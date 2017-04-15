@@ -401,34 +401,35 @@ namespace GameA
         #region 接口
         public object GetTitle()
         {
-            if(_user == LocalUser.Instance.User)
-            {
-                return "我的发布";
-            }
-            else
-            {
-                return _user.NickName+"的发布";
-            }
+//            if(_user == LocalUser.Instance.UserLegacy)
+//            {
+//                return "我的发布";
+//            }
+//            else
+//            {
+//                return _user.NickName+"的发布";
+//            }
+			return null;
         }
 
         public Button GetRightButton()
         {
-            if(_user != LocalUser.Instance.User)
-            {
-                return null;
-            }
-            if(_mode == EMode.None)
-            {
-                return null;
-            }
-            else if(_mode == EMode.Normal)
-            {
-                return _cachedView.EditButtonRightResource;
-            }
-            else if(_mode == EMode.Edit)
-            {
-                return _cachedView.CancelButtonRightResource;
-            }
+//            if(_user != LocalUser.Instance.UserLegacy)
+//            {
+//                return null;
+//            }
+//            if(_mode == EMode.None)
+//            {
+//                return null;
+//            }
+//            else if(_mode == EMode.Normal)
+//            {
+//                return _cachedView.EditButtonRightResource;
+//            }
+//            else if(_mode == EMode.Edit)
+//            {
+//                return _cachedView.CancelButtonRightResource;
+//            }
             return null;
         }
 

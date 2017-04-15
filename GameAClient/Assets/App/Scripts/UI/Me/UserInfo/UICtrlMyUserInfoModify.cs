@@ -61,16 +61,16 @@ namespace GameA
 
         private void RefreshView()
         {
-            User user = LocalUser.Instance.User;
-            if(user == null)
-            {
-                LogHelper.Error("UICtrlMyUserInfoModify LocalUser.user is null");
-                return;
-            }
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImage, user.HeadImgUrl);
-            DictionaryTools.SetContentText(_cachedView.NickNameText, user.NickName);
-            DictionaryTools.SetContentText(_cachedView.SexText, EnumStringDefine.GetSexString(user.Sex));
-            DictionaryTools.SetContentText(_cachedView.ProfileText, user.Profile);
+//            User user = LocalUser.Instance.UserLegacy;
+//            if(user == null)
+//            {
+//                LogHelper.Error("UICtrlMyUserInfoModify LocalUser.user is null");
+//                return;
+//            }
+//            ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImage, user.HeadImgUrl);
+//            DictionaryTools.SetContentText(_cachedView.NickNameText, user.NickName);
+//            DictionaryTools.SetContentText(_cachedView.SexText, EnumStringDefine.GetSexString(user.Sex));
+//            DictionaryTools.SetContentText(_cachedView.ProfileText, user.Profile);
         }
 
         #endregion
@@ -113,14 +113,14 @@ namespace GameA
 
         private void ModifyHeadImgCallback(byte[] bytes)
         {
-            User user = LocalUser.Instance.User;
-            if(bytes == null || bytes.Length == 0)
-            {
-                return;
-            }
-            const string localHeadImageName = "localHeadImg.jpg";
-            ImageResourceManager.Instance.SaveOrUpdateImageData(localHeadImageName, bytes);
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImage, localHeadImageName);
+//            User user = LocalUser.Instance.UserLegacy;
+//            if(bytes == null || bytes.Length == 0)
+//            {
+//                return;
+//            }
+//            const string localHeadImageName = "localHeadImg.jpg";
+//            ImageResourceManager.Instance.SaveOrUpdateImageData(localHeadImageName, bytes);
+//            ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadImage, localHeadImageName);
 
 //            Msg_CA_UpdateUserInfo msg = new Msg_CA_UpdateUserInfo();
 //            msg.UserInfo = new Msg_UserInfoDetail();
@@ -134,19 +134,19 @@ namespace GameA
 
         private void OnNickNameClick()
         {
-            Tuple<string, Action<string>> tuple = new Tuple<string, Action<string>>(LocalUser.Instance.User.NickName, OnNickNameCallback);
-            SocialGUIManager.Instance.OpenUI<UICtrlNickNameEditor>(tuple);
+//            Tuple<string, Action<string>> tuple = new Tuple<string, Action<string>>(LocalUser.Instance.UserLegacy.NickName, OnNickNameCallback);
+//            SocialGUIManager.Instance.OpenUI<UICtrlNickNameEditor>(tuple);
         }
 
         private void OnNickNameCallback(string newNickName)
         {
-            User user = LocalUser.Instance.User;
-            if(newNickName == user.NickName)
-            {
-                return;
-            }
-
-            DictionaryTools.SetContentText(_cachedView.NickNameText, newNickName);
+//            User user = LocalUser.Instance.UserLegacy;
+//            if(newNickName == user.NickName)
+//            {
+//                return;
+//            }
+//
+//            DictionaryTools.SetContentText(_cachedView.NickNameText, newNickName);
 
 //            Msg_CA_UpdateUserInfo msg = new Msg_CA_UpdateUserInfo();
 //            msg.UserInfo = new Msg_UserInfoDetail();
@@ -158,19 +158,19 @@ namespace GameA
 
         private void OnProfileClick()
         {
-            Tuple<string, Action<string>> tuple = new Tuple<string, Action<string>>(LocalUser.Instance.User.Profile, OnProfileCallback);
-            SocialGUIManager.Instance.OpenUI<UICtrlProfileEditor>(tuple);
+//            Tuple<string, Action<string>> tuple = new Tuple<string, Action<string>>(LocalUser.Instance.UserLegacy.Profile, OnProfileCallback);
+//            SocialGUIManager.Instance.OpenUI<UICtrlProfileEditor>(tuple);
         }
 
         private void OnProfileCallback(string newProfile)
         {
-            User user = LocalUser.Instance.User;
-            if(newProfile == user.Profile)
-            {
-                return;
-            }
-
-            DictionaryTools.SetContentText(_cachedView.ProfileText, newProfile);
+//            User user = LocalUser.Instance.UserLegacy;
+//            if(newProfile == user.Profile)
+//            {
+//                return;
+//            }
+//
+//            DictionaryTools.SetContentText(_cachedView.ProfileText, newProfile);
 
 //            Msg_CA_UpdateUserInfo msg = new Msg_CA_UpdateUserInfo();
 //            msg.UserInfo = new Msg_UserInfoDetail();
@@ -187,13 +187,13 @@ namespace GameA
 
         private void OnSexCallback(ESex sex)
         {
-            User user = LocalUser.Instance.User;
-            if(sex == user.Sex)
-            {
-                return;
-            }
-
-            DictionaryTools.SetContentText(_cachedView.SexText, EnumStringDefine.GetSexString(sex));
+//            User user = LocalUser.Instance.UserLegacy;
+//            if(sex == user.Sex)
+//            {
+//                return;
+//            }
+//
+//            DictionaryTools.SetContentText(_cachedView.SexText, EnumStringDefine.GetSexString(sex));
 
 //            Msg_CA_UpdateUserInfo msg = new Msg_CA_UpdateUserInfo();
 //            msg.UserInfo = new Msg_UserInfoDetail();

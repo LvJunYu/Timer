@@ -86,7 +86,7 @@ namespace GameA
 //            }
 //        }
 
-        public User User
+        public User UserLegacy
         {
             get
             {
@@ -665,7 +665,8 @@ namespace GameA
                 msg = update;
                 apiPath = SoyHttpApiPath.UpdateProject;
             }
-            User user = LocalUser.Instance.User;
+//            User user = LocalUser.Instance.UserLegacy;
+			var user = LocalUser.Instance.User;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateProject>(apiPath, msg, ret => {
                 if (ret.ResultCode == (int)EProjectOperateResult.POR_Success)
                 {
@@ -760,7 +761,8 @@ namespace GameA
             {
                 publishProject.PersonalProjectId = _projectId;
             }
-            User user = LocalUser.Instance.User;
+//            User user = LocalUser.Instance.UserLegacy;
+			var user = LocalUser.Instance.User;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PublishProject>(SoyHttpApiPath.PublishProject, publishProject, ret => {
                 if (ret.ResultCode == (int)EProjectOperateResult.POR_Success)
                 {
@@ -1116,10 +1118,10 @@ namespace GameA
             }
 //            _updateTime = msg.UpdateTime;
 //            _guid = msg.ProjectId;
-			if (UserInfo!= null)
-            {
-				_user = UserManager.Instance.OnSyncUserData(UserInfo);
-            }
+//			if (UserInfo!= null)
+//            {
+//				_user = UserManager.Instance.OnSyncUserData(UserInfo);
+//            }
 //            _name = msg.Name;
 //            _summary = msg.Summary;
 //            _iconPath = msg.IconPath;
@@ -1143,41 +1145,41 @@ namespace GameA
             }
 		}
 
-        private Msg_SC_DAT_Project ToMsg()
-        {
-            Msg_SC_DAT_Project msg = new Msg_SC_DAT_Project();
-            msg.UpdateTime = _updateTime;
-			msg.ProjectId = _projectId;
-            if (_user != null)
-            {
-                msg.UserInfo = _user.ToMsgUserInfoSimple();
-            }
-            msg.Name = _name;
-            msg.Summary = _summary;
-            msg.IconPath = _iconPath;
-            msg.ResPath = _resPath;
-            msg.CreateTime = _createTime;
-            msg.LocalDataState = _localDataState;
-            msg.ProjectStatus = _projectStatus;
-            msg.ProgramVersion = _programVersion;
-            msg.ResourcesVersion = _resourceVersion;
-//            msg.Category = (int)_projectCategory;
-            msg.PassFlag = _passFlag;
-            msg.RecordUsedTime = _recordUsedTime;
-            msg.IsValid = _isValid;
-            msg.ExtendData = new Msg_SC_DAT_ProjectExtend();
-            msg.ExtendData.PlayCount = _totalClickCount;
-            msg.ExtendData.CommentCount = _totalCommentCount;
-            msg.ExtendData.IsValid = _isValid;
-			msg.ExtendData.ProjectId = _projectId;
-            msg.ExtendData.Rate = _totalRate;
-            msg.ExtendData.RateCount = _totalRateCount;
-            msg.ExtendData.LikeCount = _likeCount;
-            msg.ExtendData.FavoriteCount = _favoriteCount;
-            msg.ExtendData.DownloadCount = _downloadCount;
-            msg.ExtendData.ShareCount = _shareCount;
-            return msg;
-        }
+//        private Msg_SC_DAT_Project ToMsg()
+//        {
+//            Msg_SC_DAT_Project msg = new Msg_SC_DAT_Project();
+//            msg.UpdateTime = _updateTime;
+//			msg.ProjectId = _projectId;
+//            if (_user != null)
+//            {
+//                msg.UserInfo = _user.ToMsgUserInfoSimple();
+//            }
+//            msg.Name = _name;
+//            msg.Summary = _summary;
+//            msg.IconPath = _iconPath;
+//            msg.ResPath = _resPath;
+//            msg.CreateTime = _createTime;
+//            msg.LocalDataState = _localDataState;
+//            msg.ProjectStatus = _projectStatus;
+//            msg.ProgramVersion = _programVersion;
+//            msg.ResourcesVersion = _resourceVersion;
+////            msg.Category = (int)_projectCategory;
+//            msg.PassFlag = _passFlag;
+//            msg.RecordUsedTime = _recordUsedTime;
+//            msg.IsValid = _isValid;
+//            msg.ExtendData = new Msg_SC_DAT_ProjectExtend();
+//            msg.ExtendData.PlayCount = _totalClickCount;
+//            msg.ExtendData.CommentCount = _totalCommentCount;
+//            msg.ExtendData.IsValid = _isValid;
+//			msg.ExtendData.ProjectId = _projectId;
+//            msg.ExtendData.Rate = _totalRate;
+//            msg.ExtendData.RateCount = _totalRateCount;
+//            msg.ExtendData.LikeCount = _likeCount;
+//            msg.ExtendData.FavoriteCount = _favoriteCount;
+//            msg.ExtendData.DownloadCount = _downloadCount;
+//            msg.ExtendData.ShareCount = _shareCount;
+//            return msg;
+//        }
 
 		public void OnSyncProjectExtendData(ProjectExtend msg)
         {
@@ -1412,7 +1414,7 @@ namespace GameA
         {
             Project p = new Project();
             p.ProjectId = LocalCacheManager.Instance.GetLocalGuid();
-            p.User = LocalUser.Instance.User;
+            p.UserLegacy = LocalUser.Instance.UserLegacy;
             p.LocalDataState = ELocalDataState.LDS_UnCreated;
             p.Name = "";
             p.Summary = "";

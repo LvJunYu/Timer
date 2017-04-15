@@ -142,52 +142,52 @@ namespace GameA
 
         private static void ShareProject(PlatformType pt, Project project)
         {
-            _shareTarget = project;
-            bool isSelf = LocalUser.Instance.UserGuid == project.User.UserId;
-            ShareContent sc = new ShareContent();
-            sc.SetShareType(ContentType.Webpage);
-            sc.SetTitle(isSelf?"我在匠游做了一个游戏，求挑战" : "我在匠游发现了一个好玩的关卡，来挑战吧");
-            sc.SetImageUrl("http://res.joy-you.com/web/share/img/logo96x96.png");
-            sc.SetText("匠游是一款游戏DIY神器，在这里你不仅是一个玩家，还可以成为游戏创作达人。自由创作，快乐分享，快来和无数小伙伴们一起创造快乐吧！");
-            string url = " ";
-            if(!string.IsNullOrEmpty(NetworkManager.AppHttpClient.BaseUrl))
-            {
-                url = NetworkManager.AppHttpClient.BaseUrl.Substring(0, NetworkManager.AppHttpClient.BaseUrl.Length-6)
-                +"share/project/"+project.ProjectId + "?isSelf=" + (isSelf?1:0);
-                if(LocalUser.Instance.User != null)
-                {
-                    url = url + "&userId=" + LocalUser.Instance.UserGuid;
-                }
-                url = url.Replace("https://", "http://");
-            }
-            sc.SetUrl(url);
-            sc.SetTitleUrl(url);
-            ShareSDK.Instance.ShareContent(pt, sc);
+//            _shareTarget = project;
+//            bool isSelf = LocalUser.Instance.UserGuid == project.UserLegacy.UserId;
+//            ShareContent sc = new ShareContent();
+//            sc.SetShareType(ContentType.Webpage);
+//            sc.SetTitle(isSelf?"我在匠游做了一个游戏，求挑战" : "我在匠游发现了一个好玩的关卡，来挑战吧");
+//            sc.SetImageUrl("http://res.joy-you.com/web/share/img/logo96x96.png");
+//            sc.SetText("匠游是一款游戏DIY神器，在这里你不仅是一个玩家，还可以成为游戏创作达人。自由创作，快乐分享，快来和无数小伙伴们一起创造快乐吧！");
+//            string url = " ";
+//            if(!string.IsNullOrEmpty(NetworkManager.AppHttpClient.BaseUrl))
+//            {
+//                url = NetworkManager.AppHttpClient.BaseUrl.Substring(0, NetworkManager.AppHttpClient.BaseUrl.Length-6)
+//                +"share/project/"+project.ProjectId + "?isSelf=" + (isSelf?1:0);
+//                if(LocalUser.Instance.UserLegacy != null)
+//                {
+//                    url = url + "&userId=" + LocalUser.Instance.UserGuid;
+//                }
+//                url = url.Replace("https://", "http://");
+//            }
+//            sc.SetUrl(url);
+//            sc.SetTitleUrl(url);
+//            ShareSDK.Instance.ShareContent(pt, sc);
         }
 
         private static void ShareRecord(PlatformType pt, Record record)
         {
-            _shareTarget = record;
-            bool isSelf = LocalUser.Instance.UserGuid == record.User.UserId;
-            ShareContent sc = new ShareContent();
-            sc.SetShareType(ContentType.Webpage);
-            sc.SetTitle(isSelf?"我在匠游通关了一个关卡，快来看录像" : "我在匠游发现了一个好玩的录像，快来围观");
-            sc.SetImageUrl("http://res.joy-you.com/web/share/img/logo96x96.png");
-            sc.SetText("匠游是一款游戏DIY神器，在这里你不仅是一个玩家，还可以成为游戏创作达人。自由创作，快乐分享，快来和无数小伙伴们一起创造快乐吧！");
-            string url = " ";
-            if(!string.IsNullOrEmpty(NetworkManager.AppHttpClient.BaseUrl))
-            {
-                url = NetworkManager.AppHttpClient.BaseUrl.Substring(0, NetworkManager.AppHttpClient.BaseUrl.Length-6)
-                    +"share/record/"+record.Id + "?isSelf=" + (isSelf?1:0);
-                if(LocalUser.Instance.User != null)
-                {
-                    url = url + "&userId=" + LocalUser.Instance.UserGuid;
-                }
-                url = url.Replace("https://", "http://");
-            }
-            sc.SetUrl(url);
-            sc.SetTitleUrl(url);
-            ShareSDK.Instance.ShareContent(pt, sc);
+//            _shareTarget = record;
+//            bool isSelf = LocalUser.Instance.UserGuid == record.User.UserId;
+//            ShareContent sc = new ShareContent();
+//            sc.SetShareType(ContentType.Webpage);
+//            sc.SetTitle(isSelf?"我在匠游通关了一个关卡，快来看录像" : "我在匠游发现了一个好玩的录像，快来围观");
+//            sc.SetImageUrl("http://res.joy-you.com/web/share/img/logo96x96.png");
+//            sc.SetText("匠游是一款游戏DIY神器，在这里你不仅是一个玩家，还可以成为游戏创作达人。自由创作，快乐分享，快来和无数小伙伴们一起创造快乐吧！");
+//            string url = " ";
+//            if(!string.IsNullOrEmpty(NetworkManager.AppHttpClient.BaseUrl))
+//            {
+//                url = NetworkManager.AppHttpClient.BaseUrl.Substring(0, NetworkManager.AppHttpClient.BaseUrl.Length-6)
+//                    +"share/record/"+record.Id + "?isSelf=" + (isSelf?1:0);
+//                if(LocalUser.Instance.UserLegacy != null)
+//                {
+//                    url = url + "&userId=" + LocalUser.Instance.UserGuid;
+//                }
+//                url = url.Replace("https://", "http://");
+//            }
+//            sc.SetUrl(url);
+//            sc.SetTitleUrl(url);
+//            ShareSDK.Instance.ShareContent(pt, sc);
         }
 
 

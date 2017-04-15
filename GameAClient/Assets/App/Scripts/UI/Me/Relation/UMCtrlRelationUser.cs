@@ -92,11 +92,11 @@ namespace GameA
                     {
                         RefreshView();
                     }
-                    if(LocalUser.Instance.User != null)
-                    {
-                        LocalUser.Instance.User.FollowedListRequestTimer.Zero();
-                        LocalUser.Instance.User.UserInfoRequestGameTimer.Zero();
-                    }
+//                    if(LocalUser.Instance.UserLegacy != null)
+//                    {
+//                        LocalUser.Instance.UserLegacy.FollowedListRequestTimer.Zero();
+//                        LocalUser.Instance.UserLegacy.UserInfoRequestGameTimer.Zero();
+//                    }
                     user.FollowerListRequestTimer.Zero();
                     user.UserInfoRequestGameTimer.Zero();
                 }

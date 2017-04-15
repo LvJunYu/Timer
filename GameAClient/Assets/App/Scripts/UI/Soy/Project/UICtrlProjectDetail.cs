@@ -74,7 +74,7 @@ namespace GameA
 
         private void OnAuthorClick()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlUserInfo>(_content.Project.User);
+            SocialGUIManager.Instance.OpenUI<UICtrlUserInfo>(_content.Project.UserLegacy);
         }
 
         private void OnPlayClick()
@@ -162,48 +162,48 @@ namespace GameA
 
         private void RefreshView()
         {
-            _cachedView.TagGroup.SelectIndex(_cachedView.TagGroup.CurInx, true);
-            Project pj = _content.Project;
-            if(_content.Project.ProjectStatus == EProjectStatus.PS_Public && !_content.Project.IsValid)
-            {
-                DictionaryTools.SetContentText(_cachedView.ProjectName, "[已删除]");
-            }
-            else
-            {
-                DictionaryTools.SetContentText(_cachedView.ProjectName, pj.Name);
-            }
-            if(string.IsNullOrEmpty(pj.Summary))
-            {
-                _cachedView.CollapseSumBtn.gameObject.SetActive(false);
-            }
-            else
-            {
-                _cachedView.CollapseSumBtn.gameObject.SetActive(true);
-                DictionaryTools.SetContentText(_cachedView.Summary, string.Format(SummaryTemplate, pj.Summary));
-            }
-
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.ProjectCover, pj.IconPath, _cachedView.DefaultTexture);
-            _cachedView.CreateTime.text =  DateTimeUtil.UnixTimestampMillisToLocalDateTime(_content.Project.CreateTime).ToString("MM-dd HH:mm");
-            if(_content.Project.DownloadPrice < 0)
-            {
-                DictionaryTools.SetContentText(_cachedView.DownloadBtnText, "不可下载");
-                _cachedView.DownloadPriceImage.gameObject.SetActive(false);
-            }
-            else if(_content.Project.DownloadPrice == 0)
-            {
-                DictionaryTools.SetContentText(_cachedView.DownloadBtnText, "免费下载");
-                _cachedView.DownloadPriceImage.gameObject.SetActive(false);
-            }
-            else
-            {
-                DictionaryTools.SetContentText(_cachedView.DownloadBtnText, ""+_content.Project.DownloadPrice);
-                _cachedView.DownloadPriceImage.gameObject.SetActive(true);
-            }
-            RefreshAuthorView();
-            RefreshStatisticAndUserInfo();
-            RefreshRecentPlayedUser();
-
-            _cachedView.AdminDock.SetActive(LocalUser.Instance.User!=null && LocalUser.Instance.User.AccountRoleType == EAccountRoleType.AcRT_Admin);
+//            _cachedView.TagGroup.SelectIndex(_cachedView.TagGroup.CurInx, true);
+//            Project pj = _content.Project;
+//            if(_content.Project.ProjectStatus == EProjectStatus.PS_Public && !_content.Project.IsValid)
+//            {
+//                DictionaryTools.SetContentText(_cachedView.ProjectName, "[已删除]");
+//            }
+//            else
+//            {
+//                DictionaryTools.SetContentText(_cachedView.ProjectName, pj.Name);
+//            }
+//            if(string.IsNullOrEmpty(pj.Summary))
+//            {
+//                _cachedView.CollapseSumBtn.gameObject.SetActive(false);
+//            }
+//            else
+//            {
+//                _cachedView.CollapseSumBtn.gameObject.SetActive(true);
+//                DictionaryTools.SetContentText(_cachedView.Summary, string.Format(SummaryTemplate, pj.Summary));
+//            }
+//
+//            ImageResourceManager.Instance.SetDynamicImage(_cachedView.ProjectCover, pj.IconPath, _cachedView.DefaultTexture);
+//            _cachedView.CreateTime.text =  DateTimeUtil.UnixTimestampMillisToLocalDateTime(_content.Project.CreateTime).ToString("MM-dd HH:mm");
+//            if(_content.Project.DownloadPrice < 0)
+//            {
+//                DictionaryTools.SetContentText(_cachedView.DownloadBtnText, "不可下载");
+//                _cachedView.DownloadPriceImage.gameObject.SetActive(false);
+//            }
+//            else if(_content.Project.DownloadPrice == 0)
+//            {
+//                DictionaryTools.SetContentText(_cachedView.DownloadBtnText, "免费下载");
+//                _cachedView.DownloadPriceImage.gameObject.SetActive(false);
+//            }
+//            else
+//            {
+//                DictionaryTools.SetContentText(_cachedView.DownloadBtnText, ""+_content.Project.DownloadPrice);
+//                _cachedView.DownloadPriceImage.gameObject.SetActive(true);
+//            }
+//            RefreshAuthorView();
+//            RefreshStatisticAndUserInfo();
+//            RefreshRecentPlayedUser();
+//
+//            _cachedView.AdminDock.SetActive(LocalUser.Instance.UserLegacy!=null && LocalUser.Instance.UserLegacy.AccountRoleType == EAccountRoleType.AcRT_Admin);
         }
 
         private void RefreshStatisticAndUserInfo()
@@ -241,7 +241,7 @@ namespace GameA
 
         private void RefreshAuthorView()
         {
-            User user = _content.Project.User;
+            User user = _content.Project.UserLegacy;
             if(user.Sex == ESex.S_None)
             {
                 _cachedView.SexImg.gameObject.SetActive(false);
@@ -270,8 +270,8 @@ namespace GameA
                     _cachedView.UnfollowBtn.gameObject.SetActive(false);
                 }
             }
-            DictionaryTools.SetContentText(_cachedView.AuthorName, _content.Project.User.NickName);
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, _content.Project.User.HeadImgUrl, _cachedView.DefaultTexture);
+            DictionaryTools.SetContentText(_cachedView.AuthorName, _content.Project.UserLegacy.NickName);
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, _content.Project.UserLegacy.HeadImgUrl, _cachedView.DefaultTexture);
         }
 
         private void RefreshRecentPlayedUser()
@@ -336,33 +336,33 @@ namespace GameA
         private bool _isFollowStateRequest = false;
         private void OnFollowBtnClick()
         {
-            if(!AppLogicUtil.CheckAndRequiredLogin())
-            {
-                return;
-            }
-            if(_isFollowStateRequest)
-            {
-                return;
-            }
-            User user = _content.Project.User;
-            _isFollowStateRequest = true;
-            user.UpdateFollowState(!_content.Project.User.FollowedByMe, flag=>{
-                _isFollowStateRequest = false;
-                if(flag)
-                {
-                    if(user.UserId == _content.Project.User.UserId)
-                    {
-                        RefreshAuthorView();
-                    }
-                    if(LocalUser.Instance.User != null)
-                    {
-                        LocalUser.Instance.User.FollowedListRequestTimer.Zero();
-                        LocalUser.Instance.User.UserInfoRequestGameTimer.Zero();
-                    }
-                    user.FollowerListRequestTimer.Zero();
-                    user.UserInfoRequestGameTimer.Zero();
-                }
-            });
+//            if(!AppLogicUtil.CheckAndRequiredLogin())
+//            {
+//                return;
+//            }
+//            if(_isFollowStateRequest)
+//            {
+//                return;
+//            }
+//            User user = _content.Project.UserLegacy;
+//            _isFollowStateRequest = true;
+//            user.UpdateFollowState(!_content.Project.UserLegacy.FollowedByMe, flag=>{
+//                _isFollowStateRequest = false;
+//                if(flag)
+//                {
+//                    if(user.UserId == _content.Project.UserLegacy.UserId)
+//                    {
+//                        RefreshAuthorView();
+//                    }
+//                    if(LocalUser.Instance.UserLegacy != null)
+//                    {
+//                        LocalUser.Instance.UserLegacy.FollowedListRequestTimer.Zero();
+//                        LocalUser.Instance.UserLegacy.UserInfoRequestGameTimer.Zero();
+//                    }
+//                    user.FollowerListRequestTimer.Zero();
+//                    user.UserInfoRequestGameTimer.Zero();
+//                }
+//            });
         }
 
         private bool _isFavoriteRequest = false;
@@ -399,71 +399,71 @@ namespace GameA
 
         private void OnDownloadBtnClick()
         {
-            if(!AppLogicUtil.CheckAndRequiredLogin())
-            {
-                return;
-            }
-            string tipString;
-            if(LocalUser.Instance.User.UserId == _content.Project.User.UserId)
-            {
-                tipString = "花费0金币下载这个作品";
-            }
-            else
-            {
-                if(_content.Project.DownloadPrice < 0)
-                {
-                    return;
-                }
-                tipString = string.Format("花费{0}金币下载这个作品", _content.Project.DownloadPrice);
-            }
-            CommonTools.ShowPopupDialog(tipString,null,
-                new System.Collections.Generic.KeyValuePair<string, Action>("确定", ()=>{
-                    DownloadProject();
-                }), 
-                new System.Collections.Generic.KeyValuePair<string, Action>("取消", ()=>{
-
-                }));
+//            if(!AppLogicUtil.CheckAndRequiredLogin())
+//            {
+//                return;
+//            }
+//            string tipString;
+//            if(LocalUser.Instance.UserLegacy.UserId == _content.Project.UserLegacy.UserId)
+//            {
+//                tipString = "花费0金币下载这个作品";
+//            }
+//            else
+//            {
+//                if(_content.Project.DownloadPrice < 0)
+//                {
+//                    return;
+//                }
+//                tipString = string.Format("花费{0}金币下载这个作品", _content.Project.DownloadPrice);
+//            }
+//            CommonTools.ShowPopupDialog(tipString,null,
+//                new System.Collections.Generic.KeyValuePair<string, Action>("确定", ()=>{
+//                    DownloadProject();
+//                }), 
+//                new System.Collections.Generic.KeyValuePair<string, Action>("取消", ()=>{
+//
+//                }));
         }
         private void DownloadProject()
         {
-            int price = 0;
-            if(LocalUser.Instance.User != null && LocalUser.Instance.User.UserId == _content.Project.User.UserId)
-            {
-            }
-            else if(_content.Project.DownloadPrice < 0)
-            {
-                return;
-            }
-            else if(_content.Project.DownloadPrice == 0)
-            {
-            }
-            else
-            {
-                price = _content.Project.DownloadPrice;
-            }
-            User user = LocalUser.Instance.User;
-            Project project = _content.Project;
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
-            MatrixProjectTools.PreparePersonalProjectData(()=>{
-//                var userMatrixData = AppData.Instance.UserMatrixData.GetData(project.MatrixGuid);
-                int localCount = LocalUser.Instance.User.GetSavedProjectCount();
-//                if(userMatrixData.PersonalProjectWorkshopSize <= localCount)
-//                {
+//            int price = 0;
+//            if(LocalUser.Instance.UserLegacy != null && LocalUser.Instance.UserLegacy.UserId == _content.Project.UserLegacy.UserId)
+//            {
+//            }
+//            else if(_content.Project.DownloadPrice < 0)
+//            {
+//                return;
+//            }
+//            else if(_content.Project.DownloadPrice == 0)
+//            {
+//            }
+//            else
+//            {
+//                price = _content.Project.DownloadPrice;
+//            }
+//            User user = LocalUser.Instance.UserLegacy;
+//            Project project = _content.Project;
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
+//            MatrixProjectTools.PreparePersonalProjectData(()=>{
+////                var userMatrixData = AppData.Instance.UserMatrixData.GetData(project.MatrixGuid);
+//                int localCount = LocalUser.Instance.UserLegacy.GetSavedProjectCount();
+////                if(userMatrixData.PersonalProjectWorkshopSize <= localCount)
+////                {
+////                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+////                    ShowDownloadFailedTip(EProjectOperateResult.POR_WorkshopSizeNotEnough);
+////                    return;
+////                }
+//                project.DownloadProject(()=>{
 //                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//                    ShowDownloadFailedTip(EProjectOperateResult.POR_WorkshopSizeNotEnough);
-//                    return;
-//                }
-                project.DownloadProject(()=>{
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    CommonTools.ShowPopupDialog("作品下载成功，请到工坊查看");
-                }, failedCode=>{
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    ShowDownloadFailedTip(failedCode);
-                });
-            }, ()=>{
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                CommonTools.ShowPopupDialog("用户数据获取失败，下载失败");
-            });
+//                    CommonTools.ShowPopupDialog("作品下载成功，请到工坊查看");
+//                }, failedCode=>{
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                    ShowDownloadFailedTip(failedCode);
+//                });
+//            }, ()=>{
+//                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                CommonTools.ShowPopupDialog("用户数据获取失败，下载失败");
+//            });
         }
 
         private void ShowDownloadFailedTip(EProjectOperateResult code)

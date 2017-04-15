@@ -64,10 +64,10 @@ namespace GameA
                 DictionaryTools.SetContentText(_cachedView.Name, _content.Name);
             }
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.Icon, _content.IconPath, _cachedView.DefaultCoverTexture);
-            User u = _content.User;
+            User u = _content.UserLegacy;
             DictionaryTools.SetContentText(_cachedView.AuthorName, u.NickName);
             DictionaryTools.SetContentText(_cachedView.Summary, _content.Summary);
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, _content.User.HeadImgUrl, _cachedView.DefaultUserTexture);
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, _content.UserLegacy.HeadImgUrl, _cachedView.DefaultUserTexture);
 //            DictionaryTools.SetContentText(_cachedView.ProjectCategoryText, EnumStringDefine.GetProjectCategoryString(_content.ProjectCategory));
         }
 

@@ -119,11 +119,19 @@ namespace GameA
 //				Debug.Log (level.Value.Id + " " + level.Value.Name);
 //			}
 			_cachedView.AvatarImage.SetActiveEx(false);
-			LocalUser.Instance.User.AvatarData.LoadUsingData(()=>{
-				RefreshAvatar();
-			}, (networkError) => {
-				LogHelper.Error("Network error when get avatarData, {0}", networkError);
-			});
+//			LocalUser.Instance.UserLegacy.AvatarData.LoadUsingData(()=>{
+//				RefreshAvatar();
+//			}, (networkError) => {
+//				LogHelper.Error("Network error when get avatarData, {0}", networkError);
+//			});
+			LocalUser.Instance.UsingAvatarData.Request(
+				LocalUser.Instance.UserGuid,
+				() => {
+					RefreshAvatar();
+				}, code => {
+					LogHelper.Error("Network error when get avatarData, {0}", code);
+				}
+			);
         }
 
 		protected override void OnOpen (object parameter)
@@ -147,19 +155,19 @@ namespace GameA
 //        }
 
 		private void OnTestChangeAvatar () {
-			SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求换装...");
-			int type = UnityEngine.Random.Range (0, 3);
-			LocalUser.Instance.User.AvatarData.SendChangeAvatarPart (
-				(EAvatarPart)(type + 1),
-				(_avatarView.EquipedPartsIds [type] + 1) % 2 + 1,
-				() => {
-					_avatarView.SetParts ((_avatarView.EquipedPartsIds [type] + 1) % 2 + 1,
-						(SpinePartsHelper.ESpineParts)type, true);
-					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-				}, (netError) => {
-					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-				}
-			);
+//			SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求换装...");
+//			int type = UnityEngine.Random.Range (0, 3);
+//			LocalUser.Instance.UserLegacy.AvatarData.SendChangeAvatarPart (
+//				(EAvatarPart)(type + 1),
+//				(_avatarView.EquipedPartsIds [type] + 1) % 2 + 1,
+//				() => {
+//					_avatarView.SetParts ((_avatarView.EquipedPartsIds [type] + 1) % 2 + 1,
+//						(SpinePartsHelper.ESpineParts)type, true);
+//					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//				}, (netError) => {
+//					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//				}
+//			);
 		}
 
 		private void OnDebugClearUserData () {
@@ -270,16 +278,16 @@ namespace GameA
 //        }
 
 		private void RefreshUserInfo () {
-			_cachedView.NickName.text = LocalUser.Instance.User.NickName;
+			_cachedView.NickName.text = LocalUser.Instance.User.UserInfoSimple.NickName;
 			ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHeadAvatar, 
-				LocalUser.Instance.User.HeadImgUrl,
+				LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,
 				_cachedView.DefaultUserHeadTexture);
-			_cachedView.AdventureLevel.text = LocalUser.Instance.User.PlayerLevel.ToString();
-			_cachedView.CreatorLevel.text = LocalUser.Instance.User.CreatorLevel.ToString();
-			if (LocalUser.Instance.User.Sex == ESex.S_Male) {
+			_cachedView.AdventureLevel.text = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel.ToString();
+			_cachedView.CreatorLevel.text = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorLevel.ToString();
+			if (LocalUser.Instance.User.UserInfoSimple.Sex == ESex.S_Male) {
 				_cachedView.MaleIcon.gameObject.SetActive (true);
 				_cachedView.FemaleIcon.gameObject.SetActive (false);
-			} else if (LocalUser.Instance.User.Sex == ESex.S_Female) {
+			} else if (LocalUser.Instance.User.UserInfoSimple.Sex == ESex.S_Female) {
 				_cachedView.MaleIcon.gameObject.SetActive (false);
 				_cachedView.FemaleIcon.gameObject.SetActive (true);
 			} else {
@@ -288,17 +296,25 @@ namespace GameA
 			}
 		}
 		private void RefreshWalletInfo () {
-			_cachedView.MoneyCount.text = LocalUser.Instance.User.GoldCoin.ToString();
-			_cachedView.DiamondCount.text = LocalUser.Instance.User.Diamond.ToString();
+			_cachedView.MoneyCount.text = LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin.ToString();
+			_cachedView.DiamondCount.text = LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond.ToString();
 		}
 		private void RefreshAvatar () {
-			if (!LocalUser.Instance.User.AvatarData.Inited)
-				return;
+//			if (!LocalUser.Instance.UserLegacy.AvatarData.Inited)
+//				return;
 			_cachedView.AvatarImage.SetActiveEx(true);
-			_avatarView.SetParts (LocalUser.Instance.User.AvatarData.HeadPartId, SpinePartsHelper.ESpineParts.Head, true);
-			_avatarView.SetParts (LocalUser.Instance.User.AvatarData.UpperPartId, SpinePartsHelper.ESpineParts.Upper, true);
-			_avatarView.SetParts (LocalUser.Instance.User.AvatarData.LowerPartId, SpinePartsHelper.ESpineParts.Lower, true);
-			_avatarView.SetParts (LocalUser.Instance.User.AvatarData.AppendagePartId, SpinePartsHelper.ESpineParts.Appendage, true);
+			if (LocalUser.Instance.UsingAvatarData.Head != null) {
+				_avatarView.SetParts ((int)LocalUser.Instance.UsingAvatarData.Head.Id, SpinePartsHelper.ESpineParts.Head, true);
+			}
+			if (LocalUser.Instance.UsingAvatarData.Upper != null) {
+				_avatarView.SetParts ((int)LocalUser.Instance.UsingAvatarData.Upper.Id, SpinePartsHelper.ESpineParts.Upper, true);
+			}
+			if (LocalUser.Instance.UsingAvatarData.Lower != null) {
+				_avatarView.SetParts ((int)LocalUser.Instance.UsingAvatarData.Lower.Id, SpinePartsHelper.ESpineParts.Lower, true);
+			}
+			if (LocalUser.Instance.UsingAvatarData.Appendage != null) {
+				_avatarView.SetParts ((int)LocalUser.Instance.UsingAvatarData.Appendage.Id, SpinePartsHelper.ESpineParts.Appendage, true);
+			}
 		}
 
         #endregion
