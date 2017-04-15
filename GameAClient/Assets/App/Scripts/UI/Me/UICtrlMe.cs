@@ -68,33 +68,33 @@ namespace GameA
 
         private void RequestData()
         {
-            if(LocalUser.Instance.User == null)
-            {
-                return;
-            }
-            if(_isRequest)
-            {
-                return;
-            }
-            User user = LocalUser.Instance.User;
-            GameTimer timer = user.UserInfoRequestGameTimer;
-            if(timer.GetInterval() > UserInfoRequestInterval)
-            {
-                _isRequest = true;
-                Msg_CS_DAT_UserInfoDetail msg = new Msg_CS_DAT_UserInfoDetail();
-                msg.UserId = user.UserId;
-                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserInfoDetail>(SoyHttpApiPath.UserInfoDetail, msg, ret=>{
-                    _isRequest = false;
-                    UserManager.Instance.OnSyncUserData(ret, true);
-                    if(user == LocalUser.Instance.User)
-                    {
-                        user.UserInfoRequestGameTimer.Reset();
-                        UpdateView();
-                    }
-                }, (code, msgStr)=>{
-                    _isRequest = false;
-                });
-            }
+//            if(LocalUser.Instance.UserLegacy == null)
+//            {
+//                return;
+//            }
+//            if(_isRequest)
+//            {
+//                return;
+//            }
+//            User user = LocalUser.Instance.UserLegacy;
+//            GameTimer timer = user.UserInfoRequestGameTimer;
+//            if(timer.GetInterval() > UserInfoRequestInterval)
+//            {
+//                _isRequest = true;
+//                Msg_CS_DAT_UserInfoDetail msg = new Msg_CS_DAT_UserInfoDetail();
+//                msg.UserId = user.UserId;
+//                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserInfoDetail>(SoyHttpApiPath.UserInfoDetail, msg, ret=>{
+//                    _isRequest = false;
+//                    UserManager.Instance.OnSyncUserData(ret, true);
+//                    if(user == LocalUser.Instance.UserLegacy)
+//                    {
+//                        user.UserInfoRequestGameTimer.Reset();
+//                        UpdateView();
+//                    }
+//                }, (code, msgStr)=>{
+//                    _isRequest = false;
+//                });
+//            }
         }
 
         protected override void OnOpen(object parameter)
@@ -106,50 +106,50 @@ namespace GameA
 
         private void UpdateView()
         {
-            if(LocalUser.Instance.Account.HasLogin)
-            {
-                var user = LocalUser.Instance.User;
-
-                _cachedView.UserInfoDock.SetActive(true);
-                _cachedView.LoginBtnDock.SetActive(false);
-
-                ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHeadImg, user.HeadImgUrl, _cachedView.DefaultUserHeadTexture);
-                _cachedView.NickName.text = user.NickName;
-                if(user.Sex == ESex.S_None)
-                {
-                    _cachedView.SexImg.gameObject.SetActive(false);
-                }
-                else
-                {
-                    _cachedView.SexImg.gameObject.SetActive(true);
-                    _cachedView.SexImg.sprite = AppResourceManager.Instance.GetSprite(SpriteNameDefine.GetSexIcon(user.Sex));
-                }
-                _cachedView.Profile.text = user.Profile;
-                DictionaryTools.SetContentText(_cachedView.FollowListText, "关注 " + user.FollowCount);
-                DictionaryTools.SetContentText(_cachedView.FollowerListText, "粉丝 " + user.FollowerCount);
-                _cachedView.PlayerLevel.SetLevel(user.PlayerLevel);
-                _cachedView.PlayerLevel.SetExp(user.PlayerExp, UserLevelUtil.GetLevelTotalExp(user.PlayerLevel));
-                _cachedView.PlayerLevel.SetLevelProgress(UserLevelUtil.GetUserLevelProgress(user.PlayerLevel, user.PlayerExp));
-                _cachedView.CreatorLevel.SetLevel(user.CreatorLevel);
-                _cachedView.CreatorLevel.SetExp(user.CreatorExp, UserLevelUtil.GetLevelTotalExp(user.CreatorLevel));
-                _cachedView.CreatorLevel.SetLevelProgress(UserLevelUtil.GetUserLevelProgress(user.CreatorLevel, user.CreatorExp));
-                DictionaryTools.SetContentText(_cachedView.CurrencyText, string.Format("金币：{0}", user.GoldCoin));
-            }
-            else
-            {
-                _cachedView.UserInfoDock.SetActive(false);
-                _cachedView.LoginBtnDock.SetActive(true);
-                DictionaryTools.SetContentText(_cachedView.FollowListText, "关注 " + 0);
-                DictionaryTools.SetContentText(_cachedView.FollowerListText, "粉丝 " + 0);
-                _cachedView.PlayerLevel.SetLevel(0);
-                _cachedView.PlayerLevel.SetExp(0, 0);
-                _cachedView.PlayerLevel.SetLevelProgress(0);
-                _cachedView.CreatorLevel.SetLevel(0);
-                _cachedView.CreatorLevel.SetExp(0, 0);
-                _cachedView.CreatorLevel.SetLevelProgress(0);
-                DictionaryTools.SetContentText(_cachedView.CurrencyText, "未登录");
-                ClearAllNotificationTip();
-            }
+//            if(LocalUser.Instance.Account.HasLogin)
+//            {
+//                var user = LocalUser.Instance.UserLegacy;
+//
+//                _cachedView.UserInfoDock.SetActive(true);
+//                _cachedView.LoginBtnDock.SetActive(false);
+//
+//                ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHeadImg, user.HeadImgUrl, _cachedView.DefaultUserHeadTexture);
+//                _cachedView.NickName.text = user.NickName;
+//                if(user.Sex == ESex.S_None)
+//                {
+//                    _cachedView.SexImg.gameObject.SetActive(false);
+//                }
+//                else
+//                {
+//                    _cachedView.SexImg.gameObject.SetActive(true);
+//                    _cachedView.SexImg.sprite = AppResourceManager.Instance.GetSprite(SpriteNameDefine.GetSexIcon(user.Sex));
+//                }
+//                _cachedView.Profile.text = user.Profile;
+//                DictionaryTools.SetContentText(_cachedView.FollowListText, "关注 " + user.FollowCount);
+//                DictionaryTools.SetContentText(_cachedView.FollowerListText, "粉丝 " + user.FollowerCount);
+//                _cachedView.PlayerLevel.SetLevel(user.PlayerLevel);
+//                _cachedView.PlayerLevel.SetExp(user.PlayerExp, UserLevelUtil.GetLevelTotalExp(user.PlayerLevel));
+//                _cachedView.PlayerLevel.SetLevelProgress(UserLevelUtil.GetUserLevelProgress(user.PlayerLevel, user.PlayerExp));
+//                _cachedView.CreatorLevel.SetLevel(user.CreatorLevel);
+//                _cachedView.CreatorLevel.SetExp(user.CreatorExp, UserLevelUtil.GetLevelTotalExp(user.CreatorLevel));
+//                _cachedView.CreatorLevel.SetLevelProgress(UserLevelUtil.GetUserLevelProgress(user.CreatorLevel, user.CreatorExp));
+//                DictionaryTools.SetContentText(_cachedView.CurrencyText, string.Format("金币：{0}", user.GoldCoin));
+//            }
+//            else
+//            {
+//                _cachedView.UserInfoDock.SetActive(false);
+//                _cachedView.LoginBtnDock.SetActive(true);
+//                DictionaryTools.SetContentText(_cachedView.FollowListText, "关注 " + 0);
+//                DictionaryTools.SetContentText(_cachedView.FollowerListText, "粉丝 " + 0);
+//                _cachedView.PlayerLevel.SetLevel(0);
+//                _cachedView.PlayerLevel.SetExp(0, 0);
+//                _cachedView.PlayerLevel.SetLevelProgress(0);
+//                _cachedView.CreatorLevel.SetLevel(0);
+//                _cachedView.CreatorLevel.SetExp(0, 0);
+//                _cachedView.CreatorLevel.SetLevelProgress(0);
+//                DictionaryTools.SetContentText(_cachedView.CurrencyText, "未登录");
+//                ClearAllNotificationTip();
+//            }
         }
 
         private void ClearAllNotificationTip()
@@ -190,7 +190,7 @@ namespace GameA
 
         private void OnUserInfoClick()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlUserInfo>(LocalUser.Instance.User);
+//            SocialGUIManager.Instance.OpenUI<UICtrlUserInfo>(LocalUser.Instance.UserLegacy);
         }
 
         private void OnFollowListBtnClick()
@@ -199,7 +199,7 @@ namespace GameA
             {
                 return;
             }
-            SocialGUIManager.Instance.OpenUI<UICtrlFollowedUserList>(LocalUser.Instance.User);
+//            SocialGUIManager.Instance.OpenUI<UICtrlFollowedUserList>(LocalUser.Instance.UserLegacy);
         }
 
         private void OnFollowerListBtnClick()
@@ -208,7 +208,7 @@ namespace GameA
             {
                 return;
             }
-            SocialGUIManager.Instance.OpenUI<UICtrlFollowerUserList>(LocalUser.Instance.User);
+//            SocialGUIManager.Instance.OpenUI<UICtrlFollowerUserList>(LocalUser.Instance.UserLegacy);
         }
 
         private void OnMyPublishedProjectBtnClick()
@@ -217,7 +217,7 @@ namespace GameA
             {
                 return;
             }
-            SocialGUIManager.Instance.OpenUI<UICtrlPublishedProjects>(LocalUser.Instance.User);
+//            SocialGUIManager.Instance.OpenUI<UICtrlPublishedProjects>(LocalUser.Instance.UserLegacy);
         }
 
         private void OnMyRecordBtnClick()

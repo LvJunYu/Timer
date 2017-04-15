@@ -217,7 +217,7 @@ namespace GameA
 
         public static void PreparePersonalProjectData(Action successCallback, Action failedCallback)
         {
-            if(LocalUser.Instance.User == null)
+            if(LocalUser.Instance.UserLegacy == null)
             {
                 return;
             }
@@ -228,7 +228,8 @@ namespace GameA
 //                helper.FailOne();
 //            });
 
-            User user = LocalUser.Instance.User;
+//            User user = LocalUser.Instance.UserLegacy;
+			var user = LocalUser.Instance.User;
             if(!user.GetSavedPrjectRequestTimer().PassedSecondsWithoutReset(600))
             {
                 helper.CompleteOne();

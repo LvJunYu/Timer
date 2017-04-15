@@ -20,6 +20,7 @@ namespace GameA
 		protected long _lastDirtyTime;
 		// got dirty when local modified
 		protected bool _dirty;
+		protected bool _inited;
 
 		protected Action _syncSuccessCB;
 		protected Action<ENetResultCode> _syncFailedCB;
@@ -29,9 +30,16 @@ namespace GameA
 		public virtual bool IsDirty {
 			get { return _dirty; }
 		}
+		public bool IsInited {
+			get { return _inited; }
+		}
 		#endregion
 
 		#region Functions
+		public SyncronisticData () {
+			_dirty = true;
+			_inited = false;
+		}
 		protected void SetDirty () {
 			_dirty = true;
 			_lastDirtyTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
@@ -39,6 +47,7 @@ namespace GameA
 
 		protected void OnSyncSucceed () {
 			_lastSyncTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
+			_inited = true;
 			_dirty = false;
 			if (_syncSuccessCB != null) {
 				_syncSuccessCB.Invoke ();

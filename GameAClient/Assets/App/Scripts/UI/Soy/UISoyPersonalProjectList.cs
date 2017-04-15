@@ -107,7 +107,7 @@ namespace GameA
 
         public void Refresh()
         {
-            if(LocalUser.Instance.User == null)
+			if(LocalUser.Instance.User == null)
             {
                 return;
             }
@@ -139,7 +139,7 @@ namespace GameA
             int pCount = 0;
 //            if(userMatrixData != null)
 //            {
-                var pList = LocalUser.Instance.User.GetSavedProjectList();
+			var pList = LocalUser.Instance.User.GetSavedProjectList();
                 for(int i=0, maxLen = pList.Count; i<maxLen; i++)
                 {
                     var wrapper = new CardDataRendererWrapper<Project>(pList[i], OnItemClick);

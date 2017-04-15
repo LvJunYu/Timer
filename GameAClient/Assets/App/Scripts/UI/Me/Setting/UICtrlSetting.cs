@@ -80,7 +80,7 @@ namespace GameA
                 _cachedView.LogoutButton.gameObject.SetActive(false);
             }
 
-            _cachedView.AdminDock.SetActive(LocalUser.Instance.User != null && LocalUser.Instance.User.AccountRoleType == EAccountRoleType.AcRT_Admin);
+//            _cachedView.AdminDock.SetActive(LocalUser.Instance.UserLegacy != null && LocalUser.Instance.UserLegacy.AccountRoleType == EAccountRoleType.AcRT_Admin);
         }
 
         protected override void OnOpen(object parameter)
