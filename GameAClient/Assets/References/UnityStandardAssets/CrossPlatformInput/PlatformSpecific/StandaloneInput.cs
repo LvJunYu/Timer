@@ -1,0 +1,124 @@
+using System;
+using UnityEngine;
+
+namespace UnitySampleAssets.CrossPlatformInput.PlatformSpecific
+{
+    public class StandaloneInput : VirtualInput
+    {
+        // 需要监听的输入按钮
+        private string [] _virtualBtnNames = { "Jump", "Fire1", "Fire2", "Horizontal", "Vertical" };
+
+        private void AddButton (string name)
+        {
+            // we have not registered this button yet so add it, happens in the constructor
+            CrossPlatformInputManager.RegisterVirtualButton (new CrossPlatformInputManager.VirtualButton (name));
+        }
+
+        public override float GetAxis(string name, bool raw)
+        {
+            return raw ? Input.GetAxisRaw(name) : Input.GetAxis(name);
+        }
+
+
+        public override bool GetButton(string name)
+        {
+            //return Input.GetButton(name);
+            if (virtualButtons.ContainsKey (name)) {
+                return virtualButtons [name].GetButton;
+            }
+
+            AddButton (name);
+            return virtualButtons [name].GetButton;
+        }
+
+
+        public override bool GetButtonDown(string name)
+        {
+            //return Input.GetButtonDown(name);
+            if (virtualButtons.ContainsKey (name)) {
+                return virtualButtons [name].GetButtonDown;
+            }
+
+            AddButton (name);
+            return virtualButtons [name].GetButtonDown;
+        }
+
+
+        public override bool GetButtonUp(string name)
+        {
+            //return Input.GetButtonUp(name);
+            if (virtualButtons.ContainsKey (name)) {
+                return virtualButtons [name].GetButtonUp;
+            }
+
+            AddButton (name);
+            return virtualButtons [name].GetButtonUp;
+        }
+
+
+        public override void SetButtonDown(string name)
+        {
+            throw new Exception(
+                " This is not possible to be called for standalone input. Please check your platform and code where this is called");
+        }
+
+
+        public override void SetButtonUp(string name)
+        {
+            throw new Exception(
+                " This is not possible to be called for standalone input. Please check your platform and code where this is called");
+        }
+
+
+        public override void SetAxisPositive(string name)
+        {
+            throw new Exception(
+                " This is not possible to be called for standalone input. Please check your platform and code where this is called");
+        }
+
+
+        public override void SetAxisNegative(string name)
+        {
+            throw new Exception(
+                " This is not possible to be called for standalone input. Please check your platform and code where this is called");
+        }
+
+
+        public override void SetAxisZero(string name)
+        {
+            throw new Exception(
+                " This is not possible to be called for standalone input. Please check your platform and code where this is called");
+        }
+
+
+        public override void SetAxis(string name, float value)
+        {
+            throw new Exception(
+                " This is not possible to be called for standalone input. Please check your platform and code where this is called");
+        }
+
+
+        public override Vector3 MousePosition()
+        {
+            return Input.mousePosition;
+        }
+
+        public override void Update ()
+        {
+            for (int i = 0; i < _virtualBtnNames.Length; i++) {
+                if (Input.GetButtonDown (_virtualBtnNames [i])) {
+                    if (!virtualButtons.ContainsKey (_virtualBtnNames [i])) {
+                        AddButton (_virtualBtnNames [i]);
+                    }
+                    virtualButtons [_virtualBtnNames [i]].Pressed ();
+                }
+                if (Input.GetButtonUp (_virtualBtnNames [i])) {
+                    if (!virtualButtons.ContainsKey (_virtualBtnNames [i])) {
+                        AddButton (_virtualBtnNames [i]);
+                    }
+                    virtualButtons [_virtualBtnNames [i]].Released ();
+                }
+            }
+        }
+    }
+}

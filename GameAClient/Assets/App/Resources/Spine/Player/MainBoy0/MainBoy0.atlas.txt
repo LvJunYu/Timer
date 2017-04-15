@@ -1,0 +1,238 @@
+
+MainBoy0.png
+size: 512,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+t_MainBoy0_TouBu_0
+  rotate: false
+  xy: 2, 2
+  size: 204, 203
+  orig: 204, 203
+  offset: 0, 0
+  index: -1
+t_MainBoy0_Yan_0
+  rotate: false
+  xy: 208, 124
+  size: 162, 81
+  orig: 162, 81
+  offset: 0, 0
+  index: -1
+
+MainBoy02.png
+size: 512,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+0/ShangShen/t_MainBoy0_PiaoDai_0
+  rotate: false
+  xy: 2, 2
+  size: 157, 241
+  orig: 157, 241
+  offset: 0, 0
+  index: -1
+0/ShangShen/t_MainBoy0_ShenTi_0
+  rotate: false
+  xy: 161, 86
+  size: 110, 157
+  orig: 110, 157
+  offset: 0, 0
+  index: -1
+0/ShangShen/t_MainBoy0_YouDaBi_0
+  rotate: false
+  xy: 370, 171
+  size: 64, 72
+  orig: 64, 72
+  offset: 0, 0
+  index: -1
+0/ShangShen/t_MainBoy0_YouShou_0
+  rotate: true
+  xy: 161, 5
+  size: 79, 108
+  orig: 79, 108
+  offset: 0, 0
+  index: -1
+0/ShangShen/t_MainBoy0_ZuoDaBi_0
+  rotate: false
+  xy: 436, 167
+  size: 59, 76
+  orig: 59, 76
+  offset: 0, 0
+  index: -1
+0/ShangShen/t_MainBoy0_ZuoShou_0
+  rotate: false
+  xy: 273, 117
+  size: 95, 126
+  orig: 95, 126
+  offset: 0, 0
+  index: -1
+
+MainBoy03.png
+size: 512,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+0/Tou/t_MainBoy0_TouFaYouQian_0
+  rotate: false
+  xy: 263, 232
+  size: 121, 144
+  orig: 121, 144
+  offset: 0, 0
+  index: -1
+0/Tou/t_MainBoy0_TouFaZhongHou_0
+  rotate: false
+  xy: 2, 137
+  size: 259, 239
+  orig: 259, 239
+  offset: 0, 0
+  index: -1
+0/Tou/t_MainBoy0_TouFaZuoQian_0
+  rotate: false
+  xy: 2, 2
+  size: 212, 133
+  orig: 212, 133
+  offset: 0, 0
+  index: -1
+
+MainBoy04.png
+size: 256,128
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+0/XiaShen/t_MainBoy0_YouDaTui_0
+  rotate: false
+  xy: 2, 31
+  size: 71, 95
+  orig: 71, 95
+  offset: 0, 0
+  index: -1
+0/XiaShen/t_MainBoy0_YouJiao_0
+  rotate: false
+  xy: 75, 25
+  size: 62, 101
+  orig: 62, 101
+  offset: 0, 0
+  index: -1
+0/XiaShen/t_MainBoy0_ZuoDaTui_0
+  rotate: true
+  xy: 139, 65
+  size: 61, 97
+  orig: 61, 97
+  offset: 0, 0
+  index: -1
+0/XiaShen/t_MainBoy0_ZuoJiao_0
+  rotate: true
+  xy: 139, 2
+  size: 61, 94
+  orig: 61, 94
+  offset: 0, 0
+  index: -1
+
+MainBoy05.png
+size: 512,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+1/ShangShen/t_MainBoy0_PiaoDai_1
+  rotate: false
+  xy: 2, 2
+  size: 157, 241
+  orig: 157, 241
+  offset: 0, 0
+  index: -1
+1/ShangShen/t_MainBoy0_ShenTi_1
+  rotate: false
+  xy: 161, 86
+  size: 110, 157
+  orig: 110, 157
+  offset: 0, 0
+  index: -1
+1/ShangShen/t_MainBoy0_YouDaBi_
+  rotate: false
+  xy: 358, 171
+  size: 64, 72
+  orig: 64, 72
+  offset: 0, 0
+  index: -1
+1/ShangShen/t_MainBoy0_YouShou_1
+  rotate: true
+  xy: 161, 12
+  size: 72, 95
+  orig: 72, 95
+  offset: 0, 0
+  index: -1
+1/ShangShen/t_MainBoy0_ZuoDaBi_1
+  rotate: true
+  xy: 424, 184
+  size: 59, 76
+  orig: 59, 76
+  offset: 0, 0
+  index: -1
+1/ShangShen/t_MainBoy0_ZuoShou_1
+  rotate: false
+  xy: 273, 139
+  size: 83, 104
+  orig: 83, 104
+  offset: 0, 0
+  index: -1
+
+MainBoy06.png
+size: 512,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+1/Tou/t_MainBoy0_TouFaYouQian_1
+  rotate: false
+  xy: 263, 232
+  size: 121, 144
+  orig: 121, 144
+  offset: 0, 0
+  index: -1
+1/Tou/t_MainBoy0_TouFaZhongHou_1
+  rotate: false
+  xy: 2, 137
+  size: 259, 239
+  orig: 259, 239
+  offset: 0, 0
+  index: -1
+1/Tou/t_MainBoy0_TouFaZuoQian_1
+  rotate: false
+  xy: 2, 2
+  size: 212, 133
+  orig: 212, 133
+  offset: 0, 0
+  index: -1
+
+MainBoy07.png
+size: 256,128
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+1/XiaShen/t_MainBoy0_YouDaTui_1
+  rotate: false
+  xy: 2, 31
+  size: 71, 95
+  orig: 71, 95
+  offset: 0, 0
+  index: -1
+1/XiaShen/t_MainBoy0_YouJiao_1
+  rotate: false
+  xy: 75, 25
+  size: 62, 101
+  orig: 62, 101
+  offset: 0, 0
+  index: -1
+1/XiaShen/t_MainBoy0_ZuoDaTui_1
+  rotate: true
+  xy: 139, 65
+  size: 61, 97
+  orig: 61, 97
+  offset: 0, 0
+  index: -1
+1/XiaShen/t_MainBoy0_ZuoJiao_1
+  rotate: true
+  xy: 139, 2
+  size: 61, 94
+  orig: 61, 94
+  offset: 0, 0
+  index: -1

@@ -1,0 +1,722 @@
+[
+    {
+        "Id": "1",
+        "Name": "1-1",
+        "Description": "啦啦啦",
+        "Type": "0",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "11",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "2",
+        "Name": "1-2",
+        "Description": "啦啦啦",
+        "Type": "0",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "1",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "3",
+        "Name": "1-3",
+        "Description": "啦啦啦",
+        "Type": "0",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "1",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "4",
+        "Name": "1-4",
+        "Description": "啦啦啦",
+        "Type": "0",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "1",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "5",
+        "Name": "1-5",
+        "Description": "啦啦啦",
+        "Type": "0",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "1",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "6",
+        "Name": "1-6",
+        "Description": "啦啦啦",
+        "Type": "0",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "1",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "7",
+        "Name": "1-7",
+        "Description": "啦啦啦",
+        "Type": "0",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "1",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "8",
+        "Name": "1-8",
+        "Description": "啦啦啦",
+        "Type": "0",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "1",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "9",
+        "Name": "1-9",
+        "Description": "啦啦啦",
+        "Type": "0",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "1",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "10",
+        "Name": "Bonus1",
+        "Description": "啦啦啦",
+        "Type": "1",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "2",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "11",
+        "Name": "Bonus2",
+        "Description": "啦啦啦",
+        "Type": "2",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "3",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "12",
+        "Name": "Bonus3",
+        "Description": "啦啦啦",
+        "Type": "3",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "4",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "13",
+        "Name": "2-1",
+        "Description": "啦啦啦",
+        "Type": "0",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "1",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "14",
+        "Name": "2-2",
+        "Description": "啦啦啦",
+        "Type": "0",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "1",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "15",
+        "Name": "2-3",
+        "Description": "啦啦啦",
+        "Type": "0",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "1",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "16",
+        "Name": "2-4",
+        "Description": "啦啦啦",
+        "Type": "0",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "1",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "17",
+        "Name": "2-5",
+        "Description": "啦啦啦",
+        "Type": "0",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "1",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "18",
+        "Name": "2-6",
+        "Description": "啦啦啦",
+        "Type": "0",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "1",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "19",
+        "Name": "2-7",
+        "Description": "啦啦啦",
+        "Type": "0",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "1",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "20",
+        "Name": "2-8",
+        "Description": "啦啦啦",
+        "Type": "0",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "1",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "21",
+        "Name": "2-9",
+        "Description": "啦啦啦",
+        "Type": "0",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "1",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "22",
+        "Name": "Bonus1",
+        "Description": "啦啦啦",
+        "Type": "1",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "5",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "23",
+        "Name": "Bonus2",
+        "Description": "啦啦啦",
+        "Type": "2",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "6",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    },
+    {
+        "Id": "24",
+        "Name": "Bonus3",
+        "Description": "啦啦啦",
+        "Type": "3",
+        "EnergyCost": "1",
+        "StarConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "Star1Value": "0",
+        "Star2Value": "0",
+        "Star3Value": "0",
+        "HelperItems": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ],
+        "WinReward": "7",
+        "WinConditions": [
+            "0",
+            "1",
+            "2"
+        ],
+        "TimeLimit": "300"
+    }
+]

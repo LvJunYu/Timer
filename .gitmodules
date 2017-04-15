@@ -1,0 +1,4 @@
+[submodule "GameAClient/Assets/JoyGameArt"]
+	path = GameAClient/Assets/JoyGameArt
+	url = https://git.oschina.net/joyyou/JoyGameArt.git
+	branch = master

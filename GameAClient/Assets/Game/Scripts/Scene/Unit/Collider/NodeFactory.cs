@@ -1,0 +1,57 @@
+﻿/********************************************************************
+** Filename : NodeTools
+** Author : Dong
+** Date : 2016/9/25 星期日 下午 6:35:05
+** Summary : NodeTools
+***********************************************************************/
+
+using SoyEngine;
+using SoyEngine.Proto;
+using SoyEngine;
+using UnityEngine;
+
+namespace GameA.Game
+{
+    public static class NodeFactory
+    {
+        public static SceneNode GetDataNode(UnitDesc unitDesc, Table_Unit tableUnit)
+        {
+            return SoyEngine.NodeFactory.GetDataNode((ushort) tableUnit.Id,
+                tableUnit.GetBaseDataGrid(unitDesc.Guid), unitDesc.Guid.z,
+                unitDesc.Rotation, unitDesc.Scale, UnitManager.Instance.GetLayer(tableUnit));
+        }
+
+        public static SceneNode GetColliderNode(UnitDesc unitDesc, Table_Unit tableUnit)
+        {
+            bool isDynamic = false;
+            switch (tableUnit.EColliderType)
+            {
+                case EColliderType.Dynamic:
+                    isDynamic = true;
+                    break;
+                case EColliderType.Static:
+                    UnitExtra unitExtra;
+                    if (DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
+                    {
+                        isDynamic = unitExtra.IsDynamic();
+                    }
+                    break;
+            }
+            IntVec3 guid = tableUnit.RendererToCollider(ref unitDesc);
+            Grid2D grid = tableUnit.GetColliderGrid(guid.x, guid.y, unitDesc.Rotation, unitDesc.Scale);
+            return SoyEngine.NodeFactory.GetColliderNode(isDynamic, (ushort) tableUnit.Id, grid, guid.z,
+                unitDesc.Rotation, unitDesc.Scale,
+                UnitManager.Instance.GetLayer(tableUnit));
+        }
+
+        public static NodeData GetNodeData(MapRect2D mapRect2D, Table_Unit tableUnit)
+        {
+            var scale = new Vector2(mapRect2D.Scale== null ? 1 : mapRect2D.Scale.X,
+                mapRect2D.Scale==null ? 1 : mapRect2D.Scale.Y);
+            return new NodeData((ushort) mapRect2D.Id,
+                new Grid2D(mapRect2D.XMin, mapRect2D.YMin, mapRect2D.XMax, mapRect2D.YMax),
+                UnitManager.Instance.GetDepth(tableUnit),
+                (byte)mapRect2D.Rotation, scale);
+        }
+    }
+}

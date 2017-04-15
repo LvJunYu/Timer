@@ -1,0 +1,15 @@
+GameAClient/Library/
+GameAClient/Temp/
+/GameAClient/Assembly-CSharp.csproj
+/GameAClient/Assembly-CSharp-Editor.csproj
+/GameAClient/GameAClient.sln
+/GameAClient/.vs
+/GameAClient/obj
+GameAClient/GameAClient.CSharp.Editor.csproj
+GameAClient/GameAClient.CSharp.csproj
+GameAClient/GameAClient.v12.suo
+*.userprefs
+*.mdb
+*.mdb.meta
+GameAClient/Assets/LocalTest
+GameAClient/Assets/LocalTest.meta

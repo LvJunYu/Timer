@@ -1,0 +1,225 @@
+// 获取冒险关卡用户数据 | 获取冒险关卡用户数据
+using System;
+using System.Collections.Generic;
+using SoyEngine.Proto;
+using SoyEngine;
+
+namespace GameA
+{
+    public partial class AdventureUserLevelDataDetail : SyncronisticData {
+        #region 字段
+        // sc fields----------------------------------
+        // 
+        private AdventureUserLevelData _simpleData;
+        // 
+        private Record _highScoreRecord;
+        // 
+        private Record _star1FlagRecord;
+        // 
+        private Record _star2FlagRecord;
+        // 
+        private Record _star3FlagRecord;
+        // 
+        private UserInfoSimple _highScoreFriendInfo;
+
+        // cs fields----------------------------------
+        // 用户
+        private long _cs_userId;
+        // 章节
+        private int _cs_section;
+        // 
+        private EAdventureProjectType _cs_projectType;
+        // 
+        private int _cs_level;
+        #endregion
+
+        #region 属性
+        // sc properties----------------------------------
+        // 
+        public AdventureUserLevelData SimpleData { 
+            get { return _simpleData; }
+            set { if (_simpleData != value) {
+                _simpleData = value;
+                SetDirty();
+            }}
+        }
+        // 
+        public Record HighScoreRecord { 
+            get { return _highScoreRecord; }
+            set { if (_highScoreRecord != value) {
+                _highScoreRecord = value;
+                SetDirty();
+            }}
+        }
+        // 
+        public Record Star1FlagRecord { 
+            get { return _star1FlagRecord; }
+            set { if (_star1FlagRecord != value) {
+                _star1FlagRecord = value;
+                SetDirty();
+            }}
+        }
+        // 
+        public Record Star2FlagRecord { 
+            get { return _star2FlagRecord; }
+            set { if (_star2FlagRecord != value) {
+                _star2FlagRecord = value;
+                SetDirty();
+            }}
+        }
+        // 
+        public Record Star3FlagRecord { 
+            get { return _star3FlagRecord; }
+            set { if (_star3FlagRecord != value) {
+                _star3FlagRecord = value;
+                SetDirty();
+            }}
+        }
+        // 
+        public UserInfoSimple HighScoreFriendInfo { 
+            get { return _highScoreFriendInfo; }
+            set { if (_highScoreFriendInfo != value) {
+                _highScoreFriendInfo = value;
+                SetDirty();
+            }}
+        }
+        
+        // cs properties----------------------------------
+        // 用户
+        public long CS_UserId { 
+            get { return _cs_userId; }
+            set { _cs_userId = value; }
+        }
+        // 章节
+        public int CS_Section { 
+            get { return _cs_section; }
+            set { _cs_section = value; }
+        }
+        // 
+        public EAdventureProjectType CS_ProjectType { 
+            get { return _cs_projectType; }
+            set { _cs_projectType = value; }
+        }
+        // 
+        public int CS_Level { 
+            get { return _cs_level; }
+            set { _cs_level = value; }
+        }
+
+        public override bool IsDirty {
+            get {
+                if (null != _simpleData && _simpleData.IsDirty) {
+                    return true;
+                }
+                if (null != _highScoreRecord && _highScoreRecord.IsDirty) {
+                    return true;
+                }
+                if (null != _star1FlagRecord && _star1FlagRecord.IsDirty) {
+                    return true;
+                }
+                if (null != _star2FlagRecord && _star2FlagRecord.IsDirty) {
+                    return true;
+                }
+                if (null != _star3FlagRecord && _star3FlagRecord.IsDirty) {
+                    return true;
+                }
+                if (null != _highScoreFriendInfo && _highScoreFriendInfo.IsDirty) {
+                    return true;
+                }
+                return base.IsDirty;
+            }
+        }
+        #endregion
+
+        #region 方法
+        /// <summary>
+		/// 获取冒险关卡用户数据
+		/// </summary>
+		/// <param name="userId">用户.</param>
+		/// <param name="section">章节.</param>
+		/// <param name="projectType">.</param>
+		/// <param name="level">.</param>
+        public void Request (
+            long userId,
+            int section,
+            EAdventureProjectType projectType,
+            int level,
+            Action successCallback, Action<ENetResultCode> failedCallback)
+        {
+            OnRequest (successCallback, failedCallback);
+
+            Msg_CS_DAT_AdventureUserLevelDataDetail msg = new Msg_CS_DAT_AdventureUserLevelDataDetail();
+            msg.UserId = userId;
+            msg.Section = section;
+            msg.ProjectType = projectType;
+            msg.Level = level;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AdventureUserLevelDataDetail>(
+                SoyHttpApiPath.AdventureUserLevelDataDetail, msg, ret => {
+                    if (OnSync(ret)) {
+                        OnSyncSucceed(); 
+                    }
+                }, (failedCode, failedMsg) => {
+                    OnSyncFailed(failedCode, failedMsg);
+            });
+        }
+
+        public bool OnSync (Msg_SC_DAT_AdventureUserLevelDataDetail msg)
+        {
+            if (null == msg) return false;
+            if (null == _simpleData) {
+                _simpleData = new AdventureUserLevelData(msg.SimpleData);
+            } else {
+                _simpleData.OnSyncFromParent(msg.SimpleData);
+            }
+            if (null == _highScoreRecord) {
+                _highScoreRecord = new Record(msg.HighScoreRecord);
+            } else {
+                _highScoreRecord.OnSyncFromParent(msg.HighScoreRecord);
+            }
+            if (null == _star1FlagRecord) {
+                _star1FlagRecord = new Record(msg.Star1FlagRecord);
+            } else {
+                _star1FlagRecord.OnSyncFromParent(msg.Star1FlagRecord);
+            }
+            if (null == _star2FlagRecord) {
+                _star2FlagRecord = new Record(msg.Star2FlagRecord);
+            } else {
+                _star2FlagRecord.OnSyncFromParent(msg.Star2FlagRecord);
+            }
+            if (null == _star3FlagRecord) {
+                _star3FlagRecord = new Record(msg.Star3FlagRecord);
+            } else {
+                _star3FlagRecord.OnSyncFromParent(msg.Star3FlagRecord);
+            }
+            if (null == _highScoreFriendInfo) {
+                _highScoreFriendInfo = new UserInfoSimple(msg.HighScoreFriendInfo);
+            } else {
+                _highScoreFriendInfo.OnSyncFromParent(msg.HighScoreFriendInfo);
+            }
+            OnSyncPartial();
+            return true;
+        }
+
+        public void OnSyncFromParent (Msg_SC_DAT_AdventureUserLevelDataDetail msg) {
+            if (OnSync(msg)) {
+                OnSyncSucceed();
+            }
+        }
+
+        public AdventureUserLevelDataDetail (Msg_SC_DAT_AdventureUserLevelDataDetail msg) {
+            if (OnSync(msg)) {
+                OnSyncSucceed();
+            }
+        }
+
+        public AdventureUserLevelDataDetail () { 
+            _simpleData = new AdventureUserLevelData();
+            _highScoreRecord = new Record();
+            _star1FlagRecord = new Record();
+            _star2FlagRecord = new Record();
+            _star3FlagRecord = new Record();
+            _highScoreFriendInfo = new UserInfoSimple();
+        }
+        #endregion
+    }
+}

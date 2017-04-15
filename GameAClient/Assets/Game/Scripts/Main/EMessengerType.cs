@@ -1,0 +1,111 @@
+﻿/********************************************************************
+** Filename : EMessengerType
+** Author : Dong
+** Date : 2015/7/2 16:45:59
+** Summary : EMessengerType
+***********************************************************************/
+
+using System;
+using System.Collections;
+
+namespace GameA.Game
+{
+    public class EMessengerType
+    {
+        public static int OnTableInited = SoyEngine.EMessengerType.NextId++;
+
+        public static int OnCommandChanged = SoyEngine.EMessengerType.NextId++;
+        public static int OnSelectedItemChanged = SoyEngine.EMessengerType.NextId++;
+        public static int OnUndoChanged = SoyEngine.EMessengerType.NextId++;
+        public static int OnRedoChanged = SoyEngine.EMessengerType.NextId++;
+
+        public static int OnScreenOperator = SoyEngine.EMessengerType.NextId++;
+        public static int OnValidMapRectChanged = SoyEngine.EMessengerType.NextId++;
+
+        public static int OnActorFlip = SoyEngine.EMessengerType.NextId++;
+
+        public static int OnPlayChanged = SoyEngine.EMessengerType.NextId++;
+
+		public static int OnDrag_2MouseButton = SoyEngine.EMessengerType.NextId++;
+		public static int OnDrag_2MouseEnd = SoyEngine.EMessengerType.NextId++;
+
+
+		public static int OnPinchMouseButton = SoyEngine.EMessengerType.NextId++;
+		public static int OnPinchMouseButtonStart = SoyEngine.EMessengerType.NextId++;
+		public static int OnPinchMouseButtonEnd = SoyEngine.EMessengerType.NextId++;
+
+
+		public static int OnScreenOperatorSuccess = SoyEngine.EMessengerType.NextId++;
+
+		public static int OnEditorModeCameraMove = SoyEngine.EMessengerType.NextId++;
+
+        public static int OnEdit = SoyEngine.EMessengerType.NextId++;
+        public static int OnPlay = SoyEngine.EMessengerType.NextId++;
+
+        public static int OnLifeChanged = SoyEngine.EMessengerType.NextId++;
+        public static int OnKeyChanged = SoyEngine.EMessengerType.NextId++;
+        public static int OnWinDataChanged = SoyEngine.EMessengerType.NextId++;
+        public static int OnMainPlayerCreated = SoyEngine.EMessengerType.NextId++;
+
+	    public static int GameLog = SoyEngine.EMessengerType.NextId++;
+	    public static int GameErrorLog = SoyEngine.EMessengerType.NextId++;
+
+	    public static int GameFinishSuccess  = SoyEngine.EMessengerType.NextId++;
+        public static int GameFinishSuccessShowUI = SoyEngine.EMessengerType.NextId++;
+        public static int GameFinishFailed = SoyEngine.EMessengerType.NextId++;
+        public static int GameFailedDeadMark = SoyEngine.EMessengerType.NextId++;
+
+        public static int OnMainPlayerDead = SoyEngine.EMessengerType.NextId++;
+
+		public static int OnGameRestart = SoyEngine.EMessengerType.NextId++;
+
+		public static int OnCameraOrthoSpringbackChangeEnd = SoyEngine.EMessengerType.NextId++;
+
+		public static int ForceUpdateCameraMaskSize = SoyEngine.EMessengerType.NextId++;
+
+
+		public static int OpenGameSetting = SoyEngine.EMessengerType.NextId++;
+		public static int OnCloseGameSetting = SoyEngine.EMessengerType.NextId++;
+
+        public static int CaptureGameCover = SoyEngine.EMessengerType.NextId++;
+
+		public static int AfterCommandChanged = SoyEngine.EMessengerType.NextId++;
+
+        public static int OnSkillChanged = SoyEngine.EMessengerType.NextId++;
+        public static int OnAmmoChanged = SoyEngine.EMessengerType.NextId++;
+
+        // 主玩家复活
+        public static int OnMainPlayerRevive = SoyEngine.EMessengerType.NextId++;
+
+        public static int OnGameLoadError = SoyEngine.EMessengerType.NextId++;
+
+		public static int OnTriggerBulletinBoardEnter = SoyEngine.EMessengerType.NextId++;
+		public static int OnTriggerBulletinBoardExit = SoyEngine.EMessengerType.NextId++;
+
+        public static readonly int OnAOISubscribe = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnAOIUnsubscribe = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnDynamicSubscribe = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnDynamicUnsubscribe = SoyEngine.EMessengerType.NextId++;
+
+        public static readonly int OnBgDynamicSubscribe = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnBgDynamicUnsubscribe = SoyEngine.EMessengerType.NextId++;
+
+        public static readonly int OnRespawnPointTrigger = SoyEngine.EMessengerType.NextId++;
+
+	    public static readonly int OnEditorLayerChanged = SoyEngine.EMessengerType.NextId++;
+		public static int OnEnterGameLoadingProcess = SoyEngine.EMessengerType.NextId++;
+		public static int OnLoadingErrorCloseUI = SoyEngine.EMessengerType.NextId++;
+		public static int OnDanmuDataAdded = SoyEngine.EMessengerType.NextId++;
+
+		public static int OnRecordRestart = SoyEngine.EMessengerType.NextId++;
+
+        public static int OnUnitEditChanged = SoyEngine.EMessengerType.NextId++;
+
+		/// <summary>
+		/// 改编特效时调用 
+		/// </summary>
+		public static int OnCurCompositeEditorStateChanged = SoyEngine.EMessengerType.NextId++;
+
+		public static int OnCancelSelectState = SoyEngine.EMessengerType.NextId++;
+	}
+}
