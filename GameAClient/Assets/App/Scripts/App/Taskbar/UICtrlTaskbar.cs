@@ -97,9 +97,11 @@ namespace GameA
 
 //            RefreshMeNewMessageState();
 
-			_cachedView.WorldButton.onClick.AddListener (OnNews);
-			_cachedView.WorkshopButton.onClick.AddListener (OnCreate);
-			_cachedView.SingleModeButton.onClick.AddListener (OnSingleGame);
+			_cachedView.WorldButton.onClick.AddListener (OnNewsBtn);
+			_cachedView.WorkshopButton.onClick.AddListener (OnCreateBtn);
+			_cachedView.SingleModeButton.onClick.AddListener (OnSingleGameBtn);
+
+			_cachedView.AvatarBtn.onClick.AddListener (OnAvatarBtn);
 
 			_cachedView.TestChangeAvatarBtn.onClick.AddListener (OnTestChangeAvatar);
 			_cachedView.DebugClearUserDataBtn.onClick.AddListener (OnDebugClearUserData);
@@ -179,7 +181,7 @@ namespace GameA
 				});
 		}
 
-        public void OnNews()
+        public void OnNewsBtn()
         {
 //            if(OpenMainUI(typeof (UICtrlNewsFeed)))
 //            {
@@ -187,7 +189,7 @@ namespace GameA
 //            }
         }
 
-        public void OnCreate()
+        public void OnCreateBtn()
         {
             if(OpenMainUI(typeof (UICtrlMatrixDetail)))
             {
@@ -211,7 +213,7 @@ namespace GameA
 //            }
 //        }
 
-		private void OnSingleGame () {
+		private void OnSingleGameBtn () {
 			OpenMainUI(typeof (UICtrlSingleMode));
 		}
 
@@ -226,6 +228,13 @@ namespace GameA
             _currentUI = ui;
             return true;
         }
+
+		/// <summary>
+		/// 家园角色被点击
+		/// </summary>
+		private void OnAvatarBtn () {
+			SocialGUIManager.Instance.OpenPopupUI<UICtrlFashionShop> ();
+		}
 
 //        private void SelectButton(UnityEngine.UI.Button button)
 //        {

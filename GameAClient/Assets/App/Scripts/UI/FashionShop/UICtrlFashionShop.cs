@@ -51,7 +51,7 @@ namespace GameA
         {
             base.OnViewCreated();
 
-			_cachedView.CloseBtn.onClick.AddListener (OnReturnBtnClick);
+			_cachedView.CloseBtn.onClick.AddListener (OnCloseBtnClick);
 
         }
 			
@@ -63,8 +63,8 @@ namespace GameA
         }
 			
 
-		private void OnReturnBtnClick () {
-			SocialGUIManager.Instance.ReturnToHome ();
+		private void OnCloseBtnClick () {
+			SocialGUIManager.Instance.CloseUI<UICtrlFashionShop> ();
 		}
 
 

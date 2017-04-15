@@ -25,6 +25,7 @@ namespace GameA
 		public Button WorkshopButton;
 		public Button WorldButton;
 		public Button SingleModeButton;
+		public Button AvatarBtn;
 		public Spine.Unity.SkeletonAnimation PlayerAvatarAnimation;
 		public Camera AvatarRenderCamera;
 		public RawImage AvatarImage;

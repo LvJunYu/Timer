@@ -8,5 +8,7 @@ namespace GameA
 	public class UIViewFashionShop : UIViewBase
     {
 		public Button CloseBtn;
+
+		public UICtrlFashionItem[] Items;
     }
 }
