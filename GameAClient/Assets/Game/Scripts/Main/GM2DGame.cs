@@ -381,6 +381,8 @@ namespace GameA.Game
 				ChangeToMode (EMode.Edit);
 			} else if (_eGameInitType == GameManager.EStartType.ModifyEdit) {
 				ChangeToMode (EMode.ModifyEdit);
+			} else if (_eGameInitType == GameManager.EStartType.Create) {
+				ChangeToMode (EMode.Edit);
 			}
 	        if (SocialGUIManager.Instance.RunRecordInApp)
 	        {
