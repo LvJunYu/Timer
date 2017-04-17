@@ -62,7 +62,7 @@ namespace GameA
 
         private void OnAuthorClick()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlUserInfo>(_content.User);
+            SocialGUIManager.Instance.OpenUI<UICtrlUserInfo>(_content.UserLegacy);
         }
 
         private void OnFollowBtnClick()
@@ -71,7 +71,7 @@ namespace GameA
             {
                 return;
             }
-            _content.User.UpdateFollowState(!_content.User.FollowedByMe, flag=>{
+            _content.UserLegacy.UpdateFollowState(!_content.UserLegacy.FollowedByMe, flag=>{
                 if(flag)
                 {
                     RefreshView();
@@ -101,9 +101,9 @@ namespace GameA
                 Unload();
                 return;
             }
-            User u = _content.User;
+            User u = _content.UserLegacy;
             DictionaryTools.SetContentText(_cachedView.AuthorName, u.NickName);
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, _content.User.HeadImgUrl, _cachedView.DefaultTexture);
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, _content.UserLegacy.HeadImgUrl, _cachedView.DefaultTexture);
             _cachedView.CreateTime.text =  DateTimeUtil.GetServerSmartDateStringByTimestampMillis(_content.CreateTime);
             DictionaryTools.SetContentText(_cachedView.Name, _content.Name);
             string summary;

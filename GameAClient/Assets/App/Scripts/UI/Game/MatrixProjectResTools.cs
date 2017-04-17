@@ -217,23 +217,24 @@ namespace GameA
 
         public static void PreparePersonalProjectData(Action successCallback, Action failedCallback)
         {
-            if(LocalUser.Instance.User == null)
-            {
-                return;
-            }
-            ParallelTaskHelper helper = new ParallelTaskHelper(2, successCallback, failedCallback);
+//            if(LocalUser.Instance.UserLegacy == null)
+//            {
+//                return;
+//            }
+//            ParallelTaskHelper helper = new ParallelTaskHelper(2, successCallback, failedCallback);
 //            AppData.Instance.UserMatrixData.TryRequestData(()=>{
-                helper.CompleteOne();
+//                helper.CompleteOne();
 //            }, ()=>{
 //                helper.FailOne();
 //            });
 
-            User user = LocalUser.Instance.User;
-            if(!user.GetSavedPrjectRequestTimer().PassedSecondsWithoutReset(600))
-            {
-                helper.CompleteOne();
-                return;
-            }
+//            User user = LocalUser.Instance.UserLegacy;
+			var user = LocalUser.Instance.User;
+//            if(!user.GetSavedPrjectRequestTimer().PassedSecondsWithoutReset(600))
+//            {
+//                helper.CompleteOne();
+//                return;
+//            }
 
             Msg_CS_DAT_PersonalProjectList msg = new Msg_CS_DAT_PersonalProjectList();
             msg.TotalCount = user.GetSavedProjectList().Count;
@@ -241,9 +242,15 @@ namespace GameA
 			NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_PersonalProjectList>(SoyHttpApiPath.PersonalProjectList, msg, ret=>{
                 user.OnSyncUserSavedProjectList(ret);
                 user.GetSavedPrjectRequestTimer().Reset();
-                helper.CompleteOne();
+				if (successCallback != null) {
+					successCallback.Invoke();
+				}
+//                helper.CompleteOne();
             }, (code, msgStr)=>{
-                helper.FailOne();
+//                helper.FailOne();
+				if (failedCallback != null) {
+					failedCallback.Invoke();
+				}
             });
             
         }

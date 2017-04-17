@@ -66,15 +66,15 @@ namespace GameA
 
         private void UpdateView()
         {
-            if(LocalUser.Instance.User == null)
-            {
-                return;
-            }
-            ESex sex = LocalUser.Instance.User.Sex;
-
-            _cachedView.FemaleBg.color = sex==ESex.S_Female ? FemaleSelectedBtnBgColor : UnselectedBtnBgColor;
-
-            _cachedView.MaleBg.color = sex==ESex.S_Male ? MaleSelectedBtnBgColor : UnselectedBtnBgColor;
+//            if(LocalUser.Instance.UserLegacy == null)
+//            {
+//                return;
+//            }
+//            ESex sex = LocalUser.Instance.UserLegacy.Sex;
+//
+//            _cachedView.FemaleBg.color = sex==ESex.S_Female ? FemaleSelectedBtnBgColor : UnselectedBtnBgColor;
+//
+//            _cachedView.MaleBg.color = sex==ESex.S_Male ? MaleSelectedBtnBgColor : UnselectedBtnBgColor;
         }
 
         protected override void OnDestroy()

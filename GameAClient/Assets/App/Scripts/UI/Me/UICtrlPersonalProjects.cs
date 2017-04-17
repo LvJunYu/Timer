@@ -128,7 +128,8 @@ namespace GameA
                 msg.MaxUpdateTime = minUpdateTime;
             }
             msg.MaxCount = PageCount;
-            User user = LocalUser.Instance.User;
+//            User user = LocalUser.Instance.UserLegacy;
+			var user = LocalUser.Instance.User;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_PersonalProjectList>(SoyHttpApiPath.PersonalProjectList, msg, ret=>{
                 _isRequest = false;
                 if(LocalUser.Instance.User  == user)

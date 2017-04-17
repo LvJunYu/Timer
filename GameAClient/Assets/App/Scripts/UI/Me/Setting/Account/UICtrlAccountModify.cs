@@ -85,22 +85,22 @@ namespace GameA
 
         protected override void OnOpen(object parameter)
         {
-            if(LocalUser.Instance.User == null)
-            {
-                LogHelper.Error("UICtrlAccountModify user not login");
-                return;
-            }
-            else
-            {
-                _user = LocalUser.Instance.User;
-                _snsBinding = _user.SnsBinding;
-                if(_snsBinding == null)
-                {
-                    _snsBinding = new SnsBinding();
-                    _snsBinding.Clear();
-                }
-                UpdateView();
-            }
+//            if(LocalUser.Instance.UserLegacy == null)
+//            {
+//                LogHelper.Error("UICtrlAccountModify user not login");
+//                return;
+//            }
+//            else
+//            {
+//                _user = LocalUser.Instance.UserLegacy;
+//                _snsBinding = _user.SnsBinding;
+//                if(_snsBinding == null)
+//                {
+//                    _snsBinding = new SnsBinding();
+//                    _snsBinding.Clear();
+//                }
+//                UpdateView();
+//            }
             base.OnOpen(parameter);
         }
 

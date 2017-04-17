@@ -136,7 +136,7 @@ namespace GameA
             _cachedView.GameWideProgressText.text = string.Empty;
             Project project = GameManager.Instance.CurrentGame.Project;
             DictionaryTools.SetContentText(_cachedView.GameWideTitle, project.Name);
-            DictionaryTools.SetContentText(_cachedView.GameWideAuthorName, project.User.NickName);
+            DictionaryTools.SetContentText(_cachedView.GameWideAuthorName, project.UserLegacy.NickName);
             DictionaryTools.SetContentText(_cachedView.GameWideSummary, "简介：" + project.Summary);
             _cachedView.GameWideCompleteRate.Set(project.ExtendReady, project.CompleteCount, project.FailCount);
 //            Matrix matrix = project.Matrix;
@@ -159,7 +159,7 @@ namespace GameA
 //                _cachedView.GameWideMatrixLabelBg.gameObject.SetActive(false);
 //            }
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.GameWideCover, project.IconPath, _cachedView.DefaultCoverTexture);
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.GameWideAuthorIcon, project.User.HeadImgUrl, _cachedView.DefaultUserTexture);
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.GameWideAuthorIcon, project.UserLegacy.HeadImgUrl, _cachedView.DefaultUserTexture);
 
             if(project.RecentPlayedUserList == null || project.RecentPlayedUserList.Count == 0)
             {

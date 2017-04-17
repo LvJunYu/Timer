@@ -74,8 +74,10 @@ namespace SoyEngine
         public const string HomePartData = "/home/getUserPartData";
         // 解锁装饰
         public const string UnlockHomePart = "/home/unlockHomePart";
-        // 角色时装数据
-        public const string AvatarPart = "/home/getUserAvatarPartData";
+        // 角色正在使用时装数据
+        public const string UsingAvatarPart = "/home/getUserUsingAvatarPartData";
+        // 角色可以使用的时装数据
+        public const string ValidAvatarPart = "/home/getUserValidAvatarPartData";
         // 角色换装
         public const string ChangeAvatarPart = "/home/changeAvatarPart";
         // 时装打折券

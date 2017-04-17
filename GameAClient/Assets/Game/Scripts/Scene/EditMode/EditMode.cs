@@ -978,7 +978,7 @@ namespace GameA.Game
 			Rect worldRect = GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect);
 			if (_cameraMask != null)
 			{
-				_cameraMask.Trans.localPosition = worldRect.center;
+				_cameraMask.Trans.localPosition = new Vector3(worldRect.center.x, worldRect.center.y, -30);
 				_cameraMask.SetLocalScale(worldRect.width, worldRect.height);
 			}
 			else

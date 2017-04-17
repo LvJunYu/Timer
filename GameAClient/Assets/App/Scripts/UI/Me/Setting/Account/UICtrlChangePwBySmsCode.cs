@@ -49,8 +49,8 @@ namespace GameA
 
         private void UpdateView()
         {
-            _cachedView.PhoneNumInput.text = LocalUser.Instance.User.PhoneNum;
-            _cachedView.SmsCodeInput.text = string.Empty;
+//            _cachedView.PhoneNumInput.text = LocalUser.Instance.UserLegacy.PhoneNum;
+//            _cachedView.SmsCodeInput.text = string.Empty;
         }
 
         protected override void OnOpen(object parameter)

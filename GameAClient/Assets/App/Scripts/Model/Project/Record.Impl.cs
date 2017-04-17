@@ -283,7 +283,7 @@ namespace GameA
         {
             Project oldProject = _project;
             _id = msg.RecordId;
-			_user = UserManager.Instance.OnSyncUserData(_userInfo);
+//			_user = UserManager.Instance.OnSyncUserData(_userInfo);
             _usedTime = msg.UsedTime;
             _createTime = msg.CreateTime;
             _recordPath = msg.RecordPath;

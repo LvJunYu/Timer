@@ -173,10 +173,10 @@ namespace GameA
                     {
                         UpdateView();
                     }
-                    if(LocalUser.Instance.User != null)
+					if(LocalUser.Instance.User != null)
                     {
-                        LocalUser.Instance.User.FollowedListRequestTimer.Zero();
-                        LocalUser.Instance.User.UserInfoRequestGameTimer.Zero();
+						LocalUser.Instance.User.FollowedListRequestTimer.Zero();
+						LocalUser.Instance.User.UserInfoRequestGameTimer.Zero();
                     }
                     user.FollowerListRequestTimer.Zero();
                     user.UserInfoRequestGameTimer.Zero();

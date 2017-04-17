@@ -116,7 +116,7 @@ namespace GameA
             {
                 return;
             }
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
             MatrixProjectTools.PreparePersonalProjectData(()=>{
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 ProcessCreate();
@@ -207,25 +207,25 @@ namespace GameA
 
         public void ProcessDelete()
         {
-            List<Project> projectList = _cachedView.SoyPersonalProjectList.GetSelectedProjectList();
-            if(projectList.Count == 0)
-            {
-                return;
-            }
-            CommonTools.ShowPopupDialog(string.Format("确定要删除这 {0} 个作品吗？", projectList.Count), null,
-                new KeyValuePair<string, Action>("确定",()=>{
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在删除");
-                    LocalUser.Instance.User.DeleteUserSavedProject(projectList, ()=>{
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                        SetMode(EMode.Normal);
-                        RefreshView();
-                    }, ()=>{
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                        CommonTools.ShowPopupDialog("删除失败");
-                    });
-                }), new KeyValuePair<string, Action>("取消", ()=>{
-                    LogHelper.Info("Cancel Delete");
-                }));
+//            List<Project> projectList = _cachedView.SoyPersonalProjectList.GetSelectedProjectList();
+//            if(projectList.Count == 0)
+//            {
+//                return;
+//            }
+//            CommonTools.ShowPopupDialog(string.Format("确定要删除这 {0} 个作品吗？", projectList.Count), null,
+//                new KeyValuePair<string, Action>("确定",()=>{
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在删除");
+//                    LocalUser.Instance.UserLegacy.DeleteUserSavedProject(projectList, ()=>{
+//                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                        SetMode(EMode.Normal);
+//                        RefreshView();
+//                    }, ()=>{
+//                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                        CommonTools.ShowPopupDialog("删除失败");
+//                    });
+//                }), new KeyValuePair<string, Action>("取消", ()=>{
+//                    LogHelper.Info("Cancel Delete");
+//                }));
         }
 
         public void SetPersonalProjectCount(int count)
