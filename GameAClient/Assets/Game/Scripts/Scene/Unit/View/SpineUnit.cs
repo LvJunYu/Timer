@@ -17,9 +17,8 @@ namespace GameA.Game
         protected SkeletonAnimation _skeletonAnimation;
 		protected Renderer _renderer;
 
-        public override void OnGet()
+        public SpineUnit()
         {
-            base.OnGet();
             _skeletonAnimation = _trans.gameObject.AddComponent<SkeletonAnimation>();
             _skeletonAnimation.enabled = false;
         }
@@ -66,6 +65,7 @@ namespace GameA.Game
             if (_skeletonAnimation != null)
             {
                 _skeletonAnimation.Clear();
+                _skeletonAnimation.enabled = false;
             }
             ClearComponents();
             base.OnFree();

@@ -368,6 +368,27 @@ namespace GameA.Game
             get { return (ELayerType)_tableUnit.Layer; }
         }
 
+        public EMoveDirection FireDirection
+        {
+            get
+            {
+                if (IsHero)
+                {
+                    return _curMoveDirection;
+                }
+                return (EMoveDirection)(Rotation+1);
+            }
+        }
+
+        public IntVec2 FirePos
+        {
+            get
+            {
+                var dataSize = GetDataSize();
+                return new IntVec2(_curPos.x + dataSize.x, (int)(_curPos.y + dataSize.y * 0.8f));
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>

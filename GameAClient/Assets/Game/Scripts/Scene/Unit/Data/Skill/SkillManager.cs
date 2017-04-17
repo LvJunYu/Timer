@@ -16,7 +16,7 @@ namespace GameA.Game
     public class SkillManager : MonoBehaviour
     {
         public static SkillManager Instance;
-        protected SkillBase _currentSkill;
+        [SerializeField]protected SkillBase _currentSkill;
         private Dictionary<string, SkillBase> _skills = new Dictionary<string, SkillBase>();
 
         private void Awake()
@@ -58,6 +58,10 @@ namespace GameA.Game
         {
             if (_currentSkill != null)
             {
+                if (_currentSkill.GetType() == typeof(T))
+                {
+                    return;
+                }
                 _currentSkill.Exit();
                 _currentSkill = null;
             }
@@ -68,15 +72,22 @@ namespace GameA.Game
                 return;
             }
             _currentSkill = skill;
-            _currentSkill.Enter(plus);
+            _currentSkill.Enter(PlayMode.Instance.MainUnit, plus);
         }
 
         public void Fire()
         {
-            LogHelper.Debug("Fire");
             if (_currentSkill != null)
             {
                 _currentSkill.Fire();
+            }
+        }
+
+        public void UpdateLogic()
+        {
+            if (_currentSkill != null)
+            {
+                _currentSkill.UpdateLogic();
             }
         }
     }

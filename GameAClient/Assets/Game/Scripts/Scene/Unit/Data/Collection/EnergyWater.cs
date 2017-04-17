@@ -29,8 +29,6 @@ namespace GameA.Game
         protected override void OnTrigger()
         {
             SkillManager.Instance.ChangeSkill<SkillWater>(_plus);
-            //播放特效 声音
-            LogHelper.Debug("EnergyWater");
         }
     }
 }

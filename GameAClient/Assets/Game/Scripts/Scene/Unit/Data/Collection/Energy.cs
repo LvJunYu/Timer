@@ -27,7 +27,7 @@ namespace GameA.Game
         {
             if (other.IsMain)
             {
-                if (_currentCount == 0)
+                if (_currentCount > 0)
                 {
                     _currentCount = 0;
                     OnTrigger();

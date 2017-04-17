@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -18,11 +19,10 @@ namespace GameA.Game
     public class BulletBase : UnitBase, IPoolableObject
     {
         protected bool _run;
-        protected IntVec2 _startPos;
         protected IntVec2 _speed;
         protected IntVec2 _pointA;
         protected IntVec2 _pointB;
-        protected int _velocity;
+        protected SkillBase _skill;
 
         public void OnGet()
         {
@@ -30,18 +30,44 @@ namespace GameA.Game
 
         public void OnFree()
         {
+            Clear();
         }
 
         public void OnDestroyObject()
         {
         }
 
-        public virtual void Run(IntVec2 startPos, IntVec2 speed)
+        protected override void Clear()
+        {
+            base.Clear();
+            _run = false;
+            _speed = IntVec2.zero;
+            _pointA = IntVec2.zero;
+            _pointB = IntVec2.zero;
+            _skill = null;
+        }
+
+        public virtual void Run(SkillBase skill)
         {
             _run = true;
-            _startPos = startPos;
-            SetPos(_startPos);
-            _speed = speed;
+            _skill = skill;
+            SetPos(_skill.Owner.FirePos);
+            _curMoveDirection = _skill.Owner.FireDirection;
+            switch (_curMoveDirection)
+            {
+                case EMoveDirection.Up:
+                    _speed = _skill.BulletSpeed * IntVec2.up;
+                    break;
+                case EMoveDirection.Right:
+                    _speed = _skill.BulletSpeed * IntVec2.right;
+                    break;
+                case EMoveDirection.Down:
+                    _speed = _skill.BulletSpeed * IntVec2.down;
+                    break;
+                case EMoveDirection.Left:
+                    _speed = _skill.BulletSpeed * IntVec2.left;
+                    break;
+            }
         }
 
         public override void UpdateLogic()
@@ -54,10 +80,10 @@ namespace GameA.Game
             if (_isAlive)
             {
                 GM2DTools.GetBorderPoint(ColliderGrid, _curMoveDirection, ref _pointA, ref _pointB);
-                var checkGrid = SceneQuery2D.GetGrid(_pointA, _pointB, (byte)(_curMoveDirection - 1), _velocity);
+                var checkGrid = SceneQuery2D.GetGrid(_pointA, _pointB, (byte)(_curMoveDirection - 1), Mathf.Max(_speed.x, _speed.y));
                 if (!DataScene2D.Instance.IsInTileMap(checkGrid))
                 {
-                    Speed = IntVec2.zero;
+                    OnDead();
                     return;
                 }
                 var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.BulletHitLayer, float.MinValue, float.MaxValue, _dynamicCollider);
@@ -65,11 +91,17 @@ namespace GameA.Game
                 {
                     if (GM2DTools.OnDirectionHit(units[i], this, _curMoveDirection))
                     {
-                        Speed = IntVec2.zero;
+                        OnDead();
                         break;
                     }
                 }
             }
+        }
+
+        protected override void OnDead()
+        {
+            base.OnDead();
+            PlayMode.Instance.DestroyUnit(this);
         }
 
         public override void UpdateView(float deltaTime)
@@ -78,7 +110,7 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_isStart && _isAlive)
+            if (_isAlive)
             {
                 _deltaPos = _speed + _extraDeltaPos;
                 _curPos += _deltaPos;

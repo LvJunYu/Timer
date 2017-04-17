@@ -250,12 +250,15 @@ namespace GameA.Game
             unitView = null;
             switch (unit.TableUnit.EGeneratedType)
             {
-			case EGeneratedType.Spine:
-				if (unit.Id == 1001 || unit.Id == 1002) {
-					unitView = PoolFactory<ChangePartsSpineView>.Get();
-				} else {
-					unitView = PoolFactory<SpineUnit>.Get ();
-				}
+                case EGeneratedType.Spine:
+                    if (unit.Id == 1001 || unit.Id == 1002)
+                    {
+                        unitView = PoolFactory<ChangePartsSpineView>.Get();
+                    }
+                    else
+                    {
+                        unitView = PoolFactory<SpineUnit>.Get();
+                    }
                     break;
                 case EGeneratedType.Tiling:
                     unitView = PoolFactory<SpriteUnit>.Get();
@@ -266,9 +269,6 @@ namespace GameA.Game
                 case EGeneratedType.Empty:
                     unitView = PoolFactory<EmptyUnit>.Get();
                     break;
-//				case EGeneratedType.ChangePartsSpine:
-//					
-//					break;
             }
             if (unitView != null)
             {

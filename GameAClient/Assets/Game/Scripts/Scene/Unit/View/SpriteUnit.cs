@@ -16,9 +16,8 @@ namespace GameA.Game
     {
         protected SpriteRenderer _spriteRenderer;
 
-        public override void OnGet()
+        public SpriteUnit()
         {
-            base.OnGet();
             _spriteRenderer = _trans.gameObject.AddComponent<SpriteRenderer>();
         }
 

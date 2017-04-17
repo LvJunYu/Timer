@@ -64,6 +64,8 @@ namespace GameA.Game
             PoolFactory<EmptyUnit>.Clear();
             PoolFactory<BgItem>.Clear();
             PoolFactory<BgRoot>.Clear();
+
+            PoolFactory<BulletWater>.Clear();
 		    Instance = null;
 		}
 

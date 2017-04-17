@@ -56,15 +56,6 @@ namespace GameA.Game
             get { return _box; }
         }
 
-        public IntVec2 FirePos
-        {
-            get
-            {
-                var dataSize = GetDataSize();
-                return new IntVec2(_curPos.x + dataSize.x, (int) (_curPos.y +dataSize.y*0.8f));
-            }
-        }
-
         public override bool CanPortal
         {
             get { return true; }
@@ -232,6 +223,7 @@ namespace GameA.Game
             if (_isAlive && _isStart)
             {
                 _mainInput.UpdateLogic();
+                SkillManager.Instance.UpdateLogic();
                 CheckGround();
                 CheckClimb();
                 UpdateSpeedY();
