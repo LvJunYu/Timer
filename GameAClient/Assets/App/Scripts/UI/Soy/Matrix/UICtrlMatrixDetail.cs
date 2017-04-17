@@ -116,7 +116,7 @@ namespace GameA
             {
                 return;
             }
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
             MatrixProjectTools.PreparePersonalProjectData(()=>{
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 ProcessCreate();
