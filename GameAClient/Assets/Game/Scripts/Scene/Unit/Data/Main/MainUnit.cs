@@ -39,6 +39,11 @@ namespace GameA.Game
         protected UnityNativeParticleItem _brakeEfffect;
         [SerializeField]
         protected UnityNativeParticleItem _invincibleEfffect;
+
+		protected UnityNativeParticleItem _shooterEffect;
+		[SerializeField]
+		protected IntVec2 _shooterEffectOffset = new IntVec2 (300,0);
+		protected IntVec2 _shooterEffectPos;
         /// <summary>
         /// 跑步声音间隔
         /// </summary>
@@ -158,6 +163,10 @@ namespace GameA.Game
 			}
 //            _runEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem(ParticleNameConstDefineGM2D.Run, _trans);
             _brakeEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem(ParticleNameConstDefineGM2D.Brake, _trans);
+
+			_shooterEffect = GameParticleManager.Instance.GetUnityNativeParticleItem("ShooterEffect", _trans);
+			_shooterEffect.Play ();
+			_shooterEffectPos = _curPos;
             return true;
         }
 
@@ -482,6 +491,29 @@ namespace GameA.Game
             {
                 _portalEffect.Update();
             }
+
+			if (_shooterEffect != null && _shooterEffect.IsPlaying) {
+				IntVec2 offset = _shooterEffectOffset;
+				if (_curMoveDirection == EMoveDirection.Right) {
+					offset.x = -offset.x;
+				}
+				IntVec2 destPos = CenterPos + offset;
+				if (_shooterEffectPos.x != destPos.x) {
+					int deltaX = (destPos.x - _shooterEffectPos.x) / 6;
+					if (deltaX == 0) {
+						deltaX = destPos.x > _shooterEffectPos.x ? 1 : -1;
+					}
+					_shooterEffectPos.x = _shooterEffectPos.x + deltaX;
+				}
+				if (_shooterEffectPos.y != destPos.y) {
+					int deltaY = (destPos.y - _shooterEffectPos.y) / 6;
+					if (deltaY == 0) {
+						deltaY = destPos.y > _shooterEffectPos.y ? 1 : -1;
+					}
+					_shooterEffectPos.y = _shooterEffectPos.y + deltaY;
+				}
+				_shooterEffect.Trans.position = GM2DTools.TileToWorld (_shooterEffectPos);
+			}
 
             Vector3 euler = _trans.eulerAngles;
             euler.y = _curMoveDirection == EMoveDirection.Right ? 0 : 180;
