@@ -368,15 +368,15 @@ namespace GameA.Game
             get { return (ELayerType)_tableUnit.Layer; }
         }
 
-        public EDirectionType FireDirection
+        public EMoveDirection FireDirection
         {
             get
             {
                 if (IsHero)
                 {
-                    return (EDirectionType)(_curMoveDirection - 1);
+                    return _curMoveDirection;
                 }
-                return (EDirectionType)Rotation;
+                return (EMoveDirection)(Rotation+1);
             }
         }
 

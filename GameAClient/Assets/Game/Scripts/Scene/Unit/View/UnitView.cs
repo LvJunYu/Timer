@@ -34,10 +34,14 @@ namespace GameA.Game
 		    get { return _dirTrans; }
 	    }
 
-        public virtual void OnGet()
+        public UnitView()
         {
             _trans = new GameObject(GetType().Name).transform;
             _trans.parent = UnitManager.Instance.GetOriginParent();
+        }
+
+        public virtual void OnGet()
+        {
         }
 
         public bool Init(UnitBase unit)

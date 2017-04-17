@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -18,11 +19,9 @@ namespace GameA.Game
     public class BulletBase : UnitBase, IPoolableObject
     {
         protected bool _run;
-        protected IntVec2 _startPos;
         protected IntVec2 _speed;
         protected IntVec2 _pointA;
         protected IntVec2 _pointB;
-        protected int _velocity;
         protected SkillBase _skill;
 
         public void OnGet()
@@ -31,30 +30,41 @@ namespace GameA.Game
 
         public void OnFree()
         {
+            Clear();
         }
 
         public void OnDestroyObject()
         {
         }
 
+        protected override void Clear()
+        {
+            base.Clear();
+            _run = false;
+            _speed = IntVec2.zero;
+            _pointA = IntVec2.zero;
+            _pointB = IntVec2.zero;
+            _skill = null;
+        }
+
         public virtual void Run(SkillBase skill)
         {
             _run = true;
             _skill = skill;
-            _startPos = _skill.Owner.FirePos;
-            SetPos(_startPos);
-            switch (_skill.Owner.FireDirection)
+            SetPos(_skill.Owner.FirePos);
+            _curMoveDirection = _skill.Owner.FireDirection;
+            switch (_curMoveDirection)
             {
-                case EDirectionType.Up:
+                case EMoveDirection.Up:
                     _speed = _skill.BulletSpeed * IntVec2.up;
                     break;
-                case EDirectionType.Right:
+                case EMoveDirection.Right:
                     _speed = _skill.BulletSpeed * IntVec2.right;
                     break;
-                case EDirectionType.Down:
+                case EMoveDirection.Down:
                     _speed = _skill.BulletSpeed * IntVec2.down;
                     break;
-                case EDirectionType.Left:
+                case EMoveDirection.Left:
                     _speed = _skill.BulletSpeed * IntVec2.left;
                     break;
             }
@@ -70,10 +80,10 @@ namespace GameA.Game
             if (_isAlive)
             {
                 GM2DTools.GetBorderPoint(ColliderGrid, _curMoveDirection, ref _pointA, ref _pointB);
-                var checkGrid = SceneQuery2D.GetGrid(_pointA, _pointB, (byte)(_curMoveDirection - 1), _velocity);
+                var checkGrid = SceneQuery2D.GetGrid(_pointA, _pointB, (byte)(_curMoveDirection - 1), Mathf.Max(_speed.x, _speed.y));
                 if (!DataScene2D.Instance.IsInTileMap(checkGrid))
                 {
-                    Speed = IntVec2.zero;
+                    OnDead();
                     return;
                 }
                 var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.BulletHitLayer, float.MinValue, float.MaxValue, _dynamicCollider);
@@ -81,11 +91,17 @@ namespace GameA.Game
                 {
                     if (GM2DTools.OnDirectionHit(units[i], this, _curMoveDirection))
                     {
-                        Speed = IntVec2.zero;
+                        OnDead();
                         break;
                     }
                 }
             }
+        }
+
+        protected override void OnDead()
+        {
+            base.OnDead();
+            PlayMode.Instance.DestroyUnit(this);
         }
 
         public override void UpdateView(float deltaTime)
@@ -94,7 +110,7 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_isStart && _isAlive)
+            if (_isAlive)
             {
                 _deltaPos = _speed + _extraDeltaPos;
                 _curPos += _deltaPos;
@@ -120,11 +136,6 @@ namespace GameA.Game
                 ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider, new IntVec2(_lastColliderGrid.XMin, _lastColliderGrid.YMin));
                 _lastColliderGrid = _colliderGrid;
             }
-        }
-
-        public override string ToString()
-        {
-            return string.Format("{0}, Run: {1}, StartPos: {2}, Speed: {3}, PointA: {4}, PointB: {5}, Velocity: {6}", base.ToString(), _run, _startPos, _speed, _pointA, _pointB, _velocity);
         }
     }
 }

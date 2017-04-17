@@ -57,7 +57,7 @@ namespace GameA.Game
             _plus = plus;
             _timerCD = 0;
             _cdTime = 10;
-            _bulletSpeed = 50;
+            _bulletSpeed = 200;
         }
 
         internal virtual void Exit()
@@ -86,7 +86,7 @@ namespace GameA.Game
             return null;
         }
 
-        public void Update()
+        public void UpdateLogic()
         {
             if (_timerCD > 0)
             {

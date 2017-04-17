@@ -214,6 +214,7 @@ namespace GameA.Game
             if (_isAlive && _isStart)
             {
                 _mainInput.UpdateLogic();
+                SkillManager.Instance.UpdateLogic();
                 CheckGround();
                 CheckClimb();
                 UpdateSpeedY();

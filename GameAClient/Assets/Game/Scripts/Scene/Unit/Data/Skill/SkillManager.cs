@@ -58,6 +58,10 @@ namespace GameA.Game
         {
             if (_currentSkill != null)
             {
+                if (_currentSkill.GetType() == typeof(T))
+                {
+                    return;
+                }
                 _currentSkill.Exit();
                 _currentSkill = null;
             }
@@ -76,6 +80,14 @@ namespace GameA.Game
             if (_currentSkill != null)
             {
                 _currentSkill.Fire();
+            }
+        }
+
+        public void UpdateLogic()
+        {
+            if (_currentSkill != null)
+            {
+                _currentSkill.UpdateLogic();
             }
         }
     }
