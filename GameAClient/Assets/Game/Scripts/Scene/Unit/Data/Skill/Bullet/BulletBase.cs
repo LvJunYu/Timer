@@ -23,6 +23,7 @@ namespace GameA.Game
         protected IntVec2 _pointA;
         protected IntVec2 _pointB;
         protected int _velocity;
+        protected SkillBase _skill;
 
         public void OnGet()
         {
@@ -36,12 +37,27 @@ namespace GameA.Game
         {
         }
 
-        public virtual void Run(IntVec2 startPos, IntVec2 speed)
+        public virtual void Run(SkillBase skill)
         {
             _run = true;
-            _startPos = startPos;
+            _skill = skill;
+            _startPos = _skill.Owner.FirePos;
             SetPos(_startPos);
-            _speed = speed;
+            switch (_skill.Owner.FireDirection)
+            {
+                case EDirectionType.Up:
+                    _speed = _skill.BulletSpeed * IntVec2.up;
+                    break;
+                case EDirectionType.Right:
+                    _speed = _skill.BulletSpeed * IntVec2.right;
+                    break;
+                case EDirectionType.Down:
+                    _speed = _skill.BulletSpeed * IntVec2.down;
+                    break;
+                case EDirectionType.Left:
+                    _speed = _skill.BulletSpeed * IntVec2.left;
+                    break;
+            }
         }
 
         public override void UpdateLogic()
@@ -104,6 +120,11 @@ namespace GameA.Game
                 ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider, new IntVec2(_lastColliderGrid.XMin, _lastColliderGrid.YMin));
                 _lastColliderGrid = _colliderGrid;
             }
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}, Run: {1}, StartPos: {2}, Speed: {3}, PointA: {4}, PointB: {5}, Velocity: {6}", base.ToString(), _run, _startPos, _speed, _pointA, _pointB, _velocity);
         }
     }
 }

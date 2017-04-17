@@ -29,10 +29,11 @@ namespace GameA.Game
         private bool _hasNoWinConditionWithoutTimeLimit = false;
         [SerializeField] private int _heroRescued;
         [SerializeField] private int _keyGain;
-        private MapStatistics _mapStatistics = new MapStatistics();
         [SerializeField] private int _monsterKilled;
         [SerializeField] private ESceneState _runState;
         [SerializeField] private int _secondLeft;
+
+        private MapStatistics _mapStatistics = new MapStatistics();
 
         public bool IsMainPlayerCreated
         {

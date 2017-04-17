@@ -51,7 +51,8 @@
         "Id": "2001",
         "Name": "树魔",
         "Use": "1",
-        "Icon": "Icon",
+        "Icon": "M1MonsterTreeIcon",
+        "Model": "M1MonsterTree",
         "UnitType": "2",
         "Layer": "2",
         "GeneratedType": "1",
@@ -1378,7 +1379,9 @@
         "ParentType": "0",
         "ChildType": "0",
         "OriginMoveDirection": "0",
-        "OriginMagicDirection": "0"
+        "OriginMagicDirection": "0",
+        "MoveDirectionMask": "0",
+        "RotationMask": "15"
     },
     {
         "Id": "38002",

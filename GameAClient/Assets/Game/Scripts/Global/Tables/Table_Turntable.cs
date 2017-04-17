@@ -8,6 +8,9 @@ namespace GameA.Game
 		// 序号
 		[ColumnMapping("Id")]
 		public int Id;
+		// 名字
+		[ColumnMapping("Name")]
+		public string Name;
 		// 奖励1
 		[ColumnMapping("Reward1")]
 		public int Reward1;
