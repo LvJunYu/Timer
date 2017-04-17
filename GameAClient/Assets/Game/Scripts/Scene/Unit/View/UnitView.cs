@@ -37,7 +37,9 @@ namespace GameA.Game
         public UnitView()
         {
             _trans = new GameObject(GetType().Name).transform;
-            _trans.parent = UnitManager.Instance.GetOriginParent();
+			if (UnitManager.Instance != null) {
+				_trans.parent = UnitManager.Instance.GetOriginParent ();
+			}
         }
 
         public virtual void OnGet()
