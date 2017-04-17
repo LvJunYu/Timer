@@ -17,7 +17,7 @@ namespace GameA.Game
     {
         protected override BulletBase CreateBullet()
         {
-            return PlayMode.Instance.CreateRuntimeUnit(10001, PlayMode.Instance.MainUnit.FirePos, 1, Vector2.one) as BulletWater;
+            return PlayMode.Instance.CreateRuntimeUnit(10001, _owner.FirePos, (byte)_owner.FireDirection, Vector2.one) as BulletWater;
         }
     }
 }

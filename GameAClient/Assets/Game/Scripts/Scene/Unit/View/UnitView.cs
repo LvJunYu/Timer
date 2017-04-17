@@ -190,22 +190,26 @@ namespace GameA.Game
             {
                 //生成蓝石
             }
-            if (GM2DGame.Instance.CurrentMode == EMode.Edit || GM2DGame.Instance.CurrentMode == EMode.EditTest)
+            if (tableUnit.EUnitType != EUnitType.Bullet)
             {
-                //生成方向标志
-                if (tableUnit.CanRotate || _unit.MoveDirection != EMoveDirection.None || tableUnit.Id == ConstDefineGM2D.RollerId)
+                if (GM2DGame.Instance.CurrentMode == EMode.Edit || GM2DGame.Instance.CurrentMode == EMode.EditTest)
                 {
-                    CreateDirTrans();
+                    //生成方向标志
+                    if (tableUnit.CanRotate || _unit.MoveDirection != EMoveDirection.None || tableUnit.Id == ConstDefineGM2D.RollerId)
+                    {
+                        CreateDirTrans();
+                    }
                 }
+            }
+
+            if (tableUnit.CanRotate)
+            {
+                Vector3 offset = GetRotationPosOffset();
+                _trans.localEulerAngles = new Vector3(0, 0, GetRotation(_unit.UnitDesc.Rotation));
+                _trans.localPosition = offset + _unit.GetTransPos();
             }
             if (_dirTrans != null)
             {
-                if (tableUnit.CanRotate)
-                {
-                    Vector3 offset = GetRotationPosOffset();
-                    _trans.localEulerAngles = new Vector3(0, 0, GetRotation(_unit.UnitDesc.Rotation));
-                    _trans.localPosition = offset + _unit.GetTransPos();
-                }
                 if (_unit.MoveDirection != EMoveDirection.None || tableUnit.Id == ConstDefineGM2D.RollerId)
                 {
                     float y = 0;
