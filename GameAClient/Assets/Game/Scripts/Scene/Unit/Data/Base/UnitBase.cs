@@ -1154,7 +1154,7 @@ namespace GameA.Game
         {
         }
 
-        public virtual void AddEdge(int start, int end, EDirectionType direction, EEdgeType eEdgeType)
+        public virtual void DoEdge(int start, int end, EDirectionType direction, ESkillType eSkillType)
         {
         }
     }

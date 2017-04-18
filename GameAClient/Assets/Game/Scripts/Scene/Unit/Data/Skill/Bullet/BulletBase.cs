@@ -23,6 +23,7 @@ namespace GameA.Game
         protected IntVec2 _pointA;
         protected IntVec2 _pointB;
         protected SkillBase _skill;
+        protected ESkillType _eSkillType;
 
         public void OnGet()
         {
@@ -100,10 +101,49 @@ namespace GameA.Game
 
         protected virtual void DoHit(UnitBase unit)
         {
+            if (_skill.Plus)
+            {
+                DoEdge(unit);
+            }
             OnDead();
             if (unit is Switch)
             {
                 //
+            }
+        }
+
+        protected virtual void DoEdge(UnitBase unit)
+        {
+            switch (_curMoveDirection)
+            {
+                case EMoveDirection.Up:
+                    {
+                        int centerPoint = (_colliderGrid.XMax + 1 + _colliderGrid.XMin) / 2;
+                        unit.DoEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Down,
+                            _eSkillType);
+                    }
+                    break;
+                case EMoveDirection.Down:
+                    {
+                        int centerPoint = (_colliderGrid.XMax + 1 + _colliderGrid.XMin) / 2;
+                        unit.DoEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Up,
+                            _eSkillType);
+                    }
+                    break;
+                case EMoveDirection.Left:
+                    {
+                        int centerPoint = (_colliderGrid.YMax + 1 + _colliderGrid.YMin) / 2;
+                        unit.DoEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Right,
+                            _eSkillType);
+                    }
+                    break;
+                case EMoveDirection.Right:
+                    {
+                        int centerPoint = (_colliderGrid.YMax + 1 + _colliderGrid.YMin) / 2;
+                        unit.DoEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Left,
+                            _eSkillType);
+                    }
+                    break;
             }
         }
 

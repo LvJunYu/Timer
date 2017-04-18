@@ -18,12 +18,18 @@ namespace GameA.Game
         protected List<Edge> _edges = new List<Edge>();
         private Comparison<Edge> _comparisonSkillType = SortEdge;
 
+        /// <summary>
+        /// 倒排
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         private static int SortEdge(Edge x, Edge y)
         {
-           return x.EEdgeType.CompareTo(y.EEdgeType);
+           return y.ESkillType.CompareTo(x.ESkillType);
         }
 
-        public override void AddEdge(int start, int end, EDirectionType direction, EEdgeType eEdgeType)
+        public override void DoEdge(int start, int end, EDirectionType direction, ESkillType eSkillType)
         {
             switch (direction)
             {
@@ -38,11 +44,18 @@ namespace GameA.Game
                     end = Math.Min(_colliderGrid.YMax, end);
                     break;
             }
-            var edge = new Edge(start, end, direction, eEdgeType);
-            LogHelper.Debug("AddEdge: {0}", edge);
-            Merge(ref edge);
-            Cut(ref edge);
-            _edges.Add(edge);
+            var edge = new Edge(start, end, direction, eSkillType);
+            LogHelper.Debug("DoEdge: {0}", edge);
+            if (eSkillType == ESkillType.Water)
+            {
+                Cut(ref edge);
+            }
+            else
+            {
+                Merge(ref edge);
+                Cut(ref edge);
+                _edges.Add(edge);
+            }
             //排序下
             if (_edges.Count > 1)
             {
@@ -58,7 +71,7 @@ namespace GameA.Game
                 for (int i = _edges.Count - 1; i >= 0; i--)
                 {
                     var current = _edges[i];
-                    if (edge.Direction == current.Direction && edge.EEdgeType == current.EEdgeType)
+                    if (edge.Direction == current.Direction && edge.ESkillType == current.ESkillType)
                     {
                         if (edge.Merge(ref current))
                         {
@@ -76,13 +89,13 @@ namespace GameA.Game
 
         private void Cut(ref Edge edge)
         {
-            for (int i = 0; i < _edges.Count; i++)
+            for (int i = _edges.Count - 1; i >= 0; i--)
             {
                 //判断同面
                 if (_edges[i].Direction == edge.Direction)
                 {
                     //不同类切割添加
-                    if (_edges[i].EEdgeType != edge.EEdgeType)
+                    if (_edges[i].ESkillType != edge.ESkillType)
                     {
                         _edges[i].Cut(ref edge, _edges);
                     }
@@ -123,15 +136,15 @@ namespace GameA.Game
         protected void OnUpEdgeHit(UnitBase other, Edge edge)
         {
             LogHelper.Debug("OnUpEdgeHit: {0}", edge);
-            switch (edge.EEdgeType)
+            switch (edge.ESkillType)
             {
-                    case EEdgeType.Fire:
+                    case ESkillType.Fire:
                     break;
-                    case EEdgeType.Jelly:
+                    case ESkillType.Jelly:
                     break;
-                    case EEdgeType.Clay:
+                    case ESkillType.Clay:
                     break;
-                    case EEdgeType.Ice:
+                    case ESkillType.Ice:
                     break;
             }
         }
@@ -139,15 +152,15 @@ namespace GameA.Game
         protected void OnLeftEdgeHit(UnitBase other, Edge edge)
         {
             LogHelper.Debug("OnLeftEdgeHit: {0}", edge);
-            switch (edge.EEdgeType)
+            switch (edge.ESkillType)
             {
-                case EEdgeType.Fire:
+                case ESkillType.Fire:
                     break;
-                case EEdgeType.Jelly:
+                case ESkillType.Jelly:
                     break;
-                case EEdgeType.Clay:
+                case ESkillType.Clay:
                     break;
-                case EEdgeType.Ice:
+                case ESkillType.Ice:
                     break;
             }
         }
@@ -158,19 +171,19 @@ namespace GameA.Game
         public int Start;
         public int End;
         public EDirectionType Direction;
-        public EEdgeType EEdgeType;
+        public ESkillType ESkillType;
 
-        public Edge(int start, int end, EDirectionType direction, EEdgeType eEdgeType)
+        public Edge(int start, int end, EDirectionType direction, ESkillType eSkillType)
         {
             Start = start;
             End = end;
             Direction = direction;
-            EEdgeType = eEdgeType;
+            ESkillType = eSkillType;
         }
 
         public override string ToString()
         {
-            return string.Format("Start: {0}, End: {1}, Direction: {2}, EEdgeType: {3}", Start, End, Direction, EEdgeType);
+            return string.Format("Start: {0}, End: {1}, Direction: {2}, ESkillType: {3}", Start, End, Direction, ESkillType);
         }
 
         private bool Intersect(ref Edge edge)
@@ -205,21 +218,22 @@ namespace GameA.Game
             int cutEnd = Math.Min(End, edge.End);
             if (cutStart > Start)
             {
-                edges.Add(new Edge(Start, cutStart - 1, Direction, EEdgeType));
+                edges.Add(new Edge(Start, cutStart - 1, Direction, ESkillType));
             }
             if (End > cutEnd)
             {
-                edges.Add(new Edge(cutEnd + 1, End, Direction, EEdgeType));
+                edges.Add(new Edge(cutEnd + 1, End, Direction, ESkillType));
             }
         }
     }
 
-    public enum EEdgeType
+    public enum ESkillType
     {
         None,
         Fire,
         Jelly,
         Clay,
         Ice,
+        Water,
     }
 }
