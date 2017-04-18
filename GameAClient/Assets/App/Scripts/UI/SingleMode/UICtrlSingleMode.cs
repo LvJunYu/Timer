@@ -18,7 +18,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlSingleMode : UISocialContentCtrlBase<UIViewSingleMode>, IUIWithTaskBar
+	public class UICtrlSingleMode : UISocialCtrlBase<UIViewSingleMode>
     {
         #region 常量与字段
 		/// <summary>
@@ -355,70 +355,6 @@ namespace GameA
 					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
 				}
 			);
-		}
-
-		private void TestCommitResult (int chapterId, int levelId, int levelIdx, bool isBonusLevel) {
-//			SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "测试提交关卡完成数据...");
-//
-//			int chapterIdx = chapterId - 1;
-//			AppData.Instance.AdventureData.CommitLevelResult (
-//				true,
-//				100,
-//				true,
-//				false,
-//				true,
-//				12345,
-//				3,
-//				4,
-//				5,
-//				6,
-//				() => {
-//					Debug.Log ("______________________________________Commit result sucess");
-//					// todo set local chapter data
-////					AppData.Instance.AdventureData.SectionList[]
-//					AdventureUserSection sectionData;
-//					if (chapterIdx >= AppData.Instance.AdventureData.UserData.SectionList.Count) {
-//						LogHelper.Error("Can't get chapterData of id {0}", chapterId);
-//						return;
-//					} else {
-//						sectionData = AppData.Instance.AdventureData.UserData.SectionList[chapterIdx];
-//					}
-//					List<AdventureUserLevelDataDetail> levelDataList = isBonusLevel ? sectionData.BonusLevelUserDataList : sectionData.NormalLevelUserDataList;
-//					AdventureUserLevelDataDetail levelData;
-//					if (levelIdx > levelDataList.Count) {
-//						LogHelper.Error("Try to modify level(id:{0}) data in chapter {1} in an unexpected way", levelId, chapterId);
-//						return;
-//					} else if (levelIdx == levelDataList.Count) {
-//						levelData = sectionData.LocalAddLevelData(isBonusLevel);
-//					} else {
-//						levelData = levelDataList[levelIdx];
-//					}
-//
-//					levelData.SimpleData.Star1Flag = true;
-//					levelData.SimpleData.Star2Flag = false;
-//					levelData.SimpleData.Star3Flag = true;
-//					levelData.SimpleData.SuccessCount++;
-//					levelData.Request(
-//						LocalUser.Instance.UserGuid,
-//						chapterId,
-//						isBonusLevel ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal,
-//						levelIdx + 1,
-//						()=>{
-//							RefreshChapterInfo();
-//						},null
-//					);
-//
-//					if (AppData.Instance.AdventureData.UserData.AdventureUserProgress.CompleteLevel < (levelIdx + 1)) {
-//						AppData.Instance.AdventureData.UserData.AdventureUserProgress.CompleteLevel = levelIdx + 1;
-//					}
-//					RefreshChapterInfo();
-//
-//					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-//				},
-//				(error) => {
-//					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-//				}
-//			);
 		}
 
 		private void OnBeginDrag (PointerEventData eventData) {
