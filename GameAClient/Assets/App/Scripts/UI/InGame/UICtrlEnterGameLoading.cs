@@ -136,7 +136,7 @@ namespace GameA
             _cachedView.GameWideProgressText.text = string.Empty;
             Project project = GameManager.Instance.CurrentGame.Project;
             DictionaryTools.SetContentText(_cachedView.GameWideTitle, project.Name);
-            DictionaryTools.SetContentText(_cachedView.GameWideAuthorName, project.UserLegacy.NickName);
+//            DictionaryTools.SetContentText(_cachedView.GameWideAuthorName, project.UserLegacy.NickName);
             DictionaryTools.SetContentText(_cachedView.GameWideSummary, "简介：" + project.Summary);
             _cachedView.GameWideCompleteRate.Set(project.ExtendReady, project.CompleteCount, project.FailCount);
 //            Matrix matrix = project.Matrix;

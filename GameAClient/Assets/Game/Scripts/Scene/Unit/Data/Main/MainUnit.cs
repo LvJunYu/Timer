@@ -40,9 +40,18 @@ namespace GameA.Game
         [SerializeField]
         protected UnityNativeParticleItem _invincibleEfffect;
 
+		/// <summary>
+		/// 射击光点特效
+		/// </summary>
 		protected UnityNativeParticleItem _shooterEffect;
 		[SerializeField]
-		protected IntVec2 _shooterEffectOffset = new IntVec2 (300,0);
+		/// <summary>
+		/// 射击光点和主角脚下中心点的偏移
+		/// </summary>
+		protected IntVec2 _shooterEffectOffset = new IntVec2 (300,450);
+		/// <summary>
+		/// 射击光点的实际位置
+		/// </summary>
 		protected IntVec2 _shooterEffectPos;
         /// <summary>
         /// 跑步声音间隔
@@ -489,28 +498,7 @@ namespace GameA.Game
                 _portalEffect.Update();
             }
 
-			if (_shooterEffect != null && _shooterEffect.IsPlaying) {
-				IntVec2 offset = _shooterEffectOffset;
-				if (_curMoveDirection == EMoveDirection.Right) {
-					offset.x = -offset.x;
-				}
-				IntVec2 destPos = CenterPos + offset;
-				if (_shooterEffectPos.x != destPos.x) {
-					int deltaX = (destPos.x - _shooterEffectPos.x) / 6;
-					if (deltaX == 0) {
-						deltaX = destPos.x > _shooterEffectPos.x ? 1 : -1;
-					}
-					_shooterEffectPos.x = _shooterEffectPos.x + deltaX;
-				}
-				if (_shooterEffectPos.y != destPos.y) {
-					int deltaY = (destPos.y - _shooterEffectPos.y) / 6;
-					if (deltaY == 0) {
-						deltaY = destPos.y > _shooterEffectPos.y ? 1 : -1;
-					}
-					_shooterEffectPos.y = _shooterEffectPos.y + deltaY;
-				}
-				_shooterEffect.Trans.position = GM2DTools.TileToWorld (_shooterEffectPos);
-			}
+			UpdateShooterPoint ();
 
             Vector3 euler = _trans.eulerAngles;
             euler.y = _curMoveDirection == EMoveDirection.Right ? 0 : 180;
@@ -966,6 +954,31 @@ namespace GameA.Game
                 _mainInput.UpdateRenderer();
             }
         }
+
+		private void UpdateShooterPoint () {
+			if (_shooterEffect != null && _shooterEffect.IsPlaying) {
+				IntVec2 offset = _shooterEffectOffset;
+				if (_curMoveDirection == EMoveDirection.Right) {
+					offset.x = -offset.x;
+				}
+				IntVec2 destPos = CenterPos + offset;
+				if (_shooterEffectPos.x != destPos.x) {
+					int deltaX = (destPos.x - _shooterEffectPos.x) / 6;
+					if (deltaX == 0) {
+						deltaX = destPos.x > _shooterEffectPos.x ? 1 : -1;
+					}
+					_shooterEffectPos.x = _shooterEffectPos.x + deltaX;
+				}
+				if (_shooterEffectPos.y != destPos.y) {
+					int deltaY = (destPos.y - _shooterEffectPos.y) / 6;
+					if (deltaY == 0) {
+						deltaY = destPos.y > _shooterEffectPos.y ? 1 : -1;
+					}
+					_shooterEffectPos.y = _shooterEffectPos.y + deltaY;
+				}
+				_shooterEffect.Trans.position = GM2DTools.TileToWorld (_shooterEffectPos);
+			}
+		}
 
         #endregion
 

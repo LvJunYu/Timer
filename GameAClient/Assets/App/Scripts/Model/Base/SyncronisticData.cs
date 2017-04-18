@@ -35,7 +35,7 @@ namespace GameA
 		}
 		#endregion
 
-		#region Functions
+		#region Methods
 		public SyncronisticData () {
 			_dirty = true;
 			_inited = false;
@@ -70,18 +70,6 @@ namespace GameA
 		}
 
 		protected virtual void OnSyncPartial () { }
-		#endregion
-	}
-
-	public class PartialSyncronisticData<T> : SyncronisticData{
-		#region Fields
-		protected T _owner;
-		#endregion
-
-		#region Properties
-		#endregion
-
-		#region Functions
 		#endregion
 	}
 }
