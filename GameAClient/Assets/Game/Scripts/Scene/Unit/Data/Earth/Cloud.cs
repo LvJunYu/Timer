@@ -11,7 +11,7 @@ using System.Collections;
 namespace GameA.Game
 {
     [Unit(Id = 4015, Type = typeof(Cloud))]
-    public class Cloud : Earth
+    public class Cloud : BlockBase
     {
         protected bool _trigger;
         protected int _timer;

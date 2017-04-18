@@ -14,7 +14,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     [Unit(Id = 5008, Type = typeof(BridgeEmitter))]
-    public class BridgeEmitter : Earth
+    public class BridgeEmitter : BlockBase
     {
         private const int BridgeUnitId = 5009;
         protected Grid2D _checkGrid;

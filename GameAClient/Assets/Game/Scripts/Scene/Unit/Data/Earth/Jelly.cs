@@ -12,7 +12,7 @@ using SoyEngine;
 namespace GameA.Game
 {
     [Unit(Id = 4012, Type = typeof(Jelly))]
-    public class Jelly : Earth
+    public class Jelly : BlockBase
     {
         protected override bool OnInit()
         {

@@ -11,7 +11,7 @@ using SoyEngine;
 
 namespace GameA.Game
 {
-    public class Energy : Earth
+    public class Energy : BlockBase
     {
         protected bool _plus;
         protected int _totalCount;

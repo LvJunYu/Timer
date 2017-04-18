@@ -14,7 +14,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     [Serializable]
-    public class RigidbodyUnit : Earth
+    public class RigidbodyUnit : BlockBase
     {
         [SerializeField]
         protected UnitBase[] _hitUnits = new UnitBase[4];

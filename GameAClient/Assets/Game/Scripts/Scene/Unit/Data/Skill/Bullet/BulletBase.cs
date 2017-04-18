@@ -101,6 +101,10 @@ namespace GameA.Game
         protected virtual void DoHit(UnitBase unit)
         {
             OnDead();
+            if (unit is Switch)
+            {
+                //
+            }
         }
 
         protected override void OnDead()

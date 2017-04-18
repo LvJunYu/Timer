@@ -12,7 +12,7 @@ using SoyEngine;
 namespace GameA.Game
 {
     [Unit(Id = 4013, Type = typeof(ScorchedEarth))]
-    public class ScorchedEarth : Earth
+    public class ScorchedEarth : BlockBase
     {
         protected bool _trigger;
         protected int _timer;

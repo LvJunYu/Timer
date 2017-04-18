@@ -8,7 +8,7 @@
 namespace GameA.Game
 {
     [Unit(Id = 4004, Type = typeof (TransparentEarth))]
-    public class TransparentEarth : Earth
+    public class TransparentEarth : BlockBase
     {
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
