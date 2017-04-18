@@ -15,6 +15,9 @@ namespace GameA.Game
     [Serializable]
     public class SkillBase
     {
+        [SerializeField]
+        protected ESkillType _eSkillType;
+
         /// <summary>
         /// 攻击范围
         /// </summary>
@@ -59,6 +62,11 @@ namespace GameA.Game
         public bool Plus
         {
             get { return _plus; }
+        }
+
+        public ESkillType ESkillType
+        {
+            get { return _eSkillType; }
         }
 
         internal virtual void Enter(UnitBase ower, bool plus)

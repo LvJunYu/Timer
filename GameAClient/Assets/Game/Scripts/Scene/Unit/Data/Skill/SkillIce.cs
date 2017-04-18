@@ -1,8 +1,8 @@
 ﻿/********************************************************************
-** Filename : SkillFire
+** Filename : SkillIce
 ** Author : Dong
-** Date : 2017/3/22 星期三 上午 10:37:29
-** Summary : SkillFire
+** Date : 2017/4/18 星期二 下午 6:55:06
+** Summary : SkillIce
 ***********************************************************************/
 
 using System;
@@ -11,18 +11,18 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    [Skill(Name = "SkillFire", Type = typeof(SkillFire))]
-    public class SkillFire : SkillBase
+    [Skill(Name = "SkillIce", Type = typeof(SkillIce))]
+    public class SkillIce : SkillBase
     {
         internal override void Enter(UnitBase ower, bool plus)
         {
             base.Enter(ower, plus);
-            _eSkillType = ESkillType.Fire;
+            _eSkillType = ESkillType.Ice;
         }
 
         protected override BulletBase CreateBullet()
         {
-            return PlayMode.Instance.CreateRuntimeUnit(10002, _owner.FirePos, (byte)(_owner.FireDirection - 1), Vector2.one) as BulletBase;
+            return PlayMode.Instance.CreateRuntimeUnit(10003, _owner.FirePos, (byte)(_owner.FireDirection - 1), Vector2.one) as BulletBase;
         }
     }
 }

@@ -23,7 +23,6 @@ namespace GameA.Game
         protected IntVec2 _pointA;
         protected IntVec2 _pointB;
         protected SkillBase _skill;
-        protected ESkillType _eSkillType;
 
         public void OnGet()
         {
@@ -120,28 +119,28 @@ namespace GameA.Game
                     {
                         int centerPoint = (_colliderGrid.XMax + 1 + _colliderGrid.XMin) / 2;
                         unit.DoEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Down,
-                            _eSkillType);
+                            _skill.ESkillType);
                     }
                     break;
                 case EMoveDirection.Down:
                     {
                         int centerPoint = (_colliderGrid.XMax + 1 + _colliderGrid.XMin) / 2;
                         unit.DoEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Up,
-                            _eSkillType);
+                            _skill.ESkillType);
                     }
                     break;
                 case EMoveDirection.Left:
                     {
                         int centerPoint = (_colliderGrid.YMax + 1 + _colliderGrid.YMin) / 2;
                         unit.DoEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Right,
-                            _eSkillType);
+                            _skill.ESkillType);
                     }
                     break;
                 case EMoveDirection.Right:
                     {
                         int centerPoint = (_colliderGrid.YMax + 1 + _colliderGrid.YMin) / 2;
                         unit.DoEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Left,
-                            _eSkillType);
+                            _skill.ESkillType);
                     }
                     break;
             }
