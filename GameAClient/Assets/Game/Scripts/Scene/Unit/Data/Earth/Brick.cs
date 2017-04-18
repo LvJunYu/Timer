@@ -10,7 +10,7 @@ using SoyEngine;
 namespace GameA.Game
 {
     [Unit(Id = 4006, Type = typeof(Brick))]
-    public class Brick : Earth
+    public class Brick : BlockBase
     {
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {

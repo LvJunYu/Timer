@@ -11,7 +11,7 @@ using System.Collections;
 namespace GameA.Game
 {
     [Unit(Id = 4003, Type = typeof(SwitchEarth))]
-    public class SwitchEarth : Earth
+    public class SwitchEarth : BlockBase
     {
     }
 }

@@ -11,7 +11,7 @@ using System.Collections;
 namespace GameA.Game
 {
     [Unit(Id = 4011, Type = typeof(Clay))]
-    public class Clay : Earth
+    public class Clay : BlockBase
     {
         protected override bool OnInit()
         {

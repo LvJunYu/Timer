@@ -11,7 +11,7 @@ using System.Collections;
 namespace GameA.Game
 {
     [Unit(Id = 4010, Type = typeof(Fire))]
-    public class Fire : Earth
+    public class Fire : BlockBase
     {
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {

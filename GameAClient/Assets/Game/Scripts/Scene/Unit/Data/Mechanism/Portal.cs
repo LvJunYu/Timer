@@ -13,7 +13,7 @@ using Spine.Unity;
 namespace GameA.Game
 {
     [Unit(Id = 5003, Type = typeof(Portal))]
-    public class Portal : Earth
+    public class Portal : BlockBase
     {
         protected SkeletonAnimation _animation;
 

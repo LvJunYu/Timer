@@ -11,7 +11,7 @@ using Spine.Unity;
 namespace GameA.Game
 {
     [Unit(Id = 5002, Type = typeof(RevivePoint))]
-    public class RevivePoint : Earth
+    public class RevivePoint : BlockBase
     {
         private bool _trigger;
 

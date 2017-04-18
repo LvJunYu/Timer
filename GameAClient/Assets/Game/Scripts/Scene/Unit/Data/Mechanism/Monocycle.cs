@@ -11,7 +11,7 @@ using System.Collections;
 namespace GameA.Game
 {
     [Unit(Id = 5007, Type = typeof(Monocycle))]
-    public class Monocycle : Earth
+    public class Monocycle : BlockBase
     {
     }
 }

@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    public class UnitWithChild : Earth
+    public class UnitWithChild : BlockBase
     {
         protected UnitChild _unitChild;
         protected UnitBase _childUnit;

@@ -11,7 +11,7 @@ using System.Collections;
 namespace GameA.Game
 {
     [Unit(Id = 5006, Type = typeof(MovingPlatform))]
-    public class MovingPlatform : Earth
+    public class MovingPlatform : BlockBase
     {
 
     }

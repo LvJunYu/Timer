@@ -51,6 +51,16 @@ namespace GameA.Game
             get { return _owner; }
         }
 
+        public int Range
+        {
+            get { return _range; }
+        }
+
+        public bool Plus
+        {
+            get { return _plus; }
+        }
+
         internal virtual void Enter(UnitBase ower, bool plus)
         {
             _owner = ower;

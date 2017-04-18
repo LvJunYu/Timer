@@ -13,7 +13,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     [Unit(Id = 5009, Type = typeof(Bridge))]
-    public class Bridge : Earth
+    public class Bridge : BlockBase
     {
 
     }

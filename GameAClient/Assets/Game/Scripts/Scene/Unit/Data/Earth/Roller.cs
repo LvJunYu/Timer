@@ -11,7 +11,7 @@ using Spine.Unity;
 namespace GameA.Game
 {
     [Unit(Id = 5005, Type = typeof (Roller))]
-    public class Roller : Earth
+    public class Roller : BlockBase
     {
         private EMoveDirection _rollerDirection;
 

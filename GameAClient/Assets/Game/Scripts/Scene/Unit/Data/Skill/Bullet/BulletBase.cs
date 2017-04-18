@@ -91,10 +91,19 @@ namespace GameA.Game
                 {
                     if (GM2DTools.OnDirectionHit(units[i], this, _curMoveDirection))
                     {
-                        OnDead();
+                        DoHit(units[i]);
                         break;
                     }
                 }
+            }
+        }
+
+        protected virtual void DoHit(UnitBase unit)
+        {
+            OnDead();
+            if (unit is Switch)
+            {
+                //
             }
         }
 

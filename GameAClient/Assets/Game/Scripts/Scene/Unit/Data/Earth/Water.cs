@@ -14,7 +14,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     [Unit(Id = 4008, Type = typeof(Water))]
-    public class Water : Earth
+    public class Water : BlockBase
     {
         internal override bool InstantiateView()
         {

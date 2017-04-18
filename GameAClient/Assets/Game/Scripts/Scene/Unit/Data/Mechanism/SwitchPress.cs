@@ -14,7 +14,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     [Unit(Id = 5104, Type = typeof(SwitchPress))]
-    public class SwitchPress : Earth
+    public class SwitchPress : BlockBase
     {
         protected bool _trigger;
 

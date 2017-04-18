@@ -11,7 +11,7 @@ using System.Collections;
 namespace GameA.Game
 {
     [Unit(Id = 5011, Type = typeof(AlertLazer))]
-    public class AlertLazer : Earth
+    public class AlertLazer : BlockBase
     {
     }
 }
