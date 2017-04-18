@@ -380,7 +380,7 @@ namespace GameA.Game
             }
         }
 
-        public IntVec2 FirePos
+        public virtual IntVec2 FirePos
         {
             get
             {

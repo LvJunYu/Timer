@@ -38,7 +38,7 @@ namespace GameA.Game
         public const int MovingEarthBlockLayer = MainPlayerLayer | HeroLayer | ItemLayer;
         public const int MovingEarthBlockUpLayer = 1 << (int)ESceneLayer.Item;
 
-        public const int BulletHitLayer = MainPlayerLayer | HeroLayer | ItemLayer;
+        public const int BulletHitLayer = HeroLayer | ItemLayer;
 
 		public static EnvManager Instance
         {
