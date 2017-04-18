@@ -18,7 +18,7 @@ namespace GameA.Game
         /// <summary>
         /// 攻击范围
         /// </summary>
-        [SerializeField]protected int _range;
+        [SerializeField]protected int _radius;
         /// <summary>
         /// CD时间
         /// </summary>
@@ -51,9 +51,9 @@ namespace GameA.Game
             get { return _owner; }
         }
 
-        public int Range
+        public int Radius
         {
-            get { return _range; }
+            get { return _radius; }
         }
 
         public bool Plus
@@ -65,6 +65,7 @@ namespace GameA.Game
         {
             _owner = ower;
             _plus = plus;
+            _radius = 160;
             _timerCD = 0;
             _cdTime = 10;
             _bulletSpeed = 200;
@@ -106,7 +107,7 @@ namespace GameA.Game
 
         public override string ToString()
         {
-            return string.Format("Range: {0}, CdTime: {1}, Plus: {2}, TimerCd: {3}, BulletSpeed: {4}, Owner: {5}", _range, _cdTime, _plus, _timerCD, _bulletSpeed, _owner);
+            return string.Format("Range: {0}, CdTime: {1}, Plus: {2}, TimerCd: {3}, BulletSpeed: {4}, Owner: {5}", _radius, _cdTime, _plus, _timerCD, _bulletSpeed, _owner);
         }
     }
 }

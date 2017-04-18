@@ -1153,5 +1153,9 @@ namespace GameA.Game
         internal virtual void OnSwitchTrigger()
         {
         }
+
+        public virtual void AddEdge(int start, int end, EDirectionType direction, EEdgeType eEdgeType)
+        {
+        }
     }
 }

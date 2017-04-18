@@ -16,27 +16,24 @@ namespace GameA.Game
     {
         protected override void DoHit(UnitBase unit)
         {
-            base.DoHit(unit);
             if (!_skill.Plus)
             {
                 return;
             }
-            var range = _skill.Range;
             switch (_curMoveDirection)
             {
                 case EMoveDirection.Up:
-                    _speed = _skill.BulletSpeed * IntVec2.up;
                     break;
                 case EMoveDirection.Right:
-                    _speed = _skill.BulletSpeed * IntVec2.right;
+                    int centerPoint = (_colliderGrid.YMax + 1 + _colliderGrid.YMin)/2;
+                    unit.AddEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Left, EEdgeType.Clay);
                     break;
                 case EMoveDirection.Down:
-                    _speed = _skill.BulletSpeed * IntVec2.down;
                     break;
                 case EMoveDirection.Left:
-                    _speed = _skill.BulletSpeed * IntVec2.left;
                     break;
             }
+            base.DoHit(unit);
         }
     }
 }
