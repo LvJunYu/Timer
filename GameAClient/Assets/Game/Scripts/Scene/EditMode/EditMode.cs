@@ -215,6 +215,11 @@ namespace GameA.Game
             return true;
         }
 
+		/// <summary>
+		/// 从地图文件反序列化时的处理方法
+		/// </summary>
+		/// <param name="unitDesc">Unit desc.</param>
+		/// <param name="tableUnit">Table unit.</param>
         public void OnReadMapFile(UnitDesc unitDesc, Table_Unit tableUnit)
         {
             AfterAddUnit(unitDesc, tableUnit, true);
@@ -993,7 +998,7 @@ namespace GameA.Game
 			if (_mapRectMask != null)
 			{
 				_mapRectMask.SetActiveEx(_curEditorLayer == EEditorLayer.Effect);
-				_mapRectMask.transform.localPosition = worldRect.center;
+				_mapRectMask.transform.localPosition = new Vector3(worldRect.center.x, worldRect.center.y, -30);
 				_mapRectMask.SetLocalScale(worldRect.width, worldRect.height);
 			}
 			else
