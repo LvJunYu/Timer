@@ -20,8 +20,6 @@ namespace GameA.Game
     {
         protected bool _run;
         protected IntVec2 _speed;
-        protected IntVec2 _pointA;
-        protected IntVec2 _pointB;
         protected SkillBase _skill;
 
         public void OnGet()
@@ -42,8 +40,6 @@ namespace GameA.Game
             base.Clear();
             _run = false;
             _speed = IntVec2.zero;
-            _pointA = IntVec2.zero;
-            _pointB = IntVec2.zero;
             _skill = null;
         }
 
@@ -79,8 +75,9 @@ namespace GameA.Game
             }
             if (_isAlive)
             {
-                GM2DTools.GetBorderPoint(ColliderGrid, _curMoveDirection, ref _pointA, ref _pointB);
-                var checkGrid = SceneQuery2D.GetGrid(_pointA, _pointB, (byte)(_curMoveDirection - 1), Mathf.Max(_speed.x, _speed.y));
+                IntVec2 pointA = IntVec2.zero, pointB = IntVec2.zero;
+                GM2DTools.GetBorderPoint(_colliderGrid, _curMoveDirection, ref pointA, ref pointB);
+                var checkGrid = SceneQuery2D.GetGrid(pointA, pointB, (byte)(_curMoveDirection - 1), Math.Max(_speed.x, _speed.y));
                 if (!DataScene2D.Instance.IsInTileMap(checkGrid))
                 {
                     OnDead();
@@ -181,7 +178,7 @@ namespace GameA.Game
             if (!_lastColliderGrid.Equals(_colliderGrid))
             {
                 _dynamicCollider.Grid = _colliderGrid;
-                ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider, new IntVec2(_lastColliderGrid.XMin, _lastColliderGrid.YMin));
+                ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider);
                 _lastColliderGrid = _colliderGrid;
             }
         }

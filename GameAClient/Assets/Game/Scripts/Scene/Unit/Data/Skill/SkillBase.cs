@@ -96,7 +96,7 @@ namespace GameA.Game
             {
                 return;
             }
-            LogHelper.Debug("Skill: {0} CreateBullet: {1}",this, bullet);
+            //LogHelper.Debug("Skill: {0} CreateBullet: {1}",this, bullet);
             bullet.Run(this);
         }
 
