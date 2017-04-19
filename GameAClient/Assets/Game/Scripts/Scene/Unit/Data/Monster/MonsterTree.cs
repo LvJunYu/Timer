@@ -13,6 +13,12 @@ namespace GameA.Game
     [Unit(Id = 2001, Type = typeof(MonsterTree))]
     public class MonsterTree : MonsterBase
     {
+        protected override void UpdateMonster()
+        {
+            if (_isAlive && _isStart)
+            {
 
+            }
+        }
     }
 }

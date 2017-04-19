@@ -120,8 +120,13 @@ namespace GameA.Game
                 {
                     return;
                 }
+                UpdateMonster();
                 _lastGrounded = _grounded;
             }
+        }
+
+        protected virtual void UpdateMonster()
+        {
         }
 
         protected virtual void OnRightStampedEmpty()
