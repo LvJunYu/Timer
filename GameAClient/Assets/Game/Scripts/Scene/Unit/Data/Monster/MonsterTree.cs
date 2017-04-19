@@ -1,19 +1,18 @@
 ﻿/********************************************************************
-** Filename : BulletWater
+** Filename : MonsterTree
 ** Author : Dong
-** Date : 2017/3/23 星期四 下午 3:12:00
-** Summary : BulletWater
+** Date : 2017/4/18 星期二 下午 9:00:48
+** Summary : MonsterTree
 ***********************************************************************/
 
 using System;
 using System.Collections;
-using SoyEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 10001, Type = typeof(BulletWater))]
-    public class BulletWater : BulletBase
+    [Unit(Id = 2001, Type = typeof(MonsterTree))]
+    public class MonsterTree : UnitBase
     {
-        
+
     }
 }

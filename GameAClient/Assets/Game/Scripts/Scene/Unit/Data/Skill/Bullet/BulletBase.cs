@@ -100,10 +100,49 @@ namespace GameA.Game
 
         protected virtual void DoHit(UnitBase unit)
         {
+            if (_skill.Plus)
+            {
+                DoEdge(unit);
+            }
             OnDead();
             if (unit is Switch)
             {
                 //
+            }
+        }
+
+        protected virtual void DoEdge(UnitBase unit)
+        {
+            switch (_curMoveDirection)
+            {
+                case EMoveDirection.Up:
+                    {
+                        int centerPoint = (_colliderGrid.XMax + 1 + _colliderGrid.XMin) / 2;
+                        unit.DoEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Down,
+                            _skill.ESkillType);
+                    }
+                    break;
+                case EMoveDirection.Down:
+                    {
+                        int centerPoint = (_colliderGrid.XMax + 1 + _colliderGrid.XMin) / 2;
+                        unit.DoEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Up,
+                            _skill.ESkillType);
+                    }
+                    break;
+                case EMoveDirection.Left:
+                    {
+                        int centerPoint = (_colliderGrid.YMax + 1 + _colliderGrid.YMin) / 2;
+                        unit.DoEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Right,
+                            _skill.ESkillType);
+                    }
+                    break;
+                case EMoveDirection.Right:
+                    {
+                        int centerPoint = (_colliderGrid.YMax + 1 + _colliderGrid.YMin) / 2;
+                        unit.DoEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Left,
+                            _skill.ESkillType);
+                    }
+                    break;
             }
         }
 
