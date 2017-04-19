@@ -65,7 +65,7 @@
         "Anchore": "6",
         "ModelAnchore": "6",
         "ParentType": "0",
-        "ChildType": "1",
+        "ChildType": "2",
         "OriginMoveDirection": "4",
         "OriginMagicDirection": "0",
         "MoveDirectionMask": "10"
@@ -97,7 +97,7 @@
             "AudioWalkEarth02",
             "AudioWalkEarth03"
         ],
-        "WalkEffectName": "M1EarthWalk",
+        "WalkEffectName": "M1EffectEarthWalk",
         "DestroyAudioName": "AudioDestroyEarth"
     },
     {
@@ -127,7 +127,6 @@
             "AudioWalkEarth02",
             "AudioWalkEarth03"
         ],
-        "WalkEffectName": "M1EarthWalk",
         "DestroyAudioName": "AudioDestroyEarth"
     },
     {
@@ -216,7 +215,7 @@
         "CHeight": "32",
         "Anchore": "5",
         "ModelAnchore": "5",
-        "ParentType": "2",
+        "ParentType": "1",
         "ChildType": "0",
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "4",
@@ -226,9 +225,8 @@
             "AudioWalkBrick02",
             "AudioWalkBrick03"
         ],
-        "WalkEffectName": "M1EarthWalk",
         "DestroyAudioName": "AudioDestroyBrick",
-        "DestroyEffectName": "M1BrickDisappear"
+        "DestroyEffectName": "M1EffectBrickDestroy"
     },
     {
         "Id": "4007",
@@ -293,12 +291,11 @@
         "CHeight": "32",
         "Anchore": "5",
         "ModelAnchore": "5",
-        "ParentType": "1",
+        "ParentType": "2",
         "ChildType": "0",
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "4",
-        "MoveDirectionMask": "15",
-        "WalkEffectName": "M1EarthWalk"
+        "MoveDirectionMask": "15"
     },
     {
         "Id": "4010",
@@ -344,7 +341,8 @@
         "ChildType": "0",
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "4",
-        "MoveDirectionMask": "15"
+        "MoveDirectionMask": "15",
+        "WalkEffectName": "M1EffectClayWalk"
     },
     {
         "Id": "4012",
@@ -390,7 +388,8 @@
         "ChildType": "0",
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "4",
-        "MoveDirectionMask": "15"
+        "MoveDirectionMask": "15",
+        "DestroyEffectName": "M1EffectScorchedEarth"
     },
     {
         "Id": "4014",
@@ -442,9 +441,7 @@
             "AudioWalkFissure02",
             "AudioWalkFissure03"
         ],
-        "WalkEffectName": "M1EarthWalk",
-        "DestroyAudioName": "AudioDestroyFissure",
-        "DestroyEffectName": "M1BuoyancyDisappear"
+        "DestroyAudioName": "AudioDestroyFissure"
     },
     {
         "Id": "4101",
@@ -537,8 +534,7 @@
         "ChildType": "0",
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "4",
-        "MoveDirectionMask": "15",
-        "WalkEffectName": "M1EarthWalk"
+        "MoveDirectionMask": "15"
     },
     {
         "Id": "5002",
@@ -561,8 +557,7 @@
         "ChildType": "0",
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "4",
-        "MoveDirectionMask": "15",
-        "WalkEffectName": "M1EarthWalk"
+        "MoveDirectionMask": "15"
     },
     {
         "Id": "5003",
@@ -586,8 +581,7 @@
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "4",
         "MoveDirectionMask": "15",
-        "RotationMask": "15",
-        "WalkEffectName": "M1EarthWalk"
+        "RotationMask": "15"
     },
     {
         "Id": "5004",
@@ -633,8 +627,7 @@
         "ChildType": "0",
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "4",
-        "MoveDirectionMask": "15",
-        "WalkEffectName": "M1EarthWalk"
+        "MoveDirectionMask": "15"
     },
     {
         "Id": "5006",
@@ -657,8 +650,7 @@
         "ChildType": "0",
         "OriginMoveDirection": "4",
         "OriginMagicDirection": "0",
-        "MoveDirectionMask": "15",
-        "WalkEffectName": "M1EarthWalk"
+        "MoveDirectionMask": "15"
     },
     {
         "Id": "5007",
@@ -776,8 +768,7 @@
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "4",
         "MoveDirectionMask": "15",
-        "RotationMask": "15",
-        "WalkEffectName": "M1EarthWalk"
+        "RotationMask": "15"
     },
     {
         "Id": "5012",
@@ -801,7 +792,6 @@
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "4",
         "MoveDirectionMask": "15",
-        "WalkEffectName": "M1EarthWalk",
         "DestroyAudioName": "AudioReward"
     },
     {
@@ -825,8 +815,7 @@
         "ChildType": "0",
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "4",
-        "MoveDirectionMask": "15",
-        "WalkEffectName": "M1EarthWalk"
+        "MoveDirectionMask": "15"
     },
     {
         "Id": "5014",
@@ -1011,9 +1000,7 @@
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "4",
         "MoveDirectionMask": "15",
-        "WalkEffectName": "M1EarthWalk",
-        "DestroyAudioName": "AudioReward",
-        "DestroyEffectName": "M1GemDisappear"
+        "DestroyAudioName": "AudioReward"
     },
     {
         "Id": "6002",
@@ -1037,9 +1024,7 @@
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "4",
         "MoveDirectionMask": "15",
-        "WalkEffectName": "M1EarthWalk",
-        "DestroyAudioName": "AudioReward",
-        "DestroyEffectName": "M1LifeDisappear"
+        "DestroyAudioName": "AudioReward"
     },
     {
         "Id": "6003",
@@ -1063,9 +1048,7 @@
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "4",
         "MoveDirectionMask": "15",
-        "WalkEffectName": "M1EarthWalk",
-        "DestroyAudioName": "AudioReward",
-        "DestroyEffectName": "M1OrbitDisappear"
+        "DestroyAudioName": "AudioReward"
     },
     {
         "Id": "6101",
@@ -1203,8 +1186,7 @@
         "ChildType": "0",
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "0",
-        "MoveDirectionMask": "15",
-        "WalkEffectName": "M1EarthWalk"
+        "MoveDirectionMask": "15"
     },
     {
         "Id": "7002",
@@ -1293,8 +1275,7 @@
         "ChildType": "0",
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "0",
-        "MoveDirectionMask": "15",
-        "WalkEffectName": "M1EarthWalk"
+        "MoveDirectionMask": "15"
     },
     {
         "Id": "7102",
@@ -1381,7 +1362,106 @@
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "0",
         "MoveDirectionMask": "0",
+        "RotationMask": "15",
+        "DestroyEffectName": "M1EffectWaterDestroy"
+    },
+    {
+        "Id": "10002",
+        "Name": "子弹火",
+        "Use": "1",
+        "Icon": "M1BulletWaterIcon",
+        "Model": "M1BulletWater",
+        "UnitType": "8",
+        "Layer": "10",
+        "GeneratedType": "2",
+        "ColliderType": "1",
+        "Count": "0",
+        "Width": "24",
+        "Height": "24",
+        "CWidth": "24",
+        "CHeight": "24",
+        "Anchore": "5",
+        "ModelAnchore": "5",
+        "ParentType": "0",
+        "ChildType": "0",
+        "OriginMoveDirection": "0",
+        "OriginMagicDirection": "0",
+        "MoveDirectionMask": "0",
+        "RotationMask": "15",
+        "DestroyEffectName": "M1EffectFireDestroy"
+    },
+    {
+        "Id": "10003",
+        "Name": "子弹冰",
+        "Use": "1",
+        "Icon": "M1BulletWaterIcon",
+        "Model": "M1BulletWater",
+        "UnitType": "8",
+        "Layer": "10",
+        "GeneratedType": "2",
+        "ColliderType": "1",
+        "Count": "0",
+        "Width": "24",
+        "Height": "24",
+        "CWidth": "24",
+        "CHeight": "24",
+        "Anchore": "5",
+        "ModelAnchore": "5",
+        "ParentType": "0",
+        "ChildType": "0",
+        "OriginMoveDirection": "0",
+        "OriginMagicDirection": "0",
+        "MoveDirectionMask": "0",
         "RotationMask": "15"
+    },
+    {
+        "Id": "10004",
+        "Name": "子弹果冻",
+        "Use": "1",
+        "Icon": "M1BulletWaterIcon",
+        "Model": "M1BulletWater",
+        "UnitType": "8",
+        "Layer": "10",
+        "GeneratedType": "2",
+        "ColliderType": "1",
+        "Count": "0",
+        "Width": "24",
+        "Height": "24",
+        "CWidth": "24",
+        "CHeight": "24",
+        "Anchore": "5",
+        "ModelAnchore": "5",
+        "ParentType": "0",
+        "ChildType": "0",
+        "OriginMoveDirection": "0",
+        "OriginMagicDirection": "0",
+        "MoveDirectionMask": "0",
+        "RotationMask": "15"
+    },
+    {
+        "Id": "10005",
+        "Name": "子弹粘液",
+        "Use": "1",
+        "Icon": "M1BulletWaterIcon",
+        "Model": "M1BulletWater",
+        "UnitType": "8",
+        "Layer": "10",
+        "GeneratedType": "2",
+        "ColliderType": "1",
+        "Count": "0",
+        "Width": "24",
+        "Height": "24",
+        "CWidth": "24",
+        "CHeight": "24",
+        "Anchore": "5",
+        "ModelAnchore": "5",
+        "ParentType": "0",
+        "ChildType": "0",
+        "OriginMoveDirection": "0",
+        "OriginMagicDirection": "0",
+        "MoveDirectionMask": "0",
+        "RotationMask": "15",
+        "DestroyEffectName": "M1EffectClayDestroy"
     },
     {
         "Id": "38002",
@@ -1399,8 +1479,7 @@
         "CHeight": "32",
         "Anchore": "5",
         "ModelAnchore": "5",
-        "ChildType": "0",
-        "WalkEffectName": "M1EarthWalk"
+        "ChildType": "0"
     },
     {
         "Id": "38003",
@@ -1418,8 +1497,7 @@
         "CHeight": "32",
         "Anchore": "5",
         "ModelAnchore": "5",
-        "ChildType": "0",
-        "WalkEffectName": "M1EarthWalk"
+        "ChildType": "0"
     },
     {
         "Id": "38004",
@@ -1437,8 +1515,7 @@
         "CHeight": "32",
         "Anchore": "5",
         "ModelAnchore": "5",
-        "ChildType": "0",
-        "WalkEffectName": "M1EarthWalk"
+        "ChildType": "0"
     },
     {
         "Id": "38005",
@@ -1456,8 +1533,7 @@
         "CHeight": "32",
         "Anchore": "5",
         "ModelAnchore": "5",
-        "ChildType": "0",
-        "WalkEffectName": "M1EarthWalk"
+        "ChildType": "0"
     },
     {
         "Id": "65535",
