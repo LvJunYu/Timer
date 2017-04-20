@@ -16,7 +16,9 @@ namespace GameA.Game
     public class Earth : BlockBase
     {
         protected List<Edge> _edges = new List<Edge>();
-        private Comparison<Edge> _comparisonSkillType = SortEdge;
+        private static Comparison<Edge> _comparisonSkillType = SortEdge;
+
+        #region edge
 
         /// <summary>
         /// 倒排
@@ -31,20 +33,9 @@ namespace GameA.Game
 
         public override void DoEdge(int start, int end, EDirectionType direction, ESkillType eSkillType)
         {
-            switch (direction)
-            {
-                    case EDirectionType.Up:
-                    case EDirectionType.Down:
-                    start = Math.Max(_colliderGrid.XMin, start);
-                    end = Math.Min(_colliderGrid.XMax, end);
-                    break;
-                    case EDirectionType.Left:
-                    case EDirectionType.Right:
-                    start = Math.Max(_colliderGrid.YMin, start);
-                    end = Math.Min(_colliderGrid.YMax, end);
-                    break;
-            }
-            var edge = new Edge(start, end, direction, eSkillType);
+            int localStart = 0, localEnd = 0;
+            GetLocalPos(start, end, ref localStart, ref localEnd, direction);
+            var edge = new Edge(localStart, localEnd, direction, eSkillType);
             LogHelper.Debug("DoEdge: {0}", edge);
             if (eSkillType == ESkillType.Water)
             {
@@ -103,13 +94,34 @@ namespace GameA.Game
             }
         }
 
+        private void GetLocalPos(int start, int end, ref int localStart, ref int localEnd, EDirectionType eDirectionType)
+        {
+            switch (eDirectionType)
+            {
+                case EDirectionType.Up:
+                case EDirectionType.Down:
+                    localStart = Math.Max(_colliderGrid.XMin, start) - _colliderGrid.XMin;
+                    localEnd = Math.Min(_colliderGrid.XMax, end) - _colliderGrid.XMin;
+                    break;
+                case EDirectionType.Left:
+                case EDirectionType.Right:
+                    localStart = Math.Max(_colliderGrid.YMin, start) - _colliderGrid.YMin;
+                    localEnd = Math.Min(_colliderGrid.YMax, end) - _colliderGrid.YMin;
+                    break;
+            }
+        }
+
+        #endregion
+
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
             if (other.IsHero)
             {
+                int localStart = 0, localEnd = 0;
+                GetLocalPos(other.ColliderGrid.XMin, other.ColliderGrid.XMax, ref localStart, ref localEnd, EDirectionType.Up);
                 for (int i = 0; i < _edges.Count; i++)
                 {
-                    if (_edges[i].Direction == EDirectionType.Up && _edges[i].Intersect(other.ColliderGrid.XMin, other.ColliderGrid.XMax))
+                    if (_edges[i].Direction == EDirectionType.Up && _edges[i].Intersect(localStart, localEnd))
                     {
                         OnUpEdgeHit(other, _edges[i]);
                     }
@@ -122,9 +134,11 @@ namespace GameA.Game
         {
             if (other.IsHero)
             {
+                int localStart = 0, localEnd = 0;
+                GetLocalPos(other.ColliderGrid.YMin, other.ColliderGrid.YMax, ref localStart, ref localEnd, EDirectionType.Left);
                 for (int i = 0; i < _edges.Count; i++)
                 {
-                    if (_edges[i].Direction == EDirectionType.Left && _edges[i].Intersect(other.ColliderGrid.YMin, other.ColliderGrid.YMax))
+                    if (_edges[i].Direction == EDirectionType.Left && _edges[i].Intersect(localStart, localEnd))
                     {
                         OnLeftEdgeHit(other, _edges[i]);
                     }
