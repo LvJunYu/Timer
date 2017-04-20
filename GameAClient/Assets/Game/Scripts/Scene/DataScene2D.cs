@@ -29,6 +29,19 @@ namespace GameA.Game
         protected Dictionary<IntVec3, List<IntVec3>> _switchedUnits = new Dictionary<IntVec3, List<IntVec3>>();
         private static List<UnitBase> _cachedUnits = new List<UnitBase>();
 
+		/// <summary>
+		/// 删除修改的物体堆栈
+		/// </summary>
+		private List<ModifyData> _removedUnits = new List<ModifyData>();
+		/// <summary>
+		/// 改动修改的物体堆栈
+		/// </summary>
+		private List<ModifyData> _modifiedUnits = new List<ModifyData> ();
+		/// <summary>
+		/// 添加修改的物体堆栈
+		/// </summary>
+		private List<ModifyData> _addedUnits = new List<ModifyData>();
+
         #endregion
 
         #region 属性
@@ -63,6 +76,23 @@ namespace GameA.Game
             get { return _unitExtras; }
         }
 
+		public List<ModifyData> RemovedUnits {
+			get {
+				return this._removedUnits;
+			}
+		}
+
+		public List<ModifyData> ModifiedUnits {
+			get {
+				return this._modifiedUnits;
+			}
+		}
+
+		public List<ModifyData> AddedUnits {
+			get {
+				return this._addedUnits;
+			}
+		}
         #endregion
 
         #region 方法
@@ -355,4 +385,9 @@ namespace GameA.Game
 
         #endregion
     }
+
+	public struct ModifyData {
+		public UnitDesc OrigUnit;
+		public UnitDesc ModifiedUnit;
+	}
 }

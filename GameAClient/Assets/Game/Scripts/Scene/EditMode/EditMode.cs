@@ -20,16 +20,25 @@ namespace GameA.Game
     {
         public static EditMode Instance;
         private IntVec2 _tileSizePerScreen;
-
+		/// <summary>
+		/// 地图数据统计
+		/// </summary>
         private MapStatistics _mapStatistics = new MapStatistics();
+		/// <summary>
+		/// 命令管理
+		/// </summary>
+		private CommandManager _commandManager;
+		/// <summary>
+		/// 关卡中只能存在一个的物体的索引
+		/// </summary>
         private Dictionary<int, UnitDesc> _replaceUnits = new Dictionary<int, UnitDesc>();
         private UnitDesc _mainPlayer = UnitDesc.zero;
 
         [SerializeField]
         private GameObject _backgroundObject;
         [SerializeField]
-        private ECommandType _commandType = ECommandType.Create;
-        private ICommand _currentCommand;
+		protected ECommandType _commandType = ECommandType.Create;
+		protected ICommand _currentCommand;
 
 		private EEditorLayer _curEditorLayer = EEditorLayer.None;
 
@@ -48,11 +57,18 @@ namespace GameA.Game
         private bool _isDraggingItem;
         private SlicedCameraMask _cameraMask;
 	    private MapRectMask _mapRectMask;
-        private float _lastTouchTime;
+        protected float _lastTouchTime;
         private Grid2D _limitedMapGrid;
         private bool _is2FingersPressed;
 
-
+		/// <summary>
+		/// 命令管理
+		/// </summary>
+		public CommandManager CommandManager {
+    		get {
+    			return this._commandManager;
+    		}
+    	}
 	    public CompositeEditorModule CompositeModule
 	    {
 		    get { return _compositeEditor; }
@@ -102,8 +118,9 @@ namespace GameA.Game
             Messenger<ushort>.AddListener(EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
             Messenger<EScreenOperator>.AddListener(EMessengerType.OnScreenOperator, OnScreenOperator);
             Messenger.AddListener(EMessengerType.ForceUpdateCameraMaskSize, ForceUpdateCameraMaskSize);
-            Messenger<Vector2>.AddListener(EMessengerType.OnDrag_2MouseButton, OnDrag_2MouseButton);
-            Messenger<Vector2>.AddListener(EMessengerType.OnDrag_2MouseEnd, OnDragEnd);
+
+            Messenger<Vector2>.AddListener(EMessengerType.OnDrag_MouseBtn2, OnDrag_MouseBtn2);
+            Messenger<Vector2>.AddListener(EMessengerType.OnDrag_MouseBtn2End, OnDragEnd);
             Messenger<float>.AddListener(EMessengerType.OnPinchMouseButton, OnPinchMouseButton);
             Messenger.AddListener(EMessengerType.OnPinchMouseButtonStart, OnPinchMouseButtonStart);
             Messenger.AddListener(EMessengerType.OnPinchMouseButtonEnd, OnPinchMouseButtonEnd);
@@ -120,7 +137,8 @@ namespace GameA.Game
             EasyTouch.On_DragEnd += OnDragEnd;
             EasyTouch.On_Cancel2Fingers += On_Cancel2Fingers;
 			_compositeEditor = new CompositeEditorModule();
-
+			_commandManager = new CommandManager ();
+			_commandManager.Init ();
 
 			_backgroundObject = new GameObject("BackGround");
             var box = _backgroundObject.AddComponent<BoxCollider2D>();
@@ -131,6 +149,7 @@ namespace GameA.Game
         private void OnDestroy()
         {
 			_compositeEditor.Clear();
+			_commandManager.Clear ();
             Instance = null;
             EasyTouch.On_TouchStart -= On_TouchStart;
             EasyTouch.On_TouchDown -= On_TouchDown;
@@ -147,15 +166,15 @@ namespace GameA.Game
             Messenger<ushort>.RemoveListener(EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
             Messenger<EScreenOperator>.RemoveListener(EMessengerType.OnScreenOperator, OnScreenOperator);
             Messenger.RemoveListener(EMessengerType.ForceUpdateCameraMaskSize, ForceUpdateCameraMaskSize);
-            Messenger<Vector2>.RemoveListener(EMessengerType.OnDrag_2MouseButton, OnDrag_2MouseButton);
-            Messenger<Vector2>.RemoveListener(EMessengerType.OnDrag_2MouseEnd, OnDragEnd);
+            Messenger<Vector2>.RemoveListener(EMessengerType.OnDrag_MouseBtn2, OnDrag_MouseBtn2);
+            Messenger<Vector2>.RemoveListener(EMessengerType.OnDrag_MouseBtn2End, OnDragEnd);
             Messenger<float>.RemoveListener(EMessengerType.OnPinchMouseButton, OnPinchMouseButton);
             Messenger.RemoveListener(EMessengerType.OnPinchMouseButtonStart, OnPinchMouseButtonStart);
             Messenger.RemoveListener(EMessengerType.OnPinchMouseButtonEnd, OnPinchMouseButtonEnd);
             Messenger.RemoveListener(EMessengerType.GameFinishSuccess, OnSuccess);
         }
 
-        public void Init()
+		public virtual void Init()
         {
             var max = GM2DTools.ScreenToTileByServerTile(new Vector2(GM2DGame.Instance.GameScreenWidth, GM2DGame.Instance.GameScreenHeight));
             _tileSizePerScreen = new IntVec2(max.x + ConstDefineGM2D.ServerTileScale - 1, max.y + ConstDefineGM2D.ServerTileScale - 1);
@@ -169,6 +188,7 @@ namespace GameA.Game
             InitLimitedMapRect();
             InitMask();
             UpdateMaskValue();
+			_commandType = ECommandType.Create;
             //LogHelper.Debug(_middleUIWorldPos[0] + "|" + _middleUIWorldPos[1] + "|" + _middleUIWorldPos[2]);
         }
 
@@ -256,10 +276,11 @@ namespace GameA.Game
                 return false;
             }
             AfterAddUnit(unitDesc, tableUnit);
+			Messenger.Broadcast(EMessengerType.OnMapUnitChanged);
             return true;
         }
 
-        public bool DeleteUnit(UnitDesc unitDesc)
+        public virtual bool DeleteUnit(UnitDesc unitDesc)
         {
             Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
             if (tableUnit == null)
@@ -289,6 +310,7 @@ namespace GameA.Game
                 return false;
             }
             AfterDeleteUnit(unitDesc, tableUnit);
+			Messenger.Broadcast(EMessengerType.OnMapUnitChanged);
             return true;
         }
 
@@ -310,7 +332,7 @@ namespace GameA.Game
 			Messenger.Broadcast(EMessengerType.OnEditorLayerChanged);
 	    }
 
-        private void AfterDeleteUnit(UnitDesc unitDesc, Table_Unit tableUnit)
+        protected virtual void AfterDeleteUnit(UnitDesc unitDesc, Table_Unit tableUnit)
         {
             if (_mainPlayer == unitDesc)
             {
@@ -411,6 +433,9 @@ namespace GameA.Game
             _limitedMapGrid.YMax = _limitedMapGrid.YMin + size.y - 1;
         }
 
+		/// <summary>
+		/// 初始化地图边框和特效蒙黑
+		/// </summary>
         private void InitMask()
         {
             if (_cameraMask != null)
@@ -527,12 +552,12 @@ namespace GameA.Game
 
         #region game logic event
 
-        private void ForceUpdateCameraMaskSize()
+		protected virtual void ForceUpdateCameraMaskSize()
         {
             UpdateMaskValue();
         }
 
-        private void OnScreenOperator(EScreenOperator eScreenOperator)
+        protected virtual void OnScreenOperator(EScreenOperator eScreenOperator)
         {
             var changedTileSize = new IntRect(IntVec2.zero, IntVec2.zero);
             var validMapRect = DataScene2D.Instance.ValidMapRect;
@@ -598,7 +623,7 @@ namespace GameA.Game
 
         #region input  event
 
-        private void On_TouchStart(Gesture gesture)
+		protected virtual void On_TouchStart(Gesture gesture)
         {
 			_currentCommand = null;
 			if (_commandType == ECommandType.Move)
@@ -664,7 +689,7 @@ namespace GameA.Game
             _lastTouchTime = Time.realtimeSinceStartup;
         }
 
-        private void OnPinch(Gesture ge)
+		protected virtual void OnPinch(Gesture ge)
         {
          //   if (ge.pickedObject != _backgroundObject)
          //   {
@@ -681,7 +706,7 @@ namespace GameA.Game
          //   }
         }
 
-        private void OnTwoFingersTouchUp(Gesture ge)
+		protected virtual void OnTwoFingersTouchUp(Gesture ge)
         {
 	   //     if (_commandType != ECommandType.Move)
 	   //     {
@@ -697,12 +722,12 @@ namespace GameA.Game
     //        }
         }
 
-        private void OnTwoFingersTouchDown(Gesture ge)
+		protected virtual void OnTwoFingersTouchDown(Gesture ge)
         {
             _is2FingersPressed = true;
         }
 
-        private void On_TouchDown(Gesture gesture)
+        protected virtual void On_TouchDown(Gesture gesture)
         {
 	        if (_commandType == ECommandType.Move)
 	        {
@@ -726,7 +751,7 @@ namespace GameA.Game
             }
         }
 
-        private void OnPinchEnd(Gesture ge)
+		protected virtual void OnPinchEnd(Gesture ge)
         {
 	        //if (_commandType != ECommandType.Move)
 	        //{
@@ -738,7 +763,7 @@ namespace GameA.Game
          //   }
         }
 
-        private void On_TouchUp(Gesture gesture)
+		protected virtual void On_TouchUp(Gesture gesture)
         {
             if (EasyTouch.GetTouchCount() == 1)
             {
@@ -750,11 +775,11 @@ namespace GameA.Game
 	        }
             if (_currentCommand != null && !_isPlaying)
             {
-                CommandManager.Instance.Execute(_currentCommand, Input.mousePosition);
+                _commandManager.Execute(_currentCommand, Input.mousePosition);
             }
         }
 
-        private void On_Drag(Gesture gesture)
+		protected virtual void On_Drag(Gesture gesture)
         {
 			if (_commandType != ECommandType.Move)
 			{
@@ -771,7 +796,7 @@ namespace GameA.Game
             }
         }
 
-        private void OnDragEnd(Gesture gesture)
+		protected virtual void OnDragEnd(Gesture gesture)
         {
 			if (_commandType != ECommandType.Move)
 			{
@@ -785,7 +810,7 @@ namespace GameA.Game
             CameraManager.Instance.OnDragEnd(deltaWorldPos);
         }
 
-        private void OnDrag_2MouseButton(Vector2 delta)
+        private void OnDrag_MouseBtn2(Vector2 delta)
         {
             if (!_isPlaying)
             {
@@ -810,14 +835,14 @@ namespace GameA.Game
 
         private void OnPinchMouseButtonEnd()
         {
-            if (!_isPlaying)
-            {
-                CameraManager.Instance.OnPinchEnd();
-                CameraManager.Instance.OnDragEnd(Vector2.zero);
-            }
+//            if (!_isPlaying)
+//            {
+//                CameraManager.Instance.OnPinchEnd();
+//                CameraManager.Instance.OnDragEnd(Vector2.zero);
+//            }
         }
 
-        private void On_Cancel2Fingers(Gesture gesture)
+		protected virtual void On_Cancel2Fingers(Gesture gesture)
         {
             if (gesture.pickedObject != _backgroundObject)
             {
@@ -883,7 +908,7 @@ namespace GameA.Game
             for (int i = finalCount; i >= 0; i--)
             {
                 tmpPos = mousePos - gesture.deltaPosition*i/finalCount;
-                CommandManager.Instance.Execute(_currentCommand, tmpPos);
+				_commandManager.Execute(_currentCommand, tmpPos);
             }
         }
 
@@ -906,7 +931,7 @@ namespace GameA.Game
             _selectedItemId = itemId;
         }
 
-        private void OnCommandChanged(ECommandType eCommandType)
+		protected virtual void OnCommandChanged(ECommandType eCommandType)
         {
             _lastMousePosition = Vector3.zero;
             _lastRectIndex = IntVec3.zero;
@@ -918,10 +943,10 @@ namespace GameA.Game
                 case ECommandType.Erase:
                     break;
                 case ECommandType.Redo:
-                    CommandManager.Instance.Redo();
+					_commandManager.Redo();
                     return;
                 case ECommandType.Undo:
-                    CommandManager.Instance.Undo();
+					_commandManager.Undo();
                     return;
                 case ECommandType.Play:
                     HandlePlay();

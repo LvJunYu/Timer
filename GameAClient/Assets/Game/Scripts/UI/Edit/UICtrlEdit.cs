@@ -7,7 +7,7 @@
 
 using System;
 using System.Collections;
-
+using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine;
 using UnityEngine;
@@ -66,6 +66,15 @@ namespace GameA.Game
 	        _cachedView.EnterEffectMode.onClick.AddListener(OnClickEffectModeButton);
 	        _cachedView.ExitEffectMode.onClick.AddListener(OnClickEffectModeButton);
 
+			_cachedView.ModifyEraseBtn.onClick.AddListener (OnModifyEraseBtn);
+			_cachedView.ModifyModifyBtn.onClick.AddListener (OnModifyModifyBtn);
+			_cachedView.ModifyAddBtn.onClick.AddListener (OnModifyAddBtn);
+
+			for (int i = 0; i < _cachedView.ModifyItems.Length; i++) {
+				_cachedView.ModifyItems [i].id = i;
+				_cachedView.ModifyItems[i].DelBtnCb = OnModifyItemDelBtn;
+			}
+
             //_moveBtn = _cachedView.MoveBtnObj.AddComponent<Social.UIDraggableButton> ();
             //_moveBtn.Button = _moveBtn.gameObject.GetComponent<Button> ();
             //_moveBtn.RectTransform = _moveBtn.GetComponent<RectTransform> ();
@@ -89,6 +98,7 @@ namespace GameA.Game
 	    {
 		    base.InitEventListener();
 			RegisterEvent(EMessengerType.AfterCommandChanged, AfterCommandChanged);
+			RegisterEvent(EMessengerType.OnMapUnitChanged, OnMapDataChanged);
 	    }
 
         protected override void OnOpen(object parameter)
@@ -99,6 +109,13 @@ namespace GameA.Game
             _moveBtnOrigPos = _cachedView.MoveBtn.RectTrans.localPosition;
             //_moveBtnOrigPos = new Vector2 (60, -50);
         }
+
+		protected override void OnDestroy ()
+		{
+			base.OnDestroy ();
+			Messenger.RemoveListener(EMessengerType.AfterCommandChanged, AfterCommandChanged);
+			Messenger.RemoveListener(EMessengerType.OnMapUnitChanged, OnMapDataChanged);
+		}
 
         public override void OnUpdate ()
         {
@@ -247,7 +264,7 @@ namespace GameA.Game
 			case EMode.ModifyEdit:
 				_cachedView.Erase.gameObject.SetActive(false);
 				_cachedView.Redo.gameObject.SetActive(false);
-				_cachedView.Undo.gameObject.SetActive(true);
+				_cachedView.Undo.gameObject.SetActive(false);
 				_cachedView.Publish.gameObject.SetActive(false);
 				_cachedView.ButtonFinishCondition.SetActiveEx(false);
 
@@ -331,6 +348,107 @@ namespace GameA.Game
         {
             Messenger.Broadcast(EMessengerType.CaptureGameCover);
         }
+
+		#region Modify
+		private void OnModifyAddBtn () {
+			if (EditMode.Instance.CurCommandType != ECommandType.Create) {
+				SwitchModifyMode (ECommandType.Create);
+			}
+		}
+		private void OnModifyEraseBtn () {
+			if (EditMode.Instance.CurCommandType != ECommandType.Erase) {
+				SwitchModifyMode (ECommandType.Erase);
+			}
+		}
+		private void OnModifyModifyBtn () {
+			if (EditMode.Instance.CurCommandType != ECommandType.Modify) {
+				SwitchModifyMode (ECommandType.Modify);
+			}
+		}
+
+		private void SwitchModifyMode (ECommandType type) {
+			switch (type) {
+			case ECommandType.Create:
+				_cachedView.ModifyAddBtn.transform.localScale = Vector3.one * 1.2f;
+				_cachedView.ModifyEraseBtn.transform.localScale = Vector3.one;
+				_cachedView.ModifyModifyBtn.transform.localScale = Vector3.one;
+				break;
+			case ECommandType.Erase:
+				_cachedView.ModifyAddBtn.transform.localScale = Vector3.one;
+				_cachedView.ModifyEraseBtn.transform.localScale = Vector3.one * 1.2f;
+				_cachedView.ModifyModifyBtn.transform.localScale = Vector3.one;
+				break;
+			case ECommandType.Modify:
+				_cachedView.ModifyAddBtn.transform.localScale = Vector3.one;
+				_cachedView.ModifyEraseBtn.transform.localScale = Vector3.one;
+				_cachedView.ModifyModifyBtn.transform.localScale = Vector3.one * 1.2f;
+				break;
+			}
+			Messenger<ECommandType>.Broadcast(EMessengerType.OnCommandChanged, type);
+
+			// update modifyItemList
+			UpdateModifyItemList();
+		}
+
+		/// <summary>
+		/// 改造列表删除按钮响应函数
+		/// </summary>
+		/// <param name="idx">Index.</param>
+		private void OnModifyItemDelBtn (int idx) {
+			if (EditMode.Instance.CurCommandType == ECommandType.Create) {
+				
+			} else if (EditMode.Instance.CurCommandType == ECommandType.Erase) {
+				((ModifyEditMode)EditMode.Instance).UndoModifyErase (idx);
+			} else if (EditMode.Instance.CurCommandType == ECommandType.Modify) {
+				
+			}
+		}
+		/// <summary>
+		/// 更新改造地块列表界面
+		/// </summary>
+		private void UpdateModifyItemList () {
+			if (_editMode != EMode.ModifyEdit)
+				return;
+			ModifyEditMode modifyEditMode = EditMode.Instance as ModifyEditMode;
+			if (null == modifyEditMode)
+				return;
+			List<ModifyData> descs = null;
+			switch (EditMode.Instance.CurCommandType) {
+			case ECommandType.Create:
+				descs = modifyEditMode.AddedUnits;
+				break;
+			case ECommandType.Erase:
+				descs = modifyEditMode.RemovedUnits;
+				break;
+			case ECommandType.Modify:
+				descs = modifyEditMode.ModifiedUnits;
+				break;
+			}
+			if (null == descs)
+				return;
+			int i = 0;
+			for (; i < _cachedView.ModifyItems.Length && i < descs.Count; i++) {
+				var tableUnit = TableManager.Instance.GetUnit (descs [i].OrigUnit.Id);
+				if (null == tableUnit) {
+					LogHelper.Error ("can't find tabledata of modifyItem id{0}", descs[i].OrigUnit.Id);
+				} else {
+					Sprite texture;
+					if (GameResourceManager.Instance.TryGetSpriteByName(tableUnit.Icon, out texture))
+					{
+						_cachedView.ModifyItems [i].SetItem (texture);
+					}
+					else
+					{
+						LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", tableUnit.Id,
+							tableUnit.Icon, tableUnit.EGeneratedType);
+					}
+				}
+			}
+			for (; i < _cachedView.ModifyItems.Length; i++) {
+				_cachedView.ModifyItems [i].SetEmpty ();
+			}
+		}
+		#endregion
 
         private void OnRedo()
         {
@@ -445,6 +563,11 @@ namespace GameA.Game
             //ShowMenu (true);
         }
 
+		private void OnMapDataChanged () {
+			UpdateModifyItemList ();
+		}
+
+
 
 		private void Broadcast(ECommandType type)
         {
@@ -458,7 +581,10 @@ namespace GameA.Game
 	    private void AfterCommandChanged()
 	    {
 		    //UpdateMoveButtonState();
-			UpdateEraseButtonState();
+			if (_editMode == EMode.Edit) {
+				UpdateEraseButtonState ();
+			} else if (_editMode == EMode.ModifyEdit) {
+			}
 		}
 
 		#endregion

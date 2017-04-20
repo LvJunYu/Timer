@@ -666,6 +666,7 @@ namespace GameA.Game
 			Project p = GameManager.Instance.CurrentGame.Project;
 			if(p.ProjectStatus == EProjectStatus.PS_Private)
 			{
+				Messenger.Broadcast(EMessengerType.GameFinishSuccessShowUI);
 //				byte[] record = GetRecord();
 //				float usedTime = PlayMode.Instance.GameSuccessFrameCnt * ConstDefineGM2D.FixedDeltaTime;
 //				GM2DGame.Instance.RecordBytes = record;

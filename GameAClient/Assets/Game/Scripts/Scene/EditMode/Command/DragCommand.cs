@@ -50,7 +50,7 @@ namespace GameA.Game
 
         public bool Execute(Vector2 mousePos)
         {
-            if (_success && InputManager.Instance.OnTouchDown)
+            if (_success && InputManager.Instance.IsTouchDown)
             {
                 TryCreateCurDraggingUnitBase();
                 if (_virUnit == null || _virUnit.Trans == null)

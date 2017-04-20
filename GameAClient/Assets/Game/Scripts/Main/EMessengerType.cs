@@ -18,6 +18,7 @@ namespace GameA.Game
         public static int OnSelectedItemChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnUndoChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnRedoChanged = SoyEngine.EMessengerType.NextId++;
+		public static int OnMapUnitChanged = SoyEngine.EMessengerType.NextId++;
 
         public static int OnScreenOperator = SoyEngine.EMessengerType.NextId++;
         public static int OnValidMapRectChanged = SoyEngine.EMessengerType.NextId++;
@@ -26,8 +27,14 @@ namespace GameA.Game
 
         public static int OnPlayChanged = SoyEngine.EMessengerType.NextId++;
 
-		public static int OnDrag_2MouseButton = SoyEngine.EMessengerType.NextId++;
-		public static int OnDrag_2MouseEnd = SoyEngine.EMessengerType.NextId++;
+		/// <summary>
+		/// 鼠标右键按下拖拽
+		/// </summary>
+		public static int OnDrag_MouseBtn2 = SoyEngine.EMessengerType.NextId++;
+		/// <summary>
+		/// 鼠标右键按下拖拽结束
+		/// </summary>
+		public static int OnDrag_MouseBtn2End = SoyEngine.EMessengerType.NextId++;
 
 
 		public static int OnPinchMouseButton = SoyEngine.EMessengerType.NextId++;

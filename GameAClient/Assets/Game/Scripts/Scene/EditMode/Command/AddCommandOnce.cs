@@ -25,7 +25,7 @@ namespace GameA.Game
 
         public bool Execute(Vector2 mousePos)
         {
-            if (InputManager.Instance.OnTouchDown)
+            if (InputManager.Instance.IsTouchDown)
             {
                 UnitDesc unitDesc;
                 if (EditMode.Instance.GetUnitKey(ECommandType.Create, mousePos, out unitDesc))

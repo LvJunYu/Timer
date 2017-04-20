@@ -176,36 +176,35 @@ namespace GameA.Game
 		}
 
 		public byte[] Save()
-        {
-            var gm2DMapData = new GM2DMapData();
-            gm2DMapData.Version = GM2DGame.MapVersion;
-            //DynamicCollider -> RendererData 回头修改为多线程或者两份同时计算
-            //2016.7.18 修改为直接按照ColliderData存取
-            //2016.9.12 修改为按照RendererData存取
-		    var nodes = DataScene2D.Instance.GetAllNodes();
-		    for (int i = 0; i < nodes.Count; i++)
-		    {
-                gm2DMapData.Data.Add(GM2DTools.ToProto(nodes[i]));
-		    }
-            var enumerator = DataScene2D.Instance.UnitExtras.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                gm2DMapData.UnitExtraInfos.Add(GM2DTools.ToProto(enumerator.Current.Key, enumerator.Current.Value));
-            }
-		    var pairUnitIter = PairUnitManager.Instance.PairUnits.Values.GetEnumerator();
-            while (pairUnitIter.MoveNext())
-            {
-                if (pairUnitIter.Current != null)
-                {
-                    for (int i = 0; i < pairUnitIter.Current.Length; i++)
-                    {
-                        if (pairUnitIter.Current[i].UnitA.Guid != IntVec3.zero)
-                        {
-                            gm2DMapData.PairUnitDatas.Add(GM2DTools.ToProto(pairUnitIter.Current[i]));
-                        }
-                    }
-                }
-            }
+		{
+			var gm2DMapData = new GM2DMapData ();
+			gm2DMapData.Version = GM2DGame.MapVersion;
+			//DynamicCollider -> RendererData 回头修改为多线程或者两份同时计算
+			//2016.7.18 修改为直接按照ColliderData存取
+			//2016.9.12 修改为按照RendererData存取
+			var nodes = DataScene2D.Instance.GetAllNodes ();
+			for (int i = 0; i < nodes.Count; i++) {
+				gm2DMapData.Data.Add (GM2DTools.ToProto (nodes [i]));
+			}
+			var enumerator = DataScene2D.Instance.UnitExtras.GetEnumerator ();
+			while (enumerator.MoveNext ()) {
+				gm2DMapData.UnitExtraInfos.Add (GM2DTools.ToProto (enumerator.Current.Key, enumerator.Current.Value));
+			}
+			var pairUnitIter = PairUnitManager.Instance.PairUnits.Values.GetEnumerator ();
+			while (pairUnitIter.MoveNext ()) {
+				if (pairUnitIter.Current != null) {
+					for (int i = 0; i < pairUnitIter.Current.Length; i++) {
+						if (pairUnitIter.Current [i].UnitA.Guid != IntVec3.zero) {
+							gm2DMapData.PairUnitDatas.Add (GM2DTools.ToProto (pairUnitIter.Current [i]));
+						}
+					}
+				}
+			}
+			var modifyDatas = DataScene2D.Instance.ModifiedUnits;
+			for (int i = 0; i < modifyDatas.Count; i++) {
+			}
+
+
             gm2DMapData.UserGUID = LocalUser.Instance.UserGuid;
             gm2DMapData.ValidMapRect = GM2DTools.ToProto(DataScene2D.Instance.ValidMapRect);
             var mapEditor = EditMode.Instance;

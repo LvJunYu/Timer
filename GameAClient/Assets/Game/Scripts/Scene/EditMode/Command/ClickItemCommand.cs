@@ -37,7 +37,7 @@ namespace GameA.Game
 
         public bool Execute(Vector2 mousePos)
         {
-            if (InputManager.Instance.OnTouchDown)
+            if (InputManager.Instance.IsTouchDown)
             {
                 if (CheckDragCondition(mousePos))
                 {

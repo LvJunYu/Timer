@@ -47,7 +47,7 @@ namespace SoyEngine
 			if (_curDragingItem != null)
 			{
 				AddOrCoverCommand command = new AddOrCoverCommand(_curDragingItem);
-				CommandManager.Instance.Execute(command, eventData.position);
+				EditMode.Instance.CommandManager.Execute(command, eventData.position);
 				_curDragingItem = null;
 				EditMode.Instance.SetDraggingState(false);
 			}
