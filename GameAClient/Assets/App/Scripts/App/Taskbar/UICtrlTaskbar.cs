@@ -105,10 +105,11 @@ namespace GameA
 			_cachedView.SingleModeButton.onClick.AddListener (OnSingleGameBtn);
 
 			_cachedView.AvatarBtn.onClick.AddListener (OnAvatarBtn);
+            _cachedView.LotteryButton.onClick.AddListener(OnLottery);
 
-			_cachedView.TestChangeAvatarBtn.onClick.AddListener (OnTestChangeAvatar);
+            _cachedView.TestChangeAvatarBtn.onClick.AddListener (OnTestChangeAvatar);
 			_cachedView.DebugClearUserDataBtn.onClick.AddListener (OnDebugClearUserData);
-
+           
 			// todo player avatar at home
 			_avatarRenderTexture = new RenderTexture (256, 512, 0);
 			_cachedView.AvatarRenderCamera.targetTexture = _avatarRenderTexture;
@@ -135,6 +136,7 @@ namespace GameA
 					LogHelper.Error("Network error when get avatarData, {0}", code);
 				}
 			);
+        
         }
 
 		protected override void OnOpen (object parameter)
@@ -172,24 +174,9 @@ namespace GameA
 //				}
 //			);
 		}
-
+        
 		private void OnDebugClearUserData () {
-//			SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "清空数据");
-//			RemoteCommands.ClearUserAll (LocalUser.Instance.UserGuid,
-//				ret => {
-//					ParallelTaskHelper<ENetResultCode> helper = new ParallelTaskHelper<ENetResultCode>(()=>{
-//						SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);	
-//					}, code=>{
-//						LogHelper.Error("Refresh user data failed.");
-//						SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//					});
-//					helper.AddTask(AppData.Instance.LoadAppData);
-//					helper.AddTask(LocalUser.Instance.LoadUserData);
-//					helper.AddTask(AppData.Instance.AdventureData.PrepareAllData);
-//				}, code => {
-//					LogHelper.Error("Clear user data failed.");
-//					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//				});
+
 		}
 
         public void OnNewsBtn()
@@ -230,6 +217,7 @@ namespace GameA
 
         private bool OpenMainUI(Type type, object param = null)
         {
+            
             UICtrlBase ui = SocialGUIManager.Instance.GetUI(type);
 //            if(_currentUI == ui)
 //            {
@@ -247,40 +235,45 @@ namespace GameA
 			SocialGUIManager.Instance.OpenPopupUI<UICtrlFashionShop> ();
 		}
 
-//        private void SelectButton(UnityEngine.UI.Button button)
-//        {
-//            for (int i = 0; i < _buttonList.Length; i++)
-//            {
-//                var btn = _buttonList[i];
-//                if(btn == null)
-//                {
-//                    continue;
-//                }
-//                Image image = (Image) btn.targetGraphic;
-//                if(btn == button)
-//                {
-//                    image.sprite = btn.spriteState.pressedSprite;
-//                    Text text = btn.GetComponentInChildren<Text>();
-//                    if(text != null)
-//                    {
-//                        text.color = SelectedColorList[i];
-//                    }
-//                    btn.enabled = false;
-//                }
-//                else
-//                {
-//                    image.sprite = btn.spriteState.disabledSprite;
-//                    Text text = btn.GetComponentInChildren<Text>();
-//                    if(text != null)
-//                    {
-//                        text.color = DefaultColorList[i];
-//                    }
-//                    btn.enabled = true;
-//                }
-//            }
-//        }
+        private void OnLottery()
+        {
+            SocialGUIManager.Instance.OpenPopupUI<UICtrlLottery>();
+        }
 
-		private void RefreshUserInfo () {
+        //        private void SelectButton(UnityEngine.UI.Button button)
+        //        {
+        //            for (int i = 0; i < _buttonList.Length; i++)
+        //            {
+        //                var btn = _buttonList[i];
+        //                if(btn == null)
+        //                {
+        //                    continue;
+        //                }
+        //                Image image = (Image) btn.targetGraphic;
+        //                if(btn == button)
+        //                {
+        //                    image.sprite = btn.spriteState.pressedSprite;
+        //                    Text text = btn.GetComponentInChildren<Text>();
+        //                    if(text != null)
+        //                    {
+        //                        text.color = SelectedColorList[i];
+        //                    }
+        //                    btn.enabled = false;
+        //                }
+        //                else
+        //                {
+        //                    image.sprite = btn.spriteState.disabledSprite;
+        //                    Text text = btn.GetComponentInChildren<Text>();
+        //                    if(text != null)
+        //                    {
+        //                        text.color = DefaultColorList[i];
+        //                    }
+        //                    btn.enabled = true;
+        //                }
+        //            }
+        //        }
+
+        private void RefreshUserInfo () {
 			_cachedView.NickName.text = LocalUser.Instance.User.UserInfoSimple.NickName;
 			ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHeadAvatar, 
 				LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,
