@@ -83,14 +83,19 @@ namespace GameA.Game
                     OnDead();
                     return;
                 }
+                bool hit = false;
                 var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.BulletHitLayer, float.MinValue, float.MaxValue, _dynamicCollider);
                 for (int i = 0; i < units.Count; i++)
                 {
                     if (GM2DTools.OnDirectionHit(units[i], this, _curMoveDirection))
                     {
                         DoHit(units[i]);
-                        break;
+                        hit = true;
                     }
+                }
+                if (hit)
+                {
+                    OnDead();
                 }
             }
         }
@@ -101,7 +106,6 @@ namespace GameA.Game
             {
                 DoEdge(unit);
             }
-            OnDead();
             if (unit is Switch)
             {
                 //
