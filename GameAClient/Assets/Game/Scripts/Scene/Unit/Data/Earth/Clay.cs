@@ -20,13 +20,8 @@ namespace GameA.Game
                 return false;
             }
             _canClimbed = true;
+            _friction = 30;
             return true;
-        }
-
-        public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
-        {
-            //速度变慢 跳的不高。TODO 
-            return base.OnUpHit(other, ref y, checkOnly);
         }
     }
 }

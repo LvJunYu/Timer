@@ -29,6 +29,13 @@ namespace GameA.Game
         protected Box _box;
         protected EBoxOperateType _eBoxOperateType;
 
+        protected int _curMaxSpeedX;
+        protected int _curMaxQuickenSpeedX;
+
+        protected const int MaxSpeedX = 80;
+        protected const int MaxQuickenSpeedX = 160;
+        protected const int ClayRatio = 5;
+
         #region view
 
         protected ReviveEffect _reviveEffect;
@@ -524,6 +531,7 @@ namespace GameA.Game
             }
             if (!air)
             {
+                _onClay = false;
                 bool downExist = false;
                 int deltaX = int.MaxValue;
                 List<UnitBase> units = EnvManager.RetriveDownUnits(this);
@@ -542,6 +550,10 @@ namespace GameA.Game
                         if (unit.Friction > friction)
                         {
                             friction = unit.Friction;
+                        }
+                        if (unit.Id == ConstDefineGM2D.ClayId)
+                        {
+                            _onClay = true;
                         }
                         var delta = Mathf.Abs(CenterPos.x - unit.CenterPos.x);
                         if (deltaX > delta)
@@ -566,6 +578,13 @@ namespace GameA.Game
                     OnJump();
                 }
             }
+            _curMaxSpeedX = MaxSpeedX;
+            _curMaxQuickenSpeedX = MaxQuickenSpeedX;
+            if (_onClay)
+            {
+                _curMaxSpeedX /= ClayRatio;
+                _curMaxQuickenSpeedX /= ClayRatio;
+            }
             if (air)
             {
                 _mainInput._brakeTime = 0;
@@ -576,13 +595,13 @@ namespace GameA.Game
                         _isMoving = true;
                         if (_mainInput._quickenTime == 0)
                         {
-                            if (SpeedX <= -84)
+                            if (SpeedX <= -_curMaxSpeedX + 4)
                             {
                                 SpeedX += 4;
                             }
-                            else if (SpeedX <= -80)
+                            else if (SpeedX <= -_curMaxSpeedX)
                             {
-                                SpeedX = -80;
+                                SpeedX = -_curMaxSpeedX;
                             }
                             else if (SpeedX <= 0)
                             {
@@ -595,17 +614,17 @@ namespace GameA.Game
                         }
                         else
                         {
-                            if (SpeedX <= -164)
+                            if (SpeedX <= -_curMaxQuickenSpeedX + 4)
                             {
                                 SpeedX += 4;
                             }
-                            else if (SpeedX <= -160)
+                            else if (SpeedX <= -_curMaxQuickenSpeedX)
                             {
-                                SpeedX = -160;
+                                SpeedX = -_curMaxQuickenSpeedX;
                             }
                             else if (SpeedX <= 0)
                             {
-                                if (SpeedX <= -80)
+                                if (SpeedX <= -_curMaxSpeedX)
                                 {
                                     SpeedX--;
                                 }
@@ -625,13 +644,13 @@ namespace GameA.Game
                         _isMoving = true;
                         if (_mainInput._quickenTime == 0)
                         {
-                            if (SpeedX >= 84)
+                            if (SpeedX >= _curMaxSpeedX + 4)
                             {
                                 SpeedX -= 4;
                             }
-                            else if (SpeedX >= 80)
+                            else if (SpeedX >= _curMaxSpeedX)
                             {
-                                SpeedX = 80;
+                                SpeedX = _curMaxSpeedX;
                             }
                             else if (SpeedX >= 0)
                             {
@@ -644,17 +663,17 @@ namespace GameA.Game
                         }
                         else
                         {
-                            if (SpeedX >= 164)
+                            if (SpeedX >= _curMaxQuickenSpeedX + 4)
                             {
                                 SpeedX -= 4;
                             }
-                            else if (SpeedX >= 160)
+                            else if (SpeedX >= _curMaxQuickenSpeedX)
                             {
-                                SpeedX = 160;
+                                SpeedX = _curMaxQuickenSpeedX;
                             }
                             else if (SpeedX >= 0)
                             {
-                                if (SpeedX > 80)
+                                if (SpeedX > _curMaxSpeedX)
                                 {
                                     SpeedX++;
                                 }
@@ -693,13 +712,13 @@ namespace GameA.Game
                                     _mainInput._brakeTime = 10;
                                 }
                             }
-                            else if (SpeedX < (-80 - friction / 2))
+                            else if (SpeedX < (-_curMaxSpeedX - friction / 2))
                             {
                                 SpeedX += friction / 2;
                             }
-                            else if (SpeedX <= -80)
+                            else if (SpeedX <= -_curMaxSpeedX)
                             {
-                                SpeedX = -80;
+                                SpeedX = -_curMaxSpeedX;
                             }
                             else if (SpeedX <= 0)
                             {
@@ -734,17 +753,17 @@ namespace GameA.Game
                                     _mainInput._brakeTime = 10;
                                 }
                             }
-                            else if (SpeedX < (-160 - friction / 2))
+                            else if (SpeedX < (-_curMaxQuickenSpeedX - friction / 2))
                             {
                                 SpeedX += friction / 2;
                             }
-                            else if (SpeedX <= -160)
+                            else if (SpeedX <= -_curMaxQuickenSpeedX)
                             {
-                                SpeedX = -160;
+                                SpeedX = -_curMaxQuickenSpeedX;
                             }
                             else if (SpeedX <= 0)
                             {
-                                if (SpeedX < -80)
+                                if (SpeedX < -_curMaxSpeedX)
                                 {
                                     SpeedX--;
                                 }
@@ -786,13 +805,13 @@ namespace GameA.Game
                                     _mainInput._brakeTime = 10;
                                 }
                             }
-                            else if (SpeedX > (80 + friction / 2))
+                            else if (SpeedX > (_curMaxSpeedX + friction / 2))
                             {
                                 SpeedX -= friction / 2;
                             }
-                            else if (SpeedX >= 80)
+                            else if (SpeedX >= _curMaxSpeedX)
                             {
-                                SpeedX = 80;
+                                SpeedX = _curMaxSpeedX;
                             }
                             else if (SpeedX >= 0)
                             {
@@ -827,17 +846,17 @@ namespace GameA.Game
                                     _mainInput._brakeTime = 10;
                                 }
                             }
-                            else if (SpeedX > (160 + friction / 2))
+                            else if (SpeedX > (_curMaxQuickenSpeedX + friction / 2))
                             {
                                 SpeedX -= friction / 2;
                             }
-                            else if (SpeedX >= 160)
+                            else if (SpeedX >= _curMaxQuickenSpeedX)
                             {
-                                SpeedX = 160;
+                                SpeedX = _curMaxQuickenSpeedX;
                             }
                             else if (SpeedX >= 0)
                             {
-                                if (SpeedX > 80)
+                                if (SpeedX > _curMaxSpeedX)
                                 {
                                     SpeedX++;
                                 }

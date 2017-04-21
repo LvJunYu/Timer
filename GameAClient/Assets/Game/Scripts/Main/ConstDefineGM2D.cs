@@ -127,6 +127,7 @@ namespace GameA.Game
         // 高摩擦力的地块ID
         public const int HighFrictionEarthID = 4011;
 
+        public const int ClayId = 4011;
         public const int BlueStoneId = 4101;
         public const int BlueStoneRotateId = 4103;
         public const int BoxId = 5004;

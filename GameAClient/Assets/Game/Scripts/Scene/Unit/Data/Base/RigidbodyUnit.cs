@@ -19,11 +19,7 @@ namespace GameA.Game
         [SerializeField]
         protected UnitBase[] _hitUnits = new UnitBase[4];
         private static HashSet<IntVec3> _cacheCheckedDownUnits = new HashSet<IntVec3>();
-
-        public UnitBase GetDownUnit()
-        {
-            return _hitUnits[2];
-        }
+        protected bool _onClay;
 
         protected override void Clear()
         {
