@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
@@ -20,35 +21,33 @@ namespace GameA.Game
 		/// </summary>
         protected List<Edge> _edges = new List<Edge>();
         private static Comparison<Edge> _comparisonSkillType = SortEdge;
+        private SplashController _leftEdgeSplash;
 
         #region edge
 
-		private SplashController _leftEdgeSplash;
 
 		protected override void Clear ()
 		{
 			base.Clear ();
             _edges.Clear();
-			if (null != _leftEdgeSplash) {
-				GameObject.Destroy (_leftEdgeSplash.gameObject);
-			}
+            if (null != _leftEdgeSplash)
+            {
+                Object.Destroy(_leftEdgeSplash.gameObject);
+            }
 		}
 
-		private void InitSplash () {
-			if (null == _leftEdgeSplash) {
-				var particle = GameParticleManager.Instance.GetUnityNativeParticleItem("Decal_Fire_L", _trans, ESortingOrder.Item);
-				particle.Trans.localPosition = new Vector3 (0,0,0.1f);
-				particle.Trans.localScale = Vector3.one * 2;
-				if (null != particle) {
-					particle.Play ();
-					_leftEdgeSplash = particle.Trans.GetComponent<SplashController> ();
-				}
-				if (null == _leftEdgeSplash) {
-					LogHelper.Error ("Get decal prefab failed. name: {0}", "Decal_Fire_L");
-				}
-			}
-		}
-
+        private void InitSplash()
+        {
+            if (null == _leftEdgeSplash)
+            {
+                UnityNativeParticleItem particle =
+                    GameParticleManager.Instance.GetUnityNativeParticleItem("Decal_Fire_L", _trans);
+                particle.Trans.localPosition = new Vector3(0, 0, 0.1f);
+                particle.Trans.localScale = Vector3.one*2;
+                particle.Play();
+                _leftEdgeSplash = particle.Trans.GetComponent<SplashController>();
+            }
+        }
 
         /// <summary>
         /// 倒排
@@ -70,7 +69,6 @@ namespace GameA.Game
                 return;
             }
             var edge = new Edge(localStart, localEnd, direction, eSkillType);
-            LogHelper.Debug("DoEdge: {0}", edge);
             if (eSkillType == ESkillType.Water)
             {
                 Cut(ref edge);
@@ -86,21 +84,23 @@ namespace GameA.Game
             {
                 _edges.Sort(_comparisonSkillType);
             }
-
-
-			if (null == _leftEdgeSplash) {
-				InitSplash ();
-			}
-            var regions = new List<Vector2>();
-            for (int i = 0; i < _edges.Count; i++)
+            if (_leftEdgeSplash == null)
             {
-                if (_edges[i].Direction == EDirectionType.Left && direction == EDirectionType.Left)
-                {
-                    regions.Add(new Vector2(_edges[i].Start * ConstDefineGM2D.ClientTileScale,
-                        (_edges[i].End + 1) * ConstDefineGM2D.ClientTileScale));
-                }
+                InitSplash();
             }
-			_leftEdgeSplash.SetSplashRegion (regions);
+            if (_leftEdgeSplash != null)
+            {
+                var regions = new List<Vector2>();
+                for (int i = 0; i < _edges.Count; i++)
+                {
+                    if (_edges[i].Direction == EDirectionType.Left && direction == EDirectionType.Left)
+                    {
+                        regions.Add(new Vector2(_edges[i].Start * ConstDefineGM2D.ClientTileScale,
+                            (_edges[i].End + 1) * ConstDefineGM2D.ClientTileScale));
+                    }
+                }
+                _leftEdgeSplash.SetSplashRegion(regions);
+            }
         }
 
         private void Merge(ref Edge edge)
