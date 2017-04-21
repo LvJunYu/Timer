@@ -25,6 +25,7 @@ namespace GameA.Game
         private bool _run;
         private bool _pausing;
 
+        private readonly List<UnitBase> _freezingNodes = new List<UnitBase>();
         private SceneState _sceneState = new SceneState();
         private List<int> _inputDatas = new List<int>();
         [SerializeField] private ESceneState _eSceneState = ESceneState.Play;
@@ -400,11 +401,12 @@ namespace GameA.Game
 
         public void Freeze(UnitBase unit)
         {
-            if (unit == null || unit.DynamicCollider == null)
+            if (unit == null)
             {
                 return;
             }
-            JoyPhysics2D.Freeze(unit.DynamicCollider);
+            unit.IsFreezed = true;
+            _freezingNodes.Add(unit);
         }
 
         /// <summary>
@@ -413,11 +415,12 @@ namespace GameA.Game
         /// <param name="unit"></param>
         public void UnFreeze(UnitBase unit)
         {
-            if (unit == null || unit.DynamicCollider == null)
+            if (unit == null)
             {
                 return;
             }
-            JoyPhysics2D.UnFreeze(unit.DynamicCollider);
+            unit.IsFreezed = false;
+            _freezingNodes.Remove(unit);
         }
 
         public void GameFinishSuccess()
@@ -473,7 +476,11 @@ namespace GameA.Game
 
         private void Clear()
         {
-            JoyPhysics2D.Reset();
+            for (int i = 0; i < _freezingNodes.Count; i++)
+            {
+                UnFreeze(_freezingNodes[i]);
+            }
+            _freezingNodes.Clear();
             _nextActions.Clear();
             _waitDestroyUnits.Clear();
             ColliderScene2D.Instance.Reset();

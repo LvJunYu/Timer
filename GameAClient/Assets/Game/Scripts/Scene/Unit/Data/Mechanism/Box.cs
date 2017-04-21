@@ -138,7 +138,7 @@ namespace GameA.Game
             }
         }
 
-        protected override bool CheckDown()
+        protected override void CheckDown()
         {
             if (_deltaPos.y < 0)
             {
@@ -167,10 +167,8 @@ namespace GameA.Game
                     _colliderPos.y = y;
                     _deltaPos.y = y - _colliderPos.y;
                     _hitUnits[(int)EDirectionType.Down] = hit;
-                    return true;
                 }
             }
-            return false;
         }
     }
 }

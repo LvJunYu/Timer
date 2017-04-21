@@ -18,6 +18,7 @@ namespace GameA.Game
     {
         [SerializeField]
         protected UnitBase[] _hitUnits = new UnitBase[4];
+        private static HashSet<IntVec3> _cacheCheckedDownUnits = new HashSet<IntVec3>();
 
         public UnitBase GetDownUnit()
         {
@@ -31,6 +32,7 @@ namespace GameA.Game
             {
                 _hitUnits[i] = null;
             }
+            _cacheCheckedDownUnits.Clear();
         }
 
         protected override void UpdateCollider(IntVec2 min)
@@ -43,22 +45,26 @@ namespace GameA.Game
             {
                 return;
             }
-
-            _colliderPos.y = min.y;
-            if (_deltaPos.y != 0)
+            if (_isFreezed)
             {
+                _colliderPos = min;
+                _colliderGrid = GetColliderGrid(_colliderPos);
+            }
+            else
+            {
+                _colliderPos.y = min.y;
                 CheckUp();
                 CheckDown();
-            }
-            _colliderGrid = GetColliderGrid(_colliderPos);
+                _colliderGrid = GetColliderGrid(_colliderPos);
 
-            _colliderPos.x = min.x;
-            if (_deltaPos.x != 0)
-            {
-                CheckLeft();
-                CheckRight();
+                _colliderPos.x = min.x;
+                if (_deltaPos.x != 0)
+                {
+                    CheckLeft();
+                    CheckRight();
+                }
+                _colliderGrid = GetColliderGrid(_colliderPos);
             }
-            _colliderGrid = GetColliderGrid(_colliderPos);
 
             if (!_lastColliderGrid.Equals(_colliderGrid))
             {
@@ -68,7 +74,7 @@ namespace GameA.Game
             }
         }
 
-        protected virtual bool CheckUp()
+        protected virtual void CheckUp()
         {
             if (_deltaPos.y > 0)
             {
@@ -97,14 +103,13 @@ namespace GameA.Game
                     _colliderPos.y = y;
                     _deltaPos.y = y - _colliderPos.y;
                     _hitUnits[(int)EDirectionType.Up] = hit;
-                    return true;
                 }
             }
-            return false;
         }
 
-        protected virtual bool CheckDown()
+        protected virtual void CheckDown()
         {
+            _cacheCheckedDownUnits.Clear();
             if (_deltaPos.y < 0)
             {
                 bool flag = false;
@@ -118,6 +123,7 @@ namespace GameA.Game
                 {
                     var unit = units[i];
                     int ymin = 0;
+                    _cacheCheckedDownUnits.Add(unit.Guid);
                     if (unit.IsAlive && unit.OnUpHit(this, ref ymin))
                     {
                         flag = true;
@@ -138,13 +144,24 @@ namespace GameA.Game
                     _colliderPos.y = y;
                     _deltaPos.y = y - _colliderPos.y;
                     _hitUnits[(int)EDirectionType.Down] = hit;
-                    return true;
                 }
             }
-            return false;
+            for (int i = 0; i < _downUnits.Count; i++)
+            {
+                var unit = _downUnits[i];
+                if (_cacheCheckedDownUnits.Contains(unit.Guid))
+                {
+                    continue;
+                }
+                if (unit.IsAlive)
+                {
+                    int ymin = 0;
+                    unit.OnUpHit(this, ref ymin);
+                }
+            }
         }
 
-        protected virtual bool CheckLeft()
+        protected virtual void CheckLeft()
         {
             if (_deltaPos.x < 0)
             {
@@ -173,13 +190,11 @@ namespace GameA.Game
                 {
                     _colliderPos.x = x;
                     _hitUnits[(int)EDirectionType.Left] = hit;
-                    return true;
                 }
             }
-            return false;
         }
 
-        protected virtual bool CheckRight()
+        protected virtual void CheckRight()
         {
             if (_deltaPos.x > 0)
             {
@@ -208,10 +223,8 @@ namespace GameA.Game
                 {
                     _colliderPos.x = x;
                     _hitUnits[(int)EDirectionType.Right] = hit;
-                    return true;
                 }
             }
-            return false;
         }
     }
 }

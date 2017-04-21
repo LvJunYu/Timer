@@ -188,7 +188,12 @@ namespace GameA.Game
 
         public bool TryGetUnit(IntVec3 guid, out UnitBase unit)
         {
-            return _units.TryGetValue(guid, out unit);
+            if (!_units.TryGetValue(guid, out unit))
+            {
+                LogHelper.Warning("TryGetUnit failed,{0}", guid);
+                return false;
+            }
+            return !unit.IsFreezed;
         }
 
         public bool TryGetUnit(SceneNode colliderNode, out UnitBase unit)
@@ -517,9 +522,9 @@ namespace GameA.Game
                 {
                     var guid = tableUnit.ColliderToRenderer(node.Guid, node.Rotation);
                     UnitBase unit;
-                    if (!_instance.Units.TryGetValue(guid, out unit))
+                    if (!_instance.TryGetUnit(guid, out unit))
                     {
-                        LogHelper.Warning("TryGetUnits failed,{0}", node);
+                        //LogHelper.Warning("TryGetUnits failed,{0}", node);
                         continue;
                     }
                     _cachedUnits.Add(unit);
@@ -536,9 +541,9 @@ namespace GameA.Game
                             var guid = new IntVec3(newGrid.XMin + j * size.x, newGrid.YMin + k * size.y, node.Depth);
                             guid = tableUnit.ColliderToRenderer(guid, node.Rotation);
                             UnitBase unit;
-                            if (!_instance.Units.TryGetValue(guid, out unit))
+                            if (!_instance.TryGetUnit(guid, out unit))
                             {
-                                LogHelper.Warning("TryGetUnit failed,{0}", node);
+                                //LogHelper.Warning("TryGetUnit failed,{0}", node);
                                 continue;
                             }
                             _cachedUnits.Add(unit);
@@ -563,9 +568,9 @@ namespace GameA.Game
             {
                 IntVec3 guid = tableUnit.ColliderToRenderer(node.Guid, node.Rotation);
                 UnitBase unit;
-                if (!_instance.Units.TryGetValue(guid, out unit))
+                if (!_instance.TryGetUnit(guid, out unit))
                 {
-                    LogHelper.Warning("TryGetUnits failed,{0}", node);
+                    //LogHelper.Warning("TryGetUnits failed,{0}", node);
                     return null;
                 }
                 _cachedUnits.Add(unit);
@@ -582,9 +587,8 @@ namespace GameA.Game
                         var guid = new IntVec3(newGrid.XMin + j * size.x, newGrid.YMin + k * size.y, node.Depth);
                         guid = tableUnit.ColliderToRenderer(guid, node.Rotation);
                         UnitBase unit;
-                        if (!_instance.Units.TryGetValue(guid, out unit))
+                        if (!_instance.TryGetUnit(guid, out unit))
                         {
-                            LogHelper.Warning("TryGetUnit failed,{0}", node);
                             continue;
                         }
                         _cachedUnits.Add(unit);

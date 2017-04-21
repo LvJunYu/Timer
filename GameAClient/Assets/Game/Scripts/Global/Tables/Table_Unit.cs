@@ -11,7 +11,7 @@ namespace GameA.Game
 		// 名字
 		[ColumnMapping("Name")]
 		public string Name;
-		// 是否使用
+		// 使用显示
 		[ColumnMapping("Use")]
 		public int Use;
 		// 图标

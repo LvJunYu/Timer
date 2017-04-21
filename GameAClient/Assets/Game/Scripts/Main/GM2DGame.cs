@@ -334,7 +334,6 @@ namespace GameA.Game
             {
                 _tableMatrix = TableManager.Instance.GetMatrix(1);
             }
-
             gameObject.AddComponent<UnitManager>();
             UnitManager.Instance.Init();
             gameObject.AddComponent<CameraManager>();

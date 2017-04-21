@@ -17,15 +17,9 @@ namespace GameA.Game
 		// MatrixType
 		[ColumnMapping("MatrixType")]
 		public int MatrixType;
-		// CasualUnitIds
-		[ColumnMapping("CasualUnitIds")]
-		public int[] CasualUnitIds;
-		// PuzzleUnitIds
-		[ColumnMapping("PuzzleUnitIds")]
-		public int[] PuzzleUnitIds;
-		// ExtremeUnitIds
-		[ColumnMapping("ExtremeUnitIds")]
-		public int[] ExtremeUnitIds;
+		// UnitIds
+		[ColumnMapping("UnitIds")]
+		public int[] UnitIds;
 		// Icon
 		[ColumnMapping("Icon")]
 		public string Icon;

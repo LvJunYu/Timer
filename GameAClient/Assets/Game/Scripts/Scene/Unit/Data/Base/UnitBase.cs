@@ -18,6 +18,8 @@ namespace GameA.Game
     {
         #region base data
 
+        protected bool _isFreezed;
+
         [SerializeField]
         protected int _life;
 
@@ -340,7 +342,8 @@ namespace GameA.Game
 
         public virtual bool IsFreezed
         {
-            get { return _dynamicCollider != null && _dynamicCollider.IsFreezed == 1; }
+            get { return _isFreezed; }
+            set { _isFreezed = value; }
         }
 
         public virtual bool CanPortal

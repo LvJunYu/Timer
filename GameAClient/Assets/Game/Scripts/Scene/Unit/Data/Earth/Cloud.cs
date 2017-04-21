@@ -35,6 +35,11 @@ namespace GameA.Game
             {
                 _animation.Reset();
             }
+            if (_view != null)
+            {
+                _view.SetRendererEnabled(false);
+            }
+            PlayMode.Instance.UnFreeze(this);
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
