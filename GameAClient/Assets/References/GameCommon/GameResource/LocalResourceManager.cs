@@ -47,8 +47,17 @@ namespace SoyEngine
 
         #region field
 		private Stack<GameResourceLoaderEx> _idleLoaders;
+		/// <summary>
+		/// 本地资源版本信息 key：gameName
+		/// </summary>
 		private Dictionary<string, GameLocalFileVersionPack> _curGameLocalFileData;
+		/// <summary>
+		/// 最新的配置文件中的版本信息
+		/// </summary>
 		private AppVersionDataFull _curAppVersion;
+		/// <summary>
+		/// 包内的资源版本信息
+		/// </summary>
 		private AppVersionDataFull _packageAppVersion = null;
         private EAppResVersionCheckState _appResVersionCheckState;
         private int _appResVersionChecking;
@@ -426,7 +435,8 @@ namespace SoyEngine
 
             _curGameLocalFileData.Clear();
 			LogHelper.Debug("Init build in pack res，gameList.count = {0}", 1);
-            for(int i=0; i<1; i++)
+            
+			for(int i=0; i<1; i++)
             {
 				string gameName = "GameMaker2D";
 				//索引本地文件配置
@@ -449,6 +459,7 @@ namespace SoyEngine
 						_curGameLocalFileData.Add(gameName, data);
 					}
 				}
+				// 从资源服务器取最新版本信息
 				{
 					if (_curAppVersion.ContainGameFileVersionPack(gameName))
 					{
@@ -514,6 +525,12 @@ namespace SoyEngine
             }
 		}
 
+		/// <summary>
+		/// 序列化包内资源版本信息
+		/// </summary>
+		/// <returns>The package config data.</returns>
+		/// <param name="packVersion">Pack version.</param>
+		/// <param name="requestVersionId">Request version identifier.</param>
 		private IEnumerator UpdatePackageConfigData(int packVersion,int requestVersionId)
 		{
 			if (requestVersionId == 0)

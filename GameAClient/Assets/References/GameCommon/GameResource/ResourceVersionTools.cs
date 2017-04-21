@@ -15,7 +15,12 @@ namespace SoyEngine
 {
 	public class ResourceVersionTools
 	{
-
+		/// <summary>
+		/// 把待更新版本信息和包内版本信息作比较，判断哪些包内资源需要更新
+		/// </summary>
+		/// <param name="list">List.</param>
+		/// <param name="pack">Pack.</param>
+		/// <param name="isRes">If set to <c>true</c> is res.</param>
 		public static void UpdateChangeListLoadFrom(List<ResourceCheckRes> list, GameLocalFileVersionPack pack, bool isRes)
 		{
 			if (list == null || pack == null)
