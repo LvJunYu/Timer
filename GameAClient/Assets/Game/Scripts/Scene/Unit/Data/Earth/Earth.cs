@@ -28,6 +28,7 @@ namespace GameA.Game
 		protected override void Clear ()
 		{
 			base.Clear ();
+            _edges.Clear();
 			if (null != _leftEdgeSplash) {
 				GameObject.Destroy (_leftEdgeSplash.gameObject);
 			}
@@ -64,6 +65,10 @@ namespace GameA.Game
         {
             int localStart = 0, localEnd = 0;
             GetLocalPos(start, end, ref localStart, ref localEnd, direction);
+            if (localEnd < localStart)
+            {
+                return;
+            }
             var edge = new Edge(localStart, localEnd, direction, eSkillType);
             LogHelper.Debug("DoEdge: {0}", edge);
             if (eSkillType == ESkillType.Water)
@@ -86,12 +91,15 @@ namespace GameA.Game
 			if (null == _leftEdgeSplash) {
 				InitSplash ();
 			}
-			List<Vector2> regions = new List<Vector2> ();
-			for (int i = 0; i < _edges.Count; i++) {
-				if (_edges[i].Direction == EDirectionType.Left && direction == EDirectionType.Left) {
-					regions.Add (new Vector2(_edges[i].Start * ConstDefineGM2D.ClientTileScale, _edges[i].End * ConstDefineGM2D.ClientTileScale));	
-				}
-			}
+            var regions = new List<Vector2>();
+            for (int i = 0; i < _edges.Count; i++)
+            {
+                if (_edges[i].Direction == EDirectionType.Left && direction == EDirectionType.Left)
+                {
+                    regions.Add(new Vector2(_edges[i].Start * ConstDefineGM2D.ClientTileScale,
+                        (_edges[i].End + 1) * ConstDefineGM2D.ClientTileScale));
+                }
+            }
 			_leftEdgeSplash.SetSplashRegion (regions);
         }
 
