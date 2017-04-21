@@ -98,7 +98,7 @@ namespace GameA.Game
 	    {
 		    base.InitEventListener();
 			RegisterEvent(EMessengerType.AfterCommandChanged, AfterCommandChanged);
-			RegisterEvent(EMessengerType.OnMapUnitChanged, OnMapDataChanged);
+			RegisterEvent(EMessengerType.OnModifyUnitChanged, OnMapDataChanged);
 	    }
 
         protected override void OnOpen(object parameter)
@@ -114,7 +114,7 @@ namespace GameA.Game
 		{
 			base.OnDestroy ();
 			Messenger.RemoveListener(EMessengerType.AfterCommandChanged, AfterCommandChanged);
-			Messenger.RemoveListener(EMessengerType.OnMapUnitChanged, OnMapDataChanged);
+			Messenger.RemoveListener(EMessengerType.OnModifyUnitChanged, OnMapDataChanged);
 		}
 
         public override void OnUpdate ()

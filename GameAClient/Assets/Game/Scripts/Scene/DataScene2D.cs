@@ -183,6 +183,7 @@ namespace GameA.Game
             {
                 _mainPlayer = dataNode;
             }
+			Debug.Log ("______________________________ dataScene2D.AddData");
             return true;
         }
 
@@ -220,6 +221,7 @@ namespace GameA.Game
             {
                 _mainPlayer = null;
             }
+			Debug.Log ("______________________________ dataScene2D.DelData");
             return true;
         }
 

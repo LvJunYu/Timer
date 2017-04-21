@@ -54,6 +54,13 @@ namespace GameA.Game
         #endregion
 		#region Methods
 
+		public void OnModifyDelete (UnitDesc unitDesc) {
+			ModifyData data = new ModifyData ();
+			data.OrigUnit = unitDesc;
+			RemovedUnits.Add (data);
+			Messenger.Broadcast(EMessengerType.OnModifyUnitChanged);
+		}
+
 		/// <summary>
 		/// 撤销改造擦除
 		/// </summary>
@@ -104,7 +111,7 @@ namespace GameA.Game
 			switch (_commandType)
 			{
 			case ECommandType.Erase:
-				_currentCommand = new DeleteCommand ();
+				_currentCommand = new ModifyDeleteCommand ();
 				break;
 			case ECommandType.Modify:
 				break;
@@ -172,13 +179,10 @@ namespace GameA.Game
 			}
 		}
 
-		protected override void AfterDeleteUnit (UnitDesc unitDesc, Table_Unit tableUnit)
-		{
-			base.AfterDeleteUnit (unitDesc, tableUnit);
-			ModifyData data = new ModifyData ();
-			data.OrigUnit = unitDesc;
-			RemovedUnits.Add (data);
-		}
+//		protected override void AfterDeleteUnit (UnitDesc unitDesc, Table_Unit tableUnit)
+//		{
+//			base.AfterDeleteUnit (unitDesc, tableUnit);
+//		}
 
 		/// <summary>
 		/// 检查是否可以改造擦除

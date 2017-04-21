@@ -18,7 +18,11 @@ namespace GameA.Game
         public static int OnSelectedItemChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnUndoChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnRedoChanged = SoyEngine.EMessengerType.NextId++;
-		public static int OnMapUnitChanged = SoyEngine.EMessengerType.NextId++;
+
+		public static int OnModifyEditDeleted = SoyEngine.EMessengerType.NextId++;
+		public static int OnModifyEditAdded = SoyEngine.EMessengerType.NextId++;
+		public static int OnModifyModified = SoyEngine.EMessengerType.NextId++;
+		public static int OnModifyUnitChanged = SoyEngine.EMessengerType.NextId++;
 
         public static int OnScreenOperator = SoyEngine.EMessengerType.NextId++;
         public static int OnValidMapRectChanged = SoyEngine.EMessengerType.NextId++;

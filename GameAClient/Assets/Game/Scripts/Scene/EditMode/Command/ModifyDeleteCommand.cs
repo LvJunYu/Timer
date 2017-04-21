@@ -12,9 +12,9 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    public class DeleteCommand : CommandBase , ICommand
+	public class ModifyDeleteCommand : DeleteCommand
     {
-		public virtual bool Execute(Vector2 mousePos)
+		public override bool Execute(Vector2 mousePos)
         {
             if (InputManager.Instance.IsTouchDown)
             {
@@ -56,6 +56,7 @@ namespace GameA.Game
                         UnitExtra unitExtra;
                         DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra);
                         _buffers.Add(new UnitEditData(unitDesc, unitExtra));
+						((ModifyEditMode)EditMode.Instance).OnModifyDelete (unitDesc);
 //                        _pushFlag = true;
 					}
                 }
@@ -66,30 +67,30 @@ namespace GameA.Game
 
         public bool Redo()
         {
-            if (_buffers.Count > 0)
-            {
-                for (int i = 0; i < _buffers.Count; i++)
-                {
-                    EditMode.Instance.DeleteUnit(_buffers[i].UnitDesc);
-                }
-                return true;
-            }
+//            if (_buffers.Count > 0)
+//            {
+//                for (int i = 0; i < _buffers.Count; i++)
+//                {
+//                    EditMode.Instance.DeleteUnit(_buffers[i].UnitDesc);
+//                }
+//                return true;
+//            }
             return false;
         }
 
         public bool Undo()
         {
-            if (_buffers.Count > 0)
-            {
-                for (int i = 0; i < _buffers.Count; i++)
-                {
-                    if (EditMode.Instance.AddUnit(_buffers[i].UnitDesc))
-	                {
-                        DataScene2D.Instance.ProcessUnitExtra(_buffers[i].UnitDesc.Guid, _buffers[i].UnitExtra);
-	                }
-                }
-                return true;
-            }
+//            if (_buffers.Count > 0)
+//            {
+//                for (int i = 0; i < _buffers.Count; i++)
+//                {
+//                    if (EditMode.Instance.AddUnit(_buffers[i].UnitDesc))
+//	                {
+//                        DataScene2D.Instance.ProcessUnitExtra(_buffers[i].UnitDesc.Guid, _buffers[i].UnitExtra);
+//	                }
+//                }
+//                return true;
+//            }
             return false;
         }
 
