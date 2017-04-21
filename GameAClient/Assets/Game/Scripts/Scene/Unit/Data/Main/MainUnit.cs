@@ -34,7 +34,6 @@ namespace GameA.Game
 
         protected const int MaxSpeedX = 80;
         protected const int MaxQuickenSpeedX = 160;
-        protected const int ClayRatio = 5;
 
         #region view
 

@@ -20,6 +20,7 @@ namespace GameA.Game
         protected UnitBase[] _hitUnits = new UnitBase[4];
         private static HashSet<IntVec3> _cacheCheckedDownUnits = new HashSet<IntVec3>();
         protected bool _onClay;
+        protected const int ClayRatio = 5;
 
         protected override void Clear()
         {
