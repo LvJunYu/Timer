@@ -401,7 +401,7 @@ namespace GameA.Game
 
         public void Freeze(UnitBase unit)
         {
-            if (unit == null)
+            if (unit == null || unit.IsFreezed)
             {
                 return;
             }
