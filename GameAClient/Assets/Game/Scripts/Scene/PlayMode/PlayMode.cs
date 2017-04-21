@@ -415,7 +415,7 @@ namespace GameA.Game
         /// <param name="unit"></param>
         public void UnFreeze(UnitBase unit)
         {
-            if (unit == null)
+            if (unit == null || !unit.IsFreezed)
             {
                 return;
             }

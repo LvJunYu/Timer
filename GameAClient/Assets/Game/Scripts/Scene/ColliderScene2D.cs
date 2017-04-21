@@ -190,7 +190,6 @@ namespace GameA.Game
         {
             if (!_units.TryGetValue(guid, out unit))
             {
-                LogHelper.Warning("TryGetUnit failed,{0}", guid);
                 return false;
             }
             return !unit.IsFreezed;

@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -22,6 +23,11 @@ namespace GameA.Game
             base.Clear();
             _trigger = false;
             _timer = 0;
+            PlayMode.Instance.UnFreeze(this);
+            if (_view != null)
+            {
+                _view.SetRendererEnabled(true);
+            }
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
@@ -80,6 +86,8 @@ namespace GameA.Game
                     if (_view != null)
                     {
                         _view.SetRendererEnabled(false);
+                        GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
+                        GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position, Vector3.one);
                     }
                 }
                 else if (_timer == 30)
