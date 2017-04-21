@@ -29,6 +29,10 @@ namespace GameA.Game
             {
                 assetPath = string.Format("{0}_{1}", tableUnit.Model, Random.Range(1,3));
             }
+            if (tableUnit.CanRotate)
+            {
+                assetPath = string.Format("{0}_{1}", tableUnit.Model, _unit.Rotation);
+            }
             Sprite sprite;
             if (!GameResourceManager.Instance.TryGetSpriteByName(assetPath, out sprite))
             {

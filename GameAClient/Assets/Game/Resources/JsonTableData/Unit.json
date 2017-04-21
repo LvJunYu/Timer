@@ -861,7 +861,8 @@
         "ChildType": "0",
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "4",
-        "MoveDirectionMask": "15"
+        "MoveDirectionMask": "15",
+        "RotationMask": "15"
     },
     {
         "Id": "5016",
@@ -884,7 +885,8 @@
         "ChildType": "0",
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "4",
-        "MoveDirectionMask": "15"
+        "MoveDirectionMask": "15",
+        "RotationMask": "15"
     },
     {
         "Id": "5101",
