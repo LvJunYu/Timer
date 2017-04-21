@@ -11,7 +11,7 @@ using System.Collections;
 namespace GameA.Game
 {
     [Unit(Id = 4103, Type = typeof(BlueStoneRotate))]
-    public class BlueStoneRotate : UnitBase
+    public class BlueStoneRotate : Magic
     {
 
     }

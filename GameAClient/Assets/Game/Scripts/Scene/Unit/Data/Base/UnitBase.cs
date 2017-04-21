@@ -44,7 +44,6 @@ namespace GameA.Game
         protected bool _isStart;
         protected int _friction;
 
-        protected List<UnitBase> _upUnits = new List<UnitBase>();
         protected List<UnitBase> _downUnits = new List<UnitBase>();
         protected UnitBase _downUnit;
         protected bool _useCorner;
@@ -165,11 +164,6 @@ namespace GameA.Game
         public bool IsStart
         {
             get { return _isStart; }
-        }
-
-        public List<UnitBase> UpUnits
-        {
-            get { return _upUnits; }
         }
 
         public List<UnitBase> DownUnits
@@ -528,7 +522,6 @@ namespace GameA.Game
             _lastColliderGrid = _colliderGrid;
             _colliderGridInner = _useCorner ? _colliderGrid.GetGridInner() : _colliderGrid;
 
-            _upUnits.Clear();
             _downUnits.Clear();
             _downUnit = null;
             _curBanInputTime = 0;
@@ -556,8 +549,9 @@ namespace GameA.Game
         {
             _downUnit = null;
             _downUnits.Clear();
-            _upUnits.Clear();
             _isCalculated = false;
+            Speed += ExtraSpeed;
+            ExtraSpeed = IntVec2.zero;
             if (_curBanInputTime > 0)
             {
                 _curBanInputTime--;

@@ -24,10 +24,11 @@ namespace GameA.Game
 
         public override void OnShootHit(UnitBase other)
         {
-            if (other is BulletWater)
+            if (other is BulletFire)
             {
                 PlayMode.Instance.DestroyUnit(this);
                 PushChild();
+                OnDead();
             }
         }
     }

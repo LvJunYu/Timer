@@ -537,7 +537,6 @@ namespace GameA.Game
                         downExist = true;
                         _grounded = true;
                         _downUnits.Add(unit);
-                        unit.UpUnits.Add(this);
                         _mainInput._jumpState = 0;
                         _mainInput._jumpLevel = 0;
                         if (unit.Friction > friction)

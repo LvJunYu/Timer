@@ -49,7 +49,6 @@ namespace GameA.Game
                             downExist = true;
                             _grounded = true;
                             _downUnits.Add(unit);
-                            unit.UpUnits.Add(this);
                             if (unit.Friction > friction)
                             {
                                 friction = unit.Friction;
