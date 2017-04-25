@@ -54,10 +54,13 @@ namespace GameA.Game
         #endregion
 		#region Methods
 
-		public void OnModifyDelete (UnitDesc unitDesc) {
-			ModifyData data = new ModifyData ();
-			data.OrigUnit = unitDesc;
-			RemovedUnits.Add (data);
+		public void OnModifyDelete (UnitEditData orig) {
+			RemovedUnits.Add (new ModifyData(orig, orig));
+			Messenger.Broadcast(EMessengerType.OnModifyUnitChanged);
+		}
+
+		public void OnModifyModify (UnitEditData orig, UnitEditData modified) {
+			ModifiedUnits.Add (new ModifyData(orig, modified));
 			Messenger.Broadcast(EMessengerType.OnModifyUnitChanged);
 		}
 
@@ -71,16 +74,37 @@ namespace GameA.Game
 			}
 			ModifyData data = RemovedUnits [idx];
 			RemovedUnits.RemoveAt (idx);
-			if (!AddUnit(data.OrigUnit)) {
+			if (!AddUnit(data.OrigUnit.UnitDesc)) {
 				RemovedUnits.Insert (idx, data);
 				LogHelper.Error ("Can't undo the {0}'s erase action when add unit, unitdesc: {1}", idx, data.OrigUnit);
+			} else {
+				DataScene2D.Instance.ProcessUnitExtra(data.OrigUnit.UnitDesc.Guid, data.OrigUnit.UnitExtra);
 			}
 		}
 		/// <summary>
 		/// 撤销改造修改
 		/// </summary>
 		public void UndoModifModify (int idx) {
-			
+			if (idx >= ModifiedUnits.Count) {
+				LogHelper.Error ("Try to undo the {0}'s modify action out of range");
+				return;
+			}
+			ModifyData data = ModifiedUnits [idx];
+			ModifiedUnits.RemoveAt (idx);
+//			bool success = true;
+
+			if (!DeleteUnit(data.ModifiedUnit.UnitDesc)) {
+				ModifiedUnits.Insert (idx, data);
+				LogHelper.Error ("Can't undo the {0}'s modify action when delete unit, unitdesc: {1}", idx, data.ModifiedUnit);
+				return;
+			}
+			if (!AddUnit(data.OrigUnit.UnitDesc)) {
+				ModifiedUnits.Insert (idx, data);
+				LogHelper.Error ("Can't undo the {0}'s modify action when add unit, unitdesc: {1}", idx, data.OrigUnit);
+				return;
+			} else {
+				DataScene2D.Instance.ProcessUnitExtra(data.OrigUnit.UnitDesc.Guid, data.OrigUnit.UnitExtra);
+			}
 		}
 		/// <summary>
 		/// 撤销改造添加
@@ -114,6 +138,11 @@ namespace GameA.Game
 				_currentCommand = new ModifyDeleteCommand ();
 				break;
 			case ECommandType.Modify:
+				UnitDesc outValue;
+				if (TryGetSelectedObject(Input.mousePosition, out outValue))
+				{
+					_currentCommand = new ModifyClickItemCommand(outValue, gesture.position);
+				}
 				break;
 			case ECommandType.Create:
 //				{

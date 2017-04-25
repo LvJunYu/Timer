@@ -15,10 +15,13 @@ namespace GameA.Game
 {
     public class ClickItemCommand : CommandBase, ICommand
     {
+		/// <summary>
+		/// 点击命令下指针/手指一动超过该值则变成拖拽命令
+		/// </summary>
         public const float DragCommandTakeEffectOffsetValue = 0.2f;
-        private UnitDesc _clickedUnit;
-        private Vector2 _startMousePos;
-        private Table_Unit _clickedTableUnit;
+		protected UnitDesc _clickedDesc;
+		protected Vector2 _startMousePos;
+		protected Table_Unit _clickedTableUnit;
 
         public static List<byte> DirectionList = new List<byte>()
 		{
@@ -28,20 +31,40 @@ namespace GameA.Game
 			(byte)EDirectionType.Left,
 		};
 
+
+//		protected UnitDesc _origDesc;
+		/// <summary>
+		/// 原始物体的额外信息
+		/// </summary>
+		protected UnitExtra _clickedExtra;
+		/// <summary>
+		/// 修改后物体的信息
+		/// </summary>
+		protected UnitDesc _modifiedDesc;
+		/// <summary>
+		/// 修改后物体的额外信息
+		/// </summary>
+		protected UnitExtra _modifiedExtra;
+
         public ClickItemCommand(UnitDesc clickUnit, Vector2 startMousePos)
         {
-            _clickedUnit = clickUnit;
+            _clickedDesc = clickUnit;
+			if (!DataScene2D.Instance.TryGetUnitExtra (_clickedDesc.Guid, out _clickedExtra)) {
+				return;
+			}
+			_modifiedDesc = _clickedDesc;
+			_modifiedExtra = _clickedExtra;
             _startMousePos = startMousePos;
             _clickedTableUnit = UnitManager.Instance.GetTableUnit(clickUnit.Id);
         }
 
-        public bool Execute(Vector2 mousePos)
+        public virtual bool Execute(Vector2 mousePos)
         {
             if (InputManager.Instance.IsTouchDown)
             {
                 if (CheckDragCondition(mousePos))
                 {
-                    EditMode.Instance.ChangeCurCommand(new DragCommand(_clickedUnit, mousePos));
+                    EditMode.Instance.ChangeCurCommand(new DragCommand(_clickedDesc, mousePos));
                 }
                 _pushFlag = false;
             }
@@ -66,23 +89,23 @@ namespace GameA.Game
             return false;
         }
 
-        private bool CheckDragCondition(Vector2 mousePos)
+        protected bool CheckDragCondition(Vector2 mousePos)
         {
             var delta = _startMousePos - mousePos;
             return delta.magnitude >= DragCommandTakeEffectOffsetValue;
         }
 
-        private bool DoClickOperator()
+		protected bool DoClickOperator()
         {
             if (_clickedTableUnit.CanRotate)
             {
                 return DoRotate();
             }
-            if (_clickedUnit.Id == ConstDefineGM2D.BillboardId)
+            if (_clickedDesc.Id == ConstDefineGM2D.BillboardId)
             {
                 return DoAddMsg();
             }
-            if (_clickedUnit.Id == ConstDefineGM2D.RollerId)
+            if (_clickedDesc.Id == ConstDefineGM2D.RollerId)
             {
                 return DoRoller();
             }
@@ -93,40 +116,46 @@ namespace GameA.Game
             return false;
         }
 
-        private bool DoAddMsg()
+		protected virtual bool DoAddMsg()
         {
-            GM2DGUIManager.Instance.OpenUI<UICtrlGameItemAddMessage>(_clickedUnit);
+            GM2DGUIManager.Instance.OpenUI<UICtrlGameItemAddMessage>(_clickedDesc);
             return false;
         }
 
-        private bool DoRotate()
+		protected bool DoRotate()
         {
-            var curValue = _clickedUnit.Rotation;
-            if (!CheckDirectionValid(curValue))
+            var curValue = _clickedDesc.Rotation;
+			if (!CheckDirectionValid(_clickedDesc.Rotation))
             {
                 return false;
             }
             byte dir;
-            if (!CalculateNextDir(curValue, _clickedTableUnit.RotationMask, out dir))
+			if (!CalculateNextDir(_clickedDesc.Rotation, _clickedTableUnit.RotationMask, out dir))
             {
                 return false;
             }
-            if (!EditMode.Instance.DeleteUnit(_clickedUnit))
+            if (!EditMode.Instance.DeleteUnit(_clickedDesc))
             {
                 return false;
             }
-            _clickedUnit.Rotation = dir;
-            return EditMode.Instance.AddUnit(_clickedUnit);
+            _modifiedDesc.Rotation = dir;
+            if (EditMode.Instance.AddUnit (_modifiedDesc)) {
+                DataScene2D.Instance.ProcessUnitExtra (_modifiedDesc.Guid, _modifiedExtra);
+                return true;
+            } else {
+                return false;
+            }
+
         }
 
-        private bool DoRoller()
+		protected bool DoRoller()
         {
-            UnitExtra unitExtra;
-            if (!DataScene2D.Instance.TryGetUnitExtra(_clickedUnit.Guid, out unitExtra))
-            {
-                return false;
-            }
-            var curValue = (byte)(unitExtra.RollerDirection - 1);
+//            UnitExtra unitExtra;
+//            if (!DataScene2D.Instance.TryGetUnitExtra(_clickedDesc.Guid, out unitExtra))
+//            {
+//                return false;
+//            }
+            var curValue = (byte)(_clickedExtra.RollerDirection - 1);
             if (!CheckDirectionValid(curValue))
             {
                 return false;
@@ -136,28 +165,32 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (!EditMode.Instance.DeleteUnit(_clickedUnit))
+            if (!EditMode.Instance.DeleteUnit(_clickedDesc))
             {
                 return false;
             }
-            unitExtra.RollerDirection = (EMoveDirection)(dir + 1);
-            DataScene2D.Instance.ProcessUnitExtra(_clickedUnit.Guid, unitExtra);
-            return EditMode.Instance.AddUnit(_clickedUnit);
+            _modifiedExtra.RollerDirection = (EMoveDirection)(dir + 1);
+            if (EditMode.Instance.AddUnit (_modifiedDesc)) {
+                DataScene2D.Instance.ProcessUnitExtra (_modifiedDesc.Guid, _modifiedExtra);
+                return true;
+            } else {
+                return false;
+            }
         }
 
-        private bool DoMove()
+		protected bool DoMove()
         {
-            UnitExtra unitExtra;
-            if (!DataScene2D.Instance.TryGetUnitExtra(_clickedUnit.Guid, out unitExtra))
-            {
-                return false;
-            }
+//            UnitExtra unitExtra;
+//            if (!DataScene2D.Instance.TryGetUnitExtra(_clickedDesc.Guid, out unitExtra))
+//            {
+//                return false;
+//            }
             //说明是静止的 肯定没有蓝石
-            if (unitExtra.MoveDirection == 0)
+            if (_clickedExtra.MoveDirection == 0)
             {
                 return false;
             }
-            var curValue = (byte) (unitExtra.MoveDirection - 1);
+            var curValue = (byte) (_clickedExtra.MoveDirection - 1);
             if (!CheckDirectionValid(curValue))
             {
                 return false;
@@ -167,16 +200,20 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (!EditMode.Instance.DeleteUnit(_clickedUnit))
+            if (!EditMode.Instance.DeleteUnit(_clickedDesc))
             {
                 return false;
             }
-            unitExtra.MoveDirection = (EMoveDirection) (dir + 1);
-            DataScene2D.Instance.ProcessUnitExtra(_clickedUnit.Guid, unitExtra);
-            return EditMode.Instance.AddUnit(_clickedUnit);
+            _modifiedExtra.MoveDirection = (EMoveDirection) (dir + 1);
+            if (EditMode.Instance.AddUnit (_modifiedDesc)) {
+                DataScene2D.Instance.ProcessUnitExtra (_modifiedDesc.Guid, _modifiedExtra);
+                return true;
+            } else {
+                return false;
+            }
         }
 
-        private bool CalculateNextDir(byte curValue, int mask, out byte dir)
+		protected bool CalculateNextDir(byte curValue, int mask, out byte dir)
         {
             dir = 0;
             int index = 0;
@@ -209,7 +246,7 @@ namespace GameA.Game
             return res;
         }
 
-        private bool CheckDirectionValid(byte value)
+		protected bool CheckDirectionValid(byte value)
         {
             return value == (byte)EDirectionType.Up ||
                    value == (byte)EDirectionType.Right ||
@@ -217,7 +254,7 @@ namespace GameA.Game
                    value == (byte)EDirectionType.Left;
         }
 
-        private byte GetRepeatDirByIndex(int index)
+		protected byte GetRepeatDirByIndex(int index)
         {
             int realIndex = index % 4;
             return DirectionList[realIndex];

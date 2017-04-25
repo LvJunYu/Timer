@@ -400,7 +400,7 @@ namespace GameA.Game
 			} else if (EditMode.Instance.CurCommandType == ECommandType.Erase) {
 				((ModifyEditMode)EditMode.Instance).UndoModifyErase (idx);
 			} else if (EditMode.Instance.CurCommandType == ECommandType.Modify) {
-				
+				((ModifyEditMode)EditMode.Instance).UndoModifModify (idx);
 			}
 		}
 		/// <summary>
@@ -412,7 +412,7 @@ namespace GameA.Game
 			ModifyEditMode modifyEditMode = EditMode.Instance as ModifyEditMode;
 			if (null == modifyEditMode)
 				return;
-			List<ModifyData> descs = null;
+            List<ModifyData> descs = null;
 			switch (EditMode.Instance.CurCommandType) {
 			case ECommandType.Create:
 				descs = modifyEditMode.AddedUnits;
@@ -428,9 +428,9 @@ namespace GameA.Game
 				return;
 			int i = 0;
 			for (; i < _cachedView.ModifyItems.Length && i < descs.Count; i++) {
-				var tableUnit = TableManager.Instance.GetUnit (descs [i].OrigUnit.Id);
+                var tableUnit = TableManager.Instance.GetUnit (descs [i].OrigUnit.UnitDesc.Id);
 				if (null == tableUnit) {
-					LogHelper.Error ("can't find tabledata of modifyItem id{0}", descs[i].OrigUnit.Id);
+                    LogHelper.Error ("can't find tabledata of modifyItem id{0}", descs[i].OrigUnit.UnitDesc.Id);
 				} else {
 					Sprite texture;
 					if (GameResourceManager.Instance.TryGetSpriteByName(tableUnit.Icon, out texture))

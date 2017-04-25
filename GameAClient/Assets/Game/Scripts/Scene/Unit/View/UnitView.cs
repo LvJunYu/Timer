@@ -198,7 +198,10 @@ namespace GameA.Game
             }
             if (tableUnit.EUnitType != EUnitType.Bullet)
             {
-                if (GM2DGame.Instance.CurrentMode == EMode.Edit || GM2DGame.Instance.CurrentMode == EMode.EditTest)
+                if (GM2DGame.Instance.CurrentMode == EMode.Edit || 
+					GM2DGame.Instance.CurrentMode == EMode.EditTest ||
+					GM2DGame.Instance.CurrentMode == EMode.ModifyEdit
+				)
                 {
                     //生成方向标志
                     if (tableUnit.CanRotate || _unit.MoveDirection != EMoveDirection.None || tableUnit.Id == ConstDefineGM2D.RollerId)

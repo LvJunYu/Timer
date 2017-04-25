@@ -56,7 +56,7 @@ namespace GameA.Game
                         UnitExtra unitExtra;
                         DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra);
                         _buffers.Add(new UnitEditData(unitDesc, unitExtra));
-						((ModifyEditMode)EditMode.Instance).OnModifyDelete (unitDesc);
+						((ModifyEditMode)EditMode.Instance).OnModifyDelete (new UnitEditData(unitDesc, unitExtra));
 //                        _pushFlag = true;
 					}
                 }
@@ -65,38 +65,5 @@ namespace GameA.Game
             return _pushFlag;
         }
 
-        public bool Redo()
-        {
-//            if (_buffers.Count > 0)
-//            {
-//                for (int i = 0; i < _buffers.Count; i++)
-//                {
-//                    EditMode.Instance.DeleteUnit(_buffers[i].UnitDesc);
-//                }
-//                return true;
-//            }
-            return false;
-        }
-
-        public bool Undo()
-        {
-//            if (_buffers.Count > 0)
-//            {
-//                for (int i = 0; i < _buffers.Count; i++)
-//                {
-//                    if (EditMode.Instance.AddUnit(_buffers[i].UnitDesc))
-//	                {
-//                        DataScene2D.Instance.ProcessUnitExtra(_buffers[i].UnitDesc.Guid, _buffers[i].UnitExtra);
-//	                }
-//                }
-//                return true;
-//            }
-            return false;
-        }
-
-		public void Exit()
-		{
-
-		}
 	}
 }

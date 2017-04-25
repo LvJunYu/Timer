@@ -389,7 +389,11 @@ namespace GameA.Game
     }
 
 	public struct ModifyData {
-		public UnitDesc OrigUnit;
-		public UnitDesc ModifiedUnit;
+		public UnitEditData OrigUnit;
+		public UnitEditData ModifiedUnit;
+		public ModifyData (UnitEditData orig, UnitEditData modified) {
+			OrigUnit = orig;
+			ModifiedUnit = modified;
+		}
 	}
 }

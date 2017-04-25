@@ -277,7 +277,6 @@ namespace GameA.Game
             }
             AfterAddUnit(unitDesc, tableUnit);
 			Messenger.Broadcast(EMessengerType.OnModifyUnitChanged);
-			Debug.Log ("__________________________  EditMode.AddUnit");
             return true;
         }
 
@@ -312,7 +311,6 @@ namespace GameA.Game
             }
             AfterDeleteUnit(unitDesc, tableUnit);
 
-			Debug.Log ("__________________________  EditMode.DelUnit");
             return true;
         }
 
