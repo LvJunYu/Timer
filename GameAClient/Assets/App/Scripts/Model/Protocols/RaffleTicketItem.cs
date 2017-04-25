@@ -8,7 +8,7 @@ namespace GameA
 {
     public partial class RaffleTicketItem : SyncronisticData {
         #region 字段
-        // 部件
+        // 类型
         private int _type;
         // 
         private long _id;
@@ -17,7 +17,7 @@ namespace GameA
         #endregion
 
         #region 属性
-        // 部件
+        // 类型
         public int Type { 
             get { return _type; }
             set { if (_type != value) {

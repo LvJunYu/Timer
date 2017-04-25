@@ -96,6 +96,9 @@ namespace GameA
 //            _cachedView.ScaleRoot.sizeDelta = size;
 
 //            RefreshMeNewMessageState();
+            #if UNITY_EDITOR
+            SocialGUIManager.Instance.OpenPopupUI<UICtrlGMTool> ();
+            #endif
 
 			_cachedView.WorldButton.onClick.AddListener (OnNewsBtn);
 			_cachedView.WorkshopButton.onClick.AddListener (OnCreateBtn);

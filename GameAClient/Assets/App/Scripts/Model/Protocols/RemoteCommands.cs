@@ -480,6 +480,279 @@ namespace GameA
         }
 
         /// <summary>
+		/// 改造
+		/// </summary>
+		/// <param name="flag">占位</param>
+        public static void Reform (
+            int flag,
+            Action<Msg_SC_CMD_Reform> successCallback, Action<ENetResultCode> failedCallback) {
+
+            Msg_CS_CMD_Reform msg = new Msg_CS_CMD_Reform();
+            // 改造
+            msg.Flag = flag;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_Reform>(
+                SoyHttpApiPath.Reform, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "Reform", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+            });
+        }
+
+        /// <summary>
+		/// 随机改造关卡
+		/// </summary>
+		/// <param name="curReformSection">当前改造关卡所属章节</param>
+		/// <param name="curReformLevel">当前改造关卡所属关卡</param>
+        public static void ReselectReformLevel (
+            int curReformSection,
+            int curReformLevel,
+            Action<Msg_SC_CMD_ReselectReformLevel> successCallback, Action<ENetResultCode> failedCallback) {
+
+            Msg_CS_CMD_ReselectReformLevel msg = new Msg_CS_CMD_ReselectReformLevel();
+            // 随机改造关卡
+            msg.CurReformSection = curReformSection;
+            msg.CurReformLevel = curReformLevel;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ReselectReformLevel>(
+                SoyHttpApiPath.ReselectReformLevel, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ReselectReformLevel", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+            });
+        }
+
+        /// <summary>
+		/// 领取改造奖励
+		/// </summary>
+		/// <param name="rewardLevel">改造奖励级别</param>
+        public static void GetReformReward (
+            int rewardLevel,
+            Action<Msg_SC_CMD_GetReformReward> successCallback, Action<ENetResultCode> failedCallback) {
+
+            Msg_CS_CMD_GetReformReward msg = new Msg_CS_CMD_GetReformReward();
+            // 领取改造奖励
+            msg.RewardLevel = rewardLevel;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_GetReformReward>(
+                SoyHttpApiPath.GetReformReward, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "GetReformReward", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+            });
+        }
+
+        /// <summary>
+		/// 上传改造关卡
+		/// </summary>
+		/// <param name="projectId">关卡Id</param>
+		/// <param name="programVersion"></param>
+		/// <param name="resourceVersion"></param>
+		/// <param name="passFlag"></param>
+		/// <param name="recordUsedTime"></param>
+        public static void SaveReformProject (
+            long projectId,
+            int programVersion,
+            int resourceVersion,
+            bool passFlag,
+            float recordUsedTime,
+            Action<Msg_SC_CMD_SaveReformProject> successCallback, Action<ENetResultCode> failedCallback) {
+
+            Msg_CS_CMD_SaveReformProject msg = new Msg_CS_CMD_SaveReformProject();
+            // 上传改造关卡
+            msg.ProjectId = projectId;
+            msg.ProgramVersion = programVersion;
+            msg.ResourceVersion = resourceVersion;
+            msg.PassFlag = passFlag;
+            msg.RecordUsedTime = recordUsedTime;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_SaveReformProject>(
+                SoyHttpApiPath.SaveReformProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "SaveReformProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+            });
+        }
+
+        /// <summary>
+		/// 发布改造关卡
+		/// </summary>
+		/// <param name="personalProjectId"></param>
+		/// <param name="programVersion"></param>
+		/// <param name="resourceVersion"></param>
+		/// <param name="recordUsedTime"></param>
+        public static void PublishReformProject (
+            long personalProjectId,
+            int programVersion,
+            int resourceVersion,
+            float recordUsedTime,
+            Action<Msg_SC_CMD_PublishReformProject> successCallback, Action<ENetResultCode> failedCallback) {
+
+            Msg_CS_CMD_PublishReformProject msg = new Msg_CS_CMD_PublishReformProject();
+            // 发布改造关卡
+            msg.PersonalProjectId = personalProjectId;
+            msg.ProgramVersion = programVersion;
+            msg.ResourceVersion = resourceVersion;
+            msg.RecordUsedTime = recordUsedTime;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PublishReformProject>(
+                SoyHttpApiPath.PublishReformProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "PublishReformProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+            });
+        }
+
+        /// <summary>
+		/// 获取挑战关卡
+		/// </summary>
+		/// <param name="flag">占位符</param>
+        public static void GetMatchChallengeProject (
+            int flag,
+            Action<Msg_SC_CMD_GetMatchChallengeProject> successCallback, Action<ENetResultCode> failedCallback) {
+
+            Msg_CS_CMD_GetMatchChallengeProject msg = new Msg_CS_CMD_GetMatchChallengeProject();
+            // 获取挑战关卡
+            msg.Flag = flag;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_GetMatchChallengeProject>(
+                SoyHttpApiPath.GetMatchChallengeProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "GetMatchChallengeProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+            });
+        }
+
+        /// <summary>
+		/// 选取挑战关卡
+		/// </summary>
+		/// <param name="challengeType">选择类型</param>
+		/// <param name="change">花钱切换</param>
+        public static void SelectMatchChallengeProject (
+            EChallengeProjectTyple challengeType,
+            bool change,
+            Action<Msg_SC_CMD_SelectMatchChallengeProject> successCallback, Action<ENetResultCode> failedCallback) {
+
+            Msg_CS_CMD_SelectMatchChallengeProject msg = new Msg_CS_CMD_SelectMatchChallengeProject();
+            // 选取挑战关卡
+            msg.ChallengeType = challengeType;
+            msg.Change = change;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_SelectMatchChallengeProject>(
+                SoyHttpApiPath.SelectMatchChallengeProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "SelectMatchChallengeProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+            });
+        }
+
+        /// <summary>
+		/// 开始挑战
+		/// </summary>
+		/// <param name="projectId">关卡Id</param>
+        public static void PlayMatchChallengeLevel (
+            long projectId,
+            Action<Msg_SC_CMD_PlayMatchChallengeLevel> successCallback, Action<ENetResultCode> failedCallback) {
+
+            Msg_CS_CMD_PlayMatchChallengeLevel msg = new Msg_CS_CMD_PlayMatchChallengeLevel();
+            // 开始挑战
+            msg.ProjectId = projectId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PlayMatchChallengeLevel>(
+                SoyHttpApiPath.PlayMatchChallengeLevel, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "PlayMatchChallengeLevel", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+            });
+        }
+
+        /// <summary>
+		/// 提交匹配挑战关卡数据
+		/// </summary>
+		/// <param name="token">令牌</param>
+		/// <param name="success">是否过关</param>
+		/// <param name="usedTime">使用的时间</param>
+        public static void CommitMatchChallengeLevelResult (
+            long token,
+            bool success,
+            float usedTime,
+            Action<Msg_SC_CMD_CommitMatchChallengeLevelResult> successCallback, Action<ENetResultCode> failedCallback) {
+
+            Msg_CS_CMD_CommitMatchChallengeLevelResult msg = new Msg_CS_CMD_CommitMatchChallengeLevelResult();
+            // 提交匹配挑战关卡数据
+            msg.Token = token;
+            msg.Success = success;
+            msg.UsedTime = usedTime;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CommitMatchChallengeLevelResult>(
+                SoyHttpApiPath.CommitMatchChallengeLevelResult, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CommitMatchChallengeLevelResult", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+            });
+        }
+
+        /// <summary>
+		/// 跳过本次挑战
+		/// </summary>
+		/// <param name="flag">占位</param>
+        public static void MatchSkipChallenge (
+            int flag,
+            Action<Msg_SC_CMD_MatchSkipChallenge> successCallback, Action<ENetResultCode> failedCallback) {
+
+            Msg_CS_CMD_MatchSkipChallenge msg = new Msg_CS_CMD_MatchSkipChallenge();
+            // 跳过本次挑战
+            msg.Flag = flag;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_MatchSkipChallenge>(
+                SoyHttpApiPath.MatchSkipChallenge, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "MatchSkipChallenge", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+            });
+        }
+
+        /// <summary>
 		/// 清空用户数据
 		/// </summary>
 		/// <param name="userId">用户</param>
@@ -497,6 +770,33 @@ namespace GameA
                     }
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ClearUserAll", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+            });
+        }
+
+        /// <summary>
+		/// 执行GM指令
+		/// </summary>
+		/// <param name="userId">用户</param>
+		/// <param name="command"></param>
+        public static void ExecuteCommand (
+            long userId,
+            string command,
+            Action<Msg_SC_CMD_ExecuteCommand> successCallback, Action<ENetResultCode> failedCallback) {
+
+            Msg_CS_CMD_ExecuteCommand msg = new Msg_CS_CMD_ExecuteCommand();
+            // 执行GM指令
+            msg.UserId = userId;
+            msg.Command = command;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ExecuteCommand>(
+                SoyHttpApiPath.ExecuteCommand, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ExecuteCommand", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
