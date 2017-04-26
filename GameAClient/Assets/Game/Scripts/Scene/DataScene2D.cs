@@ -255,28 +255,34 @@ namespace GameA.Game
             return _cachedUnits;
         }
 
-        public void BindSwitch(IntVec3 switchGuid, IntVec3 unitGuid)
+        public bool BindSwitch(IntVec3 switchGuid, IntVec3 unitGuid)
         {
             if (!_switchedUnits.ContainsKey(switchGuid))
             {
                 _switchedUnits.Add(switchGuid, new List<IntVec3>());
             }
+            if (_switchedUnits[switchGuid].Contains(unitGuid))
+            {
+                return false;
+            }
             _switchedUnits[switchGuid].Add(unitGuid);
+            return true;
         }
 
-        public void UnbindSwitch(IntVec3 switchGuid, IntVec3 unitGuid)
+        public bool UnbindSwitch(IntVec3 switchGuid, IntVec3 unitGuid)
         {
             List<IntVec3> unitsGuid;
             if (!_switchedUnits.TryGetValue(switchGuid, out unitsGuid))
             {
                 LogHelper.Error("UnbindSwitch Failed, {0}, {1}", switchGuid, unitGuid);
-                return;
+                return false;
             }
             unitsGuid.Remove(unitGuid);
             if (unitsGuid.Count == 0)
             {
                 _switchedUnits.Remove(switchGuid);
             }
+            return true;
         }
 
         #endregion
