@@ -235,7 +235,11 @@ namespace GameA.Game
         #endregion
 
         #region Switch
-
+        /// <summary>
+        /// 查找开关控制的Unit
+        /// </summary>
+        /// <returns>The switched units.</returns>
+        /// <param name="guid">开关id.</param>
         public List<UnitBase> GetSwitchedUnits(IntVec3 guid)
         {
             List<IntVec3> unitsGuid;
