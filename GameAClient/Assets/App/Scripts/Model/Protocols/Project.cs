@@ -35,16 +35,32 @@ namespace GameA
         private int _programVersion;
         // 
         private int _resourcesVersion;
-        // 
+        // 是否有效
         private bool _isValid;
-        // 
+        // 收藏次数等信息
         private ProjectExtend _extendData;
-        // 
+        // 用户收藏等信息
         private ProjectUserData _projectUserData;
-        // 
+        // 是否已经过关
         private bool _passFlag;
-        // 
+        // 过关录像使用时间
         private float _recordUsedTime;
+        // 改造原始section
+        private int _targetSection;
+        // 改造原始level
+        private int _targetLevel;
+        // 地图宽
+        private int _mapWidth;
+        // 地图高
+        private int _mapHeight;
+        // 总地块数
+        private int _totalUnitCount;
+        // 添加地块数量
+        private int _addCount;
+        // 删除地块数量
+        private int _deleteCount;
+        // 修改地块数量
+        private int _modifyCount;
 
         // cs fields----------------------------------
         // 关卡Id
@@ -157,7 +173,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        // 是否有效
         public bool IsValid { 
             get { return _isValid; }
             set { if (_isValid != value) {
@@ -165,7 +181,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        // 收藏次数等信息
         public ProjectExtend ExtendData { 
             get { return _extendData; }
             set { if (_extendData != value) {
@@ -173,7 +189,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        // 用户收藏等信息
         public ProjectUserData ProjectUserData { 
             get { return _projectUserData; }
             set { if (_projectUserData != value) {
@@ -181,7 +197,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        // 是否已经过关
         public bool PassFlag { 
             get { return _passFlag; }
             set { if (_passFlag != value) {
@@ -189,11 +205,75 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        // 过关录像使用时间
         public float RecordUsedTime { 
             get { return _recordUsedTime; }
             set { if (_recordUsedTime != value) {
                 _recordUsedTime = value;
+                SetDirty();
+            }}
+        }
+        // 改造原始section
+        public int TargetSection { 
+            get { return _targetSection; }
+            set { if (_targetSection != value) {
+                _targetSection = value;
+                SetDirty();
+            }}
+        }
+        // 改造原始level
+        public int TargetLevel { 
+            get { return _targetLevel; }
+            set { if (_targetLevel != value) {
+                _targetLevel = value;
+                SetDirty();
+            }}
+        }
+        // 地图宽
+        public int MapWidth { 
+            get { return _mapWidth; }
+            set { if (_mapWidth != value) {
+                _mapWidth = value;
+                SetDirty();
+            }}
+        }
+        // 地图高
+        public int MapHeight { 
+            get { return _mapHeight; }
+            set { if (_mapHeight != value) {
+                _mapHeight = value;
+                SetDirty();
+            }}
+        }
+        // 总地块数
+        public int TotalUnitCount { 
+            get { return _totalUnitCount; }
+            set { if (_totalUnitCount != value) {
+                _totalUnitCount = value;
+                SetDirty();
+            }}
+        }
+        // 添加地块数量
+        public int AddCount { 
+            get { return _addCount; }
+            set { if (_addCount != value) {
+                _addCount = value;
+                SetDirty();
+            }}
+        }
+        // 删除地块数量
+        public int DeleteCount { 
+            get { return _deleteCount; }
+            set { if (_deleteCount != value) {
+                _deleteCount = value;
+                SetDirty();
+            }}
+        }
+        // 修改地块数量
+        public int ModifyCount { 
+            get { return _modifyCount; }
+            set { if (_modifyCount != value) {
+                _modifyCount = value;
                 SetDirty();
             }}
         }
@@ -277,6 +357,14 @@ namespace GameA
             }
             _passFlag = msg.PassFlag;           
             _recordUsedTime = msg.RecordUsedTime;           
+            _targetSection = msg.TargetSection;           
+            _targetLevel = msg.TargetLevel;           
+            _mapWidth = msg.MapWidth;           
+            _mapHeight = msg.MapHeight;           
+            _totalUnitCount = msg.TotalUnitCount;           
+            _addCount = msg.AddCount;           
+            _deleteCount = msg.DeleteCount;           
+            _modifyCount = msg.ModifyCount;           
             OnSyncPartial();
             return true;
         }

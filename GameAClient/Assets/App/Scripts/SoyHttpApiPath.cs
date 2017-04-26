@@ -88,7 +88,29 @@ namespace SoyEngine
         public const string BuyAvatarPart = "/home/buyAvatarPart";
         // 转盘抽奖
         public const string Raffle = "/home/raffle";
-        // 清空用户数据
-        public const string ClearUserAll = "/gm/clearUserAll";
+        // 用户匹配改造数据
+        public const string MatchUserData = "match/getUserData";
+        // 改造
+        public const string Reform = "match/reform";
+        // 随机改造关卡
+        public const string ReselectReformLevel = "match/reselectReformLevel";
+        // 领取改造奖励
+        public const string GetReformReward = "match/getReformReward";
+        // 上传改造关卡
+        public const string SaveReformProject = "/match/saveReformProject";
+        // 发布改造关卡
+        public const string PublishReformProject = "/match/publishReformProject";
+        // 获取挑战关卡
+        public const string GetMatchChallengeProject = "/match/getChallengeProject";
+        // 选取挑战关卡
+        public const string SelectMatchChallengeProject = "/match/selectChallengeProject";
+        // 开始挑战
+        public const string PlayMatchChallengeLevel = "/match/playChallengeLevel";
+        // 提交匹配挑战关卡数据
+        public const string CommitMatchChallengeLevelResult = "/match/commitChallengeLevelResult";
+        // 跳过本次挑战
+        public const string MatchSkipChallenge = "/match/skipChallenge";
+        // 执行GM指令
+        public const string ExecuteCommand = "/gm/executeCommand";
     }
 }
