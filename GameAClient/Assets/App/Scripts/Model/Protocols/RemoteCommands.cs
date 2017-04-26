@@ -753,30 +753,6 @@ namespace GameA
         }
 
         /// <summary>
-		/// 清空用户数据
-		/// </summary>
-		/// <param name="userId">用户</param>
-        public static void ClearUserAll (
-            long userId,
-            Action<Msg_SC_CMD_ClearUserAll> successCallback, Action<ENetResultCode> failedCallback) {
-
-            Msg_CS_CMD_ClearUserAll msg = new Msg_CS_CMD_ClearUserAll();
-            // 清空用户数据
-            msg.UserId = userId;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ClearUserAll>(
-                SoyHttpApiPath.ClearUserAll, msg, ret => {
-                    if (successCallback != null) {
-                        successCallback.Invoke(ret);
-                    }
-                }, (failedCode, failedMsg) => {
-                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ClearUserAll", failedCode, failedMsg);
-                    if (failedCallback != null) {
-                        failedCallback.Invoke(failedCode);
-                    }
-            });
-        }
-
-        /// <summary>
 		/// 执行GM指令
 		/// </summary>
 		/// <param name="userId">用户</param>

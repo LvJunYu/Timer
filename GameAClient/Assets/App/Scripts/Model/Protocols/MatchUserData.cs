@@ -30,7 +30,7 @@ namespace GameA
         // 剩余挑战次数
         private int _leftChallengeCount;
         // 剩余挑战次数刷新时间
-        private int _leftChallengeCountRefreshTime;
+        private long _leftChallengeCountRefreshTime;
         // 挑战次数累计间隔秒数
         private int _challengeIntervalSecond;
         // 最大可累计挑战次数
@@ -140,7 +140,7 @@ namespace GameA
             }}
         }
         // 剩余挑战次数刷新时间
-        public int LeftChallengeCountRefreshTime { 
+        public long LeftChallengeCountRefreshTime { 
             get { return _leftChallengeCountRefreshTime; }
             set { if (_leftChallengeCountRefreshTime != value) {
                 _leftChallengeCountRefreshTime = value;

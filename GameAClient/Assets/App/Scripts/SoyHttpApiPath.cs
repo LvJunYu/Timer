@@ -110,8 +110,6 @@ namespace SoyEngine
         public const string CommitMatchChallengeLevelResult = "/match/commitChallengeLevelResult";
         // 跳过本次挑战
         public const string MatchSkipChallenge = "/match/skipChallenge";
-        // 清空用户数据
-        public const string ClearUserAll = "/gm/clearUserAll";
         // 执行GM指令
         public const string ExecuteCommand = "/gm/executeCommand";
     }
