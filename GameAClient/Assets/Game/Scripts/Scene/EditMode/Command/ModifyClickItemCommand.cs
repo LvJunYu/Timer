@@ -33,10 +33,10 @@ namespace GameA.Game
         {
             if (InputManager.Instance.IsTouchDown)
             {
-//                if (CheckDragCondition(mousePos))
-//                {
-//                    EditMode.Instance.ChangeCurCommand(new DragCommand(_clickedUnit, mousePos));
-//                }
+                if (CheckDragCondition(mousePos))
+                {
+                    EditMode.Instance.ChangeCurCommand(new ModifyDragCommand(_clickedDesc, mousePos));
+                }
                 _pushFlag = false;
             }
             else

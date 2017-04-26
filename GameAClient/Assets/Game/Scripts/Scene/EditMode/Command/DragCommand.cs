@@ -16,25 +16,25 @@ namespace GameA.Game
 {
     public class DragCommand : CommandBase, ICommand
     {
-        private bool _success;
+        protected bool _success;
 
-        private UnitDesc _dragUnitDesc;
-        private UnitExtra _dragUnitExtra;
-        private Table_Unit _dragTableUnit;
+        protected UnitDesc _dragUnitDesc;
+        protected UnitExtra _dragUnitExtra;
+        protected Table_Unit _dragTableUnit;
 
-        private Vector2 _actualMousePos;
+        protected Vector2 _actualMousePos;
 
-        private static Transform _dragHelperParent;
+        protected static Transform _dragHelperParent;
 
         // offset of mouse position between draggingOnject position when command begin 
-        private Vector3 _mouseObjectOffsetInWorld;
-        private UnitDesc _addedDesc;
+        protected Vector3 _mouseObjectOffsetInWorld;
+        protected UnitDesc _addedDesc;
 
-        private UnitBase _virUnit;
+        protected UnitBase _virUnit;
 
-        private bool _isAddChild;
-        private IntVec3 _parentGuid;
-        private UnitChild _lastUnitChild;
+        protected bool _isAddChild;
+        protected IntVec3 _parentGuid;
+        protected UnitChild _lastUnitChild;
 
         public DragCommand(UnitDesc dragedDesc, Vector2 mousePos)
         {
@@ -48,7 +48,7 @@ namespace GameA.Game
             _mouseObjectOffsetInWorld = objectWorldPos + GM2DTools.GetUnitDragingOffset(_dragUnitDesc.Id) - GM2DTools.ScreenToWorldPoint(mousePos);
         }
 
-        public bool Execute(Vector2 mousePos)
+        public virtual bool Execute(Vector2 mousePos)
         {
             if (_success && InputManager.Instance.IsTouchDown)
             {
@@ -59,9 +59,11 @@ namespace GameA.Game
                 }
                 _actualMousePos = Vector2.Lerp(_actualMousePos, mousePos, 0.02f * Time.deltaTime);
                 Vector3 realMousePos = GM2DTools.ScreenToWorldPoint(_actualMousePos);
+                // 把物体放在摄像机裁剪范围内
 				realMousePos.z = -50;
                 _dragHelperParent.position = realMousePos + _mouseObjectOffsetInWorld + _virUnit.TableUnit.ModelOffset;
 
+                // 摇晃和缩放被拖拽物体
                 Vector2 delta = _actualMousePos - mousePos;
                 _dragHelperParent.eulerAngles = new Vector3(0, 0, Mathf.Clamp(delta.x * 0.5f, -45f, 45f));
                 if (delta.y > 0)
@@ -89,7 +91,7 @@ namespace GameA.Game
                 _dragHelperParent.localScale = new Vector3(Mathf.Clamp(1f + delta.y * 0.0025f, 0.8f, 1.2f), Mathf.Clamp(1f - delta.y * 0.005f, 0.8f, 1.2f), 1f);
                 _pushFlag = true;
                 return false;
-            }
+            } else
             {
                 if (_pushFlag)
                 {
@@ -220,7 +222,7 @@ namespace GameA.Game
             return true;
         }
 
-        private void TryCreateCurDraggingUnitBase()
+        protected void TryCreateCurDraggingUnitBase()
         {
             if (_virUnit == null)
             {
