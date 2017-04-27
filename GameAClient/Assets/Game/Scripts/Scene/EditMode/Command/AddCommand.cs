@@ -13,7 +13,7 @@ namespace GameA.Game
 {
     public class AddCommand : CommandBase, ICommand
     {
-		public bool Execute(Vector2 mousePos)
+		public virtual bool Execute(Vector2 mousePos)
         {
             if (InputManager.Instance.IsTouchDown)
             {

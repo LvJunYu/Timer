@@ -51,7 +51,7 @@ namespace GameA.Game
         private IntVec2 _changedTileSize;
 
         [SerializeField]
-        private int _selectedItemId;
+        protected int _selectedItemId;
         [SerializeField]
         private bool _isPlaying;
         private bool _isDraggingItem;

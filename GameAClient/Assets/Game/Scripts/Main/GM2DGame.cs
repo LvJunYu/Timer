@@ -421,6 +421,7 @@ namespace GameA.Game
 				GM2DGUIManager.Instance.GetUI<UICtrlEdit> ().ChangeToEditTestMode ();
 				GM2DGUIManager.Instance.CloseUI<UICtrlScreenOperator> ();
 				GM2DGUIManager.Instance.OpenUI<UICtrlSceneState> ();
+                GM2DGUIManager.Instance.CloseUI<UICtrlModifyEdit> ();
 				InputManager.Instance.ShowGameInput ();
 			} else if (mode == EMode.Edit) {
 				GM2DGUIManager.Instance.OpenUI<UICtrlCreate> ();
@@ -444,6 +445,7 @@ namespace GameA.Game
 			} else if (mode == EMode.ModifyEdit) {
 				GM2DGUIManager.Instance.OpenUI<UICtrlEdit> ().ChangeToModifyMode ();
 				GM2DGUIManager.Instance.CloseUI<UICtrlSceneState> ();
+                GM2DGUIManager.Instance.OpenUI<UICtrlModifyEdit> ();
 				InputManager.Instance.HideGameInput ();
 			}
         }

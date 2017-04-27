@@ -13,7 +13,7 @@ namespace GameA.Game
 {
     public class ModifyAddCommand : AddCommand
     {
-		public bool Execute(Vector2 mousePos)
+		public override bool Execute(Vector2 mousePos)
         {
             if (InputManager.Instance.IsTouchDown)
             {
@@ -30,11 +30,15 @@ namespace GameA.Game
                     {
                         return false;
                     }
-					if (EditMode.Instance.AddUnit(unitDesc))
+                    ModifyEditMode edit = EditMode.Instance as ModifyEditMode;
+                    if (null != edit && edit.CheckCanModifyAdd(unitDesc))
 					{
-                        _buffers.Add(new UnitEditData(unitDesc, UnitExtra.zero));
-                        _pushFlag = true;
-                        GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioEditorLayItem);
+                        if (EditMode.Instance.AddUnit (unitDesc)) {
+                            _buffers.Add (new UnitEditData (unitDesc, UnitExtra.zero));
+                            _pushFlag = true;
+                            GameAudioManager.Instance.PlaySoundsEffects (AudioNameConstDefineGM2D.GameAudioEditorLayItem);
+                            edit.OnModifyAdd (new UnitEditData(unitDesc, UnitExtra.zero));
+                        }
                     }
                 }
                 return false;
