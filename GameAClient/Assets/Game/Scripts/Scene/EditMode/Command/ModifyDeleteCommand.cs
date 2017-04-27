@@ -51,14 +51,18 @@ namespace GameA.Game
                     //        }
                     //    }
                     //}
-                    if (EditMode.Instance.DeleteUnit(unitDesc))
-                    {
-                        UnitExtra unitExtra;
-                        DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra);
-                        _buffers.Add(new UnitEditData(unitDesc, unitExtra));
-						((ModifyEditMode)EditMode.Instance).OnModifyDelete (new UnitEditData(unitDesc, unitExtra));
+                    ModifyEditMode editMode = ((ModifyEditMode)EditMode.Instance);
+                    if (null != editMode) {
+                        if (editMode.CheckCanModifyErase (unitDesc)) {
+                            UnitExtra unitExtra;
+                            DataScene2D.Instance.TryGetUnitExtra (unitDesc.Guid, out unitExtra);
+                            if (editMode.DeleteUnit (unitDesc)) {
+                                _buffers.Add (new UnitEditData (unitDesc, unitExtra));
+                                ((ModifyEditMode)EditMode.Instance).OnModifyDelete (new UnitEditData (unitDesc, unitExtra));
 //                        _pushFlag = true;
-					}
+                            }
+                        }
+                    }
                 }
                 return false;
             }

@@ -188,7 +188,7 @@ namespace GameA.Game
             }
         }
 
-        private void UpdateSign()
+        public void UpdateSign()
         {
             var tableUnit = _unit.TableUnit;
             //当不可动但却能动，说明有蓝石

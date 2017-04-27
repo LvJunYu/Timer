@@ -79,49 +79,53 @@ namespace GameA.Game
                         ? EnvManager.EffectLayer
                         : EnvManager.UnitLayerWithoutEffect;
                     var coverUnits = DataScene2D.GridCastAllReturnUnits(target, layerMask);
-                    //for (int i = 0; i < coverUnits.Count; i++)
-                    //{
-                    //    var tableUnit = UnitManager.Instance.GetTableUnit(coverUnits[i].Id);
-                    //    if (tableUnit.EPairType > 0 && !CheckCanAddChild(_dragTableUnit, coverUnits[i]))
-                    //    {
-                    //        Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("不可覆盖{0}", tableUnit.Name));
-                    //        _success = false;
-                    //        _pushFlag = false;
-                    //        EditMode.Instance.AddUnit(_dragUnitDesc);
-                    //        break;
-                    //    }
-                    //}
-                    if (_success)
-                    {
-                        _addedDesc = target;
-                        DataScene2D.Instance.ProcessUnitExtra(_addedDesc.Guid, _dragUnitExtra);
-                        if (EditMode.Instance.AddUnit(target))
-                        {
+//                    if (coverUnits.Count != 0) {
+//                        Messenger<string>.Broadcast(EMessengerType.GameLog, "不能覆盖原有的物体");
+//                    } else {
+                    if (_success) {
+                        if (coverUnits.Count != 0) {
+                            Messenger<string>.Broadcast (EMessengerType.GameLog, "只能移动或变换，不能覆盖");
+                            _success = false;
+                        } else {
+                            _addedDesc = target;
+                            EditMode.Instance.SetDraggingState (false);
+                            if (_dragUnitDesc != _addedDesc) {
+                                ModifyEditMode editMode = ((ModifyEditMode)EditMode.Instance);
+                                if (null != editMode && editMode.ChackCanModifyModify (_dragUnitDesc, _addedDesc)) {
 
-                        }
-                        else
-                        {
-                            DataScene2D.Instance.DeleteUnitExtra(_addedDesc.Guid);
-                            _addedDesc = UnitDesc.zero;
-                            for (int i = 0; i < _buffers.Count; i++)
-                            {
-                                DataScene2D.Instance.ProcessUnitExtra(_buffers[i].UnitDesc.Guid, _buffers[i].UnitExtra);
-                                EditMode.Instance.AddUnit(_buffers[i].UnitDesc);
+                                    DataScene2D.Instance.ProcessUnitExtra (_addedDesc.Guid, _dragUnitExtra);
+                                    if (EditMode.Instance.AddUnit (target)) {
+                                
+                                        ((ModifyEditMode)EditMode.Instance).OnModifyModify (
+                                            new UnitEditData (_dragUnitDesc, _dragUnitExtra), 
+                                            new UnitEditData (_addedDesc, _dragUnitExtra)
+                                        );
+
+                                    } else {
+                                        _success = false;        
+                                    }
+                                } else {
+                                    _success = false;
+                                }
+                            } else {
+                                _success = false;
                             }
-                            DataScene2D.Instance.ProcessUnitExtra(_dragUnitDesc.Guid, _dragUnitExtra);
-                            EditMode.Instance.AddUnit(_dragUnitDesc);
+                        }
+                        if (!_success) {
+                            DataScene2D.Instance.DeleteUnitExtra (_addedDesc.Guid);
+                            _addedDesc = UnitDesc.zero;
+                            for (int i = 0; i < _buffers.Count; i++) {
+                                DataScene2D.Instance.ProcessUnitExtra (_buffers [i].UnitDesc.Guid, _buffers [i].UnitExtra);
+                                EditMode.Instance.AddUnit (_buffers [i].UnitDesc);
+                            }
+                            DataScene2D.Instance.ProcessUnitExtra (_dragUnitDesc.Guid, _dragUnitExtra);
+                            EditMode.Instance.AddUnit (_dragUnitDesc);
                             _pushFlag = false;
                         }
-                        
                     }
+//                    }
                     UnitManager.Instance.FreeUnitView(_virUnit);
                     EditMode.Instance.SetDraggingState(false);
-                    if (_dragUnitDesc != _addedDesc) {
-                        ((ModifyEditMode)EditMode.Instance).OnModifyModify (
-                            new UnitEditData (_dragUnitDesc, _dragUnitExtra), 
-                            new UnitEditData (_addedDesc, _dragUnitExtra)
-                        );
-                    }
                 }
                 return _pushFlag;
             }

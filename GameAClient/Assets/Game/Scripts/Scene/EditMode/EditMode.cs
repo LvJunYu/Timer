@@ -276,7 +276,7 @@ namespace GameA.Game
                 return false;
             }
             AfterAddUnit(unitDesc, tableUnit);
-			Messenger.Broadcast(EMessengerType.OnModifyUnitChanged);
+//			Messenger.Broadcast(EMessengerType.OnModifyUnitChanged);
             return true;
         }
 

@@ -60,6 +60,15 @@ namespace GameA.Game
 		}
 
 		public void OnModifyModify (UnitEditData orig, UnitEditData modified) {
+            // 检查是否是对已修改地块再次进行修改
+            for (int i = 0, n = ModifiedUnits.Count; i < n; i++) {
+                if (ModifiedUnits [i].ModifiedUnit.UnitDesc.Guid == orig.UnitDesc.Guid) {
+                    ModifyData data = ModifiedUnits [i];
+                    data.ModifiedUnit = modified;
+                    ModifiedUnits [i] = data;
+                    return;
+                }
+            }
 			ModifiedUnits.Add (new ModifyData(orig, modified));
 			Messenger.Broadcast(EMessengerType.OnModifyUnitChanged);
 		}
@@ -80,6 +89,7 @@ namespace GameA.Game
 			} else {
 				DataScene2D.Instance.ProcessUnitExtra(data.OrigUnit.UnitDesc.Guid, data.OrigUnit.UnitExtra);
 			}
+            Messenger.Broadcast(EMessengerType.OnModifyUnitChanged);
 		}
 		/// <summary>
 		/// 撤销改造修改
@@ -105,6 +115,7 @@ namespace GameA.Game
 			} else {
 				DataScene2D.Instance.ProcessUnitExtra(data.OrigUnit.UnitDesc.Guid, data.OrigUnit.UnitExtra);
 			}
+            Messenger.Broadcast(EMessengerType.OnModifyUnitChanged);
 		}
 		/// <summary>
 		/// 撤销改造添加
@@ -112,6 +123,7 @@ namespace GameA.Game
 		public void UndoModifyAdd (int idx) {
 			
 		}
+
 
 		public override void Init ()
 		{
@@ -141,7 +153,9 @@ namespace GameA.Game
 				UnitDesc outValue;
 				if (TryGetSelectedObject(Input.mousePosition, out outValue))
 				{
-					_currentCommand = new ModifyClickItemCommand(outValue, gesture.position);
+                    if (ChackCanModifyModify (outValue, outValue)) {
+                        _currentCommand = new ModifyClickItemCommand (outValue, gesture.position);
+                    }
 				}
 				break;
 			case ECommandType.Create:
@@ -198,15 +212,14 @@ namespace GameA.Game
 
 		}
 
-		public override bool DeleteUnit (UnitDesc unitDesc)
-		{
-			if (CheckCanModifyErase ()) {
-				return base.DeleteUnit (unitDesc);
-			} else {
-				Messenger<string>.Broadcast(EMessengerType.GameLog, "擦除次数已用完");
-				return false;
-			}
-		}
+//		public override bool DeleteUnit (UnitDesc unitDesc)
+//		{
+//            if (CheckCanModifyErase (unitDesc)) {
+//				return base.DeleteUnit (unitDesc);
+//			} else {
+//				return false;
+//			}
+//		}
 
 //		protected override void AfterDeleteUnit (UnitDesc unitDesc, Table_Unit tableUnit)
 //		{
@@ -217,12 +230,72 @@ namespace GameA.Game
 		/// 检查是否可以改造擦除
 		/// </summary>
 		/// <returns><c>true</c>, if can modify erase was checked, <c>false</c> otherwise.</returns>
-		private bool CheckCanModifyErase () {
+        public bool CheckCanModifyErase (UnitDesc unitDesc) {
+            // 检查是否是删除的物体
+            for (int i = 0, n = RemovedUnits.Count; i < n; i++) {
+                if (RemovedUnits [i].OrigUnit.UnitDesc.Guid == unitDesc.Guid) {
+                    // 出错的才会到这里
+                    Messenger<string>.Broadcast(EMessengerType.GameLog, "不能重复删除物体");
+                    return false;
+                }
+            }
+            // 检查是否是改动的物体
+            for (int i = 0, n = ModifiedUnits.Count; i < n; i++) {
+                if (ModifiedUnits [i].OrigUnit.UnitDesc.Guid == unitDesc.Guid ||
+                    ModifiedUnits [i].ModifiedUnit.UnitDesc.Guid == unitDesc.Guid) {
+                    return false;
+                }
+            }
+            // 检查是否是添加的物体
+            for (int i = 0, n = AddedUnits.Count; i < n; i++) {
+                if (AddedUnits [i].ModifiedUnit.UnitDesc.Guid == unitDesc.Guid) {
+                    Messenger<string>.Broadcast(EMessengerType.GameLog, "不能删除改造添加的物体");
+                    return false;
+                }
+            }
+            // 检查是否达到了删除数量上限
 			// todo 限制数量从玩家属性中取
 			if (RemovedUnits.Count >= 5) {
+                Messenger<string>.Broadcast(EMessengerType.GameLog, "擦除次数已用完");
 				return false;
-			} return true;
+			}
+            return true;
 		}
+        /// <summary>
+        /// 检查是否可以改造修改
+        /// </summary>
+        /// <returns><c>true</c>, if can modify modify was chacked, <c>false</c> otherwise.</returns>
+        /// <param name="orig">Original.</param>
+        /// <param name="modified">Modified.</param>
+        public bool ChackCanModifyModify (UnitDesc orig, UnitDesc modified) {
+            // 检查目标位置是否存在删除物体
+            for (int i = 0, n = RemovedUnits.Count; i < n; i++) {
+                if (RemovedUnits [i].OrigUnit.UnitDesc.Guid == modified.Guid) {
+                    Messenger<string>.Broadcast(EMessengerType.GameLog, "不能覆盖改造删除的物体");
+                    return false;
+                }
+            }
+            // 检查原物体是否是添加物体
+            for (int i = 0, n = AddedUnits.Count; i < n; i++) {
+                if (AddedUnits [i].ModifiedUnit.UnitDesc.Guid == orig.Guid) {
+                    Messenger<string>.Broadcast(EMessengerType.GameLog, "不能覆盖改造添加的物体");
+                    return false;
+                }
+            }
+            // 检查目标位置是否是已修改物体的原位置
+            for (int i = 0, n = ModifiedUnits.Count; i < n; i++) {
+                if (ModifiedUnits [i].OrigUnit.UnitDesc.Guid == modified.Guid) {
+                    Messenger<string>.Broadcast(EMessengerType.GameLog, "不能移动到已移动物体的原位置");
+                    return false;
+                }
+            }
+            // todo 限制数量从玩家属性中取
+            if (ModifiedUnits.Count >= 5) {
+                Messenger<string>.Broadcast(EMessengerType.GameLog, "改变次数已用完");
+                return false;
+            }
+            return true;
+        }
 
 
 		// disabled features

@@ -247,6 +247,12 @@ namespace GameA.Game
                 return;
             }
             _unitExtras.AddOrReplace(guid, unitExtra);
+            // 更新unit
+            UnitBase unit = null;
+            if (ColliderScene2D.Instance.TryGetUnit(guid, out unit))
+            {
+                unit.UpdateExtraData ();
+            }
         }
 
         public void ProcessUnitChild(IntVec3 guid, UnitChild unitChild)

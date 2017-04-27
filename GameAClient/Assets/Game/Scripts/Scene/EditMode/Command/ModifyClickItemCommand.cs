@@ -45,12 +45,15 @@ namespace GameA.Game
                 {
                     return false;
                 }
-                _pushFlag = DoClickOperator();
-				if (_pushFlag) {
-                    ((ModifyEditMode)EditMode.Instance).OnModifyModify (
-                        new UnitEditData(_clickedDesc, _clickedExtra),
-                        new UnitEditData(_modifiedDesc, _modifiedExtra));
-				}
+                ModifyEditMode editMode = ((ModifyEditMode)EditMode.Instance);
+                if (null != editMode && editMode.ChackCanModifyModify(_clickedDesc, _modifiedDesc)) {
+                    _pushFlag = DoClickOperator ();
+                    if (_pushFlag) {
+                        ((ModifyEditMode)EditMode.Instance).OnModifyModify (
+                            new UnitEditData (_clickedDesc, _clickedExtra),
+                            new UnitEditData (_modifiedDesc, _modifiedExtra));
+                    }
+                }
             }
             return _pushFlag;
 		}
