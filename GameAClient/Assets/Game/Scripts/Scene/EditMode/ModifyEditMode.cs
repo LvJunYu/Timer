@@ -20,6 +20,8 @@ namespace GameA.Game
     {
 		#region fileds
         private static Vector2 MaskEffectOffset = new Vector2(0.35f, 0.4f);
+
+        private float _lastShowUnitPosEffectTime = 0;
 //		/// <summary>
 //		/// 删除修改的物体堆栈
 //		/// </summary>
@@ -64,6 +66,17 @@ namespace GameA.Game
 		}
         #endregion
 		#region Methods
+
+        public void ShowUnitPosEffect (IntVec3 guid) {
+            if (Time.timeSinceLevelLoad - _lastShowUnitPosEffectTime < 0.5f)
+                return;
+            _lastShowUnitPosEffectTime = Time.timeSinceLevelLoad;
+            Vector3 pos = GM2DTools.TileToWorld(guid);
+            pos.z = -60;
+            pos.x += MaskEffectOffset.x;
+            pos.y += MaskEffectOffset.y;
+            GameParticleManager.Instance.Emit (ParticleNameConstDefineGM2D.HereItIs, pos, Vector3.one, 2f);
+        }
 
         public void OnModifyAdd (UnitEditData orig) {
             AddedUnits.Add (new ModifyData(orig, orig));
@@ -415,6 +428,15 @@ namespace GameA.Game
 		/// </summary>
 		/// <returns><c>true</c>, if can modify erase was checked, <c>false</c> otherwise.</returns>
         public bool CheckCanModifyErase (UnitDesc unitDesc) {
+            // 检查是否是不能删除的特殊物体
+            if (unitDesc.Id == ConstDefineGM2D.PlayerTableId) {
+                Messenger<string>.Broadcast(EMessengerType.GameLog, "不能删除主角");
+                return false;
+            } else if (unitDesc.Id == ConstDefineGM2D.FinalDoorId) {
+                Messenger<string>.Broadcast(EMessengerType.GameLog, "不能删除终点");
+                return false;
+            }
+
             // 检查是否是删除的物体
             for (int i = 0, n = RemovedUnits.Count; i < n; i++) {
                 if (RemovedUnits [i].OrigUnit.UnitDesc.Guid == unitDesc.Guid) {

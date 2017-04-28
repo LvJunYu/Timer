@@ -61,6 +61,8 @@ namespace GameA.Game
         private Grid2D _limitedMapGrid;
         private bool _is2FingersPressed;
 
+        private ECommandType _cmdTypeBeforeMove;
+
 		/// <summary>
 		/// 命令管理
 		/// </summary>
@@ -792,7 +794,7 @@ namespace GameA.Game
             if (CheckReceiveTwoFingerEvent())
             {
                 Vector2 deltaWorldPos = GM2DTools.ScreenToWorldSize(gesture.deltaPosition);
-                CameraManager.Instance.UpdateFadePostionOffset(deltaWorldPos);
+                CameraManager.Instance.MovePosInEditor(deltaWorldPos);
             }
         }
 
@@ -815,7 +817,7 @@ namespace GameA.Game
             if (!_isPlaying)
             {
                 Vector2 deltaWorldPos = GM2DTools.ScreenToWorldSize(delta);
-                CameraManager.Instance.UpdateFadePostionOffset(deltaWorldPos);
+                CameraManager.Instance.MovePosInEditor(deltaWorldPos);
             }
         }
 
@@ -959,10 +961,16 @@ namespace GameA.Game
                 case ECommandType.Create:
                 break;
             case ECommandType.Move:
+                _cmdTypeBeforeMove = _commandType;
                 CancelCurrentCommand ();
                     break;
             }
-            _commandType = eCommandType;
+            // 从移动操作退出时，回到移动操作前的操作
+            if (_commandType == ECommandType.Move) {
+                _commandType = _cmdTypeBeforeMove;
+            } else {
+                _commandType = eCommandType;
+            }
             Messenger.Broadcast(EMessengerType.AfterCommandChanged);
             //Debug.Log("OnCommandChanged:" + eCommandType);
             if (_commandType == ECommandType.Pause)

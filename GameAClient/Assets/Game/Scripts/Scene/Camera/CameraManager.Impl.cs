@@ -21,12 +21,72 @@ namespace GameA.Game
         private OrthoSizeSpringbackEffect _orthoEffect;
 
 
+
         public void SetEditorModeStartPos(Vector3 pos)
         {
             UpdateVaildMapRect();
             UpdateCameraViewRect();
             UpdateCameraMoveRect();
             UpdatePos(pos, true);
+        }
+
+        /// <summary>
+        /// 编辑器状态下设定摄像机的位置
+        /// </summary>
+        /// <param name="offset">Offset.</param>
+        public void MovePosInEditor(Vector2 offset)
+        {
+            _positionEffect.Move(offset);
+            Messenger.Broadcast(EMessengerType.OnEditorModeCameraMove);
+        }
+
+        public void LerpPosInEditor (Vector2 pos) {
+            _positionEffect.Lerp(pos);
+        }
+
+        public void OnDragEnd(Vector2 delta)
+        {
+            _positionEffect.OnDragEnd(delta);
+        }
+
+        public void OnPinchEnd()
+        {
+            _orthoEffect.OnPinchEnd();
+        }
+
+        public void UpdateFadeCameraOrthoSizeOffset(float offset)
+        {
+            _orthoEffect.UpdateOffset(offset);
+            //   _finalOrthoSize += offset;
+            //Tweener t = _rendererCamera.DOOrthoSize(_finalOrthoSize, ConstDefineGM2D.CameraOrthoSizeFadeTime);
+            //t.SetEase(Ease.OutQuart);
+        }
+
+        public bool CheckReachLimitLeft(Vector3 pos)
+        {
+            if (_cameraViewRect.xMin - _validMapRect.xMin < ConstDefineGM2D.ScreenOperatorVisibleDiffer)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool CheckReachLimitRight(Vector3 pos)
+        {
+            if (_validMapRect.xMax - _cameraViewRect.xMax < ConstDefineGM2D.ScreenOperatorVisibleDiffer)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool CheckReachLimitTop(Vector3 pos)
+        {
+            if (_validMapRect.yMax - _cameraViewRect.yMax < ConstDefineGM2D.ScreenOperatorVisibleDiffer)
+            {
+                return true;
+            }
+            return false;
         }
 
         #region event
@@ -80,7 +140,16 @@ namespace GameA.Game
             UpdatePos(new Vector2(x, y), false, finishCallback,false);
         }
 
+        private void OnFinishTweenCameraPos()
+        {
+            Messenger.Broadcast(EMessengerType.ForceUpdateCameraMaskSize);
+        }
 
+
+        #endregion
+
+        #region private
+        
         private void UpdatePos(Vector2 pos, bool immediately = false, Action finishCallback = null,bool clampPos = true)
         {
             _finalPos = pos;
@@ -89,7 +158,7 @@ namespace GameA.Game
                 _finalPos.x = Mathf.Clamp(_finalPos.x, _cameraMoveRect.xMin, _cameraMoveRect.xMax);
                 _finalPos.y = Mathf.Clamp(_finalPos.y, _cameraMoveRect.yMin, _cameraMoveRect.yMax);
             }
-
+            
             if (immediately)
             {
                 RendererCameraPos = _finalPos;
@@ -99,77 +168,13 @@ namespace GameA.Game
                 const float duration = 1;
                 DoCameraTweenPos(_finalPos, duration, finishCallback);
             }
-
+            
             if (GM2DGame.Instance.CurrentMode == EMode.Edit)
             {
                 UpdateCameraViewRect();
                 Messenger.Broadcast(EMessengerType.OnEditorModeCameraMove);
             }
         }
-
-
-        private void OnFinishTweenCameraPos()
-        {
-            Messenger.Broadcast(EMessengerType.ForceUpdateCameraMaskSize);
-        }
-
-
-        #endregion
-
-
-
-        public void UpdateFadePostionOffset(Vector2 offset)
-        {
-            _positionEffect.UpdatePosOffset(offset);
-        }
-
-        public void OnDragEnd(Vector2 delta)
-        {
-            _positionEffect.OnDragEnd(delta);
-        }
-
-        public void OnPinchEnd()
-        {
-            _orthoEffect.OnPinchEnd();
-        }
-
-        public void UpdateFadeCameraOrthoSizeOffset(float offset)
-        {
-            _orthoEffect.UpdateOffset(offset);
-            //   _finalOrthoSize += offset;
-            //Tweener t = _rendererCamera.DOOrthoSize(_finalOrthoSize, ConstDefineGM2D.CameraOrthoSizeFadeTime);
-            //t.SetEase(Ease.OutQuart);
-        }
-
-        public bool CheckReachLimitLeft(Vector3 pos)
-        {
-            if (_cameraViewRect.xMin - _validMapRect.xMin < ConstDefineGM2D.ScreenOperatorVisibleDiffer)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public bool CheckReachLimitRight(Vector3 pos)
-        {
-            if (_validMapRect.xMax - _cameraViewRect.xMax < ConstDefineGM2D.ScreenOperatorVisibleDiffer)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public bool CheckReachLimitTop(Vector3 pos)
-        {
-            if (_validMapRect.yMax - _cameraViewRect.yMax < ConstDefineGM2D.ScreenOperatorVisibleDiffer)
-            {
-                return true;
-            }
-            return false;
-        }
-
-
-        #region private
 
         private void DoCameraTweenPos(Vector3 finalPos, float duration, Action finisCallback = null)
         {
