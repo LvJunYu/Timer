@@ -12,13 +12,14 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-	public class PositionSpringbackEffect:MonoBehaviour
+	public class PositionSpringbackEffect : MonoBehaviour
 	{
 		public float InertiaFactor = 1;
 
 		public float Resistance = 30;
 		public const float TimePreFrame = 1f/30;
 		public const float SpringbackCheckPrecision = 0.01f;
+        public const float SmallDistance = 0.01f;
 		public const float SpringbackDuringTime = 0.3f;
 
 		private Transform _cachedTrans; 
@@ -39,12 +40,21 @@ namespace GameA.Game
 		private ESpingState _curState;
 		private Vector2 _springbackAimPos;
 
+        /// <summary>
+        /// 编辑状态下锁住摄像机移动
+        /// </summary>
+        private bool _lockMove;
+        /// <summary>
+        /// 差值移动目标坐标
+        /// </summary>
+        private Vector2 _lerpTargetPos;
 
 		public enum ESpingState
 		{
 			None,
-			InertiaMoving,
+			InertiaMove,
 			Springback,
+            LerpMove,
 		}
 
 		public void Init(Transform trans, Action<Vector2> action)
@@ -84,7 +94,7 @@ namespace GameA.Game
 
 		}
 
-		public void UpdatePosOffset(Vector2 offset)
+		public void Move(Vector2 offset)
 		{
 			Vector2 curPos = _cachedTrans.position;
 			curPos -= offset;
@@ -95,14 +105,19 @@ namespace GameA.Game
 			_curState = ESpingState.None;
 		}
 
+        public void Lerp (Vector2 pos) {
+            _lerpTargetPos = ClampValidRect(pos);
+            _lockMove = true;
+            _curState = ESpingState.LerpMove;
+        }
 
 		private float _inertialMotionTime;
 
 		public void OnDragEnd(Vector2 lastOffset)
 		{
-			if (lastOffset.magnitude < 0.01f)
+            if (lastOffset.magnitude < SmallDistance)
 			{
-				Vector2 delta = GetSpringbackPosition(_cachedTrans.position);
+				Vector2 delta = GetSpringbackDelta(_cachedTrans.position);
 				if (!NeedSpringback(delta))
 				{
 					_curState = ESpingState.None;
@@ -115,7 +130,7 @@ namespace GameA.Game
 			_inertialMotionTime = rel.magnitude/Resistance;
 			_acceleration = -rel.normalized*Resistance;
 
-			_curState = ESpingState.InertiaMoving;
+			_curState = ESpingState.InertiaMove;
 			_curSpeed = rel;
 			_startTime = Time.realtimeSinceStartup;
 		}
@@ -128,9 +143,9 @@ namespace GameA.Game
 			}
 			switch (_curState)
 			{
-				case ESpingState.InertiaMoving:
+				case ESpingState.InertiaMove:
 				{
-					DoUpdateInertiaMoving();
+					DoUpdateInertiaMove();
 					break;
 				}
 				case ESpingState.Springback:
@@ -138,6 +153,12 @@ namespace GameA.Game
 					DoUpdateSpringback();
 					break;
 				}
+            case ESpingState.LerpMove:
+                {
+                    DoUpdateLerpMove ();
+                    break;
+                }
+                Messenger.Broadcast(EMessengerType.OnEditorModeCameraMove);
 			}
 
 		}
@@ -173,7 +194,19 @@ namespace GameA.Game
 			}
 		}
 
-		private void DoUpdateInertiaMoving()
+        private void DoUpdateLerpMove () {
+            Vector2 v = _lerpTargetPos - (Vector2)_cachedTrans.position;
+            if (v.sqrMagnitude < SmallDistance * 0.25f) {
+                _cachedTrans.position = _lerpTargetPos;
+                _curState = ESpingState.None;
+                return;
+            }
+            Vector3 target = new Vector3 (_lerpTargetPos.x, _lerpTargetPos.y, _cachedTrans.position.z);
+            _cachedTrans.position = Vector3.Lerp (_cachedTrans.position, _lerpTargetPos, Time.deltaTime * 6);
+            SetFinalPos (_cachedTrans.position);
+        }
+
+		private void DoUpdateInertiaMove()
 		{
 			if (UpdateSpeed())
 			{
@@ -181,14 +214,14 @@ namespace GameA.Game
 				Vector3 pos = _cachedTrans.position - new Vector3(offset.x, offset.y);
 				pos = ClampedByOuterRect(pos);
 				Vector3 tmp = _cachedTrans.position - pos;
-				if(tmp.magnitude>0.01f)
+                if(tmp.magnitude>SmallDistance)
 				{
 					_cachedTrans.position = ClampedByOuterRect(pos);
 					SetFinalPos(pos);
 					return;
 				}
 			}
-			Vector2 delta = GetSpringbackPosition(_cachedTrans.position);
+			Vector2 delta = GetSpringbackDelta(_cachedTrans.position);
 			if (!NeedSpringback(delta))
 			{
 				_curState = ESpingState.None;
@@ -219,7 +252,7 @@ namespace GameA.Game
 		}
 
 
-		private Vector2 GetSpringbackPosition(Vector2 pos)
+		private Vector2 GetSpringbackDelta(Vector2 pos)
 		{
 			Vector2 res = Vector2.zero;
 			if (pos.x < _validMoveRect.xMin)
@@ -242,6 +275,28 @@ namespace GameA.Game
 			}
 			return res;
 		}
+
+        private Vector2 ClampValidRect (Vector2 pos) {
+            if (pos.x < _validMoveRect.xMin)
+            {
+                pos.x = _validMoveRect.xMin;
+            }
+            else if(pos.x > _validMoveRect.xMax)
+            {
+                pos.x = _validMoveRect.xMax;
+            }
+
+
+            if (pos.y < _validMoveRect.yMin)
+            {
+                pos.y = _validMoveRect.yMin; 
+            }
+            else if (pos.y > _validMoveRect.yMax)
+            {
+                pos.y = _validMoveRect.yMax;
+            }
+            return pos;
+        }
 
 		private bool NeedSpringback(Vector2 delta)
 		{

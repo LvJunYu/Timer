@@ -151,14 +151,17 @@ namespace GameA.Game
         /// </summary>
         /// <param name="idx">Index.</param>
         private void OnModifyItemIconBtn (int idx) {
-//            if (EditMode.Instance.CurCommandType == ECommandType.Create) {
-//                ((ModifyEditMode)EditMode.Instance).UndoModifyAdd (idx);
-//            } else if (EditMode.Instance.CurCommandType == ECommandType.Erase) {
-//                ((ModifyEditMode)EditMode.Instance).UndoModifyErase (idx);
-//            } else if (EditMode.Instance.CurCommandType == ECommandType.Modify) {
-//                ((ModifyEditMode)EditMode.Instance).UndoModifModify (idx);
-//            }
-            Debug.Log ("____________Press icon btn " + idx);
+            IntVec3 unitPos = IntVec3.zero;
+            if (EditMode.Instance.CurCommandType == ECommandType.Create) {
+                unitPos = ((ModifyEditMode)EditMode.Instance).AddedUnits [idx].ModifiedUnit.UnitDesc.Guid;
+            } else if (EditMode.Instance.CurCommandType == ECommandType.Erase) {
+                unitPos = ((ModifyEditMode)EditMode.Instance).RemovedUnits [idx].OrigUnit.UnitDesc.Guid;
+            } else if (EditMode.Instance.CurCommandType == ECommandType.Modify) {
+                unitPos = ((ModifyEditMode)EditMode.Instance).ModifiedUnits [idx].ModifiedUnit.UnitDesc.Guid;
+            }
+
+            CameraManager.Instance.LerpPosInEditor(GM2DTools.TileToWorld(unitPos));
+            ((ModifyEditMode)EditMode.Instance).ShowUnitPosEffect (unitPos);
         }
 
         private void OnModifySelectItemBtn (int idx) {

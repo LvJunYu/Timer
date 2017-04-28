@@ -132,5 +132,8 @@ namespace GameA.Game
         public const int BoxId = 5004;
         public const int RollerId = 5005;
         public const int BillboardId = 7001;
+
+        public const int PlayerTableId = 1001;
+        public const int FinalDoorId = 5001;
     }
 }

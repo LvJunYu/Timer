@@ -396,7 +396,6 @@ namespace GameA.Game
         {
             _finalPos = pos;
             UpdateCameraViewRect();
-            Messenger.Broadcast(EMessengerType.OnEditorModeCameraMove);
         }
 
         private void SetFinalOrtho(float value)
