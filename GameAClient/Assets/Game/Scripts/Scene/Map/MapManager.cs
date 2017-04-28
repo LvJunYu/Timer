@@ -196,7 +196,7 @@ namespace GameA.Game
 			//    return;
 			//}
 			var go = new GameObject("EditMode");
-			go.AddComponent<EditMode>();
+			go.AddComponent<ModifyEditMode>();
 			_mapFile.Read(mapData);
 			//read是协程 后面不能写任何代码
 		}

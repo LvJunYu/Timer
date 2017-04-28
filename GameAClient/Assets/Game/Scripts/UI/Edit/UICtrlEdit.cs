@@ -7,7 +7,7 @@
 
 using System;
 using System.Collections;
-
+using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine;
 using UnityEngine;
@@ -99,6 +99,12 @@ namespace GameA.Game
             _moveBtnOrigPos = _cachedView.MoveBtn.RectTrans.localPosition;
             //_moveBtnOrigPos = new Vector2 (60, -50);
         }
+
+		protected override void OnDestroy ()
+		{
+			base.OnDestroy ();
+			Messenger.RemoveListener(EMessengerType.AfterCommandChanged, AfterCommandChanged);
+		}
 
         public override void OnUpdate ()
         {
@@ -197,8 +203,6 @@ namespace GameA.Game
 				if (_cachedView.Capture != null) {
 					_cachedView.Capture.gameObject.SetActive (false);
 				}
-
-				_cachedView.ModifyPannel.SetActive (false);
 				break;
 			case EMode.EditTest:
 				_cachedView.Erase.gameObject.SetActive(false);
@@ -219,8 +223,6 @@ namespace GameA.Game
 				{
 					_cachedView.Capture.gameObject.SetActive(false);
 				}
-
-				_cachedView.ModifyPannel.SetActive (false);
 				break;
 			case EMode.PlayRecord:
 				_cachedView.Erase.gameObject.SetActive(false);
@@ -241,13 +243,11 @@ namespace GameA.Game
 				{
 					_cachedView.Capture.gameObject.SetActive(false);
 				}
-
-				_cachedView.ModifyPannel.SetActive (false);
 				break;
 			case EMode.ModifyEdit:
 				_cachedView.Erase.gameObject.SetActive(false);
 				_cachedView.Redo.gameObject.SetActive(false);
-				_cachedView.Undo.gameObject.SetActive(true);
+				_cachedView.Undo.gameObject.SetActive(false);
 				_cachedView.Publish.gameObject.SetActive(false);
 				_cachedView.ButtonFinishCondition.SetActiveEx(false);
 
@@ -263,8 +263,6 @@ namespace GameA.Game
 				{
 					_cachedView.Capture.gameObject.SetActive(false);
 				}
-
-				_cachedView.ModifyPannel.SetActive (true);
 				break;
 			}
 		}
@@ -445,7 +443,6 @@ namespace GameA.Game
             //ShowMenu (true);
         }
 
-
 		private void Broadcast(ECommandType type)
         {
             //关掉UICtrlItem
@@ -458,7 +455,10 @@ namespace GameA.Game
 	    private void AfterCommandChanged()
 	    {
 		    //UpdateMoveButtonState();
-			UpdateEraseButtonState();
+			if (_editMode == EMode.Edit) {
+				UpdateEraseButtonState ();
+			} else if (_editMode == EMode.ModifyEdit) {
+			}
 		}
 
 		#endregion

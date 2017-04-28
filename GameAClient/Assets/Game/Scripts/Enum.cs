@@ -116,9 +116,19 @@ namespace GameA.Game
         Pause,
 		Drag,
 		Move,
+		Modify,
         Max,
     }
-
+	/// <summary>
+	/// 改造类型
+	/// </summary>
+	public enum EModifyType {
+		None,
+		Add,
+		Erase,
+		Modify,
+		Max,
+	}
 	public enum ECompositeEditorState
 	{
 		None,
@@ -163,14 +173,14 @@ namespace GameA.Game
         CanJumpAnywhereAnyNumberOfTimes
     }
 
-    public enum EModifyType
-    {
-        None,
-        Speed = 1,
-        AccOnGround = 2,
-        JumpEnabled = 3,
-        PushForce = 4,
-    }
+//    public enum EModifyType
+//    {
+//        None,
+//        Speed = 1,
+//        AccOnGround = 2,
+//        JumpEnabled = 3,
+//        PushForce = 4,
+//    }
 
     public enum ESlotType
     {

@@ -11,9 +11,9 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    public class AddCommand : CommandBase, ICommand
+    public class ModifyAddCommand : AddCommand
     {
-		public virtual bool Execute(Vector2 mousePos)
+		public override bool Execute(Vector2 mousePos)
         {
             if (InputManager.Instance.IsTouchDown)
             {
@@ -30,11 +30,15 @@ namespace GameA.Game
                     {
                         return false;
                     }
-					if (EditMode.Instance.AddUnit(unitDesc))
+                    ModifyEditMode edit = EditMode.Instance as ModifyEditMode;
+                    if (null != edit && edit.CheckCanModifyAdd(unitDesc))
 					{
-                        _buffers.Add(new UnitEditData(unitDesc, UnitExtra.zero));
-                        _pushFlag = true;
-                        GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioEditorLayItem);
+                        if (EditMode.Instance.AddUnit (unitDesc)) {
+                            _buffers.Add (new UnitEditData (unitDesc, UnitExtra.zero));
+                            _pushFlag = true;
+                            GameAudioManager.Instance.PlaySoundsEffects (AudioNameConstDefineGM2D.GameAudioEditorLayItem);
+                            edit.OnModifyAdd (new UnitEditData(unitDesc, UnitExtra.zero));
+                        }
                     }
                 }
                 return false;
@@ -44,29 +48,11 @@ namespace GameA.Game
 
         public bool Redo()
         {
-            //Debug.Log("AddCommand Redo: " + _buffers.Count);
-            if (_buffers.Count > 0)
-            {
-                for (int i = 0; i < _buffers.Count; i++)
-                {
-                    EditMode.Instance.AddUnit(_buffers[i].UnitDesc);
-                }
-                return true;
-            }
             return false;
         }
 
         public bool Undo()
         {
-            //Debug.Log("AddCommand Undo: " + _buffers.Count);
-            if (_buffers.Count > 0)
-            {
-                for (int i = 0; i < _buffers.Count; i++)
-                {
-                    EditMode.Instance.DeleteUnit(_buffers[i].UnitDesc);
-                }
-                return true;
-            }
             return false;
         }
 

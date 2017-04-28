@@ -42,7 +42,7 @@ namespace GameA.Game
         }
     }
 
-    public struct UnitEditData
+    public struct UnitEditData : IEquatable<UnitEditData>
     {
         public UnitDesc UnitDesc;
         public UnitExtra UnitExtra;
@@ -51,6 +51,20 @@ namespace GameA.Game
         {
             UnitDesc = unitDesc;
             UnitExtra = unitExtra;
+        }
+        public static bool operator ==(UnitEditData a, UnitEditData other)
+        {
+            return (a.UnitDesc == other.UnitDesc) && (a.UnitExtra == other.UnitExtra);
+        }
+
+        public static bool operator !=(UnitEditData a, UnitEditData other)
+        {
+            return !(a == other);
+        }
+
+        public bool Equals (UnitEditData other)
+        {
+            return (UnitDesc == other.UnitDesc) && (UnitExtra == other.UnitExtra);
         }
     }
 }

@@ -35,7 +35,7 @@ namespace GameA.Game
 				if (mouse2)
 				{
 					Vector2 delta = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - _lastMousePos;
-					Messenger<Vector2>.Broadcast(EMessengerType.OnDrag_2MouseButton, delta);
+					Messenger<Vector2>.Broadcast(EMessengerType.OnDrag_MouseBtn2, delta);
 					_lastMousePos = Input.mousePosition;
 					_lastDelta = delta;
 				}
@@ -43,7 +43,7 @@ namespace GameA.Game
 				{
 					_is2MouseButtonPress = false;
                     var deltaWorldPos = GM2DTools.ScreenToWorldSize(_lastDelta);
-					Messenger<Vector2>.Broadcast(EMessengerType.OnDrag_2MouseEnd, deltaWorldPos);
+					Messenger<Vector2>.Broadcast(EMessengerType.OnDrag_MouseBtn2End, deltaWorldPos);
 				}
 			}
 			else

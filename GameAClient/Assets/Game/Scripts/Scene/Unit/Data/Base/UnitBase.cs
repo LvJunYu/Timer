@@ -668,6 +668,16 @@ namespace GameA.Game
         {
         }
 
+        /// <summary>
+        /// 更新额外信息
+        /// </summary>
+        public void UpdateExtraData () {
+            _moveDirection = DataScene2D.Instance.GetUnitExtra(_guid).MoveDirection;
+            if (null != _view) {
+                _view.UpdateSign ();
+            }
+        }
+
         public bool Equals(UnitBase other)
         {
             return other.Guid == _guid;
