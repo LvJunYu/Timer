@@ -21,12 +21,18 @@ namespace GameA
         private int _curReformSection;
         // 当前改造关卡所属关卡
         private int _curReformLevel;
-        // 最后改造时间
-        private long _lastReformTime;
+        // 当前改造状态
+        private int _curReformState;
         // 改造间隔秒数
         private int _reformIntervalSeconds;
         // 当前正在改造的关卡数据
         private Project _curReformProject;
+        // 改造可改变地块数
+        private int _reformModifyUnitCapacity;
+        // 改造可添加地块数
+        private int _reformAddUnitCapacity;
+        // 改造可删除地块数
+        private int _reformDeleteUnitCapacity;
         // 剩余挑战次数
         private int _leftChallengeCount;
         // 剩余挑战次数刷新时间
@@ -107,11 +113,11 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 最后改造时间
-        public long LastReformTime { 
-            get { return _lastReformTime; }
-            set { if (_lastReformTime != value) {
-                _lastReformTime = value;
+        // 当前改造状态
+        public int CurReformState { 
+            get { return _curReformState; }
+            set { if (_curReformState != value) {
+                _curReformState = value;
                 SetDirty();
             }}
         }
@@ -128,6 +134,30 @@ namespace GameA
             get { return _curReformProject; }
             set { if (_curReformProject != value) {
                 _curReformProject = value;
+                SetDirty();
+            }}
+        }
+        // 改造可改变地块数
+        public int ReformModifyUnitCapacity { 
+            get { return _reformModifyUnitCapacity; }
+            set { if (_reformModifyUnitCapacity != value) {
+                _reformModifyUnitCapacity = value;
+                SetDirty();
+            }}
+        }
+        // 改造可添加地块数
+        public int ReformAddUnitCapacity { 
+            get { return _reformAddUnitCapacity; }
+            set { if (_reformAddUnitCapacity != value) {
+                _reformAddUnitCapacity = value;
+                SetDirty();
+            }}
+        }
+        // 改造可删除地块数
+        public int ReformDeleteUnitCapacity { 
+            get { return _reformDeleteUnitCapacity; }
+            set { if (_reformDeleteUnitCapacity != value) {
+                _reformDeleteUnitCapacity = value;
                 SetDirty();
             }}
         }
@@ -303,13 +333,16 @@ namespace GameA
             }
             _curReformSection = msg.CurReformSection;           
             _curReformLevel = msg.CurReformLevel;           
-            _lastReformTime = msg.LastReformTime;           
+            _curReformState = msg.CurReformState;           
             _reformIntervalSeconds = msg.ReformIntervalSeconds;           
             if (null == _curReformProject) {
                 _curReformProject = new Project(msg.CurReformProject);
             } else {
                 _curReformProject.OnSyncFromParent(msg.CurReformProject);
             }
+            _reformModifyUnitCapacity = msg.ReformModifyUnitCapacity;           
+            _reformAddUnitCapacity = msg.ReformAddUnitCapacity;           
+            _reformDeleteUnitCapacity = msg.ReformDeleteUnitCapacity;           
             _leftChallengeCount = msg.LeftChallengeCount;           
             _leftChallengeCountRefreshTime = msg.LeftChallengeCountRefreshTime;           
             _challengeIntervalSecond = msg.ChallengeIntervalSecond;           
