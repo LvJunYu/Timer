@@ -328,6 +328,10 @@ namespace GameA
 
 		public void ReturnToHome () {
 			_defaultUIStack.CloseAll();
+            UICtrlTaskbar taskBar = SocialGUIManager.Instance.GetUI<UICtrlTaskbar>();
+            if (taskBar != null && taskBar.IsViewCreated) {
+                taskBar.Open (null);
+            }
 //			ClearUIStackStack();
 		}
 
