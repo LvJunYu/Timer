@@ -45,6 +45,8 @@ namespace GameA.Game
         public const int DefaultGeneratedTileWidth = 30 * ServerTileScale;
         public const int MaxHeightTileCount = 10;
 
+        public const float cBotMaxPositionError = 1.0f;
+
 
         public static Vector2 RatioPlayerPos = new Vector2(0.5f,0.5f);
 

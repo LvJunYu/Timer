@@ -14,7 +14,7 @@ using UnitySampleAssets.CrossPlatformInput;
 
 namespace GameA.Game
 {
-    public enum InputType
+    public enum EInputType
     {
         Left,
         Right,
@@ -41,9 +41,9 @@ namespace GameA.Game
         protected EFire2State _fire2State;
 
         [SerializeField]
-        protected bool[] _curInputs = new bool[(int)InputType.Max];
+        protected bool[] _curInputs = new bool[(int)EInputType.Max];
         [SerializeField]
-        protected bool[] _lastInputs = new bool[(int)InputType.Max];
+        protected bool[] _lastInputs = new bool[(int)EInputType.Max];
 
         [SerializeField]
         protected float _lastHorizontal;
@@ -227,75 +227,75 @@ namespace GameA.Game
         {
             _lastHorizontal = _curHorizontal;
             _curHorizontal = CrossPlatformInputManager.GetAxis("Horizontal");
-            if (KeyDown(InputType.Left))
+            if (KeyDown(EInputType.Left))
             {
-                _curInputs[(int)InputType.Left] = true;
+                _curInputs[(int)EInputType.Left] = true;
             }
-            if (KeyUp(InputType.Left))
+            if (KeyUp(EInputType.Left))
             {
-                _curInputs[(int)InputType.Left] = false;
+                _curInputs[(int)EInputType.Left] = false;
             }
-            if (KeyDown(InputType.Right))
+            if (KeyDown(EInputType.Right))
             {
-                _curInputs[(int)InputType.Right] = true;
+                _curInputs[(int)EInputType.Right] = true;
             }
-            if (KeyUp(InputType.Right))
+            if (KeyUp(EInputType.Right))
             {
-                _curInputs[(int)InputType.Right] = false;
+                _curInputs[(int)EInputType.Right] = false;
             }
-            if (KeyDown(InputType.Jump))
+            if (KeyDown(EInputType.Jump))
             {
-                _curInputs[(int)InputType.Jump] = true;
+                _curInputs[(int)EInputType.Jump] = true;
             }
-            if (KeyUp(InputType.Jump))
+            if (KeyUp(EInputType.Jump))
             {
-                _curInputs[(int)InputType.Jump] = false;
+                _curInputs[(int)EInputType.Jump] = false;
             }
-            if (KeyDown(InputType.Shoot))
+            if (KeyDown(EInputType.Shoot))
             {
-                _curInputs[(int)InputType.Shoot] = true;
+                _curInputs[(int)EInputType.Shoot] = true;
             }
-            if (KeyUp(InputType.Shoot))
+            if (KeyUp(EInputType.Shoot))
             {
-                _curInputs[(int)InputType.Shoot] = false;
+                _curInputs[(int)EInputType.Shoot] = false;
             }
-            if (KeyDown(InputType.Quicken))
+            if (KeyDown(EInputType.Quicken))
             {
-                _curInputs[(int)InputType.Quicken] = true;
+                _curInputs[(int)EInputType.Quicken] = true;
             }
-            if (KeyUp(InputType.Quicken))
+            if (KeyUp(EInputType.Quicken))
             {
-                _curInputs[(int)InputType.Quicken] = false;
+                _curInputs[(int)EInputType.Quicken] = false;
             }
         }
 
-        protected bool KeyDown(InputType inputType)
+        protected bool KeyDown(EInputType eInputType)
         {
-            switch (inputType)
+            switch (eInputType)
             {
-                case InputType.Left:
+                case EInputType.Left:
                     return _lastHorizontal > -0.1f && _curHorizontal < -0.1f;
-                case InputType.Right:
+                case EInputType.Right:
                     return _lastHorizontal < 0.1f && _curHorizontal > 0.1f;
-                case InputType.Jump:
+                case EInputType.Jump:
                     return CrossPlatformInputManager.GetButtonDown("Jump");
-                case InputType.Shoot:
+                case EInputType.Shoot:
                     return CrossPlatformInputManager.GetButtonDown("Fire1");
-                case InputType.Quicken:
+                case EInputType.Quicken:
                     return CrossPlatformInputManager.GetButtonDown("Fire2");
             }
             return false;
         }
 
-        protected bool KeyUp(InputType inputType)
+        protected bool KeyUp(EInputType eInputType)
         {
-            switch (inputType)
+            switch (eInputType)
             {
-                case InputType.Left:
+                case EInputType.Left:
                     return _lastHorizontal < -0.1f && _curHorizontal > -0.1f;
-                case InputType.Right:
+                case EInputType.Right:
                     return _lastHorizontal > 0.1f && _curHorizontal < 0.1f;
-                case InputType.Jump:
+                case EInputType.Jump:
                     if (GuideManager.Instance.IsLockJumpButton)
                     {
                         return false;
@@ -305,9 +305,9 @@ namespace GameA.Game
                         return true;
                     }
                     return CrossPlatformInputManager.GetButtonUp("Jump");
-                case InputType.Shoot:
+                case EInputType.Shoot:
                     return CrossPlatformInputManager.GetButtonUp("Fire1");
-                case InputType.Quicken:
+                case EInputType.Quicken:
                     return CrossPlatformInputManager.GetButtonUp("Fire2");
             }
             return false;

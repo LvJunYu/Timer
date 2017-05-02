@@ -23,6 +23,7 @@ namespace GameA.Game
         [SerializeField] private readonly List<UnitBase> _allUnits = new List<UnitBase>();
         private Comparison<UnitBase> _comparisonMoving = SortRectIndex;
         private InterestArea _interestArea;
+        private byte[,] _pathGrid;
 
         public static ColliderScene2D Instance
         {
@@ -65,6 +66,15 @@ namespace GameA.Game
             Init(width, height);
             InitRegions(regionTilesCount);
             _interestArea = new InterestArea(RegionTileSize * 1.5f, RegionTileSize * 2.5f, this);
+            _pathGrid = new byte[Mathf.NextPowerOfTwo(width / JoyConfig.ServerTileScale), Mathf.NextPowerOfTwo(height / JoyConfig.ServerTileScale)];
+            for (int i = 0; i < _pathGrid.GetLength(0); i++)
+            {
+                for (int j = 0; j < _pathGrid.GetLength(1); j++)
+                {
+                    _pathGrid[i, j] = 1;
+                }
+            }
+            InitPathFinder(_pathGrid);
         }
 
         protected override void OnInit()
@@ -119,6 +129,10 @@ namespace GameA.Game
             {
                 PlayMode.Instance.MainUnit = (MainUnit)unit;
             }
+            else
+            {
+                _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 0;
+            }
             _allUnits.Add(unit);
             return true;
         }
@@ -143,6 +157,7 @@ namespace GameA.Game
                 return true;
             }
             _allUnits.Remove(unit);
+            _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 1;
             UnitManager.Instance.FreeUnitView(unit);
             return _units.Remove(unitDesc.Guid);
         }
@@ -660,5 +675,54 @@ namespace GameA.Game
         }
 
         #endregion
+
+        #region path
+
+        public List<IntVec2> FindPath(UnitBase unit, UnitBase target, short maxCharacterJumpHeight)
+        {
+            var start = unit.CurPos / ConstDefineGM2D.ServerTileScale;
+            var end = target.CurPos / ConstDefineGM2D.ServerTileScale;
+            var size = unit.GetColliderSize() / ConstDefineGM2D.ServerTileScale;
+            return FindPath(start, end, Math.Max(1, size.x), Math.Max(1, size.y), maxCharacterJumpHeight);
+        }
+
+        public override bool IsOnewayPlatform(int x, int y)
+        {
+            return base.IsOnewayPlatform(x, y);
+        }
+
+        public override bool IsGround(int x, int y)
+        {
+            if (_pathGrid[x, y] == 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        #endregion
+
+        internal bool AnySolidBlockInStripe(int x, int y0, int y1)
+        {
+            int startY, endY;
+            if (y0 <= y1)
+            {
+                startY = y0;
+                endY = y1;
+            }
+            else
+            {
+                startY = y1;
+                endY = y0;
+            }
+            for (int y = startY; y <= endY; ++y)
+            {
+                if (IsGround(x, y))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }
