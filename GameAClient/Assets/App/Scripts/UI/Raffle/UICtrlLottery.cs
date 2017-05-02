@@ -27,7 +27,7 @@ namespace GameA
     {
         #region 常量与字段
 
-        private int SelectedTicketNum = 0;
+        private int selectedTicketNum = 0;
 
         //初始旋转速度
         private float mInitSpeed = 0;
@@ -66,11 +66,11 @@ namespace GameA
 
         private void RefreshRaffleCount()
         {
-            _cachedView.Ticketlvl1.text = LocalUser.Instance.RaffleTicket.RaffleDictionary(1).ToString();//查看数量
-            _cachedView.Ticketlvl2.text = LocalUser.Instance.RaffleTicket.RaffleDictionary(2).ToString();
-            _cachedView.Ticketlvl3.text = LocalUser.Instance.RaffleTicket.RaffleDictionary(3).ToString();
-            _cachedView.Ticketlvl4.text = LocalUser.Instance.RaffleTicket.RaffleDictionary(4).ToString();
-            _cachedView.Ticketlvl5.text = LocalUser.Instance.RaffleTicket.RaffleDictionary(5).ToString();
+            _cachedView.NumberOfTicketlvl1.text = LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(1).ToString();//查看数量
+            _cachedView.NumberOfTicketlvl2.text = LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(2).ToString();
+            _cachedView.NumberOfTicketlvl3.text = LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(3).ToString();
+            _cachedView.NumberOfTicketlvl4.text = LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(4).ToString();
+            _cachedView.NumberOfTicketlvl5.text = LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(5).ToString();
         }
 
 
@@ -94,18 +94,18 @@ namespace GameA
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtnClick);
 
             //_cachedView.RaffleTicketlvl1.onClick.AddListener(()=>OnSelectedRaffleBtn(1));
-            _cachedView.RaffleTicketlvl1.onClick.AddListener(OnSelectedRaffleBtn1); //注册每个按钮点击时会显示当前选中
-            _cachedView.RaffleTicketlvl2.onClick.AddListener(OnSelectedRaffleBtn2);
-            _cachedView.RaffleTicketlvl3.onClick.AddListener(OnSelectedRaffleBtn3);
-            _cachedView.RaffleTicketlvl4.onClick.AddListener(OnSelectedRaffleBtn4);
-            _cachedView.RaffleTicketlvl5.onClick.AddListener(OnSelectedRaffleBtn5);
-            _cachedView.RaffleButton.onClick.AddListener(() => UseRaffleTicket(this.SelectedTicketNum));
+            _cachedView.RaffleTicketlvl1Btn.onClick.AddListener(OnSelectedRaffleBtn1); //注册每个按钮点击时会显示当前选中
+            _cachedView.RaffleTicketlvl2Btn.onClick.AddListener(OnSelectedRaffleBtn2);
+            _cachedView.RaffleTicketlvl3Btn.onClick.AddListener(OnSelectedRaffleBtn3);
+            _cachedView.RaffleTicketlvl4Btn.onClick.AddListener(OnSelectedRaffleBtn4);
+            _cachedView.RaffleTicketlvl5Btn.onClick.AddListener(OnSelectedRaffleBtn5);
+            _cachedView.RaffleBtn.onClick.AddListener(() => UseRaffleTicket(this.selectedTicketNum));
 
         }
 
         private void UseRaffleTicket(int selectedTicketNum)
         {
-            if (LocalUser.Instance.RaffleTicket.RaffleDictionary(selectedTicketNum) > 0)
+            if (LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(selectedTicketNum) > 0)
             {
 
                 this.mInitSpeed = 100;
@@ -115,7 +115,7 @@ namespace GameA
                 // RotateThePanel(LocalUser.Instance.RaffleTicket.CurrentRewardId);
 
             }
-            else _cachedView.ShowSelectedTicket.text = "抽奖券数量不够";
+            else _cachedView.SelectedTicketType.text = "抽奖券数量不够";
         }
 
 
@@ -125,7 +125,7 @@ namespace GameA
             this.mInitSpeed = 0;
             _cachedView.mRoolPanel.rotation = Quaternion.Euler(0, 0, rewardid * 360 / 8);
             this.isPause = true;
-
+            _cachedView.RewardExhibition.text = rewardid.ToString();
 
         }
 
@@ -168,29 +168,29 @@ namespace GameA
 
         private void OnSelectedRaffleBtn1()
         {
-            this.SelectedTicketNum = 1;
-            _cachedView.ShowSelectedTicket.text = "新手抽奖券";
+            this.selectedTicketNum = 1;
+            _cachedView.SelectedTicketType.text = "新手抽奖券";
         }
 
         private void OnSelectedRaffleBtn2()
         {
-            this.SelectedTicketNum = 2;
-            _cachedView.ShowSelectedTicket.text = "初级抽奖券";
+            this.selectedTicketNum = 2;
+            _cachedView.SelectedTicketType.text = "初级抽奖券";
         }
         private void OnSelectedRaffleBtn3()
         {
-            this.SelectedTicketNum = 3;
-            _cachedView.ShowSelectedTicket.text = "中级抽奖券";
+            this.selectedTicketNum = 3;
+            _cachedView.SelectedTicketType.text = "中级抽奖券";
         }
         private void OnSelectedRaffleBtn4()
         {
-            this.SelectedTicketNum = 4;
-            _cachedView.ShowSelectedTicket.text = "高级抽奖券";
+            this.selectedTicketNum = 4;
+            _cachedView.SelectedTicketType.text = "高级抽奖券";
         }
         private void OnSelectedRaffleBtn5()
         {
-            this.SelectedTicketNum = 5;
-            _cachedView.ShowSelectedTicket.text = "大师抽奖券";
+            this.selectedTicketNum = 5;
+            _cachedView.SelectedTicketType.text = "大师抽奖券";
         }
 
 

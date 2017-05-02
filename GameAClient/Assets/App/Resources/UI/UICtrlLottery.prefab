@@ -2085,7 +2085,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u70B9\u51FB\u62BD\u5956"
+  m_Text: 
 --- !u!114 &114284782647720518
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2991,20 +2991,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortIndex: 0
   CloseBtn: {fileID: 114900126650076678}
-  RaffleTicketlvl1: {fileID: 114849831477652810}
-  RaffleTicketlvl2: {fileID: 114553072624528476}
-  RaffleTicketlvl3: {fileID: 114490406191898028}
-  RaffleTicketlvl4: {fileID: 114195951738476388}
-  RaffleTicketlvl5: {fileID: 114969539647056168}
-  RaffleButton: {fileID: 114945101177386542}
+  RaffleTicketlvl1Btn: {fileID: 114849831477652810}
+  RaffleTicketlvl2Btn: {fileID: 114553072624528476}
+  RaffleTicketlvl3Btn: {fileID: 114490406191898028}
+  RaffleTicketlvl4Btn: {fileID: 114195951738476388}
+  RaffleTicketlvl5Btn: {fileID: 114969539647056168}
+  RaffleBtn: {fileID: 114945101177386542}
   mRoolPanel: {fileID: 224794829340964618}
-  Ticketlvl1: {fileID: 114520298684330000}
-  Ticketlvl2: {fileID: 114946734416369430}
-  Ticketlvl3: {fileID: 114699819605949318}
-  Ticketlvl4: {fileID: 114052682518246978}
-  Ticketlvl5: {fileID: 114011052458101600}
-  ShowSelectedTicket: {fileID: 114057216248385894}
-  ShowReward: {fileID: 0}
+  NumberOfTicketlvl1: {fileID: 114520298684330000}
+  NumberOfTicketlvl2: {fileID: 114946734416369430}
+  NumberOfTicketlvl3: {fileID: 114699819605949318}
+  NumberOfTicketlvl4: {fileID: 114052682518246978}
+  NumberOfTicketlvl5: {fileID: 114011052458101600}
+  SelectedTicketType: {fileID: 114057216248385894}
+  RewardExhibition: {fileID: 114271593804411166}
 --- !u!114 &114591200073255066
 MonoBehaviour:
   m_ObjectHideFlags: 1

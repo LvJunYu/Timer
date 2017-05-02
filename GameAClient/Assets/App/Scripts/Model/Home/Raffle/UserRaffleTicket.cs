@@ -10,42 +10,28 @@ namespace GameA
     public partial class UserRaffleTicket : SyncronisticData
     {
         //private Dictionary<ERaffleTicketType, RaffleItem> _RaffleTicketDict = new Dictionary<ERaffleTicketType, RaffleItem>();
-        private long _currentRewardId = 0;
         private Dictionary<long, int> _RaffleTicketDict = new Dictionary<long, int>();
         private int _rewardType = 0;
 
-
-        public UserRaffleTicket(long userId)
-        {
-            _userId = userId;
-        }
-
-        public long CurrentRewardId
-        {
-            get { return _currentRewardId; }
-            set { _currentRewardId = value; }
-        }
-
-
-        public void LoadData(Action successCallback, Action<ENetResultCode> failedCallback)
-        {
-            Msg_CS_DAT_UserRaffleTicket msg = new Msg_CS_DAT_UserRaffleTicket();
-            msg.UserId = _userId;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_CS_DAT_UserRaffleTicket>(SoyHttpApiPath.UserRaffleTicket, msg, ret =>
-            {
-                //Set(ret);
-                if (null != successCallback)
-                {
-                    successCallback.Invoke();
-                }
-            }, (errorCode, errorMsg) =>
-            {
-                if (null != failedCallback)
-                {
-                    failedCallback.Invoke(errorCode);
-                }
-            });
-        }
+        //public void LoadData(Action successCallback, Action<ENetResultCode> failedCallback)
+        //{
+        //    Msg_CS_DAT_UserRaffleTicket msg = new Msg_CS_DAT_UserRaffleTicket();
+        //    msg.UserId = _userId;
+        //    NetworkManager.AppHttpClient.SendWithCb<Msg_CS_DAT_UserRaffleTicket>(SoyHttpApiPath.UserRaffleTicket, msg, ret =>
+        //    {
+        //        //Set(ret);
+        //        if (null != successCallback)
+        //        {
+        //            successCallback.Invoke();
+        //        }
+        //    }, (errorCode, errorMsg) =>
+        //    {
+        //        if (null != failedCallback)
+        //        {
+        //            failedCallback.Invoke(errorCode);
+        //        }
+        //    });
+        //}
 
         protected override void OnSyncPartial()
         {
@@ -61,7 +47,7 @@ namespace GameA
             }
         }
 
-        public int RaffleDictionary(int _id)
+        public int GetCountInRaffleDictionary(int _id)
         {
 
             if (_RaffleTicketDict.ContainsKey(_id))
