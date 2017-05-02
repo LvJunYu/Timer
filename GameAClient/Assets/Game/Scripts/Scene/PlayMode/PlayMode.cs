@@ -144,9 +144,9 @@ namespace GameA.Game
             Instance = null;
         }
 
-        public void OnReadMapFile(UnitDesc unitDesc, Table_Unit tableUnit)
+        public void OnReadMapFile(Table_Unit tableUnit)
         {
-            _sceneState.Check(unitDesc, tableUnit);
+            _sceneState.Check(tableUnit);
         }
 
         private void Update()

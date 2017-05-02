@@ -1,8 +1,8 @@
 ﻿/********************************************************************
-** Filename : Key
+** Filename : Life
 ** Author : Dong
-** Date : 2017/4/7 星期五 下午 4:47:08
-** Summary : Key
+** Date : 2017/5/2 星期二 下午 4:57:12
+** Summary : Life
 ***********************************************************************/
 
 using System;
@@ -10,12 +10,12 @@ using System.Collections;
 
 namespace GameA.Game
 {
-    [Unit(Id = 5012, Type = typeof(Key))]
-    public class Key : CollectionBase
+    [Unit(Id = 6002, Type = typeof(Life))]
+    public class Life : CollectionBase
     {
         protected override void OnTrigger()
         {
-            PlayMode.Instance.SceneState.AddKey();
+            PlayMode.Instance.MainUnit.Life ++;
             base.OnTrigger();
         }
     }

@@ -11,7 +11,12 @@ using System.Collections;
 namespace GameA.Game
 {
     [Unit(Id = 6001, Type = typeof(Gem))]
-    public class Gem : UnitBase
+    public class Gem : CollectionBase
     {
+        protected override void OnTrigger()
+        {
+            PlayMode.Instance.SceneState.GemGain++;
+            base.OnTrigger();
+        }
     }
 }

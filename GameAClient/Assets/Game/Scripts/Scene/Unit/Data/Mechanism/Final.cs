@@ -11,7 +11,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     [Unit(Id = 5001, Type = typeof(Final))]
-    public class Final : Magic
+    public class Final : BlockBase
     {
         protected static Final _instance;
 
@@ -39,13 +39,10 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.IsMain)
+            if (!checkOnly && other.IsMain)
             {
                 //播放动画
-                if (PlayMode.Instance.SceneState.CheckWinWithoutConditionArrived())
-                {
-                    PlayMode.Instance.SceneState.Arrived = true;
-                }
+                PlayMode.Instance.SceneState.Arrived = true;
             }
             return base.OnUpHit(other, ref y, checkOnly);
         }

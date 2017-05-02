@@ -228,10 +228,10 @@ namespace GameA.Game
             switch (GM2DGame.Instance.GameInitType)
             {
                 case GameManager.EStartType.Play:
-                PlayMode.Instance.OnReadMapFile(unitDesc, tableUnit);
+                PlayMode.Instance.OnReadMapFile(tableUnit);
                 break;
                 case GameManager.EStartType.PlayRecord:
-                 PlayMode.Instance.OnReadMapFile(unitDesc, tableUnit);
+                 PlayMode.Instance.OnReadMapFile(tableUnit);
                 break;
                 case GameManager.EStartType.Edit:
                 EditMode.Instance.OnReadMapFile(unitDesc, tableUnit);

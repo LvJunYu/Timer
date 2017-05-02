@@ -150,6 +150,11 @@ namespace GameA.Game
             return (_winCondition & (1 << (int) eWinCondition)) != 0;
         }
 
+        public void RemoveCondition(EWinCondition eWinCondition)
+        {
+            _winCondition = (byte)(_winCondition & ~(1 << (int)eWinCondition));
+        }
+
         public void AddFinishCount()
         {
             _levelFinishCount ++;

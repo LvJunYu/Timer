@@ -23,14 +23,15 @@ namespace GameA.Game
             Fail,
         }
 
-        [SerializeField] private bool _arrived;
+        [SerializeField]
+        private ESceneState _runState;
         private float _gameTimer;
+
+        [SerializeField] private bool _arrived;
         [SerializeField] private int _gemGain;
-        private bool _hasNoWinConditionWithoutTimeLimit = false;
         [SerializeField] private int _heroRescued;
         [SerializeField] private int _keyGain;
         [SerializeField] private int _monsterKilled;
-        [SerializeField] private ESceneState _runState;
         [SerializeField] private int _secondLeft;
 
         private MapStatistics _mapStatistics = new MapStatistics();
@@ -91,7 +92,7 @@ namespace GameA.Game
             get { return _arrived; }
             set
             {
-                if (!CheckWinWithoutConditionArrived())
+                if (!CheckWin(true))
                 {
                     return;
                 }
@@ -164,6 +165,19 @@ namespace GameA.Game
             _mapStatistics.LifeCount = levelData.LifeCount;
         }
 
+        private void Reset()
+        {
+            _runState = ESceneState.Run;
+            _gameTimer = 0;
+
+            _arrived = false;
+            _gemGain = 0;
+            _monsterKilled = 0;
+            _heroRescued = 0;
+            _keyGain = 0;
+            _runState = 0;
+        }
+
         public void RePlay()
         {
             Reset();
@@ -194,23 +208,9 @@ namespace GameA.Game
             Messenger.Broadcast(EMessengerType.OnWinDataChanged);
         }
 
-        public void Reset()
+        public void Check(Table_Unit tableUnit)
         {
-            _arrived = false;
-            _gemGain = 0;
-            _monsterKilled = 0;
-            _heroRescued = 0;
-            _keyGain = 0;
-            _runState = 0;
-        }
-
-        /// <summary>
-        ///     Play��PlayRecord��ʼ����ͼʱ��������
-        /// </summary>
-        /// <param name="unitDesc"></param>
-        /// <param name="tableUnit"></param>
-        public void Check(UnitDesc unitDesc, Table_Unit tableUnit)
-        {
+            _mapStatistics.AddOrDelete(tableUnit, true);
         }
 
         public void ForceSetTimeFinish()
@@ -220,12 +220,12 @@ namespace GameA.Game
 
         public bool HasWinCondition(EWinCondition eWinCondition)
         {
-            return (_mapStatistics.WinCondition & (1 << (int) eWinCondition)) != 0;
+            return _mapStatistics.HasWinCondition(eWinCondition);
         }
 
         private void RemoveCondition(EWinCondition eWinCondition)
         {
-            _mapStatistics.WinCondition = (byte) (_mapStatistics.WinCondition & ~(1 << (int) eWinCondition));
+            _mapStatistics.RemoveCondition(eWinCondition);
         }
 
         public void UpdateLogic(float deltaTime)
@@ -300,7 +300,8 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (_hasNoWinConditionWithoutTimeLimit)
+
+            if (_mapStatistics.WinCondition == (int)EWinCondition.TimeLimit)
             {
                 if (CheckWinTimeLimit())
                 {
@@ -334,12 +335,6 @@ namespace GameA.Game
             return true;
         }
 
-        public bool CheckWinWithoutConditionArrived()
-        {
-            return CheckWin(true);
-        }
-
-
         private void UpdateWinState()
         {
             if (!CheckWin())
@@ -348,6 +343,7 @@ namespace GameA.Game
             }
             Messenger.Broadcast(EMessengerType.GameFinishSuccess);
             _runState = ESceneState.Win;
+            LogHelper.Debug("Win");
         }
 
         private bool CheckWinCollectTreasure()
