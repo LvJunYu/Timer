@@ -49,9 +49,9 @@ namespace GameA.Game
         public ClickItemCommand(UnitDesc clickUnit, Vector2 startMousePos)
         {
             _clickedDesc = clickUnit;
-			if (!DataScene2D.Instance.TryGetUnitExtra (_clickedDesc.Guid, out _clickedExtra)) {
-				return;
-			}
+            //if (!DataScene2D.Instance.TryGetUnitExtra (_clickedDesc.Guid, out _clickedExtra)) {
+            //    return;
+            //}
 			_modifiedDesc = _clickedDesc;
 			_modifiedExtra = _clickedExtra;
             _startMousePos = startMousePos;

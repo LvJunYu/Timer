@@ -15,7 +15,7 @@ namespace GameA.Game
     [Unit(Id = 5003, Type = typeof(Portal))]
     public class Portal : BlockBase
     {
-        protected override bool OnInit()
+        internal override bool InstantiateView()
         {
             if (!base.InstantiateView())
             {
