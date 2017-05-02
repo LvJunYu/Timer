@@ -32,6 +32,16 @@ namespace GameA.Game
             return MoveDirection == other.MoveDirection && Msg == other.Msg && RollerDirection == other.RollerDirection && 
                    Child.Equals(other.Child);
         }
+
+        public static bool operator ==(UnitExtra a, UnitExtra other)
+        {
+            return (a.MoveDirection == other.MoveDirection) && (a.Msg == other.Msg) && (a.RollerDirection == other.RollerDirection) && a.Child.Equals(other.Child);
+        }
+
+        public static bool operator !=(UnitExtra a, UnitExtra other)
+        {
+            return !(a == other);
+        }
     }
 
     [Serializable]

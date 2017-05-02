@@ -2,7 +2,7 @@
 ** Filename : UICtrlGamePlay  
 ** Author : ake
 ** Date : 4/27/2016 8:44:10 PM
-** Summary : UICtrlGamePlay  
+** Summary : 游戏胜利条件设置界面 
 ***********************************************************************/
 
 
@@ -15,6 +15,9 @@ using SoyEngine;
 namespace GameA.Game
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
+	/// <summary>
+	/// 游戏胜利条件设置界面
+	/// </summary>
     public class UICtrlGamePlay: UICtrlGenericBase<UIViewGamePlay>
     {
 		private FinishCondition _curCondition;

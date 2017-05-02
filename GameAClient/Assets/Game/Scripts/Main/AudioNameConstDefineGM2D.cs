@@ -53,5 +53,9 @@ namespace GameA.Game
 		public const string WallClimb = "M1EffectWallClimb";
 
         public const string Invincible = "M1OrbitBuff";
+
+        public const string RedMask = "RedMaskEffect";
+        public const string YellowMask = "YellowMaskEffect";
+        public const string HereItIs = "HereItIsEffect";
     }
 }

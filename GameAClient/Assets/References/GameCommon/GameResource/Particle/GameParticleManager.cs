@@ -115,11 +115,11 @@ namespace SoyEngine
 			return true;
 	    }
 
-        public bool Emit(string itemName, Transform parent, float lifeTime)
+        public UnityNativeParticleItem Emit(string itemName, Transform parent, float lifeTime)
         {
             if (string.IsNullOrEmpty(itemName))
             {
-                return false;
+                return null;
             }
 //#if UNITY_EDITOR
 //            itemPrefab = Resources.Load (itemName);
@@ -138,13 +138,13 @@ namespace SoyEngine
 			if (com == null || com.Trans == null)
 			{
 				LogHelper.Error("Emit failed! itemName is {0}", itemName);
-				return false;
+				return null;
 			}
 			com.SetData(true, lifeTime);
             com.SetParent(parent, Vector3.zero);
             com.Play(lifeTime);
 			AddToSceneItems(com);
-			return true;
+			return com;
         }
 
 	    void Update()

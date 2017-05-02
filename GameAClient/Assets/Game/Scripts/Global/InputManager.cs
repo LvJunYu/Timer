@@ -20,12 +20,12 @@ namespace GameA.Game
         public static InputManager Instance;
 
         public GameInputControl GameInputControl;
-        private bool _onTouchDown;
+		private bool _touchDown;
         private bool _keyJump;
 
-        public bool OnTouchDown
+        public bool IsTouchDown
         {
-            get { return _onTouchDown; }
+            get { return _touchDown; }
         }
 
         public void Awake()
@@ -57,12 +57,12 @@ namespace GameA.Game
 
         private void EasyTouchOnOnTouchDown(Gesture gesture)
         {
-            _onTouchDown = true;
+            _touchDown = true;
         }
 
         private void EasyTouchOnOnTouchUp(Gesture gesture)
         {
-            _onTouchDown = false;
+            _touchDown = false;
         }
 
         public void ShowGameInput()
