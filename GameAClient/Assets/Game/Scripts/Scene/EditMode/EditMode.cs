@@ -658,15 +658,14 @@ namespace GameA.Game
 	                    {
 							if (_selectedItemId > 0)
 							{
+								UnitDesc unit;
 								Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(_selectedItemId);
 								if (tableUnit.EUnitType == EUnitType.MainPlayer)
 								{
 									_currentCommand = new AddCommandOnce(_mainPlayer);
 								}
-								else if (tableUnit.Count == 1)
+                                else if (tableUnit.Count == 1 && _replaceUnits.TryGetValue(_selectedItemId, out unit))
 								{
-									UnitDesc unit;
-									_replaceUnits.TryGetValue(_selectedItemId, out unit);
 									_currentCommand = new AddCommandOnce(unit);
 								}
 								else

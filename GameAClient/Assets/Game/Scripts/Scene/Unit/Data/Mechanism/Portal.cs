@@ -15,28 +15,14 @@ namespace GameA.Game
     [Unit(Id = 5003, Type = typeof(Portal))]
     public class Portal : BlockBase
     {
-        protected SkeletonAnimation _animation;
-
         protected override bool OnInit()
         {
-            if (!base.OnInit())
+            if (!base.InstantiateView())
             {
                 return false;
             }
-            _animation = _trans.GetComponent<SkeletonAnimation>();
-            return true;
-        }
-
-        internal override void OnPlay()
-        {
-            base.OnPlay();
-            _animation.state.SetAnimation(0, "Run", true);
-        }
-
-        internal override void Reset()
-        {
-            base.Reset();
-            _animation.Reset();
+            _animation = new AnimationSystem();
+            return _animation.Init(this, "Run");
         }
 
         public static void OnPortal(PairUnit pairUnit, UnitDesc unitDesc)
