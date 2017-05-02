@@ -6,7 +6,8 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserRaffleTicket : SyncronisticData {
+    public partial class UserRaffleTicket : SyncronisticData 
+    {
         #region 字段
         // sc fields----------------------------------
         // 用户

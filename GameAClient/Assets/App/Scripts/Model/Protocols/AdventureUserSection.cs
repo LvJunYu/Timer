@@ -6,7 +6,8 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AdventureUserSection : SyncronisticData {
+    public partial class AdventureUserSection : SyncronisticData 
+    {
         #region 字段
         // sc fields----------------------------------
         // 

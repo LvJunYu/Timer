@@ -6,7 +6,8 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AdventureProjectList : SyncronisticData {
+    public partial class AdventureProjectList : SyncronisticData 
+    {
         #region 字段
         // sc fields----------------------------------
         // 版本号

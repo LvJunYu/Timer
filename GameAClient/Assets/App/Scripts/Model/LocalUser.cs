@@ -19,12 +19,12 @@ namespace GameA
 
         private readonly Account _account = Account.Instance;
 		private UserInfoDetail _user;
-		private UsingAvatarPart _usingAvatarData;
-		private ValidAvatarPart _validAvatarData;
-//        private User _user;
+		private UsingAvatarPart _usingAvatarData =new UsingAvatarPart();
+		private ValidAvatarPart _validAvatarData =new ValidAvatarPart();
+        private UserRaffleTicket _userRaffleTicket =new UserRaffleTicket();
+        //        private User _user;
 
         #endregion
-
         #region 属性
 
         public long UserGuid
@@ -56,14 +56,18 @@ namespace GameA
     			return this._validAvatarData;
     		}
     	}
+
+        public UserRaffleTicket RaffleTicket
+        {
+            get { return this._userRaffleTicket; }
+        }
+
         #endregion
 
         #region 方法
         private LocalUser()
         {
             Messenger.AddListener(SoyEngine.EMessengerType.OnAccountLogout, OnLogout);
-			_usingAvatarData = new UsingAvatarPart ();
-			_validAvatarData = new ValidAvatarPart ();
         }
 
         public bool Init()

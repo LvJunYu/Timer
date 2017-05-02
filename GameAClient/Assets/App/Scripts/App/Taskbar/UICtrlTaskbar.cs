@@ -107,6 +107,8 @@ namespace GameA
 			_cachedView.AvatarBtn.onClick.AddListener (OnAvatarBtn);
             _cachedView.LotteryButton.onClick.AddListener(OnLottery);
 
+          
+
             _cachedView.TestChangeAvatarBtn.onClick.AddListener (OnTestChangeAvatar);
 			_cachedView.DebugClearUserDataBtn.onClick.AddListener (OnDebugClearUserData);
            
@@ -239,6 +241,8 @@ namespace GameA
         {
             SocialGUIManager.Instance.OpenPopupUI<UICtrlLottery>();
         }
+
+
 
         //        private void SelectButton(UnityEngine.UI.Button button)
         //        {
