@@ -11,17 +11,11 @@ using Spine.Unity;
 namespace GameA.Game
 {
     [Unit(Id = 7001, Type = typeof (BillBoard))]
-    public class BillBoard : UnitBase
+    public class BillBoard : Magic
     {
-        private SkeletonAnimation _animation;
         private bool _trigger;
         private UnitBase _unit;
         private int _time;
-
-        public IntVec3 GetGuid()
-        {
-            return _guid;
-        }
 
         public void UpdateLogic(float deltaTime)
         {
@@ -35,7 +29,6 @@ namespace GameA.Game
                         _trigger = false;
                         _unit = null;
                         Messenger.Broadcast(EMessengerType.OnTriggerBulletinBoardExit);
-                        _animation.state.SetAnimation(0, "Run", true);
                     }
                 }
             }
@@ -47,13 +40,11 @@ namespace GameA.Game
             {
                 return false;
             }
-            _animation = _trans.GetComponent<SkeletonAnimation>();
             return true;
         }
 
         internal override void OnPlay()
         {
-            _animation.state.SetAnimation(0, "Run", true);
             _time = 0;
             base.OnPlay();
         }
@@ -76,7 +67,6 @@ namespace GameA.Game
             {
                 _trigger = true;
                 _unit = other;
-                _animation.state.SetAnimation(1, "Start", false);
                 Messenger<IntVec3>.Broadcast(EMessengerType.OnTriggerBulletinBoardEnter, _guid);
                 _time = 0;
             }
