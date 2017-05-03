@@ -5,16 +5,24 @@ namespace GameA.Game
     [Serializable]
 	public partial class Table_Decorate
 	{
-		// 序号
+		/// <summary>
+        /// 序号
+        /// </summary>
 		[ColumnMapping("Id")]
 		public int Id;
-		// 位置
+		/// <summary>
+        /// 位置
+        /// </summary>
 		[ColumnMapping("Position")]
 		public int Position;
-		// 解锁章节
+		/// <summary>
+        /// 解锁章节
+        /// </summary>
 		[ColumnMapping("Chapter")]
 		public int Chapter;
-		// 资源
+		/// <summary>
+        /// 资源
+        /// </summary>
 		[ColumnMapping("Resource")]
 		public string Resource;
 	}

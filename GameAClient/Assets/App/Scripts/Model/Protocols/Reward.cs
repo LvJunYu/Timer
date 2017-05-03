@@ -8,12 +8,16 @@ namespace GameA
 {
     public partial class Reward : SyncronisticData {
         #region 字段
-        // 奖励列表
+        /// <summary>
+        /// 奖励列表
+        /// </summary>
         private List<RewardItem> _itemList;
         #endregion
 
         #region 属性
-        // 奖励列表
+        /// <summary>
+        /// 奖励列表
+        /// </summary>
         public List<RewardItem> ItemList { 
             get { return _itemList; }
             set { if (_itemList != value) {

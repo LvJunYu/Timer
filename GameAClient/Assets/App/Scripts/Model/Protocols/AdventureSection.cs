@@ -8,16 +8,24 @@ namespace GameA
 {
     public partial class AdventureSection : SyncronisticData {
         #region 字段
-        // 章节
+        /// <summary>
+        /// 章节
+        /// </summary>
         private int _section;
-        // 普通关卡列表
+        /// <summary>
+        /// 普通关卡列表
+        /// </summary>
         private List<Project> _normalProjectList;
-        // 奖励关卡列表
+        /// <summary>
+        /// 奖励关卡列表
+        /// </summary>
         private List<Project> _bonusProjectList;
         #endregion
 
         #region 属性
-        // 章节
+        /// <summary>
+        /// 章节
+        /// </summary>
         public int Section { 
             get { return _section; }
             set { if (_section != value) {
@@ -25,7 +33,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 普通关卡列表
+        /// <summary>
+        /// 普通关卡列表
+        /// </summary>
         public List<Project> NormalProjectList { 
             get { return _normalProjectList; }
             set { if (_normalProjectList != value) {
@@ -33,7 +43,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 奖励关卡列表
+        /// <summary>
+        /// 奖励关卡列表
+        /// </summary>
         public List<Project> BonusProjectList { 
             get { return _bonusProjectList; }
             set { if (_bonusProjectList != value) {

@@ -6,27 +6,38 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserRelationStatistic : SyncronisticData 
-    {
+    public partial class UserRelationStatistic : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        // 用户ID
+        /// <summary>
+        /// 用户ID
+        /// </summary>
         private long _userId;
-        // 关注数
+        /// <summary>
+        /// 关注数
+        /// </summary>
         private int _followCount;
-        // 粉丝数
+        /// <summary>
+        /// 粉丝数
+        /// </summary>
         private int _followerCount;
-        // 好友数
+        /// <summary>
+        /// 好友数
+        /// </summary>
         private int _friendCount;
 
         // cs fields----------------------------------
-        // 用户id
+        /// <summary>
+        /// 用户id
+        /// </summary>
         private long _cs_userId;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        // 用户ID
+        /// <summary>
+        /// 用户ID
+        /// </summary>
         public long UserId { 
             get { return _userId; }
             set { if (_userId != value) {
@@ -34,7 +45,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 关注数
+        /// <summary>
+        /// 关注数
+        /// </summary>
         public int FollowCount { 
             get { return _followCount; }
             set { if (_followCount != value) {
@@ -42,7 +55,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 粉丝数
+        /// <summary>
+        /// 粉丝数
+        /// </summary>
         public int FollowerCount { 
             get { return _followerCount; }
             set { if (_followerCount != value) {
@@ -50,7 +65,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 好友数
+        /// <summary>
+        /// 好友数
+        /// </summary>
         public int FriendCount { 
             get { return _friendCount; }
             set { if (_friendCount != value) {
@@ -60,7 +77,9 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        // 用户id
+        /// <summary>
+        /// 用户id
+        /// </summary>
         public long CS_UserId { 
             get { return _cs_userId; }
             set { _cs_userId = value; }

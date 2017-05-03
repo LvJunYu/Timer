@@ -7,8 +7,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public class RemoteCommands 
-    {
+    public class RemoteCommands {
         /// <summary>
 		/// 设备登录包
 		/// </summary>
@@ -19,8 +18,7 @@ namespace GameA
             string appVersion,
             string name,
             EPhoneType devicePlatform,
-            Action<Msg_SC_CMD_LoginByToken> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_LoginByToken> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_LoginByToken msg = new Msg_CS_CMD_LoginByToken();
             // 设备登录包
@@ -46,8 +44,7 @@ namespace GameA
 		/// <param name="flag">占位</param>
         public static void Logout (
             int flag,
-            Action<Msg_SC_CMD_Logout> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_Logout> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_Logout msg = new Msg_CS_CMD_Logout();
             // 退出登录
@@ -81,8 +78,7 @@ namespace GameA
             int resourceVersion,
             bool passFlag,
             float recordUsedTime,
-            Action<Msg_SC_CMD_CreateProject> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_CreateProject> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_CreateProject msg = new Msg_CS_CMD_CreateProject();
             // 创建关卡
@@ -123,8 +119,7 @@ namespace GameA
             int resourceVersion,
             bool passFlag,
             float recordUsedTime,
-            Action<Msg_SC_CMD_UpdateProject> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_UpdateProject> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_UpdateProject msg = new Msg_CS_CMD_UpdateProject();
             // 更新关卡
@@ -154,8 +149,7 @@ namespace GameA
 		/// <param name="projectId">关卡Id</param>
         public static void DeleteProject (
             List<long> projectId,
-            Action<Msg_SC_CMD_DeleteProject> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_DeleteProject> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_DeleteProject msg = new Msg_CS_CMD_DeleteProject();
             // 删除关卡
@@ -189,8 +183,7 @@ namespace GameA
             int programVersion,
             int resourceVersion,
             float recordUsedTime,
-            Action<Msg_SC_CMD_PublishProject> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_PublishProject> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_PublishProject msg = new Msg_CS_CMD_PublishProject();
             // 发布关卡
@@ -219,8 +212,7 @@ namespace GameA
 		/// <param name="projectId">关卡Id</param>
         public static void UnpublishProject (
             List<long> projectId,
-            Action<Msg_SC_CMD_UnpublishProject> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_UnpublishProject> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_UnpublishProject msg = new Msg_CS_CMD_UnpublishProject();
             // 取消发布
@@ -248,8 +240,7 @@ namespace GameA
             int section,
             EAdventureProjectType projectType,
             int level,
-            Action<Msg_SC_CMD_PlayAdventureLevel> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_PlayAdventureLevel> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_PlayAdventureLevel msg = new Msg_CS_CMD_PlayAdventureLevel();
             // 进入冒险关卡
@@ -275,8 +266,7 @@ namespace GameA
 		/// <param name="section">章节</param>
         public static void UnlockAdventureSection (
             int section,
-            Action<Msg_SC_CMD_UnlockAdventureSection> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_UnlockAdventureSection> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_UnlockAdventureSection msg = new Msg_CS_CMD_UnlockAdventureSection();
             // 解锁章节
@@ -320,8 +310,7 @@ namespace GameA
             int killMonsterCount,
             int leftTime,
             int leftLife,
-            Action<Msg_SC_CMD_CommitAdventureLevelResult> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_CommitAdventureLevelResult> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_CommitAdventureLevelResult msg = new Msg_CS_CMD_CommitAdventureLevelResult();
             // 提交冒险模式数据
@@ -357,8 +346,7 @@ namespace GameA
         public static void UseProps (
             long token,
             List<Msg_PropItem> itemDataList,
-            Action<Msg_SC_CMD_UseProps> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_UseProps> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_UseProps msg = new Msg_CS_CMD_UseProps();
             // 使用道具
@@ -385,8 +373,7 @@ namespace GameA
         public static void UnlockHomePart (
             EHomePart type,
             long id,
-            Action<Msg_SC_CMD_UnlockHomePart> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_UnlockHomePart> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_UnlockHomePart msg = new Msg_CS_CMD_UnlockHomePart();
             // 解锁装饰
@@ -413,8 +400,7 @@ namespace GameA
         public static void ChangeAvatarPart (
             EAvatarPart type,
             long newId,
-            Action<Msg_SC_CMD_ChangeAvatarPart> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_ChangeAvatarPart> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_ChangeAvatarPart msg = new Msg_CS_CMD_ChangeAvatarPart();
             // 角色换装
@@ -447,8 +433,7 @@ namespace GameA
             EBuyAvatarPartDurationType durationType,
             ECurrencyType currencyType,
             long discountCouponId,
-            Action<Msg_SC_CMD_BuyAvatarPart> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_BuyAvatarPart> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_BuyAvatarPart msg = new Msg_CS_CMD_BuyAvatarPart();
             // 购买时装
@@ -476,8 +461,7 @@ namespace GameA
 		/// <param name="id">抽奖券Id</param>
         public static void Raffle (
             long id,
-            Action<Msg_SC_CMD_Raffle> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_Raffle> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_Raffle msg = new Msg_CS_CMD_Raffle();
             // 转盘抽奖
@@ -501,8 +485,7 @@ namespace GameA
 		/// <param name="flag">占位</param>
         public static void Reform (
             int flag,
-            Action<Msg_SC_CMD_Reform> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_Reform> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_Reform msg = new Msg_CS_CMD_Reform();
             // 改造
@@ -528,8 +511,7 @@ namespace GameA
         public static void ReselectReformLevel (
             int curReformSection,
             int curReformLevel,
-            Action<Msg_SC_CMD_ReselectReformLevel> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_ReselectReformLevel> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_ReselectReformLevel msg = new Msg_CS_CMD_ReselectReformLevel();
             // 随机改造关卡
@@ -554,8 +536,7 @@ namespace GameA
 		/// <param name="rewardLevel">改造奖励级别</param>
         public static void GetReformReward (
             int rewardLevel,
-            Action<Msg_SC_CMD_GetReformReward> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_GetReformReward> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_GetReformReward msg = new Msg_CS_CMD_GetReformReward();
             // 领取改造奖励
@@ -587,8 +568,7 @@ namespace GameA
             int resourceVersion,
             bool passFlag,
             float recordUsedTime,
-            Action<Msg_SC_CMD_SaveReformProject> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_SaveReformProject> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_SaveReformProject msg = new Msg_CS_CMD_SaveReformProject();
             // 上传改造关卡
@@ -622,8 +602,7 @@ namespace GameA
             int programVersion,
             int resourceVersion,
             float recordUsedTime,
-            Action<Msg_SC_CMD_PublishReformProject> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_PublishReformProject> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_PublishReformProject msg = new Msg_CS_CMD_PublishReformProject();
             // 发布改造关卡
@@ -650,8 +629,7 @@ namespace GameA
 		/// <param name="flag">占位符</param>
         public static void GetMatchChallengeProject (
             int flag,
-            Action<Msg_SC_CMD_GetMatchChallengeProject> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_GetMatchChallengeProject> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_GetMatchChallengeProject msg = new Msg_CS_CMD_GetMatchChallengeProject();
             // 获取挑战关卡
@@ -677,8 +655,7 @@ namespace GameA
         public static void SelectMatchChallengeProject (
             EChallengeProjectTyple challengeType,
             bool change,
-            Action<Msg_SC_CMD_SelectMatchChallengeProject> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_SelectMatchChallengeProject> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_SelectMatchChallengeProject msg = new Msg_CS_CMD_SelectMatchChallengeProject();
             // 选取挑战关卡
@@ -703,8 +680,7 @@ namespace GameA
 		/// <param name="projectId">关卡Id</param>
         public static void PlayMatchChallengeLevel (
             long projectId,
-            Action<Msg_SC_CMD_PlayMatchChallengeLevel> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_PlayMatchChallengeLevel> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_PlayMatchChallengeLevel msg = new Msg_CS_CMD_PlayMatchChallengeLevel();
             // 开始挑战
@@ -732,8 +708,7 @@ namespace GameA
             long token,
             bool success,
             float usedTime,
-            Action<Msg_SC_CMD_CommitMatchChallengeLevelResult> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_CommitMatchChallengeLevelResult> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_CommitMatchChallengeLevelResult msg = new Msg_CS_CMD_CommitMatchChallengeLevelResult();
             // 提交匹配挑战关卡数据
@@ -759,8 +734,7 @@ namespace GameA
 		/// <param name="flag">占位</param>
         public static void MatchSkipChallenge (
             int flag,
-            Action<Msg_SC_CMD_MatchSkipChallenge> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_MatchSkipChallenge> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_MatchSkipChallenge msg = new Msg_CS_CMD_MatchSkipChallenge();
             // 跳过本次挑战
@@ -786,8 +760,7 @@ namespace GameA
         public static void ExecuteCommand (
             long userId,
             string command,
-            Action<Msg_SC_CMD_ExecuteCommand> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_ExecuteCommand> successCallback, Action<ENetResultCode> failedCallback) {
 
             Msg_CS_CMD_ExecuteCommand msg = new Msg_CS_CMD_ExecuteCommand();
             // 执行GM指令

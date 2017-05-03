@@ -6,29 +6,42 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AdventureUserSection : SyncronisticData 
-    {
+    public partial class AdventureUserSection : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _section;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _treasureMapBuyCount;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private List<AdventureUserLevelDataDetail> _normalLevelUserDataList;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private List<AdventureUserLevelDataDetail> _bonusLevelUserDataList;
 
         // cs fields----------------------------------
-        // 用户
+        /// <summary>
+        /// 用户
+        /// </summary>
         private long _cs_userId;
-        // 章节
+        /// <summary>
+        /// 章节
+        /// </summary>
         private int _cs_section;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int Section { 
             get { return _section; }
             set { if (_section != value) {
@@ -36,7 +49,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int TreasureMapBuyCount { 
             get { return _treasureMapBuyCount; }
             set { if (_treasureMapBuyCount != value) {
@@ -44,7 +59,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public List<AdventureUserLevelDataDetail> NormalLevelUserDataList { 
             get { return _normalLevelUserDataList; }
             set { if (_normalLevelUserDataList != value) {
@@ -52,7 +69,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public List<AdventureUserLevelDataDetail> BonusLevelUserDataList { 
             get { return _bonusLevelUserDataList; }
             set { if (_bonusLevelUserDataList != value) {
@@ -62,12 +81,16 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        // 用户
+        /// <summary>
+        /// 用户
+        /// </summary>
         public long CS_UserId { 
             get { return _cs_userId; }
             set { _cs_userId = value; }
         }
-        // 章节
+        /// <summary>
+        /// 章节
+        /// </summary>
         public int CS_Section { 
             get { return _cs_section; }
             set { _cs_section = value; }

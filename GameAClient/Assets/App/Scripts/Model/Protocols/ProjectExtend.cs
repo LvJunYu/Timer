@@ -6,43 +6,70 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class ProjectExtend : SyncronisticData 
-    {
+    public partial class ProjectExtend : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        // 关卡Id
+        /// <summary>
+        /// 关卡Id
+        /// </summary>
         private long _projectId;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private bool _isValid;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private float _rate;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _rateCount;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _commentCount;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private long _playCount;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _completeCount;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _failCount;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _likeCount;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _favoriteCount;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _downloadCount;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _shareCount;
 
         // cs fields----------------------------------
-        // 关卡Id
+        /// <summary>
+        /// 关卡Id
+        /// </summary>
         private long _cs_projectId;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        // 关卡Id
+        /// <summary>
+        /// 关卡Id
+        /// </summary>
         public long ProjectId { 
             get { return _projectId; }
             set { if (_projectId != value) {
@@ -50,7 +77,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool IsValid { 
             get { return _isValid; }
             set { if (_isValid != value) {
@@ -58,7 +87,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public float Rate { 
             get { return _rate; }
             set { if (_rate != value) {
@@ -66,7 +97,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int RateCount { 
             get { return _rateCount; }
             set { if (_rateCount != value) {
@@ -74,7 +107,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int CommentCount { 
             get { return _commentCount; }
             set { if (_commentCount != value) {
@@ -82,7 +117,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public long PlayCount { 
             get { return _playCount; }
             set { if (_playCount != value) {
@@ -90,7 +127,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int CompleteCount { 
             get { return _completeCount; }
             set { if (_completeCount != value) {
@@ -98,7 +137,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int FailCount { 
             get { return _failCount; }
             set { if (_failCount != value) {
@@ -106,7 +147,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int LikeCount { 
             get { return _likeCount; }
             set { if (_likeCount != value) {
@@ -114,7 +157,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int FavoriteCount { 
             get { return _favoriteCount; }
             set { if (_favoriteCount != value) {
@@ -122,7 +167,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int DownloadCount { 
             get { return _downloadCount; }
             set { if (_downloadCount != value) {
@@ -130,7 +177,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int ShareCount { 
             get { return _shareCount; }
             set { if (_shareCount != value) {
@@ -140,7 +189,9 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        // 关卡Id
+        /// <summary>
+        /// 关卡Id
+        /// </summary>
         public long CS_ProjectId { 
             get { return _cs_projectId; }
             set { _cs_projectId = value; }

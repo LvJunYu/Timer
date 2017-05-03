@@ -6,27 +6,38 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserRelationWithMe : SyncronisticData 
-    {
+    public partial class UserRelationWithMe : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        // 用户ID
+        /// <summary>
+        /// 用户ID
+        /// </summary>
         private long _userId;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private bool _followMe;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private bool _followedByMe;
-        // 好友
+        /// <summary>
+        /// 好友
+        /// </summary>
         private bool _isFriend;
 
         // cs fields----------------------------------
-        // 用户id
+        /// <summary>
+        /// 用户id
+        /// </summary>
         private long _cs_userId;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        // 用户ID
+        /// <summary>
+        /// 用户ID
+        /// </summary>
         public long UserId { 
             get { return _userId; }
             set { if (_userId != value) {
@@ -34,7 +45,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool FollowMe { 
             get { return _followMe; }
             set { if (_followMe != value) {
@@ -42,7 +55,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool FollowedByMe { 
             get { return _followedByMe; }
             set { if (_followedByMe != value) {
@@ -50,7 +65,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 好友
+        /// <summary>
+        /// 好友
+        /// </summary>
         public bool IsFriend { 
             get { return _isFriend; }
             set { if (_isFriend != value) {
@@ -60,7 +77,9 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        // 用户id
+        /// <summary>
+        /// 用户id
+        /// </summary>
         public long CS_UserId { 
             get { return _cs_userId; }
             set { _cs_userId = value; }

@@ -6,27 +6,38 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AdventureProjectList : SyncronisticData 
-    {
+    public partial class AdventureProjectList : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        // 版本号
+        /// <summary>
+        /// 版本号
+        /// </summary>
         private long _version;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _totalSectionCount;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private List<AdventureSection> _sectionList;
 
         // cs fields----------------------------------
-        // 最小章节
+        /// <summary>
+        /// 最小章节
+        /// </summary>
         private int _cs_minSection;
-        // 最大章节
+        /// <summary>
+        /// 最大章节
+        /// </summary>
         private int _cs_maxSection;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        // 版本号
+        /// <summary>
+        /// 版本号
+        /// </summary>
         public long Version { 
             get { return _version; }
             set { if (_version != value) {
@@ -34,7 +45,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int TotalSectionCount { 
             get { return _totalSectionCount; }
             set { if (_totalSectionCount != value) {
@@ -42,7 +55,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public List<AdventureSection> SectionList { 
             get { return _sectionList; }
             set { if (_sectionList != value) {
@@ -52,12 +67,16 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        // 最小章节
+        /// <summary>
+        /// 最小章节
+        /// </summary>
         public int CS_MinSection { 
             get { return _cs_minSection; }
             set { _cs_minSection = value; }
         }
-        // 最大章节
+        /// <summary>
+        /// 最大章节
+        /// </summary>
         public int CS_MaxSection { 
             get { return _cs_maxSection; }
             set { _cs_maxSection = value; }

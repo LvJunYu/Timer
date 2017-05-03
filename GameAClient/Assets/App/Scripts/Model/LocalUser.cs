@@ -21,8 +21,10 @@ namespace GameA
 		private UserInfoDetail _user;
 		private UsingAvatarPart _usingAvatarData =new UsingAvatarPart();
 		private ValidAvatarPart _validAvatarData =new ValidAvatarPart();
+        // 抽奖相关数据
         private UserRaffleTicket _userRaffleTicket =new UserRaffleTicket();
-        //        private User _user;
+        // 匹配挑战相关数据
+        private MatchUserData _matchUserData = new MatchUserData ();
 
         #endregion
         #region 属性
@@ -45,21 +47,33 @@ namespace GameA
 		public UserInfoDetail User {
 			get { return _user; }
 		}
-		public UsingAvatarPart UsingAvatarData {
-    		get {
-    			return this._usingAvatarData;
-    		}
-    	}
+        public UsingAvatarPart UsingAvatarData {
+            get {
+                return this._usingAvatarData;
+            }
+        }
 
-    	public ValidAvatarPart ValidAvatarData {
-    		get {
-    			return this._validAvatarData;
-    		}
-    	}
-
+        public ValidAvatarPart ValidAvatarData {
+            get {
+                return this._validAvatarData;
+            }
+        }
+        /// <summary>
+        /// 抽奖相关数据
+        /// </summary>
+        /// <value>The raffle ticket.</value>
         public UserRaffleTicket RaffleTicket
         {
             get { return this._userRaffleTicket; }
+        }
+        /// <summary>
+        /// 匹配挑战相关数据
+        /// </summary>
+        /// <value>The using avatar data.</value>
+        public MatchUserData MatchUserData {
+            get {
+                return this._matchUserData;
+            }
         }
 
         #endregion

@@ -5,16 +5,24 @@ namespace GameA.Game
     [Serializable]
 	public partial class Table_TreasureMap
 	{
-		// 序号
+		/// <summary>
+        /// 序号
+        /// </summary>
 		[ColumnMapping("Id")]
 		public int Id;
-		// 关卡id
+		/// <summary>
+        /// 关卡id
+        /// </summary>
 		[ColumnMapping("Level")]
 		public int Level;
-		// x坐标
+		/// <summary>
+        /// x坐标
+        /// </summary>
 		[ColumnMapping("X")]
 		public int X;
-		// y坐标
+		/// <summary>
+        /// y坐标
+        /// </summary>
 		[ColumnMapping("Y")]
 		public int Y;
 	}

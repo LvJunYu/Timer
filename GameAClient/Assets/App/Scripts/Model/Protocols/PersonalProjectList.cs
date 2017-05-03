@@ -6,33 +6,50 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class PersonalProjectList : SyncronisticData 
-    {
+    public partial class PersonalProjectList : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        // ECachedDataState
+        /// <summary>
+        /// ECachedDataState
+        /// </summary>
         private int _resultCode;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private long _updateTime;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private List<Project> _projectList;
 
         // cs fields----------------------------------
-        // 关卡Id
+        /// <summary>
+        /// 关卡Id
+        /// </summary>
         private List<long> _cs_projectId;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private long _cs_minUpdateTime;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private long _cs_maxUpdateTime;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _cs_maxCount;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _cs_totalCount;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        // ECachedDataState
+        /// <summary>
+        /// ECachedDataState
+        /// </summary>
         public int ResultCode { 
             get { return _resultCode; }
             set { if (_resultCode != value) {
@@ -40,7 +57,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public long UpdateTime { 
             get { return _updateTime; }
             set { if (_updateTime != value) {
@@ -48,7 +67,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public List<Project> ProjectList { 
             get { return _projectList; }
             set { if (_projectList != value) {
@@ -58,27 +79,37 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        // 关卡Id
+        /// <summary>
+        /// 关卡Id
+        /// </summary>
         public List<long> CS_ProjectId { 
             get { return _cs_projectId; }
             set { _cs_projectId = value; }
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public long CS_MinUpdateTime { 
             get { return _cs_minUpdateTime; }
             set { _cs_minUpdateTime = value; }
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public long CS_MaxUpdateTime { 
             get { return _cs_maxUpdateTime; }
             set { _cs_maxUpdateTime = value; }
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int CS_MaxCount { 
             get { return _cs_maxCount; }
             set { _cs_maxCount = value; }
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int CS_TotalCount { 
             get { return _cs_totalCount; }
             set { _cs_totalCount = value; }
