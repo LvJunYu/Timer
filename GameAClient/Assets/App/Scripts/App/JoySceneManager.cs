@@ -18,7 +18,7 @@ namespace GameA
         internal void Init()
         {
             Messenger.AddListener(EMessengerType.LoadEmptyScene, LoadEmptyScene);
-        }
+        }        
 
         internal void LoadEmptyScene()
         {

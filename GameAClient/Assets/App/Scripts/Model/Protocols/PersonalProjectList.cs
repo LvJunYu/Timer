@@ -6,7 +6,8 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class PersonalProjectList : SyncronisticData {
+    public partial class PersonalProjectList : SyncronisticData 
+    {
         #region 字段
         // sc fields----------------------------------
         // ECachedDataState

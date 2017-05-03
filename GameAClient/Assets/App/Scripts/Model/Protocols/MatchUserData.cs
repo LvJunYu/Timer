@@ -6,7 +6,8 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class MatchUserData : SyncronisticData {
+    public partial class MatchUserData : SyncronisticData 
+    {
         #region 字段
         // sc fields----------------------------------
         // 用户Id

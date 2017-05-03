@@ -80,20 +80,6 @@ namespace GameA
 
         public void PrepareAdventureUserData(Action successCallback, Action<ENetResultCode> failedCallback)
         {
-//			Msg_CS_DAT_AdventureUserData msg = new Msg_CS_DAT_AdventureUserData();
-//			NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AdventureUserData>(SoyHttpApiPath.AdventureUserData, msg, ret =>
-//            {
-//                SetAdventureUserData(ret);
-//                if (null != successCallback)
-//                {
-//                    successCallback.Invoke();
-//                }
-//            }, (errorCode, errorMsg) => {
-//                if (null != failedCallback)
-//                {
-//                    failedCallback.Invoke(errorCode);
-//                }
-//            });
 			_userData.Request(LocalUser.Instance.UserGuid, successCallback, failedCallback);
         }
 
