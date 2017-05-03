@@ -213,8 +213,8 @@ MonoBehaviour:
     AppServerApiRoot: http://dev.joy-you.com/gameaapi
     GameResoureRoot: http://127.0.0.1
   - Enable: 1
-    AppServerApiRoot: http://192.168.0.217:8080/GameAServer/gameaapi
-    GameResoureRoot: http://127.0.0.1:7888
+    AppServerApiRoot: http://192.168.2.204:8080/GameAServer/gameaapi
+    GameResoureRoot: http://www.joy-you.com:9081
   AppVersion: 1
   PackageAppResourceVersion: 0
   UseLocalDebugRes: 1

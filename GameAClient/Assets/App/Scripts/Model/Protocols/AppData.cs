@@ -6,7 +6,8 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class AppData : SyncronisticData {
+    public partial class AppData : SyncronisticData 
+    {
         #region 字段
         // sc fields----------------------------------
         // 应用版本号
