@@ -53,7 +53,6 @@ namespace GameA.Game
         {
             _trigger = false;
             _unit = null;
-            _animation.Reset();
             base.Reset();
         }
 

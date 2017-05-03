@@ -36,8 +36,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            _animation = new AnimationSystem();
-            return _animation.Init(this, _rollerDirection == EMoveDirection.Left ? "LeftRun" : "RightRun");
+            return _animation.Init(_rollerDirection == EMoveDirection.Left ? "LeftRun" : "RightRun");
         }
 
         protected override void Clear()

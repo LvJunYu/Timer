@@ -21,6 +21,7 @@ namespace GameA.Game
         {
             _skeletonAnimation = _trans.gameObject.AddComponent<SkeletonAnimation>();
             _skeletonAnimation.enabled = false;
+            _animation = new AnimationSystem(_skeletonAnimation);
         }
 
         protected override bool OnInit()
@@ -34,6 +35,7 @@ namespace GameA.Game
             _skeletonAnimation.skeletonDataAsset = data;
             _skeletonAnimation.Initialize(true);
             _skeletonAnimation.enabled = true;
+            _animation.Set();
             _renderer = _skeletonAnimation.GetComponent<Renderer>();
             _renderer.sortingOrder = UnitManager.Instance.GetSortingOrder(_unit.TableUnit);
             return true;
@@ -61,6 +63,10 @@ namespace GameA.Game
 
         public override void OnFree()
         {
+            if (_animation != null)
+            {
+                _animation.OnFree();
+            }
             if (_skeletonAnimation != null)
             {
                 _skeletonAnimation.Clear();

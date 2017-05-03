@@ -25,6 +25,8 @@ namespace GameA.Game
 
         protected UnitBase _unit;
 
+        protected AnimationSystem _animation;
+
 		public Transform Trans
         {
             get { return _trans; }
@@ -34,6 +36,11 @@ namespace GameA.Game
 	    {
 		    get { return _dirTrans; }
 	    }
+
+        public AnimationSystem Animation
+        {
+            get { return _animation; }
+        }
 
         public UnitView()
         {
@@ -125,6 +132,10 @@ namespace GameA.Game
             if (_unit == null)
             {
                 return;
+            }
+            if (_animation != null)
+            {
+                _animation.Reset();
             }
             if (_trans != null)
             {

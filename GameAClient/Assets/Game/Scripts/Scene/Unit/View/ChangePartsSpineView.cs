@@ -41,6 +41,7 @@ namespace GameA.Game
 			LinkBaseSkinTextures ();
 			_skeletonAnimation.Initialize(true);
 			_skeletonAnimation.enabled = true;
+            _animation.Set();
 			_renderer = _skeletonAnimation.GetComponent<Renderer>();
             _renderer.sortingOrder = UnitManager.Instance.GetSortingOrder(_unit.TableUnit);
 

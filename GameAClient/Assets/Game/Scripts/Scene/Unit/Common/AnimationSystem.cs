@@ -29,36 +29,39 @@ namespace GameA.Game
 		/// </summary>
 		private Dictionary<string, Action> _eventHandles = new Dictionary<string, Action> ();
 
-        public bool Init(UnitBase unit)
+        public AnimationSystem(SkeletonAnimation skeletonAnimation)
         {
-            if (unit.Trans == null)
-            {
-                return false;
-            }
-            _skeletonAnimation = unit.Trans.GetComponent<SkeletonAnimation>();
-            if (_skeletonAnimation == null)
-            {
-                LogHelper.Error("SkeletonAnimation is null, {0}", unit);
-                return false;
-            }
+            _skeletonAnimation = skeletonAnimation;
+        }
+
+        public void Set()
+        {
             Animation[] animations = _skeletonAnimation.state.Data.skeletonData.animations.Items;
             for (int i = 0; i < animations.Length; i++)
             {
                 _animations.Add(animations[i].Name, animations[i]);
             }
-			_eventHandles.Clear ();
-            return true;
+            _skeletonAnimation.state.Event += OnEvent;
         }
 
-        public bool Init(UnitBase unit, string aniName)
+        internal void OnFree()
         {
-            if (!Init(unit))
+            _animations.Clear();
+            _eventHandles.Clear();
+            _initAniName = null;
+            for (int i = 0; i < _currentAnimation.Length; i++)
             {
-                return false;
+                _currentAnimation[i] = null;
             }
-            _initAniName = aniName;
-            PlayLoop(_initAniName);
-			_skeletonAnimation.state.Event += OnEvent;
+        }
+
+        public bool Init(string aniName)
+        {
+            if (!string.IsNullOrEmpty(aniName))
+            {
+                _initAniName = aniName;
+                PlayLoop(_initAniName);
+            }
             return true;
         }
 
@@ -173,13 +176,16 @@ namespace GameA.Game
 		/// <returns><c>true</c>, if event handle was added, <c>false</c> otherwise.</returns>
 		/// <param name="eventName">Event name.</param>
 		/// <param name="handle">Handle.</param>
-		public bool AddEventHandle (string eventName, Action handle) {
-			if (_eventHandles.ContainsKey (eventName)) {
-				LogHelper.Warning ("Already contains event name {0} when add animation event on {1}", eventName, _skeletonAnimation.name);
-				return false;
-			}
-			_eventHandles [eventName] = handle;
-			return true;
+		public bool AddEventHandle(string eventName, Action handle)
+		{
+		    if (_eventHandles.ContainsKey(eventName))
+		    {
+		        LogHelper.Warning("Already contains event name {0} when add animation event on {1}", eventName,
+		            _skeletonAnimation.name);
+		        return false;
+		    }
+		    _eventHandles[eventName] = handle;
+		    return true;
 		}
     }
 }

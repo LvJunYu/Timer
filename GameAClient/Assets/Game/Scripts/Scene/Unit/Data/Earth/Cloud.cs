@@ -16,27 +16,17 @@ namespace GameA.Game
         protected bool _trigger;
         protected int _timer;
 
-        internal override bool InstantiateView()
-        {
-            if (!base.InstantiateView())
-            {
-                return false;
-            }
-            _animation = new AnimationSystem();
-            return _animation.Init(this);
-        }
-
         protected override void Clear()
         {
             base.Clear();
             _trigger = false;
             _timer = 0;
-            if (_animation != null)
-            {
-                _animation.Reset();
-            }
             if (_view != null)
             {
+                if (_animation != null)
+                {
+                    _animation.Reset();
+                }
                 _view.SetRendererEnabled(false);
             }
             PlayMode.Instance.UnFreeze(this);
@@ -109,10 +99,10 @@ namespace GameA.Game
                     if (_view != null)
                     {
                         _view.SetRendererEnabled(true);
-                    }
-                    if (_animation != null)
-                    {
-                        _animation.Reset();
+                        if (_animation != null)
+                        {
+                            _animation.Reset();
+                        }
                     }
                 }
             }

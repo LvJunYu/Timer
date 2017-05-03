@@ -164,8 +164,7 @@ namespace GameA.Game
                 return false;
             }
             LogHelper.Debug("InstantiateView {0}", ToString());
-            _animation = new AnimationSystem();
-            if (!_animation.Init(this, "Idle"))
+            if (!_animation.Init("Idle"))
             {
                 return false;
             }

@@ -117,7 +117,11 @@ namespace GameA.Game
             get { return _view == null ? null : _view.Trans; }
         }
 
-        protected AnimationSystem _animation;
+        protected AnimationSystem _animation
+        {
+            get { return _view == null ? null : _view.Animation; }
+        }
+
         [SerializeField]
         protected int _dieTime;
 
@@ -786,7 +790,7 @@ namespace GameA.Game
             float z =- (_curPos.x + _curPos.y * 2) * 0.00078125f + _zOffset;
             if (_tableUnit.EGeneratedType == EGeneratedType.Spine && !IsHero)
             {
-                return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, - 0.1f * 0.00078125f, z);
+                return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, - 0.1f, z);
             }
 			return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + Vector3.forward * z;
         }

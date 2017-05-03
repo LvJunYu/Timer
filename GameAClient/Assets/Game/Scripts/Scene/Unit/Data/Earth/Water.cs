@@ -22,10 +22,13 @@ namespace GameA.Game
             {
                 return false;
             }
-            _animation = new AnimationSystem();
-            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(1.6f - Time.realtimeSinceStartup % 1.6f,
-                () => _animation.Init(this, "Run")));
-            return true;
+            if (_view1 != null)
+            {
+            }
+            return _animation.Init("Run");
+            //CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(1.6f - Time.realtimeSinceStartup % 1.6f,
+            //    () => _animation.Init(this, "Run")));
+            //return true;
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)

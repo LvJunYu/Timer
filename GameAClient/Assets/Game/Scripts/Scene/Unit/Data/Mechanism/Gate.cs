@@ -15,16 +15,6 @@ namespace GameA.Game
     {
         private bool _opened;
 
-        internal override bool InstantiateView()
-        {
-            if (!base.InstantiateView())
-            {
-                return false;
-            }
-            _animation = new AnimationSystem();
-            return _animation.Init(this); ;
-        }
-
         protected override void Clear()
         {
             base.Clear();
