@@ -231,15 +231,31 @@ namespace GameA.Game
                     {
                         PoolFactory<SpineUnit>.Free((SpineUnit)unit.View);
                     }
+                    if (unit.View1 != null)
+                    {
+                        PoolFactory<SpineUnit>.Free((SpineUnit)unit.View1);
+                    }
                     break;
                 case EGeneratedType.Tiling:
                     PoolFactory<SpriteUnit>.Free((SpriteUnit)unit.View);
+                    if (unit.View1 != null)
+                    {
+                        PoolFactory<SpriteUnit>.Free((SpriteUnit)unit.View1);
+                    }
                     break;
                 case EGeneratedType.Morph:
                     PoolFactory<MorphUnit>.Free((MorphUnit)unit.View);
+                    if (unit.View1 != null)
+                    {
+                        PoolFactory<MorphUnit>.Free((MorphUnit)unit.View1);
+                    }
                     break;
                 case EGeneratedType.Empty:
                     PoolFactory<EmptyUnit>.Free((EmptyUnit)unit.View);
+                    if (unit.View1 != null)
+                    {
+                        PoolFactory<EmptyUnit>.Free((EmptyUnit)unit.View1);
+                    }
 					break;
             }
             unit.OnObjectDestroy();

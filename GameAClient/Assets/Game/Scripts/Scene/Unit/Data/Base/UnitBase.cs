@@ -104,6 +104,7 @@ namespace GameA.Game
         /// 可能会为NULL
         /// </summary>
         protected UnitView _view;
+        protected UnitView _view1;
 
         protected string _assetPath;
 
@@ -279,6 +280,11 @@ namespace GameA.Game
         public UnitView View
         {
             get { return _view; }
+        }
+
+        public UnitView View1
+        {
+            get { return _view1; }
         }
 
         public Transform Trans
@@ -479,6 +485,23 @@ namespace GameA.Game
             }
             _trans.position = GetTransPos();
             SetFacingDir(_curMoveDirection, true);
+
+            if (!string.IsNullOrEmpty(_tableUnit.Model1))
+            {
+                _assetPath = _tableUnit.Model1;
+                if (!UnitManager.Instance.TryGetUnitView(this, out _view1))
+                {
+                    LogHelper.Error("TryGetUnitView Failed, {0}", _tableUnit.Id);
+                    return false;
+                }
+                CommonTools.SetParent(_view1.Trans, _trans);
+                //如果没有设置ZOffset
+                if (Math.Abs(_zOffset) < Mathf.Epsilon)
+                {
+                    _trans.position += new Vector3(0, 0, 0.9f);
+                }
+                _view1.Trans.position += new Vector3(0, 0, -1.9f);
+            }
             return true;
         }
 
@@ -1149,6 +1172,7 @@ namespace GameA.Game
         internal virtual void OnObjectDestroy()
         {
             _view = null;
+            _view1 = null;
         }
 
         internal virtual void OnDispose()

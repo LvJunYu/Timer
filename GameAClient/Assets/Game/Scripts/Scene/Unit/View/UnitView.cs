@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Security.Cryptography.X509Certificates;
 using DG.Tweening;
 using SoyEngine;
 using UnityEngine;
@@ -37,7 +38,8 @@ namespace GameA.Game
         public UnitView()
         {
             _trans = new GameObject(GetType().Name).transform;
-			if (UnitManager.Instance != null) {
+			if (UnitManager.Instance != null) 
+            {
 				_trans.parent = UnitManager.Instance.GetOriginParent ();
 			}
         }
@@ -91,7 +93,7 @@ namespace GameA.Game
             _unit = null;
             _trans.SetActiveEx(true);
             _trans.position = _hidePos;
-            _trans.localScale = Vector2.one;
+            _trans.localScale = Vector3.one;
             _trans.localRotation = Quaternion.identity;
             _trans.parent = UnitManager.Instance.GetOriginParent();
 			if (_dirTrans != null)
@@ -127,7 +129,7 @@ namespace GameA.Game
             if (_trans != null)
             {
                 _trans.position = _unit.GetTransPos();
-                _trans.localScale = _unit.UnitDesc.Scale;
+                _trans.localScale = new Vector3(_unit.UnitDesc.Scale.x, _unit.UnitDesc.Scale.y, 1);
                 _trans.rotation = Quaternion.identity;
                 _trans.parent = UnitManager.Instance.GetParent(_unit.TableUnit.EUnitType);
             }

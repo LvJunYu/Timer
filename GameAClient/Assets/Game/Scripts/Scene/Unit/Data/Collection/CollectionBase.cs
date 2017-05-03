@@ -18,7 +18,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            _zOffset = 1f;
+            _zOffset = 0.9f;
             return true;
         }
 

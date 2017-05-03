@@ -7,22 +7,14 @@
 
 using System;
 using System.Collections;
+using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
     [Unit(Id = 7002, Type = typeof(Tree))]
     public class Tree : DecorationBase
     {
-        protected UnitView _grassView;
 
-        internal override bool InstantiateView()
-        {
-            if (!base.InstantiateView())
-            {
-                return false;
-            }
-
-            return true;
-        }
     }
 }
