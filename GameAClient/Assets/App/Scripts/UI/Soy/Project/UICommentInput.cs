@@ -17,6 +17,9 @@ namespace GameA
         public Button ReplyCancelBtn;
         public Text ReplyNameLabel;
         public InputField Input;
+		/// <summary>
+		/// 发送按钮
+		/// </summary>
         public Button SendBtn;
 
         private User _targetUser;

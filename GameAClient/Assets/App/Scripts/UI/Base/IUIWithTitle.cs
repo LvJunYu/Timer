@@ -13,7 +13,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 
-
+/*抬头接口，继承接口的时候里面的方法都要实现*/
 namespace GameA
 {
     public interface IUIWithTitle

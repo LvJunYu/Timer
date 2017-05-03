@@ -23,11 +23,17 @@ namespace GameA
         public Text RateCount;
         public Text Summary;
         public UIProjectCompleteRate ProjectCompleteRate;
+
+
+
         public RectTransform RecentCompleteUserDock;
         public Text RecentCompleteUserTip;
 
         public GameObject CommentTip;
         public VerticalLayoutGroup CommentDock;
+		/// <summary>
+		/// ?？??
+		/// </summary>
         public Button CommentBtn;
         public Text CommentCount;
     }

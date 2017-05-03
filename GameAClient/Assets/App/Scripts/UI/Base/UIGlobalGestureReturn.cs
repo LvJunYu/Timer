@@ -6,7 +6,7 @@
   ***********************************************************************/
 using System;
 using UnityEngine;
-
+/*猜测这个脚本实现的是，触摸翻页，滚动返回，及动画，全局触摸的返回*/
 namespace GameA
 {
     public class UIGlobalGestureReturn
@@ -46,7 +46,7 @@ namespace GameA
                         {
                             break;
                         }
-                        Touch t = Input.GetTouch(0);
+                        Touch t = Input.GetTouch(0);//屏幕触摸一跟手指
                         if (t.phase != TouchPhase.Began)
                         {
                             break;
@@ -60,7 +60,7 @@ namespace GameA
                         _touchStartPos = t.position;
                         break;
                     }
-                case EState.judging:
+                case EState.judging://todo 判断状态 也没用   空白中
                     {
                         Touch t = default(Touch);
                         bool flag = false;
@@ -172,9 +172,10 @@ namespace GameA
         private enum EState
         {
             None,
-            judging,
-            TouchMove,
+            judging,//todo
+            TouchMove,//触摸移动
         }
     }
+    
 }
 

@@ -19,7 +19,7 @@ namespace GameA
 
         private readonly Account _account = Account.Instance;
 		private UserInfoDetail _user;
-		private UsingAvatarPart _usingAvatarData;
+		private UsingAvatarPart _usingAvatarData;//chuande
 		private ValidAvatarPart _validAvatarData;
 //        private User _user;
 

@@ -6,7 +6,7 @@
  ***********************************************************************/
 
 
-
+ /*社交ui接口*/
 using SoyEngine;
 using UnityEngine.UI;
 using UnityEngine;

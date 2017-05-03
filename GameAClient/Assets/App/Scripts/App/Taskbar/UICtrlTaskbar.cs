@@ -10,11 +10,12 @@ using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
 using SoyEngine.Proto;
-using SoyEngine;
+//using SoyEngine;
 using GameA.Game;
 
 namespace GameA
 {
+	
 	[UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlTaskbar : UICtrlGenericBase<UIViewTaskbar>
     {
@@ -104,7 +105,12 @@ namespace GameA
 			_cachedView.WorkshopButton.onClick.AddListener (OnCreateBtn);
 			_cachedView.SingleModeButton.onClick.AddListener (OnSingleGameBtn);
 
+
+
 			_cachedView.AvatarBtn.onClick.AddListener (OnAvatarBtn);
+
+
+
 
 			_cachedView.TestChangeAvatarBtn.onClick.AddListener (OnTestChangeAvatar);
 			_cachedView.DebugClearUserDataBtn.onClick.AddListener (OnDebugClearUserData);
@@ -161,7 +167,7 @@ namespace GameA
 //			SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求换装...");
 //			int type = UnityEngine.Random.Range (0, 3);
 //			LocalUser.Instance.UserLegacy.AvatarData.SendChangeAvatarPart (
-//				(EAvatarPart)(type + 1),
+//				(EAvatarPart)(type + 1),  
 //				(_avatarView.EquipedPartsIds [type] + 1) % 2 + 1,
 //				() => {
 //					_avatarView.SetParts ((_avatarView.EquipedPartsIds [type] + 1) % 2 + 1,

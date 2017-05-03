@@ -43,12 +43,15 @@ namespace GameA
             var y = _uiTrans.localPosition.y;
             _uiTrans.SetParent(SocialGUIManager.Instance.UIRoot.UIGroups[_groupId].Trans);
         }
-
+        /// <summary>
+        /// 打开
+        /// </summary>
+        /// <param name="parameter"></param>
         public override void Open(object parameter)
         {
             OpenBegin(parameter);
         }
-
+       
         protected virtual void OnOpenComplete(object parameter)
         {
         }

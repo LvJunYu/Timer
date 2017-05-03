@@ -10,11 +10,11 @@
 using SoyEngine;
 using UnityEngine.UI;
 using UnityEngine;
-
-
+/*meiyuoyong*/
+/*社交界面的配置*/
 namespace GameA
 {
-    public static class SocialUIConfig
+    public static class SocialUIConfig//todo
     {
         #region 变量
         private static bool _hasInit = false;

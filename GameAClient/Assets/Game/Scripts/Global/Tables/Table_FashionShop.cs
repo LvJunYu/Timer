@@ -21,7 +21,9 @@ namespace GameA.Game
 		[ColumnMapping("Sex")]
 		public int Sex;
 	}
-
+    /// <summary>
+    /// 时装店资源表
+    /// </summary>
     public class TableFashionShopAsset:BaseTableAsset
 	{
 		[UnityEngine.SerializeField]

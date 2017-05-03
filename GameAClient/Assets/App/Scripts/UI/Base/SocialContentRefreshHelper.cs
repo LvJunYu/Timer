@@ -11,7 +11,7 @@ using UnityEngine.UI;
 
 namespace GameA
 {
-    public class SocialContentRefreshHelper
+    public class SocialContentRefreshHelper//todo
     {
         private UIRefreshController _refreshController;
         private GameObject _content;
@@ -38,7 +38,7 @@ namespace GameA
             _emptyTip = emptyTip;
             _errorTip = errorTip;
         }
-
+        /*不知道的哪些状态在切换*/
         private void UpdateView()
         {
             switch(_state)
@@ -124,8 +124,10 @@ namespace GameA
             }
         }
 
-
-        public enum EState
+		/// <summary>
+		/// app 中的逻辑
+		/// </summary>
+        public enum EState//todo
         {
             None,
             SuccessEmpty,

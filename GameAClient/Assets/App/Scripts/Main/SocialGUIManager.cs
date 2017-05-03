@@ -55,7 +55,7 @@ namespace GameA
         ScreenRotateMask,
         Max, 
     }
-
+    /*社交管理器*/
     public class SocialGUIManager : GUIManager
     {
         public static SocialGUIManager Instance;
@@ -119,7 +119,7 @@ namespace GameA
         protected override void Update()
         {
             base.Update();
-            _globalGestureReturn.Update();
+//            _globalGestureReturn.Update();
         }
 
 	    protected override void OnDestroy()
@@ -328,10 +328,6 @@ namespace GameA
 
 		public void ReturnToHome () {
 			_defaultUIStack.CloseAll();
-            UICtrlTaskbar taskBar = SocialGUIManager.Instance.GetUI<UICtrlTaskbar>();
-            if (taskBar != null && taskBar.IsViewCreated) {
-                taskBar.Open (null);
-            }
 //			ClearUIStackStack();
 		}
 

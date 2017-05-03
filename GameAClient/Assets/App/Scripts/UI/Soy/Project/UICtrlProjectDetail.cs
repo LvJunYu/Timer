@@ -56,11 +56,21 @@ namespace GameA
             _cachedView.ShareBtn.onClick.AddListener(OnShareBtnClick);
             _cachedView.LikeBtn.onClick.AddListener(OnLikeBtnClick);
             _cachedView.CollapseSumBtn.onClick.AddListener(OnCollapseSumBtnClick);
+
+
+
             _cachedView.CommentInput.SendBtn.onClick.AddListener(OnPostCommentBtnClick);
+
+
+
+
             _cachedView.TagGroup.AddButton(_cachedView.SummaryBtn, OnSummaryBtnClick);
             _cachedView.TagGroup.AddButton(_cachedView.RecentBtn, OnRecentBtnClick);
             _cachedView.TagGroup.AddButton(_cachedView.RankBtn, OnRankBtnClick);
             _cachedView.TagGroup.AddButton(_cachedView.CommentBtn, OnCommentBtnClick);
+
+
+
             _cachedView.CommentInput.Input.characterLimit = SoyConstDefine.MaxProjectCommentLength;
 //            _cachedView.CommentList.ItemClickCallback = OnCommentItemClick;
 
