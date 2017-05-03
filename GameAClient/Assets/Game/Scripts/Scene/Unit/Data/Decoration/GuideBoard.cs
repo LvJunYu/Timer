@@ -11,7 +11,7 @@ using Spine.Unity;
 namespace GameA.Game
 {
     [Unit(Id = 7101, Type = typeof (GuideBoard))]
-    public class GuideBoard : UnitBase
+    public class GuideBoard : DecorationBase
     {
 
     }

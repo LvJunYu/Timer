@@ -11,7 +11,7 @@ using Spine.Unity;
 namespace GameA.Game
 {
     [Unit(Id = 7001, Type = typeof (BillBoard))]
-    public class BillBoard : Magic
+    public class BillBoard : DecorationBase
     {
         private bool _trigger;
         private UnitBase _unit;

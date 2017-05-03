@@ -98,6 +98,8 @@ namespace GameA.Game
 
         #region view
 
+        protected float _zOffset;
+
         /// <summary>
         /// 可能会为NULL
         /// </summary>
@@ -738,12 +740,12 @@ namespace GameA.Game
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, size, _tableUnit);
                 }
             }
-            float z = _curPos.x + _curPos.y;
+            float z =- (_curPos.x + _curPos.y * 2) * 0.00078125f + _zOffset;
             if (_tableUnit.EGeneratedType == EGeneratedType.Spine && !IsHero)
             {
-                return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset - new Vector3(0, 0.1f, z * 0.00078125f);
+                return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, - 0.1f * 0.00078125f, z);
             }
-			return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset - Vector3.forward * z * 0.00078125f;
+			return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + Vector3.forward * z;
         }
 
         #endregion

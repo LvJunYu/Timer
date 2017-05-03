@@ -11,7 +11,7 @@ using System.Collections;
 namespace GameA.Game
 {
     [Unit(Id = 7103, Type = typeof(MonsterBoard))]
-    public class MonsterBoard : UnitBase
+    public class MonsterBoard : DecorationBase
     {
     }
 }
