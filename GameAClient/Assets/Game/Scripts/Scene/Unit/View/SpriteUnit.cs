@@ -23,24 +23,14 @@ namespace GameA.Game
 
         protected override bool OnInit()
         {
-            var tableUnit = _unit.TableUnit;
-            string assetPath = tableUnit.Model;
-            if (tableUnit.Id == 4001 || tableUnit.Id == 4002)
-            {
-                assetPath = string.Format("{0}_{1}", tableUnit.Model, Random.Range(1,3));
-            }
-            if (tableUnit.CanRotate)
-            {
-                assetPath = string.Format("{0}_{1}", tableUnit.Model, _unit.Rotation);
-            }
             Sprite sprite;
-            if (!GameResourceManager.Instance.TryGetSpriteByName(assetPath, out sprite))
+            if (!GameResourceManager.Instance.TryGetSpriteByName(_unit.AssetPath, out sprite))
             {
-                LogHelper.Error("TryGetSpriteByName failed,{0}", assetPath);
+                LogHelper.Error("TryGetSpriteByName failed,{0}", _unit.AssetPath);
                 return false;
             }
             _spriteRenderer.sprite = sprite;
-            _spriteRenderer.sortingOrder = UnitManager.Instance.GetSortingOrder(tableUnit);
+            _spriteRenderer.sortingOrder = UnitManager.Instance.GetSortingOrder(_unit.TableUnit);
             return true;
         }
 

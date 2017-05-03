@@ -25,18 +25,17 @@ namespace GameA.Game
 
         protected override bool OnInit()
         {
-            var tableUnit = _unit.TableUnit;
             SkeletonDataAsset data;
-            if (!GameResourceManager.Instance.TryGetSpineDataByName(tableUnit.Model, out data))
+            if (!GameResourceManager.Instance.TryGetSpineDataByName(_unit.AssetPath, out data))
             {
-                LogHelper.Error("TryGetSpineDataByName Failed! {0}", tableUnit.Model);
+                LogHelper.Error("TryGetSpineDataByName Failed! {0}", _unit.AssetPath);
                 return false;
             }
             _skeletonAnimation.skeletonDataAsset = data;
             _skeletonAnimation.Initialize(true);
             _skeletonAnimation.enabled = true;
             _renderer = _skeletonAnimation.GetComponent<Renderer>();
-            _renderer.sortingOrder = UnitManager.Instance.GetSortingOrder(tableUnit);
+            _renderer.sortingOrder = UnitManager.Instance.GetSortingOrder(_unit.TableUnit);
             return true;
         }
 

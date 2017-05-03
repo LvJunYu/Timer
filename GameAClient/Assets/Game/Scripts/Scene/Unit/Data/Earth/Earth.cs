@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 namespace GameA.Game
 {
@@ -22,6 +23,11 @@ namespace GameA.Game
         protected List<Edge> _edges = new List<Edge>();
         private static Comparison<Edge> _comparisonSkillType = SortEdge;
         private SplashController _leftEdgeSplash;
+
+        protected override void InitAssetPath()
+        {
+            _assetPath = string.Format("{0}_{1}", _tableUnit.Model, Random.Range(1, 3));
+        }
 
         #region edge
 

@@ -105,6 +105,8 @@ namespace GameA.Game
         /// </summary>
         protected UnitView _view;
 
+        protected string _assetPath;
+
         /// <summary>
         /// 可能会为NULL
         /// </summary>
@@ -388,6 +390,11 @@ namespace GameA.Game
             }
         }
 
+        public string AssetPath
+        {
+            get { return _assetPath; }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -398,6 +405,7 @@ namespace GameA.Game
             _unitDesc.Rotation = 0;
             _unitDesc.Scale = Vector3.one;
             _curMoveDirection = _moveDirection = DataScene2D.Instance.GetUnitExtra(_guid).MoveDirection;
+            InitAssetPath();
             if (!UnitManager.Instance.TryGetUnitView(this, out _view))
             {
                 LogHelper.Error("TryGetUnitView Failed, {0}", tableUnit.Id);
@@ -416,8 +424,10 @@ namespace GameA.Game
         internal bool Init(Table_Unit tableUnit, UnitDesc unitDesc)
         {
             _tableUnit = tableUnit;
+            _unitDesc = unitDesc;
             _curMoveDirection = _moveDirection = DataScene2D.Instance.GetUnitExtra(_guid).MoveDirection;
             _curPos = new IntVec2(_guid.x, _guid.y);
+            InitAssetPath();
             if (!UnitManager.Instance.TryGetUnitView(this, out _view))
             {
                 LogHelper.Error("TryGetUnitView Failed, {0}", tableUnit.Id);
@@ -439,9 +449,19 @@ namespace GameA.Game
                 _friction = 12;
                 _dynamicCollider = dynamicCollider;
             }
+            InitAssetPath();
             OnInit();
             _colliderGridInner = _useCorner ? _colliderGrid.GetGridInner() : _colliderGrid;
             return true;
+        }
+
+        protected virtual void InitAssetPath()
+        {
+            _assetPath = _tableUnit.Model;
+            if (_tableUnit.CanRotate)
+            {
+                _assetPath = string.Format("{0}_{1}", _tableUnit.Model, _unitDesc.Rotation);
+            }
         }
 
         protected virtual bool OnInit()
