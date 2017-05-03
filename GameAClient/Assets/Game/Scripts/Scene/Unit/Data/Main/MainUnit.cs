@@ -173,8 +173,7 @@ namespace GameA.Game
 			}
 //            _runEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem(ParticleNameConstDefineGM2D.Run, _trans);
             _brakeEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem(ParticleNameConstDefineGM2D.Brake, _trans);
-
-			_shooterEffect = GameParticleManager.Instance.GetUnityNativeParticleItem("ShooterEffect", _trans);
+            _shooterEffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectShooter", _trans);
 			_shooterEffect.Play ();
 			_shooterEffectPos = _curPos;
             return true;
