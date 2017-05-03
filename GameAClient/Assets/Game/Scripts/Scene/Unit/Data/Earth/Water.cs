@@ -24,6 +24,7 @@ namespace GameA.Game
             }
             if (_view1 != null)
             {
+                _view1.Animation.Init("Run");
             }
             return _animation.Init("Run");
             //CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(1.6f - Time.realtimeSinceStartup % 1.6f,
