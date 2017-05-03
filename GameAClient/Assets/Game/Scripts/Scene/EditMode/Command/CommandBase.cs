@@ -36,6 +36,24 @@ namespace GameA.Game
             return true;
         }
 
+        protected bool CheckCanBindMagic(Table_Unit child, UnitDesc parent)
+        {
+            if (child == null || parent == UnitDesc.zero)
+            {
+                return false;
+            }
+            Table_Unit tableParent = UnitManager.Instance.GetTableUnit(parent.Id);
+            if (tableParent == null)
+            {
+                return false;
+            }
+            if (child.Id == ConstDefineGM2D.BlueStoneId && tableParent.OriginMagicDirection!=0)
+            {
+                return true;
+            }
+            return false;
+        }
+
         protected bool CheckMask(byte rotation,int mask)
         {
             return (mask & (byte)(1 << rotation)) != 0;

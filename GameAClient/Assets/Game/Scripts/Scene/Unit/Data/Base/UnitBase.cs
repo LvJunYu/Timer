@@ -506,7 +506,6 @@ namespace GameA.Game
         {
             ClearRunTime();
             _isAlive = true;
-            _life = 1;
             _dieTime = 0;
             _deltaPos = IntVec2.zero;
             _deltaImpactPos = IntVec2.zero;
@@ -739,32 +738,10 @@ namespace GameA.Game
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, size, _tableUnit);
                 }
             }
-            float z;
-//            var mapWidth = (int) (MapConfig.PermitMapSize.x*ConstDefineGM2D.ClientTileScale);
-            if (_dynamicCollider != null)
+            float z = _curPos.x + _curPos.y;
+            if (_tableUnit.EGeneratedType == EGeneratedType.Spine && !IsHero)
             {
-                var dataSize = GetDataSize();
-                int y;
-                if (_deltaPos.x == 0)
-                {
-                    y = _curMoveDirection == EMoveDirection.Left ? _curPos.y + dataSize.y - 1 : _curPos.y;
-                }
-                else
-                {
-                    y = _deltaPos.x < 0 ? _curPos.y + dataSize.y - 1 : _curPos.y;
-                }
-				z = _curPos.x + y;// * mapWidth;
-            }
-            else
-            {
-                z = _curPos.x + _curPos.y;
-            }
-            if (!IsHero)
-            {
-                if (_tableUnit.EGeneratedType == EGeneratedType.Spine)
-                {
-					return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset - new Vector3(0, 0.1f, z * 0.00078125f);
-                }
+                return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset - new Vector3(0, 0.1f, z * 0.00078125f);
             }
 			return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset - Vector3.forward * z * 0.00078125f;
         }
