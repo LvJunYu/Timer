@@ -1176,7 +1176,7 @@ namespace GameA.Game
                 PlayMode.Instance.CurrentShadow.RecordNormalDeath();
                 if (_view != null)
                 {
-					GameParticleManager.Instance.Emit("M1KongZhongSiWang", _trans.position + Vector3.up * 0.5f, Vector3.one);
+                    GameParticleManager.Instance.Emit("M1EffectAirDeath", _trans.position + Vector3.up * 0.5f, Vector3.one);
                 }
                 OnRevive();
                 _trans.eulerAngles = new Vector3(90, 0, 0);

@@ -110,7 +110,7 @@ namespace GameA.Game
 
         // 熊猫死后魂飞特效的资源名
         public const string PandaSoulSEPrefabName = "M2PandaSoul";
-        public const string MarioSoulSEPrefabName = "M1Soul";
+        public const string MarioSoulSEPrefabName = "M1EffectSoul";
         public const string MarioPortalParticle = "M1GenSui";
         public const string MarioLazerParticle = "M1HuiJu";
         public const string MarioLazerEffect1 = "M1LazerEffect1";
