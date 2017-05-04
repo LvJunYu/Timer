@@ -17,7 +17,7 @@ namespace GameA.Game
         private UnitBase _unit;
         private int _time;
 
-        public void UpdateLogic(float deltaTime)
+        public override void UpdateLogic()
         {
             if (_trigger)
             {
@@ -56,7 +56,7 @@ namespace GameA.Game
             base.Reset();
         }
 
-        public override void OnHit(UnitBase other)
+        protected override void OnTrigger(UnitBase other)
         {
             if (!other.IsMain)
             {
@@ -66,8 +66,8 @@ namespace GameA.Game
             {
                 _trigger = true;
                 _unit = other;
-                Messenger<IntVec3>.Broadcast(EMessengerType.OnTriggerBulletinBoardEnter, _guid);
                 _time = 0;
+                Messenger<IntVec3>.Broadcast(EMessengerType.OnTriggerBulletinBoardEnter, _guid);
             }
         }
     }
