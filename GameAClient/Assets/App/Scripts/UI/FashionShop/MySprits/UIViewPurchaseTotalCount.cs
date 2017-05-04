@@ -6,7 +6,7 @@ using UnityEngine.UI;
 /*购买界面*/
 namespace GameA
 {
-	public class UIViewGoShopping : UIViewBase
+	public class UIViewPurchaseTotalCount : UIViewBase
 	{
 		/// <summary>
 		/// 关闭按钮

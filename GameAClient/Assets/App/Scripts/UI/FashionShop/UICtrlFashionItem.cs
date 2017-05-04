@@ -48,11 +48,11 @@ namespace GameA
 		#endregion
 
 		#region 方法
-		void Start () {
-			BuyBtn.onClick.AddListener (OnBuyBtn);
-			UseBtn.onClick.AddListener (OnUseBtn);
-			DressBtn.onClick.AddListener (OnDrseeBtn);
-		}
+		//void Start () {
+		//	BuyBtn.onClick.AddListener (OnBuyBtn);
+		//	UseBtn.onClick.AddListener (OnUseBtn);
+		//	DressBtn.onClick.AddListener (OnDrseeBtn);
+		//}
 
 		private void RefreshInfo (Table_FashionShop tableShop) {
 

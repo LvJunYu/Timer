@@ -32,11 +32,13 @@ namespace GameA
 		public void Set(){
 			
 		}
+
+
 		/*这是我取到了数据以后我要读出这个数据*/
 		public void Set(USCtrlShopping.Person data)
 		{
 
-//			DictionaryTools.SetStaticText (_cachedView.DjsText, "剩余时间");
+			//DictionaryTools.SetStaticText (_cachedView.DjsText, "剩余时间");
 
 		}
 
@@ -51,7 +53,7 @@ namespace GameA
 		/// </summary>
 		private void BuyViwe()
 		{
-			SocialGUIManager.Instance.OpenPopupUI<UICtrlGoShopping> ();
+			SocialGUIManager.Instance.OpenPopupUI<UICtrlPurchaseTotalCount> ();
 		}
 		/// <summary>
 		/// 穿戴的事件，服务器发送数据在这个接收

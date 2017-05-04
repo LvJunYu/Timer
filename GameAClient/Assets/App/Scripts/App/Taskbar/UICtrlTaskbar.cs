@@ -250,7 +250,7 @@ namespace GameA
 		/// 家园角色被点击
 		/// </summary>
 		private void OnAvatarBtn () {
-			SocialGUIManager.Instance.OpenPopupUI<UICtrlFashionShop> ();
+			SocialGUIManager.Instance.OpenPopupUI<UICtrlFashionShopMainMenu>();
 		}
 
 //        private void SelectButton(UnityEngine.UI.Button button)

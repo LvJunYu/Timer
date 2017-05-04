@@ -12,7 +12,7 @@ using GameA.Game;
 namespace GameA
 {
 	[UIAutoSetup(EUIAutoSetupType.Create)]
-	public class UICtrlGoShopping : UISocialCtrlBase<UIViewGoShopping>
+	public class UICtrlPurchaseTotalCount : UISocialCtrlBase<UIViewPurchaseTotalCount>
 	{
 		#region 常量与字段
 
@@ -41,7 +41,7 @@ namespace GameA
 //			_cachedView.GoShoppingViwe.onClick.AddListener (GoShoppingViwe);
 		}
 		private void OnCloseBtnClick () {
-			SocialGUIManager.Instance.OpenPopupUI<UICtrlGoShopping> ();//???/
+			SocialGUIManager.Instance.OpenPopupUI<UICtrlPurchaseTotalCount> ();//???/
 		}
 
 		/// <summary>

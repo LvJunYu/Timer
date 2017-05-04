@@ -126,7 +126,7 @@ GameObject:
   - component: {fileID: 114646696046746418}
   - component: {fileID: 114751053780630694}
   m_Layer: 5
-  m_Name: UICtrlGoShopping
+  m_Name: UICtrlPurchaseTotalCount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1166,6 +1166,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortIndex: 0
   CloseBtn: {fileID: 114092839563002428}
+  GoShoppingViwe: {fileID: 114676343235638994}
 --- !u!114 &114754078723071138
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1696,7 +1697,7 @@ RectTransform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1291043410747934}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:

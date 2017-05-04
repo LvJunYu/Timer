@@ -18,8 +18,8 @@ using GameA.Game;
 
 namespace GameA
 {
-	[UIAutoSetup(EUIAutoSetupType.Create)]
-	public class UICtrlFashionShop : UISocialCtrlBase<UIViewFashionShop>
+	[UIAutoSetup(EUIAutoSetupType.Add)]
+	public class UICtrlFashionShopMainMenu : UISocialCtrlBase<UIViewFashionShopMainMenu>
     {
 		#region 常量与字段
 		private USCtrlShopping _usctrlAllShopping;//对应的界面按钮对应的各个界面实现切换
@@ -70,7 +70,6 @@ namespace GameA
 
 //			_cachedView.TagGroup.AddButton(_cachedView.CloseBtn, OnSYbuttonClick);
 
- 
 			_cachedView.TagGroup.AddButton(_cachedView.USViewShopping.SYbutton, OnSYbuttonClick);//添加按钮
 			_cachedView.TagGroup.AddButton(_cachedView.USViewShopping.KZbutton, OnKZbuttonClick);
 			_cachedView.TagGroup.AddButton(_cachedView.USViewShopping.MZbutton, OnMZbuttonClick);
@@ -183,7 +182,7 @@ namespace GameA
         /// 关闭按钮
         /// </summary>
 		private void OnCloseBtnClick () {
-			SocialGUIManager.Instance.CloseUI<UICtrlFashionShop> ();
+			SocialGUIManager.Instance.CloseUI<UICtrlFashionShopMainMenu> ();
 		}
 
 

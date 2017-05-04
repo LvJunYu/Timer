@@ -5,7 +5,7 @@ using UnityEngine.UI;
 /*主UI*/
 namespace GameA
 {
-	public class UIViewFashionShop : UIViewBase
+	public class UIViewFashionShopMainMenu : UIViewBase
     {
 		/// <summary>
 		/// 时装关闭按钮
@@ -28,6 +28,6 @@ namespace GameA
 
 
 
-		public UICtrlFashionItem[] Items;
+		//public UICtrlFashionItem[] Items;
     }
 }

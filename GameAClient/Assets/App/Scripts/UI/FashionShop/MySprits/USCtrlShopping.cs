@@ -12,10 +12,9 @@ namespace GameA
 {
 	public class USCtrlShopping : USCtrlBase <USViewShopping>
 	{
-		
 		private List<UMCtrlShoppingCard> _cardList = new List<UMCtrlShoppingCard>();
-	
 		private Project _content;
+
 		/// <summary>
 		/// 掉这个方法的时候就是添加到list中，然后创建新的shopping
 		/// </summary>
