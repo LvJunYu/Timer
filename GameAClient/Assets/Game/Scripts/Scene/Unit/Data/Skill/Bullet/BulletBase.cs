@@ -47,7 +47,6 @@ namespace GameA.Game
         {
             _run = true;
             _skill = skill;
-            SetPos(_skill.Owner.FirePos);
             _curMoveDirection = _skill.Owner.FireDirection;
             switch (_curMoveDirection)
             {

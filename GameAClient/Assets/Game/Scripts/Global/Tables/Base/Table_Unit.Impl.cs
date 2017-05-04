@@ -332,6 +332,5 @@ namespace GameA.Game
         Tiling,
         Morph,
         Empty,
-//		ChangePartsSpine,
     }
 }

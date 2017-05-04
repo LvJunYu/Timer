@@ -18,11 +18,7 @@ namespace GameA.Game
         {
             base.Enter(ower, plus);
             _eSkillType = ESkillType.Ice;
-        }
-
-        protected override BulletBase CreateBullet()
-        {
-            return PlayMode.Instance.CreateRuntimeUnit(10003, _owner.FirePos, (byte)(_owner.FireDirection - 1), Vector2.one) as BulletBase;
+            _bulletId = 10003;
         }
     }
 }

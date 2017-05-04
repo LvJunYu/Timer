@@ -44,6 +44,8 @@ namespace GameA.Game
         [SerializeField]
         protected UnitBase _owner;
 
+        protected int _bulletId;
+
         public int BulletSpeed
         {
             get { return _bulletSpeed; }
@@ -83,6 +85,14 @@ namespace GameA.Game
         {
         }
 
+        public void UpdateLogic()
+        {
+            if (_timerCD > 0)
+            {
+                _timerCD--;
+            }
+        }
+
         public void Fire()
         {
             if (_timerCD > 0)
@@ -100,17 +110,25 @@ namespace GameA.Game
             bullet.Run(this);
         }
 
-        protected virtual BulletBase CreateBullet()
+        private BulletBase CreateBullet()
         {
-            return null;
+            if (_bulletId == 0)
+            {
+                return null;
+            }
+            var rotation = (byte)(_owner.FireDirection - 1);
+            return PlayMode.Instance.CreateRuntimeUnit(_bulletId, GetBulletPos(_bulletId, rotation), rotation, Vector2.one) as BulletBase;
         }
 
-        public void UpdateLogic()
+        private IntVec2 GetBulletPos(int bulletId, byte rotation)
         {
-            if (_timerCD > 0)
+            var tableUnit = UnitManager.Instance.GetTableUnit(bulletId);
+            if (tableUnit == null)
             {
-                _timerCD--;
+                return IntVec2.zero;
             }
+            var dataSize = tableUnit.GetDataSize(rotation, Vector2.one);
+            return _owner.FirePos - dataSize * 0.5f;
         }
 
         public override string ToString()

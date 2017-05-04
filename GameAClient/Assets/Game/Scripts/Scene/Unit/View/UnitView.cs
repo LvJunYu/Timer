@@ -224,7 +224,7 @@ namespace GameA.Game
                 }
             }
 
-            if (tableUnit.CanRotate && tableUnit.EGeneratedType != EGeneratedType.Tiling)
+            if (tableUnit.CanRotate)
             {
                 Vector3 offset = GetRotationPosOffset();
                 _trans.localEulerAngles = new Vector3(0, 0, GetRotation(_unit.UnitDesc.Rotation));
