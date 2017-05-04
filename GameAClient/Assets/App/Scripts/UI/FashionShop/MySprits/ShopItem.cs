@@ -5,7 +5,7 @@ using GameA.Game;
 using SoyEngine.Proto;
 using UnityEngine;
 
-public class ShopItem
+public class    ShopItem
 {
 
 	private EAvatarPart _avatarType;
@@ -44,28 +44,28 @@ public class ShopItem
 	// 所在皮肤id
 	public int SkinId;
 
-	public void ShopItemt(Table_HeadParts HeadParts)
+	public ShopItem(Table_HeadParts headParts)
 	{
 		//this._headParts = HeadParts;
 		this._avatarType = EAvatarPart.AP_Head;
-		this.Name = HeadParts.Name;
-		this.Description = HeadParts.Description;
-		this.Sex = HeadParts.Sex;
-		this.Character = HeadParts.Character;
-		this.PriceGoldDay = HeadParts.PriceGoldDay;
-		this.PriceGoldMonth = HeadParts.PriceGoldMonth;
-		this.PriceGoldPermanent = HeadParts.PriceGoldPermanent;
-		this.PriceDiamondDay = HeadParts.PriceDiamondDay;
-		this.PriceDiamondWeek = HeadParts.PriceDiamondWeek;
-		this.PriceDiamondMonth = HeadParts.PriceDiamondMonth;
-		this.PriceDiamondPermanent = HeadParts.PriceDiamondPermanent;
-		this.BigTexture = HeadParts.BigTexture;
-		this.SmallTexture = HeadParts.SmallTexture;
-		this.PreviewTexture = HeadParts.PreviewTexture;
-		this.SkinId = HeadParts.SkinId;
+		this.Name = headParts.Name;
+		this.Description = headParts.Description;
+		this.Sex = headParts.Sex;
+		this.Character = headParts.Character;
+		this.PriceGoldDay = headParts.PriceGoldDay;
+		this.PriceGoldMonth = headParts.PriceGoldMonth;
+		this.PriceGoldPermanent = headParts.PriceGoldPermanent;
+		this.PriceDiamondDay = headParts.PriceDiamondDay;
+		this.PriceDiamondWeek = headParts.PriceDiamondWeek;
+		this.PriceDiamondMonth = headParts.PriceDiamondMonth;
+		this.PriceDiamondPermanent = headParts.PriceDiamondPermanent;
+		this.BigTexture = headParts.BigTexture;
+		this.SmallTexture = headParts.SmallTexture;
+		this.PreviewTexture = headParts.PreviewTexture;
+		this.SkinId = headParts.SkinId;
 
 	}
-	public void ShopItemt(Table_UpperBodyParts UpperBodyParts)
+	public ShopItem(Table_UpperBodyParts UpperBodyParts)
 	{
 		//this._upperBodyParts = UpperBodyParts;
 		this._avatarType = EAvatarPart.AP_Head;
@@ -87,7 +87,7 @@ public class ShopItem
 
 
 	}
-	public void ShopItemt(Table_LowerBodyParts LowerBodyParts)
+	public ShopItem(Table_LowerBodyParts LowerBodyParts)
 	{
 		//this._lowerBodyParts = LowerBodyParts;
 		this._avatarType = EAvatarPart.AP_Head;
@@ -110,7 +110,7 @@ public class ShopItem
 
 
 	}
-	public void ShopItemt(Table_AppendageParts AppendageParts)
+	public ShopItem(Table_AppendageParts AppendageParts)
 	{
 		//this._appendageParts = AppendageParts;
 		this._avatarType = EAvatarPart.AP_Head;

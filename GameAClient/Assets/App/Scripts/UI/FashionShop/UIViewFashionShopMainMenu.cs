@@ -19,8 +19,8 @@ namespace GameA
 		/// 独立的US界面
 		/// </summary>
 		public USViewShopping USViewShopping;
-		public USViewShopping SYViewShopping;
-		public USViewShopping XZViewShopping;
+	    public USViewShopping FashionPage1;
+        public USViewShopping XZViewShopping;
 		public USViewShopping ZSViewShopping;
 		public USViewShopping MZViewShopping;
 		public USViewShopping KZViewShopping;

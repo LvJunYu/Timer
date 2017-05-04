@@ -24,9 +24,23 @@ namespace GameA
 		#region 常量与字段
 		private USCtrlShopping _usctrlAllShopping;//对应的界面按钮对应的各个界面实现切换
 		private USCtrlShopping _usctrlHeadShopping;//头
-		private USCtrlShopping _usctrlBodyShopping;//上衣
+		private USCtrlShopping _usctrlFashionPage1;//第一页
 		private USCtrlShopping _usctrlLegShopping;//腿
 		private USCtrlShopping _usctrlZSusShopping;//装饰
+
+	    private List<ShopItem> _page1 = new List<ShopItem>();
+        private List<ShopItem> _page2 = new List<ShopItem>();
+        private List<ShopItem> _page3 = new List<ShopItem>();
+        private List<ShopItem> _page4 = new List<ShopItem>();
+        private List<ShopItem> _headParts = new List<ShopItem>();
+        private List<ShopItem> _upperParts = new List<ShopItem>();
+        private List<ShopItem> _lowerParts = new List<ShopItem>();
+        private List<ShopItem> _appendageParts = new List<ShopItem>();
+	    private Dictionary<int,List<ShopItem>> _itemMainDic = new Dictionary<int, List<ShopItem>>();
+
+
+
+
         #endregion
 
         #region 属性
@@ -64,18 +78,15 @@ namespace GameA
         /// </summary>
         protected override void OnViewCreated()
         {
+            
             base.OnViewCreated();
-
-
-
 //			_cachedView.TagGroup.AddButton(_cachedView.CloseBtn, OnSYbuttonClick);
 
-			_cachedView.TagGroup.AddButton(_cachedView.USViewShopping.SYbutton, OnSYbuttonClick);//添加按钮
+			_cachedView.TagGroup.AddButton(_cachedView.USViewShopping.Page1Btn,OnFashionPage1ButtonClick);
 			_cachedView.TagGroup.AddButton(_cachedView.USViewShopping.KZbutton, OnKZbuttonClick);
 			_cachedView.TagGroup.AddButton(_cachedView.USViewShopping.MZbutton, OnMZbuttonClick);
 			_cachedView.TagGroup.AddButton(_cachedView.USViewShopping.XZbutton, OnXZbuttonClick);
 			_cachedView.TagGroup.AddButton(_cachedView.USViewShopping.ZSbutton, OnZSbuttonClick);
-
 
 
 			_usctrlAllShopping = new USCtrlShopping ();
@@ -86,9 +97,9 @@ namespace GameA
 			_usctrlHeadShopping.Init(_cachedView.MZViewShopping);
 			_usctrlHeadShopping.ShoppingPage = USCtrlShopping.EShoppingPage.MZUIViewShopping;
 
-			_usctrlBodyShopping = new USCtrlShopping ();
-			_usctrlBodyShopping.Init(_cachedView.SYViewShopping);
-			_usctrlBodyShopping.ShoppingPage = USCtrlShopping.EShoppingPage.SYUIViewShopping;
+            _usctrlFashionPage1 = new USCtrlShopping ();
+            _usctrlFashionPage1.Init(_cachedView.FashionPage1);
+            _usctrlFashionPage1.ShoppingPage = USCtrlShopping.EShoppingPage.FashionPage1;
 
 			_usctrlLegShopping = new USCtrlShopping ();
 			_usctrlLegShopping.Init(_cachedView.USViewShopping);
@@ -103,23 +114,97 @@ namespace GameA
 
 
 			_cachedView.CloseBtn.onClick.AddListener (OnCloseBtnClick);
+
+            TakeDataFromTablemanager();
+
+        }
+
+	    private void TakeDataFromTablemanager()
+	    {
+	        var headPartsDic = TableManager.Instance.Table_HeadPartsDic;
+            var lowerPartsDic = TableManager.Instance.Table_LowerBodyPartsDic;
+            var upperPartsDic = TableManager.Instance.Table_UpperBodyPartsDic;
+            var appendagePartsDic = TableManager.Instance.Table_AppendagePartsDic;
+	        _itemMainDic.Add(1, _headParts);
+            _itemMainDic.Add(2, _upperParts);
+            _itemMainDic.Add(3, _lowerParts);
+            _itemMainDic.Add(4, _appendageParts);
+
+
+
+            for (int i = 0; i < headPartsDic.Count; i++)
+	        {
+                ShopItem headPart = new ShopItem(headPartsDic[i]);
+	            _headParts.Add(headPart);
+	        }
+            for (int i = 0; i < lowerPartsDic.Count; i++)
+            {
+                ShopItem lowerPart = new ShopItem(lowerPartsDic[i]);
+                _lowerParts.Add(lowerPart);
+            }
+            for (int i = 0; i < upperPartsDic.Count; i++)
+            {
+                ShopItem upperPart = new ShopItem(upperPartsDic[i]);
+                _upperParts.Add(upperPart);
+            }
+            for (int i = 0; i < appendagePartsDic.Count; i++)
+	        {
+                ShopItem appendage = new ShopItem(appendagePartsDic[i]);
+                _appendageParts.Add(appendage);
+	        }
+
+        }
+
+
+    private void MakePageList()
+	    {
+            var fashionShopDic = TableManager.Instance.Table_FashionShopDic;
+	        for (int i = 0; i <fashionShopDic.Count; i++)
+	        {
+	            //ShopItem pageItem = new ShopItem(fashionShopDic[i]);
+	            var ItemType = fashionShopDic[i].Type;
+                var ItemIdx = fashionShopDic[i].ItemIdx;
+                var Sex = fashionShopDic[i].Sex;
+
+                     switch (fashionShopDic[i].Type)
+                {
+                    case 1:
+                        _page1.Add(_itemMainDic[ItemType][ItemIdx]);
+                        break;
+                    case 2:
+                        _page2.Add(_itemMainDic[ItemType][ItemIdx]);
+                        break;
+                    case 3:
+                        _page3.Add(_itemMainDic[ItemType][ItemIdx]);
+                        break;
+                    case 4:
+                        _page4.Add(_itemMainDic[ItemType][ItemIdx]);
+                        break;
+
+
+                }
+
+
+
+                
+	        }
+
         }
 
 
 
 
 
-
-		/*界面的切换这个打开和关闭*/
-		private void OnSYbuttonClick(bool open)
+	    /*界面的切换这个打开和关闭*/
+		private void OnFashionPage1ButtonClick(bool open)
 		{
 			if (open)
 			{
-				_usctrlBodyShopping.Open ();
+                _usctrlFashionPage1.Open ();
 			}
 			else 
 			{
-				_usctrlBodyShopping.Close();
+                _usctrlFashionPage1.Close();
 			}
 		}
 
@@ -164,13 +249,6 @@ namespace GameA
 		}
 
 
-
-
-
-
-
-
-			
 
         #region 接口
         protected override void InitGroupId()

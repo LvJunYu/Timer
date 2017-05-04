@@ -11,8 +11,8 @@ namespace GameA
 		/// <summary>
 		/// 上衣按钮/场景
 		/// </summary>
-		public Button SYbutton;
-		public GameObject  SYbuttonDock;
+		public Button Page1Btn;
+		public GameObject Page1Obj;
 
 		/// <summary>
 		/// 裤子按钮/场景
@@ -93,7 +93,7 @@ namespace GameA
 		/// 卡片的父物体的位置（1）
 		/// 剩下的还有4个界面
 		/// </summary>
-		 public RectTransform SYDock;
+		 //public RectTransform SYDock;
 
 
 
