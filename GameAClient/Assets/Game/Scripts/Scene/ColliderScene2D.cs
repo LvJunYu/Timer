@@ -382,7 +382,6 @@ namespace GameA.Game
         #region Physics
 
         private static List<RayHit2D> _cachedRayHits = new List<RayHit2D>();
-        private static readonly List<UnitDesc> _cachedUnitObjects = new List<UnitDesc>();
         private static readonly List<UnitBase> _cachedUnits = new List<UnitBase>();
 
         internal static bool PointCast(Vector2 point, out SceneNode sceneNode, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue)
@@ -612,37 +611,31 @@ namespace GameA.Game
             return _cachedUnits;
         }
 
-        public static List<SceneNode> CircleCastAll(Vector2 center, float radius, int layerMask = JoyPhysics2D.LayMaskAll,
+        public static List<SceneNode> CircleCastAll(IntVec2 center, int radius, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue,
             SceneNode excludeNode = null)
         {
-            return SceneQuery2D.CircleCastAll(center * ConstDefineGM2D.ServerTileScale,
-                radius * ConstDefineGM2D.ServerTileScale, layerMask, Instance, minDepth, maxDepth,
+            return SceneQuery2D.CircleCastAll(center, radius, layerMask, Instance, minDepth, maxDepth,
                 excludeNode);
         }
 
-        public static List<UnitDesc> CircleCastAllReturnUnits(Vector2 center, float radius, int layerMask = JoyPhysics2D.LayMaskAll,
-            float minDepth = float.MinValue, float maxDepth = float.MaxValue,
-            SceneNode excludeNode = null)
+        public static List<UnitBase> CircleCastAllReturnUnits(IntVec2 center, int radius, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
-            _cachedUnitObjects.Clear();
-            var grid = new Grid2D(GM2DTools.WorldToTile(center.x - radius), GM2DTools.WorldToTile(center.y - radius),
-                GM2DTools.WorldToTile(center.x + radius) - 1, GM2DTools.WorldToTile(center.y + radius) - 1);
+            _cachedUnits.Clear();
+            var grid = new Grid2D(center.x - radius, center.y - radius, center.x + radius - 1, center.y + radius - 1);
             grid = grid.IntersectWith(DataScene2D.Instance.RootGrid);
-            List<SceneNode> nodes = CircleCastAll(center, radius, layerMask, minDepth, maxDepth, excludeNode);
-            center *= ConstDefineGM2D.ServerTileScale;
-            radius *= ConstDefineGM2D.ServerTileScale;
+            List<SceneNode> nodes = SceneQuery2D.CircleCastAll(center, radius, layerMask, Instance, minDepth, maxDepth, excludeNode);
             for (int i = 0; i < nodes.Count; i++)
             {
-                if (!SplitSceneNodeCacheToUnitObject(center, radius, grid, nodes[i]))
+                if (!SplitNode(center, radius, grid, nodes[i]))
                 {
-                    LogHelper.Error("SplitSceneNodeCacheToUnitObject failed.{0}, {1}", nodes[i], grid);
+                    LogHelper.Error("SplitNode failed.{0}, {1}", nodes[i], grid);
                 }
             }
-            return _cachedUnitObjects;
+            return _cachedUnits;
         }
 
-        private static bool SplitSceneNodeCacheToUnitObject(Vector2 center, float radius, Grid2D grid, SceneNode node)
+        private static bool SplitNode(IntVec2 center, int radius, Grid2D grid, SceneNode node)
         {
             Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(node.Id);
             if (tableUnit == null)
@@ -653,9 +646,16 @@ namespace GameA.Game
             //动态物体
             if (node.IsDynamic())
             {
-                _cachedUnitObjects.Add(new UnitDesc(node.Id, tableUnit.ColliderToRenderer(node.Guid, node.Rotation), node.Rotation, node.Scale));
+                var guid = tableUnit.ColliderToRenderer(node.Guid, node.Rotation);
+                UnitBase unit;
+                if (!_instance.TryGetUnit(guid, out unit))
+                {
+                    return false;
+                }
+                _cachedUnits.Add(unit);
                 return true;
             }
+
             Grid2D newGrid = GM2DTools.IntersectWith(grid, node, tableUnit, false);
             var colliderSize = tableUnit.GetColliderSize(node);
             var count = tableUnit.GetColliderCount(newGrid, node.Rotation, node.Scale);
@@ -663,11 +663,17 @@ namespace GameA.Game
             {
                 for (int k = 0; k < count.y; k++)
                 {
-                    var rectIndex = new IntVec3(newGrid.XMin + j * colliderSize.x, newGrid.YMin + k * colliderSize.y, node.Depth);
-                    var splitedGrid = tableUnit.GetBaseColliderGrid(rectIndex);
+                    var guid = new IntVec3(newGrid.XMin + j * colliderSize.x, newGrid.YMin + k * colliderSize.y, node.Depth);
+                    guid = tableUnit.ColliderToRenderer(guid, node.Rotation);
+                    var splitedGrid = tableUnit.GetColliderGrid(guid.x, guid.y, node.Rotation, node.Scale);
                     if (splitedGrid.Intersect(center, radius))
                     {
-                        _cachedUnitObjects.Add(new UnitDesc(node.Id, tableUnit.ColliderToRenderer(rectIndex, node.Rotation), node.Rotation, node.Scale));
+                        UnitBase unit;
+                        if (!_instance.TryGetUnit(guid, out unit))
+                        {
+                            continue;
+                        }
+                        _cachedUnits.Add(unit);
                     }
                 }
             }

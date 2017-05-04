@@ -93,26 +93,32 @@ namespace SoyEngine
 			return item;
 	    }
 
-		public bool Emit(string itemName, Vector3 pos, Vector3 scale, float lifeTime = ConstDefineGM2D.DefaultParticlePlayTime, ESortingOrder sortingOrder = ESortingOrder.Item)
-	    {
+        public bool Emit(string itemName, Vector3 pos, Vector3 rotation, Vector3 scale, float lifeTime = ConstDefineGM2D.DefaultParticlePlayTime, ESortingOrder sortingOrder = ESortingOrder.Item)
+        {
             if (string.IsNullOrEmpty(itemName))
             {
                 return false;
             }
 
-			UnityNativeParticleItem com = GetParticleItem(itemName);
-		    if (com == null || com.Trans == null)
-		    {
-				LogHelper.Error("Emit failed! itemName is {0}",itemName);
-			    return false;
-		    }
-			com.SetData(true, lifeTime);
-			com.SetParent(null, pos);
-			com.Trans.localScale = scale;
-			com.SetSortingOrder (sortingOrder);
-			com.Play(lifeTime);
-			AddToSceneItems(com);
-			return true;
+            UnityNativeParticleItem com = GetParticleItem(itemName);
+            if (com == null || com.Trans == null)
+            {
+                LogHelper.Error("Emit failed! itemName is {0}", itemName);
+                return false;
+            }
+            com.SetData(true, lifeTime);
+            com.SetParent(null, pos);
+            com.Trans.localEulerAngles = rotation;
+            com.Trans.localScale = scale;
+            com.SetSortingOrder(sortingOrder);
+            com.Play(lifeTime);
+            AddToSceneItems(com);
+            return true;
+        }
+
+		public bool Emit(string itemName, Vector3 pos, Vector3 scale, float lifeTime = ConstDefineGM2D.DefaultParticlePlayTime, ESortingOrder sortingOrder = ESortingOrder.Item)
+		{
+		    return Emit(itemName, pos, Vector3.zero, scale, lifeTime, sortingOrder);
 	    }
 
         public UnityNativeParticleItem Emit(string itemName, Transform parent, float lifeTime)

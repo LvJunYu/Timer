@@ -22,6 +22,9 @@ namespace GameA.Game
         protected IntVec2 _speed;
         protected SkillBase _skill;
 
+        protected IntVec2 _delta;
+        protected float _deltaLength;
+
         public void OnGet()
         {
         }
@@ -79,7 +82,7 @@ namespace GameA.Game
                 var checkGrid = SceneQuery2D.GetGrid(pointA, pointB, (byte)(_curMoveDirection - 1), Math.Max(_speed.x, _speed.y));
                 if (!DataScene2D.Instance.IsInTileMap(checkGrid))
                 {
-                    OnDead();
+                    DoDead();
                     return;
                 }
                 bool hit = false;
@@ -94,7 +97,7 @@ namespace GameA.Game
                 }
                 if (hit)
                 {
-                    OnDead();
+                    DoDead();
                 }
             }
         }
@@ -146,9 +149,16 @@ namespace GameA.Game
             }
         }
 
-        protected override void OnDead()
+        protected void DoDead(float zRotation = 0)
         {
-            base.OnDead();
+            _isAlive = false;
+            Clear();
+            --Life;
+            if (_view != null)
+            {
+                GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
+                GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, new Vector3(0, 0, zRotation), _trans.position, Vector3.one);
+            }
             PlayMode.Instance.DestroyUnit(this);
         }
 

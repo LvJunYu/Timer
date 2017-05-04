@@ -19,8 +19,9 @@ namespace GameA.Game
         protected ESkillType _eSkillType;
 
         /// <summary>
-        /// 攻击范围
+        /// 攻击举例
         /// </summary>
+        [SerializeField] protected int _range;
         [SerializeField]protected int _radius;
         /// <summary>
         /// CD时间
@@ -61,6 +62,11 @@ namespace GameA.Game
             get { return _radius; }
         }
 
+        public int Range
+        {
+            get { return _range; }
+        }
+
         public bool Plus
         {
             get { return _plus; }
@@ -76,6 +82,7 @@ namespace GameA.Game
             _owner = ower;
             _plus = plus;
             _radius = 160;
+            _range = 8*ConstDefineGM2D.ServerTileScale;
             _timerCD = 0;
             _cdTime = 10;
             _bulletSpeed = 200;
