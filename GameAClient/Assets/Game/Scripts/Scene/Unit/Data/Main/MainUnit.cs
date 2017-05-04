@@ -42,8 +42,7 @@ namespace GameA.Game
 
         protected ReviveEffect _reviveEffect;
         protected ReviveEffect _portalEffect;
-//        [SerializeField] 
-//        protected UnityNativeParticleItem _runEfffect;
+
         [SerializeField]
         protected UnityNativeParticleItem _brakeEfffect;
         [SerializeField]
@@ -180,12 +179,12 @@ namespace GameA.Game
             {
                 return false;
             }
-            LogHelper.Debug("InstantiateView {0}", ToString());
             if (!_animation.Init("Idle"))
             {
                 return false;
             }
-			if (!_animation.AddEventHandle ("Step", OnStep)) {
+			if (!_animation.AddEventHandle ("Step", OnStep)) 
+            {
 				return false;
 			}
             _brakeEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem(ParticleNameConstDefineGM2D.Brake, _trans);
@@ -221,10 +220,6 @@ namespace GameA.Game
                 _portalEffect.Destroy();
                 _portalEffect = null;
             }
-//            if (_runEfffect != null)
-//            {
-//                _runEfffect.Stop();
-//            }
             if (_brakeEfffect != null)
             {
                 _brakeEfffect.Stop();
@@ -441,7 +436,6 @@ namespace GameA.Game
                         }
                         _walkAudioInternal -= 7;
                     }
-                    isRunning = true;
                     if (_walkAudioInternal <= 0)
                     {
                         int randomValue = UnityEngine.Random.Range(0, 3);
@@ -481,17 +475,6 @@ namespace GameA.Game
                     PlayMode.Instance.CurrentShadow.RecordAnimation(IdleAnimName(), true);
                 }
             }
-//            if (_runEfffect != null)
-//            {
-//                if (isRunning)
-//                {
-//                    _runEfffect.Play();
-//                }
-//                else
-//                {
-//                    _runEfffect.StopEmit();
-//                }
-//            }
             if (_brakeEfffect != null)
             {
                 if (_mainInput._brakeTime > 0)
@@ -1174,10 +1157,6 @@ namespace GameA.Game
             _invincibleTime = 0;
             _flashTime = 0;
             _big = 0;
-//            if (_runEfffect != null)
-//            {
-//                _runEfffect.Stop();
-//            }
             if (_brakeEfffect != null)
             {
                 _brakeEfffect.Stop();
@@ -1243,10 +1222,6 @@ namespace GameA.Game
             }
             _eUnitState = EUnitState.Portaling;
             PlayMode.Instance.Freeze(this);
-//            if (_runEfffect != null)
-//            {
-//                _runEfffect.Stop();
-//            }
             if (_brakeEfffect != null)
             {
                 _brakeEfffect.Stop();
@@ -1337,17 +1312,27 @@ namespace GameA.Game
 
         protected void OnJump()
         {
-            if (_view != null)
+            if (!GameAudioManager.Instance.IsPlaying(AudioNameConstDefineGM2D.GameAudioSpingEffect))
+            {
+                GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioLightingJump);
+            }
+            if (_downUnit == null || _view == null)
+            {
+                return;
+            }
+            if (_downUnit.Id == ConstDefineGM2D.ClayId)
             {
 				GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Jump, _trans.position, Vector3.one);
-                //如果底下物体没有音乐的情况下才播放 TODO
-                GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioLightingJump);
             }
         }
 
         protected void OnLand()
         {
-            if (_view != null)
+            if (_downUnit == null || _view == null)
+            {
+                return;
+            }
+            if (_downUnit.Id == ConstDefineGM2D.ClayId)
             {
 				GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Land, _trans.position, Vector3.one);
             }
@@ -1363,15 +1348,17 @@ namespace GameA.Game
 		/// <summary>
 		/// 播放跑步烟尘
 		/// </summary>
-		protected void OnStep () {
-			Vector3 scale = _curMoveDirection == EMoveDirection.Right ? Vector3.one : new Vector3 (-1, 1, 1);
-			if (_downUnit == null) {
-			} else if (_downUnit.Id == ParticleNameConstDefineGM2D.MudId) {
-				GameParticleManager.Instance.Emit (ParticleNameConstDefineGM2D.RunOnMud, _trans.position + Vector3.up * 0.2f, scale, 1);
-			} else {
-				// default
-				GameParticleManager.Instance.Emit (ParticleNameConstDefineGM2D.Run, _trans.position + Vector3.up * 0.2f, scale, 1);
-			}
+		protected void OnStep()
+		{
+		    if (_downUnit == null || _view == null)
+		    {
+                return;
+		    }
+		    Vector3 scale = _curMoveDirection == EMoveDirection.Right ? Vector3.one : new Vector3(-1, 1, 1);
+            if (_downUnit.Id == ConstDefineGM2D.ClayId)
+		    {
+		        GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.RunOnMud, _trans.position + Vector3.up*0.2f, scale, 1);
+		    }
 		}
 
         #endregion

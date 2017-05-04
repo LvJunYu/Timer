@@ -35,7 +35,7 @@ namespace GameA.Game
                     {
                         PlayMode.Instance.MainUnit.Step(80);
                         other.ExtraSpeed.y = 330;
-                        GameAudioManager.Instance.PlaySoundsEffects("AudioSpring");
+                        GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
                         //GameParticleManager.Instance.Emit("M1KuoSanBo", _trans.position);
                     }
                     else if (other.IsMonster)
@@ -57,7 +57,7 @@ namespace GameA.Game
                     if (other.IsMain)
                     {
                         other.ExtraSpeed.y = -330;
-                        GameAudioManager.Instance.PlaySoundsEffects("AudioSpring");
+                        GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
                         //GameParticleManager.Instance.Emit("M1KuoSanBo", _trans.position);
                     }
                     else if (other.IsMonster)
@@ -81,7 +81,7 @@ namespace GameA.Game
                     other.CurBanInputTime = 20;
                     if (other.IsMain)
                     {
-                        GameAudioManager.Instance.PlaySoundsEffects("AudioSpring");
+                        GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
                         //GameParticleManager.Instance.Emit("M1KuoSanBo", _trans.position);
                     }
                 }
@@ -101,7 +101,7 @@ namespace GameA.Game
                     other.CurBanInputTime = 20;
                     if (other.IsMain)
                     {
-                        GameAudioManager.Instance.PlaySoundsEffects("AudioSpring");
+                        GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
                         //GameParticleManager.Instance.Emit("M1KuoSanBo", _trans.position);
                     }
                 }

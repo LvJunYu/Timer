@@ -84,7 +84,17 @@ namespace SoyEngine
 			PlayAudio(EAudioType.SoundsEffects, audioName, loop);
 		}
 
-		public void Stop(string audioName)
+        public bool IsPlaying(string audioName)
+        {
+            AudioItem audioItem;
+            if (!_playingAudioEffect.TryGetValue(audioName, out audioItem))
+            {
+                return false;
+            }
+            return true;
+        }
+
+	    public void Stop(string audioName)
 		{
             if (string.IsNullOrEmpty(audioName))
             {
