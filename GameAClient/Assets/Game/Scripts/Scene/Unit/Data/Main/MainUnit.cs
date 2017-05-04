@@ -164,6 +164,13 @@ namespace GameA.Game
             _mainInput = new MainInput(this);
             _skillCtrl = new SkillCtrl(this);
             _skillCtrl.ChangeSkill<SkillWater>(false);
+
+            IntVec2 offset = _shooterEffectOffset;
+            if (_curMoveDirection == EMoveDirection.Right)
+            {
+                offset.x = -offset.x;
+            }
+            _shooterEffectPos = CenterPos + offset;
             return true;
         }
 
@@ -181,11 +188,11 @@ namespace GameA.Game
 			if (!_animation.AddEventHandle ("Step", OnStep)) {
 				return false;
 			}
-//            _runEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem(ParticleNameConstDefineGM2D.Run, _trans);
             _brakeEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem(ParticleNameConstDefineGM2D.Brake, _trans);
-            _shooterEffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectShooter", _trans);
+            //初始化ShooterEffect
+            _shooterEffect = GameParticleManager.Instance.GetUnityNativeParticleItem(ParticleNameConstDefineGM2D.Shooter, _trans);
 			_shooterEffect.Play ();
-			_shooterEffectPos = _curPos;
+            _shooterEffect.Trans.position = GM2DTools.TileToWorld(_shooterEffectPos, _trans.position.z);
             return true;
         }
 
@@ -980,30 +987,37 @@ namespace GameA.Game
             }
         }
 
-		private void UpdateShooterPoint () {
-			if (_shooterEffect != null && _shooterEffect.IsPlaying) {
-				IntVec2 offset = _shooterEffectOffset;
-				if (_curMoveDirection == EMoveDirection.Right) {
-					offset.x = -offset.x;
-				}
-				IntVec2 destPos = CenterPos + offset;
-				if (_shooterEffectPos.x != destPos.x) {
-					int deltaX = (destPos.x - _shooterEffectPos.x) / 6;
-					if (deltaX == 0) {
-						deltaX = destPos.x > _shooterEffectPos.x ? 1 : -1;
-					}
-					_shooterEffectPos.x = _shooterEffectPos.x + deltaX;
-				}
-				if (_shooterEffectPos.y != destPos.y) {
-					int deltaY = (destPos.y - _shooterEffectPos.y) / 6;
-					if (deltaY == 0) {
-						deltaY = destPos.y > _shooterEffectPos.y ? 1 : -1;
-					}
-					_shooterEffectPos.y = _shooterEffectPos.y + deltaY;
-				}
-				_shooterEffect.Trans.position = GM2DTools.TileToWorld (_shooterEffectPos);
-			}
-		}
+        private void UpdateShooterPoint()
+        {
+            if (_shooterEffect != null && _shooterEffect.IsPlaying)
+            {
+                IntVec2 offset = _shooterEffectOffset;
+                if (_curMoveDirection == EMoveDirection.Right)
+                {
+                    offset.x = -offset.x;
+                }
+                IntVec2 destPos = CenterPos + offset;
+                if (_shooterEffectPos.x != destPos.x)
+                {
+                    int deltaX = (destPos.x - _shooterEffectPos.x) / 6;
+                    if (deltaX == 0)
+                    {
+                        deltaX = destPos.x > _shooterEffectPos.x ? 1 : -1;
+                    }
+                    _shooterEffectPos.x = _shooterEffectPos.x + deltaX;
+                }
+                if (_shooterEffectPos.y != destPos.y)
+                {
+                    int deltaY = (destPos.y - _shooterEffectPos.y) / 6;
+                    if (deltaY == 0)
+                    {
+                        deltaY = destPos.y > _shooterEffectPos.y ? 1 : -1;
+                    }
+                    _shooterEffectPos.y = _shooterEffectPos.y + deltaY;
+                }
+                _shooterEffect.Trans.position = GM2DTools.TileToWorld(_shooterEffectPos, _trans.position.z);
+            }
+        }
 
         #endregion
 

@@ -336,6 +336,12 @@ namespace GameA.Game
             return new Vector3(t.x, t.y, 0);
         }
 
+        public static Vector3 TileToWorld(IntVec2 tile, float z)
+        {
+            Vector2 t = new Vector2(tile.x, tile.y) * ConstDefineGM2D.ClientTileScale;
+            return new Vector3(t.x, t.y, z);
+        }
+
         public static float TileToWorld(int tile)
         {
             return tile * ConstDefineGM2D.ClientTileScale;

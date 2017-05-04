@@ -51,6 +51,7 @@ namespace GameA.Game
         public const string Brake = "M1EffectBrake";
         public const string WallJump = "M1EffectWallJump";
 		public const string WallClimb = "M1EffectWallClimb";
+        public const string Shooter = "M1EffectShooter";
 
         public const string Invincible = "M1OrbitBuff";
 
