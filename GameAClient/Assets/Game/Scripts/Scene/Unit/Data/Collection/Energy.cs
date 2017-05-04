@@ -25,18 +25,18 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.IsMain)
+            if (other.SkillCtrl != null)
             {
                 if (_currentCount > 0)
                 {
                     _currentCount = 0;
-                    OnTrigger();
+                    OnTrigger(other);
                 }
             }
             return base.OnUpHit(other, ref y, checkOnly);
         }
 
-        protected virtual void OnTrigger()
+        protected virtual void OnTrigger(UnitBase other)
         {
             //主角能量加
         }

@@ -1,8 +1,8 @@
 ﻿/********************************************************************
-** Filename : SkillManager
+** Filename : SkillCtrl
 ** Author : Dong
 ** Date : 2017/3/22 星期三 上午 10:36:44
-** Summary : SkillManager
+** Summary : SkillCtrl
 ***********************************************************************/
 
 using System;
@@ -13,16 +13,15 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    public class SkillManager : MonoBehaviour
+    public class SkillCtrl
     {
-        public static SkillManager Instance;
+        protected UnitBase _owner;
         [SerializeField]protected SkillBase _currentSkill;
-        private Dictionary<string, SkillBase> _skills = new Dictionary<string, SkillBase>();
+        protected Dictionary<string, SkillBase> _skills = new Dictionary<string, SkillBase>();
 
-        private void Awake()
+        public SkillCtrl(UnitBase owner)
         {
-            Instance = this;
-
+            _owner = owner;
             Type curType = GetType();
             Type[] types = curType.Assembly.GetTypes();
             Type attrType = typeof(SkillAttribute);
@@ -72,7 +71,7 @@ namespace GameA.Game
                 return;
             }
             _currentSkill = skill;
-            _currentSkill.Enter(PlayMode.Instance.MainUnit, plus);
+            _currentSkill.Enter(_owner, plus);
         }
 
         public void Fire()

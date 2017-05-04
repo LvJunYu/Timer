@@ -27,7 +27,7 @@ namespace GameA.Game
                 {
                     _animation.Reset();
                 }
-                _view.SetRendererEnabled(false);
+                _view.SetRendererEnabled(true);
             }
             PlayMode.Instance.UnFreeze(this);
         }

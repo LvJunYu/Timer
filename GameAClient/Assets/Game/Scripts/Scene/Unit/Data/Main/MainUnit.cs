@@ -21,6 +21,9 @@ namespace GameA.Game
 
         [SerializeField]
         protected MainInput _mainInput;
+
+        protected SkillCtrl _skillCtrl;
+
         [SerializeField] protected int _big;
         [SerializeField] protected int _flashTime;
         [SerializeField] protected int _invincibleTime;
@@ -65,6 +68,11 @@ namespace GameA.Game
         protected int _walkAudioInternal = 12;
 
         #endregion
+
+        public override SkillCtrl SkillCtrl
+        {
+            get { return _skillCtrl; }
+        }
 
         public Box Box
         {
@@ -154,6 +162,8 @@ namespace GameA.Game
                 return false;
             }
             _mainInput = new MainInput(this);
+            _skillCtrl = new SkillCtrl(this);
+            _skillCtrl.ChangeSkill<SkillWater>(false);
             return true;
         }
 
@@ -241,7 +251,7 @@ namespace GameA.Game
             if (_isAlive && _isStart)
             {
                 _mainInput.UpdateLogic();
-                SkillManager.Instance.UpdateLogic();
+                _skillCtrl.UpdateLogic();
                 CheckGround();
                 CheckClimb();
                 UpdateSpeedY();
@@ -536,7 +546,7 @@ namespace GameA.Game
                 {
                     UnitBase unit = units[i];
                     int ymin = 0;
-                    if (unit != null && unit.IsAlive && unit.HasMainFloor && CheckOnFloor(unit) &&
+                    if (unit != null && unit.IsAlive && CheckOnFloor(unit) &&
                         unit.OnUpHit(this, ref ymin, true))
                     {
                         downExist = true;

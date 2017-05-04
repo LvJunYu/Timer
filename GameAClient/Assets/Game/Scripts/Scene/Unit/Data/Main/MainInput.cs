@@ -581,7 +581,7 @@ namespace GameA.Game
         {
             if (ShootInputDown)
             {
-                SkillManager.Instance.Fire();
+                _unit.SkillCtrl.Fire();
             }
         }
 

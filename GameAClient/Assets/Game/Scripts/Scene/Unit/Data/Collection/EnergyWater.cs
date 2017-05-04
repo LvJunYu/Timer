@@ -27,9 +27,9 @@ namespace GameA.Game
             return true;
         }
 
-        protected override void OnTrigger()
+        protected override void OnTrigger(UnitBase other)
         {
-            SkillManager.Instance.ChangeSkill<SkillWater>(_plus);
+            other.SkillCtrl.ChangeSkill<SkillWater>(_plus);
         }
     }
 }

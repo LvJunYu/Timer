@@ -38,10 +38,6 @@ namespace GameA.Game
             {
                 _hitUnits[i] = null;
             }
-            if (_colliderPos.Equals(min))
-            {
-                return;
-            }
             if (_isFreezed)
             {
                 _colliderPos = min;

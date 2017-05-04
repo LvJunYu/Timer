@@ -134,6 +134,11 @@ namespace GameA.Game
             get { return _tableUnit; }
         }
 
+        public virtual SkillCtrl SkillCtrl
+        {
+            get { return null; }
+        }
+
         public IntVec2 CurPos
         {
             get { return _curPos; }
@@ -468,7 +473,7 @@ namespace GameA.Game
         protected virtual void InitAssetPath()
         {
             _assetPath = _tableUnit.Model;
-            if (_tableUnit.CanRotate)
+            if (_tableUnit.CanRotate && _tableUnit.Id < 10000)
             {
                 _assetPath = string.Format("{0}_{1}", _tableUnit.Model, _unitDesc.Rotation);
             }

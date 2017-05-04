@@ -339,7 +339,6 @@ namespace GameA.Game
             gameObject.AddComponent<CameraManager>();
             var playObject = new GameObject("PlayMode");
             playObject.AddComponent<PlayMode>();
-            playObject.AddComponent<SkillManager>();
             DeadMarkManager.Instance.Init();
             if(_eGameInitType == GameManager.EStartType.PlayRecord)
             {
