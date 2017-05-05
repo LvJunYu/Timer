@@ -123,18 +123,17 @@ namespace GameA.Game
             {
                 return null;
             }
-            var rotation = (byte)(_owner.ShootRot/90);
-            return PlayMode.Instance.CreateRuntimeUnit(_bulletId, GetBulletPos(_bulletId, rotation), rotation, Vector2.one) as BulletBase;
+            return PlayMode.Instance.CreateRuntimeUnit(_bulletId, GetBulletPos(_bulletId), 0, Vector2.one) as BulletBase;
         }
 
-        private IntVec2 GetBulletPos(int bulletId, byte rotation)
+        private IntVec2 GetBulletPos(int bulletId)
         {
             var tableUnit = UnitManager.Instance.GetTableUnit(bulletId);
             if (tableUnit == null)
             {
                 return IntVec2.zero;
             }
-            var dataSize = tableUnit.GetDataSize(rotation, Vector2.one);
+            var dataSize = tableUnit.GetDataSize(0, Vector2.one);
             return _owner.FirePos - dataSize * 0.5f;
         }
 

@@ -69,6 +69,7 @@ namespace GameA.Game
             _rotation = _skill.Owner.ShootRot;
             var rad = _rotation * Mathf.Deg2Rad;
             _speed = new IntVec2((int)(_skill.BulletSpeed * Math.Sin(rad)), (int)(_skill.BulletSpeed * Math.Cos(rad)));
+            _trans.eulerAngles = new Vector3(0, 0, -_rotation);
             if (_animation != null)
             {
                 _animation.Init("Run");
