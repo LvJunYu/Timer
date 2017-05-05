@@ -111,7 +111,7 @@ namespace GameA.Game
             return _unitParents[(int) eUnitType];
         }
 
-        public int GetDepth(Table_Unit tableUnit)
+        public static int GetDepth(Table_Unit tableUnit)
         {
             if (tableUnit.UnitType == (int) EUnitType.Effect)
             {

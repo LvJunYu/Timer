@@ -89,13 +89,13 @@ namespace SoyEngine
         // 转盘抽奖
         public const string Raffle = "/home/raffle";
         // 用户匹配改造数据
-        public const string MatchUserData = "match/getUserData";
+        public const string MatchUserData = "/match/getUserData";
         // 改造
-        public const string Reform = "match/reform";
+        public const string Reform = "/match/reform";
         // 随机改造关卡
-        public const string ReselectReformLevel = "match/reselectReformLevel";
+        public const string ReselectReformLevel = "/match/reselectReformLevel";
         // 领取改造奖励
-        public const string GetReformReward = "match/getReformReward";
+        public const string GetReformReward = "/match/getReformReward";
         // 上传改造关卡
         public const string SaveReformProject = "/match/saveReformProject";
         // 发布改造关卡

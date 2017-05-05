@@ -22,23 +22,23 @@ namespace GameA
         /// </summary>
         private UserInfoSimple _userInfo;
         /// <summary>
-        /// 
+        /// 名称
         /// </summary>
         private string _name;
         /// <summary>
-        /// 
+        /// 简介
         /// </summary>
         private string _summary;
         /// <summary>
-        /// 
+        /// 关卡截图资源路径
         /// </summary>
         private string _iconPath;
         /// <summary>
-        /// 
+        /// 关卡文件资源路径
         /// </summary>
         private string _resPath;
         /// <summary>
-        /// 
+        /// 创建时间
         /// </summary>
         private long _createTime;
         /// <summary>
@@ -154,7 +154,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 
+        /// 名称
         /// </summary>
         public string Name { 
             get { return _name; }
@@ -164,7 +164,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 
+        /// 简介
         /// </summary>
         public string Summary { 
             get { return _summary; }
@@ -174,7 +174,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 
+        /// 关卡截图资源路径
         /// </summary>
         public string IconPath { 
             get { return _iconPath; }
@@ -184,7 +184,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 
+        /// 关卡文件资源路径
         /// </summary>
         public string ResPath { 
             get { return _resPath; }
@@ -194,7 +194,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 
+        /// 创建时间
         /// </summary>
         public long CreateTime { 
             get { return _createTime; }
@@ -418,18 +418,27 @@ namespace GameA
             long projectId,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            OnRequest (successCallback, failedCallback);
+            if (_isRequesting) {
+                if (_cs_projectId != projectId) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest (successCallback, failedCallback);
+            } else {
+                _cs_projectId = projectId;
+                OnRequest (successCallback, failedCallback);
 
-            Msg_CS_DAT_Project msg = new Msg_CS_DAT_Project();
-            msg.ProjectId = projectId;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_Project>(
-                SoyHttpApiPath.Project, msg, ret => {
-                    if (OnSync(ret)) {
-                        OnSyncSucceed(); 
-                    }
-                }, (failedCode, failedMsg) => {
-                    OnSyncFailed(failedCode, failedMsg);
-            });
+                Msg_CS_DAT_Project msg = new Msg_CS_DAT_Project();
+                msg.ProjectId = projectId;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_Project>(
+                    SoyHttpApiPath.Project, msg, ret => {
+                        if (OnSync(ret)) {
+                            OnSyncSucceed(); 
+                        }
+                    }, (failedCode, failedMsg) => {
+                        OnSyncFailed(failedCode, failedMsg);
+                });            
+            }            
         }
 
         public bool OnSync (Msg_SC_DAT_Project msg)

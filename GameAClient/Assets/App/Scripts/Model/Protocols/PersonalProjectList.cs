@@ -146,22 +146,51 @@ namespace GameA
             int totalCount,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            OnRequest (successCallback, failedCallback);
+            if (_isRequesting) {
+                if (_cs_projectId != projectId) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_minUpdateTime != minUpdateTime) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_maxUpdateTime != maxUpdateTime) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_maxCount != maxCount) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_totalCount != totalCount) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest (successCallback, failedCallback);
+            } else {
+                _cs_projectId = projectId;
+                _cs_minUpdateTime = minUpdateTime;
+                _cs_maxUpdateTime = maxUpdateTime;
+                _cs_maxCount = maxCount;
+                _cs_totalCount = totalCount;
+                OnRequest (successCallback, failedCallback);
 
-            Msg_CS_DAT_PersonalProjectList msg = new Msg_CS_DAT_PersonalProjectList();
-            msg.ProjectId.AddRange(projectId);
-            msg.MinUpdateTime = minUpdateTime;
-            msg.MaxUpdateTime = maxUpdateTime;
-            msg.MaxCount = maxCount;
-            msg.TotalCount = totalCount;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_PersonalProjectList>(
-                SoyHttpApiPath.PersonalProjectList, msg, ret => {
-                    if (OnSync(ret)) {
-                        OnSyncSucceed(); 
-                    }
-                }, (failedCode, failedMsg) => {
-                    OnSyncFailed(failedCode, failedMsg);
-            });
+                Msg_CS_DAT_PersonalProjectList msg = new Msg_CS_DAT_PersonalProjectList();
+                msg.ProjectId.AddRange(projectId);
+                msg.MinUpdateTime = minUpdateTime;
+                msg.MaxUpdateTime = maxUpdateTime;
+                msg.MaxCount = maxCount;
+                msg.TotalCount = totalCount;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_PersonalProjectList>(
+                    SoyHttpApiPath.PersonalProjectList, msg, ret => {
+                        if (OnSync(ret)) {
+                            OnSyncSucceed(); 
+                        }
+                    }, (failedCode, failedMsg) => {
+                        OnSyncFailed(failedCode, failedMsg);
+                });            
+            }            
         }
 
         public bool OnSync (Msg_SC_DAT_PersonalProjectList msg)

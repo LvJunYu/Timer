@@ -13,10 +13,15 @@ namespace GameA
         public Button EditBtn;
         public Button RepickBtn;
 
+        public Button RandomPickBtn;
+
         // published
         public RawImage CoverImg;
         public Text StateTxt;
+        public Text ProjectLocTxt;
 
         public Texture DefaultProjectCoverTex;
+
+        public Image InputBlock;
     }
 }

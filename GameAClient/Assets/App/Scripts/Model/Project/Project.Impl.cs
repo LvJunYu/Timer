@@ -806,6 +806,9 @@ namespace GameA
             }, form);
         }
 
+        public void PublishModifyProject () {
+        }
+
         public void PrepareRes(Action successCallback, Action failedCallback = null)
         {
             byte[] data = LocalCacheManager.Instance.Load(LocalCacheManager.EType.File, ResPath);
@@ -818,6 +821,7 @@ namespace GameA
                 return;
             }
             SFile file = SFile.GetFileWithUrl(SoyPath.Instance.GetFileUrl(ResPath));
+            Debug.Log ("____________________download map file: " + ResPath);
             file.DownloadAsync((f) =>
                 {
                     LocalCacheManager.Instance.Save(f.FileBytes, LocalCacheManager.EType.File, ResPath);

@@ -129,18 +129,27 @@ namespace GameA
             int flag,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            OnRequest (successCallback, failedCallback);
+            if (_isRequesting) {
+                if (_cs_flag != flag) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest (successCallback, failedCallback);
+            } else {
+                _cs_flag = flag;
+                OnRequest (successCallback, failedCallback);
 
-            Msg_CS_DAT_AppData msg = new Msg_CS_DAT_AppData();
-            msg.Flag = flag;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AppData>(
-                SoyHttpApiPath.AppData, msg, ret => {
-                    if (OnSync(ret)) {
-                        OnSyncSucceed(); 
-                    }
-                }, (failedCode, failedMsg) => {
-                    OnSyncFailed(failedCode, failedMsg);
-            });
+                Msg_CS_DAT_AppData msg = new Msg_CS_DAT_AppData();
+                msg.Flag = flag;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AppData>(
+                    SoyHttpApiPath.AppData, msg, ret => {
+                        if (OnSync(ret)) {
+                            OnSyncSucceed(); 
+                        }
+                    }, (failedCode, failedMsg) => {
+                        OnSyncFailed(failedCode, failedMsg);
+                });            
+            }            
         }
 
         public bool OnSync (Msg_SC_DAT_AppData msg)

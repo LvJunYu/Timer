@@ -128,19 +128,33 @@ namespace GameA
             int section,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            OnRequest (successCallback, failedCallback);
+            if (_isRequesting) {
+                if (_cs_userId != userId) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_section != section) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest (successCallback, failedCallback);
+            } else {
+                _cs_userId = userId;
+                _cs_section = section;
+                OnRequest (successCallback, failedCallback);
 
-            Msg_CS_DAT_AdventureUserSection msg = new Msg_CS_DAT_AdventureUserSection();
-            msg.UserId = userId;
-            msg.Section = section;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AdventureUserSection>(
-                SoyHttpApiPath.AdventureUserSection, msg, ret => {
-                    if (OnSync(ret)) {
-                        OnSyncSucceed(); 
-                    }
-                }, (failedCode, failedMsg) => {
-                    OnSyncFailed(failedCode, failedMsg);
-            });
+                Msg_CS_DAT_AdventureUserSection msg = new Msg_CS_DAT_AdventureUserSection();
+                msg.UserId = userId;
+                msg.Section = section;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AdventureUserSection>(
+                    SoyHttpApiPath.AdventureUserSection, msg, ret => {
+                        if (OnSync(ret)) {
+                            OnSyncSucceed(); 
+                        }
+                    }, (failedCode, failedMsg) => {
+                        OnSyncFailed(failedCode, failedMsg);
+                });            
+            }            
         }
 
         public bool OnSync (Msg_SC_DAT_AdventureUserSection msg)

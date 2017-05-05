@@ -213,18 +213,27 @@ namespace GameA
             long projectId,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            OnRequest (successCallback, failedCallback);
+            if (_isRequesting) {
+                if (_cs_projectId != projectId) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest (successCallback, failedCallback);
+            } else {
+                _cs_projectId = projectId;
+                OnRequest (successCallback, failedCallback);
 
-            Msg_CS_DAT_ProjectExtend msg = new Msg_CS_DAT_ProjectExtend();
-            msg.ProjectId = projectId;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_ProjectExtend>(
-                SoyHttpApiPath.ProjectExtend, msg, ret => {
-                    if (OnSync(ret)) {
-                        OnSyncSucceed(); 
-                    }
-                }, (failedCode, failedMsg) => {
-                    OnSyncFailed(failedCode, failedMsg);
-            });
+                Msg_CS_DAT_ProjectExtend msg = new Msg_CS_DAT_ProjectExtend();
+                msg.ProjectId = projectId;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_ProjectExtend>(
+                    SoyHttpApiPath.ProjectExtend, msg, ret => {
+                        if (OnSync(ret)) {
+                            OnSyncSucceed(); 
+                        }
+                    }, (failedCode, failedMsg) => {
+                        OnSyncFailed(failedCode, failedMsg);
+                });            
+            }            
         }
 
         public bool OnSync (Msg_SC_DAT_ProjectExtend msg)

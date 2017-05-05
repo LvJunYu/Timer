@@ -182,7 +182,10 @@ namespace GameA
 //					SocialGUIManager.Instance.ChangeToGameMode();
 //				}
 //			);
-            SocialGUIManager.Instance.OpenPopupUI<UICtrlModify>();
+            if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_WaitForChance) {
+            } else {
+                SocialGUIManager.Instance.OpenPopupUI<UICtrlModify> ();
+            }
 		}
 
         private void OnMatchBtn () {

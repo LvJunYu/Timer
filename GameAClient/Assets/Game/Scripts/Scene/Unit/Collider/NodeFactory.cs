@@ -50,7 +50,7 @@ namespace GameA.Game
                 mapRect2D.Scale==null ? 1 : mapRect2D.Scale.Y);
             return new NodeData((ushort) mapRect2D.Id,
                 new Grid2D(mapRect2D.XMin, mapRect2D.YMin, mapRect2D.XMax, mapRect2D.YMax),
-                UnitManager.Instance.GetDepth(tableUnit),
+                UnitManager.GetDepth(tableUnit),
                 (byte)mapRect2D.Rotation, scale);
         }
     }

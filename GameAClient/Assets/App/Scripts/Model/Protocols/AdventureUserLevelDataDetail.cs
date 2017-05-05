@@ -186,21 +186,45 @@ namespace GameA
             int level,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            OnRequest (successCallback, failedCallback);
+            if (_isRequesting) {
+                if (_cs_userId != userId) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_section != section) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_projectType != projectType) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_level != level) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest (successCallback, failedCallback);
+            } else {
+                _cs_userId = userId;
+                _cs_section = section;
+                _cs_projectType = projectType;
+                _cs_level = level;
+                OnRequest (successCallback, failedCallback);
 
-            Msg_CS_DAT_AdventureUserLevelDataDetail msg = new Msg_CS_DAT_AdventureUserLevelDataDetail();
-            msg.UserId = userId;
-            msg.Section = section;
-            msg.ProjectType = projectType;
-            msg.Level = level;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AdventureUserLevelDataDetail>(
-                SoyHttpApiPath.AdventureUserLevelDataDetail, msg, ret => {
-                    if (OnSync(ret)) {
-                        OnSyncSucceed(); 
-                    }
-                }, (failedCode, failedMsg) => {
-                    OnSyncFailed(failedCode, failedMsg);
-            });
+                Msg_CS_DAT_AdventureUserLevelDataDetail msg = new Msg_CS_DAT_AdventureUserLevelDataDetail();
+                msg.UserId = userId;
+                msg.Section = section;
+                msg.ProjectType = projectType;
+                msg.Level = level;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AdventureUserLevelDataDetail>(
+                    SoyHttpApiPath.AdventureUserLevelDataDetail, msg, ret => {
+                        if (OnSync(ret)) {
+                            OnSyncSucceed(); 
+                        }
+                    }, (failedCode, failedMsg) => {
+                        OnSyncFailed(failedCode, failedMsg);
+                });            
+            }            
         }
 
         public bool OnSync (Msg_SC_DAT_AdventureUserLevelDataDetail msg)

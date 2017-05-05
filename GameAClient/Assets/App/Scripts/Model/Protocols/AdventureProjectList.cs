@@ -107,19 +107,33 @@ namespace GameA
             int maxSection,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            OnRequest (successCallback, failedCallback);
+            if (_isRequesting) {
+                if (_cs_minSection != minSection) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_maxSection != maxSection) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest (successCallback, failedCallback);
+            } else {
+                _cs_minSection = minSection;
+                _cs_maxSection = maxSection;
+                OnRequest (successCallback, failedCallback);
 
-            Msg_CS_DAT_AdventureProjectList msg = new Msg_CS_DAT_AdventureProjectList();
-            msg.MinSection = minSection;
-            msg.MaxSection = maxSection;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AdventureProjectList>(
-                SoyHttpApiPath.AdventureProjectList, msg, ret => {
-                    if (OnSync(ret)) {
-                        OnSyncSucceed(); 
-                    }
-                }, (failedCode, failedMsg) => {
-                    OnSyncFailed(failedCode, failedMsg);
-            });
+                Msg_CS_DAT_AdventureProjectList msg = new Msg_CS_DAT_AdventureProjectList();
+                msg.MinSection = minSection;
+                msg.MaxSection = maxSection;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AdventureProjectList>(
+                    SoyHttpApiPath.AdventureProjectList, msg, ret => {
+                        if (OnSync(ret)) {
+                            OnSyncSucceed(); 
+                        }
+                    }, (failedCode, failedMsg) => {
+                        OnSyncFailed(failedCode, failedMsg);
+                });            
+            }            
         }
 
         public bool OnSync (Msg_SC_DAT_AdventureProjectList msg)

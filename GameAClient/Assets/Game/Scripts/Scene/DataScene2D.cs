@@ -155,7 +155,7 @@ namespace GameA.Game
                 ? (int)(tile.y * ConstDefineGM2D.ClientTileScale + 0.5f) * ConstDefineGM2D.ServerTileScale
                 : (int)((float)tile.y / size.y + 0.5f) * size.y;
 
-            return new IntVec3(x, y, UnitManager.Instance.GetDepth(tableUnit));
+            return new IntVec3(x, y, UnitManager.GetDepth(tableUnit));
         }
 
         #endregion
@@ -409,5 +409,74 @@ namespace GameA.Game
 			OrigUnit = orig;
 			ModifiedUnit = modified;
 		}
+        // 从地图文件方序列化出来的构造函数
+        public ModifyData (SoyEngine.Proto.ModifyItemData modifyItemData) {
+            OrigUnit = new UnitEditData ();
+            ModifiedUnit = new UnitEditData ();
+            if (DataScene2D.Instance == null) {
+                LogHelper.Error ("Instantiate modifyData failed, datascene2d not exist");
+                return;
+            }
+            Table_Unit table = TableManager.Instance.GetUnit (modifyItemData.OrigData.Id);
+            if (null == table) {
+                LogHelper.Error ("ParseModifyData error, unit with invalid id {0}", modifyItemData.OrigData.Id);
+                return;
+            }
+            int depth = UnitManager.GetDepth (table);
+            UnitDesc origDesc = new UnitDesc (
+                modifyItemData.OrigData.Id,
+                new IntVec3(modifyItemData.OrigData.XMin, modifyItemData.OrigData.YMin, depth),
+                (byte)modifyItemData.OrigData.Rotation,
+                new Vector2(modifyItemData.OrigData.Scale== null ? 1 : modifyItemData.OrigData.Scale.X,
+                    modifyItemData.OrigData.Scale==null ? 1 : modifyItemData.OrigData.Scale.Y)
+            );
+            UnitExtra origExtra = new UnitExtra ();
+            origExtra.Child = new UnitChild (
+                (ushort)modifyItemData.OrigExtra.UnitChild.Id,
+                (byte)modifyItemData.OrigExtra.UnitChild.Rotation,
+                (EMoveDirection)modifyItemData.OrigExtra.UnitChild.MoveDirection
+            );
+            origExtra.MoveDirection = (EMoveDirection)modifyItemData.OrigExtra.MoveDirection;
+            origExtra.RollerDirection = (EMoveDirection)modifyItemData.OrigExtra.RollerDirection;
+            OrigUnit = new UnitEditData (origDesc, origExtra);
+            UnitDesc modifiedDesc = new UnitDesc (
+                modifyItemData.ModifiedData.Id,
+                new IntVec3(modifyItemData.ModifiedData.XMin, modifyItemData.ModifiedData.YMin, depth),
+                (byte)modifyItemData.ModifiedData.Rotation,
+                new Vector2(modifyItemData.ModifiedData.Scale== null ? 1 : modifyItemData.ModifiedData.Scale.X,
+                    modifyItemData.ModifiedData.Scale==null ? 1 : modifyItemData.ModifiedData.Scale.Y)
+            );
+            UnitExtra modifiedExtra;
+            DataScene2D.Instance.TryGetUnitExtra (modifiedDesc.Guid, out modifiedExtra);
+            ModifiedUnit = new UnitEditData (modifiedDesc, modifiedExtra);
+        }
+
+        public SoyEngine.Proto.ModifyItemData ToModifyItemData () {
+            SoyEngine.Proto.ModifyItemData mid = new SoyEngine.Proto.ModifyItemData ();
+            mid.OrigData = new SoyEngine.Proto.MapRect2D ();
+            mid.OrigData.Id = OrigUnit.UnitDesc.Id;
+            mid.OrigData.Rotation = (int)OrigUnit.UnitDesc.Rotation;
+            mid.OrigData.Scale = new SoyEngine.Proto.Vec2Proto ();
+            mid.OrigData.Scale.X = OrigUnit.UnitDesc.Scale.x;
+            mid.OrigData.Scale.Y = OrigUnit.UnitDesc.Scale.y;
+            mid.OrigData.XMin = OrigUnit.UnitDesc.Guid.x;
+            mid.OrigData.XMax = OrigUnit.UnitDesc.Guid.x + ConstDefineGM2D.ServerTileScale;
+            mid.OrigData.YMin = OrigUnit.UnitDesc.Guid.y;
+            mid.OrigData.YMax = OrigUnit.UnitDesc.Guid.y + ConstDefineGM2D.ServerTileScale;
+            mid.OrigExtra = GM2DTools.ToProto (OrigUnit.UnitDesc.Guid, OrigUnit.UnitExtra);
+
+            mid.ModifiedData = new SoyEngine.Proto.MapRect2D ();
+            mid.ModifiedData.Id = ModifiedUnit.UnitDesc.Id;
+            mid.ModifiedData.Rotation = (int)ModifiedUnit.UnitDesc.Rotation;
+            mid.ModifiedData.Scale = new SoyEngine.Proto.Vec2Proto ();
+            mid.ModifiedData.Scale.X = ModifiedUnit.UnitDesc.Scale.x;
+            mid.ModifiedData.Scale.Y = ModifiedUnit.UnitDesc.Scale.y;
+            mid.ModifiedData.XMin = ModifiedUnit.UnitDesc.Guid.x;
+            mid.ModifiedData.XMax = ModifiedUnit.UnitDesc.Guid.x + ConstDefineGM2D.ServerTileScale;
+            mid.ModifiedData.YMin = ModifiedUnit.UnitDesc.Guid.y;
+            mid.ModifiedData.YMax = ModifiedUnit.UnitDesc.Guid.y + ConstDefineGM2D.ServerTileScale;
+
+            return mid;
+        }
 	}
 }

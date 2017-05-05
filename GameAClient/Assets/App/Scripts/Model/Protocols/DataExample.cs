@@ -134,20 +134,39 @@ namespace GameA
             ESomeEnum type,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            OnRequest (successCallback, failedCallback);
+            if (_isRequesting) {
+                if (_cs_id != id) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_name != name) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_type != type) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest (successCallback, failedCallback);
+            } else {
+                _cs_id = id;
+                _cs_name = name;
+                _cs_type = type;
+                OnRequest (successCallback, failedCallback);
 
-            Msg_CS_DAT_DataExample msg = new Msg_CS_DAT_DataExample();
-            msg.Id = id;
-            msg.Name = name;
-            msg.Type = type;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_DataExample>(
-                SoyHttpApiPath.DataExample, msg, ret => {
-                    if (OnSync(ret)) {
-                        OnSyncSucceed(); 
-                    }
-                }, (failedCode, failedMsg) => {
-                    OnSyncFailed(failedCode, failedMsg);
-            });
+                Msg_CS_DAT_DataExample msg = new Msg_CS_DAT_DataExample();
+                msg.Id = id;
+                msg.Name = name;
+                msg.Type = type;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_DataExample>(
+                    SoyHttpApiPath.DataExample, msg, ret => {
+                        if (OnSync(ret)) {
+                            OnSyncSucceed(); 
+                        }
+                    }, (failedCode, failedMsg) => {
+                        OnSyncFailed(failedCode, failedMsg);
+                });            
+            }            
         }
 
         public bool OnSync (Msg_SC_DAT_DataExample msg)
