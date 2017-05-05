@@ -14,7 +14,7 @@ namespace GameA.Game
 		// 种类
 		[ColumnMapping("Type")]
 		public int Type;
-		// 物品序号
+		// 物品ID
 		[ColumnMapping("ItemIdx")]
 		public int ItemIdx;
 		// 性别

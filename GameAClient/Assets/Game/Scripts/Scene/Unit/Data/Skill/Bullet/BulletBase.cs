@@ -20,9 +20,21 @@ namespace GameA.Game
     {
         protected bool _run;
         protected SkillBase _skill;
+        /// <summary>
+        /// 速度
+        /// </summary>
         protected IntVec2 _speed;
+        /// <summary>
+        /// 是否被阻挡
+        /// </summary>
         protected bool _blocked;
+        /// <summary>
+        /// 角度
+        /// </summary>
         protected int _rotation;
+        /// <summary>
+        /// 初始位置
+        /// </summary>
         protected IntVec2 _originPos;
 
         public void OnGet()
@@ -92,22 +104,22 @@ namespace GameA.Game
         protected virtual void OnBlocked()
         {
             _isAlive = false;
-            Clear();
             --Life;
             if (_view != null)
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
                 GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position, new Vector3(0, 0, _rotation), Vector3.one);
             }
+            Clear();
             PlayMode.Instance.DestroyUnit(this);
         }
 
-        protected override void Hit(UnitBase unit)
+        protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
             _blocked = true;
             if (_skill.Plus)
             {
-                DoEdge(unit);
+                DoEdge(unit, eDirectionType);
             }
             if (unit is Switch)
             {
@@ -115,32 +127,32 @@ namespace GameA.Game
             }
         }
 
-        protected virtual void DoEdge(UnitBase unit)
+        protected virtual void DoEdge(UnitBase unit, EDirectionType eDirectionType)
         {
-            switch (_curMoveDirection)
+            switch (eDirectionType)
             {
-                case EMoveDirection.Up:
+                case EDirectionType.Up:
                     {
                         int centerPoint = (_colliderGrid.XMax + 1 + _colliderGrid.XMin) / 2;
                         unit.DoEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Down,
                             _skill.ESkillType);
                     }
                     break;
-                case EMoveDirection.Down:
+                case EDirectionType.Down:
                     {
                         int centerPoint = (_colliderGrid.XMax + 1 + _colliderGrid.XMin) / 2;
                         unit.DoEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Up,
                             _skill.ESkillType);
                     }
                     break;
-                case EMoveDirection.Left:
+                case EDirectionType.Left:
                     {
                         int centerPoint = (_colliderGrid.YMax + 1 + _colliderGrid.YMin) / 2;
                         unit.DoEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Right,
                             _skill.ESkillType);
                     }
                     break;
-                case EMoveDirection.Right:
+                case EDirectionType.Right:
                     {
                         int centerPoint = (_colliderGrid.YMax + 1 + _colliderGrid.YMin) / 2;
                         unit.DoEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Left,

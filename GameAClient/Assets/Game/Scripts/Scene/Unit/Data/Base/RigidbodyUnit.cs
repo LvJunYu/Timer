@@ -93,7 +93,7 @@ namespace GameA.Game
                         {
                             _cacheHitUnits.Add(unit.Guid);
                             unit.OnHit(this);
-                            Hit(unit);
+                            Hit(unit, EDirectionType.Up);
                         }
                         flag = true;
                         if (ymin < y)
@@ -135,7 +135,7 @@ namespace GameA.Game
                         {
                             _cacheHitUnits.Add(unit.Guid);
                             unit.OnHit(this);
-                            Hit(unit);
+                            Hit(unit, EDirectionType.Down);
                         }
                         flag = true;
                         if (ymin > y)
@@ -193,7 +193,7 @@ namespace GameA.Game
                         {
                             _cacheHitUnits.Add(unit.Guid);
                             unit.OnHit(this);
-                            Hit(unit);
+                            Hit(unit, EDirectionType.Left);
                         }
                         flag = true;
                         if (xmin > x)
@@ -232,7 +232,7 @@ namespace GameA.Game
                         {
                             _cacheHitUnits.Add(unit.Guid);
                             unit.OnHit(this);
-                            Hit(unit);
+                            Hit(unit, EDirectionType.Right);
                         }
                         flag = true;
                         if (xmin < x)
@@ -250,7 +250,7 @@ namespace GameA.Game
             }
         }
 
-        protected virtual void Hit(UnitBase unit)
+        protected virtual void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
         }
     }
