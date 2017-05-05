@@ -123,7 +123,7 @@ namespace GameA.Game
             {
                 return null;
             }
-            var rotation = (byte)(_owner.FireDirection - 1);
+            var rotation = (byte)(_owner.ShootRot/90);
             return PlayMode.Instance.CreateRuntimeUnit(_bulletId, GetBulletPos(_bulletId, rotation), rotation, Vector2.one) as BulletBase;
         }
 

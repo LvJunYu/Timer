@@ -18,6 +18,8 @@ namespace GameA.Game
     {
         Left,
         Right,
+        Up,
+        Down,
         Jump,
         Shoot,
         Quicken,
@@ -49,11 +51,19 @@ namespace GameA.Game
         protected float _lastHorizontal;
         [SerializeField]
         protected float _curHorizontal;
+        [SerializeField]
+        protected float _lastVertical;
+        [SerializeField]
+        protected float _curVertical;
 
         [SerializeField]
         protected int _leftInput;
         [SerializeField]
         protected int _rightInput;
+        [SerializeField]
+        protected int _upInput;
+        [SerializeField]
+        protected int _downInput;
 
         [SerializeField]
         public int _brakeTime;
@@ -200,8 +210,12 @@ namespace GameA.Game
             _lastJumpInput = false;
             _lastHorizontal = 0;
             _curHorizontal = 0;
+            _lastVertical = 0;
+            _curVertical = 0;
             _leftInput = 0;
             _rightInput = 0;
+            _upInput = 0;
+            _downInput = 0;
             _brakeTime = 0;
             _brakeType = 0;
             _jumpInput = false;
@@ -226,7 +240,9 @@ namespace GameA.Game
         public void UpdateRenderer()
         {
             _lastHorizontal = _curHorizontal;
+            _lastVertical = _curVertical;
             _curHorizontal = CrossPlatformInputManager.GetAxis("Horizontal");
+            _curVertical = CrossPlatformInputManager.GetAxis("Vertical");
             if (KeyDown(EInputType.Left))
             {
                 _curInputs[(int)EInputType.Left] = true;
@@ -242,6 +258,22 @@ namespace GameA.Game
             if (KeyUp(EInputType.Right))
             {
                 _curInputs[(int)EInputType.Right] = false;
+            }
+            if (KeyDown(EInputType.Up))
+            {
+                _curInputs[(int)EInputType.Up] = true;
+            }
+            if (KeyUp(EInputType.Up))
+            {
+                _curInputs[(int)EInputType.Up] = false;
+            }
+            if (KeyDown(EInputType.Down))
+            {
+                _curInputs[(int)EInputType.Down] = true;
+            }
+            if (KeyUp(EInputType.Down))
+            {
+                _curInputs[(int)EInputType.Down] = false;
             }
             if (KeyDown(EInputType.Jump))
             {
@@ -277,6 +309,10 @@ namespace GameA.Game
                     return _lastHorizontal > -0.1f && _curHorizontal < -0.1f;
                 case EInputType.Right:
                     return _lastHorizontal < 0.1f && _curHorizontal > 0.1f;
+                case EInputType.Down:
+                    return _lastVertical > -0.1f && _curVertical < -0.1f;
+                case EInputType.Up:
+                    return _lastVertical < 0.1f && _curVertical > 0.1f;
                 case EInputType.Jump:
                     return CrossPlatformInputManager.GetButtonDown("Jump");
                 case EInputType.Shoot:
@@ -295,6 +331,10 @@ namespace GameA.Game
                     return _lastHorizontal < -0.1f && _curHorizontal > -0.1f;
                 case EInputType.Right:
                     return _lastHorizontal > 0.1f && _curHorizontal < 0.1f;
+                case EInputType.Down:
+                    return _lastVertical < -0.1f && _curVertical > -0.1f;
+                case EInputType.Up:
+                    return _lastVertical > 0.1f && _curVertical < 0.1f;
                 case EInputType.Jump:
                     if (GuideManager.Instance.IsLockJumpButton)
                     {
@@ -388,36 +428,60 @@ namespace GameA.Game
                 {
                     _inputDatas.Add(_curTime);
                     _inputDatas.Add(4);
-                    _jumpInput = true;
+                    _upInput = 1;
                 }
                 if (!_curInputs[2] && _lastInputs[2])
                 {
                     _inputDatas.Add(_curTime);
                     _inputDatas.Add(5);
-                    _jumpInput = false;
+                    _upInput = 0;
                 }
                 if (_curInputs[3] && !_lastInputs[3])
                 {
                     _inputDatas.Add(_curTime);
                     _inputDatas.Add(6);
-                    _shootInput = true;
+                    _downInput = 1;
                 }
                 if (!_curInputs[3] && _lastInputs[3])
                 {
                     _inputDatas.Add(_curTime);
                     _inputDatas.Add(7);
-                    _shootInput = false;
+                    _downInput = 0;
                 }
                 if (_curInputs[4] && !_lastInputs[4])
                 {
                     _inputDatas.Add(_curTime);
                     _inputDatas.Add(8);
-                    _quickenInput = true;
+                    _jumpInput = true;
                 }
                 if (!_curInputs[4] && _lastInputs[4])
                 {
                     _inputDatas.Add(_curTime);
                     _inputDatas.Add(9);
+                    _jumpInput = false;
+                }
+                if (_curInputs[5] && !_lastInputs[5])
+                {
+                    _inputDatas.Add(_curTime);
+                    _inputDatas.Add(10);
+                    _shootInput = true;
+                }
+                if (!_curInputs[5] && _lastInputs[5])
+                {
+                    _inputDatas.Add(_curTime);
+                    _inputDatas.Add(11);
+                    _shootInput = false;
+                }
+                if (_curInputs[6] && !_lastInputs[6])
+                {
+                    _inputDatas.Add(_curTime);
+                    _inputDatas.Add(12);
+                    _quickenInput = true;
+                }
+                if (!_curInputs[6] && _lastInputs[6])
+                {
+                    _inputDatas.Add(_curTime);
+                    _inputDatas.Add(13);
                     _quickenInput = false;
                 }
             }
@@ -446,25 +510,41 @@ namespace GameA.Game
                     }
                     if (_inputDatas[_index] == 4)
                     {
-                        _jumpInput = true;
+                        _upInput = 1;
                     }
                     if (_inputDatas[_index] == 5)
                     {
-                        _jumpInput = false;
+                        _upInput = 0;
                     }
                     if (_inputDatas[_index] == 6)
                     {
-                        _shootInput = true;
+                        _downInput = 1;
                     }
                     if (_inputDatas[_index] == 7)
                     {
-                        _shootInput = false;
+                        _downInput = 0;
                     }
                     if (_inputDatas[_index] == 8)
                     {
-                        _quickenInput = true;
+                        _jumpInput = true;
                     }
                     if (_inputDatas[_index] == 9)
+                    {
+                        _jumpInput = false;
+                    }
+                    if (_inputDatas[_index] == 10)
+                    {
+                        _shootInput = true;
+                    }
+                    if (_inputDatas[_index] == 11)
+                    {
+                        _shootInput = false;
+                    }
+                    if (_inputDatas[_index] == 12)
+                    {
+                        _quickenInput = true;
+                    }
+                    if (_inputDatas[_index] == 13)
                     {
                         _quickenInput = false;
                     }
@@ -581,6 +661,41 @@ namespace GameA.Game
         {
             if (ShootInputDown)
             {
+                var eShootDir = _unit.CurMoveDirection == EMoveDirection.Left?EShootDirectionType.Left:EShootDirectionType.Right;
+                if (_leftInput == 1)
+                {
+                    eShootDir = EShootDirectionType.Left;
+                    if (_downInput == 1)
+                    {
+                        eShootDir = EShootDirectionType.LeftDown;
+                    }
+                    else if (_upInput == 1)
+                    {
+                        eShootDir = EShootDirectionType.LeftUp;
+                    }
+                }
+                else if (_rightInput == 1)
+                {
+                    eShootDir = EShootDirectionType.Right;
+                    if (_downInput == 1)
+                    {
+                        eShootDir = EShootDirectionType.RightDown;
+                    }
+                    else if (_upInput == 1)
+                    {
+                        eShootDir = EShootDirectionType.RightUp;
+                    }
+                }
+                else if (_downInput == 1)
+                {
+                    eShootDir = EShootDirectionType.Down;
+                }
+                else if (_upInput == 1)
+                {
+                    eShootDir = EShootDirectionType.Up;
+                }
+
+                _unit.ShootRot = (int) eShootDir;
                 _unit.SkillCtrl.Fire();
             }
         }

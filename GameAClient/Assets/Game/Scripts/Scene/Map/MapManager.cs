@@ -369,7 +369,7 @@ namespace GameA.Game
 			return _mapFile.Save();
 		}
 
-		public void OnDrawGizmos()
+		void OnDrawGizmos()
 		{
             ColliderScene2D.Instance.OnDrawGizmos();
             //DataScene2D.Instance.OnDrawGizmos();

@@ -19,11 +19,8 @@ namespace GameA.Game
     public class BulletBase : UnitBase, IPoolableObject
     {
         protected bool _run;
-        protected IntVec2 _speed;
         protected SkillBase _skill;
-
-        protected IntVec2 _delta;
-        protected float _deltaLength;
+        protected IntVec2 _speed;
 
         public void OnGet()
         {
@@ -50,22 +47,10 @@ namespace GameA.Game
         {
             _run = true;
             _skill = skill;
-            _curMoveDirection = _skill.Owner.FireDirection;
-            switch (_curMoveDirection)
-            {
-                case EMoveDirection.Up:
-                    _speed = _skill.BulletSpeed * IntVec2.up;
-                    break;
-                case EMoveDirection.Right:
-                    _speed = _skill.BulletSpeed * IntVec2.right;
-                    break;
-                case EMoveDirection.Down:
-                    _speed = _skill.BulletSpeed * IntVec2.down;
-                    break;
-                case EMoveDirection.Left:
-                    _speed = _skill.BulletSpeed * IntVec2.left;
-                    break;
-            }
+            var rotation = _skill.Owner.ShootRot * Mathf.Deg2Rad;
+            _speed = new IntVec2((int)(_skill.BulletSpeed * Math.Sin(rotation)), (int)(_skill.BulletSpeed * Math.Cos(rotation)));
+            _curMoveDirection = _skill.Owner.CurMoveDirection;
+            LogHelper.Debug(_skill.Owner.ShootRot + "~" + _speed + "~" + _curMoveDirection);
         }
 
         public override void UpdateLogic()

@@ -51,6 +51,8 @@ namespace GameA.Game
 
         protected bool _canClimbed;
 
+        protected int _shootRot;
+
         #endregion
 
         #region motor
@@ -384,16 +386,10 @@ namespace GameA.Game
             get { return (ELayerType)_tableUnit.Layer; }
         }
 
-        public EMoveDirection FireDirection
+        public int ShootRot
         {
-            get
-            {
-                if (IsHero)
-                {
-                    return _curMoveDirection;
-                }
-                return (EMoveDirection)(Rotation+1);
-            }
+            get { return _shootRot; }
+            set { _shootRot = value; }
         }
 
         public virtual IntVec2 FirePos

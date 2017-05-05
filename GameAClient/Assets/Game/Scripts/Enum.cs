@@ -26,6 +26,18 @@ namespace GameA.Game
         Left,
     }
 
+    public enum EShootDirectionType
+    {
+        Up = 0,
+        Right = 90,
+        Down = 180,
+        Left = 270,
+        RightUp = 45,
+        RightDown = 135,
+        LeftDown = 225,
+        LeftUp = 315
+    }
+
     public enum EMoveDirection : byte
     {
         None = 0,
