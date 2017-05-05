@@ -138,5 +138,10 @@ namespace GameA.Game
 
         public const int PlayerTableId = 1001;
         public const int FinalDoorId = 5001;
+
+        public static bool IsEnergy(int id)
+        {
+            return id >=6101 && id <= 6105;
+        }
     }
 }

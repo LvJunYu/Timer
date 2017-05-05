@@ -30,6 +30,12 @@ namespace GameA.Game
             return true;
         }
 
+        public override void UpdateExtraData()
+        {
+            _rollerDirection = DataScene2D.Instance.GetUnitExtra(_guid).RollerDirection;
+            base.UpdateExtraData();
+        }
+
         internal override bool InstantiateView()
         {
             if (!base.InstantiateView())

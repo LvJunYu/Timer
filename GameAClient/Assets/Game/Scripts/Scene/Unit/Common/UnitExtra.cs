@@ -20,6 +20,7 @@ namespace GameA.Game
         public EMoveDirection MoveDirection;
         public EMoveDirection RollerDirection;
         public string Msg;
+        public byte IsPlus;
         public UnitChild Child;
 
         public bool IsDynamic()
@@ -29,13 +30,13 @@ namespace GameA.Game
 
         public bool Equals(UnitExtra other)
         {
-            return MoveDirection == other.MoveDirection && Msg == other.Msg && RollerDirection == other.RollerDirection && 
+            return MoveDirection == other.MoveDirection && Msg == other.Msg && RollerDirection == other.RollerDirection && IsPlus == other.IsPlus && 
                    Child.Equals(other.Child);
         }
 
         public static bool operator ==(UnitExtra a, UnitExtra other)
         {
-            return (a.MoveDirection == other.MoveDirection) && (a.Msg == other.Msg) && (a.RollerDirection == other.RollerDirection) && a.Child.Equals(other.Child);
+            return a.Equals(other);
         }
 
         public static bool operator !=(UnitExtra a, UnitExtra other)

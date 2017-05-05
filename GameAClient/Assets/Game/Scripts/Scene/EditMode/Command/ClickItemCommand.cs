@@ -49,9 +49,7 @@ namespace GameA.Game
         public ClickItemCommand(UnitDesc clickUnit, Vector2 startMousePos)
         {
             _clickedDesc = clickUnit;
-            //if (!DataScene2D.Instance.TryGetUnitExtra (_clickedDesc.Guid, out _clickedExtra)) {
-            //    return;
-            //}
+            _clickedExtra = DataScene2D.Instance.GetUnitExtra(_clickedDesc.Guid);
 			_modifiedDesc = _clickedDesc;
 			_modifiedExtra = _clickedExtra;
             _startMousePos = startMousePos;
@@ -97,7 +95,11 @@ namespace GameA.Game
 
 		protected bool DoClickOperator()
         {
-            if (_clickedTableUnit.CanRotate)
+		    if (ConstDefineGM2D.IsEnergy(_clickedTableUnit.Id))
+		    {
+		        return DoEnergy();
+		    }
+		    if (_clickedTableUnit.CanRotate)
             {
                 return DoRotate();
             }
@@ -116,7 +118,14 @@ namespace GameA.Game
             return false;
         }
 
-		protected virtual bool DoAddMsg()
+        protected bool DoEnergy()
+        {
+            _modifiedExtra.IsPlus = (byte) (_clickedExtra.IsPlus == 0 ? 1 : 0);
+            DataScene2D.Instance.ProcessUnitExtra(_modifiedDesc.Guid, _modifiedExtra);
+            return true;
+        }
+
+        protected virtual bool DoAddMsg()
         {
             GM2DGUIManager.Instance.OpenUI<UICtrlGameItemAddMessage>(_clickedDesc);
             return false;
@@ -124,7 +133,6 @@ namespace GameA.Game
 
 		protected bool DoRotate()
         {
-            var curValue = _clickedDesc.Rotation;
 			if (!CheckDirectionValid(_clickedDesc.Rotation))
             {
                 return false;
@@ -139,22 +147,16 @@ namespace GameA.Game
                 return false;
             }
             _modifiedDesc.Rotation = dir;
-            if (EditMode.Instance.AddUnit (_modifiedDesc)) {
-                DataScene2D.Instance.ProcessUnitExtra (_modifiedDesc.Guid, _modifiedExtra);
+            if (EditMode.Instance.AddUnit(_modifiedDesc))
+            {
+                DataScene2D.Instance.ProcessUnitExtra(_modifiedDesc.Guid, _modifiedExtra);
                 return true;
-            } else {
-                return false;
             }
-
+            return false;
         }
 
 		protected bool DoRoller()
         {
-//            UnitExtra unitExtra;
-//            if (!DataScene2D.Instance.TryGetUnitExtra(_clickedDesc.Guid, out unitExtra))
-//            {
-//                return false;
-//            }
             var curValue = (byte)(_clickedExtra.RollerDirection - 1);
             if (!CheckDirectionValid(curValue))
             {
@@ -165,26 +167,13 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (!EditMode.Instance.DeleteUnit(_clickedDesc))
-            {
-                return false;
-            }
             _modifiedExtra.RollerDirection = (EMoveDirection)(dir + 1);
-            if (EditMode.Instance.AddUnit (_modifiedDesc)) {
-                DataScene2D.Instance.ProcessUnitExtra (_modifiedDesc.Guid, _modifiedExtra);
-                return true;
-            } else {
-                return false;
-            }
+            DataScene2D.Instance.ProcessUnitExtra(_modifiedDesc.Guid, _modifiedExtra);
+            return true;
         }
 
 		protected bool DoMove()
         {
-//            UnitExtra unitExtra;
-//            if (!DataScene2D.Instance.TryGetUnitExtra(_clickedDesc.Guid, out unitExtra))
-//            {
-//                return false;
-//            }
             //说明是静止的 肯定没有蓝石
             if (_clickedExtra.MoveDirection == 0)
             {
@@ -200,17 +189,9 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (!EditMode.Instance.DeleteUnit(_clickedDesc))
-            {
-                return false;
-            }
             _modifiedExtra.MoveDirection = (EMoveDirection) (dir + 1);
-            if (EditMode.Instance.AddUnit (_modifiedDesc)) {
-                DataScene2D.Instance.ProcessUnitExtra (_modifiedDesc.Guid, _modifiedExtra);
-                return true;
-            } else {
-                return false;
-            }
+		    DataScene2D.Instance.ProcessUnitExtra(_modifiedDesc.Guid, _modifiedExtra);
+		    return false;
         }
 
 		protected bool CalculateNextDir(byte curValue, int mask, out byte dir)
