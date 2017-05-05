@@ -19,6 +19,7 @@ namespace GameA.Game
         [SerializeField]
         protected UnitBase[] _hitUnits = new UnitBase[4];
         private static HashSet<IntVec3> _cacheCheckedDownUnits = new HashSet<IntVec3>();
+        private static HashSet<IntVec3> _cacheHitUnits = new HashSet<IntVec3>();
         protected bool _onClay;
         protected const int ClayRatio = 5;
 
@@ -30,6 +31,7 @@ namespace GameA.Game
                 _hitUnits[i] = null;
             }
             _cacheCheckedDownUnits.Clear();
+            _cacheHitUnits.Clear();
         }
 
         protected override void UpdateCollider(IntVec2 min)
@@ -45,13 +47,17 @@ namespace GameA.Game
             }
             else
             {
+                _cacheHitUnits.Clear();
                 _colliderPos.y = min.y;
-                CheckUp();
-                CheckDown();
+                if (_isAlive)
+                {
+                    CheckUp();
+                    CheckDown();
+                }
                 _colliderGrid = GetColliderGrid(_colliderPos);
 
                 _colliderPos.x = min.x;
-                if (_deltaPos.x != 0)
+                if (_deltaPos.x != 0 && _isAlive)
                 {
                     CheckLeft();
                     CheckRight();
@@ -83,6 +89,12 @@ namespace GameA.Game
                     int ymin = 0;
                     if (unit.IsAlive && unit.OnDownHit(this, ref ymin))
                     {
+                        if (!_cacheHitUnits.Contains(unit.Guid))
+                        {
+                            _cacheHitUnits.Add(unit.Guid);
+                            unit.OnHit(this);
+                            Hit(unit);
+                        }
                         flag = true;
                         if (ymin < y)
                         {
@@ -119,6 +131,12 @@ namespace GameA.Game
                     _cacheCheckedDownUnits.Add(unit.Guid);
                     if (unit.IsAlive && unit.OnUpHit(this, ref ymin))
                     {
+                        if (!_cacheHitUnits.Contains(unit.Guid))
+                        {
+                            _cacheHitUnits.Add(unit.Guid);
+                            unit.OnHit(this);
+                            Hit(unit);
+                        }
                         flag = true;
                         if (ymin > y)
                         {
@@ -171,6 +189,12 @@ namespace GameA.Game
                     int xmin = 0;
                     if (unit.IsAlive && unit.OnRightHit(this, ref xmin))
                     {
+                        if (!_cacheHitUnits.Contains(unit.Guid))
+                        {
+                            _cacheHitUnits.Add(unit.Guid);
+                            unit.OnHit(this);
+                            Hit(unit);
+                        }
                         flag = true;
                         if (xmin > x)
                         {
@@ -204,6 +228,12 @@ namespace GameA.Game
                     int xmin = 0;
                     if (unit.IsAlive && unit.OnLeftHit(this, ref xmin))
                     {
+                        if (!_cacheHitUnits.Contains(unit.Guid))
+                        {
+                            _cacheHitUnits.Add(unit.Guid);
+                            unit.OnHit(this);
+                            Hit(unit);
+                        }
                         flag = true;
                         if (xmin < x)
                         {
@@ -218,6 +248,10 @@ namespace GameA.Game
                     _hitUnits[(int)EDirectionType.Right] = hit;
                 }
             }
+        }
+
+        protected virtual void Hit(UnitBase unit)
+        {
         }
     }
 }

@@ -178,6 +178,7 @@ namespace GameA.Game
                 _deltaPos = _speed + _extraDeltaPos;
                 _curPos += _deltaPos;
                 UpdateCollider(GetColliderPos(_curPos));
+                _curPos = GetPos(_colliderPos);
                 if (_view != null)
                 {
                     _trans.position = GetTransPos();

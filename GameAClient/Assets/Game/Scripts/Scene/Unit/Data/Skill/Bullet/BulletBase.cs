@@ -16,11 +16,14 @@ namespace GameA.Game
     /// 子弹需要做成池
     /// </summary>
     [Poolable(MinPoolSize = 10, PreferedPoolSize = 100, MaxPoolSize = ConstDefineGM2D.MaxTileCount)]
-    public class BulletBase : UnitBase, IPoolableObject
+    public class BulletBase : RigidbodyUnit, IPoolableObject
     {
         protected bool _run;
         protected SkillBase _skill;
         protected IntVec2 _speed;
+        protected bool _blocked;
+        protected int _rotation;
+        protected IntVec2 _originPos;
 
         public void OnGet()
         {
@@ -39,56 +42,69 @@ namespace GameA.Game
         {
             base.Clear();
             _run = false;
-            _speed = IntVec2.zero;
             _skill = null;
+            _speed = IntVec2.zero;
+            _blocked = false;
+            _rotation = 0;
+            _originPos = IntVec2.zero;
         }
 
         public virtual void Run(SkillBase skill)
         {
+            _originPos = CenterPos;
             _run = true;
             _skill = skill;
-            var rotation = _skill.Owner.ShootRot * Mathf.Deg2Rad;
-            _speed = new IntVec2((int)(_skill.BulletSpeed * Math.Sin(rotation)), (int)(_skill.BulletSpeed * Math.Cos(rotation)));
-            _curMoveDirection = _skill.Owner.CurMoveDirection;
-            LogHelper.Debug(_skill.Owner.ShootRot + "~" + _speed + "~" + _curMoveDirection);
+            _rotation = _skill.Owner.ShootRot;
+            var rad = _rotation * Mathf.Deg2Rad;
+            _speed = new IntVec2((int)(_skill.BulletSpeed * Math.Sin(rad)), (int)(_skill.BulletSpeed * Math.Cos(rad)));
         }
 
-        public override void UpdateLogic()
+        public override void UpdateView(float deltaTime)
         {
-            base.UpdateLogic();
             if (!_run)
             {
                 return;
             }
             if (_isAlive)
             {
-                IntVec2 pointA = IntVec2.zero, pointB = IntVec2.zero;
-                GM2DTools.GetBorderPoint(_colliderGrid, _curMoveDirection, ref pointA, ref pointB);
-                var checkGrid = SceneQuery2D.GetGrid(pointA, pointB, (byte)(_curMoveDirection - 1), Math.Max(_speed.x, _speed.y));
-                if (!DataScene2D.Instance.IsInTileMap(checkGrid))
+                _deltaPos = _speed + _extraDeltaPos;
+                _curPos += _deltaPos;
+                //超出最大射击距离
+                if ((CenterPos - _originPos).SqrMagnitude() >= _skill.Range * _skill.Range)
                 {
-                    DoDead();
-                    return;
+                    var rad = _rotation*Mathf.Deg2Rad;
+                    CenterPos = _originPos + new IntVec2((int)(_skill.Range * Math.Sin(rad)), (int)(_skill.Range * Math.Cos(rad)));
+                    _blocked = true;
                 }
-                bool hit = false;
-                var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.BulletHitLayer, float.MinValue, float.MaxValue, _dynamicCollider);
-                for (int i = 0; i < units.Count; i++)
+                UpdateCollider(GetColliderPos(_curPos));
+                _curPos = GetPos(_colliderPos);
+                if (_view != null)
                 {
-                    if (GM2DTools.OnDirectionHit(units[i], this, _curMoveDirection))
-                    {
-                        DoHit(units[i]);
-                        hit = true;
-                    }
+                    _trans.position = GetTransPos();
                 }
-                if (hit)
+                if (_blocked)
                 {
-                    DoDead();
+                    OnBlocked();
                 }
             }
         }
 
-        protected virtual void DoHit(UnitBase unit)
+        protected virtual void OnBlocked()
         {
+            _isAlive = false;
+            Clear();
+            --Life;
+            if (_view != null)
+            {
+                GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
+                GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position, new Vector3(0, 0, _rotation), Vector3.one);
+            }
+            PlayMode.Instance.DestroyUnit(this);
+        }
+
+        protected override void Hit(UnitBase unit)
+        {
+            _blocked = true;
             if (_skill.Plus)
             {
                 DoEdge(unit);
@@ -131,53 +147,6 @@ namespace GameA.Game
                             _skill.ESkillType);
                     }
                     break;
-            }
-        }
-
-        protected void DoDead(float zRotation = 0)
-        {
-            _isAlive = false;
-            Clear();
-            --Life;
-            if (_view != null)
-            {
-                GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
-                GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, new Vector3(0, 0, zRotation), _trans.position, Vector3.one);
-            }
-            PlayMode.Instance.DestroyUnit(this);
-        }
-
-        public override void UpdateView(float deltaTime)
-        {
-            if (!_run)
-            {
-                return;
-            }
-            if (_isAlive)
-            {
-                _deltaPos = _speed + _extraDeltaPos;
-                _curPos += _deltaPos;
-                UpdateCollider(GetColliderPos(_curPos));
-                if (_view != null)
-                {
-                    _trans.position = GetTransPos();
-                }
-            }
-        }
-
-        protected virtual void UpdateCollider(IntVec2 min)
-        {
-            if (_colliderPos.Equals(min))
-            {
-                return;
-            }
-            _colliderPos = min;
-            _colliderGrid = GetColliderGrid(_colliderPos);
-            if (!_lastColliderGrid.Equals(_colliderGrid))
-            {
-                _dynamicCollider.Grid = _colliderGrid;
-                ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider);
-                _lastColliderGrid = _colliderGrid;
             }
         }
     }
