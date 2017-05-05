@@ -84,8 +84,8 @@ namespace GameA.Game
             _radius = 160;
             _range = 8*ConstDefineGM2D.ServerTileScale;
             _timerCD = 0;
-            _cdTime = 10;
-            _bulletSpeed = 200;
+            _cdTime = 2;
+            _bulletSpeed = 100;
         }
 
         internal virtual void Exit()

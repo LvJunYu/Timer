@@ -69,6 +69,10 @@ namespace GameA.Game
             _rotation = _skill.Owner.ShootRot;
             var rad = _rotation * Mathf.Deg2Rad;
             _speed = new IntVec2((int)(_skill.BulletSpeed * Math.Sin(rad)), (int)(_skill.BulletSpeed * Math.Cos(rad)));
+            if (_animation != null)
+            {
+                _animation.Init("Run");
+            }
         }
 
         public override void UpdateView(float deltaTime)
