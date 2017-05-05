@@ -242,11 +242,13 @@ namespace GameA.Game
             if (unitExtra.Equals(UnitExtra.zero))
             {
                 DeleteUnitExtra(guid);
-                return;
             }
-            _unitExtras.AddOrReplace(guid, unitExtra);
+            else
+            {
+                _unitExtras.AddOrReplace(guid, unitExtra);
+            }
             // 更新unit
-            UnitBase unit = null;
+            UnitBase unit;
             if (ColliderScene2D.Instance.TryGetUnit(guid, out unit))
             {
                 unit.UpdateExtraData ();

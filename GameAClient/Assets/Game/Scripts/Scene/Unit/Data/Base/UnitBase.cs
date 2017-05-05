@@ -415,8 +415,8 @@ namespace GameA.Game
             _unitDesc.Id = _tableUnit.Id;
             _unitDesc.Rotation = 0;
             _unitDesc.Scale = Vector3.one;
-            _curMoveDirection = _moveDirection = DataScene2D.Instance.GetUnitExtra(_guid).MoveDirection;
             InitAssetPath();
+            UpdateExtraData();
             if (!UnitManager.Instance.TryGetUnitView(this, out _view))
             {
                 LogHelper.Error("TryGetUnitView Failed, {0}", tableUnit.Id);
@@ -436,9 +436,9 @@ namespace GameA.Game
         {
             _tableUnit = tableUnit;
             _unitDesc = unitDesc;
-            _curMoveDirection = _moveDirection = DataScene2D.Instance.GetUnitExtra(_guid).MoveDirection;
             _curPos = new IntVec2(_guid.x, _guid.y);
             InitAssetPath();
+            UpdateExtraData();
             if (!UnitManager.Instance.TryGetUnitView(this, out _view))
             {
                 LogHelper.Error("TryGetUnitView Failed, {0}", tableUnit.Id);
@@ -453,7 +453,6 @@ namespace GameA.Game
         {
             _tableUnit = tableUnit;
             _unitDesc = unitDesc;
-            _curMoveDirection = _moveDirection = DataScene2D.Instance.GetUnitExtra(_guid).MoveDirection;
             _friction = 6;
             if (dynamicCollider != null)
             {
@@ -461,6 +460,7 @@ namespace GameA.Game
                 _dynamicCollider = dynamicCollider;
             }
             InitAssetPath();
+            UpdateExtraData();
             OnInit();
             _colliderGridInner = _useCorner ? _colliderGrid.GetGridInner() : _colliderGrid;
             return true;

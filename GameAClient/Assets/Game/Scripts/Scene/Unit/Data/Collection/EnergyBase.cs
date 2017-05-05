@@ -1,8 +1,8 @@
 ﻿/********************************************************************
-** Filename : Energy
+** Filename : EnergyBase
 ** Author : Dong
 ** Date : 2017/3/22 星期三 下午 2:39:07
-** Summary : Energy
+** Summary : EnergyBase
 ***********************************************************************/
 
 using System;
@@ -11,7 +11,7 @@ using SoyEngine;
 
 namespace GameA.Game
 {
-    public class Energy : BlockBase
+    public class EnergyBase : BlockBase
     {
         protected bool _plus;
         protected int _totalCount;
@@ -21,6 +21,13 @@ namespace GameA.Game
         public float GetProcess()
         {
             return (float) _currentCount/_totalCount;
+        }
+
+        public override void UpdateExtraData()
+        {
+            _plus = DataScene2D.Instance.GetUnitExtra(_guid).IsPlusEnergy == 1;
+            base.UpdateExtraData();
+            LogHelper.Debug("_plus + _"+_plus);
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)

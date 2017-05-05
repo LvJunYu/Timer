@@ -95,6 +95,15 @@ namespace GameA.Game
 
 		protected bool DoClickOperator()
         {
+            //蓝石优先判断。
+            if (_clickedTableUnit.CanMove || _clickedTableUnit.OriginMagicDirection != 0)
+            {
+                //说明是静止的 肯定没有蓝石
+                if (_clickedExtra.MoveDirection != 0)
+                {
+                    return DoMove();
+                }
+            }
 		    if (ConstDefineGM2D.IsEnergy(_clickedTableUnit.Id))
 		    {
 		        return DoEnergy();
@@ -111,17 +120,13 @@ namespace GameA.Game
             {
                 return DoRoller();
             }
-            if (_clickedTableUnit.CanMove || _clickedTableUnit.OriginMagicDirection != 0)
-            {
-                return DoMove();
-            }
             return false;
         }
 
         protected bool DoEnergy()
         {
-            _modifiedExtra.IsPlus = (byte) (_clickedExtra.IsPlus == 0 ? 1 : 0);
-            DataScene2D.Instance.ProcessUnitExtra(_modifiedDesc.Guid, _modifiedExtra);
+            _modifiedExtra.IsPlusEnergy = (byte) (_clickedExtra.IsPlusEnergy == 0 ? 1 : 0);
+            SaveUnitExtra();
             return true;
         }
 
@@ -133,10 +138,6 @@ namespace GameA.Game
 
 		protected bool DoRotate()
         {
-			if (!CheckDirectionValid(_clickedDesc.Rotation))
-            {
-                return false;
-            }
             byte dir;
 			if (!CalculateNextDir(_clickedDesc.Rotation, _clickedTableUnit.RotationMask, out dir))
             {
@@ -149,7 +150,7 @@ namespace GameA.Game
             _modifiedDesc.Rotation = dir;
             if (EditMode.Instance.AddUnit(_modifiedDesc))
             {
-                DataScene2D.Instance.ProcessUnitExtra(_modifiedDesc.Guid, _modifiedExtra);
+                SaveUnitExtra();
                 return true;
             }
             return false;
@@ -157,45 +158,40 @@ namespace GameA.Game
 
 		protected bool DoRoller()
         {
-            var curValue = (byte)(_clickedExtra.RollerDirection - 1);
-            if (!CheckDirectionValid(curValue))
-            {
-                return false;
-            }
             byte dir;
-            if (!CalculateNextDir(curValue, 10, out dir))
+            if (!CalculateNextDir((byte)(_clickedExtra.RollerDirection - 1), 10, out dir))
             {
                 return false;
             }
             _modifiedExtra.RollerDirection = (EMoveDirection)(dir + 1);
-            DataScene2D.Instance.ProcessUnitExtra(_modifiedDesc.Guid, _modifiedExtra);
+            SaveUnitExtra();
             return true;
         }
 
 		protected bool DoMove()
         {
-            //说明是静止的 肯定没有蓝石
-            if (_clickedExtra.MoveDirection == 0)
-            {
-                return false;
-            }
-            var curValue = (byte) (_clickedExtra.MoveDirection - 1);
-            if (!CheckDirectionValid(curValue))
-            {
-                return false;
-            }
             byte dir;
-            if (!CalculateNextDir(curValue,_clickedTableUnit.MoveDirectionMask, out dir))
+            if (!CalculateNextDir((byte)(_clickedExtra.MoveDirection - 1), _clickedTableUnit.MoveDirectionMask, out dir))
             {
                 return false;
             }
             _modifiedExtra.MoveDirection = (EMoveDirection) (dir + 1);
-		    DataScene2D.Instance.ProcessUnitExtra(_modifiedDesc.Guid, _modifiedExtra);
+		    SaveUnitExtra();
 		    return false;
         }
 
-		protected bool CalculateNextDir(byte curValue, int mask, out byte dir)
+        protected void SaveUnitExtra()
         {
+            DataScene2D.Instance.ProcessUnitExtra(_modifiedDesc.Guid, _modifiedExtra);
+        }
+
+        protected bool CalculateNextDir(byte curValue, int mask, out byte dir)
+        {
+            if (!CheckDirectionValid(curValue))
+            {
+                dir = 0;
+                return false;
+            }
             dir = 0;
             int index = 0;
             bool hasFind = false;

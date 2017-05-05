@@ -11,7 +11,7 @@ using System.Collections;
 namespace GameA.Game
 {
     [Unit(Id = 6102, Type = typeof(EnergyFire))]
-    public class EnergyFire : Energy
+    public class EnergyFire : EnergyBase
     {
         protected override bool OnInit()
         {

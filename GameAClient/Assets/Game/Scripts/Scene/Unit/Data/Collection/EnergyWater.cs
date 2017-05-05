@@ -12,7 +12,7 @@ using SoyEngine;
 namespace GameA.Game
 {
     [Unit(Id = 6101, Type = typeof(EnergyWater))]
-    public class EnergyWater : Energy
+    public class EnergyWater : EnergyBase
     {
         protected override bool OnInit()
         {
