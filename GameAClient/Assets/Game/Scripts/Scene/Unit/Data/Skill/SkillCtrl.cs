@@ -74,9 +74,23 @@ namespace GameA.Game
             _currentSkill.Enter(_owner, plus);
         }
 
-        public void Fire()
+        /// <summary>
+        /// 增强型技能点射
+        /// </summary>
+        public void FireOnce()
         {
-            if (_currentSkill != null)
+            if (_currentSkill != null && _currentSkill.Plus)
+            {
+                _currentSkill.Fire();
+            }
+        }
+
+        /// <summary>
+        /// 普通技能持续触发
+        /// </summary>
+        public void FireLoop()
+        {
+            if (_currentSkill != null && !_currentSkill.Plus)
             {
                 _currentSkill.Fire();
             }

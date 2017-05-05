@@ -659,44 +659,51 @@ namespace GameA.Game
 
         protected void CheckFire()
         {
-            if (ShootInputDown)
+            if (!_shootInput && !ShootInputDown)
             {
-                var eShootDir = _unit.CurMoveDirection == EMoveDirection.Left?EShootDirectionType.Left:EShootDirectionType.Right;
-                if (_leftInput == 1)
+                return;
+            }
+            var eShootDir = _unit.CurMoveDirection == EMoveDirection.Left ? EShootDirectionType.Left : EShootDirectionType.Right;
+            if (_leftInput == 1)
+            {
+                eShootDir = EShootDirectionType.Left;
+                if (_downInput == 1)
                 {
-                    eShootDir = EShootDirectionType.Left;
-                    if (_downInput == 1)
-                    {
-                        eShootDir = EShootDirectionType.LeftDown;
-                    }
-                    else if (_upInput == 1)
-                    {
-                        eShootDir = EShootDirectionType.LeftUp;
-                    }
-                }
-                else if (_rightInput == 1)
-                {
-                    eShootDir = EShootDirectionType.Right;
-                    if (_downInput == 1)
-                    {
-                        eShootDir = EShootDirectionType.RightDown;
-                    }
-                    else if (_upInput == 1)
-                    {
-                        eShootDir = EShootDirectionType.RightUp;
-                    }
-                }
-                else if (_downInput == 1)
-                {
-                    eShootDir = EShootDirectionType.Down;
+                    eShootDir = EShootDirectionType.LeftDown;
                 }
                 else if (_upInput == 1)
                 {
-                    eShootDir = EShootDirectionType.Up;
+                    eShootDir = EShootDirectionType.LeftUp;
                 }
-
-                _unit.ShootRot = (int) eShootDir;
-                _unit.SkillCtrl.Fire();
+            }
+            else if (_rightInput == 1)
+            {
+                eShootDir = EShootDirectionType.Right;
+                if (_downInput == 1)
+                {
+                    eShootDir = EShootDirectionType.RightDown;
+                }
+                else if (_upInput == 1)
+                {
+                    eShootDir = EShootDirectionType.RightUp;
+                }
+            }
+            else if (_downInput == 1)
+            {
+                eShootDir = EShootDirectionType.Down;
+            }
+            else if (_upInput == 1)
+            {
+                eShootDir = EShootDirectionType.Up;
+            }
+            _unit.ShootRot = (int)eShootDir;
+            if (ShootInputDown)
+            {
+                _unit.SkillCtrl.FireOnce();
+            }
+            if (_shootInput)
+            {
+                _unit.SkillCtrl.FireLoop();
             }
         }
 
