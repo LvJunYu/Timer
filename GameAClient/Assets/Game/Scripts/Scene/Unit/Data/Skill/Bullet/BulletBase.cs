@@ -96,7 +96,7 @@ namespace GameA.Game
                 _curPos = GetPos(_colliderPos);
                 if (_view != null)
                 {
-                    _trans.position = GetTransPos();
+                    _trans.position = GM2DTools.TileToWorld(CenterPos, _skill.Owner.Trans.position.z);
                 }
                 if (_blocked)
                 {

@@ -5,43 +5,69 @@ namespace GameA.Game
     [Serializable]
 	public partial class Table_StandaloneChapter
 	{
-		// 序号
+		/// <summary>
+        /// 序号
+        /// </summary>
 		[ColumnMapping("Id")]
 		public int Id;
-		// 名字
+		/// <summary>
+        /// 名字
+        /// </summary>
 		[ColumnMapping("Name")]
 		public string Name;
-		// 描述
+		/// <summary>
+        /// 描述
+        /// </summary>
 		[ColumnMapping("Description")]
 		public string Description;
-		// 普通关卡
+		/// <summary>
+        /// 普通关卡
+        /// </summary>
 		[ColumnMapping("NormalLevels")]
 		public int[] NormalLevels;
-		// 奖励关卡
+		/// <summary>
+        /// 奖励关卡
+        /// </summary>
 		[ColumnMapping("BonusLevels")]
 		public int[] BonusLevels;
-		// 抽奖券产出概率
+		/// <summary>
+        /// 抽奖券产出概率
+        /// </summary>
 		[ColumnMapping("TicketProbability")]
 		public int TicketProbability;
-		// 抽奖券可能奖励
+		/// <summary>
+        /// 抽奖券可能奖励
+        /// </summary>
 		[ColumnMapping("TicketRewards")]
 		public int[] TicketRewards;
-		// 抽奖券比例
+		/// <summary>
+        /// 抽奖券比例
+        /// </summary>
 		[ColumnMapping("TicketProportions")]
 		public int[] TicketProportions;
-		// 拼图产出概率
+		/// <summary>
+        /// 拼图产出概率
+        /// </summary>
 		[ColumnMapping("PuzzleProbability")]
 		public int PuzzleProbability;
-		// 拼图可能奖励
+		/// <summary>
+        /// 拼图可能奖励
+        /// </summary>
 		[ColumnMapping("PuzzleRewards")]
 		public int[] PuzzleRewards;
-		// 拼图产出比例
+		/// <summary>
+        /// 拼图产出比例
+        /// </summary>
 		[ColumnMapping("PuzzleProportions")]
 		public int[] PuzzleProportions;
-		// 宝藏奖励
+		/// <summary>
+        /// 宝藏奖励
+        /// </summary>
 		[ColumnMapping("TreasureRewards")]
 		public int[] TreasureRewards;
-		// 宝藏比例
+		/// <summary>
+        /// 宝藏比例
+        /// </summary>
 		[ColumnMapping("TreasureProportions")]
 		public int[] TreasureProportions;
 	}

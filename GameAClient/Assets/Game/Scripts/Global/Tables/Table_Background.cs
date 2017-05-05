@@ -5,40 +5,64 @@ namespace GameA.Game
     [Serializable]
 	public partial class Table_Background
 	{
-		// 序号
+		/// <summary>
+        /// 序号
+        /// </summary>
 		[ColumnMapping("Id")]
 		public int Id;
-		// Model
+		/// <summary>
+        /// Model
+        /// </summary>
 		[ColumnMapping("Model")]
 		public string Model;
-		// 数据宽
+		/// <summary>
+        /// 数据宽
+        /// </summary>
 		[ColumnMapping("Width")]
 		public int Width;
-		// Height
+		/// <summary>
+        /// Height
+        /// </summary>
 		[ColumnMapping("Height")]
 		public int Height;
-		// 数据宽
+		/// <summary>
+        /// 数据宽
+        /// </summary>
 		[ColumnMapping("MinScale")]
 		public float MinScale;
-		// MaxScale
+		/// <summary>
+        /// MaxScale
+        /// </summary>
 		[ColumnMapping("MaxScale")]
 		public float MaxScale;
-		// Depth
+		/// <summary>
+        /// Depth
+        /// </summary>
 		[ColumnMapping("Depth")]
 		public int Depth;
-		// SortingLayer
+		/// <summary>
+        /// SortingLayer
+        /// </summary>
 		[ColumnMapping("SortingLayer")]
 		public int SortingLayer;
-		// MoveSpeedX
+		/// <summary>
+        /// MoveSpeedX
+        /// </summary>
 		[ColumnMapping("MoveSpeedX")]
 		public float MoveSpeedX;
-		// MoveSpeedY
+		/// <summary>
+        /// MoveSpeedY
+        /// </summary>
 		[ColumnMapping("MoveSpeedY")]
 		public float MoveSpeedY;
-		// RotateSpeed
+		/// <summary>
+        /// RotateSpeed
+        /// </summary>
 		[ColumnMapping("RotateSpeed")]
 		public int RotateSpeed;
-		// RotateAngle
+		/// <summary>
+        /// RotateAngle
+        /// </summary>
 		[ColumnMapping("RotateAngle")]
 		public float RotateAngle;
 	}

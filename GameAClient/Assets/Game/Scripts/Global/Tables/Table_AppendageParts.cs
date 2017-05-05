@@ -5,55 +5,89 @@ namespace GameA.Game
     [Serializable]
 	public partial class Table_AppendageParts
 	{
-		// 序号
+		/// <summary>
+        /// 序号
+        /// </summary>
 		[ColumnMapping("Id")]
 		public int Id;
-		// 名称
+		/// <summary>
+        /// 名称
+        /// </summary>
 		[ColumnMapping("Name")]
 		public string Name;
-		// 介绍
+		/// <summary>
+        /// 介绍
+        /// </summary>
 		[ColumnMapping("Description")]
 		public string Description;
-		// 性别
+		/// <summary>
+        /// 性别
+        /// </summary>
 		[ColumnMapping("Sex")]
 		public int Sex;
-		// 能装备角色
+		/// <summary>
+        /// 能装备角色
+        /// </summary>
 		[ColumnMapping("Character")]
 		public int Character;
-		// 金币价格1天
+		/// <summary>
+        /// 金币价格1天
+        /// </summary>
 		[ColumnMapping("PriceGoldDay")]
 		public int PriceGoldDay;
-		// 金币价格7天
+		/// <summary>
+        /// 金币价格7天
+        /// </summary>
 		[ColumnMapping("PriceGoldWeek")]
 		public int PriceGoldWeek;
-		// 金币价格30天
+		/// <summary>
+        /// 金币价格30天
+        /// </summary>
 		[ColumnMapping("PriceGoldMonth")]
 		public int PriceGoldMonth;
-		// 金币价格永久
+		/// <summary>
+        /// 金币价格永久
+        /// </summary>
 		[ColumnMapping("PriceGoldPermanent")]
 		public int PriceGoldPermanent;
-		// 钻石价格一天
+		/// <summary>
+        /// 钻石价格一天
+        /// </summary>
 		[ColumnMapping("PriceDiamondDay")]
 		public int PriceDiamondDay;
-		// 钻石价格一周
+		/// <summary>
+        /// 钻石价格一周
+        /// </summary>
 		[ColumnMapping("PriceDiamondWeek")]
 		public int PriceDiamondWeek;
-		// 钻石价格一月
+		/// <summary>
+        /// 钻石价格一月
+        /// </summary>
 		[ColumnMapping("PriceDiamondMonth")]
 		public int PriceDiamondMonth;
-		// 钻石价格永久
+		/// <summary>
+        /// 钻石价格永久
+        /// </summary>
 		[ColumnMapping("PriceDiamondPermanent")]
 		public int PriceDiamondPermanent;
-		// 大贴图
+		/// <summary>
+        /// 大贴图
+        /// </summary>
 		[ColumnMapping("BigTexture")]
 		public string BigTexture;
-		// 小贴图
+		/// <summary>
+        /// 小贴图
+        /// </summary>
 		[ColumnMapping("SmallTexture")]
 		public string SmallTexture;
-		// 预览图
+		/// <summary>
+        /// 预览图
+        /// </summary>
 		[ColumnMapping("PreviewTexture")]
 		public string PreviewTexture;
-		// 所在皮肤id
+		/// <summary>
+        /// 所在皮肤id
+        /// </summary>
 		[ColumnMapping("SkinId")]
 		public int SkinId;
 	}
