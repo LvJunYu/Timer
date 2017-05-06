@@ -276,10 +276,7 @@ namespace GameA.Game
                 LimitPos();
                 UpdateCollider(GetColliderPos(_curPos));
                 _curPos = GetPos(_colliderPos);
-                if (_view != null)
-                {
-                    _trans.position = GetTransPos();
-                }
+                UpdateTransPos();
             }
             if (OutOfMap())
             {

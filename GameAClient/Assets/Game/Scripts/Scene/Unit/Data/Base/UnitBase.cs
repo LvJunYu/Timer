@@ -16,7 +16,6 @@ namespace GameA.Game
     [System.Serializable]
     public class UnitBase : IEquatable<UnitBase>
     {
-
         protected const float BackZOffset = 0.9f;
         protected const float FrontZOffset = -1.9f;
 
@@ -104,7 +103,8 @@ namespace GameA.Game
 
         #region view
 
-        protected float _zOffset;
+        protected float _viewZOffset;
+        protected float _view1ZOffset;
 
         /// <summary>
         /// 可能会为NULL
@@ -463,6 +463,8 @@ namespace GameA.Game
                 _friction = 12;
                 _dynamicCollider = dynamicCollider;
             }
+            _viewZOffset = 0;
+            _view1ZOffset = FrontZOffset;
             InitAssetPath();
             UpdateExtraData();
             OnInit();
@@ -492,9 +494,6 @@ namespace GameA.Game
                 LogHelper.Error("TryGetUnitView Failed, {0}", _tableUnit.Id);
                 return false;
             }
-            _trans.position = GetTransPos();
-            SetFacingDir(_curMoveDirection, true);
-
             if (!string.IsNullOrEmpty(_tableUnit.Model1))
             {
                 _assetPath = _tableUnit.Model1;
@@ -504,8 +503,9 @@ namespace GameA.Game
                     return false;
                 }
                 CommonTools.SetParent(_view1.Trans, _trans);
-                _view1.Trans.position += new Vector3(0, 0, FrontZOffset);
             }
+            UpdateTransPos();
+            SetFacingDir(_curMoveDirection, true);
             return true;
         }
 
@@ -764,6 +764,19 @@ namespace GameA.Game
 
 		#region private 
 
+        public void UpdateTransPos()
+        {
+            if (_view != null)
+            {
+                _trans.position = GetTransPos();
+                if (_view1 != null)
+                {
+                    _trans.position = GetTransPos();
+                    _view1.Trans.position = _trans.position + new Vector3(0, 0, _view1ZOffset);
+                }
+            }
+        }
+
         public Vector3 GetTransPos()
         {
             if (Util.IsFloatEqual(_tableUnit.ModelOffset.x, float.MaxValue))
@@ -789,7 +802,7 @@ namespace GameA.Game
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, size, _tableUnit);
                 }
             }
-            float z =- (_curPos.x + _curPos.y * 2) * 0.00078125f + _zOffset;
+            float z =- (_curPos.x + _curPos.y * 2) * 0.00078125f + _viewZOffset;
             if (_tableUnit.EGeneratedType == EGeneratedType.Spine && !IsHero)
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, - 0.1f, z);
@@ -1134,10 +1147,7 @@ namespace GameA.Game
                     _lastColliderGrid = _colliderGrid;
                 }
             }
-            if (_view != null)
-            {
-                _view.Trans.position = GetTransPos();
-            }
+            UpdateTransPos();
         }
 
         protected IntVec2 GetColliderPos(IntVec2 pos)
@@ -1177,16 +1187,46 @@ namespace GameA.Game
 
         protected void SetSortingOrderBack()
         {
-            _zOffset = BackZOffset;
+            _viewZOffset = BackZOffset;
         }
 
         protected void SetSortingOrderFront()
         {
-            _zOffset = FrontZOffset;
+            _viewZOffset = FrontZOffset;
         }
 
         protected void SetFront()
         {
+        }
+
+        public int GetRotation(byte rotation)
+        {
+            return -90 * rotation;
+        }
+
+        public Vector2 GetRotationPosOffset()
+        {
+            if (_tableUnit.EGeneratedType != EGeneratedType.Spine)
+            {
+                return Vector2.zero;
+            }
+            Vector2 res = Vector2.zero;
+            Vector2 size = GM2DTools.TileToWorld(GetDataSize() * 0.5f);
+            switch ((ERotationType)Rotation)
+            {
+                case ERotationType.Right:
+                    res.x = -size.x;
+                    res.y = size.y;
+                    break;
+                case ERotationType.Down:
+                    res.y = size.y * 2;
+                    break;
+                case ERotationType.Left:
+                    res.x = size.x;
+                    res.y = size.y;
+                    break;
+            }
+            return res;
         }
 
         internal virtual void OnObjectDestroy()

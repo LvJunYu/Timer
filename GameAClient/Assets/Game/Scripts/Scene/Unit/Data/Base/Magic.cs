@@ -179,10 +179,7 @@ namespace GameA.Game
                 _curPos += _deltaPos;
                 UpdateCollider(GetColliderPos(_curPos));
                 _curPos = GetPos(_colliderPos);
-                if (_view != null)
-                {
-                    _trans.position = GetTransPos();
-                }
+                UpdateTransPos();
             }
         }
 

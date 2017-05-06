@@ -113,7 +113,7 @@ namespace GameA.Game
         public void UpdateDataView ()
         {
             if (_trans != null) {
-                _trans.position = GetTransPos ();
+                UpdateTransPos();
                 if (_deadFrameIdx > 0) {
                     if (PlayMode.Instance.LogicFrameCnt - _deadFrameIdx == 20) {
                         SpeedY = 150;

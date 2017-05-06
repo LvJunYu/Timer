@@ -23,6 +23,7 @@ namespace GameA.Game
                 return false;
             }
             SetSortingOrderBack();
+            _view1ZOffset = -0.9f;
             return true;
         }
 
@@ -37,9 +38,6 @@ namespace GameA.Game
                 _view1.Animation.Init("Run");
             }
             return _animation.Init("Run");
-            //CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(1.6f - Time.realtimeSinceStartup % 1.6f,
-            //    () => _animation.Init(this, "Run")));
-            //return true;
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)

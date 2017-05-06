@@ -139,7 +139,7 @@ namespace GameA.Game
             }
             if (_trans != null)
             {
-                _trans.position = _unit.GetTransPos();
+                _unit.UpdateTransPos(); ;
                 _trans.localScale = new Vector3(_unit.UnitDesc.Scale.x, _unit.UnitDesc.Scale.y, 1);
                 _trans.rotation = Quaternion.identity;
                 _trans.parent = UnitManager.Instance.GetParent(_unit.TableUnit.EUnitType);
