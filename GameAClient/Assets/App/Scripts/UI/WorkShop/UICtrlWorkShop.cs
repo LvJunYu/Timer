@@ -25,6 +25,10 @@ namespace GameA
         /// </summary>
         private EWorkShopState _state = EWorkShopState.None;
         private int _personalProjectCount;
+
+
+        private List<CardDataRendererWrapper<Project>> _content = new List<CardDataRendererWrapper<Project>>();
+
         #endregion
 
         #region 属性
@@ -37,6 +41,7 @@ namespace GameA
             _personalProjectCount = 0;
             base.OnOpen (parameter);
             SetMode(EWorkShopState.Edit);
+//            LocalUser.Instance.PersonalProjectList.Request ();
             Refresh();
         }
 
@@ -61,7 +66,7 @@ namespace GameA
             base.OnViewCreated();
 //            _cachedView.LoginBtn.onClick.AddListener(OnLoginBtnClick);
 //            _cachedView.RegisterBtn.onClick.AddListener(OnRegisterBtnClick);
-            //_cachedView.CreateBtn.onClick.AddListener(OnRunBtnClick);
+            _cachedView.NewProjectBtn.onClick.AddListener(OnNewProjectBtn);
 //            _cachedView.CreateXiuXianBtn.onClick.AddListener (OnRunXiuXianBtnClick);
 //            _cachedView.CreateJieMiBtn.onClick.AddListener (OnRunJieMiBtnClick);
 //            _cachedView.CreateJiXianBtn.onClick.AddListener (OnRunJiXianBtnClick);
@@ -93,6 +98,10 @@ namespace GameA
 //            }
         }
 
+        private void RefreshWorkShopProjectList () {
+//            LocalUser.Instance.per
+        }
+
         private void OnCloseCatogeryMaskClick ()
         {
 //            HideCreateCategoryMask ();
@@ -107,10 +116,9 @@ namespace GameA
 //            HideCreateCategoryMask ();
 //            OnRunBtnClick ();
         }
-        private void OnRunJiXianBtnClick ()
+        private void OnNewProjectBtn ()
         {
-//            HideCreateCategoryMask ();
-//            OnRunBtnClick ();
+            ProcessCreate ();
         }
 
         private void OnRunBtnClick()
@@ -132,7 +140,7 @@ namespace GameA
         public void ProcessCreate()
         {
 //            var userMatrixData = AppData.Instance.UserMatrixData.GetData(_content.MatrixGuid);
-            int localCount = LocalUser.Instance.User.GetSavedProjectCount();
+//            int localCount = LocalUser.Instance.User.GetSavedProjectCount();
 //            if(userMatrixData.PersonalProjectWorkshopSize <= localCount)
 //            {
 //                CommonTools.ShowPopupDialog("工坊已满，请升级匠人等级或者前去工坊整理");
@@ -184,11 +192,11 @@ namespace GameA
 
         private void InternalCreate()
         {
-            Project project = Project.CreateProject();
+            Project project = Project.CreateWorkShopProject();
             MatrixProjectTools.SetProjectVersion(project);
 //            project.ProjectCategory = category;
             GameManager.Instance.GameMode = EGameMode.Normal;
-            project.BeginCreate();
+            GameManager.Instance.RequestCreate (project);
             SocialGUIManager.Instance.ChangeToGameMode();
         }
 

@@ -538,10 +538,10 @@ namespace GameA
 //            OnSyncProject(msg);
 //        }
 
-        public void BeginCreate()
-        {
-            GameManager.Instance.RequestCreate(this);
-        }
+//        public void BeginCreate()
+//        {
+//            GameManager.Instance.RequestCreate(this);
+//        }
 
         public void BeginEdit()
         {
@@ -1448,11 +1448,11 @@ namespace GameA
 //        }
 
 
-        public static Project CreateProject()
+        public static Project CreateWorkShopProject()
         {
             Project p = new Project();
             p.ProjectId = LocalCacheManager.Instance.GetLocalGuid();
-            p.UserLegacy = LocalUser.Instance.UserLegacy;
+//            p.UserLegacy = LocalUser.Instance.UserLegacy;
             p.LocalDataState = ELocalDataState.LDS_UnCreated;
             p.Name = "";
             p.Summary = "";

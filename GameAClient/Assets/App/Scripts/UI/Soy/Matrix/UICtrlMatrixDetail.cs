@@ -181,11 +181,11 @@ namespace GameA
 
         private void InternalCreate()
         {
-            Project project = Project.CreateProject();
+            Project project = Project.CreateWorkShopProject();
             MatrixProjectTools.SetProjectVersion(project);
 //            project.ProjectCategory = category;
             GameManager.Instance.GameMode = EGameMode.Normal;
-            project.BeginCreate();
+//            project.BeginCreate();
             SocialGUIManager.Instance.ChangeToGameMode();
         }
 
