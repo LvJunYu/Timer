@@ -95,16 +95,16 @@ namespace GameA.Game
 			switch (eGameInitType)
             {
                 case GameManager.EStartType.Play:
-                    InitPlay(project);
+                    InitPlay(project, GameManager.EStartType.Play);
                     break;
                 case GameManager.EStartType.PlayRecord:
-                    InitPlay(project);
+                    InitPlay(project, GameManager.EStartType.PlayRecord);
                     break;
 				case GameManager.EStartType.Edit:
-					InitEdit(project);
+                    InitEdit(project, GameManager.EStartType.Edit);
 					break;
 				case GameManager.EStartType.ModifyEdit:
-					InitModifyEdit (project);
+                    InitModifyEdit (project, GameManager.EStartType.ModifyEdit);
 					break;
 				case GameManager.EStartType.Create:
 					InitCreate();
@@ -113,7 +113,7 @@ namespace GameA.Game
 			return true;
 		}
 
-		private void InitPlay(Project project)
+        private void InitPlay(Project project, GameManager.EStartType startType)
 		{
 			var data = project.GetData();
 			if (data == null)
@@ -133,11 +133,11 @@ namespace GameA.Game
 				LogHelper.Error("InitPlay failed, ClientScene2D({0}) is null!!", project.ProjectId);
 				return;
 			}
-			_mapFile.Read(mapData);
+            _mapFile.Read(mapData, startType);
             //read是协程 后面不能写任何代码
 		}
 
-        private void InitEdit(Project project)
+        private void InitEdit(Project project, GameManager.EStartType startType)
         {
             var data = project.GetData();
             if (data == null)
@@ -165,11 +165,11 @@ namespace GameA.Game
             //}
             var go = new GameObject("EditMode");
             go.AddComponent<EditMode>();
-            _mapFile.Read(mapData);
+            _mapFile.Read(mapData, startType);
             //read是协程 后面不能写任何代码
         }
 
-		private void InitModifyEdit(Project project)
+        private void InitModifyEdit(Project project, GameManager.EStartType startType)
 		{
 			var data = project.GetData();
 			if (data == null)
@@ -197,7 +197,7 @@ namespace GameA.Game
 			//}
 			var go = new GameObject("EditMode");
 			go.AddComponent<ModifyEditMode>();
-			_mapFile.Read(mapData);
+            _mapFile.Read(mapData, startType);
 			//read是协程 后面不能写任何代码
 		}
 

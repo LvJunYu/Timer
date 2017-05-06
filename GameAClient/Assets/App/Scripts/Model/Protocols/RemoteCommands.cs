@@ -7,8 +7,8 @@ using SoyEngine;
 
 namespace GameA
 {
-    public class RemoteCommands 
-    {
+    public class RemoteCommands {
+        private static bool _isRequstingLoginByToken = false;
         /// <summary>
 		/// 设备登录包
 		/// </summary>
@@ -19,9 +19,13 @@ namespace GameA
             string appVersion,
             string name,
             EPhoneType devicePlatform,
-            Action<Msg_SC_CMD_LoginByToken> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_LoginByToken> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingLoginByToken) {
+                return;
+            }
+            _isRequstingLoginByToken = true;
             Msg_CS_CMD_LoginByToken msg = new Msg_CS_CMD_LoginByToken();
             // 设备登录包
             msg.AppVersion = appVersion;
@@ -32,23 +36,32 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingLoginByToken = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "LoginByToken", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingLoginByToken = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingLogout = false;
         /// <summary>
 		/// 退出登录
 		/// </summary>
 		/// <param name="flag">占位</param>
         public static void Logout (
             int flag,
-            Action<Msg_SC_CMD_Logout> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_Logout> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingLogout) {
+                return;
+            }
+            _isRequstingLogout = true;
             Msg_CS_CMD_Logout msg = new Msg_CS_CMD_Logout();
             // 退出登录
             msg.Flag = flag;
@@ -57,14 +70,19 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingLogout = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "Logout", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingLogout = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingCreateProject = false;
         /// <summary>
 		/// 创建关卡
 		/// </summary>
@@ -81,9 +99,13 @@ namespace GameA
             int resourceVersion,
             bool passFlag,
             float recordUsedTime,
-            Action<Msg_SC_CMD_CreateProject> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_CreateProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingCreateProject) {
+                return;
+            }
+            _isRequstingCreateProject = true;
             Msg_CS_CMD_CreateProject msg = new Msg_CS_CMD_CreateProject();
             // 创建关卡
             msg.Name = name;
@@ -97,14 +119,19 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingCreateProject = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CreateProject", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingCreateProject = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingUpdateProject = false;
         /// <summary>
 		/// 更新关卡
 		/// </summary>
@@ -123,9 +150,13 @@ namespace GameA
             int resourceVersion,
             bool passFlag,
             float recordUsedTime,
-            Action<Msg_SC_CMD_UpdateProject> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_UpdateProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingUpdateProject) {
+                return;
+            }
+            _isRequstingUpdateProject = true;
             Msg_CS_CMD_UpdateProject msg = new Msg_CS_CMD_UpdateProject();
             // 更新关卡
             msg.ProjectId = projectId;
@@ -140,23 +171,32 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingUpdateProject = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpdateProject", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingUpdateProject = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingDeleteProject = false;
         /// <summary>
 		/// 删除关卡
 		/// </summary>
 		/// <param name="projectId">关卡Id</param>
         public static void DeleteProject (
             List<long> projectId,
-            Action<Msg_SC_CMD_DeleteProject> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_DeleteProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingDeleteProject) {
+                return;
+            }
+            _isRequstingDeleteProject = true;
             Msg_CS_CMD_DeleteProject msg = new Msg_CS_CMD_DeleteProject();
             // 删除关卡
             msg.ProjectId.AddRange(projectId);
@@ -165,14 +205,19 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingDeleteProject = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteProject", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingDeleteProject = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingPublishProject = false;
         /// <summary>
 		/// 发布关卡
 		/// </summary>
@@ -189,9 +234,13 @@ namespace GameA
             int programVersion,
             int resourceVersion,
             float recordUsedTime,
-            Action<Msg_SC_CMD_PublishProject> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_PublishProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingPublishProject) {
+                return;
+            }
+            _isRequstingPublishProject = true;
             Msg_CS_CMD_PublishProject msg = new Msg_CS_CMD_PublishProject();
             // 发布关卡
             msg.PersonalProjectId = personalProjectId;
@@ -205,23 +254,32 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingPublishProject = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "PublishProject", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingPublishProject = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingUnpublishProject = false;
         /// <summary>
 		/// 取消发布
 		/// </summary>
 		/// <param name="projectId">关卡Id</param>
         public static void UnpublishProject (
             List<long> projectId,
-            Action<Msg_SC_CMD_UnpublishProject> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_UnpublishProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingUnpublishProject) {
+                return;
+            }
+            _isRequstingUnpublishProject = true;
             Msg_CS_CMD_UnpublishProject msg = new Msg_CS_CMD_UnpublishProject();
             // 取消发布
             msg.ProjectId.AddRange(projectId);
@@ -230,14 +288,19 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingUnpublishProject = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UnpublishProject", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingUnpublishProject = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingPlayAdventureLevel = false;
         /// <summary>
 		/// 进入冒险关卡
 		/// </summary>
@@ -248,9 +311,13 @@ namespace GameA
             int section,
             EAdventureProjectType projectType,
             int level,
-            Action<Msg_SC_CMD_PlayAdventureLevel> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_PlayAdventureLevel> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingPlayAdventureLevel) {
+                return;
+            }
+            _isRequstingPlayAdventureLevel = true;
             Msg_CS_CMD_PlayAdventureLevel msg = new Msg_CS_CMD_PlayAdventureLevel();
             // 进入冒险关卡
             msg.Section = section;
@@ -261,23 +328,32 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingPlayAdventureLevel = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "PlayAdventureLevel", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingPlayAdventureLevel = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingUnlockAdventureSection = false;
         /// <summary>
 		/// 解锁章节
 		/// </summary>
 		/// <param name="section">章节</param>
         public static void UnlockAdventureSection (
             int section,
-            Action<Msg_SC_CMD_UnlockAdventureSection> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_UnlockAdventureSection> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingUnlockAdventureSection) {
+                return;
+            }
+            _isRequstingUnlockAdventureSection = true;
             Msg_CS_CMD_UnlockAdventureSection msg = new Msg_CS_CMD_UnlockAdventureSection();
             // 解锁章节
             msg.Section = section;
@@ -286,14 +362,19 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingUnlockAdventureSection = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UnlockAdventureSection", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingUnlockAdventureSection = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingCommitAdventureLevelResult = false;
         /// <summary>
 		/// 提交冒险模式数据
 		/// </summary>
@@ -320,9 +401,13 @@ namespace GameA
             int killMonsterCount,
             int leftTime,
             int leftLife,
-            Action<Msg_SC_CMD_CommitAdventureLevelResult> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_CommitAdventureLevelResult> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingCommitAdventureLevelResult) {
+                return;
+            }
+            _isRequstingCommitAdventureLevelResult = true;
             Msg_CS_CMD_CommitAdventureLevelResult msg = new Msg_CS_CMD_CommitAdventureLevelResult();
             // 提交冒险模式数据
             msg.Token = token;
@@ -341,14 +426,19 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingCommitAdventureLevelResult = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CommitAdventureLevelResult", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingCommitAdventureLevelResult = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingUseProps = false;
         /// <summary>
 		/// 使用道具
 		/// </summary>
@@ -357,9 +447,13 @@ namespace GameA
         public static void UseProps (
             long token,
             List<Msg_PropItem> itemDataList,
-            Action<Msg_SC_CMD_UseProps> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_UseProps> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingUseProps) {
+                return;
+            }
+            _isRequstingUseProps = true;
             Msg_CS_CMD_UseProps msg = new Msg_CS_CMD_UseProps();
             // 使用道具
             msg.Token = token;
@@ -369,14 +463,19 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingUseProps = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UseProps", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingUseProps = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingUnlockHomePart = false;
         /// <summary>
 		/// 解锁装饰
 		/// </summary>
@@ -385,9 +484,13 @@ namespace GameA
         public static void UnlockHomePart (
             EHomePart type,
             long id,
-            Action<Msg_SC_CMD_UnlockHomePart> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_UnlockHomePart> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingUnlockHomePart) {
+                return;
+            }
+            _isRequstingUnlockHomePart = true;
             Msg_CS_CMD_UnlockHomePart msg = new Msg_CS_CMD_UnlockHomePart();
             // 解锁装饰
             msg.Type = type;
@@ -397,14 +500,19 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingUnlockHomePart = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UnlockHomePart", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingUnlockHomePart = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingChangeAvatarPart = false;
         /// <summary>
 		/// 角色换装
 		/// </summary>
@@ -413,9 +521,13 @@ namespace GameA
         public static void ChangeAvatarPart (
             EAvatarPart type,
             long newId,
-            Action<Msg_SC_CMD_ChangeAvatarPart> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_ChangeAvatarPart> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingChangeAvatarPart) {
+                return;
+            }
+            _isRequstingChangeAvatarPart = true;
             Msg_CS_CMD_ChangeAvatarPart msg = new Msg_CS_CMD_ChangeAvatarPart();
             // 角色换装
             msg.Type = type;
@@ -425,14 +537,19 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingChangeAvatarPart = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ChangeAvatarPart", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingChangeAvatarPart = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingBuyAvatarPart = false;
         /// <summary>
 		/// 购买时装
 		/// </summary>
@@ -447,9 +564,13 @@ namespace GameA
             EBuyAvatarPartDurationType durationType,
             ECurrencyType currencyType,
             long discountCouponId,
-            Action<Msg_SC_CMD_BuyAvatarPart> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_BuyAvatarPart> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingBuyAvatarPart) {
+                return;
+            }
+            _isRequstingBuyAvatarPart = true;
             Msg_CS_CMD_BuyAvatarPart msg = new Msg_CS_CMD_BuyAvatarPart();
             // 购买时装
             msg.PartType = partType;
@@ -462,23 +583,32 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingBuyAvatarPart = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "BuyAvatarPart", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingBuyAvatarPart = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingRaffle = false;
         /// <summary>
 		/// 转盘抽奖
 		/// </summary>
 		/// <param name="id">抽奖券Id</param>
         public static void Raffle (
             long id,
-            Action<Msg_SC_CMD_Raffle> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_Raffle> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingRaffle) {
+                return;
+            }
+            _isRequstingRaffle = true;
             Msg_CS_CMD_Raffle msg = new Msg_CS_CMD_Raffle();
             // 转盘抽奖
             msg.Id = id;
@@ -487,23 +617,32 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingRaffle = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "Raffle", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingRaffle = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingReform = false;
         /// <summary>
 		/// 改造
 		/// </summary>
 		/// <param name="flag">占位</param>
         public static void Reform (
             int flag,
-            Action<Msg_SC_CMD_Reform> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_Reform> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingReform) {
+                return;
+            }
+            _isRequstingReform = true;
             Msg_CS_CMD_Reform msg = new Msg_CS_CMD_Reform();
             // 改造
             msg.Flag = flag;
@@ -512,14 +651,19 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingReform = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "Reform", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingReform = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingReselectReformLevel = false;
         /// <summary>
 		/// 随机改造关卡
 		/// </summary>
@@ -528,9 +672,13 @@ namespace GameA
         public static void ReselectReformLevel (
             int curReformSection,
             int curReformLevel,
-            Action<Msg_SC_CMD_ReselectReformLevel> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_ReselectReformLevel> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingReselectReformLevel) {
+                return;
+            }
+            _isRequstingReselectReformLevel = true;
             Msg_CS_CMD_ReselectReformLevel msg = new Msg_CS_CMD_ReselectReformLevel();
             // 随机改造关卡
             msg.CurReformSection = curReformSection;
@@ -540,23 +688,32 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingReselectReformLevel = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ReselectReformLevel", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingReselectReformLevel = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingGetReformReward = false;
         /// <summary>
 		/// 领取改造奖励
 		/// </summary>
 		/// <param name="rewardLevel">改造奖励级别</param>
         public static void GetReformReward (
             int rewardLevel,
-            Action<Msg_SC_CMD_GetReformReward> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_GetReformReward> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingGetReformReward) {
+                return;
+            }
+            _isRequstingGetReformReward = true;
             Msg_CS_CMD_GetReformReward msg = new Msg_CS_CMD_GetReformReward();
             // 领取改造奖励
             msg.RewardLevel = rewardLevel;
@@ -565,31 +722,42 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingGetReformReward = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "GetReformReward", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingGetReformReward = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingSaveReformProject = false;
         /// <summary>
 		/// 上传改造关卡
 		/// </summary>
 		/// <param name="projectId">关卡Id</param>
 		/// <param name="programVersion"></param>
 		/// <param name="resourceVersion"></param>
-		/// <param name="passFlag"></param>
-		/// <param name="recordUsedTime"></param>
+		/// <param name="passFlag">是否已经通过</param>
+		/// <param name="recordUsedTime">过关使用时间</param>
+		/// <param name="uploadParam">上传参数</param>
         public static void SaveReformProject (
             long projectId,
             int programVersion,
             int resourceVersion,
             bool passFlag,
             float recordUsedTime,
-            Action<Msg_SC_CMD_SaveReformProject> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Msg_ProjectUploadParam uploadParam,
+            Action<Msg_SC_CMD_SaveReformProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingSaveReformProject) {
+                return;
+            }
+            _isRequstingSaveReformProject = true;
             Msg_CS_CMD_SaveReformProject msg = new Msg_CS_CMD_SaveReformProject();
             // 上传改造关卡
             msg.ProjectId = projectId;
@@ -597,19 +765,25 @@ namespace GameA
             msg.ResourceVersion = resourceVersion;
             msg.PassFlag = passFlag;
             msg.RecordUsedTime = recordUsedTime;
+            msg.UploadParam = uploadParam;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_SaveReformProject>(
                 SoyHttpApiPath.SaveReformProject, msg, ret => {
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingSaveReformProject = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "SaveReformProject", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingSaveReformProject = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingPublishReformProject = false;
         /// <summary>
 		/// 发布改造关卡
 		/// </summary>
@@ -617,42 +791,58 @@ namespace GameA
 		/// <param name="programVersion"></param>
 		/// <param name="resourceVersion"></param>
 		/// <param name="recordUsedTime"></param>
+		/// <param name="uploadParam">上传参数</param>
         public static void PublishReformProject (
             long personalProjectId,
             int programVersion,
             int resourceVersion,
             float recordUsedTime,
-            Action<Msg_SC_CMD_PublishReformProject> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Msg_ProjectUploadParam uploadParam,
+            Action<Msg_SC_CMD_PublishReformProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingPublishReformProject) {
+                return;
+            }
+            _isRequstingPublishReformProject = true;
             Msg_CS_CMD_PublishReformProject msg = new Msg_CS_CMD_PublishReformProject();
             // 发布改造关卡
             msg.PersonalProjectId = personalProjectId;
             msg.ProgramVersion = programVersion;
             msg.ResourceVersion = resourceVersion;
             msg.RecordUsedTime = recordUsedTime;
+            msg.UploadParam = uploadParam;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PublishReformProject>(
                 SoyHttpApiPath.PublishReformProject, msg, ret => {
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingPublishReformProject = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "PublishReformProject", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingPublishReformProject = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingGetMatchChallengeProject = false;
         /// <summary>
 		/// 获取挑战关卡
 		/// </summary>
 		/// <param name="flag">占位符</param>
         public static void GetMatchChallengeProject (
             int flag,
-            Action<Msg_SC_CMD_GetMatchChallengeProject> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_GetMatchChallengeProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingGetMatchChallengeProject) {
+                return;
+            }
+            _isRequstingGetMatchChallengeProject = true;
             Msg_CS_CMD_GetMatchChallengeProject msg = new Msg_CS_CMD_GetMatchChallengeProject();
             // 获取挑战关卡
             msg.Flag = flag;
@@ -661,14 +851,19 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingGetMatchChallengeProject = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "GetMatchChallengeProject", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingGetMatchChallengeProject = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingSelectMatchChallengeProject = false;
         /// <summary>
 		/// 选取挑战关卡
 		/// </summary>
@@ -677,9 +872,13 @@ namespace GameA
         public static void SelectMatchChallengeProject (
             EChallengeProjectTyple challengeType,
             bool change,
-            Action<Msg_SC_CMD_SelectMatchChallengeProject> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_SelectMatchChallengeProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingSelectMatchChallengeProject) {
+                return;
+            }
+            _isRequstingSelectMatchChallengeProject = true;
             Msg_CS_CMD_SelectMatchChallengeProject msg = new Msg_CS_CMD_SelectMatchChallengeProject();
             // 选取挑战关卡
             msg.ChallengeType = challengeType;
@@ -689,23 +888,32 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingSelectMatchChallengeProject = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "SelectMatchChallengeProject", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingSelectMatchChallengeProject = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingPlayMatchChallengeLevel = false;
         /// <summary>
 		/// 开始挑战
 		/// </summary>
 		/// <param name="projectId">关卡Id</param>
         public static void PlayMatchChallengeLevel (
             long projectId,
-            Action<Msg_SC_CMD_PlayMatchChallengeLevel> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_PlayMatchChallengeLevel> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingPlayMatchChallengeLevel) {
+                return;
+            }
+            _isRequstingPlayMatchChallengeLevel = true;
             Msg_CS_CMD_PlayMatchChallengeLevel msg = new Msg_CS_CMD_PlayMatchChallengeLevel();
             // 开始挑战
             msg.ProjectId = projectId;
@@ -714,14 +922,19 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingPlayMatchChallengeLevel = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "PlayMatchChallengeLevel", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingPlayMatchChallengeLevel = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingCommitMatchChallengeLevelResult = false;
         /// <summary>
 		/// 提交匹配挑战关卡数据
 		/// </summary>
@@ -732,9 +945,13 @@ namespace GameA
             long token,
             bool success,
             float usedTime,
-            Action<Msg_SC_CMD_CommitMatchChallengeLevelResult> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_CommitMatchChallengeLevelResult> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingCommitMatchChallengeLevelResult) {
+                return;
+            }
+            _isRequstingCommitMatchChallengeLevelResult = true;
             Msg_CS_CMD_CommitMatchChallengeLevelResult msg = new Msg_CS_CMD_CommitMatchChallengeLevelResult();
             // 提交匹配挑战关卡数据
             msg.Token = token;
@@ -745,23 +962,32 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingCommitMatchChallengeLevelResult = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CommitMatchChallengeLevelResult", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingCommitMatchChallengeLevelResult = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingMatchSkipChallenge = false;
         /// <summary>
 		/// 跳过本次挑战
 		/// </summary>
 		/// <param name="flag">占位</param>
         public static void MatchSkipChallenge (
             int flag,
-            Action<Msg_SC_CMD_MatchSkipChallenge> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_MatchSkipChallenge> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingMatchSkipChallenge) {
+                return;
+            }
+            _isRequstingMatchSkipChallenge = true;
             Msg_CS_CMD_MatchSkipChallenge msg = new Msg_CS_CMD_MatchSkipChallenge();
             // 跳过本次挑战
             msg.Flag = flag;
@@ -770,14 +996,19 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingMatchSkipChallenge = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "MatchSkipChallenge", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingMatchSkipChallenge = false;
+                },
+                form
+            );
         }
 
+        private static bool _isRequstingExecuteCommand = false;
         /// <summary>
 		/// 执行GM指令
 		/// </summary>
@@ -786,9 +1017,13 @@ namespace GameA
         public static void ExecuteCommand (
             long userId,
             string command,
-            Action<Msg_SC_CMD_ExecuteCommand> successCallback, Action<ENetResultCode> failedCallback) 
-        {
+            Action<Msg_SC_CMD_ExecuteCommand> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
 
+            if (_isRequstingExecuteCommand) {
+                return;
+            }
+            _isRequstingExecuteCommand = true;
             Msg_CS_CMD_ExecuteCommand msg = new Msg_CS_CMD_ExecuteCommand();
             // 执行GM指令
             msg.UserId = userId;
@@ -798,12 +1033,16 @@ namespace GameA
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
+                    _isRequstingExecuteCommand = false;
                 }, (failedCode, failedMsg) => {
                     LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ExecuteCommand", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-            });
+                    _isRequstingExecuteCommand = false;
+                },
+                form
+            );
         }
 
     }

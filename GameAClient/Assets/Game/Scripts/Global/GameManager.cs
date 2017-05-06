@@ -175,6 +175,9 @@ namespace GameA
             return _projectList[_curProjectInx+1];
         }
 
+        /// <summary>
+        /// 载入地图的时候以什么初衷载入
+        /// </summary>
         public enum EStartType
         {
             None,

@@ -6,41 +6,66 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserInfoDetail : SyncronisticData 
-    {
+    public partial class UserInfoDetail : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        // 简要信息
+        /// <summary>
+        /// 简要信息
+        /// </summary>
         private UserInfoSimple _userInfoSimple;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private string _userName;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private string _phoneNum;
-        // 生日
+        /// <summary>
+        /// 生日
+        /// </summary>
         private long _birthDay;
-        // 国家
+        /// <summary>
+        /// 国家
+        /// </summary>
         private string _country;
-        // 省份
+        /// <summary>
+        /// 省份
+        /// </summary>
         private string _province;
-        // 城市
+        /// <summary>
+        /// 城市
+        /// </summary>
         private string _city;
-        // 签名
+        /// <summary>
+        /// 签名
+        /// </summary>
         private string _profile;
-        // 更新时间
+        /// <summary>
+        /// 更新时间
+        /// </summary>
         private long _updateTime;
-        // 账号类型
+        /// <summary>
+        /// 账号类型
+        /// </summary>
         private int _roleType;
-        // 社交关系统计
+        /// <summary>
+        /// 社交关系统计
+        /// </summary>
         private UserRelationStatistic _relationStatistic;
 
         // cs fields----------------------------------
-        // 用户id
+        /// <summary>
+        /// 用户id
+        /// </summary>
         private long _cs_userId;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        // 简要信息
+        /// <summary>
+        /// 简要信息
+        /// </summary>
         public UserInfoSimple UserInfoSimple { 
             get { return _userInfoSimple; }
             set { if (_userInfoSimple != value) {
@@ -48,7 +73,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public string UserName { 
             get { return _userName; }
             set { if (_userName != value) {
@@ -56,7 +83,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public string PhoneNum { 
             get { return _phoneNum; }
             set { if (_phoneNum != value) {
@@ -64,7 +93,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 生日
+        /// <summary>
+        /// 生日
+        /// </summary>
         public long BirthDay { 
             get { return _birthDay; }
             set { if (_birthDay != value) {
@@ -72,7 +103,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 国家
+        /// <summary>
+        /// 国家
+        /// </summary>
         public string Country { 
             get { return _country; }
             set { if (_country != value) {
@@ -80,7 +113,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 省份
+        /// <summary>
+        /// 省份
+        /// </summary>
         public string Province { 
             get { return _province; }
             set { if (_province != value) {
@@ -88,7 +123,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 城市
+        /// <summary>
+        /// 城市
+        /// </summary>
         public string City { 
             get { return _city; }
             set { if (_city != value) {
@@ -96,7 +133,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 签名
+        /// <summary>
+        /// 签名
+        /// </summary>
         public string Profile { 
             get { return _profile; }
             set { if (_profile != value) {
@@ -104,7 +143,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 更新时间
+        /// <summary>
+        /// 更新时间
+        /// </summary>
         public long UpdateTime { 
             get { return _updateTime; }
             set { if (_updateTime != value) {
@@ -112,7 +153,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 账号类型
+        /// <summary>
+        /// 账号类型
+        /// </summary>
         public int RoleType { 
             get { return _roleType; }
             set { if (_roleType != value) {
@@ -120,7 +163,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 社交关系统计
+        /// <summary>
+        /// 社交关系统计
+        /// </summary>
         public UserRelationStatistic RelationStatistic { 
             get { return _relationStatistic; }
             set { if (_relationStatistic != value) {
@@ -130,7 +175,9 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        // 用户id
+        /// <summary>
+        /// 用户id
+        /// </summary>
         public long CS_UserId { 
             get { return _cs_userId; }
             set { _cs_userId = value; }
@@ -158,18 +205,27 @@ namespace GameA
             long userId,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            OnRequest (successCallback, failedCallback);
+            if (_isRequesting) {
+                if (_cs_userId != userId) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest (successCallback, failedCallback);
+            } else {
+                _cs_userId = userId;
+                OnRequest (successCallback, failedCallback);
 
-            Msg_CS_DAT_UserInfoDetail msg = new Msg_CS_DAT_UserInfoDetail();
-            msg.UserId = userId;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserInfoDetail>(
-                SoyHttpApiPath.UserInfoDetail, msg, ret => {
-                    if (OnSync(ret)) {
-                        OnSyncSucceed(); 
-                    }
-                }, (failedCode, failedMsg) => {
-                    OnSyncFailed(failedCode, failedMsg);
-            });
+                Msg_CS_DAT_UserInfoDetail msg = new Msg_CS_DAT_UserInfoDetail();
+                msg.UserId = userId;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserInfoDetail>(
+                    SoyHttpApiPath.UserInfoDetail, msg, ret => {
+                        if (OnSync(ret)) {
+                            OnSyncSucceed(); 
+                        }
+                    }, (failedCode, failedMsg) => {
+                        OnSyncFailed(failedCode, failedMsg);
+                });            
+            }            
         }
 
         public bool OnSync (Msg_SC_DAT_UserInfoDetail msg)

@@ -6,71 +6,126 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class Project : SyncronisticData 
-    {
+    public partial class Project : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        // 最后更新时间
+        /// <summary>
+        /// 最后更新时间
+        /// </summary>
         private long _updateTime;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private long _projectId;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private UserInfoSimple _userInfo;
-        // 
+        /// <summary>
+        /// 名称
+        /// </summary>
         private string _name;
-        // 
+        /// <summary>
+        /// 简介
+        /// </summary>
         private string _summary;
-        // 
+        /// <summary>
+        /// 关卡截图资源路径
+        /// </summary>
         private string _iconPath;
-        // 
+        /// <summary>
+        /// 关卡文件资源路径
+        /// </summary>
         private string _resPath;
-        // 
+        /// <summary>
+        /// 创建时间
+        /// </summary>
         private long _createTime;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private ELocalDataState _localDataState;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private EProjectStatus _projectStatus;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private long _localUpdateTime;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _programVersion;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _resourcesVersion;
-        // 是否有效
+        /// <summary>
+        /// 是否有效
+        /// </summary>
         private bool _isValid;
-        // 收藏次数等信息
+        /// <summary>
+        /// 收藏次数等信息
+        /// </summary>
         private ProjectExtend _extendData;
-        // 用户收藏等信息
+        /// <summary>
+        /// 用户收藏等信息
+        /// </summary>
         private ProjectUserData _projectUserData;
-        // 是否已经过关
+        /// <summary>
+        /// 是否已经过关
+        /// </summary>
         private bool _passFlag;
-        // 过关录像使用时间
+        /// <summary>
+        /// 过关录像使用时间
+        /// </summary>
         private float _recordUsedTime;
-        // 改造原始section
+        /// <summary>
+        /// 改造原始section
+        /// </summary>
         private int _targetSection;
-        // 改造原始level
+        /// <summary>
+        /// 改造原始level
+        /// </summary>
         private int _targetLevel;
-        // 地图宽
+        /// <summary>
+        /// 地图宽
+        /// </summary>
         private int _mapWidth;
-        // 地图高
+        /// <summary>
+        /// 地图高
+        /// </summary>
         private int _mapHeight;
-        // 总地块数
+        /// <summary>
+        /// 总地块数
+        /// </summary>
         private int _totalUnitCount;
-        // 添加地块数量
+        /// <summary>
+        /// 添加地块数量
+        /// </summary>
         private int _addCount;
-        // 删除地块数量
+        /// <summary>
+        /// 删除地块数量
+        /// </summary>
         private int _deleteCount;
-        // 修改地块数量
+        /// <summary>
+        /// 修改地块数量
+        /// </summary>
         private int _modifyCount;
 
         // cs fields----------------------------------
-        // 关卡Id
+        /// <summary>
+        /// 关卡Id
+        /// </summary>
         private long _cs_projectId;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        // 最后更新时间
+        /// <summary>
+        /// 最后更新时间
+        /// </summary>
         public long UpdateTime { 
             get { return _updateTime; }
             set { if (_updateTime != value) {
@@ -78,7 +133,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public long ProjectId { 
             get { return _projectId; }
             set { if (_projectId != value) {
@@ -86,7 +143,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public UserInfoSimple UserInfo { 
             get { return _userInfo; }
             set { if (_userInfo != value) {
@@ -94,7 +153,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 名称
+        /// </summary>
         public string Name { 
             get { return _name; }
             set { if (_name != value) {
@@ -102,7 +163,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 简介
+        /// </summary>
         public string Summary { 
             get { return _summary; }
             set { if (_summary != value) {
@@ -110,7 +173,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 关卡截图资源路径
+        /// </summary>
         public string IconPath { 
             get { return _iconPath; }
             set { if (_iconPath != value) {
@@ -118,7 +183,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 关卡文件资源路径
+        /// </summary>
         public string ResPath { 
             get { return _resPath; }
             set { if (_resPath != value) {
@@ -126,7 +193,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 创建时间
+        /// </summary>
         public long CreateTime { 
             get { return _createTime; }
             set { if (_createTime != value) {
@@ -134,7 +203,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public ELocalDataState LocalDataState { 
             get { return _localDataState; }
             set { if (_localDataState != value) {
@@ -142,7 +213,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public EProjectStatus ProjectStatus { 
             get { return _projectStatus; }
             set { if (_projectStatus != value) {
@@ -150,7 +223,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public long LocalUpdateTime { 
             get { return _localUpdateTime; }
             set { if (_localUpdateTime != value) {
@@ -158,7 +233,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int ProgramVersion { 
             get { return _programVersion; }
             set { if (_programVersion != value) {
@@ -166,7 +243,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int ResourcesVersion { 
             get { return _resourcesVersion; }
             set { if (_resourcesVersion != value) {
@@ -174,7 +253,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 是否有效
+        /// <summary>
+        /// 是否有效
+        /// </summary>
         public bool IsValid { 
             get { return _isValid; }
             set { if (_isValid != value) {
@@ -182,7 +263,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 收藏次数等信息
+        /// <summary>
+        /// 收藏次数等信息
+        /// </summary>
         public ProjectExtend ExtendData { 
             get { return _extendData; }
             set { if (_extendData != value) {
@@ -190,7 +273,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 用户收藏等信息
+        /// <summary>
+        /// 用户收藏等信息
+        /// </summary>
         public ProjectUserData ProjectUserData { 
             get { return _projectUserData; }
             set { if (_projectUserData != value) {
@@ -198,7 +283,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 是否已经过关
+        /// <summary>
+        /// 是否已经过关
+        /// </summary>
         public bool PassFlag { 
             get { return _passFlag; }
             set { if (_passFlag != value) {
@@ -206,7 +293,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 过关录像使用时间
+        /// <summary>
+        /// 过关录像使用时间
+        /// </summary>
         public float RecordUsedTime { 
             get { return _recordUsedTime; }
             set { if (_recordUsedTime != value) {
@@ -214,7 +303,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 改造原始section
+        /// <summary>
+        /// 改造原始section
+        /// </summary>
         public int TargetSection { 
             get { return _targetSection; }
             set { if (_targetSection != value) {
@@ -222,7 +313,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 改造原始level
+        /// <summary>
+        /// 改造原始level
+        /// </summary>
         public int TargetLevel { 
             get { return _targetLevel; }
             set { if (_targetLevel != value) {
@@ -230,7 +323,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 地图宽
+        /// <summary>
+        /// 地图宽
+        /// </summary>
         public int MapWidth { 
             get { return _mapWidth; }
             set { if (_mapWidth != value) {
@@ -238,7 +333,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 地图高
+        /// <summary>
+        /// 地图高
+        /// </summary>
         public int MapHeight { 
             get { return _mapHeight; }
             set { if (_mapHeight != value) {
@@ -246,7 +343,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 总地块数
+        /// <summary>
+        /// 总地块数
+        /// </summary>
         public int TotalUnitCount { 
             get { return _totalUnitCount; }
             set { if (_totalUnitCount != value) {
@@ -254,7 +353,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 添加地块数量
+        /// <summary>
+        /// 添加地块数量
+        /// </summary>
         public int AddCount { 
             get { return _addCount; }
             set { if (_addCount != value) {
@@ -262,7 +363,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 删除地块数量
+        /// <summary>
+        /// 删除地块数量
+        /// </summary>
         public int DeleteCount { 
             get { return _deleteCount; }
             set { if (_deleteCount != value) {
@@ -270,7 +373,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 修改地块数量
+        /// <summary>
+        /// 修改地块数量
+        /// </summary>
         public int ModifyCount { 
             get { return _modifyCount; }
             set { if (_modifyCount != value) {
@@ -280,7 +385,9 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        // 关卡Id
+        /// <summary>
+        /// 关卡Id
+        /// </summary>
         public long CS_ProjectId { 
             get { return _cs_projectId; }
             set { _cs_projectId = value; }
@@ -311,18 +418,27 @@ namespace GameA
             long projectId,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            OnRequest (successCallback, failedCallback);
+            if (_isRequesting) {
+                if (_cs_projectId != projectId) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest (successCallback, failedCallback);
+            } else {
+                _cs_projectId = projectId;
+                OnRequest (successCallback, failedCallback);
 
-            Msg_CS_DAT_Project msg = new Msg_CS_DAT_Project();
-            msg.ProjectId = projectId;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_Project>(
-                SoyHttpApiPath.Project, msg, ret => {
-                    if (OnSync(ret)) {
-                        OnSyncSucceed(); 
-                    }
-                }, (failedCode, failedMsg) => {
-                    OnSyncFailed(failedCode, failedMsg);
-            });
+                Msg_CS_DAT_Project msg = new Msg_CS_DAT_Project();
+                msg.ProjectId = projectId;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_Project>(
+                    SoyHttpApiPath.Project, msg, ret => {
+                        if (OnSync(ret)) {
+                            OnSyncSucceed(); 
+                        }
+                    }, (failedCode, failedMsg) => {
+                        OnSyncFailed(failedCode, failedMsg);
+                });            
+            }            
         }
 
         public bool OnSync (Msg_SC_DAT_Project msg)

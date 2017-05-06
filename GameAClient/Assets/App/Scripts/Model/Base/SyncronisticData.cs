@@ -22,6 +22,8 @@ namespace GameA
 		protected bool _dirty;
 		protected bool _inited;
 
+        protected bool _isRequesting;
+
 		protected Action _syncSuccessCB;
 		protected Action<ENetResultCode> _syncFailedCB;
 		#endregion
@@ -37,7 +39,7 @@ namespace GameA
 
 		#region Methods
 		public SyncronisticData () {
-			_dirty = true;
+			_dirty = false;
 			_inited = false;
 		}
 		protected void SetDirty () {
@@ -54,6 +56,7 @@ namespace GameA
 				_syncSuccessCB = null;
 			}
 			_syncFailedCB = null;
+            _isRequesting = false;
 		}
 
 		protected void OnSyncFailed (ENetResultCode netResultCode, string errorMsg) {
@@ -62,11 +65,15 @@ namespace GameA
 				_syncFailedCB.Invoke (netResultCode);
 			}
 			_syncSuccessCB = null;
+            _isRequesting = false;
 		}
 
-		protected void OnRequest (Action successCallback, Action<ENetResultCode> failedCallback) {
-			_syncSuccessCB = successCallback;
-			_syncFailedCB = failedCallback;
+        protected void OnRequest (Action successCallback, Action<ENetResultCode> failedCallback) {
+            _syncSuccessCB -= successCallback;
+            _syncFailedCB -= failedCallback;
+			_syncSuccessCB += successCallback;
+			_syncFailedCB += failedCallback;
+            _isRequesting = true;
 		}
 
 		protected virtual void OnSyncPartial () { }
