@@ -26,6 +26,8 @@ namespace GameA
         // 匹配挑战相关数据
         private MatchUserData _matchUserData = new MatchUserData ();
 
+        private PersonalProjectList _personalProjectList = new PersonalProjectList ();
+
         #endregion
         #region 属性
 
@@ -76,6 +78,11 @@ namespace GameA
             }
         }
 
+        public PersonalProjectList PersonalProjectList {
+            get {
+                return this._personalProjectList;
+            }
+        }
         #endregion
 
         #region 方法

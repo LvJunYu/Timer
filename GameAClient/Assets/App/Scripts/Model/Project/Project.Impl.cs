@@ -538,10 +538,10 @@ namespace GameA
 //            OnSyncProject(msg);
 //        }
 
-        public void BeginCreate()
-        {
-            GameManager.Instance.RequestCreate(this);
-        }
+//        public void BeginCreate()
+//        {
+//            GameManager.Instance.RequestCreate(this);
+//        }
 
         public void BeginEdit()
         {
@@ -639,79 +639,111 @@ namespace GameA
             {
                 form.AddBinaryData("recordFile", recordBytes);
             }
-            object msg = null;
-            string apiPath = null;
-            bool isCreate = false;
-            if (LocalDataState == ELocalDataState.LDS_UnCreated)
-            {
-                Msg_CS_CMD_CreateProject create = new Msg_CS_CMD_CreateProject();
-                create.Name = Name;
-                create.Summary = Summary;
-                create.PassFlag = passFlag;
-                create.RecordUsedTime = recordUsedTime;
-
-                create.ProgramVersion = ProgramVersion;
-                create.ResourceVersion = ResourceVersion;
-                msg = create;
-                apiPath = SoyHttpApiPath.CreateProject;
-                isCreate = true;
+            if (LocalDataState == ELocalDataState.LDS_UnCreated) {
+                RemoteCommands.CreateProject (
+                    Name,
+                    Summary,
+                    ProgramVersion,
+                    ResourceVersion,
+                    passFlag,
+                    recordUsedTime,
+                    msg => {
+                        if (msg.ResultCode == (int)EProjectOperateResult.POR_Success) {
+                            LocalCacheManager.Instance.Save(dataBytes, LocalCacheManager.EType.File, ResPath);
+                            ImageResourceManager.Instance.SaveOrUpdateImageData(IconPath, iconBytes);
+                            LocalUser.Instance.User.GetSavedPrjectRequestTimer().Zero();
+                            if (successCallback != null)
+                            {
+                                successCallback.Invoke();
+                            }
+                        } else {
+                            if (failedCallback != null)
+                            {
+                                failedCallback.Invoke(EProjectOperateResult.POR_Error);
+                            }
+                        }
+                    },
+                    code => {
+                        LogHelper.Error("level create error, code: {0}", code);
+                        if (failedCallback != null)
+                        {
+                            failedCallback.Invoke(EProjectOperateResult.POR_Error);
+                        }
+                    },
+                    form
+                );
+            } else {
+                RemoteCommands.UpdateProject (
+                    ProjectId,
+                    Name,
+                    Summary,
+                    ProgramVersion,
+                    ResourceVersion,
+                    passFlag,
+                    recordUsedTime,
+                    msg => {
+                        OnSyncFromParent(msg.ProjectData);
+                        LocalUser.Instance.User.GetSavedPrjectRequestTimer().Zero();
+                        if (successCallback != null)
+                        {
+                            successCallback.Invoke();
+                        }
+                    },
+                    code => {
+                        LogHelper.Error("level upload error, code: {0}", code);
+                        if (failedCallback != null)
+                        {
+                            failedCallback.Invoke(EProjectOperateResult.POR_Error);
+                        }
+                    },
+                    form
+                );
             }
-            else
-            {
-                Msg_CS_CMD_UpdateProject update = new Msg_CS_CMD_UpdateProject();
-                update.ProjectId = ProjectId;
-                update.Name = Name;
-                update.Summary = Summary;
-                update.PassFlag = passFlag;
-                update.RecordUsedTime = recordUsedTime;
 
-                update.ProgramVersion = ProgramVersion;
-                update.ResourceVersion = ResourceVersion;
-                msg = update;
-                apiPath = SoyHttpApiPath.UpdateProject;
-            }
-//            User user = LocalUser.Instance.UserLegacy;
-			var user = LocalUser.Instance.User;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateProject>(apiPath, msg, ret => {
-                if (ret.ResultCode == (int)EProjectOperateResult.POR_Success)
-                {
-                    if (isCreate)
-                    {
-                        user.OnProjectCreated(ret.ProjectData, this);
-                        LocalCacheManager.Instance.Save(dataBytes, LocalCacheManager.EType.File, ResPath);
-                        ImageResourceManager.Instance.SaveOrUpdateImageData(IconPath, iconBytes);
-                    }
-                    else
-                    {
-                        DeleteResCache();
-                        _syncIgnoreMe = true;
-                        ProjectManager.Instance.OnSyncProject(ret.ProjectData, true);
-                        _syncIgnoreMe = false;
-						OnSyncFromParent(ret.ProjectData);
-                    }
-                    user.GetSavedPrjectRequestTimer().Zero();
 
-                    if (successCallback != null)
-                    {
-                        successCallback.Invoke();
-                    }
-                }
-                else
-                {
-                    LogHelper.Error("level upload error, code: {0}", ret.ResultCode);
-                    if (failedCallback != null)
-                    {
-                        failedCallback.Invoke((EProjectOperateResult)ret.ResultCode);
-                    }
-                }
-            }, (intCode, str) =>
-            {
-                SoyHttpClient.ShowErrorTip(intCode);
-                if (failedCallback != null)
-                {
-                    failedCallback.Invoke(EProjectOperateResult.POR_None);
-                }
-            }, form);
+//
+////            User user = LocalUser.Instance.UserLegacy;
+//			var user = LocalUser.Instance.User;
+//            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateProject>(apiPath, msg, ret => {
+//                if (ret.ResultCode == (int)EProjectOperateResult.POR_Success)
+//                {
+//                    if (isCreate)
+//                    {
+//                        user.OnProjectCreated(ret.ProjectData, this);
+//                        LocalCacheManager.Instance.Save(dataBytes, LocalCacheManager.EType.File, ResPath);
+//                        ImageResourceManager.Instance.SaveOrUpdateImageData(IconPath, iconBytes);
+//                    }
+//                    else
+//                    {
+//                        DeleteResCache();
+//                        _syncIgnoreMe = true;
+//                        ProjectManager.Instance.OnSyncProject(ret.ProjectData, true);
+//                        _syncIgnoreMe = false;
+//						OnSyncFromParent(ret.ProjectData);
+//                    }
+//                    user.GetSavedPrjectRequestTimer().Zero();
+//
+//                    if (successCallback != null)
+//                    {
+//                        successCallback.Invoke();
+//                    }
+//                }
+//                else
+//                {
+//                    LogHelper.Error("level upload error, code: {0}", ret.ResultCode);
+//                    if (failedCallback != null)
+//                    {
+//                        failedCallback.Invoke((EProjectOperateResult)ret.ResultCode);
+//                    }
+//                }
+//            }, (intCode, str) =>
+//            {
+//                SoyHttpClient.ShowErrorTip(intCode);
+//                if (failedCallback != null)
+//                {
+//                    failedCallback.Invoke(EProjectOperateResult.POR_None);
+//                }
+//            }, form);
         }
 
         public void Delete()
@@ -1448,11 +1480,11 @@ namespace GameA
 //        }
 
 
-        public static Project CreateProject()
+        public static Project CreateWorkShopProject()
         {
             Project p = new Project();
             p.ProjectId = LocalCacheManager.Instance.GetLocalGuid();
-            p.UserLegacy = LocalUser.Instance.UserLegacy;
+//            p.UserLegacy = LocalUser.Instance.UserLegacy;
             p.LocalDataState = ELocalDataState.LDS_UnCreated;
             p.Name = "";
             p.Summary = "";

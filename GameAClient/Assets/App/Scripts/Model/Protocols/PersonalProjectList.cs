@@ -24,10 +24,6 @@ namespace GameA
 
         // cs fields----------------------------------
         /// <summary>
-        /// 关卡Id
-        /// </summary>
-        private List<long> _cs_projectId;
-        /// <summary>
         /// 
         /// </summary>
         private long _cs_minUpdateTime;
@@ -80,13 +76,6 @@ namespace GameA
         
         // cs properties----------------------------------
         /// <summary>
-        /// 关卡Id
-        /// </summary>
-        public List<long> CS_ProjectId { 
-            get { return _cs_projectId; }
-            set { _cs_projectId = value; }
-        }
-        /// <summary>
         /// 
         /// </summary>
         public long CS_MinUpdateTime { 
@@ -133,13 +122,11 @@ namespace GameA
         /// <summary>
 		/// 工坊关卡
 		/// </summary>
-		/// <param name="projectId">关卡Id.</param>
 		/// <param name="minUpdateTime">.</param>
 		/// <param name="maxUpdateTime">.</param>
 		/// <param name="maxCount">.</param>
 		/// <param name="totalCount">.</param>
         public void Request (
-            List<long> projectId,
             long minUpdateTime,
             long maxUpdateTime,
             int maxCount,
@@ -147,10 +134,6 @@ namespace GameA
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
             if (_isRequesting) {
-                if (_cs_projectId != projectId) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
                 if (_cs_minUpdateTime != minUpdateTime) {
                     if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
                     return;
@@ -169,7 +152,6 @@ namespace GameA
                 }
                 OnRequest (successCallback, failedCallback);
             } else {
-                _cs_projectId = projectId;
                 _cs_minUpdateTime = minUpdateTime;
                 _cs_maxUpdateTime = maxUpdateTime;
                 _cs_maxCount = maxCount;
@@ -177,7 +159,6 @@ namespace GameA
                 OnRequest (successCallback, failedCallback);
 
                 Msg_CS_DAT_PersonalProjectList msg = new Msg_CS_DAT_PersonalProjectList();
-                msg.ProjectId.AddRange(projectId);
                 msg.MinUpdateTime = minUpdateTime;
                 msg.MaxUpdateTime = maxUpdateTime;
                 msg.MaxCount = maxCount;
