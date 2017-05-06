@@ -53,7 +53,7 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-//			RegisterEvent(EMessengerType.OnChangeToAppMode, OnReturnToApp);
+			RegisterEvent(EMessengerType.OnChangeToAppMode, OnReturnToApp);
 //            RegisterEvent(EMessengerType.OnAccountLoginStateChanged, OnEvent);
         }
 
@@ -76,7 +76,10 @@ namespace GameA
             if (_randomPickTimer > 0) {
                 _randomPickTimer -= Time.deltaTime;
                 if (_randomPickTimer <= 0) {
-//                    if ()
+                    if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_Editing) {
+                        if (_isOpen) Refresh();
+                        _cachedView.InputBlock.SetActiveEx (false);
+                    }
                 }
             }
         }
@@ -137,27 +140,28 @@ namespace GameA
 //                project = LocalUser.Instance.MatchUserData.CurReformProject;
 //
 //            } else {
-            if (string.IsNullOrEmpty(LocalUser.Instance.MatchUserData.CurReformProject.ResPath)) {
-                int sectionIdx = LocalUser.Instance.MatchUserData.CurReformSection - 1;
-                int levelIdx = LocalUser.Instance.MatchUserData.CurReformLevel - 1;
-                if (sectionIdx >= AppData.Instance.AdventureData.ProjectList.SectionList.Count) {
-                    Debug.Log ("no project");
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-
-                    // todo out of range exception
-                    return;
-                }
-                var section = AppData.Instance.AdventureData.ProjectList.SectionList [sectionIdx];
-                if (levelIdx >= section.NormalProjectList.Count) {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-
-                    // todo out of range exception
-                    return;
-                }
-                project.ResPath = section.NormalProjectList [levelIdx].ResPath;
-//                project = section.NormalProjectList [levelIdx];
-                Debug.Log ("_______________________________ modify orig project");
-            }
+//            if (string.IsNullOrEmpty(LocalUser.Instance.MatchUserData.CurReformProject.ResPath) &&
+//                LocalUser.Instance.MatchUserData.CurReformProject.BytesData == null) {
+//                int sectionIdx = LocalUser.Instance.MatchUserData.CurReformSection - 1;
+//                int levelIdx = LocalUser.Instance.MatchUserData.CurReformLevel - 1;
+//                if (sectionIdx >= AppData.Instance.AdventureData.ProjectList.SectionList.Count) {
+//                    Debug.Log ("no project");
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+//
+//                    // todo out of range exception
+//                    return;
+//                }
+//                var section = AppData.Instance.AdventureData.ProjectList.SectionList [sectionIdx];
+//                if (levelIdx >= section.NormalProjectList.Count) {
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+//
+//                    // todo out of range exception
+//                    return;
+//                }
+//                project.ResPath = section.NormalProjectList [levelIdx].ResPath;
+////                project = section.NormalProjectList [levelIdx];
+//                Debug.Log ("_______________________________ modify orig project");
+//            }
 //            if (null == project)
 //                return;
             project.PrepareRes(
@@ -220,7 +224,6 @@ namespace GameA
                         LocalUser.Instance.MatchUserData.CurReformState = (int)EReformState.RS_Editing;
                         // 立刻请求更新数据，以获取改造中的project
                         LocalUser.Instance.MatchUserData.Request(LocalUser.Instance.UserGuid, null, null);
-                        if (_isOpen) Refresh();
                     } else {
                         // todo network error handle
                     }
@@ -231,6 +234,19 @@ namespace GameA
             );
         }
 
+        private void OnReturnToApp () {
+//            if (LocalUser.Instance.MatchUserData.IsDirty) {
+//                LocalUser.Instance.MatchUserData.Request (
+//                    LocalUser.Instance.UserGuid,
+//                    () => {
+//                        Refresh();
+//                    },
+//                    code => {
+//                        // todo network error
+//                    }
+//                );
+//            }
+        }
         #endregion 接口
         #endregion
 

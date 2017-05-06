@@ -16,7 +16,7 @@ namespace GameA
 {
 	public partial class Project : SyncronisticData {
         #region 变量
-        // 地图数据
+        // 地图数据（压缩过的），内存中的缓存，第一次保存改造关卡，resPath仍然是空，读这个数据
         private byte[] _bytesData;
         private ProjectUploadParam _projectUploadParam = new ProjectUploadParam();
         #endregion 变量
@@ -25,21 +25,24 @@ namespace GameA
 
 
         #endregion 属性
-
+//        public byte[] BytesData {
+//        get {
+//            return this._bytesData;
+//        }
+//    }
         #region 方法
-        public void SetBytesData (byte[] bytesData) {
-            _bytesData = bytesData;
-        }
-        public void SaveModifyProject (Action successCallback = null, Action<EProjectOperateResult> failedCallback = null) {
-            if (_bytesData == null) {
+//        public void SetBytesData (byte[] bytesData) {
+//            _bytesData = bytesData;
+//        }
+        public void SaveModifyProject (Byte[] data, Action successCallback = null, Action<EProjectOperateResult> failedCallback = null) {
+            if (data == null) {
                 if (failedCallback != null) {
                     failedCallback.Invoke (EProjectOperateResult.POR_Error);
                     return;
                 }
             }
-            byte[] compressedBytes = MatrixProjectTools.CompressLZMA (_bytesData);
             WWWForm form = new WWWForm();
-            form.AddBinaryData("levelFile", compressedBytes);
+            form.AddBinaryData("levelFile", data);
             Msg_ProjectUploadParam msgProjectUploadParam = new Msg_ProjectUploadParam ();
             msgProjectUploadParam.MapWidth = _projectUploadParam.MapWidth;
             msgProjectUploadParam.MapHeight = _projectUploadParam.MapHeight;
@@ -81,6 +84,12 @@ namespace GameA
                 },
                 form
             );
+            // 保存完后取一次数据
+            Request (_projectId, null, null);
+            // 如果
+            if (string.IsNullOrEmpty (ResPath)) {
+                _bytesData = data;
+            }
         }
         #endregion
     }

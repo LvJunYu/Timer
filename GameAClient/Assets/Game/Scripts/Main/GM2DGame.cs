@@ -493,8 +493,9 @@ namespace GameA.Game
         /// </summary>
         public void SaveModifyProject (Action successCallback = null, Action<EProjectOperateResult> failedCallback = null) {
             byte[] mapDataBytes = MapManager.Instance.SaveMapData();
-            _project.SetBytesData (mapDataBytes);
-            _project.SaveModifyProject (successCallback, failedCallback);
+            byte[] compressedBytes = MatrixProjectTools.CompressLZMA (mapDataBytes);
+//            _project.SetBytesData (mapDataBytes);
+            _project.SaveModifyProject (compressedBytes, successCallback, failedCallback);
         }
 
         public void Publish(string name, string summary, Action successCallback=null, Action<EProjectOperateResult> failedCallback=null)

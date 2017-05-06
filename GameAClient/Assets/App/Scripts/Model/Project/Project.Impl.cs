@@ -607,7 +607,12 @@ namespace GameA
 
         public byte[] GetData()
         {
-            return LocalCacheManager.Instance.Load(LocalCacheManager.EType.File, ResPath);
+            string targetRes = ResPath;
+            // 这个方法应该在prepare之后执行，所以这里不做异常检查了
+            if (_projectStatus == EProjectStatus.PS_Reform && string.IsNullOrEmpty (ResPath)) {
+                targetRes = AppData.Instance.AdventureData.ProjectList.SectionList [TargetSection - 1].NormalProjectList [TargetLevel - 1].ResPath;
+            }
+            return LocalCacheManager.Instance.Load (LocalCacheManager.EType.File, targetRes);
         }
 
         public void Save(string name, string summary, byte[] dataBytes, byte[] iconBytes,
@@ -811,7 +816,33 @@ namespace GameA
 
         public void PrepareRes(Action successCallback, Action failedCallback = null)
         {
-            byte[] data = LocalCacheManager.Instance.Load(LocalCacheManager.EType.File, ResPath);
+            string targetRes = ResPath;
+            // 改造关卡特殊处理
+            if (_projectStatus == EProjectStatus.PS_Reform) {
+                if (string.IsNullOrEmpty (ResPath)) {
+                    if ((TargetSection - 1) < AppData.Instance.AdventureData.ProjectList.SectionList.Count &&
+                        (TargetLevel - 1) >= AppData.Instance.AdventureData.ProjectList.SectionList [TargetSection - 1].NormalProjectList.Count &&
+                        !string.IsNullOrEmpty(AppData.Instance.AdventureData.ProjectList.SectionList [TargetSection - 1].NormalProjectList[TargetLevel - 1].ResPath)) {
+                        targetRes = AppData.Instance.AdventureData.ProjectList.SectionList [TargetSection - 1].NormalProjectList [TargetLevel - 1].ResPath;
+                    } else {
+                        if (string.IsNullOrEmpty (ResPath)) {
+                            if (null != failedCallback) {
+                                failedCallback.Invoke ();
+                            }
+                            return;
+                        }
+                    }
+                }
+                // else 正常往后执行，检查自己的respath
+            } else {
+                if (string.IsNullOrEmpty (ResPath)) {
+                    if (null != failedCallback) {
+                        failedCallback.Invoke ();
+                    }
+                    return;
+                }
+            }
+            byte[] data = LocalCacheManager.Instance.Load(LocalCacheManager.EType.File, targetRes);
             if (data != null)
             {
                 if (successCallback != null)
@@ -820,18 +851,18 @@ namespace GameA
                 }
                 return;
             }
-            SFile file = SFile.GetFileWithUrl(SoyPath.Instance.GetFileUrl(ResPath));
-            Debug.Log ("____________________download map file: " + ResPath);
+            SFile file = SFile.GetFileWithUrl(SoyPath.Instance.GetFileUrl(targetRes));
+            Debug.Log ("____________________download map file: " + targetRes);
             file.DownloadAsync((f) =>
                 {
-                    LocalCacheManager.Instance.Save(f.FileBytes, LocalCacheManager.EType.File, ResPath);
+                    LocalCacheManager.Instance.Save(f.FileBytes, LocalCacheManager.EType.File, targetRes);
                     if (successCallback != null)
                     {
                         successCallback.Invoke();
                     }
                 }, sFile =>
                 {
-					Debug.Log("__________________________" + SoyPath.Instance.GetFileUrl(ResPath));
+                    Debug.Log("__________________________" + SoyPath.Instance.GetFileUrl(targetRes));
                     if (failedCallback != null)
                     {
                         failedCallback.Invoke();
@@ -1147,6 +1178,9 @@ namespace GameA
             {
 				OnSyncProjectUserData(_projectUserData);
             }
+
+            // 
+//            _bytesData = null;
 		}
 
 //        private Msg_SC_DAT_Project ToMsg()
