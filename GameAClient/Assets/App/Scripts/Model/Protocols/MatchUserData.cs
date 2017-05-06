@@ -35,14 +35,12 @@ namespace GameA
         private int _reformDeleteUnitCapacity;
         // 剩余挑战次数
         private int _leftChallengeCount;
-        // 剩余挑战次数刷新时间
+        // 剩余挑战次数刷新时间ms
         private long _leftChallengeCountRefreshTime;
-        // 挑战次数累计间隔秒数
+        // 挑战次数累计间隔秒数s
         private int _challengeIntervalSecond;
         // 最大可累计挑战次数
         private int _challengeCapacity;
-        // 挑战加速结束时间
-        private long _challengeBoostingEndTime;
         // 当前匹配已挑战次数
         private int _curMatchChallengeCount;
         // 当前已选挑战难度EChallengeProjectTyple
@@ -169,7 +167,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 剩余挑战次数刷新时间
+        // 剩余挑战次数刷新时间ms
         public long LeftChallengeCountRefreshTime { 
             get { return _leftChallengeCountRefreshTime; }
             set { if (_leftChallengeCountRefreshTime != value) {
@@ -177,7 +175,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 挑战次数累计间隔秒数
+        // 挑战次数累计间隔秒数s
         public int ChallengeIntervalSecond { 
             get { return _challengeIntervalSecond; }
             set { if (_challengeIntervalSecond != value) {
@@ -190,14 +188,6 @@ namespace GameA
             get { return _challengeCapacity; }
             set { if (_challengeCapacity != value) {
                 _challengeCapacity = value;
-                SetDirty();
-            }}
-        }
-        // 挑战加速结束时间
-        public long ChallengeBoostingEndTime { 
-            get { return _challengeBoostingEndTime; }
-            set { if (_challengeBoostingEndTime != value) {
-                _challengeBoostingEndTime = value;
                 SetDirty();
             }}
         }
@@ -347,7 +337,6 @@ namespace GameA
             _leftChallengeCountRefreshTime = msg.LeftChallengeCountRefreshTime;           
             _challengeIntervalSecond = msg.ChallengeIntervalSecond;           
             _challengeCapacity = msg.ChallengeCapacity;           
-            _challengeBoostingEndTime = msg.ChallengeBoostingEndTime;           
             _curMatchChallengeCount = msg.CurMatchChallengeCount;           
             _curSelectedChallengeType = msg.CurSelectedChallengeType;           
             if (null == _easyChallengeProjectData) {

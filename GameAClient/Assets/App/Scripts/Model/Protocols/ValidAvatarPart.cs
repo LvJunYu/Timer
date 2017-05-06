@@ -11,7 +11,7 @@ namespace GameA
         // sc fields----------------------------------
         // 用户
         private long _userId;
-        //
+        // 
         private List<AvatarPartItem> _itemDataList;
 
         // cs fields----------------------------------

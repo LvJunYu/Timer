@@ -8,9 +8,9 @@ using UnityEngine;
 public class    ShopItem
 {
 
-	private EAvatarPart _avatarType;
-	// 序号
-	private int Id;
+    public EAvatarPart _avatarType;
+    // 序号
+    public int Id;
 	// 名称
 	public string Name;
 	// 介绍
@@ -46,9 +46,9 @@ public class    ShopItem
 
 	public ShopItem(Table_HeadParts headParts)
 	{
-		//this._headParts = HeadParts;
 		this._avatarType = EAvatarPart.AP_Head;
-		this.Name = headParts.Name;
+        this.Id = headParts.Id;
+        this.Name = headParts.Name;
 		this.Description = headParts.Description;
 		this.Sex = headParts.Sex;
 		this.Character = headParts.Character;
@@ -67,9 +67,9 @@ public class    ShopItem
 	}
 	public ShopItem(Table_UpperBodyParts UpperBodyParts)
 	{
-		//this._upperBodyParts = UpperBodyParts;
 		this._avatarType = EAvatarPart.AP_Head;
-		this.Name = UpperBodyParts.Name;
+        this.Id = UpperBodyParts.Id;
+        this.Name = UpperBodyParts.Name;
 		this.Description = UpperBodyParts.Description;
 		this.Sex = UpperBodyParts.Sex;
 		this.Character = UpperBodyParts.Character;
@@ -91,7 +91,8 @@ public class    ShopItem
 	{
 		//this._lowerBodyParts = LowerBodyParts;
 		this._avatarType = EAvatarPart.AP_Head;
-		this.Name = LowerBodyParts.Name;
+	    this.Id = LowerBodyParts.Id;
+        this.Name = LowerBodyParts.Name;
 		this.Description = LowerBodyParts.Description;
 		this.Sex = LowerBodyParts.Sex;
 		this.Character = LowerBodyParts.Character;
@@ -114,7 +115,8 @@ public class    ShopItem
 	{
 		//this._appendageParts = AppendageParts;
 		this._avatarType = EAvatarPart.AP_Head;
-		this.Name = AppendageParts.Name;
+        this.Id = AppendageParts.Id;
+        this.Name = AppendageParts.Name;
 		this.Description = AppendageParts.Description;
 		this.Sex = AppendageParts.Sex;
 		this.Character = AppendageParts.Character;

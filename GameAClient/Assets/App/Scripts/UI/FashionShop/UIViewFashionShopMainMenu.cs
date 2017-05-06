@@ -18,16 +18,20 @@ namespace GameA
 		/// <summary>
 		/// 独立的US界面
 		/// </summary>
-		public USViewShopping USViewShopping;
-	    public USViewShopping FashionPage1;
-        public USViewShopping XZViewShopping;
-		public USViewShopping ZSViewShopping;
-		public USViewShopping MZViewShopping;
-		public USViewShopping KZViewShopping;
+		public USViewFashionShop USViewShop;
+	    public USViewFashionShop FashionPage1;
+        public USViewFashionShop FashionPage2;
+		public USViewFashionShop FashionPage3;
+		public USViewFashionShop FashionPage4;
+        public USViewFashionShop FashionPage5;
+
+	    public Text UsingHead;
+	    public Text UsingUpper;
+	    public Text UsingLower;
+	    public Text UsingAppendage;
 
 
 
-
-		//public UICtrlFashionItem[] Items;
+	    //public UICtrlFashionItem[] Items;
     }
 }

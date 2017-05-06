@@ -14,16 +14,14 @@ namespace GameA.Game
 		// 种类
 		[ColumnMapping("Type")]
 		public int Type;
-		// 物品序号
+		// 物品ID
 		[ColumnMapping("ItemIdx")]
 		public int ItemIdx;
 		// 性别
 		[ColumnMapping("Sex")]
 		public int Sex;
 	}
-    /// <summary>
-    /// 时装店资源表
-    /// </summary>
+
     public class TableFashionShopAsset:BaseTableAsset
 	{
 		[UnityEngine.SerializeField]

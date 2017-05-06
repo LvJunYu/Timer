@@ -15,15 +15,15 @@ namespace GameA
         private long _projectId;
         // 
         private UserInfoSimple _userInfo;
-        // 
+        // 名称
         private string _name;
-        // 
+        // 简介
         private string _summary;
-        // 
+        // 关卡截图资源路径
         private string _iconPath;
-        // 
+        // 关卡文件资源路径
         private string _resPath;
-        // 
+        // 创建时间
         private long _createTime;
         // 
         private ELocalDataState _localDataState;
@@ -93,7 +93,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        // 名称
         public string Name { 
             get { return _name; }
             set { if (_name != value) {
@@ -101,7 +101,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        // 简介
         public string Summary { 
             get { return _summary; }
             set { if (_summary != value) {
@@ -109,7 +109,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        // 关卡截图资源路径
         public string IconPath { 
             get { return _iconPath; }
             set { if (_iconPath != value) {
@@ -117,7 +117,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        // 关卡文件资源路径
         public string ResPath { 
             get { return _resPath; }
             set { if (_resPath != value) {
@@ -125,7 +125,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        // 创建时间
         public long CreateTime { 
             get { return _createTime; }
             set { if (_createTime != value) {

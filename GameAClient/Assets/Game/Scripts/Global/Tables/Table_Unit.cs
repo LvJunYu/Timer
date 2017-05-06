@@ -20,6 +20,9 @@ namespace GameA.Game
 		// 模型
 		[ColumnMapping("Model")]
 		public string Model;
+		// 模型1
+		[ColumnMapping("Model1")]
+		public string Model1;
 		// 类别
 		[ColumnMapping("UnitType")]
 		public int UnitType;

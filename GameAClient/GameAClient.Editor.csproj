@@ -106,6 +106,9 @@
     <Reference Include="UnityEditor.Graphs">
       <HintPath>Library\UnityAssemblies\UnityEditor.Graphs.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEditor.Android.Extensions">
+      <HintPath>Library\UnityAssemblies\UnityEditor.Android.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">
       <HintPath>Library\UnityAssemblies\UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
     </Reference>
@@ -141,9 +144,6 @@
     </Reference>
     <Reference Include="DOTween50">
       <HintPath>Assets\References\DOTween\DOTween50.dll</HintPath>
-    </Reference>
-    <Reference Include="DOTweenEditor">
-      <HintPath>Assets\References\DOTween\Editor\DOTweenEditor.dll</HintPath>
     </Reference>
     <Reference Include="NativeToolkitWP8">
       <HintPath>Assets\References\NativeToolkit\Plugins\NativeToolkitWP8.dll</HintPath>
@@ -231,6 +231,10 @@
     <Compile Include="Assets\References\UnityStandardAssets\Editor\ImageEffects\SunShaftsEditor.cs" />
     <Compile Include="Assets\References\UnityStandardAssets\Editor\ImageEffects\TonemappingEditor.cs" />
     <Compile Include="Assets\References\UnityStandardAssets\Editor\ImageEffects\VignetteAndChromaticAberrationEditor.cs" />
+    <Compile Include="Assets\ThirdParty\JoyEditorTools\Editor\JoyEditorToolsDefine.cs" />
+    <Compile Include="Assets\ThirdParty\JoyEditorTools\Editor\JoyProtoTool.cs" />
+    <Compile Include="Assets\ThirdParty\JoyEditorTools\Editor\JoyTableTool.cs" />
+    <Compile Include="Assets\ThirdParty\JoyEditorTools\Editor\JoyToolUtility.cs" />
     <Compile Include="Assets\ThirdParty\NativeToolkit\Editor\PostProcessor.cs" />
     <Compile Include="Assets\ThirdParty\NativeToolkit\Facebook\Editor\EnableFacebook.cs" />
     <Compile Include="Assets\ThirdParty\XUPorter\Editor\MiniJSON\MiniJSON.cs" />
@@ -280,7 +284,9 @@
     <None Include="Assets\JoyGameArt\ArtCode\Spine\spine-unity\Shaders\HiddenPass.shader" />
     <None Include="Assets\JoyGameArt\ArtCode\Spine\spine-unity\Shaders\Skeleton.shader" />
     <None Include="Assets\JoyGameArt\ArtCode\Spine\spine-unity\Shaders\SkeletonLit.shader" />
+    <None Include="Assets\JoyGameArt\Depends\Atlas\CommonUI\SoyAltasConfig.txt" />
     <None Include="Assets\JoyGameArt\Depends\Atlas\GameBg1\SoyAltasConfig.txt" />
+    <None Include="Assets\JoyGameArt\Depends\Atlas\M1Element\SoyAltasConfig.txt" />
     <None Include="Assets\JoyGameArt\Depends\Atlas\M1Icon\SoyAltasConfig.txt" />
     <None Include="Assets\JoyGameArt\Depends\Atlas\M1UI\SoyAltasConfig.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\AvatarCharacter\MainBoy0\MainBoy0.atlas.txt" />
@@ -306,8 +312,11 @@
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Portal.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1RevivePoint.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Roller.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Switch.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1SwitchFollow.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1SwitchGate.atlas.txt" />
-    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Water.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Water_B.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Water_F.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Weapon\Empty.txt" />
     <None Include="Assets\JoyGameArt\Global\Shader\Decal.shader" />
     <None Include="Assets\JoyGameArt\Global\Shader\TiledSprite2d.shader" />
@@ -316,7 +325,6 @@
     <None Include="Assets\References\DOTween\DOTween43.xml" />
     <None Include="Assets\References\DOTween\DOTween46.xml" />
     <None Include="Assets\References\DOTween\DOTween50.xml" />
-    <None Include="Assets\References\DOTween\Editor\DOTweenEditor.XML" />
     <None Include="Assets\References\DOTween\readme.txt" />
     <None Include="Assets\References\NativeToolkit\Plugins\Android\AndroidManifestS.xml" />
     <None Include="Assets\References\NativeToolkit\Plugins\Android\NativeToolkit\AndroidManifestS.xml" />

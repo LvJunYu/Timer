@@ -111,6 +111,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\App\Scripts\App\GMTool\UICtrlGMTool.cs" />
+    <Compile Include="Assets\App\Scripts\App\GMTool\UIViewGMTool.cs" />
     <Compile Include="Assets\App\Scripts\App\JoySceneManager.cs" />
     <Compile Include="Assets\App\Scripts\App\ListMenuView\IListMenuViewItem.cs" />
     <Compile Include="Assets\App\Scripts\App\ListMenuView\ListMenuView.cs" />
@@ -170,6 +172,8 @@
     <Compile Include="Assets\App\Scripts\Model\Protocols\DataExample.cs" />
     <Compile Include="Assets\App\Scripts\Model\Protocols\HomePartData.cs" />
     <Compile Include="Assets\App\Scripts\Model\Protocols\HomePartItem.cs" />
+    <Compile Include="Assets\App\Scripts\Model\Protocols\MatchUnitItem.cs" />
+    <Compile Include="Assets\App\Scripts\Model\Protocols\MatchUserData.cs" />
     <Compile Include="Assets\App\Scripts\Model\Protocols\PersonalProjectList.cs" />
     <Compile Include="Assets\App\Scripts\Model\Protocols\Project.cs" />
     <Compile Include="Assets\App\Scripts\Model\Protocols\ProjectExtend.cs" />
@@ -186,6 +190,7 @@
     <Compile Include="Assets\App\Scripts\Model\Protocols\UserInfoDetail.cs" />
     <Compile Include="Assets\App\Scripts\Model\Protocols\UserInfoSimple.cs" />
     <Compile Include="Assets\App\Scripts\Model\Protocols\UserLevel.cs" />
+    <Compile Include="Assets\App\Scripts\Model\Protocols\UserMatchUnitData.cs" />
     <Compile Include="Assets\App\Scripts\Model\Protocols\UserProp.cs" />
     <Compile Include="Assets\App\Scripts\Model\Protocols\UserRaffleTicket.cs" />
     <Compile Include="Assets\App\Scripts\Model\Protocols\UserRelationStatistic.cs" />
@@ -214,9 +219,15 @@
     <Compile Include="Assets\App\Scripts\UI\Base\USCtrlBase.cs" />
     <Compile Include="Assets\App\Scripts\UI\Base\USViewBase.cs" />
     <Compile Include="Assets\App\Scripts\UI\EnumStringDefine.cs" />
-    <Compile Include="Assets\App\Scripts\UI\FashionShop\UICtrlFashionItem.cs" />
-    <Compile Include="Assets\App\Scripts\UI\FashionShop\UICtrlFashionShop.cs" />
-    <Compile Include="Assets\App\Scripts\UI\FashionShop\UIViewFashionShop.cs" />
+    <Compile Include="Assets\App\Scripts\UI\FashionShop\MySprits\ShopItem.cs" />
+    <Compile Include="Assets\App\Scripts\UI\FashionShop\MySprits\UICtrlPurchaseTotalCount.cs" />
+    <Compile Include="Assets\App\Scripts\UI\FashionShop\MySprits\UIViewPurchaseTotalCount.cs" />
+    <Compile Include="Assets\App\Scripts\UI\FashionShop\MySprits\UMCtrlFashionShopCard.cs" />
+    <Compile Include="Assets\App\Scripts\UI\FashionShop\MySprits\UMViewFashionShopCard.cs" />
+    <Compile Include="Assets\App\Scripts\UI\FashionShop\MySprits\USCtrlFashionShop.cs" />
+    <Compile Include="Assets\App\Scripts\UI\FashionShop\MySprits\USViewFashionShop.cs" />
+    <Compile Include="Assets\App\Scripts\UI\FashionShop\UICtrlFashionShopMainMenu.cs" />
+    <Compile Include="Assets\App\Scripts\UI\FashionShop\UIViewFashionShopMainMenu.cs" />
     <Compile Include="Assets\App\Scripts\UI\Game\MatrixProjectResTools.cs" />
     <Compile Include="Assets\App\Scripts\UI\InGame\UICtrlEnterGameLoading.cs" />
     <Compile Include="Assets\App\Scripts\UI\InGame\UICtrlMenuInGame.cs" />
@@ -356,6 +367,7 @@
     <Compile Include="Assets\Game\Scripts\Main\EMessengerType.cs" />
     <Compile Include="Assets\Game\Scripts\Main\GM2DGUIManager.cs" />
     <Compile Include="Assets\Game\Scripts\Main\GM2DGame.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\Camera\CameraManager.Impl.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Camera\CameraManager.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Camera\MouseDragListener.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Camera\MousePinchListener.cs" />
@@ -374,9 +386,14 @@
     <Compile Include="Assets\Game\Scripts\Scene\EditMode\Command\ICommand.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\EditMode\Command\ICommandManager.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\EditMode\Command\LineCommand.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\EditMode\Command\ModifyAddCommand.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\EditMode\Command\ModifyClickItemCommand.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\EditMode\Command\ModifyDeleteCommand.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\EditMode\Command\ModifyDragCommand.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\EditMode\Command\MultipleSelectCommand.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\EditMode\CompositeEditorModule.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\EditMode\EditMode.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\EditMode\ModifyEditMode.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Enums.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\EnvManager.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\GM2DTools.cs" />
@@ -417,6 +434,7 @@
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Base\UnitBase.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Base\UnitManager.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Base\UnitWithChild.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Collection\CollectionBase.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Collection\Energy.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Collection\EnergyClay.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Collection\EnergyFire.cs" />
@@ -424,8 +442,16 @@
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Collection\EnergyJelly.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Collection\EnergyWater.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Collection\Gem.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Collection\Invincible.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Collection\Life.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Decoration\AlertBoard.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Decoration\BillBoard.cs" />
-    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Decoration\GuideboardUnit.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Decoration\Flower.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Decoration\Grass.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Decoration\GuideBoard.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Decoration\LaserBoard.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Decoration\MonsterBoard.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Decoration\Tree.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Earth\BlueStone.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Earth\BlueStoneBan.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Earth\BlueStoneRotate.cs" />
@@ -469,6 +495,7 @@
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\SwitchPress.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\SwtichFollow.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\Trigger.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Monster\MonsterAI.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Monster\MonsterBase.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Monster\MonsterTree.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Skill\Bullet\BulletBase.cs" />
@@ -499,6 +526,7 @@
     <Compile Include="Assets\Game\Scripts\UI\Edit\UICtrlGameCaptureCover.cs" />
     <Compile Include="Assets\Game\Scripts\UI\Edit\UICtrlGameCompositeEditorTools.cs" />
     <Compile Include="Assets\Game\Scripts\UI\Edit\UICtrlGameItemAddMessage.cs" />
+    <Compile Include="Assets\Game\Scripts\UI\Edit\UICtrlModifyEdit.cs" />
     <Compile Include="Assets\Game\Scripts\UI\GM2DUIConstDefine.cs" />
     <Compile Include="Assets\Game\Scripts\UI\GameFinish\UICtrlGameFinish.cs" />
     <Compile Include="Assets\Game\Scripts\UI\GameFinish\UICtrlGameMark.cs" />
@@ -539,6 +567,7 @@
     <Compile Include="Assets\JoyGameArt\ArtCode\EasyTouchBundle\EasyTouchControls\Plugins\ETCTouchPad.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\EffectScripts\EnergyPoolCtrl.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\EffectScripts\SplashController.cs" />
+    <Compile Include="Assets\JoyGameArt\ArtCode\EffectScripts\SwitchConnection.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\Res\BgAsset\BgPrefab.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\Res\BuildToolsConstDefine.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\Res\EResType.cs" />
@@ -672,6 +701,7 @@
     <Compile Include="Assets\JoyGameArt\ArtCode\UI\UICommon\UIStatus.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\UI\UICommon\UITransformStatus.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\UI\UIItem\UIViewModifyItem.cs" />
+    <Compile Include="Assets\JoyGameArt\ArtCode\UI\UIItem\UIViewModifySelectItem.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\UI\UIItem\UMViewGameRatingBarItem.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\UI\UIViewCountDown.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\UI\UIViewCreate.cs" />
@@ -680,18 +710,13 @@
     <Compile Include="Assets\JoyGameArt\ArtCode\UI\UIViewGameLog.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\UI\UIViewGamePlay.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\UI\UIViewItem.cs" />
+    <Compile Include="Assets\JoyGameArt\ArtCode\UI\UIViewModifyEdit.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\UI\UIViewPublish.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\UI\UIViewScreenOperator.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\UI\UMViewGamePlayItem.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\UI\UMViewGamePlayItemEx.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\UI\UMViewItem.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\UI\UMViewItemScreenButton.cs" />
-    <Compile Include="Assets\LocalTest\MySprits\UICtrlGoShopping.cs" />
-    <Compile Include="Assets\LocalTest\MySprits\UIViewGoShopping.cs" />
-    <Compile Include="Assets\LocalTest\MySprits\UMCtrlShoppingCard.cs" />
-    <Compile Include="Assets\LocalTest\MySprits\UMViewShoppingCard.cs" />
-    <Compile Include="Assets\LocalTest\MySprits\USCtrlShopping.cs" />
-    <Compile Include="Assets\LocalTest\MySprits\USViewShopping.cs" />
     <Compile Include="Assets\References\7Z\Common\CRC.cs" />
     <Compile Include="Assets\References\7Z\Common\CommandLineParser.cs" />
     <Compile Include="Assets\References\7Z\Common\InBuffer.cs" />
@@ -883,7 +908,9 @@
     <None Include="Assets\JoyGameArt\ArtCode\Spine\spine-unity\Shaders\HiddenPass.shader" />
     <None Include="Assets\JoyGameArt\ArtCode\Spine\spine-unity\Shaders\Skeleton.shader" />
     <None Include="Assets\JoyGameArt\ArtCode\Spine\spine-unity\Shaders\SkeletonLit.shader" />
+    <None Include="Assets\JoyGameArt\Depends\Atlas\CommonUI\SoyAltasConfig.txt" />
     <None Include="Assets\JoyGameArt\Depends\Atlas\GameBg1\SoyAltasConfig.txt" />
+    <None Include="Assets\JoyGameArt\Depends\Atlas\M1Element\SoyAltasConfig.txt" />
     <None Include="Assets\JoyGameArt\Depends\Atlas\M1Icon\SoyAltasConfig.txt" />
     <None Include="Assets\JoyGameArt\Depends\Atlas\M1UI\SoyAltasConfig.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\AvatarCharacter\MainBoy0\MainBoy0.atlas.txt" />
@@ -909,8 +936,11 @@
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Portal.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1RevivePoint.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Roller.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Switch.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1SwitchFollow.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1SwitchGate.atlas.txt" />
-    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Water.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Water_B.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Water_F.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Weapon\Empty.txt" />
     <None Include="Assets\JoyGameArt\Global\Shader\Decal.shader" />
     <None Include="Assets\JoyGameArt\Global\Shader\TiledSprite2d.shader" />
@@ -919,7 +949,6 @@
     <None Include="Assets\References\DOTween\DOTween43.xml" />
     <None Include="Assets\References\DOTween\DOTween46.xml" />
     <None Include="Assets\References\DOTween\DOTween50.xml" />
-    <None Include="Assets\References\DOTween\Editor\DOTweenEditor.XML" />
     <None Include="Assets\References\DOTween\readme.txt" />
     <None Include="Assets\References\NativeToolkit\Plugins\Android\AndroidManifestS.xml" />
     <None Include="Assets\References\NativeToolkit\Plugins\Android\NativeToolkit\AndroidManifestS.xml" />
