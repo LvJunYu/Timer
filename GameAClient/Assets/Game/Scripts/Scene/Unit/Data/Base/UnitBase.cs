@@ -16,6 +16,10 @@ namespace GameA.Game
     [System.Serializable]
     public class UnitBase : IEquatable<UnitBase>
     {
+
+        protected const float BackZOffset = 0.9f;
+        protected const float FrontZOffset = -1.9f;
+
         #region base data
 
         protected bool _isFreezed;
@@ -500,12 +504,7 @@ namespace GameA.Game
                     return false;
                 }
                 CommonTools.SetParent(_view1.Trans, _trans);
-                //如果没有设置ZOffset
-                if (Math.Abs(_zOffset) < Mathf.Epsilon)
-                {
-                    _trans.position += new Vector3(0, 0, 0.9f);
-                }
-                _view1.Trans.position += new Vector3(0, 0, -1.9f);
+                _view1.Trans.position += new Vector3(0, 0, FrontZOffset);
             }
             return true;
         }
@@ -1174,6 +1173,20 @@ namespace GameA.Game
         public IntVec2 GetColliderSize()
         {
             return _tableUnit.GetColliderSize(ref _unitDesc);
+        }
+
+        protected void SetSortingOrderBack()
+        {
+            _zOffset = BackZOffset;
+        }
+
+        protected void SetSortingOrderFront()
+        {
+            _zOffset = FrontZOffset;
+        }
+
+        protected void SetFront()
+        {
         }
 
         internal virtual void OnObjectDestroy()

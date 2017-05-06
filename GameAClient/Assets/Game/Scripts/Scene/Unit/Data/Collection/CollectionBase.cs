@@ -18,7 +18,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            _zOffset = 0.9f;
+            SetSortingOrderBack();
             return true;
         }
 

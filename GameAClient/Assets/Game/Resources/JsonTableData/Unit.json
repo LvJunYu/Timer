@@ -1422,7 +1422,8 @@
         "ChildType": "0",
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "0",
-        "MoveDirectionMask": "15"
+        "MoveDirectionMask": "15",
+        "RotationMask": "15"
     },
     {
         "Id": "7102",

@@ -13,5 +13,14 @@ namespace GameA.Game
     [Unit(Id = 7004, Type = typeof(Flower))]
     public class Flower : DecorationBase
     {
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            SetSortingOrderBack();
+            return true;
+        }
     }
 }

@@ -15,6 +15,14 @@ namespace GameA.Game
     [Unit(Id = 7002, Type = typeof(Tree))]
     public class Tree : DecorationBase
     {
-
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            SetSortingOrderBack();
+            return true;
+        }
     }
 }

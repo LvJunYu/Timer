@@ -13,5 +13,14 @@ namespace GameA.Game
     [Unit(Id = 7003, Type = typeof(Grass))]
     public class Grass : DecorationBase
     {
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            SetSortingOrderBack();
+            return true;
+        }
     }
 }

@@ -16,8 +16,8 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_StandaloneLevel> Table_StandaloneLevelDic = new Dictionary<int, Table_StandaloneLevel>();
 		public readonly Dictionary<int,Table_StandaloneChapter> Table_StandaloneChapterDic = new Dictionary<int, Table_StandaloneChapter>();
 		public readonly Dictionary<int,Table_FashionShop> Table_FashionShopDic = new Dictionary<int, Table_FashionShop>();
-		public readonly Dictionary<int,Table_HeadParts> Table_HeadPartsDic = new Dictionary<int, Table_HeadParts>();
 		public readonly Dictionary<int,Table_UpperBodyParts> Table_UpperBodyPartsDic = new Dictionary<int, Table_UpperBodyParts>();
+		public readonly Dictionary<int,Table_HeadParts> Table_HeadPartsDic = new Dictionary<int, Table_HeadParts>();
 		public readonly Dictionary<int,Table_LowerBodyParts> Table_LowerBodyPartsDic = new Dictionary<int, Table_LowerBodyParts>();
 		public readonly Dictionary<int,Table_AppendageParts> Table_AppendagePartsDic = new Dictionary<int, Table_AppendageParts>();
 		public readonly Dictionary<int,Table_TreasureMap> Table_TreasureMapDic = new Dictionary<int, Table_TreasureMap>();
@@ -36,8 +36,8 @@ namespace GameA.Game
 		[UnityEngine.SerializeField] private Table_StandaloneLevel[] _tableStandaloneLevels;
 		[UnityEngine.SerializeField] private Table_StandaloneChapter[] _tableStandaloneChapters;
 		[UnityEngine.SerializeField] private Table_FashionShop[] _tableFashionShops;
-		[UnityEngine.SerializeField] private Table_HeadParts[] _tableHeadPartss;
 		[UnityEngine.SerializeField] private Table_UpperBodyParts[] _tableUpperBodyPartss;
+		[UnityEngine.SerializeField] private Table_HeadParts[] _tableHeadPartss;
 		[UnityEngine.SerializeField] private Table_LowerBodyParts[] _tableLowerBodyPartss;
 		[UnityEngine.SerializeField] private Table_AppendageParts[] _tableAppendagePartss;
 		[UnityEngine.SerializeField] private Table_TreasureMap[] _tableTreasureMaps;
@@ -77,10 +77,10 @@ namespace GameA.Game
 			_tableStandaloneChapters = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneChapter[]>(StandaloneChapterTextAsset.text);
 			var FashionShopTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "FashionShop"));
 			_tableFashionShops = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionShop[]>(FashionShopTextAsset.text);
-			var HeadPartsTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "HeadParts"));
-			_tableHeadPartss = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_HeadParts[]>(HeadPartsTextAsset.text);
 			var UpperBodyPartsTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "UpperBodyParts"));
 			_tableUpperBodyPartss = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_UpperBodyParts[]>(UpperBodyPartsTextAsset.text);
+			var HeadPartsTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "HeadParts"));
+			_tableHeadPartss = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_HeadParts[]>(HeadPartsTextAsset.text);
 			var LowerBodyPartsTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "LowerBodyParts"));
 			_tableLowerBodyPartss = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_LowerBodyParts[]>(LowerBodyPartsTextAsset.text);
 			var AppendagePartsTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "AppendageParts"));
@@ -140,13 +140,6 @@ namespace GameA.Game
 				return;
 			}
 			_tableFashionShops = FashionShopAsset.DataArray;
-			var HeadPartsAsset = _loader.GetConfigAssetData<TableHeadPartsAsset>("HeadParts");
-			if (HeadPartsAsset == null)
-			{
-				LogHelper.Error("HeadPartsAsset is null");
-				return;
-			}
-			_tableHeadPartss = HeadPartsAsset.DataArray;
 			var UpperBodyPartsAsset = _loader.GetConfigAssetData<TableUpperBodyPartsAsset>("UpperBodyParts");
 			if (UpperBodyPartsAsset == null)
 			{
@@ -154,6 +147,13 @@ namespace GameA.Game
 				return;
 			}
 			_tableUpperBodyPartss = UpperBodyPartsAsset.DataArray;
+			var HeadPartsAsset = _loader.GetConfigAssetData<TableHeadPartsAsset>("HeadParts");
+			if (HeadPartsAsset == null)
+			{
+				LogHelper.Error("HeadPartsAsset is null");
+				return;
+			}
+			_tableHeadPartss = HeadPartsAsset.DataArray;
 			var LowerBodyPartsAsset = _loader.GetConfigAssetData<TableLowerBodyPartsAsset>("LowerBodyParts");
 			if (LowerBodyPartsAsset == null)
 			{
@@ -297,17 +297,6 @@ namespace GameA.Game
 					LogHelper.Warning("_tableFashionShops table.Id {0} is duplicated!", _tableFashionShops[i].Id);
 				}
 			}
-			for (int i = 0; i < _tableHeadPartss.Length; i++)
-			{
-				if (!Table_HeadPartsDic.ContainsKey(_tableHeadPartss[i].Id))
-				{
-					Table_HeadPartsDic.Add(_tableHeadPartss[i].Id,_tableHeadPartss[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableHeadPartss table.Id {0} is duplicated!", _tableHeadPartss[i].Id);
-				}
-			}
 			for (int i = 0; i < _tableUpperBodyPartss.Length; i++)
 			{
 				if (!Table_UpperBodyPartsDic.ContainsKey(_tableUpperBodyPartss[i].Id))
@@ -317,6 +306,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableUpperBodyPartss table.Id {0} is duplicated!", _tableUpperBodyPartss[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableHeadPartss.Length; i++)
+			{
+				if (!Table_HeadPartsDic.ContainsKey(_tableHeadPartss[i].Id))
+				{
+					Table_HeadPartsDic.Add(_tableHeadPartss[i].Id,_tableHeadPartss[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableHeadPartss table.Id {0} is duplicated!", _tableHeadPartss[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableLowerBodyPartss.Length; i++)
@@ -513,19 +513,19 @@ namespace GameA.Game
 			}
 			return null;
 		}
-		public Table_HeadParts GetHeadParts(int key)
+		public Table_UpperBodyParts GetUpperBodyParts(int key)
 		{
-			Table_HeadParts tmp;
-			if (Table_HeadPartsDic.TryGetValue(key,out tmp))
+			Table_UpperBodyParts tmp;
+			if (Table_UpperBodyPartsDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
 			return null;
 		}
-		public Table_UpperBodyParts GetUpperBodyParts(int key)
+		public Table_HeadParts GetHeadParts(int key)
 		{
-			Table_UpperBodyParts tmp;
-			if (Table_UpperBodyPartsDic.TryGetValue(key,out tmp))
+			Table_HeadParts tmp;
+			if (Table_HeadPartsDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

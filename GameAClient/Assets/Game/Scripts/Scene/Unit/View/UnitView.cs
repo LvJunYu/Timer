@@ -224,14 +224,15 @@ namespace GameA.Game
                 }
             }
 
-            if (tableUnit.CanRotate)
-            {
-                Vector3 offset = GetRotationPosOffset();
-                _trans.localEulerAngles = new Vector3(0, 0, GetRotation(_unit.UnitDesc.Rotation));
-                _trans.localPosition = offset + _unit.GetTransPos();
-            }
             if (_dirTrans != null)
             {
+                if (tableUnit.CanRotate)
+                {
+                    //Vector3 offset = GetRotationPosOffset();
+                    _dirTrans.localEulerAngles = new Vector3(0, 0, GetRotation(_unit.UnitDesc.Rotation));
+                    //_dirTrans.localPosition = offset + _unit.GetTransPos();
+                }
+
                 if (_unit.MoveDirection != EMoveDirection.None || tableUnit.Id == ConstDefineGM2D.RollerId)
                 {
                     float y = 0;
