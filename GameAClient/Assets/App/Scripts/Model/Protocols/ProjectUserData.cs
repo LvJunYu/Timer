@@ -8,24 +8,40 @@ namespace GameA
 {
     public partial class ProjectUserData : SyncronisticData {
         #region 字段
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private long _projectId;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private long _userId;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private bool _likeFlag;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _rate;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private bool _favorite;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _completeCount;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private long _lastPlayTime;
         #endregion
 
         #region 属性
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public long ProjectId { 
             get { return _projectId; }
             set { if (_projectId != value) {
@@ -33,7 +49,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public long UserId { 
             get { return _userId; }
             set { if (_userId != value) {
@@ -41,7 +59,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool LikeFlag { 
             get { return _likeFlag; }
             set { if (_likeFlag != value) {
@@ -49,7 +69,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int Rate { 
             get { return _rate; }
             set { if (_rate != value) {
@@ -57,7 +79,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool Favorite { 
             get { return _favorite; }
             set { if (_favorite != value) {
@@ -65,7 +89,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int CompleteCount { 
             get { return _completeCount; }
             set { if (_completeCount != value) {
@@ -73,7 +99,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public long LastPlayTime { 
             get { return _lastPlayTime; }
             set { if (_lastPlayTime != value) {

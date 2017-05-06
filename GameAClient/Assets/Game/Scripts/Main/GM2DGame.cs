@@ -487,6 +487,16 @@ namespace GameA.Game
             }, failedCallback);
         }
 
+        /// <summary>
+        /// 保存改造关卡
+        /// </summary>
+        public void SaveModifyProject (Action successCallback = null, Action<EProjectOperateResult> failedCallback = null) {
+            byte[] mapDataBytes = MapManager.Instance.SaveMapData();
+            byte[] compressedBytes = MatrixProjectTools.CompressLZMA (mapDataBytes);
+//            _project.SetBytesData (mapDataBytes);
+            _project.SaveModifyProject (compressedBytes, successCallback, failedCallback);
+        }
+
         public void Publish(string name, string summary, Action successCallback=null, Action<EProjectOperateResult> failedCallback=null)
         {
             if(name == null)

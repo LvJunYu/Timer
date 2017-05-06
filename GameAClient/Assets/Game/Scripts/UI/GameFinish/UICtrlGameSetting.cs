@@ -140,49 +140,57 @@ namespace GameA.Game
 
 		private void OnClickExitButton()
         {
-			if (GM2DGame.Instance.GameInitType == GameManager.EStartType.Create
-				|| GM2DGame.Instance.GameInitType == GameManager.EStartType.Edit)
-			{
-				if (GM2DGame.Instance.NeedSave)
-				{
-					CommonTools.ShowPopupDialog("关卡做出的修改还未保存，是否退出", null,
-						new System.Collections.Generic.KeyValuePair<string, Action>("取消", () => { }),
-						new System.Collections.Generic.KeyValuePair<string, Action>("保存", () =>
-						{
-							if (GM2DGame.Instance.CurrentMode == EMode.EditTest)
-							{
-								Messenger<ECommandType>.Broadcast(EMessengerType.OnCommandChanged, ECommandType.Pause);
-								GM2DGame.Instance.ChangeToMode(EMode.Edit);
-							}
-							Project project = GM2DGame.Instance.Project;
-                                if (project.LocalDataState == ELocalDataState.LDS_UnCreated)
-							{
-								CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
-								{
-									GM2DGUIManager.Instance.CloseUI<UICtrlGameSetting>();
-									GM2DGUIManager.Instance.OpenUI<UICtrlPublish>();
-								}));
-							}
-							else
-							{
-                                UICtrlPublish.SaveProject(project.Name, project.Summary,
-                                    project.DownloadPrice, project.PublishRecordFlag, ()=>{
-									GM2DGUIManager.Instance.CloseUI<UICtrlGameSetting>();
-									SocialApp.Instance.ReturnToApp();
-								}, () =>
-								{
-									//保存失败
-								});
-							}
-						}),
-						new System.Collections.Generic.KeyValuePair<string, Action>("退出", () =>
-						{
-							GM2DGUIManager.Instance.CloseUI<UICtrlGameSetting>();
-							SocialApp.Instance.ReturnToApp();
-						}));
-					return;
-				}
-			}
+            if (GM2DGame.Instance.GameInitType == GameManager.EStartType.Create
+            || GM2DGame.Instance.GameInitType == GameManager.EStartType.Edit) {
+                if (GM2DGame.Instance.NeedSave) {
+                    CommonTools.ShowPopupDialog ("关卡做出的修改还未保存，是否退出", null,
+                        new System.Collections.Generic.KeyValuePair<string, Action> ("取消", () => {
+                        }),
+                        new System.Collections.Generic.KeyValuePair<string, Action> ("保存", () => {
+                            if (GM2DGame.Instance.CurrentMode == EMode.EditTest) {
+                                Messenger<ECommandType>.Broadcast (EMessengerType.OnCommandChanged, ECommandType.Pause);
+                                GM2DGame.Instance.ChangeToMode (EMode.Edit);
+                            }
+                            Project project = GM2DGame.Instance.Project;
+                            if (project.LocalDataState == ELocalDataState.LDS_UnCreated) {
+                                CoroutineProxy.Instance.StartCoroutine (CoroutineProxy.RunNextFrame (() => {
+                                    GM2DGUIManager.Instance.CloseUI<UICtrlGameSetting> ();
+                                    GM2DGUIManager.Instance.OpenUI<UICtrlPublish> ();
+                                }));
+                            } else {
+                                UICtrlPublish.SaveProject (project.Name, project.Summary,
+                                    project.DownloadPrice, project.PublishRecordFlag, () => {
+                                    GM2DGUIManager.Instance.CloseUI<UICtrlGameSetting> ();
+                                    SocialApp.Instance.ReturnToApp ();
+                                }, () => {
+                                    //保存失败
+                                });
+                            }
+                        }),
+                        new System.Collections.Generic.KeyValuePair<string, Action> ("退出", () => {
+                            GM2DGUIManager.Instance.CloseUI<UICtrlGameSetting> ();
+                            SocialApp.Instance.ReturnToApp ();
+                        }));
+                    return;
+                }
+            } else if (GM2DGame.Instance.GameInitType == GameManager.EStartType.ModifyEdit) {
+                // 保存改造关卡
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存改造关卡");
+                GM2DGame.Instance.SaveModifyProject (() => {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                        GM2DGUIManager.Instance.CloseUI<UICtrlGameSetting>();
+                        SocialApp.Instance.ReturnToApp();
+                    },
+                    code => {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                        GM2DGUIManager.Instance.CloseUI<UICtrlGameSetting>();
+                        SocialApp.Instance.ReturnToApp();
+                        // todo error handle
+                        LogHelper.Error("SaveModifyProject failed");
+                    }
+                );
+                return;
+            }
 			GM2DGUIManager.Instance.CloseUI<UICtrlGameSetting>();
 			SocialApp.Instance.ReturnToApp();
 		}

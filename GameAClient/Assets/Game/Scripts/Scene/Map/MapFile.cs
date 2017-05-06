@@ -32,17 +32,18 @@ namespace GameA.Game
             StopCoroutine("ParseData");
         }
 
-        public void Read(GM2DMapData mapData)
+        public void Read(GM2DMapData mapData, GameManager.EStartType startType)
         {
             _run = true;
             _mapProcess = 0;
             var version = mapData.Version;
             switch (version)
             {
-                case 0:
-                case 1:
-                    StartCoroutine("ParseData", mapData);
-                    break;
+            case 0:
+            case 1:
+//                StartCoroutine ("ParseData", mapData);
+                StartCoroutine (ParseData (mapData, startType));
+                break;
             }
         }
 
@@ -52,7 +53,7 @@ namespace GameA.Game
             StopCoroutine("ParseData");
         }
 
-        private IEnumerator ParseData(GM2DMapData mapData)
+        private IEnumerator ParseData(GM2DMapData mapData, GameManager.EStartType startType)
         {
             _mapProcess = 0f;
             var timer = new GameTimer();
@@ -69,7 +70,6 @@ namespace GameA.Game
                     AddAttrTo(GM2DTools.ToEngine(item.Guid), item);
                 }
             }
-
             var pairUnits = new Dictionary<IntVec3, PairUnitData>();
             var pairUnitDatas = mapData.PairUnitDatas;
             if (pairUnitDatas != null)
@@ -151,6 +151,10 @@ namespace GameA.Game
                     }
                 }
             }
+            // 只有在改造编辑的时候才读取地图的改造信息数据
+            if (startType == GameManager.EStartType.ModifyEdit) {
+                ParseModifyData (mapData);
+            }
             _mapProcess = 1;
             MapManager.Instance.OnSetMapDataSuccess(mapData);
         }
@@ -174,6 +178,21 @@ namespace GameA.Game
             MapManager.Instance.OnReadMapFile(unitDesc, tableUnit);
 			return true;
 		}
+
+        /// <summary>
+        /// 处理改造数据
+        /// </summary>
+        private void ParseModifyData (GM2DMapData mapData) {
+            for (int i = 0; i < mapData.ModifyDatas.Count; i++) {
+                if (mapData.ModifyDatas [i].Type == SoyEngine.Proto.EModifyType.MT_Modify) {
+                    DataScene2D.Instance.ModifiedUnits.Add (new ModifyData(mapData.ModifyDatas [i]));
+                } else if (mapData.ModifyDatas [i].Type == SoyEngine.Proto.EModifyType.MT_Erase) {
+                    DataScene2D.Instance.RemovedUnits.Add (new ModifyData(mapData.ModifyDatas [i]));
+                } else if (mapData.ModifyDatas [i].Type == SoyEngine.Proto.EModifyType.MT_Add) {
+                    DataScene2D.Instance.AddedUnits.Add (new ModifyData(mapData.ModifyDatas [i]));
+                }
+            }
+        }
 
 		public byte[] Save()
 		{
@@ -200,9 +219,23 @@ namespace GameA.Game
 					}
 				}
 			}
-			var modifyDatas = DataScene2D.Instance.ModifiedUnits;
-			for (int i = 0; i < modifyDatas.Count; i++) {
+
+            gm2DMapData.ModifyDatas.Clear ();
+            for (int i = 0; i < DataScene2D.Instance.ModifiedUnits.Count; i++) {
+                var mid = DataScene2D.Instance.ModifiedUnits [i].ToModifyItemData ();
+                mid.Type = SoyEngine.Proto.EModifyType.MT_Modify;
+                gm2DMapData.ModifyDatas.Add (mid);
 			}
+            for (int i = 0; i < DataScene2D.Instance.AddedUnits.Count; i++) {
+                var mid = DataScene2D.Instance.AddedUnits [i].ToModifyItemData ();
+                mid.Type = SoyEngine.Proto.EModifyType.MT_Add;
+                gm2DMapData.ModifyDatas.Add (mid);
+            }
+            for (int i = 0; i < DataScene2D.Instance.RemovedUnits.Count; i++) {
+                var mid = DataScene2D.Instance.RemovedUnits [i].ToModifyItemData ();
+                mid.Type = SoyEngine.Proto.EModifyType.MT_Erase;
+                gm2DMapData.ModifyDatas.Add (mid);
+            }
 
 
             gm2DMapData.UserGUID = LocalUser.Instance.UserGuid;
