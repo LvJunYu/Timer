@@ -402,6 +402,8 @@ namespace GameA
 		}
 
 		private void OnReturnToApp () {
+            if (!_isOpen)
+                return;
 			RefreshChapterInfo ();
 			if (_currentChapter <= AppData.Instance.AdventureData.UserData.SectionList.Count) {
 				if (AppData.Instance.AdventureData.UserData.SectionList [_currentChapter - 1].IsDirty) {
