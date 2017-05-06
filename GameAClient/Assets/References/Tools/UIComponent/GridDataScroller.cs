@@ -162,6 +162,7 @@ namespace SoyEngine
 
         private void CalculateParam()
         {
+            Canvas.ForceUpdateCanvases ();
             float vWidth = _scroller.viewport.rect.width;
             float vHeight = _scroller.viewport.rect.height;
             LayoutElement le = _scroller.viewport.GetComponent<LayoutElement>();

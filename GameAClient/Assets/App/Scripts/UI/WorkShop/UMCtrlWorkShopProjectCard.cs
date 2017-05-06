@@ -12,10 +12,23 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UMCtrlWorkShopProjectCard : UMCtrlBase<UMViewWorkShopProjectCard>
+    public class UMCtrlWorkShopProjectCard : UMCtrlBase<UMViewWorkShopProjectCard>, IDataItemRenderer
     {
         private CardDataRendererWrapper<Project> _wrapper;
-        public RectTransform Trans
+        private int _index;
+        public int Index
+        {
+            get
+            {
+                return _index;
+            }
+            set
+            {
+                _index = value;
+            }
+        }
+
+        public RectTransform Transform
         {
             get { return _cachedView.Trans; }
         }
@@ -28,12 +41,12 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-//            _cachedView.Card.onClick.AddListener(OnCardClick);
+            _cachedView.CardBtn.onClick.AddListener(OnCardClick);
         }
 
         protected override void OnDestroy()
         {
-//            _cachedView.Card.onClick.RemoveAllListeners();
+            _cachedView.CardBtn.onClick.RemoveAllListeners();
             base.OnDestroy();
         }
 
@@ -61,21 +74,23 @@ namespace GameA
             if(_wrapper == null)
             {
                 ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
+                _cachedView.SeletedMark.SetActiveEx (false);
                 return;
             }
 //            RefreshCardMode(_wrapper.CardMode, _wrapper.IsSelected);
             if(_wrapper.Content == null)
             {
-                _cachedView.EmptyDock.SetActive(true);
-                _cachedView.InfoDock.SetActive(false);
+//                _cachedView.EmptyDock.SetActive(true);
+//                _cachedView.InfoDock.SetActive(false);
             }
             else
             {
-                _cachedView.EmptyDock.SetActive(false);
-                _cachedView.InfoDock.SetActive(true);
+//                _cachedView.EmptyDock.SetActive(false);
+//                _cachedView.InfoDock.SetActive(true);
                 DictionaryTools.SetContentText(_cachedView.Title, _wrapper.Content.Name);
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _wrapper.Content.IconPath, _cachedView.DefaultCoverTexture);
-                _cachedView.CreateTime.text = DateTimeUtil.GetServerSmartDateStringByTimestampMillis(_wrapper.Content.UpdateTime);
+                _cachedView.SeletedMark.SetActiveEx (_wrapper.IsSelected);
+                _cachedView.CreateTime.text = DateTimeUtil.GetServerSmartDateStringByTimestampMillis(_wrapper.Content.CreateTime);
 //                DictionaryTools.SetContentText(_cachedView.ProjectCategoryText, EnumStringDefine.GetProjectCategoryString(_wrapper.Content.ProjectCategory));
             }
         }

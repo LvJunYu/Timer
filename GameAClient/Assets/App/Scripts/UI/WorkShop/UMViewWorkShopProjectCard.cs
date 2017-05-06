@@ -26,5 +26,6 @@ namespace GameA
         public Image SeletedMark;
         public GameObject InfoDock;
         public GameObject EmptyDock;
+        public Button CardBtn;
     }
 }

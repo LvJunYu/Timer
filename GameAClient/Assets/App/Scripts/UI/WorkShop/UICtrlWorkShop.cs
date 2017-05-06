@@ -26,8 +26,9 @@ namespace GameA
         private EWorkShopState _state = EWorkShopState.None;
         private int _personalProjectCount;
 
-
+        private CardDataRendererWrapper<Project> _curSelectedProject;
         private List<CardDataRendererWrapper<Project>> _content = new List<CardDataRendererWrapper<Project>>();
+        private bool _autoSelectFirstProject = false;
 
         #endregion
 
@@ -41,7 +42,17 @@ namespace GameA
             _personalProjectCount = 0;
             base.OnOpen (parameter);
             SetMode(EWorkShopState.Edit);
-//            LocalUser.Instance.PersonalProjectList.Request ();
+            LocalUser.Instance.PersonalProjectList.Request (0, long.MaxValue, int.MaxValue, 0,
+                () => {
+                    Refresh();
+                },
+                code => {
+                    // todo error handle
+                }
+            );
+            if (null == _curSelectedProject) {
+                AotoSelectFirstProject ();
+            }
             Refresh();
         }
 
@@ -57,7 +68,7 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-//            RegisterEvent(EMessengerType.OnChangeToAppMode, OnEvent);
+            RegisterEvent(EMessengerType.OnChangeToAppMode, OnReturnToApp);
 //            RegisterEvent(SoyEngine.EMessengerType.OnAccountLoginStateChanged, OnEvent);
         }
 
@@ -67,7 +78,8 @@ namespace GameA
 //            _cachedView.LoginBtn.onClick.AddListener(OnLoginBtnClick);
 //            _cachedView.RegisterBtn.onClick.AddListener(OnRegisterBtnClick);
             _cachedView.NewProjectBtn.onClick.AddListener(OnNewProjectBtn);
-//            _cachedView.CreateXiuXianBtn.onClick.AddListener (OnRunXiuXianBtnClick);
+            _cachedView.DeleteBtn.onClick.AddListener (OnDeleteBtn);
+            _cachedView.EditBtn.onClick.AddListener (OnEditBtn);
 //            _cachedView.CreateJieMiBtn.onClick.AddListener (OnRunJieMiBtnClick);
 //            _cachedView.CreateJiXianBtn.onClick.AddListener (OnRunJiXianBtnClick);
 //            _cachedView.CloseCategoryMaskBtn.onClick.AddListener (OnCloseCatogeryMaskClick);
@@ -76,11 +88,19 @@ namespace GameA
 
 
 			_cachedView.ReturnBtn.onClick.AddListener (OnReturnBtn);
+
+            _cachedView.GridScroller.SetCallback(OnItemRefresh, GetItemRenderer);
         }
 
         private void Refresh()
         {
-            RefreshView();
+//            RefreshView();
+            RefreshWorkShopProjectList ();
+            RefreshProjectDetailInfoPanel ();
+        }
+
+        private void AotoSelectFirstProject () {
+            _autoSelectFirstProject = true;
         }
 
         private void RefreshView()
@@ -99,7 +119,87 @@ namespace GameA
         }
 
         private void RefreshWorkShopProjectList () {
+            long preSelectPRojectId = 0;
+            if (null != _curSelectedProject) {
+                preSelectPRojectId = _curSelectedProject.Content.ProjectId;
+            }
 //            LocalUser.Instance.per
+            if (LocalUser.Instance.PersonalProjectList.IsInited) {
+                List<Project> list = LocalUser.Instance.PersonalProjectList.ProjectList;
+                _content.Clear();
+                _content.Capacity = list.Capacity;
+                for(int i=0; i < list.Count; i++)
+                {
+                    var wrapper = new CardDataRendererWrapper<Project>(list[i], OnProjectCardClick);
+//                    if(_mode == EMode.Edit)
+//                    {
+//                        wrapper.CardMode = ECardMode.Selectable;
+//                        wrapper.IsSelected = false;
+//                    }
+//                    else
+                    {
+                        wrapper.CardMode = ECardMode.Normal;
+                        wrapper.IsSelected = list [i].ProjectId == preSelectPRojectId;
+                        _curSelectedProject = wrapper.IsSelected ? wrapper : _curSelectedProject;
+                    }
+                    _content.Add(wrapper);
+                }
+                _cachedView.GridScroller.SetItemCount(_content.Count);
+                if (_autoSelectFirstProject && null == _curSelectedProject) {
+                    _autoSelectFirstProject = false;
+                    if (_content.Count > 0) {
+                        _content [0].IsSelected = true;
+                        _curSelectedProject = _content [0];
+                    }
+                }
+//                _currentSelectedCount = 0;
+            }
+        }
+
+        private void RefreshProjectDetailInfoPanel () {
+            if (null != _curSelectedProject && null != _curSelectedProject.Content) {
+                ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _curSelectedProject.Content.IconPath, _cachedView.DefaultCoverTexture);
+                DictionaryTools.SetContentText(_cachedView.Title, _curSelectedProject.Content.Name);
+                DictionaryTools.SetContentText(_cachedView.Desc, _curSelectedProject.Content.Summary);
+            } else {
+                ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
+                DictionaryTools.SetContentText(_cachedView.Title, "----");
+                DictionaryTools.SetContentText(_cachedView.Desc, "--------");
+            }
+        }
+
+        private void OnProjectCardClick(CardDataRendererWrapper<Project> item) {
+            if (null != _curSelectedProject) {
+                _curSelectedProject.IsSelected = false;
+            }
+            item.IsSelected = true;
+            _curSelectedProject = item;
+            _cachedView.GridScroller.RefreshCurrent ();
+            RefreshProjectDetailInfoPanel ();
+        }
+
+        private void OnItemRefresh(IDataItemRenderer item, int inx)
+        {
+            if(inx >= _content.Count)
+            {
+                LogHelper.Error("OnItemRefresh Error Inx > count");
+                return;
+            }
+            item.Set(_content[inx]);
+//            if(!_isEnd && _mode != EMode.Edit)
+//            {
+//                if(inx > _content.Count - 2)
+//                {
+//                    RequestData(true);
+//                }
+//            }
+        }
+
+        private IDataItemRenderer GetItemRenderer(RectTransform parent)
+        {
+            var item = new UMCtrlWorkShopProjectCard();
+            item.Init(parent, Vector3.zero);
+            return item;
         }
 
         private void OnCloseCatogeryMaskClick ()
@@ -111,10 +211,9 @@ namespace GameA
 //            HideCreateCategoryMask ();
 //            OnRunBtnClick ();
         }
-        private void OnRunJieMiBtnClick ()
+        private void OnDeleteBtn ()
         {
-//            HideCreateCategoryMask ();
-//            OnRunBtnClick ();
+            ProcessDelete ();
         }
         private void OnNewProjectBtn ()
         {
@@ -173,6 +272,41 @@ namespace GameA
             }
         }
 
+        private void ProcessDelete () {
+            if (null == _curSelectedProject || null == _curSelectedProject.Content)
+                return;
+            CommonTools.ShowPopupDialog(string.Format("确定要删除作品《{0}》吗？", _curSelectedProject.Content.Name), null,
+                new KeyValuePair<string, Action>("确定",()=>{
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在删除");
+                    var projList = new List<long>();
+                    projList.Add(_curSelectedProject.Content.ProjectId);
+                    RemoteCommands.DeleteProject(
+                        projList,
+                        msg => {
+                            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                            LocalUser.Instance.PersonalProjectList.ProjectList.Remove(_curSelectedProject.Content);
+                            _curSelectedProject = null;
+                            AotoSelectFirstProject ();
+                            Refresh ();
+                            LocalUser.Instance.PersonalProjectList.Request (0, long.MaxValue, int.MaxValue, 0,
+                                () => {
+                                    Refresh();
+                                },
+                                code => {
+                                    // todo error handle
+                                }
+                            );
+                        },
+                        code => {
+                            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                            CommonTools.ShowPopupDialog("删除失败");
+                        }
+                    );
+                }), new KeyValuePair<string, Action>("取消", ()=>{
+                    LogHelper.Info("Cancel Delete");
+            }));
+        }
+
 //        public void ShowCreateCategoryMask ()
 //        {
 //            if (_cachedView.CategaryMask.activeInHierarchy == false) {
@@ -216,28 +350,6 @@ namespace GameA
 //            _uiStack.Titlebar.RefreshRightButton();
         }
 
-        public void ProcessDelete()
-        {
-//            List<Project> projectList = _cachedView.SoyPersonalProjectList.GetSelectedProjectList();
-//            if(projectList.Count == 0)
-//            {
-//                return;
-//            }
-//            CommonTools.ShowPopupDialog(string.Format("确定要删除这 {0} 个作品吗？", projectList.Count), null,
-//                new KeyValuePair<string, Action>("确定",()=>{
-//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在删除");
-//                    LocalUser.Instance.UserLegacy.DeleteUserSavedProject(projectList, ()=>{
-//                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//                        SetMode(EMode.Normal);
-//                        RefreshView();
-//                    }, ()=>{
-//                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//                        CommonTools.ShowPopupDialog("删除失败");
-//                    });
-//                }), new KeyValuePair<string, Action>("取消", ()=>{
-//                    LogHelper.Info("Cancel Delete");
-//                }));
-        }
 
 //        public void SetPersonalProjectCount(int count)
 //        {
@@ -250,10 +362,12 @@ namespace GameA
 //            SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
 //        }
 //
-//        private void OnRegisterBtnClick()
-//        {
-//            SocialGUIManager.Instance.OpenPopupUI<UICtrlSignup>();
-//        }
+        private void OnEditBtn()
+        {
+            if (null != _curSelectedProject && null != _curSelectedProject.Content) {
+                AppLogicUtil.EditPersonalProject(_curSelectedProject.Content);
+            }
+        }
 
 		private void OnReturnBtn () {
 			SocialGUIManager.Instance.ReturnToHome ();
@@ -296,6 +410,18 @@ namespace GameA
 //                SetMode(EMode.Edit);
 //            }
 //        }
+
+
+        private void OnReturnToApp () {
+            LocalUser.Instance.PersonalProjectList.Request (0, long.MaxValue, int.MaxValue, 0,
+                () => {
+                    Refresh();
+                },
+                code => {
+                    // todo error handle
+                }
+            );
+        }
 
         #endregion 接口
         #endregion
