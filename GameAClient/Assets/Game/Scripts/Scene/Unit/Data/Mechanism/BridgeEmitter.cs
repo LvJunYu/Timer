@@ -38,7 +38,7 @@ namespace GameA.Game
             _checkGrid = GM2DTools.CalculateFireColliderGrid(BridgeUnitId, _colliderGrid, _unitDesc.Rotation);
         }
 
-        public void UpdateLogic(float deltaTime)
+        public override void UpdateLogic()
         {
             if (PlayMode.Instance.LogicFrameCnt % 5 == 0)
             {
