@@ -14,7 +14,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     [Unit(Id = 5008, Type = typeof(BridgeEmitter))]
-    public class BridgeEmitter : BlockBase
+    public class BridgeEmitter : SwitchUnit
     {
         private const int BridgeUnitId = 5009;
         protected Grid2D _checkGrid;
@@ -32,10 +32,12 @@ namespace GameA.Game
             _gridChecks.Clear();
         }
 
-        internal override void OnSwitchTrigger()
+        protected override void OnTrigger()
         {
-            base.OnSwitchTrigger();
-            _checkGrid = GM2DTools.CalculateFireColliderGrid(BridgeUnitId, _colliderGrid, _unitDesc.Rotation);
+            if (_run)
+            {
+                _checkGrid = GM2DTools.CalculateFireColliderGrid(BridgeUnitId, _colliderGrid, _unitDesc.Rotation);
+            }
         }
 
         public override void UpdateLogic()

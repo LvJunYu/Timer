@@ -1240,7 +1240,7 @@ namespace GameA.Game
             _isDisposed = true;
         }
 
-        internal virtual void OnSwitchTrigger()
+        internal virtual void OnOtherSwitch()
         {
         }
 

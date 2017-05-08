@@ -50,7 +50,7 @@ namespace GameA.Game
             }
         }
 
-        internal override void OnSwitchTrigger()
+        internal override void OnOtherSwitch()
         {
             _run = !_run;
         }

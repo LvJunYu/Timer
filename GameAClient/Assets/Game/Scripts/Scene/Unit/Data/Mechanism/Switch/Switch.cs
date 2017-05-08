@@ -37,7 +37,7 @@ namespace GameA.Game
                     var unit = _units[i];
                     if (unit != null && unit.IsAlive)
                     {
-                        unit.OnSwitchTrigger();
+                        unit.OnOtherSwitch();
                     }
                 }
             }
