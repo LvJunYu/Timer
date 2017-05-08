@@ -2,7 +2,7 @@
 using System.Collections;
 using SoyEngine;
 using UnityEngine.UI;
-
+/*试图初始界面*/
 public class UIViewInitPage : UIViewBase {
     public Image BgImage;
     public Image LoadingImage;

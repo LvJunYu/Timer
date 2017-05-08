@@ -36,6 +36,7 @@ namespace GameA
 			}
 			_lastClickTime = Time.realtimeSinceStartup;
 		}
+        
 
 		private void Update()
 		{

@@ -10,11 +10,12 @@ using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
 using SoyEngine.Proto;
-using SoyEngine;
+//using SoyEngine;
 using GameA.Game;
 
 namespace GameA
 {
+	
 	[UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlTaskbar : UICtrlGenericBase<UIViewTaskbar>
     {
@@ -104,14 +105,16 @@ namespace GameA
 			_cachedView.WorkshopButton.onClick.AddListener (OnCreateBtn);
 			_cachedView.SingleModeButton.onClick.AddListener (OnSingleGameBtn);
 
+
+
 			_cachedView.AvatarBtn.onClick.AddListener (OnAvatarBtn);
-            _cachedView.LotteryButton.onClick.AddListener(OnLottery);
 
-          
 
-            _cachedView.TestChangeAvatarBtn.onClick.AddListener (OnTestChangeAvatar);
+
+
+			_cachedView.TestChangeAvatarBtn.onClick.AddListener (OnTestChangeAvatar);
 			_cachedView.DebugClearUserDataBtn.onClick.AddListener (OnDebugClearUserData);
-           
+
 			// todo player avatar at home
 			_avatarRenderTexture = new RenderTexture (256, 512, 0);
 			_cachedView.AvatarRenderCamera.targetTexture = _avatarRenderTexture;
@@ -138,7 +141,6 @@ namespace GameA
 					LogHelper.Error("Network error when get avatarData, {0}", code);
 				}
 			);
-        
         }
 
 		protected override void OnOpen (object parameter)
@@ -165,7 +167,7 @@ namespace GameA
 //			SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求换装...");
 //			int type = UnityEngine.Random.Range (0, 3);
 //			LocalUser.Instance.UserLegacy.AvatarData.SendChangeAvatarPart (
-//				(EAvatarPart)(type + 1),
+//				(EAvatarPart)(type + 1),  
 //				(_avatarView.EquipedPartsIds [type] + 1) % 2 + 1,
 //				() => {
 //					_avatarView.SetParts ((_avatarView.EquipedPartsIds [type] + 1) % 2 + 1,
@@ -176,9 +178,24 @@ namespace GameA
 //				}
 //			);
 		}
-        
-		private void OnDebugClearUserData () {
 
+		private void OnDebugClearUserData () {
+//			SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "清空数据");
+//			RemoteCommands.ClearUserAll (LocalUser.Instance.UserGuid,
+//				ret => {
+//					ParallelTaskHelper<ENetResultCode> helper = new ParallelTaskHelper<ENetResultCode>(()=>{
+//						SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);	
+//					}, code=>{
+//						LogHelper.Error("Refresh user data failed.");
+//						SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//					});
+//					helper.AddTask(AppData.Instance.LoadAppData);
+//					helper.AddTask(LocalUser.Instance.LoadUserData);
+//					helper.AddTask(AppData.Instance.AdventureData.PrepareAllData);
+//				}, code => {
+//					LogHelper.Error("Clear user data failed.");
+//					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//				});
 		}
 
         public void OnNewsBtn()
@@ -191,7 +208,7 @@ namespace GameA
 
         public void OnCreateBtn()
         {
-            if(OpenMainUI(typeof (UICtrlWorkShop)))
+            if(OpenMainUI(typeof (UICtrlMatrixDetail)))
             {
 //                SelectButton(_cachedView.Create.Button);
             }
@@ -219,7 +236,6 @@ namespace GameA
 
         private bool OpenMainUI(Type type, object param = null)
         {
-            
             UICtrlBase ui = SocialGUIManager.Instance.GetUI(type);
 //            if(_currentUI == ui)
 //            {
@@ -234,50 +250,43 @@ namespace GameA
 		/// 家园角色被点击
 		/// </summary>
 		private void OnAvatarBtn () {
-			SocialGUIManager.Instance.OpenPopupUI<UICtrlFashionShop> ();
+			SocialGUIManager.Instance.OpenPopupUI<UICtrlFashionShopMainMenu>();
 		}
 
-        private void OnLottery()
-        {
-            SocialGUIManager.Instance.OpenPopupUI<UICtrlLottery>();
-        }
+//        private void SelectButton(UnityEngine.UI.Button button)
+//        {
+//            for (int i = 0; i < _buttonList.Length; i++)
+//            {
+//                var btn = _buttonList[i];
+//                if(btn == null)
+//                {
+//                    continue;
+//                }
+//                Image image = (Image) btn.targetGraphic;
+//                if(btn == button)
+//                {
+//                    image.sprite = btn.spriteState.pressedSprite;
+//                    Text text = btn.GetComponentInChildren<Text>();
+//                    if(text != null)
+//                    {
+//                        text.color = SelectedColorList[i];
+//                    }
+//                    btn.enabled = false;
+//                }
+//                else
+//                {
+//                    image.sprite = btn.spriteState.disabledSprite;
+//                    Text text = btn.GetComponentInChildren<Text>();
+//                    if(text != null)
+//                    {
+//                        text.color = DefaultColorList[i];
+//                    }
+//                    btn.enabled = true;
+//                }
+//            }
+//        }
 
-
-
-        //        private void SelectButton(UnityEngine.UI.Button button)
-        //        {
-        //            for (int i = 0; i < _buttonList.Length; i++)
-        //            {
-        //                var btn = _buttonList[i];
-        //                if(btn == null)
-        //                {
-        //                    continue;
-        //                }
-        //                Image image = (Image) btn.targetGraphic;
-        //                if(btn == button)
-        //                {
-        //                    image.sprite = btn.spriteState.pressedSprite;
-        //                    Text text = btn.GetComponentInChildren<Text>();
-        //                    if(text != null)
-        //                    {
-        //                        text.color = SelectedColorList[i];
-        //                    }
-        //                    btn.enabled = false;
-        //                }
-        //                else
-        //                {
-        //                    image.sprite = btn.spriteState.disabledSprite;
-        //                    Text text = btn.GetComponentInChildren<Text>();
-        //                    if(text != null)
-        //                    {
-        //                        text.color = DefaultColorList[i];
-        //                    }
-        //                    btn.enabled = true;
-        //                }
-        //            }
-        //        }
-
-        private void RefreshUserInfo () {
+		private void RefreshUserInfo () {
 			_cachedView.NickName.text = LocalUser.Instance.User.UserInfoSimple.NickName;
 			ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHeadAvatar, 
 				LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,

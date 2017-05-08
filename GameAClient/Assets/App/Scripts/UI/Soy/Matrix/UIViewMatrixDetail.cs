@@ -19,6 +19,9 @@ namespace GameA
         public Button CreateJiXianBtn;
         public Button CloseCategoryMaskBtn;
         public Button CloseCategoryMaskBtnBigger;
+		/// <summary>
+		/// 覆蓋界面
+		/// </summary>
         public GameObject CategaryMask;
         public Image CreateBtnSprite;
         public UISoyPersonalProjectList SoyPersonalProjectList;

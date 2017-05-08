@@ -206,20 +206,21 @@ namespace GameA
 //                {
 //                    _cachedView.NormalWideLoadingImage.sprite = param.LoadingImg;
 //                }
-//            }
+//                           }
         }
-        private void UpdateNormalTallView()
-        {
 
+		private void UpdateNormalTallView()
+        {
+			
         }
 
         #region 公开方法
 
-        public void SetText(string str)
-        {
-            _cachedView.NormalWideProgressText.text = str;
-            _cachedView.GameWideProgressText.text = str;
-        }
+		public void SetText (string str)
+		{
+			_cachedView.NormalWideProgressText.text = str;
+			_cachedView.GameWideProgressText.text = str;
+		}
         #endregion 公开方法
 
         #region 事件响应

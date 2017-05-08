@@ -104,6 +104,7 @@ namespace GameA
             User u = _content.UserLegacy;
             DictionaryTools.SetContentText(_cachedView.AuthorName, u.NickName);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, _content.UserLegacy.HeadImgUrl, _cachedView.DefaultTexture);
+//			ImageResourceManager.Instance.SetDynamicImage();
             _cachedView.CreateTime.text =  DateTimeUtil.GetServerSmartDateStringByTimestampMillis(_content.CreateTime);
             DictionaryTools.SetContentText(_cachedView.Name, _content.Name);
             string summary;

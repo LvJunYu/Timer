@@ -13,7 +13,7 @@ using UnityEngine;
 
 
 namespace GameA
-{
+{/*用户左边按钮*/
     public interface IUIWithLeftCustomButton
     {
         Button GetLeftButton();

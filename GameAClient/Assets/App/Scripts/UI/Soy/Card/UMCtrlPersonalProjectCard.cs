@@ -28,6 +28,7 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
+
             _cachedView.Card.onClick.AddListener(OnCardClick);
         }
 
