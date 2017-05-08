@@ -145,6 +145,7 @@
     <Compile Include="Assets\App\Scripts\Model\EMessengerType.cs" />
     <Compile Include="Assets\App\Scripts\Model\Home\AvatarPart\HomeAvatarPartData.cs" />
     <Compile Include="Assets\App\Scripts\Model\Home\HomePart\HomePartData.cs" />
+    <Compile Include="Assets\App\Scripts\Model\Home\Raffle\UserRaffleTicket.cs" />
     <Compile Include="Assets\App\Scripts\Model\LocalUser.cs" />
     <Compile Include="Assets\App\Scripts\Model\Project\Project.Impl.cs" />
     <Compile Include="Assets\App\Scripts\Model\Project\ProjectComment.cs" />
@@ -158,7 +159,6 @@
     <Compile Include="Assets\App\Scripts\Model\ProtocolPartial\UserEnergy.Impl.cs" />
     <Compile Include="Assets\App\Scripts\Model\ProtocolPartial\UserInfoDetail.Impl.cs" />
     <Compile Include="Assets\App\Scripts\Model\ProtocolPartial\UsingAvatarPart.Impl.cs" />
-    <Compile Include="Assets\App\Scripts\Model\ProtocolPartial\ValidAvatarPart.Impl.cs" />
     <Compile Include="Assets\App\Scripts\Model\Protocols\AdventureProjectList.cs" />
     <Compile Include="Assets\App\Scripts\Model\Protocols\AdventureSection.cs" />
     <Compile Include="Assets\App\Scripts\Model\Protocols\AdventureUserData.cs" />
@@ -220,15 +220,9 @@
     <Compile Include="Assets\App\Scripts\UI\Base\USCtrlBase.cs" />
     <Compile Include="Assets\App\Scripts\UI\Base\USViewBase.cs" />
     <Compile Include="Assets\App\Scripts\UI\EnumStringDefine.cs" />
-    <Compile Include="Assets\App\Scripts\UI\FashionShop\MySprits\ShopItem.cs" />
-    <Compile Include="Assets\App\Scripts\UI\FashionShop\MySprits\UICtrlPurchaseTotalCount.cs" />
-    <Compile Include="Assets\App\Scripts\UI\FashionShop\MySprits\UIViewPurchaseTotalCount.cs" />
-    <Compile Include="Assets\App\Scripts\UI\FashionShop\MySprits\UMCtrlFashionShopCard.cs" />
-    <Compile Include="Assets\App\Scripts\UI\FashionShop\MySprits\UMViewFashionShopCard.cs" />
-    <Compile Include="Assets\App\Scripts\UI\FashionShop\MySprits\USCtrlFashionShop.cs" />
-    <Compile Include="Assets\App\Scripts\UI\FashionShop\MySprits\USViewFashionShop.cs" />
-    <Compile Include="Assets\App\Scripts\UI\FashionShop\UICtrlFashionShopMainMenu.cs" />
-    <Compile Include="Assets\App\Scripts\UI\FashionShop\UIViewFashionShopMainMenu.cs" />
+    <Compile Include="Assets\App\Scripts\UI\FashionShop\UICtrlFashionItem.cs" />
+    <Compile Include="Assets\App\Scripts\UI\FashionShop\UICtrlFashionShop.cs" />
+    <Compile Include="Assets\App\Scripts\UI\FashionShop\UIViewFashionShop.cs" />
     <Compile Include="Assets\App\Scripts\UI\Game\MatrixProjectResTools.cs" />
     <Compile Include="Assets\App\Scripts\UI\InGame\UICtrlEnterGameLoading.cs" />
     <Compile Include="Assets\App\Scripts\UI\InGame\UICtrlMenuInGame.cs" />
@@ -283,6 +277,8 @@
     <Compile Include="Assets\App\Scripts\UI\Me\UserInfo\UIViewMyUserInfoModify.cs" />
     <Compile Include="Assets\App\Scripts\UI\ModifyMatch\UICtrlModifyMatchMain.cs" />
     <Compile Include="Assets\App\Scripts\UI\ModifyMatch\UIViewModifyMatchMain.cs" />
+    <Compile Include="Assets\App\Scripts\UI\Raffle\UICtrlLottery.cs" />
+    <Compile Include="Assets\App\Scripts\UI\Raffle\UIViewLottery.cs" />
     <Compile Include="Assets\App\Scripts\UI\SingleMode\UICtrlChapter.cs" />
     <Compile Include="Assets\App\Scripts\UI\SingleMode\UICtrlLevelPoint.cs" />
     <Compile Include="Assets\App\Scripts\UI\SingleMode\UICtrlSingleMode.cs" />
@@ -435,7 +431,6 @@
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Base\UnitBase.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Base\UnitManager.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Base\UnitWithChild.cs" />
-    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Collection\CollectionBase.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Collection\Energy.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Collection\EnergyClay.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Collection\EnergyFire.cs" />
@@ -443,16 +438,8 @@
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Collection\EnergyJelly.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Collection\EnergyWater.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Collection\Gem.cs" />
-    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Collection\Invincible.cs" />
-    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Collection\Life.cs" />
-    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Decoration\AlertBoard.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Decoration\BillBoard.cs" />
-    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Decoration\Flower.cs" />
-    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Decoration\Grass.cs" />
-    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Decoration\GuideBoard.cs" />
-    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Decoration\LaserBoard.cs" />
-    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Decoration\MonsterBoard.cs" />
-    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Decoration\Tree.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Decoration\GuideboardUnit.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Earth\BlueStone.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Earth\BlueStoneBan.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Earth\BlueStoneRotate.cs" />
@@ -496,7 +483,6 @@
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\SwitchPress.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\SwtichFollow.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\Trigger.cs" />
-    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Monster\MonsterAI.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Monster\MonsterBase.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Monster\MonsterTree.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Skill\Bullet\BulletBase.cs" />
