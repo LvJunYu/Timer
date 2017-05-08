@@ -12,7 +12,7 @@ using UnityEngine;
 
 
 namespace GameA
-{
+{/*任务栏*/
     public interface IUIWithTaskBar
     {
     }

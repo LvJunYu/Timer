@@ -106,6 +106,9 @@
     <Reference Include="UnityEditor.Graphs">
       <HintPath>Library\UnityAssemblies\UnityEditor.Graphs.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEditor.Android.Extensions">
+      <HintPath>Library\UnityAssemblies\UnityEditor.Android.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">
       <HintPath>Library\UnityAssemblies\UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
     </Reference>
@@ -312,7 +315,8 @@
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Switch.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1SwitchFollow.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1SwitchGate.atlas.txt" />
-    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Water.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Water_B.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Water_F.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Weapon\Empty.txt" />
     <None Include="Assets\JoyGameArt\Global\Shader\Decal.shader" />
     <None Include="Assets\JoyGameArt\Global\Shader\TiledSprite2d.shader" />

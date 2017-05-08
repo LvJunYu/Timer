@@ -30,20 +30,21 @@ namespace GameA.Game
 		}
 		protected override bool OnInit()
 		{
+			var tableUnit = _unit.TableUnit;
 			SkeletonDataAsset data;
-            if (!GameResourceManager.Instance.TryGetSpineDataByName(_unit.AssetPath, out data))
+			if (!GameResourceManager.Instance.TryGetSpineDataByName(tableUnit.Model, out data))
 			{
-                LogHelper.Error("TryGetSpineDataByName Failed! {0}", _unit.AssetPath);
+				LogHelper.Error("TryGetSpineDataByName Failed! {0}", tableUnit.Model);
 				return false;
 			}
+
 
 			_skeletonAnimation.skeletonDataAsset = data;
 			LinkBaseSkinTextures ();
 			_skeletonAnimation.Initialize(true);
 			_skeletonAnimation.enabled = true;
-            _animation.Set();
 			_renderer = _skeletonAnimation.GetComponent<Renderer>();
-            _renderer.sortingOrder = UnitManager.Instance.GetSortingOrder(_unit.TableUnit);
+			_renderer.sortingOrder = UnitManager.Instance.GetSortingOrder(tableUnit);
 
 			_avatarId = 1;
 			_skeletonName = _unit.TableUnit.Model;

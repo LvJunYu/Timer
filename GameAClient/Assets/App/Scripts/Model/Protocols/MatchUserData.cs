@@ -9,111 +9,61 @@ namespace GameA
     public partial class MatchUserData : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        /// <summary>
-        /// 用户Id
-        /// </summary>
+        // 用户Id
         private long _userId;
-        /// <summary>
-        /// 可用地块数据
-        /// </summary>
+        // 可用地块数据
         private UserMatchUnitData _unitData;
-        /// <summary>
-        /// 最后发布时间
-        /// </summary>
+        // 最后发布时间
         private long _curPublishTime;
-        /// <summary>
-        /// 最后发布的关卡数据
-        /// </summary>
+        // 最后发布的关卡数据
         private Project _curPublishProject;
-        /// <summary>
-        /// 当前改造关卡所属章节
-        /// </summary>
+        // 当前改造关卡所属章节
         private int _curReformSection;
-        /// <summary>
-        /// 当前改造关卡所属关卡
-        /// </summary>
+        // 当前改造关卡所属关卡
         private int _curReformLevel;
-        /// <summary>
-        /// 当前改造状态
-        /// </summary>
+        // 当前改造状态
         private int _curReformState;
-        /// <summary>
-        /// 改造间隔秒数
-        /// </summary>
+        // 改造间隔秒数
         private int _reformIntervalSeconds;
-        /// <summary>
-        /// 当前正在改造的关卡数据
-        /// </summary>
+        // 当前正在改造的关卡数据
         private Project _curReformProject;
-        /// <summary>
-        /// 改造可改变地块数
-        /// </summary>
+        // 改造可改变地块数
         private int _reformModifyUnitCapacity;
-        /// <summary>
-        /// 改造可添加地块数
-        /// </summary>
+        // 改造可添加地块数
         private int _reformAddUnitCapacity;
-        /// <summary>
-        /// 改造可删除地块数
-        /// </summary>
+        // 改造可删除地块数
         private int _reformDeleteUnitCapacity;
-        /// <summary>
-        /// 剩余挑战次数
-        /// </summary>
+        // 剩余挑战次数
         private int _leftChallengeCount;
-        /// <summary>
-        /// 剩余挑战次数刷新时间ms
-        /// </summary>
+        // 剩余挑战次数刷新时间ms
         private long _leftChallengeCountRefreshTime;
-        /// <summary>
-        /// 挑战次数累计间隔秒数s
-        /// </summary>
+        // 挑战次数累计间隔秒数s
         private int _challengeIntervalSecond;
-        /// <summary>
-        /// 最大可累计挑战次数
-        /// </summary>
+        // 最大可累计挑战次数
         private int _challengeCapacity;
-        /// <summary>
-        /// 当前匹配已挑战次数
-        /// </summary>
+        // 当前匹配已挑战次数
         private int _curMatchChallengeCount;
-        /// <summary>
-        /// 当前已选挑战难度EChallengeProjectTyple
-        /// </summary>
+        // 当前已选挑战难度EChallengeProjectTyple
         private int _curSelectedChallengeType;
-        /// <summary>
-        /// 简单挑战关卡数据
-        /// </summary>
+        // 简单挑战关卡数据
         private Project _easyChallengeProjectData;
-        /// <summary>
-        /// 中等挑战关卡数据
-        /// </summary>
+        // 中等挑战关卡数据
         private Project _mediumChallengeProjectData;
-        /// <summary>
-        /// 困难挑战关卡数据
-        /// </summary>
+        // 困难挑战关卡数据
         private Project _difficultChallengeProjectData;
-        /// <summary>
-        /// 随机挑战关卡数据
-        /// </summary>
+        // 随机挑战关卡数据
         private Project _randomChallengeProjectData;
-        /// <summary>
-        /// 已发布关卡奖励积攒数量
-        /// </summary>
+        // 已发布关卡奖励积攒数量
         private int _playCountForReward;
 
         // cs fields----------------------------------
-        /// <summary>
-        /// 用户Id
-        /// </summary>
+        // 用户Id
         private long _cs_userId;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        /// <summary>
-        /// 用户Id
-        /// </summary>
+        // 用户Id
         public long UserId { 
             get { return _userId; }
             set { if (_userId != value) {
@@ -121,9 +71,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 可用地块数据
-        /// </summary>
+        // 可用地块数据
         public UserMatchUnitData UnitData { 
             get { return _unitData; }
             set { if (_unitData != value) {
@@ -131,9 +79,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 最后发布时间
-        /// </summary>
+        // 最后发布时间
         public long CurPublishTime { 
             get { return _curPublishTime; }
             set { if (_curPublishTime != value) {
@@ -141,9 +87,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 最后发布的关卡数据
-        /// </summary>
+        // 最后发布的关卡数据
         public Project CurPublishProject { 
             get { return _curPublishProject; }
             set { if (_curPublishProject != value) {
@@ -151,9 +95,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 当前改造关卡所属章节
-        /// </summary>
+        // 当前改造关卡所属章节
         public int CurReformSection { 
             get { return _curReformSection; }
             set { if (_curReformSection != value) {
@@ -161,9 +103,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 当前改造关卡所属关卡
-        /// </summary>
+        // 当前改造关卡所属关卡
         public int CurReformLevel { 
             get { return _curReformLevel; }
             set { if (_curReformLevel != value) {
@@ -171,9 +111,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 当前改造状态
-        /// </summary>
+        // 当前改造状态
         public int CurReformState { 
             get { return _curReformState; }
             set { if (_curReformState != value) {
@@ -181,9 +119,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 改造间隔秒数
-        /// </summary>
+        // 改造间隔秒数
         public int ReformIntervalSeconds { 
             get { return _reformIntervalSeconds; }
             set { if (_reformIntervalSeconds != value) {
@@ -191,9 +127,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 当前正在改造的关卡数据
-        /// </summary>
+        // 当前正在改造的关卡数据
         public Project CurReformProject { 
             get { return _curReformProject; }
             set { if (_curReformProject != value) {
@@ -201,9 +135,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 改造可改变地块数
-        /// </summary>
+        // 改造可改变地块数
         public int ReformModifyUnitCapacity { 
             get { return _reformModifyUnitCapacity; }
             set { if (_reformModifyUnitCapacity != value) {
@@ -211,9 +143,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 改造可添加地块数
-        /// </summary>
+        // 改造可添加地块数
         public int ReformAddUnitCapacity { 
             get { return _reformAddUnitCapacity; }
             set { if (_reformAddUnitCapacity != value) {
@@ -221,9 +151,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 改造可删除地块数
-        /// </summary>
+        // 改造可删除地块数
         public int ReformDeleteUnitCapacity { 
             get { return _reformDeleteUnitCapacity; }
             set { if (_reformDeleteUnitCapacity != value) {
@@ -231,9 +159,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 剩余挑战次数
-        /// </summary>
+        // 剩余挑战次数
         public int LeftChallengeCount { 
             get { return _leftChallengeCount; }
             set { if (_leftChallengeCount != value) {
@@ -241,9 +167,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 剩余挑战次数刷新时间ms
-        /// </summary>
+        // 剩余挑战次数刷新时间ms
         public long LeftChallengeCountRefreshTime { 
             get { return _leftChallengeCountRefreshTime; }
             set { if (_leftChallengeCountRefreshTime != value) {
@@ -251,9 +175,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 挑战次数累计间隔秒数s
-        /// </summary>
+        // 挑战次数累计间隔秒数s
         public int ChallengeIntervalSecond { 
             get { return _challengeIntervalSecond; }
             set { if (_challengeIntervalSecond != value) {
@@ -261,9 +183,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 最大可累计挑战次数
-        /// </summary>
+        // 最大可累计挑战次数
         public int ChallengeCapacity { 
             get { return _challengeCapacity; }
             set { if (_challengeCapacity != value) {
@@ -271,9 +191,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 当前匹配已挑战次数
-        /// </summary>
+        // 当前匹配已挑战次数
         public int CurMatchChallengeCount { 
             get { return _curMatchChallengeCount; }
             set { if (_curMatchChallengeCount != value) {
@@ -281,9 +199,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 当前已选挑战难度EChallengeProjectTyple
-        /// </summary>
+        // 当前已选挑战难度EChallengeProjectTyple
         public int CurSelectedChallengeType { 
             get { return _curSelectedChallengeType; }
             set { if (_curSelectedChallengeType != value) {
@@ -291,9 +207,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 简单挑战关卡数据
-        /// </summary>
+        // 简单挑战关卡数据
         public Project EasyChallengeProjectData { 
             get { return _easyChallengeProjectData; }
             set { if (_easyChallengeProjectData != value) {
@@ -301,9 +215,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 中等挑战关卡数据
-        /// </summary>
+        // 中等挑战关卡数据
         public Project MediumChallengeProjectData { 
             get { return _mediumChallengeProjectData; }
             set { if (_mediumChallengeProjectData != value) {
@@ -311,9 +223,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 困难挑战关卡数据
-        /// </summary>
+        // 困难挑战关卡数据
         public Project DifficultChallengeProjectData { 
             get { return _difficultChallengeProjectData; }
             set { if (_difficultChallengeProjectData != value) {
@@ -321,9 +231,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 随机挑战关卡数据
-        /// </summary>
+        // 随机挑战关卡数据
         public Project RandomChallengeProjectData { 
             get { return _randomChallengeProjectData; }
             set { if (_randomChallengeProjectData != value) {
@@ -331,9 +239,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 已发布关卡奖励积攒数量
-        /// </summary>
+        // 已发布关卡奖励积攒数量
         public int PlayCountForReward { 
             get { return _playCountForReward; }
             set { if (_playCountForReward != value) {
@@ -343,9 +249,7 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        /// <summary>
-        /// 用户Id
-        /// </summary>
+        // 用户Id
         public long CS_UserId { 
             get { return _cs_userId; }
             set { _cs_userId = value; }
@@ -388,27 +292,18 @@ namespace GameA
             long userId,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            if (_isRequesting) {
-                if (_cs_userId != userId) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
-                OnRequest (successCallback, failedCallback);
-            } else {
-                _cs_userId = userId;
-                OnRequest (successCallback, failedCallback);
+            OnRequest (successCallback, failedCallback);
 
-                Msg_CS_DAT_MatchUserData msg = new Msg_CS_DAT_MatchUserData();
-                msg.UserId = userId;
-                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_MatchUserData>(
-                    SoyHttpApiPath.MatchUserData, msg, ret => {
-                        if (OnSync(ret)) {
-                            OnSyncSucceed(); 
-                        }
-                    }, (failedCode, failedMsg) => {
-                        OnSyncFailed(failedCode, failedMsg);
-                });            
-            }            
+            Msg_CS_DAT_MatchUserData msg = new Msg_CS_DAT_MatchUserData();
+            msg.UserId = userId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_MatchUserData>(
+                SoyHttpApiPath.MatchUserData, msg, ret => {
+                    if (OnSync(ret)) {
+                        OnSyncSucceed(); 
+                    }
+                }, (failedCode, failedMsg) => {
+                    OnSyncFailed(failedCode, failedMsg);
+            });
         }
 
         public bool OnSync (Msg_SC_DAT_MatchUserData msg)

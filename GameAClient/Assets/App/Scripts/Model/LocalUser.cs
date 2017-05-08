@@ -19,12 +19,16 @@ namespace GameA
 
         private readonly Account _account = Account.Instance;
 		private UserInfoDetail _user;
+
 		private UsingAvatarPart _usingAvatarData =new UsingAvatarPart();
 		private ValidAvatarPart _validAvatarData =new ValidAvatarPart();
         // 抽奖相关数据
         private UserRaffleTicket _userRaffleTicket =new UserRaffleTicket();
         // 匹配挑战相关数据
         private MatchUserData _matchUserData = new MatchUserData ();
+
+//        private User _user;
+
 
         private PersonalProjectList _personalProjectList = new PersonalProjectList ();
 

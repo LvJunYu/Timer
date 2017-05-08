@@ -8,7 +8,7 @@ using System;
 using UnityEngine.UI;
 
 namespace GameA
-{
+{/*社交ui的控制接口*/
     public interface IUISocialContentCtrl:IUISocialCtrl
     {
         ScrollRect GetBoundsScrollRect();
