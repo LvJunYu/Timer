@@ -483,6 +483,18 @@ namespace GameA.Game
             _assetPath = _tableUnit.Model;
         }
 
+        protected void InitAssetRotation()
+        {
+            if (_animation == null)
+            {
+                _assetPath = string.Format("{0}_{1}", _tableUnit.Model, _unitDesc.Rotation);
+            }
+            else
+            {
+                _animation.Init(((EDirectionType) Rotation).ToString());
+            }
+        }
+
         protected virtual bool OnInit()
         {
             Clear();

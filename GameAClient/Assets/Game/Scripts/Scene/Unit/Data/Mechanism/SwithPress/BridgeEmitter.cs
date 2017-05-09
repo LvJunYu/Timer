@@ -25,7 +25,7 @@ namespace GameA.Game
 
         protected override void InitAssetPath()
         {
-            _assetPath = string.Format("{0}_{1}", _tableUnit.Model, _unitDesc.Rotation);
+            InitAssetRotation();
         }
 
         protected override void Clear()

@@ -13,6 +13,9 @@ namespace GameA.Game
     [Unit(Id = 5010, Type = typeof(Lazer))]
     public class Lazer : Magic
     {
-
+        protected override void InitAssetPath()
+        {
+            InitAssetRotation();
+        }
     }
 }

@@ -21,7 +21,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            _animation.Init("Run");
+            InitAssetRotation();
             return true;
         }
 

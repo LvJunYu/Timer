@@ -34,7 +34,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            _animation.PlayOnce(((EDirectionType) Rotation).ToString());
+            InitAssetRotation();
             return true;
         }
 

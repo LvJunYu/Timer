@@ -20,7 +20,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            _animation.Init(((EDirectionType)Rotation).ToString());
+            InitAssetRotation();
             return true;
         }
     }

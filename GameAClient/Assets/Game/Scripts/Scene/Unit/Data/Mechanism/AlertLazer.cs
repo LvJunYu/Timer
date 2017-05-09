@@ -13,5 +13,9 @@ namespace GameA.Game
     [Unit(Id = 5011, Type = typeof(AlertLazer))]
     public class AlertLazer : BlockBase
     {
+        protected override void InitAssetPath()
+        {
+            InitAssetRotation();
+        }
     }
 }
