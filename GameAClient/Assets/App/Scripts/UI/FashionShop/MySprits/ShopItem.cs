@@ -67,7 +67,7 @@ public class    ShopItem
 	}
 	public ShopItem(Table_UpperBodyParts UpperBodyParts)
 	{
-		this._avatarType = EAvatarPart.AP_Head;
+		this._avatarType = EAvatarPart.AP_Upper;
         this.Id = UpperBodyParts.Id;
         this.Name = UpperBodyParts.Name;
 		this.Description = UpperBodyParts.Description;
@@ -90,7 +90,7 @@ public class    ShopItem
 	public ShopItem(Table_LowerBodyParts LowerBodyParts)
 	{
 		//this._lowerBodyParts = LowerBodyParts;
-		this._avatarType = EAvatarPart.AP_Head;
+		this._avatarType = EAvatarPart.AP_Lower;
 	    this.Id = LowerBodyParts.Id;
         this.Name = LowerBodyParts.Name;
 		this.Description = LowerBodyParts.Description;
@@ -114,7 +114,7 @@ public class    ShopItem
 	public ShopItem(Table_AppendageParts AppendageParts)
 	{
 		//this._appendageParts = AppendageParts;
-		this._avatarType = EAvatarPart.AP_Head;
+		this._avatarType = EAvatarPart.AP_Appendage;
         this.Id = AppendageParts.Id;
         this.Name = AppendageParts.Name;
 		this.Description = AppendageParts.Description;

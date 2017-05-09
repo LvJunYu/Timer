@@ -75,7 +75,7 @@ namespace GameA
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_ValidAvatarPart>(
                 SoyHttpApiPath.ValidAvatarPart, msg, ret => {
                     if (OnSync(ret)) {
-                        OnSyncSucceed(); 
+                        OnSyncSucceed();
                     }
                 }, (failedCode, failedMsg) => {
                     OnSyncFailed(failedCode, failedMsg);

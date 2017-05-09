@@ -45,7 +45,8 @@ namespace GameA
         protected override void OnOpen (object parameter)
         {
             base.OnOpen (parameter);
-//			TableManager.Instance.GetFashionShop ();
+            RefreshFashionShopPanel();
+            //			TableManager.Instance.GetFashionShop ();
         }
         /// <summary>
         /// 关闭UI
@@ -72,13 +73,13 @@ namespace GameA
 /// <param name="type"></param>
 /// <param name="previewTexture"></param>
 
-	    public void TryFashionOn(EAvatarPart type ,string previewTexture)
+	    public void TryFashionOn(ShopItem listItem)
 	    {
-            switch (type)
+            switch (listItem._avatarType)
             {
 
                 case EAvatarPart.AP_Head:
-                    if (_cachedView.UsingHead.text == previewTexture)
+                    if (_cachedView.UsingHead.text == listItem.Id.ToString())
                     {
                         if (LocalUser.Instance.UsingAvatarData.Head == null)
                         {
@@ -92,12 +93,12 @@ namespace GameA
                     }
                     else
                     {
-                        _cachedView.UsingHead.text = previewTexture;
+                        _cachedView.UsingHead.text = listItem.Id.ToString();
                     }
                     ;
                     break;
                 case EAvatarPart.AP_Lower:
-                    if (_cachedView.UsingLower.text == previewTexture)
+                    if (_cachedView.UsingLower.text == listItem.Id.ToString())
                     {
                         if (LocalUser.Instance.UsingAvatarData.Lower == null)
                         {
@@ -111,12 +112,12 @@ namespace GameA
                     }
                     else
                     {
-                        _cachedView.UsingLower.text = previewTexture;
+                        _cachedView.UsingLower.text = listItem.Id.ToString();
                     }
                     ;
                     break;
                 case EAvatarPart.AP_Upper:
-                    if (_cachedView.UsingUpper.text == previewTexture)
+                    if (_cachedView.UsingUpper.text == listItem.Id.ToString())
                     {
                         if (LocalUser.Instance.UsingAvatarData.Upper == null)
                         {
@@ -130,13 +131,13 @@ namespace GameA
                     }
                     else
                     {
-                        _cachedView.UsingUpper.text = previewTexture;
+                        _cachedView.UsingUpper.text = listItem.Id.ToString();
                     }
                     ;
                     break;
 
                 case EAvatarPart.AP_Appendage:
-                    if (_cachedView.UsingAppendage.text == previewTexture)
+                    if (_cachedView.UsingAppendage.text == listItem.Id.ToString())
                     {
                         if (LocalUser.Instance.UsingAvatarData.Appendage == null)
                         {
@@ -150,54 +151,69 @@ namespace GameA
                     }
                     else
                     {
-                        _cachedView.UsingAppendage.text = previewTexture;
+                        _cachedView.UsingAppendage.text = listItem.Id.ToString();
                     }
                     ;
                     break;
             }
         }
 
-	    /// <summary>
+        /// <summary>
         /// 创建
         /// </summary>
         protected override void OnViewCreated()
         {
-            InitTagGroup();
-            InitPageData();
-            LocalUser.Instance.UsingAvatarData.Request(LocalUser.Instance.UserGuid, () => {
-                RefreshUsingAvatarPreviewTexture();
-            }, code => {
-                LogHelper.Error("Network error when get UsingAvatarData, {0}", code);
-            });
+            //RefreshFashionShopPanel();
         }
 
-	    private void RefreshUsingAvatarPreviewTexture()
+        public void RefreshFashionShopPanel()
+        {
+            
+            LocalUser.Instance.UsingAvatarData.Request(LocalUser.Instance.UserGuid, () =>
+            {
+            RefreshUsingAvatarPreview();
+            }, code =>
+            {
+                LogHelper.Error("Network error when get UsingAvatarData, {0}", code);
+            });
+            LocalUser.Instance.ValidAvatarData.Request(LocalUser.Instance.UserGuid, () =>
+            {
+
+            }, code =>
+            {
+                LogHelper.Error("Network error when get ValidAvatarData, {0}", code);
+            });
+            InitTagGroup();
+            InitPageData();
+        }
+
+        public void RefreshUsingAvatarPreview()
 	    {
 	        //Debug.Log(LocalUser.Instance.UsingAvatarData.Head);
             //Debug.Log(_cachedView);
             //Debug.Log(_cachedView.UsingHead);
 	        if (LocalUser.Instance.UsingAvatarData.Head != null)
 	        {
-	            _cachedView.UsingHead.text =
-	                TableManager.Instance.GetHeadParts((int)LocalUser.Instance.UsingAvatarData.Head.Id).PreviewTexture;
+	            _cachedView.UsingHead.text = LocalUser.Instance.UsingAvatarData.Head.Id.ToString();
+                //TableManager.Instance.GetHeadParts((int)LocalUser.Instance.UsingAvatarData.Head.Id).PreviewTexture;
 
 	        }
 	        if (LocalUser.Instance.UsingAvatarData.Upper != null)
 	        {
-                _cachedView.UsingUpper.text = 
-                    TableManager.Instance.GetUpperBodyParts((int)LocalUser.Instance.UsingAvatarData.Upper.Id).PreviewTexture;
+                _cachedView.UsingUpper.text = LocalUser.Instance.UsingAvatarData.Upper.Id.ToString();
+                //TableManager.Instance.GetUpperBodyParts((int)LocalUser.Instance.UsingAvatarData.Upper.Id).PreviewTexture;
 
             }
 	        if (LocalUser.Instance.UsingAvatarData.Lower != null)
 	        {
-                _cachedView.UsingLower.text =
-                    TableManager.Instance.GetUpperBodyParts((int)LocalUser.Instance.UsingAvatarData.Lower.Id).PreviewTexture;
+                _cachedView.UsingLower.text = LocalUser.Instance.UsingAvatarData.Lower.Id.ToString();
+                //TableManager.Instance.GetUpperBodyParts((int)LocalUser.Instance.UsingAvatarData.Lower.Id).PreviewTexture;
                
 	        }
             if (LocalUser.Instance.UsingAvatarData.Appendage!= null)
 	        {
-                _cachedView.UsingAppendage.text =
-                   TableManager.Instance.GetUpperBodyParts((int)LocalUser.Instance.UsingAvatarData.Appendage.Id).PreviewTexture;
+                _cachedView.UsingAppendage.text = LocalUser.Instance.UsingAvatarData.Appendage.Id.ToString();
+                //TableManager.Instance.GetUpperBodyParts((int)LocalUser.Instance.UsingAvatarData.Appendage.Id).PreviewTexture;
           
 	        }
 
@@ -242,7 +258,7 @@ namespace GameA
 
         }
 
-	    private void InitPageData()
+	    public void InitPageData()
 	    {
           
 	        var dict = new Dictionary<int, List<ShopItem>>(); //建立字典 键是分页 值为每个分页的itemlist
@@ -279,8 +295,8 @@ namespace GameA
             //   { 
 
             //}
-	        _usctrlFashionPage1.Set(dict[1]);
-	        _usctrlFashionPage2.Set(dict[2]);
+            _usctrlFashionPage2.Set(dict[2]);
+            _usctrlFashionPage1.Set(dict[1]);
 	        _usctrlFashionPage3.Set(dict[3]);
 	        _usctrlFashionPage4.Set(dict[4]);
             _usctrlFashionPage5.Set(dict[5]);
