@@ -165,7 +165,7 @@ namespace GameA.Game
             _levelFinishCount = 0;
         }
 
-        public void AddOrDelete(Table_Unit tableUnit, bool value, bool isInit = false)
+        public void AddOrDeleteUnit(Table_Unit tableUnit, bool value, bool isInit = false)
         {
             if (!isInit)
             {
@@ -196,6 +196,10 @@ namespace GameA.Game
                     }
                     break;
             }
+        }
+
+        public void AddOrDeleteConnection () {
+            NeedSave = true;
         }
     }
 }

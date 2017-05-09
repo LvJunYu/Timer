@@ -93,6 +93,12 @@ namespace GameA.Game
 				return this._addedUnits;
 			}
 		}
+
+        public Dictionary<IntVec3, List<IntVec3>> SwitchedUnits {
+            get {
+                return this._switchedUnits;
+            }
+        }
         #endregion
 
         #region 方法
@@ -278,7 +284,7 @@ namespace GameA.Game
         /// </summary>
         /// <returns>The switched units.</returns>
         /// <param name="guid">开关id.</param>
-        public List<UnitBase> GetSwitchedUnits(IntVec3 guid)
+        public List<UnitBase> GetControlledUnits(IntVec3 guid)
         {
             List<IntVec3> unitsGuid;
             if (!_switchedUnits.TryGetValue(guid, out unitsGuid))
@@ -295,6 +301,23 @@ namespace GameA.Game
                 }
             }
             return _cachedUnits;
+        }
+
+        /// <summary>
+        /// 查找控制unit的开关
+        /// </summary>
+        /// <returns>The switch units connected.</returns>
+        /// <param name="guid">GUID.</param>
+        public List<IntVec3> GetSwitchUnitsConnected (IntVec3 guid) {
+            List<IntVec3> result = new List<IntVec3> ();
+            var itor = _switchedUnits.GetEnumerator ();
+            while (itor.MoveNext ()) {
+                List<IntVec3> units = itor.Current.Value;
+                if (units.Contains (guid)) {
+                    result.Add (itor.Current.Key);
+                }
+            }
+            return result;
         }
 
         public bool BindSwitch(IntVec3 switchGuid, IntVec3 unitGuid)

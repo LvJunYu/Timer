@@ -25,7 +25,7 @@ namespace GameA.Game
         internal override void OnPlay()
         {
             base.OnPlay();
-            _units = DataScene2D.Instance.GetSwitchedUnits(_guid);
+            _units = DataScene2D.Instance.GetControlledUnits(_guid);
         }
 
         public void OnHit()

@@ -295,7 +295,7 @@ namespace GameA.Game
 
 		public static Vector2 WorldToScreenPoint(Vector2 worldPosition)
         {
-            return CameraManager.Instance.MainCamera.WorldToScreenPoint(worldPosition);
+            return CameraManager.Instance.RendererCamera.WorldToScreenPoint(worldPosition);
         }
 
         public static Vector2 WorldToScreenSize(Vector2 worldSize)

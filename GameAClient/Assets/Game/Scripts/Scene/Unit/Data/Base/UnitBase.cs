@@ -99,6 +99,12 @@ namespace GameA.Game
         protected IntVec2 _minPos;
         protected IntVec2 _maxPos;
 
+        /// <summary>
+        /// 该物体是否能被开关控制
+        /// </summary>
+        /// <value><c>true</c> if this instance can controlled by switch; otherwise, <c>false</c>.</value>
+        public virtual bool CanControlledBySwitch { get { return false; } }
+
         #endregion
 
         #region view
@@ -1007,6 +1013,17 @@ namespace GameA.Game
             var up = new Vector2(0, 0.5f * size.y / ConstDefineGM2D.ServerTileScale);
             Vector2 newTransPos = (Vector2)_trans.position + up - (Vector2)_trans.up.normalized * up.y;
             _trans.position = newTransPos;
+        }
+
+        /// <summary>
+        /// 当这个物体被连上开关时的处理函数
+        /// </summary>
+        protected virtual void OnConnectToSwitch (UnitBase switchUnit) {
+        }
+        /// <summary>
+        /// 当这个物体被取消开关连接时的处理函数
+        /// </summary>
+        protected virtual void OnDisconnectToSwitch (UnitBase switchUnit) {
         }
 
         #region OnHit
