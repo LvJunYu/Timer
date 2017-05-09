@@ -423,7 +423,7 @@ namespace GameA.Game
         {
             _tableUnit = tableUnit;
             _unitDesc.Id = _tableUnit.Id;
-            _unitDesc.Rotation = 0;
+            _unitDesc.Rotation = dir;
             _unitDesc.Scale = Vector3.one;
             InitAssetPath();
             UpdateExtraData();
@@ -432,6 +432,7 @@ namespace GameA.Game
                 LogHelper.Error("TryGetUnitView Failed, {0}", tableUnit.Id);
                 return;
             }
+            InitAssetRotation();
             SetFacingDir(_curMoveDirection, true);
             _view.SetSortingOrder((int)ESortingOrder.DragingItem);
         }
@@ -454,6 +455,7 @@ namespace GameA.Game
                 LogHelper.Error("TryGetUnitView Failed, {0}", tableUnit.Id);
                 return true;
             }
+            InitAssetRotation();
             _view.OnIsChild();
             SetFacingDir(_curMoveDirection, true);
             return true;

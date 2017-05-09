@@ -237,7 +237,8 @@ namespace GameA.Game
                     var helperParentObj = new GameObject("DragHelperParent");
                     _dragHelperParent = helperParentObj.transform;
                 }
-                _dragHelperParent.position = _virUnit.Trans.position - (Vector3)_virUnit.View.GetRotationPosOffset();
+                _dragHelperParent.position = _virUnit.Trans.position;
+                //_dragHelperParent.position = _virUnit.Trans.position - (Vector3)_virUnit.View.GetRotationPosOffset();
                 _dragHelperParent.position += GM2DTools.GetUnitDragingOffset(_dragUnitDesc.Id);
                 _virUnit.Trans.parent = _dragHelperParent;
             }
