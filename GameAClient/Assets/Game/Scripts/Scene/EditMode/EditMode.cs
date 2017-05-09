@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    public class EditMode : MonoBehaviour
+    public partial class EditMode : MonoBehaviour
     {
         public static EditMode Instance;
         private IntVec2 _tileSizePerScreen;
@@ -150,8 +150,12 @@ namespace GameA.Game
 
         private void OnDestroy()
         {
-			_compositeEditor.Clear();
-			_commandManager.Clear ();
+            Clear ();
+        }
+
+        protected virtual void Clear () {
+            _compositeEditor.Clear();
+            _commandManager.Clear ();
             Instance = null;
             EasyTouch.On_TouchStart -= On_TouchStart;
             EasyTouch.On_TouchDown -= On_TouchDown;
@@ -174,6 +178,15 @@ namespace GameA.Game
             Messenger.RemoveListener(EMessengerType.OnPinchMouseButtonStart, OnPinchMouseButtonStart);
             Messenger.RemoveListener(EMessengerType.OnPinchMouseButtonEnd, OnPinchMouseButtonEnd);
             Messenger.RemoveListener(EMessengerType.GameFinishSuccess, OnSuccess);
+
+            for (int i = 0; i < _unitMaskEffectCache.Count; i++) {
+                _unitMaskEffectCache [i].DestroySelf ();
+            }
+            _unitMaskEffectCache.Clear ();
+            for (int i = 0; i < _connectLineEffectCache.Count; i++) {
+                _connectLineEffectCache [i].DestroySelf ();
+            }
+            _connectLineEffectCache.Clear ();
         }
 
 		public virtual void Init()
@@ -191,6 +204,7 @@ namespace GameA.Game
             InitMask();
             UpdateMaskValue();
 			_commandType = ECommandType.Create;
+            _currentSelectedUnitOnSwitchMode = UnitDesc.zero;
             //LogHelper.Debug(_middleUIWorldPos[0] + "|" + _middleUIWorldPos[1] + "|" + _middleUIWorldPos[2]);
         }
 
@@ -344,7 +358,7 @@ namespace GameA.Game
             {
                 _replaceUnits.Remove(unitDesc.Id);
             }
-            _mapStatistics.AddOrDelete(tableUnit, false);
+            _mapStatistics.AddOrDeleteUnit(tableUnit, false);
         }
 
         private void BeforeAddUnit(UnitDesc unitDesc, Table_Unit tableUnit)
@@ -379,7 +393,7 @@ namespace GameA.Game
             {
                 _replaceUnits.Add(unitDesc.Id, unitDesc);
             }
-            _mapStatistics.AddOrDelete(tableUnit, true, isInit);
+            _mapStatistics.AddOrDeleteUnit(tableUnit, true, isInit);
         }
 
         public bool CheckCanPublic(bool showPrompt)
@@ -677,7 +691,31 @@ namespace GameA.Game
 
                     }
                 }
-                    break;
+                break;
+            case ECommandType.Switch:
+                UnitDesc outValue2;
+                if (TryGetSelectedObject(Input.mousePosition, out outValue2))
+                {
+                    if (UnitDefine.Instance.IsSwitch (outValue2.Id)) {
+                        _currentCommand = new SwitchClickItemCommand (outValue2, gesture.position);
+                    } else {
+//                        Vector3 mouseWorldPos = GM2DTools.ScreenToWorldPoint(Input.mousePosition);
+//                        IntVec3 mouseTile = GM2DTools.WorldToTile(mouseWorldPos);
+//                        UnitBase unit;
+//                        if (ColliderScene2D.Instance.TryGetUnit (mouseTile, out unit)) {
+//                            if (unit.CanControlledBySwitch) {
+//                                _currentCommand = new SwitchClickItemCommand (outValue2, gesture.position);
+//                            }
+//                        }
+                        UnitBase unit;
+                        if (ColliderScene2D.Instance.TryGetUnit (outValue2.Guid, out unit)) {
+                            if (unit.CanControlledBySwitch) {
+                                _currentCommand = new SwitchClickItemCommand (outValue2, gesture.position);
+                            }
+                        }
+                    }
+                }
+                break;
             }
 
 
@@ -962,11 +1000,20 @@ namespace GameA.Game
             case ECommandType.Move:
                 _cmdTypeBeforeMove = _commandType;
                 CancelCurrentCommand ();
-                    break;
+                break;
+            case ECommandType.Switch:
+                OnEnterSwitchMode ();
+                break;
             }
             // 从移动操作退出时，回到移动操作前的操作
             if (_commandType == ECommandType.Move) {
                 _commandType = _cmdTypeBeforeMove;
+                if (_cmdTypeBeforeMove == ECommandType.Switch) {
+                    OnEnterSwitchMode ();
+                }
+            } else if (_commandType == ECommandType.Switch) {
+                OnExitSwitchMode ();
+                _commandType = eCommandType;
             } else {
                 _commandType = eCommandType;
             }

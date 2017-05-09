@@ -201,6 +201,18 @@ namespace GameA.Game
 
 		}
 
+        protected override void Clear ()
+        {
+            base.Clear ();
+            for (int i = 0; i < _redMaskEffectCache.Count; i++) {
+                _redMaskEffectCache [i].DestroySelf ();
+            }
+            _redMaskEffectCache.Clear ();
+            for (int i = 0; i < _yellowMaskEffectCache.Count; i++) {
+                _yellowMaskEffectCache [i].DestroySelf ();
+            }
+            _yellowMaskEffectCache.Clear ();
+        }
 
 		public override void Init ()
 		{
