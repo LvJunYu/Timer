@@ -208,7 +208,7 @@ namespace GameA
 
         public void OnCreateBtn()
         {
-            if(OpenMainUI(typeof (UICtrlMatrixDetail)))
+            if(OpenMainUI(typeof (UICtrlWorkShop)))
             {
 //                SelectButton(_cachedView.Create.Button);
             }
