@@ -5,85 +5,139 @@ namespace GameA.Game
     [Serializable]
 	public partial class Table_Unit
 	{
-		// 序号
+		/// <summary>
+        /// 序号
+        /// </summary>
 		[ColumnMapping("Id")]
 		public int Id;
-		// 名字
+		/// <summary>
+        /// 名字
+        /// </summary>
 		[ColumnMapping("Name")]
 		public string Name;
-		// 使用显示
+		/// <summary>
+        /// 使用显示
+        /// </summary>
 		[ColumnMapping("Use")]
 		public int Use;
-		// 图标
+		/// <summary>
+        /// 图标
+        /// </summary>
 		[ColumnMapping("Icon")]
 		public string Icon;
-		// 模型
+		/// <summary>
+        /// 模型
+        /// </summary>
 		[ColumnMapping("Model")]
 		public string Model;
-		// 模型1
+		/// <summary>
+        /// 模型1
+        /// </summary>
 		[ColumnMapping("Model1")]
 		public string Model1;
-		// 类别
+		/// <summary>
+        /// 类别
+        /// </summary>
 		[ColumnMapping("UnitType")]
 		public int UnitType;
-		// 碰撞层
+		/// <summary>
+        /// 碰撞层
+        /// </summary>
 		[ColumnMapping("Layer")]
 		public int Layer;
-		// 生成类别
+		/// <summary>
+        /// 生成类别
+        /// </summary>
 		[ColumnMapping("GeneratedType")]
 		public int GeneratedType;
-		// 碰撞类别
+		/// <summary>
+        /// 碰撞类别
+        /// </summary>
 		[ColumnMapping("ColliderType")]
 		public int ColliderType;
-		// 数量
+		/// <summary>
+        /// 数量
+        /// </summary>
 		[ColumnMapping("Count")]
 		public int Count;
-		// 数据宽
+		/// <summary>
+        /// 数据宽
+        /// </summary>
 		[ColumnMapping("Width")]
 		public int Width;
-		// 数据高
+		/// <summary>
+        /// 数据高
+        /// </summary>
 		[ColumnMapping("Height")]
 		public int Height;
-		// 碰撞宽
+		/// <summary>
+        /// 碰撞宽
+        /// </summary>
 		[ColumnMapping("CWidth")]
 		public int CWidth;
-		// 碰撞高
+		/// <summary>
+        /// 碰撞高
+        /// </summary>
 		[ColumnMapping("CHeight")]
 		public int CHeight;
-		// 碰撞锚点
+		/// <summary>
+        /// 碰撞锚点
+        /// </summary>
 		[ColumnMapping("Anchore")]
 		public int Anchore;
-		// 模型锚点
+		/// <summary>
+        /// 模型锚点
+        /// </summary>
 		[ColumnMapping("ModelAnchore")]
 		public int ModelAnchore;
-		// 父亲类别
+		/// <summary>
+        /// 父亲类别
+        /// </summary>
 		[ColumnMapping("ParentType")]
 		public int ParentType;
-		// 孩子类别
+		/// <summary>
+        /// 孩子类别
+        /// </summary>
 		[ColumnMapping("ChildType")]
 		public int ChildType;
-		// 初始移动方向
+		/// <summary>
+        /// 初始移动方向
+        /// </summary>
 		[ColumnMapping("OriginMoveDirection")]
 		public int OriginMoveDirection;
-		// 初始蓝石移动方向
+		/// <summary>
+        /// 初始蓝石移动方向
+        /// </summary>
 		[ColumnMapping("OriginMagicDirection")]
 		public int OriginMagicDirection;
-		// 移动方向集合
+		/// <summary>
+        /// 移动方向集合
+        /// </summary>
 		[ColumnMapping("MoveDirectionMask")]
 		public int MoveDirectionMask;
-		// 旋转方向集合
+		/// <summary>
+        /// 旋转方向集合
+        /// </summary>
 		[ColumnMapping("RotationMask")]
 		public int RotationMask;
-		// 行走音效
+		/// <summary>
+        /// 行走音效
+        /// </summary>
 		[ColumnMapping("WalkAudioNames")]
 		public string[] WalkAudioNames;
-		// 行走特效
+		/// <summary>
+        /// 行走特效
+        /// </summary>
 		[ColumnMapping("WalkEffectName")]
 		public string WalkEffectName;
-		// 破坏音效
+		/// <summary>
+        /// 破坏音效
+        /// </summary>
 		[ColumnMapping("DestroyAudioName")]
 		public string DestroyAudioName;
-		// 破坏特效
+		/// <summary>
+        /// 破坏特效
+        /// </summary>
 		[ColumnMapping("DestroyEffectName")]
 		public string DestroyEffectName;
 	}

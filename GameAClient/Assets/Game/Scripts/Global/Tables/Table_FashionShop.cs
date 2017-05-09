@@ -5,19 +5,29 @@ namespace GameA.Game
     [Serializable]
 	public partial class Table_FashionShop
 	{
-		// 序号
+		/// <summary>
+        /// 序号
+        /// </summary>
 		[ColumnMapping("Id")]
 		public int Id;
-		// 所属分页
+		/// <summary>
+        /// 所属分页
+        /// </summary>
 		[ColumnMapping("PageIdx")]
 		public int PageIdx;
-		// 种类
+		/// <summary>
+        /// 种类
+        /// </summary>
 		[ColumnMapping("Type")]
 		public int Type;
-		// 物品ID
+		/// <summary>
+        /// 物品ID
+        /// </summary>
 		[ColumnMapping("ItemIdx")]
 		public int ItemIdx;
-		// 性别
+		/// <summary>
+        /// 性别
+        /// </summary>
 		[ColumnMapping("Sex")]
 		public int Sex;
 	}
