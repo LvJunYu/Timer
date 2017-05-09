@@ -55,14 +55,13 @@ namespace GameA.Game
             }
         }
 
-        public bool Init(string aniName)
+        public void Init(string aniName)
         {
             if (!string.IsNullOrEmpty(aniName))
             {
                 _initAniName = aniName;
                 PlayLoop(_initAniName);
             }
-            return true;
         }
 
         private TrackEntry SetAnimation(string aniName, int trackIndex = 0, float timeScale = 1, bool loop = false)

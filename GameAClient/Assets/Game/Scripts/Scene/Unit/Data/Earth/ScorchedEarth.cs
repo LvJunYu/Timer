@@ -18,6 +18,16 @@ namespace GameA.Game
         protected bool _trigger;
         protected int _timer;
 
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            _animation.Init("Run");
+            return true;
+        }
+
         protected override void Clear()
         {
             base.Clear();

@@ -13,6 +13,16 @@ namespace GameA.Game
     [Unit(Id = 4010, Type = typeof(Fire))]
     public class Fire : BlockBase
     {
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            _animation.Init("Run");
+            return true;
+        }
+
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
             OnDamage(other, checkOnly);

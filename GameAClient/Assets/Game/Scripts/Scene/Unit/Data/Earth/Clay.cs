@@ -23,5 +23,15 @@ namespace GameA.Game
             _friction = 30;
             return true;
         }
+
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            _animation.Init("Run");
+            return true;
+        }
     }
 }

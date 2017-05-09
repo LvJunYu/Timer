@@ -31,7 +31,8 @@ namespace GameA.Game
             {
                 return false;
             }
-            return _animation.Init("Run");
+            _animation.Init("Run");
+            return true;
         }
 
         private void OnRespawnPointTrigger(IntVec3 guid)

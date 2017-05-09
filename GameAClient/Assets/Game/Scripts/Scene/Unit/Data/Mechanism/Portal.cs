@@ -21,7 +21,8 @@ namespace GameA.Game
             {
                 return false;
             }
-            return _animation.Init("Run");
+            _animation.Init("Run");
+            return true;
         }
 
         public static void OnPortal(PairUnit pairUnit, UnitDesc unitDesc)

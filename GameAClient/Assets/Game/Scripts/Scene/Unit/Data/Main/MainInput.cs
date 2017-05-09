@@ -565,6 +565,7 @@ namespace GameA.Game
                 //攀墙跳
                 if (_eClimbState > EClimbState.None)
                 {
+                    _unit.CurBanInputTime = 20;
                     _climbJump = true;
                     _unit.SpeedY = 0;
                     _unit.ExtraSpeed.y = 0;
@@ -572,7 +573,7 @@ namespace GameA.Game
                     _jumpLevel = 0;
                     if (_eClimbState == EClimbState.Left)
                     {
-                        _unit.SpeedX = 80;
+                        _unit.SpeedX = 120;
                         if (_unit.CurMoveDirection != EMoveDirection.Right)
                         {
                             _unit.SetFacingDir(EMoveDirection.Right);
@@ -581,14 +582,13 @@ namespace GameA.Game
                     }
                     else if (_eClimbState == EClimbState.Right)
                     {
-                        _unit.SpeedX = -80;
+                        _unit.SpeedX = -120;
                         if (_unit.CurMoveDirection != EMoveDirection.Left)
                         {
                             _unit.SetFacingDir(EMoveDirection.Left);
                             PlayMode.Instance.CurrentShadow.RecordDirChange(EMoveDirection.Left);
                         }
                     }
-                    //_unit.CurBanInputTime = 20;
                 }
                 else if ((_step || _jumpState == 0))
                 {

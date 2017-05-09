@@ -37,7 +37,8 @@ namespace GameA.Game
             {
                 _view1.Animation.Init("Run");
             }
-            return _animation.Init("Run");
+            _animation.Init("Run");
+            return true;
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)

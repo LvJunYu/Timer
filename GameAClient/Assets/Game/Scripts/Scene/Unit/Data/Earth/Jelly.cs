@@ -24,6 +24,16 @@ namespace GameA.Game
             return true;
         }
 
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            _animation.Init("Run");
+            return true;
+        }
+
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
             if (!checkOnly)
@@ -36,11 +46,14 @@ namespace GameA.Game
                         PlayMode.Instance.MainUnit.Step(80);
                         other.ExtraSpeed.y = 330;
                         GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
-                        //GameParticleManager.Instance.Emit("M1KuoSanBo", _trans.position);
                     }
                     else if (other.IsMonster)
                     {
                         other.ExtraSpeed.y = 330;
+                    }
+                    if (_animation != null)
+                    {
+                        _animation.PlayOnce("Up");
                     }
                 }
             }
@@ -58,11 +71,14 @@ namespace GameA.Game
                     {
                         other.ExtraSpeed.y = -330;
                         GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
-                        //GameParticleManager.Instance.Emit("M1KuoSanBo", _trans.position);
                     }
                     else if (other.IsMonster)
                     {
                         other.ExtraSpeed.y = -330;
+                    }
+                    if (_animation != null)
+                    {
+                        _animation.PlayOnce("Down");
                     }
                 }
             }
@@ -82,7 +98,10 @@ namespace GameA.Game
                     if (other.IsMain)
                     {
                         GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
-                        //GameParticleManager.Instance.Emit("M1KuoSanBo", _trans.position);
+                    }
+                    if (_animation != null)
+                    {
+                        _animation.PlayOnce("Left");
                     }
                 }
             }
@@ -102,7 +121,10 @@ namespace GameA.Game
                     if (other.IsMain)
                     {
                         GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
-                        //GameParticleManager.Instance.Emit("M1KuoSanBo", _trans.position);
+                    }
+                    if (_animation != null)
+                    {
+                        _animation.PlayOnce("Right");
                     }
                 }
             }

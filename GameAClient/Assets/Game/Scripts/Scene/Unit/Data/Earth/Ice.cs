@@ -22,6 +22,16 @@ namespace GameA.Game
             return true;
         }
 
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            _animation.Init("Run");
+            return true;
+        }
+
         public override void OnShootHit(UnitBase other)
         {
             if (other is BulletFire)

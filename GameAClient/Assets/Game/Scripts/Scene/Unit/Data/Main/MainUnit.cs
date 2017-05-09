@@ -179,10 +179,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (!_animation.Init("Idle"))
-            {
-                return false;
-            }
+            _animation.Init("Idle");
 			if (!_animation.AddEventHandle ("Step", OnStep)) 
             {
 				return false;
