@@ -127,10 +127,7 @@ namespace GameA.Game
 
         public override IntVec2 FirePos
         {
-            get
-            {
-                return _shooterEffectPos;
-            }
+            get { return _shooterEffectPos; }
         }
 
         public IntVec2 CameraFollowPos

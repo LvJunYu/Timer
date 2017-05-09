@@ -27,6 +27,11 @@ namespace GameA.Game
             set { _switchPress = value; }
         }
 
+        protected override void InitAssetPath()
+        {
+            _assetPath = string.Format("{0}_{1}", _tableUnit.Model, _unitDesc.Rotation);
+        }
+
         internal override void Reset()
         {
             base.Reset();

@@ -400,8 +400,8 @@ namespace GameA.Game
         {
             get
             {
-                var dataSize = GetDataSize();
-                return new IntVec2(_curPos.x + dataSize.x, (int)(_curPos.y + dataSize.y * 0.8f));
+                var halfSize = GetDataSize() / 2;
+                return new IntVec2(_curPos.x + halfSize.x, _curPos.y + halfSize.y);
             }
         }
 
