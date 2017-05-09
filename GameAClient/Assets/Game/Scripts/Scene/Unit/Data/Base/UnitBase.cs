@@ -685,6 +685,13 @@ namespace GameA.Game
         }
 
         /// <summary>
+        /// 被电
+        /// </summary>
+        public virtual void OnLight()
+        {
+        }
+
+        /// <summary>
         /// 怪物触碰打击
         /// </summary>
         public virtual void OnHeroTouch(UnitBase other)
