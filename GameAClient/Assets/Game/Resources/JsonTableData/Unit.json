@@ -1035,7 +1035,7 @@
         "Model": "M1SwitchTriggeOn",
         "UnitType": "5",
         "Layer": "3",
-        "GeneratedType": "4",
+        "GeneratedType": "2",
         "ColliderType": "0",
         "Count": "0",
         "Width": "32",
