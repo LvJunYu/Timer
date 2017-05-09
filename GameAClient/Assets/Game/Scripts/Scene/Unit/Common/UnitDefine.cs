@@ -19,7 +19,7 @@ namespace GameA.Game
             get { return _instance??(_instance = new UnitDefine()); }
         }
 
-        public const int SwitchTriggerId = 5111;
+        public const int SwitchTriggerId = 5100;
 
         public bool IsSwitch(int id)
         {

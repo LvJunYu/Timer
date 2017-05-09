@@ -858,14 +858,6 @@ namespace GameA.Game
         {
         }
 
-        public virtual void OnColliderEnter(UnitBase other)
-        {
-        }
-
-        public virtual void OnColliderExit(UnitBase other)
-        {
-        }
-
         public virtual void OnPortal(IntVec2 targetPos, IntVec2 speed)
         {
             if (_eUnitState == EUnitState.Portaling)

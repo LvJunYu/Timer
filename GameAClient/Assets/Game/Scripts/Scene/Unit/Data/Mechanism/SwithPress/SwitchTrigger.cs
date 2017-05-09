@@ -1,32 +1,30 @@
 ﻿/********************************************************************
-** Filename : SwitchPress
+** Filename : SwitchTrigger
 ** Author : Dong
-** Date : 2017/5/8 星期一 下午 2:54:54
-** Summary : SwitchPress
+** Date : 2017/5/9 星期二 上午 10:32:53
+** Summary : SwitchTrigger
 ***********************************************************************/
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using SoyEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 5111, Type = typeof(SwitchPress))]
-    public class SwitchPress : BlockBase
+    [Unit(Id = 5100, Type = typeof(SwitchTrigger))]
+    public class SwitchTrigger : UnitBase
     {
+        protected SwitchPress _switchPress;
         protected bool _trigger;
         protected List<UnitBase> _units = new List<UnitBase>();
         protected bool _colliderTrigger;
         protected List<UnitBase> _colliderUnits = new List<UnitBase>();
 
-        protected override bool OnInit()
+        public SwitchPress SwitchPress
         {
-            if (!base.OnInit())
-            {
-                return false;
-            }
-            SetSortingOrderFront();
-            return true;
+            get { return _switchPress; }
+            set { _switchPress = value; }
         }
 
         internal override void Reset()
@@ -34,6 +32,7 @@ namespace GameA.Game
             base.Reset();
             _trigger = false;
             _colliderTrigger = false;
+            _switchPress = null;
             _units.Clear();
             _colliderUnits.Clear();
         }
@@ -43,7 +42,7 @@ namespace GameA.Game
             OnTrigger(other);
         }
 
-        public override void OnColliderEnter(UnitBase other)
+        public void OnColliderEnter(UnitBase other)
         {
             if (_colliderUnits.Contains(other))
             {
@@ -58,7 +57,7 @@ namespace GameA.Game
             OnTriggerStart(other);
         }
 
-        public override void OnColliderExit(UnitBase other)
+        public void OnColliderExit(UnitBase other)
         {
             _colliderUnits.Remove(other);
             if (_colliderUnits.Count == 0)
@@ -83,7 +82,7 @@ namespace GameA.Game
             OnTriggerStart(other);
         }
 
-        public override void UpdateLogic()
+        public void UpdateLogic(float deltaTime)
         {
             if (_trigger)
             {
@@ -104,18 +103,26 @@ namespace GameA.Game
 
         protected void OnTriggerStart(UnitBase other)
         {
-            //if (_switchUnit != null)
-            //{
-            //    _switchUnit.OnTrigger(other);
-            //}
+            if (_view != null)
+            {
+                _view.ChangeView("M1SwitchTriggeOn_"+_unitDesc.Rotation);
+            }
+            if (_switchPress != null)
+            {
+                _switchPress.OnTriggerStart(other);
+            }
         }
 
         protected void OnTriggerEnd()
         {
-            //if (_switchUnit != null)
-            //{
-            //    _switchUnit.OnTriggerEnd();
-            //}
+            if (_view != null)
+            {
+                _view.ChangeView("M1SwitchTriggerOff_" + _unitDesc.Rotation);
+            }
+            if (_switchPress != null)
+            {
+                _switchPress.OnTriggerEnd();
+            }
         }
     }
 }

@@ -13,7 +13,7 @@ namespace GameA.Game
     public struct GridCheck
     {
         private UnitBase _self;
-        private UnitBase _hit;
+        private SwitchTrigger _hit;
         private bool _isStay;
 
         public UnitBase Self
@@ -34,7 +34,7 @@ namespace GameA.Game
             _isStay = false;
         }
 
-        public void Do(UnitBase hit)
+        public void Do(SwitchTrigger hit)
         {
             if (hit != null)
             {
