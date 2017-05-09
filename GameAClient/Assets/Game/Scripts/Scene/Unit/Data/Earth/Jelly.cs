@@ -64,7 +64,7 @@ namespace GameA.Game
         {
             if (!checkOnly)
             {
-                if (other.SpeedY > 0)
+                if (other.SpeedY >= 0)
                 {
                     other.SpeedY = 0;
                     if (other.IsMain)

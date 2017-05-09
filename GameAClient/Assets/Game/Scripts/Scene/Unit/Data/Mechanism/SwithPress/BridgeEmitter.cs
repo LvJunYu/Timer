@@ -23,6 +23,11 @@ namespace GameA.Game
         private static List<Queue<UnitBase>> s_freeQueues = new List<Queue<UnitBase>>();
         protected Dictionary<IntVec3, List<GridCheck>> _gridChecks = new Dictionary<IntVec3, List<GridCheck>>();
 
+        protected override void InitAssetPath()
+        {
+            _assetPath = string.Format("{0}_{1}", _tableUnit.Model, _unitDesc.Rotation);
+        }
+
         protected override void Clear()
         {
             base.Clear();

@@ -28,6 +28,16 @@ namespace GameA.Game
             return true;
         }
 
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            _animation.PlayOnce(((EDirectionType) Rotation).ToString());
+            return true;
+        }
+
         public override void UpdateLogic()
         {
             base.UpdateLogic();

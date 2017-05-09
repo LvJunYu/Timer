@@ -52,7 +52,10 @@ namespace GameA.Game
 
         internal override void OnObjectDestroy()
         {
-            PlayMode.Instance.DestroyUnit(_childUnit);
+            if (PlayMode.Instance != null)
+            {
+                PlayMode.Instance.DestroyUnit(_childUnit);
+            }
         }
 
         protected virtual void PushChild()

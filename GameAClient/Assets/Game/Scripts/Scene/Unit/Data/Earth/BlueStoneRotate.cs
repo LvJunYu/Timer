@@ -14,20 +14,14 @@ namespace GameA.Game
     [Unit(Id = 4103, Type = typeof(BlueStoneRotate))]
     public class BlueStoneRotate : Magic
     {
-        protected override void InitAssetPath()
+        internal override bool InstantiateView()
         {
-            _assetPath = _tableUnit.Model;
-        }
-
-        public override void UpdateExtraData()
-        {
-            base.UpdateExtraData();
-            if (_view != null)
+            if (!base.InstantiateView())
             {
-                _trans.localEulerAngles = new Vector3(0, 0, GetRotation(_unitDesc.Rotation));
-                Vector3 offset = GetRotationPosOffset();
-                _trans.localPosition = offset + GetTransPos();
+                return false;
             }
+            _animation.Init(((EDirectionType)Rotation).ToString());
+            return true;
         }
     }
 }

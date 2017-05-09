@@ -58,9 +58,9 @@ namespace GameA.Game
 
         internal override void OnEdit()
         {
-            if (_editSequence == null)
+            if (_editSequence != null)
             {
-                PlayAnimation();
+                _editSequence.Play();
             }
         }
 
@@ -84,10 +84,6 @@ namespace GameA.Game
         {
             _trigger = false;
             _unit = null;
-            if (_editSequence != null)
-            {
-                _editSequence.Play();
-            }
             base.Clear();
         }
 
@@ -165,11 +161,6 @@ namespace GameA.Game
             {
                 _spriteRenderer.DOFade(0, 0.2f);
             }
-        }
-
-        public IntVec3 GetGuid()
-        {
-            return _guid;
         }
 
         public override void UpdateLogic()

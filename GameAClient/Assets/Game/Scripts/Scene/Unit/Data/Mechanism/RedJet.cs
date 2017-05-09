@@ -13,5 +13,14 @@ namespace GameA.Game
     [Unit(Id = 5016, Type = typeof(RedJet))]
     public class RedJet : Magic
     {
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            _animation.PlayOnce(((EDirectionType)Rotation).ToString());
+            return true;
+        }
     }
 }
