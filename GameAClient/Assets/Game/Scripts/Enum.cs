@@ -129,6 +129,7 @@ namespace GameA.Game
 		Drag,
 		Move,
 		Modify,
+        Switch,     // 编辑开关
         Max,
     }
 	/// <summary>

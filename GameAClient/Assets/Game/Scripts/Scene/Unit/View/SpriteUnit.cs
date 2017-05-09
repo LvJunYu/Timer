@@ -78,5 +78,10 @@ namespace GameA.Game
 		    base.OnCancelSelect();
 			_spriteRenderer.color = NormalColor;
 		}
+
+        public override void SetRendererColor (Color color)
+        {
+            _spriteRenderer.color = color;
+        }
     }
 }

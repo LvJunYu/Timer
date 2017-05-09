@@ -81,6 +81,14 @@ namespace GameA.Game
                 }
             }
 
+            var switchUnitDatas = mapData.SwitchUnitDatas;
+            for (int i = 0; i < switchUnitDatas.Count; i++) {
+                for (int j = 0; j < switchUnitDatas [i].ControlledGUIDs.Count; j++) {
+                    DataScene2D.Instance.BindSwitch(GM2DTools.ToEngine(switchUnitDatas[i].SwitchGUID),
+                        GM2DTools.ToEngine(switchUnitDatas [i].ControlledGUIDs[j]));
+                }
+            }
+
             //计算总数
             int num = 0;
             int totalCount = 0;
@@ -219,6 +227,16 @@ namespace GameA.Game
 					}
 				}
 			}
+
+            var switchUnitItor = DataScene2D.Instance.SwitchedUnits.GetEnumerator ();
+            while (switchUnitItor.MoveNext ()) {
+                SwitchUnitData newData = new SwitchUnitData ();
+                newData.SwitchGUID = GM2DTools.ToProto (switchUnitItor.Current.Key);
+                for (int i = 0; i < switchUnitItor.Current.Value.Count; i++) {
+                    newData.ControlledGUIDs.Add(GM2DTools.ToProto(switchUnitItor.Current.Value[i]));
+                }
+                gm2DMapData.SwitchUnitDatas.Add (newData);
+            }
 
             gm2DMapData.ModifyDatas.Clear ();
             for (int i = 0; i < DataScene2D.Instance.ModifiedUnits.Count; i++) {

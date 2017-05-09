@@ -57,5 +57,6 @@ namespace GameA.Game
         public const string RedMask = "RedMaskEffect";
         public const string YellowMask = "YellowMaskEffect";
         public const string HereItIs = "HereItIsEffect";
+        public const string ConnectLine = "SwitchConnectionEffect";
     }
 }

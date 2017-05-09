@@ -210,7 +210,7 @@ namespace GameA.Game
 
         public void Check(Table_Unit tableUnit)
         {
-            _mapStatistics.AddOrDelete(tableUnit, true);
+            _mapStatistics.AddOrDeleteUnit(tableUnit, true);
         }
 
         public void ForceSetTimeFinish()
