@@ -13,6 +13,9 @@ namespace GameA.Game
     [Unit(Id = 7101, Type = typeof (GuideBoard))]
     public class GuideBoard : DecorationBase
     {
-
+        protected override void InitAssetPath()
+        {
+            InitAssetRotation();
+        }
     }
 }
