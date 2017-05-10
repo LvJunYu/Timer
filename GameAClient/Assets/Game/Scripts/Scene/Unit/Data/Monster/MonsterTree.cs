@@ -17,7 +17,8 @@ namespace GameA.Game
         {
             if (_isAlive && _isStart)
             {
-
+                _animation.PlayLoop("Run");
+                CheckWay();
             }
         }
     }

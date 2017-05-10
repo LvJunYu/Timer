@@ -549,8 +549,8 @@ namespace GameA.Game
 
         protected virtual void OnDead()
         {
-            _isAlive = false;
             Clear();
+            _isAlive = false;
             --Life;
             if (_view != null)
             {
@@ -905,11 +905,11 @@ namespace GameA.Game
                 PlayMode.Instance.UnFreeze(this);
                 if (speed.x > 0)
                 {
-                    ChangeWay(ERotationType.Right);
+                    ChangeWay(EMoveDirection.Right);
                 }
                 if (speed.x < 0)
                 {
-                    ChangeWay(ERotationType.Left);
+                    ChangeWay(EMoveDirection.Left);
                 }
                 Speed = speed;
                 SetPos(targetPos);
@@ -921,7 +921,7 @@ namespace GameA.Game
             return false;
         }
 
-        public virtual void ChangeWay(ERotationType eRotationType)
+        public virtual void ChangeWay(EMoveDirection eMoveDirection)
         {
 
         }

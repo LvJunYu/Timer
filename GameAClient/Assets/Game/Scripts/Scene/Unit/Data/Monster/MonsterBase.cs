@@ -132,5 +132,33 @@ namespace GameA.Game
         protected virtual void OnLeftStampedEmpty()
         {
         }
+
+        protected void CheckWay()
+        {
+            if (_hitUnits != null)
+            {
+                if (_curMoveDirection == EMoveDirection.Left && _hitUnits[(int)EDirectionType.Left] != null)
+                {
+                    ChangeWay(EMoveDirection.Right);
+                }
+                else if (_curMoveDirection == EMoveDirection.Right && _hitUnits[(int)EDirectionType.Right] != null)
+                {
+                    ChangeWay(EMoveDirection.Left);
+                }
+            }
+        }
+
+        public override void ChangeWay(EMoveDirection eMoveDirection)
+        {
+            if (!_isMonster)
+            {
+                return;
+            }
+            if (_monsterSpeed != 0)
+            {
+                SpeedX = eMoveDirection == EMoveDirection.Right ? _monsterSpeed : -_monsterSpeed;
+            }
+            SetFacingDir(eMoveDirection);
+        }
     }
 }

@@ -1194,6 +1194,7 @@ namespace GameA.Game
                                     _eUnitState = EUnitState.Normal;
                                     _mainInput.Clear();
                                     ClearRunTime();
+                                    LogHelper.Debug("!!!!!" + _isAlive);
                                     _isAlive = true;
                                     _flashTime = 100;
                                     _dieTime = 0;
