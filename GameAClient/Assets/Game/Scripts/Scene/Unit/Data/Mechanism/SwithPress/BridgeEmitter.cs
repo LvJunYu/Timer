@@ -47,7 +47,7 @@ namespace GameA.Game
         {
             if (PlayMode.Instance.LogicFrameCnt % 5 == 0)
             {
-                if (!_run)
+                if (!_trigger)
                 {
                     if (_curCreatingQueue != null)
                     {

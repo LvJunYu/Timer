@@ -120,8 +120,8 @@ namespace GameA.Game
         {
             Instance = this;
             transform.gameObject.AddComponent<UnitUpdateManager>();
-//            Messenger.AddListener(EMessengerType.GameFinishFailed, GameFinishFailed);
-//            Messenger.AddListener(EMessengerType.GameFinishSuccess, GameFinishSuccess);
+            Messenger.AddListener(EMessengerType.GameFinishFailed, GameFinishFailed);
+            Messenger.AddListener(EMessengerType.GameFinishSuccess, GameFinishSuccess);
             _unityTimeSinceGameStarted = 0f;
             _logicFrameCnt = 0;
             _allSkeletonAnimationComp.Clear ();
@@ -680,20 +680,18 @@ namespace GameA.Game
 
         private void RevertData()
         {
-            foreach (var unitObject in _addedDatas)
+            foreach (var unitDesc in _addedDatas)
             {
-                //var tableUnit = UnitManager.Instance.GetTableUnit(unitObject.Id);
-                ////需要单次调用，因为模型可能不存在，但是必须得先删除数据
-                //ColliderScene2D.Instance.DeleteCollider(unitObject, tableUnit);
-                ////删除模型
-                //ColliderScene2D.Instance.DestroyView(unitObject);
+                var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+                ColliderScene2D.Instance.DestroyView(unitDesc);
+                ColliderScene2D.Instance.DeleteUnit(unitDesc, tableUnit);
             }
             _addedDatas.Clear();
             for (int i = 0; i < _deletedDatas.Count; i++)
             {
-                var unitObject = _deletedDatas[i];
-                var tableUnit = UnitManager.Instance.GetTableUnit(unitObject.Id);
-                ColliderScene2D.Instance.AddUnit(unitObject, tableUnit);
+                var unitDesc = _deletedDatas[i];
+                var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+                ColliderScene2D.Instance.AddUnit(unitDesc, tableUnit);
             }
             _deletedDatas.Clear();
         }

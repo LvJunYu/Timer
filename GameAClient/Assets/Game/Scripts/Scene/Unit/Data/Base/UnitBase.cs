@@ -1035,9 +1035,9 @@ namespace GameA.Game
         protected virtual void OnDisconnectToSwitch (UnitBase switchUnit) {
         }
 
-        #region OnHit
+        #region OnIntersect
 
-        public virtual void OnHit(UnitBase other)
+        public virtual void OnIntersect(UnitBase other)
         {
         }
 

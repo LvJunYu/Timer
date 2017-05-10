@@ -42,9 +42,12 @@ namespace GameA.Game
             _colliderUnits.Clear();
         }
 
-        public override void OnHit(UnitBase other)
+        public override void OnIntersect(UnitBase other)
         {
-            OnTrigger(other);
+            if (other.IsHero || other is Box)
+            {
+                OnTrigger(other);
+            }
         }
 
         public void OnColliderEnter(UnitBase other)
@@ -87,7 +90,7 @@ namespace GameA.Game
             OnTriggerStart(other);
         }
 
-        public void UpdateLogic(float deltaTime)
+        public override void UpdateLogic()
         {
             if (_trigger)
             {
@@ -110,7 +113,7 @@ namespace GameA.Game
         {
             if (_view != null)
             {
-                _view.ChangeView("M1SwitchTriggeOn_"+_unitDesc.Rotation);
+                _view.ChangeView("M1SwitchTriggerOn_"+_unitDesc.Rotation);
             }
             if (_switchPress != null)
             {

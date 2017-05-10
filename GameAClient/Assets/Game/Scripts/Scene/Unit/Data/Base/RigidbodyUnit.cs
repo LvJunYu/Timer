@@ -19,7 +19,14 @@ namespace GameA.Game
         [SerializeField]
         protected UnitBase[] _hitUnits = new UnitBase[4];
         private static HashSet<IntVec3> _cacheCheckedDownUnits = new HashSet<IntVec3>();
+        /// <summary>
+        /// 是否相撞
+        /// </summary>
         private static HashSet<IntVec3> _cacheHitUnits = new HashSet<IntVec3>();
+        /// <summary>
+        /// 是否相交
+        /// </summary>
+        private static HashSet<IntVec3> _cacheIntersectUnits = new HashSet<IntVec3>();
         protected bool _onClay;
         protected const int ClayRatio = 5;
 
@@ -32,6 +39,7 @@ namespace GameA.Game
             }
             _cacheCheckedDownUnits.Clear();
             _cacheHitUnits.Clear();
+            _cacheIntersectUnits.Clear();
         }
 
         protected override void UpdateCollider(IntVec2 min)
@@ -48,6 +56,7 @@ namespace GameA.Game
             else
             {
                 _cacheHitUnits.Clear();
+                _cacheIntersectUnits.Clear();
                 _colliderPos.y = min.y;
                 if (_isAlive)
                 {
@@ -86,20 +95,19 @@ namespace GameA.Game
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    int ymin = 0;
-                    if (unit.IsAlive && unit.OnDownHit(this, ref ymin))
+                    if (unit.IsAlive)
                     {
-                        if (!_cacheHitUnits.Contains(unit.Guid))
+                        CheckIntersect(unit);
+                        int ymin = 0;
+                        if (unit.OnDownHit(this, ref ymin))
                         {
-                            _cacheHitUnits.Add(unit.Guid);
-                            unit.OnHit(this);
-                            Hit(unit, EDirectionType.Up);
-                        }
-                        flag = true;
-                        if (ymin < y)
-                        {
-                            y = ymin;
-                            hit = unit;
+                            CheckHit(unit, EDirectionType.Up);
+                            flag = true;
+                            if (ymin < y)
+                            {
+                                y = ymin;
+                                hit = unit;
+                            }
                         }
                     }
                 }
@@ -127,25 +135,24 @@ namespace GameA.Game
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    int ymin = 0;
                     _cacheCheckedDownUnits.Add(unit.Guid);
-                    if (unit.IsAlive && unit.OnUpHit(this, ref ymin))
+                    if (unit.IsAlive)
                     {
-                        if (!_cacheHitUnits.Contains(unit.Guid))
+                        CheckIntersect(unit);
+                        int ymin = 0;
+                        if (unit.OnUpHit(this, ref ymin))
                         {
-                            _cacheHitUnits.Add(unit.Guid);
-                            unit.OnHit(this);
-                            Hit(unit, EDirectionType.Down);
-                        }
-                        flag = true;
-                        if (ymin > y)
-                        {
-                            y = ymin;
-                            var delta = Mathf.Abs(CenterPos.x - unit.CenterPos.x);
-                            if (deltaX > delta)
+                            CheckHit(unit, EDirectionType.Down);
+                            flag = true;
+                            if (ymin > y)
                             {
-                                deltaX = delta;
-                                hit = unit;
+                                y = ymin;
+                                var delta = Mathf.Abs(CenterPos.x - unit.CenterPos.x);
+                                if (deltaX > delta)
+                                {
+                                    deltaX = delta;
+                                    hit = unit;
+                                }
                             }
                         }
                     }
@@ -186,20 +193,19 @@ namespace GameA.Game
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    int xmin = 0;
-                    if (unit.IsAlive && unit.OnRightHit(this, ref xmin))
+                    if (unit.IsAlive)
                     {
-                        if (!_cacheHitUnits.Contains(unit.Guid))
+                        CheckIntersect(unit);
+                        int xmin = 0;
+                        if (unit.OnRightHit(this, ref xmin))
                         {
-                            _cacheHitUnits.Add(unit.Guid);
-                            unit.OnHit(this);
-                            Hit(unit, EDirectionType.Left);
-                        }
-                        flag = true;
-                        if (xmin > x)
-                        {
-                            x = xmin;
-                            hit = unit;
+                            CheckHit(unit, EDirectionType.Left);
+                            flag = true;
+                            if (xmin > x)
+                            {
+                                x = xmin;
+                                hit = unit;
+                            }
                         }
                     }
                 }
@@ -225,20 +231,19 @@ namespace GameA.Game
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    int xmin = 0;
-                    if (unit.IsAlive && unit.OnLeftHit(this, ref xmin))
+                    if (unit.IsAlive)
                     {
-                        if (!_cacheHitUnits.Contains(unit.Guid))
+                        CheckIntersect(unit);
+                        int xmin = 0;
+                        if (unit.IsAlive && unit.OnLeftHit(this, ref xmin))
                         {
-                            _cacheHitUnits.Add(unit.Guid);
-                            unit.OnHit(this);
-                            Hit(unit, EDirectionType.Right);
-                        }
-                        flag = true;
-                        if (xmin < x)
-                        {
-                            x = xmin;
-                            hit = unit;
+                            CheckHit(unit, EDirectionType.Right);
+                            flag = true;
+                            if (xmin < x)
+                            {
+                                x = xmin;
+                                hit = unit;
+                            }
                         }
                     }
                 }
@@ -247,6 +252,24 @@ namespace GameA.Game
                     _colliderPos.x = x;
                     _hitUnits[(int)EDirectionType.Right] = hit;
                 }
+            }
+        }
+
+        private void CheckIntersect(UnitBase unit)
+        {
+            if (!_cacheIntersectUnits.Contains(unit.Guid))
+            {
+                _cacheIntersectUnits.Add(unit.Guid);
+                unit.OnIntersect(this);
+            }
+        }
+
+        private void CheckHit(UnitBase unit, EDirectionType eDirectionType)
+        {
+            if (!_cacheHitUnits.Contains(unit.Guid))
+            {
+                _cacheHitUnits.Add(unit.Guid);
+                Hit(unit, eDirectionType);
             }
         }
 
