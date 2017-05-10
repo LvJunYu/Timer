@@ -20,7 +20,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            InitAssetRotation();
+            InitAssetRotation(true);
             return true;
         }
     }
