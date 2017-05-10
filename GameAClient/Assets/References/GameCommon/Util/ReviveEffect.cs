@@ -31,7 +31,7 @@ public class ReviveEffect {
         }
     }
 
-    public ReviveEffect (SoyEngine.UnityNativeParticleItem particle)
+    public ReviveEffect (UnityNativeParticleItem particle)
     {
         _particle = particle;
     }

@@ -1229,7 +1229,7 @@ namespace GameA.Game
             _trans.eulerAngles = new Vector3(90, 0, 0);
             if (_portalEffect == null)
             {
-                var particle = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.MarioPortalParticle, null);
+                var particle = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null);
                 _portalEffect = new ReviveEffect(particle);
             }
             _portalEffect.Play(_trans.position + Vector3.up * 0.5f,
