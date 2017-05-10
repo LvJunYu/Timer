@@ -34,26 +34,22 @@ namespace GameA.Game
             }
         }
 
-        protected override bool OnInit()
+        internal override bool InstantiateView()
         {
-            if (!base.OnInit())
+            if (!base.InstantiateView())
             {
                 return false;
             }
+            _animation.Init("Run");
             return true;
         }
 
-        internal override void OnPlay()
+        protected override void Clear()
         {
+            base.Clear();
             _time = 0;
-            base.OnPlay();
-        }
-
-        internal override void Reset()
-        {
             _trigger = false;
             _unit = null;
-            base.Reset();
         }
 
         protected override void OnTrigger(UnitBase other)
@@ -67,6 +63,10 @@ namespace GameA.Game
                 _trigger = true;
                 _unit = other;
                 _time = 0;
+                if (_animation != null)
+                {
+                    _animation.PlayOnce("Start", 1, 1);
+                }
                 Messenger<IntVec3>.Broadcast(EMessengerType.OnTriggerBulletinBoardEnter, _guid);
             }
         }
