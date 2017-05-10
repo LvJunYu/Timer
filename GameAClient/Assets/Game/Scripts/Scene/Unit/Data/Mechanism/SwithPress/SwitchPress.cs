@@ -13,10 +13,11 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 5111, Type = typeof(SwitchPress))]
+    [Unit(Id = 5104, Type = typeof(SwitchPress))]
     public class SwitchPress : BlockBase
     {
         protected bool _trigger;
+        protected bool _triggerReverse;
 
         internal override void OnPlay()
         {
@@ -27,26 +28,26 @@ namespace GameA.Game
             Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(UnitDefine.SwitchTriggerId);
             IntVec2 dataSize = tableUnit.GetDataSize(0, Vector2.one);
             var triggerDir = EDirectionType.Up;
-            switch ((EDirectionType)_unitDesc.Rotation)
+            switch ((EDirectionType) _unitDesc.Rotation)
             {
                 case EDirectionType.Up:
-                    triggerDir = EDirectionType.Down;
-                    guid.y -= dataSize.y;
+                    triggerDir = _triggerReverse ? EDirectionType.Down : EDirectionType.Up;
+                    guid.y = _triggerReverse ? guid.y - dataSize.y : _colliderGrid.YMax + 1;
                     break;
                 case EDirectionType.Down:
-                    triggerDir = EDirectionType.Up;
-                    guid.y = _colliderGrid.YMax + 1;
+                    triggerDir = _triggerReverse ? EDirectionType.Up : EDirectionType.Down;
+                    guid.y = _triggerReverse ? _colliderGrid.YMax + 1 : guid.y - dataSize.y;
                     break;
                 case EDirectionType.Left:
-                    triggerDir = EDirectionType.Right;
-                    guid.x = _colliderGrid.XMax + 1;
+                    triggerDir = _triggerReverse ? EDirectionType.Right : EDirectionType.Left;
+                    guid.x = _triggerReverse ? _colliderGrid.XMax + 1 : guid.x - dataSize.x;
                     break;
                 case EDirectionType.Right:
-                    triggerDir = EDirectionType.Left;
-                    guid.x -= dataSize.x;
+                    triggerDir = _triggerReverse ? EDirectionType.Left : EDirectionType.Right;
+                    guid.x = _triggerReverse ? guid.x - dataSize.x : _colliderGrid.XMax + 1;
                     break;
             }
-            var switchTrigger = PlayMode.Instance.CreateUnit(new UnitDesc(UnitDefine.SwitchTriggerId, guid, (byte)triggerDir, Vector2.one)) as SwitchTrigger;
+            var switchTrigger = PlayMode.Instance.CreateUnit(new UnitDesc(UnitDefine.SwitchTriggerId, guid,(byte) triggerDir, Vector2.one)) as SwitchTrigger;
             if (switchTrigger == null)
             {
                 LogHelper.Error("CreateUnit switchTrigger Faield,{0}", ToString());
@@ -56,21 +57,21 @@ namespace GameA.Game
             switchTrigger.SwitchPress = this;
         }
 
-        internal override void Reset()
+        protected override void Clear()
         {
-            base.Reset();
+            base.Clear();
             _trigger = false;
         }
 
         public virtual void OnTriggerStart(UnitBase other)
         {
-            LogHelper.Debug("OnTriggerStart {0}", ToString());
+            //LogHelper.Debug("OnTriggerStart {0}", ToString());
             _trigger = true;
         }
 
         public virtual void OnTriggerEnd()
         {
-            LogHelper.Debug("OnTriggerEnd {0}", ToString());
+            //LogHelper.Debug("OnTriggerEnd {0}", ToString());
             _trigger = false;
         }
     }

@@ -23,6 +23,16 @@ namespace GameA.Game
         private static List<Queue<UnitBase>> s_freeQueues = new List<Queue<UnitBase>>();
         protected Dictionary<IntVec3, List<GridCheck>> _gridChecks = new Dictionary<IntVec3, List<GridCheck>>();
 
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            _triggerReverse = true;
+            return true;
+        }
+
         protected override void InitAssetPath()
         {
             InitAssetRotation();
