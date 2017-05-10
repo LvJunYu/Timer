@@ -114,7 +114,7 @@ namespace GameA.Game
                 Object.Destroy(_dirTrans2.gameObject);
                 _dirTrans2 = null;
             }
-		}
+        }
 
 	    public static Color SelectedColor = Color.red;
 	    public static Color NormalColor = Color.white;

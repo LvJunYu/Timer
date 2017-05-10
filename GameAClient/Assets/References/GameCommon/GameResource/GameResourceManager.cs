@@ -166,6 +166,11 @@ namespace SoyEngine
 
         public Sprite GetSpriteByName(string spName)
         {
+            if (string.IsNullOrEmpty(spName))
+            {
+                LogHelper.Error("GetSpriteByName failed,{0}", spName);
+                return null;
+            }
             string atlasName = null;
 	        bool useLocale = false;
 #if UNITY_EDITOR

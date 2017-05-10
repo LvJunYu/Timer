@@ -432,7 +432,6 @@ namespace GameA.Game
                 LogHelper.Error("TryGetUnitView Failed, {0}", tableUnit.Id);
                 return;
             }
-            InitAssetRotation();
             SetFacingDir(_curMoveDirection, true);
             _view.SetSortingOrder((int)ESortingOrder.DragingItem);
         }
@@ -455,7 +454,6 @@ namespace GameA.Game
                 LogHelper.Error("TryGetUnitView Failed, {0}", tableUnit.Id);
                 return true;
             }
-            InitAssetRotation();
             _view.OnIsChild();
             SetFacingDir(_curMoveDirection, true);
             return true;
