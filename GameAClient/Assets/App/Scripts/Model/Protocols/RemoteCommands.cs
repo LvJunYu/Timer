@@ -8,6 +8,9 @@ using SoyEngine;
 namespace GameA
 {
     public class RemoteCommands {
+        public static bool IsRequstingLoginByToken {
+            get { return _isRequstingLoginByToken; }
+        }
         private static bool _isRequstingLoginByToken = false;
         /// <summary>
 		/// 设备登录包
@@ -48,6 +51,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingLogout {
+            get { return _isRequstingLogout; }
+        }
         private static bool _isRequstingLogout = false;
         /// <summary>
 		/// 退出登录
@@ -82,6 +88,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingCreateProject {
+            get { return _isRequstingCreateProject; }
+        }
         private static bool _isRequstingCreateProject = false;
         /// <summary>
 		/// 创建关卡
@@ -131,6 +140,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingUpdateProject {
+            get { return _isRequstingUpdateProject; }
+        }
         private static bool _isRequstingUpdateProject = false;
         /// <summary>
 		/// 更新关卡
@@ -183,6 +195,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingDeleteProject {
+            get { return _isRequstingDeleteProject; }
+        }
         private static bool _isRequstingDeleteProject = false;
         /// <summary>
 		/// 删除关卡
@@ -217,6 +232,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingPublishProject {
+            get { return _isRequstingPublishProject; }
+        }
         private static bool _isRequstingPublishProject = false;
         /// <summary>
 		/// 发布关卡
@@ -266,6 +284,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingUnpublishProject {
+            get { return _isRequstingUnpublishProject; }
+        }
         private static bool _isRequstingUnpublishProject = false;
         /// <summary>
 		/// 取消发布
@@ -300,6 +321,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingPlayAdventureLevel {
+            get { return _isRequstingPlayAdventureLevel; }
+        }
         private static bool _isRequstingPlayAdventureLevel = false;
         /// <summary>
 		/// 进入冒险关卡
@@ -340,6 +364,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingUnlockAdventureSection {
+            get { return _isRequstingUnlockAdventureSection; }
+        }
         private static bool _isRequstingUnlockAdventureSection = false;
         /// <summary>
 		/// 解锁章节
@@ -374,6 +401,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingCommitAdventureLevelResult {
+            get { return _isRequstingCommitAdventureLevelResult; }
+        }
         private static bool _isRequstingCommitAdventureLevelResult = false;
         /// <summary>
 		/// 提交冒险模式数据
@@ -438,6 +468,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingUseProps {
+            get { return _isRequstingUseProps; }
+        }
         private static bool _isRequstingUseProps = false;
         /// <summary>
 		/// 使用道具
@@ -475,6 +508,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingUnlockHomePart {
+            get { return _isRequstingUnlockHomePart; }
+        }
         private static bool _isRequstingUnlockHomePart = false;
         /// <summary>
 		/// 解锁装饰
@@ -512,6 +548,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingChangeAvatarPart {
+            get { return _isRequstingChangeAvatarPart; }
+        }
         private static bool _isRequstingChangeAvatarPart = false;
         /// <summary>
 		/// 角色换装
@@ -549,6 +588,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingBuyAvatarPart {
+            get { return _isRequstingBuyAvatarPart; }
+        }
         private static bool _isRequstingBuyAvatarPart = false;
         /// <summary>
 		/// 购买时装
@@ -595,6 +637,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingRaffle {
+            get { return _isRequstingRaffle; }
+        }
         private static bool _isRequstingRaffle = false;
         /// <summary>
 		/// 转盘抽奖
@@ -629,6 +674,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingReform {
+            get { return _isRequstingReform; }
+        }
         private static bool _isRequstingReform = false;
         /// <summary>
 		/// 改造
@@ -663,6 +711,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingReselectReformLevel {
+            get { return _isRequstingReselectReformLevel; }
+        }
         private static bool _isRequstingReselectReformLevel = false;
         /// <summary>
 		/// 随机改造关卡
@@ -700,6 +751,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingGetReformReward {
+            get { return _isRequstingGetReformReward; }
+        }
         private static bool _isRequstingGetReformReward = false;
         /// <summary>
 		/// 领取改造奖励
@@ -734,6 +788,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingSaveReformProject {
+            get { return _isRequstingSaveReformProject; }
+        }
         private static bool _isRequstingSaveReformProject = false;
         /// <summary>
 		/// 上传改造关卡
@@ -783,6 +840,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingPublishReformProject {
+            get { return _isRequstingPublishReformProject; }
+        }
         private static bool _isRequstingPublishReformProject = false;
         /// <summary>
 		/// 发布改造关卡
@@ -829,6 +889,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingGetMatchChallengeProject {
+            get { return _isRequstingGetMatchChallengeProject; }
+        }
         private static bool _isRequstingGetMatchChallengeProject = false;
         /// <summary>
 		/// 获取挑战关卡
@@ -863,6 +926,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingSelectMatchChallengeProject {
+            get { return _isRequstingSelectMatchChallengeProject; }
+        }
         private static bool _isRequstingSelectMatchChallengeProject = false;
         /// <summary>
 		/// 选取挑战关卡
@@ -900,6 +966,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingPlayMatchChallengeLevel {
+            get { return _isRequstingPlayMatchChallengeLevel; }
+        }
         private static bool _isRequstingPlayMatchChallengeLevel = false;
         /// <summary>
 		/// 开始挑战
@@ -934,6 +1003,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingCommitMatchChallengeLevelResult {
+            get { return _isRequstingCommitMatchChallengeLevelResult; }
+        }
         private static bool _isRequstingCommitMatchChallengeLevelResult = false;
         /// <summary>
 		/// 提交匹配挑战关卡数据
@@ -974,6 +1046,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingMatchSkipChallenge {
+            get { return _isRequstingMatchSkipChallenge; }
+        }
         private static bool _isRequstingMatchSkipChallenge = false;
         /// <summary>
 		/// 跳过本次挑战
@@ -1008,6 +1083,9 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingExecuteCommand {
+            get { return _isRequstingExecuteCommand; }
+        }
         private static bool _isRequstingExecuteCommand = false;
         /// <summary>
 		/// 执行GM指令
