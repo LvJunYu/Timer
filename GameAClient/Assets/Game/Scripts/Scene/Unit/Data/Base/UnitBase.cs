@@ -497,7 +497,7 @@ namespace GameA.Game
             {
                 if (loop)
                 {
-                    _animation.PlayLoop(((EDirectionType) Rotation).ToString());
+                    _animation.Init(((EDirectionType) Rotation).ToString());
                 }
                 else
                 {

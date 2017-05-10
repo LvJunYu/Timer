@@ -265,6 +265,10 @@ namespace GameA.Game
 
         public int GetCurrentId(int id)
         {
+            if (id==0)
+            {
+                return 0;
+            }
             var tableUnit = UnitManager.Instance.GetTableUnit(id);
             if (tableUnit.EPairType == 0)
             {
