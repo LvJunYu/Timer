@@ -432,6 +432,10 @@ namespace GameA.Game
                 LogHelper.Error("TryGetUnitView Failed, {0}", tableUnit.Id);
                 return;
             }
+            if (tableUnit.CanRotate)
+            {
+                InitAssetRotation();
+            }
             SetFacingDir(_curMoveDirection, true);
             _view.SetSortingOrder((int)ESortingOrder.DragingItem);
         }
@@ -483,7 +487,7 @@ namespace GameA.Game
             _assetPath = _tableUnit.Model;
         }
 
-        protected void InitAssetRotation()
+        protected void InitAssetRotation(bool loop = false)
         {
             if (_animation == null)
             {
@@ -491,7 +495,14 @@ namespace GameA.Game
             }
             else
             {
-                _animation.PlayOnce(((EDirectionType) Rotation).ToString());
+                if (loop)
+                {
+                    _animation.PlayLoop(((EDirectionType) Rotation).ToString());
+                }
+                else
+                {
+                    _animation.PlayOnce(((EDirectionType) Rotation).ToString());
+                }
             }
         }
 

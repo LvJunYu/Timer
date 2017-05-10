@@ -30,14 +30,26 @@ namespace GameA.Game
             var allUnits = ColliderScene2D.Instance.AllUnits;
             for (int i = 0; i < allUnits.Count; i++)
             {
+                if (allUnits[i].IsFreezed)
+                {
+                    continue;
+                }
                 allUnits[i].CheckStart();
             }
             for (int i = 0; i < allUnits.Count; i++)
             {
+                if (allUnits[i].IsFreezed)
+                {
+                    continue;
+                } 
                 allUnits[i].UpdateLogic();
             }
             for (int i = 0; i < allUnits.Count; i++)
             {
+                if (allUnits[i].IsFreezed)
+                {
+                    continue;
+                } 
                 allUnits[i].CalculateExtraDeltaPos();
             }
             var mainUnit = PlayMode.Instance.MainUnit;
@@ -48,7 +60,7 @@ namespace GameA.Game
                 case EBoxOperateType.Push:
                     for (int i = 0; i < allUnits.Count; i++)
                     {
-                        if (allUnits[i].IsMain)
+                        if (allUnits[i].IsMain || allUnits[i].IsFreezed)
                         {
                             continue;
                         }
@@ -60,7 +72,7 @@ namespace GameA.Game
                     PlayMode.Instance.MainUnit.UpdateView(deltaTime);
                     for (int i = 0; i < allUnits.Count; i++)
                     {
-                        if (allUnits[i].IsMain)
+                        if (allUnits[i].IsMain || allUnits[i].IsFreezed)
                         {
                             continue;
                         }

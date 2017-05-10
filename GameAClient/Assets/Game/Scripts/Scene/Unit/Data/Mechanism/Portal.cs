@@ -21,7 +21,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            InitAssetRotation();
+            InitAssetRotation(true);
             return true;
         }
 
@@ -42,14 +42,14 @@ namespace GameA.Game
             var checkGrid = GM2DTools.CalculateFireColliderGrid(sender.Id, colliderGrid, unitDesc.Rotation);
             var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid,
                 JoyPhysics2D.GetColliderLayerMask(sender.DynamicCollider.Layer));
+            for (int i = 0; i < units.Count; i++)
+            {
+                if (GM2DTools.OnDirectionHit(units[i], sender, (EMoveDirection)(unitDesc.Rotation + 1)))
+                {
+                    return;
+                }
+            }
             var speed = IntVec2.zero;
-            //for (int i = 0; i < units.Count; i++)
-            //{
-            //    if (GM2DTools.OnDirectionHit(units[i], sender, unitDesc.Rotation))
-            //    {
-            //        return;
-            //    }
-            //}
             switch ((ERotationType)unitDesc.Rotation)
             {
                 case ERotationType.Up:
