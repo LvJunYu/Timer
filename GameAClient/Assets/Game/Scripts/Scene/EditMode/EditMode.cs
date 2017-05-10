@@ -278,11 +278,11 @@ namespace GameA.Game
             {
                 return false;
             }
-            //if (tableUnit.EPairType > 0)
-            //{
-            //    PairUnitManager.Instance.AddPairUnit(unitDesc, tableUnit);
-            //    UpdateSelectItem();
-            //}
+            if (tableUnit.EPairType > 0)
+            {
+                PairUnitManager.Instance.AddPairUnit(unitDesc, tableUnit);
+                UpdateSelectItem();
+            }
             if (!ColliderScene2D.Instance.AddUnit(unitDesc, tableUnit))
             {
                 return false;
@@ -304,11 +304,6 @@ namespace GameA.Game
                 LogHelper.Error("DeleteUnit failed,{0}", unitDesc.ToString());
                 return false;
             }
-            //if (tableUnit.EPairType > 0)
-            //{
-            //    PairUnitManager.Instance.DeletePairUnit(unitDesc, tableUnit);
-            //    UpdateSelectItem();
-            //}
             if (!ColliderScene2D.Instance.DestroyView(unitDesc))
             {
                 return false;
@@ -316,17 +311,21 @@ namespace GameA.Game
             if (!ColliderScene2D.Instance.DeleteUnit(unitDesc, tableUnit))
             {
                 //成对的不能返回false
-                //if (tableUnit.EPairType == 0)
-                //{
-                //    return false;
-                //}
+                if (tableUnit.EPairType == 0)
+                {
+                    return false;
+                }
             }
             if (!DataScene2D.Instance.DeleteData(unitDesc, tableUnit))
             {
                 return false;
             }
+            if (tableUnit.EPairType > 0)
+            {
+                PairUnitManager.Instance.DeletePairUnit(unitDesc, tableUnit);
+                UpdateSelectItem();
+            }
             AfterDeleteUnit(unitDesc, tableUnit);
-
             return true;
         }
 

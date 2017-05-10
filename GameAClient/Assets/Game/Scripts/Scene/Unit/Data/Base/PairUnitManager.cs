@@ -41,11 +41,11 @@ namespace GameA.Game
         public void SetValue(UnitDesc unitDesc, Table_Unit tableUnit)
         {
             //确保UnitA对应着第一个
-            //if (UnitA == UnitDesc.zero && unitDesc.Id == tableUnit.PairUnitIds[0])
-            //{
-            //    UnitA = unitDesc;
-            //    return;
-            //}
+            if (UnitA == UnitDesc.zero && unitDesc.Id == tableUnit.PairUnitIds[0])
+            {
+                UnitA = unitDesc;
+                return;
+            }
             UnitB = unitDesc;
         }
 
@@ -105,10 +105,7 @@ namespace GameA.Game
 
         public PairUnitManager()
         {
-            _pairUnits.Add(EPairType.TrapDoor, new PairUnit[20]);
             _pairUnits.Add(EPairType.ProtalDoor, new PairUnit[20]);
-            _pairUnits.Add(EPairType.ControlledRotator90, new PairUnit[20]);
-            _pairUnits.Add(EPairType.ControlledRotator180, new PairUnit[20]);
             foreach (var pairUnits in _pairUnits.Values)
             {
                 for (int i = 0; i < pairUnits.Length; i++)
@@ -120,18 +117,18 @@ namespace GameA.Game
 
         public void OnReadMapFile(UnitDesc unitDesc, Table_Unit tableUnit, PairUnitData pairUnitData)
         {
-            //if (!_pairUnits.ContainsKey(tableUnit.EPairType))
-            //{
-            //    LogHelper.Error("OnReadMapFile Failed, {0} | {1}", unitDesc, pairUnitData);
-            //    return;
-            //}
-            //if (pairUnitData.Num >= _pairUnits[tableUnit.EPairType].Length)
-            //{
-            //    LogHelper.Error("OnReadMapFile Failed, {0} | {1}", unitDesc, pairUnitData);
-            //    return;
-            //}
-            //var pairUnit = _pairUnits[tableUnit.EPairType][pairUnitData.Num];
-            //pairUnit.SetValue(unitDesc,tableUnit);
+            if (!_pairUnits.ContainsKey(tableUnit.EPairType))
+            {
+                LogHelper.Error("OnReadMapFile Failed, {0} | {1}", unitDesc, pairUnitData);
+                return;
+            }
+            if (pairUnitData.Num >= _pairUnits[tableUnit.EPairType].Length)
+            {
+                LogHelper.Error("OnReadMapFile Failed, {0} | {1}", unitDesc, pairUnitData);
+                return;
+            }
+            var pairUnit = _pairUnits[tableUnit.EPairType][pairUnitData.Num];
+            pairUnit.SetValue(unitDesc, tableUnit);
         }
 
         public void Dispose()
@@ -154,70 +151,70 @@ namespace GameA.Game
 
         public void AddPairUnit(UnitDesc unitDesc, Table_Unit tableUnit)
         {
-            //PairUnit pairUnit;
-            //if (!TryGetNotFullPairUnit(tableUnit.EPairType, out pairUnit))
-            //{
-            //    LogHelper.Error("AddPairUnit Failed{0}", unitDesc);
-            //    return;
-            //}
-            //pairUnit.SetValue(unitDesc, tableUnit);
+            PairUnit pairUnit;
+            if (!TryGetNotFullPairUnit(tableUnit.EPairType, out pairUnit))
+            {
+                LogHelper.Error("AddPairUnit Failed{0}", unitDesc);
+                return;
+            }
+            pairUnit.SetValue(unitDesc, tableUnit);
         }
 
         public bool DeletePairUnit(UnitDesc unitDesc, Table_Unit tableUnit)
         {
-            //var ePairType = tableUnit.EPairType;
-            //PairUnit pairUnit;
-            //if (!TryGetPairUnit(ePairType, unitDesc, out pairUnit))
-            //{
-            //    LogHelper.Error("DeletePairUnit TryGetPairUnit Failed, {0}", unitDesc);
-            //    return false;
-            //}
-            //pairUnit.RemoveValue(unitDesc);
+            var ePairType = tableUnit.EPairType;
+            PairUnit pairUnit;
+            if (!TryGetPairUnit(ePairType, unitDesc, out pairUnit))
+            {
+                LogHelper.Error("DeletePairUnit TryGetPairUnit Failed, {0}", unitDesc);
+                return false;
+            }
+            pairUnit.RemoveValue(unitDesc);
             return true;
         }
 
         public void OnPairTriggerEnter(UnitBase sender, UnitBase unit)
         {
-            //PairUnit pairUnit;
-            //if (!TryGetPairUnit(unit.TableUnit.EPairType,unit.Guid, out pairUnit))
-            //{
-            //    LogHelper.Error("OnPairTriggerEnter TryGetPairUnit Failed, {0}", unit);
-            //    return;
-            //}
-            //pairUnit.TriggeredCnt++;
-            //pairUnit.Sender = sender;
-            ////传送门要特殊处理
-            //if (unit.TableUnit.EPairType == EPairType.ProtalDoor)
-            //{
-            //    Portal.OnPortal(pairUnit, unit.Guid == pairUnit.UnitA.Guid ? pairUnit.UnitB : pairUnit.UnitA);
-            //    return;
-            //}
-            //var listerner = unit.Guid == pairUnit.UnitA.Guid ? pairUnit.UnitB.Guid : pairUnit.UnitA.Guid;
-            ////通知UnitBase
-            //UnitBase listernerUnit;
-            //if (ColliderScene2D.Instance.TryGetUnit(listerner, out listernerUnit))
-            //{
-            //    listernerUnit.OnPairUnitTriggerEnter(pairUnit);
-            //}
+            PairUnit pairUnit;
+            if (!TryGetPairUnit(unit.TableUnit.EPairType, unit.Guid, out pairUnit))
+            {
+                LogHelper.Error("OnPairTriggerEnter TryGetPairUnit Failed, {0}", unit);
+                return;
+            }
+            pairUnit.TriggeredCnt++;
+            pairUnit.Sender = sender;
+            //传送门要特殊处理
+            if (unit.TableUnit.EPairType == EPairType.ProtalDoor)
+            {
+                Portal.OnPortal(pairUnit, unit.Guid == pairUnit.UnitA.Guid ? pairUnit.UnitB : pairUnit.UnitA);
+                return;
+            }
+            var listerner = unit.Guid == pairUnit.UnitA.Guid ? pairUnit.UnitB.Guid : pairUnit.UnitA.Guid;
+            //通知UnitBase
+            UnitBase listernerUnit;
+            if (ColliderScene2D.Instance.TryGetUnit(listerner, out listernerUnit))
+            {
+                listernerUnit.OnPairUnitTriggerEnter(pairUnit);
+            }
         }
 
         public void OnPairTriggerExit(UnitBase sender, UnitBase unit)
         {
-            //PairUnit pairUnit;
-            //if (!TryGetPairUnit(unit.TableUnit.EPairType, unit.Guid, out pairUnit))
-            //{
-            //    LogHelper.Error("OnPairTriggerExit TryGetPairUnit Failed, {0}", unit);
-            //    return;
-            //}
-            //pairUnit.TriggeredCnt--;
-            //pairUnit.Sender = null;
-            //var listerner = unit.Guid == pairUnit.UnitA.Guid ? pairUnit.UnitB.Guid : pairUnit.UnitA.Guid;
-            ////通知UnitBase
-            //UnitBase listernerUnit;
-            //if (ColliderScene2D.Instance.TryGetUnit(listerner, out listernerUnit))
-            //{
-            //    listernerUnit.OnPairUnitTriggerExit(pairUnit);
-            //}
+            PairUnit pairUnit;
+            if (!TryGetPairUnit(unit.TableUnit.EPairType, unit.Guid, out pairUnit))
+            {
+                LogHelper.Error("OnPairTriggerExit TryGetPairUnit Failed, {0}", unit);
+                return;
+            }
+            pairUnit.TriggeredCnt--;
+            pairUnit.Sender = null;
+            var listerner = unit.Guid == pairUnit.UnitA.Guid ? pairUnit.UnitB.Guid : pairUnit.UnitA.Guid;
+            //通知UnitBase
+            UnitBase listernerUnit;
+            if (ColliderScene2D.Instance.TryGetUnit(listerner, out listernerUnit))
+            {
+                listernerUnit.OnPairUnitTriggerExit(pairUnit);
+            }
         }
 
         public bool TryGetPairUnit(EPairType ePairType, IntVec3 guid, out PairUnit pairUnit)
@@ -268,18 +265,17 @@ namespace GameA.Game
 
         public int GetCurrentId(int id)
         {
-            //var tableUnit = UnitManager.Instance.GetTableUnit(id);
-            //if (tableUnit.EPairType == 0)
-            //{
-            //    return id;
-            //}
-            //PairUnit pairUnit;
-            //if (!TryGetNotFullPairUnit(tableUnit.EPairType, out pairUnit))
-            //{
-            //    return id;
-            //}
-            //return pairUnit.GetVacancyId(tableUnit.PairUnitIds);
-            return id;
+            var tableUnit = UnitManager.Instance.GetTableUnit(id);
+            if (tableUnit.EPairType == 0)
+            {
+                return id;
+            }
+            PairUnit pairUnit;
+            if (!TryGetNotFullPairUnit(tableUnit.EPairType, out pairUnit))
+            {
+                return id;
+            }
+            return pairUnit.GetVacancyId(tableUnit.PairUnitIds);
         }
     }
 }

@@ -281,10 +281,8 @@ namespace GameA.Game
     public enum EPairType
     {
         None,
-        TrapDoor,
         ProtalDoor,
-        ControlledRotator90,
-        ControlledRotator180,
+        TrapDoor,
         Max
     }
 

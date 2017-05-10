@@ -22,6 +22,7 @@ namespace GameA.Game
         protected Transform _trans;
 
 		protected Transform _dirTrans;
+        protected Transform _dirTrans2;
 
         protected UnitBase _unit;
 
@@ -108,6 +109,11 @@ namespace GameA.Game
 				Object.Destroy(_dirTrans.gameObject);
 			    _dirTrans = null;
 			}
+            if (_dirTrans2 != null)
+            {
+                Object.Destroy(_dirTrans2.gameObject);
+                _dirTrans2 = null;
+            }
 		}
 
 	    public static Color SelectedColor = Color.red;
@@ -148,6 +154,10 @@ namespace GameA.Game
             {
                 _dirTrans.SetActiveEx(true);
             }
+            if (_dirTrans2 != null)
+            {
+                _dirTrans2.SetActiveEx(true);
+            }
             UpdateSign();
         }
 
@@ -156,6 +166,10 @@ namespace GameA.Game
             if (_dirTrans != null)
             {
                 _dirTrans.SetActiveEx(false);
+            }
+            if (_dirTrans2 != null)
+            {
+                _dirTrans2.SetActiveEx(false);
             }
         }
 
@@ -173,6 +187,10 @@ namespace GameA.Game
             if (_dirTrans != null)
             {
                 _dirTrans.SetActiveEx(false);
+            }
+            if (_dirTrans2 != null)
+            {
+                _dirTrans2.SetActiveEx(false);
             }
         }
 
@@ -223,7 +241,10 @@ namespace GameA.Game
                     }
                 }
             }
-
+            if (tableUnit.EPairType != EPairType.None)
+            {
+                SetPairRenderer();
+            }
             if (_dirTrans != null)
             {
                 if (tableUnit.CanRotate)
@@ -258,19 +279,32 @@ namespace GameA.Game
 
         private void SetPairRenderer()
         {
-            //var meshRenderer = _dirTrans2.gameObject.AddComponent<SpriteRenderer>();
-            //meshRenderer.sortingOrder = (int)ESortingOrder.AttTexture2;
-            //PairUnit pairUnit;
-            //if (!PairUnitManager.Instance.TryGetPairUnit(_unit.TableUnit.EPairType, _unit.UnitDesc,out pairUnit))
-            //{
-            //    LogHelper.Debug("TryGetPairUnit Faield,{0}",_unit.UnitDesc);
-            //    return;
-            //}
-            //Sprite arrowTexture;
-            //if (GameResourceManager.Instance.TryGetSpriteByName("Letter_"+pairUnit.Num, out arrowTexture))
-            //{
-            //    meshRenderer.sprite = arrowTexture;
-            //}
+            SpriteRenderer spriteRenderer;
+            if (_dirTrans2 == null)
+            {
+                _dirTrans2 = new GameObject("Pair").transform;
+                CommonTools.SetParent(_dirTrans2, _trans);
+                spriteRenderer = _dirTrans2.gameObject.AddComponent<SpriteRenderer>();
+                spriteRenderer.sortingOrder = (int)ESortingOrder.AttTexture2;
+                if (this is SpineUnit)
+                {
+                    var offset = GM2DTools.TileToWorld(_unit.GetDataSize()) * 0.5f;
+                    offset.x = 0;
+                    _dirTrans2.localPosition = offset;
+                }
+            }
+            spriteRenderer = _dirTrans2.GetComponent<SpriteRenderer>();
+            PairUnit pairUnit;
+            if (!PairUnitManager.Instance.TryGetPairUnit(_unit.TableUnit.EPairType, _unit.UnitDesc, out pairUnit))
+            {
+                LogHelper.Debug("TryGetPairUnit Faield,{0}", _unit.UnitDesc);
+                return;
+            }
+            Sprite arrowTexture;
+            if (GameResourceManager.Instance.TryGetSpriteByName("Letter_" + pairUnit.Num, out arrowTexture))
+            {
+                spriteRenderer.sprite = arrowTexture;
+            }
         }
 
         public Vector2 GetRotationPosOffset()

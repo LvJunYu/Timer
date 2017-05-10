@@ -58,6 +58,12 @@ namespace GameA.Game
             get { return OriginMoveDirection != 0; }
         }
 
+	    public EPairType EPairType
+	    {
+	        get { return (EPairType) PairType; }
+	    }
+
+
 	    public int _width;
 	    public int _height;
         public int _cWidth;

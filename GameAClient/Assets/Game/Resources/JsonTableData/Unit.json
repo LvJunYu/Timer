@@ -720,7 +720,12 @@
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "4",
         "MoveDirectionMask": "15",
-        "RotationMask": "15"
+        "RotationMask": "15",
+        "PairType": "1",
+        "PairUnitIds": [
+            "5003",
+            "5003"
+        ]
     },
     {
         "Id": "5004",

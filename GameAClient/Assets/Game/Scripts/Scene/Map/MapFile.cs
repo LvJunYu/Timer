@@ -144,6 +144,14 @@ namespace GameA.Game
                                 continue;
                             }
                         }
+                        if (tableUnit.EPairType > 0)
+                        {
+                            PairUnitData pairUnitData;
+                            if (pairUnits.TryGetValue(unitObject.Guid, out pairUnitData))
+                            {
+                                PairUnitManager.Instance.OnReadMapFile(unitObject, tableUnit, pairUnitData);
+                            }
+                        }
                         if (!AddUnit(unitObject))
                         {
                             LogHelper.Error("SetMapData Failed, AddUnit:{0}", unitObject);

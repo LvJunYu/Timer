@@ -121,6 +121,16 @@ namespace GameA.Game
 		[ColumnMapping("RotationMask")]
 		public int RotationMask;
 		/// <summary>
+        /// 成对类别
+        /// </summary>
+		[ColumnMapping("PairType")]
+		public int PairType;
+		/// <summary>
+        /// 成对id
+        /// </summary>
+		[ColumnMapping("PairUnitIds")]
+		public int[] PairUnitIds;
+		/// <summary>
         /// 行走音效
         /// </summary>
 		[ColumnMapping("WalkAudioNames")]
