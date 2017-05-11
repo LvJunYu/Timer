@@ -89,6 +89,7 @@ namespace GameA
             _cachedView.ChangeModeBtn.onClick.AddListener(OnChangeModeBtn);
 //            _cachedView.RegisterBtn.onClick.AddListener(OnRegisterBtnClick);
             _cachedView.NewProjectBtn.onClick.AddListener(OnNewProjectBtn);
+            _cachedView.PublishBtn.onClick.AddListener (OnPublishBtn);
             _cachedView.DeleteBtn.onClick.AddListener (OnDeleteBtn);
             _cachedView.EditBtn.onClick.AddListener (OnEditBtn);
 
@@ -277,7 +278,19 @@ namespace GameA
         }
 
         private void RefreshPlayerInfoPanel () {
-            _cachedView.MakerLvl.text = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorLevel.ToString ();
+            int curLv = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorLevel;
+            int nexLv = curLv + 1;
+            long curExp = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorExp;
+            Game.Table_PlayerLvToExp curLvTable = Game.TableManager.Instance.GetPlayerLvToExp (curLv);
+            Game.Table_PlayerLvToExp nextLvTable = Game.TableManager.Instance.GetPlayerLvToExp (nexLv);
+            long curLvExpBase = curLvTable == null ? curExp : curLvTable.AdvExp;
+            long nextLvExp = nextLvTable == null ? int.MaxValue : nextLvTable.AdvExp;
+
+            _cachedView.MakerLvl.text = curLv.ToString ();
+            _cachedView.MakerExpText.text = string.Format ("{0} / {1}", curExp, nextLvExp);
+            _cachedView.MakerExpFillImg.fillAmount = Mathf.Clamp01((float)(curExp - curLvExpBase) / Mathf.Max(1, (nextLvExp - curLvExpBase)));
+//            _cachedView.PublishedProjectCnt.text = LocalUser.Instance.User.UserInfoSimple.
+
         }
 
         private void RefreshPublishedProjectList () {
@@ -326,6 +339,17 @@ namespace GameA
 //            HideCreateCategoryMask ();
 //            OnRunBtnClick ();
         }
+
+        private void OnPublishBtn () {
+            if (null == _curSelectedProject || null == _curSelectedProject.Content)
+                return;
+            if (_curSelectedProject.Content.PassFlag == false) {
+                Debug.Log ("________________ 关卡还未通过，无法发布");
+                return;
+            }
+            SocialGUIManager.Instance.OpenPopupUI<UICtrlPublishProject> (_curSelectedProject.Content);
+        }
+
         private void OnDeleteBtn ()
         {
             ProcessDelete ();

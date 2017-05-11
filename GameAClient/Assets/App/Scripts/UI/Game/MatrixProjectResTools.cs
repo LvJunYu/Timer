@@ -113,7 +113,7 @@ namespace GameA
 //                state = EMatrixProjectResState.ProjectProgramVersionAhead;
 //                return false;
 //            }
-            if(project.ResourceVersion > LocalResourceManager.Instance.CurAppVersion.VersionId)
+            if(project.ResourcesVersion > LocalResourceManager.Instance.CurAppVersion.VersionId)
             {
                 state = EMatrixProjectResState.ProjectResourceVersionAhead;
                 return false;
@@ -132,7 +132,7 @@ namespace GameA
         public static void SetProjectVersion(Project project)
         {
 //            project.ProgramVersion = MatrixManager.Instance.GetGameVersion(project.Matrix.GameType);
-            project.ResourceVersion = LocalResourceManager.Instance.CurAppVersion.VersionId;
+            project.ResourcesVersion = LocalResourceManager.Instance.CurAppVersion.VersionId;
         }
 
         public static void ShowMatrixProjectResCheckTip(EMatrixProjectResState state)

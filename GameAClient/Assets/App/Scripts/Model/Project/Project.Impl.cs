@@ -194,17 +194,17 @@ namespace GameA
 //            }
 //        }
 
-        public int ResourceVersion
-        {
-            get
-            {
-                return this._resourceVersion;
-            }
-            set
-            {
-                _resourceVersion = value;
-            }
-        }
+//        public int ResourceVersion
+//        {
+//            get
+//            {
+//                return this._resourceVersion;
+//            }
+//            set
+//            {
+//                _resourceVersion = value;
+//            }
+//        }
 
         public int DownloadPrice
         {
@@ -644,7 +644,7 @@ namespace GameA
                     Name,
                     Summary,
                     ProgramVersion,
-                    ResourceVersion,
+                    ResourcesVersion,
                     passFlag,
                     recordUsedTime,
                     msg => {
@@ -678,7 +678,7 @@ namespace GameA
                     Name,
                     Summary,
                     ProgramVersion,
-                    ResourceVersion,
+                    ResourcesVersion,
                     passFlag,
                     recordUsedTime,
                     msg => {
@@ -793,7 +793,7 @@ namespace GameA
             publishProject.RecordUsedTime = recordUsedTime;
 
             publishProject.ProgramVersion = ProgramVersion;
-            publishProject.ResourceVersion = ResourceVersion;
+            publishProject.ResourceVersion = ResourcesVersion;
             if (!isCreate)
             {
                 publishProject.PersonalProjectId = _projectId;

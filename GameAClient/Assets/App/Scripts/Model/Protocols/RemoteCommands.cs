@@ -936,7 +936,7 @@ namespace GameA
 		/// <param name="challengeType">选择类型</param>
 		/// <param name="change">花钱切换</param>
         public static void SelectMatchChallengeProject (
-            EChallengeProjectTyple challengeType,
+            EChallengeProjectType challengeType,
             bool change,
             Action<Msg_SC_CMD_SelectMatchChallengeProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {

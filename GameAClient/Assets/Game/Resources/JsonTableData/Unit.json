@@ -636,7 +636,7 @@
         "Model": "M1BlueStoneRotate",
         "UnitType": "4",
         "Layer": "3",
-        "GeneratedType": "2",
+        "GeneratedType": "1",
         "ColliderType": "0",
         "Count": "0",
         "Width": "32",
@@ -720,7 +720,12 @@
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "4",
         "MoveDirectionMask": "15",
-        "RotationMask": "15"
+        "RotationMask": "15",
+        "PairType": "1",
+        "PairUnitIds": [
+            "5003",
+            "5003"
+        ]
     },
     {
         "Id": "5004",
@@ -1031,8 +1036,8 @@
         "Id": "5100",
         "Name": "开关触发器",
         "Use": "0",
-        "Icon": "M1SwitchTriggerOnIcon",
-        "Model": "M1SwitchTriggerOn",
+        "Icon": "M1SwitchTriggerOffIcon",
+        "Model": "M1SwitchTriggerOff",
         "UnitType": "5",
         "Layer": "3",
         "GeneratedType": "2",
@@ -1042,7 +1047,7 @@
         "Height": "32",
         "CWidth": "16",
         "CHeight": "8",
-        "Anchore": "5",
+        "Anchore": "6",
         "ModelAnchore": "5",
         "ParentType": "0",
         "ChildType": "0",
@@ -1128,7 +1133,7 @@
         "Model": "M1SwitchPress",
         "UnitType": "5",
         "Layer": "3",
-        "GeneratedType": "1",
+        "GeneratedType": "2",
         "ColliderType": "0",
         "Count": "0",
         "Width": "32",

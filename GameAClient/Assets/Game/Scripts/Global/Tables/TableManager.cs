@@ -32,6 +32,7 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_Puzzle> Table_PuzzleDic = new Dictionary<int, Table_Puzzle>();
 		public readonly Dictionary<int,Table_AvatarStruct> Table_AvatarStructDic = new Dictionary<int, Table_AvatarStruct>();
 		public readonly Dictionary<int,Table_AvatarSlotName> Table_AvatarSlotNameDic = new Dictionary<int, Table_AvatarSlotName>();
+		public readonly Dictionary<int,Table_PlayerLvToExp> Table_PlayerLvToExpDic = new Dictionary<int, Table_PlayerLvToExp>();
 		[UnityEngine.SerializeField] private Table_Unit[] _tableUnits;
 		[UnityEngine.SerializeField] private Table_StandaloneLevel[] _tableStandaloneLevels;
 		[UnityEngine.SerializeField] private Table_StandaloneChapter[] _tableStandaloneChapters;
@@ -52,6 +53,7 @@ namespace GameA.Game
 		[UnityEngine.SerializeField] private Table_Puzzle[] _tablePuzzles;
 		[UnityEngine.SerializeField] private Table_AvatarStruct[] _tableAvatarStructs;
 		[UnityEngine.SerializeField] private Table_AvatarSlotName[] _tableAvatarSlotNames;
+		[UnityEngine.SerializeField] private Table_PlayerLvToExp[] _tablePlayerLvToExps;
 
 		private TableResLoader _loader;
 		#endregion
@@ -109,6 +111,8 @@ namespace GameA.Game
 			_tableAvatarStructs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarStruct[]>(AvatarStructTextAsset.text);
 			var AvatarSlotNameTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "AvatarSlotName"));
 			_tableAvatarSlotNames = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarSlotName[]>(AvatarSlotNameTextAsset.text);
+			var PlayerLvToExpTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "PlayerLvToExp"));
+			_tablePlayerLvToExps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PlayerLvToExp[]>(PlayerLvToExpTextAsset.text);
 			#else
 			_loader = new TableResLoader("GameMaker2D");
 
@@ -252,6 +256,13 @@ namespace GameA.Game
 				return;
 			}
 			_tableAvatarSlotNames = AvatarSlotNameAsset.DataArray;
+			var PlayerLvToExpAsset = _loader.GetConfigAssetData<TablePlayerLvToExpAsset>("PlayerLvToExp");
+			if (PlayerLvToExpAsset == null)
+			{
+				LogHelper.Error("PlayerLvToExpAsset is null");
+				return;
+			}
+			_tablePlayerLvToExps = PlayerLvToExpAsset.DataArray;
 			#endif
 			for (int i = 0; i < _tableUnits.Length; i++)
 			{
@@ -473,6 +484,17 @@ namespace GameA.Game
 					LogHelper.Warning("_tableAvatarSlotNames table.Id {0} is duplicated!", _tableAvatarSlotNames[i].Id);
 				}
 			}
+			for (int i = 0; i < _tablePlayerLvToExps.Length; i++)
+			{
+				if (!Table_PlayerLvToExpDic.ContainsKey(_tablePlayerLvToExps[i].Id))
+				{
+					Table_PlayerLvToExpDic.Add(_tablePlayerLvToExps[i].Id,_tablePlayerLvToExps[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tablePlayerLvToExps table.Id {0} is duplicated!", _tablePlayerLvToExps[i].Id);
+				}
+			}
 			
 			Messenger.Broadcast(EMessengerType.OnTableInited);
 		}
@@ -652,6 +674,15 @@ namespace GameA.Game
 		{
 			Table_AvatarSlotName tmp;
 			if (Table_AvatarSlotNameDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_PlayerLvToExp GetPlayerLvToExp(int key)
+		{
+			Table_PlayerLvToExp tmp;
+			if (Table_PlayerLvToExpDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

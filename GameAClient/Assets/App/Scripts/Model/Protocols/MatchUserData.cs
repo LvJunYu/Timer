@@ -78,7 +78,7 @@ namespace GameA
         /// </summary>
         private int _curMatchChallengeCount;
         /// <summary>
-        /// 当前已选挑战难度EChallengeProjectTyple
+        /// 当前已选挑战难度EChallengeProjectType
         /// </summary>
         private int _curSelectedChallengeType;
         /// <summary>
@@ -282,7 +282,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 当前已选挑战难度EChallengeProjectTyple
+        /// 当前已选挑战难度EChallengeProjectType
         /// </summary>
         public int CurSelectedChallengeType { 
             get { return _curSelectedChallengeType; }
