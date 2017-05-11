@@ -46,7 +46,7 @@ namespace GameA
         {
             base.OnOpen (parameter);
             RefreshFashionShopPanel();
-            //			TableManager.Instance.GetFashionShop ();
+             
         }
         /// <summary>
         /// 关闭UI
@@ -54,6 +54,8 @@ namespace GameA
         protected override void OnClose()
         {
             base.OnClose();
+            RefreshFashionShopPanel();
+
         }
         /// <summary>
         /// 初始化事件监听
@@ -163,31 +165,37 @@ namespace GameA
         /// </summary>
         protected override void OnViewCreated()
         {
-            //RefreshFashionShopPanel();
+            InitTagGroup();
+            SetRenderTexture();
         }
 
-        public void RefreshFashionShopPanel()
+	    private void SetRenderTexture()
+	    {
+            
+            _cachedView.Avatar.texture= SocialGUIManager.Instance.GetUI<UICtrlTaskbar>().AvatarRenderTexture;
+
+	    }
+
+	    public void RefreshFashionShopPanel()
         {
             
             LocalUser.Instance.UsingAvatarData.Request(LocalUser.Instance.UserGuid, () =>
             {
-            RefreshUsingAvatarPreview();
+               RefreshUsingAvatarPreview();
             }, code =>
             {
                 LogHelper.Error("Network error when get UsingAvatarData, {0}", code);
             });
             LocalUser.Instance.ValidAvatarData.Request(LocalUser.Instance.UserGuid, () =>
             {
-
+                InitPageData();
             }, code =>
             {
                 LogHelper.Error("Network error when get ValidAvatarData, {0}", code);
             });
-            InitTagGroup();
-            InitPageData();
         }
 
-        public void RefreshUsingAvatarPreview()
+    public void RefreshUsingAvatarPreview()
 	    {
 	        //Debug.Log(LocalUser.Instance.UsingAvatarData.Head);
             //Debug.Log(_cachedView);
@@ -291,85 +299,83 @@ namespace GameA
 	            list.Add(shopitem);//放入shopitem
 
 	        }
-            //for (int i = 0; i < listcount; i++)
-            //   { 
-
-            //}
             _usctrlFashionPage2.Set(dict[2]);
             _usctrlFashionPage1.Set(dict[1]);
 	        _usctrlFashionPage3.Set(dict[3]);
 	        _usctrlFashionPage4.Set(dict[4]);
             _usctrlFashionPage5.Set(dict[5]);
-
+            //Debug.Log("______________________________Set UMCtrlFashionShopCard " + listItem.Id + " name:" + listItem.Name + 
+            //    " " + _cachedView.IsOccupied.text + 
+            //    " " + _cachedView.IsOwned.text);
 
 
 
         }
 
-	    //private void TakeDataFromTablemanager()
-	    //{
-	    //    var headPartsDic = TableManager.Instance.Table_HeadPartsDic;
-     //       var lowerPartsDic = TableManager.Instance.Table_LowerBodyPartsDic;
-     //       var upperPartsDic = TableManager.Instance.Table_UpperBodyPartsDic;
-     //       var appendagePartsDic = TableManager.Instance.Table_AppendagePartsDic;
-	    //    _itemMainDic.Add(1, _headParts);
-     //       _itemMainDic.Add(2, _upperParts);
-     //       _itemMainDic.Add(3, _lowerParts);
-     //       _itemMainDic.Add(4, _appendageParts);
+        //private void TakeDataFromTablemanager()
+        //{
+        //    var headPartsDic = TableManager.Instance.Table_HeadPartsDic;
+        //       var lowerPartsDic = TableManager.Instance.Table_LowerBodyPartsDic;
+        //       var upperPartsDic = TableManager.Instance.Table_UpperBodyPartsDic;
+        //       var appendagePartsDic = TableManager.Instance.Table_AppendagePartsDic;
+        //    _itemMainDic.Add(1, _headParts);
+        //       _itemMainDic.Add(2, _upperParts);
+        //       _itemMainDic.Add(3, _lowerParts);
+        //       _itemMainDic.Add(4, _appendageParts);
 
 
 
-     //       for (int i = 0; i < headPartsDic.Count; i++)
-	    //    {
-     //           ShopItem headPart = new ShopItem(headPartsDic[i]);
-	    //        _headParts.Add(headPart);
-	    //    }
-     //       for (int i = 0; i < lowerPartsDic.Count; i++)
-     //       {
-     //           ShopItem lowerPart = new ShopItem(lowerPartsDic[i]);
-     //           _lowerParts.Add(lowerPart);
-     //       }
-     //       for (int i = 0; i < upperPartsDic.Count; i++)
-     //       {
-     //           ShopItem upperPart = new ShopItem(upperPartsDic[i]);
-     //           _upperParts.Add(upperPart);
-     //       }
-     //       for (int i = 0; i < appendagePartsDic.Count; i++)
-	    //    {
-     //           ShopItem appendage = new ShopItem(appendagePartsDic[i]);
-     //           _appendageParts.Add(appendage);
-	    //    }
+        //       for (int i = 0; i < headPartsDic.Count; i++)
+        //    {
+        //           ShopItem headPart = new ShopItem(headPartsDic[i]);
+        //        _headParts.Add(headPart);
+        //    }
+        //       for (int i = 0; i < lowerPartsDic.Count; i++)
+        //       {
+        //           ShopItem lowerPart = new ShopItem(lowerPartsDic[i]);
+        //           _lowerParts.Add(lowerPart);
+        //       }
+        //       for (int i = 0; i < upperPartsDic.Count; i++)
+        //       {
+        //           ShopItem upperPart = new ShopItem(upperPartsDic[i]);
+        //           _upperParts.Add(upperPart);
+        //       }
+        //       for (int i = 0; i < appendagePartsDic.Count; i++)
+        //    {
+        //           ShopItem appendage = new ShopItem(appendagePartsDic[i]);
+        //           _appendageParts.Add(appendage);
+        //    }
 
-     //   }
+        //   }
 
 
-    //private void MakePageList()
-	   // {
-    //        var fashionShopDic = TableManager.Instance.Table_FashionShopDic;
-	   //     for (int i = 0; i <fashionShopDic.Count; i++)
-	   //     {
-	   //         //ShopItem pageItem = new ShopItem(fashionShopDic[i]);
-	   //         var ItemType = fashionShopDic[i].Type;
-    //            var ItemIdx = fashionShopDic[i].ItemIdx;
-    //            var Sex = fashionShopDic[i].Sex;
+        //private void MakePageList()
+        // {
+        //        var fashionShopDic = TableManager.Instance.Table_FashionShopDic;
+        //     for (int i = 0; i <fashionShopDic.Count; i++)
+        //     {
+        //         //ShopItem pageItem = new ShopItem(fashionShopDic[i]);
+        //         var ItemType = fashionShopDic[i].Type;
+        //            var ItemIdx = fashionShopDic[i].ItemIdx;
+        //            var Sex = fashionShopDic[i].Sex;
 
-    //                 switch (fashionShopDic[i].Type)
-    //            {
-    //                case 1:
-    //                    _page1.Add(_itemMainDic[ItemType][ItemIdx]);
-    //                    break;
-    //                case 2:
-    //                    _page2.Add(_itemMainDic[ItemType][ItemIdx]);
-    //                    break;
-    //                case 3:
-    //                    _page3.Add(_itemMainDic[ItemType][ItemIdx]);
-    //                    break;
-    //                case 4:
-    //                    _page4.Add(_itemMainDic[ItemType][ItemIdx]);
-    //                    break;
+        //                 switch (fashionShopDic[i].Type)
+        //            {
+        //                case 1:
+        //                    _page1.Add(_itemMainDic[ItemType][ItemIdx]);
+        //                    break;
+        //                case 2:
+        //                    _page2.Add(_itemMainDic[ItemType][ItemIdx]);
+        //                    break;
+        //                case 3:
+        //                    _page3.Add(_itemMainDic[ItemType][ItemIdx]);
+        //                    break;
+        //                case 4:
+        //                    _page4.Add(_itemMainDic[ItemType][ItemIdx]);
+        //                    break;
 
-	    /*界面的切换这个打开和关闭*/
-		private void OnFashionPage1ButtonClick(bool open)
+        /*界面的切换这个打开和关闭*/
+        private void OnFashionPage1ButtonClick(bool open)
 		{
 			if (open)
 			{

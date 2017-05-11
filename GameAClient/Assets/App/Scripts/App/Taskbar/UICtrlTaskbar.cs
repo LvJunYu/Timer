@@ -27,9 +27,9 @@ namespace GameA
 //        private Color[] SelectedColorList;
 
 		private ChangePartsSpineView _avatarView;
-		private RenderTexture _avatarRenderTexture;
+	    public RenderTexture AvatarRenderTexture { get;  set; }
 
-        #endregion
+	    #endregion
 
         #region 属性
 
@@ -47,8 +47,8 @@ namespace GameA
 
 		protected override void OnDestroy ()
 		{
-			if (_avatarRenderTexture != null) {
-				_avatarRenderTexture.Release ();
+			if (AvatarRenderTexture != null) {
+				AvatarRenderTexture.Release ();
 			}
 			base.OnDestroy ();
 		}
@@ -116,11 +116,12 @@ namespace GameA
 			_cachedView.DebugClearUserDataBtn.onClick.AddListener (OnDebugClearUserData);
 
 			// todo player avatar at home
-			_avatarRenderTexture = new RenderTexture (256, 512, 0);
-			_cachedView.AvatarRenderCamera.targetTexture = _avatarRenderTexture;
-			_cachedView.AvatarImage.texture = _avatarRenderTexture;
+			AvatarRenderTexture = new RenderTexture (256, 512, 0);
+			_cachedView.AvatarRenderCamera.targetTexture = AvatarRenderTexture;
+            _cachedView.AvatarImage.texture = _cachedView.AvatarRenderCamera.targetTexture;
+                //AvatarRenderTexture;
 
-			_avatarView = new ChangePartsSpineView ();
+            _avatarView = new ChangePartsSpineView ();
 			_avatarView.HomePlayerAvatarViewInit (_cachedView.PlayerAvatarAnimation);
 
 //			var levels = TableManager.Instance.Table_StandaloneLevelDic;

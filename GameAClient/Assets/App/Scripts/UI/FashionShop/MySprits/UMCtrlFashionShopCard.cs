@@ -21,8 +21,15 @@ public class UMCtrlFashionShopCard : UMCtrlBase<UMViewFashionShopCard>
         _cachedView.PreviewTexture.text = listItem.PreviewTexture;
         _cachedView.IsOccupied.text = JudgeItemOccupied(listItem) ? "此时装已装备" : "未装备";
         _cachedView.IsOwned.text = JudgeItemOwned(listItem) ? "此时装已拥有" : "未拥有";
-        _cachedView.BuyFashion.onClick.AddListener(() =>
-              BuyFashion(listItem));
+        Debug.Log("______________________________Set UMCtrlFashionShopCard " + listItem.Id + " name:" + listItem.Name +
+           " " + _cachedView.IsOccupied.text +
+           " " + _cachedView.IsOwned.text);
+        _cachedView.BuyFashion.onClick.AddListener(() => {
+                  BuyFashion(listItem);
+                                                             Debug.Log("购买:" + listItem.Name);
+        }
+
+            );
         _cachedView.TryFashionOn.onClick.AddListener(() =>SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().
               TryFashionOn(listItem));
         _cachedView.ChangeFashion.onClick.AddListener(() =>
@@ -62,7 +69,8 @@ public class UMCtrlFashionShopCard : UMCtrlBase<UMViewFashionShopCard>
                    () => {
                        LocalUser.Instance.ValidAvatarData.Request(LocalUser.Instance.UserGuid, () =>
                        {
-                           SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().RefreshFashionShopPanel();
+                           Set(listItem);
+                           //SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().RefreshFashionShopPanel();
                            _cachedView.Message.text = "购买成功";
                        }, code =>
                        {
@@ -161,36 +169,26 @@ public class UMCtrlFashionShopCard : UMCtrlBase<UMViewFashionShopCard>
         switch (listItem._avatarType)
         {
             case EAvatarPart.AP_Head:
-                if (LocalUser.Instance.ValidAvatarData.ItemHead!=null)
-                {
-                    rst = LocalUser.Instance.ValidAvatarData.ItemHead.ContainsKey(listItem.Id);
-                }
+                rst = LocalUser.Instance.ValidAvatarData.GetItemInHeadDictionary(listItem.Id) != null ? true:false;
                 break;
             case EAvatarPart.AP_Lower:
-                if (LocalUser.Instance.ValidAvatarData.ItemLower != null)
-                {
-                    rst = LocalUser.Instance.ValidAvatarData.ItemLower.ContainsKey(listItem.Id);
-                }
+                //if (LocalUser.Instance.ValidAvatarData.ItemLower != null)
+                //{
+                //    rst = LocalUser.Instance.ValidAvatarData.ItemLower.ContainsKey(listItem.Id);
+                //}
+                rst = LocalUser.Instance.ValidAvatarData.GetItemInLowerDictionary(listItem.Id) != null ? true : false;
                 break;
             case EAvatarPart.AP_Upper:
-                if (LocalUser.Instance.ValidAvatarData.ItemUpper != null)
-                {
-                    rst = LocalUser.Instance.ValidAvatarData.ItemUpper.ContainsKey((int)listItem.Id);
-                }
+                rst = LocalUser.Instance.ValidAvatarData.GetItemInUpperDictionary(listItem.Id) != null ? true : false;
                 break;
             case EAvatarPart.AP_Appendage:
-                if (LocalUser.Instance.ValidAvatarData.ItemAppendage != null)
-                {
-                    rst = LocalUser.Instance.ValidAvatarData.ItemAppendage.ContainsKey(listItem.Id);
-                }
+                rst = LocalUser.Instance.ValidAvatarData.GetItemInAppendageDictionary(listItem.Id) != null ? true : false;
                 break;
             default:
                 break;
         }
         return rst;
-
     }
-
     private void ChangeFashion(ShopItem listItem)
     {
         if (JudgeItemOwned(listItem))
@@ -208,7 +206,8 @@ public class UMCtrlFashionShopCard : UMCtrlBase<UMViewFashionShopCard>
                 {
                     LocalUser.Instance.UsingAvatarData.Request(LocalUser.Instance.UserGuid, () =>
                     {
-                        SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().RefreshFashionShopPanel();
+                        Set(listItem);
+                        //SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().RefreshFashionShopPanel();
                         _cachedView.Message.text = "换装成功";
                     }, code =>
                     {
