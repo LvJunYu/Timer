@@ -101,6 +101,8 @@ namespace GameA
 		/// <param name="resourceVersion"></param>
 		/// <param name="passFlag"></param>
 		/// <param name="recordUsedTime"></param>
+		/// <param name="timeLimit">时间限制</param>
+		/// <param name="winCondition">胜利条件</param>
         public static void CreateProject (
             string name,
             string summary,
@@ -108,6 +110,8 @@ namespace GameA
             int resourceVersion,
             bool passFlag,
             float recordUsedTime,
+            int timeLimit,
+            int winCondition,
             Action<Msg_SC_CMD_CreateProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -123,6 +127,8 @@ namespace GameA
             msg.ResourceVersion = resourceVersion;
             msg.PassFlag = passFlag;
             msg.RecordUsedTime = recordUsedTime;
+            msg.TimeLimit = timeLimit;
+            msg.WinCondition = winCondition;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CreateProject>(
                 SoyHttpApiPath.CreateProject, msg, ret => {
                     if (successCallback != null) {
@@ -154,6 +160,8 @@ namespace GameA
 		/// <param name="resourceVersion"></param>
 		/// <param name="passFlag"></param>
 		/// <param name="recordUsedTime"></param>
+		/// <param name="timeLimit">时间限制</param>
+		/// <param name="winCondition">胜利条件</param>
         public static void UpdateProject (
             long projectId,
             string name,
@@ -162,6 +170,8 @@ namespace GameA
             int resourceVersion,
             bool passFlag,
             float recordUsedTime,
+            int timeLimit,
+            int winCondition,
             Action<Msg_SC_CMD_UpdateProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -178,6 +188,8 @@ namespace GameA
             msg.ResourceVersion = resourceVersion;
             msg.PassFlag = passFlag;
             msg.RecordUsedTime = recordUsedTime;
+            msg.TimeLimit = timeLimit;
+            msg.WinCondition = winCondition;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateProject>(
                 SoyHttpApiPath.UpdateProject, msg, ret => {
                     if (successCallback != null) {
@@ -245,6 +257,8 @@ namespace GameA
 		/// <param name="programVersion"></param>
 		/// <param name="resourceVersion"></param>
 		/// <param name="recordUsedTime"></param>
+		/// <param name="timeLimit">时间限制</param>
+		/// <param name="winCondition">胜利条件</param>
         public static void PublishProject (
             long personalProjectId,
             string name,
@@ -252,6 +266,8 @@ namespace GameA
             int programVersion,
             int resourceVersion,
             float recordUsedTime,
+            int timeLimit,
+            int winCondition,
             Action<Msg_SC_CMD_PublishProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -267,6 +283,8 @@ namespace GameA
             msg.ProgramVersion = programVersion;
             msg.ResourceVersion = resourceVersion;
             msg.RecordUsedTime = recordUsedTime;
+            msg.TimeLimit = timeLimit;
+            msg.WinCondition = winCondition;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PublishProject>(
                 SoyHttpApiPath.PublishProject, msg, ret => {
                     if (successCallback != null) {

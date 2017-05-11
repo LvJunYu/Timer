@@ -26,10 +26,11 @@ namespace GameA
         private EWorkShopState _state = EWorkShopState.None;
         private int _personalProjectCount;
 
-        private CardDataRendererWrapper<Project> _curSelectedProject;
-        private List<CardDataRendererWrapper<Project>> _content = new List<CardDataRendererWrapper<Project>>();
+        private CardDataRendererWrapper<Project> _curSelectedPrivateProject;
+        private List<CardDataRendererWrapper<Project>> _privateContents = new List<CardDataRendererWrapper<Project>>();
         private bool _autoSelectFirstProject = false;
 
+        private List<CardDataRendererWrapper<Project>> _publicContents = new List<CardDataRendererWrapper<Project>>();
 
         /// <summary>
         /// 本地信息改变了等待update上传的关卡列表
@@ -63,7 +64,16 @@ namespace GameA
                     // todo error handle
                 }
             );
-            if (null == _curSelectedProject) {
+            LocalUser.Instance.UserPublishedProjectList.Request(
+                LocalUser.Instance.UserGuid,
+                0, int.MaxValue,
+                EPublishedProjectOrderBy.PPOB_PublishTime,
+                EOrderType.OT_Asc,
+                null,
+                null
+            );
+
+            if (null == _curSelectedPrivateProject) {
                 AotoSelectFirstProject ();
             }
             RefreshView();
@@ -105,7 +115,8 @@ namespace GameA
 
 			_cachedView.ReturnBtn.onClick.AddListener (OnReturnBtn);
 
-            _cachedView.PrivateProjectsGridScroller.SetCallback(OnItemRefresh, GetItemRenderer);
+            _cachedView.PrivateProjectsGridScroller.SetCallback(OnPrivateItemRefresh, GetPrivateItemRenderer);
+            _cachedView.PublicProjectsGridScroller.SetCallback (OnPublicItemRefresh, GetPublicItemRenderer);
         }
 
         public override void OnUpdate ()
@@ -115,24 +126,26 @@ namespace GameA
 //            if (null != _curSelectedProject) {
             if (!RemoteCommands.IsRequstingUpdateProject) {
                 // 优先更新当前选择关卡
-                if (null != _curSelectedProject && 
-                    null != _curSelectedProject.Content &&
-                    _curSelectedProject.Content.IsDirty) {
-                    WeakReference projectWR = new WeakReference (_curSelectedProject.Content);
+                if (null != _curSelectedPrivateProject && 
+                    null != _curSelectedPrivateProject.Content &&
+                    _curSelectedPrivateProject.Content.IsDirty) {
+                    WeakReference projectWR = new WeakReference (_curSelectedPrivateProject.Content);
                     Debug.Log ("_________Request update current select project");
                     RemoteCommands.UpdateProject (
-                        _curSelectedProject.Content.ProjectId,
-                        _curSelectedProject.Content.Name,
-                        _curSelectedProject.Content.Summary,
-                        _curSelectedProject.Content.ProgramVersion,
-                        _curSelectedProject.Content.ResourcesVersion,
-                        _curSelectedProject.Content.PassFlag,
-                        _curSelectedProject.Content.RecordUsedTime,
+                        _curSelectedPrivateProject.Content.ProjectId,
+                        _curSelectedPrivateProject.Content.Name,
+                        _curSelectedPrivateProject.Content.Summary,
+                        _curSelectedPrivateProject.Content.ProgramVersion,
+                        _curSelectedPrivateProject.Content.ResourcesVersion,
+                        _curSelectedPrivateProject.Content.PassFlag,
+                        _curSelectedPrivateProject.Content.RecordUsedTime,
+                        _curSelectedPrivateProject.Content.TimeLimit,
+                        _curSelectedPrivateProject.Content.WinCondition,
                         msg => {
                             if (msg.ResultCode == (int)EProjectOperateResult.POR_Success) {
-                                if (null != _curSelectedProject &&
-                                    null != _curSelectedProject.Content &&
-                                    msg.ProjectData.ProjectId == _curSelectedProject.Content.ProjectId) {
+                                if (null != _curSelectedPrivateProject &&
+                                    null != _curSelectedPrivateProject.Content &&
+                                    msg.ProjectData.ProjectId == _curSelectedPrivateProject.Content.ProjectId) {
                                     RefreshProjectDetailInfoPanel ();
                                 }
                                 if (null != projectWR.Target) {
@@ -162,6 +175,8 @@ namespace GameA
                                     project.ResourcesVersion,
                                     project.PassFlag,
                                     project.RecordUsedTime,
+                                    project.TimeLimit,
+                                    project.WinCondition,
                                     msg => {
                                         if (msg.ResultCode == (int)EProjectOperateResult.POR_Success) {
                                             if (msg.ProjectData.ProjectId == project.ProjectId) {
@@ -222,17 +237,17 @@ namespace GameA
 
         private void RefreshWorkShopProjectList () {
             long preSelectPRojectId = 0;
-            if (null != _curSelectedProject) {
-                preSelectPRojectId = _curSelectedProject.Content.ProjectId;
+            if (null != _curSelectedPrivateProject) {
+                preSelectPRojectId = _curSelectedPrivateProject.Content.ProjectId;
             }
 //            LocalUser.Instance.per
             if (LocalUser.Instance.PersonalProjectList.IsInited) {
                 List<Project> list = LocalUser.Instance.PersonalProjectList.ProjectList;
-                _content.Clear();
-                _content.Capacity = list.Capacity;
+                _privateContents.Clear();
+                _privateContents.Capacity = list.Capacity;
                 for(int i=0; i < list.Count; i++)
                 {
-                    var wrapper = new CardDataRendererWrapper<Project>(list[i], OnProjectCardClick);
+                    var wrapper = new CardDataRendererWrapper<Project>(list[i], OnPrivateProjectCardClick);
 //                    if(_mode == EMode.Edit)
 //                    {
 //                        wrapper.CardMode = ECardMode.Selectable;
@@ -242,16 +257,16 @@ namespace GameA
                     {
                         wrapper.CardMode = ECardMode.Normal;
                         wrapper.IsSelected = list [i].ProjectId == preSelectPRojectId;
-                        _curSelectedProject = wrapper.IsSelected ? wrapper : _curSelectedProject;
+                        _curSelectedPrivateProject = wrapper.IsSelected ? wrapper : _curSelectedPrivateProject;
                     }
-                    _content.Add(wrapper);
+                    _privateContents.Add(wrapper);
                 }
-                _cachedView.PrivateProjectsGridScroller.SetItemCount(_content.Count);
-                if (_autoSelectFirstProject && null == _curSelectedProject) {
+                _cachedView.PrivateProjectsGridScroller.SetItemCount(_privateContents.Count);
+                if (_autoSelectFirstProject && null == _curSelectedPrivateProject) {
                     _autoSelectFirstProject = false;
-                    if (_content.Count > 0) {
-                        _content [0].IsSelected = true;
-                        _curSelectedProject = _content [0];
+                    if (_privateContents.Count > 0) {
+                        _privateContents [0].IsSelected = true;
+                        _curSelectedPrivateProject = _privateContents [0];
                     }
                 }
 //                _currentSelectedCount = 0;
@@ -269,10 +284,10 @@ namespace GameA
             _cachedView.ConfirmDescBtn.gameObject.SetActive (false);
 
 
-            if (null != _curSelectedProject && null != _curSelectedProject.Content) {
-                ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _curSelectedProject.Content.IconPath, _cachedView.DefaultCoverTexture);
-                DictionaryTools.SetContentText(_cachedView.Title, _curSelectedProject.Content.Name);
-                DictionaryTools.SetContentText(_cachedView.Desc, _curSelectedProject.Content.Summary);
+            if (null != _curSelectedPrivateProject && null != _curSelectedPrivateProject.Content) {
+                ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _curSelectedPrivateProject.Content.IconPath, _cachedView.DefaultCoverTexture);
+                DictionaryTools.SetContentText(_cachedView.Title, _curSelectedPrivateProject.Content.Name);
+                DictionaryTools.SetContentText(_cachedView.Desc, _curSelectedPrivateProject.Content.Summary);
             } else {
                 ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
                 DictionaryTools.SetContentText(_cachedView.Title, "----");
@@ -297,26 +312,67 @@ namespace GameA
         }
 
         private void RefreshPublishedProjectList () {
+//            long preSelectPRojectId = 0;
+//            if (null != _curSelectedPrivateProject) {
+//                preSelectPRojectId = _curSelectedPrivateProject.Content.ProjectId;
+//            }
+            //            LocalUser.Instance.per
+            if (LocalUser.Instance.UserPublishedProjectList.IsInited) {
+                List<Project> list = LocalUser.Instance.UserPublishedProjectList.ProjectList;
+                _publicContents.Clear();
+                _publicContents.Capacity = list.Capacity;
+                for(int i=0; i < list.Count; i++)
+                {
+                    var wrapper = new CardDataRendererWrapper<Project>(list[i], OnPublicProjectCardClick);
+                    //                    if(_mode == EMode.Edit)
+                    //                    {
+                    //                        wrapper.CardMode = ECardMode.Selectable;
+                    //                        wrapper.IsSelected = false;
+                    //                    }
+                    //                    else
+                    {
+                        wrapper.CardMode = ECardMode.Normal;
+//                        wrapper.IsSelected = list [i].ProjectId == preSelectPRojectId;
+//                        _curSelectedPrivateProject = wrapper.IsSelected ? wrapper : _curSelectedPrivateProject;
+                    }
+                    _publicContents.Add(wrapper);
+                }
+                _cachedView.PublicProjectsGridScroller.SetItemCount(_publicContents.Count);
+//                if (_autoSelectFirstProject && null == _curSelectedPrivateProject) {
+//                    _autoSelectFirstProject = false;
+//                    if (_privateContents.Count > 0) {
+//                        _privateContents [0].IsSelected = true;
+//                        _curSelectedPrivateProject = _privateContents [0];
+//                    }
+//                }
+                //                _currentSelectedCount = 0;
+            }
         }
 
-        private void OnProjectCardClick(CardDataRendererWrapper<Project> item) {
-            if (null != _curSelectedProject) {
-                _curSelectedProject.IsSelected = false;
+        private void OnPrivateProjectCardClick(CardDataRendererWrapper<Project> item) {
+            if (null != _curSelectedPrivateProject) {
+                _curSelectedPrivateProject.IsSelected = false;
             }
             item.IsSelected = true;
-            _curSelectedProject = item;
+            _curSelectedPrivateProject = item;
             _cachedView.PrivateProjectsGridScroller.RefreshCurrent ();
             RefreshProjectDetailInfoPanel ();
         }
 
-        private void OnItemRefresh(IDataItemRenderer item, int inx)
+        private void OnPublicProjectCardClick (CardDataRendererWrapper<Project> item) {
+            if (null != item && null != item.Content) {
+                SocialGUIManager.Instance.OpenPopupUI<UICtrlProjectDetailInfo> (item.Content);
+            }
+        }
+
+        private void OnPrivateItemRefresh(IDataItemRenderer item, int inx)
         {
-            if(inx >= _content.Count)
+            if(inx >= _privateContents.Count)
             {
-                LogHelper.Error("OnItemRefresh Error Inx > count");
+                LogHelper.Error("OnPrivateItemRefresh Error Inx > count");
                 return;
             }
-            item.Set(_content[inx]);
+            item.Set(_privateContents[inx]);
 //            if(!_isEnd && _mode != EMode.Edit)
 //            {
 //                if(inx > _content.Count - 2)
@@ -326,9 +382,33 @@ namespace GameA
 //            }
         }
 
-        private IDataItemRenderer GetItemRenderer(RectTransform parent)
+        private IDataItemRenderer GetPrivateItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlWorkShopProjectCard();
+            item.Init(parent, Vector3.zero);
+            return item;
+        }
+
+        private void OnPublicItemRefresh(IDataItemRenderer item, int inx)
+        {
+            if(inx >= _publicContents.Count)
+            {
+                LogHelper.Error("OnPublicItemRefresh Error Inx > count");
+                return;
+            }
+            item.Set(_publicContents[inx]);
+            //            if(!_isEnd && _mode != EMode.Edit)
+            //            {
+            //                if(inx > _content.Count - 2)
+            //                {
+            //                    RequestData(true);
+            //                }
+            //            }
+        }
+
+        private IDataItemRenderer GetPublicItemRenderer(RectTransform parent)
+        {
+            var item = new UMCtrlPublishedProjectCard();
             item.Init(parent, Vector3.zero);
             return item;
         }
@@ -344,13 +424,13 @@ namespace GameA
         }
 
         private void OnPublishBtn () {
-            if (null == _curSelectedProject || null == _curSelectedProject.Content)
+            if (null == _curSelectedPrivateProject || null == _curSelectedPrivateProject.Content)
                 return;
-            if (_curSelectedProject.Content.PassFlag == false) {
+            if (_curSelectedPrivateProject.Content.PassFlag == false) {
                 Debug.Log ("________________ 关卡还未通过，无法发布");
                 return;
             }
-            SocialGUIManager.Instance.OpenPopupUI<UICtrlPublishProject> (_curSelectedProject.Content);
+            SocialGUIManager.Instance.OpenPopupUI<UICtrlPublishProject> (_curSelectedPrivateProject.Content);
         }
 
         private void OnDeleteBtn ()
@@ -415,19 +495,19 @@ namespace GameA
         }
 
         private void ProcessDelete () {
-            if (null == _curSelectedProject || null == _curSelectedProject.Content)
+            if (null == _curSelectedPrivateProject || null == _curSelectedPrivateProject.Content)
                 return;
-            CommonTools.ShowPopupDialog(string.Format("确定要删除作品《{0}》吗？", _curSelectedProject.Content.Name), null,
+            CommonTools.ShowPopupDialog(string.Format("确定要删除作品《{0}》吗？", _curSelectedPrivateProject.Content.Name), null,
                 new KeyValuePair<string, Action>("确定",()=>{
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在删除");
                     var projList = new List<long>();
-                    projList.Add(_curSelectedProject.Content.ProjectId);
+                    projList.Add(_curSelectedPrivateProject.Content.ProjectId);
                     RemoteCommands.DeleteProject(
                         projList,
                         msg => {
                             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                            LocalUser.Instance.PersonalProjectList.ProjectList.Remove(_curSelectedProject.Content);
-                            _curSelectedProject = null;
+                            LocalUser.Instance.PersonalProjectList.ProjectList.Remove(_curSelectedPrivateProject.Content);
+                            _curSelectedPrivateProject = null;
                             AotoSelectFirstProject ();
                             RefreshView ();
                             LocalUser.Instance.PersonalProjectList.Request (0,
@@ -497,6 +577,18 @@ namespace GameA
                 _cachedView.Private.SetActive (true);
                 _cachedView.Public.SetActive (false);
             } else if (_state == EWorkShopState.PublishList) {
+                LocalUser.Instance.UserPublishedProjectList.Request(
+                    LocalUser.Instance.UserGuid,
+                    0, int.MaxValue,
+                    EPublishedProjectOrderBy.PPOB_PublishTime,
+                    EOrderType.OT_Asc,
+                    () => {
+                        if (_isOpen && _state == EWorkShopState.PublishList) {
+                            RefreshPublishedProjectList();
+                        }
+                    },
+                    null
+                );
                 _cachedView.Private.SetActive (false);
                 _cachedView.Public.SetActive (true);
             }
@@ -517,8 +609,8 @@ namespace GameA
 //
         private void OnEditBtn ()
         {
-            if (null != _curSelectedProject && null != _curSelectedProject.Content) {
-                AppLogicUtil.EditPersonalProject(_curSelectedProject.Content);
+            if (null != _curSelectedPrivateProject && null != _curSelectedPrivateProject.Content) {
+                AppLogicUtil.EditPersonalProject(_curSelectedPrivateProject.Content);
             }
         }
 
@@ -594,10 +686,10 @@ namespace GameA
         }
 
         private void OnEditTitleBtn () {
-            if (null == _curSelectedProject || null == _curSelectedProject.Content)
+            if (null == _curSelectedPrivateProject || null == _curSelectedPrivateProject.Content)
                 return;
             _cachedView.Title.gameObject.SetActive (false);
-            _cachedView.TitleInput.text = _curSelectedProject.Content.Name;
+            _cachedView.TitleInput.text = _curSelectedPrivateProject.Content.Name;
             _cachedView.TitleInput.gameObject.SetActive (true);
             _cachedView.EditTitleBtn.gameObject.SetActive (false);
             _cachedView.ConfirmTitleBtn.gameObject.SetActive (true);
@@ -608,9 +700,9 @@ namespace GameA
             newTitle = CheckProjectTitleValid (newTitle);
             if (!string.IsNullOrEmpty(newTitle) &&
                 newTitle != _cachedView.Title.text) {
-                _curSelectedProject.Content.Name = newTitle;
+                _curSelectedPrivateProject.Content.Name = newTitle;
                 _cachedView.Title.text = newTitle;
-                AddWaitUpdateProject (_curSelectedProject.Content);
+                AddWaitUpdateProject (_curSelectedPrivateProject.Content);
             }
             _cachedView.Title.gameObject.SetActive (true);
             _cachedView.TitleInput.gameObject.SetActive (false);
@@ -618,10 +710,10 @@ namespace GameA
             _cachedView.ConfirmTitleBtn.gameObject.SetActive (false);
         }
         private void OnEditDescBtn () {
-            if (null == _curSelectedProject || null == _curSelectedProject.Content)
+            if (null == _curSelectedPrivateProject || null == _curSelectedPrivateProject.Content)
                 return;
             _cachedView.Desc.gameObject.SetActive (false);
-            _cachedView.DescInput.text = _curSelectedProject.Content.Summary;
+            _cachedView.DescInput.text = _curSelectedPrivateProject.Content.Summary;
             _cachedView.DescInput.gameObject.SetActive (true);
             _cachedView.EditDescBtn.gameObject.SetActive (false);
             _cachedView.ConfirmDescBtn.gameObject.SetActive (true);
@@ -631,9 +723,9 @@ namespace GameA
             newDesc = CheckProjectDescValid (newDesc);
             if (!string.IsNullOrEmpty(newDesc) &&
                 newDesc != _cachedView.Desc.text) {
-                _curSelectedProject.Content.Summary = newDesc;
+                _curSelectedPrivateProject.Content.Summary = newDesc;
                 _cachedView.Desc.text = newDesc;
-                AddWaitUpdateProject (_curSelectedProject.Content);
+                AddWaitUpdateProject (_curSelectedPrivateProject.Content);
             }
             _cachedView.Desc.gameObject.SetActive (true);
             _cachedView.DescInput.gameObject.SetActive (false);

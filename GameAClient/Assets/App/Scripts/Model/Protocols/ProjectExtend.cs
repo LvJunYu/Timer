@@ -14,47 +14,47 @@ namespace GameA
         /// </summary>
         private long _projectId;
         /// <summary>
-        /// 
+        /// 是否有效
         /// </summary>
         private bool _isValid;
         /// <summary>
-        /// 
+        /// 评分
         /// </summary>
         private float _rate;
         /// <summary>
-        /// 
+        /// 评分次数
         /// </summary>
         private int _rateCount;
         /// <summary>
-        /// 
+        /// 评论条数
         /// </summary>
         private int _commentCount;
         /// <summary>
-        /// 
+        /// 被玩次数
         /// </summary>
         private long _playCount;
         /// <summary>
-        /// 
+        /// 被通关次数
         /// </summary>
         private int _completeCount;
         /// <summary>
-        /// 
+        /// 失败次数
         /// </summary>
         private int _failCount;
         /// <summary>
-        /// 
+        /// 点赞次数
         /// </summary>
         private int _likeCount;
         /// <summary>
-        /// 
+        /// 收藏次数
         /// </summary>
         private int _favoriteCount;
         /// <summary>
-        /// 
+        /// 下载次数
         /// </summary>
         private int _downloadCount;
         /// <summary>
-        /// 
+        /// 分享次数
         /// </summary>
         private int _shareCount;
 
@@ -78,7 +78,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 
+        /// 是否有效
         /// </summary>
         public bool IsValid { 
             get { return _isValid; }
@@ -88,7 +88,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 
+        /// 评分
         /// </summary>
         public float Rate { 
             get { return _rate; }
@@ -98,7 +98,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 
+        /// 评分次数
         /// </summary>
         public int RateCount { 
             get { return _rateCount; }
@@ -108,7 +108,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 
+        /// 评论条数
         /// </summary>
         public int CommentCount { 
             get { return _commentCount; }
@@ -118,7 +118,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 
+        /// 被玩次数
         /// </summary>
         public long PlayCount { 
             get { return _playCount; }
@@ -128,7 +128,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 
+        /// 被通关次数
         /// </summary>
         public int CompleteCount { 
             get { return _completeCount; }
@@ -138,7 +138,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 
+        /// 失败次数
         /// </summary>
         public int FailCount { 
             get { return _failCount; }
@@ -148,7 +148,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 
+        /// 点赞次数
         /// </summary>
         public int LikeCount { 
             get { return _likeCount; }
@@ -158,7 +158,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 
+        /// 收藏次数
         /// </summary>
         public int FavoriteCount { 
             get { return _favoriteCount; }
@@ -168,7 +168,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 
+        /// 下载次数
         /// </summary>
         public int DownloadCount { 
             get { return _downloadCount; }
@@ -178,7 +178,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 
+        /// 分享次数
         /// </summary>
         public int ShareCount { 
             get { return _shareCount; }

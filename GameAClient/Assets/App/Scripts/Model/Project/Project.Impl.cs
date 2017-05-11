@@ -74,6 +74,15 @@ namespace GameA
 
         #region 属性
 
+        public float PassRate {
+            get {
+                if (null != ExtendData && ExtendData.PlayCount > 0) {
+                    return (float)ExtendData.CompleteCount / ExtendData.PlayCount;
+                } else {
+                    return 0f;
+                }
+            }
+        }
 //        public long ProjectId
 //        {
 //            get
@@ -615,10 +624,20 @@ namespace GameA
             return LocalCacheManager.Instance.Load (LocalCacheManager.EType.File, targetRes);
         }
 
-        public void Save(string name, string summary, byte[] dataBytes, byte[] iconBytes,
-                         int downloadPrice, bool passFlag,
-                         float recordUsedTime, byte[] recordBytes, bool publishRecordFlag,
-                         Action successCallback, Action<EProjectOperateResult> failedCallback)
+        public void Save(
+            string name, 
+            string summary,
+            byte[] dataBytes,
+            byte[] iconBytes,
+            int downloadPrice,
+            bool passFlag,
+            float recordUsedTime, 
+            byte[] recordBytes,
+            bool publishRecordFlag,
+            int timeLimit,
+            int winCondition,
+            Action successCallback,
+            Action<EProjectOperateResult> failedCallback)
         {
             if (ProjectStatus == EProjectStatus.PS_Public)
             {
@@ -631,6 +650,7 @@ namespace GameA
             }
             Name = name;
             Summary = summary;
+            WinCondition = winCondition;
 
             WWWForm form = new WWWForm();
             form.AddBinaryData("levelFile", dataBytes);
@@ -647,6 +667,8 @@ namespace GameA
                     ResourcesVersion,
                     passFlag,
                     recordUsedTime,
+                    timeLimit,
+                    winCondition,
                     msg => {
                         if (msg.ResultCode == (int)EProjectOperateResult.POR_Success) {
                             LocalCacheManager.Instance.Save(dataBytes, LocalCacheManager.EType.File, ResPath);
@@ -681,6 +703,8 @@ namespace GameA
                     ResourcesVersion,
                     passFlag,
                     recordUsedTime,
+                    timeLimit,
+                    winCondition,
                     msg => {
                         OnSyncFromParent(msg.ProjectData);
                         LocalUser.Instance.User.GetSavedPrjectRequestTimer().Zero();

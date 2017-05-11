@@ -70,6 +70,8 @@ namespace GameA
                 _project.ProgramVersion,
                 _project.ResourcesVersion,
                 _project.RecordUsedTime,
+                _project.TimeLimit,
+                _project.WinCondition,
                 msg => {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     CommonTools.ShowPopupDialog("发布关卡成功");

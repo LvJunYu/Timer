@@ -14,7 +14,7 @@ namespace GameA
         /// </summary>
         private long _projectId;
         /// <summary>
-        /// 
+        /// 发布者信息
         /// </summary>
         private UserInfoSimple _userInfo;
         /// <summary>
@@ -146,7 +146,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 
+        /// 发布者信息
         /// </summary>
         public UserInfoSimple UserInfo { 
             get { return _userInfo; }
