@@ -52,7 +52,10 @@ namespace GameA
             _personalProjectCount = 0;
             base.OnOpen (parameter);
             SetMode(EWorkShopState.Edit);
-            LocalUser.Instance.PersonalProjectList.Request (0, long.MaxValue, int.MaxValue, 0,
+            LocalUser.Instance.PersonalProjectList.Request (0, 
+                int.MaxValue,
+                EPersonalProjectOrderBy.PePOB_LastUpdateTime,
+                EOrderType.OT_Asc,
                 () => {
                     RefreshView();
                 },
@@ -359,21 +362,21 @@ namespace GameA
             ProcessCreate ();
         }
 
-        private void OnRunBtnClick()
-        {
-            if(!AppLogicUtil.CheckAndRequiredLogin())
-            {
-                return;
-            }
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
-            MatrixProjectTools.PreparePersonalProjectData(()=>{
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                ProcessCreate();
-            },()=>{
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                CommonTools.ShowPopupDialog("数据请求失败，请检查网络后重试");
-            });
-        }
+//        private void OnRunBtnClick()
+//        {
+//            if(!AppLogicUtil.CheckAndRequiredLogin())
+//            {
+//                return;
+//            }
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
+//            MatrixProjectTools.PreparePersonalProjectData(()=>{
+//                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                ProcessCreate();
+//            },()=>{
+//                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                CommonTools.ShowPopupDialog("数据请求失败，请检查网络后重试");
+//            });
+//        }
 
         public void ProcessCreate()
         {
@@ -427,7 +430,10 @@ namespace GameA
                             _curSelectedProject = null;
                             AotoSelectFirstProject ();
                             RefreshView ();
-                            LocalUser.Instance.PersonalProjectList.Request (0, long.MaxValue, int.MaxValue, 0,
+                            LocalUser.Instance.PersonalProjectList.Request (0,
+                                int.MaxValue,
+                                EPersonalProjectOrderBy.PePOB_CreateTime,
+                                EOrderType.OT_Asc,
                                 () => {
                                     RefreshView();
                                 },
@@ -567,7 +573,9 @@ namespace GameA
 
 
         private void OnReturnToApp () {
-            LocalUser.Instance.PersonalProjectList.Request (0, long.MaxValue, int.MaxValue, 0,
+            LocalUser.Instance.PersonalProjectList.Request (0, int.MaxValue, 
+                EPersonalProjectOrderBy.PePOB_CreateTime,
+                EOrderType.OT_Asc,
                 () => {
                     RefreshView();
                 },

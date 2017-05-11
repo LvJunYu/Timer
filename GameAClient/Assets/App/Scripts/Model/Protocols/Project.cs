@@ -10,10 +10,6 @@ namespace GameA
         #region 字段
         // sc fields----------------------------------
         /// <summary>
-        /// 最后更新时间
-        /// </summary>
-        private long _updateTime;
-        /// <summary>
         /// 
         /// </summary>
         private long _projectId;
@@ -113,6 +109,22 @@ namespace GameA
         /// 修改地块数量
         /// </summary>
         private int _modifyCount;
+        /// <summary>
+        /// 过关时间限制
+        /// </summary>
+        private int _timeLimit;
+        /// <summary>
+        /// 胜利条件（按位存储）
+        /// </summary>
+        private int _winCondition;
+        /// <summary>
+        /// 最后更新时间
+        /// </summary>
+        private long _updateTime;
+        /// <summary>
+        /// 最后发布时间
+        /// </summary>
+        private long _publishTime;
 
         // cs fields----------------------------------
         /// <summary>
@@ -123,16 +135,6 @@ namespace GameA
 
         #region 属性
         // sc properties----------------------------------
-        /// <summary>
-        /// 最后更新时间
-        /// </summary>
-        public long UpdateTime { 
-            get { return _updateTime; }
-            set { if (_updateTime != value) {
-                _updateTime = value;
-                SetDirty();
-            }}
-        }
         /// <summary>
         /// 
         /// </summary>
@@ -383,6 +385,46 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 过关时间限制
+        /// </summary>
+        public int TimeLimit { 
+            get { return _timeLimit; }
+            set { if (_timeLimit != value) {
+                _timeLimit = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 胜利条件（按位存储）
+        /// </summary>
+        public int WinCondition { 
+            get { return _winCondition; }
+            set { if (_winCondition != value) {
+                _winCondition = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 最后更新时间
+        /// </summary>
+        public long UpdateTime { 
+            get { return _updateTime; }
+            set { if (_updateTime != value) {
+                _updateTime = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 最后发布时间
+        /// </summary>
+        public long PublishTime { 
+            get { return _publishTime; }
+            set { if (_publishTime != value) {
+                _publishTime = value;
+                SetDirty();
+            }}
+        }
         
         // cs properties----------------------------------
         /// <summary>
@@ -444,7 +486,6 @@ namespace GameA
         public bool OnSync (Msg_SC_DAT_Project msg)
         {
             if (null == msg) return false;
-            _updateTime = msg.UpdateTime;           
             _projectId = msg.ProjectId;           
             if (null == _userInfo) {
                 _userInfo = new UserInfoSimple(msg.UserInfo);
@@ -482,6 +523,10 @@ namespace GameA
             _addCount = msg.AddCount;           
             _deleteCount = msg.DeleteCount;           
             _modifyCount = msg.ModifyCount;           
+            _timeLimit = msg.TimeLimit;           
+            _winCondition = msg.WinCondition;           
+            _updateTime = msg.UpdateTime;           
+            _publishTime = msg.PublishTime;           
             OnSyncPartial();
             return true;
         }

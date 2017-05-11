@@ -229,29 +229,29 @@ namespace GameA
 //            });
 
 //            User user = LocalUser.Instance.UserLegacy;
-			var user = LocalUser.Instance.User;
+//			var user = LocalUser.Instance.User;
 //            if(!user.GetSavedPrjectRequestTimer().PassedSecondsWithoutReset(600))
 //            {
 //                helper.CompleteOne();
 //                return;
 //            }
 
-            Msg_CS_DAT_PersonalProjectList msg = new Msg_CS_DAT_PersonalProjectList();
-            msg.TotalCount = user.GetSavedProjectList().Count;
-            msg.MinUpdateTime = user.GetSavedProjectLastUpdateTime();
-			NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_PersonalProjectList>(SoyHttpApiPath.PersonalProjectList, msg, ret=>{
-                user.OnSyncUserSavedProjectList(ret);
-                user.GetSavedPrjectRequestTimer().Reset();
-				if (successCallback != null) {
-					successCallback.Invoke();
-				}
-//                helper.CompleteOne();
-            }, (code, msgStr)=>{
-//                helper.FailOne();
-				if (failedCallback != null) {
-					failedCallback.Invoke();
-				}
-            });
+//            Msg_CS_DAT_PersonalProjectList msg = new Msg_CS_DAT_PersonalProjectList();
+////            msg.TotalCount = user.GetSavedProjectList().Count;
+//            msg.MinUpdateTime = user.GetSavedProjectLastUpdateTime();
+//			NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_PersonalProjectList>(SoyHttpApiPath.PersonalProjectList, msg, ret=>{
+//                user.OnSyncUserSavedProjectList(ret);
+//                user.GetSavedPrjectRequestTimer().Reset();
+//				if (successCallback != null) {
+//					successCallback.Invoke();
+//				}
+////                helper.CompleteOne();
+//            }, (code, msgStr)=>{
+////                helper.FailOne();
+//				if (failedCallback != null) {
+//					failedCallback.Invoke();
+//				}
+//            });
             
         }
 

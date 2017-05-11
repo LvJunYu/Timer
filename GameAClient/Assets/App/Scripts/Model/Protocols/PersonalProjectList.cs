@@ -26,19 +26,19 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private long _cs_minUpdateTime;
-        /// <summary>
-        /// 
-        /// </summary>
-        private long _cs_maxUpdateTime;
+        private int _cs_startInx;
         /// <summary>
         /// 
         /// </summary>
         private int _cs_maxCount;
         /// <summary>
-        /// 
+        /// 排序字段
         /// </summary>
-        private int _cs_totalCount;
+        private EPersonalProjectOrderBy _cs_orderBy;
+        /// <summary>
+        /// 升序降序
+        /// </summary>
+        private EOrderType _cs_orderType;
         #endregion
 
         #region 属性
@@ -78,16 +78,9 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public long CS_MinUpdateTime { 
-            get { return _cs_minUpdateTime; }
-            set { _cs_minUpdateTime = value; }
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        public long CS_MaxUpdateTime { 
-            get { return _cs_maxUpdateTime; }
-            set { _cs_maxUpdateTime = value; }
+        public int CS_StartInx { 
+            get { return _cs_startInx; }
+            set { _cs_startInx = value; }
         }
         /// <summary>
         /// 
@@ -97,11 +90,18 @@ namespace GameA
             set { _cs_maxCount = value; }
         }
         /// <summary>
-        /// 
+        /// 排序字段
         /// </summary>
-        public int CS_TotalCount { 
-            get { return _cs_totalCount; }
-            set { _cs_totalCount = value; }
+        public EPersonalProjectOrderBy CS_OrderBy { 
+            get { return _cs_orderBy; }
+            set { _cs_orderBy = value; }
+        }
+        /// <summary>
+        /// 升序降序
+        /// </summary>
+        public EOrderType CS_OrderType { 
+            get { return _cs_orderType; }
+            set { _cs_orderType = value; }
         }
 
         public override bool IsDirty {
@@ -122,23 +122,19 @@ namespace GameA
         /// <summary>
 		/// 工坊关卡
 		/// </summary>
-		/// <param name="minUpdateTime">.</param>
-		/// <param name="maxUpdateTime">.</param>
+		/// <param name="startInx">.</param>
 		/// <param name="maxCount">.</param>
-		/// <param name="totalCount">.</param>
+		/// <param name="orderBy">排序字段.</param>
+		/// <param name="orderType">升序降序.</param>
         public void Request (
-            long minUpdateTime,
-            long maxUpdateTime,
+            int startInx,
             int maxCount,
-            int totalCount,
+            EPersonalProjectOrderBy orderBy,
+            EOrderType orderType,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
             if (_isRequesting) {
-                if (_cs_minUpdateTime != minUpdateTime) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
-                if (_cs_maxUpdateTime != maxUpdateTime) {
+                if (_cs_startInx != startInx) {
                     if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
                     return;
                 }
@@ -146,23 +142,27 @@ namespace GameA
                     if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
                     return;
                 }
-                if (_cs_totalCount != totalCount) {
+                if (_cs_orderBy != orderBy) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_orderType != orderType) {
                     if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
                     return;
                 }
                 OnRequest (successCallback, failedCallback);
             } else {
-                _cs_minUpdateTime = minUpdateTime;
-                _cs_maxUpdateTime = maxUpdateTime;
+                _cs_startInx = startInx;
                 _cs_maxCount = maxCount;
-                _cs_totalCount = totalCount;
+                _cs_orderBy = orderBy;
+                _cs_orderType = orderType;
                 OnRequest (successCallback, failedCallback);
 
                 Msg_CS_DAT_PersonalProjectList msg = new Msg_CS_DAT_PersonalProjectList();
-                msg.MinUpdateTime = minUpdateTime;
-                msg.MaxUpdateTime = maxUpdateTime;
+                msg.StartInx = startInx;
                 msg.MaxCount = maxCount;
-                msg.TotalCount = totalCount;
+                msg.OrderBy = orderBy;
+                msg.OrderType = orderType;
                 NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_PersonalProjectList>(
                     SoyHttpApiPath.PersonalProjectList, msg, ret => {
                         if (OnSync(ret)) {
