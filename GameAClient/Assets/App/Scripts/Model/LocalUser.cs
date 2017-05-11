@@ -32,6 +32,8 @@ namespace GameA
 
         private PersonalProjectList _personalProjectList = new PersonalProjectList ();
 
+        private UserPublishedProjectList _userPublishedProjectList = new UserPublishedProjectList ();
+
         #endregion
         #region 属性
 
@@ -85,6 +87,12 @@ namespace GameA
         public PersonalProjectList PersonalProjectList {
             get {
                 return this._personalProjectList;
+            }
+        }
+
+        public UserPublishedProjectList UserPublishedProjectList {
+            get {
+                return this._userPublishedProjectList;
             }
         }
         #endregion

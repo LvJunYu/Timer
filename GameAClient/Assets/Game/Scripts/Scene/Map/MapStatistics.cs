@@ -108,6 +108,26 @@ namespace GameA.Game
             set { _winCondition = value; }
         }
 
+        public int MsgWinCondition {
+            get {
+                int result = 0;
+                if (HasWinCondition (EWinCondition.KillMonster)) {
+                    result |= 1 << (int)SoyEngine.Proto.EWinCondition.WC_Monster;
+                }
+                if (HasWinCondition (EWinCondition.CollectTreasure)) {
+                    result |= 1 << (int)SoyEngine.Proto.EWinCondition.WC_Collect;
+                }
+                if (HasWinCondition (EWinCondition.Arrived)) {
+                    result |= 1 << (int)SoyEngine.Proto.EWinCondition.WC_Arrive;
+                }
+                // 
+                if (result == 0) {
+                    result |= 1 << (int)SoyEngine.Proto.EWinCondition.WC_None;
+                }
+                return result;
+            }
+        }
+
 	    public int LevelFinishCount
 	    {
 		    get { return _levelFinishCount; }

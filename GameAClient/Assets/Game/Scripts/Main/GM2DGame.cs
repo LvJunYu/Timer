@@ -476,15 +476,27 @@ namespace GameA.Game
                 return;
             }
             bool passFlag = CheckCanPublish();
-            _project.Save(name, summary, mapDataBytes, IconBytes, downloadPrice,
-                passFlag, RecordUsedTime, RecordBytes, publishRecordFlag, ()=>{
-                NeedSave = false;
-                MapDirty = false;
-                if(successCallback != null)
-                {
-                    successCallback.Invoke();
-                }
-            }, failedCallback);
+
+            _project.Save(
+                name, 
+                summary,
+                mapDataBytes,
+                IconBytes,
+                downloadPrice,
+                passFlag, 
+                RecordUsedTime, 
+                RecordBytes,
+                publishRecordFlag,
+                EditMode.Instance.MapStatistics.TimeLimit,
+                EditMode.Instance.MapStatistics.MsgWinCondition,
+                ()=>{
+                    NeedSave = false;
+                    MapDirty = false;
+                    if(successCallback != null)
+                    {
+                        successCallback.Invoke();
+                    }
+                }, failedCallback);
         }
 
         /// <summary>
