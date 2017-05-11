@@ -22,7 +22,7 @@ namespace GameA.Game
                 return false;
             }
             _isMonster = true;
-            _monsterSpeed = 20;
+            _monsterSpeed = 30;
             return true;
         }
 
@@ -94,9 +94,9 @@ namespace GameA.Game
                 if (!_grounded)
                 {
                     SpeedY -= 12;
-                    if (SpeedY < -160)
+                    if (SpeedY < -120)
                     {
-                        SpeedY = -160;
+                        SpeedY = -120;
                     }
                 }
             }

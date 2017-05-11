@@ -43,6 +43,8 @@ namespace GameA.Game
 
         public void OnFree()
         {
+            //赋值为空
+            _dynamicCollider = null;
             Clear();
         }
 
@@ -58,13 +60,13 @@ namespace GameA.Game
 
         protected override void Clear()
         {
-            base.Clear();
             _run = false;
             _skill = null;
             _speed = IntVec2.zero;
             _blocked = false;
             _rotation = 0;
             _originPos = IntVec2.zero;
+            base.Clear();
         }
 
         public virtual void Run(SkillBase skill)
