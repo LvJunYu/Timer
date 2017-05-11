@@ -46,6 +46,8 @@ namespace SoyEngine
         public const string PublishProject = "/project/publish";
         // 取消发布
         public const string UnpublishProject = "/project/unpublish";
+        // 用户发布的关卡
+        public const string UserPublishedProjectList = "/project/getUserPublishedList";
         // 工坊关卡
         public const string Record = "/record/get";
         // 冒险模式关卡列表

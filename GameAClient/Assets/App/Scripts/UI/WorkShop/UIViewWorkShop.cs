@@ -12,16 +12,35 @@ namespace GameA
         public Button ReturnBtn;
         public Button ChangeModeBtn;
 
-        public Button NewProjectBtn;
-        public Button PublishBtn;
-        public Button DeleteBtn;
 
-        public GridDataScroller GridScroller;
 
-        // personal project info detail
+        public GameObject Private;
+        // private project info detail
         public RawImage Cover;
         public Button EditBtn;
         public Text Title;
+        public InputField TitleInput;
+        public Button EditTitleBtn;
+        public Button ConfirmTitleBtn;
         public Text Desc;
+        public InputField DescInput;
+        public Button EditDescBtn;
+        public Button ConfirmDescBtn;
+        public Button PublishBtn;
+        public Button DeleteBtn;
+        // private project list
+        public GridDataScroller PrivateProjectsGridScroller;
+        public Button NewProjectBtn;
+
+        public GameObject Public;
+        public Text MakerLvl;
+        public Image MakerExpFillImg;
+        public Text MakerExpText;
+        public Text PublishedProjectCnt;
+        public Text ServedPlayerCnt;
+        public Text LikedCnt;
+        public Text MostPopulerProjectName;
+        public GridDataScroller PublicProjectsGridScroller;
+
     }
 }

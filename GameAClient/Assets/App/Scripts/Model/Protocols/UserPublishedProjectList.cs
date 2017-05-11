@@ -1,4 +1,4 @@
-// 工坊关卡 | 工坊关卡
+// 工坊关卡 | 用户发布的关卡
 using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class PersonalProjectList : SyncronisticData {
+    public partial class UserPublishedProjectList : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -26,6 +26,10 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
+        private long _cs_userId;
+        /// <summary>
+        /// 
+        /// </summary>
         private int _cs_startInx;
         /// <summary>
         /// 
@@ -34,7 +38,7 @@ namespace GameA
         /// <summary>
         /// 排序字段
         /// </summary>
-        private EPersonalProjectOrderBy _cs_orderBy;
+        private EPublishedProjectOrderBy _cs_orderBy;
         /// <summary>
         /// 升序降序
         /// </summary>
@@ -78,6 +82,13 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
+        public long CS_UserId { 
+            get { return _cs_userId; }
+            set { _cs_userId = value; }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         public int CS_StartInx { 
             get { return _cs_startInx; }
             set { _cs_startInx = value; }
@@ -92,7 +103,7 @@ namespace GameA
         /// <summary>
         /// 排序字段
         /// </summary>
-        public EPersonalProjectOrderBy CS_OrderBy { 
+        public EPublishedProjectOrderBy CS_OrderBy { 
             get { return _cs_orderBy; }
             set { _cs_orderBy = value; }
         }
@@ -120,20 +131,26 @@ namespace GameA
 
         #region 方法
         /// <summary>
-		/// 工坊关卡
+		/// 用户发布的关卡
 		/// </summary>
+		/// <param name="userId">.</param>
 		/// <param name="startInx">.</param>
 		/// <param name="maxCount">.</param>
 		/// <param name="orderBy">排序字段.</param>
 		/// <param name="orderType">升序降序.</param>
         public void Request (
+            long userId,
             int startInx,
             int maxCount,
-            EPersonalProjectOrderBy orderBy,
+            EPublishedProjectOrderBy orderBy,
             EOrderType orderType,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
             if (_isRequesting) {
+                if (_cs_userId != userId) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
                 if (_cs_startInx != startInx) {
                     if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
                     return;
@@ -152,19 +169,21 @@ namespace GameA
                 }
                 OnRequest (successCallback, failedCallback);
             } else {
+                _cs_userId = userId;
                 _cs_startInx = startInx;
                 _cs_maxCount = maxCount;
                 _cs_orderBy = orderBy;
                 _cs_orderType = orderType;
                 OnRequest (successCallback, failedCallback);
 
-                Msg_CS_DAT_PersonalProjectList msg = new Msg_CS_DAT_PersonalProjectList();
+                Msg_CS_DAT_UserPublishedProjectList msg = new Msg_CS_DAT_UserPublishedProjectList();
+                msg.UserId = userId;
                 msg.StartInx = startInx;
                 msg.MaxCount = maxCount;
                 msg.OrderBy = orderBy;
                 msg.OrderType = orderType;
-                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_PersonalProjectList>(
-                    SoyHttpApiPath.PersonalProjectList, msg, ret => {
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserPublishedProjectList>(
+                    SoyHttpApiPath.UserPublishedProjectList, msg, ret => {
                         if (OnSync(ret)) {
                             OnSyncSucceed(); 
                         }
@@ -174,7 +193,7 @@ namespace GameA
             }            
         }
 
-        public bool OnSync (Msg_SC_DAT_PersonalProjectList msg)
+        public bool OnSync (Msg_SC_DAT_UserPublishedProjectList msg)
         {
             if (null == msg) return false;
             _resultCode = msg.ResultCode;           
@@ -187,19 +206,19 @@ namespace GameA
             return true;
         }
 
-        public void OnSyncFromParent (Msg_SC_DAT_PersonalProjectList msg) {
+        public void OnSyncFromParent (Msg_SC_DAT_UserPublishedProjectList msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public PersonalProjectList (Msg_SC_DAT_PersonalProjectList msg) {
+        public UserPublishedProjectList (Msg_SC_DAT_UserPublishedProjectList msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public PersonalProjectList () { 
+        public UserPublishedProjectList () { 
             _projectList = new List<Project>();
         }
         #endregion
