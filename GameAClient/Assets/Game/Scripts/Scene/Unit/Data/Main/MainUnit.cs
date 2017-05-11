@@ -357,7 +357,6 @@ namespace GameA.Game
                         _animation.PlayOnce(JumpAnimName(_mainInput._jumpLevel));
 						if (_mainInput.ClimbJump) {
 							Vector3 effectPos = _trans.position;
-							Debug.Log ("Waaaaaaa " + _curMoveDirection);
 							if (_curMoveDirection == EMoveDirection.Left)
 							{
 								effectPos += Vector3.right * 0.25f + Vector3.forward * 0.6f;
@@ -948,9 +947,9 @@ namespace GameA.Game
                 else
                 {
                     SpeedY -= 12;
-                    if (SpeedY < -160)
+                    if (SpeedY < -120)
                     {
-                        SpeedY = -160;
+                        SpeedY = -120;
                     }
                 }
             }

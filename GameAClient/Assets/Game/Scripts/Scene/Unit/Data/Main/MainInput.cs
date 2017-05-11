@@ -243,6 +243,16 @@ namespace GameA.Game
             _lastVertical = _curVertical;
             _curHorizontal = CrossPlatformInputManager.GetAxis("Horizontal");
             _curVertical = CrossPlatformInputManager.GetAxis("Vertical");
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                Jelly.ExtraSpeedY -= 10;
+                LogHelper.Debug(Jelly.ExtraSpeedY + "~");
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                Jelly.ExtraSpeedY += 10;
+                LogHelper.Debug(Jelly.ExtraSpeedY + "~");
+            }
             if (KeyDown(EInputType.Left))
             {
                 _curInputs[(int)EInputType.Left] = true;

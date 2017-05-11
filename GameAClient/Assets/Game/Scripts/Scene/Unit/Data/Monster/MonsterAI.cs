@@ -46,12 +46,39 @@ namespace GameA.Game
         protected bool _jumpInput;
         protected bool _lastJumpInput;
 
-        protected int _jumpState;
-        protected int _jumpLevel;
+        public int _jumpState;
+        public int _jumpLevel;
         protected bool _stopJump;
+
+        [SerializeField]
+        public int _brakeTime;
+        public int _brakeType;
+
+        [SerializeField]
+        public EClimbState _eClimbState;
 
         private const int JumpFirstMaxTime = 105;
         private const int JumpSecondMaxTime = 205;
+
+        public int LeftInput
+        {
+            get { return _leftInput; }
+        }
+
+        public int RightInput
+        {
+            get { return _rightInput; }
+        }
+
+        public bool JumpInput
+        {
+            get { return _jumpInput; }
+        }
+
+        public MonsterAI(MonsterBase monster)
+        {
+            _unit = monster;
+        }
 
         public void UpdateLogic()
         {
@@ -59,6 +86,7 @@ namespace GameA.Game
             _lastJumpInput = _jumpInput;
             _lastRightInput = _rightInput;
             _lastLeftInput = _leftInput;
+            _onGround = _unit.Grounded;
             CalculateInput();
             UpdateMonster();
         }
@@ -75,9 +103,9 @@ namespace GameA.Game
                     }
                     break;
                 case EActionState.MoveTo:
-                    IntVec2 prevDest, currentDest, nextDest;
+                    IntVec2 lastDest, currentDest, nextDest;
                     bool destOnGround, reachedY, reachedX;
-                    GetContext(out prevDest, out currentDest, out nextDest, out destOnGround, out reachedX, out reachedY);
+                    GetContext(out lastDest, out currentDest, out nextDest, out destOnGround, out reachedX, out reachedY);
                     IntVec2 pathPosition = _unit.CurPos / ConstDefineGM2D.ServerTileScale;
 
                     _leftInput = 0;
@@ -86,29 +114,27 @@ namespace GameA.Game
                     //到达路径点
                     if (reachedX && reachedY)
                     {
-                        int prevNodeId = _currentNodeId;
+                        int lastNodeId = _currentNodeId;
                         _currentNodeId++;
-
                         if (_currentNodeId >= _path.Count)
                         {
                             _currentNodeId = -1;
                             _currentActionState = EActionState.None;
                             break;
                         }
-
                         if (_onGround)
                         {
-                            _framesOfJumping = GetJumpFramesForNode(prevNodeId);
+                            _framesOfJumping = GetJumpFramesForNode(lastNodeId);
                         }
                         goto case EActionState.MoveTo;
                     }
                     else if (!reachedX)
                     {
-                        if (currentDest.x - pathPosition.x > ConstDefineGM2D.cBotMaxPositionError)
+                        if (currentDest.x - pathPosition.x > ConstDefineGM2D.AIMaxPositionError)
                         {
                             _rightInput = 1;
                         }
-                        else if (pathPosition.x - currentDest.x > ConstDefineGM2D.cBotMaxPositionError)
+                        else if (pathPosition.x - currentDest.x > ConstDefineGM2D.AIMaxPositionError)
                         {
                             _leftInput = 1;
                         }
@@ -133,11 +159,11 @@ namespace GameA.Game
 
                         if (checkedX != 0 && !ColliderScene2D.Instance.AnySolidBlockInStripe(checkedX, pathPosition.y, _path[_currentNodeId + 1].y))
                         {
-                            if (nextDest.x - pathPosition.x > ConstDefineGM2D.cBotMaxPositionError)
+                            if (nextDest.x - pathPosition.x > ConstDefineGM2D.AIMaxPositionError)
                             {
                                 _rightInput = 1;
                             }
-                            else if (pathPosition.x - nextDest.x > ConstDefineGM2D.cBotMaxPositionError)
+                            else if (pathPosition.x - nextDest.x > ConstDefineGM2D.AIMaxPositionError)
                             {
                                 _leftInput = 1;
                             }
@@ -187,7 +213,7 @@ namespace GameA.Game
                 case 1:
                     return 1;
                 case 2:
-                    return 2;
+                    return 5;
                 case 3:
                     return 6;
                 case 4:
@@ -201,20 +227,20 @@ namespace GameA.Game
             }
         }
 
-        private int GetJumpFramesForNode(int prevNodeId)
+        private int GetJumpFramesForNode(int lastNodeId)
         {
-            int currentNodeId = prevNodeId + 1;
+            int currentNodeId = lastNodeId + 1;
 
-            if (_path[currentNodeId].y - _path[prevNodeId].y > 0 && _unit.Grounded)
+            if (_path[currentNodeId].y - _path[lastNodeId].y > 0 && _unit.Grounded)
             {
                 int jumpHeight = 1;
                 for (int i = currentNodeId; i < _path.Count; ++i)
                 {
-                    if (_path[i].y - _path[prevNodeId].y >= jumpHeight)
+                    if (_path[i].y - _path[lastNodeId].y >= jumpHeight)
                     {
-                        jumpHeight = _path[i].y - _path[prevNodeId].y;
+                        jumpHeight = _path[i].y - _path[lastNodeId].y;
                     }
-                    if (_path[i].y - _path[prevNodeId].y < jumpHeight || ColliderScene2D.Instance.IsGround(_path[i].x, _path[i].y - 1))
+                    if (_path[i].y - _path[lastNodeId].y < jumpHeight || ColliderScene2D.Instance.IsGround(_path[i].x, _path[i].y - 1))
                     {
                         return GetJumpFrameCount(jumpHeight);
                     }
@@ -227,20 +253,20 @@ namespace GameA.Game
         {
             return (prevDest.x <= currentDest.x && pathPosition.x >= currentDest.x)
                    || (prevDest.x >= currentDest.x && pathPosition.x <= currentDest.x)
-                   || Mathf.Abs(pathPosition.x - currentDest.x) <= ConstDefineGM2D.cBotMaxPositionError;
+                   || Mathf.Abs(pathPosition.x - currentDest.x) <= ConstDefineGM2D.AIMaxPositionError;
         }
 
         private bool ReachedNodeOnYAxis(IntVec2 pathPosition, IntVec2 prevDest, IntVec2 currentDest)
         {
             return (prevDest.y <= currentDest.y && pathPosition.y >= currentDest.y)
                    || (prevDest.y >= currentDest.y && pathPosition.y <= currentDest.y)
-                   || (Mathf.Abs(pathPosition.y - currentDest.y) <= ConstDefineGM2D.cBotMaxPositionError);
+                   || (Mathf.Abs(pathPosition.y - currentDest.y) <= ConstDefineGM2D.AIMaxPositionError);
         }
 
-        private void GetContext(out IntVec2 prevDest, out IntVec2 currentDest, out IntVec2 nextDest,
+        private void GetContext(out IntVec2 lastDest, out IntVec2 currentDest, out IntVec2 nextDest,
             out bool destOnGround, out bool reachedX, out bool reachedY)
         {
-            prevDest = _path[_currentNodeId - 1];
+            lastDest = _path[_currentNodeId - 1];
             currentDest = _path[_currentNodeId];
             nextDest = currentDest;
 
@@ -249,9 +275,9 @@ namespace GameA.Game
                 nextDest = _path[_currentNodeId + 1];
             }
             destOnGround = false;
-            for (int x = _path[_currentNodeId].x; x < _path[_currentNodeId].x + 1; ++x)
+            for (int i = _path[_currentNodeId].x; i < _path[_currentNodeId].x + 1; ++i)
             {
-                if (ColliderScene2D.Instance.IsGround(x, _path[_currentNodeId].y - 1))
+                if (ColliderScene2D.Instance.IsGround(i, _path[_currentNodeId].y - 1))
                 {
                     destOnGround = true;
                     break;
@@ -260,13 +286,12 @@ namespace GameA.Game
 
             IntVec2 pathPosition = _unit.CurPos / ConstDefineGM2D.ServerTileScale;
 
-            reachedX = ReachedNodeOnXAxis(pathPosition, prevDest, currentDest);
-            reachedY = ReachedNodeOnYAxis(pathPosition, prevDest, currentDest);
+            reachedX = ReachedNodeOnXAxis(pathPosition, lastDest, currentDest);
+            reachedY = ReachedNodeOnYAxis(pathPosition, lastDest, currentDest);
 
             //这里需要 TODO
-            //snap the character if it reached the goal but overshot it by more than cBotMaxPositionError
-            if (reachedX && Mathf.Abs(pathPosition.x - currentDest.x) > ConstDefineGM2D.cBotMaxPositionError &&
-                Mathf.Abs(pathPosition.x - currentDest.x) < ConstDefineGM2D.cBotMaxPositionError * 3.0f &&
+            if (reachedX && Mathf.Abs(pathPosition.x - currentDest.x) > ConstDefineGM2D.AIMaxPositionError &&
+                Mathf.Abs(pathPosition.x - currentDest.x) < ConstDefineGM2D.AIMaxPositionError * 3.0f &&
                 _lastLeftInput == 0 && _lastRightInput == 0)
             {
                 pathPosition.x = currentDest.x;
@@ -305,6 +330,12 @@ namespace GameA.Game
 
         private void UpdateMonster()
         {
+            if (_jumpInput)
+            {
+                _unit.SpeedY = 140;
+                return;
+            }
+            return;
             if (_jumpInput)
             {
                 if (_jumpState == 0)
@@ -367,6 +398,7 @@ namespace GameA.Game
             {
                 _jumpState = 1;
             }
+            LogHelper.Debug("Monster:"+_jumpState+"~"+_unit.SpeedY+"~"+_unit.Grounded);
         }
     }
 }

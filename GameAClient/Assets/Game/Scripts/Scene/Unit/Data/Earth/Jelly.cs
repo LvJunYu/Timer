@@ -14,6 +14,9 @@ namespace GameA.Game
     [Unit(Id = 4012, Type = typeof(Jelly))]
     public class Jelly : BlockBase
     {
+        public static int ExtraSpeedX = 180;
+        public static int ExtraSpeedY = 240;
+
         protected override bool OnInit()
         {
             if (!base.OnInit())
@@ -44,12 +47,12 @@ namespace GameA.Game
                     if (other.IsMain)
                     {
                         PlayMode.Instance.MainUnit.Step(80);
-                        other.ExtraSpeed.y = 330;
+                        other.ExtraSpeed.y = ExtraSpeedY;
                         GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
                     }
                     else if (other.IsMonster)
                     {
-                        other.ExtraSpeed.y = 330;
+                        other.ExtraSpeed.y = ExtraSpeedY;
                     }
                     if (_animation != null)
                     {
@@ -69,12 +72,12 @@ namespace GameA.Game
                     other.SpeedY = 0;
                     if (other.IsMain)
                     {
-                        other.ExtraSpeed.y = -330;
+                        other.ExtraSpeed.y = -ExtraSpeedY;
                         GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
                     }
                     else if (other.IsMonster)
                     {
-                        other.ExtraSpeed.y = -330;
+                        other.ExtraSpeed.y = -ExtraSpeedY;
                     }
                     if (_animation != null)
                     {
@@ -92,8 +95,8 @@ namespace GameA.Game
                 if (other.IsHero)
                 {
                     other.Speed = IntVec2.zero;
-                    other.ExtraSpeed.x = -180;
-                    other.ExtraSpeed.y = 180;
+                    other.ExtraSpeed.x = -ExtraSpeedX;
+                    other.ExtraSpeed.y = ExtraSpeedX;
                     other.CurBanInputTime = 20;
                     if (other.IsMain)
                     {
@@ -115,8 +118,8 @@ namespace GameA.Game
                 if (other.IsHero)
                 {
                     other.Speed = IntVec2.zero;
-                    other.ExtraSpeed.x = 180;
-                    other.ExtraSpeed.y = 180;
+                    other.ExtraSpeed.x = ExtraSpeedX;
+                    other.ExtraSpeed.y = ExtraSpeedX;
                     other.CurBanInputTime = 20;
                     if (other.IsMain)
                     {

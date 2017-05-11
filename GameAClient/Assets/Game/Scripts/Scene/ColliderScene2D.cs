@@ -139,26 +139,25 @@ namespace GameA.Game
 
         public bool DeleteUnit(UnitDesc unitDesc, Table_Unit tableUnit)
         {
+            UnitBase unit;
+            if (!_units.TryGetValue(unitDesc.Guid, out unit))
+            {
+                LogHelper.Warning("DeleteUnit Failed, {0}", unitDesc);
+                return true;
+            }
             var colliderNode = NodeFactory.GetColliderNode(unitDesc, tableUnit);
             if (colliderNode == null)
             {
-                LogHelper.Error("DeleteCollider Failed,{0}", unitDesc.ToString());
+                LogHelper.Error("GetColliderNode Failed,{0}", unitDesc.ToString());
                 return false;
             }
             if (!DeleteNode(colliderNode))
             {
-                LogHelper.Error("DeleteCollider Failed,{0}", unitDesc.ToString());
+                LogHelper.Error("DeleteNode Failed,{0}", unitDesc.ToString());
                 return false;
-            }
-            UnitBase unit;
-            if (!_units.TryGetValue(unitDesc.Guid, out unit))
-            {
-                //LogHelper.Warning("DeleteUnit Failed, {0}", UnitDesc);
-                return true;
             }
             _allUnits.Remove(unit);
             _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 1;
-            UnitManager.Instance.FreeUnitView(unit);
             return _units.Remove(unitDesc.Guid);
         }
 
@@ -167,7 +166,7 @@ namespace GameA.Game
             UnitBase unit;
             if (!_units.TryGetValue(unitDesc.Guid, out unit))
             {
-                //LogHelper.Warning("InstantiateView Failed, {0}", UnitDesc);
+                LogHelper.Warning("InstantiateView Failed, {0}", unitDesc);
                 return false;
             }
             if (unit.View !=null)
@@ -190,7 +189,7 @@ namespace GameA.Game
             UnitBase unit;
             if (!_units.TryGetValue(unitDesc.Guid, out unit))
             {
-                //LogHelper.Warning("DeleteUnit Failed, {0}", UnitDesc);
+                LogHelper.Warning("DestroyView Failed, {0}", unitDesc);
                 return false;
             }
             if (unit.TableUnit.EGeneratedType == EGeneratedType.Morph)
