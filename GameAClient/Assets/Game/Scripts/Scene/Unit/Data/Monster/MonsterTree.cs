@@ -31,16 +31,21 @@ namespace GameA.Game
         protected int _stuckTime;
         protected int _currentNodeId;
 
-        protected int _friction;
         protected int _jumpSpeed;
 
         protected int _thinkTimer;
+        protected IntVec2 _lastPos;
+        protected int _stuckTimer;
+        private const int MaxStuckFrames = 30;
 
         protected override void Clear()
         {
             base.Clear();
             _path.Clear();
             _eState = EMonsterState.Think;
+            _thinkTimer = 0;
+            _stuckTimer = 0;
+            _lastPos = _curPos;
         }
 
         protected virtual void CalculateMonsterState()
@@ -66,10 +71,6 @@ namespace GameA.Game
 
         private void ChangeState(EMonsterState state)
         {
-            if (_eState == state)
-            {
-                return;
-            }
             _eState = state;
         }
 
@@ -85,6 +86,7 @@ namespace GameA.Game
                     _path.Add(path[i]);
                 }
                 _currentNodeId = 1;
+                SpeedY = GetJumpSpeedForNode(0);
                 ChangeState(EMonsterState.Seek);
             }
             else
@@ -92,6 +94,24 @@ namespace GameA.Game
                 _currentNodeId = -1;
                 ChangeState(EMonsterState.Think);
             }
+        }
+
+        public override void UpdateView(float deltaTime)
+        {
+            base.UpdateView(deltaTime);
+            if (_curPos == _lastPos)
+            {
+                ++_stuckTimer;
+                if (_stuckTimer > MaxStuckFrames)
+                {
+                    MoveTo();
+                }
+            }
+            else
+            {
+                _stuckTimer = 0;
+            }
+            _lastPos = _curPos;
         }
 
         public override void UpdateLogic()
@@ -223,19 +243,20 @@ namespace GameA.Game
                 }
                 return;
             }
+            var pathPos = GetColliderPos(_curPos);
             if (!reachedX)
             {
-                if (currentDest.x - _curPos.x > ConstDefineGM2D.AIMaxPositionError)
+                if (currentDest.x - pathPos.x > ConstDefineGM2D.AIMaxPositionError)
                 {
                     //向右
                     SetFacingDir(EMoveDirection.Right);
-                    SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, _friction);
+                    SpeedX = _curMaxSpeedX;
                 }
-                else if (_curPos.x - currentDest.x > ConstDefineGM2D.AIMaxPositionError)
+                else if (pathPos.x - currentDest.x > ConstDefineGM2D.AIMaxPositionError)
                 {
                     //向左
                     SetFacingDir(EMoveDirection.Left);
-                    SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, _friction);
+                    SpeedX = -_curMaxSpeedX;
                 }
             }
             else if (_path.Count > _currentNodeId + 1 && !destOnGround)
@@ -248,49 +269,37 @@ namespace GameA.Game
                 {
                     if (_path[_currentNodeId + 1].x > _path[_currentNodeId].x)
                     {
-                        checkedX = _curPos.x + size.x;
+                        checkedX = pathPos.x + size.x;
                     }
                     else
                     {
-                        checkedX = _curPos.x - 1;
+                        checkedX = pathPos.x - 1;
                     }
                 }
 
-                if (checkedX != 0 && !ColliderScene2D.Instance.AnySolidBlockInStripe(checkedX / ConstDefineGM2D.ServerTileScale, _curPos.y / ConstDefineGM2D.ServerTileScale, _path[_currentNodeId + 1].y))
+                if (checkedX != 0 && !ColliderScene2D.Instance.AnySolidBlockInStripe(checkedX / ConstDefineGM2D.ServerTileScale, pathPos.y / ConstDefineGM2D.ServerTileScale, _path[_currentNodeId + 1].y))
                 {
-                    if (nextDest.x - _curPos.x > ConstDefineGM2D.AIMaxPositionError)
+                    if (nextDest.x - pathPos.x > ConstDefineGM2D.AIMaxPositionError)
                     {
                         //向右
                         SetFacingDir(EMoveDirection.Right);
-                        SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, _friction);
+                        SpeedX = _curMaxSpeedX;
                     }
-                    else if (_curPos.x - nextDest.x > ConstDefineGM2D.AIMaxPositionError)
+                    else if (pathPos.x - nextDest.x > ConstDefineGM2D.AIMaxPositionError)
                     {
                         //向左
                         SetFacingDir(EMoveDirection.Left);
-                        SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, _friction);
+                        SpeedX = -_curMaxSpeedX;
                     }
 
-                    if (ReachedNodeOnXAxis(_curPos, currentDest, nextDest) &&
-                        ReachedNodeOnYAxis(_curPos, currentDest, nextDest))
+                    if (ReachedNodeOnXAxis(pathPos, currentDest, nextDest) &&
+                        ReachedNodeOnYAxis(pathPos, currentDest, nextDest))
                     {
                         _currentNodeId += 1;
                         return;
                     }
                 }
             }
-            //if (_unit.CurPos == _oldPosition)
-            //{
-            //    ++_stuckFrames;
-            //    if (_stuckFrames > MaxStuckFrames)
-            //    {
-            //        MoveTo(_path[_path.Count - 1]);
-            //    }
-            //}
-            //else
-            //{
-            //    _stuckFrames = 0;
-            //}
         }
 
         private int GetJumpSpeedForNode(int lastNodeId)
@@ -351,8 +360,14 @@ namespace GameA.Game
                 }
             }
             var lastDest = _path[_currentNodeId - 1] * ConstDefineGM2D.ServerTileScale;
-            reachedX = ReachedNodeOnXAxis(_curPos, lastDest, currentDest);
-            reachedY = ReachedNodeOnYAxis(_curPos, lastDest, currentDest);
+            var pathPos = GetColliderPos(_curPos);
+            reachedX = ReachedNodeOnXAxis(pathPos, lastDest, currentDest);
+            reachedY = ReachedNodeOnYAxis(pathPos, lastDest, currentDest);
+
+            if (reachedX && Mathf.Abs(pathPos.x - currentDest.x) > ConstDefineGM2D.AIMaxPositionError && Mathf.Abs(pathPos.x - currentDest.x) < ConstDefineGM2D.AIMaxPositionError * 3.0f)
+            {
+                _curPos.x = currentDest.x;
+            }
 
             if (destOnGround && !_grounded)
             {

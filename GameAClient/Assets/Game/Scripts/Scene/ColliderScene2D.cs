@@ -685,8 +685,8 @@ namespace GameA.Game
 
         public List<IntVec2> FindPath(UnitBase unit, UnitBase target, short maxCharacterJumpHeight)
         {
-            var start = unit.CurPos / ConstDefineGM2D.ServerTileScale;
-            var end = target.CurPos / ConstDefineGM2D.ServerTileScale;
+            var start = unit.GetCurColliderPos() / ConstDefineGM2D.ServerTileScale;
+            var end = target.GetCurColliderPos() / ConstDefineGM2D.ServerTileScale;
             var size = unit.GetColliderSize() / ConstDefineGM2D.ServerTileScale;
             return FindPath(start, end, Math.Max(1, size.x), Math.Max(1, size.y), maxCharacterJumpHeight);
         }
