@@ -15,7 +15,7 @@ namespace GameA.Game
 {
     public enum EMonsterState
     {
-        Idle,
+        Think,
         Seek,
         Attack
     }
@@ -26,7 +26,7 @@ namespace GameA.Game
         public static IntVec2 SeekRange = new IntVec2(13, 4) * ConstDefineGM2D.ServerTileScale;
         public static IntVec2 AttackRange = new IntVec2(1, 1) * ConstDefineGM2D.ServerTileScale;
         protected List<IntVec2> _path = new List<IntVec2>();
-        protected EMonsterState _eMonsterState;
+        protected EMonsterState _eState;
 
         protected int _stuckTime;
         protected int _currentNodeId;
@@ -34,40 +34,43 @@ namespace GameA.Game
         protected int _friction;
         protected int _jumpSpeed;
 
+        protected int _thinkTimer;
+
         protected override void Clear()
         {
             base.Clear();
             _path.Clear();
-            _eMonsterState = EMonsterState.Idle;
+            _eState = EMonsterState.Think;
         }
 
         protected virtual void CalculateMonsterState()
         {
-            IntVec2 rel = CenterPos - PlayMode.Instance.MainUnit.CenterPos;
-            switch (_eMonsterState)
+            _thinkTimer++;
+            switch (_eState)
             {
-                case EMonsterState.Idle:
-                    if (Mathf.Abs(rel.x) <= SeekRange.x && Mathf.Abs(rel.y) <= SeekRange.y)
+                case EMonsterState.Think:
+                    if (_thinkTimer > 50)
                     {
-                        _eMonsterState = EMonsterState.Seek;
-                        MoveTo();
+                        OnThink();
+                        _thinkTimer = 0;
                     }
                     break;
                 case EMonsterState.Seek:
-                    if (Mathf.Abs(rel.x) <= AttackRange.x && Mathf.Abs(rel.y) <= AttackRange.y)
-                    {
-                        _eMonsterState = EMonsterState.Attack;
-                        goto case EMonsterState.Attack;
-                    }
                     OnSeek();
                     break;
                 case EMonsterState.Attack:
-                    if (Mathf.Abs(rel.x) > AttackRange.x && Mathf.Abs(rel.y) > AttackRange.y)
-                    {
-                        _eMonsterState = EMonsterState.Seek;
-                    }
+                    OnAttack();
                     break;
             }
+        }
+
+        private void ChangeState(EMonsterState state)
+        {
+            if (_eState == state)
+            {
+                return;
+            }
+            _eState = state;
         }
 
         protected void MoveTo()
@@ -82,10 +85,12 @@ namespace GameA.Game
                     _path.Add(path[i]);
                 }
                 _currentNodeId = 1;
+                ChangeState(EMonsterState.Seek);
             }
             else
             {
                 _currentNodeId = -1;
+                ChangeState(EMonsterState.Think);
             }
         }
 
@@ -172,12 +177,35 @@ namespace GameA.Game
         {
         }
 
+        protected void OnThink()
+        {
+            IntVec2 rel = CenterPos - PlayMode.Instance.MainUnit.CenterPos;
+            if (Mathf.Abs(rel.x) <= SeekRange.x && Mathf.Abs(rel.y) <= SeekRange.y)
+            {
+                MoveTo();
+            }
+        }
+
+        protected void OnAttack()
+        {
+            IntVec2 rel = CenterPos - PlayMode.Instance.MainUnit.CenterPos;
+            if (Mathf.Abs(rel.x) > AttackRange.x && Mathf.Abs(rel.y) > AttackRange.y)
+            {
+                ChangeState(EMonsterState.Seek);
+            }
+        }
+
         protected void OnSeek()
         {
-            IntVec2 lastDest, currentDest, nextDest;
+            IntVec2 rel = CenterPos - PlayMode.Instance.MainUnit.CenterPos;
+            if (Mathf.Abs(rel.x) <= AttackRange.x && Mathf.Abs(rel.y) <= AttackRange.y)
+            {
+                ChangeState(EMonsterState.Attack);
+                return;
+            }
+            IntVec2 currentDest, nextDest;
             bool destOnGround, reachedY, reachedX;
-            GetContext(out lastDest, out currentDest, out nextDest, out destOnGround, out reachedX, out reachedY);
-            IntVec2 pathPosition = _curPos / ConstDefineGM2D.ServerTileScale;
+            GetContext(out currentDest, out nextDest, out destOnGround, out reachedX, out reachedY);
             //到达路径点
             if (reachedX && reachedY)
             {
@@ -186,7 +214,7 @@ namespace GameA.Game
                 if (_currentNodeId >= _path.Count)
                 {
                     _currentNodeId = -1;
-                    _eMonsterState = EMonsterState.Idle;
+                    _eState = EMonsterState.Think;
                     return;
                 }
                 if (_grounded)
@@ -197,13 +225,13 @@ namespace GameA.Game
             }
             if (!reachedX)
             {
-                if (currentDest.x - pathPosition.x > ConstDefineGM2D.AIMaxPositionError)
+                if (currentDest.x - _curPos.x > ConstDefineGM2D.AIMaxPositionError)
                 {
                     //向右
                     SetFacingDir(EMoveDirection.Right);
                     SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, _friction);
                 }
-                else if (pathPosition.x - currentDest.x > ConstDefineGM2D.AIMaxPositionError)
+                else if (_curPos.x - currentDest.x > ConstDefineGM2D.AIMaxPositionError)
                 {
                     //向左
                     SetFacingDir(EMoveDirection.Left);
@@ -214,37 +242,37 @@ namespace GameA.Game
             {
                 int checkedX = 0;
 
-                var size = GetColliderSize() / ConstDefineGM2D.ServerTileScale;
+                var size = GetColliderSize();
                 //下落时解决提前落地的问题
                 if (_path[_currentNodeId + 1].x != _path[_currentNodeId].x)
                 {
                     if (_path[_currentNodeId + 1].x > _path[_currentNodeId].x)
                     {
-                        checkedX = pathPosition.x + Math.Max(1, size.x);
+                        checkedX = _curPos.x + size.x;
                     }
                     else
                     {
-                        checkedX = pathPosition.x - 1;
+                        checkedX = _curPos.x - 1;
                     }
                 }
 
-                if (checkedX != 0 && !ColliderScene2D.Instance.AnySolidBlockInStripe(checkedX, pathPosition.y, _path[_currentNodeId + 1].y))
+                if (checkedX != 0 && !ColliderScene2D.Instance.AnySolidBlockInStripe(checkedX / ConstDefineGM2D.ServerTileScale, _curPos.y / ConstDefineGM2D.ServerTileScale, _path[_currentNodeId + 1].y))
                 {
-                    if (nextDest.x - pathPosition.x > ConstDefineGM2D.AIMaxPositionError)
+                    if (nextDest.x - _curPos.x > ConstDefineGM2D.AIMaxPositionError)
                     {
                         //向右
                         SetFacingDir(EMoveDirection.Right);
                         SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, _friction);
                     }
-                    else if (pathPosition.x - nextDest.x > ConstDefineGM2D.AIMaxPositionError)
+                    else if (_curPos.x - nextDest.x > ConstDefineGM2D.AIMaxPositionError)
                     {
                         //向左
                         SetFacingDir(EMoveDirection.Left);
                         SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, _friction);
                     }
 
-                    if (ReachedNodeOnXAxis(pathPosition, currentDest, nextDest) &&
-                        ReachedNodeOnYAxis(pathPosition, currentDest, nextDest))
+                    if (ReachedNodeOnXAxis(_curPos, currentDest, nextDest) &&
+                        ReachedNodeOnYAxis(_curPos, currentDest, nextDest))
                     {
                         _currentNodeId += 1;
                         return;
@@ -304,15 +332,14 @@ namespace GameA.Game
             return 0;
         }
 
-        private void GetContext(out IntVec2 lastDest, out IntVec2 currentDest, out IntVec2 nextDest,
+        private void GetContext(out IntVec2 currentDest, out IntVec2 nextDest,
        out bool destOnGround, out bool reachedX, out bool reachedY)
         {
-            lastDest = _path[_currentNodeId - 1];
-            currentDest = _path[_currentNodeId];
+            currentDest = _path[_currentNodeId] * ConstDefineGM2D.ServerTileScale;
             nextDest = currentDest;
             if (_path.Count > _currentNodeId + 1)
             {
-                nextDest = _path[_currentNodeId + 1];
+                nextDest = _path[_currentNodeId + 1] * ConstDefineGM2D.ServerTileScale;
             }
             destOnGround = false;
             for (int i = _path[_currentNodeId].x; i < _path[_currentNodeId].x + 1; ++i)
@@ -323,10 +350,9 @@ namespace GameA.Game
                     break;
                 }
             }
-            IntVec2 pathPosition = _curPos / ConstDefineGM2D.ServerTileScale;
-
-            reachedX = ReachedNodeOnXAxis(pathPosition, lastDest, currentDest);
-            reachedY = ReachedNodeOnYAxis(pathPosition, lastDest, currentDest);
+            var lastDest = _path[_currentNodeId - 1] * ConstDefineGM2D.ServerTileScale;
+            reachedX = ReachedNodeOnXAxis(_curPos, lastDest, currentDest);
+            reachedY = ReachedNodeOnYAxis(_curPos, lastDest, currentDest);
 
             if (destOnGround && !_grounded)
             {
