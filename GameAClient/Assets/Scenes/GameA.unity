@@ -349,9 +349,14 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1474037019252310, guid: 71c291a103d655a418fe391c3494bb76, type: 2}
+    - target: {fileID: 114040453795862924, guid: 71c291a103d655a418fe391c3494bb76,
+        type: 2}
+      propertyPath: m_Text
+      value: ZXzX
+      objectReference: {fileID: 0}
+    - target: {fileID: 1463314295154056, guid: 71c291a103d655a418fe391c3494bb76, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 71c291a103d655a418fe391c3494bb76, type: 2}
@@ -456,6 +461,22 @@ Prefab:
     - target: {fileID: 1920484820713068, guid: 3f917365a15f002428345ee2eed9c4ff, type: 2}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1155027114770238, guid: 3f917365a15f002428345ee2eed9c4ff, type: 2}
+      propertyPath: m_Name
+      value: Head
+      objectReference: {fileID: 0}
+    - target: {fileID: 1393862368647680, guid: 3f917365a15f002428345ee2eed9c4ff, type: 2}
+      propertyPath: m_Name
+      value: Upper
+      objectReference: {fileID: 0}
+    - target: {fileID: 1518808707995640, guid: 3f917365a15f002428345ee2eed9c4ff, type: 2}
+      propertyPath: m_Name
+      value: Lower
+      objectReference: {fileID: 0}
+    - target: {fileID: 1285123537435228, guid: 3f917365a15f002428345ee2eed9c4ff, type: 2}
+      propertyPath: m_Name
+      value: Appendage
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3f917365a15f002428345ee2eed9c4ff, type: 2}
