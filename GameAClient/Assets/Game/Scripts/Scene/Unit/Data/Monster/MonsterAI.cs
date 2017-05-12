@@ -102,7 +102,7 @@ namespace GameA.Game
                         _jumpInput = true;
                     }
                     break;
-                case EActionState.MoveTo:
+                case EActionState.MoveTo:                                                                                      
                     IntVec2 lastDest, currentDest, nextDest;
                     bool destOnGround, reachedY, reachedX;
                     GetContext(out lastDest, out currentDest, out nextDest, out destOnGround, out reachedX, out reachedY);
@@ -128,7 +128,7 @@ namespace GameA.Game
                         }
                         goto case EActionState.MoveTo;
                     }
-                    else if (!reachedX)
+                    if (!reachedX)
                     {
                         if (currentDest.x - pathPosition.x > ConstDefineGM2D.AIMaxPositionError)
                         {
@@ -211,7 +211,7 @@ namespace GameA.Game
             switch (deltaY)
             {
                 case 1:
-                    return 1;
+                    return 5;
                 case 2:
                     return 5;
                 case 3:
@@ -332,12 +332,6 @@ namespace GameA.Game
         {
             if (_jumpInput)
             {
-                _unit.SpeedY = 140;
-                return;
-            }
-            return;
-            if (_jumpInput)
-            {
                 if (_jumpState == 0)
                 {
                     _jumpState = 100;
@@ -398,7 +392,6 @@ namespace GameA.Game
             {
                 _jumpState = 1;
             }
-            LogHelper.Debug("Monster:"+_jumpState+"~"+_unit.SpeedY+"~"+_unit.Grounded);
         }
     }
 }

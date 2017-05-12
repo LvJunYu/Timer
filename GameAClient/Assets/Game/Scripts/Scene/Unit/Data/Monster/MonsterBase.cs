@@ -14,6 +14,7 @@ namespace GameA.Game
     public class MonsterBase : RigidbodyUnit
     {
         protected int _monsterSpeed;
+        protected int _curMaxSpeedX;
 
         protected override bool OnInit()
         {
@@ -22,7 +23,8 @@ namespace GameA.Game
                 return false;
             }
             _isMonster = true;
-            _monsterSpeed = 30;
+            _monsterSpeed = 40;
+            _curMaxSpeedX = _monsterSpeed;
             return true;
         }
 
@@ -154,9 +156,9 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_monsterSpeed != 0)
+            if (_curMaxSpeedX != 0)
             {
-                SpeedX = eMoveDirection == EMoveDirection.Right ? _monsterSpeed : -_monsterSpeed;
+                SpeedX = eMoveDirection == EMoveDirection.Right ? _curMaxSpeedX : -_curMaxSpeedX;
             }
             SetFacingDir(eMoveDirection);
         }

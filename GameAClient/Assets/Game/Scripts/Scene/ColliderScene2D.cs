@@ -698,6 +698,10 @@ namespace GameA.Game
 
         public override bool IsGround(int x, int y)
         {
+            if (x < 0 || y < 0)
+            {
+                return false;
+            }
             if (_pathGrid[x, y] == 0)
             {
                 return true;
