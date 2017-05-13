@@ -121,7 +121,7 @@ namespace SoyEngine
 		    return Emit(itemName, pos, Vector3.zero, scale, lifeTime, sortingOrder);
 	    }
 
-        public UnityNativeParticleItem Emit(string itemName, Transform parent, float lifeTime)
+        public UnityNativeParticleItem Emit(string itemName, Transform parent, float lifeTime = ConstDefineGM2D.DefaultParticlePlayTime)
         {
             if (string.IsNullOrEmpty(itemName))
             {
@@ -239,7 +239,7 @@ namespace SoyEngine
 		    }
 		    if (_sceneParticleItems.ContainsKey(item.UUID))
 		    {
-				LogHelper.Error("AddToSceneItems failed item.uuid {0} duplicated,item.ItemName is {1}", item.UUID, item.ItemName);
+                //LogHelper.Error("AddToSceneItems failed item.uuid {0} duplicated,item.ItemName is {1}", item.UUID, item.ItemName);
 			    return;
 		    }
 			_sceneParticleItems.Add(item.UUID, item);

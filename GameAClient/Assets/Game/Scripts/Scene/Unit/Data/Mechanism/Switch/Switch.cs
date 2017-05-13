@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -16,6 +17,7 @@ namespace GameA.Game
     public class Switch : BlockBase
     {
         protected List<UnitBase> _units;
+        protected UnityNativeParticleItem _effectStart;
         protected UnityNativeParticleItem _effectRun;
 
         internal override bool InstantiateView()
@@ -24,6 +26,7 @@ namespace GameA.Game
             {
                 return false;
             }
+            _effectStart = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectSwitchStart", _trans);
             _effectRun = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectSwitchRun", _trans);
             if (_effectRun != null)
             {
@@ -35,6 +38,11 @@ namespace GameA.Game
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();
+            if (_effectStart != null)
+            {
+                GameParticleManager.FreeParticleItem(_effectStart);
+                _effectStart = null;
+            }
             if (_effectRun != null)
             {
                 GameParticleManager.FreeParticleItem(_effectRun);
@@ -96,6 +104,10 @@ namespace GameA.Game
 
         protected void OnTrigger()
         {
+            if (_effectStart != null && !_effectStart.IsPlaying)
+            {
+                _effectStart.Play(0.5f);
+            }
             if (_units != null)
             {
                 for (int i = 0; i < _units.Count; i++)
