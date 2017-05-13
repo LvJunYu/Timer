@@ -257,6 +257,8 @@ namespace GameA.Game
             }
         }
 
+        private IntVec2 _lastDeltaPos;
+
         public override void UpdateView(float deltaTime)
         {
             if (!PlayMode.Instance.SceneState.GameRunning && PlayMode.Instance.SceneState.Arrived)
@@ -266,6 +268,10 @@ namespace GameA.Game
             if (_isAlive && _isStart)
             {
                 _deltaPos = _speed + _extraDeltaPos;
+                if (_lastDeltaPos.y >=0&&_deltaPos.y<0)
+                {
+                    LogHelper.Debug(_curPos.y*ConstDefineGM2D.ClientTileScale+"~");
+                }
                 _curPos += _deltaPos;
                 LimitPos();
                 UpdateCollider(GetColliderPos(_curPos));
@@ -505,6 +511,7 @@ namespace GameA.Game
             }
             _trans.eulerAngles = euler;
             _lastGrounded = _grounded;
+            _lastDeltaPos = _deltaPos;
         }
 
         protected virtual void CheckGround()

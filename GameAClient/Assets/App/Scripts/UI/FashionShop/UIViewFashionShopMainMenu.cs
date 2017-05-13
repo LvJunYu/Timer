@@ -30,6 +30,7 @@ namespace GameA
 	    public Text UsingLower;
 	    public Text UsingAppendage;
 
+	    public RawImage Avatar;
 
 
 	    //public UICtrlFashionItem[] Items;

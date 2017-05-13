@@ -1185,11 +1185,15 @@ namespace GameA.Game
             UpdateTransPos();
         }
 
-        protected IntVec2 GetColliderPos(IntVec2 pos)
+        public IntVec2 GetColliderPos(IntVec2 pos)
         {
             return _tableUnit.RendererToCollider(pos, Rotation);
         }
 
+        public IntVec2 GetCurColliderPos()
+        {
+            return _tableUnit.RendererToCollider(_curPos, Rotation);
+        }
 
         public virtual IntVec2 GetDeltaImpactPos()
         {

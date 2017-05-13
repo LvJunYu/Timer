@@ -16950,20 +16950,9 @@ Prefab:
       propertyPath: m_Name
       value: UMCtrlShoppingCard
       objectReference: {fileID: 0}
-    - target: {fileID: 114355710970109906, guid: 71c291a103d655a418fe391c3494bb76,
-        type: 2}
-      propertyPath: TryFashionOn
-      value: 
-      objectReference: {fileID: 1234958882}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 71c291a103d655a418fe391c3494bb76, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &1234958882 stripped
-MonoBehaviour:
-  m_PrefabParentObject: {fileID: 114419836806055290, guid: 71c291a103d655a418fe391c3494bb76,
-    type: 2}
-  m_PrefabInternal: {fileID: 1234958881}
-  m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
 --- !u!1001 &1238905939
 Prefab:
   m_ObjectHideFlags: 0

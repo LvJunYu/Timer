@@ -12,7 +12,12 @@ public class UMViewFashionShopCard : UMViewBase
     public Text PriceGoldDay;
     public Text IsOccupied;
     public Text IsOwned;
+    public Text Message;
+
+
     public Button TryFashionOn;
+    public Button ChangeFashion;
+    public Button BuyFashion;
     //public EAvatarPart _avatarType;
     //public int Id;
     //public string Description;
