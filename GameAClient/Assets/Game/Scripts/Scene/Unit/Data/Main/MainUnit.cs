@@ -247,7 +247,7 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            if (_isAlive && _isStart)
+            if (_isAlive && _isStart && !_isFreezed)
             {
                 _mainInput.UpdateLogic();
                 _skillCtrl.UpdateLogic();
