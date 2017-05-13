@@ -134,10 +134,6 @@ namespace GameA.Game
             {
                 DoEdge(unit, eDirectionType);
             }
-            if (unit is Switch)
-            {
-                //
-            }
         }
 
         protected virtual void DoEdge(UnitBase unit, EDirectionType eDirectionType)

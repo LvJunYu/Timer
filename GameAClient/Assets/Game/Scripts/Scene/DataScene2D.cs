@@ -308,13 +308,16 @@ namespace GameA.Game
         /// </summary>
         /// <returns>The switch units connected.</returns>
         /// <param name="guid">GUID.</param>
-        public List<IntVec3> GetSwitchUnitsConnected (IntVec3 guid) {
-            List<IntVec3> result = new List<IntVec3> ();
-            var itor = _switchedUnits.GetEnumerator ();
-            while (itor.MoveNext ()) {
+        public List<IntVec3> GetSwitchUnitsConnected(IntVec3 guid)
+        {
+            var result = new List<IntVec3>();
+            Dictionary<IntVec3, List<IntVec3>>.Enumerator itor = _switchedUnits.GetEnumerator();
+            while (itor.MoveNext())
+            {
                 List<IntVec3> units = itor.Current.Value;
-                if (units.Contains (guid)) {
-                    result.Add (itor.Current.Key);
+                if (units.Contains(guid))
+                {
+                    result.Add(itor.Current.Key);
                 }
             }
             return result;

@@ -11,7 +11,7 @@ using System.Collections;
 namespace GameA.Game
 {
     [Unit(Id = 5102, Type = typeof(SwtichFollow))]
-    public class SwtichFollow : UnitBase
+    public class SwtichFollow : Switch
     {
     }
 }
