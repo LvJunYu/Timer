@@ -8,13 +8,39 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using SoyEngine;
 
 namespace GameA.Game
 {
     [Unit(Id = 5101, Type = typeof(Switch))]
     public class Switch : BlockBase
     {
-        protected List<UnitBase> _units; 
+        protected List<UnitBase> _units;
+        protected UnityNativeParticleItem _effectRun;
+
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            _effectRun = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectSwitchRun", _trans);
+            if (_effectRun != null)
+            {
+                _effectRun.Play();
+            }
+            return true;
+        }
+
+        internal override void OnObjectDestroy()
+        {
+            base.OnObjectDestroy();
+            if (_effectRun != null)
+            {
+                GameParticleManager.FreeParticleItem(_effectRun);
+                _effectRun = null;
+            }
+        }
 
         protected override void Clear()
         {

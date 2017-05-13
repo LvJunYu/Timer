@@ -423,14 +423,10 @@ namespace GameA.Game
             _unitDesc.Scale = Vector3.one;
             InitAssetPath();
             UpdateExtraData();
-            if (!UnitManager.Instance.TryGetUnitView(this, out _view))
+            if (!InstantiateView())
             {
-                LogHelper.Error("TryGetUnitView Failed, {0}", tableUnit.Id);
+                LogHelper.Error("InstantiateView Failed, {0}", tableUnit.Id);
                 return;
-            }
-            if (tableUnit.CanRotate)
-            {
-                InitAssetRotation();
             }
             SetFacingDir(_curMoveDirection, true);
             _view.SetSortingOrder((int)ESortingOrder.DragingItem);
