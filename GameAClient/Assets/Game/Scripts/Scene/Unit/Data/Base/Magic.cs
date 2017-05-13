@@ -210,6 +210,7 @@ namespace GameA.Game
             {
                 return _deltaImpactPos;
             }
+            return _deltaImpactPos + Speed;
             if (!_isCalculated && _dynamicCollider != null)
             {
                 if (_downUnits.Count > 0)
