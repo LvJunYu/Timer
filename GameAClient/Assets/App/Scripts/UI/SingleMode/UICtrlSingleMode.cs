@@ -136,6 +136,11 @@ namespace GameA
 			_cachedView.MatchBtn.onClick.AddListener (OnMatchBtnClick);
 			_cachedView.TreasureBtn.onClick.AddListener (OnTreasureBtnClick);
 			_cachedView.EncBtn.onClick.AddListener (OnEncBtnClick);
+            _cachedView.NextBtn.onClick.AddListener (OnNextBtn);
+            _cachedView.PrevBtn.onClick.AddListener (OnPrevBtn);
+            _cachedView.EnergyPlusBtn.onClick.AddListener (OnEnergyPlusBtn);
+            _cachedView.GoldPlusBtn.onClick.AddListener (OnGoldPlusBtn);
+            _cachedView.DiamondPlusBtn.onClick.AddListener (OnDiamondPlusBtn);
 
 			int screenWidth = (int)_cachedView.ChapterScrollRect.GetComponent<RectTransform> ().GetWidth();
 			float contentWidth = (screenWidth + ChapterDistance) / 2 + ChapterDistance * (ChapterCnt - 1);
@@ -177,10 +182,12 @@ namespace GameA
 				lerpSpeed = 0.1f;
 			}
 			if (!_dragging) {
-				_cachedView.ChapterScrollRect.horizontalNormalizedPosition = 
+                if (Mathf.Abs (_cachedView.ChapterScrollRect.horizontalNormalizedPosition - _chapterRightNormalizedHorizontalPos [_currentChapter - 1]) > 0.001f) {
+                    _cachedView.ChapterScrollRect.horizontalNormalizedPosition = 
 					Mathf.Lerp (_cachedView.ChapterScrollRect.horizontalNormalizedPosition, 
-						_chapterRightNormalizedHorizontalPos[_currentChapter - 1],
-						lerpSpeed);
+                        _chapterRightNormalizedHorizontalPos [_currentChapter - 1],
+                        lerpSpeed);
+                }
 			}
 
 			if ((Input.touchCount == 0 && !Input.anyKey) && _cachedView.ChapterScrollRect.isForceReleased) {
@@ -225,6 +232,9 @@ namespace GameA
 			);
 			_cachedView.EnergyBar.fillAmount = (float)currentEnergy / energyCapacity;
 			_nextEnergyGenerateTime = AppData.Instance.AdventureData.UserData.UserEnergyData.NextGenerateTime;
+
+            _cachedView.GoldNumber.text = LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin.ToString();
+            _cachedView.DiamondNumber.text = LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond.ToString();
 		}
 
 		private void RefreshChapterInfo () {
@@ -252,6 +262,17 @@ namespace GameA
 			if (_cachedView.Chapters [_currentChapter - 1] != null) {
 				_cachedView.Chapters [_currentChapter - 1].RefreshInfo (tableChapter);
 			}
+
+            if (_currentChapter == 1) {
+                _cachedView.PrevBtn.gameObject.SetActive (false);
+            } else {
+                _cachedView.PrevBtn.gameObject.SetActive (true);
+            }
+            if (_currentChapter == ChapterCnt) {
+                _cachedView.NextBtn.gameObject.SetActive (false);
+            } else {
+                _cachedView.NextBtn.gameObject.SetActive (true);
+            }
 		}
         
         #region 接口
@@ -275,6 +296,33 @@ namespace GameA
 		private void OnEncBtnClick () {
 		}
 
+        private void OnNextBtn () {
+            if (_currentChapter >= ChapterCnt) {
+                _currentChapter = ChapterCnt;
+                return;
+            }
+            _currentChapter += 1;
+            RefreshChapterInfo ();
+            BeginChangeChapter ();
+            _dragging = false;
+        }
+        private void OnPrevBtn () {
+            if (_currentChapter <= 1) {
+                _currentChapter = 1;
+                return;
+            }
+            _currentChapter -= 1;
+            RefreshChapterInfo ();
+            BeginChangeChapter ();
+            _dragging = false;
+        }
+
+        private void OnEnergyPlusBtn () {
+        }
+        private void OnGoldPlusBtn () {
+        }
+        private void OnDiamondPlusBtn () {
+        }
 		/// <summary>
 		/// 关卡被点击，从关卡图标按钮发出的消息调用
 		/// </summary>
@@ -404,6 +452,7 @@ namespace GameA
 		private void OnReturnToApp () {
             if (!_isOpen)
                 return;
+//            _cachedView.ChapterScrollRect.horizontalNormalizedPosition = _chapterRightNormalizedHorizontalPos[_currentChapter - 1];
 			RefreshChapterInfo ();
 			if (_currentChapter <= AppData.Instance.AdventureData.UserData.SectionList.Count) {
 				if (AppData.Instance.AdventureData.UserData.SectionList [_currentChapter - 1].IsDirty) {

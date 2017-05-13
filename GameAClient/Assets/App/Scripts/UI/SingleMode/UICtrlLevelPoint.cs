@@ -21,6 +21,7 @@ namespace GameA
         #region 常量与字段
 		public GameObject Active;
 		public GameObject Disactive;
+        public Button Current;
 		public Button LevelBtn;
 		public GameObject StarLight1;
 		public GameObject StarLight2;
@@ -45,6 +46,9 @@ namespace GameA
         #region 方法
 		void Start () {
 			LevelBtn.onClick.AddListener (OnClick);
+            if (null != Current) {
+                Current.onClick.AddListener (OnClick);
+            }
 		}
 
 		public void RefreshInfo (int chapterId, int levelIdx, Game.Table_StandaloneLevel tableLevel) {
@@ -60,6 +64,7 @@ namespace GameA
 					StarLight1.SetActive (levelData.SimpleData.Star1Flag);
 					StarLight2.SetActive (levelData.SimpleData.Star2Flag);
 					StarLight3.SetActive (levelData.SimpleData.Star3Flag);
+                    Current.gameObject.SetActive (false);
 					Active.SetActive (true);
 					Disactive.SetActive (false);
 				} else {
@@ -67,9 +72,11 @@ namespace GameA
 					StarLight2.SetActive (false);
 					StarLight3.SetActive (false);
 					if (levelIdx == AppData.Instance.AdventureData.UserData.AdventureUserProgress.CompleteLevel) {
-						Active.SetActive (true);
+                        Current.gameObject.SetActive (true);
+						Active.SetActive (false);
 						Disactive.SetActive (false);
 					} else {
+                        Current.gameObject.SetActive (false);
 						Active.SetActive (false);
 						Disactive.SetActive (true);
 					}
