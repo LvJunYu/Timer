@@ -140,7 +140,7 @@ MonoBehaviour:
     _trans: {fileID: 0}
   _run: 0
   Language: 0
-  _env: 0
+  _env: 1
   _clearCache: 0
   _appServerAddress:
   - Enable: 0
