@@ -826,7 +826,7 @@ namespace GameA.Game
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, size, _tableUnit);
                 }
             }
-            float z =- (_curPos.x + _curPos.y * 2) * 0.00078125f + _viewZOffset;
+            float z =- (_curPos.x + _curPos.y ) * 0.00078125f + _viewZOffset;
             if (_tableUnit.EGeneratedType == EGeneratedType.Spine && !IsHero)
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, - 0.1f, z);
