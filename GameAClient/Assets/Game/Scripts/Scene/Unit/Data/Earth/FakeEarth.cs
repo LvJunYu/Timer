@@ -27,7 +27,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            _hasMainFloor = false;
             _useCorner = false;
             return true;
         }

@@ -24,6 +24,11 @@ namespace GameA.Game
         protected UnitBase _magicRotate;
         protected bool _run = true;
 
+        public override bool CanControlledBySwitch
+        {
+            get { return UseMagic(); }
+        }
+
         protected override void Clear()
         {
             base.Clear();

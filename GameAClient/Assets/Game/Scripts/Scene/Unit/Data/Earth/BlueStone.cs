@@ -14,10 +14,6 @@ namespace GameA.Game
     [Unit(Id = 4101, Type = typeof(BlueStone))]
     public class BlueStone : BlockBase
     {
-        public override bool CanControlledBySwitch {
-            get {
-                return true;
-            }
-        }
+
     }
 }

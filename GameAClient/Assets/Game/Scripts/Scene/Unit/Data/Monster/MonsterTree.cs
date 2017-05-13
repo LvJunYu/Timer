@@ -24,7 +24,7 @@ namespace GameA.Game
     public class MonsterTree : MonsterBase
     {
         public static IntVec2 SeekRange = new IntVec2(13, 4) * ConstDefineGM2D.ServerTileScale;
-        public static IntVec2 AttackRange = new IntVec2(1, 1) * ConstDefineGM2D.ServerTileScale;
+        public static IntVec2 AttackRange = new IntVec2(2, 1) * ConstDefineGM2D.ServerTileScale;
         protected List<IntVec2> _path = new List<IntVec2>();
         protected EMonsterState _eState;
 
@@ -94,24 +94,6 @@ namespace GameA.Game
                 _currentNodeId = -1;
                 ChangeState(EMonsterState.Think);
             }
-        }
-
-        public override void UpdateView(float deltaTime)
-        {
-            base.UpdateView(deltaTime);
-            if (_curPos == _lastPos)
-            {
-                ++_stuckTimer;
-                if (_stuckTimer > MaxStuckFrames)
-                {
-                    MoveTo();
-                }
-            }
-            else
-            {
-                _stuckTimer = 0;
-            }
-            _lastPos = _curPos;
         }
 
         public override void UpdateLogic()
@@ -250,13 +232,15 @@ namespace GameA.Game
                 {
                     //向右
                     SetFacingDir(EMoveDirection.Right);
-                    SpeedX = _curMaxSpeedX;
+                    //SpeedX = _curMaxSpeedX;
+                    SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, 6);
                 }
                 else if (pathPos.x - currentDest.x > ConstDefineGM2D.AIMaxPositionError)
                 {
                     //向左
                     SetFacingDir(EMoveDirection.Left);
-                    SpeedX = -_curMaxSpeedX;
+                    //SpeedX = -_curMaxSpeedX;
+                    SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, 6);
                 }
             }
             else if (_path.Count > _currentNodeId + 1 && !destOnGround)
@@ -283,13 +267,15 @@ namespace GameA.Game
                     {
                         //向右
                         SetFacingDir(EMoveDirection.Right);
-                        SpeedX = _curMaxSpeedX;
+                        //SpeedX = _curMaxSpeedX;
+                        SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, 6);
                     }
                     else if (pathPos.x - nextDest.x > ConstDefineGM2D.AIMaxPositionError)
                     {
                         //向左
                         SetFacingDir(EMoveDirection.Left);
-                        SpeedX = -_curMaxSpeedX;
+                        //SpeedX = -_curMaxSpeedX;
+                        SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, 6);
                     }
 
                     if (ReachedNodeOnXAxis(pathPos, currentDest, nextDest) &&
@@ -363,12 +349,10 @@ namespace GameA.Game
             var pathPos = GetColliderPos(_curPos);
             reachedX = ReachedNodeOnXAxis(pathPos, lastDest, currentDest);
             reachedY = ReachedNodeOnYAxis(pathPos, lastDest, currentDest);
-
-            if (reachedX && Mathf.Abs(pathPos.x - currentDest.x) > ConstDefineGM2D.AIMaxPositionError && Mathf.Abs(pathPos.x - currentDest.x) < ConstDefineGM2D.AIMaxPositionError * 3.0f)
-            {
-                _curPos.x = currentDest.x;
-            }
-
+            //if (reachedX && Mathf.Abs(pathPos.x - currentDest.x) > ConstDefineGM2D.AIMaxPositionError && Mathf.Abs(pathPos.x - currentDest.x) < ConstDefineGM2D.AIMaxPositionError * 3.0f)
+            //{
+            //    _curPos.x = currentDest.x;
+            //}
             if (destOnGround && !_grounded)
             {
                 reachedY = false;
@@ -387,6 +371,40 @@ namespace GameA.Game
             return (lastDest.y <= currentDest.y && pathPos.y >= currentDest.y)
                    || (lastDest.y >= currentDest.y && pathPos.y <= currentDest.y)
                    || (Mathf.Abs(pathPos.y - currentDest.y) <= ConstDefineGM2D.AIMaxPositionError);
+        }
+
+        protected override void UpdateMonsterView()
+        {
+            switch (_eState)
+            {
+                    case EMonsterState.Think:
+                    if (_animation != null)
+                    {
+                        _animation.PlayLoop("Idle");
+                    }
+                    break;
+                    case EMonsterState.Seek:
+                    if (_animation != null)
+                    {
+                        _animation.PlayLoop("Run");
+                    }
+                    break;
+                    case EMonsterState.Attack:
+                    break;
+            }
+            if (_curPos == _lastPos)
+            {
+                ++_stuckTimer;
+                if (_stuckTimer > MaxStuckFrames)
+                {
+                    MoveTo();
+                }
+            }
+            else
+            {
+                _stuckTimer = 0;
+            }
+            _lastPos = _curPos;
         }
     }
 }

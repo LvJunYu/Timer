@@ -33,6 +33,7 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_AvatarStruct> Table_AvatarStructDic = new Dictionary<int, Table_AvatarStruct>();
 		public readonly Dictionary<int,Table_AvatarSlotName> Table_AvatarSlotNameDic = new Dictionary<int, Table_AvatarSlotName>();
 		public readonly Dictionary<int,Table_PlayerLvToExp> Table_PlayerLvToExpDic = new Dictionary<int, Table_PlayerLvToExp>();
+		public readonly Dictionary<int,Table_PlayerLvToModifyLimit> Table_PlayerLvToModifyLimitDic = new Dictionary<int, Table_PlayerLvToModifyLimit>();
 		[UnityEngine.SerializeField] private Table_Unit[] _tableUnits;
 		[UnityEngine.SerializeField] private Table_StandaloneLevel[] _tableStandaloneLevels;
 		[UnityEngine.SerializeField] private Table_StandaloneChapter[] _tableStandaloneChapters;
@@ -54,6 +55,7 @@ namespace GameA.Game
 		[UnityEngine.SerializeField] private Table_AvatarStruct[] _tableAvatarStructs;
 		[UnityEngine.SerializeField] private Table_AvatarSlotName[] _tableAvatarSlotNames;
 		[UnityEngine.SerializeField] private Table_PlayerLvToExp[] _tablePlayerLvToExps;
+		[UnityEngine.SerializeField] private Table_PlayerLvToModifyLimit[] _tablePlayerLvToModifyLimits;
 
 		private TableResLoader _loader;
 		#endregion
@@ -113,6 +115,8 @@ namespace GameA.Game
 			_tableAvatarSlotNames = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarSlotName[]>(AvatarSlotNameTextAsset.text);
 			var PlayerLvToExpTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "PlayerLvToExp"));
 			_tablePlayerLvToExps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PlayerLvToExp[]>(PlayerLvToExpTextAsset.text);
+			var PlayerLvToModifyLimitTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "PlayerLvToModifyLimit"));
+			_tablePlayerLvToModifyLimits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PlayerLvToModifyLimit[]>(PlayerLvToModifyLimitTextAsset.text);
 			#else
 			_loader = new TableResLoader("GameMaker2D");
 
@@ -263,6 +267,13 @@ namespace GameA.Game
 				return;
 			}
 			_tablePlayerLvToExps = PlayerLvToExpAsset.DataArray;
+			var PlayerLvToModifyLimitAsset = _loader.GetConfigAssetData<TablePlayerLvToModifyLimitAsset>("PlayerLvToModifyLimit");
+			if (PlayerLvToModifyLimitAsset == null)
+			{
+				LogHelper.Error("PlayerLvToModifyLimitAsset is null");
+				return;
+			}
+			_tablePlayerLvToModifyLimits = PlayerLvToModifyLimitAsset.DataArray;
 			#endif
 			for (int i = 0; i < _tableUnits.Length; i++)
 			{
@@ -495,6 +506,17 @@ namespace GameA.Game
 					LogHelper.Warning("_tablePlayerLvToExps table.Id {0} is duplicated!", _tablePlayerLvToExps[i].Id);
 				}
 			}
+			for (int i = 0; i < _tablePlayerLvToModifyLimits.Length; i++)
+			{
+				if (!Table_PlayerLvToModifyLimitDic.ContainsKey(_tablePlayerLvToModifyLimits[i].Id))
+				{
+					Table_PlayerLvToModifyLimitDic.Add(_tablePlayerLvToModifyLimits[i].Id,_tablePlayerLvToModifyLimits[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tablePlayerLvToModifyLimits table.Id {0} is duplicated!", _tablePlayerLvToModifyLimits[i].Id);
+				}
+			}
 			
 			Messenger.Broadcast(EMessengerType.OnTableInited);
 		}
@@ -683,6 +705,15 @@ namespace GameA.Game
 		{
 			Table_PlayerLvToExp tmp;
 			if (Table_PlayerLvToExpDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_PlayerLvToModifyLimit GetPlayerLvToModifyLimit(int key)
+		{
+			Table_PlayerLvToModifyLimit tmp;
+			if (Table_PlayerLvToModifyLimitDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

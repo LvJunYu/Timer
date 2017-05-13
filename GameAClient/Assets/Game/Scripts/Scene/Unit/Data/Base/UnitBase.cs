@@ -99,12 +99,6 @@ namespace GameA.Game
         protected IntVec2 _minPos;
         protected IntVec2 _maxPos;
 
-        /// <summary>
-        /// 该物体是否能被开关控制
-        /// </summary>
-        /// <value><c>true</c> if this instance can controlled by switch; otherwise, <c>false</c>.</value>
-        public virtual bool CanControlledBySwitch { get { return false; } }
-
         #endregion
 
         #region view
@@ -139,7 +133,14 @@ namespace GameA.Game
 
         #endregion
 
-        protected bool _hasMainFloor = true;
+        /// <summary>
+        /// 该物体是否能被开关控制
+        /// </summary>
+        /// <value><c>true</c> if this instance can controlled by switch; otherwise, <c>false</c>.</value>
+        public virtual bool CanControlledBySwitch
+        {
+            get { return false; }
+        }
 
         public Table_Unit TableUnit
         {
@@ -311,11 +312,6 @@ namespace GameA.Game
         public Transform Trans
         {
             get { return _trans; }
-        }
-
-        public bool HasMainFloor
-        {
-            get { return _hasMainFloor; }
         }
 
         public IntVec2 DeltaPos

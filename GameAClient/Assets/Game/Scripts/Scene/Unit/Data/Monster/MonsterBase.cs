@@ -118,12 +118,12 @@ namespace GameA.Game
                 {
                     return;
                 }
-                UpdateMonster();
+                UpdateMonsterView();
                 _lastGrounded = _grounded;
             }
         }
 
-        protected virtual void UpdateMonster()
+        protected virtual void UpdateMonsterView()
         {
         }
 

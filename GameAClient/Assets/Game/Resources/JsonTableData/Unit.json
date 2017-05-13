@@ -839,7 +839,7 @@
         "ParentType": "1",
         "ChildType": "0",
         "OriginMoveDirection": "0",
-        "OriginMagicDirection": "4",
+        "OriginMagicDirection": "0",
         "MoveDirectionMask": "15",
         "RotationMask": "15"
     },
