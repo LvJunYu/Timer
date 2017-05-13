@@ -294,6 +294,7 @@ namespace GameA
 		}
 
 		private void OnEncBtnClick () {
+            SocialGUIManager.ShowReward (null);
 		}
 
         private void OnNextBtn () {
