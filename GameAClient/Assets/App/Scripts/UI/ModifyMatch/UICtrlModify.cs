@@ -77,8 +77,11 @@ namespace GameA
                 _randomPickTimer -= Time.deltaTime;
                 if (_randomPickTimer <= 0) {
                     if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_Editing) {
-                        if (_isOpen) Refresh();
+                        if (_isOpen)
+                            Refresh ();
                         _cachedView.InputBlock.SetActiveEx (false);
+                    } else {
+                        _randomPickTimer = 0.001f;
                     }
                 }
             }
@@ -102,6 +105,7 @@ namespace GameA
                     LocalUser.Instance.MatchUserData.CurReformSection,
                     LocalUser.Instance.MatchUserData.CurReformLevel
                 );
+                _cachedView.ProjectLocTxt.SetActiveEx (true);
                 _cachedView.RandomPickBtn.SetActiveEx (false);
                 _cachedView.EditBtn.SetActiveEx (true);
                 _cachedView.RepickBtn.SetActiveEx (true);
@@ -208,6 +212,46 @@ namespace GameA
         }
 
         private void OnRepickBtn () {
+            if (LocalUser.Instance.MatchUserData.CurReformState != (int)EReformState.RS_Editing) {
+                return;
+            }
+            SocialGUIManager.ShowPopupDialog (
+                string.Format ("花费 {0}金币 重新随机改造的基础关卡，当前编辑的内容全部作废，可以吗？", 10),
+                "确定重新随机吗",
+                new KeyValuePair<string, Action> ("确定", () => {
+                    // todo repick cost
+                    if (GameATools.CheckGold(10)) {
+                        LocalUser.Instance.MatchUserData.CurReformState = (int)EReformState.RS_ChanceReady;
+                        _randomPickTimer = _randomPickStateTime;
+                        _cachedView.InputBlock.SetActiveEx (true);                        
+                        RemoteCommands.ReselectReformLevel(
+                            LocalUser.Instance.MatchUserData.CurReformSection,
+                            LocalUser.Instance.MatchUserData.CurReformLevel,
+                            msg => {
+                                if (msg.ResultCode == (int)EReselectReformLevelCode.RRLC_Success) {
+                                    LocalUser.Instance.MatchUserData.CurReformSection = msg.NewReformSection;
+                                    LocalUser.Instance.MatchUserData.CurReformLevel = msg.NewReformLevel;
+                                    LocalUser.Instance.MatchUserData.CurReformState = (int)EReformState.RS_Editing;
+                                    LocalUser.Instance.MatchUserData.CurReformProject.TargetSection = msg.NewReformSection;
+                                    LocalUser.Instance.MatchUserData.CurReformProject.TargetLevel = msg.NewReformLevel;
+                                    LocalUser.Instance.MatchUserData.CurReformProject.ResPath = string.Empty;
+                                    // 立刻请求更新数据，以获取改造中的project
+                                    LocalUser.Instance.MatchUserData.Request(LocalUser.Instance.UserGuid, null, null);
+                                } else {
+                                    LocalUser.Instance.MatchUserData.CurReformState = (int)EReformState.RS_Editing;
+                                    SocialGUIManager.ShowPopupDialog("重新随机改造关卡失败，原因代码：" + msg.ResultCode.ToString());
+                                    _randomPickTimer = 0.01f;
+                                }
+                            },
+                            code => {
+                                // todo handle error
+                            }
+                        );
+                    }
+                }),
+                new KeyValuePair<string, Action> ("取消", () => {
+                })
+            );
         }
 
         private void OnRamdomPickBtn () {

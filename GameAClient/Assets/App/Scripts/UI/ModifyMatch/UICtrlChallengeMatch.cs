@@ -55,7 +55,9 @@ namespace GameA
             base.OnViewCreated();
 
 			_cachedView.CloseBtn.onClick.AddListener (OnCloseBtn);
-
+            _cachedView.SelectBtn.onClick.AddListener (OnSelectBtn);
+            _cachedView.RandomPickBtn.onClick.AddListener (OnRandomPickBtn);
+            _cachedView.ChallengeBtn.onClick.AddListener (OnChallengeBtn);
         }
 
         public override void OnUpdate ()
@@ -82,14 +84,14 @@ namespace GameA
             SocialGUIManager.Instance.CloseUI<UICtrlChallengeMatch>();
 		}
 
-		private void OnPublishBtn () {
+        private void OnSelectBtn () {
 			
 		}
 
-        private void OnEditBtn () {
+        private void OnChallengeBtn () {
         }
 
-        private void OnRepickBtn () {
+        private void OnRandomPickBtn () {
             
 
         }

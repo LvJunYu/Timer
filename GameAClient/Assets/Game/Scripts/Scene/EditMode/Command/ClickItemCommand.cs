@@ -177,7 +177,7 @@ namespace GameA.Game
             }
             _modifiedExtra.MoveDirection = (EMoveDirection) (dir + 1);
 		    SaveUnitExtra();
-		    return false;
+		    return true;
         }
 
         protected void SaveUnitExtra()

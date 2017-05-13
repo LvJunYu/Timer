@@ -35,7 +35,7 @@ namespace GameA.Game
 //		/// </summary>
 //		private List<UnitDesc> _addedUnits;
 
-        public List<IntVec2> TempAvailableUnits = new List<IntVec2> ();
+//        public List<IntVec2> TempAvailabl eUnits = new List<IntVec2> ();
 
         private ECommandType _cmdTypeBeforePlayTest;
 
@@ -67,6 +67,16 @@ namespace GameA.Game
         #endregion
 		#region Methods
 
+        public int UsedModifyAddUnitCnt (int unitId) {
+            int result = 0;
+            for (int i = 0; i < DataScene2D.Instance.AddedUnits.Count; i++) {
+                if (DataScene2D.Instance.AddedUnits [i].ModifiedUnit.UnitDesc.Id == unitId) {
+                    result++;
+                }
+            }
+            return result;
+        }
+
         public void ShowUnitPosEffect (IntVec3 guid) {
             if (Time.timeSinceLevelLoad - _lastShowUnitPosEffectTime < 0.5f)
                 return;
@@ -80,16 +90,16 @@ namespace GameA.Game
 
         public void OnModifyAdd (UnitEditData orig) {
             AddedUnits.Add (new ModifyData(orig, orig));
-            for (int i = 0; i < TempAvailableUnits.Count; i++) {
-                if (TempAvailableUnits [i].x == orig.UnitDesc.Id) {
-                    IntVec2 updatedInfo = new IntVec2 (orig.UnitDesc.Id, TempAvailableUnits [i].y - 1);
-                    TempAvailableUnits [i] = updatedInfo;
-//                    if (TempAvailableUnits [i].y == 0) {
-//                        _selectedItemId = 0;
-//                    }
-                    break;
-                }
-            }
+//            for (int i = 0; i < TempAvailableUnits.Count; i++) {
+//                if (TempAvailableUnits [i].x == orig.UnitDesc.Id) {
+//                    IntVec2 updatedInfo = new IntVec2 (orig.UnitDesc.Id, TempAvailableUnits [i].y - 1);
+//                    TempAvailableUnits [i] = updatedInfo;
+////                    if (TempAvailableUnits [i].y == 0) {
+////                        _selectedItemId = 0;
+////                    }
+//                    break;
+//                }
+//            }
             Messenger.Broadcast(EMessengerType.OnModifyUnitChanged);
             UpdateMaskEffects ();
         }
@@ -188,13 +198,13 @@ namespace GameA.Game
                 DataScene2D.Instance.ProcessUnitExtra(data.ModifiedUnit.UnitDesc.Guid, UnitExtra.zero);
             }
 
-            for (int i = 0; i < TempAvailableUnits.Count; i++) {
-                if (TempAvailableUnits [i].x == data.ModifiedUnit.UnitDesc.Id) {
-                    IntVec2 updatedInfo = new IntVec2 (data.ModifiedUnit.UnitDesc.Id, TempAvailableUnits [i].y + 1);
-                    TempAvailableUnits [i] = updatedInfo;
-                    break;
-                }
-            }
+//            for (int i = 0; i < TempAvailableUnits.Count; i++) {
+//                if (TempAvailableUnits [i].x == data.ModifiedUnit.UnitDesc.Id) {
+//                    IntVec2 updatedInfo = new IntVec2 (data.ModifiedUnit.UnitDesc.Id, TempAvailableUnits [i].y + 1);
+//                    TempAvailableUnits [i] = updatedInfo;
+//                    break;
+//                }
+//            }
 
             Messenger.Broadcast(EMessengerType.OnModifyUnitChanged);
             UpdateMaskEffects ();
@@ -218,13 +228,6 @@ namespace GameA.Game
 		{
 			base.Init ();
 			_commandType = ECommandType.Modify;
-//			_removedUnits = new List<UnitDesc> ();
-//			_modifiedUnits = new List<UnitDesc> ();
-//			_addedUnits = new List<UnitDesc> ();
-
-            TempAvailableUnits.Add (new IntVec2 (4006, 3));
-            TempAvailableUnits.Add (new IntVec2 (4007, 6));
-            TempAvailableUnits.Add (new IntVec2 (4008, 1));
 
 		}
 
@@ -417,19 +420,15 @@ namespace GameA.Game
             }
             // 检查是否达到了删除数量上限
             // todo 限制数量从玩家属性中取
-            if (AddedUnits.Count >= 5) {
+            if (AddedUnits.Count >= LocalUser.Instance.MatchUserData.ReformAddUnitCapacity) {
                 Messenger<string>.Broadcast(EMessengerType.GameLog, "添加次数已用完");
                 return false;
             }
 
             // 检查地块数量是否够
-            for (int i = 0; i < TempAvailableUnits.Count; i++) {
-                if (TempAvailableUnits [i].x == unitDesc.Id) {
-                    if (TempAvailableUnits [i].y <= 0) {
-                        Messenger<string>.Broadcast (EMessengerType.GameLog, "这种地块已用完");
-                        return false;
-                    }
-                }
+            if (LocalUser.Instance.MatchUserData.GetCanAddUnitNumOfId(unitDesc.Id) <= 0) {
+                Messenger<string>.Broadcast (EMessengerType.GameLog, "这种地块已用完");
+                return false;
             }
 
             return true;
@@ -474,7 +473,7 @@ namespace GameA.Game
             }
             // 检查是否达到了删除数量上限
 			// todo 限制数量从玩家属性中取
-			if (RemovedUnits.Count >= 5) {
+            if (RemovedUnits.Count >= LocalUser.Instance.MatchUserData.ReformDeleteUnitCapacity) {
                 Messenger<string>.Broadcast(EMessengerType.GameLog, "擦除次数已用完");
 				return false;
 			}
@@ -511,8 +510,14 @@ namespace GameA.Game
                     }
                 }
             }
-            // todo 限制数量从玩家属性中取
-            if (ModifiedUnits.Count >= 5) {
+            // 检查数量前检查是不是修改之前的已修改地块
+            bool reModify = false;
+            for (int i = ModifiedUnits.Count - 1; i >= 0; i--) {
+                if (ModifiedUnits [i].ModifiedUnit.UnitDesc.Guid == orig.Guid) {
+                    reModify = true;
+                }
+            }
+            if (!reModify && ModifiedUnits.Count >= LocalUser.Instance.MatchUserData.ReformModifyUnitCapacity) {
                 Messenger<string>.Broadcast(EMessengerType.GameLog, "改变次数已用完");
                 return false;
             }

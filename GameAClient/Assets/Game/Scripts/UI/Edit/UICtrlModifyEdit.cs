@@ -19,11 +19,19 @@ namespace GameA.Game
     public class UICtrlModifyEdit : UICtrlGenericBase<UIViewModifyEdit>
     {
         #region 常量与字段
+        // 目前版本可能的最大数量限制
+        private const int _maxAltLimit = 5;
+        private const int _maxDelLimit = 5;
+        private const int _maxAddLimit = 5;
 
         /// <summary>
         /// 当前选择的item序号
         /// </summary>
         private int _selectedItemIdx;
+
+        private int _altLimit;
+        private int _delLimit;
+        private int _addLimit;
 
         #endregion
 
@@ -67,6 +75,10 @@ namespace GameA.Game
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+
+            _altLimit = Mathf.Min(LocalUser.Instance.MatchUserData.ReformModifyUnitCapacity, _maxAltLimit);
+            _delLimit = Mathf.Min (LocalUser.Instance.MatchUserData.ReformDeleteUnitCapacity, _maxDelLimit);
+            _addLimit = Mathf.Min (LocalUser.Instance.MatchUserData.ReformAddUnitCapacity, _maxAddLimit);
 
             UpdateModifyItemList ();
             UpdateSelectItemList ();
@@ -171,20 +183,23 @@ namespace GameA.Game
                 Messenger<ushort>.Broadcast(EMessengerType.OnSelectedItemChanged, 0);
                 return;
             }
+            int unitId = 0;
             ModifyEditMode editMode = EditMode.Instance as ModifyEditMode;
             for (int i = 0; i < _cachedView.SelectItems.Length; i++) {
                 if (idx == i) {
-                    if (editMode.TempAvailableUnits[idx].y == 0) {
+                    if (LocalUser.Instance.MatchUserData.UnitData.ItemList.Count <= idx ||
+                        LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitCount <= 0) {
                         Messenger<string>.Broadcast(EMessengerType.GameLog, "这种东西用完了");
                         return;
                     }
+                    unitId = (int)LocalUser.Instance.MatchUserData.UnitData.ItemList [i].UnitId;
                     _cachedView.SelectItems [i].SetSelected (true);
                 } else {
                     _cachedView.SelectItems [i].SetSelected (false);
                 }
             }
 
-            Messenger<ushort>.Broadcast(EMessengerType.OnSelectedItemChanged, (ushort)editMode.TempAvailableUnits[idx].x);
+            Messenger<ushort>.Broadcast(EMessengerType.OnSelectedItemChanged, (ushort)unitId);
         }
 		/// <summary>
 		/// 更新改造地块列表界面
@@ -194,41 +209,52 @@ namespace GameA.Game
 			ModifyEditMode modifyEditMode = EditMode.Instance as ModifyEditMode;
 			if (null == modifyEditMode)
 				return;
+            int slotNumLimit = 1;
             List<ModifyData> descs = null;
 			switch (EditMode.Instance.CurCommandType) {
-			case ECommandType.Create:
-				descs = modifyEditMode.AddedUnits;
+            case ECommandType.Create:
+                descs = modifyEditMode.AddedUnits;
+                slotNumLimit = _addLimit;
 				break;
 			case ECommandType.Erase:
 				descs = modifyEditMode.RemovedUnits;
+                slotNumLimit = _delLimit;
 				break;
 			case ECommandType.Modify:
 				descs = modifyEditMode.ModifiedUnits;
+                slotNumLimit = _altLimit;
 				break;
 			}
 			if (null == descs)
 				return;
 			int i = 0;
-			for (; i < _cachedView.ModifyItems.Length && i < descs.Count; i++) {
+            for (; i < slotNumLimit && i < descs.Count; i++) {
                 var tableUnit = TableManager.Instance.GetUnit (descs [i].OrigUnit.UnitDesc.Id);
 				if (null == tableUnit) {
                     LogHelper.Error ("can't find tabledata of modifyItem id{0}", descs[i].OrigUnit.UnitDesc.Id);
+                    return;
 				} else {
 					Sprite texture;
 					if (GameResourceManager.Instance.TryGetSpriteByName(tableUnit.Icon, out texture))
 					{
+                        _cachedView.ModifyItems [i].gameObject.SetActive (true);
 						_cachedView.ModifyItems [i].SetItem (texture);
 					}
 					else
 					{
 						LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", tableUnit.Id,
 							tableUnit.Icon, tableUnit.EGeneratedType);
+                        return;
 					}
 				}
 			}
-			for (; i < _cachedView.ModifyItems.Length; i++) {
+            for (; i < _cachedView.ModifyItems.Length && i < slotNumLimit; i++) {
+                _cachedView.ModifyItems [i].gameObject.SetActive (true);
 				_cachedView.ModifyItems [i].SetEmpty ();
 			}
+            for (; i < _cachedView.ModifyItems.Length; i++) {
+                _cachedView.ModifyItems [i].gameObject.SetActive (false);
+            }
 		}
 
         /// <summary>
@@ -236,16 +262,31 @@ namespace GameA.Game
         /// </summary>
         private void UpdateSelectItemList () {
             ModifyEditMode editMode = EditMode.Instance as ModifyEditMode;
-            for (int i = 0; i < _cachedView.SelectItems.Length; i++) {
+            int avilableAddUnitCnt = LocalUser.Instance.MatchUserData.UnitData.ItemList.Count;
+            int i = 0;
+            for (; i < _cachedView.SelectItems.Length && i < avilableAddUnitCnt; i++) {
+                _cachedView.SelectItems [i].gameObject.SetActive (true);
                 _cachedView.SelectItems [i].id = i;
                 _cachedView.SelectItems[i].BtnCb = OnModifySelectItemBtn;
-                Table_Unit tableUnit = TableManager.Instance.GetUnit (editMode.TempAvailableUnits[i].x);
+                Table_Unit tableUnit = TableManager.Instance.GetUnit (
+                    (int)LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitId);
+                if (null == tableUnit) {
+                    LogHelper.Error ("Can't find table of unit id: {0}", LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitId);
+                    _cachedView.SelectItems [i].gameObject.SetActive (false);
+                    continue;
+                }
                 Sprite texture;
                 if (GameResourceManager.Instance.TryGetSpriteByName (tableUnit.Icon, out texture)) {
-                    _cachedView.SelectItems [i].SetItem (texture, editMode.TempAvailableUnits[i].y);
+                    _cachedView.SelectItems [i].SetItem (texture,
+                        LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitCount - editMode.UsedModifyAddUnitCnt(tableUnit.Id));
                 } else {
                     LogHelper.Error ("Can't find icon of unit id: {0}", tableUnit.Id);
+                    _cachedView.SelectItems [i].SetItem (null,
+                        LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitCount - editMode.UsedModifyAddUnitCnt(tableUnit.Id));
                 }
+            }
+            for (; i < _cachedView.SelectItems.Length; i++) {
+                _cachedView.SelectItems [i].gameObject.SetActive (false);
             }
         }
 

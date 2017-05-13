@@ -621,6 +621,9 @@ namespace GameA
             if (_projectStatus == EProjectStatus.PS_Reform && string.IsNullOrEmpty (ResPath)) {
                 targetRes = AppData.Instance.AdventureData.ProjectList.SectionList [TargetSection - 1].NormalProjectList [TargetLevel - 1].ResPath;
             }
+            if (_projectStatus == EProjectStatus.PS_Reform && null != _bytesData) {
+                return _bytesData;
+            }
             return LocalCacheManager.Instance.Load (LocalCacheManager.EType.File, targetRes);
         }
 
@@ -875,10 +878,17 @@ namespace GameA
             string targetRes = ResPath;
             // 改造关卡特殊处理
             if (_projectStatus == EProjectStatus.PS_Reform) {
+                if (_bytesData != null) {
+                    if (successCallback != null)
+                    {
+                        successCallback.Invoke();
+                    }
+                    return;
+                }
                 if (string.IsNullOrEmpty (ResPath)) {
                     if ((TargetSection - 1) < AppData.Instance.AdventureData.ProjectList.SectionList.Count &&
-                        (TargetLevel - 1) >= AppData.Instance.AdventureData.ProjectList.SectionList [TargetSection - 1].NormalProjectList.Count &&
-                        !string.IsNullOrEmpty(AppData.Instance.AdventureData.ProjectList.SectionList [TargetSection - 1].NormalProjectList[TargetLevel - 1].ResPath)) {
+                        (TargetLevel - 1) < AppData.Instance.AdventureData.ProjectList.SectionList [TargetSection - 1].NormalProjectList.Count &&
+                        !string.IsNullOrEmpty (AppData.Instance.AdventureData.ProjectList.SectionList [TargetSection - 1].NormalProjectList [TargetLevel - 1].ResPath)) {
                         targetRes = AppData.Instance.AdventureData.ProjectList.SectionList [TargetSection - 1].NormalProjectList [TargetLevel - 1].ResPath;
                     } else {
                         if (string.IsNullOrEmpty (ResPath)) {
