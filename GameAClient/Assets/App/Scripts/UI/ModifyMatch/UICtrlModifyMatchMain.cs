@@ -37,17 +37,19 @@ namespace GameA
         {
             base.OnOpen (parameter);
             if (LocalUser.Instance.MatchUserData.IsInited) {
-                RefreshAll ();
+                RefreshViewAll ();
             }
             LocalUser.Instance.MatchUserData.Request (
                 LocalUser.Instance.UserGuid,
                 () => {
-                    RefreshAll();
+                    RefreshViewAll();
                 },
                 code => {
                     // todo request data failed
                 }
             );
+            LocalUser.Instance.MatchUserData.LocalRefresh ();
+            RefreshViewAll ();
         }
 
         protected override void OnClose()
@@ -81,14 +83,14 @@ namespace GameA
         }
 			
 
-		private void RefreshAll () {
+		private void RefreshViewAll () {
             RefreshUserInfo ();
             RefreshModifyMatch ();
             RefreshPublishedProject ();
 		}
 
         private void RefreshUserInfo () {
-            _cachedView.MakerLevel.text = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel.ToString ();
+            _cachedView.MakerLevel.text = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorLevel.ToString ();
             _cachedView.CanModifyNum.text = LocalUser.Instance.MatchUserData.ReformModifyUnitCapacity.ToString ();
             _cachedView.CanDeleteNum.text = LocalUser.Instance.MatchUserData.ReformDeleteUnitCapacity.ToString ();
             _cachedView.CanAddNum.text = LocalUser.Instance.MatchUserData.ReformAddUnitCapacity.ToString ();
@@ -189,7 +191,10 @@ namespace GameA
 		}
 
         private void OnMatchBtn () {
-            SocialGUIManager.Instance.OpenPopupUI<UICtrlChallengeMatch>();
+            if (LocalUser.Instance.MatchUserData.LeftChallengeCount > 0) {
+                SocialGUIManager.Instance.OpenPopupUI<UICtrlChallengeMatch> ();
+            } else {
+            }
         }
 
         private void OnClaimBtn () {

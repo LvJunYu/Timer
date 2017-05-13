@@ -11,6 +11,7 @@ namespace GameA
 
         public Button RandomPickBtn;
         public Button ChallengeBtn;
+        public Button SelectBtn;
 
 
         public USViewChallengeProjectCard ChallengeProjectEasy;

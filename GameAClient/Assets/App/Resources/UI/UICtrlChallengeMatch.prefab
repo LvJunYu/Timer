@@ -2541,6 +2541,7 @@ MonoBehaviour:
   CloseBtn: {fileID: 114065785367671400}
   RandomPickBtn: {fileID: 114693274129421454}
   ChallengeBtn: {fileID: 114834084294325640}
+  SelectBtn: {fileID: 0}
   ChallengeProjectEasy: {fileID: 114483466498402896}
   ChallengeProjectNormal: {fileID: 114682723974451198}
   ChallengeProjectHard: {fileID: 114822608013534710}

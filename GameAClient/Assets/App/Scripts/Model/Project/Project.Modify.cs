@@ -69,27 +69,28 @@ namespace GameA
                 msg => {
                     if ((int)EProjectOperateResult.POR_Success == msg.ResultCode) {
                         if (null != successCallback) {
+                            OnSyncFromParent(msg.ProjectData);
                             successCallback.Invoke();
                         }
                     } else {
+                        _bytesData = null;
                         if (null != failedCallback) {
                             failedCallback.Invoke(EProjectOperateResult.POR_Error);
                         }
                     }
                 },
                 code => {
+                    _bytesData = null;
                     if (null != failedCallback) {
                         failedCallback.Invoke(EProjectOperateResult.POR_Error);
                     }
                 },
                 form
             );
-            // 保存完后取一次数据
-            Request (_projectId, null, null);
             // 如果
-            if (string.IsNullOrEmpty (ResPath)) {
+//            if (string.IsNullOrEmpty (ResPath)) {
                 _bytesData = data;
-            }
+//            }
         }
         #endregion
     }

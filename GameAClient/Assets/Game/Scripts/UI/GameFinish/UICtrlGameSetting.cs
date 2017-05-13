@@ -174,22 +174,24 @@ namespace GameA.Game
                     return;
                 }
             } else if (GM2DGame.Instance.GameInitType == GameManager.EStartType.ModifyEdit) {
-                // 保存改造关卡
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存改造关卡");
-                GM2DGame.Instance.SaveModifyProject (() => {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                        GM2DGUIManager.Instance.CloseUI<UICtrlGameSetting>();
-                        SocialApp.Instance.ReturnToApp();
+                if (GM2DGame.Instance.NeedSave) {
+                    // 保存改造关卡
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "正在保存改造关卡");
+                    GM2DGame.Instance.SaveModifyProject (() => {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                        GM2DGUIManager.Instance.CloseUI<UICtrlGameSetting> ();
+                        SocialApp.Instance.ReturnToApp ();
                     },
-                    code => {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                        GM2DGUIManager.Instance.CloseUI<UICtrlGameSetting>();
-                        SocialApp.Instance.ReturnToApp();
-                        // todo error handle
-                        LogHelper.Error("SaveModifyProject failed");
-                    }
-                );
-                return;
+                        code => {
+                            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                            GM2DGUIManager.Instance.CloseUI<UICtrlGameSetting> ();
+                            SocialApp.Instance.ReturnToApp ();
+                            // todo error handle
+                            LogHelper.Error ("SaveModifyProject failed");
+                        }
+                    );
+                    return;
+                }
             }
 			GM2DGUIManager.Instance.CloseUI<UICtrlGameSetting>();
 			SocialApp.Instance.ReturnToApp();
