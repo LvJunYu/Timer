@@ -56,7 +56,7 @@ namespace GameA.Game
                         UnitExtra unitExtra;
                         DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra);
                         _buffers.Add(new UnitEditData(unitDesc, unitExtra));
-//                        _pushFlag = true;
+                        _pushFlag = true;
 					}
                 }
                 return false;
