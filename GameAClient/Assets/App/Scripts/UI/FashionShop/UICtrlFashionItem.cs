@@ -24,8 +24,8 @@ namespace GameA
 
 		#region 方法
 		void Start () {
-			BuyBtn.onClick.AddListener (OnBuyBtn);
-			UseBtn.onClick.AddListener (OnUseBtn);
+			//BuyBtn.onClick.AddListener (OnBuyBtn);
+			//UseBtn.onClick.AddListener (OnUseBtn);
 		}
 
 		private void RefreshInfo (Table_FashionShop tableShop) {

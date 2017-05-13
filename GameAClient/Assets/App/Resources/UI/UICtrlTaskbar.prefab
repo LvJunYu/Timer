@@ -832,8 +832,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 1, y: 0}
+  m_SizeDelta: {x: -2, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &22497538
 RectTransform:
@@ -5016,6 +5016,7 @@ MonoBehaviour:
   WorldButton: {fileID: 114295502804930632}
   SingleModeButton: {fileID: 114410724918712716}
   AvatarBtn: {fileID: 114674136816770446}
+  LotteryBtn: {fileID: 114773027775638434}
   PlayerAvatarAnimation: {fileID: 114809571393400904}
   AvatarRenderCamera: {fileID: 20741894369770822}
   AvatarImage: {fileID: 114111139608157796}

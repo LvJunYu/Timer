@@ -30,9 +30,16 @@ namespace GameA
         //初始旋转速度
         private float _initSpeed = 0;
         //速度变化值
-        private float _delta = 0.5f;
+        private float _delta = 0f;
         //转盘是否暂停
         private bool _isPause = true;
+        private int _TurnsNumber =3;
+        private float _stopTime = 5f;
+        private float _stopRotation = 0f;
+        private float _currentEulerAngles = 0f;
+
+
+
         #endregion
         #region 属性
         #endregion
@@ -80,10 +87,14 @@ namespace GameA
        }
         private void UseRaffleTicket(int selectedTicketNum)
         {
+       
+
             if (LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(selectedTicketNum) > 0)
             {
-                this._initSpeed = 100;
-                LocalUser.Instance.RaffleTicket.UseRaffleTicket(selectedTicketNum, this.DecelerateThePanel, null);
+                _isPause = false;
+                this._initSpeed = 2000;
+                LocalUser.Instance.RaffleTicket.UseRaffleTicket(selectedTicketNum, DecelerateThePanel
+                    , null);
                 RefreshRaffleCount();
                 // RotateThePanel(LocalUser.Instance.RaffleTicket.CurrentRewardId);
             }
@@ -91,19 +102,49 @@ namespace GameA
         }
         private void DecelerateThePanel(long rewardid)
         {
-            this._initSpeed = 0;
-            _cachedView.RoolPanel.rotation = Quaternion.Euler(0, 0, rewardid * 360 / 8);
-            this._isPause = true;
+            //this._initSpeed = 0;
+            //_cachedView.RoolPanel.rotation = Quaternion.Euler(0, 0, rewardid * 360 / 8);
+            //this._isPause = true;
             _cachedView.RewardExhibition.text = rewardid.ToString();
+            _currentEulerAngles = _cachedView.RoolPanel.rotation.eulerAngles.z % 360;
+            //if (_currentEulerAngles - rewardid*360/8 > 180)
+            //{
+            //    _stopRotation = Mathf.Abs(_currentEulerAngles - rewardid * 360 / 8);
+            //}
+             if (0 < _currentEulerAngles - rewardid*360/8)
+            {
+                
+                Mathf.Abs(_stopRotation = 360 - (_currentEulerAngles - rewardid * 360 / 8));
+            }
+            else if (_currentEulerAngles - rewardid*360/8 < 0)
+            {
+                _stopRotation = Mathf.Abs( rewardid * 360 / 8- _currentEulerAngles);
+            }
+
+        
+               // _delta = _initSpeed*_initSpeed / (2 * _stopRotation);
+            _delta = _initSpeed * _initSpeed / (2 * (_stopRotation + 360 * 12-20.5f));
+            Debug.Log("______________速度" + _initSpeed);
+
+            Debug.Log("______________加速度"+ _delta);
+            Debug.Log("______________当前位置" + _currentEulerAngles);
+            Debug.Log("______________目标位置" + rewardid * 360 / 8);
+            Debug.Log("______________停止距离" + _stopRotation);
+
+
+
         }
+
         public override void OnUpdate()
         {
             if (!_isPause)
             {
                 //转动转盘(-1为顺时针,1为逆时针)
-                _cachedView.RoolPanel.Rotate(new Vector3(0, 0, _initSpeed) * _initSpeed * Time.deltaTime);
+                //_initSpeed = Mathf.MoveTowardsAngle((float)_cachedView.RoolPanel.rotation, 10, 0.1f*Time.deltaTime);
+                
+                _cachedView.RoolPanel.Rotate(new Vector3(0, 0, _initSpeed) *Time.deltaTime);
                 //让转动的速度缓缓降低
-                _initSpeed -= _delta;
+                _initSpeed -= _delta*Time.deltaTime;
                 //当转动的速度为0时转盘停止转动
                 if (_initSpeed <= 0)
                 {
@@ -112,6 +153,8 @@ namespace GameA
                 }
             }
         }
+
+
         #region 接口
         protected override void InitGroupId()
         {

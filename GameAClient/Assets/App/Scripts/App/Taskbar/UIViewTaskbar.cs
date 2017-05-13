@@ -40,6 +40,10 @@ namespace GameA
         /// <summary>
         /// 人物动画
         /// </summary>
+        public Button LotteryBtn;
+        /// <summary>
+        /// 人物动画
+        /// </summary>
 		public Spine.Unity.SkeletonAnimation PlayerAvatarAnimation;
         /// <summary>
         /// 人物摄像机
