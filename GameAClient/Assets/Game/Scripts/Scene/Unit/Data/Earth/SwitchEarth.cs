@@ -16,9 +16,30 @@ namespace GameA.Game
     [Unit(Id = 4003, Type = typeof(SwitchEarth))]
     public class SwitchEarth : BlockBase
     {
-        protected bool _trigger;
+        protected bool _finalTrigger;
+        protected bool _currentTrigger;
         protected SpineObject _effect;
         protected List<UnitBase> _switchPressUnits = new List<UnitBase>();
+
+        public bool CurrentTrigger
+        {
+            set
+            {
+                if (_currentTrigger == value)
+                {
+                    return;
+                }
+                _currentTrigger = value;
+                if (_view != null)
+                {
+                    _view.SetRendererEnabled(!_currentTrigger);
+                }
+                if (_effect != null)
+                {
+                    _effect.Trans.gameObject.SetActiveEx(_currentTrigger);
+                }
+            }
+        }
 
         public override bool CanControlledBySwitch
         {
@@ -28,9 +49,10 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
-            _trigger = false;
+            _finalTrigger = false;
+            _currentTrigger = true;
             _switchPressUnits.Clear();
-            SetEffect();
+            SetState(_finalTrigger);
         }
 
         internal override void OnObjectDestroy()
@@ -53,7 +75,7 @@ namespace GameA.Game
             {
                 _effect = GameParticleManager.Instance.EmitLoop("M1EffectSwitchEarth", _trans.position + new Vector3(0,-0.6f,0));
             }
-            SetEffect();
+            SetState(_finalTrigger);
             return true;
         }
 
@@ -62,8 +84,8 @@ namespace GameA.Game
             base.OnOtherSwitch();
             if (_switchPressUnits.Count == 0)
             {
-                _trigger = !_trigger;
-                SetEffect();
+                _finalTrigger = !_finalTrigger;
+                SetState(_finalTrigger);
             }
         }
 
@@ -74,12 +96,8 @@ namespace GameA.Game
                 return;
             }
             _switchPressUnits.Add(switchPress);
-            if (_trigger)
-            {
-                return;
-            }
-            _trigger = true;
-            SetEffect();
+            _finalTrigger = true;
+            SetState(_finalTrigger);
         }
 
         internal override void OnSwitchPressEnd(SwitchPress switchPress)
@@ -87,26 +105,45 @@ namespace GameA.Game
             _switchPressUnits.Remove(switchPress);
             if (_switchPressUnits.Count == 0)
             {
-                _trigger = false;
-                SetEffect();
+                _finalTrigger = false;
+                SetState(_finalTrigger);
             }
         }
 
-        private void SetEffect()
+        private void SetState(bool value)
         {
-            if (_view != null)
+            if (_currentTrigger == value)
             {
-                _view.SetRendererEnabled(!_trigger);
+                return;
             }
-            if (_effect != null)
+            if (_currentTrigger && !_finalTrigger)
             {
-                _effect.Trans.gameObject.SetActiveEx(_trigger);
+                var units = ColliderScene2D.GridCastAllReturnUnits(_colliderGrid);
+                for (int i = 0; i < units.Count; i++)
+                {
+                    var unit = units[i];
+                    if (unit != null && unit.IsAlive && unit != this)
+                    {
+                        return;
+                    }
+                }
+                CurrentTrigger = _finalTrigger;
             }
+            else
+            {
+                CurrentTrigger = _finalTrigger;
+            }
+        }
+
+        public override void UpdateLogic()
+        {
+            base.UpdateLogic();
+            SetState(_finalTrigger);
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (_trigger)
+            if (_currentTrigger)
             {
                 return false;
             }
@@ -115,7 +152,7 @@ namespace GameA.Game
 
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (_trigger)
+            if (_currentTrigger)
             {
                 return false;
             }
@@ -124,7 +161,7 @@ namespace GameA.Game
 
         public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (_trigger)
+            if (_currentTrigger)
             {
                 return false;
             }
@@ -133,7 +170,7 @@ namespace GameA.Game
 
         public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (_trigger)
+            if (_currentTrigger)
             {
                 return false;
             }
