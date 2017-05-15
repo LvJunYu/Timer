@@ -110,7 +110,7 @@ namespace GameA.Game
                         for (int i = 0; i < units.Count; i++)
                         {
                             UnitBase unit = units[i];
-                            if (unit != null && unit.IsAlive && unit != this && !(unit is SwitchTrigger))
+                            if (IsBlockedBy(unit))
                             {
                                 return;
                             }

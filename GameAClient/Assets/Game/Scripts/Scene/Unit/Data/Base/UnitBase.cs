@@ -1290,5 +1290,14 @@ namespace GameA.Game
         internal virtual void OnSwitchPressEnd(SwitchPress switchPress)
         {
         }
+
+        public bool IsBlockedBy(UnitBase unit)
+        {
+            if (unit != null && unit.IsAlive && unit != this && !(unit is SwitchTrigger))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

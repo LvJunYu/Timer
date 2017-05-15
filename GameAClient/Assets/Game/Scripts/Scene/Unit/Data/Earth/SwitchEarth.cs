@@ -122,7 +122,7 @@ namespace GameA.Game
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (unit != null && unit.IsAlive && unit != this)
+                    if (IsBlockedBy(unit))
                     {
                         return;
                     }
