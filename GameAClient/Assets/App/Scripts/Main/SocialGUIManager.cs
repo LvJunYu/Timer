@@ -403,6 +403,14 @@ namespace GameA
             Messenger<string, string, KeyValuePair<string, Action>[]>.Broadcast(GameA.EMessengerType.ShowDialog, msg, title, btnParam);
         }
 
+        /// <summary>
+        /// 展示奖励，传入奖励数组x：id，y：cnt
+        /// </summary>
+        /// <param name="items">Items.</param>
+        public static void ShowReward (params IntVec2[] items) {
+            Instance.OpenPopupUI<UICtrlReward> (items);
+        }
+
         public enum EMode
         {
             App,

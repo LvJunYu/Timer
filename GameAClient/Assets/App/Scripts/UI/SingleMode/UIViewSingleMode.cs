@@ -13,6 +13,16 @@ namespace GameA
 		public Button TreasureBtn;
 		public Button EncBtn;
 
+        public Button NextBtn;
+        public Button PrevBtn;
+
+        public Text GoldNumber;
+        public Text DiamondNumber;
+
+        public Button EnergyPlusBtn;
+        public Button GoldPlusBtn;
+        public Button DiamondPlusBtn;
+
 		public Image EnergyBar;
 		public Text EnergyNumber;
 		public Text ChapterTitle;
