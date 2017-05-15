@@ -15,7 +15,7 @@ namespace GameA.Game
     [Unit(Id = 4013, Type = typeof(ScorchedEarth))]
     public class ScorchedEarth : BlockBase
     {
-        protected bool _trigger;
+        protected int _state;
         protected int _timer;
 
         internal override bool InstantiateView()
@@ -31,7 +31,7 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
-            _trigger = false;
+            _state = 0;
             _timer = 0;
             PlayMode.Instance.UnFreeze(this);
             if (_view != null)
@@ -42,24 +42,40 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
+            if (_state == 2)
+            {
+                return false;
+            }
             OnTrigger(other, checkOnly);
             return base.OnUpHit(other, ref y, checkOnly);
         }
 
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {
+            if (_state == 2)
+            {
+                return false;
+            }
             OnTrigger(other, checkOnly);
             return base.OnDownHit(other, ref y, checkOnly);
         }
 
         public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
         {
+            if (_state == 2)
+            {
+                return false;
+            }
             OnTrigger(other, checkOnly);
             return base.OnLeftHit(other, ref x, checkOnly);
         }
 
         public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
         {
+            if (_state == 2)
+            {
+                return false;
+            }
             OnTrigger(other, checkOnly);
             return base.OnRightHit(other, ref x, checkOnly);
         }
@@ -77,22 +93,26 @@ namespace GameA.Game
 
         public void OnExplode()
         {
-            if (!_trigger)
+            if (_state == 0)
             {
-                _trigger = true;
+                _state = 1;
+                if (UseMagic())
+                {
+                    _run = false;
+                }
             }
         }
 
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            if (_trigger)
+            if (_state != 0)
             {
                 _timer++;
                 if (_timer == 30)
                 {
                     //开始爆炸
-                    PlayMode.Instance.Freeze(this);
+                    _state = 2;
                     if (_view != null)
                     {
                         _view.SetRendererEnabled(false);
@@ -117,9 +137,12 @@ namespace GameA.Game
                         }
                     }
                     //复原
-                    _trigger = false;
+                    _state = 0;
+                    if (UseMagic())
+                    {
+                        _run = true;
+                    }
                     _timer = 0;
-                    PlayMode.Instance.UnFreeze(this);
                     if (_view != null)
                     {
                         _view.SetRendererEnabled(true);
@@ -130,22 +153,46 @@ namespace GameA.Game
 
         private void SendMsgToAround()
         {
-            var scale = ConstDefineGM2D.ServerTileScale;
-            Check(new IntVec3(_guid.x, _guid.y + scale, _guid.z));
-            Check(new IntVec3(_guid.x, _guid.y - scale, _guid.z));
-            Check(new IntVec3(_guid.x - scale, _guid.y, _guid.z));
-            Check(new IntVec3(_guid.x + scale, _guid.y, _guid.z));
+            //var scale = ConstDefineGM2D.ServerTileScale;
+            //Check(new IntVec3(_curPos.x, _curPos.y + scale, _guid.z));
+            //Check(new IntVec3(_curPos.x, _curPos.y - scale, _guid.z));
+            //Check(new IntVec3(_curPos.x - scale, _curPos.y, _guid.z));
+            //Check(new IntVec3(_curPos.x + scale, _curPos.y, _guid.z));
+            CheckGrid(GetYGrid(30));
+            CheckGrid(GetYGrid(-30));
+            CheckGrid(GetXGrid(-30));
+            CheckGrid(GetXGrid(30));
         }
 
-        private void Check(IntVec3 guid)
+        //private void Check(IntVec3 guid)
+        //{
+        //    UnitBase unit;
+        //    if (ColliderScene2D.Instance.TryGetUnit(guid, out unit))
+        //    {
+        //        var scorchedEarth = unit as ScorchedEarth;
+        //        if (scorchedEarth != null && scorchedEarth.CurPos == new IntVec2(guid.x, guid.y))
+        //        {
+        //            scorchedEarth.OnExplode();
+        //        }
+        //    }
+        //}
+
+        private void CheckGrid(Grid2D grid)
         {
-            UnitBase unit;
-            if (ColliderScene2D.Instance.TryGetUnit(guid, out unit))
+            var units = ColliderScene2D.GridCastAllReturnUnits(grid);
+            if (units.Count > 0)
             {
-                var scorchedEarth = unit as ScorchedEarth;
-                if (scorchedEarth != null)
+                for (int i = 0; i < units.Count; i++)
                 {
-                    scorchedEarth.OnExplode();
+                    var unit = units[i];
+                    if (unit != null && unit.IsAlive && unit != this)
+                    {
+                        var scorchedEarth = unit as ScorchedEarth;
+                        if (scorchedEarth != null)
+                        {
+                            scorchedEarth.OnExplode();
+                        }
+                    }
                 }
             }
         }

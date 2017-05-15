@@ -32,6 +32,7 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
+            _run = true;
             _magicRotate = null;
             if (!IsHero && _curMoveDirection != EMoveDirection.None)
             {

@@ -923,10 +923,22 @@ namespace GameA.Game
 
         }
 
+        public Grid2D GetXGrid(int deltaX)
+        {
+            var min = new IntVec2(_colliderGrid.XMin + deltaX, _colliderGrid.YMin);
+            return new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
+        }
+
+        public Grid2D GetYGrid(int deltaY)
+        {
+            var min = new IntVec2(_colliderGrid.XMin, _colliderGrid.YMin + deltaY);
+            return new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
+        }
+
         public bool CheckRightFloor()
         {
-            var min = new IntVec2(ColliderGrid.XMin + 1, ColliderGrid.YMin);
-            var grid = new Grid2D(min.x, min.y, min.x + ColliderGrid.XMax - ColliderGrid.XMin, min.y + ColliderGrid.YMax - ColliderGrid.YMin);
+            var min = new IntVec2(_colliderGrid.XMin + 1, _colliderGrid.YMin);
+            var grid = new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
             var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer));
             for (int i = 0; i < units.Count; i++)
             {
@@ -941,8 +953,8 @@ namespace GameA.Game
 
         public bool CheckLeftFloor()
         {
-            var min = new IntVec2(ColliderGrid.XMin - 1, ColliderGrid.YMin);
-            var grid = new Grid2D(min.x, min.y, min.x + ColliderGrid.XMax - ColliderGrid.XMin, min.y + ColliderGrid.YMax - ColliderGrid.YMin);
+            var min = new IntVec2(_colliderGrid.XMin - 1, _colliderGrid.YMin);
+            var grid = new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
             var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue, _dynamicCollider);
             for (int i = 0; i < units.Count; i++)
             {
@@ -957,20 +969,20 @@ namespace GameA.Game
 
         public bool CheckOnFloor(UnitBase unit)
         {
-            return ColliderGrid.YMin - 1 == unit.ColliderGrid.YMax && ColliderGrid.XMax >= unit.ColliderGrid.XMin &&
-                   ColliderGrid.XMin <= unit.ColliderGrid.XMax;
+            return _colliderGrid.YMin - 1 == unit.ColliderGrid.YMax && _colliderGrid.XMax >= unit.ColliderGrid.XMin &&
+                   _colliderGrid.XMin <= unit.ColliderGrid.XMax;
         }
 
         public bool CheckLeftFloor(UnitBase unit)
         {
-            return ColliderGrid.XMin - 1 == unit.ColliderGrid.XMax && ColliderGrid.YMin >= unit.ColliderGrid.YMin &&
-                    ColliderGrid.YMin <= unit.ColliderGrid.YMax;
+            return _colliderGrid.XMin - 1 == unit.ColliderGrid.XMax && _colliderGrid.YMin >= unit.ColliderGrid.YMin &&
+                    _colliderGrid.YMin <= unit.ColliderGrid.YMax;
         }
 
         public bool CheckRightFloor(UnitBase unit)
         {
-            return ColliderGrid.XMax + 1 == unit.ColliderGrid.XMin && ColliderGrid.YMin >= unit.ColliderGrid.YMin &&
-                    ColliderGrid.YMin <= unit.ColliderGrid.YMax;
+            return _colliderGrid.XMax + 1 == unit.ColliderGrid.XMin && _colliderGrid.YMin >= unit.ColliderGrid.YMin &&
+                    _colliderGrid.YMin <= unit.ColliderGrid.YMax;
         }
 
         public virtual void CalculateExtraDeltaPos()
