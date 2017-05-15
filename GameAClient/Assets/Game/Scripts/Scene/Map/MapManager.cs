@@ -66,6 +66,7 @@ namespace GameA.Game
             PoolFactory<BgRoot>.Clear();
 
             PoolFactory<BulletWater>.Clear();
+            PoolFactory<SpineObject>.Clear();
 		    Instance = null;
 		}
 

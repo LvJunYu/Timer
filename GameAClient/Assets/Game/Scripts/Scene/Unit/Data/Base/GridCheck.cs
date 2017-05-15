@@ -42,14 +42,14 @@ namespace GameA.Game
                 if (_hit == null)
                 {
                     _hit = hit;
-                    _hit.OnColliderEnter(_self);
+                    _hit.OnGridCheckEnter(_self);
                 }
             }
             else
             {
                 if (_hit != null)
                 {
-                    _hit.OnColliderExit(_self);
+                    _hit.OnGridCheckExit(_self);
                     _hit = null;
                 }
             }

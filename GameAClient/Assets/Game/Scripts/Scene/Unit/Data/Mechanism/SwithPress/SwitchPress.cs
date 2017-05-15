@@ -18,10 +18,12 @@ namespace GameA.Game
     {
         protected bool _trigger;
         protected bool _triggerReverse;
+        protected List<UnitBase> _units;
 
         internal override void OnPlay()
         {
             base.OnPlay();
+            _units = DataScene2D.Instance.GetControlledUnits(_guid);
             _trigger = false;
             IntVec3 guid = _guid;
             guid.z = GM2DTools.GetRuntimeCreatedUnitDepth();
@@ -65,14 +67,38 @@ namespace GameA.Game
 
         public virtual void OnTriggerStart(UnitBase other)
         {
-            //LogHelper.Debug("OnTriggerStart {0}", ToString());
+            //LogHelper.Debug("OnTriggerStart {0}", ToString() + "~" + _trans.GetInstanceID());
             _trigger = true;
+
+            if (_units != null)
+            {
+                for (int i = 0; i < _units.Count; i++)
+                {
+                    var unit = _units[i];
+                    if (unit != null && unit.IsAlive)
+                    {
+                        unit.OnSwitchPressStart(this);
+                    }
+                }
+            }
         }
 
         public virtual void OnTriggerEnd()
         {
             //LogHelper.Debug("OnTriggerEnd {0}", ToString());
             _trigger = false;
+
+            if (_units != null)
+            {
+                for (int i = 0; i < _units.Count; i++)
+                {
+                    var unit = _units[i];
+                    if (unit != null && unit.IsAlive)
+                    {
+                        unit.OnSwitchPressEnd(this);
+                    }
+                }
+            }
         }
     }
 }

@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using SoyEngine;
 using UnityEngine;
 
@@ -300,7 +301,7 @@ namespace GameA.Game
                     _cachedUnits.Add(unit);
                 }
             }
-            return _cachedUnits;
+            return _cachedUnits.ToList();
         }
 
         /// <summary>

@@ -182,8 +182,16 @@ namespace SoyEngine
 			    }
 		    }
 	    }
-    
-	    public static void FreeParticleItem(UnityNativeParticleItem item)
+
+        public static void FreeSpineObject(SpineObject item)
+        {
+            if (item != null)
+            {
+                PoolFactory<SpineObject>.Free(item);
+            }
+        }
+
+        public static void FreeParticleItem(UnityNativeParticleItem item)
 	    {
 		    if (item == null || item.Trans == null)
 		    {
@@ -300,5 +308,16 @@ namespace SoyEngine
 	    }
 
 		#endregion
+
+        internal SpineObject EmitLoop(string path, Vector3 pos)
+        {
+            SpineObject so;
+            if (GM2DTools.TryGetSpineObject(path, out so))
+            {
+                so.Trans.position = pos;
+                so.SkeletonAnimation.state.SetAnimation(0, "Run", true);
+            }
+            return so;
+        }
 	}
 }

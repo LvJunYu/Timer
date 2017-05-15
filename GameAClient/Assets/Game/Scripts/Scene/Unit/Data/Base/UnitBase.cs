@@ -1275,7 +1275,19 @@ namespace GameA.Game
         {
         }
 
+        internal virtual void OnSwitch(bool value)
+        {
+        }
+
         public virtual void DoEdge(int start, int end, EDirectionType direction, ESkillType eSkillType)
+        {
+        }
+
+        internal virtual void OnSwitchPressStart(SwitchPress switchPress)
+        {
+        }
+
+        internal virtual void OnSwitchPressEnd(SwitchPress switchPress)
         {
         }
     }

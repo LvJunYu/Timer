@@ -151,6 +151,7 @@ namespace GameA.Game
 
         public int GetSortingOrder(Table_Unit tableUnit)
         {
+            return 0;
             //switch (tableUnit.EUnitType)
             //{
             //    case EUnitType.Earth:

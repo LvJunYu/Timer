@@ -18,8 +18,8 @@ namespace GameA.Game
         protected SwitchPress _switchPress;
         protected bool _trigger;
         protected List<UnitBase> _units = new List<UnitBase>();
-        protected bool _colliderTrigger;
-        protected List<UnitBase> _colliderUnits = new List<UnitBase>();
+        protected bool _gridCheckTrigger;
+        protected List<UnitBase> _gridCheckUnits = new List<UnitBase>();
 
         public SwitchPress SwitchPress
         {
@@ -36,10 +36,9 @@ namespace GameA.Game
         {
             base.Clear();
             _trigger = false;
-            _colliderTrigger = false;
-            _switchPress = null;
+            _gridCheckTrigger = false;
             _units.Clear();
-            _colliderUnits.Clear();
+            _gridCheckUnits.Clear();
         }
 
         public override void OnIntersect(UnitBase other)
@@ -50,27 +49,27 @@ namespace GameA.Game
             }
         }
 
-        public void OnColliderEnter(UnitBase other)
+        public void OnGridCheckEnter(UnitBase other)
         {
-            if (_colliderUnits.Contains(other))
+            if (_gridCheckUnits.Contains(other))
             {
                 return;
             }
-            _colliderUnits.Add(other);
-            if (_colliderTrigger)
+            _gridCheckUnits.Add(other);
+            if (_gridCheckTrigger)
             {
                 return;
             }
-            _colliderTrigger = true;
+            _gridCheckTrigger = true;
             OnTriggerStart(other);
         }
 
-        public void OnColliderExit(UnitBase other)
+        public void OnGridCheckExit(UnitBase other)
         {
-            _colliderUnits.Remove(other);
-            if (_colliderUnits.Count == 0)
+            _gridCheckUnits.Remove(other);
+            if (_gridCheckUnits.Count == 0)
             {
-                _colliderTrigger = false;
+                _gridCheckTrigger = false;
                 OnTriggerEnd();
             }
         }
@@ -123,13 +122,16 @@ namespace GameA.Game
 
         protected void OnTriggerEnd()
         {
-            if (_view != null)
+            if (!_trigger && !_gridCheckTrigger)
             {
-                _view.ChangeView("M1SwitchTriggerOff_" + _unitDesc.Rotation);
-            }
-            if (_switchPress != null)
-            {
-                _switchPress.OnTriggerEnd();
+                if (_view != null)
+                {
+                    _view.ChangeView("M1SwitchTriggerOff_" + _unitDesc.Rotation);
+                }
+                if (_switchPress != null)
+                {
+                    _switchPress.OnTriggerEnd();
+                }
             }
         }
     }
