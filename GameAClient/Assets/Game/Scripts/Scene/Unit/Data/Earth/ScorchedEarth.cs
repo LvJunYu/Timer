@@ -89,7 +89,7 @@ namespace GameA.Game
             if (_trigger)
             {
                 _timer++;
-                if (_timer == 10)
+                if (_timer == 30)
                 {
                     //开始爆炸
                     PlayMode.Instance.Freeze(this);
@@ -99,14 +99,23 @@ namespace GameA.Game
                         GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
                         GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position, Vector3.one);
                     }
-                }
-                else if (_timer == 30)
-                {
                     //查收周边的让其爆炸
                     SendMsgToAround();
                 }
-                else if (_timer == 200)
+                else if (_timer >= 200)
                 {
+                    var units = ColliderScene2D.GridCastAllReturnUnits(_colliderGrid);
+                    if (units.Count > 0)
+                    {
+                        for (int i = 0; i < units.Count; i++)
+                        {
+                            UnitBase unit = units[i];
+                            if (unit != null && unit.IsAlive && unit != this && !(unit is SwitchTrigger))
+                            {
+                                return;
+                            }
+                        }
+                    }
                     //复原
                     _trigger = false;
                     _timer = 0;

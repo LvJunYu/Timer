@@ -19,6 +19,7 @@ namespace GameA.Game
         [SerializeField]
         protected Transform _trans;
         protected SkeletonAnimation _skeletonAnimation;
+        protected Renderer _renderer;
 
         public Transform Trans
         {
@@ -63,6 +64,8 @@ namespace GameA.Game
             _trans.parent = UnitManager.Instance.GetOriginParent();
             _skeletonAnimation = go.AddComponent<SkeletonAnimation>();
             _skeletonAnimation.SetEnableEx(false);
+            _renderer = _skeletonAnimation.GetComponent<Renderer>();
+            _renderer.sortingOrder = (int) ESortingOrder.Item;
         }
 
         public bool Init(string path)
@@ -81,6 +84,14 @@ namespace GameA.Game
             _skeletonAnimation.skeletonDataAsset = data;
             _skeletonAnimation.Initialize(true);
             return true;
+        }
+
+        public void SetRendererEnabled(bool value)
+        {
+            if (_renderer != null)
+            {
+                _renderer.enabled = value;
+            }
         }
 
         public void StopAnimation()
