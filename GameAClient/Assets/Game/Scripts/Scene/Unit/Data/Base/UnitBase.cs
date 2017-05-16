@@ -147,7 +147,12 @@ namespace GameA.Game
             get { return _tableUnit; }
         }
 
-        public virtual SkillCtrl SkillCtrl
+        public virtual SkillCtrl SkillCtrl1
+        {
+            get { return null; }
+        }
+
+        public virtual SkillCtrl SkillCtrl2
         {
             get { return null; }
         }

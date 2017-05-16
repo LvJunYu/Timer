@@ -22,7 +22,8 @@ namespace GameA.Game
         [SerializeField]
         protected MainInput _mainInput;
 
-        protected SkillCtrl _skillCtrl;
+        protected SkillCtrl _skillCtrl1;
+        protected SkillCtrl _skillCtrl2;
 
         [SerializeField] protected int _big;
         [SerializeField] protected int _flashTime;
@@ -68,9 +69,14 @@ namespace GameA.Game
 
         #endregion
 
-        public override SkillCtrl SkillCtrl
+        public override SkillCtrl SkillCtrl1
         {
-            get { return _skillCtrl; }
+            get { return _skillCtrl1; }
+        }
+
+        public override SkillCtrl SkillCtrl2
+        {
+            get { return _skillCtrl2; }
         }
 
         public bool OnClay
@@ -166,8 +172,11 @@ namespace GameA.Game
                 return false;
             }
             _mainInput = new MainInput(this);
-            _skillCtrl = new SkillCtrl(this);
-            _skillCtrl.ChangeSkill<SkillWater>(false);
+            _skillCtrl1 = new SkillCtrl(this);
+            _skillCtrl1.ChangeSkill<SkillWater>(false);
+
+            _skillCtrl2 = new SkillCtrl(this);
+            _skillCtrl2.ChangeSkill<SkillWater>(true);
 
             IntVec2 offset = _shooterEffectOffset;
             if (_curMoveDirection == EMoveDirection.Right)
@@ -255,7 +264,8 @@ namespace GameA.Game
             if (_isAlive && _isStart && !_isFreezed)
             {
                 _mainInput.UpdateLogic();
-                _skillCtrl.UpdateLogic();
+                _skillCtrl1.UpdateLogic();
+                _skillCtrl2.UpdateLogic();
                 CheckGround();
                 CheckClimb();
                 UpdateSpeedY();

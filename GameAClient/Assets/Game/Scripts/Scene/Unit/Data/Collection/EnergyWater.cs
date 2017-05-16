@@ -29,7 +29,7 @@ namespace GameA.Game
 
         protected override void OnTrigger(UnitBase other)
         {
-            other.SkillCtrl.ChangeSkill<SkillWater>(_plus);
+            other.SkillCtrl1.ChangeSkill<SkillWater>(_plus);
         }
     }
 }

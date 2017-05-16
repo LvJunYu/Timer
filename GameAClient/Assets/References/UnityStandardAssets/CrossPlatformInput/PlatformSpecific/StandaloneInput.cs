@@ -6,7 +6,7 @@ namespace UnitySampleAssets.CrossPlatformInput.PlatformSpecific
     public class StandaloneInput : VirtualInput
     {
         // 需要监听的输入按钮
-        private string [] _virtualBtnNames = { "Jump", "Fire1", "Fire2", "Horizontal", "Vertical" };
+        private string[] _virtualBtnNames = { "Jump", "Fire1", "Fire2", "Fire3", "Horizontal", "Vertical" };
 
         private void AddButton (string name)
         {

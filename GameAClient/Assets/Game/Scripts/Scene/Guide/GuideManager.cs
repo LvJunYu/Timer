@@ -127,7 +127,7 @@ namespace GameA.Game
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.JumpButton);
 			// 	}
 			// 	if (_currentGuide == null) return;
-			// 	if (PlayMode.Instance.MainUnit.MainInput.ShootInput) {
+			// 	if (PlayMode.Instance.MainUnit.MainInput.Skill1Input) {
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.AttackButton);
 			// 	}
 			// }

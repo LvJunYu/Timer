@@ -187,11 +187,10 @@ namespace GameA.Game
                 _testStepByStep--;
                 _unityTimeSinceGameStarted = (_logicFrameCnt + 1) * ConstDefineGM2D.FixedDeltaTime;
             }
-            UpdateRenderer(Time.deltaTime);
             while (_logicFrameCnt*ConstDefineGM2D.FixedDeltaTime < _unityTimeSinceGameStarted)
             {
                 _executeLogic = _logicFrameCnt*ConstDefineGM2D.FixedDeltaTime < _unityTimeSinceGameStarted;
-                //UpdateRenderer(Mathf.Min(Time.deltaTime, ConstDefineGM2D.FixedDeltaTime));
+                UpdateRenderer(Mathf.Min(Time.deltaTime, ConstDefineGM2D.FixedDeltaTime));
                 CheckUnit();
                 if (_executeLogic)
                 {

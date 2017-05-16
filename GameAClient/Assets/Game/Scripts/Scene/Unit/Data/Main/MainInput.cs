@@ -21,8 +21,9 @@ namespace GameA.Game
         Up,
         Down,
         Jump,
-        Shoot,
         Quicken,
+        Skill1,
+        Skill2,
         Max
     }
 
@@ -74,15 +75,19 @@ namespace GameA.Game
         protected bool _lastJumpInput;
 
         [SerializeField]
-        protected bool _shootInput;
-        [SerializeField]
-        protected bool _lastShootInput;
-
-        [SerializeField]
         protected bool _quickenInput;
         [SerializeField]
         protected bool _lastQuickenInput;
         public int _quickenTime;
+
+        [SerializeField]
+        protected bool _skill1Input;
+        [SerializeField]
+        protected bool _lastSkill1Input;
+        [SerializeField]
+        protected bool _skill2Input;
+        [SerializeField]
+        protected bool _lastSkill2Input;
 
         // 跳跃等级
         [SerializeField]
@@ -137,14 +142,14 @@ namespace GameA.Game
             get { return _jumpInput; }
         }
 
-        public bool ShootInput
+        public bool Skill1Input
         {
-            get { return _shootInput; }
+            get { return _skill1Input; }
         }
 
-        public bool ShootInputDown
+        public bool Skill2InputDown
         {
-            get { return _shootInput && !_lastShootInput; }
+            get { return _skill2Input && !_lastSkill2Input; }
         }
 
         public bool QuickenInputUp
@@ -225,11 +230,13 @@ namespace GameA.Game
             _climbJump = false;
             _step = false;
             _stepY = 0;
-            _shootInput = false;
-            _lastShootInput = false;
             _quickenInput = false;
             _lastQuickenInput = false;
             _quickenTime = 0;
+            _skill1Input = false;
+            _lastSkill1Input = false;
+            _skill2Input = false;
+            _lastSkill2Input = false;
             for (int i = 0; i < _curInputs.Length; i++)
             {
                 _curInputs[i] = false;
@@ -241,6 +248,12 @@ namespace GameA.Game
         {
             _lastHorizontal = _curHorizontal;
             _lastVertical = _curVertical;
+
+            _lastJumpInput = _jumpInput;
+            _lastQuickenInput = _quickenInput;
+            _lastSkill1Input = _skill1Input;
+            _lastSkill2Input = _skill2Input;
+
             _curHorizontal = CrossPlatformInputManager.GetAxis("Horizontal");
             _curVertical = CrossPlatformInputManager.GetAxis("Vertical");
             if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -293,14 +306,6 @@ namespace GameA.Game
             {
                 _curInputs[(int)EInputType.Jump] = false;
             }
-            if (KeyDown(EInputType.Shoot))
-            {
-                _curInputs[(int)EInputType.Shoot] = true;
-            }
-            if (KeyUp(EInputType.Shoot))
-            {
-                _curInputs[(int)EInputType.Shoot] = false;
-            }
             if (KeyDown(EInputType.Quicken))
             {
                 _curInputs[(int)EInputType.Quicken] = true;
@@ -308,6 +313,22 @@ namespace GameA.Game
             if (KeyUp(EInputType.Quicken))
             {
                 _curInputs[(int)EInputType.Quicken] = false;
+            }
+            if (KeyDown(EInputType.Skill1))
+            {
+                _curInputs[(int)EInputType.Skill1] = true;
+            }
+            if (KeyUp(EInputType.Skill1))
+            {
+                _curInputs[(int)EInputType.Skill1] = false;
+            }
+            if (KeyDown(EInputType.Skill2))
+            {
+                _curInputs[(int)EInputType.Skill2] = true;
+            }
+            if (KeyUp(EInputType.Skill2))
+            {
+                _curInputs[(int)EInputType.Skill2] = false;
             }
         }
 
@@ -325,9 +346,11 @@ namespace GameA.Game
                     return _lastVertical < 0.1f && _curVertical > 0.1f;
                 case EInputType.Jump:
                     return CrossPlatformInputManager.GetButtonDown("Jump");
-                case EInputType.Shoot:
-                    return CrossPlatformInputManager.GetButtonDown("Fire1");
                 case EInputType.Quicken:
+                    return CrossPlatformInputManager.GetButtonDown("Fire3");
+                case EInputType.Skill1:
+                    return CrossPlatformInputManager.GetButtonDown("Fire1");
+                case EInputType.Skill2:
                     return CrossPlatformInputManager.GetButtonDown("Fire2");
             }
             return false;
@@ -355,9 +378,11 @@ namespace GameA.Game
                         return true;
                     }
                     return CrossPlatformInputManager.GetButtonUp("Jump");
-                case EInputType.Shoot:
-                    return CrossPlatformInputManager.GetButtonUp("Fire1");
                 case EInputType.Quicken:
+                    return CrossPlatformInputManager.GetButtonUp("Fire3");
+                case EInputType.Skill1:
+                    return CrossPlatformInputManager.GetButtonUp("Fire1");
+                case EInputType.Skill2:
                     return CrossPlatformInputManager.GetButtonUp("Fire2");
             }
             return false;
@@ -396,16 +421,13 @@ namespace GameA.Game
                 }
             }
             CheckJump();
-            CheckFire();
-            CheckFire2();
+            CheckQuicken();
+            CheckSkill();
             _step = false;
         }
 
         protected void CheckInput()
         {
-            _lastJumpInput = _jumpInput;
-            _lastShootInput = _shootInput;
-            _lastQuickenInput = _quickenInput;
             if (_runMode == ERunMode.Normal)
             {
                 if (_curInputs[0] && !_lastInputs[0])
@@ -474,25 +496,37 @@ namespace GameA.Game
                 {
                     _inputDatas.Add(_curTime);
                     _inputDatas.Add(10);
-                    _shootInput = true;
+                    _quickenInput = true;
                 }
                 if (!_curInputs[5] && _lastInputs[5])
                 {
                     _inputDatas.Add(_curTime);
                     _inputDatas.Add(11);
-                    _shootInput = false;
+                    _quickenInput = false;
                 }
                 if (_curInputs[6] && !_lastInputs[6])
                 {
                     _inputDatas.Add(_curTime);
                     _inputDatas.Add(12);
-                    _quickenInput = true;
+                    _skill1Input = true;
                 }
                 if (!_curInputs[6] && _lastInputs[6])
                 {
                     _inputDatas.Add(_curTime);
                     _inputDatas.Add(13);
-                    _quickenInput = false;
+                    _skill1Input = false;
+                }
+                if (_curInputs[7] && !_lastInputs[7])
+                {
+                    _inputDatas.Add(_curTime);
+                    _inputDatas.Add(14);
+                    _skill2Input = true;
+                }
+                if (!_curInputs[7] && _lastInputs[7])
+                {
+                    _inputDatas.Add(_curTime);
+                    _inputDatas.Add(15);
+                    _skill2Input = false;
                 }
             }
             else if (_runMode == ERunMode.Record)
@@ -544,19 +578,27 @@ namespace GameA.Game
                     }
                     if (_inputDatas[_index] == 10)
                     {
-                        _shootInput = true;
+                        _quickenInput = true;
                     }
                     if (_inputDatas[_index] == 11)
                     {
-                        _shootInput = false;
+                        _quickenInput = false;
                     }
                     if (_inputDatas[_index] == 12)
                     {
-                        _quickenInput = true;
+                        _skill1Input = true;
                     }
                     if (_inputDatas[_index] == 13)
                     {
-                        _quickenInput = false;
+                        _skill1Input = false;
+                    }
+                    if (_inputDatas[_index] == 14)
+                    {
+                        _skill2Input = true;
+                    }
+                    if (_inputDatas[_index] == 15)
+                    {
+                        _skill2Input = false;
                     }
                     _index++;
                 }
@@ -667,12 +709,35 @@ namespace GameA.Game
             }
         }
 
-        protected void CheckFire()
+        protected void CheckQuicken()
         {
-            if (!_shootInput && !ShootInputDown)
+            switch (_fire2State)
             {
-                return;
+                case EFire2State.HoldBox:
+                    {
+                        if (QuickenInputUp)
+                        {
+                            _unit.OnBoxHoldingChanged();
+                        }
+                    }
+                    break;
+                case EFire2State.Quicken:
+                    {
+                        if (_quickenTime > 0)
+                        {
+                            return;
+                        }
+                        if (QuickenInputUp)
+                        {
+                            _quickenTime = QuickenMaxTime;
+                        }
+                    }
+                    break;
             }
+        }
+
+        protected void CheckSkill()
+        {
             var eShootDir = _unit.CurMoveDirection == EMoveDirection.Left ? EShootDirectionType.Left : EShootDirectionType.Right;
             if (_leftInput == 1)
             {
@@ -707,40 +772,14 @@ namespace GameA.Game
                 eShootDir = EShootDirectionType.Up;
             }
             _unit.ShootRot = (int)eShootDir;
-            if (ShootInputDown)
-            {
-                _unit.SkillCtrl.FireOnce();
-            }
-            if (_shootInput)
-            {
-                _unit.SkillCtrl.FireLoop();
-            }
-        }
 
-        protected void CheckFire2()
-        {
-            switch (_fire2State)
+            if (_skill1Input)
             {
-                    case EFire2State.HoldBox:
-                {
-                    if (QuickenInputUp)
-                    {
-                        _unit.OnBoxHoldingChanged();
-                    }
-                }
-                    break;
-                    case EFire2State.Quicken:
-                {
-                    if (_quickenTime > 0)
-                    {
-                        return;
-                    }
-                    if (QuickenInputUp)
-                    {
-                        _quickenTime = QuickenMaxTime;
-                    }
-                }
-                    break;
+                _unit.SkillCtrl1.Fire();
+            }
+            if (Skill2InputDown)
+            {
+                _unit.SkillCtrl2.Fire();
             }
         }
 

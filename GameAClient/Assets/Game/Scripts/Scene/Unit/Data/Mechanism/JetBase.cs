@@ -45,7 +45,7 @@ namespace GameA.Game
             if (_skillCtrl != null)
             {
                 _skillCtrl.UpdateLogic();
-                if (_skillCtrl.JetFire())
+                if (_skillCtrl.Fire())
                 {
                     if (_animation != null)
                     {

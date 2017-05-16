@@ -32,7 +32,7 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.SkillCtrl != null)
+            if (other.SkillCtrl1 != null)
             {
                 if (_currentCount > 0)
                 {

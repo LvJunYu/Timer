@@ -28,7 +28,7 @@ namespace GameA.Game
 
         protected override void OnTrigger(UnitBase other)
         {
-            other.SkillCtrl.ChangeSkill<SkillFire>(_plus);
+            other.SkillCtrl1.ChangeSkill<SkillFire>(_plus);
         }
     }
 }
