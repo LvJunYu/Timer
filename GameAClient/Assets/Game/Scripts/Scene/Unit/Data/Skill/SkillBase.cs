@@ -39,6 +39,9 @@ namespace GameA.Game
         [SerializeField]
         protected int _timerCD;
 
+        protected int _timerAnimation;
+        protected int _cdAnimation;
+
         [SerializeField]
         protected int _bulletSpeed;
 
@@ -86,6 +89,15 @@ namespace GameA.Game
             _timerCD = 0;
             _cdTime = 8;
             _bulletSpeed = 200;
+            _timerAnimation = 0;
+            _cdAnimation = 0;
+        }
+
+        internal void SetValue(int cdTime, int range, int cdAnimation)
+        {
+            _cdTime = cdTime;
+            _range = range * ConstDefineGM2D.ServerTileScale;
+            _cdAnimation = cdAnimation;
         }
 
         internal virtual void Exit()
@@ -98,23 +110,32 @@ namespace GameA.Game
             {
                 _timerCD--;
             }
+            if (_timerAnimation > 0)
+            {
+                _timerAnimation--;
+                if (_timerAnimation == 0)
+                {
+                    //生成子弹
+                    CreateBullet();
+                }
+            }
         }
 
-        public void Fire()
+        public bool Fire()
         {
             if (_timerCD > 0)
             {
-                return;
+                return false;
             }
             _timerCD = _cdTime;
-            //生成子弹
-            var bullet = CreateBullet();
-            if (bullet == null)
+            _timerAnimation = _cdAnimation;
+            if (_timerAnimation == 0)
             {
-                return;
+                //生成子弹
+                CreateBullet();
+                //LogHelper.Debug("Skill: {0} CreateBullet: {1}",this, bullet);
             }
-            //LogHelper.Debug("Skill: {0} CreateBullet: {1}",this, bullet);
-            bullet.Run(this);
+            return true;
         }
 
         private BulletBase CreateBullet()
@@ -123,7 +144,12 @@ namespace GameA.Game
             {
                 return null;
             }
-            return PlayMode.Instance.CreateRuntimeUnit(_bulletId, GetBulletPos(_bulletId), 0, Vector2.one) as BulletBase;
+            var bullet =  PlayMode.Instance.CreateRuntimeUnit(_bulletId, GetBulletPos(_bulletId), 0, Vector2.one) as BulletBase;
+            if (bullet != null)
+            {
+                bullet.Run(this);
+            }
+            return bullet;
         }
 
         private IntVec2 GetBulletPos(int bulletId)

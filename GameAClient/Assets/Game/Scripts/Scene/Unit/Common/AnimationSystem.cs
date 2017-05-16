@@ -24,6 +24,7 @@ namespace GameA.Game
         private readonly Dictionary<string, Animation> _animations = new Dictionary<string, Animation>();
 		// 默认动作，初始状态时播放
         private string _initAniName;
+        private bool _initAniLoop;
 		/// <summary>
 		/// 动画事件回调
 		/// </summary>
@@ -49,18 +50,27 @@ namespace GameA.Game
             _animations.Clear();
             _eventHandles.Clear();
             _initAniName = null;
+            _initAniLoop = false;
             for (int i = 0; i < _currentAnimation.Length; i++)
             {
                 _currentAnimation[i] = null;
             }
         }
 
-        public void Init(string aniName)
+        public void Init(string aniName, bool loop = true)
         {
+            _initAniLoop = loop;
             if (!string.IsNullOrEmpty(aniName))
             {
                 _initAniName = aniName;
-                PlayLoop(_initAniName);
+                if (_initAniLoop)
+                {
+                    PlayLoop(_initAniName);
+                }
+                else
+                {
+                    PlayOnce(_initAniName);
+                }
             }
         }
 
@@ -156,7 +166,14 @@ namespace GameA.Game
             }
             if (_initAniName != null)
             {
-                PlayLoop(_initAniName);
+                if (_initAniLoop)
+                {
+                    PlayLoop(_initAniName);
+                }
+                else
+                {
+                    PlayOnce(_initAniName);
+                }
             }
         }
 

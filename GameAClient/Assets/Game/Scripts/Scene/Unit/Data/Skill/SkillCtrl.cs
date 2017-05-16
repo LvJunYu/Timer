@@ -19,6 +19,11 @@ namespace GameA.Game
         [SerializeField]protected SkillBase _currentSkill;
         protected Dictionary<string, SkillBase> _skills = new Dictionary<string, SkillBase>();
 
+        public SkillBase CurrentSkill
+        {
+            get { return _currentSkill; }
+        }
+
         public SkillCtrl(UnitBase owner)
         {
             _owner = owner;
@@ -77,23 +82,34 @@ namespace GameA.Game
         /// <summary>
         /// 增强型技能点射
         /// </summary>
-        public void FireOnce()
+        public bool FireOnce()
         {
             if (_currentSkill != null && _currentSkill.Plus)
             {
-                _currentSkill.Fire();
+                return _currentSkill.Fire();
             }
+            return false;
         }
 
         /// <summary>
         /// 普通技能持续触发
         /// </summary>
-        public void FireLoop()
+        public bool FireLoop()
         {
             if (_currentSkill != null && !_currentSkill.Plus)
             {
-                _currentSkill.Fire();
+                return _currentSkill.Fire();
             }
+            return false;
+        }
+
+        public bool JetFire()
+        {
+            if (_currentSkill != null)
+            {
+                return _currentSkill.Fire();
+            }
+            return false;
         }
 
         public void UpdateLogic()

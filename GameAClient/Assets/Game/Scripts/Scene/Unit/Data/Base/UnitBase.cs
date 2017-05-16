@@ -487,14 +487,7 @@ namespace GameA.Game
             }
             else
             {
-                if (loop)
-                {
-                    _animation.Init(((EDirectionType) Rotation).ToString());
-                }
-                else
-                {
-                    _animation.PlayOnce(((EDirectionType) Rotation).ToString());
-                }
+                _animation.Init(((EDirectionType)Rotation).ToString(), loop);
             }
         }
 
