@@ -1226,11 +1226,6 @@ namespace GameA.Game
             _viewZOffset = BackZOffset;
         }
 
-        protected void SetSortingOrderFront()
-        {
-            _viewZOffset = FrontZOffset;
-        }
-
         protected void SetFront()
         {
         }

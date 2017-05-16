@@ -18,7 +18,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            SetSortingOrderFront();
+            _viewZOffset = -0.1f;
             return true;
         }
 
