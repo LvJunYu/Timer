@@ -48,6 +48,7 @@ namespace GameA.Game
             {
                 _hitUnits[i] = null;
             }
+            _cacheIntersectUnits.Clear();
             if (_isFreezed)
             {
                 _colliderPos = min;
@@ -56,7 +57,6 @@ namespace GameA.Game
             else
             {
                 _cacheHitUnits.Clear();
-                _cacheIntersectUnits.Clear();
                 _colliderPos.y = min.y;
                 if (_isAlive)
                 {
@@ -79,6 +79,18 @@ namespace GameA.Game
                 _dynamicCollider.Grid = _colliderGrid;
                 ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider);
                 _lastColliderGrid = _colliderGrid;
+            }
+            else if(!_isFreezed)  //静止的时候检测是否交叉
+            {
+                var units = ColliderScene2D.GridCastAllReturnUnits(_colliderGrid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue, _dynamicCollider);
+                for (int i = 0; i < units.Count; i++)
+                {
+                    var unit = units[i];
+                    if (unit.IsAlive)
+                    {
+                        CheckIntersect(unit);
+                    }
+                }
             }
         }
 
@@ -263,7 +275,6 @@ namespace GameA.Game
                 unit.OnIntersect(this);
             }
         }
-
         private void CheckHit(UnitBase unit, EDirectionType eDirectionType)
         {
             if (!_cacheHitUnits.Contains(unit.Guid))
