@@ -93,11 +93,15 @@ namespace GameA.Game
             _cdAnimation = 0;
         }
 
-        internal void SetValue(int cdTime, int range, int cdAnimation)
+        internal void SetValue(int cdTime, int range, int cdAnimation = 0)
         {
             _cdTime = cdTime;
             _range = range * ConstDefineGM2D.ServerTileScale;
             _cdAnimation = cdAnimation;
+            if (_cdAnimation > _cdTime)
+            {
+                LogHelper.Error("Error: _cdAnimation{0} > _cdTime{1}", _cdAnimation, _cdTime);
+            }
         }
 
         internal virtual void Exit()

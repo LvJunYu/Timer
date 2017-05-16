@@ -11,15 +11,16 @@ using System.Collections;
 namespace GameA.Game
 {
     [Unit(Id = 5016, Type = typeof(JetRed))]
-    public class JetRed : Magic
+    public class JetRed : JetBase
     {
-        internal override bool InstantiateView()
+        protected override bool OnInit()
         {
-            if (!base.InstantiateView())
+            if (!base.OnInit())
             {
                 return false;
             }
-            InitAssetRotation();
+            _timeScale = 3;
+            _skillCtrl.CurrentSkill.SetValue(8, 60, AnimationLength / _timeScale);
             return true;
         }
     }
