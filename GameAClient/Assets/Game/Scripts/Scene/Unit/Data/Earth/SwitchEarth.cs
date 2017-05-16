@@ -36,7 +36,7 @@ namespace GameA.Game
                 }
                 if (_effect != null)
                 {
-                    _effect.Trans.gameObject.SetActiveEx(_currentTrigger);
+                    _effect.SetRendererEnabled(_currentTrigger);
                 }
             }
         }
@@ -50,9 +50,16 @@ namespace GameA.Game
         {
             base.Clear();
             _finalTrigger = false;
-            _currentTrigger = true;
+            _currentTrigger = false;
             _switchPressUnits.Clear();
-            SetState(_finalTrigger);
+            if (_view != null)
+            {
+                _view.SetRendererEnabled(!_currentTrigger);
+            }
+            if (_effect != null)
+            {
+                _effect.SetRendererEnabled(_currentTrigger);
+            }
         }
 
         internal override void OnObjectDestroy()
@@ -73,9 +80,10 @@ namespace GameA.Game
             }
             if (_trans != null)
             {
+                _view.SetRendererEnabled(!_currentTrigger);
                 _effect = GameParticleManager.Instance.EmitLoop("M1EffectSwitchEarth", _trans.position + new Vector3(0,-0.6f,0));
+                _effect.SetRendererEnabled(_currentTrigger);
             }
-            SetState(_finalTrigger);
             return true;
         }
 
@@ -127,11 +135,11 @@ namespace GameA.Game
                         return;
                     }
                 }
-                CurrentTrigger = _finalTrigger;
+                CurrentTrigger = value;
             }
             else
             {
-                CurrentTrigger = _finalTrigger;
+                CurrentTrigger = value;
             }
         }
 

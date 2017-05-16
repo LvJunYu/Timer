@@ -21,7 +21,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            _skillCtrl.CurrentSkill.SetValue(50, 60, 15);
+            _skillCtrl.CurrentSkill.SetValue(50, 60, AnimationLength);
             return true;
         }
     }

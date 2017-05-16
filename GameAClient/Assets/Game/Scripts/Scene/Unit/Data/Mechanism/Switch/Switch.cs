@@ -26,13 +26,18 @@ namespace GameA.Game
             {
                 return false;
             }
+            CreateParticle();
+            return true;
+        }
+
+        protected virtual void CreateParticle()
+        {
             _effectStart = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectSwitchStart", _trans);
             _effectRun = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectSwitchRun", _trans);
             if (_effectRun != null)
             {
                 _effectRun.Play();
             }
-            return true;
         }
 
         internal override void OnObjectDestroy()
