@@ -41,6 +41,11 @@ namespace GameA.Game
 		[ColumnMapping("UnitType")]
 		public int UnitType;
 		/// <summary>
+        /// 类别
+        /// </summary>
+		[ColumnMapping("UIType")]
+		public int UIType;
+		/// <summary>
         /// 碰撞层
         /// </summary>
 		[ColumnMapping("Layer")]

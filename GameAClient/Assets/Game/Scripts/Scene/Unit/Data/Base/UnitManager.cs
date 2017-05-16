@@ -23,7 +23,7 @@ namespace GameA.Game
         public readonly Dictionary<int, Table_Unit> _units = new Dictionary<int, Table_Unit>();
 
         private Dictionary<int,Type> _unitTypes = new Dictionary<int, Type>();
-        private readonly Dictionary<EUnitType, List<Table_Unit>> _typeUnits = new Dictionary<EUnitType, List<Table_Unit>>();
+        private readonly Dictionary<EUIType, List<Table_Unit>> _typeUnits = new Dictionary<EUIType, List<Table_Unit>>();
 
         private void Awake()
         {
@@ -75,7 +75,7 @@ namespace GameA.Game
                 _units.Add(pair.Key, tableUnit);
                 if (tableUnit.Use == 1)
                 {
-                    var unitType = tableUnit.EUnitType;
+                    var unitType = (EUIType)tableUnit.UIType;
                     if (!_typeUnits.ContainsKey(unitType))
                     {
                         _typeUnits.Add(unitType, new List<Table_Unit>());
@@ -85,7 +85,7 @@ namespace GameA.Game
             }
         }
 
-        public List<Table_Unit> GetSameTypeItems(EUnitType eUnitType)
+        public List<Table_Unit> GetSameTypeItems(EUIType eUnitType)
         {
             List<Table_Unit> tableItems;
             if (!_typeUnits.TryGetValue(eUnitType, out tableItems))

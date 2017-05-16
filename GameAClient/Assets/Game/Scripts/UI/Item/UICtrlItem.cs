@@ -16,15 +16,15 @@ namespace GameA.Game
     [UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlItem : UICtrlGenericBase<UIViewItem>
     {
-        private EUnitType _selectedUnitType;
-	    private EUnitType _lastSelectUnitType;
+        private EUIType _selectedUnitType;
+        private EUIType _lastSelectUnitType;
 
         private List<UMCtrlItem> _umItems = new List<UMCtrlItem>();
 
         public const string NormalButtonSpriteName = "ChoiceButton_2";
         public const string SelectButtonSpriteName = "ChoiceButton_1";
 
-        private Dictionary<EUnitType, Button> _cachedButtonDic;
+        private Dictionary<EUIType, Button> _cachedButtonDic;
 
 
         protected override void InitGroupId()
@@ -61,13 +61,13 @@ namespace GameA.Game
 			UpdateTabbarState();
 			if (EditMode.Instance.CurEditorLayer == EEditorLayer.Effect)
 			{
-				RefreshView(EUnitType.Effect);
+                RefreshView(EUIType.Effect);
 			}
 			else
 			{
-				if (_selectedUnitType == EUnitType.Effect)
+                if (_selectedUnitType == EUIType.Effect)
 				{
-					_selectedUnitType = EUnitType.None;
+                    _selectedUnitType = EUIType.None;
 				}
 				RefreshView(_selectedUnitType);
 			}
@@ -86,8 +86,8 @@ namespace GameA.Game
 		    if (IsOpen)
 		    {
 				UpdateTabbarState();
-			    EUnitType showType = EditMode.Instance.CurEditorLayer == EEditorLayer.Effect
-				    ? EUnitType.Effect
+                EUIType showType = EditMode.Instance.CurEditorLayer == EEditorLayer.Effect
+                    ? EUIType.Effect
 				    : _lastSelectUnitType;
 				RefreshView(showType);
 			}
@@ -95,32 +95,32 @@ namespace GameA.Game
 
 		private void OnCollection()
         {
-            RefreshView(EUnitType.Collection);
+            RefreshView(EUIType.Collection);
         }
 
         private void OnMonster()
         {
-            RefreshView(EUnitType.Monster);
+            RefreshView(EUIType.Monster);
         }
 
         private void OnMechanism()
         {
-            RefreshView(EUnitType.Mechanism);
+            RefreshView(EUIType.Mechanism);
         }
 
         private void OnEarth()
         {
-            RefreshView(EUnitType.Earth);
+            RefreshView(EUIType.Earth);
         }
 
         private void OnActor()
         {
-            RefreshView(EUnitType.MainPlayer);
+            RefreshView(EUIType.Main);
         }
 
         private void OnDecoration()
         {
-            RefreshView(EUnitType.Decoration);
+            RefreshView(EUIType.Decoration);
         }
 		#endregion
 
@@ -130,11 +130,11 @@ namespace GameA.Game
 
 		#region private
 
-		private void RefreshView(EUnitType eUnitType)
+        private void RefreshView(EUIType eUnitType)
         {
-		    if (eUnitType == EUnitType.None)
+            if (eUnitType == EUIType.None)
 		    {
-                eUnitType = EUnitType.MainPlayer;
+                eUnitType = EUIType.Main;
             }
             if (_selectedUnitType == eUnitType)
             {
@@ -201,13 +201,13 @@ namespace GameA.Game
 
         private void InitUI()
         {
-            _cachedButtonDic = new Dictionary<EUnitType, Button>();
-            _cachedButtonDic.Add(EUnitType.Decoration,_cachedView.Decoration);
-            _cachedButtonDic.Add(EUnitType.Collection, _cachedView.Collection);
-            _cachedButtonDic.Add(EUnitType.Earth, _cachedView.Earth);
-            _cachedButtonDic.Add(EUnitType.MainPlayer, _cachedView.Actor);
-            _cachedButtonDic.Add(EUnitType.Mechanism, _cachedView.Mechanism);
-            _cachedButtonDic.Add(EUnitType.Monster, _cachedView.Monster);
+            _cachedButtonDic = new Dictionary<EUIType, Button>();
+            _cachedButtonDic.Add(EUIType.Decoration,_cachedView.Decoration);
+            _cachedButtonDic.Add(EUIType.Collection, _cachedView.Collection);
+            _cachedButtonDic.Add(EUIType.Earth, _cachedView.Earth);
+            _cachedButtonDic.Add(EUIType.Main, _cachedView.Actor);
+            _cachedButtonDic.Add(EUIType.Mechanism, _cachedView.Mechanism);
+            _cachedButtonDic.Add(EUIType.Monster, _cachedView.Monster);
 			var enumerator = _cachedButtonDic.GetEnumerator();
 			while (enumerator.MoveNext())
 			{

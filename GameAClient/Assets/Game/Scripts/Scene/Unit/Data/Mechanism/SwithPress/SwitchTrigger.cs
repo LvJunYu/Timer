@@ -27,6 +27,16 @@ namespace GameA.Game
             set { _switchPress = value; }
         }
 
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            _viewZOffset = 0.1f;
+            return false;
+        }
+
         protected override void InitAssetPath()
         {
             InitAssetRotation();

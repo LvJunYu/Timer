@@ -69,6 +69,21 @@ namespace GameA.Game
         Max
     }
 
+    public enum EUIType
+    {
+        None,
+        Main,
+        Monster,
+        Vehicle,
+        Earth,
+        Mechanism,
+        Collection,
+        Decoration,
+        Bullet,
+        Missle,
+        Effect,
+    }
+
     public enum EUnitType
     {
         None,
