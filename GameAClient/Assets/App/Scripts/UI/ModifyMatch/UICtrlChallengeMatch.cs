@@ -28,8 +28,9 @@ namespace GameA
         private USCtrlChallengeProjectCard _hardCard;
         private USCtrlChallengeProjectCard _unkownCard;
 
-        private EChallengeProjectType _selectChallengeTemp;
+//        private EChallengeProjectType _selectChallengeTemp;
 
+        private const float _randomPickStateTime = 4.0f;
         /// <summary>
         /// 随机改造关卡计时器，点击随机按钮后进入随机状态，至少持续N秒，收到回包且计时器结束则进入下一状态
         /// </summary>
@@ -46,7 +47,7 @@ namespace GameA
         {
             base.OnOpen (parameter);
 
-            _cachedView.InputBlock.SetActiveEx (false);
+            _cachedView.InputBlock.gameObject.SetActive (false);
             _randomPickTimer = 0f;
             if (LocalUser.Instance.MatchUserData.IsDirty) {
                 LocalUser.Instance.MatchUserData.Request (
@@ -102,7 +103,7 @@ namespace GameA
                     if (LocalUser.Instance.MatchUserData.CurrentChallengeState() == MatchUserData.EChallengeState.Selecting) {
                         if (_isOpen)
                             Refresh ();
-                        _cachedView.InputBlock.SetActiveEx (false);
+                        _cachedView.InputBlock.gameObject.SetActive (false);
                     } else {
                         _randomPickTimer = 0.001f;
                     }
@@ -128,7 +129,7 @@ namespace GameA
                 _cachedView.RandomPickBtn.gameObject.SetActive (false);
                 _cachedView.ChallengeBtn.gameObject.SetActive (false);
                 _cachedView.AbandomBtn.gameObject.SetActive (false);
-                _selectChallengeTemp = EChallengeProjectType.CPT_None;
+//                _selectChallengeTemp = EChallengeProjectType.CPT_None;
             } else if (LocalUser.Instance.MatchUserData.CurrentChallengeState() == MatchUserData.EChallengeState.Challenging) {
                 _easyCard.SetProject (LocalUser.Instance.MatchUserData.EasyChallengeProjectData, EChallengeProjectType.CPT_Easy,
                     LocalUser.Instance.MatchUserData.CurSelectedChallengeType == (int)EChallengeProjectType.CPT_Easy ? 1 : -1);
@@ -159,38 +160,38 @@ namespace GameA
             SocialGUIManager.Instance.CloseUI<UICtrlChallengeMatch>();
 		}
 
-        private void OnSelectBtn () {
-            if (MatchUserData.EChallengeState.Selecting != LocalUser.Instance.MatchUserData.CurrentChallengeState())
-                return;
-            if (_selectChallengeTemp == EChallengeProjectType.CPT_None) {
-                SocialGUIManager.ShowPopupDialog (
-                    "请先点击一个关卡卡片", null, new KeyValuePair<string, Action> ("知道了", null));
-            } else {
-                SocialGUIManager.ShowPopupDialog(
-                    string.Format("确定选择 {1} 进行挑战吗？首次选择免费，重选需要支付金币", _selectChallengeTemp),
-                    "请确定",
-                    new KeyValuePair<string, Action>("确定", () => {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "...");
-                        RemoteCommands.SelectMatchChallengeProject(
-                            _selectChallengeTemp, false, 
-                            msg => {
-                                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                                if (msg.ResultCode == (int)ESelectMatchChallengeProjectCode.SMCPC_Success) {
-
-                                } else {
-                                    // error handle
-                                }
-                            },
-                            code => {
-                                // error handle
-                                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                            }
-                        );
-                    }),
-                    new KeyValuePair<string, Action>("取消", null)
-                );
-            }			
-		}
+//        private void OnSelectBtn () {
+//            if (MatchUserData.EChallengeState.Selecting != LocalUser.Instance.MatchUserData.CurrentChallengeState())
+//                return;
+//            if (_selectChallengeTemp == EChallengeProjectType.CPT_None) {
+//                SocialGUIManager.ShowPopupDialog (
+//                    "请先点击一个关卡卡片", null, new KeyValuePair<string, Action> ("知道了", null));
+//            } else {
+//                SocialGUIManager.ShowPopupDialog(
+//                    string.Format("确定选择 {1} 进行挑战吗？首次选择免费，重选需要支付金币", _selectChallengeTemp),
+//                    "请确定",
+//                    new KeyValuePair<string, Action>("确定", () => {
+//                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "...");
+//                        RemoteCommands.SelectMatchChallengeProject(
+//                            _selectChallengeTemp, false, 
+//                            msg => {
+//                                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+//                                if (msg.ResultCode == (int)ESelectMatchChallengeProjectCode.SMCPC_Success) {
+//
+//                                } else {
+//                                    // error handle
+//                                }
+//                            },
+//                            code => {
+//                                // error handle
+//                                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+//                            }
+//                        );
+//                    }),
+//                    new KeyValuePair<string, Action>("取消", null)
+//                );
+//            }			
+//		}
 
         private void OnChallengeBtn () {
             if (MatchUserData.EChallengeState.Challenging != LocalUser.Instance.MatchUserData.CurrentChallengeState())
@@ -200,6 +201,8 @@ namespace GameA
         private void OnRandomPickBtn () {
             if (MatchUserData.EChallengeState.ChanceReady != LocalUser.Instance.MatchUserData.CurrentChallengeState())
                 return;
+            _randomPickTimer = _randomPickStateTime;
+            _cachedView.InputBlock.gameObject.SetActive (true);
             RemoteCommands.GetMatchChallengeProject (
                 0,
                 msg => {
@@ -208,6 +211,7 @@ namespace GameA
                         LocalUser.Instance.MatchUserData.MediumChallengeProjectData.OnSyncFromParent(msg.MediumChallengeProjectData);
                         LocalUser.Instance.MatchUserData.DifficultChallengeProjectData.OnSyncFromParent(msg.DifficultChallengeProjectData);
                         LocalUser.Instance.MatchUserData.RandomChallengeProjectData.OnSyncFromParent(msg.RandomChallengeProjectData);
+                        LocalUser.Instance.MatchUserData.LeftChallengeCount--;
                         LocalUser.Instance.MatchUserData.CurSelectedChallengeType = (int)EChallengeProjectType.CPT_None;
                     } else {
                         SocialGUIManager.ShowPopupDialog("随机挑战关卡失败，原因代码：" + msg.ResultCode.ToString());
@@ -254,18 +258,18 @@ namespace GameA
         #endregion 接口
         private void OnChallengeProjectSelected (EChallengeProjectType type) {
             if (LocalUser.Instance.MatchUserData.CurrentChallengeState() == MatchUserData.EChallengeState.Selecting) {
-                _selectChallengeTemp = type;
+//                _selectChallengeTemp = type;
                 SocialGUIManager.ShowPopupDialog(
-                    string.Format("确定选择 {1} 进行挑战吗？首次选择免费，重选需要支付金币", _selectChallengeTemp),
+                    string.Format("确定选择 {0} 进行挑战吗？首次选择免费，重选需要支付金币", type),
                     "请确定",
                     new KeyValuePair<string, Action>("确定", () => {
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "...");
                         RemoteCommands.SelectMatchChallengeProject(
-                            _selectChallengeTemp, false, 
+                            type, false, 
                             msg => {
                                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
                                 if (msg.ResultCode == (int)ESelectMatchChallengeProjectCode.SMCPC_Success) {
-                                    LocalUser.Instance.MatchUserData.CurSelectedChallengeType = (int)_selectChallengeTemp;
+                                    LocalUser.Instance.MatchUserData.CurSelectedChallengeType = (int)type;
                                     Refresh();
                                 } else {
                                     // error handle
@@ -291,7 +295,7 @@ namespace GameA
                                 msg => {
                                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
                                     if (msg.ResultCode == (int)ESelectMatchChallengeProjectCode.SMCPC_Success) {
-                                        LocalUser.Instance.MatchUserData.CurSelectedChallengeType = (int)_selectChallengeTemp;
+                                        LocalUser.Instance.MatchUserData.CurSelectedChallengeType = (int)type;
                                         Refresh();
                                     } else {
                                         // error handle

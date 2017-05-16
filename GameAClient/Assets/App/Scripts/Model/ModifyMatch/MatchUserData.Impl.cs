@@ -104,23 +104,23 @@ namespace GameA
         public EChallengeState CurrentChallengeState () {
             if (!_inited)
                 return EChallengeState.None;
+            if (!_easyChallengeProjectData.IsInited &&
+                !_mediumChallengeProjectData.IsInited &&
+                !_difficultChallengeProjectData.IsInited &&
+                !_randomChallengeProjectData.IsInited) {
 
-            if (_leftChallengeCount <= 0)
-                return EChallengeState.WaitForChance;
-            else {
-                if (!_easyChallengeProjectData.IsInited &&
-                    !_mediumChallengeProjectData.IsInited &&
-                    !_difficultChallengeProjectData.IsInited &&
-                    !_randomChallengeProjectData.IsInited) {
+                if (_leftChallengeCount <= 0)
+                    return EChallengeState.WaitForChance;
+                else
                     return EChallengeState.ChanceReady;
-                } else {                    
-                    if (_curSelectedChallengeType == (int)EChallengeProjectType.CPT_None) {
-                        return EChallengeState.Selecting;
-                    } else {
-                        return EChallengeState.Challenging;
-                    }
+            } else {
+                if (_curSelectedChallengeType == (int)EChallengeProjectType.CPT_None) {
+                    return EChallengeState.Selecting;
+                } else {
+                    return EChallengeState.Challenging;
                 }
             }
+
         }
 
         /// <summary>

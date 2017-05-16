@@ -99,6 +99,11 @@ namespace GameA
 
         private void RefreshModifyMatch () {
             int matchPoint = LocalUser.Instance.MatchUserData.LeftChallengeCount;
+            MatchUserData.EChallengeState challengeState = LocalUser.Instance.MatchUserData.CurrentChallengeState ();
+            if (MatchUserData.EChallengeState.Selecting == challengeState || 
+                MatchUserData.EChallengeState.Challenging == challengeState) {
+                matchPoint += 1;
+            }
             int matchPointMax = LocalUser.Instance.MatchUserData.ChallengeCapacity;
             _cachedView.MatchPoint.text = string.Format ("{0} / {1}", matchPoint, matchPointMax);
 
@@ -107,10 +112,14 @@ namespace GameA
             float getMatchPointLeftTimeInPercentage = 0f;
             if (0 == matchPoint) {
                 getMatchPointCDInSecond = 0.001f * (now - LocalUser.Instance.MatchUserData.LeftChallengeCountRefreshTime);
-                getMatchPointLeftTimeInPercentage = 1f - getMatchPointCDInSecond / 
-                    (float)LocalUser.Instance.MatchUserData.ChallengeIntervalSecond;
+                getMatchPointLeftTimeInPercentage = 1f - getMatchPointCDInSecond /
+                (float)LocalUser.Instance.MatchUserData.ChallengeIntervalSecond;
+                _cachedView.MatchCDImage.fillAmount = getMatchPointLeftTimeInPercentage;
+                _cachedView.MatchCDImage.gameObject.SetActive (true);
+            } else {
+                _cachedView.MatchCDImage.gameObject.SetActive (false);
             }
-            _cachedView.MatchCDImage.fillAmount = getMatchPointLeftTimeInPercentage;
+
 
             if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_WaitForChance) {
                 int modifyCDInSecond = LocalUser.Instance.MatchUserData.ReformIntervalSeconds
@@ -196,9 +205,10 @@ namespace GameA
 		}
 
         private void OnMatchBtn () {
-            if (LocalUser.Instance.MatchUserData.LeftChallengeCount > 0) {
-                SocialGUIManager.Instance.OpenPopupUI<UICtrlChallengeMatch> ();
+            if (MatchUserData.EChallengeState.WaitForChance == LocalUser.Instance.MatchUserData.CurrentChallengeState()) {
+                
             } else {
+                SocialGUIManager.Instance.OpenPopupUI<UICtrlChallengeMatch> ();
             }
         }
 
