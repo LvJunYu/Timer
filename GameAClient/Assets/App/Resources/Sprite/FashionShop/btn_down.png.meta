@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 955201b3061a64b40b8c432e8bbcc098
-timeCreated: 1494400232
+guid: 553a5a50b0ed0964e9ff5549610e5178
+timeCreated: 1494849769
 licenseType: Pro
 TextureImporter:
   fileIDToRecycleName: {}
@@ -39,8 +39,8 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spritePixelsToUnits: 128
+  spriteBorder: {x: 15, y: 17, z: 15, w: 14}
+  spritePixelsToUnits: 100
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -78,7 +78,7 @@ TextureImporter:
     serializedVersion: 2
     sprites: []
     outline: []
-  spritePackingTag: FASHIONSHOPUI
+  spritePackingTag: 
   userData: 
   assetBundleName: 
   assetBundleVariant: 

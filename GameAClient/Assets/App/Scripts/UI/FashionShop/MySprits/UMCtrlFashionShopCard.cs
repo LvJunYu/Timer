@@ -10,7 +10,12 @@ using System;
 
 public class UMCtrlFashionShopCard : UMCtrlBase<UMViewFashionShopCard>
 {
-    //private EAvatarPart _Type;
+    //private USCtrlFashionShop UsParent;
+
+    //public UMCtrlFashionShopCard(USCtrlFashionShop Parent)
+    //{
+    //    UsParent = UsParent;
+    //}
 
     public void Set(ShopItem listItem)
     {
@@ -26,14 +31,23 @@ public class UMCtrlFashionShopCard : UMCtrlBase<UMViewFashionShopCard>
            " " + _cachedView.IsOwned.text);
         _cachedView.BuyFashion.onClick.AddListener(() => {
                   BuyFashion(listItem);
+        
                                                              Debug.Log("购买:" + listItem.Name);
         }
 
             );
-        _cachedView.TryFashionOn.onClick.AddListener(() =>SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().
-              TryFashionOn(listItem));
+        _cachedView.TryFashionOn.onClick.AddListener(() =>
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().TryFashionOn(listItem);
+            SetSelectedFashion(listItem);
+        }
+            );
         _cachedView.ChangeFashion.onClick.AddListener(() =>
-              ChangeFashion(listItem));
+        {
+            ChangeFashion(listItem);
+            SetSelectedFashion(listItem);
+        }
+           );
         //_cachedView._avatarType = listItem._avatarType;
         //_cachedView.Id = listItem.Id;
         //_cachedView.Description = listItem.Description;
@@ -49,6 +63,28 @@ public class UMCtrlFashionShopCard : UMCtrlBase<UMViewFashionShopCard>
         //_cachedView.SmallTexture = listItem.SmallTexture;
         //_cachedView.SkinId = listItem.SkinId;
     }
+
+    private void SetSelectedFashion(ShopItem listItem)
+    {
+        switch (listItem._avatarType)
+        {
+            case EAvatarPart.AP_Head:
+                SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().SelectHead = this;
+                break;
+            case EAvatarPart.AP_Lower:
+                SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().SelectLower = this;
+                break;
+            case EAvatarPart.AP_Upper:
+                SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().SelectUpper = this;
+                break;
+            case EAvatarPart.AP_Appendage:
+                SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().SelectAppendage = this;
+                break;
+            default:
+                break;
+        }
+    }
+
     private void BuyFashion(ShopItem listItem)
     {
         if (JudgeItemOwned(listItem))
@@ -255,6 +291,18 @@ public class UMCtrlFashionShopCard : UMCtrlBase<UMViewFashionShopCard>
                 failedCallback.Invoke();
             }
         });
+    }
+
+    public void ChangeDock(bool selected)
+    {
+        if (selected)
+        {
+            Init(_cachedView.DockSelected as RectTransform);
+        }
+        else
+        {
+            Init(_cachedView.DockUnSelected as RectTransform);
+        }
     }
 
 

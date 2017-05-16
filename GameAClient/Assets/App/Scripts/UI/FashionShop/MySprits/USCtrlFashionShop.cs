@@ -12,6 +12,7 @@ namespace GameA
 {
 	public class USCtrlFashionShop : USCtrlBase <USViewFashionShop>
 	{
+        private UMCtrlFashionShopCard _curSelectedPrivateCard;
         private EShoppingPage _shoppingPage;
         public EShoppingPage ShoppingPage
         {
@@ -35,12 +36,6 @@ namespace GameA
             _cachedView.gameObject.SetActive(false);
         }
 
-	    //private void ReFreshPage()
-	    //{
-
-
-	    //}
-
 	    /// <summary>
         /// 枚举分页
         /// </summary>
@@ -56,24 +51,24 @@ namespace GameA
         /// 根据字符串返回枚举
         /// </summary>
         /// <param name="USUI"></param>
-	    public void USUIShopping(EShoppingPage USUI)
-	    {
-	        switch (USUI)
-	        {
-	            case EShoppingPage.FashionPage1:
-	                break;
-	            case EShoppingPage.FashionPage2:
-	                break;
-	            case EShoppingPage.FashionPage3:
-	                break;
-	            case EShoppingPage.FashionPage4:
-	                break;
-                case EShoppingPage.FashionPage5:
-                    break;
-                    //case EShoppingPage.FashionPage5:
-                    // break;
-            }
-	    }
+	    //public void USUIShopping(EShoppingPage USUI)
+	    //{
+	    //    switch (USUI)
+	    //    {
+	    //        case EShoppingPage.FashionPage1:
+	    //            break;
+	    //        case EShoppingPage.FashionPage2:
+	    //            break;
+	    //        case EShoppingPage.FashionPage3:
+	    //            break;
+	    //        case EShoppingPage.FashionPage4:
+	    //            break;
+     //           case EShoppingPage.FashionPage5:
+     //               break;
+     //               //case EShoppingPage.FashionPage5:
+     //               // break;
+     //       }
+	    //}
 
 
         //		/*这是我的数据,读表读出来一部分，然后自己写一部分，形成一个聚合代码*/
