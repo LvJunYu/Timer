@@ -53,7 +53,7 @@ namespace GameA.Game
 		protected override void OnOpen(object parameter)
 		{
 			base.OnOpen(parameter);
-			_curMarkStarValue = GM2DGame.Instance.Project.UserRate;
+//			_curMarkStarValue = GM2DGame.Instance.Project.UserRate;
 			UpdateShow();
 			UpdateLifeItem();
 		}

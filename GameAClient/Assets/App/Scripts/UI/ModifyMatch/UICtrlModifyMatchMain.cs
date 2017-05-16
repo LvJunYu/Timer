@@ -60,7 +60,8 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-//			RegisterEvent(EMessengerType.OnChangeToAppMode, OnReturnToApp);
+//            Messenger<Project>.AddListener (EMessengerType.OnReformProjectPublished, OnReformProjectPublished);
+			RegisterEvent(EMessengerType.OnReformProjectPublished, OnReformProjectPublished);
 //            RegisterEvent(EMessengerType.OnAccountLoginStateChanged, OnEvent);
         }
 
@@ -135,8 +136,12 @@ namespace GameA
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.PublishedProjectSnapShoot, 
                     LocalUser.Instance.MatchUserData.CurPublishProject.IconPath,
                     _cachedView.DefaultProjectCoverTex);
-                _cachedView.PassingRate.text = string.Format("{0}%", (int)(LocalUser.Instance.MatchUserData.CurPublishProject.ExtendData.CompleteCount / 
-                    (float)LocalUser.Instance.MatchUserData.CurPublishProject.ExtendData.PlayCount * 100));
+                int passRate = 0;
+                if (LocalUser.Instance.MatchUserData.CurPublishProject.ExtendData.PlayCount > 0) {
+                    passRate = (int)(LocalUser.Instance.MatchUserData.CurPublishProject.ExtendData.CompleteCount /
+                    (float)LocalUser.Instance.MatchUserData.CurPublishProject.ExtendData.PlayCount * 100);
+                }
+                _cachedView.PassingRate.text = passRate.ToString();
                 int validSecond = (int)((_publishedProjectValidTimeLength - 
                     (DateTimeUtil.GetServerTimeNowTimestampMillis () - LocalUser.Instance.MatchUserData.CurPublishTime)) 
                     / GameTimer.Second2Ms);
@@ -212,6 +217,19 @@ namespace GameA
         }
 
         #endregion 接口
+        private void OnReformProjectPublished () {
+            if (!IsOpen)
+                return;
+            LocalUser.Instance.MatchUserData.Request(
+                LocalUser.Instance.UserGuid,
+                () => {
+                    RefreshViewAll();
+                },
+                code => {
+                    // error handle
+                }
+            );
+        }
         #endregion
 
     }

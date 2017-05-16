@@ -34,6 +34,45 @@ namespace GameA
 //        public void SetBytesData (byte[] bytesData) {
 //            _bytesData = bytesData;
 //        }
+        /// <summary>
+        /// 根据DataScene2D的信息刷新ProjectUploadParam
+        /// </summary>
+        public void RefreshProjectUploadParam () {
+            _projectUploadParam.UsedUnitDataList.Clear ();
+            List<Game.ModifyData> addedUnits = Game.DataScene2D.Instance.AddedUnits;
+            Dictionary<int, int> addedDic = new Dictionary<int, int> ();
+            for (int i = 0; i < addedUnits.Count; i++) {
+                if (addedDic.ContainsKey (addedUnits [i].ModifiedUnit.UnitDesc.Id)) {
+                    addedDic [addedUnits [i].ModifiedUnit.UnitDesc.Id] = addedDic [addedUnits [i].ModifiedUnit.UnitDesc.Id] + 1; 
+                } else {
+                    addedDic [addedUnits [i].ModifiedUnit.UnitDesc.Id] = 1;
+                }
+            }
+            var itor = addedDic.GetEnumerator ();
+            while (itor.MoveNext ()) {
+                UnitDataItem item = new UnitDataItem ();
+                item.UnitId = itor.Current.Key;
+                item.UnitCount = itor.Current.Value;
+                _projectUploadParam.UsedUnitDataList.Add (item);
+            }
+
+            _projectUploadParam.MapWidth = Game.DataScene2D.Instance.Width;
+            _projectUploadParam.MapHeight = Game.DataScene2D.Instance.Height;
+            _projectUploadParam.TotalUnitCount = Game.ColliderScene2D.Instance.AllUnits.Count;
+            _projectUploadParam.AddCount = Game.DataScene2D.Instance.AddedUnits.Count;
+            _projectUploadParam.DeleteCount = Game.DataScene2D.Instance.RemovedUnits.Count;
+            _projectUploadParam.ModifyCount = Game.DataScene2D.Instance.ModifiedUnits.Count;
+            _projectUploadParam.ReformRate = (
+                Game.DataScene2D.Instance.AddedUnits.Count + 
+                Game.DataScene2D.Instance.RemovedUnits.Count + 
+                Game.DataScene2D.Instance.ModifiedUnits.Count) /
+                Game.ColliderScene2D.Instance.AllUnits.Count;
+            _projectUploadParam.RecordRestartCount = 0;
+            _projectUploadParam.RecordUsedLifeCount = 0;
+            _projectUploadParam.OperateCount = 0;
+            _projectUploadParam.TotalOperateTime = 0;
+        }
+
         public void SaveModifyProject (Byte[] data, Action successCallback = null, Action<EProjectOperateResult> failedCallback = null) {
             if (data == null) {
                 if (failedCallback != null) {
@@ -41,31 +80,18 @@ namespace GameA
                     return;
                 }
             }
+
             WWWForm form = new WWWForm();
             form.AddBinaryData("levelFile", data);
-            Msg_ProjectUploadParam msgProjectUploadParam = new Msg_ProjectUploadParam ();
-            msgProjectUploadParam.MapWidth = _projectUploadParam.MapWidth;
-            msgProjectUploadParam.MapHeight = _projectUploadParam.MapHeight;
-            msgProjectUploadParam.TotalUnitCount = _projectUploadParam.TotalUnitCount;
-            msgProjectUploadParam.AddCount = _projectUploadParam.AddCount;
-            msgProjectUploadParam.DeleteCount = _projectUploadParam.DeleteCount;
-            msgProjectUploadParam.ModifyCount = _projectUploadParam.ModifyCount;
-            msgProjectUploadParam.ReformRate = _projectUploadParam.ReformRate;
-            msgProjectUploadParam.RecordRestartCount = _projectUploadParam.RecordRestartCount;
-            msgProjectUploadParam.RecordUsedLifeCount = _projectUploadParam.RecordUsedLifeCount;
-            for (int i = 0; i < _projectUploadParam.UsedUnitDataList.Count; i++) {
-                Msg_UnitDataItem msgUnitDataItem = new Msg_UnitDataItem ();
-                msgUnitDataItem.UnitCount = _projectUploadParam.UsedUnitDataList [i].UnitCount;
-                msgUnitDataItem.UnitId = _projectUploadParam.UsedUnitDataList [i].UnitId;
-                msgProjectUploadParam.UsedUnitDataList.Add(msgUnitDataItem);
-            }
+            RefreshProjectUploadParam ();
+
             RemoteCommands.SaveReformProject (
                 _projectId,
                 _programVersion,
                 _resourceVersion,
                 _passFlag,
                 100f,
-                msgProjectUploadParam,
+                GetMsgProjectUploadParam(),
                 msg => {
                     if ((int)EProjectOperateResult.POR_Success == msg.ResultCode) {
                         if (null != successCallback) {
@@ -91,6 +117,27 @@ namespace GameA
 //            if (string.IsNullOrEmpty (ResPath)) {
                 _bytesData = data;
 //            }
+        }
+
+        public Msg_ProjectUploadParam GetMsgProjectUploadParam () {
+            Msg_ProjectUploadParam msgProjectUploadParam = new Msg_ProjectUploadParam ();
+            msgProjectUploadParam.MapWidth = _projectUploadParam.MapWidth;
+            msgProjectUploadParam.MapHeight = _projectUploadParam.MapHeight;
+            msgProjectUploadParam.TotalUnitCount = _projectUploadParam.TotalUnitCount;
+            msgProjectUploadParam.AddCount = _projectUploadParam.AddCount;
+            msgProjectUploadParam.DeleteCount = _projectUploadParam.DeleteCount;
+            msgProjectUploadParam.ModifyCount = _projectUploadParam.ModifyCount;
+            msgProjectUploadParam.ReformRate = _projectUploadParam.ReformRate;
+            msgProjectUploadParam.RecordRestartCount = _projectUploadParam.RecordRestartCount;
+            msgProjectUploadParam.RecordUsedLifeCount = _projectUploadParam.RecordUsedLifeCount;
+
+            for (int i = 0; i < _projectUploadParam.UsedUnitDataList.Count; i++) {
+                Msg_UnitDataItem msgUnitDataItem = new Msg_UnitDataItem ();
+                msgUnitDataItem.UnitCount = _projectUploadParam.UsedUnitDataList [i].UnitCount;
+                msgUnitDataItem.UnitId = _projectUploadParam.UsedUnitDataList [i].UnitId;
+                msgProjectUploadParam.UsedUnitDataList.Add(msgUnitDataItem);
+            }
+            return msgProjectUploadParam;
         }
         #endregion
     }

@@ -97,7 +97,10 @@ namespace GameA
 //                }
 //            }
         }
-
+        /// <summary>
+        /// 当天挑战状态
+        /// </summary>
+        /// <returns>The challenge state.</returns>
         public EChallengeState CurrentChallengeState () {
             if (!_inited)
                 return EChallengeState.None;
@@ -118,6 +121,17 @@ namespace GameA
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// 请求放弃挑战成功后的本地数据刷新
+        /// </summary>
+        public void OnAbandomChallengeSuccess () {
+            CurSelectedChallengeType = (int)EChallengeProjectType.CPT_None;
+            EasyChallengeProjectData = new Project();
+            MediumChallengeProjectData = new Project();
+            DifficultChallengeProjectData = new Project();
+            RandomChallengeProjectData = new Project();
         }
         #endregion
     }

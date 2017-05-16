@@ -339,6 +339,89 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingPlayWorldProject {
+            get { return _isRequstingPlayWorldProject; }
+        }
+        private static bool _isRequstingPlayWorldProject = false;
+        /// <summary>
+		/// Msg_CS_CMD_PlayWorldProject
+		/// </summary>
+		/// <param name="projectId">关卡Id</param>
+        public static void PlayWorldProject (
+            long projectId,
+            Action<Msg_SC_CMD_PlayWorldProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingPlayWorldProject) {
+                return;
+            }
+            _isRequstingPlayWorldProject = true;
+            Msg_CS_CMD_PlayWorldProject msg = new Msg_CS_CMD_PlayWorldProject();
+            // Msg_CS_CMD_PlayWorldProject
+            msg.ProjectId = projectId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PlayWorldProject>(
+                SoyHttpApiPath.PlayWorldProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingPlayWorldProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "PlayWorldProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingPlayWorldProject = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingCommitWorldProjectResult {
+            get { return _isRequstingCommitWorldProjectResult; }
+        }
+        private static bool _isRequstingCommitWorldProjectResult = false;
+        /// <summary>
+		/// 提交过关世界关卡数据
+		/// </summary>
+		/// <param name="token">关卡Id</param>
+		/// <param name="success"></param>
+		/// <param name="deadPos"></param>
+		/// <param name="usedTime"></param>
+        public static void CommitWorldProjectResult (
+            long token,
+            bool success,
+            byte[] deadPos,
+            float usedTime,
+            Action<Msg_SC_CMD_CommitWorldProjectResult> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingCommitWorldProjectResult) {
+                return;
+            }
+            _isRequstingCommitWorldProjectResult = true;
+            Msg_CS_CMD_CommitWorldProjectResult msg = new Msg_CS_CMD_CommitWorldProjectResult();
+            // 提交过关世界关卡数据
+            msg.Token = token;
+            msg.Success = success;
+            msg.DeadPos = deadPos;
+            msg.UsedTime = usedTime;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CommitWorldProjectResult>(
+                SoyHttpApiPath.CommitWorldProjectResult, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingCommitWorldProjectResult = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CommitWorldProjectResult", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingCommitWorldProjectResult = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingPlayAdventureLevel {
             get { return _isRequstingPlayAdventureLevel; }
         }

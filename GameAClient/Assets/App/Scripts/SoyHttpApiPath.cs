@@ -48,6 +48,10 @@ namespace SoyEngine
         public const string UnpublishProject = "/project/unpublish";
         // 用户发布的关卡
         public const string UserPublishedProjectList = "/project/getUserPublishedList";
+        // Msg_CS_CMD_PlayWorldProject
+        public const string PlayWorldProject = "/world/playProject";
+        // 提交过关世界关卡数据
+        public const string CommitWorldProjectResult = "/world/commitProjectResult";
         // 工坊关卡
         public const string Record = "/record/get";
         // 冒险模式关卡列表

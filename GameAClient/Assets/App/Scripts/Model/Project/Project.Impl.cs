@@ -56,7 +56,7 @@ namespace GameA
         private GameTimer _projectCommentListRequestTimer;
 
         private bool _userLike;
-        private byte _userRate;
+//        private byte _userRate;
         private bool _userFavorite;
         private int _userCompleteCount;
         private long _userLastPlayTime;
@@ -424,17 +424,17 @@ namespace GameA
             }
         }
 
-        public byte UserRate
-        {
-            get
-            {
-                return this._userRate;
-            }
-            set
-            {
-                _userRate = value;
-            }
-        }
+//        public byte UserRate
+//        {
+//            get
+//            {
+//                return this._userRate;
+//            }
+//            set
+//            {
+//                _userRate = value;
+//            }
+//        }
 
         public bool UserFavorite
         {
@@ -938,14 +938,14 @@ namespace GameA
 
         public void UpdateRate(int rate, Action<bool> callback = null)
         {
-            if (_userRate == rate)
-            {
-                if (callback != null)
-                {
-                    callback.Invoke(false);
-                }
-                return;
-            }
+//            if (_userRate == rate)
+//            {
+//                if (callback != null)
+//                {
+//                    callback.Invoke(false);
+//                }
+//                return;
+//            }
             if (!_isValid)
             {
                 if (callback != null)
@@ -1289,8 +1289,6 @@ namespace GameA
         {
             _extendReady = true;
             _isValid = msg.IsValid;
-            _totalRate = msg.Rate;
-            _totalRateCount = msg.RateCount;
             _totalCommentCount = msg.CommentCount;
             _totalClickCount = msg.PlayCount;
             _completeCount = msg.CompleteCount;
@@ -1362,17 +1360,17 @@ namespace GameA
 
 		public void OnSyncProjectUserData(ProjectUserData msg)
         {
-            _userRate = (byte)msg.Rate;
+//            _userRate = (byte)msg.Rate;
             _userFavorite = msg.Favorite;
             _userLastPlayTime = msg.LastPlayTime;
             _userCompleteCount = msg.CompleteCount;
-            _userLike = msg.LikeFlag;
+//            _userLike = msg.LikeFlag;
         }
 
         public void ClearProjectUserData()
         {
             _userLike = false;
-            _userRate = 0;
+//            _userRate = 0;
             _userFavorite = false;
             _userLastPlayTime = 0;
             _userCompleteCount = 0;

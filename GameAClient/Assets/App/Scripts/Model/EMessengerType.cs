@@ -88,6 +88,10 @@ namespace GameA
         //public static readonly int OnDynamicSubscribe = SoyEngine.EMessengerType.NextId++;
         //public static readonly int OnDynamicUnsubscribe = SoyEngine.EMessengerType.NextId++;
         public static int OnRecordFullScreenStateChanged = SoyEngine.EMessengerType.NextId++;
+
+        // 匹配改造相关
+        public static int OnReformProjectPublished = SoyEngine.EMessengerType.NextId++;
+        public static int OnChallengeProjectSelected = SoyEngine.EMessengerType.NextId++;
     }
 }
 

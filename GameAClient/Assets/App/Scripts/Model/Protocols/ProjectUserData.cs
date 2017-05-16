@@ -19,11 +19,7 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private bool _likeFlag;
-        /// <summary>
-        /// 
-        /// </summary>
-        private int _rate;
+        private EProjectLikeStatus _likeStatus;
         /// <summary>
         /// 
         /// </summary>
@@ -62,20 +58,10 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public bool LikeFlag { 
-            get { return _likeFlag; }
-            set { if (_likeFlag != value) {
-                _likeFlag = value;
-                SetDirty();
-            }}
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        public int Rate { 
-            get { return _rate; }
-            set { if (_rate != value) {
-                _rate = value;
+        public EProjectLikeStatus LikeStatus { 
+            get { return _likeStatus; }
+            set { if (_likeStatus != value) {
+                _likeStatus = value;
                 SetDirty();
             }}
         }
@@ -117,8 +103,7 @@ namespace GameA
             if (null == msg) return false;
             _projectId = msg.ProjectId;     
             _userId = msg.UserId;     
-            _likeFlag = msg.LikeFlag;     
-            _rate = msg.Rate;     
+            _likeStatus = msg.LikeStatus;     
             _favorite = msg.Favorite;     
             _completeCount = msg.CompleteCount;     
             _lastPlayTime = msg.LastPlayTime;     

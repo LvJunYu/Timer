@@ -18,14 +18,6 @@ namespace GameA
         /// </summary>
         private bool _isValid;
         /// <summary>
-        /// 评分
-        /// </summary>
-        private float _rate;
-        /// <summary>
-        /// 评分次数
-        /// </summary>
-        private int _rateCount;
-        /// <summary>
         /// 评论条数
         /// </summary>
         private int _commentCount;
@@ -42,7 +34,11 @@ namespace GameA
         /// </summary>
         private int _failCount;
         /// <summary>
-        /// 点赞次数
+        /// 踩次数
+        /// </summary>
+        private int _unlikeCount;
+        /// <summary>
+        /// 顶次数
         /// </summary>
         private int _likeCount;
         /// <summary>
@@ -88,26 +84,6 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 评分
-        /// </summary>
-        public float Rate { 
-            get { return _rate; }
-            set { if (_rate != value) {
-                _rate = value;
-                SetDirty();
-            }}
-        }
-        /// <summary>
-        /// 评分次数
-        /// </summary>
-        public int RateCount { 
-            get { return _rateCount; }
-            set { if (_rateCount != value) {
-                _rateCount = value;
-                SetDirty();
-            }}
-        }
-        /// <summary>
         /// 评论条数
         /// </summary>
         public int CommentCount { 
@@ -148,7 +124,17 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 点赞次数
+        /// 踩次数
+        /// </summary>
+        public int UnlikeCount { 
+            get { return _unlikeCount; }
+            set { if (_unlikeCount != value) {
+                _unlikeCount = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 顶次数
         /// </summary>
         public int LikeCount { 
             get { return _likeCount; }
@@ -241,12 +227,11 @@ namespace GameA
             if (null == msg) return false;
             _projectId = msg.ProjectId;           
             _isValid = msg.IsValid;           
-            _rate = msg.Rate;           
-            _rateCount = msg.RateCount;           
             _commentCount = msg.CommentCount;           
             _playCount = msg.PlayCount;           
             _completeCount = msg.CompleteCount;           
             _failCount = msg.FailCount;           
+            _unlikeCount = msg.UnlikeCount;           
             _likeCount = msg.LikeCount;           
             _favoriteCount = msg.FavoriteCount;           
             _downloadCount = msg.DownloadCount;           

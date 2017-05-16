@@ -702,8 +702,9 @@ namespace GameA.Game
 				CommitAdventureGameResult (true);
 				return;
 			}
-			else
+            else if (p.ProjectStatus == EProjectStatus.PS_Reform)
 			{
+                p.PassFlag = true;
 			}
 		}
 
