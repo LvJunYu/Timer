@@ -116,7 +116,7 @@ namespace GameA.Game
                             for (int j = 0; j < units.Count; j++)
                             {
                                 UnitBase unit = units[j];
-                                if (unit != null && unit.IsAlive && GM2DTools.OnDirectionHit(unit, PlayMode.Instance.MainUnit, (EMoveDirection)(Rotation+1)))
+                                if (unit != null && unit.IsAlive && !(unit is TransparentEarth) && GM2DTools.OnDirectionHit(unit, PlayMode.Instance.MainUnit, (EMoveDirection)(Rotation+1)))
                                 {
                                     distance = hit.distance;
                                     flag = true;

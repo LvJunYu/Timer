@@ -73,6 +73,11 @@ namespace GameA.Game
             get { return _skillCtrl; }
         }
 
+        public bool OnClay
+        {
+            get { return _onClay; }
+        }
+
         public Box Box
         {
             get { return _box; }

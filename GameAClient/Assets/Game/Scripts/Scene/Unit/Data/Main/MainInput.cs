@@ -654,7 +654,7 @@ namespace GameA.Game
             else if (_jumpState >= 100)
             {
                 _jumpState++;
-                _unit.SpeedY += 70;
+                _unit.SpeedY += _unit.OnClay ? 50 : 70;
             }
             if ((_jumpState > JumpFirstMaxTime && _jumpState < 200) || _jumpState > JumpSecondMaxTime)
             {
