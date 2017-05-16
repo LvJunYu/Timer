@@ -13,7 +13,6 @@ namespace GameA.Game
 {
     public class EnergyBase : BlockBase
     {
-        protected bool _plus;
         protected int _totalCount;
         protected int _currentCount;
         protected int _speed;
@@ -23,16 +22,16 @@ namespace GameA.Game
             return (float) _currentCount/_totalCount;
         }
 
-        public override void UpdateExtraData()
-        {
-            _plus = DataScene2D.Instance.GetUnitExtra(_guid).IsPlusEnergy == 1;
-            base.UpdateExtraData();
-            LogHelper.Debug("_plus + _"+_plus);
-        }
+        //public override void UpdateExtraData()
+        //{
+        //    _plus = DataScene2D.Instance.GetUnitExtra(_guid).IsPlusEnergy == 1;
+        //    base.UpdateExtraData();
+        //    LogHelper.Debug("_plus + _"+_plus);
+        //}
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.SkillCtrl1 != null)
+            if (other.SkillCtrl2 != null)
             {
                 if (_currentCount > 0)
                 {

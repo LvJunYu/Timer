@@ -11,25 +11,24 @@ using SoyEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 6101, Type = typeof(EnergyWater))]
-    public class EnergyWater : EnergyBase
-    {
-        protected override bool OnInit()
-        {
-            if (!base.OnInit())
-            {
-                return false;
-            }
-            _totalCount = 300;
-            _currentCount = 0;
-            _speed = 1;
-            _plus = true;
-            return true;
-        }
+    //[Unit(Id = 6101, Type = typeof(EnergyWater))]
+    //public class EnergyWater : EnergyBase
+    //{
+    //    protected override bool OnInit()
+    //    {
+    //        if (!base.OnInit())
+    //        {
+    //            return false;
+    //        }
+    //        _totalCount = 300;
+    //        _currentCount = 0;
+    //        _speed = 1;
+    //        return true;
+    //    }
 
-        protected override void OnTrigger(UnitBase other)
-        {
-            other.SkillCtrl1.ChangeSkill<SkillWater>(_plus);
-        }
-    }
+    //    protected override void OnTrigger(UnitBase other)
+    //    {
+    //        other.SkillCtrl1.ChangeSkill<SkillWater>();
+    //    }
+    //}
 }

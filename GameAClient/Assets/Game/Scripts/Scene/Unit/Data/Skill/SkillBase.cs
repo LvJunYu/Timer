@@ -28,11 +28,7 @@ namespace GameA.Game
         /// </summary>
         [SerializeField]
         protected int _cdTime;
-        /// <summary>
-        /// 是否强力
-        /// </summary>
-        [SerializeField]
-        protected bool _plus;
+
         /// <summary>
         /// 定时器
         /// </summary>
@@ -70,20 +66,14 @@ namespace GameA.Game
             get { return _range; }
         }
 
-        public bool Plus
-        {
-            get { return _plus; }
-        }
-
         public ESkillType ESkillType
         {
             get { return _eSkillType; }
         }
 
-        internal virtual void Enter(UnitBase ower, bool plus)
+        internal virtual void Enter(UnitBase ower)
         {
             _owner = ower;
-            _plus = plus;
             _radius = 160;
             _range = 10*ConstDefineGM2D.ServerTileScale;
             _timerCD = 0;
@@ -165,11 +155,6 @@ namespace GameA.Game
             }
             var dataSize = tableUnit.GetDataSize(0, Vector2.one);
             return _owner.FirePos - dataSize * 0.5f;
-        }
-
-        public override string ToString()
-        {
-            return string.Format("Range: {0}, CdTime: {1}, Plus: {2}, TimerCd: {3}, BulletSpeed: {4}, Owner: {5}", _radius, _cdTime, _plus, _timerCD, _bulletSpeed, _owner);
         }
     }
 }

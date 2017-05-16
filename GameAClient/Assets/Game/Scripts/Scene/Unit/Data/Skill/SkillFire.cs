@@ -14,9 +14,9 @@ namespace GameA.Game
     [Skill(Name = "SkillFire", Type = typeof(SkillFire))]
     public class SkillFire : SkillBase
     {
-        internal override void Enter(UnitBase ower, bool plus)
+        internal override void Enter(UnitBase ower)
         {
-            base.Enter(ower, plus);
+            base.Enter(ower);
             _eSkillType = ESkillType.Fire;
             _bulletId = 10002;
         }

@@ -173,10 +173,10 @@ namespace GameA.Game
             }
             _mainInput = new MainInput(this);
             _skillCtrl1 = new SkillCtrl(this);
-            _skillCtrl1.ChangeSkill<SkillWater>(false);
+            _skillCtrl1.ChangeSkill<SkillWater>();
 
             _skillCtrl2 = new SkillCtrl(this);
-            _skillCtrl2.ChangeSkill<SkillWater>(true);
+            _skillCtrl2.ChangeSkill<SkillWater>();
 
             IntVec2 offset = _shooterEffectOffset;
             if (_curMoveDirection == EMoveDirection.Right)

@@ -24,7 +24,7 @@ namespace GameA.Game
             }
             _shootRot = (_unitDesc.Rotation) * 90;
             _skillCtrl = new SkillCtrl(this);
-            _skillCtrl.ChangeSkill<SkillWater>(true);
+            _skillCtrl.ChangeSkill<SkillWater>();
             _timeScale = 1;
             return true;
         }

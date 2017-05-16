@@ -58,7 +58,7 @@ namespace GameA.Game
             }
         }
 
-        public void ChangeSkill<T>(bool plus) where T : class
+        public void ChangeSkill<T>() where T : class
         {
             if (_currentSkill != null)
             {
@@ -76,7 +76,7 @@ namespace GameA.Game
                 return;
             }
             _currentSkill = skill;
-            _currentSkill.Enter(_owner, plus);
+            _currentSkill.Enter(_owner);
         }
 
         public bool Fire()

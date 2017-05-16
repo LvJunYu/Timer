@@ -130,10 +130,7 @@ namespace GameA.Game
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
             _blocked = true;
-            if (_skill.Plus)
-            {
-                DoEdge(unit, eDirectionType);
-            }
+            DoEdge(unit, eDirectionType);
         }
 
         protected virtual void DoEdge(UnitBase unit, EDirectionType eDirectionType)

@@ -22,13 +22,12 @@ namespace GameA.Game
             _totalCount = 300;
             _currentCount = 0;
             _speed = 1;
-            _plus = true;
             return true;
         }
 
         protected override void OnTrigger(UnitBase other)
         {
-            other.SkillCtrl1.ChangeSkill<SkillJelly>(_plus);
+            other.SkillCtrl2.ChangeSkill<SkillJelly>();
         }
     }
 }

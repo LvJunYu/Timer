@@ -14,9 +14,9 @@ namespace GameA.Game
     [Skill(Name = "SkillIce", Type = typeof(SkillIce))]
     public class SkillIce : SkillBase
     {
-        internal override void Enter(UnitBase ower, bool plus)
+        internal override void Enter(UnitBase ower)
         {
-            base.Enter(ower, plus);
+            base.Enter(ower);
             _eSkillType = ESkillType.Ice;
             _bulletId = 10003;
         }

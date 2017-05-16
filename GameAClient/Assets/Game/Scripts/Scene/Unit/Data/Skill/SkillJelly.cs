@@ -14,9 +14,9 @@ namespace GameA.Game
     [Skill(Name = "SkillJelly", Type = typeof(SkillJelly))]
     public class SkillJelly : SkillBase
     {
-        internal override void Enter(UnitBase ower, bool plus)
+        internal override void Enter(UnitBase ower)
         {
-            base.Enter(ower, plus);
+            base.Enter(ower);
             _eSkillType = ESkillType.Jelly;
             _bulletId = 10004;
         }
