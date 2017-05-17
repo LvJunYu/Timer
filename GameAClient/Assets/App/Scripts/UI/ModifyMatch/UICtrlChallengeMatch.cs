@@ -203,7 +203,7 @@ namespace GameA
                 LocalUser.Instance.MatchUserData.PlayChallenge (
                     () => {
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                        GameATools.UseEnergy (LocalUser.Instance.MatchUserData.CurMatchChallengeCount);
+                        GameATools.LocalUseEnergy (LocalUser.Instance.MatchUserData.CurMatchChallengeCount);
                     },
                     () => {
                         // todo error handle
@@ -304,23 +304,26 @@ namespace GameA
                         string.Format("确定花费 {0} 金币将挑战关卡改为 {1} 吗？", 10, type),
                         "请确定",
                         new KeyValuePair<string, Action>("确定", () => {
-                            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "...");
-                            RemoteCommands.SelectMatchChallengeProject(
-                                type, true, 
-                                msg => {
-                                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                                    if (msg.ResultCode == (int)ESelectMatchChallengeProjectCode.SMCPC_Success) {
-                                        LocalUser.Instance.MatchUserData.CurSelectedChallengeType = (int)type;
-                                        Refresh();
-                                    } else {
+                            if (GameATools.CheckGold(10)) {
+                                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "...");
+                                RemoteCommands.SelectMatchChallengeProject(
+                                    type, true, 
+                                    msg => {
+                                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                                        if (msg.ResultCode == (int)ESelectMatchChallengeProjectCode.SMCPC_Success) {
+                                            LocalUser.Instance.MatchUserData.CurSelectedChallengeType = (int)type;
+                                            GameATools.LocalUseGold(10);
+                                            Refresh();
+                                        } else {
+                                            // error handle
+                                        }
+                                    },
+                                    code => {
                                         // error handle
+                                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
                                     }
-                                },
-                                code => {
-                                    // error handle
-                                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                                }
-                            );
+                                );
+                            }
                         }),
                         new KeyValuePair<string, Action>("取消", null)
                     );

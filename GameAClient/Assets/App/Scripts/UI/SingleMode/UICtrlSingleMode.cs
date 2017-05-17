@@ -54,12 +54,6 @@ namespace GameA
 		/// 屏蔽玩家输入计时器
 		/// </summary>
 		private float _blockInputTimer;
-
-		/// <summary>
-		/// 下一次长体力的时间
-		/// </summary>
-		private long _nextEnergyGenerateTime;
-
         #endregion
 
         #region 属性
@@ -105,13 +99,14 @@ namespace GameA
 					);
 				}
 			}
-			AppData.Instance.AdventureData.UserData.UserEnergyData.Request (
-				LocalUser.Instance.UserGuid,
-				() => {
-					RefreshEnergyInfo ();
-				}, null
-			);
-			RefreshEnergyInfo ();
+            SocialGUIManager.ShowGoldEnergyBar (true);
+//			AppData.Instance.AdventureData.UserData.UserEnergyData.Request (
+//				LocalUser.Instance.UserGuid,
+//				() => {
+//					RefreshEnergyInfo ();
+//				}, null
+//			);
+//			RefreshEnergyInfo ();
 			RefreshChapterInfo ();
         }
 
@@ -138,9 +133,6 @@ namespace GameA
 			_cachedView.EncBtn.onClick.AddListener (OnEncBtnClick);
             _cachedView.NextBtn.onClick.AddListener (OnNextBtn);
             _cachedView.PrevBtn.onClick.AddListener (OnPrevBtn);
-            _cachedView.EnergyPlusBtn.onClick.AddListener (OnEnergyPlusBtn);
-            _cachedView.GoldPlusBtn.onClick.AddListener (OnGoldPlusBtn);
-            _cachedView.DiamondPlusBtn.onClick.AddListener (OnDiamondPlusBtn);
 
 			int screenWidth = (int)_cachedView.ChapterScrollRect.GetComponent<RectTransform> ().GetWidth();
 			float contentWidth = (screenWidth + ChapterDistance) / 2 + ChapterDistance * (ChapterCnt - 1);
@@ -194,12 +186,6 @@ namespace GameA
 				_cachedView.ChapterScrollRect.EnableDrag ();
 			}
 			///----------------------------------------------
-
-			// energy refresh
-			if (DateTimeUtil.GetServerTimeNowTimestampMillis() > _nextEnergyGenerateTime) {
-				RefreshEnergyInfo ();
-			}
-
 		}
 
 		/// <summary>
@@ -222,20 +208,7 @@ namespace GameA
 			_cachedView.InputBlock.enabled = true;
 		}
 
-		private void RefreshEnergyInfo () {
-			AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh ();
-			int currentEnergy = AppData.Instance.AdventureData.UserData.UserEnergyData.Energy;
-			int energyCapacity = AppData.Instance.AdventureData.UserData.UserEnergyData.EnergyCapacity;
-			_cachedView.EnergyNumber.text = string.Format("{0} / {1}",
-				currentEnergy,
-				energyCapacity
-			);
-			_cachedView.EnergyBar.fillAmount = (float)currentEnergy / energyCapacity;
-			_nextEnergyGenerateTime = AppData.Instance.AdventureData.UserData.UserEnergyData.NextGenerateTime;
-
-            _cachedView.GoldNumber.text = LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin.ToString();
-            _cachedView.DiamondNumber.text = LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond.ToString();
-		}
+		
 
 		private void RefreshChapterInfo () {
 			if (_currentChapter < 1) {
@@ -318,12 +291,6 @@ namespace GameA
             _dragging = false;
         }
 
-        private void OnEnergyPlusBtn () {
-        }
-        private void OnGoldPlusBtn () {
-        }
-        private void OnDiamondPlusBtn () {
-        }
 		/// <summary>
 		/// 关卡被点击，从关卡图标按钮发出的消息调用
 		/// </summary>
@@ -338,6 +305,7 @@ namespace GameA
 			var tableChapter = Game.TableManager.Instance.GetStandaloneChapter (chapterId);
 			if (null == tableChapter) {
 				LogHelper.Error ("Find tableChapter failed, {0}", chapterId);
+                return;
 			}
 			int levelId = 0;
 			if (isBonusLevel) {
@@ -356,6 +324,8 @@ namespace GameA
 				}
 			}
 
+            if (!isBonusLevel && !GameATools.CheckEnergy (1))
+                return;
 			EAdventureProjectType eAPType = isBonusLevel ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal;
 //			Debug.Log ("_________________onLevelClicked " + chapterIdx + " " + levelIdx + " isBonus: " + isBonusLevel);
 
@@ -368,19 +338,11 @@ namespace GameA
 				eAPType,
 				() => {
 					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-					// set local energy data
-					AppData.Instance.AdventureData.UserData.UserEnergyData.Energy--;
-					// refresh energy ui based on local data
-					RefreshEnergyInfo ();
-					// acquire remote energy data and then refresh ui again
-					AppData.Instance.AdventureData.UserData.UserEnergyData.Request (
-						LocalUser.Instance.UserGuid,
-						() => {
-							RefreshEnergyInfo ();
-						},
-						(errorCode) => {
-						}
-					);
+                    if (!isBonusLevel) {
+					    // set local energy data
+                        GameATools.LocalUseEnergy(1);
+                    }
+					
 					if (AppData.Instance.AdventureData.ProjectList.SectionList.Count < chapterId) {
 						LogHelper.Error("No project data of chapter {0}", chapterId);
 					} else {

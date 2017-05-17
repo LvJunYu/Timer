@@ -18,6 +18,7 @@ namespace GameA
 		#region Fields
 		protected long _lastSyncTime;
 		protected long _lastDirtyTime;
+        protected long _firstDirtyTime;
 		// got dirty when local modified
 		protected bool _dirty;
 		protected bool _inited;
@@ -35,6 +36,15 @@ namespace GameA
 		public bool IsInited {
 			get { return _inited; }
 		}
+        public long LastSyncTime {
+            get { return _lastSyncTime; }
+        }
+        public long LastDirtyTime {
+            get { return _lastDirtyTime; }
+        }
+        public long FirstDirtyTime {
+            get { return _firstDirtyTime; }
+        }
 		#endregion
 
 		#region Methods
@@ -43,8 +53,12 @@ namespace GameA
 			_inited = false;
 		}
 		protected void SetDirty () {
+            long now = DateTimeUtil.GetServerTimeNowTimestampMillis();
+            if (!_dirty) {
+                _firstDirtyTime = now;
+            }
 			_dirty = true;
-			_lastDirtyTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
+            _lastDirtyTime = now;
 		}
 
 		protected void OnSyncSucceed () {
