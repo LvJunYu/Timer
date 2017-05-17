@@ -92,6 +92,11 @@ namespace GameA
         // 匹配改造相关
         public static int OnReformProjectPublished = SoyEngine.EMessengerType.NextId++;
         public static int OnChallengeProjectSelected = SoyEngine.EMessengerType.NextId++;
+
+        // 金钱、体力变化
+        public static int OnGoldChanged = SoyEngine.EMessengerType.NextId++;
+        public static int OnDiamondChanged = SoyEngine.EMessengerType.NextId++;
+        public static int OnEnergyChanged = SoyEngine.EMessengerType.NextId++;
     }
 }
 

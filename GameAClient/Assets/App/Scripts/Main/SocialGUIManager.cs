@@ -33,6 +33,10 @@ namespace GameA
         /// </summary>
         PopUpUI,
         /// <summary>
+        /// 在所有主界面和一般弹出界面之上的界面
+        /// </summary>
+        FrontUI,
+        /// <summary>
         /// 游戏内UI
         /// </summary>
         InGame,
@@ -409,6 +413,28 @@ namespace GameA
         /// <param name="items">Items.</param>
         public static void ShowReward (params IntVec2[] items) {
             Instance.OpenPopupUI<UICtrlReward> (items);
+        }
+
+        /// <summary>
+        /// 打开金钱体力栏
+        /// </summary>
+        /// <param name="showEnergy">If set to <c>true</c> show energy.</param>
+        public static void ShowGoldEnergyBar (bool showEnergy = false) {
+            var ui = Instance.GetUI<UICtrlGoldEnergy> ();
+            if (!ui.IsOpen) {
+                ui = Instance.OpenUI<UICtrlGoldEnergy> ();
+            }
+            ui.Show (showEnergy);
+        }
+
+        /// <summary>
+        /// 关闭金钱体力栏
+        /// </summary>
+        public static void HideGoldEnergyBar () {
+            var ui = Instance.GetUI<UICtrlGoldEnergy> ();
+            if (ui.IsOpen) {
+                ui.Hide ();
+            }
         }
 
         public enum EMode

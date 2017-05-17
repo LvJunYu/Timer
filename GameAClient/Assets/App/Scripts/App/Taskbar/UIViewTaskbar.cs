@@ -53,10 +53,6 @@ namespace GameA
         /// 换装按钮
         /// </summary>
 		public Button TestChangeAvatarBtn;
-        /// <summary>
-        /// 清空用户数据按钮
-        /// </summary>
-		public Button DebugClearUserDataBtn;
 
 
 		// user info
@@ -88,22 +84,6 @@ namespace GameA
         /// 匠人经验，等级
         /// </summary>
 		public Text CreatorLevel;
-        /// <summary>
-        /// 点券，充值的，钻石
-        /// </summary>
-		public Text DiamondCount;
-        /// <summary>
-        /// 游戏中的金钱
-        /// </summary>
-		public Text MoneyCount;
-        /// <summary>
-        /// 内购游戏得到的金币
-        /// </summary>
-		public Button MoneyBtn;
-        /// <summary>
-        /// 内购钻石
-        /// </summary>
-		public Button DiamondBtn;
 
     }
 }

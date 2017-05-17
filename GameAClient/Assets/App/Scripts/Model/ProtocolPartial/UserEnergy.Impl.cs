@@ -41,7 +41,14 @@ namespace GameA
 					EnergyLastRefreshTime = now;
 					Energy = _energyCapacity;
 				}
+                Messenger.Broadcast (EMessengerType.OnEnergyChanged);
 			}
 		}
+
+        protected override void OnSyncPartial ()
+        {
+            base.OnSyncPartial ();
+            Messenger.Broadcast (EMessengerType.OnEnergyChanged);
+        }
 	}
 }
