@@ -69,9 +69,9 @@
     },
     {
         "Id": "4",
-        "Name": "女装饰1",
+        "Name": "男装饰4",
         "Description": "饰饰饰饰",
-        "Sex": "2",
+        "Sex": "1",
         "Character": "1",
         "PriceGoldDay": "0",
         "PriceGoldWeek": "0",
@@ -87,7 +87,7 @@
     },
     {
         "Id": "5",
-        "Name": "女装饰2",
+        "Name": "女装饰1",
         "Description": "饰饰饰饰",
         "Sex": "2",
         "Character": "1",
@@ -105,7 +105,7 @@
     },
     {
         "Id": "6",
-        "Name": "女装饰3",
+        "Name": "女装饰2",
         "Description": "饰饰饰饰",
         "Sex": "2",
         "Character": "1",
@@ -123,7 +123,7 @@
     },
     {
         "Id": "7",
-        "Name": "女装饰4",
+        "Name": "女装饰3",
         "Description": "饰饰饰饰",
         "Sex": "2",
         "Character": "1",
@@ -138,5 +138,20 @@
         "BigTexture": "MainBoy05",
         "PreviewTexture": "MainBoy05",
         "SkinId": "3"
+    },
+    {
+        "Id": "8",
+        "Name": "女装饰4",
+        "Description": "饰饰饰饰",
+        "Sex": "2",
+        "Character": "1",
+        "PriceGoldDay": "300",
+        "PriceGoldWeek": "1680",
+        "PriceGoldMonth": "6300",
+        "PriceGoldPermanent": "12600",
+        "PriceDiamondDay": "0",
+        "PriceDiamondWeek": "0",
+        "PriceDiamondMonth": "0",
+        "PriceDiamondPermanent": "0"
     }
 ]

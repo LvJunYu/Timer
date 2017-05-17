@@ -16,6 +16,27 @@ namespace GameA.Game
         protected int _totalCount;
         protected int _currentCount;
         protected int _speed;
+        protected EnergyPoolCtrl _energyPoolCtrl;
+
+        protected string _effectName;
+
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            if (!string.IsNullOrEmpty(_effectName))
+            {
+                var particle = GameParticleManager.Instance.GetUnityNativeParticleItem(_effectName, _trans);
+                if (particle != null)
+                {
+                    particle.Play();
+                    _energyPoolCtrl = particle.Trans.GetComponent<EnergyPoolCtrl>();
+                }
+            }
+            return true;
+        }
 
         public float GetProcess()
         {

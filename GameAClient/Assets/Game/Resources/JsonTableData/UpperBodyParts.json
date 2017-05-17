@@ -74,9 +74,9 @@
     },
     {
         "Id": "4",
-        "Name": "女上身1",
+        "Name": "男上身4",
         "Description": "身身身身",
-        "Sex": "2",
+        "Sex": "1",
         "Character": "1",
         "PriceGoldDay": "0",
         "PriceGoldWeek": "0",
@@ -93,7 +93,7 @@
     },
     {
         "Id": "5",
-        "Name": "女上身2",
+        "Name": "女上身1",
         "Description": "身身身身",
         "Sex": "2",
         "Character": "1",
@@ -112,7 +112,7 @@
     },
     {
         "Id": "6",
-        "Name": "女上身3",
+        "Name": "女上身2",
         "Description": "身身身身",
         "Sex": "2",
         "Character": "1",
@@ -131,7 +131,7 @@
     },
     {
         "Id": "7",
-        "Name": "女上身4",
+        "Name": "女上身3",
         "Description": "身身身身",
         "Sex": "2",
         "Character": "1",
@@ -147,5 +147,20 @@
         "SmallTexture": "MainBoy02",
         "PreviewTexture": "MainBoy02",
         "SkinId": "3"
+    },
+    {
+        "Id": "8",
+        "Name": "女上身4",
+        "Description": "身身身身",
+        "Sex": "2",
+        "Character": "1",
+        "PriceGoldDay": "300",
+        "PriceGoldWeek": "1680",
+        "PriceGoldMonth": "6300",
+        "PriceGoldPermanent": "12600",
+        "PriceDiamondDay": "0",
+        "PriceDiamondWeek": "0",
+        "PriceDiamondMonth": "0",
+        "PriceDiamondPermanent": "0"
     }
 ]

@@ -22,6 +22,7 @@ namespace GameA.Game
             _totalCount = 300;
             _currentCount = 0;
             _speed = 1;
+            _effectName = "M1EffectEnergyIce";
             return true;
         }
 
