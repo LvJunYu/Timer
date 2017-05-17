@@ -23,7 +23,6 @@ namespace GameA
         public USViewFashionShop FashionPage2;
 		public USViewFashionShop FashionPage3;
 		public USViewFashionShop FashionPage4;
-        public USViewFashionShop FashionPage5;
 
 	    public Text UsingHead;
 	    public Text UsingUpper;

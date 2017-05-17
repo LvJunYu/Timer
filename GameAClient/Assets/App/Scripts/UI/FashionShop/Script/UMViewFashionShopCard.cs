@@ -18,6 +18,7 @@ public class UMViewFashionShopCard : UMViewBase
     public Button TryFashionOn;
     public Button ChangeFashion;
     public Button BuyFashion;
+    public Image FashionPreview;
     //public EAvatarPart _avatarType;
     //public int Id;
     //public string Description;

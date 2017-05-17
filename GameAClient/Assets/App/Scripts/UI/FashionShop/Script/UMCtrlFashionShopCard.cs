@@ -12,6 +12,8 @@ namespace GameA
     public class UMCtrlFashionShopCard : UMCtrlBase<UMViewFashionShopCard>
     {
         public string CardName;
+        //private Sprite _fashion;
+
 
         public void Set(ShopItem listItem)
         {
@@ -20,6 +22,13 @@ namespace GameA
             _cachedView.Name.text = listItem.Name;
             _cachedView.PriceGoldDay.text = listItem.PriceGoldDay.ToString();
             _cachedView.PreviewTexture.text = listItem.PreviewTexture;
+            Sprite fashion = null;
+            if (GameResourceManager.Instance.TryGetSpriteByName(listItem.PreviewTexture.ToString(), out fashion))
+            {
+                _cachedView.FashionPreview.sprite = fashion;
+            }
+
+
             _cachedView.IsOccupied.text = JudgeItemOccupied(listItem) ? "此时装已装备" : "未装备";
             _cachedView.IsOwned.text = JudgeItemOwned(listItem) ? "此时装已拥有" : "未拥有";
             Debug.Log("______________________________Set UMCtrlFashionShopCard " + listItem.Id + " name:" +
