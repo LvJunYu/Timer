@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 1d9bcacfbef9e4ff9959db0893c70ee2
-timeCreated: 1494988443
+guid: 9a38eeb180376461e9dc0e5ef577e272
+timeCreated: 1494987768
 licenseType: Pro
 TextureImporter:
   fileIDToRecycleName: {}
@@ -39,7 +39,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spriteBorder: {x: 66, y: 40, z: 65, w: 62}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 128
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -86,7 +86,7 @@ TextureImporter:
     serializedVersion: 2
     sprites: []
     outline: []
-  spritePackingTag: COMMONUI
+  spritePackingTag: ADVUI
   userData: 
   assetBundleName: 
   assetBundleVariant: 

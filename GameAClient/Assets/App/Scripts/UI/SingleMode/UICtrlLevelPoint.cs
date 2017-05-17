@@ -26,6 +26,9 @@ namespace GameA
 		public GameObject StarLight1;
 		public GameObject StarLight2;
 		public GameObject StarLight3;
+        public GameObject StarDark1;
+        public GameObject StarDark2;
+        public GameObject StarDark3;
 		public Text LevelTitle;
 
 		/// <summary>
@@ -64,6 +67,9 @@ namespace GameA
 					StarLight1.SetActive (levelData.SimpleData.Star1Flag);
 					StarLight2.SetActive (levelData.SimpleData.Star2Flag);
 					StarLight3.SetActive (levelData.SimpleData.Star3Flag);
+                    StarDark1.SetActive (!levelData.SimpleData.Star1Flag);
+                    StarDark2.SetActive (!levelData.SimpleData.Star2Flag);
+                    StarDark3.SetActive (!levelData.SimpleData.Star3Flag);
                     Current.gameObject.SetActive (false);
 					Active.SetActive (true);
 					Disactive.SetActive (false);
@@ -71,6 +77,9 @@ namespace GameA
 					StarLight1.SetActive (false);
 					StarLight2.SetActive (false);
 					StarLight3.SetActive (false);
+                    StarDark1.SetActive (false);
+                    StarDark2.SetActive (false);
+                    StarDark3.SetActive (false);
 					if (levelIdx == AppData.Instance.AdventureData.UserData.AdventureUserProgress.CompleteLevel) {
                         Current.gameObject.SetActive (true);
 						Active.SetActive (false);
