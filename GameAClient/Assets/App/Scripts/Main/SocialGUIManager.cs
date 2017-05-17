@@ -408,11 +408,22 @@ namespace GameA
         }
 
         /// <summary>
-        /// 展示奖励，传入奖励数组x：id，y：cnt
+        /// 展示奖励，传入奖励数组x：type，y：id，z：cnt
         /// </summary>
         /// <param name="items">Items.</param>
-        public static void ShowReward (params IntVec2[] items) {
-            Instance.OpenPopupUI<UICtrlReward> (items);
+        public static void ShowReward (params IntVec3[] items) {
+            Instance.OpenPopupUI<UICtrlReward> (UICtrlReward.ERewardType.Reward);
+            Instance.GetUI <UICtrlReward>().SetRewards (items);
+        }
+
+        public static void ShowUnlockSystem (int systemCode) {
+            Instance.OpenPopupUI<UICtrlReward> (UICtrlReward.ERewardType.Unlock);
+            Instance.GetUI <UICtrlReward> ().SetUnlockSystem (systemCode);
+        }
+        public static void ShowUnlockAbility (int abilityCode)
+        {
+            Instance.OpenPopupUI<UICtrlReward> (UICtrlReward.ERewardType.Ability);
+            Instance.GetUI<UICtrlReward> ().SetAbility (abilityCode);
         }
 
         /// <summary>
