@@ -63,7 +63,7 @@ namespace GameA
             if (null == _project)
                 return;
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在发布");
-            RemoteCommands.PublishProject (
+            RemoteCommands.PublishWorldProject (
                 _project.ProjectId,
                 _project.Name,
                 _project.Summary,

@@ -99,31 +99,31 @@ public class UMCtrlFashionShopCard : UMCtrlBase<UMViewFashionShopCard>
                                 long discountCouponId,
                                 Action successCallback, Action failedCallback)
     {
-        RemoteCommands.BuyAvatarPart(partType, partId, durationType, currencyType, discountCouponId,
-                (Msg_SC_CMD_BuyAvatarPart ret) =>
-                {
-                    if (ret.ResultCode == (int)EBuyAvatarPartCode.BAPC_Success)
-                    {
-
-                        if (null != successCallback)
-                        {
-                            successCallback.Invoke();
-                        }
-                    }
-                    else
-                    {
-                        if (null != failedCallback)
-                        {
-                            failedCallback.Invoke();
-                        }
-                    }
-
-                },
-                (ENetResultCode ret) =>
-                {
-                    _cachedView.Message.text = "购买失败";
-                }
-        );
+//        RemoteCommands.BuyAvatarPart(partType, partId, durationType, currencyType, discountCouponId,
+//                (Msg_SC_CMD_BuyAvatarPart ret) =>
+//                {
+//                    if (ret.ResultCode == (int)EBuyAvatarPartCode.BAPC_Success)
+//                    {
+//
+//                        if (null != successCallback)
+//                        {
+//                            successCallback.Invoke();
+//                        }
+//                    }
+//                    else
+//                    {
+//                        if (null != failedCallback)
+//                        {
+//                            failedCallback.Invoke();
+//                        }
+//                    }
+//
+//                },
+//                (ENetResultCode ret) =>
+//                {
+//                    _cachedView.Message.text = "购买失败";
+//                }
+//        );
     }
 
 

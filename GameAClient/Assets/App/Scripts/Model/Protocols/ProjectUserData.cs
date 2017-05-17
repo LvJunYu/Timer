@@ -19,7 +19,7 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private EProjectLikeStatus _likeStatus;
+        private EProjectLikeState _likeState;
         /// <summary>
         /// 
         /// </summary>
@@ -58,10 +58,10 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public EProjectLikeStatus LikeStatus { 
-            get { return _likeStatus; }
-            set { if (_likeStatus != value) {
-                _likeStatus = value;
+        public EProjectLikeState LikeState { 
+            get { return _likeState; }
+            set { if (_likeState != value) {
+                _likeState = value;
                 SetDirty();
             }}
         }
@@ -103,7 +103,7 @@ namespace GameA
             if (null == msg) return false;
             _projectId = msg.ProjectId;     
             _userId = msg.UserId;     
-            _likeStatus = msg.LikeStatus;     
+            _likeState = msg.LikeState;     
             _favorite = msg.Favorite;     
             _completeCount = msg.CompleteCount;     
             _lastPlayTime = msg.LastPlayTime;     

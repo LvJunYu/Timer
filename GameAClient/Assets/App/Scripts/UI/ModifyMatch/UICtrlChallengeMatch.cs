@@ -71,7 +71,7 @@ namespace GameA
         {
             base.InitEventListener();
             Messenger<EChallengeProjectType>.AddListener (EMessengerType.OnChallengeProjectSelected, OnChallengeProjectSelected);
-//			RegisterEvent(EMessengerType.OnChangeToAppMode, OnReturnToApp);
+			RegisterEvent(EMessengerType.OnChangeToAppMode, OnReturnToApp);
 //            RegisterEvent(EMessengerType.OnAccountLoginStateChanged, OnEvent);
         }
 
@@ -196,6 +196,21 @@ namespace GameA
         private void OnChallengeBtn () {
             if (MatchUserData.EChallengeState.Challenging != LocalUser.Instance.MatchUserData.CurrentChallengeState())
                 return;
+
+
+            if (GameATools.CheckEnergy(LocalUser.Instance.MatchUserData.CurMatchChallengeCount)) {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "正在进入挑战关卡");
+                LocalUser.Instance.MatchUserData.PlayChallenge (
+                    () => {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                        GameATools.UseEnergy (LocalUser.Instance.MatchUserData.CurMatchChallengeCount);
+                    },
+                    () => {
+                        // todo error handle
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                    }
+                );
+            }
         }
 
         private void OnRandomPickBtn () {
@@ -312,6 +327,10 @@ namespace GameA
                 }
             } else {
             }
+        }
+
+        private void OnReturnToApp () {
+            Refresh ();
         }
         #endregion
 

@@ -43,15 +43,27 @@ namespace SoyEngine
         // 工坊关卡
         public const string PersonalProjectList = "/project/getPersonalList";
         // 发布关卡
-        public const string PublishProject = "/project/publish";
+        public const string PublishWorldProject = "/world/publishProject";
         // 取消发布
-        public const string UnpublishProject = "/project/unpublish";
+        public const string UnpublishWorldProject = "/world/unpublishProject";
         // 用户发布的关卡
-        public const string UserPublishedProjectList = "/project/getUserPublishedList";
+        public const string UserPublishedWorldProjectList = "/world/getUserPublishedProjectList";
         // Msg_CS_CMD_PlayWorldProject
         public const string PlayWorldProject = "/world/playProject";
         // 提交过关世界关卡数据
         public const string CommitWorldProjectResult = "/world/commitProjectResult";
+        // 获取世界关卡评论列表
+        public const string WorldProjectCommentList = "/world/getProjectCommentList";
+        // 提交世界关卡评论
+        public const string PostWorldProjectComment = "/world/postProjectComment";
+        // 修改关卡顶踩
+        public const string UpdateWorldProjectLike = "/world/updateProjectLike";
+        // 修改关卡收藏状态
+        public const string UpdateWorldProjectFavorite = "/world/updateProjectFavorite";
+        // 删除收藏关卡
+        public const string DeleteWorldProjectFavorite = "/world/deleteProjectFavorite";
+        // 用户收藏的关卡
+        public const string UserFavoriteWorldProjectList = "/world/getUserFavoriteProjectList";
         // 工坊关卡
         public const string Record = "/record/get";
         // 冒险模式关卡列表
