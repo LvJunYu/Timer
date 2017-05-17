@@ -54,11 +54,14 @@ namespace GameA.Game
 
         protected bool _canClimbed;
 
-        protected int _shootRot;
+        protected int _shootAngle;
 
         #endregion
 
         #region motor
+
+        protected bool _canMotor;
+        protected bool _canAttack;
 
         [SerializeField]
         protected IntVec2 _deltaPos;
@@ -142,17 +145,42 @@ namespace GameA.Game
             get { return false; }
         }
 
+        /// <summary>
+        /// 是否可以被喷涂
+        /// </summary>
+        public virtual bool CanPainted
+        {
+            get { return false;}
+        }
+
         public Table_Unit TableUnit
         {
             get { return _tableUnit; }
         }
 
-        public virtual SkillCtrl SkillCtrl1
+        public bool CanMotor
+        {
+            get { return _canMotor; }
+            set { _canMotor = value; }
+        }
+
+        public bool CanAttack
+        {
+            get { return _canAttack; }
+            set { _canAttack = value; }
+        }
+
+        public virtual SkillManager SkillMgr1
         {
             get { return null; }
         }
 
-        public virtual SkillCtrl SkillCtrl2
+        public virtual SkillManager SkillMgr2
+        {
+            get { return null; }
+        }
+
+        public virtual EffectManager EffectMgr
         {
             get { return null; }
         }
@@ -397,10 +425,10 @@ namespace GameA.Game
             get { return (ELayerType)_tableUnit.Layer; }
         }
 
-        public int ShootRot
+        public int ShootAngle
         {
-            get { return _shootRot; }
-            set { _shootRot = value; }
+            get { return _shootAngle; }
+            set { _shootAngle = value; }
         }
 
         public virtual IntVec2 FirePos
@@ -1284,7 +1312,7 @@ namespace GameA.Game
         {
         }
 
-        public virtual void DoEdge(int start, int end, EDirectionType direction, ESkillType eSkillType)
+        public virtual void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType)
         {
         }
 

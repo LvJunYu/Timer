@@ -12,7 +12,7 @@ namespace GameA.Game
 {
     public class JetBase : Magic
     {
-        protected SkillCtrl _skillCtrl;
+        protected SkillManager _skillManager;
         protected int _timeScale;
         protected const int AnimationLength = 15;
 
@@ -22,9 +22,9 @@ namespace GameA.Game
             {
                 return false;
             }
-            _shootRot = (_unitDesc.Rotation) * 90;
-            _skillCtrl = new SkillCtrl(this);
-            _skillCtrl.ChangeSkill<SkillWater>();
+            _shootAngle = (_unitDesc.Rotation) * 90;
+            _skillManager = new SkillManager(this);
+            _skillManager.ChangeSkill<SkillWater>();
             _timeScale = 1;
             return true;
         }
@@ -42,10 +42,10 @@ namespace GameA.Game
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            if (_skillCtrl != null)
+            if (_skillManager != null)
             {
-                _skillCtrl.UpdateLogic();
-                if (_skillCtrl.Fire())
+                _skillManager.UpdateLogic();
+                if (_skillManager.Fire())
                 {
                     if (_animation != null)
                     {

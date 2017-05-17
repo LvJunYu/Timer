@@ -28,7 +28,7 @@ namespace GameA.Game
 
         protected override void OnTrigger(UnitBase other)
         {
-            other.SkillCtrl2.ChangeSkill<SkillJelly>();
+            other.SkillMgr2.ChangeSkill<SkillJelly>();
         }
     }
 }

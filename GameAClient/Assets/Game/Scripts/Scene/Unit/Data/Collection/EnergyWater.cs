@@ -28,7 +28,7 @@ namespace GameA.Game
 
     //    protected override void OnTrigger(UnitBase other)
     //    {
-    //        other.SkillCtrl1.ChangeSkill<SkillWater>();
+    //        other.SkillMgr1.ChangeSkill<SkillWater>();
     //    }
     //}
 }

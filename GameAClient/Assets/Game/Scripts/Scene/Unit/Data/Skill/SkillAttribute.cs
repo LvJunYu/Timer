@@ -16,4 +16,11 @@ namespace GameA.Game
         public string Name;
         public Type Type;
     }
+
+    [AttributeUsage(AttributeTargets.Class)]
+    public class EffectAttribute : Attribute
+    {
+        public string Name;
+        public Type Type;
+    }
 }

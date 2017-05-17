@@ -31,11 +31,16 @@ namespace GameA.Game
         /// <summary>
         /// 角度
         /// </summary>
-        protected int _rotation;
+        protected int _angle;
         /// <summary>
         /// 初始位置
         /// </summary>
         protected IntVec2 _originPos;
+
+        public int Angle
+        {
+            get { return _angle; }
+        }
 
         public void OnGet()
         {
@@ -64,7 +69,7 @@ namespace GameA.Game
             _skill = null;
             _speed = IntVec2.zero;
             _blocked = false;
-            _rotation = 0;
+            _angle = 0;
             _originPos = IntVec2.zero;
             base.Clear();
         }
@@ -74,10 +79,10 @@ namespace GameA.Game
             _originPos = CenterPos;
             _run = true;
             _skill = skill;
-            _rotation = _skill.Owner.ShootRot;
-            var rad = _rotation * Mathf.Deg2Rad;
+            _angle = _skill.Owner.ShootAngle;
+            var rad = _angle * Mathf.Deg2Rad;
             _speed = new IntVec2((int)(_skill.BulletSpeed * Math.Sin(rad)), (int)(_skill.BulletSpeed * Math.Cos(rad)));
-            _trans.eulerAngles = new Vector3(0, 0, -_rotation);
+            _trans.eulerAngles = new Vector3(0, 0, -_angle);
             if (_animation != null)
             {
                 _animation.Init("Run");
@@ -97,7 +102,7 @@ namespace GameA.Game
                 //超出最大射击距离
                 if ((CenterPos - _originPos).SqrMagnitude() >= _skill.Range * _skill.Range)
                 {
-                    var rad = _rotation*Mathf.Deg2Rad;
+                    var rad = _angle*Mathf.Deg2Rad;
                     CenterPos = _originPos + new IntVec2((int)(_skill.Range * Math.Sin(rad)), (int)(_skill.Range * Math.Cos(rad)));
                     _blocked = true;
                 }
@@ -121,50 +126,90 @@ namespace GameA.Game
             if (_view != null)
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
-                GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position, new Vector3(0, 0, _rotation), Vector3.one);
+                GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position, new Vector3(0, 0, _angle), Vector3.one);
             }
             Clear();
             PlayMode.Instance.DestroyUnit(this);
         }
 
-        protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
+        protected override void HitForPaint(UnitBase unit, EDirectionType eDirectionType)
         {
             _blocked = true;
-            DoEdge(unit, eDirectionType);
+            if (unit.CanPainted)
+            {
+                DoPaint(unit, eDirectionType);
+            }
         }
 
-        protected virtual void DoEdge(UnitBase unit, EDirectionType eDirectionType)
+        protected virtual void DoPaint(UnitBase unit, EDirectionType eDirectionType)
         {
             switch (eDirectionType)
             {
                 case EDirectionType.Up:
                     {
                         int centerPoint = (_colliderGrid.XMax + 1 + _colliderGrid.XMin) / 2;
-                        unit.DoEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Down,
+                        unit.DoPaint(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Down,
                             _skill.ESkillType);
                     }
                     break;
                 case EDirectionType.Down:
                     {
                         int centerPoint = (_colliderGrid.XMax + 1 + _colliderGrid.XMin) / 2;
-                        unit.DoEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Up,
+                        unit.DoPaint(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Up,
                             _skill.ESkillType);
                     }
                     break;
                 case EDirectionType.Left:
                     {
                         int centerPoint = (_colliderGrid.YMax + 1 + _colliderGrid.YMin) / 2;
-                        unit.DoEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Right,
+                        unit.DoPaint(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Right,
                             _skill.ESkillType);
                     }
                     break;
                 case EDirectionType.Right:
                     {
                         int centerPoint = (_colliderGrid.YMax + 1 + _colliderGrid.YMin) / 2;
-                        unit.DoEdge(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Left,
+                        unit.DoPaint(centerPoint - _skill.Radius, centerPoint + _skill.Radius, EDirectionType.Left,
                             _skill.ESkillType);
                     }
                     break;
+            }
+        }
+
+        protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
+        {
+            _blocked = true;
+            if (unit.IsHero && unit.EffectMgr != null)
+            {
+                LogHelper.Debug("OnSkilled:{0}", _skill);
+                var effectMgr = unit.EffectMgr;
+                switch (_skill.ESkillType)
+                {
+                    case ESkillType.Water:
+                        //解除火、黏液；速度变慢
+                        effectMgr.RemoveEffect<EffectFire>();
+                        effectMgr.RemoveEffect<EffectClay>();
+                        effectMgr.AddEffect<EffectWater>(this);
+                        break;
+                    case ESkillType.Fire:
+                        //解除冰；着火后四处逃窜 2s 后 死亡，如果此时碰到水，火消灭。水块的话1秒内朝着泥土跳跃，跳不上被淹死。
+                        effectMgr.RemoveEffect<EffectIce>();
+                        effectMgr.AddEffect<EffectFire>(this);
+                        break;
+                    case ESkillType.Ice:
+                        //被冻成冰块
+                        effectMgr.AddEffect<EffectIce>(this);
+                        break;
+                    case ESkillType.Jelly:
+                        //被弹飞
+                        effectMgr.AddEffect<EffectJelly>(this);
+                        effectMgr.RemoveEffect<EffectJelly>();
+                        break;
+                    case ESkillType.Clay:
+                        //被黏住 但可以攻击
+                        effectMgr.AddEffect<EffectClay>(this);
+                        break;
+                }
             }
         }
     }

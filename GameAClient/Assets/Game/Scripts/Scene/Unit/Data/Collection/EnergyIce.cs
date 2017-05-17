@@ -28,7 +28,7 @@ namespace GameA.Game
 
         protected override void OnTrigger(UnitBase other)
         {
-            other.SkillCtrl2.ChangeSkill<SkillIce>();
+            other.SkillMgr2.ChangeSkill<SkillIce>();
         }
     }
 }

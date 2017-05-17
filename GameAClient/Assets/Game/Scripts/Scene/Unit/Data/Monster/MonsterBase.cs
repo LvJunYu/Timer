@@ -82,7 +82,7 @@ namespace GameA.Game
                     Speed += _lastExtraDeltaPos;
                     _grounded = false;
                 }
-                if (_curBanInputTime <= 0)
+                if (_canMotor && _curBanInputTime <= 0)
                 {
                     if (_curMoveDirection == EMoveDirection.Right)
                     {

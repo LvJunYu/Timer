@@ -14,7 +14,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     [Unit(Id = 5011, Type = typeof(AlertLazer))]
-    public class AlertLazer : Earth
+    public class AlertLazer : BlockBase
     {
         protected IntVec2 _pointA;
         protected IntVec2 _pointB;

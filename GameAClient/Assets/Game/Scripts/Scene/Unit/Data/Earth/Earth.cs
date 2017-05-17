@@ -24,6 +24,11 @@ namespace GameA.Game
         private static Comparison<Edge> _comparisonSkillType = SortEdge;
         private SplashController _leftEdgeSplash;
 
+        public override bool CanPainted
+        {
+            get { return true; }
+        }
+
         protected override void InitAssetPath()
         {
             _assetPath = string.Format("{0}_{1}", _tableUnit.Model, Random.Range(1, 3));
@@ -36,7 +41,7 @@ namespace GameA.Game
 		{
 			base.Clear ();
             _edges.Clear();
-            if (null != _leftEdgeSplash)
+            if (_leftEdgeSplash != null)
             {
                 Object.Destroy(_leftEdgeSplash.gameObject);
             }
@@ -66,7 +71,7 @@ namespace GameA.Game
            return y.ESkillType.CompareTo(x.ESkillType);
         }
 
-        public override void DoEdge(int start, int end, EDirectionType direction, ESkillType eSkillType)
+        public override void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType)
         {
             int localStart = 0, localEnd = 0;
             GetLocalPos(start, end, ref localStart, ref localEnd, direction);

@@ -771,15 +771,15 @@ namespace GameA.Game
             {
                 eShootDir = EShootDirectionType.Up;
             }
-            _unit.ShootRot = (int)eShootDir;
+            _unit.ShootAngle = (int)eShootDir;
 
             if (_skill1Input)
             {
-                _unit.SkillCtrl1.Fire();
+                _unit.SkillMgr1.Fire();
             }
             if (Skill2InputDown)
             {
-                _unit.SkillCtrl2.Fire();
+                _unit.SkillMgr2.Fire();
             }
         }
 

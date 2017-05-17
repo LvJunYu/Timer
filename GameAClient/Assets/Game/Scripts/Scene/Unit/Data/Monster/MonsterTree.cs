@@ -195,6 +195,9 @@ namespace GameA.Game
             {
                 ChangeState(EMonsterState.Seek);
             }
+            if (_canAttack)
+            {
+            }
         }
 
         protected void OnSeek()
@@ -228,19 +231,22 @@ namespace GameA.Game
             var pathPos = GetColliderPos(_curPos);
             if (!reachedX)
             {
-                if (currentDest.x - pathPos.x > ConstDefineGM2D.AIMaxPositionError)
+                if (_canMotor)
                 {
-                    //向右
-                    SetFacingDir(EMoveDirection.Right);
-                    //SpeedX = _curMaxSpeedX;
-                    SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, 6);
-                }
-                else if (pathPos.x - currentDest.x > ConstDefineGM2D.AIMaxPositionError)
-                {
-                    //向左
-                    SetFacingDir(EMoveDirection.Left);
-                    //SpeedX = -_curMaxSpeedX;
-                    SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, 6);
+                    if (currentDest.x - pathPos.x > ConstDefineGM2D.AIMaxPositionError)
+                    {
+                        //向右
+                        SetFacingDir(EMoveDirection.Right);
+                        //SpeedX = _curMaxSpeedX;
+                        SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, 6);
+                    }
+                    else if (pathPos.x - currentDest.x > ConstDefineGM2D.AIMaxPositionError)
+                    {
+                        //向左
+                        SetFacingDir(EMoveDirection.Left);
+                        //SpeedX = -_curMaxSpeedX;
+                        SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, 6);
+                    }
                 }
             }
             else if (_path.Count > _currentNodeId + 1 && !destOnGround)
@@ -263,19 +269,22 @@ namespace GameA.Game
 
                 if (checkedX != 0 && !ColliderScene2D.Instance.AnySolidBlockInStripe(checkedX / ConstDefineGM2D.ServerTileScale, pathPos.y / ConstDefineGM2D.ServerTileScale, _path[_currentNodeId + 1].y))
                 {
-                    if (nextDest.x - pathPos.x > ConstDefineGM2D.AIMaxPositionError)
+                    if (_canMotor)
                     {
-                        //向右
-                        SetFacingDir(EMoveDirection.Right);
-                        //SpeedX = _curMaxSpeedX;
-                        SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, 6);
-                    }
-                    else if (pathPos.x - nextDest.x > ConstDefineGM2D.AIMaxPositionError)
-                    {
-                        //向左
-                        SetFacingDir(EMoveDirection.Left);
-                        //SpeedX = -_curMaxSpeedX;
-                        SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, 6);
+                        if (nextDest.x - pathPos.x > ConstDefineGM2D.AIMaxPositionError)
+                        {
+                            //向右
+                            SetFacingDir(EMoveDirection.Right);
+                            //SpeedX = _curMaxSpeedX;
+                            SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, 6);
+                        }
+                        else if (pathPos.x - nextDest.x > ConstDefineGM2D.AIMaxPositionError)
+                        {
+                            //向左
+                            SetFacingDir(EMoveDirection.Left);
+                            //SpeedX = -_curMaxSpeedX;
+                            SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, 6);
+                        }
                     }
 
                     if (ReachedNodeOnXAxis(pathPos, currentDest, nextDest) &&
@@ -290,19 +299,22 @@ namespace GameA.Game
 
         private int GetJumpSpeedForNode(int lastNodeId)
         {
-            int currentNodeId = lastNodeId + 1;
-            if (_path[currentNodeId].y - _path[lastNodeId].y > 0 && _grounded)
+            if (_canMotor)
             {
-                int jumpHeight = 1;
-                for (int i = currentNodeId; i < _path.Count; ++i)
+                int currentNodeId = lastNodeId + 1;
+                if (_path[currentNodeId].y - _path[lastNodeId].y > 0 && _grounded)
                 {
-                    if (_path[i].y - _path[lastNodeId].y >= jumpHeight)
+                    int jumpHeight = 1;
+                    for (int i = currentNodeId; i < _path.Count; ++i)
                     {
-                        jumpHeight = _path[i].y - _path[lastNodeId].y;
-                    }
-                    if (_path[i].y - _path[lastNodeId].y < jumpHeight || ColliderScene2D.Instance.IsGround(_path[i].x, _path[i].y - 1))
-                    {
-                        return GetJumpSpeed(jumpHeight);
+                        if (_path[i].y - _path[lastNodeId].y >= jumpHeight)
+                        {
+                            jumpHeight = _path[i].y - _path[lastNodeId].y;
+                        }
+                        if (_path[i].y - _path[lastNodeId].y < jumpHeight || ColliderScene2D.Instance.IsGround(_path[i].x, _path[i].y - 1))
+                        {
+                            return GetJumpSpeed(jumpHeight);
+                        }
                     }
                 }
             }

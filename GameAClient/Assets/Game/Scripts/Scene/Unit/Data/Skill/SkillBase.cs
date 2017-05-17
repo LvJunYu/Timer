@@ -132,18 +132,17 @@ namespace GameA.Game
             return true;
         }
 
-        private BulletBase CreateBullet()
+        private void CreateBullet()
         {
             if (_bulletId == 0)
             {
-                return null;
+                return;
             }
             var bullet =  PlayMode.Instance.CreateRuntimeUnit(_bulletId, GetBulletPos(_bulletId), 0, Vector2.one) as BulletBase;
             if (bullet != null)
             {
                 bullet.Run(this);
             }
-            return bullet;
         }
 
         private IntVec2 GetBulletPos(int bulletId)
@@ -155,6 +154,11 @@ namespace GameA.Game
             }
             var dataSize = tableUnit.GetDataSize(0, Vector2.one);
             return _owner.FirePos - dataSize * 0.5f;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("ESkillType: {0}, Range: {1}, Radius: {2}, BulletId: {3}", _eSkillType, _range, _radius, _bulletId);
         }
     }
 }

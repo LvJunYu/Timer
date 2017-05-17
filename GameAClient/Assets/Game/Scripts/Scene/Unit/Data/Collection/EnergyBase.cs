@@ -16,9 +16,21 @@ namespace GameA.Game
         protected int _totalCount;
         protected int _currentCount;
         protected int _speed;
-        protected EnergyPoolCtrl _energyPoolCtrl;
 
         protected string _effectName;
+        protected EnergyPoolCtrl _energyPoolCtrl;
+
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            _totalCount = 300;
+            _currentCount = 0;
+            _speed = 1;
+            return true;
+        }
 
         internal override bool InstantiateView()
         {
@@ -38,11 +50,6 @@ namespace GameA.Game
             return true;
         }
 
-        public float GetProcess()
-        {
-            return (float) _currentCount/_totalCount;
-        }
-
         //public override void UpdateExtraData()
         //{
         //    _plus = DataScene2D.Instance.GetUnitExtra(_guid).IsPlusEnergy == 1;
@@ -52,7 +59,7 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.SkillCtrl2 != null)
+            if (other.SkillMgr2 != null)
             {
                 if (_currentCount > 0)
                 {
@@ -72,6 +79,15 @@ namespace GameA.Game
         {
             base.UpdateLogic();
             _currentCount = Util.ConstantLerp(_currentCount, _totalCount, _speed);
+            if (_energyPoolCtrl != null)
+            {
+                _energyPoolCtrl.LiquidVolume = GetProcess();
+            }
+        }
+
+        private float GetProcess()
+        {
+            return (float)_currentCount / _totalCount;
         }
     }
 }
