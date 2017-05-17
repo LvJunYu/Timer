@@ -113,7 +113,6 @@ namespace GameA
 
 
 			_cachedView.TestChangeAvatarBtn.onClick.AddListener (OnTestChangeAvatar);
-			_cachedView.DebugClearUserDataBtn.onClick.AddListener (OnDebugClearUserData);
 
 			// todo player avatar at home
 			AvatarRenderTexture = new RenderTexture (256, 512, 0);
@@ -146,8 +145,9 @@ namespace GameA
 
 		protected override void OnOpen (object parameter)
 		{
+            base.OnOpen (parameter);
+            SocialGUIManager.ShowGoldEnergyBar (false);
 			RefreshUserInfo ();
-			RefreshWalletInfo ();
 			RefreshAvatar ();
 		}
 			
@@ -304,10 +304,6 @@ namespace GameA
 				_cachedView.MaleIcon.gameObject.SetActive (true);
 				_cachedView.FemaleIcon.gameObject.SetActive (false);
 			}
-		}
-		private void RefreshWalletInfo () {
-			_cachedView.MoneyCount.text = LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin.ToString();
-			_cachedView.DiamondCount.text = LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond.ToString();
 		}
 		private void RefreshAvatar () {
 //			if (!LocalUser.Instance.UserLegacy.AvatarData.Inited)

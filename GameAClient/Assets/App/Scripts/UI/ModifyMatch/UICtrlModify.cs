@@ -279,6 +279,7 @@ namespace GameA
                                     LocalUser.Instance.MatchUserData.CurReformProject.TargetSection = msg.NewReformSection;
                                     LocalUser.Instance.MatchUserData.CurReformProject.TargetLevel = msg.NewReformLevel;
                                     LocalUser.Instance.MatchUserData.CurReformProject.ResPath = string.Empty;
+                                    GameATools.LocalUseGold(10);
                                     // 立刻请求更新数据，以获取改造中的project
                                     LocalUser.Instance.MatchUserData.Request(LocalUser.Instance.UserGuid, null, null);
                                 } else {
