@@ -461,6 +461,7 @@
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Collider\BgNode.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Collider\NodeFactory.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Common\AnimationSystem.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\Unit\Common\SpineObject.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Common\SwitchExtra.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Common\UnitDefine.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Common\UnitDesc.cs" />
@@ -522,13 +523,14 @@
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\Box.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\Final.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\Gate.cs" />
-    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\GreenJet.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\JetBase.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\JetGreen.cs" />
+    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\JetRed.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\Key.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\Lazer.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\Monocycle.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\MovingPlatform.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\Portal.cs" />
-    <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\RedJet.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\RevivePoint.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\Switch\Switch.cs" />
     <Compile Include="Assets\Game\Scripts\Scene\Unit\Data\Mechanism\Switch\SwitchAuto.cs" />

@@ -9,19 +9,27 @@ namespace GameA
     public partial class UserAvatarPartDiscountCoupon : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        // 用户
+        /// <summary>
+        /// 用户
+        /// </summary>
         private long _userId;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private List<AvatarPartDiscountCouponGroup> _groupList;
 
         // cs fields----------------------------------
-        // 用户
+        /// <summary>
+        /// 用户
+        /// </summary>
         private long _cs_userId;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        // 用户
+        /// <summary>
+        /// 用户
+        /// </summary>
         public long UserId { 
             get { return _userId; }
             set { if (_userId != value) {
@@ -29,7 +37,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public List<AvatarPartDiscountCouponGroup> GroupList { 
             get { return _groupList; }
             set { if (_groupList != value) {
@@ -39,7 +49,9 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        // 用户
+        /// <summary>
+        /// 用户
+        /// </summary>
         public long CS_UserId { 
             get { return _cs_userId; }
             set { _cs_userId = value; }
@@ -68,18 +80,27 @@ namespace GameA
             long userId,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            OnRequest (successCallback, failedCallback);
+            if (_isRequesting) {
+                if (_cs_userId != userId) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest (successCallback, failedCallback);
+            } else {
+                _cs_userId = userId;
+                OnRequest (successCallback, failedCallback);
 
-            Msg_CS_DAT_UserAvatarPartDiscountCoupon msg = new Msg_CS_DAT_UserAvatarPartDiscountCoupon();
-            msg.UserId = userId;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserAvatarPartDiscountCoupon>(
-                SoyHttpApiPath.UserAvatarPartDiscountCoupon, msg, ret => {
-                    if (OnSync(ret)) {
-                        OnSyncSucceed(); 
-                    }
-                }, (failedCode, failedMsg) => {
-                    OnSyncFailed(failedCode, failedMsg);
-            });
+                Msg_CS_DAT_UserAvatarPartDiscountCoupon msg = new Msg_CS_DAT_UserAvatarPartDiscountCoupon();
+                msg.UserId = userId;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserAvatarPartDiscountCoupon>(
+                    SoyHttpApiPath.UserAvatarPartDiscountCoupon, msg, ret => {
+                        if (OnSync(ret)) {
+                            OnSyncSucceed(); 
+                        }
+                    }, (failedCode, failedMsg) => {
+                        OnSyncFailed(failedCode, failedMsg);
+                });            
+            }            
         }
 
         public bool OnSync (Msg_SC_DAT_UserAvatarPartDiscountCoupon msg)

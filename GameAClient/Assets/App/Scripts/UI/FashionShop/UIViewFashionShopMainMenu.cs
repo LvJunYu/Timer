@@ -28,27 +28,17 @@ namespace GameA
 	    public Text UsingHead;
 	    public Text UsingUpper;
 	    public Text UsingLower;
-<<<<<<< HEAD
 	    public Text UsingAppendage;
-
 	    public RawImage Avatar;
-=======
-	    public Text UsingAppendage;
         public Text SelectedHead;
         public Text SelectedUpper;
         public Text SelectedLower;
         public Text SelectedAppendage;
 
-
-
-
         public Image SeletctedPage1Image;
         public Image SeletctedPage2Image;
         public Image SeletctedPage3Image;
         public Image SeletctedPage4Image;
-
-        public RawImage Avatar;
->>>>>>> 开始进行spine动画管理
 
 
 	    //public UICtrlFashionItem[] Items;

@@ -9,83 +9,95 @@ namespace GameA
     public partial class Record : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        // 作者
-        private UserInfoSimple _userInfo;
-        // 
-        private long _usedTime;
-        // 
-        private long _createTime;
-        // 
-        private string _recordPath;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private long _recordId;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private long _projectId;
-        // 
+        /// <summary>
+        /// 作者
+        /// </summary>
+        private UserInfoSimple _userInfo;
+        /// <summary>
+        /// 
+        /// </summary>
+        private int _score;
+        /// <summary>
+        /// 
+        /// </summary>
+        private long _usedTime;
+        /// <summary>
+        /// 
+        /// </summary>
+        private long _createTime;
+        /// <summary>
+        /// 
+        /// </summary>
+        private string _recordPath;
+        /// <summary>
+        /// 
+        /// </summary>
         private int _result;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private long _playCount;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private long _lastPlayTime;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private long _playUserCount;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _favoriteCount;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _likeCount;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _commentCount;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _shareCount;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private Project _projectData;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private bool _userBuy;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private bool _userLike;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private bool _userFavorite;
 
         // cs fields----------------------------------
-        // Id
+        /// <summary>
+        /// Id
+        /// </summary>
         private long _cs_recordId;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        // 作者
-        public UserInfoSimple UserInfo { 
-            get { return _userInfo; }
-            set { if (_userInfo != value) {
-                _userInfo = value;
-                SetDirty();
-            }}
-        }
-        // 
-        public long UsedTime { 
-            get { return _usedTime; }
-            set { if (_usedTime != value) {
-                _usedTime = value;
-                SetDirty();
-            }}
-        }
-        // 
-        public long CreateTime { 
-            get { return _createTime; }
-            set { if (_createTime != value) {
-                _createTime = value;
-                SetDirty();
-            }}
-        }
-        // 
-        public string RecordPath { 
-            get { return _recordPath; }
-            set { if (_recordPath != value) {
-                _recordPath = value;
-                SetDirty();
-            }}
-        }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public long RecordId { 
             get { return _recordId; }
             set { if (_recordId != value) {
@@ -93,7 +105,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public long ProjectId { 
             get { return _projectId; }
             set { if (_projectId != value) {
@@ -101,7 +115,59 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 作者
+        /// </summary>
+        public UserInfoSimple UserInfo { 
+            get { return _userInfo; }
+            set { if (_userInfo != value) {
+                _userInfo = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int Score { 
+            get { return _score; }
+            set { if (_score != value) {
+                _score = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public long UsedTime { 
+            get { return _usedTime; }
+            set { if (_usedTime != value) {
+                _usedTime = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public long CreateTime { 
+            get { return _createTime; }
+            set { if (_createTime != value) {
+                _createTime = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string RecordPath { 
+            get { return _recordPath; }
+            set { if (_recordPath != value) {
+                _recordPath = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         public int Result { 
             get { return _result; }
             set { if (_result != value) {
@@ -109,7 +175,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public long PlayCount { 
             get { return _playCount; }
             set { if (_playCount != value) {
@@ -117,7 +185,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public long LastPlayTime { 
             get { return _lastPlayTime; }
             set { if (_lastPlayTime != value) {
@@ -125,7 +195,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public long PlayUserCount { 
             get { return _playUserCount; }
             set { if (_playUserCount != value) {
@@ -133,7 +205,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int FavoriteCount { 
             get { return _favoriteCount; }
             set { if (_favoriteCount != value) {
@@ -141,7 +215,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int LikeCount { 
             get { return _likeCount; }
             set { if (_likeCount != value) {
@@ -149,7 +225,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int CommentCount { 
             get { return _commentCount; }
             set { if (_commentCount != value) {
@@ -157,7 +235,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int ShareCount { 
             get { return _shareCount; }
             set { if (_shareCount != value) {
@@ -165,7 +245,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public Project ProjectData { 
             get { return _projectData; }
             set { if (_projectData != value) {
@@ -173,7 +255,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool UserBuy { 
             get { return _userBuy; }
             set { if (_userBuy != value) {
@@ -181,7 +265,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool UserLike { 
             get { return _userLike; }
             set { if (_userLike != value) {
@@ -189,7 +275,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool UserFavorite { 
             get { return _userFavorite; }
             set { if (_userFavorite != value) {
@@ -199,7 +287,9 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        // Id
+        /// <summary>
+        /// Id
+        /// </summary>
         public long CS_RecordId { 
             get { return _cs_recordId; }
             set { _cs_recordId = value; }
@@ -227,33 +317,43 @@ namespace GameA
             long recordId,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            OnRequest (successCallback, failedCallback);
+            if (_isRequesting) {
+                if (_cs_recordId != recordId) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest (successCallback, failedCallback);
+            } else {
+                _cs_recordId = recordId;
+                OnRequest (successCallback, failedCallback);
 
-            Msg_CS_DAT_Record msg = new Msg_CS_DAT_Record();
-            msg.RecordId = recordId;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_Record>(
-                SoyHttpApiPath.Record, msg, ret => {
-                    if (OnSync(ret)) {
-                        OnSyncSucceed(); 
-                    }
-                }, (failedCode, failedMsg) => {
-                    OnSyncFailed(failedCode, failedMsg);
-            });
+                Msg_CS_DAT_Record msg = new Msg_CS_DAT_Record();
+                msg.RecordId = recordId;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_Record>(
+                    SoyHttpApiPath.Record, msg, ret => {
+                        if (OnSync(ret)) {
+                            OnSyncSucceed(); 
+                        }
+                    }, (failedCode, failedMsg) => {
+                        OnSyncFailed(failedCode, failedMsg);
+                });            
+            }            
         }
 
         public bool OnSync (Msg_SC_DAT_Record msg)
         {
             if (null == msg) return false;
+            _recordId = msg.RecordId;           
+            _projectId = msg.ProjectId;           
             if (null == _userInfo) {
                 _userInfo = new UserInfoSimple(msg.UserInfo);
             } else {
                 _userInfo.OnSyncFromParent(msg.UserInfo);
             }
+            _score = msg.Score;           
             _usedTime = msg.UsedTime;           
             _createTime = msg.CreateTime;           
             _recordPath = msg.RecordPath;           
-            _recordId = msg.RecordId;           
-            _projectId = msg.ProjectId;           
             _result = msg.Result;           
             _playCount = msg.PlayCount;           
             _lastPlayTime = msg.LastPlayTime;           

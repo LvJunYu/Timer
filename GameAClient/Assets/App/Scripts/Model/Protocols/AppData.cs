@@ -9,27 +9,43 @@ namespace GameA
     public partial class AppData : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        // 应用版本号
+        /// <summary>
+        /// 应用版本号
+        /// </summary>
         private string _imageUrlRoot;
-        // 资源版本号
+        /// <summary>
+        /// 资源版本号
+        /// </summary>
         private string _fileUrlRoot;
-        // 资源根路径
+        /// <summary>
+        /// 资源根路径
+        /// </summary>
         private string _gameResRoot;
-        // 最新版本号
+        /// <summary>
+        /// 最新版本号
+        /// </summary>
         private string _newestAppVersion;
-        // 服务器时间
+        /// <summary>
+        /// 服务器时间
+        /// </summary>
         private long _serverTime;
-        // api是否兼容
+        /// <summary>
+        /// api是否兼容
+        /// </summary>
         private bool _aPISupport;
 
         // cs fields----------------------------------
-        // 占位
+        /// <summary>
+        /// 占位
+        /// </summary>
         private int _cs_flag;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        // 应用版本号
+        /// <summary>
+        /// 应用版本号
+        /// </summary>
         public string ImageUrlRoot { 
             get { return _imageUrlRoot; }
             set { if (_imageUrlRoot != value) {
@@ -37,7 +53,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 资源版本号
+        /// <summary>
+        /// 资源版本号
+        /// </summary>
         public string FileUrlRoot { 
             get { return _fileUrlRoot; }
             set { if (_fileUrlRoot != value) {
@@ -45,7 +63,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 资源根路径
+        /// <summary>
+        /// 资源根路径
+        /// </summary>
         public string GameResRoot { 
             get { return _gameResRoot; }
             set { if (_gameResRoot != value) {
@@ -53,7 +73,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 最新版本号
+        /// <summary>
+        /// 最新版本号
+        /// </summary>
         public string NewestAppVersion { 
             get { return _newestAppVersion; }
             set { if (_newestAppVersion != value) {
@@ -61,7 +83,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 服务器时间
+        /// <summary>
+        /// 服务器时间
+        /// </summary>
         public long ServerTime { 
             get { return _serverTime; }
             set { if (_serverTime != value) {
@@ -69,7 +93,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // api是否兼容
+        /// <summary>
+        /// api是否兼容
+        /// </summary>
         public bool APISupport { 
             get { return _aPISupport; }
             set { if (_aPISupport != value) {
@@ -79,7 +105,9 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        // 占位
+        /// <summary>
+        /// 占位
+        /// </summary>
         public int CS_Flag { 
             get { return _cs_flag; }
             set { _cs_flag = value; }
@@ -101,18 +129,27 @@ namespace GameA
             int flag,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            OnRequest (successCallback, failedCallback);
+            if (_isRequesting) {
+                if (_cs_flag != flag) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest (successCallback, failedCallback);
+            } else {
+                _cs_flag = flag;
+                OnRequest (successCallback, failedCallback);
 
-            Msg_CS_DAT_AppData msg = new Msg_CS_DAT_AppData();
-            msg.Flag = flag;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AppData>(
-                SoyHttpApiPath.AppData, msg, ret => {
-                    if (OnSync(ret)) {
-                        OnSyncSucceed(); 
-                    }
-                }, (failedCode, failedMsg) => {
-                    OnSyncFailed(failedCode, failedMsg);
-            });
+                Msg_CS_DAT_AppData msg = new Msg_CS_DAT_AppData();
+                msg.Flag = flag;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AppData>(
+                    SoyHttpApiPath.AppData, msg, ret => {
+                        if (OnSync(ret)) {
+                            OnSyncSucceed(); 
+                        }
+                    }, (failedCode, failedMsg) => {
+                        OnSyncFailed(failedCode, failedMsg);
+                });            
+            }            
         }
 
         public bool OnSync (Msg_SC_DAT_AppData msg)

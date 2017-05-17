@@ -8,18 +8,28 @@ namespace GameA
 {
     public partial class HomePartItem : SyncronisticData {
         #region 字段
-        // 下边的枚举
+        /// <summary>
+        /// 下边的枚举
+        /// </summary>
         private int _type;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private long _id;
-        // 状态
+        /// <summary>
+        /// 状态
+        /// </summary>
         private int _state;
-        // 等级
+        /// <summary>
+        /// 等级
+        /// </summary>
         private int _level;
         #endregion
 
         #region 属性
-        // 下边的枚举
+        /// <summary>
+        /// 下边的枚举
+        /// </summary>
         public int Type { 
             get { return _type; }
             set { if (_type != value) {
@@ -27,7 +37,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public long Id { 
             get { return _id; }
             set { if (_id != value) {
@@ -35,7 +47,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 状态
+        /// <summary>
+        /// 状态
+        /// </summary>
         public int State { 
             get { return _state; }
             set { if (_state != value) {
@@ -43,7 +57,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 等级
+        /// <summary>
+        /// 等级
+        /// </summary>
         public int Level { 
             get { return _level; }
             set { if (_level != value) {

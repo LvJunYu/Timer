@@ -8,18 +8,28 @@ namespace GameA
 {
     public partial class AvatarPartItem : SyncronisticData {
         #region 字段
-        // 下边枚举
+        /// <summary>
+        /// 下边枚举
+        /// </summary>
         private int _type;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private long _id;
-        // 是否在使用
+        /// <summary>
+        /// 是否在使用
+        /// </summary>
         private bool _using;
-        // 过期时间
+        /// <summary>
+        /// 过期时间
+        /// </summary>
         private long _expirationTime;
         #endregion
 
         #region 属性
-        // 下边枚举
+        /// <summary>
+        /// 下边枚举
+        /// </summary>
         public int Type { 
             get { return _type; }
             set { if (_type != value) {
@@ -27,7 +37,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public long Id { 
             get { return _id; }
             set { if (_id != value) {
@@ -35,7 +47,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 是否在使用
+        /// <summary>
+        /// 是否在使用
+        /// </summary>
         public bool Using { 
             get { return _using; }
             set { if (_using != value) {
@@ -43,7 +57,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 过期时间
+        /// <summary>
+        /// 过期时间
+        /// </summary>
         public long ExpirationTime { 
             get { return _expirationTime; }
             set { if (_expirationTime != value) {

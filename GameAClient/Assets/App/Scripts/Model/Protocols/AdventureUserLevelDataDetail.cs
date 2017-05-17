@@ -9,33 +9,55 @@ namespace GameA
     public partial class AdventureUserLevelDataDetail : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private AdventureUserLevelData _simpleData;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private Record _highScoreRecord;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private Record _star1FlagRecord;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private Record _star2FlagRecord;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private Record _star3FlagRecord;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private UserInfoSimple _highScoreFriendInfo;
 
         // cs fields----------------------------------
-        // 用户
+        /// <summary>
+        /// 用户
+        /// </summary>
         private long _cs_userId;
-        // 章节
+        /// <summary>
+        /// 章节
+        /// </summary>
         private int _cs_section;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private EAdventureProjectType _cs_projectType;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _cs_level;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public AdventureUserLevelData SimpleData { 
             get { return _simpleData; }
             set { if (_simpleData != value) {
@@ -43,7 +65,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public Record HighScoreRecord { 
             get { return _highScoreRecord; }
             set { if (_highScoreRecord != value) {
@@ -51,7 +75,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public Record Star1FlagRecord { 
             get { return _star1FlagRecord; }
             set { if (_star1FlagRecord != value) {
@@ -59,7 +85,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public Record Star2FlagRecord { 
             get { return _star2FlagRecord; }
             set { if (_star2FlagRecord != value) {
@@ -67,7 +95,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public Record Star3FlagRecord { 
             get { return _star3FlagRecord; }
             set { if (_star3FlagRecord != value) {
@@ -75,7 +105,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public UserInfoSimple HighScoreFriendInfo { 
             get { return _highScoreFriendInfo; }
             set { if (_highScoreFriendInfo != value) {
@@ -85,22 +117,30 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        // 用户
+        /// <summary>
+        /// 用户
+        /// </summary>
         public long CS_UserId { 
             get { return _cs_userId; }
             set { _cs_userId = value; }
         }
-        // 章节
+        /// <summary>
+        /// 章节
+        /// </summary>
         public int CS_Section { 
             get { return _cs_section; }
             set { _cs_section = value; }
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public EAdventureProjectType CS_ProjectType { 
             get { return _cs_projectType; }
             set { _cs_projectType = value; }
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int CS_Level { 
             get { return _cs_level; }
             set { _cs_level = value; }
@@ -146,21 +186,45 @@ namespace GameA
             int level,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            OnRequest (successCallback, failedCallback);
+            if (_isRequesting) {
+                if (_cs_userId != userId) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_section != section) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_projectType != projectType) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_level != level) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest (successCallback, failedCallback);
+            } else {
+                _cs_userId = userId;
+                _cs_section = section;
+                _cs_projectType = projectType;
+                _cs_level = level;
+                OnRequest (successCallback, failedCallback);
 
-            Msg_CS_DAT_AdventureUserLevelDataDetail msg = new Msg_CS_DAT_AdventureUserLevelDataDetail();
-            msg.UserId = userId;
-            msg.Section = section;
-            msg.ProjectType = projectType;
-            msg.Level = level;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AdventureUserLevelDataDetail>(
-                SoyHttpApiPath.AdventureUserLevelDataDetail, msg, ret => {
-                    if (OnSync(ret)) {
-                        OnSyncSucceed(); 
-                    }
-                }, (failedCode, failedMsg) => {
-                    OnSyncFailed(failedCode, failedMsg);
-            });
+                Msg_CS_DAT_AdventureUserLevelDataDetail msg = new Msg_CS_DAT_AdventureUserLevelDataDetail();
+                msg.UserId = userId;
+                msg.Section = section;
+                msg.ProjectType = projectType;
+                msg.Level = level;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AdventureUserLevelDataDetail>(
+                    SoyHttpApiPath.AdventureUserLevelDataDetail, msg, ret => {
+                        if (OnSync(ret)) {
+                            OnSyncSucceed(); 
+                        }
+                    }, (failedCode, failedMsg) => {
+                        OnSyncFailed(failedCode, failedMsg);
+                });            
+            }            
         }
 
         public bool OnSync (Msg_SC_DAT_AdventureUserLevelDataDetail msg)

@@ -9,21 +9,31 @@ namespace GameA
     public partial class AdventureUserData : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        // 体力数据
+        /// <summary>
+        /// 体力数据
+        /// </summary>
         private UserEnergy _userEnergyData;
-        // 冒险进度
+        /// <summary>
+        /// 冒险进度
+        /// </summary>
         private AdventureUserProgress _adventureUserProgress;
-        // 用户章节数据列表
+        /// <summary>
+        /// 用户章节数据列表
+        /// </summary>
         private List<AdventureUserSection> _sectionList;
 
         // cs fields----------------------------------
-        // 用户
+        /// <summary>
+        /// 用户
+        /// </summary>
         private long _cs_userId;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        // 体力数据
+        /// <summary>
+        /// 体力数据
+        /// </summary>
         public UserEnergy UserEnergyData { 
             get { return _userEnergyData; }
             set { if (_userEnergyData != value) {
@@ -31,7 +41,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 冒险进度
+        /// <summary>
+        /// 冒险进度
+        /// </summary>
         public AdventureUserProgress AdventureUserProgress { 
             get { return _adventureUserProgress; }
             set { if (_adventureUserProgress != value) {
@@ -39,7 +51,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 用户章节数据列表
+        /// <summary>
+        /// 用户章节数据列表
+        /// </summary>
         public List<AdventureUserSection> SectionList { 
             get { return _sectionList; }
             set { if (_sectionList != value) {
@@ -49,7 +63,9 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        // 用户
+        /// <summary>
+        /// 用户
+        /// </summary>
         public long CS_UserId { 
             get { return _cs_userId; }
             set { _cs_userId = value; }
@@ -84,18 +100,27 @@ namespace GameA
             long userId,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            OnRequest (successCallback, failedCallback);
+            if (_isRequesting) {
+                if (_cs_userId != userId) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest (successCallback, failedCallback);
+            } else {
+                _cs_userId = userId;
+                OnRequest (successCallback, failedCallback);
 
-            Msg_CS_DAT_AdventureUserData msg = new Msg_CS_DAT_AdventureUserData();
-            msg.UserId = userId;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AdventureUserData>(
-                SoyHttpApiPath.AdventureUserData, msg, ret => {
-                    if (OnSync(ret)) {
-                        OnSyncSucceed(); 
-                    }
-                }, (failedCode, failedMsg) => {
-                    OnSyncFailed(failedCode, failedMsg);
-            });
+                Msg_CS_DAT_AdventureUserData msg = new Msg_CS_DAT_AdventureUserData();
+                msg.UserId = userId;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AdventureUserData>(
+                    SoyHttpApiPath.AdventureUserData, msg, ret => {
+                        if (OnSync(ret)) {
+                            OnSyncSucceed(); 
+                        }
+                    }, (failedCode, failedMsg) => {
+                        OnSyncFailed(failedCode, failedMsg);
+                });            
+            }            
         }
 
         public bool OnSync (Msg_SC_DAT_AdventureUserData msg)

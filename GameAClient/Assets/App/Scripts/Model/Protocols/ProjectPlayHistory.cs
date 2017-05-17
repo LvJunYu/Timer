@@ -8,16 +8,24 @@ namespace GameA
 {
     public partial class ProjectPlayHistory : SyncronisticData {
         #region 字段
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private Project _data;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private long _lastPlayTime;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private int _completeCount;
         #endregion
 
         #region 属性
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public Project Data { 
             get { return _data; }
             set { if (_data != value) {
@@ -25,7 +33,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public long LastPlayTime { 
             get { return _lastPlayTime; }
             set { if (_lastPlayTime != value) {
@@ -33,7 +43,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int CompleteCount { 
             get { return _completeCount; }
             set { if (_completeCount != value) {
