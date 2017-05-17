@@ -509,43 +509,43 @@ namespace GameA.Game
             _project.SaveModifyProject (compressedBytes, successCallback, failedCallback);
         }
 
-        public void Publish(string name, string summary, Action successCallback=null, Action<EProjectOperateResult> failedCallback=null)
-        {
-            if(name == null)
-            {
-                name = _project.Name;
-            }
-            if(summary == null)
-            {
-                summary = _project.Summary;
-            }
-
-            byte[] mapDataBytes = MapManager.Instance.SaveMapData();
-            mapDataBytes = MatrixProjectTools.CompressLZMA(mapDataBytes);
-            if(IconBytes == null)
-            {
-                IconBytes = CaptureLevel();
-            }
-            if (name == null
-                || mapDataBytes == null
-                || mapDataBytes.Length == 0)
-            {
-                if(failedCallback != null)
-                {
-                    failedCallback.Invoke(EProjectOperateResult.POR_Error);
-                }
-                return;
-            }
-            _project.Publish(name, summary, mapDataBytes, IconBytes,
-                RecordUsedTime, RecordBytes, ()=>{
-                NeedSave = false;
-                MapDirty = false;
-                if(successCallback != null)
-                {
-                    successCallback.Invoke();
-                }
-            }, failedCallback);
-        }
+//        public void Publish(string name, string summary, Action successCallback=null, Action<EProjectOperateResult> failedCallback=null)
+//        {
+//            if(name == null)
+//            {
+//                name = _project.Name;
+//            }
+//            if(summary == null)
+//            {
+//                summary = _project.Summary;
+//            }
+//
+//            byte[] mapDataBytes = MapManager.Instance.SaveMapData();
+//            mapDataBytes = MatrixProjectTools.CompressLZMA(mapDataBytes);
+//            if(IconBytes == null)
+//            {
+//                IconBytes = CaptureLevel();
+//            }
+//            if (name == null
+//                || mapDataBytes == null
+//                || mapDataBytes.Length == 0)
+//            {
+//                if(failedCallback != null)
+//                {
+//                    failedCallback.Invoke(EProjectOperateResult.POR_Error);
+//                }
+//                return;
+//            }
+//            _project.Publish(name, summary, mapDataBytes, IconBytes,
+//                RecordUsedTime, RecordBytes, ()=>{
+//                NeedSave = false;
+//                MapDirty = false;
+//                if(successCallback != null)
+//                {
+//                    successCallback.Invoke();
+//                }
+//            }, failedCallback);
+//        }
 
         public bool CheckCanPublish(bool showPrompt = false)
         {
@@ -686,25 +686,35 @@ namespace GameA.Game
 			}
 
 			Project p = GameManager.Instance.CurrentGame.Project;
-			if(p.ProjectStatus == EProjectStatus.PS_Private)
-			{
-				Messenger.Broadcast(EMessengerType.GameFinishSuccessShowUI);
+            if (p.ProjectStatus == EProjectStatus.PS_Private) {
+                Messenger.Broadcast (EMessengerType.GameFinishSuccessShowUI);
 //				byte[] record = GetRecord();
 //				float usedTime = PlayMode.Instance.GameSuccessFrameCnt * ConstDefineGM2D.FixedDeltaTime;
 //				GM2DGame.Instance.RecordBytes = record;
 //				GM2DGame.Instance.RecordUsedTime = usedTime;
 //
 //				GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>();
-			}
-			else if(p.ProjectStatus == EProjectStatus.PS_Public)
-//				&& GameManager.Instance.GameMode == EGameMode.Normal)
-			{
-				CommitAdventureGameResult (true);
-				return;
-			}
-			else
-			{
-			}
+            } else if (p.ProjectStatus == EProjectStatus.PS_Public)
+ {//				&& GameManager.Instance.GameMode == EGameMode.Normal)
+                CommitAdventureGameResult (true);
+                return;
+            } else if (p.ProjectStatus == EProjectStatus.PS_Reform) {
+                p.PassFlag = true;
+            } else if (p.ProjectStatus == EProjectStatus.PS_Challenge) {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "提交成绩中...");
+                LocalUser.Instance.MatchUserData.CommitChallengeResult (
+                    true,
+                    PlayMode.Instance.GameSuccessFrameCnt * ConstDefineGM2D.FixedDeltaTime,
+                    () => {
+                        Debug.Log("——————————————————————提交挑战成功");
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    },
+                    () => {
+                        Debug.Log("——————————————————————提交挑战失败");
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    }
+                );                    
+            }
 		}
 
 		/// <summary>

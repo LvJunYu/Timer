@@ -15,5 +15,7 @@ namespace GameA
         public RawImage Cover;
 
         public Texture DefaultProjectCoverTex;
+
+        public GameObject SelectMark;
     }
 }

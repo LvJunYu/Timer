@@ -11,12 +11,14 @@ namespace GameA
 
         public Button RandomPickBtn;
         public Button ChallengeBtn;
-        public Button SelectBtn;
+        public Button AbandomBtn;
 
 
         public USViewChallengeProjectCard ChallengeProjectEasy;
         public USViewChallengeProjectCard ChallengeProjectNormal;
         public USViewChallengeProjectCard ChallengeProjectHard;
         public USViewChallengeProjectCard ChallengeProjectUnkown;
+
+        public Image InputBlock;
     }
 }

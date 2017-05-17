@@ -60,7 +60,8 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-//			RegisterEvent(EMessengerType.OnChangeToAppMode, OnReturnToApp);
+//            Messenger<Project>.AddListener (EMessengerType.OnReformProjectPublished, OnReformProjectPublished);
+			RegisterEvent(EMessengerType.OnReformProjectPublished, OnReformProjectPublished);
 //            RegisterEvent(EMessengerType.OnAccountLoginStateChanged, OnEvent);
         }
 
@@ -98,6 +99,11 @@ namespace GameA
 
         private void RefreshModifyMatch () {
             int matchPoint = LocalUser.Instance.MatchUserData.LeftChallengeCount;
+            MatchUserData.EChallengeState challengeState = LocalUser.Instance.MatchUserData.CurrentChallengeState ();
+            if (MatchUserData.EChallengeState.Selecting == challengeState || 
+                MatchUserData.EChallengeState.Challenging == challengeState) {
+                matchPoint += 1;
+            }
             int matchPointMax = LocalUser.Instance.MatchUserData.ChallengeCapacity;
             _cachedView.MatchPoint.text = string.Format ("{0} / {1}", matchPoint, matchPointMax);
 
@@ -106,10 +112,14 @@ namespace GameA
             float getMatchPointLeftTimeInPercentage = 0f;
             if (0 == matchPoint) {
                 getMatchPointCDInSecond = 0.001f * (now - LocalUser.Instance.MatchUserData.LeftChallengeCountRefreshTime);
-                getMatchPointLeftTimeInPercentage = 1f - getMatchPointCDInSecond / 
-                    (float)LocalUser.Instance.MatchUserData.ChallengeIntervalSecond;
+                getMatchPointLeftTimeInPercentage = 1f - getMatchPointCDInSecond /
+                (float)LocalUser.Instance.MatchUserData.ChallengeIntervalSecond;
+                _cachedView.MatchCDImage.fillAmount = getMatchPointLeftTimeInPercentage;
+                _cachedView.MatchCDImage.gameObject.SetActive (true);
+            } else {
+                _cachedView.MatchCDImage.gameObject.SetActive (false);
             }
-            _cachedView.MatchCDImage.fillAmount = getMatchPointLeftTimeInPercentage;
+
 
             if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_WaitForChance) {
                 int modifyCDInSecond = LocalUser.Instance.MatchUserData.ReformIntervalSeconds
@@ -135,8 +145,12 @@ namespace GameA
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.PublishedProjectSnapShoot, 
                     LocalUser.Instance.MatchUserData.CurPublishProject.IconPath,
                     _cachedView.DefaultProjectCoverTex);
-                _cachedView.PassingRate.text = string.Format("{0}%", (int)(LocalUser.Instance.MatchUserData.CurPublishProject.ExtendData.CompleteCount / 
-                    (float)LocalUser.Instance.MatchUserData.CurPublishProject.ExtendData.PlayCount * 100));
+                int passRate = 0;
+                if (LocalUser.Instance.MatchUserData.CurPublishProject.ExtendData.PlayCount > 0) {
+                    passRate = (int)(LocalUser.Instance.MatchUserData.CurPublishProject.ExtendData.CompleteCount /
+                    (float)LocalUser.Instance.MatchUserData.CurPublishProject.ExtendData.PlayCount * 100);
+                }
+                _cachedView.PassingRate.text = passRate.ToString();
                 int validSecond = (int)((_publishedProjectValidTimeLength - 
                     (DateTimeUtil.GetServerTimeNowTimestampMillis () - LocalUser.Instance.MatchUserData.CurPublishTime)) 
                     / GameTimer.Second2Ms);
@@ -191,9 +205,10 @@ namespace GameA
 		}
 
         private void OnMatchBtn () {
-            if (LocalUser.Instance.MatchUserData.LeftChallengeCount > 0) {
-                SocialGUIManager.Instance.OpenPopupUI<UICtrlChallengeMatch> ();
+            if (MatchUserData.EChallengeState.WaitForChance == LocalUser.Instance.MatchUserData.CurrentChallengeState()) {
+                
             } else {
+                SocialGUIManager.Instance.OpenPopupUI<UICtrlChallengeMatch> ();
             }
         }
 
@@ -212,6 +227,19 @@ namespace GameA
         }
 
         #endregion 接口
+        private void OnReformProjectPublished () {
+            if (!IsOpen)
+                return;
+            LocalUser.Instance.MatchUserData.Request(
+                LocalUser.Instance.UserGuid,
+                () => {
+                    RefreshViewAll();
+                },
+                code => {
+                    // error handle
+                }
+            );
+        }
         #endregion
 
     }

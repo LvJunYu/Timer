@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class UserPublishedProjectList : SyncronisticData {
+    public partial class UserPublishedWorldProjectList : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -176,14 +176,14 @@ namespace GameA
                 _cs_orderType = orderType;
                 OnRequest (successCallback, failedCallback);
 
-                Msg_CS_DAT_UserPublishedProjectList msg = new Msg_CS_DAT_UserPublishedProjectList();
+                Msg_CS_DAT_UserPublishedWorldProjectList msg = new Msg_CS_DAT_UserPublishedWorldProjectList();
                 msg.UserId = userId;
                 msg.StartInx = startInx;
                 msg.MaxCount = maxCount;
                 msg.OrderBy = orderBy;
                 msg.OrderType = orderType;
-                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserPublishedProjectList>(
-                    SoyHttpApiPath.UserPublishedProjectList, msg, ret => {
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserPublishedWorldProjectList>(
+                    SoyHttpApiPath.UserPublishedWorldProjectList, msg, ret => {
                         if (OnSync(ret)) {
                             OnSyncSucceed(); 
                         }
@@ -193,7 +193,7 @@ namespace GameA
             }            
         }
 
-        public bool OnSync (Msg_SC_DAT_UserPublishedProjectList msg)
+        public bool OnSync (Msg_SC_DAT_UserPublishedWorldProjectList msg)
         {
             if (null == msg) return false;
             _resultCode = msg.ResultCode;           
@@ -206,19 +206,19 @@ namespace GameA
             return true;
         }
 
-        public void OnSyncFromParent (Msg_SC_DAT_UserPublishedProjectList msg) {
+        public void OnSyncFromParent (Msg_SC_DAT_UserPublishedWorldProjectList msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public UserPublishedProjectList (Msg_SC_DAT_UserPublishedProjectList msg) {
+        public UserPublishedWorldProjectList (Msg_SC_DAT_UserPublishedWorldProjectList msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public UserPublishedProjectList () { 
+        public UserPublishedWorldProjectList () { 
             _projectList = new List<Project>();
         }
         #endregion

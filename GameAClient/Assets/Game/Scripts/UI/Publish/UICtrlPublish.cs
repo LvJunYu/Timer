@@ -352,21 +352,21 @@ namespace GameA.Game
 //                }
 //            }
 
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(GM2DGUIManager.Instance.GetUI<UICtrlPublish>(), "作品正在努力发布中");
-            GM2DGame.Instance.Publish(name, summary, ()=>{
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(GM2DGUIManager.Instance.GetUI<UICtrlPublish>());
-                if(successCallback != null)
-                {
-                    successCallback.Invoke();
-                }
-            }, (code)=>{
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(GM2DGUIManager.Instance.GetUI<UICtrlPublish>());
-                ShowPublishErrorTip(code);
-                if(failedCallback != null)
-                {
-                    failedCallback.Invoke();
-                }
-            });
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(GM2DGUIManager.Instance.GetUI<UICtrlPublish>(), "作品正在努力发布中");
+//            GM2DGame.Instance.Publish(name, summary, ()=>{
+//                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(GM2DGUIManager.Instance.GetUI<UICtrlPublish>());
+//                if(successCallback != null)
+//                {
+//                    successCallback.Invoke();
+//                }
+//            }, (code)=>{
+//                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(GM2DGUIManager.Instance.GetUI<UICtrlPublish>());
+//                ShowPublishErrorTip(code);
+//                if(failedCallback != null)
+//                {
+//                    failedCallback.Invoke();
+//                }
+//            });
         }
 
         private static void ShowPublishErrorTip(EProjectOperateResult code)

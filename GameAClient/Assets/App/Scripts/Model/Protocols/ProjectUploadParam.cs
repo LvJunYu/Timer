@@ -9,7 +9,7 @@ namespace GameA
     public partial class ProjectUploadParam : SyncronisticData {
         #region 字段
         /// <summary>
-        /// 使用的地块数量
+        /// 添加的地块信息
         /// </summary>
         private List<UnitDataItem> _usedUnitDataList;
         /// <summary>
@@ -48,11 +48,19 @@ namespace GameA
         /// 发布过关使用命数
         /// </summary>
         private int _recordUsedLifeCount;
+        /// <summary>
+        /// 这次改造总共操作次数
+        /// </summary>
+        private int _operateCount;
+        /// <summary>
+        /// 这次改造总共操作时间
+        /// </summary>
+        private int _totalOperateTime;
         #endregion
 
         #region 属性
         /// <summary>
-        /// 使用的地块数量
+        /// 添加的地块信息
         /// </summary>
         public List<UnitDataItem> UsedUnitDataList { 
             get { return _usedUnitDataList; }
@@ -151,6 +159,26 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 这次改造总共操作次数
+        /// </summary>
+        public int OperateCount { 
+            get { return _operateCount; }
+            set { if (_operateCount != value) {
+                _operateCount = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 这次改造总共操作时间
+        /// </summary>
+        public int TotalOperateTime { 
+            get { return _totalOperateTime; }
+            set { if (_totalOperateTime != value) {
+                _totalOperateTime = value;
+                SetDirty();
+            }}
+        }
         #endregion
 
         #region 方法
@@ -170,6 +198,8 @@ namespace GameA
             _reformRate = msg.ReformRate;     
             _recordRestartCount = msg.RecordRestartCount;     
             _recordUsedLifeCount = msg.RecordUsedLifeCount;     
+            _operateCount = msg.OperateCount;     
+            _totalOperateTime = msg.TotalOperateTime;     
             OnSyncPartial();
             return true;
         }

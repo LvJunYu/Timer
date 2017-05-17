@@ -64,7 +64,7 @@ namespace GameA
                     // todo error handle
                 }
             );
-            LocalUser.Instance.UserPublishedProjectList.Request(
+            LocalUser.Instance.UserPublishedWorldProjectList.Request(
                 LocalUser.Instance.UserGuid,
                 0, int.MaxValue,
                 EPublishedProjectOrderBy.PPOB_PublishTime,
@@ -317,8 +317,8 @@ namespace GameA
 //                preSelectPRojectId = _curSelectedPrivateProject.Content.ProjectId;
 //            }
             //            LocalUser.Instance.per
-            if (LocalUser.Instance.UserPublishedProjectList.IsInited) {
-                List<Project> list = LocalUser.Instance.UserPublishedProjectList.ProjectList;
+            if (LocalUser.Instance.UserPublishedWorldProjectList.IsInited) {
+                List<Project> list = LocalUser.Instance.UserPublishedWorldProjectList.ProjectList;
                 _publicContents.Clear();
                 _publicContents.Capacity = list.Capacity;
                 for(int i=0; i < list.Count; i++)
@@ -577,7 +577,7 @@ namespace GameA
                 _cachedView.Private.SetActive (true);
                 _cachedView.Public.SetActive (false);
             } else if (_state == EWorkShopState.PublishList) {
-                LocalUser.Instance.UserPublishedProjectList.Request(
+                LocalUser.Instance.UserPublishedWorldProjectList.Request(
                     LocalUser.Instance.UserGuid,
                     0, int.MaxValue,
                     EPublishedProjectOrderBy.PPOB_PublishTime,
