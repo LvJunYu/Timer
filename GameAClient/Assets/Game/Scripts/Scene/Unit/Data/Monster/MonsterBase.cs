@@ -15,6 +15,12 @@ namespace GameA.Game
     {
         protected int _monsterSpeed;
         protected int _curMaxSpeedX;
+        protected EffectManager _effectManager;
+
+        public override EffectManager EffectMgr
+        {
+            get { return _effectManager; }
+        }
 
         protected override bool OnInit()
         {
@@ -25,6 +31,7 @@ namespace GameA.Game
             _isMonster = true;
             _monsterSpeed = 50;
             _curMaxSpeedX = _monsterSpeed;
+            _effectManager = new EffectManager(this);
             return true;
         }
 

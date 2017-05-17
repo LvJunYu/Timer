@@ -365,7 +365,7 @@ namespace GameA.Game
             }
             if (!ColliderScene2D.Instance.InstantiateView(unitDesc, tableUnit))
             {
-                return false;
+                //return false;
             }
             return true;
         }

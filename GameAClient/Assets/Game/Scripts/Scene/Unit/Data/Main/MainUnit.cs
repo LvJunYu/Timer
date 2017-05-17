@@ -24,6 +24,7 @@ namespace GameA.Game
 
         protected SkillManager _skillMgr1;
         protected SkillManager _skillMgr2;
+        protected EffectManager _effectManager;
 
         [SerializeField] protected int _big;
         [SerializeField] protected int _flashTime;
@@ -77,6 +78,11 @@ namespace GameA.Game
         public override SkillManager SkillMgr2
         {
             get { return _skillMgr2; }
+        }
+
+        public override EffectManager EffectMgr
+        {
+            get { return _effectManager; }
         }
 
         public bool OnClay
@@ -176,6 +182,7 @@ namespace GameA.Game
             _skillMgr1.ChangeSkill<SkillWater>();
 
             _skillMgr2 = new SkillManager(this);
+            _effectManager = new EffectManager(this);
 
             IntVec2 offset = _shooterEffectOffset;
             if (_curMoveDirection == EMoveDirection.Right)

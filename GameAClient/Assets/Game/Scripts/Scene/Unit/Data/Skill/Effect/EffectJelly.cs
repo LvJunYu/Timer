@@ -19,11 +19,11 @@ namespace GameA.Game
             _owner.ExtraSpeed.y = angle <= 90 || angle >= 270 ? 180 : -180;
             if (angle <= 90)
             {
-                _owner.ExtraSpeed.x = 180;
+                _owner.ExtraSpeed.x = 100;
             }
             else if (angle >= 270)
             {
-                _owner.ExtraSpeed.x = -180;
+                _owner.ExtraSpeed.x = -100;
             }
         }
     }
