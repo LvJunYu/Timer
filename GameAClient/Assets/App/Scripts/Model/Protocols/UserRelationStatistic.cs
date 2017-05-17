@@ -9,35 +9,23 @@ namespace GameA
     public partial class UserRelationStatistic : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        /// <summary>
-        /// 用户ID
-        /// </summary>
+        // 用户ID
         private long _userId;
-        /// <summary>
-        /// 关注数
-        /// </summary>
+        // 关注数
         private int _followCount;
-        /// <summary>
-        /// 粉丝数
-        /// </summary>
+        // 粉丝数
         private int _followerCount;
-        /// <summary>
-        /// 好友数
-        /// </summary>
+        // 好友数
         private int _friendCount;
 
         // cs fields----------------------------------
-        /// <summary>
-        /// 用户id
-        /// </summary>
+        // 用户id
         private long _cs_userId;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        /// <summary>
-        /// 用户ID
-        /// </summary>
+        // 用户ID
         public long UserId { 
             get { return _userId; }
             set { if (_userId != value) {
@@ -45,9 +33,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 关注数
-        /// </summary>
+        // 关注数
         public int FollowCount { 
             get { return _followCount; }
             set { if (_followCount != value) {
@@ -55,9 +41,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 粉丝数
-        /// </summary>
+        // 粉丝数
         public int FollowerCount { 
             get { return _followerCount; }
             set { if (_followerCount != value) {
@@ -65,9 +49,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 好友数
-        /// </summary>
+        // 好友数
         public int FriendCount { 
             get { return _friendCount; }
             set { if (_friendCount != value) {
@@ -77,9 +59,7 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        /// <summary>
-        /// 用户id
-        /// </summary>
+        // 用户id
         public long CS_UserId { 
             get { return _cs_userId; }
             set { _cs_userId = value; }
@@ -101,27 +81,18 @@ namespace GameA
             long userId,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            if (_isRequesting) {
-                if (_cs_userId != userId) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
-                OnRequest (successCallback, failedCallback);
-            } else {
-                _cs_userId = userId;
-                OnRequest (successCallback, failedCallback);
+            OnRequest (successCallback, failedCallback);
 
-                Msg_CS_DAT_UserRelationStatistic msg = new Msg_CS_DAT_UserRelationStatistic();
-                msg.UserId = userId;
-                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserRelationStatistic>(
-                    SoyHttpApiPath.UserRelationStatistic, msg, ret => {
-                        if (OnSync(ret)) {
-                            OnSyncSucceed(); 
-                        }
-                    }, (failedCode, failedMsg) => {
-                        OnSyncFailed(failedCode, failedMsg);
-                });            
-            }            
+            Msg_CS_DAT_UserRelationStatistic msg = new Msg_CS_DAT_UserRelationStatistic();
+            msg.UserId = userId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserRelationStatistic>(
+                SoyHttpApiPath.UserRelationStatistic, msg, ret => {
+                    if (OnSync(ret)) {
+                        OnSyncSucceed(); 
+                    }
+                }, (failedCode, failedMsg) => {
+                    OnSyncFailed(failedCode, failedMsg);
+            });
         }
 
         public bool OnSync (Msg_SC_DAT_UserRelationStatistic msg)

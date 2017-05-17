@@ -9,43 +9,27 @@ namespace GameA
     public partial class AdventureUserProgress : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        /// <summary>
-        /// 用户
-        /// </summary>
+        // 用户
         private long _userId;
-        /// <summary>
-        /// 完成的章节
-        /// </summary>
+        // 完成的章节
         private int _completeSection;
-        /// <summary>
-        /// 完成的关卡
-        /// </summary>
+        // 完成的关卡
         private int _completeLevel;
-        /// <summary>
-        /// 鼓励点数
-        /// </summary>
+        // 鼓励点数
         private int _encouragePoint;
-        /// <summary>
-        /// 章节钥匙数
-        /// </summary>
+        // 章节钥匙数
         private int _sectionKeyCount;
-        /// <summary>
-        /// 章节解锁进度
-        /// </summary>
+        // 章节解锁进度
         private int _sectionUnlockProgress;
 
         // cs fields----------------------------------
-        /// <summary>
-        /// 用户
-        /// </summary>
+        // 用户
         private long _cs_userId;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        /// <summary>
-        /// 用户
-        /// </summary>
+        // 用户
         public long UserId { 
             get { return _userId; }
             set { if (_userId != value) {
@@ -53,9 +37,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 完成的章节
-        /// </summary>
+        // 完成的章节
         public int CompleteSection { 
             get { return _completeSection; }
             set { if (_completeSection != value) {
@@ -63,9 +45,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 完成的关卡
-        /// </summary>
+        // 完成的关卡
         public int CompleteLevel { 
             get { return _completeLevel; }
             set { if (_completeLevel != value) {
@@ -73,9 +53,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 鼓励点数
-        /// </summary>
+        // 鼓励点数
         public int EncouragePoint { 
             get { return _encouragePoint; }
             set { if (_encouragePoint != value) {
@@ -83,9 +61,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 章节钥匙数
-        /// </summary>
+        // 章节钥匙数
         public int SectionKeyCount { 
             get { return _sectionKeyCount; }
             set { if (_sectionKeyCount != value) {
@@ -93,9 +69,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 章节解锁进度
-        /// </summary>
+        // 章节解锁进度
         public int SectionUnlockProgress { 
             get { return _sectionUnlockProgress; }
             set { if (_sectionUnlockProgress != value) {
@@ -105,9 +79,7 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        /// <summary>
-        /// 用户
-        /// </summary>
+        // 用户
         public long CS_UserId { 
             get { return _cs_userId; }
             set { _cs_userId = value; }
@@ -129,27 +101,18 @@ namespace GameA
             long userId,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            if (_isRequesting) {
-                if (_cs_userId != userId) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
-                OnRequest (successCallback, failedCallback);
-            } else {
-                _cs_userId = userId;
-                OnRequest (successCallback, failedCallback);
+            OnRequest (successCallback, failedCallback);
 
-                Msg_CS_DAT_AdventureUserProgress msg = new Msg_CS_DAT_AdventureUserProgress();
-                msg.UserId = userId;
-                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AdventureUserProgress>(
-                    SoyHttpApiPath.AdventureUserProgress, msg, ret => {
-                        if (OnSync(ret)) {
-                            OnSyncSucceed(); 
-                        }
-                    }, (failedCode, failedMsg) => {
-                        OnSyncFailed(failedCode, failedMsg);
-                });            
-            }            
+            Msg_CS_DAT_AdventureUserProgress msg = new Msg_CS_DAT_AdventureUserProgress();
+            msg.UserId = userId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AdventureUserProgress>(
+                SoyHttpApiPath.AdventureUserProgress, msg, ret => {
+                    if (OnSync(ret)) {
+                        OnSyncSucceed(); 
+                    }
+                }, (failedCode, failedMsg) => {
+                    OnSyncFailed(failedCode, failedMsg);
+            });
         }
 
         public bool OnSync (Msg_SC_DAT_AdventureUserProgress msg)

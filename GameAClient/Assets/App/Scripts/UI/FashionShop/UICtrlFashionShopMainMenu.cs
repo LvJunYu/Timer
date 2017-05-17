@@ -34,7 +34,97 @@ namespace GameA
         #endregion
 
         #region 属性
+<<<<<<< HEAD
 
+=======
+        public UMCtrlFashionShopCard SelectHead
+        {
+            get { return _headSelectedFashionCard; }
+            set {
+                if (value != _headSelectedFashionCard)
+                {
+                    if (_headSelectedFashionCard != null)
+                    {
+                        _headSelectedFashionCard.ChangeDock(false);
+                    }
+                    //之前的归为
+                    _headSelectedFashionCard = value;
+                    _cachedView.SelectedHead.text = _headSelectedFashionCard.CardName;
+
+                    //现在的改变位置
+                    _headSelectedFashionCard.ChangeDock(true);
+
+                }
+                ;
+            } 
+        }
+        public UMCtrlFashionShopCard SelectUpper
+        {
+            get { return _upperSelectedFashionCard; }
+            set
+            {
+                if (value != _upperSelectedFashionCard)
+                {
+                    if (_upperSelectedFashionCard != null)
+                    {
+                        _upperSelectedFashionCard.ChangeDock(false);
+                    }
+                    //之前的归为
+                    _upperSelectedFashionCard = value;
+                    _cachedView.SelectedUpper.text = _upperSelectedFashionCard.CardName;
+
+                    //现在的改变位置
+                    _upperSelectedFashionCard.ChangeDock(true);
+
+                }
+      ;
+            }
+        }
+        public UMCtrlFashionShopCard SelectLower
+        {
+            get { return _lowerSelectedFashionCard; }
+            set
+            {
+                if (value != _lowerSelectedFashionCard)
+                {
+                    if (_lowerSelectedFashionCard != null)
+                    {
+                        _lowerSelectedFashionCard.ChangeDock(false);
+                    }
+                    //之前的归为
+                    _lowerSelectedFashionCard = value;
+                    _cachedView.SelectedLower.text = _lowerSelectedFashionCard.CardName;
+
+                    //现在的改变位置
+                    _lowerSelectedFashionCard.ChangeDock(true);
+
+                }
+      ;
+            }
+        }
+        public UMCtrlFashionShopCard SelectAppendage
+        {
+            get { return _appendageSelectedFashionCard; }
+            set
+            {
+                if (value != _appendageSelectedFashionCard)
+                {
+                    if (_appendageSelectedFashionCard != null)
+                    {
+                        _appendageSelectedFashionCard.ChangeDock(false);
+                    }
+                    //之前的归为
+                    _appendageSelectedFashionCard = value;
+                    _cachedView.SelectedAppendage.text = _appendageSelectedFashionCard.CardName;
+
+                    //现在的改变位置
+                    _appendageSelectedFashionCard.ChangeDock(true);
+
+                }
+      ;
+            }
+        }
+>>>>>>> 开始进行spine动画管理
         #endregion
 
         #region 方法

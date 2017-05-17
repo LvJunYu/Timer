@@ -8,24 +8,16 @@ namespace GameA
 {
     public partial class AvatarPartDiscountCouponGroup : SyncronisticData {
         #region 字段
-        /// <summary>
-        /// 部件
-        /// </summary>
+        // 部件
         private int _partType;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private long _partId;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private List<AvatarPartDiscountCouponItem> _itemDataList;
         #endregion
 
         #region 属性
-        /// <summary>
-        /// 部件
-        /// </summary>
+        // 部件
         public int PartType { 
             get { return _partType; }
             set { if (_partType != value) {
@@ -33,9 +25,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public long PartId { 
             get { return _partId; }
             set { if (_partId != value) {
@@ -43,9 +33,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public List<AvatarPartDiscountCouponItem> ItemDataList { 
             get { return _itemDataList; }
             set { if (_itemDataList != value) {

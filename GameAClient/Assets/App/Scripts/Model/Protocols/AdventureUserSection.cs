@@ -9,39 +9,25 @@ namespace GameA
     public partial class AdventureUserSection : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private int _section;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private int _treasureMapBuyCount;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private List<AdventureUserLevelDataDetail> _normalLevelUserDataList;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private List<AdventureUserLevelDataDetail> _bonusLevelUserDataList;
 
         // cs fields----------------------------------
-        /// <summary>
-        /// 用户
-        /// </summary>
+        // 用户
         private long _cs_userId;
-        /// <summary>
-        /// 章节
-        /// </summary>
+        // 章节
         private int _cs_section;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public int Section { 
             get { return _section; }
             set { if (_section != value) {
@@ -49,9 +35,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public int TreasureMapBuyCount { 
             get { return _treasureMapBuyCount; }
             set { if (_treasureMapBuyCount != value) {
@@ -59,9 +43,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public List<AdventureUserLevelDataDetail> NormalLevelUserDataList { 
             get { return _normalLevelUserDataList; }
             set { if (_normalLevelUserDataList != value) {
@@ -69,9 +51,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public List<AdventureUserLevelDataDetail> BonusLevelUserDataList { 
             get { return _bonusLevelUserDataList; }
             set { if (_bonusLevelUserDataList != value) {
@@ -81,16 +61,12 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        /// <summary>
-        /// 用户
-        /// </summary>
+        // 用户
         public long CS_UserId { 
             get { return _cs_userId; }
             set { _cs_userId = value; }
         }
-        /// <summary>
-        /// 章节
-        /// </summary>
+        // 章节
         public int CS_Section { 
             get { return _cs_section; }
             set { _cs_section = value; }
@@ -128,33 +104,19 @@ namespace GameA
             int section,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            if (_isRequesting) {
-                if (_cs_userId != userId) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
-                if (_cs_section != section) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
-                OnRequest (successCallback, failedCallback);
-            } else {
-                _cs_userId = userId;
-                _cs_section = section;
-                OnRequest (successCallback, failedCallback);
+            OnRequest (successCallback, failedCallback);
 
-                Msg_CS_DAT_AdventureUserSection msg = new Msg_CS_DAT_AdventureUserSection();
-                msg.UserId = userId;
-                msg.Section = section;
-                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AdventureUserSection>(
-                    SoyHttpApiPath.AdventureUserSection, msg, ret => {
-                        if (OnSync(ret)) {
-                            OnSyncSucceed(); 
-                        }
-                    }, (failedCode, failedMsg) => {
-                        OnSyncFailed(failedCode, failedMsg);
-                });            
-            }            
+            Msg_CS_DAT_AdventureUserSection msg = new Msg_CS_DAT_AdventureUserSection();
+            msg.UserId = userId;
+            msg.Section = section;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AdventureUserSection>(
+                SoyHttpApiPath.AdventureUserSection, msg, ret => {
+                    if (OnSync(ret)) {
+                        OnSyncSucceed(); 
+                    }
+                }, (failedCode, failedMsg) => {
+                    OnSyncFailed(failedCode, failedMsg);
+            });
         }
 
         public bool OnSync (Msg_SC_DAT_AdventureUserSection msg)

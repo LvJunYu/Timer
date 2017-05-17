@@ -9,43 +9,27 @@ namespace GameA
     public partial class UserLevel : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        /// <summary>
-        /// 工匠等级
-        /// </summary>
+        // 工匠等级
         private int _creatorLevel;
-        /// <summary>
-        /// 工匠经验
-        /// </summary>
+        // 工匠经验
         private long _creatorExp;
-        /// <summary>
-        /// 冒险家等级
-        /// </summary>
+        // 冒险家等级
         private int _playerLevel;
-        /// <summary>
-        /// 冒险家经验
-        /// </summary>
+        // 冒险家经验
         private long _playerExp;
-        /// <summary>
-        /// 金币
-        /// </summary>
+        // 金币
         private long _goldCoin;
-        /// <summary>
-        /// 钻石
-        /// </summary>
+        // 钻石
         private long _diamond;
 
         // cs fields----------------------------------
-        /// <summary>
-        /// 用户id
-        /// </summary>
+        // 用户id
         private long _cs_userId;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        /// <summary>
-        /// 工匠等级
-        /// </summary>
+        // 工匠等级
         public int CreatorLevel { 
             get { return _creatorLevel; }
             set { if (_creatorLevel != value) {
@@ -53,9 +37,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 工匠经验
-        /// </summary>
+        // 工匠经验
         public long CreatorExp { 
             get { return _creatorExp; }
             set { if (_creatorExp != value) {
@@ -63,9 +45,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 冒险家等级
-        /// </summary>
+        // 冒险家等级
         public int PlayerLevel { 
             get { return _playerLevel; }
             set { if (_playerLevel != value) {
@@ -73,9 +53,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 冒险家经验
-        /// </summary>
+        // 冒险家经验
         public long PlayerExp { 
             get { return _playerExp; }
             set { if (_playerExp != value) {
@@ -83,9 +61,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 金币
-        /// </summary>
+        // 金币
         public long GoldCoin { 
             get { return _goldCoin; }
             set { if (_goldCoin != value) {
@@ -93,9 +69,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 钻石
-        /// </summary>
+        // 钻石
         public long Diamond { 
             get { return _diamond; }
             set { if (_diamond != value) {
@@ -105,9 +79,7 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        /// <summary>
-        /// 用户id
-        /// </summary>
+        // 用户id
         public long CS_UserId { 
             get { return _cs_userId; }
             set { _cs_userId = value; }
@@ -129,27 +101,18 @@ namespace GameA
             long userId,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            if (_isRequesting) {
-                if (_cs_userId != userId) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
-                OnRequest (successCallback, failedCallback);
-            } else {
-                _cs_userId = userId;
-                OnRequest (successCallback, failedCallback);
+            OnRequest (successCallback, failedCallback);
 
-                Msg_CS_DAT_UserLevel msg = new Msg_CS_DAT_UserLevel();
-                msg.UserId = userId;
-                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserLevel>(
-                    SoyHttpApiPath.UserLevel, msg, ret => {
-                        if (OnSync(ret)) {
-                            OnSyncSucceed(); 
-                        }
-                    }, (failedCode, failedMsg) => {
-                        OnSyncFailed(failedCode, failedMsg);
-                });            
-            }            
+            Msg_CS_DAT_UserLevel msg = new Msg_CS_DAT_UserLevel();
+            msg.UserId = userId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserLevel>(
+                SoyHttpApiPath.UserLevel, msg, ret => {
+                    if (OnSync(ret)) {
+                        OnSyncSucceed(); 
+                    }
+                }, (failedCode, failedMsg) => {
+                    OnSyncFailed(failedCode, failedMsg);
+            });
         }
 
         public bool OnSync (Msg_SC_DAT_UserLevel msg)

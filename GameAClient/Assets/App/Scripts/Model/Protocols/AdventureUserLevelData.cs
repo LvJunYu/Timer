@@ -8,44 +8,26 @@ namespace GameA
 {
     public partial class AdventureUserLevelData : SyncronisticData {
         #region 字段
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private long _highScore;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private bool _star1Flag;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private bool _star2Flag;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private bool _star3Flag;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private int _challengeCount;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private int _successCount;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private int _failureCount;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private long _lastPlayTime;
         #endregion
 
         #region 属性
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public long HighScore { 
             get { return _highScore; }
             set { if (_highScore != value) {
@@ -53,9 +35,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public bool Star1Flag { 
             get { return _star1Flag; }
             set { if (_star1Flag != value) {
@@ -63,9 +43,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public bool Star2Flag { 
             get { return _star2Flag; }
             set { if (_star2Flag != value) {
@@ -73,9 +51,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public bool Star3Flag { 
             get { return _star3Flag; }
             set { if (_star3Flag != value) {
@@ -83,9 +59,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public int ChallengeCount { 
             get { return _challengeCount; }
             set { if (_challengeCount != value) {
@@ -93,9 +67,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public int SuccessCount { 
             get { return _successCount; }
             set { if (_successCount != value) {
@@ -103,9 +75,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public int FailureCount { 
             get { return _failureCount; }
             set { if (_failureCount != value) {
@@ -113,9 +83,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public long LastPlayTime { 
             get { return _lastPlayTime; }
             set { if (_lastPlayTime != value) {

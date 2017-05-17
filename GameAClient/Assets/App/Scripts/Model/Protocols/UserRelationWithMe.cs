@@ -9,35 +9,23 @@ namespace GameA
     public partial class UserRelationWithMe : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        /// <summary>
-        /// 用户ID
-        /// </summary>
+        // 用户ID
         private long _userId;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private bool _followMe;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private bool _followedByMe;
-        /// <summary>
-        /// 好友
-        /// </summary>
+        // 好友
         private bool _isFriend;
 
         // cs fields----------------------------------
-        /// <summary>
-        /// 用户id
-        /// </summary>
+        // 用户id
         private long _cs_userId;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        /// <summary>
-        /// 用户ID
-        /// </summary>
+        // 用户ID
         public long UserId { 
             get { return _userId; }
             set { if (_userId != value) {
@@ -45,9 +33,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public bool FollowMe { 
             get { return _followMe; }
             set { if (_followMe != value) {
@@ -55,9 +41,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public bool FollowedByMe { 
             get { return _followedByMe; }
             set { if (_followedByMe != value) {
@@ -65,9 +49,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 好友
-        /// </summary>
+        // 好友
         public bool IsFriend { 
             get { return _isFriend; }
             set { if (_isFriend != value) {
@@ -77,9 +59,7 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        /// <summary>
-        /// 用户id
-        /// </summary>
+        // 用户id
         public long CS_UserId { 
             get { return _cs_userId; }
             set { _cs_userId = value; }
@@ -101,27 +81,18 @@ namespace GameA
             long userId,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            if (_isRequesting) {
-                if (_cs_userId != userId) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
-                OnRequest (successCallback, failedCallback);
-            } else {
-                _cs_userId = userId;
-                OnRequest (successCallback, failedCallback);
+            OnRequest (successCallback, failedCallback);
 
-                Msg_CS_DAT_UserRelationWithMe msg = new Msg_CS_DAT_UserRelationWithMe();
-                msg.UserId = userId;
-                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserRelationWithMe>(
-                    SoyHttpApiPath.UserRelationWithMe, msg, ret => {
-                        if (OnSync(ret)) {
-                            OnSyncSucceed(); 
-                        }
-                    }, (failedCode, failedMsg) => {
-                        OnSyncFailed(failedCode, failedMsg);
-                });            
-            }            
+            Msg_CS_DAT_UserRelationWithMe msg = new Msg_CS_DAT_UserRelationWithMe();
+            msg.UserId = userId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserRelationWithMe>(
+                SoyHttpApiPath.UserRelationWithMe, msg, ret => {
+                    if (OnSync(ret)) {
+                        OnSyncSucceed(); 
+                    }
+                }, (failedCode, failedMsg) => {
+                    OnSyncFailed(failedCode, failedMsg);
+            });
         }
 
         public bool OnSync (Msg_SC_DAT_UserRelationWithMe msg)

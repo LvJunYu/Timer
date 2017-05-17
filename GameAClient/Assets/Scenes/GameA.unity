@@ -95,7 +95,7 @@ NavMeshSettings:
 RectTransform:
   m_PrefabParentObject: {fileID: 224006473144285180, guid: 3f917365a15f002428345ee2eed9c4ff,
     type: 2}
-  m_PrefabInternal: {fileID: 865365876}
+  m_PrefabInternal: {fileID: 1092176932}
 --- !u!1 &574366970
 GameObject:
   m_ObjectHideFlags: 0
@@ -257,7 +257,7 @@ MonoBehaviour:
       Enable: 1
     alipayMoments:
       Enable: 1
---- !u!1001 &865365876
+--- !u!1001 &1092176932
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -354,49 +354,10 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 114284030270111244, guid: 3f917365a15f002428345ee2eed9c4ff,
-        type: 2}
-      propertyPath: m_FontData.m_Alignment
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 114419191301501116, guid: 3f917365a15f002428345ee2eed9c4ff,
-        type: 2}
-      propertyPath: m_Type
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1432848900684280, guid: 3f917365a15f002428345ee2eed9c4ff, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114488942028450246, guid: 3f917365a15f002428345ee2eed9c4ff,
-        type: 2}
-      propertyPath: m_FontData.m_Alignment
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 114667708277934862, guid: 3f917365a15f002428345ee2eed9c4ff,
-        type: 2}
-      propertyPath: m_Type
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 224023924015883102, guid: 3f917365a15f002428345ee2eed9c4ff,
+    - target: {fileID: 224670316433997960, guid: 3f917365a15f002428345ee2eed9c4ff,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 28
-      objectReference: {fileID: 0}
-    - target: {fileID: 224023924015883102, guid: 3f917365a15f002428345ee2eed9c4ff,
-        type: 2}
-      propertyPath: m_AnchoredPosition.y
-      value: -0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 224023924015883102, guid: 3f917365a15f002428345ee2eed9c4ff,
-        type: 2}
-      propertyPath: m_SizeDelta.x
-      value: 28
-      objectReference: {fileID: 0}
-    - target: {fileID: 224023924015883102, guid: 3f917365a15f002428345ee2eed9c4ff,
-        type: 2}
-      propertyPath: m_AnchoredPosition.x
-      value: -16.2
+      value: 269
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3f917365a15f002428345ee2eed9c4ff, type: 2}

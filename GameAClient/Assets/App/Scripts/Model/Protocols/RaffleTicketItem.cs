@@ -8,24 +8,16 @@ namespace GameA
 {
     public partial class RaffleTicketItem : SyncronisticData {
         #region 字段
-        /// <summary>
-        /// 类型
-        /// </summary>
+        // 类型
         private int _type;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private long _id;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private int _count;
         #endregion
 
         #region 属性
-        /// <summary>
-        /// 类型
-        /// </summary>
+        // 类型
         public int Type { 
             get { return _type; }
             set { if (_type != value) {
@@ -33,9 +25,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public long Id { 
             get { return _id; }
             set { if (_id != value) {
@@ -43,9 +33,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public int Count { 
             get { return _count; }
             set { if (_count != value) {

@@ -1,4 +1,4 @@
-// 工坊关卡 | 工坊关卡
+// 最近录像 | 高分排行榜
 using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class PersonalProjectList : SyncronisticData {
+    public partial class WorldProjectRecordRankList : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
         // ECachedDataState
@@ -14,17 +14,15 @@ namespace GameA
         // 
         private long _updateTime;
         // 
-        private List<Project> _projectList;
+        private List<Record> _recordList;
 
         // cs fields----------------------------------
+        // 
+        private long _cs_projectId;
         // 
         private int _cs_startInx;
         // 
         private int _cs_maxCount;
-        // 排序字段
-        private EPersonalProjectOrderBy _cs_orderBy;
-        // 升序降序
-        private EOrderType _cs_orderType;
         #endregion
 
         #region 属性
@@ -46,15 +44,20 @@ namespace GameA
             }}
         }
         // 
-        public List<Project> ProjectList { 
-            get { return _projectList; }
-            set { if (_projectList != value) {
-                _projectList = value;
+        public List<Record> RecordList { 
+            get { return _recordList; }
+            set { if (_recordList != value) {
+                _recordList = value;
                 SetDirty();
             }}
         }
         
         // cs properties----------------------------------
+        // 
+        public long CS_ProjectId { 
+            get { return _cs_projectId; }
+            set { _cs_projectId = value; }
+        }
         // 
         public int CS_StartInx { 
             get { return _cs_startInx; }
@@ -65,22 +68,12 @@ namespace GameA
             get { return _cs_maxCount; }
             set { _cs_maxCount = value; }
         }
-        // 排序字段
-        public EPersonalProjectOrderBy CS_OrderBy { 
-            get { return _cs_orderBy; }
-            set { _cs_orderBy = value; }
-        }
-        // 升序降序
-        public EOrderType CS_OrderType { 
-            get { return _cs_orderType; }
-            set { _cs_orderType = value; }
-        }
 
         public override bool IsDirty {
             get {
-                if (null != _projectList) {
-                    for (int i = 0; i < _projectList.Count; i++) {
-                        if (null != _projectList[i] && _projectList[i].IsDirty) {
+                if (null != _recordList) {
+                    for (int i = 0; i < _recordList.Count; i++) {
+                        if (null != _recordList[i] && _recordList[i].IsDirty) {
                             return true;
                         }
                     }
@@ -92,28 +85,25 @@ namespace GameA
 
         #region 方法
         /// <summary>
-		/// 工坊关卡
+		/// 高分排行榜
 		/// </summary>
+		/// <param name="projectId">.</param>
 		/// <param name="startInx">.</param>
 		/// <param name="maxCount">.</param>
-		/// <param name="orderBy">排序字段.</param>
-		/// <param name="orderType">升序降序.</param>
         public void Request (
+            long projectId,
             int startInx,
             int maxCount,
-            EPersonalProjectOrderBy orderBy,
-            EOrderType orderType,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
             OnRequest (successCallback, failedCallback);
 
-            Msg_CS_DAT_PersonalProjectList msg = new Msg_CS_DAT_PersonalProjectList();
+            Msg_CS_DAT_WorldProjectRecordRankList msg = new Msg_CS_DAT_WorldProjectRecordRankList();
+            msg.ProjectId = projectId;
             msg.StartInx = startInx;
             msg.MaxCount = maxCount;
-            msg.OrderBy = orderBy;
-            msg.OrderType = orderType;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_PersonalProjectList>(
-                SoyHttpApiPath.PersonalProjectList, msg, ret => {
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_WorldProjectRecordRankList>(
+                SoyHttpApiPath.WorldProjectRecordRankList, msg, ret => {
                     if (OnSync(ret)) {
                         OnSyncSucceed(); 
                     }
@@ -122,33 +112,33 @@ namespace GameA
             });
         }
 
-        public bool OnSync (Msg_SC_DAT_PersonalProjectList msg)
+        public bool OnSync (Msg_SC_DAT_WorldProjectRecordRankList msg)
         {
             if (null == msg) return false;
             _resultCode = msg.ResultCode;           
             _updateTime = msg.UpdateTime;           
-            _projectList = new List<Project>();
-            for (int i = 0; i < msg.ProjectList.Count; i++) {
-                _projectList.Add(new Project(msg.ProjectList[i]));
+            _recordList = new List<Record>();
+            for (int i = 0; i < msg.RecordList.Count; i++) {
+                _recordList.Add(new Record(msg.RecordList[i]));
             }
             OnSyncPartial();
             return true;
         }
 
-        public void OnSyncFromParent (Msg_SC_DAT_PersonalProjectList msg) {
+        public void OnSyncFromParent (Msg_SC_DAT_WorldProjectRecordRankList msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public PersonalProjectList (Msg_SC_DAT_PersonalProjectList msg) {
+        public WorldProjectRecordRankList (Msg_SC_DAT_WorldProjectRecordRankList msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public PersonalProjectList () { 
-            _projectList = new List<Project>();
+        public WorldProjectRecordRankList () { 
+            _recordList = new List<Record>();
         }
         #endregion
     }

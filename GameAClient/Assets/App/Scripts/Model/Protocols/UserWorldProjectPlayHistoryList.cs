@@ -1,4 +1,4 @@
-// 工坊关卡 | 工坊关卡
+// 最近玩过 | 最近玩过
 using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class PersonalProjectList : SyncronisticData {
+    public partial class UserWorldProjectPlayHistoryList : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
         // ECachedDataState
@@ -14,15 +14,17 @@ namespace GameA
         // 
         private long _updateTime;
         // 
-        private List<Project> _projectList;
+        private List<ProjectPlayHistory> _historyList;
 
         // cs fields----------------------------------
+        // 
+        private long _cs_userId;
         // 
         private int _cs_startInx;
         // 
         private int _cs_maxCount;
         // 排序字段
-        private EPersonalProjectOrderBy _cs_orderBy;
+        private EProjectPlayHistoryOrderBy _cs_orderBy;
         // 升序降序
         private EOrderType _cs_orderType;
         #endregion
@@ -46,15 +48,20 @@ namespace GameA
             }}
         }
         // 
-        public List<Project> ProjectList { 
-            get { return _projectList; }
-            set { if (_projectList != value) {
-                _projectList = value;
+        public List<ProjectPlayHistory> HistoryList { 
+            get { return _historyList; }
+            set { if (_historyList != value) {
+                _historyList = value;
                 SetDirty();
             }}
         }
         
         // cs properties----------------------------------
+        // 
+        public long CS_UserId { 
+            get { return _cs_userId; }
+            set { _cs_userId = value; }
+        }
         // 
         public int CS_StartInx { 
             get { return _cs_startInx; }
@@ -66,7 +73,7 @@ namespace GameA
             set { _cs_maxCount = value; }
         }
         // 排序字段
-        public EPersonalProjectOrderBy CS_OrderBy { 
+        public EProjectPlayHistoryOrderBy CS_OrderBy { 
             get { return _cs_orderBy; }
             set { _cs_orderBy = value; }
         }
@@ -78,9 +85,9 @@ namespace GameA
 
         public override bool IsDirty {
             get {
-                if (null != _projectList) {
-                    for (int i = 0; i < _projectList.Count; i++) {
-                        if (null != _projectList[i] && _projectList[i].IsDirty) {
+                if (null != _historyList) {
+                    for (int i = 0; i < _historyList.Count; i++) {
+                        if (null != _historyList[i] && _historyList[i].IsDirty) {
                             return true;
                         }
                     }
@@ -92,28 +99,31 @@ namespace GameA
 
         #region 方法
         /// <summary>
-		/// 工坊关卡
+		/// 最近玩过
 		/// </summary>
+		/// <param name="userId">.</param>
 		/// <param name="startInx">.</param>
 		/// <param name="maxCount">.</param>
 		/// <param name="orderBy">排序字段.</param>
 		/// <param name="orderType">升序降序.</param>
         public void Request (
+            long userId,
             int startInx,
             int maxCount,
-            EPersonalProjectOrderBy orderBy,
+            EProjectPlayHistoryOrderBy orderBy,
             EOrderType orderType,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
             OnRequest (successCallback, failedCallback);
 
-            Msg_CS_DAT_PersonalProjectList msg = new Msg_CS_DAT_PersonalProjectList();
+            Msg_CS_DAT_UserWorldProjectPlayHistoryList msg = new Msg_CS_DAT_UserWorldProjectPlayHistoryList();
+            msg.UserId = userId;
             msg.StartInx = startInx;
             msg.MaxCount = maxCount;
             msg.OrderBy = orderBy;
             msg.OrderType = orderType;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_PersonalProjectList>(
-                SoyHttpApiPath.PersonalProjectList, msg, ret => {
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserWorldProjectPlayHistoryList>(
+                SoyHttpApiPath.UserWorldProjectPlayHistoryList, msg, ret => {
                     if (OnSync(ret)) {
                         OnSyncSucceed(); 
                     }
@@ -122,33 +132,33 @@ namespace GameA
             });
         }
 
-        public bool OnSync (Msg_SC_DAT_PersonalProjectList msg)
+        public bool OnSync (Msg_SC_DAT_UserWorldProjectPlayHistoryList msg)
         {
             if (null == msg) return false;
             _resultCode = msg.ResultCode;           
             _updateTime = msg.UpdateTime;           
-            _projectList = new List<Project>();
-            for (int i = 0; i < msg.ProjectList.Count; i++) {
-                _projectList.Add(new Project(msg.ProjectList[i]));
+            _historyList = new List<ProjectPlayHistory>();
+            for (int i = 0; i < msg.HistoryList.Count; i++) {
+                _historyList.Add(new ProjectPlayHistory(msg.HistoryList[i]));
             }
             OnSyncPartial();
             return true;
         }
 
-        public void OnSyncFromParent (Msg_SC_DAT_PersonalProjectList msg) {
+        public void OnSyncFromParent (Msg_SC_DAT_UserWorldProjectPlayHistoryList msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public PersonalProjectList (Msg_SC_DAT_PersonalProjectList msg) {
+        public UserWorldProjectPlayHistoryList (Msg_SC_DAT_UserWorldProjectPlayHistoryList msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public PersonalProjectList () { 
-            _projectList = new List<Project>();
+        public UserWorldProjectPlayHistoryList () { 
+            _historyList = new List<ProjectPlayHistory>();
         }
         #endregion
     }

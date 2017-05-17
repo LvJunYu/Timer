@@ -1,4 +1,4 @@
-// 工坊关卡 | 工坊关卡
+// 录像 | 录像
 using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
@@ -9,91 +9,51 @@ namespace GameA
     public partial class Record : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        /// <summary>
-        /// 作者
-        /// </summary>
+        // 作者
         private UserInfoSimple _userInfo;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private long _usedTime;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private long _createTime;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private string _recordPath;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private long _recordId;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private long _projectId;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private int _result;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private long _playCount;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private long _lastPlayTime;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private long _playUserCount;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private int _favoriteCount;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private int _likeCount;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private int _commentCount;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private int _shareCount;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private Project _projectData;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private bool _userBuy;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private bool _userLike;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private bool _userFavorite;
 
         // cs fields----------------------------------
-        /// <summary>
-        /// Id
-        /// </summary>
+        // Id
         private long _cs_recordId;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        /// <summary>
-        /// 作者
-        /// </summary>
+        // 作者
         public UserInfoSimple UserInfo { 
             get { return _userInfo; }
             set { if (_userInfo != value) {
@@ -101,9 +61,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public long UsedTime { 
             get { return _usedTime; }
             set { if (_usedTime != value) {
@@ -111,9 +69,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public long CreateTime { 
             get { return _createTime; }
             set { if (_createTime != value) {
@@ -121,9 +77,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public string RecordPath { 
             get { return _recordPath; }
             set { if (_recordPath != value) {
@@ -131,9 +85,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public long RecordId { 
             get { return _recordId; }
             set { if (_recordId != value) {
@@ -141,9 +93,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public long ProjectId { 
             get { return _projectId; }
             set { if (_projectId != value) {
@@ -151,9 +101,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public int Result { 
             get { return _result; }
             set { if (_result != value) {
@@ -161,9 +109,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public long PlayCount { 
             get { return _playCount; }
             set { if (_playCount != value) {
@@ -171,9 +117,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public long LastPlayTime { 
             get { return _lastPlayTime; }
             set { if (_lastPlayTime != value) {
@@ -181,9 +125,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public long PlayUserCount { 
             get { return _playUserCount; }
             set { if (_playUserCount != value) {
@@ -191,9 +133,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public int FavoriteCount { 
             get { return _favoriteCount; }
             set { if (_favoriteCount != value) {
@@ -201,9 +141,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public int LikeCount { 
             get { return _likeCount; }
             set { if (_likeCount != value) {
@@ -211,9 +149,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public int CommentCount { 
             get { return _commentCount; }
             set { if (_commentCount != value) {
@@ -221,9 +157,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public int ShareCount { 
             get { return _shareCount; }
             set { if (_shareCount != value) {
@@ -231,9 +165,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public Project ProjectData { 
             get { return _projectData; }
             set { if (_projectData != value) {
@@ -241,9 +173,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public bool UserBuy { 
             get { return _userBuy; }
             set { if (_userBuy != value) {
@@ -251,9 +181,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public bool UserLike { 
             get { return _userLike; }
             set { if (_userLike != value) {
@@ -261,9 +189,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public bool UserFavorite { 
             get { return _userFavorite; }
             set { if (_userFavorite != value) {
@@ -273,9 +199,7 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        /// <summary>
-        /// Id
-        /// </summary>
+        // Id
         public long CS_RecordId { 
             get { return _cs_recordId; }
             set { _cs_recordId = value; }
@@ -296,34 +220,25 @@ namespace GameA
 
         #region 方法
         /// <summary>
-		/// 工坊关卡
+		/// 录像
 		/// </summary>
 		/// <param name="recordId">Id.</param>
         public void Request (
             long recordId,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            if (_isRequesting) {
-                if (_cs_recordId != recordId) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
-                OnRequest (successCallback, failedCallback);
-            } else {
-                _cs_recordId = recordId;
-                OnRequest (successCallback, failedCallback);
+            OnRequest (successCallback, failedCallback);
 
-                Msg_CS_DAT_Record msg = new Msg_CS_DAT_Record();
-                msg.RecordId = recordId;
-                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_Record>(
-                    SoyHttpApiPath.Record, msg, ret => {
-                        if (OnSync(ret)) {
-                            OnSyncSucceed(); 
-                        }
-                    }, (failedCode, failedMsg) => {
-                        OnSyncFailed(failedCode, failedMsg);
-                });            
-            }            
+            Msg_CS_DAT_Record msg = new Msg_CS_DAT_Record();
+            msg.RecordId = recordId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_Record>(
+                SoyHttpApiPath.Record, msg, ret => {
+                    if (OnSync(ret)) {
+                        OnSyncSucceed(); 
+                    }
+                }, (failedCode, failedMsg) => {
+                    OnSyncFailed(failedCode, failedMsg);
+            });
         }
 
         public bool OnSync (Msg_SC_DAT_Record msg)

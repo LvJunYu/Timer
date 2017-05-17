@@ -8,52 +8,30 @@ namespace GameA
 {
     public partial class AvatarPartDiscountCouponItem : SyncronisticData {
         #region 字段
-        /// <summary>
-        /// 数据Id
-        /// </summary>
+        // 数据Id
         private long _id;
-        /// <summary>
-        /// 配表Id
-        /// </summary>
+        // 配表Id
         private long _configTableId;
-        /// <summary>
-        /// 部件
-        /// </summary>
+        // 部件
         private int _partType;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private long _partId;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private int _durationType;
-        /// <summary>
-        /// 过期时间
-        /// </summary>
+        // 过期时间
         private long _expirationTime;
-        /// <summary>
-        /// 折扣
-        /// </summary>
+        // 折扣
         private int _discount;
-        /// <summary>
-        /// 是否已被使用
-        /// </summary>
+        // 是否已被使用
         private bool _used;
-        /// <summary>
-        /// 使用时间
-        /// </summary>
+        // 使用时间
         private long _useTime;
-        /// <summary>
-        /// 是否有效
-        /// </summary>
+        // 是否有效
         private bool _isValid;
         #endregion
 
         #region 属性
-        /// <summary>
-        /// 数据Id
-        /// </summary>
+        // 数据Id
         public long Id { 
             get { return _id; }
             set { if (_id != value) {
@@ -61,9 +39,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 配表Id
-        /// </summary>
+        // 配表Id
         public long ConfigTableId { 
             get { return _configTableId; }
             set { if (_configTableId != value) {
@@ -71,9 +47,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 部件
-        /// </summary>
+        // 部件
         public int PartType { 
             get { return _partType; }
             set { if (_partType != value) {
@@ -81,9 +55,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public long PartId { 
             get { return _partId; }
             set { if (_partId != value) {
@@ -91,9 +63,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public int DurationType { 
             get { return _durationType; }
             set { if (_durationType != value) {
@@ -101,9 +71,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 过期时间
-        /// </summary>
+        // 过期时间
         public long ExpirationTime { 
             get { return _expirationTime; }
             set { if (_expirationTime != value) {
@@ -111,9 +79,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 折扣
-        /// </summary>
+        // 折扣
         public int Discount { 
             get { return _discount; }
             set { if (_discount != value) {
@@ -121,9 +87,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 是否已被使用
-        /// </summary>
+        // 是否已被使用
         public bool Used { 
             get { return _used; }
             set { if (_used != value) {
@@ -131,9 +95,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 使用时间
-        /// </summary>
+        // 使用时间
         public long UseTime { 
             get { return _useTime; }
             set { if (_useTime != value) {
@@ -141,9 +103,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 是否有效
-        /// </summary>
+        // 是否有效
         public bool IsValid { 
             get { return _isValid; }
             set { if (_isValid != value) {

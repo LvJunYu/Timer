@@ -9,43 +9,27 @@ namespace GameA
     public partial class UserInfoSimple : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        /// <summary>
-        /// 用户ID
-        /// </summary>
+        // 用户ID
         private long _userId;
-        /// <summary>
-        /// 昵称
-        /// </summary>
+        // 昵称
         private string _nickName;
-        /// <summary>
-        /// 头像
-        /// </summary>
+        // 头像
         private string _headImgUrl;
-        /// <summary>
-        /// 性别
-        /// </summary>
+        // 性别
         private ESex _sex;
-        /// <summary>
-        /// 和我的关系
-        /// </summary>
+        // 和我的关系
         private UserRelationWithMe _relationWithMe;
-        /// <summary>
-        /// 等级数据
-        /// </summary>
+        // 等级数据
         private UserLevel _levelData;
 
         // cs fields----------------------------------
-        /// <summary>
-        /// 用户id
-        /// </summary>
+        // 用户id
         private long _cs_userId;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        /// <summary>
-        /// 用户ID
-        /// </summary>
+        // 用户ID
         public long UserId { 
             get { return _userId; }
             set { if (_userId != value) {
@@ -53,9 +37,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 昵称
-        /// </summary>
+        // 昵称
         public string NickName { 
             get { return _nickName; }
             set { if (_nickName != value) {
@@ -63,9 +45,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 头像
-        /// </summary>
+        // 头像
         public string HeadImgUrl { 
             get { return _headImgUrl; }
             set { if (_headImgUrl != value) {
@@ -73,9 +53,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 性别
-        /// </summary>
+        // 性别
         public ESex Sex { 
             get { return _sex; }
             set { if (_sex != value) {
@@ -83,9 +61,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 和我的关系
-        /// </summary>
+        // 和我的关系
         public UserRelationWithMe RelationWithMe { 
             get { return _relationWithMe; }
             set { if (_relationWithMe != value) {
@@ -93,9 +69,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 等级数据
-        /// </summary>
+        // 等级数据
         public UserLevel LevelData { 
             get { return _levelData; }
             set { if (_levelData != value) {
@@ -105,9 +79,7 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        /// <summary>
-        /// 用户id
-        /// </summary>
+        // 用户id
         public long CS_UserId { 
             get { return _cs_userId; }
             set { _cs_userId = value; }
@@ -135,27 +107,18 @@ namespace GameA
             long userId,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            if (_isRequesting) {
-                if (_cs_userId != userId) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
-                OnRequest (successCallback, failedCallback);
-            } else {
-                _cs_userId = userId;
-                OnRequest (successCallback, failedCallback);
+            OnRequest (successCallback, failedCallback);
 
-                Msg_CS_DAT_UserInfoSimple msg = new Msg_CS_DAT_UserInfoSimple();
-                msg.UserId = userId;
-                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserInfoSimple>(
-                    SoyHttpApiPath.UserInfoSimple, msg, ret => {
-                        if (OnSync(ret)) {
-                            OnSyncSucceed(); 
-                        }
-                    }, (failedCode, failedMsg) => {
-                        OnSyncFailed(failedCode, failedMsg);
-                });            
-            }            
+            Msg_CS_DAT_UserInfoSimple msg = new Msg_CS_DAT_UserInfoSimple();
+            msg.UserId = userId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserInfoSimple>(
+                SoyHttpApiPath.UserInfoSimple, msg, ret => {
+                    if (OnSync(ret)) {
+                        OnSyncSucceed(); 
+                    }
+                }, (failedCode, failedMsg) => {
+                    OnSyncFailed(failedCode, failedMsg);
+            });
         }
 
         public bool OnSync (Msg_SC_DAT_UserInfoSimple msg)

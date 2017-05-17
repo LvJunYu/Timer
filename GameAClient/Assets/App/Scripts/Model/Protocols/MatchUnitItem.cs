@@ -8,20 +8,14 @@ namespace GameA
 {
     public partial class MatchUnitItem : SyncronisticData {
         #region 字段
-        /// <summary>
-        /// 地块Id
-        /// </summary>
+        // 地块Id
         private long _unitId;
-        /// <summary>
-        /// 地块数量
-        /// </summary>
+        // 地块数量
         private int _unitCount;
         #endregion
 
         #region 属性
-        /// <summary>
-        /// 地块Id
-        /// </summary>
+        // 地块Id
         public long UnitId { 
             get { return _unitId; }
             set { if (_unitId != value) {
@@ -29,9 +23,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 地块数量
-        /// </summary>
+        // 地块数量
         public int UnitCount { 
             get { return _unitCount; }
             set { if (_unitCount != value) {

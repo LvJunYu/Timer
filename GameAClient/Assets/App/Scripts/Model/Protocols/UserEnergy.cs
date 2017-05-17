@@ -9,35 +9,23 @@ namespace GameA
     public partial class UserEnergy : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        /// <summary>
-        /// 当前体力值
-        /// </summary>
+        // 当前体力值
         private int _energy;
-        /// <summary>
-        /// 体力加速结束时间
-        /// </summary>
+        // 体力加速结束时间
         private long _energyBoostingEndTime;
-        /// <summary>
-        /// 体力最后刷新时间
-        /// </summary>
+        // 体力最后刷新时间
         private long _energyLastRefreshTime;
-        /// <summary>
-        /// 体力上限
-        /// </summary>
+        // 体力上限
         private int _energyCapacity;
 
         // cs fields----------------------------------
-        /// <summary>
-        /// 用户
-        /// </summary>
+        // 用户
         private long _cs_userId;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        /// <summary>
-        /// 当前体力值
-        /// </summary>
+        // 当前体力值
         public int Energy { 
             get { return _energy; }
             set { if (_energy != value) {
@@ -45,9 +33,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 体力加速结束时间
-        /// </summary>
+        // 体力加速结束时间
         public long EnergyBoostingEndTime { 
             get { return _energyBoostingEndTime; }
             set { if (_energyBoostingEndTime != value) {
@@ -55,9 +41,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 体力最后刷新时间
-        /// </summary>
+        // 体力最后刷新时间
         public long EnergyLastRefreshTime { 
             get { return _energyLastRefreshTime; }
             set { if (_energyLastRefreshTime != value) {
@@ -65,9 +49,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 体力上限
-        /// </summary>
+        // 体力上限
         public int EnergyCapacity { 
             get { return _energyCapacity; }
             set { if (_energyCapacity != value) {
@@ -77,9 +59,7 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        /// <summary>
-        /// 用户
-        /// </summary>
+        // 用户
         public long CS_UserId { 
             get { return _cs_userId; }
             set { _cs_userId = value; }
@@ -101,27 +81,18 @@ namespace GameA
             long userId,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            if (_isRequesting) {
-                if (_cs_userId != userId) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
-                OnRequest (successCallback, failedCallback);
-            } else {
-                _cs_userId = userId;
-                OnRequest (successCallback, failedCallback);
+            OnRequest (successCallback, failedCallback);
 
-                Msg_CS_DAT_UserEnergy msg = new Msg_CS_DAT_UserEnergy();
-                msg.UserId = userId;
-                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserEnergy>(
-                    SoyHttpApiPath.UserEnergy, msg, ret => {
-                        if (OnSync(ret)) {
-                            OnSyncSucceed(); 
-                        }
-                    }, (failedCode, failedMsg) => {
-                        OnSyncFailed(failedCode, failedMsg);
-                });            
-            }            
+            Msg_CS_DAT_UserEnergy msg = new Msg_CS_DAT_UserEnergy();
+            msg.UserId = userId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserEnergy>(
+                SoyHttpApiPath.UserEnergy, msg, ret => {
+                    if (OnSync(ret)) {
+                        OnSyncSucceed(); 
+                    }
+                }, (failedCode, failedMsg) => {
+                    OnSyncFailed(failedCode, failedMsg);
+            });
         }
 
         public bool OnSync (Msg_SC_DAT_UserEnergy msg)

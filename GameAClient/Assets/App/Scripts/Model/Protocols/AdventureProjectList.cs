@@ -9,35 +9,23 @@ namespace GameA
     public partial class AdventureProjectList : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        /// <summary>
-        /// 版本号
-        /// </summary>
+        // 版本号
         private long _version;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private int _totalSectionCount;
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         private List<AdventureSection> _sectionList;
 
         // cs fields----------------------------------
-        /// <summary>
-        /// 最小章节
-        /// </summary>
+        // 最小章节
         private int _cs_minSection;
-        /// <summary>
-        /// 最大章节
-        /// </summary>
+        // 最大章节
         private int _cs_maxSection;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        /// <summary>
-        /// 版本号
-        /// </summary>
+        // 版本号
         public long Version { 
             get { return _version; }
             set { if (_version != value) {
@@ -45,9 +33,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public int TotalSectionCount { 
             get { return _totalSectionCount; }
             set { if (_totalSectionCount != value) {
@@ -55,9 +41,7 @@ namespace GameA
                 SetDirty();
             }}
         }
-        /// <summary>
-        /// 
-        /// </summary>
+        // 
         public List<AdventureSection> SectionList { 
             get { return _sectionList; }
             set { if (_sectionList != value) {
@@ -67,16 +51,12 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        /// <summary>
-        /// 最小章节
-        /// </summary>
+        // 最小章节
         public int CS_MinSection { 
             get { return _cs_minSection; }
             set { _cs_minSection = value; }
         }
-        /// <summary>
-        /// 最大章节
-        /// </summary>
+        // 最大章节
         public int CS_MaxSection { 
             get { return _cs_maxSection; }
             set { _cs_maxSection = value; }
@@ -107,33 +87,19 @@ namespace GameA
             int maxSection,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            if (_isRequesting) {
-                if (_cs_minSection != minSection) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
-                if (_cs_maxSection != maxSection) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
-                OnRequest (successCallback, failedCallback);
-            } else {
-                _cs_minSection = minSection;
-                _cs_maxSection = maxSection;
-                OnRequest (successCallback, failedCallback);
+            OnRequest (successCallback, failedCallback);
 
-                Msg_CS_DAT_AdventureProjectList msg = new Msg_CS_DAT_AdventureProjectList();
-                msg.MinSection = minSection;
-                msg.MaxSection = maxSection;
-                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AdventureProjectList>(
-                    SoyHttpApiPath.AdventureProjectList, msg, ret => {
-                        if (OnSync(ret)) {
-                            OnSyncSucceed(); 
-                        }
-                    }, (failedCode, failedMsg) => {
-                        OnSyncFailed(failedCode, failedMsg);
-                });            
-            }            
+            Msg_CS_DAT_AdventureProjectList msg = new Msg_CS_DAT_AdventureProjectList();
+            msg.MinSection = minSection;
+            msg.MaxSection = maxSection;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AdventureProjectList>(
+                SoyHttpApiPath.AdventureProjectList, msg, ret => {
+                    if (OnSync(ret)) {
+                        OnSyncSucceed(); 
+                    }
+                }, (failedCode, failedMsg) => {
+                    OnSyncFailed(failedCode, failedMsg);
+            });
         }
 
         public bool OnSync (Msg_SC_DAT_AdventureProjectList msg)
