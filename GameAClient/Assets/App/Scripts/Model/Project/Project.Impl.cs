@@ -56,7 +56,7 @@ namespace GameA
         private GameTimer _projectCommentListRequestTimer;
 
         private bool _userLike;
-        private byte _userRate;
+//        private byte _userRate;
         private bool _userFavorite;
         private int _userCompleteCount;
         private long _userLastPlayTime;
@@ -70,6 +70,19 @@ namespace GameA
         private GameTimer _projectRecentRecordListRequestTimer;
 
         private GameTimer _projectInfoRequestTimer;
+
+        /// <summary>
+        /// 下载资源成功回调
+        /// </summary>
+        private Action _downloadResSucceedCB;
+        /// <summary>
+        /// 下载资源失败回调
+        /// </summary>
+        private Action _downloadResFailedCB;
+        /// <summary>
+        /// 是否正在下载资源
+        /// </summary>
+        private bool _isdownloadingRes;
         #endregion 变量
 
         #region 属性
@@ -424,17 +437,17 @@ namespace GameA
             }
         }
 
-        public byte UserRate
-        {
-            get
-            {
-                return this._userRate;
-            }
-            set
-            {
-                _userRate = value;
-            }
-        }
+//        public byte UserRate
+//        {
+//            get
+//            {
+//                return this._userRate;
+//            }
+//            set
+//            {
+//                _userRate = value;
+//            }
+//        }
 
         public bool UserFavorite
         {
@@ -786,89 +799,89 @@ namespace GameA
         }
 
 
-        public void Publish(string name, string summary, byte[] dataBytes, byte[] iconBytes,
-                         float recordUsedTime, byte[] recordBytes, 
-                            Action onSuccess, Action<EProjectOperateResult> onError)
-        {
-            if (ProjectStatus == EProjectStatus.PS_Public)
-            {
-                return;
-            }
-            bool isCreate = false;
-            if (LocalDataState == ELocalDataState.LDS_UnCreated)
-            {
-                isCreate = true;
-            }
-            if (string.IsNullOrEmpty(name))
-            {
-                name = string.Format("我的匠游大作");
-            }
-            Name = name;
-            Summary = summary;
-
-            WWWForm form = new WWWForm();
-            form.AddBinaryData("levelFile", dataBytes);
-            form.AddBinaryData("iconFile", iconBytes);
-            if (recordBytes != null)
-            {
-                form.AddBinaryData("recordFile", recordBytes);
-            }
-
-            Msg_CS_CMD_PublishProject publishProject = new Msg_CS_CMD_PublishProject();
-            publishProject.Name = Name;
-            publishProject.Summary = Summary;
-            publishProject.RecordUsedTime = recordUsedTime;
-
-            publishProject.ProgramVersion = ProgramVersion;
-            publishProject.ResourceVersion = ResourcesVersion;
-            if (!isCreate)
-            {
-                publishProject.PersonalProjectId = _projectId;
-            }
-//            User user = LocalUser.Instance.UserLegacy;
-			var user = LocalUser.Instance.User;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PublishProject>(SoyHttpApiPath.PublishProject, publishProject, ret => {
-                if (ret.ResultCode == (int)EProjectOperateResult.POR_Success)
-                {
-                    if (isCreate)
-                    {
-                        user.OnProjectCreated(ret.ProjectData, this);
-                        LocalCacheManager.Instance.Save(dataBytes, LocalCacheManager.EType.File, ResPath);
-                        ImageResourceManager.Instance.SaveOrUpdateImageData(IconPath, iconBytes);
-                    }
-                    else
-                    {
-                        DeleteResCache();
-                        _syncIgnoreMe = true;
-                        ProjectManager.Instance.OnSyncProject(ret.ProjectData, true);
-                        _syncIgnoreMe = false;
-                        OnSyncFromParent(ret.ProjectData);
-                    }
-                    user.GetPublishedPrjectRequestTimer().Zero();
-                    user.GetSavedPrjectRequestTimer().Zero();
-//                    Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
-                    if (onSuccess != null)
-                    {
-                        onSuccess.Invoke();
-                    }
-                }
-                else
-                {
-                    LogHelper.Error("level upload error, code: {0}", ret.ResultCode);
-                    if (onError != null)
-                    {
-                        onError.Invoke((EProjectOperateResult)ret.ResultCode);
-                    }
-                }
-            }, (intCode, str) =>
-            {
-                SoyHttpClient.ShowErrorTip(intCode);
-                if (onError != null)
-                {
-                    onError.Invoke(EProjectOperateResult.POR_None);
-                }
-            }, form);
-        }
+//        public void Publish(string name, string summary, byte[] dataBytes, byte[] iconBytes,
+//                         float recordUsedTime, byte[] recordBytes, 
+//                            Action onSuccess, Action<EProjectOperateResult> onError)
+//        {
+//            if (ProjectStatus == EProjectStatus.PS_Public)
+//            {
+//                return;
+//            }
+//            bool isCreate = false;
+//            if (LocalDataState == ELocalDataState.LDS_UnCreated)
+//            {
+//                isCreate = true;
+//            }
+//            if (string.IsNullOrEmpty(name))
+//            {
+//                name = string.Format("我的匠游大作");
+//            }
+//            Name = name;
+//            Summary = summary;
+//
+//            WWWForm form = new WWWForm();
+//            form.AddBinaryData("levelFile", dataBytes);
+//            form.AddBinaryData("iconFile", iconBytes);
+//            if (recordBytes != null)
+//            {
+//                form.AddBinaryData("recordFile", recordBytes);
+//            }
+//
+//            Msg_CS_CMD_PublishProject publishProject = new Msg_CS_CMD_PublishProject();
+//            publishProject.Name = Name;
+//            publishProject.Summary = Summary;
+//            publishProject.RecordUsedTime = recordUsedTime;
+//
+//            publishProject.ProgramVersion = ProgramVersion;
+//            publishProject.ResourceVersion = ResourcesVersion;
+//            if (!isCreate)
+//            {
+//                publishProject.PersonalProjectId = _projectId;
+//            }
+////            User user = LocalUser.Instance.UserLegacy;
+//			var user = LocalUser.Instance.User;
+//            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PublishProject>(SoyHttpApiPath.PublishProject, publishProject, ret => {
+//                if (ret.ResultCode == (int)EProjectOperateResult.POR_Success)
+//                {
+//                    if (isCreate)
+//                    {
+//                        user.OnProjectCreated(ret.ProjectData, this);
+//                        LocalCacheManager.Instance.Save(dataBytes, LocalCacheManager.EType.File, ResPath);
+//                        ImageResourceManager.Instance.SaveOrUpdateImageData(IconPath, iconBytes);
+//                    }
+//                    else
+//                    {
+//                        DeleteResCache();
+//                        _syncIgnoreMe = true;
+//                        ProjectManager.Instance.OnSyncProject(ret.ProjectData, true);
+//                        _syncIgnoreMe = false;
+//                        OnSyncFromParent(ret.ProjectData);
+//                    }
+//                    user.GetPublishedPrjectRequestTimer().Zero();
+//                    user.GetSavedPrjectRequestTimer().Zero();
+////                    Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
+//                    if (onSuccess != null)
+//                    {
+//                        onSuccess.Invoke();
+//                    }
+//                }
+//                else
+//                {
+//                    LogHelper.Error("level upload error, code: {0}", ret.ResultCode);
+//                    if (onError != null)
+//                    {
+//                        onError.Invoke((EProjectOperateResult)ret.ResultCode);
+//                    }
+//                }
+//            }, (intCode, str) =>
+//            {
+//                SoyHttpClient.ShowErrorTip(intCode);
+//                if (onError != null)
+//                {
+//                    onError.Invoke(EProjectOperateResult.POR_None);
+//                }
+//            }, form);
+//        }
 
         public void PublishModifyProject () {
         }
@@ -917,35 +930,45 @@ namespace GameA
                 }
                 return;
             }
+            if (_isdownloadingRes) {
+                _downloadResSucceedCB -= successCallback;
+                _downloadResSucceedCB += successCallback;
+                _downloadResFailedCB -= failedCallback;
+                _downloadResFailedCB += failedCallback;
+                return;
+            }
+            _isdownloadingRes = true;
             SFile file = SFile.GetFileWithUrl(SoyPath.Instance.GetFileUrl(targetRes));
             Debug.Log ("____________________download map file: " + targetRes);
             file.DownloadAsync((f) =>
                 {
+                    _isdownloadingRes = false;
                     LocalCacheManager.Instance.Save(f.FileBytes, LocalCacheManager.EType.File, targetRes);
-                    if (successCallback != null)
+                    if (_downloadResSucceedCB != null)
                     {
-                        successCallback.Invoke();
+                        _downloadResSucceedCB.Invoke();
                     }
                 }, sFile =>
                 {
+                    _isdownloadingRes = false;
                     Debug.Log("__________________________" + SoyPath.Instance.GetFileUrl(targetRes));
-                    if (failedCallback != null)
+                    if (_downloadResFailedCB != null)
                     {
-                        failedCallback.Invoke();
+                        _downloadResFailedCB.Invoke();
                     }
                 });
         }
 
         public void UpdateRate(int rate, Action<bool> callback = null)
         {
-            if (_userRate == rate)
-            {
-                if (callback != null)
-                {
-                    callback.Invoke(false);
-                }
-                return;
-            }
+//            if (_userRate == rate)
+//            {
+//                if (callback != null)
+//                {
+//                    callback.Invoke(false);
+//                }
+//                return;
+//            }
             if (!_isValid)
             {
                 if (callback != null)
@@ -1289,8 +1312,6 @@ namespace GameA
         {
             _extendReady = true;
             _isValid = msg.IsValid;
-            _totalRate = msg.Rate;
-            _totalRateCount = msg.RateCount;
             _totalCommentCount = msg.CommentCount;
             _totalClickCount = msg.PlayCount;
             _completeCount = msg.CompleteCount;
@@ -1362,17 +1383,17 @@ namespace GameA
 
 		public void OnSyncProjectUserData(ProjectUserData msg)
         {
-            _userRate = (byte)msg.Rate;
+//            _userRate = (byte)msg.Rate;
             _userFavorite = msg.Favorite;
             _userLastPlayTime = msg.LastPlayTime;
             _userCompleteCount = msg.CompleteCount;
-            _userLike = msg.LikeFlag;
+//            _userLike = msg.LikeFlag;
         }
 
         public void ClearProjectUserData()
         {
             _userLike = false;
-            _userRate = 0;
+//            _userRate = 0;
             _userFavorite = false;
             _userLastPlayTime = 0;
             _userCompleteCount = 0;

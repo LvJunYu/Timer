@@ -24,6 +24,8 @@ namespace GameA
     {
         #region 常量与字段
         private const float _randomPickStateTime = 4.0f;
+        private const string _canPublish = "可发布";
+        private const string _cantPublish = "还未通关";
         /// <summary>
         /// 随机改造关卡计时器，点击随机按钮后进入随机状态，至少持续N秒，收到回包且计时器结束则进入下一状态
         /// </summary>
@@ -41,7 +43,7 @@ namespace GameA
         {
             base.OnOpen (parameter);
             Refresh ();
-
+            _cachedView.InputBlock.SetActiveEx (false);
             _randomPickTimer = 0;
         }
 
@@ -101,6 +103,12 @@ namespace GameA
                     _cachedView.DefaultProjectCoverTex);
             } else if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_Editing) {
                 _cachedView.StateTxt.SetActiveEx (true);
+                if (LocalUser.Instance.MatchUserData.CurReformProject.IsInited &&
+                    true == LocalUser.Instance.MatchUserData.CurReformProject.PassFlag) {
+                    _cachedView.StateTxt.text = _canPublish;
+                } else {
+                    _cachedView.StateTxt.text = _cantPublish;
+                }
                 _cachedView.ProjectLocTxt.text = string.Format ("Chapt. {0} Level.{1}", 
                     LocalUser.Instance.MatchUserData.CurReformSection,
                     LocalUser.Instance.MatchUserData.CurReformLevel
@@ -112,8 +120,8 @@ namespace GameA
                 _cachedView.PublishBtn.SetActiveEx (true);
                 // 取单人模式的project，因为改造数据中的project可能还没有获得
                 Project project = null;
-                int sectionIdx = LocalUser.Instance.MatchUserData.CurReformSection;
-                int levelIdx = LocalUser.Instance.MatchUserData.CurReformLevel;
+                int sectionIdx = LocalUser.Instance.MatchUserData.CurReformSection - 1;
+                int levelIdx = LocalUser.Instance.MatchUserData.CurReformLevel - 1;
                 if (sectionIdx >= AppData.Instance.AdventureData.ProjectList.SectionList.Count) {
                     // todo out of range exception
                     return;
@@ -189,7 +197,43 @@ namespace GameA
 		}
 
 		private void OnPublishBtn () {
-			
+            if (LocalUser.Instance.MatchUserData.CurReformProject.IsInited &&
+                true == LocalUser.Instance.MatchUserData.CurReformProject.PassFlag) {
+                SocialGUIManager.ShowPopupDialog (
+                    "关卡越难发布后获得的收益越多",
+                    "确认发布",
+                    new KeyValuePair<string, Action> ("确定", () => {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "正在发布关卡");
+                        RemoteCommands.PublishReformProject(
+                            LocalUser.Instance.MatchUserData.CurReformProject.ProjectId,
+                            LocalUser.Instance.MatchUserData.CurReformProject.ProgramVersion,
+                            LocalUser.Instance.MatchUserData.CurReformProject.ResourcesVersion,
+                            LocalUser.Instance.MatchUserData.CurReformProject.RecordUsedTime,
+                            LocalUser.Instance.MatchUserData.CurReformProject.GetMsgProjectUploadParam(),
+                            msg => {
+                                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                                if (msg.ResultCode == (int)EProjectOperateResult.POR_Success) {
+                                    SocialGUIManager.Instance.CloseUI<UICtrlModify> ();
+                                    SocialGUIManager.ShowPopupDialog ("改造关卡发布成功");
+                                    LocalUser.Instance.MatchUserData.CurReformState = (int)EReformState.RS_WaitForChance;
+                                    LocalUser.Instance.MatchUserData.CurPublishTime = LocalUser.Instance.MatchUserData.CurPublishTime;
+                                    LocalUser.Instance.MatchUserData.CurPublishProject.OnSyncFromParent(msg.ProjectData);
+                                    Messenger.Broadcast(EMessengerType.OnReformProjectPublished);
+                                } else {
+                                    SocialGUIManager.ShowPopupDialog ("改造关卡发布失败，代码：9");
+                                }
+                            },
+                            code => {
+                                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                                SocialGUIManager.ShowPopupDialog ("改造关卡发布失败，代码：" + code.ToString());
+                            }
+                        );
+                    }),
+                    new KeyValuePair<string, Action> ("取消", null)         
+                );
+            } else {
+                SocialGUIManager.ShowPopupDialog ("改造关卡还没有成功通关，不可发布");
+            }
 		}
 
         private void OnEditBtn () {
@@ -245,6 +289,8 @@ namespace GameA
                             },
                             code => {
                                 // todo handle error
+                                SocialGUIManager.ShowPopupDialog("重新随机改造关卡失败，原因代码：" + code.ToString());
+                                _randomPickTimer = 0.01f;
                             }
                         );
                     }

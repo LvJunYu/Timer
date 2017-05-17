@@ -32,7 +32,7 @@ namespace GameA
 
         private PersonalProjectList _personalProjectList = new PersonalProjectList ();
 
-        private UserPublishedProjectList _userPublishedProjectList = new UserPublishedProjectList ();
+        private UserPublishedWorldProjectList _userPublishedWorldProjectList = new UserPublishedWorldProjectList ();
 
         #endregion
         #region 属性
@@ -90,9 +90,9 @@ namespace GameA
             }
         }
 
-        public UserPublishedProjectList UserPublishedProjectList {
+        public UserPublishedWorldProjectList UserPublishedWorldProjectList {
             get {
-                return this._userPublishedProjectList;
+                return this._userPublishedWorldProjectList;
             }
         }
         #endregion

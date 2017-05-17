@@ -244,10 +244,10 @@ namespace GameA
             );
         }
 
-        public static bool IsRequstingPublishProject {
-            get { return _isRequstingPublishProject; }
+        public static bool IsRequstingPublishWorldProject {
+            get { return _isRequstingPublishWorldProject; }
         }
-        private static bool _isRequstingPublishProject = false;
+        private static bool _isRequstingPublishWorldProject = false;
         /// <summary>
 		/// 发布关卡
 		/// </summary>
@@ -259,7 +259,7 @@ namespace GameA
 		/// <param name="recordUsedTime"></param>
 		/// <param name="timeLimit">时间限制</param>
 		/// <param name="winCondition">胜利条件</param>
-        public static void PublishProject (
+        public static void PublishWorldProject (
             long personalProjectId,
             string name,
             string summary,
@@ -268,14 +268,14 @@ namespace GameA
             float recordUsedTime,
             int timeLimit,
             int winCondition,
-            Action<Msg_SC_CMD_PublishProject> successCallback, Action<ENetResultCode> failedCallback,
+            Action<Msg_SC_CMD_PublishWorldProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
-            if (_isRequstingPublishProject) {
+            if (_isRequstingPublishWorldProject) {
                 return;
             }
-            _isRequstingPublishProject = true;
-            Msg_CS_CMD_PublishProject msg = new Msg_CS_CMD_PublishProject();
+            _isRequstingPublishWorldProject = true;
+            Msg_CS_CMD_PublishWorldProject msg = new Msg_CS_CMD_PublishWorldProject();
             // 发布关卡
             msg.PersonalProjectId = personalProjectId;
             msg.Name = name;
@@ -285,55 +285,298 @@ namespace GameA
             msg.RecordUsedTime = recordUsedTime;
             msg.TimeLimit = timeLimit;
             msg.WinCondition = winCondition;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PublishProject>(
-                SoyHttpApiPath.PublishProject, msg, ret => {
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PublishWorldProject>(
+                SoyHttpApiPath.PublishWorldProject, msg, ret => {
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
-                    _isRequstingPublishProject = false;
+                    _isRequstingPublishWorldProject = false;
                 }, (failedCode, failedMsg) => {
-                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "PublishProject", failedCode, failedMsg);
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "PublishWorldProject", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-                    _isRequstingPublishProject = false;
+                    _isRequstingPublishWorldProject = false;
                 },
                 form
             );
         }
 
-        public static bool IsRequstingUnpublishProject {
-            get { return _isRequstingUnpublishProject; }
+        public static bool IsRequstingUnpublishWorldProject {
+            get { return _isRequstingUnpublishWorldProject; }
         }
-        private static bool _isRequstingUnpublishProject = false;
+        private static bool _isRequstingUnpublishWorldProject = false;
         /// <summary>
 		/// 取消发布
 		/// </summary>
 		/// <param name="projectId">关卡Id</param>
-        public static void UnpublishProject (
+        public static void UnpublishWorldProject (
             List<long> projectId,
-            Action<Msg_SC_CMD_UnpublishProject> successCallback, Action<ENetResultCode> failedCallback,
+            Action<Msg_SC_CMD_UnpublishWorldProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
-            if (_isRequstingUnpublishProject) {
+            if (_isRequstingUnpublishWorldProject) {
                 return;
             }
-            _isRequstingUnpublishProject = true;
-            Msg_CS_CMD_UnpublishProject msg = new Msg_CS_CMD_UnpublishProject();
+            _isRequstingUnpublishWorldProject = true;
+            Msg_CS_CMD_UnpublishWorldProject msg = new Msg_CS_CMD_UnpublishWorldProject();
             // 取消发布
             msg.ProjectId.AddRange(projectId);
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UnpublishProject>(
-                SoyHttpApiPath.UnpublishProject, msg, ret => {
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UnpublishWorldProject>(
+                SoyHttpApiPath.UnpublishWorldProject, msg, ret => {
                     if (successCallback != null) {
                         successCallback.Invoke(ret);
                     }
-                    _isRequstingUnpublishProject = false;
+                    _isRequstingUnpublishWorldProject = false;
                 }, (failedCode, failedMsg) => {
-                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UnpublishProject", failedCode, failedMsg);
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UnpublishWorldProject", failedCode, failedMsg);
                     if (failedCallback != null) {
                         failedCallback.Invoke(failedCode);
                     }
-                    _isRequstingUnpublishProject = false;
+                    _isRequstingUnpublishWorldProject = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingPlayWorldProject {
+            get { return _isRequstingPlayWorldProject; }
+        }
+        private static bool _isRequstingPlayWorldProject = false;
+        /// <summary>
+		/// Msg_CS_CMD_PlayWorldProject
+		/// </summary>
+		/// <param name="projectId">关卡Id</param>
+        public static void PlayWorldProject (
+            long projectId,
+            Action<Msg_SC_CMD_PlayWorldProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingPlayWorldProject) {
+                return;
+            }
+            _isRequstingPlayWorldProject = true;
+            Msg_CS_CMD_PlayWorldProject msg = new Msg_CS_CMD_PlayWorldProject();
+            // Msg_CS_CMD_PlayWorldProject
+            msg.ProjectId = projectId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PlayWorldProject>(
+                SoyHttpApiPath.PlayWorldProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingPlayWorldProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "PlayWorldProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingPlayWorldProject = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingCommitWorldProjectResult {
+            get { return _isRequstingCommitWorldProjectResult; }
+        }
+        private static bool _isRequstingCommitWorldProjectResult = false;
+        /// <summary>
+		/// 提交过关世界关卡数据
+		/// </summary>
+		/// <param name="token">关卡Id</param>
+		/// <param name="success"></param>
+		/// <param name="deadPos"></param>
+		/// <param name="usedTime"></param>
+        public static void CommitWorldProjectResult (
+            long token,
+            bool success,
+            byte[] deadPos,
+            float usedTime,
+            Action<Msg_SC_CMD_CommitWorldProjectResult> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingCommitWorldProjectResult) {
+                return;
+            }
+            _isRequstingCommitWorldProjectResult = true;
+            Msg_CS_CMD_CommitWorldProjectResult msg = new Msg_CS_CMD_CommitWorldProjectResult();
+            // 提交过关世界关卡数据
+            msg.Token = token;
+            msg.Success = success;
+            msg.DeadPos = deadPos;
+            msg.UsedTime = usedTime;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CommitWorldProjectResult>(
+                SoyHttpApiPath.CommitWorldProjectResult, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingCommitWorldProjectResult = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CommitWorldProjectResult", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingCommitWorldProjectResult = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingPostWorldProjectComment {
+            get { return _isRequstingPostWorldProjectComment; }
+        }
+        private static bool _isRequstingPostWorldProjectComment = false;
+        /// <summary>
+		/// 提交世界关卡评论
+		/// </summary>
+		/// <param name="projectId">关卡Id</param>
+		/// <param name="targetUserId"></param>
+		/// <param name="comment"></param>
+        public static void PostWorldProjectComment (
+            long projectId,
+            long targetUserId,
+            string comment,
+            Action<Msg_SC_CMD_PostWorldProjectComment> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingPostWorldProjectComment) {
+                return;
+            }
+            _isRequstingPostWorldProjectComment = true;
+            Msg_CS_CMD_PostWorldProjectComment msg = new Msg_CS_CMD_PostWorldProjectComment();
+            // 提交世界关卡评论
+            msg.ProjectId = projectId;
+            msg.TargetUserId = targetUserId;
+            msg.Comment = comment;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PostWorldProjectComment>(
+                SoyHttpApiPath.PostWorldProjectComment, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingPostWorldProjectComment = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "PostWorldProjectComment", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingPostWorldProjectComment = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpdateWorldProjectLike {
+            get { return _isRequstingUpdateWorldProjectLike; }
+        }
+        private static bool _isRequstingUpdateWorldProjectLike = false;
+        /// <summary>
+		/// 修改关卡顶踩
+		/// </summary>
+		/// <param name="projectId">关卡Id</param>
+		/// <param name="likeState"></param>
+        public static void UpdateWorldProjectLike (
+            long projectId,
+            EProjectLikeState likeState,
+            Action<Msg_SC_CMD_UpdateWorldProjectLike> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpdateWorldProjectLike) {
+                return;
+            }
+            _isRequstingUpdateWorldProjectLike = true;
+            Msg_CS_CMD_UpdateWorldProjectLike msg = new Msg_CS_CMD_UpdateWorldProjectLike();
+            // 修改关卡顶踩
+            msg.ProjectId = projectId;
+            msg.LikeState = likeState;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateWorldProjectLike>(
+                SoyHttpApiPath.UpdateWorldProjectLike, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpdateWorldProjectLike = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpdateWorldProjectLike", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpdateWorldProjectLike = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpdateWorldProjectFavorite {
+            get { return _isRequstingUpdateWorldProjectFavorite; }
+        }
+        private static bool _isRequstingUpdateWorldProjectFavorite = false;
+        /// <summary>
+		/// 修改关卡收藏状态
+		/// </summary>
+		/// <param name="projectId">关卡Id</param>
+		/// <param name="favoriteFlag"></param>
+        public static void UpdateWorldProjectFavorite (
+            long projectId,
+            bool favoriteFlag,
+            Action<Msg_SC_CMD_UpdateWorldProjectFavorite> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpdateWorldProjectFavorite) {
+                return;
+            }
+            _isRequstingUpdateWorldProjectFavorite = true;
+            Msg_CS_CMD_UpdateWorldProjectFavorite msg = new Msg_CS_CMD_UpdateWorldProjectFavorite();
+            // 修改关卡收藏状态
+            msg.ProjectId = projectId;
+            msg.FavoriteFlag = favoriteFlag;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateWorldProjectFavorite>(
+                SoyHttpApiPath.UpdateWorldProjectFavorite, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpdateWorldProjectFavorite = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpdateWorldProjectFavorite", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpdateWorldProjectFavorite = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingDeleteWorldProjectFavorite {
+            get { return _isRequstingDeleteWorldProjectFavorite; }
+        }
+        private static bool _isRequstingDeleteWorldProjectFavorite = false;
+        /// <summary>
+		/// 删除收藏关卡
+		/// </summary>
+		/// <param name="projectId">关卡Id</param>
+        public static void DeleteWorldProjectFavorite (
+            List<long> projectId,
+            Action<Msg_SC_CMD_DeleteWorldProjectFavorite> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingDeleteWorldProjectFavorite) {
+                return;
+            }
+            _isRequstingDeleteWorldProjectFavorite = true;
+            Msg_CS_CMD_DeleteWorldProjectFavorite msg = new Msg_CS_CMD_DeleteWorldProjectFavorite();
+            // 删除收藏关卡
+            msg.ProjectId.AddRange(projectId);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteWorldProjectFavorite>(
+                SoyHttpApiPath.DeleteWorldProjectFavorite, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingDeleteWorldProjectFavorite = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteWorldProjectFavorite", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingDeleteWorldProjectFavorite = false;
                 },
                 form
             );
@@ -613,17 +856,11 @@ namespace GameA
         /// <summary>
 		/// 购买时装
 		/// </summary>
-		/// <param name="partType">类型</param>
-		/// <param name="partId">部件id</param>
-		/// <param name="durationType">购买时长</param>
-		/// <param name="currencyType"></param>
-		/// <param name="discountCouponId">Msg_AvatarPartDiscountCouponItem 的id</param>
+		/// <param name="buyList">购买的数据列表</param>
+		/// <param name="putOn">购买成功是否立即穿上</param>
         public static void BuyAvatarPart (
-            EAvatarPart partType,
-            long partId,
-            EBuyAvatarPartDurationType durationType,
-            ECurrencyType currencyType,
-            long discountCouponId,
+            List<Msg_BuyAvatarPartItem> buyList,
+            bool putOn,
             Action<Msg_SC_CMD_BuyAvatarPart> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -633,11 +870,8 @@ namespace GameA
             _isRequstingBuyAvatarPart = true;
             Msg_CS_CMD_BuyAvatarPart msg = new Msg_CS_CMD_BuyAvatarPart();
             // 购买时装
-            msg.PartType = partType;
-            msg.PartId = partId;
-            msg.DurationType = durationType;
-            msg.CurrencyType = currencyType;
-            msg.DiscountCouponId = discountCouponId;
+            msg.BuyList.AddRange(buyList);
+            msg.PutOn = putOn;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_BuyAvatarPart>(
                 SoyHttpApiPath.BuyAvatarPart, msg, ret => {
                     if (successCallback != null) {

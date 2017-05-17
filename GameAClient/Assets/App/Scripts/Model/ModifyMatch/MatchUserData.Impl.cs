@@ -21,7 +21,12 @@ namespace GameA
         // 默认体力增长时间／每点
         private const int DefaultChallengeGenerateTime = 300;
 
+        /// <summary>
+        /// 玩挑战关卡的token
+        /// </summary>
+        private long _playChallengeToken;
 
+        private bool _isRequestPlayChallenge;
         #endregion
 
         #region 属性
@@ -97,27 +102,145 @@ namespace GameA
 //                }
 //            }
         }
-
+        /// <summary>
+        /// 当天挑战状态
+        /// </summary>
+        /// <returns>The challenge state.</returns>
         public EChallengeState CurrentChallengeState () {
             if (!_inited)
                 return EChallengeState.None;
+            if (!_easyChallengeProjectData.IsInited &&
+                !_mediumChallengeProjectData.IsInited &&
+                !_difficultChallengeProjectData.IsInited &&
+                !_randomChallengeProjectData.IsInited) {
 
-            if (_leftChallengeCount <= 0)
-                return EChallengeState.WaitForChance;
-            else {
-                if (!_easyChallengeProjectData.IsInited &&
-                    !_mediumChallengeProjectData.IsInited &&
-                    !_difficultChallengeProjectData.IsInited &&
-                    !_randomChallengeProjectData.IsInited) {
+                if (_leftChallengeCount <= 0)
+                    return EChallengeState.WaitForChance;
+                else
                     return EChallengeState.ChanceReady;
-                } else {                    
-                    if (_curSelectedChallengeType == (int)EChallengeProjectType.CPT_None) {
-                        return EChallengeState.Selecting;
-                    } else {
-                        return EChallengeState.Challenging;
-                    }
+            } else {
+                if (_curSelectedChallengeType == (int)EChallengeProjectType.CPT_None) {
+                    return EChallengeState.Selecting;
+                } else {
+                    return EChallengeState.Challenging;
                 }
             }
+
+        }
+
+        /// <summary>
+        /// 获取当前选择的挑战project
+        /// </summary>
+        /// <returns>The challenge project.</returns>
+        public Project CurrentChallengeProject () {
+            if (!_inited)
+                return null;
+            if (_curSelectedChallengeType == (int)EChallengeProjectType.CPT_None)
+                return null;
+            if (_curSelectedChallengeType == (int)EChallengeProjectType.CPT_Easy)
+                return _easyChallengeProjectData;
+            if (_curSelectedChallengeType == (int)EChallengeProjectType.CPT_Medium)
+                return _mediumChallengeProjectData;
+            if (_curSelectedChallengeType == (int)EChallengeProjectType.CPT_Difficult)
+                return _difficultChallengeProjectData;
+            if (_curSelectedChallengeType == (int)EChallengeProjectType.CPT_Random)
+                return _randomChallengeProjectData;
+            return null;
+        }
+
+        /// <summary>
+        /// 请求放弃挑战成功后的本地数据刷新
+        /// </summary>
+        public void OnAbandomChallengeSuccess () {
+            CurSelectedChallengeType = (int)EChallengeProjectType.CPT_None;
+            EasyChallengeProjectData = new Project();
+            MediumChallengeProjectData = new Project();
+            DifficultChallengeProjectData = new Project();
+            RandomChallengeProjectData = new Project();
+        }
+
+        /// <summary>
+        /// 请求玩挑战关卡
+        /// </summary>
+        public void PlayChallenge (Action succcessCB, Action failureCB) {
+            if (_isRequestPlayChallenge)
+                return;
+            Project targetProject = LocalUser.Instance.MatchUserData.CurrentChallengeProject();
+            if (null == targetProject || !targetProject.IsInited)
+                // todo error handle
+                return;
+            _isRequestPlayChallenge = true;
+            targetProject.PrepareRes (null);
+            RemoteCommands.PlayMatchChallengeLevel (
+                targetProject.ProjectId,
+                msg => {
+                    if (msg.ResultCode == (int)EPlayMatchChallengeLevelCode.PMCLC_Success) {
+                        _playChallengeToken = msg.Token;
+                        targetProject.PrepareRes(
+                            () => {
+                                if (null != succcessCB) {
+                                    succcessCB.Invoke();
+                                }
+                                _isRequestPlayChallenge = false;
+                                GameManager.Instance.RequestPlay(targetProject);
+                                SocialGUIManager.Instance.ChangeToGameMode();
+                            },
+                            () => {
+                                // todo err handle
+                                _isRequestPlayChallenge = false;
+                                if (null != failureCB) {
+                                    failureCB.Invoke();
+                                }
+                            }
+                        );
+                    } else {
+                        // todo err handle
+                        _isRequestPlayChallenge = false;
+                        if (null != failureCB) {
+                            failureCB.Invoke();
+                        }
+                    }
+                },
+                code => {
+                    // todo err handle
+                    _isRequestPlayChallenge = false;
+                    if (null != failureCB) {
+                        failureCB.Invoke();
+                    }
+                }
+            );
+        }
+
+        public void CommitChallengeResult (bool isSuccess, float usedTime, Action successCB, Action failureCB) {
+            if (0 == _playChallengeToken)
+                return;
+            RemoteCommands.CommitMatchChallengeLevelResult (
+                _playChallengeToken,
+                isSuccess,
+                usedTime,
+                msg => {
+                    if ((int)ECommitMatchChallengeLevelResultCode.CMCLRC_Success == msg.ResultCode) {
+                        _playChallengeToken = 0;
+                        _curSelectedChallengeType = (int)EChallengeProjectType.CPT_None;
+                        _easyChallengeProjectData = new Project();
+                        _mediumChallengeProjectData = new Project();
+                        _difficultChallengeProjectData = new Project();
+                        _randomChallengeProjectData = new Project();
+                        if (null != successCB) {
+                            successCB.Invoke ();
+                        }
+                    } else {
+                        if (null != failureCB) {
+                            failureCB.Invoke();
+                        }
+                    }
+                },
+                code => {
+                    if (null != failureCB) {
+                        failureCB.Invoke();
+                    }
+                }
+            );
         }
         #endregion
     }

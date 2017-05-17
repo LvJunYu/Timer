@@ -29,5 +29,32 @@ namespace GameA {
                 return false;
             }
         }
+
+        /// <summary>
+        /// 检查是否有num体力，没有则弹出购买体力对话框
+        /// </summary>
+        /// <returns><c>true</c>, if energy was checked, <c>false</c> otherwise.</returns>
+        /// <param name="num">Number.</param>
+        /// <param name="showBuyEnergy">If set to <c>true</c> show buy energy.</param>
+        public static bool CheckEnergy (int num, bool showBuyEnergy = true) {
+            AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh ();
+            if (num > AppData.Instance.AdventureData.UserData.UserEnergyData.Energy) {
+                if (showBuyEnergy) {
+                    // todo buy energy ui
+                }
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        public static bool UseEnergy (int num) {
+            if (num > AppData.Instance.AdventureData.UserData.UserEnergyData.Energy) {
+                return false;
+            } else {
+                AppData.Instance.AdventureData.UserData.UserEnergyData.Energy -= num;
+                return true;
+            }
+        }
     }
 }
