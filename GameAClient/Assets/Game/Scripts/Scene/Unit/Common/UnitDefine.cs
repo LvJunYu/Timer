@@ -14,8 +14,11 @@ namespace GameA.Game
     {
         public const int SwitchTriggerId = 5100;
 
+        public const int TransparentEarthId = 4004;
+
         public const int ClayId = 4011;
         public const int BlueStoneId = 4101;
+        public const int BlueStoneBanId = 4102;
         public const int BlueStoneRotateId = 4103;
         public const int BoxId = 5004;
         public const int RollerId = 5005;
@@ -47,6 +50,21 @@ namespace GameA.Game
         public static bool IsPlant(int id)
         {
             return id == 7002 || id == 7003 || id == 7004;
+        }
+
+        public static bool IsBoard(int id)
+        {
+            return id == 7001 || id == 7101 || id == 7102 || id == 7103 || id == 7104;
+        }
+
+        public static bool IsHero(int id)
+        {
+            return id < 3000;
+        }
+
+        public static bool CanBlockLaserItem(int id)
+        {
+            return id != TransparentEarthId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) && !IsBoard(id);
         }
     }
 }
