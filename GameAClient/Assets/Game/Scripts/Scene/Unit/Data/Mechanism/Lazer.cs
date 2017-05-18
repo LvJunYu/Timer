@@ -19,6 +19,7 @@ namespace GameA.Game
         protected GridCheck _gridCheck;
         protected Grid2D _checkGrid;
         protected int _distance;
+        protected IntVec2 _borderCenterPoint;
 
         protected UnityNativeParticleItem _effect;
         protected UnityNativeParticleItem _lazerEffect;
@@ -47,6 +48,7 @@ namespace GameA.Game
             GM2DTools.GetBorderPoint(_colliderGrid, (EDirectionType)Rotation, ref pointA, ref pointB);
             _distance = GM2DTools.GetDistanceToBorder(pointA, Rotation);
             _checkGrid = SceneQuery2D.GetGrid(pointA, pointB, Rotation, _distance);
+            _borderCenterPoint = (pointA + pointB) / 2;
         }
 
         internal override bool InstantiateView()
@@ -56,31 +58,27 @@ namespace GameA.Game
                 return false;
             }
             _effect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazerRun", _trans);
-            _lazerEffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazer", _trans);
-            _lazerEffectEnd = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazerStart", _trans);
-            if (_lazerEffectEnd != null)
-            {
-                switch (Rotation)
-                {
-                    case 0:
-                        _lazerEffectEnd.Trans.position += 0.5f*Vector3.up;
-                        break;
-                    case 1:
-                        _lazerEffectEnd.Trans.position += 0.5f * Vector3.right;
-                        break;
-                    case 2:
-                        _lazerEffectEnd.Trans.position += 0.5f * Vector3.down;
-                        break;
-                    case 3:
-                        _lazerEffectEnd.Trans.position += 0.5f * Vector3.left;
-                        break;
-                }
-            }
             if (_effect != null)
             {
                 _effect.Trans.position += Vector3.back * 0.1f;
+                _effect.Trans.localEulerAngles = new Vector3(0, 0, Rotation*-90);
                 _effect.Play();
             }
+
+            _lazerEffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazer", _trans);
+            if (_lazerEffect != null)
+            {
+                _lazerEffect.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z - 0.1f);
+                _lazerEffect.Trans.localEulerAngles = new Vector3(0, 0, Rotation * -90);
+            }
+
+            _lazerEffectEnd = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazerStart", _trans);
+            if (_lazerEffectEnd != null)
+            {
+                _lazerEffectEnd.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z - 0.1f);
+                _lazerEffectEnd.Trans.localEulerAngles = new Vector3(0, 0, Rotation * -90);
+            }
+
             return true;
         }
 
@@ -96,6 +94,10 @@ namespace GameA.Game
             {
                 _lazerEffect.Stop();
             }
+            if (_lazerEffectEnd != null)
+            {
+                _lazerEffectEnd.Stop();
+            }
         }
 
         internal override void OnObjectDestroy()
@@ -110,6 +112,11 @@ namespace GameA.Game
             {
                 GameParticleManager.FreeParticleItem(_lazerEffect);
                 _lazerEffect = null;
+            }
+            if (_lazerEffectEnd != null)
+            {
+                GameParticleManager.FreeParticleItem(_lazerEffectEnd);
+                _lazerEffectEnd = null;
             }
         }
 
@@ -176,24 +183,27 @@ namespace GameA.Game
             }
             if (_lazerEffect != null)
             {
-                _lazerEffect.Trans.localScale = new Vector3((float)_distance / ConstDefineGM2D.ServerTileScale, 1, 1);
+                var distanceWorld = (float) _distance/ConstDefineGM2D.ServerTileScale;
+                var pos = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z - 0.1f);
                 _lazerEffect.Play();
+                _lazerEffect.Trans.position = pos;
+                _lazerEffect.Trans.localScale = new Vector3(distanceWorld, 1, 1);
                 if (_lazerEffectEnd != null)
                 {
                     _lazerEffectEnd.Play();
                     switch (Rotation)
                     {
                         case 0:
-                            _lazerEffectEnd.Trans.position += _distance * Vector3.up;
+                            _lazerEffectEnd.Trans.position = pos + distanceWorld * Vector3.up;
                             break;
                         case 1:
-                            _lazerEffectEnd.Trans.position += _distance * Vector3.right;
+                            _lazerEffectEnd.Trans.position = pos + distanceWorld * Vector3.right;
                             break;
                         case 2:
-                            _lazerEffectEnd.Trans.position += _distance * Vector3.down;
+                            _lazerEffectEnd.Trans.position = pos + distanceWorld * Vector3.down;
                             break;
                         case 3:
-                            _lazerEffectEnd.Trans.position += _distance * Vector3.left;
+                            _lazerEffectEnd.Trans.position = pos + distanceWorld * Vector3.left;
                             break;
                     }
                 }
