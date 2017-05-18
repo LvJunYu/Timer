@@ -52,7 +52,7 @@ namespace GameA.Game
 
         //public override void UpdateExtraData()
         //{
-        //    _plus = DataScene2D.Instance.GetUnitExtra(_guid).IsPlusEnergy == 1;
+        //    _plus = DataScene2D.Instance.GetUnitExtra(_guid).EnergyType == 1;
         //    base.UpdateExtraData();
         //    LogHelper.Debug("_plus + _"+_plus);
         //}

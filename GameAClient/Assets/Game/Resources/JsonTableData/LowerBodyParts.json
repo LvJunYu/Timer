@@ -31,7 +31,7 @@
         "PriceDiamondPermanent": "0",
         "BigTexture": "MainBoy04",
         "SmallTexture": "SMainBoy04",
-        "PreviewTexture": "MainBoy04",
+        "PreviewTexture": "LowerMale01",
         "SkinId": "0"
     },
     {
@@ -50,7 +50,7 @@
         "PriceDiamondPermanent": "0",
         "BigTexture": "MainBoy04",
         "SmallTexture": "SMainBoy07",
-        "PreviewTexture": "MainBoy04",
+        "PreviewTexture": "LowerMale02",
         "SkinId": "1"
     },
     {
@@ -69,7 +69,7 @@
         "PriceDiamondPermanent": "0",
         "BigTexture": "MainBoy04",
         "SmallTexture": "SMainBoy010",
-        "PreviewTexture": "MainBoy04",
+        "PreviewTexture": "LowerMale03",
         "SkinId": "2"
     },
     {
@@ -88,7 +88,7 @@
         "PriceDiamondPermanent": "0",
         "BigTexture": "MainBoy04",
         "SmallTexture": "MainBoy04",
-        "PreviewTexture": "MainBoy04",
+        "PreviewTexture": "LowerMale04",
         "SkinId": "0"
     },
     {
@@ -107,7 +107,7 @@
         "PriceDiamondPermanent": "0",
         "BigTexture": "MainBoy04",
         "SmallTexture": "MainBoy04",
-        "PreviewTexture": "MainBoy04",
+        "PreviewTexture": "LowerFemale01",
         "SkinId": "1"
     },
     {
@@ -126,7 +126,7 @@
         "PriceDiamondPermanent": "0",
         "BigTexture": "MainBoy04",
         "SmallTexture": "MainBoy04",
-        "PreviewTexture": "MainBoy04",
+        "PreviewTexture": "LowerFemale02",
         "SkinId": "2"
     },
     {
@@ -145,7 +145,7 @@
         "PriceDiamondPermanent": "0",
         "BigTexture": "MainBoy04",
         "SmallTexture": "MainBoy04",
-        "PreviewTexture": "MainBoy04",
+        "PreviewTexture": "LowerFemale03",
         "SkinId": "3"
     },
     {
@@ -163,6 +163,7 @@
         "PriceDiamondMonth": "0",
         "PriceDiamondPermanent": "0",
         "BigTexture": "MainBoy04",
-        "SmallTexture": "MainBoy04"
+        "SmallTexture": "MainBoy04",
+        "PreviewTexture": "LowerFemale04"
     }
 ]

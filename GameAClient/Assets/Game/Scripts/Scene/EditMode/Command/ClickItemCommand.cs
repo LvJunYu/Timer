@@ -125,7 +125,12 @@ namespace GameA.Game
 
         protected bool DoEnergy()
         {
-            _modifiedExtra.IsPlusEnergy = (byte) (_clickedExtra.IsPlusEnergy == 0 ? 1 : 0);
+            _clickedExtra.EnergyType++;
+            if (_clickedExtra.EnergyType >= (int)ESkillType.Max)
+            {
+                _clickedExtra.EnergyType = 0;
+            }
+            _modifiedExtra.EnergyType = _clickedExtra.EnergyType;
             SaveUnitExtra();
             return true;
         }

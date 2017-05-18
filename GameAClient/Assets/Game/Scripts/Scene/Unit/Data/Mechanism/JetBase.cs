@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using SoyEngine;
 
 namespace GameA.Game
 {
@@ -15,6 +16,7 @@ namespace GameA.Game
         protected SkillManager _skillManager;
         protected int _timeScale;
         protected const int AnimationLength = 15;
+        protected UnityNativeParticleItem _effect;
 
         protected override bool OnInit()
         {
@@ -36,7 +38,23 @@ namespace GameA.Game
                 return false;
             }
             InitAssetRotation();
+
+            _effect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectJetWaterRun", _trans);
+            if (_effect != null)
+            {
+                _effect.Play();
+            }
             return true;
+        }
+
+        internal override void OnObjectDestroy()
+        {
+            base.OnObjectDestroy();
+            if (_effect != null)
+            {
+                GameParticleManager.FreeParticleItem(_effect);
+                _effect = null;
+            }
         }
 
         public override void UpdateLogic()
