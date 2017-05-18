@@ -86,7 +86,7 @@ namespace GameA.Game
 
         public virtual IntVec2 GetDataSize(int rotation, Vector2 scale)
 	    {
-            if (rotation == (byte)ERotationType.Up || rotation == (byte)ERotationType.Down)
+            if (rotation == (byte)EDirectionType.Up || rotation == (byte)EDirectionType.Down)
             {
                 return new IntVec2((int) (_width * scale.x), (int) (_height * scale.y));
             }
@@ -105,7 +105,7 @@ namespace GameA.Game
 
 	    public virtual IntVec2 GetColliderSize(int rotation, Vector2 scale)
         {
-            if (rotation == (byte)ERotationType.Up || rotation == (byte)ERotationType.Down)
+            if (rotation == (byte)EDirectionType.Up || rotation == (byte)EDirectionType.Down)
             {
                 return new IntVec2((int) (_cWidth * scale.x), (int) (_cHeight * scale.y));
             }
@@ -245,17 +245,17 @@ namespace GameA.Game
 
 	    public IntVec3 RendererToCollider(IntVec3 renderIndex, int rotation)
         {
-            if (rotation == (byte)ERotationType.Up)
+            if (rotation == (byte)EDirectionType.Up)
             {
                 return new IntVec3(renderIndex.x + Offset.x, renderIndex.y + Offset.y,
                     renderIndex.z);
             }
-            if (rotation == (byte)ERotationType.Right)
+            if (rotation == (byte)EDirectionType.Right)
             {
                 return new IntVec3(renderIndex.x + Offset.y,
                     renderIndex.y + _width - Offset.x - _cWidth, renderIndex.z);
             }
-            if (rotation == (byte)ERotationType.Down)
+            if (rotation == (byte)EDirectionType.Down)
             {
                 return new IntVec3(renderIndex.x + _width - Offset.x - _cWidth,
                     renderIndex.y + _height - Offset.y - _cHeight, renderIndex.z);
@@ -266,16 +266,16 @@ namespace GameA.Game
 
         public IntVec2 RendererToCollider(IntVec2 renderIndex, int rotation)
         {
-            if (rotation == (byte)ERotationType.Up)
+            if (rotation == (byte)EDirectionType.Up)
             {
                 return new IntVec2(renderIndex.x + Offset.x, renderIndex.y + Offset.y);
             }
-            if (rotation == (byte)ERotationType.Right)
+            if (rotation == (byte)EDirectionType.Right)
             {
                 return new IntVec2(renderIndex.x + Offset.y,
                     renderIndex.y + _width - Offset.x - _cWidth);
             }
-            if (rotation == (byte)ERotationType.Down)
+            if (rotation == (byte)EDirectionType.Down)
             {
                 return new IntVec2(renderIndex.x + _width - Offset.x - _cWidth,
                     renderIndex.y + _height - Offset.y - _cHeight);
@@ -291,17 +291,17 @@ namespace GameA.Game
 
 	    public IntVec3 ColliderToRenderer(IntVec3 colliderIndex, int rotation)
         {
-            if (rotation == (byte)ERotationType.Up)
+            if (rotation == (byte)EDirectionType.Up)
             {
                 return new IntVec3(colliderIndex.x - Offset.x, colliderIndex.y - Offset.y,
                     colliderIndex.z);
             }
-            if (rotation == (byte)ERotationType.Right)
+            if (rotation == (byte)EDirectionType.Right)
             {
                 return new IntVec3(colliderIndex.x - Offset.y,
                     colliderIndex.y - _width + Offset.x + _cWidth, colliderIndex.z);
             }
-            if (rotation == (byte)ERotationType.Down)
+            if (rotation == (byte)EDirectionType.Down)
             {
                 return new IntVec3(colliderIndex.x - _width + Offset.x + _cWidth,
                     colliderIndex.y - _height + Offset.y + _cHeight, colliderIndex.z);
@@ -312,16 +312,16 @@ namespace GameA.Game
 
         public IntVec2 ColliderToRenderer(IntVec2 colliderIndex, int rotation)
         {
-            if (rotation == (byte)ERotationType.Up)
+            if (rotation == (byte)EDirectionType.Up)
             {
                 return new IntVec2(colliderIndex.x - Offset.x, colliderIndex.y - Offset.y);
             }
-            if (rotation == (byte)ERotationType.Right)
+            if (rotation == (byte)EDirectionType.Right)
             {
                 return new IntVec2(colliderIndex.x - Offset.y,
                     colliderIndex.y - _width + Offset.x + _cWidth);
             }
-            if (rotation == (byte)ERotationType.Down)
+            if (rotation == (byte)EDirectionType.Down)
             {
                 return new IntVec2(colliderIndex.x - _width + Offset.x + _cWidth,
                     colliderIndex.y - _height + Offset.y + _cHeight);

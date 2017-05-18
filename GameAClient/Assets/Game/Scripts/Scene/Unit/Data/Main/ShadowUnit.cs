@@ -16,7 +16,7 @@ namespace GameA.Game
         protected Color _color = Color.white;
 
         protected SkeletonAnimation _animation;
-        protected ERotationType RotationType;
+        protected EDirectionType DirectionType;
 
         protected int _deadFrameIdx;
         protected int _normalDeadFrameIdx;
@@ -143,16 +143,16 @@ namespace GameA.Game
             }
         }
 
-        //public override void SetFacingDir(ERotationType eRotationType)
+        //public override void SetFacingDir(EDirectionType EDirectionType)
         //{
-        //    if (RotationType == eRotationType)
+        //    if (DirectionType == EDirectionType)
         //    {
         //        return;
         //    }
         //    if (_trans == null) return;
-        //    RotationType = eRotationType;
+        //    DirectionType = EDirectionType;
         //    Vector3 euler = Trans.eulerAngles;
-        //    _trans.eulerAngles = RotationType == ERotationType.Right
+        //    _trans.eulerAngles = DirectionType == EDirectionType.Right
         //        ? new Vector3(euler.x, 0, euler.z)
         //        : new Vector3(euler.x, 180, euler.z);
         //}
@@ -175,7 +175,7 @@ namespace GameA.Game
 
         protected void UpdateRotation (float rad)
         {
-            float y = RotationType == ERotationType.Right
+            float y = DirectionType == EDirectionType.Right
                 ? 0
                 : 180;
             _trans.rotation = Quaternion.Euler(0, y, rad * Mathf.Rad2Deg);

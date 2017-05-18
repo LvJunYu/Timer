@@ -67,7 +67,7 @@ namespace SoyEngine
 			{
 				if (data.hovered.Count == 0)
 				{
-					_curDragingItem = UnitManager.Instance.GetUnit(_curSelectTable, ERotationType.Up);
+					_curDragingItem = UnitManager.Instance.GetUnit(_curSelectTable, EDirectionType.Up);
 					EditMode.Instance.SetDraggingState(true);
 				}
 			}

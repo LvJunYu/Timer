@@ -223,7 +223,7 @@ namespace GameA.Game
         {
             if (_virUnit == null)
             {
-                _virUnit = UnitManager.Instance.GetUnit(_dragTableUnit, (ERotationType)_dragUnitDesc.Rotation);
+                _virUnit = UnitManager.Instance.GetUnit(_dragTableUnit, (EDirectionType)_dragUnitDesc.Rotation);
                 EditMode.Instance.DeleteUnit(_dragUnitDesc);
                 //if (_dragUnitExtra.Child.Id > 0)
                 //{

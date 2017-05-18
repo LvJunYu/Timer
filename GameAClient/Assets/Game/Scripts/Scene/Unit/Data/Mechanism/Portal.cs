@@ -50,18 +50,18 @@ namespace GameA.Game
                 }
             }
             var speed = IntVec2.zero;
-            switch ((ERotationType)unitDesc.Rotation)
+            switch ((EDirectionType)unitDesc.Rotation)
             {
-                case ERotationType.Up:
+                case EDirectionType.Up:
                     speed.x = (pairUnit.TriggeredCnt / 2) % 2 == 0 ? 45 : -45;
                     speed.y = 165;
                     break;
-                case ERotationType.Down:
+                case EDirectionType.Down:
                     break;
-                case ERotationType.Left:
+                case EDirectionType.Left:
                     speed.x = -60;
                     break;
-                case ERotationType.Right:
+                case EDirectionType.Right:
                     speed.x = 60;
                     break;
             }
@@ -74,7 +74,7 @@ namespace GameA.Game
         {
             if (!checkOnly)
             {
-                if (other.SpeedY <= 0 && Rotation == (int)ERotationType.Up)
+                if (other.SpeedY <= 0 && Rotation == (int)EDirectionType.Up)
                 {
                     OnTrigger(other);
                 }
@@ -86,7 +86,7 @@ namespace GameA.Game
         {
             if (!checkOnly)
             {
-                if (other.SpeedY > 0 && Rotation == (int)ERotationType.Down)
+                if (other.SpeedY > 0 && Rotation == (int)EDirectionType.Down)
                 {
                     OnTrigger(other);
                 }
@@ -98,7 +98,7 @@ namespace GameA.Game
         {
             if (!checkOnly)
             {
-                if (Rotation == (int)ERotationType.Left)
+                if (Rotation == (int)EDirectionType.Left)
                 {
                     OnTrigger(other);
                 }
@@ -110,7 +110,7 @@ namespace GameA.Game
         {
             if (!checkOnly)
             {
-                if (Rotation == (int)ERotationType.Right)
+                if (Rotation == (int)EDirectionType.Right)
                 {
                     OnTrigger(other);
                 }

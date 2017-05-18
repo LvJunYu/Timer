@@ -18,14 +18,6 @@ namespace GameA.Game
         Left,
     }
 
-    public enum ERotationType : byte
-    {
-        Up,
-        Right,
-        Down,
-        Left,
-    }
-
     public enum EShootDirectionType
     {
         Up = 0,

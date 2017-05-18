@@ -310,16 +310,16 @@ namespace GameA.Game
             }
             Vector2 res = Vector2.zero;
             Vector2 size = GM2DTools.TileToWorld(_unit.GetDataSize() * 0.5f);
-            switch ((ERotationType)_unit.Rotation)
+            switch ((EDirectionType)_unit.Rotation)
             {
-                case ERotationType.Right:
+                case EDirectionType.Right:
                     res.x = -size.x;
                     res.y = size.y;
                     break;
-                case ERotationType.Down:
+                case EDirectionType.Down:
                     res.y = size.y * 2;
                     break;
-                case ERotationType.Left:
+                case EDirectionType.Left:
                     res.x = size.x;
                     res.y = size.y;
                     break;

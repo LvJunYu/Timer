@@ -174,7 +174,7 @@ namespace GameA.Game
             return (int)ESortingOrder.Item;
         }
 
-        public UnitBase GetUnit(Table_Unit tableUnit, ERotationType dir)
+        public UnitBase GetUnit(Table_Unit tableUnit, EDirectionType dir)
         {
             UnitBase unit = GetUnit(tableUnit.Id);
             if (unit == null)
