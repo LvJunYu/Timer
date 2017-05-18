@@ -772,8 +772,12 @@ namespace GameA.Game
         public virtual void UpdateExtraData()
         {
             _curMoveDirection = _moveDirection = DataScene2D.Instance.GetUnitExtra(_guid).MoveDirection;
-            if (null != _view)
+            if (_view != null)
             {
+                if (IsHero)
+                {
+                    SetFacingDir(_curMoveDirection, true);
+                }
                 _view.UpdateSign();
             }
         }
@@ -1237,7 +1241,7 @@ namespace GameA.Game
                 return;
             }
             _curMoveDirection = eMoveDirection;
-            if (_trans != null && _curMoveDirection != EMoveDirection.None && (_isMonster || IsMain))
+            if (_trans != null && _curMoveDirection != EMoveDirection.None && IsHero)
             {
                 Vector3 euler = _trans.eulerAngles;
                 _trans.eulerAngles = _curMoveDirection != EMoveDirection.Right ? new Vector3(euler.x, 180, euler.z) : new Vector3(euler.x, 0, euler.z);

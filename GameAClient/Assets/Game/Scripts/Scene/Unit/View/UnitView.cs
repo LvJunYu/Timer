@@ -256,22 +256,17 @@ namespace GameA.Game
 
                 if (_unit.MoveDirection != EMoveDirection.None || tableUnit.Id == ConstDefineGM2D.RollerId)
                 {
-                    float y = 0;
-                    if (_unit.IsMonster)
-                    {
-                        y = _unit.MoveDirection != EMoveDirection.Right ? 180 : 0;
-                    }
                     if (tableUnit.Id == ConstDefineGM2D.RollerId)
                     {
                         var rollerUnit = _unit as Roller;
                         if (rollerUnit != null)
                         {
-                            _dirTrans.localEulerAngles = new Vector3(0, y, GetRotation((byte)(rollerUnit.RollerDirection - 1)));
+                            _dirTrans.localEulerAngles = new Vector3(0, 0, GetRotation((byte)(rollerUnit.RollerDirection - 1)));
                         }
                     }
                     else
                     {
-                        _dirTrans.localEulerAngles = new Vector3(0, y, GetRotation((byte)(_unit.MoveDirection - 1)));
+                        _dirTrans.localEulerAngles = new Vector3(0, 0, GetRotation((byte)(_unit.MoveDirection - 1)));
                     }
                 }
             }
