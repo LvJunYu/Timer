@@ -68,14 +68,14 @@ namespace GameA.Game
             _lazerEffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazer", _trans);
             if (_lazerEffect != null)
             {
-                _lazerEffect.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z - 0.1f);
+                _lazerEffect.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z + 0.1f);
                 _lazerEffect.Trans.localEulerAngles = new Vector3(0, 0, Rotation * -90);
             }
 
             _lazerEffectEnd = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazerStart", _trans);
             if (_lazerEffectEnd != null)
             {
-                _lazerEffectEnd.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z - 0.1f);
+                _lazerEffectEnd.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z + 0.1f);
                 _lazerEffectEnd.Trans.localEulerAngles = new Vector3(0, 0, Rotation * -90);
             }
 
@@ -181,13 +181,19 @@ namespace GameA.Game
                     }
                 }
             }
+            UpdateEffect();
+            _gridCheck.After();
+        }
+
+        private void UpdateEffect()
+        {
             if (_lazerEffect != null)
             {
-                var distanceWorld = (float) _distance/ConstDefineGM2D.ServerTileScale;
-                var pos = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z - 0.1f);
+                var distanceWorld = (float)_distance / ConstDefineGM2D.ServerTileScale;
+                var pos = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z + 0.1f);
                 _lazerEffect.Play();
                 _lazerEffect.Trans.position = pos;
-                _lazerEffect.Trans.localScale = new Vector3(distanceWorld, 1, 1);
+                _lazerEffect.Trans.localScale = new Vector3(1, distanceWorld, 1);
                 if (_lazerEffectEnd != null)
                 {
                     _lazerEffectEnd.Play();
@@ -208,7 +214,6 @@ namespace GameA.Game
                     }
                 }
             }
-            _gridCheck.After();
         }
 
         protected bool IsSameDirectionSwitchTrigger(SceneNode node)
