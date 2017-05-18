@@ -369,7 +369,7 @@ namespace GameA.Game
 
         private bool CheckCanDelete(Table_Unit tableUnit)
         {
-            if (tableUnit.EUnitType == EUnitType.MainPlayer || tableUnit.Id == 65535 || UnitDefine.Instance.IsSwitch(tableUnit.Id))
+            if (tableUnit.EUnitType == EUnitType.MainPlayer || tableUnit.Id == 65535 || UnitDefine.IsSwitch(tableUnit.Id))
             {
                 return false;
             }

@@ -55,7 +55,7 @@ namespace GameA.Game
             if (idx >= _cachedConnectedGUIDs.Count)
                 return;
             bool success = false;
-            if (UnitDefine.Instance.IsSwitch (_currentSelectedUnitOnSwitchMode.Id)) {
+            if (UnitDefine.IsSwitch (_currentSelectedUnitOnSwitchMode.Id)) {
                 success = DataScene2D.Instance.UnbindSwitch (_currentSelectedUnitOnSwitchMode.Guid, _cachedConnectedGUIDs[idx]);
             } else {
                 success = DataScene2D.Instance.UnbindSwitch (_cachedConnectedGUIDs [idx], _currentSelectedUnitOnSwitchMode.Guid);
@@ -102,7 +102,7 @@ namespace GameA.Game
                     return;
                 }
                 _cachedConnectedGUIDs.Clear ();
-                bool isFromSwitch = UnitDefine.Instance.IsSwitch (_currentSelectedUnitOnSwitchMode.Id);
+                bool isFromSwitch = UnitDefine.IsSwitch (_currentSelectedUnitOnSwitchMode.Id);
                 if (isFromSwitch) {
                     
                     List<UnitBase> controlledUnits = DataScene2D.Instance.GetControlledUnits (_currentSelectedUnitOnSwitchMode.Guid);
@@ -126,7 +126,7 @@ namespace GameA.Game
         }
 
         private void UpdateEffectsOnSwitchMode () {
-            bool isFromSwitch = UnitDefine.Instance.IsSwitch (_currentSelectedUnitOnSwitchMode.Id);
+            bool isFromSwitch = UnitDefine.IsSwitch (_currentSelectedUnitOnSwitchMode.Id);
             List<Vector3> lineCenterPoses = new List<Vector3> ();
             int cnt = 0;
             for (; cnt < _cachedConnectedGUIDs.Count; cnt++) {
@@ -152,7 +152,7 @@ namespace GameA.Game
             var itor = ColliderScene2D.Instance.Units.GetEnumerator();
             while (itor.MoveNext()) {
                 if (null != itor.Current.Value && null != itor.Current.Value.View) {
-                    if (!UnitDefine.Instance.IsSwitch (itor.Current.Value.Id) &&
+                    if (!UnitDefine.IsSwitch (itor.Current.Value.Id) &&
                         !itor.Current.Value.CanControlledBySwitch) {
                         itor.Current.Value.View.SetRendererColor (SwitchModeUnitMaskColor);
                     } else {

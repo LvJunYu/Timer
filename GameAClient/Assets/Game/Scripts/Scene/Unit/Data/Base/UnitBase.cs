@@ -878,22 +878,22 @@ namespace GameA.Game
             byte neighborDir = 0;
             UnitBase upUnit, downUnit, leftUnit, rightUnit;
             var units = ColliderScene2D.Instance.Units;
-            if (units.TryGetValue(keys[0], out upUnit) && (upUnit.Id == id || UnitDefine.Instance.IsFakePart(upUnit.Id, id))&& upUnit.View != null)
+            if (units.TryGetValue(keys[0], out upUnit) && (upUnit.Id == id || UnitDefine.IsFakePart(upUnit.Id, id))&& upUnit.View != null)
             {
                 neighborDir = (byte) (neighborDir | (byte) ENeighborDir.Up);
                 upUnit.View.OnNeighborDirChanged(ENeighborDir.Down, add);
             }
-            if (units.TryGetValue(keys[1], out rightUnit) && (rightUnit.Id == id || UnitDefine.Instance.IsFakePart(rightUnit.Id, id)) && rightUnit.View != null)
+            if (units.TryGetValue(keys[1], out rightUnit) && (rightUnit.Id == id || UnitDefine.IsFakePart(rightUnit.Id, id)) && rightUnit.View != null)
             {
                 neighborDir = (byte) (neighborDir | (byte) ENeighborDir.Right);
                 rightUnit.View.OnNeighborDirChanged(ENeighborDir.Left, add);
             }
-            if (units.TryGetValue(keys[2], out downUnit) && (downUnit.Id == id || UnitDefine.Instance.IsFakePart(downUnit.Id, id)) && downUnit.View != null)
+            if (units.TryGetValue(keys[2], out downUnit) && (downUnit.Id == id || UnitDefine.IsFakePart(downUnit.Id, id)) && downUnit.View != null)
             {
                 neighborDir = (byte) (neighborDir | (byte) ENeighborDir.Down);
                 downUnit.View.OnNeighborDirChanged(ENeighborDir.Up, add);
             }
-            if (units.TryGetValue(keys[3], out leftUnit) && (leftUnit.Id == id || UnitDefine.Instance.IsFakePart(leftUnit.Id, id)) && leftUnit.View != null)
+            if (units.TryGetValue(keys[3], out leftUnit) && (leftUnit.Id == id || UnitDefine.IsFakePart(leftUnit.Id, id)) && leftUnit.View != null)
             {
                 neighborDir = (byte) (neighborDir | (byte) ENeighborDir.Left);
                 leftUnit.View.OnNeighborDirChanged(ENeighborDir.Right, add);

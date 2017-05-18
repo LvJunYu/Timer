@@ -238,16 +238,20 @@ namespace GameA.Game
                 }
             }
             //pair个数不能超过
-            //if (tableUnit.EPairType > 0)
-            //{
-            //    PairUnit pairUnit;
-            //    if (!PairUnitManager.Instance.TryGetNotFullPairUnit(tableUnit.EPairType, out pairUnit))
-            //    {
-            //        Messenger<string>.Broadcast(EMessengerType.GameLog,
-            //            string.Format("超过{0}的最大数量，不可放置喔~", tableUnit.Name));
-            //        return false;
-            //    }
-            //}
+            if (tableUnit.EPairType > 0)
+            {
+                PairUnit pairUnit;
+                if (!PairUnitManager.Instance.TryGetNotFullPairUnit(tableUnit.EPairType, out pairUnit))
+                {
+                    Messenger<string>.Broadcast(EMessengerType.GameLog,
+                        string.Format("超过{0}的最大数量，不可放置喔~", tableUnit.Name));
+                    return false;
+                }
+            }
+            //花草树只能放在泥土上。
+            if (UnitDefine.IsPlant(tableUnit.Id))
+            {
+            }
             return true;
         }
 
@@ -698,7 +702,7 @@ namespace GameA.Game
                 UnitDesc outValue2;
                 if (TryGetSelectedObject(Input.mousePosition, out outValue2))
                 {
-                    if (UnitDefine.Instance.IsSwitch (outValue2.Id)) {
+                    if (UnitDefine.IsSwitch (outValue2.Id)) {
                         _currentCommand = new SwitchClickItemCommand (outValue2, gesture.position);
                     } else {
 //                        Vector3 mouseWorldPos = GM2DTools.ScreenToWorldPoint(Input.mousePosition);

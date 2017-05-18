@@ -12,23 +12,26 @@ namespace GameA.Game
 {
     public class UnitDefine
     {
-        public static UnitDefine _instance;
-
-        public static UnitDefine Instance
-        {
-            get { return _instance??(_instance = new UnitDefine()); }
-        }
-
         public const int SwitchTriggerId = 5100;
 
-        public bool IsSwitch(int id)
+        public static bool IsSwitch(int id)
         {
             return id >= 5101 && id <= 5200;
         }
 
-        public bool IsFakePart(int one, int other)
+        public static bool IsFakePart(int one, int other)
         {
             return (one == 4001 && other == 4013) || (one == 4013 && other == 4001);
+        }
+
+        public static bool IsEarth(int id)
+        {
+            return id == 4001 || id == 4002;
+        }
+
+        public static bool IsPlant(int id)
+        {
+            return id == 7002 || id == 7003 || id == 7004;
         }
     }
 }

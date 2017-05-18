@@ -73,7 +73,7 @@ namespace GameA.Game
                         origPos.z = -60f;
                         origPos.x += MaskEffectOffset.x;
                         origPos.y += MaskEffectOffset.y;
-                        if (UnitDefine.Instance.IsSwitch (_dragUnitDesc.Id)) {
+                        if (UnitDefine.IsSwitch (_dragUnitDesc.Id)) {
                             sc.Init (origPos, targetPos);
                         } else {
                             sc.Init (targetPos, origPos);
@@ -103,7 +103,7 @@ namespace GameA.Game
                         if (coverUnits.Count == 0) {
                             _pushFlag = false;
                         } else {
-                            if (UnitDefine.Instance.IsSwitch(_dragUnitDesc.Id)) {
+                            if (UnitDefine.IsSwitch(_dragUnitDesc.Id)) {
                                 
                                 UnitBase unit;
                                 if (ColliderScene2D.Instance.TryGetUnit (coverUnits [0].Guid, out unit)) {
@@ -117,7 +117,7 @@ namespace GameA.Game
                                     _pushFlag = false;
                                 }
                             } else {
-                                if (!UnitDefine.Instance.IsSwitch (coverUnits [0].Id)) {
+                                if (!UnitDefine.IsSwitch (coverUnits [0].Id)) {
                                     _pushFlag = false;
                                 } else {
                                     EditMode.Instance.AddSwitchConnection (coverUnits [0].Guid, _dragUnitDesc.Guid);

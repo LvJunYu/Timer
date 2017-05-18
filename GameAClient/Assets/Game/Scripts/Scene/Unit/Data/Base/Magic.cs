@@ -29,13 +29,25 @@ namespace GameA.Game
             get { return UseMagic(); }
         }
 
+        public override void UpdateExtraData()
+        {
+            base.UpdateExtraData();
+            InitSpeed();
+        }
+
         protected override void Clear()
         {
             base.Clear();
             _run = true;
             _magicRotate = null;
+            InitSpeed();
+        }
+
+        protected void InitSpeed()
+        {
             if (!IsHero && _curMoveDirection != EMoveDirection.None)
             {
+                Speed = IntVec2.zero;
                 _timerMagic = 0;
                 _velocity = 20;
                 switch (_curMoveDirection)
