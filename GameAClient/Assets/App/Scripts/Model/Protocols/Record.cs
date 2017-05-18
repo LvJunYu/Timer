@@ -1,4 +1,4 @@
-// 工坊关卡 | 工坊关卡
+// 录像 | 录像
 using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
@@ -10,9 +10,21 @@ namespace GameA
         #region 字段
         // sc fields----------------------------------
         /// <summary>
+        /// 
+        /// </summary>
+        private long _recordId;
+        /// <summary>
+        /// 
+        /// </summary>
+        private long _projectId;
+        /// <summary>
         /// 作者
         /// </summary>
         private UserInfoSimple _userInfo;
+        /// <summary>
+        /// 
+        /// </summary>
+        private int _score;
         /// <summary>
         /// 
         /// </summary>
@@ -25,14 +37,6 @@ namespace GameA
         /// 
         /// </summary>
         private string _recordPath;
-        /// <summary>
-        /// 
-        /// </summary>
-        private long _recordId;
-        /// <summary>
-        /// 
-        /// </summary>
-        private long _projectId;
         /// <summary>
         /// 
         /// </summary>
@@ -92,12 +96,42 @@ namespace GameA
         #region 属性
         // sc properties----------------------------------
         /// <summary>
+        /// 
+        /// </summary>
+        public long RecordId { 
+            get { return _recordId; }
+            set { if (_recordId != value) {
+                _recordId = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public long ProjectId { 
+            get { return _projectId; }
+            set { if (_projectId != value) {
+                _projectId = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
         /// 作者
         /// </summary>
         public UserInfoSimple UserInfo { 
             get { return _userInfo; }
             set { if (_userInfo != value) {
                 _userInfo = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int Score { 
+            get { return _score; }
+            set { if (_score != value) {
+                _score = value;
                 SetDirty();
             }}
         }
@@ -128,26 +162,6 @@ namespace GameA
             get { return _recordPath; }
             set { if (_recordPath != value) {
                 _recordPath = value;
-                SetDirty();
-            }}
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        public long RecordId { 
-            get { return _recordId; }
-            set { if (_recordId != value) {
-                _recordId = value;
-                SetDirty();
-            }}
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        public long ProjectId { 
-            get { return _projectId; }
-            set { if (_projectId != value) {
-                _projectId = value;
                 SetDirty();
             }}
         }
@@ -296,7 +310,7 @@ namespace GameA
 
         #region 方法
         /// <summary>
-		/// 工坊关卡
+		/// 录像
 		/// </summary>
 		/// <param name="recordId">Id.</param>
         public void Request (
@@ -329,16 +343,17 @@ namespace GameA
         public bool OnSync (Msg_SC_DAT_Record msg)
         {
             if (null == msg) return false;
+            _recordId = msg.RecordId;           
+            _projectId = msg.ProjectId;           
             if (null == _userInfo) {
                 _userInfo = new UserInfoSimple(msg.UserInfo);
             } else {
                 _userInfo.OnSyncFromParent(msg.UserInfo);
             }
+            _score = msg.Score;           
             _usedTime = msg.UsedTime;           
             _createTime = msg.CreateTime;           
             _recordPath = msg.RecordPath;           
-            _recordId = msg.RecordId;           
-            _projectId = msg.ProjectId;           
             _result = msg.Result;           
             _playCount = msg.PlayCount;           
             _lastPlayTime = msg.LastPlayTime;           

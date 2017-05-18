@@ -74,6 +74,17 @@ namespace GameA
 
 
         private void OnEnergyPlusBtn () {
+            if (AppData.Instance.AdventureData.UserData.UserEnergyData.Energy >=
+                AppData.Instance.AdventureData.UserData.UserEnergyData.EnergyCapacity) {
+                SocialGUIManager.ShowPopupDialog (
+                    "体力已经满了",
+                    null,
+                    new KeyValuePair<string, Action> (
+                        "确定", null)
+                );
+            } else {
+                SocialGUIManager.Instance.OpenPopupUI<UICtrlBuyEnergy> ();
+            }
         }
         private void OnGoldPlusBtn () {
         }
@@ -83,7 +94,7 @@ namespace GameA
         private void OnEnergyChanged () {
             if (!IsOpen)
                 return;
-            AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh ();
+            AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh (false);
             int currentEnergy = AppData.Instance.AdventureData.UserData.UserEnergyData.Energy;
             int energyCapacity = AppData.Instance.AdventureData.UserData.UserEnergyData.EnergyCapacity;
             _cachedView.EnergyNumber.text = string.Format("{0} / {1}",

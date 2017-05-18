@@ -26,10 +26,12 @@ namespace GameA
 		/// <summary>
 		/// 客户端刷新当前体力信息
 		/// </summary>
-		public void LocalRefresh () {
+		public void LocalRefresh (bool broadcastMsg = true) {
 			long now = DateTimeUtil.GetServerTimeNowTimestampMillis ();
 			if (_energy >= _energyCapacity) {
 				EnergyLastRefreshTime = now;
+                if (broadcastMsg)
+                    Messenger.Broadcast (EMessengerType.OnEnergyChanged);
 				return;
 			}
 			long passedTime = now - EnergyLastRefreshTime;
@@ -41,8 +43,9 @@ namespace GameA
 					EnergyLastRefreshTime = now;
 					Energy = _energyCapacity;
 				}
+            }
+            if (broadcastMsg)
                 Messenger.Broadcast (EMessengerType.OnEnergyChanged);
-			}
 		}
 
         protected override void OnSyncPartial ()

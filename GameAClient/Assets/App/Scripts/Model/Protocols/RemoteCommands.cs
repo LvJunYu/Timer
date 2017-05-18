@@ -387,11 +387,21 @@ namespace GameA
 		/// <param name="success"></param>
 		/// <param name="deadPos"></param>
 		/// <param name="usedTime"></param>
+		/// <param name="score">最终得分</param>
+		/// <param name="scoreItemCount">奖分道具数</param>
+		/// <param name="killMonsterCount">击杀怪物数</param>
+		/// <param name="leftTime">剩余时间数</param>
+		/// <param name="leftLife">剩余生命</param>
         public static void CommitWorldProjectResult (
             long token,
             bool success,
             byte[] deadPos,
             float usedTime,
+            int score,
+            int scoreItemCount,
+            int killMonsterCount,
+            int leftTime,
+            int leftLife,
             Action<Msg_SC_CMD_CommitWorldProjectResult> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -405,6 +415,11 @@ namespace GameA
             msg.Success = success;
             msg.DeadPos = deadPos;
             msg.UsedTime = usedTime;
+            msg.Score = score;
+            msg.ScoreItemCount = scoreItemCount;
+            msg.KillMonsterCount = killMonsterCount;
+            msg.LeftTime = leftTime;
+            msg.LeftLife = leftLife;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CommitWorldProjectResult>(
                 SoyHttpApiPath.CommitWorldProjectResult, msg, ret => {
                     if (successCallback != null) {
@@ -577,6 +592,43 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingDeleteWorldProjectFavorite = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingBuyEnergy {
+            get { return _isRequstingBuyEnergy; }
+        }
+        private static bool _isRequstingBuyEnergy = false;
+        /// <summary>
+		/// 购买体力
+		/// </summary>
+		/// <param name="energy">购买数量</param>
+        public static void BuyEnergy (
+            int energy,
+            Action<Msg_SC_CMD_BuyEnergy> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingBuyEnergy) {
+                return;
+            }
+            _isRequstingBuyEnergy = true;
+            Msg_CS_CMD_BuyEnergy msg = new Msg_CS_CMD_BuyEnergy();
+            // 购买体力
+            msg.Energy = energy;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_BuyEnergy>(
+                SoyHttpApiPath.BuyEnergy, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingBuyEnergy = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "BuyEnergy", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingBuyEnergy = false;
                 },
                 form
             );
