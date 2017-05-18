@@ -112,9 +112,9 @@ namespace GameA.Game
         public const string PandaSoulSEPrefabName = "M2PandaSoul";
         public const string M1EffectSoul = "M1EffectSoul";
         public const string PortalingEffect = "M1EffectPortaling";
-        public const string MarioLazerParticle = "M1HuiJu";
+        public const string M1EffectAlertLazerPoint = "M1EffectAlertLazerPoint";
         public const string M1LazerEffect1 = "M1LazerEffect1";
-        public const string M1LazerEffect3 = "M1LazerEffect3";
+        public const string M1LazerEffect2 = "M1LazerEffect2";
         // 主角无敌时长
         public const float HeroInvincibleTime = 2.03125f;
         // 主角无敌效果id

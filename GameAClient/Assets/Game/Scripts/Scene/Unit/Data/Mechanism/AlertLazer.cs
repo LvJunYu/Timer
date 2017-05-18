@@ -141,7 +141,7 @@ namespace GameA.Game
                     {
                         if (_lazerEffect2 == null)
                         {
-                            _lazerEffect2 = new LazerEffect(this, ConstDefineGM2D.M1LazerEffect3);
+                            _lazerEffect2 = new LazerEffect(this, ConstDefineGM2D.M1LazerEffect2);
                         }
                         _lazerEffect2.Update((float)distance / ConstDefineGM2D.ServerTileScale);
                         if (hits.Count > 0)
@@ -181,7 +181,8 @@ namespace GameA.Game
                 }
                 if (_effect == null)
                 {
-                    _effect = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.MarioLazerParticle, _trans);
+                    _effect = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectAlertLazerPoint, _trans);
+                    _effect.Trans.position += Vector3.back*0.1f;
                 }
                 _effect.Play();
             }
@@ -230,13 +231,13 @@ namespace GameA.Game
             _trans = go.transform;
             IntVec2 pointA = IntVec2.zero, pointB = IntVec2.zero;
             GM2DTools.GetBorderPoint(lazerUnit.ColliderGrid, (EDirectionType) lazerUnit.Rotation, ref pointA, ref pointB);
-            _trans.position = GM2DTools.TileToWorld((pointA + pointB) / 2);
+            _trans.position = GM2DTools.TileToWorld((pointA + pointB)/2, lazerUnit.Trans.position.z - 0.1f);
             _trans.SetParent(lazerUnit.Trans);
             go.AddComponent<MeshFilter>().sharedMesh = Mesh;
             _renderer = go.AddComponent<MeshRenderer>();
             _renderer.sharedMaterial = new Material(Shader.Find("Mobile/Particles/Alpha Blended"));
             _renderer.sharedMaterial.mainTexture = texture;
-            _renderer.sortingOrder = (int)ESortingOrder.LazerEffect;
+            _renderer.sortingOrder = (int)ESortingOrder.Item;
             _trans.eulerAngles = new Vector3(0, 0, lazerUnit.Rotation * -90);
         }
 
