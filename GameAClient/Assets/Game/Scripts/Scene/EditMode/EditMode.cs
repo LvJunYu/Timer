@@ -251,6 +251,18 @@ namespace GameA.Game
             //花草树只能放在泥土上。
             if (UnitDefine.IsPlant(tableUnit.Id))
             {
+                var downGuid = new IntVec3(unitDesc.Guid.x, unitDesc.Guid.y - ConstDefineGM2D.ServerTileScale, unitDesc.Guid.z);
+                UnitBase downUnit;
+                if (!ColliderScene2D.Instance.TryGetUnit(downGuid, out downUnit))
+                {
+                    Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("{0}只可种植在泥土上~", tableUnit.Name));
+                    return false;
+                }
+                if (!UnitDefine.IsEarth(downUnit.Id))
+                {
+                    Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("{0}只可种植在泥土上~", tableUnit.Name));
+                    return false;
+                }
             }
             return true;
         }
