@@ -64,7 +64,13 @@ namespace SoyEngine
         public const string DeleteWorldProjectFavorite = "/world/deleteProjectFavorite";
         // 用户收藏的关卡
         public const string UserFavoriteWorldProjectList = "/world/getUserFavoriteProjectList";
-        // 工坊关卡
+        // 最近玩过
+        public const string UserWorldProjectPlayHistoryList = "/world/getUserProjectPlayHistoryList";
+        // 最近录像
+        public const string WorldProjectRecentRecordList = "/world/getProjectRecentRecordList";
+        // 高分排行榜
+        public const string WorldProjectRecordRankList = "/world/getProjectRecordRankList";
+        // 录像
         public const string Record = "/record/get";
         // 冒险模式关卡列表
         public const string AdventureProjectList = "/adventure/getProjectList";
@@ -76,6 +82,8 @@ namespace SoyEngine
         public const string AdventureUserSection = "/adventure/getUserSectionData";
         // 获取体力数据
         public const string UserEnergy = "/adventure/getUserEnergyData";
+        // 购买体力
+        public const string BuyEnergy = "/adventure/buyEnergy";
         // 冒险模式用户数据
         public const string AdventureUserData = "/adventure/getUserData";
         // 进入冒险关卡

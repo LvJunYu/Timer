@@ -9,15 +9,22 @@ using System.Collections.Generic;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup (EUIAutoSetupType.Add)]
     public class UICtrlReward : UISocialCtrlBase<UIViewReward>
     {
+        public enum ERewardType {
+            Reward,
+            Unlock,
+            Ability,
+        }
         #region Fields
         /// <summary>
         /// 奖励界面关闭锁定的时间，打开界面后，这个时间内不能关闭
         /// </summary>
         private const float _closeTime = 1f;
         private float _closeTimer;
+
+        private ERewardType _openType;
         #endregion
 
         #region Properties
@@ -30,7 +37,31 @@ namespace GameA
             _closeTimer = 1f;
             _cachedView.Tip.gameObject.SetActive (false);
 
-//            RefreshView ();
+            _openType = (ERewardType)parameter;
+            if (ERewardType.Reward == _openType) {
+                _cachedView.RewardLight.gameObject.SetActive (true);
+                _cachedView.UnlockLight.gameObject.SetActive (false);
+                _cachedView.AbilityLight.gameObject.SetActive (false);
+                _cachedView.RewardItemTitle.gameObject.SetActive ((true));
+                _cachedView.UnlockSystemTitle.gameObject.SetActive ((false));
+                _cachedView.UnlockAbilityTitle.gameObject.SetActive ((false));
+            }
+            if (ERewardType.Unlock == _openType) {
+                _cachedView.RewardLight.gameObject.SetActive (false);
+                _cachedView.UnlockLight.gameObject.SetActive (true);
+                _cachedView.AbilityLight.gameObject.SetActive (false);
+                _cachedView.RewardItemTitle.gameObject.SetActive ((false));
+                _cachedView.UnlockSystemTitle.gameObject.SetActive ((true));
+                _cachedView.UnlockAbilityTitle.gameObject.SetActive ((false));
+            }
+            if (ERewardType.Ability == _openType) {
+                _cachedView.RewardLight.gameObject.SetActive (false);
+                _cachedView.UnlockLight.gameObject.SetActive (false);
+                _cachedView.AbilityLight.gameObject.SetActive (true);
+                _cachedView.RewardItemTitle.gameObject.SetActive ((false));
+                _cachedView.UnlockSystemTitle.gameObject.SetActive ((false));
+                _cachedView.UnlockAbilityTitle.gameObject.SetActive ((true));
+            }
         }
         
         protected override void OnClose() {
@@ -57,8 +88,12 @@ namespace GameA
             if (_closeTimer < 0 && _cachedView.Tip.gameObject.activeSelf == false) {
                 _cachedView.Tip.gameObject.SetActive(true);
             }
-
-            _cachedView.BgLight.transform.localRotation = Quaternion.Euler(0,0,Time.realtimeSinceStartup * 20f);
+            if (ERewardType.Reward == _openType) 
+                _cachedView.RewardLight.transform.localRotation = Quaternion.Euler(0,0,Time.realtimeSinceStartup * 20f);
+            if (ERewardType.Unlock == _openType)
+                _cachedView.UnlockLight.transform.localRotation = Quaternion.Euler (0, 0, Time.realtimeSinceStartup * 20f);
+            if (ERewardType.Ability == _openType)
+                _cachedView.AbilityLight.transform.localRotation = Quaternion.Euler (0, 0, Time.realtimeSinceStartup * 20f);
         }
         
         protected override void InitGroupId()
@@ -66,20 +101,28 @@ namespace GameA
             _groupId = (int)EUIGroupType.PopUpUI;
         }
 
-        private void RefreshView () {
-//            ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _project.IconPath, _cachedView.DefaultCover);
-//            _cachedView.ProjectTitle.text = _project.Name;
-//            _cachedView.ProjectDesc.text = _project.Summary;
-//            _cachedView.AuthorName.text = _project.UserInfo.NickName;
-//            ImageResourceManager.Instance.SetDynamicImage(_cachedView.AuthorImg, 
-//                _project.UserInfo.HeadImgUrl,
-//                _cachedView.DefaultHeadImg);
-//
-//            _cachedView.ServedPlayerCnt.text = _project.ExtendData.PlayCount.ToString();
-//            _cachedView.LikedPlayerCnt.text = _project.ExtendData.LikeCount.ToString();
-//            _cachedView.PassRate.text = string.Format ("{0:F1}%", _project.PassRate);
+        public void SetRewards (IntVec3[] rewards) {
+            int i = 0;
+            for (; i < rewards.Length && i < _cachedView.ItemList.Length; i++) {
+                _cachedView.ItemList [i].gameObject.SetActive (true);
+            }
+
+            for (; i < _cachedView.ItemList.Length; i++) {
+                _cachedView.ItemList [i].gameObject.SetActive (false);
+            }
         }
 
+        public void SetUnlockSystem (int systemCode) {
+            for (int i = 1; i < _cachedView.ItemList.Length; i++) {
+                _cachedView.ItemList [i].gameObject.SetActive (false);
+            }
+        }
+
+        public void SetAbility (int abilityCode) {
+            for (int i = 1; i < _cachedView.ItemList.Length; i++) {
+                _cachedView.ItemList [i].gameObject.SetActive (false);
+            }
+        }
 
         private void OnBGBtn () {
             if (_closeTimer < 0) {

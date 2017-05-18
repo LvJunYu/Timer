@@ -85,7 +85,8 @@ namespace GameA {
                         }
                     );
                 }
-                Messenger.Broadcast (EMessengerType.OnEnergyChanged);
+                //Messenger.Broadcast (EMessengerType.OnEnergyChanged);
+                AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh ();
                 return true;
             }
         }
@@ -125,7 +126,6 @@ namespace GameA {
                         }
                     );
                 }
-                LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond -= num;
                 Messenger.Broadcast (EMessengerType.OnDiamondChanged);
                 return true;
             }
@@ -146,7 +146,8 @@ namespace GameA {
                     }
                 );
             }
-            Messenger.Broadcast (EMessengerType.OnEnergyChanged);
+            //Messenger.Broadcast (EMessengerType.OnEnergyChanged);
+            AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh ();
         }
         public static void LocalAddGold (int num) {
             LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin += num;
@@ -194,7 +195,8 @@ namespace GameA {
                     }
                 );
             }
-            Messenger.Broadcast (EMessengerType.OnEnergyChanged);
+            //Messenger.Broadcast (EMessengerType.OnEnergyChanged);
+            AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh ();
         }
         public static void LocalSetGold (int num) {
             LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin = num;

@@ -10,8 +10,12 @@ namespace GameA
         public Image RewardItemTitle;
         public Image UnlockSystemTitle;
         public Image UnlockAbilityTitle;
-        public Image BgLight;
+        public Image RewardLight;
+        public Image UnlockLight;
+        public Image AbilityLight;
         public Text Tip;
         public Button BGBtn;
+
+        public USViewRewardItem[] ItemList;
     }
 }
