@@ -730,7 +730,7 @@ namespace GameA.Game
         /// <summary>
         /// 被电
         /// </summary>
-        public virtual void OnLight()
+        public virtual void OnLazer()
         {
         }
 

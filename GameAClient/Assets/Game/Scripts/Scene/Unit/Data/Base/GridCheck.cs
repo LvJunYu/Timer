@@ -29,6 +29,12 @@ namespace GameA.Game
             _isStay = false;
         }
 
+        public void Clear()
+        {
+            _hit = null;
+            _isStay = false;
+        }
+
         public void Before()
         {
             _isStay = false;

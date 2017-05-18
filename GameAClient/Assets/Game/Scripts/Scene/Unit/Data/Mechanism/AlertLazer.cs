@@ -18,13 +18,13 @@ namespace GameA.Game
     {
         protected IntVec2 _pointA;
         protected IntVec2 _pointB;
-
-        protected int _timerMagic;
+        protected GridCheck _gridCheck;
+        protected int _timer;
         protected bool _shoot = true;
+
         protected UnityNativeParticleItem _effect;
         protected LazerEffect _lazerEffect1;
         protected LazerEffect _lazerEffect2;
-        protected GridCheck _gridCheck;
 
         protected override bool OnInit()
         {
@@ -32,7 +32,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            GM2DTools.GetBorderPoint(_colliderGrid, (EDirectionType)Rotation, ref _pointA, ref _pointB);
             _gridCheck = new GridCheck(this);
             return true;
         }
@@ -45,8 +44,9 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
-            _timerMagic = 0;
+            _timer = 0;
             _shoot = true;
+            _gridCheck.Clear();
             if (_effect != null)
             {
                 _effect.Stop();
@@ -83,7 +83,8 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            _timerMagic++;
+            base.UpdateLogic();
+            _timer++;
             _gridCheck.Before();
             if (_shoot)
             {
@@ -91,6 +92,7 @@ namespace GameA.Game
                 {
                     _effect.StopEmit();
                 }
+                GM2DTools.GetBorderPoint(_colliderGrid, (EDirectionType)Rotation, ref _pointA, ref _pointB);
                 var distance = GM2DTools.GetDistanceToBorder(_pointA, Rotation);
                 var hits = ColliderScene2D.GridCastAll(_pointA, _pointB, Rotation, distance, EnvManager.LazerShootLayer);
                 if (hits.Count > 0)
@@ -130,14 +132,14 @@ namespace GameA.Game
                     }
                 }
                 //显示警告
-                if (_timerMagic < 100)
+                if (_timer < 100)
                 {
                     if (_lazerEffect1 == null)
                     {
                         _lazerEffect1 = new LazerEffect(this, ConstDefineGM2D.M1LazerEffect1);
                     }
                     _lazerEffect1.Update((float)distance / ConstDefineGM2D.ServerTileScale);
-                    if (_timerMagic >= 30)
+                    if (_timer >= 30)
                     {
                         if (_lazerEffect2 == null)
                         {
@@ -154,12 +156,9 @@ namespace GameA.Game
                                     UnitBase unit;
                                     if (ColliderScene2D.Instance.TryGetUnit(hit.node, out unit))
                                     {
-                                        if (unit != null && unit.IsAlive)
+                                        if (unit != null && unit.IsAlive && unit.IsHero)
                                         {
-                                            if (unit.IsHero)
-                                            {
-                                                unit.OnLight();
-                                            }
+                                            unit.OnLazer();
                                         }
                                     }
                                 }
@@ -168,7 +167,7 @@ namespace GameA.Game
                     }
                 }
             }
-            if (_timerMagic == 100)
+            if (_timer == 100)
             {
                 _shoot = false;
                 if (_lazerEffect1 != null)
@@ -186,26 +185,26 @@ namespace GameA.Game
                 }
                 _effect.Play();
             }
-            else if (_timerMagic == 200)
+            else if (_timer == 200)
             {
                 _shoot = true;
-                _timerMagic = 0;
+                _timer = 0;
             }
             _gridCheck.After();
         }
 
-        public bool IsSameDirectionSwitchTrigger(SceneNode node)
+        protected bool IsSameDirectionSwitchTrigger(SceneNode node)
         {
             return node.Id == UnitDefine.SwitchTriggerId &&
                    (node.Rotation + Rotation == 2 || node.Rotation + Rotation == 4);
         }
 
-        private bool IsBlock(int layer)
+        protected bool IsBlock(int layer)
         {
             return ((1 << layer) & EnvManager.LazerBlockLayer) != 0;
         }
 
-        private bool IsDamage(int layer)
+        protected bool IsDamage(int layer)
         {
             return ((1 << layer) & (EnvManager.HeroLayer | EnvManager.MainPlayerLayer)) != 0;
         }

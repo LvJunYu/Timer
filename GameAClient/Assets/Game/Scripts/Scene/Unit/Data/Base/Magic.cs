@@ -19,8 +19,8 @@ namespace GameA.Game
         /// 必须可以被640整除
         /// </summary>
         protected int _velocity;
-        protected IntVec2 _pointA;
-        protected IntVec2 _pointB;
+        protected IntVec2 _pointACheck;
+        protected IntVec2 _pointBCheck;
         protected UnitBase _magicRotate;
         protected bool _run = true;
 
@@ -88,8 +88,8 @@ namespace GameA.Game
             {
                 if (Speed != IntVec2.zero)
                 {
-                    GM2DTools.GetBorderPoint(ColliderGrid, _curMoveDirection, ref _pointA, ref _pointB);
-                    var checkGrid = SceneQuery2D.GetGrid(_pointA, _pointB, (byte)(_curMoveDirection - 1), _velocity);
+                    GM2DTools.GetBorderPoint(_colliderGrid, _curMoveDirection, ref _pointACheck, ref _pointBCheck);
+                    var checkGrid = SceneQuery2D.GetGrid(_pointACheck, _pointBCheck, (byte)(_curMoveDirection - 1), _velocity);
                     if (!DataScene2D.Instance.IsInTileMap(checkGrid))
                     {
                         _timerMagic = 0;
