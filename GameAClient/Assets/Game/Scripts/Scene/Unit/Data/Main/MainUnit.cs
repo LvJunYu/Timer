@@ -526,7 +526,6 @@ namespace GameA.Game
             }
             _trans.eulerAngles = euler;
             _lastGrounded = _grounded;
-            _lastDeltaPos = _deltaPos;
         }
 
         protected virtual void CheckGround()
