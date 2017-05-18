@@ -16,9 +16,11 @@ namespace GameA.Game
     [Unit(Id = 5011, Type = typeof(AlertLazer))]
     public class AlertLazer : BlockBase
     {
-        protected IntVec2 _pointA;
-        protected IntVec2 _pointB;
         protected GridCheck _gridCheck;
+        protected Grid2D _checkGrid;
+        protected int _distance;
+        protected IntVec2 _borderCenterPoint;
+
         protected int _timer;
         protected bool _shoot = true;
 
@@ -33,7 +35,17 @@ namespace GameA.Game
                 return false;
             }
             _gridCheck = new GridCheck(this);
+            Calculate();
             return true;
+        }
+
+        private void Calculate()
+        {
+            IntVec2 pointA = IntVec2.zero, pointB = IntVec2.zero;
+            GM2DTools.GetBorderPoint(_colliderGrid, (EDirectionType)Rotation, ref pointA, ref pointB);
+            _distance = GM2DTools.GetDistanceToBorder(pointA, Rotation);
+            _checkGrid = SceneQuery2D.GetGrid(pointA, pointB, Rotation, _distance);
+            _borderCenterPoint = (pointA + pointB) / 2;
         }
 
         protected override void InitAssetPath()
@@ -88,16 +100,17 @@ namespace GameA.Game
             _gridCheck.Before();
             if (_shoot)
             {
+                if (_dynamicCollider != null)
+                {
+                    Calculate();
+                }
                 if (_effect != null)
                 {
                     _effect.StopEmit();
                 }
-                GM2DTools.GetBorderPoint(_colliderGrid, (EDirectionType)Rotation, ref _pointA, ref _pointB);
-                var distance = GM2DTools.GetDistanceToBorder(_pointA, Rotation);
-                var hits = ColliderScene2D.GridCastAll(_pointA, _pointB, Rotation, distance, EnvManager.LazerShootLayer);
+                var hits = ColliderScene2D.GridCastAll(_checkGrid, Rotation, EnvManager.LazerShootLayer);
                 if (hits.Count > 0)
                 {
-                    var grid = SceneQuery2D.GetGrid(_pointA, _pointB, Rotation, distance);
                     for (int i = 0; i < hits.Count; i++)
                     {
                         var hit = hits[i];
@@ -109,18 +122,18 @@ namespace GameA.Game
                                 if (ColliderScene2D.Instance.TryGetUnit(hit.node, out switchTrigger))
                                 {
                                     _gridCheck.Do((SwitchTrigger)switchTrigger);
-                                    distance = hit.distance + 80;
+                                    _distance = hit.distance + 80;
                                     break;
                                 }
                             }
                             bool flag = false;
-                            List<UnitBase> units = ColliderScene2D.GetUnits(hit, grid);
+                            List<UnitBase> units = ColliderScene2D.GetUnits(hit, _checkGrid);
                             for (int j = 0; j < units.Count; j++)
                             {
                                 UnitBase unit = units[j];
                                 if (unit != null && unit.IsAlive && !(unit is TransparentEarth) && GM2DTools.OnDirectionHit(unit, PlayMode.Instance.MainUnit, (EMoveDirection)(Rotation+1)))
                                 {
-                                    distance = hit.distance;
+                                    _distance = hit.distance;
                                     flag = true;
                                 }
                             }
@@ -138,20 +151,20 @@ namespace GameA.Game
                     {
                         _lazerEffect1 = new LazerEffect(this, ConstDefineGM2D.M1LazerEffect1);
                     }
-                    _lazerEffect1.Update((float)distance / ConstDefineGM2D.ServerTileScale);
+                    _lazerEffect1.Update((float)_distance / ConstDefineGM2D.ServerTileScale);
                     if (_timer >= 30)
                     {
                         if (_lazerEffect2 == null)
                         {
                             _lazerEffect2 = new LazerEffect(this, ConstDefineGM2D.M1LazerEffect2);
                         }
-                        _lazerEffect2.Update((float)distance / ConstDefineGM2D.ServerTileScale);
+                        _lazerEffect2.Update((float)_distance / ConstDefineGM2D.ServerTileScale);
                         if (hits.Count > 0)
                         {
                             for (int i = 0; i < hits.Count; i++)
                             {
                                 var hit = hits[i];
-                                if (IsDamage(hit.node.Layer) && hit.distance <= distance)
+                                if (IsDamage(hit.node.Layer) && hit.distance <= _distance)
                                 {
                                     UnitBase unit;
                                     if (ColliderScene2D.Instance.TryGetUnit(hit.node, out unit))

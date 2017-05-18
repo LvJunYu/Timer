@@ -57,26 +57,27 @@ namespace GameA.Game
             {
                 return false;
             }
+            var euler = new Vector3(0, 0, Rotation*-90);
             _effect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazerRun", _trans);
             if (_effect != null)
             {
                 _effect.Trans.position += Vector3.back * 0.1f;
-                _effect.Trans.localEulerAngles = new Vector3(0, 0, Rotation*-90);
+                _effect.Trans.localEulerAngles = euler;
                 _effect.Play();
             }
 
             _lazerEffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazer", _trans);
             if (_lazerEffect != null)
             {
-                _lazerEffect.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z + 0.1f);
-                _lazerEffect.Trans.localEulerAngles = new Vector3(0, 0, Rotation * -90);
+                _lazerEffect.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z);
+                _lazerEffect.Trans.localEulerAngles = euler;
             }
 
             _lazerEffectEnd = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazerStart", _trans);
             if (_lazerEffectEnd != null)
             {
-                _lazerEffectEnd.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z + 0.1f);
-                _lazerEffectEnd.Trans.localEulerAngles = new Vector3(0, 0, Rotation * -90);
+                _lazerEffectEnd.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z);
+                _lazerEffectEnd.Trans.localEulerAngles = euler;
             }
 
             return true;
@@ -189,14 +190,13 @@ namespace GameA.Game
         {
             if (_lazerEffect != null)
             {
-                var distanceWorld = (float)_distance / ConstDefineGM2D.ServerTileScale;
-                var pos = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z + 0.1f);
                 _lazerEffect.Play();
-                _lazerEffect.Trans.position = pos;
+                var distanceWorld = (float)_distance / ConstDefineGM2D.ServerTileScale;
                 _lazerEffect.Trans.localScale = new Vector3(1, distanceWorld, 1);
                 if (_lazerEffectEnd != null)
                 {
                     _lazerEffectEnd.Play();
+                    var pos = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z);
                     switch (Rotation)
                     {
                         case 0:
