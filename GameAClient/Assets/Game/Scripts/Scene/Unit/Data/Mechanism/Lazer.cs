@@ -76,7 +76,7 @@ namespace GameA.Game
             _lazerEffectEnd = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazerStart", _trans);
             if (_lazerEffectEnd != null)
             {
-                _lazerEffectEnd.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z);
+                _lazerEffectEnd.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z - 0.1f);
                 _lazerEffectEnd.Trans.localEulerAngles = euler;
             }
 
@@ -196,7 +196,7 @@ namespace GameA.Game
                 if (_lazerEffectEnd != null)
                 {
                     _lazerEffectEnd.Play();
-                    var pos = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z);
+                    var pos = GM2DTools.TileToWorld(_borderCenterPoint, _trans.position.z - 0.1f);
                     switch (Rotation)
                     {
                         case 0:
