@@ -104,7 +104,7 @@ namespace GameA.Game
                     return DoMove();
                 }
             }
-		    if (ConstDefineGM2D.IsEnergy(_clickedTableUnit.Id))
+            if (UnitDefine.IsEnergy(_clickedTableUnit.Id))
 		    {
 		        return DoEnergy();
 		    }
@@ -112,11 +112,11 @@ namespace GameA.Game
             {
                 return DoRotate();
             }
-            if (_clickedDesc.Id == ConstDefineGM2D.BillboardId)
+            if (_clickedDesc.Id == UnitDefine.BillboardId)
             {
                 return DoAddMsg();
             }
-            if (_clickedDesc.Id == ConstDefineGM2D.RollerId)
+            if (_clickedDesc.Id == UnitDefine.RollerId)
             {
                 return DoRoller();
             }

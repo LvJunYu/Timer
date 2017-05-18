@@ -569,7 +569,7 @@ namespace GameA.Game
                         {
                             friction = unit.Friction;
                         }
-                        if (unit.Id == ConstDefineGM2D.ClayId)
+                        if (unit.Id == UnitDefine.ClayId)
                         {
                             _onClay = true;
                         }
@@ -1083,7 +1083,7 @@ namespace GameA.Game
 
         private bool IsValidBox(UnitBase unit)
         {
-            return unit != null && unit.Id == ConstDefineGM2D.BoxId && unit.ColliderGrid.YMin == _colliderGrid.YMin;
+            return unit != null && unit.Id == UnitDefine.BoxId && unit.ColliderGrid.YMin == _colliderGrid.YMin;
         }
 
         public bool IsHoldingBox()
@@ -1342,7 +1342,7 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_downUnit.Id == ConstDefineGM2D.ClayId)
+            if (_downUnit.Id == UnitDefine.ClayId)
             {
 				GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Jump, _trans.position, Vector3.one);
             }
@@ -1354,7 +1354,7 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_downUnit.Id == ConstDefineGM2D.ClayId)
+            if (_downUnit.Id == UnitDefine.ClayId)
             {
 				GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Land, _trans.position, Vector3.one);
             }
@@ -1377,7 +1377,7 @@ namespace GameA.Game
                 return;
 		    }
 		    Vector3 scale = _curMoveDirection == EMoveDirection.Right ? Vector3.one : new Vector3(-1, 1, 1);
-            if (_downUnit.Id == ConstDefineGM2D.ClayId)
+            if (_downUnit.Id == UnitDefine.ClayId)
 		    {
 		        GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.RunOnMud, _trans.position + Vector3.up*0.2f, scale, 1);
 		    }

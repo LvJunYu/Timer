@@ -128,20 +128,5 @@ namespace GameA.Game
         public const int NoFrictionEarthID = 4004;
         // 高摩擦力的地块ID
         public const int HighFrictionEarthID = 4011;
-
-        public const int ClayId = 4011;
-        public const int BlueStoneId = 4101;
-        public const int BlueStoneRotateId = 4103;
-        public const int BoxId = 5004;
-        public const int RollerId = 5005;
-        public const int BillboardId = 7001;
-
-        public const int PlayerTableId = 1001;
-        public const int FinalDoorId = 5001;
-
-        public static bool IsEnergy(int id)
-        {
-            return id >=6101 && id <= 6105;
-        }
     }
 }

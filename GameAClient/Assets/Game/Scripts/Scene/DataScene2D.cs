@@ -204,7 +204,7 @@ namespace GameA.Game
                     ProcessUnitExtra(unitDesc.Guid, unitExtra);
                 }
             }
-            if (tableUnit.Id == ConstDefineGM2D.RollerId)
+            if (tableUnit.Id == UnitDefine.RollerId)
             {
                 UnitExtra unitExtra;
                 if (!TryGetUnitExtra(unitDesc.Guid, out unitExtra))

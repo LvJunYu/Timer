@@ -14,6 +14,21 @@ namespace GameA.Game
     {
         public const int SwitchTriggerId = 5100;
 
+        public const int ClayId = 4011;
+        public const int BlueStoneId = 4101;
+        public const int BlueStoneRotateId = 4103;
+        public const int BoxId = 5004;
+        public const int RollerId = 5005;
+        public const int BillboardId = 7001;
+
+        public const int PlayerTableId = 1001;
+        public const int FinalDoorId = 5001;
+
+        public static bool IsEnergy(int id)
+        {
+            return id >= 6101 && id <= 6105;
+        }
+
         public static bool IsSwitch(int id)
         {
             return id >= 5101 && id <= 5200;

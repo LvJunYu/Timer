@@ -235,7 +235,7 @@ namespace GameA.Game
 				)
                 {
                     //生成方向标志
-                    if (tableUnit.CanRotate || _unit.MoveDirection != EMoveDirection.None || tableUnit.Id == ConstDefineGM2D.RollerId)
+                    if (tableUnit.CanRotate || _unit.MoveDirection != EMoveDirection.None || tableUnit.Id == UnitDefine.RollerId)
                     {
                         CreateDirTrans();
                     }
@@ -254,9 +254,9 @@ namespace GameA.Game
                     //_dirTrans.localPosition = offset + _unit.GetTransPos();
                 }
 
-                if (_unit.MoveDirection != EMoveDirection.None || tableUnit.Id == ConstDefineGM2D.RollerId)
+                if (_unit.MoveDirection != EMoveDirection.None || tableUnit.Id == UnitDefine.RollerId)
                 {
-                    if (tableUnit.Id == ConstDefineGM2D.RollerId)
+                    if (tableUnit.Id == UnitDefine.RollerId)
                     {
                         var rollerUnit = _unit as Roller;
                         if (rollerUnit != null)

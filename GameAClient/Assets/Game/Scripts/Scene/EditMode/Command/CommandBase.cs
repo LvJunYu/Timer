@@ -47,7 +47,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (child.Id == ConstDefineGM2D.BlueStoneId && tableParent.OriginMagicDirection!=0)
+            if (child.Id == UnitDefine.BlueStoneId && tableParent.OriginMagicDirection != 0)
             {
                 return true;
             }

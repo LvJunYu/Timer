@@ -154,7 +154,7 @@ namespace GameA.Game
 
         private bool IsValidBlueStoneRotation(UnitBase unit)
         {
-            if (unit == null || unit.Id != ConstDefineGM2D.BlueStoneRotateId)
+            if (unit == null || unit.Id != UnitDefine.BlueStoneRotateId)
             {
                 return false;
             }

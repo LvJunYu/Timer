@@ -440,10 +440,13 @@ namespace GameA.Game
 		/// <returns><c>true</c>, if can modify erase was checked, <c>false</c> otherwise.</returns>
         public bool CheckCanModifyErase (UnitDesc unitDesc) {
             // 检查是否是不能删除的特殊物体
-            if (unitDesc.Id == ConstDefineGM2D.PlayerTableId) {
+            if (unitDesc.Id == UnitDefine.PlayerTableId)
+            {
                 Messenger<string>.Broadcast(EMessengerType.GameLog, "不能删除主角");
                 return false;
-            } else if (unitDesc.Id == ConstDefineGM2D.FinalDoorId) {
+            }
+            else if (unitDesc.Id == UnitDefine.FinalDoorId)
+            {
                 Messenger<string>.Broadcast(EMessengerType.GameLog, "不能删除终点");
                 return false;
             }

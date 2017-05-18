@@ -132,7 +132,7 @@ namespace GameA.Game
                             {
                                 _friction = unit.Friction;
                             }
-                            if (unit.Id == ConstDefineGM2D.ClayId)
+                            if (unit.Id == UnitDefine.ClayId)
                             {
                                 _onClay = true;
                             }
