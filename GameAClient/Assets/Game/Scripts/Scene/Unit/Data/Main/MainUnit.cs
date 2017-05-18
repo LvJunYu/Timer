@@ -1211,7 +1211,7 @@ namespace GameA.Game
             LogHelper.Debug("MainPlayer OnRevive");
             if (_view !=null && _reviveEffect == null)
             {
-                var particle = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.MarioSoulSEPrefabName, null);
+                var particle = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null);
                 _reviveEffect = new ReviveEffect(particle);
             }
             _eUnitState = EUnitState.Reviving;

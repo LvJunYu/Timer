@@ -134,14 +134,14 @@ namespace GameA.Game
                 {
                     if (_lazerEffect1 == null)
                     {
-                        _lazerEffect1 = new LazerEffect(this, ConstDefineGM2D.MarioLazerEffect1);
+                        _lazerEffect1 = new LazerEffect(this, ConstDefineGM2D.M1LazerEffect1);
                     }
                     _lazerEffect1.Update((float)distance / ConstDefineGM2D.ServerTileScale);
                     if (_timerMagic >= 30)
                     {
                         if (_lazerEffect2 == null)
                         {
-                            _lazerEffect2 = new LazerEffect(this, ConstDefineGM2D.MarioLazerEffect3);
+                            _lazerEffect2 = new LazerEffect(this, ConstDefineGM2D.M1LazerEffect3);
                         }
                         _lazerEffect2.Update((float)distance / ConstDefineGM2D.ServerTileScale);
                         if (hits.Count > 0)
