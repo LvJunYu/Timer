@@ -21,12 +21,18 @@ namespace GameA
             //Debug.Log(_cachedView);
             _cachedView.Name.text = listItem.Name;
             _cachedView.PriceGoldDay.text = listItem.PriceGoldDay.ToString();
+            _cachedView.PriceDiamondDay.text = listItem.PriceDiamondDay.ToString();
+
             _cachedView.PreviewTexture.text = listItem.PreviewTexture;
-            Sprite fashion = null;
-            if (GameResourceManager.Instance.TryGetSpriteByName(listItem.PreviewTexture.ToString(), out fashion))
-            {
-                _cachedView.FashionPreview.sprite = fashion;
-            }
+            //Sprite fashion = null;
+            //Debug.Log("____________预览图" + listItem.PreviewTexture);
+
+            //if (GameResourceManager.Instance.TryGetSpriteByName(listItem.PreviewTexture, out fashion))
+            //{
+            //    Debug.Log("____________时装" + fashion.name);
+
+            //    _cachedView.FashionPreview.sprite = fashion;
+            //}
 
 
             _cachedView.IsOccupied.text = JudgeItemOccupied(listItem) ? "此时装已装备" : "未装备";
@@ -143,31 +149,41 @@ namespace GameA
             long discountCouponId,
             Action successCallback, Action failedCallback)
         {
-//        RemoteCommands.BuyAvatarPart(partType, partId, durationType, currencyType, discountCouponId,
-//                (Msg_SC_CMD_BuyAvatarPart ret) =>
-//                {
-//                    if (ret.ResultCode == (int)EBuyAvatarPartCode.BAPC_Success)
-//                    {
-//
-//                        if (null != successCallback)
-//                        {
-//                            successCallback.Invoke();
-//                        }
-//                    }
-//                    else
-//                    {
-//                        if (null != failedCallback)
-//                        {
-//                            failedCallback.Invoke();
-//                        }
-//                    }
-//
-//                },
-//                (ENetResultCode ret) =>
-//                {
-//                    _cachedView.Message.text = "购买失败";
-//                }
-//        );
+            Msg_BuyAvatarPartItem msg = new Msg_BuyAvatarPartItem();
+            msg.PartType = partType;
+            msg.PartId = partId;
+            msg.CurrencyType = currencyType;
+            msg.DiscountCouponId = discountCouponId;
+            msg.DurationType = durationType;
+            List<Msg_BuyAvatarPartItem> buyList = new List<Msg_BuyAvatarPartItem>();
+            buyList.Add(msg);
+            //bool putOn,
+            //Action< Msg_SC_CMD_BuyAvatarPart > successCallback, Action<ENetResultCode> failedCallback,
+              RemoteCommands.BuyAvatarPart(buyList,true,
+                    (Msg_SC_CMD_BuyAvatarPart ret) =>
+                    {
+                        if (ret.ResultCode == (int)EBuyAvatarPartCode.BAPC_Success)
+                        {
+
+                            if (null != successCallback)
+                            {
+                                successCallback.Invoke();
+                            }
+                        }
+                        else
+                        {
+                            if (null != failedCallback)
+                            {
+                                failedCallback.Invoke();
+                            }
+                        }
+
+                    },
+                    (ENetResultCode ret) =>
+                    {
+                        _cachedView.Message.text = "购买失败";
+                    }
+            );
         }
 
 

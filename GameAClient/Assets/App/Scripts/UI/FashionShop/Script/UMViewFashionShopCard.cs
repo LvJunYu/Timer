@@ -10,6 +10,8 @@ public class UMViewFashionShopCard : UMViewBase
     public Text Name;
     public Text PreviewTexture;
     public Text PriceGoldDay;
+    public Text PriceDiamondDay;
+
     public Text IsOccupied;
     public Text IsOwned;
     public Text Message;

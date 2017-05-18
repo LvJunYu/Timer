@@ -109,10 +109,13 @@ namespace GameA
 
 			_cachedView.AvatarBtn.onClick.AddListener (OnAvatarBtn);
 
+            
+
+            
 
 
 
-			_cachedView.TestChangeAvatarBtn.onClick.AddListener (OnTestChangeAvatar);
+            _cachedView.TestChangeAvatarBtn.onClick.AddListener (OnTestChangeAvatar);
 			_cachedView.DebugClearUserDataBtn.onClick.AddListener (OnDebugClearUserData);
 
 			// todo player avatar at home

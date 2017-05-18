@@ -15,7 +15,7 @@ namespace GameA
     {
         private ChangePartsSpineView _avatarView;
 
-        private void RefreshAvatar()
+        public void RefreshAvatar()
         {
             //_cachedView.AvatarImage.SetActiveEx(true);
             if (LocalUser.Instance.UsingAvatarData.Head != null)
@@ -42,5 +42,7 @@ namespace GameA
             //_avatarView.HomePlayerAvatarViewInit(_cachedView.PlayerAvatarAnimation);
 
         }
+
+
     }
 }
