@@ -25,6 +25,8 @@ namespace GameA.Game
     {
         public static IntVec2 SeekRange = new IntVec2(13, 4) * ConstDefineGM2D.ServerTileScale;
         public static IntVec2 AttackRange = new IntVec2(2, 1) * ConstDefineGM2D.ServerTileScale;
+        private const int MaxStuckFrames = 30;
+
         protected List<IntVec2> _path = new List<IntVec2>();
         protected EMonsterState _eState;
 
@@ -36,13 +38,17 @@ namespace GameA.Game
         protected int _thinkTimer;
         protected IntVec2 _lastPos;
         protected int _stuckTimer;
-        private const int MaxStuckFrames = 30;
 
         protected override void Clear()
         {
             base.Clear();
             _path.Clear();
             _eState = EMonsterState.Think;
+
+            _stuckTime = 0;
+            _currentNodeId = -1;
+
+            _jumpSpeed = 0;
             _thinkTimer = 0;
             _stuckTimer = 0;
             _lastPos = _curPos;
@@ -54,6 +60,7 @@ namespace GameA.Game
             switch (_eState)
             {
                 case EMonsterState.Think:
+                    SpeedX = Util.ConstantLerp(SpeedX, 0, 6);
                     if (_thinkTimer > 50)
                     {
                         OnThink();
@@ -64,6 +71,7 @@ namespace GameA.Game
                     OnSeek();
                     break;
                 case EMonsterState.Attack:
+                    SpeedX = Util.ConstantLerp(SpeedX, 0, 6);
                     OnAttack();
                     break;
             }
@@ -72,6 +80,7 @@ namespace GameA.Game
         private void ChangeState(EMonsterState state)
         {
             _eState = state;
+            LogHelper.Debug("ChangeState : {0}", _eState);
         }
 
         protected void MoveTo()
@@ -191,12 +200,14 @@ namespace GameA.Game
         protected void OnAttack()
         {
             IntVec2 rel = CenterPos - PlayMode.Instance.MainUnit.CenterPos;
-            if (Mathf.Abs(rel.x) > AttackRange.x && Mathf.Abs(rel.y) > AttackRange.y)
+            if (Mathf.Abs(rel.x) > AttackRange.x || Mathf.Abs(rel.y) > AttackRange.y)
             {
                 ChangeState(EMonsterState.Seek);
+                return;
             }
             if (_canAttack)
             {
+
             }
         }
 
@@ -219,7 +230,7 @@ namespace GameA.Game
                 if (_currentNodeId >= _path.Count)
                 {
                     _currentNodeId = -1;
-                    _eState = EMonsterState.Think;
+                    ChangeState(EMonsterState.Think);
                     return;
                 }
                 if (_grounded)
@@ -294,6 +305,18 @@ namespace GameA.Game
                         return;
                     }
                 }
+            }
+            if (_curPos == _lastPos)
+            {
+                ++_stuckTimer;
+                if (_stuckTimer > MaxStuckFrames)
+                {
+                    MoveTo();
+                }
+            }
+            else
+            {
+                _stuckTimer = 0;
             }
         }
 
@@ -387,6 +410,7 @@ namespace GameA.Game
 
         protected override void UpdateMonsterView()
         {
+            LogHelper.Debug("UpdateMonsterView : {0}", _eState);
             switch (_eState)
             {
                     case EMonsterState.Think:
@@ -402,20 +426,13 @@ namespace GameA.Game
                     }
                     break;
                     case EMonsterState.Attack:
+                    if (_animation != null && !_animation.IsPlaying("Attack", 1))
+                    {
+                        _animation.PlayOnce("Attack", 1, 1);
+                    }
                     break;
             }
-            if (_curPos == _lastPos)
-            {
-                ++_stuckTimer;
-                if (_stuckTimer > MaxStuckFrames)
-                {
-                    MoveTo();
-                }
-            }
-            else
-            {
-                _stuckTimer = 0;
-            }
+
             _lastPos = _curPos;
         }
     }

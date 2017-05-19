@@ -597,6 +597,8 @@ namespace GameA.Game
         protected virtual void Clear()
         {
             ClearRunTime();
+            _canAttack = true;
+            _canMotor = true;
             _isAlive = true;
             _dieTime = 0;
             _deltaPos = IntVec2.zero;

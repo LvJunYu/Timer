@@ -19,6 +19,7 @@ namespace GameA.Game
         protected int _speedEnergy;
 
         protected EnergyPoolCtrl _energyPoolCtrl;
+        protected UnityNativeParticleItem _efffect;
 
         protected ESkillType _eSkillType;
 
@@ -57,10 +58,10 @@ namespace GameA.Game
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();
-            if (_energyPoolCtrl != null && _energyPoolCtrl.ParticleItem != null)
+            if (_efffect != null)
             {
-                GameParticleManager.FreeParticleItem(_energyPoolCtrl.ParticleItem);
-                _energyPoolCtrl = null;
+                GameParticleManager.FreeParticleItem(_efffect);
+                _efffect = null;
             }
         }
 
@@ -73,11 +74,12 @@ namespace GameA.Game
 
         private void UpdateEnergyEffect()
         {
-            if (_energyPoolCtrl != null && _energyPoolCtrl.ParticleItem != null)
+            if (_efffect != null)
             {
-                GameParticleManager.FreeParticleItem(_energyPoolCtrl.ParticleItem);
-                _energyPoolCtrl = null;
+                GameParticleManager.FreeParticleItem(_efffect);
+                _efffect = null;
             }
+            _energyPoolCtrl = null;
             string effectName = null;
             switch (_eSkillType)
             {
@@ -96,12 +98,11 @@ namespace GameA.Game
             }
             if (!string.IsNullOrEmpty(effectName))
             {
-                var particle = GameParticleManager.Instance.GetUnityNativeParticleItem(effectName, _trans);
-                if (particle != null)
+                _efffect = GameParticleManager.Instance.GetUnityNativeParticleItem(effectName, _trans);
+                if (_efffect != null)
                 {
-                    particle.Play();
-                    _energyPoolCtrl = particle.Trans.GetComponent<EnergyPoolCtrl>();
-                    _energyPoolCtrl.ParticleItem = particle;
+                    _efffect.Play();
+                    _energyPoolCtrl = _efffect.Trans.GetComponent<EnergyPoolCtrl>();
                     _energyPoolCtrl.LiquidVolume = GetProcess();
                 }
             }
