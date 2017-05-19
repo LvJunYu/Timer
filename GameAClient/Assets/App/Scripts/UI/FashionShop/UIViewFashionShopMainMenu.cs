@@ -11,10 +11,12 @@ namespace GameA
 		/// 时装关闭按钮
 		/// </summary>
 		public Button CloseBtn;
-		/// <summary>
-		/// 菜单按钮
-		/// </summary>
-		public UITagGroup TagGroup;
+        public Button RestoreFashionBtn;
+
+        /// <summary>
+        /// 菜单按钮
+        /// </summary>
+        public UITagGroup TagGroup;
 		/// <summary>
 		/// 独立的US界面
 		/// </summary>

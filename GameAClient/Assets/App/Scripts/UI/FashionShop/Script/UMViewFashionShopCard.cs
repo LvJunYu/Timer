@@ -11,7 +11,6 @@ public class UMViewFashionShopCard : UMViewBase
     public Text PreviewTexture;
     public Text PriceGoldDay;
     public Text PriceDiamondDay;
-
     public Text IsOccupied;
     public Text IsOwned;
     public Text Message;
@@ -20,6 +19,7 @@ public class UMViewFashionShopCard : UMViewBase
     public Button TryFashionOn;
     public Button ChangeFashion;
     public Button BuyFashion;
+    public Button PreviewBtn;
     public Image FashionPreview;
     //public EAvatarPart _avatarType;
     //public int Id;

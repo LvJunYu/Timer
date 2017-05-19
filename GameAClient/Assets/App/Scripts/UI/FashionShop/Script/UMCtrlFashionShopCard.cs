@@ -24,23 +24,28 @@ namespace GameA
             _cachedView.PriceDiamondDay.text = listItem.PriceDiamondDay.ToString();
 
             _cachedView.PreviewTexture.text = listItem.PreviewTexture;
-            //Sprite fashion = null;
-            //Debug.Log("____________预览图" + listItem.PreviewTexture);
+            _cachedView.PreviewBtn.onClick.AddListener(() =>
+            {
+                FashionOnClick(listItem);
+            });
 
-            //if (GameResourceManager.Instance.TryGetSpriteByName(listItem.PreviewTexture, out fashion))
-            //{
-            //    Debug.Log("____________时装" + fashion.name);
+                //Sprite fashion = null;
+                //Debug.Log("____________预览图" + listItem.PreviewTexture);
 
-            //    _cachedView.FashionPreview.sprite = fashion;
-            //}
+                //if (GameResourceManager.Instance.TryGetSpriteByName(listItem.PreviewTexture, out fashion))
+                //{
+                //    Debug.Log("____________时装" + fashion.name);
+
+                //    _cachedView.FashionPreview.sprite = fashion;
+                //}
 
 
-            _cachedView.IsOccupied.text = JudgeItemOccupied(listItem) ? "此时装已装备" : "未装备";
+                _cachedView.IsOccupied.text = JudgeItemOccupied(listItem) ? "此时装已装备" : "未装备";
             _cachedView.IsOwned.text = JudgeItemOwned(listItem) ? "此时装已拥有" : "未拥有";
-            Debug.Log("______________________________Set UMCtrlFashionShopCard " + listItem.Id + " name:" +
-                      listItem.Name +
-                      " " + _cachedView.IsOccupied.text +
-                      " " + _cachedView.IsOwned.text);
+            //Debug.Log("______________________________Set UMCtrlFashionShopCard " + listItem.Id + " name:" +
+            //          listItem.Name +
+            //          " " + _cachedView.IsOccupied.text +
+            //          " " + _cachedView.IsOwned.text);
             _cachedView.BuyFashion.onClick.AddListener(() =>
             {
                 BuyFashion(listItem);
@@ -52,13 +57,13 @@ namespace GameA
             _cachedView.TryFashionOn.onClick.AddListener(() =>
             {
                 SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().TryFashionOn(listItem);
-                SetSelectedFashion(listItem);
+                SetFittingFashion(listItem);
             }
                 );
             _cachedView.ChangeFashion.onClick.AddListener(() =>
             {
                 ChangeFashion(listItem);
-                SetSelectedFashion(listItem);
+                SetFittingFashion(listItem);
             }
                 );
             //_cachedView._avatarType = listItem._avatarType;
@@ -77,7 +82,7 @@ namespace GameA
             //_cachedView.SkinId = listItem.SkinId;
         }
 
-        private void SetSelectedFashion(ShopItem listItem)
+        private void SetFittingFashion(ShopItem listItem)
         {
             switch (listItem._avatarType)
             {
@@ -95,6 +100,25 @@ namespace GameA
                     break;
                 default:
                     break;
+            }
+        }
+
+        private void FashionOnClick(ShopItem listItem)
+        {
+            if (JudgeItemOccupied(listItem))
+            {
+                _cachedView.Message.text = "已穿戴";
+            }
+            else if (JudgeItemOwned(listItem))
+            {
+                _cachedView.Message.text = "已经拥有并穿戴";
+                SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().TryOnAvatar(listItem);
+                ChangeFashion(listItem);
+            }
+            else
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().TryOnAvatar(listItem);
+                SetFittingFashion(listItem);
             }
         }
 

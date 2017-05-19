@@ -236,12 +236,13 @@
     <Compile Include="Assets\App\Scripts\UI\Base\USViewBase.cs" />
     <Compile Include="Assets\App\Scripts\UI\EnumStringDefine.cs" />
     <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\ShopItem.cs" />
+    <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\UICtrlFashionSpine.cs" />
     <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\UICtrlPurchaseTotalCount.cs" />
+    <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\UIViewFashionSpine.cs" />
     <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\UIViewPurchaseTotalCount.cs" />
     <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\UMCtrlFashionShopCard.cs" />
     <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\UMViewFashionShopCard.cs" />
     <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\USCtrlFashionShop.cs" />
-    <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\USCtrlSpineFashion.cs" />
     <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\USViewFashionShop.cs" />
     <Compile Include="Assets\App\Scripts\UI\FashionShop\UICtrlFashionShopMainMenu.cs" />
     <Compile Include="Assets\App\Scripts\UI\FashionShop\UIViewFashionShopMainMenu.cs" />

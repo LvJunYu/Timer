@@ -255,12 +255,13 @@ namespace GameA
         {
             InitTagGroup();
             SetRenderTexture();
+            
         }
 
 	    private void SetRenderTexture()
 	    {
             
-            _cachedView.Avatar.texture= SocialGUIManager.Instance.GetUI<UICtrlTaskbar>().AvatarRenderTexture;
+            _cachedView.Avatar.texture= SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().AvatarRenderTexture;
 
 	    }
 
@@ -347,7 +348,12 @@ namespace GameA
 
 
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtnClick);
+            _cachedView.RestoreFashionBtn.onClick.AddListener(OnRestoreFashionBtnClick);
+        }
 
+        private void OnRestoreFashionBtnClick()
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().ShowAllUsingAvatar();
 
         }
 
