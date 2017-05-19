@@ -1,8 +1,8 @@
 ﻿/********************************************************************
-** Filename : EnergyWater
+** Filename : EnergyPool
 ** Author : Dong
 ** Date : 2017/3/22 星期三 下午 2:35:55
-** Summary : EnergyWater
+** Summary : EnergyPool
 ***********************************************************************/
 
 using System;
@@ -11,8 +11,8 @@ using SoyEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 6101, Type = typeof(EnergyWater))]
-    public class EnergyWater : BlockBase
+    [Unit(Id = 6101, Type = typeof(EnergyPool))]
+    public class EnergyPool : BlockBase
     {
         protected int _totalCount;
         protected int _currentCount;
@@ -44,6 +44,16 @@ namespace GameA.Game
             return true;
         }
 
+        protected override void Clear()
+        {
+            _currentCount = 0;
+            if (_energyPoolCtrl != null)
+            {
+                _energyPoolCtrl.LiquidVolume = GetProcess();
+            }
+            base.Clear();
+        }
+
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();
@@ -57,7 +67,6 @@ namespace GameA.Game
         public override void UpdateExtraData()
         {
             _eSkillType = (ESkillType)DataScene2D.Instance.GetUnitExtra(_guid).EnergyType;
-            LogHelper.Debug("{0}", _eSkillType);
             UpdateEnergyEffect();
             base.UpdateExtraData();
         }
@@ -93,6 +102,7 @@ namespace GameA.Game
                     particle.Play();
                     _energyPoolCtrl = particle.Trans.GetComponent<EnergyPoolCtrl>();
                     _energyPoolCtrl.ParticleItem = particle;
+                    _energyPoolCtrl.LiquidVolume = GetProcess();
                 }
             }
         }
@@ -112,7 +122,21 @@ namespace GameA.Game
 
         protected void OnTrigger(UnitBase other)
         {
-            other.SkillMgr1.ChangeSkill<SkillWater>();
+            switch (_eSkillType)
+            {
+                case ESkillType.Fire:
+                    other.SkillMgr2.ChangeSkill<SkillFire>();
+                    break;
+                case ESkillType.Ice:
+                    other.SkillMgr2.ChangeSkill<SkillIce>();
+                    break;
+                case ESkillType.Jelly:
+                    other.SkillMgr2.ChangeSkill<SkillJelly>();
+                    break;
+                case ESkillType.Clay:
+                    other.SkillMgr2.ChangeSkill<SkillClay>();
+                    break;
+            }
         }
 
         public override void UpdateLogic()
