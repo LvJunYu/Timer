@@ -710,10 +710,15 @@ namespace GameA.Game
                 IntVec2 pointA = IntVec2.zero, pointB = IntVec2.zero;
                 GM2DTools.GetBorderPoint(target.ColliderGrid, EDirectionType.Down, ref pointA, ref pointB);
                 var distance = GM2DTools.GetDistanceToBorder(pointA, 2);
-                GridHit2D hit;
-                if (GridCast(pointA, pointB, 2, out hit, distance, EnvManager.UnitLayer))
+                var hits = GridCastAll(pointA, pointB, 2, distance, EnvManager.UnitLayer, float.MinValue, float.MaxValue, unit.DynamicCollider);
+                for (int i = 0; i < hits.Count; i++)
                 {
-                    end.y -= hit.distance;
+                    var hit = hits[i];
+                    if (UnitDefine.IsGround(hit.node.Id))
+                    {
+                        end.y -= hit.distance;
+                        break;
+                    }
                 }
             }
             var size = unit.GetColliderSize() / ConstDefineGM2D.ServerTileScale;

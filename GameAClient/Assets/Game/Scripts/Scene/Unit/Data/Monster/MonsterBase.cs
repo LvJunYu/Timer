@@ -13,6 +13,7 @@ namespace GameA.Game
 {
     public class MonsterBase : RigidbodyUnit
     {
+        protected IntVec2 _lastPos;
         protected int _monsterSpeed;
         protected int _curMaxSpeedX;
         protected EffectManager _effectManager;
@@ -29,9 +30,15 @@ namespace GameA.Game
                 return false;
             }
             _isMonster = true;
-            _curMaxSpeedX = _monsterSpeed;
             _effectManager = new EffectManager(this);
             return true;
+        }
+
+        protected override void Clear()
+        {
+            base.Clear();
+            _lastPos = _curPos;
+            _curMaxSpeedX = _monsterSpeed;
         }
 
         public override void UpdateLogic()
@@ -126,6 +133,7 @@ namespace GameA.Game
                 }
                 UpdateMonsterView();
                 _lastGrounded = _grounded;
+                _lastPos = _curPos;
             }
         }
 
