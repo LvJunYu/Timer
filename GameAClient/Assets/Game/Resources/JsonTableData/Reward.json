@@ -429,5 +429,53 @@
         "Value1": "10",
         "SubType5": "2",
         "SubType7": "2"
+    },
+    {
+        "Id": "2000",
+        "Description": "改造奖励第1档",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "100",
+        "Type2": "6",
+        "SubType2": "0",
+        "Id2": "1",
+        "Value2": "1"
+    },
+    {
+        "Id": "2001",
+        "Description": "改造奖励第2档",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "200",
+        "Type2": "6",
+        "SubType2": "0",
+        "Id2": "1",
+        "Value2": "1",
+        "Type3": "6",
+        "SubType3": "0",
+        "Id3": "2",
+        "Value3": "1"
+    },
+    {
+        "Id": "2002",
+        "Description": "改造奖励第3档",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "300",
+        "Type2": "6",
+        "SubType2": "0",
+        "Id2": "1",
+        "Value2": "1",
+        "Type3": "6",
+        "SubType3": "0",
+        "Id3": "2",
+        "Value3": "1",
+        "Type4": "6",
+        "SubType4": "0",
+        "Id4": "3",
+        "Value4": "1"
     }
 ]

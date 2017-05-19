@@ -296,76 +296,7 @@ namespace GameA
 		/// </summary>
 		/// <param name="param">Parameter.</param>
 		private void OnLevelClicked (object param) {
-			IntVec3 intVec3Param = (IntVec3)param;
-			if (intVec3Param == null)
-				return;
-			int chapterId = intVec3Param.x;
-			int levelIdx = intVec3Param.y;
-			bool isBonusLevel = intVec3Param.z == 1;
-			var tableChapter = Game.TableManager.Instance.GetStandaloneChapter (chapterId);
-			if (null == tableChapter) {
-				LogHelper.Error ("Find tableChapter failed, {0}", chapterId);
-                return;
-			}
-			int levelId = 0;
-			if (isBonusLevel) {
-				if (levelIdx < tableChapter.BonusLevels.Length) {
-					levelId = tableChapter.BonusLevels [levelIdx];
-				} else {
-					LogHelper.Error ("Find {0}'s bonus level of chapter {1} failed.", levelIdx, chapterId);
-					return;
-				}
-			} else {
-				if (levelIdx < tableChapter.NormalLevels.Length) {
-					levelId = tableChapter.NormalLevels [levelIdx];
-				} else {
-					LogHelper.Error ("Find {0}'s normal level of chapter {1} failed.", levelIdx, chapterId);
-					return;
-				}
-			}
-
-            if (!isBonusLevel && !GameATools.CheckEnergy (1))
-                return;
-			EAdventureProjectType eAPType = isBonusLevel ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal;
-//			Debug.Log ("_________________onLevelClicked " + chapterIdx + " " + levelIdx + " isBonus: " + isBonusLevel);
-
-			SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this,
-				string.Format("请求进入冒险[{0}]关卡， 第{1}章，第{2}关...", isBonusLevel?"奖励":"普通", chapterId, levelIdx));
-
-			AppData.Instance.AdventureData.PlayAdventureLevel (
-				chapterId,
-				levelIdx + 1,
-				eAPType,
-				() => {
-					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                    if (!isBonusLevel) {
-					    // set local energy data
-                        GameATools.LocalUseEnergy(1);
-                    }
-					
-					if (AppData.Instance.AdventureData.ProjectList.SectionList.Count < chapterId) {
-						LogHelper.Error("No project data of chapter {0}", chapterId);
-					} else {
-						List<Project> projectList = isBonusLevel ? 
-							AppData.Instance.AdventureData.ProjectList.SectionList[chapterId - 1].BonusProjectList :
-							AppData.Instance.AdventureData.ProjectList.SectionList[chapterId - 1].NormalProjectList;
-						if (projectList.Count <= levelIdx) {
-							LogHelper.Error("No project data of level in idx {0} in chapter {1}", levelIdx, chapterId);
-						} else {
-							projectList[levelIdx].PrepareRes(
-								() => {
-									GameManager.Instance.RequestPlay(projectList[levelIdx]);
-									SocialGUIManager.Instance.ChangeToGameMode();
-								}
-							);
-						}
-					}
-//					TestCommitResult (chapterId, levelId, levelIdx, isBonusLevel);
-				},
-				(error) => {
-					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-				}
-			);
+            SocialGUIManager.Instance.OpenPopupUI<UICtrlAdvLvlDetail> (param);
 		}
 
 		private void OnBeginDrag (PointerEventData eventData) {

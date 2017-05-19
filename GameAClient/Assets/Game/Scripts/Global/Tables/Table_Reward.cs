@@ -16,7 +16,7 @@ namespace GameA.Game
 		[ColumnMapping("Description")]
 		public string Description;
 		/// <summary>
-        /// 奖励1类型
+        /// 奖励1类型ERewardType
         /// </summary>
 		[ColumnMapping("Type1")]
 		public int Type1;
@@ -36,7 +36,7 @@ namespace GameA.Game
 		[ColumnMapping("Value1")]
 		public int Value1;
 		/// <summary>
-        /// 奖励2类型
+        /// 奖励2类型ERewardType
         /// </summary>
 		[ColumnMapping("Type2")]
 		public int Type2;
@@ -56,7 +56,7 @@ namespace GameA.Game
 		[ColumnMapping("Value2")]
 		public int Value2;
 		/// <summary>
-        /// 奖励3类型
+        /// 奖励3类型ERewardType
         /// </summary>
 		[ColumnMapping("Type3")]
 		public int Type3;
@@ -76,7 +76,7 @@ namespace GameA.Game
 		[ColumnMapping("Value3")]
 		public int Value3;
 		/// <summary>
-        /// 奖励4类型
+        /// 奖励4类型ERewardType
         /// </summary>
 		[ColumnMapping("Type4")]
 		public int Type4;
@@ -96,7 +96,7 @@ namespace GameA.Game
 		[ColumnMapping("Value4")]
 		public int Value4;
 		/// <summary>
-        /// 奖励5类型
+        /// 奖励5类型ERewardType
         /// </summary>
 		[ColumnMapping("Type5")]
 		public int Type5;
@@ -116,7 +116,7 @@ namespace GameA.Game
 		[ColumnMapping("Value5")]
 		public int Value5;
 		/// <summary>
-        /// 奖励6类型
+        /// 奖励6类型ERewardType
         /// </summary>
 		[ColumnMapping("Type6")]
 		public int Type6;
@@ -136,7 +136,7 @@ namespace GameA.Game
 		[ColumnMapping("Value6")]
 		public int Value6;
 		/// <summary>
-        /// 奖励7类型
+        /// 奖励7类型ERewardType
         /// </summary>
 		[ColumnMapping("Type7")]
 		public int Type7;
@@ -156,7 +156,7 @@ namespace GameA.Game
 		[ColumnMapping("Value7")]
 		public int Value7;
 		/// <summary>
-        /// 奖励8类型
+        /// 奖励8类型ERewardType
         /// </summary>
 		[ColumnMapping("Type8")]
 		public int Type8;
