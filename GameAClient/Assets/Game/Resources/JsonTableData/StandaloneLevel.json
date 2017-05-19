@@ -6,13 +6,12 @@
         "Type": "0",
         "EnergyCost": "1",
         "StarConditions": [
-            "0",
             "1",
-            "2"
+            "2",
+            "3"
         ],
-        "Star1Value": "0",
-        "Star2Value": "0",
-        "Star3Value": "0",
+        "Star2Value": "100",
+        "Star3Value": "2",
         "HelperItems": [
             "0",
             "1",
@@ -22,10 +21,9 @@
             "5"
         ],
         "WinReward": "11",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
-            "1",
-            "2"
+            "0"
         ],
         "TimeLimit": "300"
     },
@@ -36,13 +34,11 @@
         "Type": "0",
         "EnergyCost": "1",
         "StarConditions": [
-            "0",
             "1",
-            "2"
+            "4",
+            "5"
         ],
-        "Star1Value": "0",
-        "Star2Value": "0",
-        "Star3Value": "0",
+        "Star2Value": "6554",
         "HelperItems": [
             "0",
             "1",
@@ -52,10 +48,9 @@
             "5"
         ],
         "WinReward": "1",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
-            "1",
-            "2"
+            "1"
         ],
         "TimeLimit": "300"
     },
@@ -66,13 +61,11 @@
         "Type": "0",
         "EnergyCost": "1",
         "StarConditions": [
-            "0",
             "1",
-            "2"
+            "6",
+            "7"
         ],
-        "Star1Value": "0",
-        "Star2Value": "0",
-        "Star3Value": "0",
+        "Star3Value": "300",
         "HelperItems": [
             "0",
             "1",
@@ -82,9 +75,8 @@
             "5"
         ],
         "WinReward": "1",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
-            "1",
             "2"
         ],
         "TimeLimit": "300"
@@ -96,13 +88,12 @@
         "Type": "0",
         "EnergyCost": "1",
         "StarConditions": [
-            "0",
             "1",
-            "2"
+            "8",
+            "9"
         ],
-        "Star1Value": "0",
-        "Star2Value": "0",
-        "Star3Value": "0",
+        "Star2Value": "10",
+        "Star3Value": "1",
         "HelperItems": [
             "0",
             "1",
@@ -112,10 +103,9 @@
             "5"
         ],
         "WinReward": "1",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
-            "1",
-            "2"
+            "3"
         ],
         "TimeLimit": "300"
     },
@@ -126,13 +116,11 @@
         "Type": "0",
         "EnergyCost": "1",
         "StarConditions": [
-            "0",
             "1",
-            "2"
+            "10",
+            "11"
         ],
-        "Star1Value": "0",
-        "Star2Value": "0",
-        "Star3Value": "0",
+        "Star2Value": "5",
         "HelperItems": [
             "0",
             "1",
@@ -142,8 +130,8 @@
             "5"
         ],
         "WinReward": "1",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
             "1",
             "2"
         ],
@@ -156,13 +144,12 @@
         "Type": "0",
         "EnergyCost": "1",
         "StarConditions": [
-            "0",
             "1",
-            "2"
+            "12",
+            "13"
         ],
-        "Star1Value": "0",
-        "Star2Value": "0",
-        "Star3Value": "0",
+        "Star2Value": "7",
+        "Star3Value": "9",
         "HelperItems": [
             "0",
             "1",
@@ -172,10 +159,10 @@
             "5"
         ],
         "WinReward": "1",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
             "1",
-            "2"
+            "3"
         ],
         "TimeLimit": "300"
     },
@@ -186,13 +173,12 @@
         "Type": "0",
         "EnergyCost": "1",
         "StarConditions": [
-            "0",
             "1",
-            "2"
+            "2",
+            "3"
         ],
-        "Star1Value": "0",
-        "Star2Value": "0",
-        "Star3Value": "0",
+        "Star2Value": "40",
+        "Star3Value": "3",
         "HelperItems": [
             "0",
             "1",
@@ -202,10 +188,10 @@
             "5"
         ],
         "WinReward": "1",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
-            "1",
-            "2"
+            "2",
+            "3"
         ],
         "TimeLimit": "300"
     },
@@ -216,13 +202,11 @@
         "Type": "0",
         "EnergyCost": "1",
         "StarConditions": [
-            "0",
             "1",
-            "2"
+            "4",
+            "5"
         ],
-        "Star1Value": "0",
-        "Star2Value": "0",
-        "Star3Value": "0",
+        "Star2Value": "52342",
         "HelperItems": [
             "0",
             "1",
@@ -232,10 +216,11 @@
             "5"
         ],
         "WinReward": "1",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
             "1",
-            "2"
+            "2",
+            "3"
         ],
         "TimeLimit": "300"
     },
@@ -246,13 +231,11 @@
         "Type": "0",
         "EnergyCost": "1",
         "StarConditions": [
-            "0",
             "1",
-            "2"
+            "6",
+            "7"
         ],
-        "Star1Value": "0",
-        "Star2Value": "0",
-        "Star3Value": "0",
+        "Star3Value": "289",
         "HelperItems": [
             "0",
             "1",
@@ -262,10 +245,11 @@
             "5"
         ],
         "WinReward": "1",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
             "1",
-            "2"
+            "2",
+            "3"
         ],
         "TimeLimit": "300"
     },
@@ -275,12 +259,6 @@
         "Description": "啦啦啦",
         "Type": "1",
         "EnergyCost": "1",
-        "StarConditions": [
-            "0",
-            "1",
-            "2"
-        ],
-        "Star1Value": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [
@@ -292,10 +270,9 @@
             "5"
         ],
         "WinReward": "2",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
-            "1",
-            "2"
+            "1"
         ],
         "TimeLimit": "300"
     },
@@ -305,12 +282,6 @@
         "Description": "啦啦啦",
         "Type": "2",
         "EnergyCost": "1",
-        "StarConditions": [
-            "0",
-            "1",
-            "2"
-        ],
-        "Star1Value": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [
@@ -322,10 +293,9 @@
             "5"
         ],
         "WinReward": "3",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
-            "1",
-            "2"
+            "1"
         ],
         "TimeLimit": "300"
     },
@@ -335,12 +305,6 @@
         "Description": "啦啦啦",
         "Type": "3",
         "EnergyCost": "1",
-        "StarConditions": [
-            "0",
-            "1",
-            "2"
-        ],
-        "Star1Value": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [
@@ -352,10 +316,9 @@
             "5"
         ],
         "WinReward": "4",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
-            "1",
-            "2"
+            "1"
         ],
         "TimeLimit": "300"
     },
@@ -366,11 +329,10 @@
         "Type": "0",
         "EnergyCost": "1",
         "StarConditions": [
-            "0",
             "1",
-            "2"
+            "8",
+            "9"
         ],
-        "Star1Value": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [
@@ -382,10 +344,9 @@
             "5"
         ],
         "WinReward": "1",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
-            "1",
-            "2"
+            "0"
         ],
         "TimeLimit": "300"
     },
@@ -396,11 +357,10 @@
         "Type": "0",
         "EnergyCost": "1",
         "StarConditions": [
-            "0",
             "1",
-            "2"
+            "10",
+            "11"
         ],
-        "Star1Value": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [
@@ -412,10 +372,9 @@
             "5"
         ],
         "WinReward": "1",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
-            "1",
-            "2"
+            "1"
         ],
         "TimeLimit": "300"
     },
@@ -426,11 +385,10 @@
         "Type": "0",
         "EnergyCost": "1",
         "StarConditions": [
-            "0",
             "1",
-            "2"
+            "12",
+            "13"
         ],
-        "Star1Value": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [
@@ -442,9 +400,8 @@
             "5"
         ],
         "WinReward": "1",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
-            "1",
             "2"
         ],
         "TimeLimit": "300"
@@ -456,11 +413,10 @@
         "Type": "0",
         "EnergyCost": "1",
         "StarConditions": [
-            "0",
             "1",
-            "2"
+            "2",
+            "3"
         ],
-        "Star1Value": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [
@@ -472,10 +428,9 @@
             "5"
         ],
         "WinReward": "1",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
-            "1",
-            "2"
+            "3"
         ],
         "TimeLimit": "300"
     },
@@ -486,11 +441,10 @@
         "Type": "0",
         "EnergyCost": "1",
         "StarConditions": [
-            "0",
             "1",
-            "2"
+            "4",
+            "5"
         ],
-        "Star1Value": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [
@@ -502,8 +456,8 @@
             "5"
         ],
         "WinReward": "1",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
             "1",
             "2"
         ],
@@ -516,11 +470,10 @@
         "Type": "0",
         "EnergyCost": "1",
         "StarConditions": [
-            "0",
             "1",
-            "2"
+            "6",
+            "7"
         ],
-        "Star1Value": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [
@@ -532,10 +485,10 @@
             "5"
         ],
         "WinReward": "1",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
             "1",
-            "2"
+            "3"
         ],
         "TimeLimit": "300"
     },
@@ -546,11 +499,10 @@
         "Type": "0",
         "EnergyCost": "1",
         "StarConditions": [
-            "0",
             "1",
-            "2"
+            "8",
+            "9"
         ],
-        "Star1Value": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [
@@ -562,10 +514,10 @@
             "5"
         ],
         "WinReward": "1",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
-            "1",
-            "2"
+            "2",
+            "3"
         ],
         "TimeLimit": "300"
     },
@@ -576,11 +528,10 @@
         "Type": "0",
         "EnergyCost": "1",
         "StarConditions": [
-            "0",
             "1",
-            "2"
+            "10",
+            "11"
         ],
-        "Star1Value": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [
@@ -592,10 +543,11 @@
             "5"
         ],
         "WinReward": "1",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
             "1",
-            "2"
+            "2",
+            "3"
         ],
         "TimeLimit": "300"
     },
@@ -606,11 +558,10 @@
         "Type": "0",
         "EnergyCost": "1",
         "StarConditions": [
-            "0",
             "1",
-            "2"
+            "12",
+            "13"
         ],
-        "Star1Value": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [
@@ -622,10 +573,11 @@
             "5"
         ],
         "WinReward": "1",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
             "1",
-            "2"
+            "2",
+            "3"
         ],
         "TimeLimit": "300"
     },
@@ -635,12 +587,6 @@
         "Description": "啦啦啦",
         "Type": "1",
         "EnergyCost": "1",
-        "StarConditions": [
-            "0",
-            "1",
-            "2"
-        ],
-        "Star1Value": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [
@@ -652,10 +598,9 @@
             "5"
         ],
         "WinReward": "5",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
-            "1",
-            "2"
+            "1"
         ],
         "TimeLimit": "300"
     },
@@ -665,12 +610,6 @@
         "Description": "啦啦啦",
         "Type": "2",
         "EnergyCost": "1",
-        "StarConditions": [
-            "0",
-            "1",
-            "2"
-        ],
-        "Star1Value": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [
@@ -682,10 +621,9 @@
             "5"
         ],
         "WinReward": "6",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
-            "1",
-            "2"
+            "1"
         ],
         "TimeLimit": "300"
     },
@@ -695,12 +633,6 @@
         "Description": "啦啦啦",
         "Type": "3",
         "EnergyCost": "1",
-        "StarConditions": [
-            "0",
-            "1",
-            "2"
-        ],
-        "Star1Value": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [
@@ -712,10 +644,9 @@
             "5"
         ],
         "WinReward": "7",
+        "LoseReward": "999",
         "WinConditions": [
-            "0",
-            "1",
-            "2"
+            "1"
         ],
         "TimeLimit": "300"
     }

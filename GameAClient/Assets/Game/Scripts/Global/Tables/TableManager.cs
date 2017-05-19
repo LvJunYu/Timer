@@ -14,6 +14,7 @@ namespace GameA.Game
 		private static TableManager _instance;
 		public readonly Dictionary<int,Table_Unit> Table_UnitDic = new Dictionary<int, Table_Unit>();
 		public readonly Dictionary<int,Table_StandaloneLevel> Table_StandaloneLevelDic = new Dictionary<int, Table_StandaloneLevel>();
+		public readonly Dictionary<int,Table_StarRequire> Table_StarRequireDic = new Dictionary<int, Table_StarRequire>();
 		public readonly Dictionary<int,Table_StandaloneChapter> Table_StandaloneChapterDic = new Dictionary<int, Table_StandaloneChapter>();
 		public readonly Dictionary<int,Table_FashionShop> Table_FashionShopDic = new Dictionary<int, Table_FashionShop>();
 		public readonly Dictionary<int,Table_UpperBodyParts> Table_UpperBodyPartsDic = new Dictionary<int, Table_UpperBodyParts>();
@@ -36,6 +37,7 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_PlayerLvToModifyLimit> Table_PlayerLvToModifyLimitDic = new Dictionary<int, Table_PlayerLvToModifyLimit>();
 		[UnityEngine.SerializeField] private Table_Unit[] _tableUnits;
 		[UnityEngine.SerializeField] private Table_StandaloneLevel[] _tableStandaloneLevels;
+		[UnityEngine.SerializeField] private Table_StarRequire[] _tableStarRequires;
 		[UnityEngine.SerializeField] private Table_StandaloneChapter[] _tableStandaloneChapters;
 		[UnityEngine.SerializeField] private Table_FashionShop[] _tableFashionShops;
 		[UnityEngine.SerializeField] private Table_UpperBodyParts[] _tableUpperBodyPartss;
@@ -77,6 +79,8 @@ namespace GameA.Game
 			_tableUnits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Unit[]>(UnitTextAsset.text);
 			var StandaloneLevelTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "StandaloneLevel"));
 			_tableStandaloneLevels = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneLevel[]>(StandaloneLevelTextAsset.text);
+			var StarRequireTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "StarRequire"));
+			_tableStarRequires = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StarRequire[]>(StarRequireTextAsset.text);
 			var StandaloneChapterTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "StandaloneChapter"));
 			_tableStandaloneChapters = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneChapter[]>(StandaloneChapterTextAsset.text);
 			var FashionShopTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "FashionShop"));
@@ -134,6 +138,13 @@ namespace GameA.Game
 				return;
 			}
 			_tableStandaloneLevels = StandaloneLevelAsset.DataArray;
+			var StarRequireAsset = _loader.GetConfigAssetData<TableStarRequireAsset>("StarRequire");
+			if (StarRequireAsset == null)
+			{
+				LogHelper.Error("StarRequireAsset is null");
+				return;
+			}
+			_tableStarRequires = StarRequireAsset.DataArray;
 			var StandaloneChapterAsset = _loader.GetConfigAssetData<TableStandaloneChapterAsset>("StandaloneChapter");
 			if (StandaloneChapterAsset == null)
 			{
@@ -295,6 +306,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableStandaloneLevels table.Id {0} is duplicated!", _tableStandaloneLevels[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableStarRequires.Length; i++)
+			{
+				if (!Table_StarRequireDic.ContainsKey(_tableStarRequires[i].Id))
+				{
+					Table_StarRequireDic.Add(_tableStarRequires[i].Id,_tableStarRequires[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableStarRequires table.Id {0} is duplicated!", _tableStarRequires[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableStandaloneChapters.Length; i++)
@@ -534,6 +556,15 @@ namespace GameA.Game
 		{
 			Table_StandaloneLevel tmp;
 			if (Table_StandaloneLevelDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_StarRequire GetStarRequire(int key)
+		{
+			Table_StarRequire tmp;
+			if (Table_StarRequireDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

@@ -61,6 +61,11 @@ namespace GameA.Game
 		[ColumnMapping("WinReward")]
 		public int WinReward;
 		/// <summary>
+        /// 失败通关奖励
+        /// </summary>
+		[ColumnMapping("LoseReward")]
+		public int LoseReward;
+		/// <summary>
         /// 胜利条件
         /// </summary>
 		[ColumnMapping("WinConditions")]

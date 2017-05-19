@@ -308,6 +308,7 @@
         "Use": "1",
         "Icon": "M1TransparentEarthIcon",
         "Model": "M1TransparentEarth",
+        "Model1": "M1TransparentEarth_1",
         "UnitType": "4",
         "UIType": "3",
         "Layer": "3",
