@@ -229,7 +229,7 @@ namespace GameA.Game
                 if (UnitDefine.IsGround(node.Id))
                 {
                     _pathGrid[lastGrid.XMin / ConstDefineGM2D.ServerTileScale, lastGrid.YMin / ConstDefineGM2D.ServerTileScale] = 1;
-                    _pathGrid[node.Guid.x / ConstDefineGM2D.ServerTileScale, node.Guid.y / ConstDefineGM2D.ServerTileScale] = 0;
+                    _pathGrid[node.Grid.XMin / ConstDefineGM2D.ServerTileScale, node.Grid.YMin / ConstDefineGM2D.ServerTileScale] = 0;
                 }
                 return true;
             }

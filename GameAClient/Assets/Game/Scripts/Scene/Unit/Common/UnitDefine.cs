@@ -92,7 +92,7 @@ namespace GameA.Game
         internal static bool IsGround(int id)
         {
             return id != SwitchTriggerId && id != LaserId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
-                   !IsBoard(id) && !IsHero(id);
+                   !IsBoard(id) && !IsMain(id);
         }
     }
 }

@@ -30,6 +30,7 @@ namespace GameA.Game
                 return false;
             }
             _isMonster = true;
+            _monsterSpeed = 30;
             _effectManager = new EffectManager(this);
             return true;
         }

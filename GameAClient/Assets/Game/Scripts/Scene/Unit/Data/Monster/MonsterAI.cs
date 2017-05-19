@@ -39,6 +39,16 @@ namespace GameA.Game
         protected int _reSeekTimer;
         protected int _curFriction;
 
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            _monsterSpeed = 40;
+            return true;
+        }
+
         protected override void Clear()
         {
             _path.Clear();
@@ -50,7 +60,6 @@ namespace GameA.Game
             _stuckTimer = 0;
             _reSeekTimer = 0;
             _curFriction = _friction;
-            _monsterSpeed = 40;
             base.Clear();
         }
 

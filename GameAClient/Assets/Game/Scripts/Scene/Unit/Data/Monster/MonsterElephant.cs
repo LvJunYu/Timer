@@ -15,6 +15,16 @@ namespace GameA.Game
     [Unit(Id = 2002, Type = typeof(MonsterElephant))]
     public class MonsterElephant : MonsterAI
     {
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            _monsterSpeed = 50;
+            return true;
+        }
+
         protected override void UpdateMonsterView()
         {
             //LogHelper.Debug("UpdateMonsterView : {0} {1}", _eState, _speed);
