@@ -217,7 +217,7 @@ namespace GameA.Game
             }
             //如果此次寻路的终点举例目标点差距太远的话，就重新寻路。
             IntVec2 distance = _path[_path.Count - 1] - PlayMode.Instance.MainUnit.CurPos/ConstDefineGM2D.ServerTileScale;
-            if (Mathf.Abs(distance.x) > PathRange.x && Mathf.Abs(distance.y) > PathRange.y)
+            if (Mathf.Abs(distance.x) > PathRange.x || Mathf.Abs(distance.y) > PathRange.y)
             {
                 ++_reSeekTimer;
                 if (_reSeekTimer > MaxReSeekFrames)
