@@ -129,7 +129,7 @@ namespace GameA.Game
             {
                 PlayMode.Instance.MainUnit = (MainUnit)unit;
             }
-            else
+            else if(UnitDefine.IsGround(unit.Id))
             {
                 _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 0;
             }
@@ -222,12 +222,23 @@ namespace GameA.Game
 
         #region AOI
 
+        public bool UpdateDynamicNode(SceneNode node, Grid2D lastGrid)
+        {
+            if (base.UpdateDynamicNode(node))
+            {
+                if (UnitDefine.IsGround(node.Id))
+                {
+                    _pathGrid[lastGrid.XMin / ConstDefineGM2D.ServerTileScale, lastGrid.YMin / ConstDefineGM2D.ServerTileScale] = 1;
+                    _pathGrid[node.Guid.x / ConstDefineGM2D.ServerTileScale, node.Guid.y / ConstDefineGM2D.ServerTileScale] = 0;
+                }
+                return true;
+            }
+            return false;
+        }
+
         public void Reset()
         {
-            //foreach (var dynamicNode in _dynamicNodes)
-            //{
-            //    dynamicNode.Value.Reset();
-            //}
+
         }
 
         #region Comparison SortData

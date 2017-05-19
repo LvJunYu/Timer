@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using SoyEngine;
 using UnityEngine;
 
@@ -31,12 +32,11 @@ namespace GameA.Game
         protected EMonsterState _eState;
 
         protected int _currentNodeId;
-
         protected int _jumpSpeed;
-
         protected int _thinkTimer;
-        protected IntVec2 _lastPos;
         protected int _stuckTimer;
+        protected IntVec2 _lastPos;
+        protected int _curFriction;
 
         protected override void Clear()
         {
@@ -44,13 +44,13 @@ namespace GameA.Game
             _path.Clear();
             _eState = EMonsterState.Think;
 
-            _stuckTimer = 0;
             _currentNodeId = -1;
-
             _jumpSpeed = 0;
             _thinkTimer = 0;
             _stuckTimer = 0;
             _lastPos = _curPos;
+            _curFriction = _friction;
+            _monsterSpeed = 40;
         }
 
         protected virtual void CalculateMonsterState()
@@ -59,7 +59,7 @@ namespace GameA.Game
             switch (_eState)
             {
                 case EMonsterState.Think:
-                    SpeedX = Util.ConstantLerp(SpeedX, 0, 6);
+                    SpeedX = Util.ConstantLerp(SpeedX, 0, _curFriction);
                     if (_thinkTimer > 50)
                     {
                         OnThink();
@@ -70,7 +70,7 @@ namespace GameA.Game
                     OnSeek();
                     break;
                 case EMonsterState.Attack:
-                    SpeedX = Util.ConstantLerp(SpeedX, 0, 6);
+                    SpeedX = Util.ConstantLerp(SpeedX, 0, _curFriction);
                     OnAttack();
                     break;
             }
@@ -116,7 +116,7 @@ namespace GameA.Game
             if (_isAlive && _isStart)
             {
                 bool air = false;
-                _friction = 6;
+                _curFriction = _friction;
                 if (SpeedY != 0)
                 {
                     air = true;
@@ -136,9 +136,9 @@ namespace GameA.Game
                             downExist = true;
                             _grounded = true;
                             _downUnits.Add(unit);
-                            if (unit.Friction > _friction)
+                            if (unit.Friction > _curFriction)
                             {
-                                _friction = unit.Friction;
+                                _curFriction = unit.Friction;
                             }
                             if (unit.Id == UnitDefine.ClayId)
                             {
@@ -247,13 +247,13 @@ namespace GameA.Game
                     {
                         //向右
                         SetFacingDir(EMoveDirection.Right);
-                        SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, 6);
+                        SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, _curFriction);
                     }
                     else if (pathPos.x - currentDest.x > ConstDefineGM2D.AIMaxPositionError)
                     {
                         //向左
                         SetFacingDir(EMoveDirection.Left);
-                        SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, 6);
+                        SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, _curFriction);
                     }
                 }
             }
@@ -283,13 +283,13 @@ namespace GameA.Game
                         {
                             //向右
                             SetFacingDir(EMoveDirection.Right);
-                            SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, 6);
+                            SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, _curFriction);
                         }
                         else if (pathPos.x - nextDest.x > ConstDefineGM2D.AIMaxPositionError)
                         {
                             //向左
                             SetFacingDir(EMoveDirection.Left);
-                            SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, 6);
+                            SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, _curFriction);
                         }
                     }
 

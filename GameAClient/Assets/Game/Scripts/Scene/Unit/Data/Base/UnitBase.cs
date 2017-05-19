@@ -610,7 +610,7 @@ namespace GameA.Game
             if (_dynamicCollider != null && !_lastColliderGrid.Equals(_colliderGrid))
             {
                 _dynamicCollider.Grid = _colliderGrid;
-                ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider);
+                ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider, _lastColliderGrid);
             }
             _lastColliderGrid = _colliderGrid;
             _colliderGridInner = _useCorner ? _colliderGrid.GetGridInner() : _colliderGrid;
@@ -1179,16 +1179,18 @@ namespace GameA.Game
         {
             var limit = DataScene2D.Instance.ValidMapRect;
             var size = GetDataSize();
-            if (IsMain)
-            {
-                _minPos = new IntVec2(limit.Min.x - _tableUnit.Offset.x, limit.Min.y - size.y);
-                _maxPos = new IntVec2(limit.Max.x - size.x + _tableUnit.Offset.x, DataScene2D.Instance.Height - size.y);
-            }
-            else
-            {
-                _minPos = new IntVec2(limit.Min.x - size.x, limit.Min.y - size.y);
-                _maxPos = new IntVec2(limit.Max.x, DataScene2D.Instance.Height);
-            }
+            _minPos = new IntVec2(limit.Min.x - _tableUnit.Offset.x, limit.Min.y - size.y);
+            _maxPos = new IntVec2(limit.Max.x - size.x + _tableUnit.Offset.x, DataScene2D.Instance.Height - size.y);
+            //if (IsMain)
+            //{
+            //    _minPos = new IntVec2(limit.Min.x - _tableUnit.Offset.x, limit.Min.y - size.y);
+            //    _maxPos = new IntVec2(limit.Max.x - size.x + _tableUnit.Offset.x, DataScene2D.Instance.Height - size.y);
+            //}
+            //else
+            //{
+            //    _minPos = new IntVec2(limit.Min.x - size.x, limit.Min.y - size.y);
+            //    _maxPos = new IntVec2(limit.Max.x, DataScene2D.Instance.Height);
+            //}
         }
 
         protected IntVec2 GetPos(IntVec2 colliderPos)
@@ -1209,7 +1211,7 @@ namespace GameA.Game
                 if (!_lastColliderGrid.Equals(_colliderGrid))
                 {
                     _dynamicCollider.Grid = _colliderGrid;
-                    ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider);
+                    ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider, _lastColliderGrid);
                     _lastColliderGrid = _colliderGrid;
                 }
             }

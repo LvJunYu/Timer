@@ -29,7 +29,6 @@ namespace GameA.Game
                 return false;
             }
             _isMonster = true;
-            _monsterSpeed = 50;
             _curMaxSpeedX = _monsterSpeed;
             _effectManager = new EffectManager(this);
             return true;
