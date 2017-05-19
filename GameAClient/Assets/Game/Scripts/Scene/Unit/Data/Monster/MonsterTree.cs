@@ -405,7 +405,7 @@ namespace GameA.Game
 
         protected override void UpdateMonsterView()
         {
-            LogHelper.Debug("UpdateMonsterView : {0} {1}", _eState, _speed);
+            //LogHelper.Debug("UpdateMonsterView : {0} {1}", _eState, _speed);
             switch (_eState)
             {
                     case EMonsterState.Think:
@@ -423,7 +423,13 @@ namespace GameA.Game
                     case EMonsterState.Attack:
                     if (_animation != null && !_animation.IsPlaying("Attack", 1))
                     {
-                        _animation.PlayOnce("Attack", 1, 1);
+                        _animation.PlayOnce("Attack", 1, 1).Complete+= delegate
+                        {
+                            if (_trans != null)
+                            {
+                                GameParticleManager.Instance.Emit("M1EffectMonsterTree", _trans.position + Vector3.forward*0.1f, Vector3.one);
+                            }
+                        };
                     }
                     break;
             }
