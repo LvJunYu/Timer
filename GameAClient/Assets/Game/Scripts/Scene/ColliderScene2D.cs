@@ -691,10 +691,22 @@ namespace GameA.Game
 
         public List<IntVec2> FindPath(UnitBase unit, UnitBase target, short maxCharacterJumpHeight)
         {
-            var start = unit.GetCurColliderPos() / ConstDefineGM2D.ServerTileScale;
-            var end = target.GetCurColliderPos() / ConstDefineGM2D.ServerTileScale;
+            var start = unit.GetCurColliderPos() ;
+            var end = target.GetCurColliderPos();
+            //不在空中的时候
+            if (!target.Grounded)
+            {
+                IntVec2 pointA = IntVec2.zero, pointB = IntVec2.zero;
+                GM2DTools.GetBorderPoint(target.ColliderGrid, EDirectionType.Down, ref pointA, ref pointB);
+                var distance = GM2DTools.GetDistanceToBorder(pointA, 2);
+                GridHit2D hit;
+                if (GridCast(pointA, pointB, 2, out hit, distance, EnvManager.UnitLayer))
+                {
+                    end.y -= hit.distance;
+                }
+            }
             var size = unit.GetColliderSize() / ConstDefineGM2D.ServerTileScale;
-            return FindPath(start, end, Math.Max(1, size.x), Math.Max(1, size.y), maxCharacterJumpHeight);
+            return FindPath(start / ConstDefineGM2D.ServerTileScale, end / ConstDefineGM2D.ServerTileScale, Math.Max(1, size.x), Math.Max(1, size.y), maxCharacterJumpHeight);
         }
 
         public override bool IsOnewayPlatform(int x, int y)
@@ -717,7 +729,7 @@ namespace GameA.Game
 
         #endregion
 
-        internal bool AnySolidBlockInStripe(int x, int y0, int y1)
+        internal bool HasBlockInLine(int x, int y0, int y1)
         {
             int startY, endY;
             if (y0 <= y1)

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using SoyEngine;
 
 namespace GameA.Game
 {
@@ -62,9 +63,22 @@ namespace GameA.Game
             return id < 3000;
         }
 
-        public static bool CanBlockLaserItem(int id)
+        public static bool IsSameDirectionSwitchTrigger(SceneNode node, byte rotation)
         {
-            return id != TransparentEarthId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) && !IsBoard(id);
+            return node.Id == SwitchTriggerId &&
+                   (node.Rotation + rotation == 2 || node.Rotation + rotation == 4);
+        }
+
+        public static bool IsLaserBlock(SceneNode node)
+        {
+            ushort id = node.Id;
+            return id != TransparentEarthId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
+                   !IsBoard(id) && (((1 << node.Layer) & EnvManager.LazerBlockLayer) != 0);
+        }
+
+        public static bool IsLaserDamage(int layer)
+        {
+            return ((1 << layer) & (EnvManager.HeroLayer | EnvManager.MainPlayerLayer)) != 0;
         }
     }
 }

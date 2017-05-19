@@ -113,7 +113,7 @@ namespace GameA.Game
 
         public override void UpdateView(float deltaTime)
         {
-            if (_isStart && _isAlive && _dynamicCollider != null)
+            if (_isStart && _isAlive)
             {
                 _deltaPos = _speed + _extraDeltaPos;
                 _curPos += _deltaPos;

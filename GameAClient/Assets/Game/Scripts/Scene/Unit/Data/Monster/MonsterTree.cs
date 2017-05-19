@@ -24,13 +24,12 @@ namespace GameA.Game
     public class MonsterTree : MonsterBase
     {
         public static IntVec2 SeekRange = new IntVec2(13, 4) * ConstDefineGM2D.ServerTileScale;
-        public static IntVec2 AttackRange = new IntVec2(2, 1) * ConstDefineGM2D.ServerTileScale;
+        public static IntVec2 AttackRange = new IntVec2(1, 1) * ConstDefineGM2D.ServerTileScale;
         private const int MaxStuckFrames = 30;
 
         protected List<IntVec2> _path = new List<IntVec2>();
         protected EMonsterState _eState;
 
-        protected int _stuckTime;
         protected int _currentNodeId;
 
         protected int _jumpSpeed;
@@ -45,7 +44,7 @@ namespace GameA.Game
             _path.Clear();
             _eState = EMonsterState.Think;
 
-            _stuckTime = 0;
+            _stuckTimer = 0;
             _currentNodeId = -1;
 
             _jumpSpeed = 0;
@@ -86,7 +85,7 @@ namespace GameA.Game
         protected void MoveTo()
         {
             _path.Clear();
-            _stuckTime = 0;
+            _stuckTimer = 0;
             var path = ColliderScene2D.Instance.FindPath(this, PlayMode.Instance.MainUnit, 3);
             if (path != null && path.Count > 1)
             {
@@ -248,14 +247,12 @@ namespace GameA.Game
                     {
                         //向右
                         SetFacingDir(EMoveDirection.Right);
-                        //SpeedX = _curMaxSpeedX;
                         SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, 6);
                     }
                     else if (pathPos.x - currentDest.x > ConstDefineGM2D.AIMaxPositionError)
                     {
                         //向左
                         SetFacingDir(EMoveDirection.Left);
-                        //SpeedX = -_curMaxSpeedX;
                         SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, 6);
                     }
                 }
@@ -278,7 +275,7 @@ namespace GameA.Game
                     }
                 }
 
-                if (checkedX != 0 && !ColliderScene2D.Instance.AnySolidBlockInStripe(checkedX / ConstDefineGM2D.ServerTileScale, pathPos.y / ConstDefineGM2D.ServerTileScale, _path[_currentNodeId + 1].y))
+                if (checkedX != 0 && !ColliderScene2D.Instance.HasBlockInLine(checkedX / ConstDefineGM2D.ServerTileScale, pathPos.y / ConstDefineGM2D.ServerTileScale, _path[_currentNodeId + 1].y))
                 {
                     if (_canMotor)
                     {
@@ -286,14 +283,12 @@ namespace GameA.Game
                         {
                             //向右
                             SetFacingDir(EMoveDirection.Right);
-                            //SpeedX = _curMaxSpeedX;
                             SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, 6);
                         }
                         else if (pathPos.x - nextDest.x > ConstDefineGM2D.AIMaxPositionError)
                         {
                             //向左
                             SetFacingDir(EMoveDirection.Left);
-                            //SpeedX = -_curMaxSpeedX;
                             SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, 6);
                         }
                     }
@@ -410,7 +405,7 @@ namespace GameA.Game
 
         protected override void UpdateMonsterView()
         {
-            LogHelper.Debug("UpdateMonsterView : {0}", _eState);
+            LogHelper.Debug("UpdateMonsterView : {0} {1}", _eState, _speed);
             switch (_eState)
             {
                     case EMonsterState.Think:

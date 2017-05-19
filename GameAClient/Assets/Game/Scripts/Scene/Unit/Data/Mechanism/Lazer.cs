@@ -131,9 +131,9 @@ namespace GameA.Game
                 for (int i = 0; i < hits.Count; i++)
                 {
                     var hit = hits[i];
-                    if (IsBlock(hit.node.Layer))
+                    if (UnitDefine.IsLaserBlock(hit.node))
                     {
-                        if (IsSameDirectionSwitchTrigger(hit.node))
+                        if (UnitDefine.IsSameDirectionSwitchTrigger(hit.node, Rotation))
                         {
                             UnitBase switchTrigger;
                             if (ColliderScene2D.Instance.TryGetUnit(hit.node, out switchTrigger))
@@ -143,27 +143,10 @@ namespace GameA.Game
                                 break;
                             }
                         }
-                        bool flag = false;
-                        List<UnitBase> units = ColliderScene2D.GetUnits(hit, _checkGrid);
-                        for (int j = 0; j < units.Count; j++)
-                        {
-                            UnitBase unit = units[j];
-                            if (unit != null && unit.IsAlive && UnitDefine.CanBlockLaserItem(unit.Id))
-                            {
-                                _distance = hit.distance;
-                                flag = true;
-                            }
-                        }
-                        if (flag)
-                        {
-                            break;
-                        }
+                        _distance = hit.distance;
+                        break;
                     }
-                }
-                for (int i = 0; i < hits.Count; i++)
-                {
-                    var hit = hits[i];
-                    if (IsDamage(hit.node.Layer) && hit.distance <= _distance)
+                    if (UnitDefine.IsLaserDamage(hit.node.Layer))
                     {
                         UnitBase unit;
                         if (ColliderScene2D.Instance.TryGetUnit(hit.node, out unit))
@@ -208,22 +191,6 @@ namespace GameA.Game
                     }
                 }
             }
-        }
-
-        protected bool IsSameDirectionSwitchTrigger(SceneNode node)
-        {
-            return node.Id == UnitDefine.SwitchTriggerId &&
-                   (node.Rotation + Rotation == 2 || node.Rotation + Rotation == 4);
-        }
-
-        protected bool IsBlock(int layer)
-        {
-            return ((1 << layer) & EnvManager.LazerBlockLayer) != 0;
-        }
-
-        protected bool IsDamage(int layer)
-        {
-            return ((1 << layer) & (EnvManager.HeroLayer | EnvManager.MainPlayerLayer)) != 0;
         }
     }
 }
