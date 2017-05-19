@@ -40,7 +40,7 @@ namespace GameA.Game
                         {
                             if (_trans != null)
                             {
-                                GameParticleManager.Instance.Emit("M1EffectMonsterTree", _trans.position + Vector3.forward * 0.1f, Vector3.one);
+                                GameParticleManager.Instance.Emit("M1EffectMonsterTree", _trans.position + Vector3.forward*0.1f);
                             }
                         };
                     }

@@ -37,7 +37,7 @@ namespace GameA.Game
                 return false;
             }
             _gridCheck = new GridCheck(this);
-            _viewZOffset = 0.1f;
+            SetSortingOrderBack();
             Calculate();
             return true;
         }
@@ -167,6 +167,7 @@ namespace GameA.Game
         {
             if (_lazerEffect != null)
             {
+                float z;
                 _lazerEffect.Play();
                 var distanceWorld = (float)_distance / ConstDefineGM2D.ServerTileScale;
                 _lazerEffect.Trans.localScale = new Vector3(1, distanceWorld, 1);
@@ -178,15 +179,19 @@ namespace GameA.Game
                     {
                         case 0:
                             _lazerEffectEnd.Trans.position = pos + distanceWorld * Vector3.up;
+                            z = GetZ(_borderCenterPoint + _distance*IntVec2.up);
                             break;
                         case 1:
                             _lazerEffectEnd.Trans.position = pos + distanceWorld * Vector3.right;
+                            z = GetZ(_borderCenterPoint + _distance * IntVec2.right);
                             break;
                         case 2:
                             _lazerEffectEnd.Trans.position = pos + distanceWorld * Vector3.down;
+                            z = GetZ(_borderCenterPoint + _distance * IntVec2.down);
                             break;
                         case 3:
                             _lazerEffectEnd.Trans.position = pos + distanceWorld * Vector3.left;
+                            z = GetZ(_borderCenterPoint + _distance * IntVec2.left);
                             break;
                     }
                 }

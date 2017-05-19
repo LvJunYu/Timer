@@ -117,7 +117,7 @@ namespace GameA.Game
                     {
                         _view.SetRendererEnabled(false);
                         GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
-                        GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position, Vector3.one);
+                        GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position);
                     }
                     //查收周边的让其爆炸
                     SendMsgToAround();

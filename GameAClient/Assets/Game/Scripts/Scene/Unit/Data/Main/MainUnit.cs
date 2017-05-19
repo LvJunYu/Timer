@@ -220,6 +220,7 @@ namespace GameA.Game
             _flashTime = 0;
             _invincibleTime = 0;
             _box = null;
+            _inWater = false;
             _eBoxOperateType = EBoxOperateType.None;
             //view
             if (_view != null)
@@ -368,7 +369,7 @@ namespace GameA.Game
 						{
 							effectPos += Vector3.right * 0.25f + Vector3.forward * 0.6f;
 						}
-						GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallClimb, effectPos, Vector3.one);
+						GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallClimb, effectPos);
                     }
                 }
                 else if(_mainInput._jumpLevel == 0)
@@ -386,7 +387,7 @@ namespace GameA.Game
 							{
 								effectPos += Vector3.left * 0.25f + Vector3.forward * 0.6f;
 							}
-							GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallJump, effectPos, Vector3.one);
+							GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallJump, effectPos);
 						}
                         PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_mainInput._jumpLevel), false);
                     }
@@ -1192,7 +1193,7 @@ namespace GameA.Game
                 PlayMode.Instance.CurrentShadow.RecordNormalDeath();
                 if (_view != null)
                 {
-                    GameParticleManager.Instance.Emit("M1EffectAirDeath", _trans.position + Vector3.up * 0.5f, Vector3.one);
+                    GameParticleManager.Instance.Emit("M1EffectAirDeath", _trans.position + Vector3.up * 0.5f);
                 }
                 OnRevive();
                 _trans.eulerAngles = new Vector3(90, 0, 0);
@@ -1214,10 +1215,11 @@ namespace GameA.Game
                                     _eUnitState = EUnitState.Normal;
                                     _mainInput.Clear();
                                     ClearRunTime();
-                                    LogHelper.Debug("!!!!!" + _isAlive);
                                     _isAlive = true;
                                     _flashTime = 100;
                                     _dieTime = 0;
+                                    _box = null;
+                                    _inWater = false;
                                     _trans.eulerAngles = new Vector3(0, 0, 0);
                                     SetPos(_revivePos);
                                     PlayMode.Instance.UpdateWorldRegion(_curPos);
@@ -1337,7 +1339,7 @@ namespace GameA.Game
             }
             if (_downUnit.Id == UnitDefine.ClayId)
             {
-				GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Jump, _trans.position, Vector3.one);
+				GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Jump, _trans.position);
             }
         }
 
@@ -1349,8 +1351,27 @@ namespace GameA.Game
             }
             if (_downUnit.Id == UnitDefine.ClayId)
             {
-				GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Land, _trans.position, Vector3.one);
+				GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Land, _trans.position);
             }
+        }
+
+        protected bool _inWater;
+
+        internal override void OnWater()
+        {
+            if (_inWater)
+            {
+                return;
+            }
+            _inWater = true;
+            if (_animation != null)
+            {
+                _animation.PlayOnce("DeathWater", 1, 1).Complete+= delegate
+                {
+                    OnDamage();
+                };
+            }
+            LogHelper.Debug("OnWater");
         }
 
         protected void OnDeadAll()

@@ -23,7 +23,6 @@ namespace GameA.Game
                 return false;
             }
             SetSortingOrderBack();
-            _view1ZOffset = -0.9f;
             return true;
         }
 
@@ -53,13 +52,10 @@ namespace GameA.Game
         private void OnWater(UnitBase other)
         {
             //播放水中动画 漂浮一会 然后死掉
+            GameParticleManager.Instance.Emit("M1EffectDeathWater", _trans.position);
             if (other.IsHero)
             {
-                
-            }
-            else
-            {
-                //播放水中特效
+                other.OnWater();
             }
         }
     }

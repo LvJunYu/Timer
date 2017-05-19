@@ -16,8 +16,8 @@ namespace GameA.Game
     [System.Serializable]
     public class UnitBase : IEquatable<UnitBase>
     {
-        protected const float BackZOffset = 0.9f;
-        protected const float FrontZOffset = -1.9f;
+        protected const float BackZOffset = 0.4f;
+        protected const float FrontZOffset = -0.4f;
 
         #region base data
 
@@ -573,7 +573,7 @@ namespace GameA.Game
             if (_view != null)
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
-				GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position, Vector3.one);
+				GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position);
             }
         }
 
@@ -828,7 +828,7 @@ namespace GameA.Game
                 if (_view1 != null)
                 {
                     _trans.position = GetTransPos();
-                    _view1.Trans.position = _trans.position + new Vector3(0, 0, _view1ZOffset);
+                    _view1.Trans.position = _trans.position + new Vector3(0, 0, _view1ZOffset - _viewZOffset);
                 }
             }
         }
@@ -864,6 +864,11 @@ namespace GameA.Game
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, - 0.1f, z);
             }
 			return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + Vector3.forward * z;
+        }
+
+        protected float GetZ(IntVec2 pos)
+        {
+            return  -(pos.x + pos.y) * 0.00078125f ;
         }
 
         #endregion
@@ -1257,9 +1262,19 @@ namespace GameA.Game
             return _tableUnit.GetColliderSize(ref _unitDesc);
         }
 
+        protected void SetSortingOrderBackground()
+        {
+            _viewZOffset = 20;
+        }
+
         protected void SetSortingOrderBack()
         {
             _viewZOffset = BackZOffset;
+        }
+
+        protected void SetSortingOrderFront()
+        {
+            _viewZOffset = FrontZOffset;
         }
 
         protected void SetFront()
@@ -1334,6 +1349,10 @@ namespace GameA.Game
                 return true;
             }
             return false;
+        }
+
+        internal virtual void OnWater()
+        {
         }
     }
 }
