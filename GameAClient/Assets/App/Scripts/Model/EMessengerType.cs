@@ -8,7 +8,7 @@ using System;
 
 namespace GameA
 {
-    public static class EMessengerType
+    public static partial class EMessengerType
     {
         public static readonly int OnAppDataChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnAllNewsFeedListChanged = SoyEngine.EMessengerType.NextId++;

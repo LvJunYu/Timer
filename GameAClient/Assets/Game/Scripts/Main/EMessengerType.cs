@@ -8,9 +8,9 @@
 using System;
 using System.Collections;
 
-namespace GameA.Game
+namespace GameA
 {
-    public class EMessengerType
+    public static partial class EMessengerType
     {
         public static int OnTableInited = SoyEngine.EMessengerType.NextId++;
 
@@ -67,6 +67,7 @@ namespace GameA.Game
 	    public static int GameFinishSuccess  = SoyEngine.EMessengerType.NextId++;
         public static int GameFinishSuccessShowUI = SoyEngine.EMessengerType.NextId++;
         public static int GameFinishFailed = SoyEngine.EMessengerType.NextId++;
+        public static int GameFinishFailedShowUI = SoyEngine.EMessengerType.NextId++;
         public static int GameFailedDeadMark = SoyEngine.EMessengerType.NextId++;
 
         public static int OnMainPlayerDead = SoyEngine.EMessengerType.NextId++;

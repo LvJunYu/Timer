@@ -259,6 +259,7 @@ namespace GameA.Game
                     else
                     {
                         _runState = ESceneState.Fail;
+                        // 因时间用完没有达到目标而失败
                         Messenger.Broadcast(EMessengerType.GameFinishFailed);
                     }
                     _secondLeft = 0;

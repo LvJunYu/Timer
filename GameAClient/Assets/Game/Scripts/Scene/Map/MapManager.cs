@@ -110,6 +110,12 @@ namespace GameA.Game
 				case GameManager.EStartType.Create:
 					InitCreate();
 					break;
+            case GameManager.EStartType.AdventureNormal:
+                InitPlay (project, GameManager.EStartType.AdventureNormal);
+                break;
+            case GameManager.EStartType.AdventureBonus:
+                InitPlay (project, GameManager.EStartType.AdventureBonus);
+                break;
 			}
 			return true;
 		}
@@ -231,6 +237,12 @@ namespace GameA.Game
                 case GameManager.EStartType.Play:
                 PlayMode.Instance.OnReadMapFile(tableUnit);
                 break;
+            case GameManager.EStartType.AdventureNormal:
+                PlayMode.Instance.OnReadMapFile (tableUnit);
+                break;
+            case GameManager.EStartType.AdventureBonus:
+                PlayMode.Instance.OnReadMapFile (tableUnit);
+                break;
                 case GameManager.EStartType.PlayRecord:
                  PlayMode.Instance.OnReadMapFile(tableUnit);
                 break;
@@ -323,6 +335,12 @@ namespace GameA.Game
                 case GameManager.EStartType.Play:
                     ChangeState(ESceneState.Play);
                     break;
+            case GameManager.EStartType.AdventureNormal:
+                ChangeState (ESceneState.Play);
+                break;
+            case GameManager.EStartType.AdventureBonus:
+                ChangeState (ESceneState.Play);
+                break;
                 case GameManager.EStartType.PlayRecord:
                     ChangeState(ESceneState.Play);
                     break;

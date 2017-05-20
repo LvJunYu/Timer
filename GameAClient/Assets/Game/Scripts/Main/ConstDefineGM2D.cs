@@ -127,5 +127,11 @@ namespace GameA.Game
         public const int NoFrictionEarthID = 4004;
         // 高摩擦力的地块ID
         public const int HighFrictionEarthID = 4011;
+
+
+        // 冒险模式每章普通关卡数
+        public const int AdvNormallevelPerChapter = 9;
+        // 冒险模式每章奖励关卡数
+        public const int AdvBonuslevelPerChapter = 3;
     }
 }

@@ -88,6 +88,86 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingUpdateFollowState {
+            get { return _isRequstingUpdateFollowState; }
+        }
+        private static bool _isRequstingUpdateFollowState = false;
+        /// <summary>
+		/// 更新关注状态
+		/// </summary>
+		/// <param name="userId">用户id</param>
+		/// <param name="followFlag"></param>
+        public static void UpdateFollowState (
+            long userId,
+            bool followFlag,
+            Action<Msg_SC_CMD_UpdateFollowState> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpdateFollowState) {
+                return;
+            }
+            _isRequstingUpdateFollowState = true;
+            Msg_CS_CMD_UpdateFollowState msg = new Msg_CS_CMD_UpdateFollowState();
+            // 更新关注状态
+            msg.UserId = userId;
+            msg.FollowFlag = followFlag;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateFollowState>(
+                SoyHttpApiPath.UpdateFollowState, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpdateFollowState = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpdateFollowState", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpdateFollowState = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpdateBlockState {
+            get { return _isRequstingUpdateBlockState; }
+        }
+        private static bool _isRequstingUpdateBlockState = false;
+        /// <summary>
+		/// 更新关注状态
+		/// </summary>
+		/// <param name="userId">用户id</param>
+		/// <param name="blockFlag"></param>
+        public static void UpdateBlockState (
+            long userId,
+            bool blockFlag,
+            Action<Msg_SC_CMD_UpdateBlockState> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpdateBlockState) {
+                return;
+            }
+            _isRequstingUpdateBlockState = true;
+            Msg_CS_CMD_UpdateBlockState msg = new Msg_CS_CMD_UpdateBlockState();
+            // 更新关注状态
+            msg.UserId = userId;
+            msg.BlockFlag = blockFlag;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateBlockState>(
+                SoyHttpApiPath.UpdateBlockState, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpdateBlockState = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpdateBlockState", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpdateBlockState = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingCreateProject {
             get { return _isRequstingCreateProject; }
         }

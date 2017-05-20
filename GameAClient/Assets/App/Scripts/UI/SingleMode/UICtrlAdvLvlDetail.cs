@@ -183,34 +183,8 @@ namespace GameA
                 eAPType,
                 () => {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                    if (!_isBonus) {
-                        // set local energy data
-                        GameATools.LocalUseEnergy (_table.EnergyCost);
-                    }
-
-                    if (AppData.Instance.AdventureData.ProjectList.SectionList.Count < _chapterIdx) {
-                        LogHelper.Error ("No project data of chapter {0}", _chapterIdx);
-                        SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail> ();
-                        return;
-                    } else {
-                        List<Project> projectList = _isBonus ?
-                            AppData.Instance.AdventureData.ProjectList.SectionList [_chapterIdx - 1].BonusProjectList :
-                            AppData.Instance.AdventureData.ProjectList.SectionList [_chapterIdx - 1].NormalProjectList;
-                        if (projectList.Count <= _levelIdx) {
-                            LogHelper.Error ("No project data of level in idx {0} in chapter {1}", _levelIdx, _chapterIdx);
-                            SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail> ();
-                            return;
-
-                        } else {
-                            projectList [_levelIdx].PrepareRes (
-                                () => {
-                                    GameManager.Instance.RequestPlay (projectList [_levelIdx]);
-                                    SocialGUIManager.Instance.ChangeToGameMode ();
-                                }
-                            );
-                        }
-                    }
-                    //                  TestCommitResult (chapterId, levelId, levelIdx, isBonusLevel);
+                    // set local energy data
+                    GameATools.LocalUseEnergy (_table.EnergyCost);
                 },
                 (error) => {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);

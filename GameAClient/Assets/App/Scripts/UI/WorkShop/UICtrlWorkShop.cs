@@ -122,7 +122,10 @@ namespace GameA
         public override void OnUpdate ()
         {
             base.OnUpdate ();
-
+            if (!_isOpen)
+                return;
+            if (SocialGUIManager.Instance.CurrentMode == SocialGUIManager.EMode.Game)
+                return;
 //            if (null != _curSelectedProject) {
             if (!RemoteCommands.IsRequstingUpdateProject) {
                 // 优先更新当前选择关卡
@@ -143,14 +146,14 @@ namespace GameA
                         _curSelectedPrivateProject.Content.WinCondition,
                         msg => {
                             if (msg.ResultCode == (int)EProjectOperateResult.POR_Success) {
+                                if (null != projectWR.Target) {
+                                    Project project = projectWR.Target as Project;
+                                    project.OnSyncFromParent (msg.ProjectData);
+                                }
                                 if (null != _curSelectedPrivateProject &&
                                     null != _curSelectedPrivateProject.Content &&
                                     msg.ProjectData.ProjectId == _curSelectedPrivateProject.Content.ProjectId) {
                                     RefreshProjectDetailInfoPanel ();
-                                }
-                                if (null != projectWR.Target) {
-                                    Project project = projectWR.Target as Project;
-                                    project.OnSyncFromParent (msg.ProjectData);
                                 }
                             }
                         },
@@ -665,16 +668,16 @@ namespace GameA
 
 
         private void OnReturnToApp () {
-            LocalUser.Instance.PersonalProjectList.Request (0, int.MaxValue, 
-                EPersonalProjectOrderBy.PePOB_CreateTime,
-                EOrderType.OT_Asc,
-                () => {
-                    RefreshView();
-                },
-                code => {
-                    // todo error handle
-                }
-            );
+//            LocalUser.Instance.PersonalProjectList.Request (0, int.MaxValue, 
+//                EPersonalProjectOrderBy.PePOB_CreateTime,
+//                EOrderType.OT_Asc,
+//                () => {
+//                    RefreshView();
+//                },
+//                code => {
+//                    // todo error handle
+//                }
+//            );
         }
 
         private void OnChangeModeBtn () {

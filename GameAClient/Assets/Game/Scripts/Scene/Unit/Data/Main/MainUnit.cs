@@ -293,6 +293,23 @@ namespace GameA.Game
                 _curPos = GetPos(_colliderPos);
                 UpdateTransPos();
             }
+            if (!_isAlive) {
+                _dieTime++;
+                if (_life <= 0) {
+                    if (_dieTime == 20) {
+                        Messenger.Broadcast (EMessengerType.GameFailedDeadMark);
+                        SpeedY = 150;
+                    }
+                    if (_dieTime > 20) {
+                        UpdateRotation ((_dieTime - 20) * 0.3f);
+                    }
+                    if (_dieTime == 100) {
+                        PlayMode.Instance.SceneState.MainUnitSiTouLe ();
+                        // 因生命用完而失败
+                        Messenger.Broadcast (EMessengerType.GameFinishFailed);
+                    }
+                }
+            }
             if (OutOfMap())
             {
                 return;
@@ -327,28 +344,29 @@ namespace GameA.Game
                 FlashRenderer(_flashTime);
             }
             bool isRunning = false;
-            if (!_isAlive)
-            {
-                _dieTime++;
-                if (_life <= 0)
-                {
-                    if (_dieTime == 20)
-                    {
-                        Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
-                        SpeedY = 150;
-                    }
-                    if (_dieTime > 20)
-                    {
-                        UpdateRotation((_dieTime - 20) * 0.3f);
-                    }
-                    if (_dieTime == 100)
-                    {
-                        PlayMode.Instance.SceneState.MainUnitSiTouLe();
-                        Messenger.Broadcast(EMessengerType.GameFinishFailed);
-                    }
-                }
-            }
-            else if (!_grounded)
+            //if (!_isAlive)
+            //{
+            //    _dieTime++;
+            //    if (_life <= 0)
+            //    {
+            //        if (_dieTime == 20)
+            //        {
+            //            Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
+            //            SpeedY = 150;
+            //        }
+            //        if (_dieTime > 20)
+            //        {
+            //            UpdateRotation((_dieTime - 20) * 0.3f);
+            //        }
+            //        if (_dieTime == 100)
+            //        {
+            //            PlayMode.Instance.SceneState.MainUnitSiTouLe();
+            //            // 因生命用完而失败
+            //            Messenger.Broadcast(EMessengerType.GameFinishFailed);
+            //        }
+            //    }
+            //}
+            if (_isAlive && !_grounded)
             {
                 _mainInput._brakeTime = 0;
                 if (_mainInput._eClimbState > 0)

@@ -14,17 +14,25 @@ namespace GameA
         /// </summary>
         private long _userId;
         /// <summary>
-        /// 
+        /// 关注我
         /// </summary>
         private bool _followMe;
         /// <summary>
-        /// 
+        /// 被我关注
         /// </summary>
         private bool _followedByMe;
         /// <summary>
         /// 好友
         /// </summary>
         private bool _isFriend;
+        /// <summary>
+        /// 被我屏蔽
+        /// </summary>
+        private bool _blockedByMe;
+        /// <summary>
+        /// 亲密值
+        /// </summary>
+        private int _friendliness;
 
         // cs fields----------------------------------
         /// <summary>
@@ -46,7 +54,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 
+        /// 关注我
         /// </summary>
         public bool FollowMe { 
             get { return _followMe; }
@@ -56,7 +64,7 @@ namespace GameA
             }}
         }
         /// <summary>
-        /// 
+        /// 被我关注
         /// </summary>
         public bool FollowedByMe { 
             get { return _followedByMe; }
@@ -72,6 +80,26 @@ namespace GameA
             get { return _isFriend; }
             set { if (_isFriend != value) {
                 _isFriend = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 被我屏蔽
+        /// </summary>
+        public bool BlockedByMe { 
+            get { return _blockedByMe; }
+            set { if (_blockedByMe != value) {
+                _blockedByMe = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 亲密值
+        /// </summary>
+        public int Friendliness { 
+            get { return _friendliness; }
+            set { if (_friendliness != value) {
+                _friendliness = value;
                 SetDirty();
             }}
         }
@@ -131,6 +159,8 @@ namespace GameA
             _followMe = msg.FollowMe;           
             _followedByMe = msg.FollowedByMe;           
             _isFriend = msg.IsFriend;           
+            _blockedByMe = msg.BlockedByMe;           
+            _friendliness = msg.Friendliness;           
             OnSyncPartial();
             return true;
         }

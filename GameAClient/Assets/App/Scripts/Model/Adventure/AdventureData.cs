@@ -25,6 +25,11 @@ namespace GameA
 		private EAdventureProjectType _lastPlayedLevelType;
 		private int _lastPlayedChapterIdx;
 		private int _lastPlayedLevelIdx;
+
+        /// <summary>
+        /// 上次冒险关卡奖励
+        /// </summary>
+        private Reward _lastAdvReward;
         #endregion 字段
 
         #region 属性
@@ -43,6 +48,25 @@ namespace GameA
 		public AdventureUserData UserData {
 			get { return _userData; }
 		}
+        public Reward LastAdvReward {
+            get { return _lastAdvReward; }
+        }
+
+        public EAdventureProjectType LastPlayedLevelType {
+            get {
+                return _lastPlayedLevelType;
+            }
+        }
+        public int LastPlayedChapterIdx {
+            get {
+                return _lastPlayedChapterIdx;
+            }
+        }
+        public int LastPlayedLevelIdx {
+            get {
+                return _lastPlayedLevelIdx;
+            }
+        }
         #endregion 属性
 
         #region 方法
@@ -124,6 +148,42 @@ namespace GameA
 			int levelIdx, 
 			EAdventureProjectType type,
 			Action successCallback, Action<ENetResultCode> failedCallback) {
+            if (_projectList.SectionList.Count < sectionId) {
+                LogHelper.Error ("no adv project data of section {0}", sectionId);
+                if (null != failedCallback) {
+                    failedCallback.Invoke (ENetResultCode.NR_None);
+                }
+                return;
+            }
+            Project project = null;
+            if (EAdventureProjectType.APT_Normal == type) {
+                if (_projectList.SectionList [sectionId - 1].NormalProjectList.Count < levelIdx) {
+                    LogHelper.Error ("no adv project data of section {0}, level {1}", sectionId, levelIdx);
+                    if (null != failedCallback) {
+                        failedCallback.Invoke (ENetResultCode.NR_None);
+                    }
+                    return;    
+                }
+                project = _projectList.SectionList [sectionId - 1].NormalProjectList [levelIdx - 1];
+            }
+            if (EAdventureProjectType.APT_Bonus == type) {
+                if (_projectList.SectionList [sectionId - 1].BonusProjectList.Count < levelIdx) {
+                    LogHelper.Error ("no adv project data of section {0}, level {1}", sectionId, levelIdx);
+                    if (null != failedCallback) {
+                        failedCallback.Invoke (ENetResultCode.NR_None);
+                    }
+                    return;
+                }
+                project = _projectList.SectionList [sectionId - 1].BonusProjectList [levelIdx - 1];
+            }
+            if (null == project) {
+                if (null != failedCallback) {
+                    failedCallback.Invoke (ENetResultCode.NR_None);
+                }
+                return;
+            };
+            project.SectionId = sectionId;
+            project.LevelId = levelIdx;
 			RemoteCommands.PlayAdventureLevel (sectionId, type, levelIdx, ret => {
 				if (ret.ResultCode == (int)EPlayAdventureLevelCode.PALC_Success) {
 					_lastRequiredLevelToken = ret.Token;
@@ -133,6 +193,30 @@ namespace GameA
 					if (null != successCallback)
 					{
 						successCallback.Invoke();
+                        if (AppData.Instance.AdventureData.ProjectList.SectionList.Count < sectionId) {
+                            LogHelper.Error ("No project data of chapter {0}", sectionId);
+                            return;
+                        } else {
+                            List<Project> projectList = EAdventureProjectType.APT_Bonus == type ?
+                                AppData.Instance.AdventureData.ProjectList.SectionList [levelIdx - 1].BonusProjectList :
+                                AppData.Instance.AdventureData.ProjectList.SectionList [levelIdx - 1].NormalProjectList;
+                            if (projectList.Count < levelIdx) {
+                                LogHelper.Error ("No project data of level in idx {0} in chapter {1}", levelIdx, sectionId);
+                                return;
+
+                            } else {
+                                projectList [levelIdx - 1].PrepareRes (
+                                    () => {
+                                        if (EAdventureProjectType.APT_Bonus == type) {
+                                            GameManager.Instance.RequestPlayAdvBonus (projectList [levelIdx - 1]);
+                                        } else {
+                                            GameManager.Instance.RequestPlayAdvNormal (projectList [levelIdx - 1]);
+                                        }
+                                        SocialGUIManager.Instance.ChangeToGameMode ();
+                                    }
+                                );
+                            }
+                        }
 					}
 				} else {
 					if (null != failedCallback)
@@ -147,6 +231,37 @@ namespace GameA
 				}
 			});
 		}
+
+        /// <summary>
+        /// 重新尝试冒险关卡
+        /// </summary>
+        public void RetryAdvLevel (Action successCallback, Action<ENetResultCode> failedCallback) {
+            PlayAdventureLevel (_lastPlayedChapterIdx + 1, _lastPlayedLevelIdx + 1, _lastPlayedLevelType, successCallback, failedCallback);
+        }
+
+        public Game.Table_StandaloneLevel GetAdvLevelTable (int chapteIdx, int levelIdx, EAdventureProjectType type) {
+            if (chapteIdx == 0 || levelIdx == 0) return null;
+
+            var tableChapter = Game.TableManager.Instance.GetStandaloneChapter (chapteIdx);
+            if (null == tableChapter) {
+                return null;
+            }
+            int levelId = 0;
+            if (EAdventureProjectType.APT_Bonus == type) {
+                if (levelIdx <= tableChapter.BonusLevels.Length) {
+                    levelId = tableChapter.BonusLevels [levelIdx - 1];
+                } else {
+                    return null;
+                }
+            } else {
+                if (levelIdx <= tableChapter.NormalLevels.Length) {
+                    levelId = tableChapter.NormalLevels [levelIdx - 1];
+                } else {
+                    return null;
+                }
+            }
+            return Game.TableManager.Instance.GetStandaloneLevel (levelId);
+        }
 
 		/// <summary>
 		/// 提交冒险模式关卡成绩
@@ -194,12 +309,18 @@ namespace GameA
 				leftTime,
 				leftLife,
 				ret => {
-					if (null != successCallback)
-					{
-						_lastRequiredLevelToken = 0;
-						LocalRefreshCommitedLevelData(success, usedTime, star1Flag, star2Flag, star3Flag, score);
-						successCallback.Invoke();
-					}
+                    if ((int)ECommitAdventureLevelResultCode.CALRC_Success == ret.ResultCode) {
+                        if (null != successCallback) {
+                            _lastRequiredLevelToken = 0;
+                            LocalRefreshCommitedLevelData (success, usedTime, star1Flag, star2Flag, star3Flag, score);
+                            _lastAdvReward = new Reward (ret.Reward);
+                            successCallback.Invoke ();
+                        }
+                    } else {
+                        if (null != failedCallback) {
+                            failedCallback.Invoke (ENetResultCode.NR_Error);
+                        }
+                    }
 				},
 				code => {
 					if (null != failedCallback)
@@ -209,7 +330,7 @@ namespace GameA
 				}
 			);
 		}
-
+        // 成功提交冒险模式通关数据后，客户端自主刷洗数据
 		private void LocalRefreshCommitedLevelData (
 			bool success,
 			float usedTime,
