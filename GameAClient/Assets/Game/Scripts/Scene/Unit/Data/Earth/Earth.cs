@@ -175,7 +175,7 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.IsHero)
+            if (other is BulletBase)
             {
                 int localStart = 0, localEnd = 0;
                 GetLocalPos(other.ColliderGrid.XMin, other.ColliderGrid.XMax, ref localStart, ref localEnd, EDirectionType.Up);
@@ -192,7 +192,7 @@ namespace GameA.Game
 
         public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (other.IsHero)
+            if (other is BulletBase)
             {
                 int localStart = 0, localEnd = 0;
                 GetLocalPos(other.ColliderGrid.YMin, other.ColliderGrid.YMax, ref localStart, ref localEnd, EDirectionType.Left);
