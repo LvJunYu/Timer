@@ -732,7 +732,19 @@ namespace GameA.Game
         /// <summary>
         /// 被电
         /// </summary>
-        public virtual void OnLazer()
+        internal virtual void OnLazer()
+        {
+        }
+
+        internal virtual void OnWater()
+        {
+        }
+
+        internal virtual void OnFire()
+        {
+        }
+
+        internal virtual void OutFire()
         {
         }
 
@@ -1349,10 +1361,6 @@ namespace GameA.Game
                 return true;
             }
             return false;
-        }
-
-        internal virtual void OnWater()
-        {
         }
 
         protected void FreeEffect(UnityNativeParticleItem effect)

@@ -91,6 +91,11 @@ namespace GameA.Game
                 }
                 if (_canMotor && _curBanInputTime <= 0)
                 {
+                    //着火了 迅速跑
+                    if (_eDieType == EDieType.Fire)
+                    {
+                        
+                    }
                     if (_curMoveDirection == EMoveDirection.Right)
                     {
                         SpeedX = Util.ConstantLerp(SpeedX, _monsterSpeed, friction);
@@ -128,6 +133,14 @@ namespace GameA.Game
                 UpdateMonsterView();
                 _lastGrounded = _grounded;
                 _lastPos = _curPos;
+            }
+            if (!_isAlive)
+            {
+                _dieTime ++;
+                if (_dieTime == 100)
+                {
+                    PlayMode.Instance.DestroyUnit(this);
+                }
             }
         }
 

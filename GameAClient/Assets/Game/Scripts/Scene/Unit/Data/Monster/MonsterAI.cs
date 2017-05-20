@@ -16,6 +16,7 @@ namespace GameA.Game
 {
     public enum EMonsterState
     {
+        None,
         Think,
         Seek,
         Attack
@@ -61,6 +62,12 @@ namespace GameA.Game
             _reSeekTimer = 0;
             _curFriction = _friction;
             base.Clear();
+        }
+
+        protected override void OnDead()
+        {
+            base.OnDead();
+            _eState = EMonsterState.None;
         }
 
         protected virtual void CalculateMonsterState()

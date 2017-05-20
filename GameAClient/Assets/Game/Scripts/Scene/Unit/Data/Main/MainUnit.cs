@@ -207,7 +207,10 @@ namespace GameA.Game
 
         protected override void Clear()
         {
-            _mainInput.Reset();
+            if (_mainInput != null)
+            {
+                _mainInput.Reset();
+            }
             _big = 0;
             _dieTime = 0;
             _flashTime = 0;
