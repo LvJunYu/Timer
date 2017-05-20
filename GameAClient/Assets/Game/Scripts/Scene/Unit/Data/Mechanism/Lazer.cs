@@ -100,21 +100,12 @@ namespace GameA.Game
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();
-            if (_effect != null)
-            {
-                GameParticleManager.FreeParticleItem(_effect);
-                _effect = null;
-            }
-            if (_lazerEffect != null)
-            {
-                GameParticleManager.FreeParticleItem(_lazerEffect);
-                _lazerEffect = null;
-            }
-            if (_lazerEffectEnd != null)
-            {
-                GameParticleManager.FreeParticleItem(_lazerEffectEnd);
-                _lazerEffectEnd = null;
-            }
+            FreeEffect(_effect);
+            _effect = null;
+            FreeEffect(_lazerEffect);
+            _lazerEffect = null;
+            FreeEffect(_lazerEffectEnd);
+            _lazerEffectEnd = null;
         }
 
         public override void UpdateLogic()

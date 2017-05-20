@@ -58,11 +58,8 @@ namespace GameA.Game
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();
-            if (_efffect != null)
-            {
-                GameParticleManager.FreeParticleItem(_efffect);
-                _efffect = null;
-            }
+            FreeEffect(_efffect);
+            _efffect = null;
         }
 
         public override void UpdateExtraData()
@@ -74,11 +71,8 @@ namespace GameA.Game
 
         private void UpdateEnergyEffect()
         {
-            if (_efffect != null)
-            {
-                GameParticleManager.FreeParticleItem(_efffect);
-                _efffect = null;
-            }
+            FreeEffect(_efffect);
+            _efffect = null;
             _energyPoolCtrl = null;
             string effectName = null;
             switch (_eSkillType)

@@ -11,17 +11,11 @@ using SoyEngine;
 
 namespace GameA.Game
 {
-    public class MonsterBase : RigidbodyUnit
+    public class MonsterBase : ActorBase
     {
         protected IntVec2 _lastPos;
         protected int _monsterSpeed;
         protected int _curMaxSpeedX;
-        protected EffectManager _effectManager;
-
-        public override EffectManager EffectMgr
-        {
-            get { return _effectManager; }
-        }
 
         protected override bool OnInit()
         {
@@ -31,7 +25,6 @@ namespace GameA.Game
             }
             _isMonster = true;
             _monsterSpeed = 30;
-            _effectManager = new EffectManager(this);
             return true;
         }
 

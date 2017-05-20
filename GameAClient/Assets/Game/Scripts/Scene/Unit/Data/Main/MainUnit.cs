@@ -15,7 +15,7 @@ namespace GameA.Game
 {
     [Serializable]
     [Unit(Id = 1001, Type = typeof(MainUnit))]
-    public class MainUnit : RigidbodyUnit
+    public class MainUnit : ActorBase
     {
         protected const int FlashTime = 100;
 
@@ -24,7 +24,6 @@ namespace GameA.Game
 
         protected SkillManager _skillMgr1;
         protected SkillManager _skillMgr2;
-        protected EffectManager _effectManager;
 
         [SerializeField] protected int _big;
         [SerializeField] protected int _flashTime;
@@ -78,11 +77,6 @@ namespace GameA.Game
         public override SkillManager SkillMgr2
         {
             get { return _skillMgr2; }
-        }
-
-        public override EffectManager EffectMgr
-        {
-            get { return _effectManager; }
         }
 
         public bool OnClay
@@ -182,7 +176,6 @@ namespace GameA.Game
             _skillMgr1.ChangeSkill<SkillWater>();
 
             _skillMgr2 = new SkillManager(this);
-            _effectManager = new EffectManager(this);
 
             IntVec2 offset = _shooterEffectOffset;
             if (_curMoveDirection == EMoveDirection.Right)
@@ -212,7 +205,7 @@ namespace GameA.Game
             return true;
         }
 
-        internal override void Reset()
+        protected override void Clear()
         {
             _mainInput.Reset();
             _big = 0;
@@ -246,7 +239,28 @@ namespace GameA.Game
             {
                 _invincibleEfffect.Stop();
             }
-            base.Reset();
+            if (_shooterEffect != null)
+            {
+                _shooterEffect.Stop();
+            }
+            base.Clear();
+        }
+
+        internal override void OnObjectDestroy()
+        {
+            base.OnObjectDestroy();
+            if (_reviveEffect != null)
+            {
+                _reviveEffect.Destroy();
+                _reviveEffect = null;
+            }
+            if (_portalEffect != null)
+            {
+                _portalEffect.Destroy();
+                _portalEffect = null;
+            }
+            FreeEffect(_shooterEffect);
+            _shooterEffect = null;
         }
 
         internal override void OnPlay()
@@ -1290,21 +1304,6 @@ namespace GameA.Game
             {
                 _animation.PlayOnce(VictoryAnimName());
                 PlayMode.Instance.CurrentShadow.RecordAnimation(VictoryAnimName(), false);
-            }
-        }
-
-        internal override void OnObjectDestroy()
-        {
-            base.OnObjectDestroy();
-            if (_reviveEffect != null)
-            {
-                _reviveEffect.Destroy();
-                _reviveEffect = null;
-            }
-            if (_portalEffect != null)
-            {
-                _portalEffect.Destroy();
-                _portalEffect = null;
             }
         }
 

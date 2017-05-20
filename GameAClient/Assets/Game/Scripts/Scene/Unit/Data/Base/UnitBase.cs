@@ -1354,5 +1354,13 @@ namespace GameA.Game
         internal virtual void OnWater()
         {
         }
+
+        protected void FreeEffect(UnityNativeParticleItem effect)
+        {
+            if (effect != null)
+            {
+                GameParticleManager.FreeParticleItem(effect);
+            }
+        }
     }
 }

@@ -43,16 +43,10 @@ namespace GameA.Game
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();
-            if (_effectStart != null)
-            {
-                GameParticleManager.FreeParticleItem(_effectStart);
-                _effectStart = null;
-            }
-            if (_effectRun != null)
-            {
-                GameParticleManager.FreeParticleItem(_effectRun);
-                _effectRun = null;
-            }
+            FreeEffect(_effectStart);
+            _effectStart = null;
+            FreeEffect(_effectRun);
+            _effectRun = null;
         }
 
         protected override void Clear()
