@@ -25,13 +25,12 @@ namespace GameA.Game
 
         protected override bool OnInit()
         {
+            _totalCount = 300;
+            _speedEnergy = 1;
             if (!base.OnInit())
             {
                 return false;
             }
-            _totalCount = 300;
-            _currentCount = 0;
-            _speedEnergy = 1;
             return true;
         }
 
@@ -47,10 +46,10 @@ namespace GameA.Game
 
         protected override void Clear()
         {
-            _currentCount = 0;
+            _currentCount = _totalCount;
             if (_energyPoolCtrl != null)
             {
-                _energyPoolCtrl.LiquidVolume = GetProcess();
+                _energyPoolCtrl.LiquidVolume = 1;
             }
             base.Clear();
         }
@@ -146,6 +145,10 @@ namespace GameA.Game
 
         private float GetProcess()
         {
+            if (_totalCount == 0)
+            {
+                return 1;
+            }
             return (float)_currentCount / _totalCount;
         }
     }

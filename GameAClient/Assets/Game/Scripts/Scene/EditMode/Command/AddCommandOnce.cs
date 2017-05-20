@@ -15,12 +15,9 @@ namespace GameA.Game
         private UnitDesc _deleteTarget;
         private UnitDesc _addTarget;
 
-	    private Table_Unit _curTableUnit;
-
 		public AddCommandOnce(UnitDesc deleteTarget)
         {
             _deleteTarget = deleteTarget;
-			_curTableUnit = UnitManager.Instance.GetTableUnit(deleteTarget.Id);
         }
 
         public bool Execute(Vector2 mousePos)
@@ -30,8 +27,9 @@ namespace GameA.Game
                 UnitDesc unitDesc;
                 if (EditMode.Instance.GetUnitKey(ECommandType.Create, mousePos, out unitDesc))
                 {
-					var grid = _curTableUnit.GetBaseDataGrid(unitDesc.Guid.x, unitDesc.Guid.y);
-                    int layerMask = _curTableUnit.UnitType == (int)EUnitType.Effect
+                    var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+                    var grid = tableUnit.GetBaseDataGrid(unitDesc.Guid.x, unitDesc.Guid.y);
+                    int layerMask = tableUnit.UnitType == (int)EUnitType.Effect
                     ? EnvManager.EffectLayer
                     : EnvManager.UnitLayerWithoutEffect;
                     SceneNode outHit;

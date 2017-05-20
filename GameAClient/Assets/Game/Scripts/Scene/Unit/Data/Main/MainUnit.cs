@@ -242,10 +242,6 @@ namespace GameA.Game
             {
                 _invincibleEfffect.Stop();
             }
-            if (_shooterEffect != null)
-            {
-                _shooterEffect.Stop();
-            }
             base.Clear();
         }
 
