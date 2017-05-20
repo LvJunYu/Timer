@@ -64,15 +64,12 @@ namespace GameA.Game
     public enum EUIType
     {
         None,
-        Main,
-        Monster,
-        Vehicle,
+        Actor,
+        Controller,
         Earth,
         Mechanism,
         Collection,
         Decoration,
-        Bullet,
-        Missle,
         Effect,
     }
 
@@ -339,5 +336,15 @@ namespace GameA.Game
         /// 举盾怪
         /// </summary>
         Broforce_Shield0 = 230,
+    }
+
+    public enum ESkillType
+    {
+        Water = -1,
+        Fire,
+        Ice,
+        Jelly,
+        Clay,
+        Max
     }
 }

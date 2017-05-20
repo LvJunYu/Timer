@@ -14,6 +14,16 @@ namespace GameA.Game
     [Unit(Id = 4103, Type = typeof(BlueStoneRotate))]
     public class BlueStoneRotate : Magic
     {
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            SetSortingOrderBack();
+            return true;
+        }
+
         internal override bool InstantiateView()
         {
             if (!base.InstantiateView())

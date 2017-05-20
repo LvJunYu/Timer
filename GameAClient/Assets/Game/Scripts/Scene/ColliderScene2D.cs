@@ -129,7 +129,7 @@ namespace GameA.Game
             {
                 PlayMode.Instance.MainUnit = (MainUnit)unit;
             }
-            else
+            else if(UnitDefine.IsGround(unit.Id))
             {
                 _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 0;
             }
@@ -222,12 +222,23 @@ namespace GameA.Game
 
         #region AOI
 
+        public bool UpdateDynamicNode(SceneNode node, Grid2D lastGrid)
+        {
+            if (base.UpdateDynamicNode(node))
+            {
+                if (UnitDefine.IsGround(node.Id))
+                {
+                    _pathGrid[lastGrid.XMin / ConstDefineGM2D.ServerTileScale, lastGrid.YMin / ConstDefineGM2D.ServerTileScale] = 1;
+                    _pathGrid[node.Grid.XMin / ConstDefineGM2D.ServerTileScale, node.Grid.YMin / ConstDefineGM2D.ServerTileScale] = 0;
+                }
+                return true;
+            }
+            return false;
+        }
+
         public void Reset()
         {
-            //foreach (var dynamicNode in _dynamicNodes)
-            //{
-            //    dynamicNode.Value.Reset();
-            //}
+
         }
 
         #region Comparison SortData
@@ -510,10 +521,16 @@ namespace GameA.Game
         }
 
         internal static List<GridHit2D> GridCastAll(IntVec2 pointA, IntVec2 pointB, byte direction, int distance = ConstDefineGM2D.MaxMapDistance, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue,
-    float maxDepth = float.MaxValue, SceneNode excludeNode = null)
+            float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
             return SceneQuery2D.GridCastAll(pointA, pointB, direction, distance, layerMask, Instance, minDepth, maxDepth,
                 excludeNode);
+        }
+
+        internal static List<GridHit2D> GridCastAll(Grid2D grid, byte direction, int distance = ConstDefineGM2D.MaxMapDistance, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue,
+            float maxDepth = float.MaxValue, SceneNode excludeNode = null)
+        {
+            return SceneQuery2D.GridCastAll(ref grid, direction, layerMask, Instance, minDepth, maxDepth,excludeNode);
         }
 
         public static List<UnitBase> GridCastAllReturnUnits(Grid2D one, int layerMask = JoyPhysics2D.LayMaskAll,
@@ -685,10 +702,27 @@ namespace GameA.Game
 
         public List<IntVec2> FindPath(UnitBase unit, UnitBase target, short maxCharacterJumpHeight)
         {
-            var start = unit.GetCurColliderPos() / ConstDefineGM2D.ServerTileScale;
-            var end = target.GetCurColliderPos() / ConstDefineGM2D.ServerTileScale;
+            var start = unit.GetCurColliderPos() ;
+            var end = target.GetCurColliderPos();
+            //不在空中的时候
+            if (!target.Grounded)
+            {
+                IntVec2 pointA = IntVec2.zero, pointB = IntVec2.zero;
+                GM2DTools.GetBorderPoint(target.ColliderGrid, EDirectionType.Down, ref pointA, ref pointB);
+                var distance = GM2DTools.GetDistanceToBorder(pointA, 2);
+                var hits = GridCastAll(pointA, pointB, 2, distance, EnvManager.UnitLayer, float.MinValue, float.MaxValue, unit.DynamicCollider);
+                for (int i = 0; i < hits.Count; i++)
+                {
+                    var hit = hits[i];
+                    if (UnitDefine.IsGround(hit.node.Id))
+                    {
+                        end.y -= hit.distance;
+                        break;
+                    }
+                }
+            }
             var size = unit.GetColliderSize() / ConstDefineGM2D.ServerTileScale;
-            return FindPath(start, end, Math.Max(1, size.x), Math.Max(1, size.y), maxCharacterJumpHeight);
+            return FindPath(start / ConstDefineGM2D.ServerTileScale, end / ConstDefineGM2D.ServerTileScale, Math.Max(1, size.x), Math.Max(1, size.y), maxCharacterJumpHeight);
         }
 
         public override bool IsOnewayPlatform(int x, int y)
@@ -711,7 +745,7 @@ namespace GameA.Game
 
         #endregion
 
-        internal bool AnySolidBlockInStripe(int x, int y0, int y1)
+        internal bool HasBlockInLine(int x, int y0, int y1)
         {
             int startY, endY;
             if (y0 <= y1)

@@ -100,7 +100,7 @@ namespace GameA.Game
 
         private void OnMonster()
         {
-            RefreshView(EUIType.Monster);
+            RefreshView(EUIType.Controller);
         }
 
         private void OnMechanism()
@@ -115,7 +115,7 @@ namespace GameA.Game
 
         private void OnActor()
         {
-            RefreshView(EUIType.Main);
+            RefreshView(EUIType.Actor);
         }
 
         private void OnDecoration()
@@ -134,7 +134,7 @@ namespace GameA.Game
         {
             if (eUnitType == EUIType.None)
 		    {
-                eUnitType = EUIType.Main;
+                eUnitType = EUIType.Controller;
             }
             if (_selectedUnitType == eUnitType)
             {
@@ -205,9 +205,9 @@ namespace GameA.Game
             _cachedButtonDic.Add(EUIType.Decoration,_cachedView.Decoration);
             _cachedButtonDic.Add(EUIType.Collection, _cachedView.Collection);
             _cachedButtonDic.Add(EUIType.Earth, _cachedView.Earth);
-            _cachedButtonDic.Add(EUIType.Main, _cachedView.Actor);
+            _cachedButtonDic.Add(EUIType.Actor, _cachedView.Actor);
             _cachedButtonDic.Add(EUIType.Mechanism, _cachedView.Mechanism);
-            _cachedButtonDic.Add(EUIType.Monster, _cachedView.Monster);
+            _cachedButtonDic.Add(EUIType.Controller, _cachedView.Monster);
 			var enumerator = _cachedButtonDic.GetEnumerator();
 			while (enumerator.MoveNext())
 			{

@@ -1,8 +1,8 @@
 ﻿/********************************************************************
-** Filename : MonsterTree
+** Filename : MonsterElephant
 ** Author : Dong
-** Date : 2017/5/19 星期五 下午 4:18:44
-** Summary : MonsterTree
+** Date : 2017/5/19 星期五 下午 4:34:09
+** Summary : MonsterElephant
 ***********************************************************************/
 
 using System;
@@ -12,9 +12,19 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 2001, Type = typeof(MonsterTree))]
-    public class MonsterTree : MonsterAI
+    [Unit(Id = 2002, Type = typeof(MonsterElephant))]
+    public class MonsterElephant : MonsterAI
     {
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            _monsterSpeed = 50;
+            return true;
+        }
+
         protected override void UpdateMonsterView()
         {
             //LogHelper.Debug("UpdateMonsterView : {0} {1}", _eState, _speed);
@@ -40,7 +50,7 @@ namespace GameA.Game
                         {
                             if (_trans != null)
                             {
-                                GameParticleManager.Instance.Emit("M1EffectMonsterTree", _trans.position + Vector3.forward*0.1f);
+                                //GameParticleManager.Instance.Emit("M1EffectMonsterTree", _trans.position + Vector3.forward * 0.1f, Vector3.one);
                             }
                         };
                     }

@@ -58,8 +58,18 @@ namespace GameA.Game
 		/// <summary>
         /// 首次通关奖励
         /// </summary>
+		[ColumnMapping("FirstWinReward")]
+		public int FirstWinReward;
+		/// <summary>
+        /// 重复通关奖励
+        /// </summary>
 		[ColumnMapping("WinReward")]
 		public int WinReward;
+		/// <summary>
+        /// 失败通关奖励
+        /// </summary>
+		[ColumnMapping("LoseReward")]
+		public int LoseReward;
 		/// <summary>
         /// 胜利条件
         /// </summary>

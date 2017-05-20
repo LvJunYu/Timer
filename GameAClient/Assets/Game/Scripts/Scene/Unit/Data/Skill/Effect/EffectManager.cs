@@ -55,6 +55,15 @@ namespace GameA.Game
             }
         }
 
+        public void Clear()
+        {
+            _currentEffects.Clear();
+            for (int i = 0; i < _currentEffects.Count; i++)
+            {
+                _currentEffects[i].OnRemoved();
+            }
+        }
+
         public virtual bool AddEffect<T>(BulletBase bullet) where T : class
         {
             EffectBase effect;

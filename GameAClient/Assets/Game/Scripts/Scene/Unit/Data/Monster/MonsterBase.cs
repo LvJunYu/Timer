@@ -11,16 +11,11 @@ using SoyEngine;
 
 namespace GameA.Game
 {
-    public class MonsterBase : RigidbodyUnit
+    public class MonsterBase : ActorBase
     {
+        protected IntVec2 _lastPos;
         protected int _monsterSpeed;
         protected int _curMaxSpeedX;
-        protected EffectManager _effectManager;
-
-        public override EffectManager EffectMgr
-        {
-            get { return _effectManager; }
-        }
 
         protected override bool OnInit()
         {
@@ -29,10 +24,15 @@ namespace GameA.Game
                 return false;
             }
             _isMonster = true;
-            _monsterSpeed = 50;
-            _curMaxSpeedX = _monsterSpeed;
-            _effectManager = new EffectManager(this);
+            _monsterSpeed = 30;
             return true;
+        }
+
+        protected override void Clear()
+        {
+            base.Clear();
+            _lastPos = _curPos;
+            _curMaxSpeedX = _monsterSpeed;
         }
 
         public override void UpdateLogic()
@@ -91,6 +91,11 @@ namespace GameA.Game
                 }
                 if (_canMotor && _curBanInputTime <= 0)
                 {
+                    //着火了 迅速跑
+                    if (_eDieType == EDieType.Fire)
+                    {
+                        
+                    }
                     if (_curMoveDirection == EMoveDirection.Right)
                     {
                         SpeedX = Util.ConstantLerp(SpeedX, _monsterSpeed, friction);
@@ -113,7 +118,7 @@ namespace GameA.Game
 
         public override void UpdateView(float deltaTime)
         {
-            if (_isStart && _isAlive && _dynamicCollider != null)
+            if (_isStart && _isAlive)
             {
                 _deltaPos = _speed + _extraDeltaPos;
                 _curPos += _deltaPos;
@@ -127,6 +132,15 @@ namespace GameA.Game
                 }
                 UpdateMonsterView();
                 _lastGrounded = _grounded;
+                _lastPos = _curPos;
+            }
+            if (!_isAlive)
+            {
+                _dieTime ++;
+                if (_dieTime == 100)
+                {
+                    PlayMode.Instance.DestroyUnit(this);
+                }
             }
         }
 

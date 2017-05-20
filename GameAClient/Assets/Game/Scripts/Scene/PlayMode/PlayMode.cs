@@ -233,10 +233,10 @@ namespace GameA.Game
             {
                 _focusPos = GetFocusPos(_mainUnit.CameraFollowPos);
 
-				var r = _mainUnit.View as ChangePartsSpineView;
-				if (r != null) {
-					r.SetParts (_logicFrameCnt / 50 % 3 + 1, SpinePartsHelper.ESpineParts.Head);
-				}
+                //var r = _mainUnit.View as ChangePartsSpineView;
+                //if (r != null) {
+                //    r.SetParts (_logicFrameCnt / 50 % 3 + 1, SpinePartsHelper.ESpineParts.Head);
+                //}
             }
         }
 

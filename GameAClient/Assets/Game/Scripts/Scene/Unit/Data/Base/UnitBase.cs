@@ -16,8 +16,8 @@ namespace GameA.Game
     [System.Serializable]
     public class UnitBase : IEquatable<UnitBase>
     {
-        protected const float BackZOffset = 0.9f;
-        protected const float FrontZOffset = -1.9f;
+        protected const float BackZOffset = 0.4f;
+        protected const float FrontZOffset = -0.4f;
 
         #region base data
 
@@ -573,7 +573,7 @@ namespace GameA.Game
             if (_view != null)
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
-				GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position, Vector3.one);
+				GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position);
             }
         }
 
@@ -597,6 +597,8 @@ namespace GameA.Game
         protected virtual void Clear()
         {
             ClearRunTime();
+            _canAttack = true;
+            _canMotor = true;
             _isAlive = true;
             _dieTime = 0;
             _deltaPos = IntVec2.zero;
@@ -608,7 +610,7 @@ namespace GameA.Game
             if (_dynamicCollider != null && !_lastColliderGrid.Equals(_colliderGrid))
             {
                 _dynamicCollider.Grid = _colliderGrid;
-                ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider);
+                ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider, _lastColliderGrid);
             }
             _lastColliderGrid = _colliderGrid;
             _colliderGridInner = _useCorner ? _colliderGrid.GetGridInner() : _colliderGrid;
@@ -730,7 +732,19 @@ namespace GameA.Game
         /// <summary>
         /// 被电
         /// </summary>
-        public virtual void OnLazer()
+        internal virtual void OnLazer()
+        {
+        }
+
+        internal virtual void OnWater()
+        {
+        }
+
+        internal virtual void OnFire()
+        {
+        }
+
+        internal virtual void OutFire()
         {
         }
 
@@ -826,7 +840,7 @@ namespace GameA.Game
                 if (_view1 != null)
                 {
                     _trans.position = GetTransPos();
-                    _view1.Trans.position = _trans.position + new Vector3(0, 0, _view1ZOffset);
+                    _view1.Trans.position = _trans.position + new Vector3(0, 0, _view1ZOffset - _viewZOffset);
                 }
             }
         }
@@ -862,6 +876,11 @@ namespace GameA.Game
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, - 0.1f, z);
             }
 			return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + Vector3.forward * z;
+        }
+
+        protected float GetZ(IntVec2 pos)
+        {
+            return  -(pos.x + pos.y) * 0.00078125f ;
         }
 
         #endregion
@@ -1177,16 +1196,18 @@ namespace GameA.Game
         {
             var limit = DataScene2D.Instance.ValidMapRect;
             var size = GetDataSize();
-            if (IsMain)
-            {
-                _minPos = new IntVec2(limit.Min.x - _tableUnit.Offset.x, limit.Min.y - size.y);
-                _maxPos = new IntVec2(limit.Max.x - size.x + _tableUnit.Offset.x, DataScene2D.Instance.Height - size.y);
-            }
-            else
-            {
-                _minPos = new IntVec2(limit.Min.x - size.x, limit.Min.y - size.y);
-                _maxPos = new IntVec2(limit.Max.x, DataScene2D.Instance.Height);
-            }
+            _minPos = new IntVec2(limit.Min.x - _tableUnit.Offset.x, limit.Min.y - size.y);
+            _maxPos = new IntVec2(limit.Max.x - size.x + _tableUnit.Offset.x, DataScene2D.Instance.Height - size.y);
+            //if (IsMain)
+            //{
+            //    _minPos = new IntVec2(limit.Min.x - _tableUnit.Offset.x, limit.Min.y - size.y);
+            //    _maxPos = new IntVec2(limit.Max.x - size.x + _tableUnit.Offset.x, DataScene2D.Instance.Height - size.y);
+            //}
+            //else
+            //{
+            //    _minPos = new IntVec2(limit.Min.x - size.x, limit.Min.y - size.y);
+            //    _maxPos = new IntVec2(limit.Max.x, DataScene2D.Instance.Height);
+            //}
         }
 
         protected IntVec2 GetPos(IntVec2 colliderPos)
@@ -1207,7 +1228,7 @@ namespace GameA.Game
                 if (!_lastColliderGrid.Equals(_colliderGrid))
                 {
                     _dynamicCollider.Grid = _colliderGrid;
-                    ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider);
+                    ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider, _lastColliderGrid);
                     _lastColliderGrid = _colliderGrid;
                 }
             }
@@ -1253,9 +1274,19 @@ namespace GameA.Game
             return _tableUnit.GetColliderSize(ref _unitDesc);
         }
 
+        protected void SetSortingOrderBackground()
+        {
+            _viewZOffset = 20;
+        }
+
         protected void SetSortingOrderBack()
         {
             _viewZOffset = BackZOffset;
+        }
+
+        protected void SetSortingOrderFront()
+        {
+            _viewZOffset = FrontZOffset;
         }
 
         protected void SetFront()
@@ -1330,6 +1361,14 @@ namespace GameA.Game
                 return true;
             }
             return false;
+        }
+
+        protected void FreeEffect(UnityNativeParticleItem effect)
+        {
+            if (effect != null)
+            {
+                GameParticleManager.FreeParticleItem(effect);
+            }
         }
     }
 }

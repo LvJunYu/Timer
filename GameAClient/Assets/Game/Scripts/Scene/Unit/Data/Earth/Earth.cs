@@ -300,14 +300,4 @@ namespace GameA.Game
             }
         }
     }
-
-    public enum ESkillType
-    {
-        None,
-        Fire,
-        Jelly,
-        Clay,
-        Ice,
-        Water,
-    }
 }
