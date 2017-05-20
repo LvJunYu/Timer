@@ -115,6 +115,22 @@ namespace GameA
             return RequestStartGame(project, EStartType.Play);
         }
 
+        public bool RequestPlayAdvNormal (Project project)
+        {
+            _projectList.Clear ();
+            _projectList.Add (project);
+            _curProjectInx = 0;
+            return RequestStartGame (project, EStartType.AdventureNormal);
+        }
+
+        public bool RequestPlayAdvBonus (Project project)
+        {
+            _projectList.Clear ();
+            _projectList.Add (project);
+            _curProjectInx = 0;
+            return RequestStartGame (project, EStartType.AdventureBonus);
+        }
+
         public bool RequestPlayRecord(Project project, Record record)
         {
             _projectList.Clear();
@@ -187,6 +203,8 @@ namespace GameA
             PlayRecord,
 			// 改造编辑
 			ModifyEdit,
+            AdventureNormal,
+            AdventureBonus,
         }
 
         private bool RequestStartGame(Project project, EStartType eStartType, Record record = null)
@@ -200,43 +218,51 @@ namespace GameA
             }
             go.AddComponent<ResourceManager>();
 
-            switch (eStartType)
-            {
-           	case EStartType.Create:
-                if (!game.Create(project))
-                {
-                    LogHelper.Error("RequestStartGame failed, id:{0}, eStartType:{1}", project.ProjectId, eStartType);
+            switch (eStartType) {
+            case EStartType.Create:
+                if (!game.Create (project)) {
+                    LogHelper.Error ("RequestStartGame failed, id:{0}, eStartType:{1}", project.ProjectId, eStartType);
                     return false;
                 }
                 break;
             case EStartType.Edit:
-                if (!game.Edit(project))
-                {
-                    LogHelper.Error("RequestStartGame failed, id:{0}, eStartType:{1}", project.ProjectId, eStartType);
+                if (!game.Edit (project)) {
+                    LogHelper.Error ("RequestStartGame failed, id:{0}, eStartType:{1}", project.ProjectId, eStartType);
                     return false;
                 }
                 break;
-			case EStartType.ModifyEdit:
-				if (!game.ModifyEdit(project))
-				{
-					LogHelper.Error("RequestStartGame failed, id:{0}, eStartType:{1}", project.ProjectId, eStartType);
-					return false;
-				}
-				break;
+            case EStartType.ModifyEdit:
+                if (!game.ModifyEdit (project)) {
+                    LogHelper.Error ("RequestStartGame failed, id:{0}, eStartType:{1}", project.ProjectId, eStartType);
+                    return false;
+                }
+                break;
             case EStartType.Play:
-                if (!game.Play(project))
-                {
-                    LogHelper.Error("RequestStartGame failed, id:{0}, eStartType:{1}", project.ProjectId, eStartType);
+                if (!game.Play (project)) {
+                    LogHelper.Error ("RequestStartGame failed, id:{0}, eStartType:{1}", project.ProjectId, eStartType);
                     return false;
                 }
                 break;
             case EStartType.PlayRecord:
-                if (!game.PlayRecord(project, record))
-                {
-                    LogHelper.Error("RequestStartGame failed, id:{0}, eStartType:{1}", project.ProjectId, eStartType);
+                if (!game.PlayRecord (project, record)) {
+                    LogHelper.Error ("RequestStartGame failed, id:{0}, eStartType:{1}", project.ProjectId, eStartType);
                     return false;
                 }
                 break;
+            case EStartType.AdventureNormal: {
+                    if (!game.PlayAdvNormal (project)) {
+                        LogHelper.Error ("RequestStartGame failed, id:{0}, eStartType:{1}", project.ProjectId, eStartType);
+                        return false;
+                    }
+                    break;
+                }
+            case EStartType.AdventureBonus: {
+                    if (!game.PlayAdvBonus (project)) {
+                        LogHelper.Error ("RequestStartGame failed, id:{0}, eStartType:{1}", project.ProjectId, eStartType);
+                        return false;
+                    }
+                    break;
+                }
             }
             _currentGame = game;
             Messenger.Broadcast(EMessengerType.OnRequestStartGame);

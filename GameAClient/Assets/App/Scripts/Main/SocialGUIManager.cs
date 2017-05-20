@@ -18,10 +18,10 @@ namespace GameA
         None = -1,
         Background,
 
-		/// <summary>
-		///     主体ui架子
-		/// </summary>
-		MainFrame,
+        /// <summary>
+        ///     主体ui架子
+        /// </summary>
+        MainFrame,
         /// <summary>
         ///     主体ui
         /// </summary>
@@ -41,10 +41,12 @@ namespace GameA
         /// </summary>
         InGame,
 
-		/// <summary>
-		/// 录像全屏
-		/// </summary>
-		RecordFullScreen,
+        /// <summary>
+        /// 录像全屏
+        /// </summary>
+        RecordFullScreen,
+
+        InGamePopup,
         /// <summary>
         /// 提示弹窗
         /// </summary>
@@ -57,7 +59,7 @@ namespace GameA
         /// 旋转屏幕蒙版
         /// </summary>
         ScreenRotateMask,
-        Max, 
+        Max,
     }
     /*社交管理器*/
     public class SocialGUIManager : GUIManager
@@ -218,8 +220,8 @@ namespace GameA
                CanvasScaler cs = _uiRoot.GetComponent<CanvasScaler>();
                 if (cs)
                 {
-                    cs.referenceResolution = new Vector2(UIConstDefine.UINormalScreenHeight,
-                        UIConstDefine.UINormalScreenWidth);
+                    cs.referenceResolution = new Vector2(UIConstDefine.UINormalScreenWidth,
+                        UIConstDefine.UINormalScreenHeight);
                     cs.matchWidthOrHeight = 1;
                 }
             }

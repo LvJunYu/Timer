@@ -34,7 +34,7 @@ namespace GameA
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnRequestStartGame, OnRequestStartGame);
             RegisterEvent(EMessengerType.OnGameStartComplete, OnGameStartComplete);
-			RegisterEvent(GameA.Game.EMessengerType.OnLoadingErrorCloseUI, OnLoadingErrorCloseUI);
+			RegisterEvent(EMessengerType.OnLoadingErrorCloseUI, OnLoadingErrorCloseUI);
         }
 
 	    protected override void OnClose()
@@ -51,12 +51,12 @@ namespace GameA
                 item.Init(_cachedView.GameWideRecentCompleteUserDock.GetComponent<RectTransform>());
                 _recentCompleteUserList.Add(item);
             }
-			Messenger<float>.AddListener(GameA.Game.EMessengerType.OnEnterGameLoadingProcess, OnSetProcess);
+			Messenger<float>.AddListener(EMessengerType.OnEnterGameLoadingProcess, OnSetProcess);
         }
 
 	    protected override void OnDestroy()
 	    {
-			Messenger<float>.RemoveListener(GameA.Game.EMessengerType.OnEnterGameLoadingProcess, OnSetProcess);
+			Messenger<float>.RemoveListener(EMessengerType.OnEnterGameLoadingProcess, OnSetProcess);
 			base.OnDestroy();
 	    }
 

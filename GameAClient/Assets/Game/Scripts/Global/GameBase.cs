@@ -62,6 +62,8 @@ namespace GameA
 		#region 方法
 
 		public abstract bool Play(Project project);
+        public abstract bool PlayAdvNormal (Project project);
+        public abstract bool PlayAdvBonus (Project project);
         public abstract bool Create(Project project);
         public abstract bool Edit(Project project);
         public abstract bool PlayRecord(Project project, Record record);

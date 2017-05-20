@@ -35,14 +35,6 @@ namespace GameA
         /// 
         /// </summary>
         private int _cs_maxCount;
-        /// <summary>
-        /// 排序字段
-        /// </summary>
-        private EProjectPlayHistoryOrderBy _cs_orderBy;
-        /// <summary>
-        /// 升序降序
-        /// </summary>
-        private EOrderType _cs_orderType;
         #endregion
 
         #region 属性
@@ -100,20 +92,6 @@ namespace GameA
             get { return _cs_maxCount; }
             set { _cs_maxCount = value; }
         }
-        /// <summary>
-        /// 排序字段
-        /// </summary>
-        public EProjectPlayHistoryOrderBy CS_OrderBy { 
-            get { return _cs_orderBy; }
-            set { _cs_orderBy = value; }
-        }
-        /// <summary>
-        /// 升序降序
-        /// </summary>
-        public EOrderType CS_OrderType { 
-            get { return _cs_orderType; }
-            set { _cs_orderType = value; }
-        }
 
         public override bool IsDirty {
             get {
@@ -136,14 +114,10 @@ namespace GameA
 		/// <param name="userId">.</param>
 		/// <param name="startInx">.</param>
 		/// <param name="maxCount">.</param>
-		/// <param name="orderBy">排序字段.</param>
-		/// <param name="orderType">升序降序.</param>
         public void Request (
             long userId,
             int startInx,
             int maxCount,
-            EProjectPlayHistoryOrderBy orderBy,
-            EOrderType orderType,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
             if (_isRequesting) {
@@ -159,29 +133,17 @@ namespace GameA
                     if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
                     return;
                 }
-                if (_cs_orderBy != orderBy) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
-                if (_cs_orderType != orderType) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
                 OnRequest (successCallback, failedCallback);
             } else {
                 _cs_userId = userId;
                 _cs_startInx = startInx;
                 _cs_maxCount = maxCount;
-                _cs_orderBy = orderBy;
-                _cs_orderType = orderType;
                 OnRequest (successCallback, failedCallback);
 
                 Msg_CS_DAT_UserWorldProjectPlayHistoryList msg = new Msg_CS_DAT_UserWorldProjectPlayHistoryList();
                 msg.UserId = userId;
                 msg.StartInx = startInx;
                 msg.MaxCount = maxCount;
-                msg.OrderBy = orderBy;
-                msg.OrderType = orderType;
                 NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserWorldProjectPlayHistoryList>(
                     SoyHttpApiPath.UserWorldProjectPlayHistoryList, msg, ret => {
                         if (OnSync(ret)) {

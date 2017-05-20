@@ -30,6 +30,12 @@ namespace SoyEngine
         public const string UserRelationStatistic = "/relation/getUserRelationStatistic";
         // 用户与我的关系
         public const string UserRelationWithMe = "/relation/getUserRelationWithMe";
+        // 更新关注状态
+        public const string UpdateFollowState = "/relation/updateFollowState";
+        // 更新关注状态
+        public const string UpdateBlockState = "/relation/updateBlockState";
+        // 获取社交用户列表
+        public const string RelationUserList = "/relation/getUserList";
         // 获取关卡数据
         public const string Project = "/project/get";
         // 关卡扩展信息
@@ -78,6 +84,8 @@ namespace SoyEngine
         public const string AdventureUserProgress = "/adventure/getUserProgress";
         // 获取冒险关卡用户数据
         public const string AdventureUserLevelDataDetail = "/adventure/getUserLevelDataDetail";
+        // 请求单人模式关卡排行
+        public const string AdventureLevelRankList = "/adventure/getLevelRankList";
         // 获取冒险章节用户数据
         public const string AdventureUserSection = "/adventure/getUserSectionData";
         // 获取体力数据

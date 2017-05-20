@@ -83,6 +83,15 @@ namespace GameA
         /// 是否正在下载资源
         /// </summary>
         private bool _isdownloadingRes;
+
+        /// <summary>
+        /// 冒险模式的第几章，如果不是冒险模式关卡，则为0
+        /// </summary>
+        private int _sectionId;
+        /// <summary>
+        /// 冒险模式的第几关，如果不是冒险模式关卡，则为0
+        /// </summary>
+        private int _levelId;
         #endregion 变量
 
         #region 属性
@@ -547,6 +556,23 @@ namespace GameA
             }
         }
 
+        public int SectionId {
+            get {
+                return _sectionId;
+            }
+            set {
+                _sectionId = value;
+            }
+        }
+
+        public int LevelId {
+            get {
+                return _levelId;
+            }
+            set {
+                _levelId = value;
+            }
+        }
         #endregion 属性
 
         #region 方法

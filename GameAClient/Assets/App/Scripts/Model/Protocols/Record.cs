@@ -28,7 +28,7 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private long _usedTime;
+        private float _usedTime;
         /// <summary>
         /// 
         /// </summary>
@@ -138,7 +138,7 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public long UsedTime { 
+        public float UsedTime { 
             get { return _usedTime; }
             set { if (_usedTime != value) {
                 _usedTime = value;

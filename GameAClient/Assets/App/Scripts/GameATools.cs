@@ -60,6 +60,7 @@ namespace GameA {
             if (num > AppData.Instance.AdventureData.UserData.UserEnergyData.Energy) {
                 if (showBuy) {
                     // todo buy energy ui
+                    SocialGUIManager.Instance.OpenPopupUI<UICtrlBuyEnergy> (num - AppData.Instance.AdventureData.UserData.UserEnergyData.Energy);
                 }
                 return false;
             } else {

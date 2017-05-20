@@ -171,7 +171,7 @@ namespace GameA.Game
                 if (_mainUnit.Life <= 0)
                 {
                     //_mainUnit.UpdateSpeedY();
-                    //_mainUnit.UpdateDataView();
+                    _mainUnit.UpdateView(ConstDefineGM2D.FixedDeltaTime);
                     //_mainUnit.AfterUpdatePhysics(ConstDefineGM2D.FixedDeltaTime);
                     for (int i = 0; i < _allSkeletonAnimationComp.Count; i++)
                     {

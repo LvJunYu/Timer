@@ -12,10 +12,10 @@ using UnityEngine;
 using SoyEngine.Proto;
 using SoyEngine;
 
-namespace GameA.Game
+namespace GameA
 {
 	[UIAutoSetup(EUIAutoSetupType.Add)]
-	public class UICtrlGameFinish:UICtrlGenericBase<UIViewGameFinish>
+	public class UICtrlGameFinish : UICtrlGenericBase<UIViewGameFinish>
 	{
 		private enum EShowState
 		{
@@ -25,22 +25,29 @@ namespace GameA.Game
 			Lose,
 			Win,
             WinRankRate,
+            AdvNormalWin,
+            AdvNormalLose,
+            AdvBonusWin,
+            AdvBonusLose,
 		}
+        private EShowState _showState;
 		private bool _finishRes;
 
 		private int _curMarkStarValue;
 
         private bool _rateRequest = false;
 
+        private USCtrlGameFinishReward [] _rewardCtrl;
+
 		protected override void InitGroupId()
 		{
-			_groupId = (int)EUIGroupType.PopUpUI;
+			_groupId = (int)EUIGroupType.InGamePopup;
 		}
 
 		protected override void InitEventListener()
 		{
 			base.InitEventListener();
-            RegisterEvent(EMessengerType.GameFinishFailed, OnFailed);
+            RegisterEvent(EMessengerType.GameFinishFailedShowUI, OnFailed);
 			RegisterEvent(EMessengerType.GameFinishSuccessShowUI, OnSuccess);
 		}
 
@@ -53,64 +60,122 @@ namespace GameA.Game
 		protected override void OnOpen(object parameter)
 		{
 			base.OnOpen(parameter);
+            if (Game.PlayMode.Instance.SceneState.GameFailed) {
+                _showState = EShowState.Lose;
+                // 冒险关卡普通关卡胜利后
+                if (Game.GM2DGame.Instance.CurrentMode == Game.EMode.AdvNormal) {
+                    _showState = EShowState.AdvNormalLose;
+                }
+                // 冒险关卡奖励关卡胜利后
+                if (Game.GM2DGame.Instance.CurrentMode == Game.EMode.AdvBonus) {
+                    _showState = EShowState.AdvBonusLose;
+                }
+            } else if (Game.PlayMode.Instance.SceneState.GameSucceed) {
+                _showState = EShowState.Win;
+                // 冒险关卡普通关卡胜利后
+                if (Game.GM2DGame.Instance.CurrentMode == Game.EMode.AdvNormal) {
+                    _showState = EShowState.AdvNormalWin;
+                }
+                // 冒险关卡奖励关卡胜利后
+                if (Game.GM2DGame.Instance.CurrentMode == Game.EMode.AdvBonus) {
+                    _showState = EShowState.AdvBonusWin;
+                }
+
+            } else {
+                SocialGUIManager.Instance.CloseUI <UICtrlGameFinish>();
+            }
+
 //			_curMarkStarValue = GM2DGame.Instance.Project.UserRate;
-			UpdateShow();
-			UpdateLifeItem();
+			UpdateView();
+			//UpdateLifeItem();
 		}
 
 		#region   private
 
 		private void UpdateLifeItem()
 		{
-			for (int i = 0; i < _cachedView.MarkStarArray.Length; i++)
-			{
-				_cachedView.MarkStarArray[i].UpdateShow(_curMarkStarValue);
-			}
+			//for (int i = 0; i < _cachedView.MarkStarArray.Length; i++)
+			//{
+			//	_cachedView.MarkStarArray[i].UpdateShow(_curMarkStarValue);
+			//}
 		}
 
 		private void InitUI()
 		{
-			_cachedView.ExitGame.onClick.AddListener(OnClickExitGame);
-            _cachedView.ExitGame2.onClick.AddListener(OnClickExitGame);
-            _cachedView.PlayAgain.onClick.AddListener(OnClickRestartGame);
-			_cachedView.PlayAgain2.onClick.AddListener(OnClickRestartGame);
-			_cachedView.Public.onClick.AddListener(OnClickPublic);
-            _cachedView.ReturnToEditor.onClick.AddListener(OnClickReturnEditor);
-			_cachedView.ReturnToEditor2.onClick.AddListener(OnClickReturnEditor);
-			_cachedView.NextLevel.onClick.AddListener(OnClickNextLevelButton);
+            _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtn);
+            _cachedView.RetryBtn.onClick.AddListener(OnRetryBtn);
+            _cachedView.NextBtn.onClick.AddListener(OnNextBtn);
 
-			_cachedView.ButtonMark.onClick.AddListener(OnClickMarkButton);
-
-            _cachedView.SkipBtn .onClick.AddListener(OnClickSkipButton);
-
-            _cachedView.ExitGameText.text = GM2DUIConstDefine.GameFinishButtonExitGame;
-            if(_cachedView.ExitGame2Text != null)
-            {
-                _cachedView.ExitGame2Text.text = GM2DUIConstDefine.GameFinishButtonExitGame;
+            _rewardCtrl = new USCtrlGameFinishReward [_cachedView.Rewards.Length];
+            for (int i = 0; i < _cachedView.Rewards.Length; i++) {
+                _rewardCtrl [i] = new USCtrlGameFinishReward ();
+                _rewardCtrl [i].Init (_cachedView.Rewards [i]);
             }
-            _cachedView.PlayAgainText.text = GM2DUIConstDefine.GameFinishButtonReStart;
-            if(_cachedView.PlayAgain2Text != null)
-            {
-                _cachedView.PlayAgain2Text.text = GM2DUIConstDefine.GameFinishButtonReStart;
-            }
-			_cachedView.PublicText.text = GM2DUIConstDefine.GameFinishButtonPublic;
-            _cachedView.ReturnToEditorText.text = GM2DUIConstDefine.GameFinishButtonReturnToEditor;
-            if(_cachedView.ReturnToEditor2Text != null)
-            {
-                _cachedView.ReturnToEditor2Text.text = GM2DUIConstDefine.GameFinishButtonReturnToEditor;
-            }
-			_cachedView.NextLevelText.text = LocaleManager.GameLocale("game_finish_button_next_level");
+			//_cachedView.PlayAgain2.onClick.AddListener(OnClickRestartGame);
+			//_cachedView.Public.onClick.AddListener(OnClickPublic);
+   //         _cachedView.ReturnToEditor.onClick.AddListener(OnClickReturnEditor);
+			//_cachedView.ReturnToEditor2.onClick.AddListener(OnClickReturnEditor);
+			//_cachedView.NextLevel.onClick.AddListener(OnClickNextLevelButton);
 
-			_cachedView.ButtonMarkText.text = GM2DUIConstDefine.GameFinishButtonMark;
+			//_cachedView.ButtonMark.onClick.AddListener(OnClickMarkButton);
 
-			for (int i = 0; i < _cachedView.MarkStarArray.Length; i++)
-			{
-				var item = _cachedView.MarkStarArray[i];
-				item.Init(i + 1, OnMarkStarItemButtonClick);
-			}
+            //_cachedView.SkipBtn .onClick.AddListener(OnClickSkipButton);
+
+   //         _cachedView.ExitGameText.text = GM2DUIConstDefine.GameFinishButtonExitGame;
+   //         if(_cachedView.ExitGame2Text != null)
+   //         {
+   //             _cachedView.ExitGame2Text.text = GM2DUIConstDefine.GameFinishButtonExitGame;
+   //         }
+   //         _cachedView.PlayAgainText.text = GM2DUIConstDefine.GameFinishButtonReStart;
+   //         if(_cachedView.PlayAgain2Text != null)
+   //         {
+   //             _cachedView.PlayAgain2Text.text = GM2DUIConstDefine.GameFinishButtonReStart;
+   //         }
+			//_cachedView.PublicText.text = GM2DUIConstDefine.GameFinishButtonPublic;
+   //         _cachedView.ReturnToEditorText.text = GM2DUIConstDefine.GameFinishButtonReturnToEditor;
+   //         if(_cachedView.ReturnToEditor2Text != null)
+   //         {
+   //             _cachedView.ReturnToEditor2Text.text = GM2DUIConstDefine.GameFinishButtonReturnToEditor;
+   //         }
+			//_cachedView.NextLevelText.text = LocaleManager.GameLocale("game_finish_button_next_level");
+
+			//_cachedView.ButtonMarkText.text = GM2DUIConstDefine.GameFinishButtonMark;
+
+			//for (int i = 0; i < _cachedView.MarkStarArray.Length; i++)
+			//{
+			//	var item = _cachedView.MarkStarArray[i];
+			//	item.Init(i + 1, OnMarkStarItemButtonClick);
+			//}
 		}
 		#region UIEvent
 
+        private void OnReturnBtn () {
+            InternalExitGame ();
+        }
+        private void OnRetryBtn () {
+            var tableLevel = AppData.Instance.AdventureData.GetAdvLevelTable (
+                AppData.Instance.AdventureData.LastPlayedChapterIdx + 1,
+                AppData.Instance.AdventureData.LastPlayedLevelIdx + 1,
+                AppData.Instance.AdventureData.LastPlayedLevelType
+            );
+            if (null == tableLevel) return;
+            if (GameATools.CheckEnergy (tableLevel.EnergyCost)) {
+                SocialGUIManager.Instance.CloseUI <UICtrlGameFinish>();
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (
+                    this, "...");
+                AppData.Instance.AdventureData.RetryAdvLevel (
+                    () => {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                        // set local energy data
+                        GameATools.LocalUseEnergy (tableLevel.EnergyCost);
+                    },
+                    (error) => {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                    }
+                );
+            }
+        }
+        private void OnNextBtn () {}
 
 		private void OnClickRestartGame()
 		{
@@ -121,11 +186,11 @@ namespace GameA.Game
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
                 p.BeginPlay(false, ()=>{
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    PlayMode.Instance.RePlay();
+                    Game.PlayMode.Instance.RePlay();
                     //SceneManager.Instance.RePlay();
-                    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioButtonClick);
-                    GM2DGUIManager.Instance.CloseUI<UICtrlGameFinish>();
-                    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioWindowClosed);
+                    //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioButtonClick);
+                    SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
+                    //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioWindowClosed);
                 }, code=>{
 //                    string tip = null;
 //                    if(code == EPlayProjectRetCode.PPRC_ProjectHasBeenDeleted)
@@ -158,86 +223,86 @@ namespace GameA.Game
             }
             else
             {
-                PlayMode.Instance.RePlay();
+                Game.PlayMode.Instance.RePlay();
                 //SceneManager.Instance.RePlay();
-                GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioButtonClick);
-                GM2DGUIManager.Instance.CloseUI<UICtrlGameFinish>();
-                GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioWindowClosed);
+                //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioButtonClick);
+                SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
+                //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioWindowClosed);
             }
         }
 
 		private void OnClickExitGame()
 		{
-            if(GM2DGame.Instance.GameInitType == GameManager.EStartType.Create
-                || GM2DGame.Instance.GameInitType == GameManager.EStartType.Edit)
-            {
-                if(GM2DGame.Instance.NeedSave)
-                {
-                    CommonTools.ShowPopupDialog("关卡做出的修改还未保存，是否退出", null,
-                        new System.Collections.Generic.KeyValuePair<string, Action>("取消",()=>{}),
-                        new System.Collections.Generic.KeyValuePair<string, Action>("保存",()=>{
-                            OnClickReturnEditor();
-                            Project project = GM2DGame.Instance.Project;
-                            if(project.LocalDataState == ELocalDataState.LDS_UnCreated)
-                            {
-                                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(()=>{
-                                    GM2DGUIManager.Instance.OpenUI<UICtrlPublish>();
-                                }));
-                            }
-                            else
-                            {
-                                UICtrlPublish.SaveProject(project.Name, project.Summary, 
-                                    project.DownloadPrice, project.PublishRecordFlag, ()=>{
-                                    SocialApp.Instance.ReturnToApp();
-                                },()=>{
-                                    GM2DGUIManager.Instance.OpenUI<UICtrlPublish>();
-                                });
-                            }
-                        }),
-                        new System.Collections.Generic.KeyValuePair<string, Action>("退出",()=>{
-                            InternalExitGame();
-                        }));
-                    return;
-                }
-            }
-            InternalExitGame();
+            //if(Game.GM2DGame.Instance.GameInitType == GameManager.EStartType.Create
+            //    || Game.GM2DGame.Instance.GameInitType == GameManager.EStartType.Edit)
+            //{
+            //    if(Game.GM2DGame.Instance.NeedSave)
+            //    {
+            //        CommonTools.ShowPopupDialog("关卡做出的修改还未保存，是否退出", null,
+            //            new System.Collections.Generic.KeyValuePair<string, Action>("取消",()=>{}),
+            //            new System.Collections.Generic.KeyValuePair<string, Action>("保存",()=>{
+            //                OnClickReturnEditor();
+            //                Project project = Game.GM2DGame.Instance.Project;
+            //                if(project.LocalDataState == ELocalDataState.LDS_UnCreated)
+            //                {
+            //                    CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(()=>{
+            //                        Game.GM2DGUIManager.Instance.OpenUI<Game.UICtrlPublish>();
+            //                    }));
+            //                }
+            //                else
+            //                {
+            //                    Game.UICtrlPublish.SaveProject(project.Name, project.Summary, 
+            //                        project.DownloadPrice, project.PublishRecordFlag, ()=>{
+            //                        SocialApp.Instance.ReturnToApp();
+            //                    },()=>{
+            //                        Game.GM2DGUIManager.Instance.OpenUI<Game.UICtrlPublish>();
+            //                    });
+            //                }
+            //            }),
+            //            new System.Collections.Generic.KeyValuePair<string, Action>("退出",()=>{
+            //                InternalExitGame();
+            //            }));
+            //        return;
+            //    }
+            //}
+            //InternalExitGame();
         }
 
         private void InternalExitGame()
         {
             SocialApp.Instance.ReturnToApp();
-            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioButtonClick);
-            GM2DGUIManager.Instance.CloseUI<UICtrlGameFinish>();
-            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioWindowClosed);
+            //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioButtonClick);
+            SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
+            //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioWindowClosed);
         }
 
         private void OnClickPublic()
 		{
             PauseGame();
-			GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioButtonClick);
-			GM2DGUIManager.Instance.CloseUI<UICtrlGameFinish>();
-            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioWindowClosed);
-            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(()=>{
-                GM2DGUIManager.Instance.OpenUI<UICtrlPublish>();
-            }));
+			//GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioButtonClick);
+            SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
+            //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioWindowClosed);
+            //CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(()=>{
+            //    GM2DGUIManager.Instance.OpenUI<UICtrlPublish>();
+            //}));
         }
 
 		private void OnClickReturnEditor()
 		{
             PauseGame();
-			GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioButtonClick);
-			GM2DGUIManager.Instance.CloseUI<UICtrlGameFinish>();
-            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioWindowClosed);
+			//GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioButtonClick);
+            SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
+            //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioWindowClosed);
         }
 
 		private void OnClickMarkButton()
 		{
-            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioButtonClick);
-            if(!AppLogicUtil.CheckLoginAndTip())
-            {
-                return;
-            }
-            GM2DGUIManager.Instance.OpenUI<UICtrlGameMark>();
+            //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioButtonClick);
+            //if(!AppLogicUtil.CheckLoginAndTip())
+            //{
+            //    return;
+            //}
+            //GM2DGUIManager.Instance.OpenUI<UICtrlGameMark>();
 		}
 
         private void OnClickSkipButton()
@@ -259,9 +324,9 @@ namespace GameA.Game
                 p.BeginPlay(false, ()=>{
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     GameManager.Instance.PlayNext();
-                    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioButtonClick);
-                    GM2DGUIManager.Instance.CloseUI<UICtrlGameFinish>();
-                    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioWindowClosed);
+                    //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioButtonClick);
+                    SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
+                    //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioWindowClosed);
                 }, code=>{
 //                    string tip = null;
 //                    if(code == EPlayProjectRetCode.PPRC_ProjectHasBeenDeleted)
@@ -295,65 +360,98 @@ namespace GameA.Game
             else
             {
                 GameManager.Instance.PlayNext();
-                GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioButtonClick);
-                GM2DGUIManager.Instance.CloseUI<UICtrlGameFinish>();
-                GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioWindowClosed);
+                //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioButtonClick);
+                SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
+                //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioWindowClosed);
             }
 		}
 
 		private void OnMarkStarItemButtonClick(int index)
         {
-            if(!AppLogicUtil.CheckLoginAndTip())
-            {
-                return;
-            }
-            if(_rateRequest)
-            {
-                return;
-            }
-			if (_curMarkStarValue == index)
-			{
-                JumpToWinState();
-                return;
-			}
-            int oldVal = _curMarkStarValue;
-			_curMarkStarValue = index;
-            _rateRequest = true;
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
-            GM2DGame.Instance.Project.UpdateRate(_curMarkStarValue, (flag)=>{
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                _rateRequest = false;
-                if(flag)
-                {
-                    JumpToWinState();
-                }
-                else
-                {
-                    CommonTools.ShowPopupDialog("评分失败", null,
-                        new System.Collections.Generic.KeyValuePair<string, Action>("重试", ()=>{
-                            _curMarkStarValue = oldVal;
-                            UpdateLifeItem();
-                            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(()=>{
-                                OnMarkStarItemButtonClick(index);
-                            }));
-                        }),
-                        new System.Collections.Generic.KeyValuePair<string, Action>("跳过", ()=>{
-                            JumpToWinState();
-                        })
-                    );
-                }
-            });
-			UpdateLifeItem();
+   //         if(!AppLogicUtil.CheckLoginAndTip())
+   //         {
+   //             return;
+   //         }
+   //         if(_rateRequest)
+   //         {
+   //             return;
+   //         }
+			//if (_curMarkStarValue == index)
+			//{
+   //             JumpToWinState();
+   //             return;
+			//}
+   //         int oldVal = _curMarkStarValue;
+			//_curMarkStarValue = index;
+   //         _rateRequest = true;
+   //         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
+   //         GM2DGame.Instance.Project.UpdateRate(_curMarkStarValue, (flag)=>{
+   //             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+   //             _rateRequest = false;
+   //             if(flag)
+   //             {
+   //                 JumpToWinState();
+   //             }
+   //             else
+   //             {
+   //                 CommonTools.ShowPopupDialog("评分失败", null,
+   //                     new System.Collections.Generic.KeyValuePair<string, Action>("重试", ()=>{
+   //                         _curMarkStarValue = oldVal;
+   //                         UpdateLifeItem();
+   //                         CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(()=>{
+   //                             OnMarkStarItemButtonClick(index);
+   //                         }));
+   //                     }),
+   //                     new System.Collections.Generic.KeyValuePair<string, Action>("跳过", ()=>{
+   //                         JumpToWinState();
+   //                     })
+   //                 );
+   //             }
+   //         });
+			//UpdateLifeItem();
 		}
 
 		#endregion
 
-		private void UpdateShow()
+        private void UpdateView()
 		{
+            switch (_showState) {
+            case EShowState.AdvBonusWin:
+                break;
+            case EShowState.AdvNormalWin:
+                _cachedView.Win.SetActive (true);
+                _cachedView.Lose.SetActive (false);
+                _cachedView.RetryBtn.gameObject.SetActive (true);
+                _cachedView.ReturnBtn.gameObject.SetActive (true);
+                // 如果是一章中的最后一关，则不显示下一关按钮
+                if (GameManager.Instance.CurrentGame.Project.LevelId == Game.ConstDefineGM2D.AdvNormallevelPerChapter) {
+                    _cachedView.NextBtn.gameObject.SetActive (false);
+                } else {
+                    _cachedView.NextBtn.gameObject.SetActive (true);
+                }
+                // 得分
+                _cachedView.Score.gameObject.SetActive (true);
+                _cachedView.Score.text = Game.PlayMode.Instance.SceneState.TotalScore.ToString ();
+                // 奖励
+                UpdateReward ();
+                break;
+            case EShowState.AdvBonusLose:
+                break;
+            case EShowState.AdvNormalLose:
+                _cachedView.Win.SetActive (false);
+                _cachedView.Lose.SetActive (true);
+                _cachedView.ReturnBtn.gameObject.SetActive (true);
+                _cachedView.RetryBtn.gameObject.SetActive (true);
+                _cachedView.NextBtn.gameObject.SetActive (false);
+                _cachedView.Score.gameObject.SetActive (false);
+                UpdateReward ();
+                break;
+            }
+            return;
 			EShowState cur = EShowState.Win;
-			if (PlayMode.Instance.SceneState.GameSucceed)
+			if (Game.PlayMode.Instance.SceneState.GameSucceed)
 			{
-				if (GM2DGame.Instance.CurrentMode == EMode.Play)
+                if (Game.GM2DGame.Instance.CurrentMode == Game.EMode.Play)
 				{
                     Project p = GameManager.Instance.CurrentGame.Project;
                     if(p.ProjectStatus == SoyEngine.Proto.EProjectStatus.PS_Public
@@ -373,19 +471,26 @@ namespace GameA.Game
                         }
 					}
 				}
-                else if(GM2DGame.Instance.CurrentMode == EMode.PlayRecord)
+                if(Game.GM2DGame.Instance.CurrentMode == Game.EMode.PlayRecord)
                 {
                     cur = EShowState.Win;
                 }
-				else
-				{
-					cur = EShowState.EditorWin;
-				}
+                // 冒险关卡普通关卡胜利后
+                if (Game.GM2DGame.Instance.CurrentMode == Game.EMode.AdvNormal) {
+                    
+                }
+                // 冒险关卡奖励关卡胜利后
+                if (Game.GM2DGame.Instance.CurrentMode == Game.EMode.AdvBonus) {
+                    
+                } else {
+                    cur = EShowState.EditorWin;
+                    
+                }
 			}
-			else if (PlayMode.Instance.SceneState.GameFailed)
+			else if (Game.PlayMode.Instance.SceneState.GameFailed)
 			{
-				if (GM2DGame.Instance.CurrentMode == EMode.Play
-                    || GM2DGame.Instance.CurrentMode == EMode.PlayRecord)
+				if (Game.GM2DGame.Instance.CurrentMode == Game.EMode.Play
+                    || Game.GM2DGame.Instance.CurrentMode == Game.EMode.PlayRecord)
 				{
 					cur = EShowState.Lose;
 				}
@@ -394,19 +499,39 @@ namespace GameA.Game
 					cur = EShowState.EditorLose;
 				}
 			}
-			SetUIState(cur);
+			//SetUIState(cur);
 		}
+
+        private void UpdateReward () {
+            if (null != AppData.Instance.AdventureData.LastAdvReward &&
+                        AppData.Instance.AdventureData.LastAdvReward.IsInited) {
+                int i = 0;
+                for (; i < _rewardCtrl.Length && i < AppData.Instance.AdventureData.LastAdvReward.ItemList.Count; i++) {
+                    _rewardCtrl [i].Set (
+                        AppData.Instance.AdventureData.LastAdvReward.ItemList [i].GetSprite (),
+                        AppData.Instance.AdventureData.LastAdvReward.ItemList[i].Count.ToString ()
+                    );
+                }
+                for (; i < _rewardCtrl.Length; i++) {
+                    _rewardCtrl [i].Hide ();
+                }
+            } else {
+                for (int i = 0; i < _rewardCtrl.Length; i++) {
+                    _rewardCtrl [i].Hide ();
+                }
+            }
+        }
 
         private void SetUIState(EShowState state)
         {
             string key = ((int) state).ToString();
-            UIRectTransformStatus.SetStatus(_cachedView.Status.gameObject, key);
+            //UIRectTransformStatus.SetStatus(_cachedView.Status.gameObject, key);
         }
 
 		private void PauseGame()
 		{
-			Messenger<ECommandType>.Broadcast(EMessengerType.OnCommandChanged, ECommandType.Pause);
-			GM2DGame.Instance.ChangeToMode(EMode.Edit);
+			//Messenger<ECommandType>.Broadcast(EMessengerType.OnCommandChanged, ECommandType.Pause);
+			//GM2DGame.Instance.ChangeToMode(EMode.Edit);
 		}
 
         private void JumpToWinState()
@@ -426,96 +551,99 @@ namespace GameA.Game
 
 		private void OnSuccess()
 		{
-			LogHelper.Info("OnSuccess");
+			//LogHelper.Info("OnSuccess");
 			if (_isOpen)
 			{
 				LogHelper.Error("OnSuccess called but _isOpen is true");
 				return;
 			}
-            if (!PlayMode.Instance.SceneState.GameSucceed) return;
-            GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>().Close();
+            if (!Game.PlayMode.Instance.SceneState.GameSucceed) return;
+            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish> ();
+            return;
+            //SocialGUIManager.Instance.GetUI<UICtrlGameFinish>().Close();
 			_finishRes = true;
-            if(GameManager.Instance.GameMode == EGameMode.PlayRecord)
-            {
-                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(2f,()=>{
-                    if(GameManager.Instance.CurrentGame != null)
-                    {
-	                    bool value = SocialGUIManager.Instance.RunRecordInApp;
-                        SocialApp.Instance.ReturnToApp(!value);
-                    }
-                }));
-                return;
-            }
+            //if(GameManager.Instance.GameMode == EGameMode.PlayRecord)
+            //{
+            //    CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(2f,()=>{
+            //        if(GameManager.Instance.CurrentGame != null)
+            //        {
+	           //         bool value = SocialGUIManager.Instance.RunRecordInApp;
+            //            SocialApp.Instance.ReturnToApp(!value);
+            //        }
+            //    }));
+            //    return;
+            //}
 
             Project p = GameManager.Instance.CurrentGame.Project;
             if(p.ProjectStatus == EProjectStatus.PS_Private)
             {
-                byte[] record = GetRecord();
-                float usedTime = PlayMode.Instance.GameSuccessFrameCnt * ConstDefineGM2D.FixedDeltaTime;
-                GM2DGame.Instance.RecordBytes = record;
-                GM2DGame.Instance.RecordUsedTime = usedTime;
+            //    byte[] record = GetRecord();
+            //    float usedTime = Game.PlayMode.Instance.GameSuccessFrameCnt * Game.ConstDefineGM2D.FixedDeltaTime;
+            //    Game.GM2DGame.Instance.RecordBytes = record;
+            //    Game.GM2DGame.Instance.RecordUsedTime = usedTime;
 
-                GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>();
+            //    SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>();
             }
-            else if(p.ProjectStatus == SoyEngine.Proto.EProjectStatus.PS_Public
-                && GameManager.Instance.GameMode == EGameMode.Normal)
-            {
-                byte[] record = GetRecord();
-                float usedTime = PlayMode.Instance.GameSuccessFrameCnt * ConstDefineGM2D.FixedDeltaTime;
-                _cachedView.GameTimeText.text = string.Format("{0:D}:{1:D2}.{2:D2}",
-                    Mathf.FloorToInt(usedTime/60),
-                    Mathf.FloorToInt(usedTime%60),
-                    Mathf.FloorToInt((usedTime*100)%100)
-                );
+            else if (p.ProjectStatus == SoyEngine.Proto.EProjectStatus.PS_Public
+                && GameManager.Instance.GameMode == EGameMode.Normal) {
+                    //byte[] record = GetRecord();
+                    //float usedTime = Game.PlayMode.Instance.GameSuccessFrameCnt * Game.ConstDefineGM2D.FixedDeltaTime;
+                    //_cachedView.GameTimeText.text = string.Format("{0:D}:{1:D2}.{2:D2}",
+                    //                //    Mathf.FloorToInt(usedTime/60),
+                    //                //    Mathf.FloorToInt(usedTime%60),
+                    //                //    Mathf.FloorToInt((usedTime*100)%100)
+                    //                //);
 
-//                if(p.ProjectCategory == EProjectCategory.PC_Challenge)
-//                {
-//                    if(_cachedView.RankTitle != null)
-//                    {
-//                        _cachedView.RankTitle.gameObject.SetActive(true);
-//                    }
-//                    _cachedView.RankText.gameObject.SetActive(true);
-//                }
-//                else
-//                {
-//                    if(_cachedView.RankTitle != null)
-//                    {
-//                        _cachedView.RankTitle.gameObject.SetActive(false);
-//                    }
-//                    _cachedView.RankText.gameObject.SetActive(false);
-//                }
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
-//                GameManager.Instance.CurrentGame.Project.CommitPlayResult(true,
-//                    usedTime, record, DeadMarkManager.Instance.GetDeadPosition(), (rank, newRecord)=>{
-//                    LogHelper.Info("游戏成绩提交成功");
-//                    _cachedView.RankText.text = rank == -1? "未入榜":""+(rank+1);
-//                    if(_cachedView.NewRecordTip != null)
-//                    {
-//                        _cachedView.NewRecordTip.enabled = newRecord;
-//                    }
-//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//                    if (!PlayMode.Instance.SceneState.GameSucceed) return;
-//                    //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
-//                    GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>();
-//                }, (errCode)=>{
-//                    LogHelper.Info("游戏成绩提交失败");
-//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//                    if (!PlayMode.Instance.SceneState.GameSucceed) return;
-//                    CommonTools.ShowPopupDialog("游戏成绩提交失败", null,
-//                        new System.Collections.Generic.KeyValuePair<string, Action>("重试", ()=>{
-//                            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnSuccess));
-//                        }), 
-//                        new System.Collections.Generic.KeyValuePair<string, Action>("跳过", ()=>{
-//                            _cachedView.RankText.text = "无排名";
-//                            //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
-//                            GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>();
-//                        }));
-//                });
-                return;
-            }
-            else
+                    ////                if(p.ProjectCategory == EProjectCategory.PC_Challenge)
+                    ////                {
+                    ////                    if(_cachedView.RankTitle != null)
+                    ////                    {
+                    ////                        _cachedView.RankTitle.gameObject.SetActive(true);
+                    ////                    }
+                    ////                    _cachedView.RankText.gameObject.SetActive(true);
+                    ////                }
+                    ////                else
+                    ////                {
+                    ////                    if(_cachedView.RankTitle != null)
+                    ////                    {
+                    ////                        _cachedView.RankTitle.gameObject.SetActive(false);
+                    ////                    }
+                    ////                    _cachedView.RankText.gameObject.SetActive(false);
+                    ////                }
+                    //                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
+                    ////                GameManager.Instance.CurrentGame.Project.CommitPlayResult(true,
+                    ////                    usedTime, record, DeadMarkManager.Instance.GetDeadPosition(), (rank, newRecord)=>{
+                    ////                    LogHelper.Info("游戏成绩提交成功");
+                    ////                    _cachedView.RankText.text = rank == -1? "未入榜":""+(rank+1);
+                    ////                    if(_cachedView.NewRecordTip != null)
+                    ////                    {
+                    ////                        _cachedView.NewRecordTip.enabled = newRecord;
+                    ////                    }
+                    ////                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    ////                    if (!PlayMode.Instance.SceneState.GameSucceed) return;
+                    ////                    //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
+                    ////                    GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>();
+                    ////                }, (errCode)=>{
+                    ////                    LogHelper.Info("游戏成绩提交失败");
+                    ////                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    ////                    if (!PlayMode.Instance.SceneState.GameSucceed) return;
+                    ////                    CommonTools.ShowPopupDialog("游戏成绩提交失败", null,
+                    ////                        new System.Collections.Generic.KeyValuePair<string, Action>("重试", ()=>{
+                    ////                            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnSuccess));
+                    ////                        }), 
+                    ////                        new System.Collections.Generic.KeyValuePair<string, Action>("跳过", ()=>{
+                    ////                            _cachedView.RankText.text = "无排名";
+                    ////                            //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
+                    ////                            GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>();
+                    ////                        }));
+                    ////                });
+                    //    return;
+            } 
+            else if (p.ProjectStatus == EProjectStatus.PS_Reform)
             {
-                GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>();
+                SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>();
+            } else {
+                SocialGUIManager.Instance.OpenUI <UICtrlGameFinish>();
             }
 
 //            if(GameManager.Instance.GameMode == EGameMode.MatrixGuide)
@@ -540,8 +668,12 @@ namespace GameA.Game
 				LogHelper.Error("OnFailed called but _isOpen is true");
 				return;
             }
-            if (!PlayMode.Instance.SceneState.GameFailed) return;
-            GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>().Close();
+            if (!Game.PlayMode.Instance.SceneState.GameFailed) return;
+
+            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish> ();
+
+            return;
+            //SocialGUIManager.Instance.GetUI<UICtrlGameFinish>().Close();
             _finishRes = false;
             if(GameManager.Instance.GameMode == EGameMode.PlayRecord)
             {
@@ -560,7 +692,7 @@ namespace GameA.Game
                 && GameManager.Instance.GameMode == EGameMode.Normal)
             {
                 byte[] record = GetRecord();
-                float usedTime = PlayMode.Instance.GameFailFrameCnt * ConstDefineGM2D.FixedDeltaTime;
+                float usedTime = Game.PlayMode.Instance.GameFailFrameCnt * Game.ConstDefineGM2D.FixedDeltaTime;
 
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
 //                GameManager.Instance.CurrentGame.Project.CommitPlayResult(false, usedTime, record, DeadMarkManager.Instance.GetDeadPosition(), (rank, newRecord)=>{
@@ -585,27 +717,27 @@ namespace GameA.Game
             }
             else
             {
-                GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioFailed);
-                GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>();
+                //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioFailed);
+                SocialGUIManager.Instance.OpenUI <UICtrlGameFinish>();
             }
 		}
 
         private byte[] GetRecord()
         {
             GM2DRecordData recordData = new GM2DRecordData();
-            recordData.Version = GM2DGame.Version;
-            recordData.FrameCount = ConstDefineGM2D.FixedFrameCount;
-            recordData.Data.AddRange(PlayMode.Instance.InputDatas);
-            byte[] recordByte = GameMapDataSerializer.Instance.Serialize(recordData);
+            //recordData.Version = GM2DGame.Version;
+            //recordData.FrameCount = ConstDefineGM2D.FixedFrameCount;
+            //recordData.Data.AddRange(PlayMode.Instance.InputDatas);
+            //byte[] recordByte = GameMapDataSerializer.Instance.Serialize(recordData);
             byte[] record = null;
-            if(recordByte == null)
-            {
-                LogHelper.Error("录像数据出错");
-            }
-            else
-            {
-                record = MatrixProjectTools.CompressLZMA(recordByte);
-            }
+            //if(recordByte == null)
+            //{
+            //    LogHelper.Error("录像数据出错");
+            //}
+            //else
+            //{
+            //    record = MatrixProjectTools.CompressLZMA(recordByte);
+            //}
             return record;
         }
 

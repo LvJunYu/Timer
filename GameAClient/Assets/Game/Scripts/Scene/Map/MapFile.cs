@@ -134,6 +134,8 @@ namespace GameA.Game
                         unitObject.Guid.y = node.Grid.YMin + k * size.y;
                         //play的时候只生成区域内的即可 不是主角
                         if (GM2DGame.Instance.GameInitType == GameManager.EStartType.Play
+                            || GM2DGame.Instance.GameInitType == GameManager.EStartType.AdventureNormal
+                            || GM2DGame.Instance.GameInitType == GameManager.EStartType.AdventureBonus
                             || GM2DGame.Instance.GameInitType == GameManager.EStartType.PlayRecord)
                         {
                             var grid = tableUnit.GetDataGrid(unitObject.Guid.x, unitObject.Guid.y, unitObject.Rotation, unitObject.Scale);

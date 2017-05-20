@@ -120,7 +120,7 @@ namespace GameA
 			_cachedView.FloatBtn.gameObject.SetActive(!show);
 			if (show)
 	        {
-				Messenger.Broadcast(GameA.Game.EMessengerType.OpenGameSetting);
+				Messenger.Broadcast(EMessengerType.OpenGameSetting);
 			}
 			else
 	        {

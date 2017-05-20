@@ -32,6 +32,10 @@ namespace GameA.Game
         PlayRecord,
 		// 改造编辑
 		ModifyEdit,
+        // 冒险模式普通关卡
+        AdvNormal,
+        // 冒险模式奖励关卡
+        AdvBonus,
     }
 
     public class GM2DGame : GameBase
@@ -212,7 +216,16 @@ namespace GameA.Game
             _project = project;
             return Init(GameManager.EStartType.Play);
         }
-
+        public override bool PlayAdvNormal (Project project)
+        {
+            _project = project;
+            return Init (GameManager.EStartType.AdventureNormal);
+        }
+        public override bool PlayAdvBonus (Project project)
+        {
+            _project = project;
+            return Init (GameManager.EStartType.AdventureBonus);
+        }
         public override bool Create(Project project)
         {
             _project = project;
@@ -307,7 +320,11 @@ namespace GameA.Game
 			} else if (_eGameInitType == GameManager.EStartType.ModifyEdit) {
 				_mode = EMode.ModifyEdit;
 			}
-            else
+            else if (_eGameInitType == GameManager.EStartType.AdventureNormal) {
+                _mode = EMode.AdvNormal;
+            } else if (_eGameInitType == GameManager.EStartType.AdventureBonus) {
+                _mode = EMode.AdvBonus;
+            } else 
             {
                 _mode = EMode.Edit;
             }
@@ -638,7 +655,11 @@ namespace GameA.Game
 				() => {
 					LogHelper.Info("游戏成绩提交成功");
 					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-					Messenger.Broadcast(EMessengerType.GameFinishSuccessShowUI);
+                    if (success) {
+                        Messenger.Broadcast (EMessengerType.GameFinishSuccessShowUI);
+                    } else {
+                        Messenger.Broadcast (EMessengerType.GameFinishFailedShowUI);
+                    }
 				}, errCode => {
 					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
 					CommonTools.ShowPopupDialog("游戏成绩提交失败", null,
@@ -687,6 +708,7 @@ namespace GameA.Game
 
 			Project p = GameManager.Instance.CurrentGame.Project;
             if (p.ProjectStatus == EProjectStatus.PS_Private) {
+                p.PassFlag = true;
                 Messenger.Broadcast (EMessengerType.GameFinishSuccessShowUI);
 //				byte[] record = GetRecord();
 //				float usedTime = PlayMode.Instance.GameSuccessFrameCnt * ConstDefineGM2D.FixedDeltaTime;

@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 4fd960230afcd4a559ec53579172aef3
-timeCreated: 1489634651
+guid: 6fe39c8bfccb64b2b8598ec199cd99c8
+timeCreated: 1495181949
 licenseType: Pro
 TextureImporter:
   fileIDToRecycleName: {}
@@ -86,7 +86,7 @@ TextureImporter:
     serializedVersion: 2
     sprites: []
     outline: []
-  spritePackingTag: ADVUI
+  spritePackingTag: INGAMEUI
   userData: 
   assetBundleName: 
   assetBundleVariant: 

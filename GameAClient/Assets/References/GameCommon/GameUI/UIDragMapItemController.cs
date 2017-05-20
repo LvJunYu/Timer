@@ -57,7 +57,7 @@ namespace SoyEngine
 		{ 
 			if (_curSelectTable != null)
 			{
-                Messenger<ushort>.Broadcast(GameA.Game.EMessengerType.OnSelectedItemChanged, (ushort)_curSelectTable.Id);
+                Messenger<ushort>.Broadcast(GameA.EMessengerType.OnSelectedItemChanged, (ushort)_curSelectTable.Id);
 			}
 		}
 

@@ -33,6 +33,10 @@ namespace GameA
         /// 钻石
         /// </summary>
         private long _diamond;
+        /// <summary>
+        /// 亲密币
+        /// </summary>
+        private int _friendlinessCoin;
 
         // cs fields----------------------------------
         /// <summary>
@@ -103,6 +107,16 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 亲密币
+        /// </summary>
+        public int FriendlinessCoin { 
+            get { return _friendlinessCoin; }
+            set { if (_friendlinessCoin != value) {
+                _friendlinessCoin = value;
+                SetDirty();
+            }}
+        }
         
         // cs properties----------------------------------
         /// <summary>
@@ -161,6 +175,7 @@ namespace GameA
             _playerExp = msg.PlayerExp;           
             _goldCoin = msg.GoldCoin;           
             _diamond = msg.Diamond;           
+            _friendlinessCoin = msg.FriendlinessCoin;           
             OnSyncPartial();
             return true;
         }
