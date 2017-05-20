@@ -267,7 +267,7 @@
         "Name": "Bonus1",
         "Description": "啦啦啦",
         "Type": "1",
-        "EnergyCost": "1",
+        "EnergyCost": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [
@@ -291,7 +291,7 @@
         "Name": "Bonus2",
         "Description": "啦啦啦",
         "Type": "2",
-        "EnergyCost": "1",
+        "EnergyCost": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [
@@ -315,7 +315,7 @@
         "Name": "Bonus3",
         "Description": "啦啦啦",
         "Type": "3",
-        "EnergyCost": "1",
+        "EnergyCost": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [
@@ -607,7 +607,7 @@
         "Name": "Bonus1",
         "Description": "啦啦啦",
         "Type": "1",
-        "EnergyCost": "1",
+        "EnergyCost": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [
@@ -631,7 +631,7 @@
         "Name": "Bonus2",
         "Description": "啦啦啦",
         "Type": "2",
-        "EnergyCost": "1",
+        "EnergyCost": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [
@@ -655,7 +655,7 @@
         "Name": "Bonus3",
         "Description": "啦啦啦",
         "Type": "3",
-        "EnergyCost": "1",
+        "EnergyCost": "0",
         "Star2Value": "0",
         "Star3Value": "0",
         "HelperItems": [

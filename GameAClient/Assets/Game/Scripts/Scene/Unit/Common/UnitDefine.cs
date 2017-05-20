@@ -94,5 +94,14 @@ namespace GameA.Game
             return id != SwitchTriggerId && id != LaserId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
                    !IsBoard(id) && !IsMain(id);
         }
+
+        public static bool IsDownY(Table_Unit tableUnit)
+        {
+            if (tableUnit == null)
+            {
+                return false;
+            }
+            return (tableUnit.EGeneratedType == EGeneratedType.Spine && !IsHero(tableUnit.Id)) || IsEnergy(tableUnit.Id) || tableUnit.Id == FinalDoorId;
+        }
     }
 }
