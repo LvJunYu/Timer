@@ -377,7 +377,7 @@ namespace GameA.Game
 
             yield return null;
             gameObject.AddComponent<InputManager>();
-            gameObject.AddComponent<GM2DGUIManager>();
+            //gameObject.AddComponent<GM2DGUIManager>();
             gameObject.AddComponent<MapManager>();
             MapManager.Instance.Init(_eGameInitType, _project);
             yield return null;
@@ -386,7 +386,7 @@ namespace GameA.Game
 				Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 0.8f + MapManager.Instance.MapProcess * 0.2f);
                 yield return new WaitForSeconds(0.2f);
             }
-            LoadGameInputController();
+            //LoadGameInputController();
 			Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess,1f);
 			if (_eGameInitType == GameManager.EStartType.Play) {
 				ChangeToMode (EMode.Play);
@@ -402,7 +402,7 @@ namespace GameA.Game
 	        if (SocialGUIManager.Instance.RunRecordInApp)
 	        {
 				var tex = SocialGUIManager.Instance.RenderRecordTexture;
-		        GM2DGUIManager.Instance.RenderUICamera.targetTexture = tex;
+		        //GM2DGUIManager.Instance.RenderUICamera.targetTexture = tex;
 				CameraManager.Instance.RendererCamera.targetTexture = tex;
 	        }
 	        
@@ -430,37 +430,37 @@ namespace GameA.Game
         {
             _mode = mode;
 			if (mode == EMode.EditTest) {
-				GM2DGUIManager.Instance.CloseUI<UICtrlItem> ();
-				GM2DGUIManager.Instance.CloseUI<UICtrlCreate> ();
-				GM2DGUIManager.Instance.OpenUI<UICtrlEdit> ();
-				GM2DGUIManager.Instance.GetUI<UICtrlEdit> ().ChangeToEditTestMode ();
-				GM2DGUIManager.Instance.CloseUI<UICtrlScreenOperator> ();
-				GM2DGUIManager.Instance.OpenUI<UICtrlSceneState> ();
-                GM2DGUIManager.Instance.CloseUI<UICtrlModifyEdit> ();
+                SocialGUIManager.Instance.CloseUI<UICtrlItem> ();
+				SocialGUIManager.Instance.CloseUI<UICtrlCreate> ();
+				SocialGUIManager.Instance.OpenUI<UICtrlEdit> ();
+				SocialGUIManager.Instance.GetUI<UICtrlEdit> ().ChangeToEditTestMode ();
+				SocialGUIManager.Instance.CloseUI<UICtrlScreenOperator> ();
+				SocialGUIManager.Instance.OpenUI<UICtrlSceneState> ();
+                SocialGUIManager.Instance.CloseUI<UICtrlModifyEdit> ();
 				InputManager.Instance.ShowGameInput ();
 			} else if (mode == EMode.Edit) {
-				GM2DGUIManager.Instance.OpenUI<UICtrlCreate> ();
-				GM2DGUIManager.Instance.OpenUI<UICtrlScreenOperator> ();
-				GM2DGUIManager.Instance.OpenUI<UICtrlEdit> ();
-				GM2DGUIManager.Instance.GetUI<UICtrlEdit> ().ChangeToEditMode ();
-				GM2DGUIManager.Instance.CloseUI<UICtrlSceneState> ();
+				SocialGUIManager.Instance.OpenUI<UICtrlCreate> ();
+				SocialGUIManager.Instance.OpenUI<UICtrlScreenOperator> ();
+				SocialGUIManager.Instance.OpenUI<UICtrlEdit> ();
+				SocialGUIManager.Instance.GetUI<UICtrlEdit> ().ChangeToEditMode ();
+				SocialGUIManager.Instance.CloseUI<UICtrlSceneState> ();
 				InputManager.Instance.HideGameInput ();
 			} else if (mode == EMode.Play) {
-				GM2DGUIManager.Instance.OpenUI<UICtrlEdit> ().ChangeToPlayMode ();
-				GM2DGUIManager.Instance.CloseUI<UICtrlCreate> ();
-				GM2DGUIManager.Instance.CloseUI<UICtrlScreenOperator> ();
-				GM2DGUIManager.Instance.OpenUI<UICtrlSceneState> ();
+				SocialGUIManager.Instance.OpenUI<UICtrlEdit> ().ChangeToPlayMode ();
+				SocialGUIManager.Instance.CloseUI<UICtrlCreate> ();
+				SocialGUIManager.Instance.CloseUI<UICtrlScreenOperator> ();
+				SocialGUIManager.Instance.OpenUI<UICtrlSceneState> ();
 				InputManager.Instance.ShowGameInput ();
 			} else if (mode == EMode.PlayRecord) {
-				GM2DGUIManager.Instance.OpenUI<UICtrlEdit> ().ChangeToPlayRecordMode ();
-				GM2DGUIManager.Instance.CloseUI<UICtrlCreate> ();
-				GM2DGUIManager.Instance.CloseUI<UICtrlScreenOperator> ();
-				GM2DGUIManager.Instance.OpenUI<UICtrlSceneState> ();
+				SocialGUIManager.Instance.OpenUI<UICtrlEdit> ().ChangeToPlayRecordMode ();
+				SocialGUIManager.Instance.CloseUI<UICtrlCreate> ();
+				SocialGUIManager.Instance.CloseUI<UICtrlScreenOperator> ();
+				SocialGUIManager.Instance.OpenUI<UICtrlSceneState> ();
 				InputManager.Instance.HideGameInput ();
 			} else if (mode == EMode.ModifyEdit) {
-				GM2DGUIManager.Instance.OpenUI<UICtrlEdit> ().ChangeToModifyMode ();
-				GM2DGUIManager.Instance.CloseUI<UICtrlSceneState> ();
-                GM2DGUIManager.Instance.OpenUI<UICtrlModifyEdit> ();
+				SocialGUIManager.Instance.OpenUI<UICtrlEdit> ().ChangeToModifyMode ();
+				SocialGUIManager.Instance.CloseUI<UICtrlSceneState> ();
+                SocialGUIManager.Instance.OpenUI<UICtrlModifyEdit> ();
 				InputManager.Instance.HideGameInput ();
 			}
         }
@@ -603,38 +603,39 @@ namespace GameA.Game
 
         private void LoadGameInputController()
         {
-#if UNITY_EDITOR
-            UnityEngine.Object obj = Resources.Load("EasyTouchControlsCanvas");
-            if (obj == null) {
-                obj = GameResourceManager.Instance.LoadMainAssetObject ("EasyTouchControlsCanvas");
-            }
-            _inputControl = CommonTools.InstantiateObject (obj);
-#else
-            var obj = GameResourceManager.Instance.LoadMainAssetObject("EasyTouchControlsCanvas");
-            _inputControl = CommonTools.InstantiateObject(obj);
-#endif
-	        var parent = GM2DGUIManager.Instance.GetFirstGroupParent()as RectTransform;
-	        var tmp1 = _inputControl.GetComponent<CanvasScaler>();
-			DestroyImmediate(tmp1);
-			var tmp3 = _inputControl.GetComponent<GraphicRaycaster>();
-			DestroyImmediate(tmp3);
-			var tmp2 = _inputControl.GetComponent<Canvas>();
-			DestroyImmediate(tmp2);
+            //#if UNITY_EDITOR
+            //UnityEngine.Object obj = Resources.Load("EasyTouchControlsCanvas");
+            //            if (obj == null) {
+            //                obj = GameResourceManager.Instance.LoadMainAssetObject ("EasyTouchControlsCanvas");
+            //            }
+            //            _inputControl = CommonTools.InstantiateObject (obj);
+            //#else
+            //            var obj = GameResourceManager.Instance.LoadMainAssetObject("EasyTouchControlsCanvas");
+            //            _inputControl = CommonTools.InstantiateObject(obj);
+            //#endif
+            //         var parent = SocialGUIManager.Instance.GetFirstGroupParent()as RectTransform;
+            //      var tmp1 = _inputControl.GetComponent<CanvasScaler>();
+            //DestroyImmediate(tmp1);
+            //var tmp3 = _inputControl.GetComponent<GraphicRaycaster>();
+            //DestroyImmediate(tmp3);
+            //var tmp2 = _inputControl.GetComponent<Canvas>();
+            //DestroyImmediate(tmp2);
 
-	        var rectTrans = _inputControl.transform as RectTransform;
-			CommonTools.SetParent(rectTrans, parent);
-	        rectTrans.anchorMax = parent.anchorMax;
-			rectTrans.anchorMin = parent.anchorMin;
-			rectTrans.anchoredPosition = parent.anchoredPosition;
-			rectTrans.anchoredPosition3D = parent.anchoredPosition3D;
-			rectTrans.offsetMax = parent.offsetMax;
-			rectTrans.offsetMin = parent.offsetMin;
-			rectTrans.pivot = parent.pivot;
-			rectTrans.sizeDelta = parent.sizeDelta;
+            //      var rectTrans = _inputControl.transform as RectTransform;
+            //CommonTools.SetParent(rectTrans, parent);
+            //      rectTrans.anchorMax = parent.anchorMax;
+            //rectTrans.anchorMin = parent.anchorMin;
+            //rectTrans.anchoredPosition = parent.anchoredPosition;
+            //rectTrans.anchoredPosition3D = parent.anchoredPosition3D;
+            //rectTrans.offsetMax = parent.offsetMax;
+            //rectTrans.offsetMin = parent.offsetMin;
+            //rectTrans.pivot = parent.pivot;
+            //rectTrans.sizeDelta = parent.sizeDelta;
 
-			CommonTools.SetAllLayerIncludeHideObj(rectTrans, (int)ELayer.UI);
+            //CommonTools.SetAllLayerIncludeHideObj(rectTrans, (int)ELayer.UI);
 
-			InputManager.Instance.GameInputControl = _inputControl.GetComponent<GameInputControl>();
+            //InputManager.Instance.GameInputControl = _inputControl.GetComponent<GameInputControl>();
+            InputManager.Instance.GameInputControl = SocialGUIManager.Instance.GetUI<UICtrlGameInputControl> ();
         }
 
 		private void CommitAdventureGameResult (bool success) {

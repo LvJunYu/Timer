@@ -160,7 +160,7 @@ namespace GameA.Game
                     }
                 }
             }
-            GM2DGUIManager.Instance.OpenUI<UICtrlEditSwitch> (allEditableGUIDs);
+            SocialGUIManager.Instance.OpenUI<UICtrlEditSwitch> (allEditableGUIDs);
         }
 
         private void OnExitSwitchMode () {
@@ -177,7 +177,7 @@ namespace GameA.Game
 //                    }
                 }
             }
-            GM2DGUIManager.Instance.CloseUI<UICtrlEditSwitch> ();
+            SocialGUIManager.Instance.CloseUI<UICtrlEditSwitch> ();
         }
 
 

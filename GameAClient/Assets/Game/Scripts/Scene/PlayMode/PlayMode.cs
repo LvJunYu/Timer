@@ -562,7 +562,7 @@ namespace GameA.Game
         public void RePlay()
         {
             _run = false;
-            GM2DGUIManager.Instance.CloseUI<UICtrlGameFinish>();
+            SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
             LogHelper.Debug("RePlay");
             Clear();
             if (!CheckPlayerValid())
@@ -626,7 +626,7 @@ namespace GameA.Game
             }
             else
             {
-                _countDownUI = GM2DGUIManager.Instance.OpenUI<UICtrlCountDown>();
+                _countDownUI = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
                 if (_countDownUI != null)
                 {
                     _countDownUI.SetCallback(() =>

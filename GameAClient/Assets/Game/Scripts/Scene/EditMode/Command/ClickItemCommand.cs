@@ -137,7 +137,7 @@ namespace GameA.Game
 
         protected virtual bool DoAddMsg()
         {
-            GM2DGUIManager.Instance.OpenUI<UICtrlGameItemAddMessage>(_clickedDesc);
+            SocialGUIManager.Instance.OpenUI<UICtrlGameItemAddMessage>(_clickedDesc);
             return false;
         }
 
