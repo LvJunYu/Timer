@@ -839,7 +839,6 @@ namespace GameA.Game
                 _trans.position = GetTransPos();
                 if (_view1 != null)
                 {
-                    _trans.position = GetTransPos();
                     _view1.Trans.position = _trans.position + new Vector3(0, 0, _view1ZOffset - _viewZOffset);
                 }
             }
