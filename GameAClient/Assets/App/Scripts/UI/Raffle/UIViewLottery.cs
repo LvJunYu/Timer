@@ -38,5 +38,7 @@ namespace GameA
         public Text SelectedTicketType;
 
         public Text RewardExhibition;
+
+	    public Image[] BrightLamp;
     }
 }

@@ -37,6 +37,8 @@ namespace GameA
         private float _stopTime = 5f;
         private float _stopRotation = 0f;
         private float _currentEulerAngles = 0f;
+        private bool _bright=false;
+        private float RotationEulerAngles = 0;
 
 
 
@@ -55,12 +57,22 @@ namespace GameA
         }
         private void RefreshRaffleCount()
         {
-            _cachedView.NumberOfTicketlvl1.text = LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(1).ToString();//查看数量
-            _cachedView.NumberOfTicketlvl2.text = LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(2).ToString();
-            _cachedView.NumberOfTicketlvl3.text = LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(3).ToString();
-            _cachedView.NumberOfTicketlvl4.text = LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(4).ToString();
-            _cachedView.NumberOfTicketlvl5.text = LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(5).ToString();
+            _cachedView.NumberOfTicketlvl1.text = MakePositiveNumber(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(1));//查看数量
+            _cachedView.NumberOfTicketlvl2.text = MakePositiveNumber(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(2));
+            _cachedView.NumberOfTicketlvl3.text = MakePositiveNumber(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(3));
+            _cachedView.NumberOfTicketlvl4.text = MakePositiveNumber(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(4));
+            _cachedView.NumberOfTicketlvl5.text = MakePositiveNumber(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(5));
         }
+
+        private string MakePositiveNumber(int lotteryNum)
+        {
+            if (lotteryNum < 0)
+            {
+                return "0";
+            }
+            else return lotteryNum.ToString();
+        }
+
         protected override void OnClose()
         {
             base.OnClose();
@@ -113,26 +125,20 @@ namespace GameA
             //}
              if (0 < _currentEulerAngles - rewardid*360/8)
             {
-                
-                Mathf.Abs(_stopRotation = 360 - (_currentEulerAngles - rewardid * 360 / 8));
+                _stopRotation = 360 - (_currentEulerAngles - rewardid * 360 / 8);
             }
             else if (_currentEulerAngles - rewardid*360/8 < 0)
             {
                 _stopRotation = Mathf.Abs( rewardid * 360 / 8- _currentEulerAngles);
             }
-
-        
-               // _delta = _initSpeed*_initSpeed / (2 * _stopRotation);
+            //_circleNum = (int)_stopRotation / 360;
+            // _delta = _initSpeed*_initSpeed / (2 * _stopRotation);
             _delta = _initSpeed * _initSpeed / (2 * (_stopRotation + 360 * 12-20.5f));
             Debug.Log("______________速度" + _initSpeed);
-
             Debug.Log("______________加速度"+ _delta);
             Debug.Log("______________当前位置" + _currentEulerAngles);
             Debug.Log("______________目标位置" + rewardid * 360 / 8);
             Debug.Log("______________停止距离" + _stopRotation);
-
-
-
         }
 
         public override void OnUpdate()
@@ -141,8 +147,22 @@ namespace GameA
             {
                 //转动转盘(-1为顺时针,1为逆时针)
                 //_initSpeed = Mathf.MoveTowardsAngle((float)_cachedView.RoolPanel.rotation, 10, 0.1f*Time.deltaTime);
-                
+                RotationEulerAngles += _initSpeed*Time.deltaTime;
                 _cachedView.RoolPanel.Rotate(new Vector3(0, 0, _initSpeed) *Time.deltaTime);
+                if (RotationEulerAngles>=270)
+                {
+                    RotationEulerAngles = 0;
+
+                 
+                        _bright = !_bright;
+                        for (int i = 0; i < _cachedView.BrightLamp.Length; i++)
+                        {
+                            _cachedView.BrightLamp[i].SetActiveEx(_bright);
+                        }
+
+                    
+
+                }
                 //让转动的速度缓缓降低
                 _initSpeed -= _delta*Time.deltaTime;
                 //当转动的速度为0时转盘停止转动
