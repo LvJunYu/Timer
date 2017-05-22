@@ -870,7 +870,7 @@ namespace GameA.Game
             float z =- (_curPos.x + _curPos.y ) * 0.00078125f + _viewZOffset;
             if (UnitDefine.IsDownY(_tableUnit))
             {
-                return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, - 0.1f, z);
+                return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, -0.1f, z);
             }
 			return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + Vector3.forward * z;
         }
@@ -1300,29 +1300,29 @@ namespace GameA.Game
             return -90 * rotation;
         }
 
-        public Vector2 GetRotationPosOffset()
+        public Vector3 GetRotationPosOffset()
         {
-            if (_tableUnit.EGeneratedType != EGeneratedType.Spine)
+            if (UnitDefine.IsBullet(Id))
             {
-                return Vector2.zero;
+                Vector3 res = Vector3.zero;
+                Vector3 size = GM2DTools.TileToWorld(GetDataSize() * 0.5f);
+                switch ((EDirectionType)Rotation)
+                {
+                    case EDirectionType.Right:
+                        res.x = -size.x;
+                        res.y = size.y;
+                        break;
+                    case EDirectionType.Down:
+                        res.y = size.y * 2;
+                        break;
+                    case EDirectionType.Left:
+                        res.x = size.x;
+                        res.y = size.y;
+                        break;
+                }
+                return res;
             }
-            Vector2 res = Vector2.zero;
-            Vector2 size = GM2DTools.TileToWorld(GetDataSize() * 0.5f);
-            switch ((EDirectionType)Rotation)
-            {
-                case EDirectionType.Right:
-                    res.x = -size.x;
-                    res.y = size.y;
-                    break;
-                case EDirectionType.Down:
-                    res.y = size.y * 2;
-                    break;
-                case EDirectionType.Left:
-                    res.x = size.x;
-                    res.y = size.y;
-                    break;
-            }
-            return res;
+            return Vector3.zero;
         }
 
         internal virtual void OnObjectDestroy()
