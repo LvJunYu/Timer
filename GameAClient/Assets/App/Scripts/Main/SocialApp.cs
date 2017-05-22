@@ -111,6 +111,10 @@ namespace GameA
             Application.targetFrameRate = 60;
             QualitySettings.vSyncCount = 1;
             gameObject.AddComponent<SocialGUIManager>();
+            GameResourceManager rm = gameObject.AddComponent<GameResourceManager> ();
+            if (!rm.Init ("GameMaker2D")) {
+                LogHelper.Error ("GameResourceManager initFailed");
+            }
         }
 
         public void Init()

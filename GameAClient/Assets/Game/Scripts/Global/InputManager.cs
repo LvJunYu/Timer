@@ -19,7 +19,7 @@ namespace GameA.Game
         public readonly static string TagVertical = "Vertical";
         public static InputManager Instance;
 
-        public GameInputControl GameInputControl;
+        public UICtrlGameInputControl GameInputControl;
 		private bool _touchDown;
         private bool _keyJump;
 
@@ -72,14 +72,18 @@ namespace GameA.Game
 		        HideGameInput();
 				return;
 	        }
-			GameInputControl.gameObject.SetActive(true);
-            GameInputControl.ShowAttack1Btn();
-            GameInputControl.SetM1YoyoFireBtnState(true);
+            if (null != GameInputControl) {
+                GameInputControl.Show ();
+                GameInputControl.ShowAttack1Btn ();
+                GameInputControl.SetM1YoyoFireBtnState (true);
+            }
         }
 
         public void HideGameInput()
         {
-            GameInputControl.gameObject.SetActive(false);
+            if (null != GameInputControl) {
+                GameInputControl.Hide ();
+            }
         }
     }
 }

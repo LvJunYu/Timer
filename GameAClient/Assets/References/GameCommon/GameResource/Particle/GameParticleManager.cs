@@ -75,7 +75,7 @@ namespace SoyEngine
 
 	    public UIParticleItem GetUIParticleItem(string itemName, Transform parent, int groupId)
 	    {
-			var group = GM2DGUIManager.Instance.UIRoot.GetUIGroup(groupId);
+            var group = GameA.SocialGUIManager.Instance.UIRoot.GetUIGroup(groupId);
 			if (group == null)
 			{
 				LogHelper.Error("GetUIParticleItem calle but groupId is invalid {0}!", groupId);

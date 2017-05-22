@@ -45,8 +45,10 @@ namespace GameA
         /// 录像全屏
         /// </summary>
         RecordFullScreen,
-
+        InGameMainUI,
         InGamePopup,
+        AppGameUI,
+        InputCtrl,
         /// <summary>
         /// 提示弹窗
         /// </summary>
@@ -133,6 +135,13 @@ namespace GameA
 			ClearRecordRes();
 		    base.OnDestroy();
 	    }
+
+        public Transform GetFirstGroupParent ()
+        {
+            SocialUIRoot root = _uiRoot as SocialUIRoot;
+
+            return root.GetFirstGroupTrans ();
+        }
 
 	    public void ChangeToFullScreenRecord()
 	    {

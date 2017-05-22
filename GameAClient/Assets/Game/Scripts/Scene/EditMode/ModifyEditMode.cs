@@ -290,11 +290,11 @@ namespace GameA.Game
 			}
 
 
-			GM2DGUIManager.Instance.CloseUI<UICtrlItem>();
+            SocialGUIManager.Instance.CloseUI<UICtrlItem>();
 			if (GM2DGame.Instance.CurrentMode == EMode.Edit)
 			{
 				//GM2DGUIManager.Instance.OpenUI<UICtrlCreate>();
-				GM2DGUIManager.Instance.OpenUI<UICtrlScreenOperator>();
+				SocialGUIManager.Instance.OpenUI<UICtrlScreenOperator>();
 			}
 			_lastTouchTime = Time.realtimeSinceStartup;
 
