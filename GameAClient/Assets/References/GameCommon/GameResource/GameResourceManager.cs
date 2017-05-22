@@ -799,8 +799,10 @@ namespace SoyEngine
 			rootPath= rootPath.Replace('\\', '/');
 			///main asset
 			PrepareResPathData(string.Format("{0}/{1}", rootPath, BuildToolsConstDefine.ExportMainAssetFolder), subStartCount,false, "*.prefab");
-			//图集
-			var atlasAssetPathList = PrepareResPathData(string.Format("{0}/{1}/{2}", rootPath, BuildToolsConstDefine.ExportDependsAssetFolder, BuildToolsConstDefine.ExportDependsAtlasAssetPathFolder),
+            //图集
+            //var atlasAssetPathList = PrepareResPathData(string.Format("{0}/{1}/{2}", rootPath, BuildToolsConstDefine.ExportDependsAssetFolder, BuildToolsConstDefine.ExportDependsAtlasAssetPathFolder),
+            // todo 临时改为在客户端工程构造atlas，之后改回在art工程构造atlas
+            var atlasAssetPathList = PrepareResPathData (string.Format ("{0}/{1}", path, "App/Resources/Sprite"),
 				subStartCount, true, "*.asset");
 			InitLocalSpriteAtlasRelation(atlasAssetPathList);
 			//音频

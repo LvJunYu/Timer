@@ -337,11 +337,11 @@ namespace GameA.Game
             }
             EnvManager.Instance.Init();
             LocaleManager.Instance.EnterGame();
-            GameResourceManager rm = gameObject.AddComponent<GameResourceManager>();
-            if (!rm.Init(GameName))
-            {
-                LogHelper.Error("GameResourceManager initFailed");
-            }
+            //GameResourceManager rm = gameObject.AddComponent<GameResourceManager>();
+            //if (!rm.Init(GameName))
+            //{
+            //    LogHelper.Error("GameResourceManager initFailed");
+            //}
             //gameObject.AddComponent<GameLocaleManager>();
             gameObject.AddComponent<GameParticleManager>();
             gameObject.AddComponent<GameAudioManager>();
