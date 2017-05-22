@@ -11,12 +11,12 @@ namespace GameA
 
         // modify
 		public Button ModifyBtn;
-        public Image ModifyCDImage;
+        //public Image ModifyCDImage;
         public Text ModifyCDText;
 
         // match
         public Button MatchBtn;
-        public Image MatchCDImage;
+        //public Image MatchCDImage;
         public Text MatchPoint;
 
         // info
