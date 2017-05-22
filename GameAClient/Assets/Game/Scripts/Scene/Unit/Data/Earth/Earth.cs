@@ -175,73 +175,108 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other is BulletBase)
+            if (other.IsHero && !checkOnly)
             {
-                int localStart = 0, localEnd = 0;
-                GetLocalPos(other.ColliderGrid.XMin, other.ColliderGrid.XMax, ref localStart, ref localEnd, EDirectionType.Up);
-                for (int i = 0; i < _edges.Count; i++)
-                {
-                    if (_edges[i].Direction == EDirectionType.Up && _edges[i].Intersect(localStart, localEnd))
-                    {
-                        OnUpEdgeHit(other, _edges[i]);
-                    }
-                }
+                CheckEdgeHit(other, EDirectionType.Up);
             }
             return base.OnUpHit(other, ref y, checkOnly);
         }
 
+        public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
+        {
+            if (other.IsHero && !checkOnly)
+            {
+                CheckEdgeHit(other, EDirectionType.Down);
+            }
+            return base.OnDownHit(other, ref y, checkOnly);
+        }
+
         public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (other is BulletBase)
+            if (other.IsHero && !checkOnly)
             {
-                int localStart = 0, localEnd = 0;
-                GetLocalPos(other.ColliderGrid.YMin, other.ColliderGrid.YMax, ref localStart, ref localEnd, EDirectionType.Left);
-                for (int i = 0; i < _edges.Count; i++)
-                {
-                    if (_edges[i].Direction == EDirectionType.Left && _edges[i].Intersect(localStart, localEnd))
-                    {
-                        OnLeftEdgeHit(other, _edges[i]);
-                    }
-                }
+                CheckEdgeHit(other, EDirectionType.Left);
             }
             return base.OnLeftHit(other, ref x, checkOnly);
         }
 
-        protected void OnUpEdgeHit(UnitBase other, Edge edge)
+        public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            LogHelper.Debug("OnUpEdgeHit: {0}", edge);
+            if (other.IsHero && !checkOnly)
+            {
+                CheckEdgeHit(other, EDirectionType.Right);
+            } 
+            return base.OnRightHit(other, ref x, checkOnly);
+        }
+
+        private void CheckEdgeHit(UnitBase other, EDirectionType eDirectionType)
+        {
+            int localStart = 0, localEnd = 0;
+            GetLocalPos(other.ColliderGrid.YMin, other.ColliderGrid.YMax, ref localStart, ref localEnd, eDirectionType);
+            for (int i = 0; i < _edges.Count; i++)
+            {
+                if (_edges[i].Direction == eDirectionType && _edges[i].Intersect(localStart, localEnd))
+                {
+                    OnEdgeHit(other, _edges[i]);
+                }
+            }
+        }
+
+        private void OnEdgeHit(UnitBase other, Edge edge)
+        {
+            LogHelper.Debug("OnEdgeHit: {0}", edge);
             switch (edge.ESkillType)
             {
                     case ESkillType.Fire:
+                    Fire.OnEffect(other);
                     break;
                     case ESkillType.Jelly:
+                    Jelly.OnEffect(other, edge.Direction);
                     break;
                     case ESkillType.Clay:
                     break;
+                    //搞定 不用管
                     case ESkillType.Ice:
                     break;
             }
         }
 
-        protected void OnLeftEdgeHit(UnitBase other, Edge edge)
+        public override Edge GetUpEdge(UnitBase other)
         {
-            LogHelper.Debug("OnLeftEdgeHit: {0}", edge);
-            switch (edge.ESkillType)
+            int localStart = 0, localEnd = 0;
+            GetLocalPos(other.ColliderGrid.YMin, other.ColliderGrid.YMax, ref localStart, ref localEnd, EDirectionType.Up);
+            for (int i = 0; i < _edges.Count; i++)
             {
-                case ESkillType.Fire:
-                    break;
-                case ESkillType.Jelly:
-                    break;
-                case ESkillType.Clay:
-                    break;
-                case ESkillType.Ice:
-                    break;
+                if (_edges[i].Direction == EDirectionType.Up && _edges[i].Intersect(localStart, localEnd))
+                {
+                    //取靠近中间的
+                    return _edges[i];
+                }
             }
+            return base.GetUpEdge(other);
+        }
+
+        protected override bool CanEdgeClimbed(UnitBase other, EDirectionType eDirectionType)
+        {
+            int localStart = 0, localEnd = 0;
+            GetLocalPos(other.ColliderGrid.YMin, other.ColliderGrid.YMax, ref localStart, ref localEnd, eDirectionType);
+            for (int i = 0; i < _edges.Count; i++)
+            {
+                if (_edges[i].Direction == eDirectionType && _edges[i].Intersect(localStart, localEnd))
+                {
+                    if (_edges[i].ESkillType == ESkillType.Clay)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return base.CanEdgeClimbed(other, eDirectionType);
         }
     }
 
     public struct Edge
     {
+        public static Edge zero = new Edge();
         public int Start;
         public int End;
         public EDirectionType Direction;

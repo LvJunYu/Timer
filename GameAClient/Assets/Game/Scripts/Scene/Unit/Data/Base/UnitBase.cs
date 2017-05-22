@@ -52,8 +52,6 @@ namespace GameA.Game
         protected bool _useCorner;
         protected bool _isDisposed = false;
 
-        protected bool _canClimbed;
-
         protected int _shootAngle;
 
         #endregion
@@ -246,9 +244,9 @@ namespace GameA.Game
             get { return _isDisposed; }
         }
 
-        public bool CanClimbed
+        public virtual bool CanClimbed
         {
-            get { return _canClimbed; }
+            get { return false; }
         }
 
         public int Life
@@ -986,7 +984,7 @@ namespace GameA.Game
             for (int i = 0; i < units.Count; i++)
             {
                 var unit = units[i];
-                if (unit.CanClimbed && CheckRightFloor(unit))
+                if ((unit.CanClimbed || CanEdgeClimbed(this, EDirectionType.Left)) && CheckRightFloor(unit))
                 {
                     return true;
                 }
@@ -1002,11 +1000,16 @@ namespace GameA.Game
             for (int i = 0; i < units.Count; i++)
             {
                 var unit = units[i];
-                if (unit.CanClimbed && CheckLeftFloor(unit))
+                if ((unit.CanClimbed || CanEdgeClimbed(this, EDirectionType.Right)) && CheckLeftFloor(unit))
                 {
                     return true;
                 }
             }
+            return false;
+        }
+
+        protected virtual bool CanEdgeClimbed(UnitBase other, EDirectionType eDirectionType)
+        {
             return false;
         }
 
@@ -1359,6 +1362,21 @@ namespace GameA.Game
             {
                 return true;
             }
+            return false;
+        }
+
+        public virtual Edge GetUpEdge(UnitBase other)
+        {
+            return Edge.zero;
+        }
+
+        public virtual bool OnClay()
+        {
+            return false;
+        }
+
+        public virtual bool OnIce()
+        {
             return false;
         }
 

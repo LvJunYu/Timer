@@ -13,13 +13,17 @@ namespace GameA.Game
     [Unit(Id = 4011, Type = typeof(Clay))]
     public class Clay : BlockBase
     {
+        public override bool CanClimbed
+        {
+            get { return true; }
+        }
+
         protected override bool OnInit()
         {
             if (!base.OnInit())
             {
                 return false;
             }
-            _canClimbed = true;
             _friction = 30;
             return true;
         }
@@ -31,6 +35,11 @@ namespace GameA.Game
                 return false;
             }
             _animation.Init("Run");
+            return true;
+        }
+
+        public override bool OnClay()
+        {
             return true;
         }
     }

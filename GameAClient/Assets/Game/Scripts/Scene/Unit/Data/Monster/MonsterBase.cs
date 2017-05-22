@@ -16,6 +16,7 @@ namespace GameA.Game
         protected IntVec2 _lastPos;
         protected int _monsterSpeed;
         protected int _curMaxSpeedX;
+        protected int _curFriction;
 
         protected override bool OnInit()
         {
@@ -40,14 +41,16 @@ namespace GameA.Game
             if (_isAlive && _isStart && !_isFreezed)
             {
                 bool air = false;
-                int friction = 0;
+                _curFriction = _friction;
                 if (SpeedY != 0)
                 {
                     air = true;
                 }
                 if (!air)
                 {
+                    _onClay = false;
                     bool downExist = false;
+                    int deltaX = int.MaxValue;
                     var units = EnvManager.RetriveDownUnits(this);
                     for (int i = 0; i < units.Count; i++)
                     {
@@ -58,9 +61,24 @@ namespace GameA.Game
                             downExist = true;
                             _grounded = true;
                             _downUnits.Add(unit);
-                            if (unit.Friction > friction)
+                            if (unit.Friction > _curFriction)
                             {
-                                friction = unit.Friction;
+                                _curFriction = unit.Friction;
+                            }
+                            var edge = unit.GetUpEdge(this);
+                            if (unit.OnClay() || edge.ESkillType == ESkillType.Clay)
+                            {
+                                _onClay = true;
+                            }
+                            else if (unit.OnIce() || edge.ESkillType == ESkillType.Ice)
+                            {
+                                _onIce = true;
+                            }
+                            var delta = Math.Abs(CenterPos.x - unit.CenterPos.x);
+                            if (deltaX > delta)
+                            {
+                                deltaX = delta;
+                                _downUnit = unit;
                             }
                         }
                     }
@@ -68,6 +86,21 @@ namespace GameA.Game
                     {
                         air = true;
                     }
+                }
+                if (air && _grounded)
+                {
+                    Speed += _lastExtraDeltaPos;
+                    _grounded = false;
+                }
+                _curMaxSpeedX = _monsterSpeed;
+                if (_onClay)
+                {
+                    _curFriction = 30;
+                    _curMaxSpeedX /= ClayRatio;
+                }
+                else if (_onIce)
+                {
+                    _curFriction = 1;
                 }
                 if (!air)
                 {
@@ -84,11 +117,7 @@ namespace GameA.Game
                         }
                     }
                 }
-                if (air && _grounded)
-                {
-                    Speed += _lastExtraDeltaPos;
-                    _grounded = false;
-                }
+                UpdateMonsterAI();
                 if (_canMotor && _curBanInputTime <= 0)
                 {
                     //着火了 迅速跑
@@ -98,11 +127,11 @@ namespace GameA.Game
                     }
                     if (_curMoveDirection == EMoveDirection.Right)
                     {
-                        SpeedX = Util.ConstantLerp(SpeedX, _monsterSpeed, friction);
+                        SpeedX = Util.ConstantLerp(SpeedX, _monsterSpeed, _curFriction);
                     }
                     else
                     {
-                        SpeedX = Util.ConstantLerp(SpeedX, -_monsterSpeed, friction);
+                        SpeedX = Util.ConstantLerp(SpeedX, -_monsterSpeed, _curFriction);
                     }
                 }
                 if (!_grounded)
@@ -114,6 +143,10 @@ namespace GameA.Game
                     }
                 }
             }
+        }
+
+        protected virtual void UpdateMonsterAI()
+        {
         }
 
         public override void UpdateView(float deltaTime)

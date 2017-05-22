@@ -38,7 +38,6 @@ namespace GameA.Game
         protected int _thinkTimer;
         protected int _stuckTimer;
         protected int _reSeekTimer;
-        protected int _curFriction;
 
         protected override bool OnInit()
         {
@@ -70,8 +69,15 @@ namespace GameA.Game
             _eState = EMonsterState.None;
         }
 
-        protected virtual void CalculateMonsterState()
+        protected override void UpdateMonsterAI()
         {
+            if (_path != null)
+            {
+                for (int i = 0; i < _path.Count - 1; i++)
+                {
+                    Debug.DrawLine(new Vector3(_path[i].x + 0.5f, _path[i].y + 0.5f), new Vector3(_path[i + 1].x + 0.5f, _path[i + 1].y + 0.5f));
+                }
+            }
             _thinkTimer++;
             switch (_eState)
             {
@@ -120,89 +126,6 @@ namespace GameA.Game
                 _currentNodeId = -1;
                 ChangeState(EMonsterState.Think);
             }
-        }
-
-        public override void UpdateLogic()
-        {
-            if (_path != null)
-            {
-                for (int i = 0; i < _path.Count - 1; i++)
-                {
-                    Debug.DrawLine(new Vector3(_path[i].x + 0.5f, _path[i].y + 0.5f), new Vector3(_path[i + 1].x + 0.5f, _path[i + 1].y + 0.5f));
-                }
-            }
-            if (_isAlive && _isStart)
-            {
-                bool air = false;
-                _curFriction = _friction;
-                if (SpeedY != 0)
-                {
-                    air = true;
-                }
-                if (!air)
-                {
-                    _onClay = false;
-                    bool downExist = false;
-                    int deltaX = int.MaxValue;
-                    var units = EnvManager.RetriveDownUnits(this);
-                    for (int i = 0; i < units.Count; i++)
-                    {
-                        var unit = units[i];
-                        int ymin = 0;
-                        if (unit != null && unit.IsAlive && CheckOnFloor(unit) && unit.OnUpHit(this, ref ymin, true))
-                        {
-                            downExist = true;
-                            _grounded = true;
-                            _downUnits.Add(unit);
-                            if (unit.Friction > _curFriction)
-                            {
-                                _curFriction = unit.Friction;
-                            }
-                            if (unit.Id == UnitDefine.ClayId)
-                            {
-                                _onClay = true;
-                            }
-                            var delta = Math.Abs(CenterPos.x - unit.CenterPos.x);
-                            if (deltaX > delta)
-                            {
-                                deltaX = delta;
-                                _downUnit = unit;
-                            }
-                        }
-                    }
-                    if (!downExist)
-                    {
-                        air = true;
-                    }
-                }
-                if (air && _grounded)
-                {
-                    Speed += _lastExtraDeltaPos;
-                    _grounded = false;
-                    if (SpeedY > 0)
-                    {
-                        OnJump();
-                    }
-                }
-                _curMaxSpeedX = _monsterSpeed;
-                if (_onClay)
-                {
-                    _curMaxSpeedX /= ClayRatio;
-                }
-                CalculateMonsterState();
-                if (!_grounded)
-                {
-                    SpeedY -= 12;
-                    if (SpeedY < -120)
-                    {
-                        SpeedY = -120;
-                    }
-                }
-            }
-        }
-
-        private void OnJump()
-        {
         }
 
         protected void OnThink()

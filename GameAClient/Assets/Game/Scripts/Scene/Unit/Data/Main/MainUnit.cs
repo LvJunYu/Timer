@@ -575,6 +575,7 @@ namespace GameA.Game
             if (!air)
             {
                 _onClay = false;
+                _onIce = false;
                 bool downExist = false;
                 int deltaX = int.MaxValue;
                 List<UnitBase> units = EnvManager.RetriveDownUnits(this);
@@ -594,9 +595,14 @@ namespace GameA.Game
                         {
                             friction = unit.Friction;
                         }
-                        if (unit.Id == UnitDefine.ClayId)
+                        var edge = unit.GetUpEdge(this);
+                        if (unit.OnClay() || edge.ESkillType == ESkillType.Clay)
                         {
                             _onClay = true;
+                        }
+                        else if (unit.OnIce() || edge.ESkillType == ESkillType.Ice)
+                        {
+                            _onIce = true;
                         }
                         var delta = Mathf.Abs(CenterPos.x - unit.CenterPos.x);
                         if (deltaX > delta)
@@ -625,8 +631,13 @@ namespace GameA.Game
             _curMaxQuickenSpeedX = MaxQuickenSpeedX;
             if (_onClay)
             {
+                friction = 30;
                 _curMaxSpeedX /= ClayRatio;
                 _curMaxQuickenSpeedX /= ClayRatio;
+            }
+            else if (_onIce)
+            {
+                friction = 1;
             }
             if (air)
             {
