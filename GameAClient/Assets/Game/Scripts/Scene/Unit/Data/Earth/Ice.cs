@@ -32,6 +32,11 @@ namespace GameA.Game
             return true;
         }
 
+        public override bool OnIce()
+        {
+            return true;
+        }
+
         public override void OnShootHit(UnitBase other)
         {
             if (other is BulletFire)

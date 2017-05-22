@@ -28,6 +28,7 @@ namespace GameA.Game
         /// </summary>
         private static HashSet<IntVec3> _cacheIntersectUnits = new HashSet<IntVec3>();
         protected bool _onClay;
+        protected bool _onIce;
         protected const int ClayRatio = 5;
 
         protected override void Clear()

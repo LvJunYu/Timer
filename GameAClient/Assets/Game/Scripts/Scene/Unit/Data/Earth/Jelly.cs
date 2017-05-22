@@ -39,61 +39,98 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (!checkOnly)
+            if (!checkOnly && other.IsHero)
             {
                 if (other.SpeedY <= 0)
                 {
-                    other.SpeedY = 0;
-                    if (other.IsMain)
-                    {
-                        PlayMode.Instance.MainUnit.Step(80);
-                        other.ExtraSpeed.y = ExtraSpeedY;
-                        GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
-                    }
-                    else if (other.IsMonster)
-                    {
-                        other.ExtraSpeed.y = ExtraSpeedY;
-                    }
                     if (_animation != null)
                     {
                         _animation.PlayOnce("Up");
                     }
                 }
+                OnEffect(other, EDirectionType.Up);
             }
             return base.OnUpHit(other, ref y, checkOnly);
         }
 
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (!checkOnly)
+            if (!checkOnly && other.IsHero)
             {
                 if (other.SpeedY >= 0)
                 {
-                    other.SpeedY = 0;
-                    if (other.IsMain)
-                    {
-                        other.ExtraSpeed.y = -ExtraSpeedY;
-                        GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
-                    }
-                    else if (other.IsMonster)
-                    {
-                        other.ExtraSpeed.y = -ExtraSpeedY;
-                    }
                     if (_animation != null)
                     {
                         _animation.PlayOnce("Down");
                     }
                 }
+                OnEffect(other, EDirectionType.Down);
             }
             return base.OnDownHit(other, ref y, checkOnly);
         }
 
         public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (!checkOnly)
+            if (!checkOnly && other.IsHero)
             {
-                if (other.IsHero)
+                if (_animation != null)
                 {
+                    _animation.PlayOnce("Left");
+                }
+                OnEffect(other, EDirectionType.Left);
+            }
+            return base.OnLeftHit(other, ref x, checkOnly);
+        }
+
+        public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
+        {
+            if (!checkOnly && other.IsHero)
+            {
+                if (_animation != null)
+                {
+                    _animation.PlayOnce("Right");
+                }
+                OnEffect(other, EDirectionType.Right);
+            }
+            return base.OnRightHit(other, ref x, checkOnly);
+        }
+
+        public static void OnEffect(UnitBase other, EDirectionType eDirectionType)
+        {
+            switch (eDirectionType)
+            {
+                case EDirectionType.Up:
+                    if (other.SpeedY <= 0)
+                    {
+                        other.SpeedY = 0;
+                        if (other.IsMain)
+                        {
+                            PlayMode.Instance.MainUnit.Step(80);
+                            other.ExtraSpeed.y = ExtraSpeedY;
+                            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
+                        }
+                        else if (other.IsMonster)
+                        {
+                            other.ExtraSpeed.y = ExtraSpeedY;
+                        }
+                    }
+                    break;
+                case EDirectionType.Down:
+                    if (other.SpeedY >= 0)
+                    {
+                        other.SpeedY = 0;
+                        if (other.IsMain)
+                        {
+                            other.ExtraSpeed.y = -ExtraSpeedY;
+                            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
+                        }
+                        else if (other.IsMonster)
+                        {
+                            other.ExtraSpeed.y = -ExtraSpeedY;
+                        }
+                    }
+                    break;
+                case EDirectionType.Left:
                     other.Speed = IntVec2.zero;
                     other.ExtraSpeed.x = -ExtraSpeedX;
                     other.ExtraSpeed.y = ExtraSpeedX;
@@ -102,21 +139,8 @@ namespace GameA.Game
                     {
                         GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
                     }
-                    if (_animation != null)
-                    {
-                        _animation.PlayOnce("Left");
-                    }
-                }
-            }
-            return base.OnLeftHit(other, ref x, checkOnly);
-        }
-
-        public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
-        {
-            if (!checkOnly)
-            {
-                if (other.IsHero)
-                {
+                    break;
+                case EDirectionType.Right:
                     other.Speed = IntVec2.zero;
                     other.ExtraSpeed.x = ExtraSpeedX;
                     other.ExtraSpeed.y = ExtraSpeedX;
@@ -125,13 +149,8 @@ namespace GameA.Game
                     {
                         GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
                     }
-                    if (_animation != null)
-                    {
-                        _animation.PlayOnce("Right");
-                    }
-                }
+                    break;
             }
-            return base.OnRightHit(other, ref x, checkOnly);
         }
     }
 }

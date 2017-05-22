@@ -821,7 +821,7 @@
         "Width": "64",
         "Height": "16",
         "CWidth": "64",
-        "CHeight": "32",
+        "CHeight": "16",
         "Anchore": "4",
         "ModelAnchore": "5",
         "ParentType": "1",
