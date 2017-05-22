@@ -31,6 +31,7 @@ namespace GameA
         /// </summary>
         public Button Page4Btn;
         public GameObject Page4Obj;
+
         /// <summary>
         /// 第五页
         /// </summary>

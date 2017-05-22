@@ -48,23 +48,27 @@ namespace GameA
             FashionPage5,
         }
 
-                 private List<UMCtrlFashionShopCard> _cardList = new List<UMCtrlFashionShopCard>();
+        private List<UMCtrlFashionShopCard> _cardList = new List<UMCtrlFashionShopCard>();
    
         public void Set(List<ShopItem> pageList)
         {
-            //for (int i = pageList.Count; i >= 0; i--)
-            //{
-            //    _cardList[i].Destroy();
-            //}
-            _cardList.Clear();
-            for (int i = 0; i < pageList.Count; i++)
+            if (_cardList.Count > 0)
             {
-                var UM = new UMCtrlFashionShopCard();
-                UM.Init(_cachedView.Dock as RectTransform);
-                UM.Set(pageList[i]);
-                
-                _cardList.Add(UM);
+                for (int i = _cardList.Count-1; i >= 0; i--)
+                {
+                    _cardList[i].DestoryUmCard();
+                }
             }
+            _cardList.Clear();
+                for (int i = 0; i < pageList.Count; i++)
+                {
+                    var UM = new UMCtrlFashionShopCard();
+                    UM.Init(_cachedView.Dock as RectTransform);
+                    UM.Set(pageList[i]);
+
+                    _cardList.Add(UM);
+                }
+            
 
 
         }

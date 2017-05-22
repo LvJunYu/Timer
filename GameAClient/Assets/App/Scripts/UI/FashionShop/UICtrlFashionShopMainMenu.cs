@@ -19,7 +19,7 @@ using GameA.Game;
 namespace GameA
 {
 	[UIAutoSetup(EUIAutoSetupType.Add)]
-	public class UICtrlFashionShopMainMenu : UISocialCtrlBase<UIViewFashionShopMainMenu>
+	public class UICtrlFashionShopMainMenu : UICtrlGenericBase<UIViewFashionShopMainMenu>
     {
 		#region 常量与字段
 		private USCtrlFashionShop _usctrlFashionPage1;
@@ -253,6 +253,7 @@ namespace GameA
         /// </summary>
         protected override void OnViewCreated()
         {
+            base.OnViewCreated();
             InitTagGroup();
             SetRenderTexture();
             
@@ -317,7 +318,6 @@ namespace GameA
 	    }
 	    private void InitTagGroup()
 	    {
-            base.OnViewCreated();
 
             _cachedView.TagGroup.AddButton(_cachedView.USViewShop.Page1Btn, OnFashionPage1ButtonClick);
             _cachedView.TagGroup.AddButton(_cachedView.USViewShop.Page2Btn, OnFashionPage2ButtonClick);
@@ -349,12 +349,46 @@ namespace GameA
 
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtnClick);
             _cachedView.RestoreFashionBtn.onClick.AddListener(OnRestoreFashionBtnClick);
+	        _cachedView.PurchaseAllFittingFashionBtn.onClick.AddListener(OnPurchaseAllFittingFashionBtnClick);
+	    }
+
+
+        private void OnPurchaseAllFittingFashionBtnClick()
+        {
+            List<ShopItem> allFittingList = new List<ShopItem>();
+            if (SelectHead.ItemID != LocalUser.Instance.UsingAvatarData.Head.Id)
+            {
+                allFittingList.Add(SelectHead.ItemInfo);
+            }
+            if (SelectHead.ItemID != LocalUser.Instance.UsingAvatarData.Upper.Id)
+            {
+
+                allFittingList.Add(SelectUpper.ItemInfo);
+            }
+            if (SelectHead.ItemID != LocalUser.Instance.UsingAvatarData.Lower.Id)
+            {
+
+                allFittingList.Add(SelectLower.ItemInfo);
+            }
+            if (SelectHead.ItemID != LocalUser.Instance.UsingAvatarData.Appendage.Id)
+            {
+
+                allFittingList.Add(SelectAppendage.ItemInfo);
+            }
+
+            SocialGUIManager.Instance.OpenUI<UICtrlShopingCart>();
+            SocialGUIManager.Instance.GetUI<UICtrlShopingCart>().Set(allFittingList);
+
+
         }
 
         private void OnRestoreFashionBtnClick()
         {
             SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().ShowAllUsingAvatar();
-
+            SelectHead = null;
+            SelectUpper = null;
+            SelectLower = null;
+            SelectAppendage = null;
         }
 
         public void InitPageData()
@@ -369,8 +403,7 @@ namespace GameA
             }
             else
             {
-                SetFashionPage(1);
-                SetFashionPage(2);
+                SetFashionPage();
             }
         }
 
@@ -408,6 +441,47 @@ namespace GameA
                     }
                     list.Add(shopitem);//放入shopitem
                 }
+            }
+            _usctrlFashionPage2.Set(dict[2]);
+            _usctrlFashionPage1.Set(dict[1]);
+            _usctrlFashionPage3.Set(dict[3]);
+            _usctrlFashionPage4.Set(dict[4]);
+
+        }
+
+        private void SetFashionPage()
+        {
+            var dict = new Dictionary<int, List<ShopItem>>(); //建立字典 键是分页 值为每个分页的itemlist
+            List<ShopItem> list = null;
+
+            for (int i = 1; i <= TableManager.Instance.Table_FashionShopDic.Count; i++)//便利tablemanager
+            {
+                
+                    var item = TableManager.Instance.Table_FashionShopDic[i]; //拿到tablemanager每一列
+                    ShopItem shopitem = null;//建立shopitem
+                    switch ((EAvatarPart)item.Type)
+                    {
+                        case EAvatarPart.AP_Appendage: //根据序号找到对应的item
+                            shopitem = new ShopItem(TableManager.Instance.GetAppendageParts(item.ItemIdx));
+                            break;
+                        case EAvatarPart.AP_Head:
+                            shopitem = new ShopItem(TableManager.Instance.GetHeadParts(item.ItemIdx));
+                            break;
+                        case EAvatarPart.AP_Lower:
+                            shopitem = new ShopItem(TableManager.Instance.GetLowerBodyParts(item.ItemIdx));
+                            break;
+                        case EAvatarPart.AP_Upper:
+                            shopitem = new ShopItem(TableManager.Instance.GetUpperBodyParts(item.ItemIdx));
+                            break;
+                    }
+
+                    if (!dict.TryGetValue(item.PageIdx, out list))
+                    {                                     //没拿到
+                        list = new List<ShopItem>();    //建立list
+                        dict.Add(item.PageIdx, list);   //放入字典 key：list value：list
+                    }
+                    list.Add(shopitem);//放入shopitem
+                
             }
             _usctrlFashionPage2.Set(dict[2]);
             _usctrlFashionPage1.Set(dict[1]);
@@ -537,7 +611,7 @@ namespace GameA
         #region 接口
         protected override void InitGroupId()
         {
-			_groupId = (int)EUIGroupType.PopUpUI;
+			_groupId = (int)EUIGroupType.MainUI;
         }
 			
         /// <summary>

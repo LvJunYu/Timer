@@ -238,9 +238,13 @@
     <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\ShopItem.cs" />
     <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\UICtrlFashionSpine.cs" />
     <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\UICtrlPurchaseTotalCount.cs" />
+    <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\UICtrlShopingCart.cs" />
     <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\UIViewFashionSpine.cs" />
     <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\UIViewPurchaseTotalCount.cs" />
+    <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\UIViewShopingCart.cs" />
+    <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\UMCtrlCartCard.cs" />
     <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\UMCtrlFashionShopCard.cs" />
+    <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\UMViewCartCard.cs" />
     <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\UMViewFashionShopCard.cs" />
     <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\USCtrlFashionShop.cs" />
     <Compile Include="Assets\App\Scripts\UI\FashionShop\Script\USViewFashionShop.cs" />

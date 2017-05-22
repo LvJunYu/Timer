@@ -97,7 +97,6 @@ namespace GameA
 
             _cachedView.AvatarImage.SetActiveEx(false);
 
-
             LocalUser.Instance.UsingAvatarData.Request(
                 LocalUser.Instance.UserGuid,
                 () =>
@@ -126,7 +125,7 @@ namespace GameA
 
         private void OnAvatarBtn()
         {
-            SocialGUIManager.Instance.OpenPopupUI<UICtrlFashionShopMainMenu>();
+            SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
         }
     }
 }

@@ -12,6 +12,8 @@ namespace GameA
 		/// </summary>
 		public Button CloseBtn;
         public Button RestoreFashionBtn;
+        public Button PurchaseAllFittingFashionBtn;
+
 
         /// <summary>
         /// 菜单按钮
