@@ -707,7 +707,7 @@ namespace GameA.Game
                         break;
                     }
             }
-			if (tableUnit.EGeneratedType == EGeneratedType.Spine)
+			if (tableUnit.EGeneratedType == EGeneratedType.Spine && !UnitDefine.IsBullet(tableUnit.Id))
             {
                 offsetInWorld.y -= modelSizeInWorld.y * 0.5f;
             }

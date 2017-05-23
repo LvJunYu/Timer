@@ -71,6 +71,11 @@ namespace GameA.Game
             return id == 7001 || id == 7101 || id == 7102 || id == 7103 || id == 7104;
         }
 
+        public static bool IsBullet(int id)
+        {
+            return id >= 10001 && id <=10010;
+        }
+
         public static bool IsSameDirectionSwitchTrigger(SceneNode node, byte rotation)
         {
             return node.Id == SwitchTriggerId &&
@@ -101,7 +106,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            return (tableUnit.EGeneratedType == EGeneratedType.Spine && !IsHero(tableUnit.Id)) || IsEnergy(tableUnit.Id) || tableUnit.Id == FinalDoorId;
+            return (tableUnit.EGeneratedType == EGeneratedType.Spine && !IsHero(tableUnit.Id) && !IsBullet(tableUnit.Id)) || IsEnergy(tableUnit.Id) || tableUnit.Id == FinalDoorId;
         }
     }
 }

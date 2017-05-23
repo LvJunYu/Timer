@@ -343,8 +343,8 @@ namespace GameA.Game
         Water = -1,
         Fire,
         Ice,
-        Jelly,
         Clay,
+        Jelly,
         Max
     }
 }

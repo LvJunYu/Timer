@@ -23,6 +23,7 @@ namespace GameA.Game
         protected List<Edge> _edges = new List<Edge>();
         private static Comparison<Edge> _comparisonSkillType = SortEdge;
         private SplashController _leftEdgeSplash;
+        private Mesh _paintMesh;
 
         public override bool CanPainted
         {
@@ -95,23 +96,27 @@ namespace GameA.Game
             {
                 _edges.Sort(_comparisonSkillType);
             }
-            if (_leftEdgeSplash == null)
+            if (_edges.Count > 0)
             {
-                InitSplash();
+                UpdateMesh();
             }
-            if (_leftEdgeSplash != null)
-            {
-                var regions = new List<Vector2>();
-                for (int i = 0; i < _edges.Count; i++)
-                {
-                    if (_edges[i].Direction == EDirectionType.Left && direction == EDirectionType.Left)
-                    {
-                        regions.Add(new Vector2(_edges[i].Start * ConstDefineGM2D.ClientTileScale,
-                            (_edges[i].End + 1) * ConstDefineGM2D.ClientTileScale));
-                    }
-                }
-                _leftEdgeSplash.SetSplashRegion(regions);
-            }
+            //if (_leftEdgeSplash == null)
+            //{
+            //    InitSplash();
+            //}
+            //if (_leftEdgeSplash != null)
+            //{
+            //    var regions = new List<Vector2>();
+            //    for (int i = 0; i < _edges.Count; i++)
+            //    {
+            //        if (_edges[i].Direction == EDirectionType.Left && direction == EDirectionType.Left)
+            //        {
+            //            regions.Add(new Vector2(_edges[i].Start * ConstDefineGM2D.ClientTileScale,
+            //                (_edges[i].End + 1) * ConstDefineGM2D.ClientTileScale));
+            //        }
+            //    }
+            //    _leftEdgeSplash.SetSplashRegion(regions);
+            //}
         }
 
         private void Merge(ref Edge edge)
@@ -168,6 +173,63 @@ namespace GameA.Game
                     localStart = Math.Max(_colliderGrid.YMin, start) - _colliderGrid.YMin;
                     localEnd = Math.Min(_colliderGrid.YMax, end) - _colliderGrid.YMin;
                     break;
+            }
+        }
+
+        private void UpdateMesh()
+        {
+            return;
+            if (_paintMesh == null)
+            {
+                _paintMesh = new Mesh();
+            }
+            for (int i = 0; i < _edges.Count; i++)
+            {
+                var edge = _edges[i];
+
+                var mesh = new Mesh();
+
+                var vertices = new Vector3[4];
+                vertices[0] = new Vector3(-0.5f, -0.5f);
+                vertices[1] = new Vector3(0.5f, -0.5f);
+                vertices[2] = new Vector3(-0.5f, 0.5f);
+                vertices[3] = new Vector3(0.5f, 0.5f);
+                mesh.vertices = vertices;
+
+                var colors32 = new Color32[4];
+                colors32[0] = new Color32(100, 100, 100, 1);
+                colors32[1] = new Color32(100, 100, 100, 1);
+                colors32[2] = new Color32(100, 100, 100, 1);
+                colors32[3] = new Color32(100, 100, 100, 1);
+                mesh.colors32 = colors32;
+
+                var tri = new int[6];
+                tri[0] = 0;
+                tri[1] = 2;
+                tri[2] = 1;
+                tri[3] = 2;
+                tri[4] = 3;
+                tri[5] = 1;
+                mesh.triangles = tri;
+
+                var normals = new Vector3[4];
+                normals[0] = Vector3.back;
+                normals[1] = Vector3.back;
+                normals[2] = Vector3.back;
+                normals[3] = Vector3.back;
+                mesh.normals = normals;
+
+                var uv = new Vector2[4];
+                uv[0 + i * 4] = new Vector2(0, 0);
+                uv[1 + i * 4] = new Vector2(1, 0);
+                uv[2 + i * 4] = new Vector2(0, 1);
+                uv[3 + i * 4] = new Vector2(1, 1);
+                mesh.uv = uv;
+
+                switch (edge.ESkillType)
+                {
+
+                }
             }
         }
 
@@ -249,7 +311,7 @@ namespace GameA.Game
             {
                 if (_edges[i].Direction == EDirectionType.Up && _edges[i].Intersect(localStart, localEnd))
                 {
-                    //取靠近中间的
+                    //取靠近中间的？
                     return _edges[i];
                 }
             }
@@ -264,10 +326,7 @@ namespace GameA.Game
             {
                 if (_edges[i].Direction == eDirectionType && _edges[i].Intersect(localStart, localEnd))
                 {
-                    if (_edges[i].ESkillType == ESkillType.Clay)
-                    {
-                        return true;
-                    }
+                    return _edges[i].ESkillType == ESkillType.Clay;
                 }
             }
             return base.CanEdgeClimbed(other, eDirectionType);
