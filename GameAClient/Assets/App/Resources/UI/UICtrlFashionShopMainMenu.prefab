@@ -1543,7 +1543,6 @@ GameObject:
   - component: {fileID: 222028686405573048}
   - component: {fileID: 114212593009996258}
   - component: {fileID: 114260261342936568}
-  - component: {fileID: 114679052329862094}
   m_Layer: 5
   m_Name: UICtrlFashionShopMainMenu
   m_TagString: Untagged
@@ -4048,18 +4047,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114679052329862094
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1920484820713068}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1200242548, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ShowMaskGraphic: 1
 --- !u!114 &114679077949418968
 MonoBehaviour:
   m_ObjectHideFlags: 1

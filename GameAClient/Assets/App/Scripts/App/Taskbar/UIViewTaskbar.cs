@@ -44,15 +44,15 @@ namespace GameA
         /// <summary>
         /// 人物动画
         /// </summary>
-		public Spine.Unity.SkeletonAnimation PlayerAvatarAnimation;
+		//public Spine.Unity.SkeletonAnimation PlayerAvatarAnimation;
         /// <summary>
         /// 人物摄像机
         /// </summary>
-		public Camera AvatarRenderCamera;
+		//public Camera AvatarRenderCamera;
         /// <summary>
         /// 人物
         /// </summary>
-		public RawImage AvatarImage;
+		//public RawImage AvatarImage;
         /// <summary>
         /// 换装按钮
         /// </summary>
