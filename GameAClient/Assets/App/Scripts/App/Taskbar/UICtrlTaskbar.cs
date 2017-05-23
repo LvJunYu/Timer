@@ -115,7 +115,7 @@ namespace GameA
 
 
             _cachedView.TestChangeAvatarBtn.onClick.AddListener (OnTestChangeAvatar);
-			_cachedView.DebugClearUserDataBtn.onClick.AddListener (OnDebugClearUserData);
+			//_cachedView.DebugClearUserDataBtn.onClick.AddListener (OnDebugClearUserData);
 
            // Debug.Log("______UICtrlTaskbar_______" + _cachedView.PlayerAvatarAnimation + "_______UICtrlTaskbar______" + _cachedView.PlayerAvatarAnimation.skeleton);
 
