@@ -31,6 +31,8 @@ namespace GameA
         public GameObject StarDark3;
 		public Text LevelTitle;
 
+        public Text StartText;
+
 		/// <summary>
 		/// 章节id
 		/// </summary>
