@@ -30,7 +30,7 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private long _cs_userId;
+        private long _cs_projectId;
         /// <summary>
         /// 
         /// </summary>
@@ -96,9 +96,9 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public long CS_UserId { 
-            get { return _cs_userId; }
-            set { _cs_userId = value; }
+        public long CS_ProjectId { 
+            get { return _cs_projectId; }
+            set { _cs_projectId = value; }
         }
         /// <summary>
         /// 
@@ -147,13 +147,13 @@ namespace GameA
         /// <summary>
 		/// 获取世界关卡评论列表
 		/// </summary>
-		/// <param name="userId">.</param>
+		/// <param name="projectId">.</param>
 		/// <param name="startInx">.</param>
 		/// <param name="maxCount">.</param>
 		/// <param name="orderBy">排序字段.</param>
 		/// <param name="orderType">升序降序.</param>
         public void Request (
-            long userId,
+            long projectId,
             int startInx,
             int maxCount,
             EProjectCommentOrderBy orderBy,
@@ -161,7 +161,7 @@ namespace GameA
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
             if (_isRequesting) {
-                if (_cs_userId != userId) {
+                if (_cs_projectId != projectId) {
                     if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
                     return;
                 }
@@ -183,7 +183,7 @@ namespace GameA
                 }
                 OnRequest (successCallback, failedCallback);
             } else {
-                _cs_userId = userId;
+                _cs_projectId = projectId;
                 _cs_startInx = startInx;
                 _cs_maxCount = maxCount;
                 _cs_orderBy = orderBy;
@@ -191,7 +191,7 @@ namespace GameA
                 OnRequest (successCallback, failedCallback);
 
                 Msg_CS_DAT_WorldProjectCommentList msg = new Msg_CS_DAT_WorldProjectCommentList();
-                msg.UserId = userId;
+                msg.ProjectId = projectId;
                 msg.StartInx = startInx;
                 msg.MaxCount = maxCount;
                 msg.OrderBy = orderBy;

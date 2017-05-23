@@ -20,7 +20,7 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private List<ProjectPlayHistory> _historyList;
+        private List<Project> _projectList;
 
         // cs fields----------------------------------
         /// <summary>
@@ -62,10 +62,10 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public List<ProjectPlayHistory> HistoryList { 
-            get { return _historyList; }
-            set { if (_historyList != value) {
-                _historyList = value;
+        public List<Project> ProjectList { 
+            get { return _projectList; }
+            set { if (_projectList != value) {
+                _projectList = value;
                 SetDirty();
             }}
         }
@@ -95,9 +95,9 @@ namespace GameA
 
         public override bool IsDirty {
             get {
-                if (null != _historyList) {
-                    for (int i = 0; i < _historyList.Count; i++) {
-                        if (null != _historyList[i] && _historyList[i].IsDirty) {
+                if (null != _projectList) {
+                    for (int i = 0; i < _projectList.Count; i++) {
+                        if (null != _projectList[i] && _projectList[i].IsDirty) {
                             return true;
                         }
                     }
@@ -160,9 +160,9 @@ namespace GameA
             if (null == msg) return false;
             _resultCode = msg.ResultCode;           
             _updateTime = msg.UpdateTime;           
-            _historyList = new List<ProjectPlayHistory>();
-            for (int i = 0; i < msg.HistoryList.Count; i++) {
-                _historyList.Add(new ProjectPlayHistory(msg.HistoryList[i]));
+            _projectList = new List<Project>();
+            for (int i = 0; i < msg.ProjectList.Count; i++) {
+                _projectList.Add(new Project(msg.ProjectList[i]));
             }
             OnSyncPartial();
             return true;
@@ -181,7 +181,7 @@ namespace GameA
         }
 
         public UserWorldProjectPlayHistoryList () { 
-            _historyList = new List<ProjectPlayHistory>();
+            _projectList = new List<Project>();
         }
         #endregion
     }

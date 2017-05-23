@@ -46,7 +46,7 @@ public class    ShopItem
 
 	public ShopItem(Table_HeadParts headParts)
 	{
-		this._avatarType = EAvatarPart.AP_Head;
+	    this._avatarType = EAvatarPart.AP_Head;
         this.Id = headParts.Id;
         this.Name = headParts.Name;
 		this.Description = headParts.Description;

@@ -43,6 +43,7 @@ namespace GameA
         //public Text RankText;
         //public Button SkipBtn;
         public Text Score;
+        public Text ScoreOutLine;
 
         public GameObject Win;
         public GameObject Lose;

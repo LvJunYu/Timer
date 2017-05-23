@@ -431,7 +431,9 @@ namespace GameA
                 }
                 // 得分
                 _cachedView.Score.gameObject.SetActive (true);
+                _cachedView.ScoreOutLine.gameObject.SetActive (true);
                 _cachedView.Score.text = Game.PlayMode.Instance.SceneState.TotalScore.ToString ();
+                _cachedView.ScoreOutLine.text = Game.PlayMode.Instance.SceneState.TotalScore.ToString ();
                 // 奖励
                 UpdateReward ();
                 break;
@@ -444,6 +446,7 @@ namespace GameA
                 _cachedView.RetryBtn.gameObject.SetActive (true);
                 _cachedView.NextBtn.gameObject.SetActive (false);
                 _cachedView.Score.gameObject.SetActive (false);
+                _cachedView.ScoreOutLine.gameObject.SetActive (false);
                 UpdateReward ();
                 break;
             }

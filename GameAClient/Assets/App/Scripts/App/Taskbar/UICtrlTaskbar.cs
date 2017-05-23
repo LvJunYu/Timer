@@ -26,8 +26,8 @@ namespace GameA
 //        private Color[] DefaultColorList;
 //        private Color[] SelectedColorList;
 
-		private ChangePartsSpineView _avatarView;
-	    public RenderTexture AvatarRenderTexture { get;  set; }
+		//private ChangePartsSpineView _avatarView;
+	    //public RenderTexture AvatarRenderTexture { get;  set; }
 
 	    #endregion
 
@@ -40,16 +40,16 @@ namespace GameA
 		public override void OnUpdate ()
 		{
 			base.OnUpdate ();
-			if (_cachedView.PlayerAvatarAnimation != null) {
-				_cachedView.PlayerAvatarAnimation.Update (Time.deltaTime);
-			}
+			//if (_cachedView.PlayerAvatarAnimation != null) {
+			//	_cachedView.PlayerAvatarAnimation.Update (Time.deltaTime);
+			//}
 		}
 
 		protected override void OnDestroy ()
 		{
-			if (AvatarRenderTexture != null) {
-				AvatarRenderTexture.Release ();
-			}
+			//if (AvatarRenderTexture != null) {
+			//	AvatarRenderTexture.Release ();
+			//}
 			base.OnDestroy ();
 		}
 
@@ -59,7 +59,7 @@ namespace GameA
         }
 
         protected override void InitEventListener()
-        {
+        { 
             base.InitEventListener();
 //            RegisterEvent(SoyEngine.EMessengerType.OnMeNewMessageStateChanged, RefreshMeNewMessageState);
         }
@@ -98,7 +98,7 @@ namespace GameA
 
 //            RefreshMeNewMessageState();
             #if UNITY_EDITOR
-            SocialGUIManager.Instance.OpenPopupUI<UICtrlGMTool> ();
+            SocialGUIManager.Instance.OpenPopupUI<UICtrlGMTool>();
             #endif
 
 			_cachedView.WorldButton.onClick.AddListener (OnNewsBtn);
@@ -107,40 +107,46 @@ namespace GameA
 
 
 
-			_cachedView.AvatarBtn.onClick.AddListener (OnAvatarBtn);
+
+            _cachedView.LotteryBtn.onClick.AddListener(OnLotteryBtn);
 
 
 
 
-			_cachedView.TestChangeAvatarBtn.onClick.AddListener (OnTestChangeAvatar);
 
-			// todo player avatar at home
-			AvatarRenderTexture = new RenderTexture (256, 512, 0);
-			_cachedView.AvatarRenderCamera.targetTexture = AvatarRenderTexture;
-            _cachedView.AvatarImage.texture = _cachedView.AvatarRenderCamera.targetTexture;
+            _cachedView.TestChangeAvatarBtn.onClick.AddListener (OnTestChangeAvatar);
+			//_cachedView.DebugClearUserDataBtn.onClick.AddListener (OnDebugClearUserData);
+
+           // Debug.Log("______UICtrlTaskbar_______" + _cachedView.PlayerAvatarAnimation + "_______UICtrlTaskbar______" + _cachedView.PlayerAvatarAnimation.skeleton);
+
+            // todo player avatar at home
+   //         AvatarRenderTexture = new RenderTexture (256, 512, 0);
+			//_cachedView.AvatarRenderCamera.targetTexture = AvatarRenderTexture;
+   //         _cachedView.AvatarImage.texture = _cachedView.AvatarRenderCamera.targetTexture;
                 //AvatarRenderTexture;
+           // Debug.Log("_______UICtrlTaskbar______" + _cachedView.PlayerAvatarAnimation+ "____UICtrlTaskbar_________" + _cachedView.PlayerAvatarAnimation.skeleton);
 
-            _avatarView = new ChangePartsSpineView ();
-			_avatarView.HomePlayerAvatarViewInit (_cachedView.PlayerAvatarAnimation);
+   //         _avatarView = new ChangePartsSpineView ();
+			//_avatarView.HomePlayerAvatarViewInit (_cachedView.PlayerAvatarAnimation);
 
 //			var levels = TableManager.Instance.Table_StandaloneLevelDic;
 //			foreach (var level in levels) {
 //				Debug.Log (level.Value.Id + " " + level.Value.Name);
 //			}
-			_cachedView.AvatarImage.SetActiveEx(false);
+			//_cachedView.AvatarImage.SetActiveEx(false);
 //			LocalUser.Instance.UserLegacy.AvatarData.LoadUsingData(()=>{
 //				RefreshAvatar();
 //			}, (networkError) => {
 //				LogHelper.Error("Network error when get avatarData, {0}", networkError);
 //			});
-			LocalUser.Instance.UsingAvatarData.Request(
-				LocalUser.Instance.UserGuid,
-				() => {
-					RefreshAvatar();
-				}, code => {
-					LogHelper.Error("Network error when get avatarData, {0}", code);
-				}
-			);
+			//LocalUser.Instance.UsingAvatarData.Request(
+			//	LocalUser.Instance.UserGuid,
+			//	() => {
+			//		RefreshAvatar();
+			//	}, code => {
+			//		LogHelper.Error("Network error when get avatarData, {0}", code);
+			//	}
+			//);
         }
 
 		protected override void OnOpen (object parameter)
@@ -148,7 +154,9 @@ namespace GameA
             base.OnOpen (parameter);
             SocialGUIManager.ShowGoldEnergyBar (false);
 			RefreshUserInfo ();
-			RefreshAvatar ();
+
+			//RefreshAvatar ();
+
 		}
 			
 //        public void ShowDefaultPage()
@@ -250,9 +258,10 @@ namespace GameA
 		/// <summary>
 		/// 家园角色被点击
 		/// </summary>
-		private void OnAvatarBtn () {
-			SocialGUIManager.Instance.OpenPopupUI<UICtrlFashionShopMainMenu>();
-		}
+
+		//private void OnAvatarBtn () {
+		//	SocialGUIManager.Instance.OpenPopupUI<UICtrlFashionShopMainMenu>();
+		//}
 
 //        private void SelectButton(UnityEngine.UI.Button button)
 //        {
@@ -287,7 +296,51 @@ namespace GameA
 //            }
 //        }
 
-		private void RefreshUserInfo () {
+
+		private void OnAvatarBtn () {
+			SocialGUIManager.Instance.OpenPopupUI<UICtrlFashionShopMainMenu>();
+		}
+        private void OnLotteryBtn()
+        {
+            Debug.Log("_________________________OnLotteryBtn");
+            SocialGUIManager.Instance.OpenPopupUI<UICtrlLottery>();
+        }
+
+        //        private void SelectButton(UnityEngine.UI.Button button)
+        //        {
+        //            for (int i = 0; i < _buttonList.Length; i++)
+        //            {
+        //                var btn = _buttonList[i];
+        //                if(btn == null)
+        //                {
+        //                    continue;
+        //                }
+        //                Image image = (Image) btn.targetGraphic;
+        //                if(btn == button)
+        //                {
+        //                    image.sprite = btn.spriteState.pressedSprite;
+        //                    Text text = btn.GetComponentInChildren<Text>();
+        //                    if(text != null)
+        //                    {
+        //                        text.color = SelectedColorList[i];
+        //                    }
+        //                    btn.enabled = false;
+        //                }
+        //                else
+        //                {
+        //                    image.sprite = btn.spriteState.disabledSprite;
+        //                    Text text = btn.GetComponentInChildren<Text>();
+        //                    if(text != null)
+        //                    {
+        //                        text.color = DefaultColorList[i];
+        //                    }
+        //                    btn.enabled = true;
+        //                }
+        //            }
+        //        }
+
+        private void RefreshUserInfo () {
+
 			_cachedView.NickName.text = LocalUser.Instance.User.UserInfoSimple.NickName;
 			ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHeadAvatar, 
 				LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,
@@ -305,23 +358,7 @@ namespace GameA
 				_cachedView.FemaleIcon.gameObject.SetActive (false);
 			}
 		}
-		private void RefreshAvatar () {
-//			if (!LocalUser.Instance.UserLegacy.AvatarData.Inited)
-//				return;
-			_cachedView.AvatarImage.SetActiveEx(true);
-			if (LocalUser.Instance.UsingAvatarData.Head != null) {
-				_avatarView.SetParts ((int)LocalUser.Instance.UsingAvatarData.Head.Id, SpinePartsHelper.ESpineParts.Head, true);
-			}
-			if (LocalUser.Instance.UsingAvatarData.Upper != null) {
-				_avatarView.SetParts ((int)LocalUser.Instance.UsingAvatarData.Upper.Id, SpinePartsHelper.ESpineParts.Upper, true);
-			}
-			if (LocalUser.Instance.UsingAvatarData.Lower != null) {
-				_avatarView.SetParts ((int)LocalUser.Instance.UsingAvatarData.Lower.Id, SpinePartsHelper.ESpineParts.Lower, true);
-			}
-			if (LocalUser.Instance.UsingAvatarData.Appendage != null) {
-				_avatarView.SetParts ((int)LocalUser.Instance.UsingAvatarData.Appendage.Id, SpinePartsHelper.ESpineParts.Appendage, true);
-			}
-		}
+
 
         #endregion
 
