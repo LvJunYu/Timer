@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 6569e843bec01014ea9bd1fa61629df2
-timeCreated: 1495455160
+guid: 66233fe9d229b4b6cbbb0d2379ac16cd
+timeCreated: 1495531327
 licenseType: Pro
 TextureImporter:
   fileIDToRecycleName: {}
@@ -86,7 +86,7 @@ TextureImporter:
     serializedVersion: 2
     sprites: []
     outline: []
-  spritePackingTag: M1UI
+  spritePackingTag: Common
   userData: 
   assetBundleName: 
   assetBundleVariant: 
