@@ -11,29 +11,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2ea4bc2f60b0164695f940dfe2553fd, type: 3}
   m_Name: HomeAtlas
   m_EditorClassIdentifier: 
-  CachedSprites:
-  - {fileID: 21300000, guid: 2228ad6e19c534ec7b25d9bf779f6c3f, type: 3}
-  - {fileID: 21300000, guid: 51ed47e7bcd2949d3bb33fba3738b1d9, type: 3}
-  - {fileID: 21300000, guid: 680ec342524ed427d92217fea534f8c3, type: 3}
-  - {fileID: 21300000, guid: 8f79991e9dfe84442ac1bb5bd7f093f0, type: 3}
-  - {fileID: 21300000, guid: 1e40e7a63e71d44af9f6be3413b4a55d, type: 3}
-  - {fileID: 21300000, guid: 8a37f367e1053440084f86bbf97c4dc8, type: 3}
-  - {fileID: 21300000, guid: d53aaf3630a3440df86f40686263fa0d, type: 3}
-  - {fileID: 21300000, guid: acc0817bb96e549d58a9f88190843951, type: 3}
-  - {fileID: 21300000, guid: 61f8f7256a15b42a681589ae32c9cbce, type: 3}
-  - {fileID: 21300000, guid: 2a8405b2f9ac34a49b5c35a21b39f80a, type: 3}
-  - {fileID: 21300000, guid: b660acd1f36f14c1db6b0c1dbe7d9192, type: 3}
-  - {fileID: 21300000, guid: 4637d98c17d9c49f6935c23261e73f02, type: 3}
-  - {fileID: 21300000, guid: 096f1d1484a6b49f489b3505e17a5fe2, type: 3}
-  - {fileID: 21300000, guid: 61e8d435f1b1d4f4bb5e3eff326c8740, type: 3}
-  - {fileID: 21300000, guid: 008f2603aaa7a42f3b5e9c05e45b02b8, type: 3}
-  - {fileID: 21300000, guid: 374cfcb4e82454483ba192f7fd4a239f, type: 3}
-  - {fileID: 21300000, guid: 4622a3ec897b54d65afca806b7d4af7e, type: 3}
-  - {fileID: 21300000, guid: 1d57747eeb10a4df88507f6210c073a6, type: 3}
-  - {fileID: 21300000, guid: b904c017c79e445dba84d8bde82b01ed, type: 3}
-  - {fileID: 21300000, guid: 5670586cd162240abae24f2fa3f97d8c, type: 3}
-  - {fileID: 21300000, guid: 913846a1818a54f74ba18fcaacc30b6e, type: 3}
-  - {fileID: 21300000, guid: 4ce6eabd085764c9ea0ba41d7aeeea01, type: 3}
-  - {fileID: 21300000, guid: e3fed90dc5c63436f901117321d08007, type: 3}
-  - {fileID: 21300000, guid: 689cc73eb63bc4589b6f1985efbcd2c6, type: 3}
-  - {fileID: 21300000, guid: 8410f8cc12fb846a8b5d1d83d8169a38, type: 3}
+  CachedSprites: []
