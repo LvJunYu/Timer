@@ -82,14 +82,14 @@ namespace GameA
             base.OnViewCreated();
             _cachedView.AvatarBtn.onClick.AddListener(OnAvatarBtn);
 
-            Debug.Log("_____________" + _cachedView.PlayerAvatarAnimation+ "_____________" +_cachedView.PlayerAvatarAnimation.skeleton);
+            //Debug.Log("_____________" + _cachedView.PlayerAvatarAnimation+ "_____________" +_cachedView.PlayerAvatarAnimation.skeleton);
 
             AvatarRenderTexture = new RenderTexture(256, 512, 0);
             _cachedView.AvatarRenderCamera.targetTexture = AvatarRenderTexture;
             _cachedView.AvatarImage.texture = _cachedView.AvatarRenderCamera.targetTexture;
             //AvatarRenderTexture;
 
-            Debug.Log("_____________" + _cachedView.PlayerAvatarAnimation + "_____________" + _cachedView.PlayerAvatarAnimation.skeleton);
+            //Debug.Log("_____________" + _cachedView.PlayerAvatarAnimation + "_____________" + _cachedView.PlayerAvatarAnimation.skeleton);
 
 
             _avatarView = new ChangePartsSpineView();

@@ -21,12 +21,12 @@ public class UMCtrlFashionShopCard : UMCtrlBase<UMViewFashionShopCard>
         _cachedView.PreviewTexture.text = listItem.PreviewTexture;
         _cachedView.IsOccupied.text = JudgeItemOccupied(listItem) ? "此时装已装备" : "未装备";
         _cachedView.IsOwned.text = JudgeItemOwned(listItem) ? "此时装已拥有" : "未拥有";
-        Debug.Log("______________________________Set UMCtrlFashionShopCard " + listItem.Id + " name:" + listItem.Name +
-           " " + _cachedView.IsOccupied.text +
-           " " + _cachedView.IsOwned.text);
+        //Debug.Log("______________________________Set UMCtrlFashionShopCard " + listItem.Id + " name:" + listItem.Name +
+        //   " " + _cachedView.IsOccupied.text +
+        //   " " + _cachedView.IsOwned.text);
         _cachedView.BuyFashion.onClick.AddListener(() => {
                   BuyFashion(listItem);
-                                                             Debug.Log("购买:" + listItem.Name);
+                                                             //Debug.Log("购买:" + listItem.Name);
         }
 
             );
