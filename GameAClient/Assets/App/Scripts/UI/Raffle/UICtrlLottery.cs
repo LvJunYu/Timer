@@ -29,6 +29,7 @@ namespace GameA
         private int _selectedTicketNum = 0;
         //初始旋转速度
         private float _initSpeed = 0;
+        private float _initialSpeed = 2000;
         //速度变化值
         private float _delta = 0f;
         //转盘是否暂停
@@ -40,7 +41,7 @@ namespace GameA
         private bool _bright=false;
         private float RotationEulerAngles = 0;
 
-
+        
 
         #endregion
         #region 属性
@@ -99,12 +100,10 @@ namespace GameA
        }
         private void UseRaffleTicket(int selectedTicketNum)
         {
-       
-
             if (LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(selectedTicketNum) > 0)
             {
                 _isPause = false;
-                this._initSpeed = 2000;
+                this._initSpeed = _initialSpeed;
                 LocalUser.Instance.RaffleTicket.UseRaffleTicket(selectedTicketNum, DecelerateThePanel
                     , null);
                 RefreshRaffleCount();
