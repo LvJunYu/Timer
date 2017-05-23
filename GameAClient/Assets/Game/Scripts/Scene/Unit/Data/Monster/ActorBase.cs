@@ -74,7 +74,7 @@ namespace GameA.Game
             OnDead();
             if (_animation != null)
             {
-                _animation.PlayOnce("DeathDrown");
+                _animation.PlayOnce("DeathWater");
             }
         }
 
