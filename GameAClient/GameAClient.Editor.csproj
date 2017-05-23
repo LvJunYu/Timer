@@ -160,8 +160,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\App\Editor\XCodePostProcessCopyRes.cs" />
-    <Compile Include="Assets\App\Scripts\UIView\InGame\Editor\UIRectTransformStatusInspector.cs" />
-    <Compile Include="Assets\App\Scripts\UIView\InGame\Editor\UITransformStatusInspector.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\EasyTouchBundle\EasyTouch\Plugins\Editor\EasyTouchInspector.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\EasyTouchBundle\EasyTouch\Plugins\Editor\EasyTouchMenu.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\EasyTouchBundle\EasyTouch\Plugins\Editor\EasyTouchTriggerInspector.cs" />
@@ -272,7 +270,6 @@
     <None Include="Assets\App\Resources\Shader\UI\UI-Unlit-TextDetail.shader" />
     <None Include="Assets\App\Resources\Shader\UI\UI-Unlit-Transparent.shader" />
     <None Include="Assets\App\Resources\Spine\Player\MainBoy0\MainBoy0.atlas.txt" />
-    <None Include="Assets\App\Resources\Sprite\Home\_source\Empty.txt" />
     <None Include="Assets\Game\Resources\Shader\SFSolidColor.shader" />
     <None Include="Assets\Game\Resources\Shader\SFVertexColor.shader" />
     <None Include="Assets\JoyGameArt\ArtCode\Shader\Effect\EnergyPoolLiquid.shader" />
@@ -318,10 +315,10 @@
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1BulletIce.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1BulletJelly.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1BulletWater.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Cat.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Clay.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Cloud.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1EffectSwitchEarth.atlas.txt" />
-    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1EffectWaterDestroy.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Fire.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Gate.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1GreenJet.atlas.txt" />

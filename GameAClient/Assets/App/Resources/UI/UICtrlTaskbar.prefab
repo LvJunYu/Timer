@@ -4656,6 +4656,7 @@ MonoBehaviour:
   WorldButton: {fileID: 114295502804930632}
   SingleModeButton: {fileID: 114410724918712716}
   AvatarBtn: {fileID: 114674136816770446}
+  LotteryBtn: {fileID: 114773027775638434}
   PlayerAvatarAnimation: {fileID: 114809571393400904}
   AvatarRenderCamera: {fileID: 20741894369770822}
   AvatarImage: {fileID: 114111139608157796}
