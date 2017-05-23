@@ -17,7 +17,8 @@ namespace GameA.Game
     [Unit(Id = 4001, Type = typeof(Earth))]
     public class Earth : BlockBase
     {
-        private const int MinEdgeLength = 64;
+        public const int MinEdgeLength = 64;
+        public const int OffsetEdgeLength = 10;
 		/// <summary>
 		/// 被涂装的边信息，有序从小到大 
 		/// </summary>
@@ -25,6 +26,7 @@ namespace GameA.Game
         private static Comparison<Edge> _comparisonSkillType = SortEdge;
         private Mesh _paintMesh;
         private MeshFilter _paintMeshFilter;
+        private static List<CombineInstance> _combineInstances = new List<CombineInstance>();
 
         public override bool CanPainted
         {
@@ -47,6 +49,11 @@ namespace GameA.Game
 		    {
                 Object.Destroy(_paintMesh);
 		        _paintMesh = null;
+		    }
+		    if (_paintMeshFilter != null)
+		    {
+                Object.Destroy(_paintMeshFilter.gameObject);
+                _paintMeshFilter = null;
 		    }
 		}
 
@@ -83,12 +90,13 @@ namespace GameA.Game
             {
                 _edges.Sort(_comparisonSkillType);
             }
-            if (_edges.Count > 0)
+            //if (_edges.Count > 0)
             {
                 UpdateMesh();
                 if (_paintMeshFilter == null)
                 {
                     _paintMeshFilter = new GameObject("Paint").gameObject.AddComponent<MeshFilter>();
+                    _paintMeshFilter.gameObject.transform.localPosition = Vector3.forward*(_trans.localPosition.z - 0.01f);
                     _paintMeshFilter.sharedMesh = new Mesh();
                     var mr = _paintMeshFilter.gameObject.AddComponent<MeshRenderer>();
                     //mr.sharedMaterial = new Material(Shader.Find("Difu"));
@@ -174,9 +182,7 @@ namespace GameA.Game
             }
             return end >= start + MinEdgeLength;
         }
-
-        private static List<CombineInstance> _combineInstances = new List<CombineInstance>();
-
+        
         private void UpdateMesh()
         {
             _combineInstances.Clear();
@@ -187,95 +193,94 @@ namespace GameA.Game
             for (int i = 0; i < _edges.Count; i++)
             {
                 var edge = _edges[i];
-                
-                var mesh = new Mesh();
-
-                Vector2 v1, v2, v3;
-                Vector2 v0 = v1 = v2 = v3 = Vector2.zero;
-                float start = edge.Start*ConstDefineGM2D.ClientTileScale;
-                float end = edge.End*ConstDefineGM2D.ClientTileScale;
-                switch (edge.Direction)
-                {
-                    case EDirectionType.Up:
-                        {
-                            float y = (_colliderGrid.YMax + 1) * ConstDefineGM2D.ClientTileScale;
-                            v0 = new Vector2(start - 0.15f, y - 0.1f);
-                            v1 = new Vector2(start + 0.15f, y + 0.1f);
-                            v2 = new Vector2(end + 0.15f, y + 0.1f);
-                            v3 = new Vector2(end - 0.15f, y - 0.1f);
-                        }
-
-                        break;
-                    case EDirectionType.Down:
-                        {
-                            float y = (_colliderGrid.YMin - 1) * ConstDefineGM2D.ClientTileScale;
-                            v0 = new Vector2(start - 0.15f, y - 0.1f);
-                            v1 = new Vector2(start + 0.15f, y + 0.1f);
-                            v2 = new Vector2(end + 0.15f, y + 0.1f);
-                            v3 = new Vector2(end - 0.15f, y - 0.1f);
-                        }
-                        break;
-                    case EDirectionType.Left:
-                        {
-                            float x = (_colliderGrid.XMin - 1) * ConstDefineGM2D.ClientTileScale;
-                            v0 = new Vector2(x - 0.15f, start - 0.1f);
-                            v1 = new Vector2(x + 0.15f, start + 0.1f);
-                            v2 = new Vector2(x + 0.15f, end + 0.1f);
-                            v3 = new Vector2(x - 0.15f, end - 0.1f);
-                        }
-                        break;
-                    case EDirectionType.Right:
-                        {
-                            float x = (_colliderGrid.XMax + 1) * ConstDefineGM2D.ClientTileScale;
-                            v0 = new Vector2(x - 0.15f, start - 0.1f);
-                            v1 = new Vector2(x + 0.15f, start - 0.1f);
-                            v2 = new Vector2(x - 0.15f, end + 0.1f);
-                            v3 = new Vector2(x + 0.15f, end + 0.1f);
-                            LogHelper.Debug("Right : {0} | {1} | {2} | {3}", v0, v1, v2, v3);
-                        }
-                        break;
-                }
-
-                var vertices = new Vector3[4];
-                vertices[0] = v0;
-                vertices[1] = v1;
-                vertices[2] = v2;
-                vertices[3] = v3;
-                mesh.vertices = vertices;
-
-                var colors32 = new Color32[4];
-                colors32[0] = Color.red;
-                colors32[1] = Color.red;
-                colors32[2] = Color.red;
-                colors32[3] = Color.red;
-                mesh.colors32 = colors32;
-
-                var tri = new int[6];
-                tri[0] = 0;
-                tri[1] = 2;
-                tri[2] = 1;
-                tri[3] = 2;
-                tri[4] = 3;
-                tri[5] = 1;
-                mesh.triangles = tri;
-
-                var normals = new Vector3[4];
-                normals[0] = Vector3.back;
-                normals[1] = Vector3.back;
-                normals[2] = Vector3.back;
-                normals[3] = Vector3.back;
-                mesh.normals = normals;
-
-                var uv = new Vector2[4];
-                uv[0] = new Vector2(0, 0);
-                uv[1] = new Vector2(1, 0);
-                uv[2] = new Vector2(0, 1);
-                uv[3] = new Vector2(1, 1);
-                mesh.uv = uv;
-
-                var ci = new CombineInstance {mesh = mesh};
-                _combineInstances.Add(ci);
+                _combineInstances.Add(new CombineInstance {mesh = CreateMesh(ref edge), transform = Matrix4x4.identity});
             }
+        }
+
+        private Mesh CreateMesh(ref Edge edge)
+        {
+            var mesh = new Mesh();
+            Vector2 v1, v2, v3;
+            Vector2 v0 = v1 = v2 = v3 = Vector2.zero;
+            float start = (edge.Start - OffsetEdgeLength) * ConstDefineGM2D.ClientTileScale;
+            float end = (edge.End + OffsetEdgeLength) * ConstDefineGM2D.ClientTileScale;
+            switch (edge.Direction)
+            {
+                case EDirectionType.Up:
+                    {
+                        float y = _colliderGrid.YMax * ConstDefineGM2D.ClientTileScale;
+                        v0 = new Vector2(start - 0.15f, y - 0.1f);
+                        v1 = new Vector2(end - 0.15f, y - 0.1f);
+                        v2 = new Vector2(start + 0.15f, y + 0.1f);
+                        v3 = new Vector2(end + 0.15f, y + 0.1f);
+                    }
+                    break;
+                case EDirectionType.Down:
+                    {
+                        float y = _colliderGrid.YMin * ConstDefineGM2D.ClientTileScale;
+                        v0 = new Vector2(start - 0.15f, y - 0.1f);
+                        v1 = new Vector2(end - 0.15f, y - 0.1f);
+                        v2 = new Vector2(start - 0.15f, y + 0.1f);
+                        v3 = new Vector2(end - 0.15f, y + 0.1f);
+                    }
+                    break;
+                case EDirectionType.Left:
+                    {
+                        float x = _colliderGrid.XMin * ConstDefineGM2D.ClientTileScale;
+                        v0 = new Vector2(x - 0.15f, start - 0.1f);
+                        v1 = new Vector2(x + 0.15f, start - 0.1f);
+                        v2 = new Vector2(x - 0.15f, end - 0.1f);
+                        v3 = new Vector2(x + 0.15f, end - 0.1f);
+                    }
+                    break;
+                case EDirectionType.Right:
+                    {
+                        float x = _colliderGrid.XMax * ConstDefineGM2D.ClientTileScale;
+                        v0 = new Vector2(x - 0.15f, start - 0.1f);
+                        v1 = new Vector2(x + 0.15f, start + 0.1f);
+                        v2 = new Vector2(x - 0.15f, end - 0.1f);
+                        v3 = new Vector2(x + 0.15f, end + 0.1f);
+                    }
+                    break;
+            }
+            var vertices = new Vector3[4];
+            vertices[0] = v0;
+            vertices[1] = v1;
+            vertices[2] = v2;
+            vertices[3] = v3;
+            mesh.vertices = vertices;
+
+            var colors32 = new Color32[4];
+            colors32[0] = Color.red;
+            colors32[1] = Color.red;
+            colors32[2] = Color.red;
+            colors32[3] = Color.red;
+            mesh.colors32 = colors32;
+
+            var tri = new int[6];
+            tri[0] = 0;
+            tri[1] = 2;
+            tri[2] = 1;
+            tri[3] = 2;
+            tri[4] = 3;
+            tri[5] = 1;
+            mesh.triangles = tri;
+
+            var normals = new Vector3[4];
+            normals[0] = Vector3.back;
+            normals[1] = Vector3.back;
+            normals[2] = Vector3.back;
+            normals[3] = Vector3.back;
+            mesh.normals = normals;
+
+            var uv = new Vector2[4];
+            uv[0] = new Vector2(0, 0);
+            uv[1] = new Vector2(1, 0);
+            uv[2] = new Vector2(0, 1);
+            uv[3] = new Vector2(1, 1);
+            mesh.uv = uv;
+            mesh.RecalculateBounds();
+            return mesh;
         }
 
         #endregion
@@ -333,7 +338,7 @@ namespace GameA.Game
 
         private void OnEdgeHit(UnitBase other, Edge edge)
         {
-            LogHelper.Debug("OnEdgeHit: {0}", edge);
+            //LogHelper.Debug("OnEdgeHit: {0}", edge);
             switch (edge.ESkillType)
             {
                     case ESkillType.Fire:
@@ -435,11 +440,11 @@ namespace GameA.Game
             edges.Remove(this);
             int cutStart = Math.Max(Start, edge.Start);
             int cutEnd = Math.Min(End, edge.End);
-            if (cutStart > Start)
+            if (cutStart - 1 >= Start + Earth.MinEdgeLength)
             {
                 edges.Add(new Edge(Start, cutStart - 1, Direction, ESkillType));
             }
-            if (End > cutEnd)
+            if (End >= cutEnd + 1 + +Earth.MinEdgeLength)
             {
                 edges.Add(new Edge(cutEnd + 1, End, Direction, ESkillType));
             }
