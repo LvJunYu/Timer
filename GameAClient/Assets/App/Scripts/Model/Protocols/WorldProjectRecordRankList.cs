@@ -1,4 +1,4 @@
-// 最近录像 | 高分排行榜
+// 高分排行榜 | 高分排行榜
 using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;

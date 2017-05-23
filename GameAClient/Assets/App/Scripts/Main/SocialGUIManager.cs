@@ -169,6 +169,7 @@ namespace GameA
 		{
 			JoyNativeTool.Instance.SetStatusBarShow (true);
 			OpenUI<UICtrlTaskbar>();//.ShowDefaultPage();
+            OpenUI<UICtrlFashionSpine>();
             Messenger.AddListener(EMessengerType.OnEscapeClick, OnEscapeClick);
         }
 

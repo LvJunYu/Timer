@@ -72,6 +72,7 @@ namespace GameA
                     if (resultCode == ERaffleCode.RC_Success)
                     {
                         SuccessfullyUseRaffleTicket(re.RewardId, (int)selectedTicketNum);
+                        GetReward(re.RewardId);
                         successCallback(this._rewardType);
                     }
                     else
@@ -131,6 +132,56 @@ namespace GameA
             return;
         }
 
+        private void GetReward(long currentRewardId)
+        {
+            var raffleUnit =TableManager.Instance.Table_RewardDic[(int)currentRewardId];
+            switch (raffleUnit.Type1)
+            {
+                //          RT_None = 0,
+                //RT_Gold = 1,
+                //RT_Diamond = 2,
+                //RT_PlayerExp = 3,
+                //RT_CreatorExp = 4,
+                //RT_FashionCoupon = 5,
+                //RT_RaffleTicket = 6
+                //ERewardType
+                case 0:
+                    break;
+                case 1:
+                    RewardMoney(raffleUnit.Value1);
+                    break;
+                case 2:
+                    RewardDiamond(raffleUnit.Value1);
+                    break;
+                case 3:
+                    RewardPlayerExp(raffleUnit.Value1);
+                    break;
+                case 4:
+                    RewardCreatorExp(raffleUnit.Value1);
+                    break;
+                case 5:
+                    break;
+                case 6:
+                    break;
+            }
+        }
+
+        private void RewardMoney(int moneyAmount)
+        {
+            LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin += moneyAmount;
+        }
+        private void RewardDiamond(int diamondAmount)
+        {
+            LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond += diamondAmount;
+        }
+        private void RewardPlayerExp(int playerExpAmount)
+        {
+            LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerExp += playerExpAmount;
+        }
+        private void RewardCreatorExp(int creatorExpAmount)
+        {
+            LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorExp += creatorExpAmount;
+        }
         private void UnsuccessfullyUseRaffleTicket()
         {
 

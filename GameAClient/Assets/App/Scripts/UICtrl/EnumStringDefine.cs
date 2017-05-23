@@ -15,8 +15,6 @@ namespace GameA
         public EnumStringDefine()
         {
         }
-
-
         public static string GetSexString(ESex sex)
         {
             if(sex == ESex.S_Female)

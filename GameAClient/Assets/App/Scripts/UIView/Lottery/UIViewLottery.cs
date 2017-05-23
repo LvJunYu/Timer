@@ -21,9 +21,7 @@ namespace GameA
 
         public Button RaffleBtn;//modify it when use cat 
 
-        public Transform mRoolPanel;
-
-
+        public Transform RoolPanel;
 
         public UICtrlLottery[] Items;
 
@@ -41,8 +39,6 @@ namespace GameA
 
         public Text RewardExhibition;
 
-
-
-
+	    public Image[] BrightLamp;
     }
 }

@@ -19,22 +19,110 @@ using GameA.Game;
 namespace GameA
 {
 	[UIAutoSetup(EUIAutoSetupType.Add)]
-	public class UICtrlFashionShopMainMenu : UISocialCtrlBase<UIViewFashionShopMainMenu>
+	public class UICtrlFashionShopMainMenu : UICtrlGenericBase<UIViewFashionShopMainMenu>
     {
 		#region 常量与字段
 		private USCtrlFashionShop _usctrlFashionPage1;
 		private USCtrlFashionShop _usctrlFashionPage2;
 		private USCtrlFashionShop _usctrlFashionPage3;
 		private USCtrlFashionShop _usctrlFashionPage4;
-	    private USCtrlFashionShop _usctrlFashionPage5;
 
+        private UMCtrlFashionShopCard _headSelectedFashionCard;
+        private UMCtrlFashionShopCard _upperSelectedFashionCard;
+        private UMCtrlFashionShopCard _lowerSelectedFashionCard;
+        private UMCtrlFashionShopCard _appendageSelectedFashionCard;
 
 
 
         #endregion
-
         #region 属性
+        public UMCtrlFashionShopCard SelectHead
+        {
+            get { return _headSelectedFashionCard; }
+            set {
+                if (value != _headSelectedFashionCard)
+                {
+                    if (_headSelectedFashionCard != null)
+                    {
+                        //_headSelectedFashionCard.ChangeDock(false);
+                    }
+                    //之前的归为
+                    _headSelectedFashionCard = value;
+                    //_cachedView.SelectedHead.text = _headSelectedFashionCard.CardName;
 
+                    //现在的改变位置
+                    //_headSelectedFashionCard.ChangeDock(true);
+
+                }
+                ;
+            } 
+        }
+        public UMCtrlFashionShopCard SelectUpper
+        {
+            get { return _upperSelectedFashionCard; }
+            set
+            {
+                if (value != _upperSelectedFashionCard)
+                {
+                    if (_upperSelectedFashionCard != null)
+                    {
+                        //_upperSelectedFashionCard.ChangeDock(false);
+                    }
+                    //之前的归为
+                    _upperSelectedFashionCard = value;
+                    //_cachedView.SelectedUpper.text = _upperSelectedFashionCard.CardName;
+
+                    //现在的改变位置
+                    //_upperSelectedFashionCard.ChangeDock(true);
+
+                }
+                ;
+            }
+        }
+        public UMCtrlFashionShopCard SelectLower
+        {
+            get { return _lowerSelectedFashionCard; }
+            set
+            {
+                if (value != _lowerSelectedFashionCard)
+                {
+                    if (_lowerSelectedFashionCard != null)
+                    {
+                        //_lowerSelectedFashionCard.ChangeDock(false);
+                    }
+                    //之前的归为
+                    _lowerSelectedFashionCard = value;
+                   // _cachedView.SelectedLower.text = _lowerSelectedFashionCard.CardName;
+
+                    //现在的改变位置
+                    //_lowerSelectedFashionCard.ChangeDock(true);
+
+                }
+      ;
+            }
+        }
+        public UMCtrlFashionShopCard SelectAppendage
+        {
+            get { return _appendageSelectedFashionCard; }
+            set
+            {
+                if (value != _appendageSelectedFashionCard)
+                {
+                    if (_appendageSelectedFashionCard != null)
+                    {
+                        //_appendageSelectedFashionCard.ChangeDock(false);
+                    }
+                    //之前的归为
+                    _appendageSelectedFashionCard = value;
+                    //_cachedView.SelectedAppendage.text = _appendageSelectedFashionCard.CardName;
+
+                    //现在的改变位置
+                    //_appendageSelectedFashionCard.ChangeDock(true);
+
+                }
+      ;
+            }
+        }
         #endregion
 
         #region 方法
@@ -165,14 +253,16 @@ namespace GameA
         /// </summary>
         protected override void OnViewCreated()
         {
+            base.OnViewCreated();
             InitTagGroup();
             SetRenderTexture();
+            
         }
 
 	    private void SetRenderTexture()
 	    {
             
-            _cachedView.Avatar.texture= SocialGUIManager.Instance.GetUI<UICtrlTaskbar>().AvatarRenderTexture;
+            _cachedView.Avatar.texture= SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().AvatarRenderTexture;
 
 	    }
 
@@ -228,17 +318,13 @@ namespace GameA
 	    }
 	    private void InitTagGroup()
 	    {
-            base.OnViewCreated();
 
             _cachedView.TagGroup.AddButton(_cachedView.USViewShop.Page1Btn, OnFashionPage1ButtonClick);
             _cachedView.TagGroup.AddButton(_cachedView.USViewShop.Page2Btn, OnFashionPage2ButtonClick);
             _cachedView.TagGroup.AddButton(_cachedView.USViewShop.Page3Btn, OnFashionPage3ButtonClick);
             _cachedView.TagGroup.AddButton(_cachedView.USViewShop.Page4Btn, OnFashionPage4ButtonClick);
-            _cachedView.TagGroup.AddButton(_cachedView.USViewShop.Page5Btn, OnFashionPage5ButtonClick);
+//            _cachedView.TagGroup.AddButton(_cachedView.USViewShop.Page5Btn, OnFashionPage5ButtonClick);
 
-            //_usctrlAllShopping = new USCtrlFashionShop();
-            //_usctrlAllShopping.Init(_cachedView.XZViewShopping);
-            //_usctrlAllShopping.ShoppingPage = USCtrlFashionShop.EShoppingPage.XZUIViewShopping;
 
             _usctrlFashionPage1 = new USCtrlFashionShop();
             _usctrlFashionPage1.Init(_cachedView.FashionPage1);
@@ -256,59 +342,151 @@ namespace GameA
             _usctrlFashionPage4.Init(_cachedView.FashionPage4);
             _usctrlFashionPage4.ShoppingPage = USCtrlFashionShop.EShoppingPage.FashionPage4;
 
-            _usctrlFashionPage5 = new USCtrlFashionShop();
-            _usctrlFashionPage5.Init(_cachedView.FashionPage5);
-            _usctrlFashionPage5.ShoppingPage = USCtrlFashionShop.EShoppingPage.FashionPage5;
+            //_usctrlFashionPage5 = new USCtrlFashionShop();
+            //_usctrlFashionPage5.Init(_cachedView.FashionPage5);
+            //_usctrlFashionPage5.ShoppingPage = USCtrlFashionShop.EShoppingPage.FashionPage5;
 
 
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtnClick);
+            _cachedView.RestoreFashionBtn.onClick.AddListener(OnRestoreFashionBtnClick);
+	        _cachedView.PurchaseAllFittingFashionBtn.onClick.AddListener(OnPurchaseAllFittingFashionBtnClick);
+	    }
+
+
+        private void OnPurchaseAllFittingFashionBtnClick()
+        {
+            List<ShopItem> allFittingList = new List<ShopItem>();
+            //if (SelectHead.ItemID != LocalUser.Instance.UsingAvatarData.Head.Id)
+            //{
+            //    allFittingList.Add(SelectHead.ItemInfo);
+            //}
+            //if (SelectHead.ItemID != LocalUser.Instance.UsingAvatarData.Upper.Id)
+            //{
+
+            //    allFittingList.Add(SelectUpper.ItemInfo);
+            //}
+            //if (SelectHead.ItemID != LocalUser.Instance.UsingAvatarData.Lower.Id)
+            //{
+
+            //    allFittingList.Add(SelectLower.ItemInfo);
+            //}
+            //if (SelectHead.ItemID != LocalUser.Instance.UsingAvatarData.Appendage.Id)
+            //{
+
+            //    allFittingList.Add(SelectAppendage.ItemInfo);
+            //}
+
+            SocialGUIManager.Instance.OpenUI<UICtrlShopingCart>();
+            SocialGUIManager.Instance.GetUI<UICtrlShopingCart>().Set(allFittingList);
 
 
         }
 
-	    public void InitPageData()
-	    {
-          
-	        var dict = new Dictionary<int, List<ShopItem>>(); //建立字典 键是分页 值为每个分页的itemlist
-            List<ShopItem> list = null;
-            for (int i = 1; i <= TableManager.Instance.Table_FashionShopDic.Count; i++)//便利tablemanager
-	        {
-	            var item = TableManager.Instance.Table_FashionShopDic[i]; //拿到tablemanager每一列
-	            ShopItem shopitem = null;//建立shopitem
-	            switch ((EAvatarPart)item.Type)
-	            {
-                    case EAvatarPart.AP_Appendage: //根据序号找到对应的item
-	                    shopitem =new ShopItem(TableManager.Instance.GetAppendageParts(item.ItemIdx));
-	                    break;
-                    case EAvatarPart.AP_Head:
-                        shopitem = new ShopItem(TableManager.Instance.GetHeadParts(item.ItemIdx));
-                        break;
-                    case EAvatarPart.AP_Lower:
-                        shopitem = new ShopItem(TableManager.Instance.GetLowerBodyParts(item.ItemIdx));
-                        break;
-	                case EAvatarPart.AP_Upper:
-	                    shopitem = new ShopItem(TableManager.Instance.GetUpperBodyParts(item.ItemIdx));
-	                    break;
-                }
-               
-	            if (!dict.TryGetValue(item.PageIdx, out list))
-	            {                                     //没拿到
-	                list = new List<ShopItem>();    //建立list
-	                dict.Add(item.PageIdx, list);   //放入字典 key：list value：list
-	            }
-	            list.Add(shopitem);//放入shopitem
+        private void OnRestoreFashionBtnClick()
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().ShowAllUsingAvatar();
+            SelectHead = null;
+            SelectUpper = null;
+            SelectLower = null;
+            SelectAppendage = null;
+        }
 
-	        }
+        public void InitPageData()
+        {
+            if (LocalUser.Instance.User.UserInfoSimple.Sex == ESex.S_Male)
+            {
+                SetFashionPage(1);
+            }
+            else if (LocalUser.Instance.User.UserInfoSimple.Sex == ESex.S_Female)
+            {
+                SetFashionPage(2);
+            }
+            else
+            {
+                SetFashionPage();
+            }
+        }
+
+        private void SetFashionPage(int sex)
+        {
+            var dict = new Dictionary<int, List<ShopItem>>(); //建立字典 键是分页 值为每个分页的itemlist
+            List<ShopItem> list = null;
+
+            for (int i = 1; i <= TableManager.Instance.Table_FashionShopDic.Count; i++)//便利tablemanager
+            {
+                if (TableManager.Instance.Table_FashionShopDic[i].Sex == sex)
+                {
+                    var item = TableManager.Instance.Table_FashionShopDic[i]; //拿到tablemanager每一列
+                    ShopItem shopitem = null;//建立shopitem
+                    switch ((EAvatarPart)item.Type)
+                    {
+                        case EAvatarPart.AP_Appendage: //根据序号找到对应的item
+                            shopitem = new ShopItem(TableManager.Instance.GetAppendageParts(item.ItemIdx));
+                            break;
+                        case EAvatarPart.AP_Head:
+                            shopitem = new ShopItem(TableManager.Instance.GetHeadParts(item.ItemIdx));
+                            break;
+                        case EAvatarPart.AP_Lower:
+                            shopitem = new ShopItem(TableManager.Instance.GetLowerBodyParts(item.ItemIdx));
+                            break;
+                        case EAvatarPart.AP_Upper:
+                            shopitem = new ShopItem(TableManager.Instance.GetUpperBodyParts(item.ItemIdx));
+                            break;
+                    }
+
+                    if (!dict.TryGetValue(item.PageIdx, out list))
+                    {                                     //没拿到
+                        list = new List<ShopItem>();    //建立list
+                        dict.Add(item.PageIdx, list);   //放入字典 key：list value：list
+                    }
+                    list.Add(shopitem);//放入shopitem
+                }
+            }
             _usctrlFashionPage2.Set(dict[2]);
             _usctrlFashionPage1.Set(dict[1]);
-	        _usctrlFashionPage3.Set(dict[3]);
-	        _usctrlFashionPage4.Set(dict[4]);
-            _usctrlFashionPage5.Set(dict[5]);
-            //Debug.Log("______________________________Set UMCtrlFashionShopCard " + listItem.Id + " name:" + listItem.Name + 
-            //    " " + _cachedView.IsOccupied.text + 
-            //    " " + _cachedView.IsOwned.text);
+            _usctrlFashionPage3.Set(dict[3]);
+            _usctrlFashionPage4.Set(dict[4]);
 
+        }
 
+        private void SetFashionPage()
+        {
+            var dict = new Dictionary<int, List<ShopItem>>(); //建立字典 键是分页 值为每个分页的itemlist
+            List<ShopItem> list = null;
+
+            for (int i = 1; i <= TableManager.Instance.Table_FashionShopDic.Count; i++)//便利tablemanager
+            {
+                
+                    var item = TableManager.Instance.Table_FashionShopDic[i]; //拿到tablemanager每一列
+                    ShopItem shopitem = null;//建立shopitem
+                    switch ((EAvatarPart)item.Type)
+                    {
+                        case EAvatarPart.AP_Appendage: //根据序号找到对应的item
+                            shopitem = new ShopItem(TableManager.Instance.GetAppendageParts(item.ItemIdx));
+                            break;
+                        case EAvatarPart.AP_Head:
+                            shopitem = new ShopItem(TableManager.Instance.GetHeadParts(item.ItemIdx));
+                            break;
+                        case EAvatarPart.AP_Lower:
+                            shopitem = new ShopItem(TableManager.Instance.GetLowerBodyParts(item.ItemIdx));
+                            break;
+                        case EAvatarPart.AP_Upper:
+                            shopitem = new ShopItem(TableManager.Instance.GetUpperBodyParts(item.ItemIdx));
+                            break;
+                    }
+
+                    if (!dict.TryGetValue(item.PageIdx, out list))
+                    {                                     //没拿到
+                        list = new List<ShopItem>();    //建立list
+                        dict.Add(item.PageIdx, list);   //放入字典 key：list value：list
+                    }
+                    list.Add(shopitem);//放入shopitem
+                
+            }
+            _usctrlFashionPage2.Set(dict[2]);
+            _usctrlFashionPage1.Set(dict[1]);
+            _usctrlFashionPage3.Set(dict[3]);
+            _usctrlFashionPage4.Set(dict[4]);
 
         }
 
@@ -377,7 +555,8 @@ namespace GameA
         /*界面的切换这个打开和关闭*/
         private void OnFashionPage1ButtonClick(bool open)
 		{
-			if (open)
+            _cachedView.SeletctedPage1Image.SetActiveEx(open);
+            if (open)
 			{
                 _usctrlFashionPage1.Open ();
 			}
@@ -389,7 +568,9 @@ namespace GameA
 
 		private void OnFashionPage2ButtonClick(bool open)
 		{
-			if (open) {
+            _cachedView.SeletctedPage2Image.SetActiveEx(open);
+
+            if (open) {
                 _usctrlFashionPage2.Open ();
 			}else
 			{
@@ -398,7 +579,9 @@ namespace GameA
 		}
 		private void OnFashionPage3ButtonClick(bool open)
 		{
-			if(open){
+            _cachedView.SeletctedPage3Image.SetActiveEx(open);
+
+            if (open){
                 _usctrlFashionPage3.Open ();
 			}else
 			{
@@ -407,27 +590,28 @@ namespace GameA
 		}
 		private void OnFashionPage4ButtonClick(bool open)
 		{
-			if (open) {
+            _cachedView.SeletctedPage4Image.SetActiveEx(open);
+            if (open) {
                 _usctrlFashionPage4.Open ();
 			} else
                 _usctrlFashionPage4.Close ();
 		}
 
-        private void OnFashionPage5ButtonClick(bool open)
-        {
-            if (open)
-            {
-                _usctrlFashionPage5.Open();
-            }
-            else
-                _usctrlFashionPage5.Close();
-        }
+        //private void OnFashionPage5ButtonClick(bool open)
+        //{
+        //    if (open)
+        //    {
+        //        _usctrlFashionPage5.Open();
+        //    }
+        //    else
+        //        _usctrlFashionPage5.Close();
+        //}
 
 
         #region 接口
         protected override void InitGroupId()
         {
-			_groupId = (int)EUIGroupType.PopUpUI;
+			_groupId = (int)EUIGroupType.MainUI;
         }
 			
         /// <summary>

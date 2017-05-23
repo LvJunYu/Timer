@@ -1,0 +1,50 @@
+[
+    {
+        "Id": "1",
+        "Name": "道具1",
+        "Desc": "这是道具1",
+        "Icon": "icon_lottery_1",
+        "PriceGold": "99999",
+        "PriceDiamond": "5"
+    },
+    {
+        "Id": "2",
+        "Name": "道具2",
+        "Desc": "这是道具2",
+        "Icon": "icon_lottery_1",
+        "PriceGold": "99999",
+        "PriceDiamond": "5"
+    },
+    {
+        "Id": "3",
+        "Name": "道具3",
+        "Desc": "这是道具3",
+        "Icon": "icon_lottery_1",
+        "PriceGold": "99999",
+        "PriceDiamond": "5"
+    },
+    {
+        "Id": "4",
+        "Name": "道具4",
+        "Desc": "这是道具4",
+        "Icon": "icon_lottery_1",
+        "PriceGold": "99999",
+        "PriceDiamond": "5"
+    },
+    {
+        "Id": "5",
+        "Name": "道具5",
+        "Desc": "这是道具5",
+        "Icon": "icon_lottery_1",
+        "PriceGold": "99999",
+        "PriceDiamond": "5"
+    },
+    {
+        "Id": "6",
+        "Name": "道具6",
+        "Desc": "这是道具6",
+        "Icon": "icon_lottery_1",
+        "PriceGold": "99999",
+        "PriceDiamond": "5"
+    }
+]
