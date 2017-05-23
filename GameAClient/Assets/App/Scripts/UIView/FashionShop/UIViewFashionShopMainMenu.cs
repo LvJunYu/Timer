@@ -11,10 +11,14 @@ namespace GameA
 		/// 时装关闭按钮
 		/// </summary>
 		public Button CloseBtn;
-		/// <summary>
-		/// 菜单按钮
-		/// </summary>
-		public UITagGroup TagGroup;
+        public Button RestoreFashionBtn;
+        public Button PurchaseAllFittingFashionBtn;
+
+
+        /// <summary>
+        /// 菜单按钮
+        /// </summary>
+        public UITagGroup TagGroup;
 		/// <summary>
 		/// 独立的US界面
 		/// </summary>
@@ -23,14 +27,21 @@ namespace GameA
         public USViewFashionShop FashionPage2;
 		public USViewFashionShop FashionPage3;
 		public USViewFashionShop FashionPage4;
-        public USViewFashionShop FashionPage5;
 
 	    public Text UsingHead;
 	    public Text UsingUpper;
 	    public Text UsingLower;
 	    public Text UsingAppendage;
-
 	    public RawImage Avatar;
+        public Text SelectedHead;
+        public Text SelectedUpper;
+        public Text SelectedLower;
+        public Text SelectedAppendage;
+
+        public Image SeletctedPage1Image;
+        public Image SeletctedPage2Image;
+        public Image SeletctedPage3Image;
+        public Image SeletctedPage4Image;
 
 
 	    //public UICtrlFashionItem[] Items;

@@ -35,6 +35,9 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_AvatarSlotName> Table_AvatarSlotNameDic = new Dictionary<int, Table_AvatarSlotName>();
 		public readonly Dictionary<int,Table_PlayerLvToExp> Table_PlayerLvToExpDic = new Dictionary<int, Table_PlayerLvToExp>();
 		public readonly Dictionary<int,Table_PlayerLvToModifyLimit> Table_PlayerLvToModifyLimitDic = new Dictionary<int, Table_PlayerLvToModifyLimit>();
+		public readonly Dictionary<int,Table_ModifyReward> Table_ModifyRewardDic = new Dictionary<int, Table_ModifyReward>();
+		public readonly Dictionary<int,Table_ProgressUnlock> Table_ProgressUnlockDic = new Dictionary<int, Table_ProgressUnlock>();
+		public readonly Dictionary<int,Table_BoostItem> Table_BoostItemDic = new Dictionary<int, Table_BoostItem>();
 		[UnityEngine.SerializeField] private Table_Unit[] _tableUnits;
 		[UnityEngine.SerializeField] private Table_StandaloneLevel[] _tableStandaloneLevels;
 		[UnityEngine.SerializeField] private Table_StarRequire[] _tableStarRequires;
@@ -58,6 +61,9 @@ namespace GameA.Game
 		[UnityEngine.SerializeField] private Table_AvatarSlotName[] _tableAvatarSlotNames;
 		[UnityEngine.SerializeField] private Table_PlayerLvToExp[] _tablePlayerLvToExps;
 		[UnityEngine.SerializeField] private Table_PlayerLvToModifyLimit[] _tablePlayerLvToModifyLimits;
+		[UnityEngine.SerializeField] private Table_ModifyReward[] _tableModifyRewards;
+		[UnityEngine.SerializeField] private Table_ProgressUnlock[] _tableProgressUnlocks;
+		[UnityEngine.SerializeField] private Table_BoostItem[] _tableBoostItems;
 
 		private TableResLoader _loader;
 		#endregion
@@ -121,6 +127,12 @@ namespace GameA.Game
 			_tablePlayerLvToExps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PlayerLvToExp[]>(PlayerLvToExpTextAsset.text);
 			var PlayerLvToModifyLimitTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "PlayerLvToModifyLimit"));
 			_tablePlayerLvToModifyLimits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PlayerLvToModifyLimit[]>(PlayerLvToModifyLimitTextAsset.text);
+			var ModifyRewardTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "ModifyReward"));
+			_tableModifyRewards = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_ModifyReward[]>(ModifyRewardTextAsset.text);
+			var ProgressUnlockTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "ProgressUnlock"));
+			_tableProgressUnlocks = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_ProgressUnlock[]>(ProgressUnlockTextAsset.text);
+			var BoostItemTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "BoostItem"));
+			_tableBoostItems = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_BoostItem[]>(BoostItemTextAsset.text);
 			#else
 			_loader = new TableResLoader("GameMaker2D");
 
@@ -285,6 +297,27 @@ namespace GameA.Game
 				return;
 			}
 			_tablePlayerLvToModifyLimits = PlayerLvToModifyLimitAsset.DataArray;
+			var ModifyRewardAsset = _loader.GetConfigAssetData<TableModifyRewardAsset>("ModifyReward");
+			if (ModifyRewardAsset == null)
+			{
+				LogHelper.Error("ModifyRewardAsset is null");
+				return;
+			}
+			_tableModifyRewards = ModifyRewardAsset.DataArray;
+			var ProgressUnlockAsset = _loader.GetConfigAssetData<TableProgressUnlockAsset>("ProgressUnlock");
+			if (ProgressUnlockAsset == null)
+			{
+				LogHelper.Error("ProgressUnlockAsset is null");
+				return;
+			}
+			_tableProgressUnlocks = ProgressUnlockAsset.DataArray;
+			var BoostItemAsset = _loader.GetConfigAssetData<TableBoostItemAsset>("BoostItem");
+			if (BoostItemAsset == null)
+			{
+				LogHelper.Error("BoostItemAsset is null");
+				return;
+			}
+			_tableBoostItems = BoostItemAsset.DataArray;
 			#endif
 			for (int i = 0; i < _tableUnits.Length; i++)
 			{
@@ -539,6 +572,39 @@ namespace GameA.Game
 					LogHelper.Warning("_tablePlayerLvToModifyLimits table.Id {0} is duplicated!", _tablePlayerLvToModifyLimits[i].Id);
 				}
 			}
+			for (int i = 0; i < _tableModifyRewards.Length; i++)
+			{
+				if (!Table_ModifyRewardDic.ContainsKey(_tableModifyRewards[i].Id))
+				{
+					Table_ModifyRewardDic.Add(_tableModifyRewards[i].Id,_tableModifyRewards[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableModifyRewards table.Id {0} is duplicated!", _tableModifyRewards[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableProgressUnlocks.Length; i++)
+			{
+				if (!Table_ProgressUnlockDic.ContainsKey(_tableProgressUnlocks[i].Id))
+				{
+					Table_ProgressUnlockDic.Add(_tableProgressUnlocks[i].Id,_tableProgressUnlocks[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableProgressUnlocks table.Id {0} is duplicated!", _tableProgressUnlocks[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableBoostItems.Length; i++)
+			{
+				if (!Table_BoostItemDic.ContainsKey(_tableBoostItems[i].Id))
+				{
+					Table_BoostItemDic.Add(_tableBoostItems[i].Id,_tableBoostItems[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableBoostItems table.Id {0} is duplicated!", _tableBoostItems[i].Id);
+				}
+			}
 			
 			Messenger.Broadcast(EMessengerType.OnTableInited);
 		}
@@ -745,6 +811,33 @@ namespace GameA.Game
 		{
 			Table_PlayerLvToModifyLimit tmp;
 			if (Table_PlayerLvToModifyLimitDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_ModifyReward GetModifyReward(int key)
+		{
+			Table_ModifyReward tmp;
+			if (Table_ModifyRewardDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_ProgressUnlock GetProgressUnlock(int key)
+		{
+			Table_ProgressUnlock tmp;
+			if (Table_ProgressUnlockDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_BoostItem GetBoostItem(int key)
+		{
+			Table_BoostItem tmp;
+			if (Table_BoostItemDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

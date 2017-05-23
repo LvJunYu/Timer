@@ -160,6 +160,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\App\Editor\XCodePostProcessCopyRes.cs" />
+    <Compile Include="Assets\App\Scripts\UIView\InGame\Editor\UIRectTransformStatusInspector.cs" />
+    <Compile Include="Assets\App\Scripts\UIView\InGame\Editor\UITransformStatusInspector.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\EasyTouchBundle\EasyTouch\Plugins\Editor\EasyTouchInspector.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\EasyTouchBundle\EasyTouch\Plugins\Editor\EasyTouchMenu.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\EasyTouchBundle\EasyTouch\Plugins\Editor\EasyTouchTriggerInspector.cs" />
@@ -214,8 +216,6 @@
     <Compile Include="Assets\JoyGameArt\ArtCode\Spine\spine-unity\SkeletonUtility\Editor\SkeletonUtilityBoneInspector.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\Spine\spine-unity\SkeletonUtility\Editor\SkeletonUtilityInspector.cs" />
     <Compile Include="Assets\JoyGameArt\ArtCode\Spine\spine-unity\SkeletonUtility\Editor\SkeletonUtilitySubmeshRendererInspector.cs" />
-    <Compile Include="Assets\JoyGameArt\ArtCode\UI\Editor\UIRectTransformStatusInspector.cs" />
-    <Compile Include="Assets\JoyGameArt\ArtCode\UI\Editor\UITransformStatusInspector.cs" />
     <Compile Include="Assets\References\UnityStandardAssets\Editor\CrossPlatformInput\CrossPlatformInputInitialize.cs" />
     <Compile Include="Assets\References\UnityStandardAssets\Editor\CrossPlatformInput\InputAxisScrollbarCI.cs" />
     <Compile Include="Assets\References\UnityStandardAssets\Editor\ImageEffects\AntialiasingEditor.cs" />
@@ -272,6 +272,7 @@
     <None Include="Assets\App\Resources\Shader\UI\UI-Unlit-TextDetail.shader" />
     <None Include="Assets\App\Resources\Shader\UI\UI-Unlit-Transparent.shader" />
     <None Include="Assets\App\Resources\Spine\Player\MainBoy0\MainBoy0.atlas.txt" />
+    <None Include="Assets\App\Resources\Sprite\Home\_source\Empty.txt" />
     <None Include="Assets\Game\Resources\Shader\SFSolidColor.shader" />
     <None Include="Assets\Game\Resources\Shader\SFVertexColor.shader" />
     <None Include="Assets\JoyGameArt\ArtCode\Shader\Effect\EnergyPoolLiquid.shader" />
@@ -287,8 +288,11 @@
     <None Include="Assets\JoyGameArt\Depends\Atlas\CommonUI\SoyAltasConfig.txt" />
     <None Include="Assets\JoyGameArt\Depends\Atlas\GameBg1\SoyAltasConfig.txt" />
     <None Include="Assets\JoyGameArt\Depends\Atlas\M1Element\SoyAltasConfig.txt" />
+    <None Include="Assets\JoyGameArt\Depends\Atlas\M1Element\_source\Empty.txt" />
     <None Include="Assets\JoyGameArt\Depends\Atlas\M1Icon\SoyAltasConfig.txt" />
+    <None Include="Assets\JoyGameArt\Depends\Atlas\M1Icon\_source\Empty.txt" />
     <None Include="Assets\JoyGameArt\Depends\Atlas\M1UI\SoyAltasConfig.txt" />
+    <None Include="Assets\JoyGameArt\Depends\Atlas\M1UI\_source\Empty.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\AvatarCharacter\MainBoy0\MainBoy0.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\AvatarCharacter\MainGirl0\MainGirl0.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\AvatarCharacter\SMainBoy0\SMainBoy0.atlas.txt" />
@@ -299,6 +303,7 @@
     <None Include="Assets\JoyGameArt\Depends\SpineData\Hero\M1\M1Efreeti\M1Efreeti.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Hero\M1\M1Eggs\M1Eggs.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Hero\M1\M1Eggs1\M1Eggs1.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Hero\M1\M1MonsterElephant\M1MonsterElephant.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Hero\M1\M1MonsterTree\M1MonsterTree.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Hero\M1\M1Severalpeople\M1Severalpeople.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Hero\M1\M1Severalpeople1\M1Severalpeople1.atlas.txt" />
@@ -306,16 +311,34 @@
     <None Include="Assets\JoyGameArt\Depends\SpineData\Hero\M1\M1TuanTuan\M1TuanTuan.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Hero\M1\M1WhitePanda\M1WhitePanda.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Hero\M1\M1YoYo\M1YoYo.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1BillBoard.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1BlueStoneRotate.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1BulletClay.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1BulletFire.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1BulletIce.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1BulletJelly.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1BulletWater.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Clay.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Cloud.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1EffectSwitchEarth.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1EffectWaterDestroy.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Fire.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Gate.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1GreenJet.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Ice.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Jelly.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Key.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Portal.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1RedJet.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1RevivePoint.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Roller.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1ScorchedEarth.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Switch.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1SwitchFollow.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1SwitchGate.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1SwitchPress.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Water.atlas.txt" />
+    <None Include="Assets\JoyGameArt\Depends\SpineData\Item\M1\M1Water_1.atlas.txt" />
     <None Include="Assets\JoyGameArt\Depends\SpineData\Weapon\Empty.txt" />
     <None Include="Assets\JoyGameArt\Global\Shader\Decal.shader" />
     <None Include="Assets\JoyGameArt\Global\Shader\TiledSprite2d.shader" />

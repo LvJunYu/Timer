@@ -76,6 +76,8 @@ namespace SoyEngine
         public const string WorldProjectRecentRecordList = "/world/getProjectRecentRecordList";
         // 高分排行榜
         public const string WorldProjectRecordRankList = "/world/getProjectRecordRankList";
+        // 最新关卡
+        public const string WorldNewestProjectList = "/world/getNewestProjectList";
         // 录像
         public const string Record = "/record/get";
         // 冒险模式关卡列表
