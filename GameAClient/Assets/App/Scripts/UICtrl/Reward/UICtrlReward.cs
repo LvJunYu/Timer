@@ -25,6 +25,8 @@ namespace GameA
         private float _closeTimer;
 
         private ERewardType _openType;
+
+        private USCtrlRewardItem [] _rewardItemCtrls;
         #endregion
 
         #region Properties
@@ -77,8 +79,11 @@ namespace GameA
             base.OnViewCreated ();
 
             _cachedView.BGBtn.onClick.AddListener (OnBGBtn);
-//            _cachedView.PlayBtn.onClick.AddListener (OnPlayBtn);
-//            _cachedView.AddTagBtn.onClick.AddListener (OnAddTagBtn);
+            _rewardItemCtrls = new USCtrlRewardItem [_cachedView.ItemList.Length];
+            for (int i = 0; i < _cachedView.ItemList.Length; i++) {
+                _rewardItemCtrls [i] = new USCtrlRewardItem ();
+                _rewardItemCtrls [i].Init (_cachedView.ItemList[i]);
+            }
         }
 
         public override void OnUpdate ()
@@ -101,10 +106,15 @@ namespace GameA
             _groupId = (int)EUIGroupType.PopUpUI;
         }
 
-        public void SetRewards (IntVec3[] rewards) {
+        public void SetRewards (Reward reward) {
+            if (null == reward) {
+                // todo error handle
+                return;
+            }
             int i = 0;
-            for (; i < rewards.Length && i < _cachedView.ItemList.Length; i++) {
+            for (; i < reward.ItemList.Count && i < _cachedView.ItemList.Length; i++) {
                 _cachedView.ItemList [i].gameObject.SetActive (true);
+                _rewardItemCtrls [i].SetItem (reward.ItemList [i]);
             }
 
             for (; i < _cachedView.ItemList.Length; i++) {
