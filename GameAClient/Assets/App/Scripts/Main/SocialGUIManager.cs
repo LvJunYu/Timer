@@ -169,6 +169,7 @@ namespace GameA
 		{
 			JoyNativeTool.Instance.SetStatusBarShow (true);
 			OpenUI<UICtrlTaskbar>();//.ShowDefaultPage();
+            OpenUI<UICtrlFashionSpine>();
             Messenger.AddListener(EMessengerType.OnEscapeClick, OnEscapeClick);
         }
 
@@ -422,9 +423,9 @@ namespace GameA
         /// 展示奖励，传入奖励数组x：type，y：id，z：cnt
         /// </summary>
         /// <param name="items">Items.</param>
-        public static void ShowReward (params IntVec3[] items) {
+        public static void ShowReward (Reward reward) {
             Instance.OpenPopupUI<UICtrlReward> (UICtrlReward.ERewardType.Reward);
-            Instance.GetUI <UICtrlReward>().SetRewards (items);
+            Instance.GetUI <UICtrlReward>().SetRewards (reward);
         }
 
         public static void ShowUnlockSystem (int systemCode) {

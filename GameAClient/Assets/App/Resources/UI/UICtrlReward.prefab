@@ -55,6 +55,7 @@ GameObject:
   - component: {fileID: 224364588653599642}
   - component: {fileID: 222459767880430426}
   - component: {fileID: 114843527238657194}
+  - component: {fileID: 114293934363005660}
   m_Layer: 5
   m_Name: Name
   m_TagString: Untagged
@@ -89,6 +90,7 @@ GameObject:
   - component: {fileID: 224987535941497132}
   - component: {fileID: 222147279800335798}
   - component: {fileID: 114573936845052064}
+  - component: {fileID: 114836629857883780}
   m_Layer: 5
   m_Name: Name
   m_TagString: Untagged
@@ -140,6 +142,7 @@ GameObject:
   - component: {fileID: 224297674987395426}
   - component: {fileID: 222012799474589254}
   - component: {fileID: 114696709324809748}
+  - component: {fileID: 114913719834290744}
   m_Layer: 5
   m_Name: Name
   m_TagString: Untagged
@@ -191,6 +194,7 @@ GameObject:
   - component: {fileID: 224228122195810992}
   - component: {fileID: 222372962385030304}
   - component: {fileID: 114626237095365500}
+  - component: {fileID: 114312794200361756}
   m_Layer: 5
   m_Name: Name
   m_TagString: Untagged
@@ -503,9 +507,9 @@ MonoBehaviour:
   RewardItemTitle: {fileID: 114926533169867332}
   UnlockSystemTitle: {fileID: 114317071054015992}
   UnlockAbilityTitle: {fileID: 114118345154908408}
-  RewardLight: {fileID: 0}
-  UnlockLight: {fileID: 0}
-  AbilityLight: {fileID: 0}
+  RewardLight: {fileID: 114539795871630212}
+  UnlockLight: {fileID: 114752749852697956}
+  AbilityLight: {fileID: 114726646669080640}
   Tip: {fileID: 114984983665840158}
   BGBtn: {fileID: 114614876431436986}
   ItemList:
@@ -540,6 +544,20 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114293934363005660
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1176568465057868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -900027084, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.828}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
 --- !u!114 &114307880099648552
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -558,6 +576,20 @@ MonoBehaviour:
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
+--- !u!114 &114312794200361756
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1446637046145604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -900027084, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.828}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
 --- !u!114 &114317071054015992
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1007,6 +1039,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Icon: {fileID: 114993032419799316}
   Name: {fileID: 114696709324809748}
+--- !u!114 &114836629857883780
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1196818849642220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -900027084, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.828}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
 --- !u!114 &114843527238657194
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1062,6 +1108,20 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
   m_ChildControlHeight: 1
+--- !u!114 &114913719834290744
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1406172106077176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -900027084, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.828}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
 --- !u!114 &114926533169867332
 MonoBehaviour:
   m_ObjectHideFlags: 1

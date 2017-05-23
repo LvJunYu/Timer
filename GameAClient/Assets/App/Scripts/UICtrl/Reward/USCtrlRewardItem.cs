@@ -36,9 +36,9 @@ namespace GameA
 //            _cachedView.SelectBtn.onClick.AddListener (OnSelectBtn);
         }
 
-        public void SetItem (Sprite sprite, string name) {
-            _cachedView.Icon.sprite = sprite;
-            _cachedView.Name.text = name;
+        public void SetItem (RewardItem item) {
+            _cachedView.Icon.sprite = item.GetSprite ();
+            _cachedView.Name.text = string.Format ("{0} X {1}", item.GetName (), item.Count);
         }
 
         #endregion

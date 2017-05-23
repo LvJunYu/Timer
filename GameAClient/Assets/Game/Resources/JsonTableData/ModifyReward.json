@@ -1,0 +1,17 @@
+[
+    {
+        "Id": "1",
+        "BaseReward": "2000",
+        "DifficultyRewardFactor": "100"
+    },
+    {
+        "Id": "2",
+        "BaseReward": "2001",
+        "DifficultyRewardFactor": "100"
+    },
+    {
+        "Id": "3",
+        "BaseReward": "2002",
+        "DifficultyRewardFactor": "100"
+    }
+]
