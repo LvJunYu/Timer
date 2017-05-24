@@ -333,7 +333,9 @@ namespace GameA
         }
 
         private void OnReturnToApp () {
-            Refresh ();
+            if (_isOpen) {
+                Refresh ();
+            }
         }
         #endregion
 
