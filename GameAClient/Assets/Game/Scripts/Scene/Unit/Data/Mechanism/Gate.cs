@@ -18,10 +18,13 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
-            _opened = false;
-            if (_animation != null)
+            if (_opened)
             {
-                _animation.Reset();
+                if (_view != null)
+                {
+                    _view.ChangeView(_tableUnit.Model);
+                }
+                _opened = false;
             }
         }
 
@@ -74,7 +77,10 @@ namespace GameA.Game
                     if (_opened == false && PlayMode.Instance.SceneState.UseKey())
                     {
                         _opened = true;
-                        //播放动画
+                        if (_view != null)
+                        {
+                            _view.ChangeView(_tableUnit.Model + "_1");
+                        }
                     }
                 }
             }

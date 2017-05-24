@@ -18,7 +18,7 @@ namespace GameA.Game
     public class Earth : BlockBase
     {
         public const int MinEdgeLength = 64;
-        public const int OffsetEdgeLength = 10;
+        public const int OffsetEdgeLength = 32;
 		/// <summary>
 		/// 被涂装的边信息，有序从小到大 
 		/// </summary>

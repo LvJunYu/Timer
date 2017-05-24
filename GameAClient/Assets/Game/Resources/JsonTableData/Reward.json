@@ -13,27 +13,51 @@
     },
     {
         "Id": "2",
-        "Description": "第一章奖励关1"
+        "Description": "第一章奖励关1",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "999"
     },
     {
         "Id": "3",
-        "Description": "第一章奖励关2"
+        "Description": "第一章奖励关2",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "999"
     },
     {
         "Id": "4",
-        "Description": "第一章奖励关3"
+        "Description": "第一章奖励关3",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "999"
     },
     {
         "Id": "5",
-        "Description": "第二章奖励关1"
+        "Description": "第二章奖励关1",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "999"
     },
     {
         "Id": "6",
-        "Description": "第二章奖励关2"
+        "Description": "第二章奖励关2",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "999"
     },
     {
         "Id": "7",
-        "Description": "第二章奖励关3"
+        "Description": "第二章奖励关3",
+        "Type1": "1",
+        "SubType1": "0",
+        "Id1": "0",
+        "Value1": "999"
     },
     {
         "Id": "500",

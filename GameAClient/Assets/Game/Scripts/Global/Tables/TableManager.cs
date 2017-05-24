@@ -16,20 +16,20 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_StandaloneLevel> Table_StandaloneLevelDic = new Dictionary<int, Table_StandaloneLevel>();
 		public readonly Dictionary<int,Table_StarRequire> Table_StarRequireDic = new Dictionary<int, Table_StarRequire>();
 		public readonly Dictionary<int,Table_StandaloneChapter> Table_StandaloneChapterDic = new Dictionary<int, Table_StandaloneChapter>();
+		public readonly Dictionary<int,Table_Reward> Table_RewardDic = new Dictionary<int, Table_Reward>();
 		public readonly Dictionary<int,Table_FashionShop> Table_FashionShopDic = new Dictionary<int, Table_FashionShop>();
 		public readonly Dictionary<int,Table_UpperBodyParts> Table_UpperBodyPartsDic = new Dictionary<int, Table_UpperBodyParts>();
 		public readonly Dictionary<int,Table_HeadParts> Table_HeadPartsDic = new Dictionary<int, Table_HeadParts>();
 		public readonly Dictionary<int,Table_LowerBodyParts> Table_LowerBodyPartsDic = new Dictionary<int, Table_LowerBodyParts>();
 		public readonly Dictionary<int,Table_AppendageParts> Table_AppendagePartsDic = new Dictionary<int, Table_AppendageParts>();
 		public readonly Dictionary<int,Table_TreasureMap> Table_TreasureMapDic = new Dictionary<int, Table_TreasureMap>();
-		public readonly Dictionary<int,Table_FashionCoupon> Table_FashionCouponDic = new Dictionary<int, Table_FashionCoupon>();
 		public readonly Dictionary<int,Table_Turntable> Table_TurntableDic = new Dictionary<int, Table_Turntable>();
+		public readonly Dictionary<int,Table_FashionCoupon> Table_FashionCouponDic = new Dictionary<int, Table_FashionCoupon>();
 		public readonly Dictionary<int,Table_Background> Table_BackgroundDic = new Dictionary<int, Table_Background>();
 		public readonly Dictionary<int,Table_Decorate> Table_DecorateDic = new Dictionary<int, Table_Decorate>();
 		public readonly Dictionary<int,Table_Matrix> Table_MatrixDic = new Dictionary<int, Table_Matrix>();
 		public readonly Dictionary<int,Table_Morph> Table_MorphDic = new Dictionary<int, Table_Morph>();
 		public readonly Dictionary<int,Table_PuzzleSummon> Table_PuzzleSummonDic = new Dictionary<int, Table_PuzzleSummon>();
-		public readonly Dictionary<int,Table_Reward> Table_RewardDic = new Dictionary<int, Table_Reward>();
 		public readonly Dictionary<int,Table_Puzzle> Table_PuzzleDic = new Dictionary<int, Table_Puzzle>();
 		public readonly Dictionary<int,Table_AvatarStruct> Table_AvatarStructDic = new Dictionary<int, Table_AvatarStruct>();
 		public readonly Dictionary<int,Table_AvatarSlotName> Table_AvatarSlotNameDic = new Dictionary<int, Table_AvatarSlotName>();
@@ -42,20 +42,20 @@ namespace GameA.Game
 		[UnityEngine.SerializeField] private Table_StandaloneLevel[] _tableStandaloneLevels;
 		[UnityEngine.SerializeField] private Table_StarRequire[] _tableStarRequires;
 		[UnityEngine.SerializeField] private Table_StandaloneChapter[] _tableStandaloneChapters;
+		[UnityEngine.SerializeField] private Table_Reward[] _tableRewards;
 		[UnityEngine.SerializeField] private Table_FashionShop[] _tableFashionShops;
 		[UnityEngine.SerializeField] private Table_UpperBodyParts[] _tableUpperBodyPartss;
 		[UnityEngine.SerializeField] private Table_HeadParts[] _tableHeadPartss;
 		[UnityEngine.SerializeField] private Table_LowerBodyParts[] _tableLowerBodyPartss;
 		[UnityEngine.SerializeField] private Table_AppendageParts[] _tableAppendagePartss;
 		[UnityEngine.SerializeField] private Table_TreasureMap[] _tableTreasureMaps;
-		[UnityEngine.SerializeField] private Table_FashionCoupon[] _tableFashionCoupons;
 		[UnityEngine.SerializeField] private Table_Turntable[] _tableTurntables;
+		[UnityEngine.SerializeField] private Table_FashionCoupon[] _tableFashionCoupons;
 		[UnityEngine.SerializeField] private Table_Background[] _tableBackgrounds;
 		[UnityEngine.SerializeField] private Table_Decorate[] _tableDecorates;
 		[UnityEngine.SerializeField] private Table_Matrix[] _tableMatrixs;
 		[UnityEngine.SerializeField] private Table_Morph[] _tableMorphs;
 		[UnityEngine.SerializeField] private Table_PuzzleSummon[] _tablePuzzleSummons;
-		[UnityEngine.SerializeField] private Table_Reward[] _tableRewards;
 		[UnityEngine.SerializeField] private Table_Puzzle[] _tablePuzzles;
 		[UnityEngine.SerializeField] private Table_AvatarStruct[] _tableAvatarStructs;
 		[UnityEngine.SerializeField] private Table_AvatarSlotName[] _tableAvatarSlotNames;
@@ -89,6 +89,8 @@ namespace GameA.Game
 			_tableStarRequires = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StarRequire[]>(StarRequireTextAsset.text);
 			var StandaloneChapterTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "StandaloneChapter"));
 			_tableStandaloneChapters = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneChapter[]>(StandaloneChapterTextAsset.text);
+			var RewardTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "Reward"));
+			_tableRewards = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Reward[]>(RewardTextAsset.text);
 			var FashionShopTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "FashionShop"));
 			_tableFashionShops = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionShop[]>(FashionShopTextAsset.text);
 			var UpperBodyPartsTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "UpperBodyParts"));
@@ -101,10 +103,10 @@ namespace GameA.Game
 			_tableAppendagePartss = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AppendageParts[]>(AppendagePartsTextAsset.text);
 			var TreasureMapTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "TreasureMap"));
 			_tableTreasureMaps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_TreasureMap[]>(TreasureMapTextAsset.text);
-			var FashionCouponTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "FashionCoupon"));
-			_tableFashionCoupons = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionCoupon[]>(FashionCouponTextAsset.text);
 			var TurntableTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "Turntable"));
 			_tableTurntables = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Turntable[]>(TurntableTextAsset.text);
+			var FashionCouponTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "FashionCoupon"));
+			_tableFashionCoupons = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionCoupon[]>(FashionCouponTextAsset.text);
 			var BackgroundTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "Background"));
 			_tableBackgrounds = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Background[]>(BackgroundTextAsset.text);
 			var DecorateTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "Decorate"));
@@ -115,8 +117,6 @@ namespace GameA.Game
 			_tableMorphs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Morph[]>(MorphTextAsset.text);
 			var PuzzleSummonTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "PuzzleSummon"));
 			_tablePuzzleSummons = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleSummon[]>(PuzzleSummonTextAsset.text);
-			var RewardTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "Reward"));
-			_tableRewards = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Reward[]>(RewardTextAsset.text);
 			var PuzzleTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "Puzzle"));
 			_tablePuzzles = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Puzzle[]>(PuzzleTextAsset.text);
 			var AvatarStructTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "AvatarStruct"));
@@ -164,6 +164,13 @@ namespace GameA.Game
 				return;
 			}
 			_tableStandaloneChapters = StandaloneChapterAsset.DataArray;
+			var RewardAsset = _loader.GetConfigAssetData<TableRewardAsset>("Reward");
+			if (RewardAsset == null)
+			{
+				LogHelper.Error("RewardAsset is null");
+				return;
+			}
+			_tableRewards = RewardAsset.DataArray;
 			var FashionShopAsset = _loader.GetConfigAssetData<TableFashionShopAsset>("FashionShop");
 			if (FashionShopAsset == null)
 			{
@@ -206,13 +213,6 @@ namespace GameA.Game
 				return;
 			}
 			_tableTreasureMaps = TreasureMapAsset.DataArray;
-			var FashionCouponAsset = _loader.GetConfigAssetData<TableFashionCouponAsset>("FashionCoupon");
-			if (FashionCouponAsset == null)
-			{
-				LogHelper.Error("FashionCouponAsset is null");
-				return;
-			}
-			_tableFashionCoupons = FashionCouponAsset.DataArray;
 			var TurntableAsset = _loader.GetConfigAssetData<TableTurntableAsset>("Turntable");
 			if (TurntableAsset == null)
 			{
@@ -220,6 +220,13 @@ namespace GameA.Game
 				return;
 			}
 			_tableTurntables = TurntableAsset.DataArray;
+			var FashionCouponAsset = _loader.GetConfigAssetData<TableFashionCouponAsset>("FashionCoupon");
+			if (FashionCouponAsset == null)
+			{
+				LogHelper.Error("FashionCouponAsset is null");
+				return;
+			}
+			_tableFashionCoupons = FashionCouponAsset.DataArray;
 			var BackgroundAsset = _loader.GetConfigAssetData<TableBackgroundAsset>("Background");
 			if (BackgroundAsset == null)
 			{
@@ -255,13 +262,6 @@ namespace GameA.Game
 				return;
 			}
 			_tablePuzzleSummons = PuzzleSummonAsset.DataArray;
-			var RewardAsset = _loader.GetConfigAssetData<TableRewardAsset>("Reward");
-			if (RewardAsset == null)
-			{
-				LogHelper.Error("RewardAsset is null");
-				return;
-			}
-			_tableRewards = RewardAsset.DataArray;
 			var PuzzleAsset = _loader.GetConfigAssetData<TablePuzzleAsset>("Puzzle");
 			if (PuzzleAsset == null)
 			{
@@ -363,6 +363,17 @@ namespace GameA.Game
 					LogHelper.Warning("_tableStandaloneChapters table.Id {0} is duplicated!", _tableStandaloneChapters[i].Id);
 				}
 			}
+			for (int i = 0; i < _tableRewards.Length; i++)
+			{
+				if (!Table_RewardDic.ContainsKey(_tableRewards[i].Id))
+				{
+					Table_RewardDic.Add(_tableRewards[i].Id,_tableRewards[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableRewards table.Id {0} is duplicated!", _tableRewards[i].Id);
+				}
+			}
 			for (int i = 0; i < _tableFashionShops.Length; i++)
 			{
 				if (!Table_FashionShopDic.ContainsKey(_tableFashionShops[i].Id))
@@ -429,17 +440,6 @@ namespace GameA.Game
 					LogHelper.Warning("_tableTreasureMaps table.Id {0} is duplicated!", _tableTreasureMaps[i].Id);
 				}
 			}
-			for (int i = 0; i < _tableFashionCoupons.Length; i++)
-			{
-				if (!Table_FashionCouponDic.ContainsKey(_tableFashionCoupons[i].Id))
-				{
-					Table_FashionCouponDic.Add(_tableFashionCoupons[i].Id,_tableFashionCoupons[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableFashionCoupons table.Id {0} is duplicated!", _tableFashionCoupons[i].Id);
-				}
-			}
 			for (int i = 0; i < _tableTurntables.Length; i++)
 			{
 				if (!Table_TurntableDic.ContainsKey(_tableTurntables[i].Id))
@@ -449,6 +449,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableTurntables table.Id {0} is duplicated!", _tableTurntables[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableFashionCoupons.Length; i++)
+			{
+				if (!Table_FashionCouponDic.ContainsKey(_tableFashionCoupons[i].Id))
+				{
+					Table_FashionCouponDic.Add(_tableFashionCoupons[i].Id,_tableFashionCoupons[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableFashionCoupons table.Id {0} is duplicated!", _tableFashionCoupons[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableBackgrounds.Length; i++)
@@ -504,17 +515,6 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tablePuzzleSummons table.Id {0} is duplicated!", _tablePuzzleSummons[i].Id);
-				}
-			}
-			for (int i = 0; i < _tableRewards.Length; i++)
-			{
-				if (!Table_RewardDic.ContainsKey(_tableRewards[i].Id))
-				{
-					Table_RewardDic.Add(_tableRewards[i].Id,_tableRewards[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableRewards table.Id {0} is duplicated!", _tableRewards[i].Id);
 				}
 			}
 			for (int i = 0; i < _tablePuzzles.Length; i++)
@@ -645,6 +645,15 @@ namespace GameA.Game
 			}
 			return null;
 		}
+		public Table_Reward GetReward(int key)
+		{
+			Table_Reward tmp;
+			if (Table_RewardDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
 		public Table_FashionShop GetFashionShop(int key)
 		{
 			Table_FashionShop tmp;
@@ -699,19 +708,19 @@ namespace GameA.Game
 			}
 			return null;
 		}
-		public Table_FashionCoupon GetFashionCoupon(int key)
+		public Table_Turntable GetTurntable(int key)
 		{
-			Table_FashionCoupon tmp;
-			if (Table_FashionCouponDic.TryGetValue(key,out tmp))
+			Table_Turntable tmp;
+			if (Table_TurntableDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
 			return null;
 		}
-		public Table_Turntable GetTurntable(int key)
+		public Table_FashionCoupon GetFashionCoupon(int key)
 		{
-			Table_Turntable tmp;
-			if (Table_TurntableDic.TryGetValue(key,out tmp))
+			Table_FashionCoupon tmp;
+			if (Table_FashionCouponDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
@@ -757,15 +766,6 @@ namespace GameA.Game
 		{
 			Table_PuzzleSummon tmp;
 			if (Table_PuzzleSummonDic.TryGetValue(key,out tmp))
-			{
-				return tmp;
-			}
-			return null;
-		}
-		public Table_Reward GetReward(int key)
-		{
-			Table_Reward tmp;
-			if (Table_RewardDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
