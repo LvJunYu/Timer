@@ -317,6 +317,7 @@ namespace GameA
                         LocalUser.Instance.MatchUserData.Request(LocalUser.Instance.UserGuid, null, null);
                     } else {
                         // todo network error handle
+                    Debug.Log ("___________________Reform error result code : " + msg.ResultCode);
                     }
                 },
                 code => {
