@@ -138,7 +138,7 @@ namespace GameA.Game
             {
                 return;
             }
-            var bullet =  PlayMode.Instance.CreateRuntimeUnit(_bulletId, GetBulletPos(_bulletId), 0, Vector2.one) as BulletBase;
+            var bullet =  PlayMode.Instance.CreateRuntimeUnit(_bulletId, GetBulletPos(_bulletId)) as BulletBase;
             if (bullet != null)
             {
                 bullet.Run(this);

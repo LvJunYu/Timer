@@ -1663,7 +1663,8 @@
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "0",
         "MoveDirectionMask": "0",
-        "RotationMask": "15"
+        "RotationMask": "15",
+        "DestroyEffectName": "M1EffecIceDestroy"
     },
     {
         "Id": "10004",
@@ -1688,7 +1689,8 @@
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "0",
         "MoveDirectionMask": "0",
-        "RotationMask": "15"
+        "RotationMask": "15",
+        "DestroyEffectName": "M1EffectJellyDestroy"
     },
     {
         "Id": "10005",

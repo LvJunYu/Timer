@@ -11,8 +11,15 @@ using System.Collections;
 namespace GameA.Game
 {
     [Unit(Id = 4007, Type = typeof(Stone))]
-    public class Stone : BlockBase
+    public class Stone : PaintBlock
     {
-
+        public override void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType)
+        {
+            if (eSkillType != ESkillType.Fire)
+            {
+                return;
+            }
+            base.DoPaint(start, end, direction, eSkillType);
+        }
     }
 }

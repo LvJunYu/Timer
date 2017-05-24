@@ -77,6 +77,7 @@ namespace GameA.Game
                     if (_opened == false && PlayMode.Instance.SceneState.UseKey())
                     {
                         _opened = true;
+                        SetEnabled(false);
                         if (_view != null)
                         {
                             _view.ChangeView(_tableUnit.Model + "_1");

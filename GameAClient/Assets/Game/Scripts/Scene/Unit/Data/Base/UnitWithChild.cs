@@ -37,7 +37,7 @@ namespace GameA.Game
             }
             if (_unitChild.Id > 0)
             {
-                _childUnit = PlayMode.Instance.CreateRuntimeUnit(_childUnit.Id, _curPos, _childUnit.Rotation, Vector2.one);
+                _childUnit = PlayMode.Instance.CreateRuntimeUnit(_childUnit.Id, _curPos, _childUnit.Rotation);
                 _childUnit.SetFacingDir(_unitChild.MoveDirection);
                 PlayMode.Instance.Freeze(_childUnit);
             }
