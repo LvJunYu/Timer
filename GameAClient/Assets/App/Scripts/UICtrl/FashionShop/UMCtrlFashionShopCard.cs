@@ -126,9 +126,6 @@ public class UMCtrlFashionShopCard : UMCtrlBase<UMViewFashionShopCard>
 //        );
     }
 
-
-
-
     private bool JudgeItemOccupied(ShopItem listItem)
     {
         bool rst = false;
@@ -256,8 +253,5 @@ public class UMCtrlFashionShopCard : UMCtrlBase<UMViewFashionShopCard>
             }
         });
     }
-
-
-
 
 }

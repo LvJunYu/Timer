@@ -12,7 +12,7 @@ namespace GameA
         //private Dictionary<ERaffleTicketType, RaffleItem> _RaffleTicketDict = new Dictionary<ERaffleTicketType, RaffleItem>();
         private Dictionary<long, int> _RaffleTicketDict = new Dictionary<long, int>();
         private int _rewardType = 0;
-
+        private Reward _reward =new Reward();
         //public void LoadData(Action successCallback, Action<ENetResultCode> failedCallback)
         //{
         //    Msg_CS_DAT_UserRaffleTicket msg = new Msg_CS_DAT_UserRaffleTicket();
@@ -32,6 +32,12 @@ namespace GameA
         //        }
         //    });
         //}
+        public Reward GetReward
+        {
+            set { _reward = value; }
+            get { return _reward; }
+
+        }
 
         protected override void OnSyncPartial()
         {
@@ -61,6 +67,8 @@ namespace GameA
 
         }
 
+
+
         public void UseRaffleTicket(long selectedTicketNum, Action<long> successCallback, Action<ENetResultCode> failedCallback)
         {
             this._RaffleTicketDict[selectedTicketNum]--;
@@ -69,11 +77,13 @@ namespace GameA
                 (re) =>
                 {
                     ERaffleCode resultCode = (ERaffleCode)re.ResultCode;
+                    
                     if (resultCode == ERaffleCode.RC_Success)
                     {
                         SuccessfullyUseRaffleTicket(re.RewardId, (int)selectedTicketNum);
-                        GetReward(re.RewardId);
+                        GetRewardvalue(re.RewardId);
                         successCallback(this._rewardType);
+                        _reward.OnSync(re.Reward);
                     }
                     else
                     {
@@ -132,7 +142,13 @@ namespace GameA
             return;
         }
 
-        private void GetReward(long currentRewardId)
+        //private void GetReward(Msg_Reward reward)
+        //{
+            
+        //    _reward = reward;
+        //}
+
+        private void GetRewardvalue(long currentRewardId)
         {
             var raffleUnit =TableManager.Instance.Table_RewardDic[(int)currentRewardId];
             switch (raffleUnit.Type1)
@@ -148,16 +164,16 @@ namespace GameA
                 case 0:
                     break;
                 case 1:
-                    RewardMoney(raffleUnit.Value1);
+                    GameATools.LocalAddGold(raffleUnit.Value1);
                     break;
                 case 2:
-                    RewardDiamond(raffleUnit.Value1);
+                    GameATools.LocalAddDiamond(raffleUnit.Value1);
                     break;
                 case 3:
-                    RewardPlayerExp(raffleUnit.Value1);
+                    GameATools.LocalAddPlayerExp(raffleUnit.Value1);
                     break;
                 case 4:
-                    RewardCreatorExp(raffleUnit.Value1);
+                    GameATools.LocalAddCreatorExp(raffleUnit.Value1);
                     break;
                 case 5:
                     break;
