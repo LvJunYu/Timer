@@ -180,6 +180,42 @@ namespace GameA {
             }
             Messenger.Broadcast (EMessengerType.OnDiamondChanged);
         }
+
+        public static void LocalAddPlayerExp(int num)
+        {
+            LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerExp += num;
+            if (DateTimeUtil.GetServerTimeNowTimestampMillis() -
+                LocalUser.Instance.User.UserInfoSimple.LevelData.FirstDirtyTime >
+                _updateLocalDirtyValueInterval)
+            {
+                LocalUser.Instance.User.UserInfoSimple.LevelData.Request(
+                    LocalUser.Instance.UserGuid,
+                    null,
+                    code => {
+                        // todo error handle
+                    }
+                );
+            }
+            Messenger.Broadcast(EMessengerType.OnDiamondChanged);
+        }
+
+        public static void LocalAddCreatorExp(int num)
+        {
+            LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorExp += num;
+            if (DateTimeUtil.GetServerTimeNowTimestampMillis() -
+                LocalUser.Instance.User.UserInfoSimple.LevelData.FirstDirtyTime >
+                _updateLocalDirtyValueInterval)
+            {
+                LocalUser.Instance.User.UserInfoSimple.LevelData.Request(
+                    LocalUser.Instance.UserGuid,
+                    null,
+                    code => {
+                        // todo error handle
+                    }
+                );
+            }
+            Messenger.Broadcast(EMessengerType.OnDiamondChanged);
+        }
         #endregion
 
         #region set gde

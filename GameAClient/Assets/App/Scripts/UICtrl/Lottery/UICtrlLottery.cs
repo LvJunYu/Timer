@@ -17,7 +17,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using GameA.Game;
-
+using Spine;
+using Spine.Unity;
 
 
 namespace GameA
@@ -41,8 +42,12 @@ namespace GameA
         private bool _bright=false;
         private float RotationEulerAngles = 0;
         private int BrightNum = 0;
-
-
+        private string GlodImageName= "icon_coins_2";
+        private string DiamondImageName= "icon_diam";
+        private string ExpImageName= "icon_gift_1";
+        private string CreatorExpImageName = "icon_gift_3";
+        private string NoneImageName = "icon_star";
+        //private Reward[] _reward;
 
 
         #endregion
@@ -99,11 +104,40 @@ namespace GameA
             _cachedView.RaffleTicketlvl4Btn.onClick.AddListener(OnSelectedRaffleBtn4);
             _cachedView.RaffleTicketlvl5Btn.onClick.AddListener(OnSelectedRaffleBtn5);
             _cachedView.RaffleBtn.onClick.AddListener(() => UseRaffleTicket(this._selectedTicketNum));
-       }
+            _cachedView.CatBtn.onClick.AddListener(OnCatBtnClick);
+
+        }
+
+        private void OnCatBtnClick()
+        {
+            UseRaffleTicket(this._selectedTicketNum);
+        }
+
+        private void ShowNoneTicketTips()
+        {
+            if (_selectedTicketNum==0)
+            {
+                SocialGUIManager.ShowPopupDialog("请选择一种抽奖券", null,
+                    new KeyValuePair<string, Action>("确定", () => {
+
+                    })
+                    );
+            }
+            else
+            {
+                SocialGUIManager.ShowPopupDialog("抽奖券数量不够", null,
+                    new KeyValuePair<string, Action>("确定", () => {
+
+                    })
+                    );
+            }
+        }
+
         private void UseRaffleTicket(int selectedTicketNum)
         {
             if (LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(selectedTicketNum) > 0)
             {
+                _cachedView.SpineCat.AnimationState.SetAnimation(0, "Run", false);
                 _isPause = false;
                 this._initSpeed = _initialSpeed;
                 LocalUser.Instance.RaffleTicket.UseRaffleTicket(selectedTicketNum, DecelerateThePanel
@@ -111,7 +145,8 @@ namespace GameA
                 RefreshRaffleCount();
                 // RotateThePanel(LocalUser.Instance.RaffleTicket.CurrentRewardId);
             }
-            else _cachedView.SelectedTicketType.text = "抽奖券数量不够";
+            else
+            { ShowNoneTicketTips();}
         }
         private void DecelerateThePanel(long rewardid)
         {
@@ -134,7 +169,7 @@ namespace GameA
             }
             //_circleNum = (int)_stopRotation / 360;
             // _delta = _initSpeed*_initSpeed / (2 * _stopRotation);
-            _delta = _initSpeed * _initSpeed / (2 * (_stopRotation + 360 * 15-20.0f));
+            _delta = _initSpeed * _initSpeed / (2 * (_stopRotation + 360 * 15-17.0f));
             //Debug.Log("______________速度" + _initSpeed);
             //Debug.Log("______________加速度"+ _delta);
             //Debug.Log("______________当前位置" + _currentEulerAngles);
@@ -174,6 +209,14 @@ namespace GameA
 
         }
 
+        private void WhenShutDown()
+        {
+            ShutDownLight();
+            _cachedView.BrightLamp[4].SetActiveEx(true);
+            SocialGUIManager.ShowReward(LocalUser.Instance.RaffleTicket.GetReward);
+
+        }
+
         public override void OnUpdate()
         {
             if (!_isPause)
@@ -194,9 +237,129 @@ namespace GameA
                 {
                     //转动停止
                     _isPause = true;
-                    ShutDownLight();
+                    WhenShutDown();
                 }
             }
+        }
+
+        private string JudgeRewardType(int RewardType)
+        {
+            string Type;
+            switch (RewardType)
+            {
+                case 1:
+                    return Type = "金币";
+                case 2:
+                    return Type = "钻石";
+                case 3:
+                    return Type = "经验";
+                case 4:
+                    return Type = "工匠经验";
+                default:
+                    return Type = "None";
+            }
+        }
+
+        private string JudgeRewardImageName(int RewardType)
+        {
+            string Type;
+            switch (RewardType)
+            {
+                case 1:
+                    return Type = GlodImageName;
+                case 2:
+                    return Type = DiamondImageName;
+                case 3:
+                    return Type = ExpImageName;
+                case 4:
+                    return Type = CreatorExpImageName;
+                default:
+                    return Type = GlodImageName;
+            }
+        }
+
+        private Sprite FindImage(string ImageName)
+        {
+            Sprite fashion;
+            if (GameResourceManager.Instance.TryGetSpriteByName(ImageName, out fashion))
+            {
+                //Debug.Log("____________时装" + fashion.name);
+                //_cachedView.FashionPreview.sprite = fashion;
+                return fashion;
+            }
+            else return null;
+
+        }
+
+        private void RefreshReward(int rewardNUm)//1 2 3
+        {
+            var TurntableUnit = TableManager.Instance.Table_TurntableDic[rewardNUm];
+            
+            _cachedView.RewardType1.text = JudgeRewardType(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward1].Type1)
+            +TableManager.Instance.Table_RewardDic[TurntableUnit.Reward1].Value1;
+            _cachedView.Reward1.sprite =
+                FindImage(JudgeRewardImageName(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward1].Type1));
+
+            ;_cachedView.RewardType2.text = JudgeRewardType(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Type1)
+            +TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Value1;
+            _cachedView.Reward2.sprite =
+                FindImage(JudgeRewardImageName(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Type1));
+
+            _cachedView.RewardType3.text = JudgeRewardType(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward3].Type1)
+            +TableManager.Instance.Table_RewardDic[TurntableUnit.Reward3].Value1;
+            _cachedView.Reward3.sprite =
+                FindImage(JudgeRewardImageName(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward3].Type1));
+
+            _cachedView.RewardType4.text = JudgeRewardType(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward4].Type1)
+            +TableManager.Instance.Table_RewardDic[TurntableUnit.Reward4].Value1;
+            _cachedView.Reward4.sprite =
+                FindImage(JudgeRewardImageName(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward4].Type1));
+
+            _cachedView.RewardType5.text = JudgeRewardType(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward5].Type1)
+            +TableManager.Instance.Table_RewardDic[TurntableUnit.Reward5].Value1;
+            _cachedView.Reward5.sprite =
+                FindImage(JudgeRewardImageName(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward5].Type1));
+
+            _cachedView.RewardType6.text = JudgeRewardType(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward6].Type1)
+            +TableManager.Instance.Table_RewardDic[TurntableUnit.Reward6].Value1;
+            _cachedView.Reward6.sprite =
+                FindImage(JudgeRewardImageName(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward6].Type1));
+
+            _cachedView.RewardType7.text = JudgeRewardType(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward7].Type1)
+            +TableManager.Instance.Table_RewardDic[TurntableUnit.Reward7].Value1;
+            _cachedView.Reward7.sprite =
+                FindImage(JudgeRewardImageName(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward7].Type1));
+
+            _cachedView.RewardType8.text = JudgeRewardType(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward8].Type1)
+            +TableManager.Instance.Table_RewardDic[TurntableUnit.Reward8].Value1;
+            _cachedView.Reward8.sprite =
+                FindImage(JudgeRewardImageName(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward8].Type1));
+
+            //{
+            //    //          RT_None = 0,
+            //    //RT_Gold = 1,
+            //    //RT_Diamond = 2,
+            //    //RT_PlayerExp = 3,
+            //    //RT_CreatorExp = 4,
+            //    //RT_FashionCoupon = 5,
+            //    //RT_RaffleTicket = 6
+            //    //ERewardType
+            //    case 1:
+            //        _cachedView.
+            //        break;
+            //    case 2:
+            //        RewardMoney(raffleUnit.Value1);
+            //        break;
+            //    case 3:
+            //        RewardDiamond(raffleUnit.Value1);
+            //        break;
+            //    case 4:
+            //        RewardPlayerExp(raffleUnit.Value1);
+            //        break;
+            //    case 5:
+            //        RewardCreatorExp(raffleUnit.Value1);
+            //        break;
+            //}
         }
 
 
@@ -213,28 +376,34 @@ namespace GameA
         private void OnSelectedRaffleBtn1()
         {
             this._selectedTicketNum = 1;
-            _cachedView.SelectedTicketType.text = "新手抽奖券";
+            _cachedView.SelectedTicketType.text = "壹";
+            RefreshReward(1);
         }
 
         private void OnSelectedRaffleBtn2()
         {
             this._selectedTicketNum = 2;
-            _cachedView.SelectedTicketType.text = "初级抽奖券";
+            _cachedView.SelectedTicketType.text = "贰";
+            RefreshReward(2);
         }
         private void OnSelectedRaffleBtn3()
         {
             this._selectedTicketNum = 3;
-            _cachedView.SelectedTicketType.text = "中级抽奖券";
+            _cachedView.SelectedTicketType.text = "叁";
+            RefreshReward(3);
         }
         private void OnSelectedRaffleBtn4()
         {
             this._selectedTicketNum = 4;
-            _cachedView.SelectedTicketType.text = "高级抽奖券";
+            _cachedView.SelectedTicketType.text = "匠";
+            RefreshReward(4);
+
         }
         private void OnSelectedRaffleBtn5()
         {
             this._selectedTicketNum = 5;
-            _cachedView.SelectedTicketType.text = "大师抽奖券";
+            _cachedView.SelectedTicketType.text = "亲密";
+            RefreshReward(5);
         }
         #endregion 接口
         #endregion
