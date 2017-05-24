@@ -30,7 +30,7 @@ namespace GameA
         /// 随机改造关卡计时器，点击随机按钮后进入随机状态，至少持续N秒，收到回包且计时器结束则进入下一状态
         /// </summary>
         private float _randomPickTimer;
-
+        private USCtrlModifyCard _curModifyCard;
         #endregion
 
         #region 属性
@@ -69,6 +69,9 @@ namespace GameA
             _cachedView.PublishBtn.onClick.AddListener (OnPublishBtn);
             _cachedView.EditBtn.onClick.AddListener (OnEditBtn);
             _cachedView.RepickBtn.onClick.AddListener (OnRepickBtn);
+
+            _curModifyCard = new USCtrlModifyCard ();
+            _curModifyCard.Init (_cachedView.CurrentModifyCard);
         }
 
         public override void OnUpdate ()
@@ -92,50 +95,23 @@ namespace GameA
 
 		private void Refresh () {
             if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_ChanceReady) {
-                _cachedView.StateTxt.SetActiveEx (false);
-                _cachedView.ProjectLocTxt.SetActiveEx (false);
+                _curModifyCard.SeEmpty ();
                 _cachedView.RandomPickBtn.SetActiveEx (true);
                 _cachedView.EditBtn.SetActiveEx (false);
                 _cachedView.RepickBtn.SetActiveEx (false);
                 _cachedView.PublishBtn.SetActiveEx (false);
-                ImageResourceManager.Instance.SetDynamicImageDefault (
-                    _cachedView.CoverImg, 
-                    _cachedView.DefaultProjectCoverTex);
             } else if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_Editing) {
-                _cachedView.StateTxt.SetActiveEx (true);
-                if (LocalUser.Instance.MatchUserData.CurReformProject.IsInited &&
-                    true == LocalUser.Instance.MatchUserData.CurReformProject.PassFlag) {
-                    _cachedView.StateTxt.text = _canPublish;
-                } else {
-                    _cachedView.StateTxt.text = _cantPublish;
-                }
-                _cachedView.ProjectLocTxt.text = string.Format ("Chapt. {0} Level.{1}", 
+                _curModifyCard.SetProject (
+                    LocalUser.Instance.MatchUserData.CurReformProject,
                     LocalUser.Instance.MatchUserData.CurReformSection,
                     LocalUser.Instance.MatchUserData.CurReformLevel
                 );
-                _cachedView.ProjectLocTxt.SetActiveEx (true);
+
                 _cachedView.RandomPickBtn.SetActiveEx (false);
                 _cachedView.EditBtn.SetActiveEx (true);
                 _cachedView.RepickBtn.SetActiveEx (true);
                 _cachedView.PublishBtn.SetActiveEx (true);
-                // 取单人模式的project，因为改造数据中的project可能还没有获得
-                Project project = null;
-                int sectionIdx = LocalUser.Instance.MatchUserData.CurReformSection - 1;
-                int levelIdx = LocalUser.Instance.MatchUserData.CurReformLevel - 1;
-                if (sectionIdx >= AppData.Instance.AdventureData.ProjectList.SectionList.Count) {
-                    // todo out of range exception
-                    return;
-                }
-                var section = AppData.Instance.AdventureData.ProjectList.SectionList [sectionIdx];
-                if (levelIdx >= section.NormalProjectList.Count) {
-                    // todo out of range exception
-                    return;
-                }
-                project = section.NormalProjectList [levelIdx];
 
-                ImageResourceManager.Instance.SetDynamicImage(_cachedView.CoverImg, 
-                    project.IconPath,
-                    _cachedView.DefaultProjectCoverTex);
             } else {
                 SocialGUIManager.Instance.CloseUI<UICtrlModify> ();
             }

@@ -16,11 +16,12 @@ namespace GameA
         public Button RandomPickBtn;
 
         // published
-        public RawImage CoverImg;
-        public Text StateTxt;
-        public Text ProjectLocTxt;
+        //public RawImage CoverImg;
+        //public Text StateTxt;
+        //public Text ProjectLocTxt;
+        public USViewModifyCard CurrentModifyCard;
 
-        public Texture DefaultProjectCoverTex;
+        //public Texture DefaultProjectCoverTex;
 
         public Image InputBlock;
     }
