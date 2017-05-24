@@ -23,6 +23,7 @@ namespace GameA.Game
         protected IntVec2 _pointBCheck;
         protected UnitBase _magicRotate;
         protected bool _run = true;
+        protected bool _enabled = true;
 
         public override bool CanControlledBySwitch
         {
@@ -39,6 +40,7 @@ namespace GameA.Game
         {
             base.Clear();
             _run = true;
+            _enabled = true;
             _magicRotate = null;
             InitSpeed();
         }
@@ -73,6 +75,11 @@ namespace GameA.Game
             _run = !_run;
         }
 
+        internal void SetEnabled(bool value)
+        {
+            _enabled = value;
+        }
+
         public bool UseMagic()
         {
             return _curMoveDirection != EMoveDirection.None;
@@ -80,7 +87,7 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            if (!_run || !UseMagic())
+            if (!_enabled || !_run || !UseMagic())
             {
                 return;
             }

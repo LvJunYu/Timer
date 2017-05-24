@@ -222,9 +222,11 @@ namespace GameA
                 if (i < (int)EUIGroupType.InGame)
                 {
                     _uiRoot.SetGroupActive(i, false);
+                } else {
+                    _uiRoot.SetGroupActive (i, true);
                 }
             }
-            _uiRoot.SetGroupActive((int)EUIGroupType.InGame, true);
+            //_uiRoot.SetGroupActive((int)EUIGroupType.InGame, true);
             if (so == ScreenOrientation.LandscapeLeft)
             {
                CanvasScaler cs = _uiRoot.GetComponent<CanvasScaler>();
@@ -273,7 +275,14 @@ namespace GameA
 			}
 
             CloseUI<UICtrlMenuInGame>();
-            _uiRoot.SetGroupActive((int)EUIGroupType.InGame, false);
+            //_uiRoot.SetGroupActive((int)EUIGroupType.InGame, false);
+            for (int i = 0; i < (int)EUIGroupType.Max; i++) {
+                if (i < (int)EUIGroupType.InGame) {
+                    _uiRoot.SetGroupActive (i, true);
+                } else {
+                    _uiRoot.SetGroupActive (i, false);
+                }
+            }
             Messenger.Broadcast(EMessengerType.OnChangeToAppMode);
         }
 

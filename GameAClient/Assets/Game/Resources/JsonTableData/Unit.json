@@ -962,7 +962,7 @@
         "UnitType": "5",
         "UIType": "4",
         "Layer": "3",
-        "GeneratedType": "1",
+        "GeneratedType": "2",
         "ColliderType": "0",
         "Count": "0",
         "Width": "32",
@@ -987,7 +987,7 @@
         "UnitType": "5",
         "UIType": "4",
         "Layer": "3",
-        "GeneratedType": "1",
+        "GeneratedType": "2",
         "ColliderType": "0",
         "Count": "0",
         "Width": "32",
@@ -1663,7 +1663,8 @@
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "0",
         "MoveDirectionMask": "0",
-        "RotationMask": "15"
+        "RotationMask": "15",
+        "DestroyEffectName": "M1EffectIceDestroy"
     },
     {
         "Id": "10004",
@@ -1688,7 +1689,8 @@
         "OriginMoveDirection": "0",
         "OriginMagicDirection": "0",
         "MoveDirectionMask": "0",
-        "RotationMask": "15"
+        "RotationMask": "15",
+        "DestroyEffectName": "M1EffectJellyDestroy"
     },
     {
         "Id": "10005",

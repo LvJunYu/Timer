@@ -305,9 +305,9 @@ namespace GameA.Game
             return unit;
         }
 
-        public UnitBase CreateRuntimeUnit(int id, IntVec2 pos, byte rotation, Vector2 scale)
+        public UnitBase CreateRuntimeUnit(int id, IntVec2 pos, byte rotation = 0)
         {
-            return CreateUnit(new UnitDesc(id, new IntVec3(pos.x, pos.y, GM2DTools.GetRuntimeCreatedUnitDepth()), rotation, scale));
+            return CreateUnit(new UnitDesc(id, new IntVec3(pos.x, pos.y, GM2DTools.GetRuntimeCreatedUnitDepth()), rotation, Vector2.one));
         }
 
         public UnitBase CreateUnit(UnitDesc unitDesc)
