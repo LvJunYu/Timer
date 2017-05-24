@@ -1664,7 +1664,7 @@
         "OriginMagicDirection": "0",
         "MoveDirectionMask": "0",
         "RotationMask": "15",
-        "DestroyEffectName": "M1EffecIceDestroy"
+        "DestroyEffectName": "M1EffectIceDestroy"
     },
     {
         "Id": "10004",
