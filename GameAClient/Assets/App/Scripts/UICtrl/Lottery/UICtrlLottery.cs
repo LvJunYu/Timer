@@ -40,8 +40,10 @@ namespace GameA
         private float _currentEulerAngles = 0f;
         private bool _bright=false;
         private float RotationEulerAngles = 0;
+        private int BrightNum = 0;
 
-        
+
+
 
         #endregion
         #region 属性
@@ -132,12 +134,44 @@ namespace GameA
             }
             //_circleNum = (int)_stopRotation / 360;
             // _delta = _initSpeed*_initSpeed / (2 * _stopRotation);
-            _delta = _initSpeed * _initSpeed / (2 * (_stopRotation + 360 * 12-20.5f));
-            Debug.Log("______________速度" + _initSpeed);
-            Debug.Log("______________加速度"+ _delta);
-            Debug.Log("______________当前位置" + _currentEulerAngles);
-            Debug.Log("______________目标位置" + rewardid * 360 / 8);
-            Debug.Log("______________停止距离" + _stopRotation);
+            _delta = _initSpeed * _initSpeed / (2 * (_stopRotation + 360 * 15-20.0f));
+            //Debug.Log("______________速度" + _initSpeed);
+            //Debug.Log("______________加速度"+ _delta);
+            //Debug.Log("______________当前位置" + _currentEulerAngles);
+            //Debug.Log("______________目标位置" + rewardid * 360 / 8);
+            //Debug.Log("______________停止距离" + _stopRotation);
+        }
+
+        private void LightEntireBright()
+        {
+            _bright = !_bright;
+            for (int i = 0; i < _cachedView.BrightLamp.Length; i++)
+            {
+                _cachedView.BrightLamp[i].SetActiveEx(_bright);
+            }
+        }
+
+        private void LightRotateBright()
+        {
+            _cachedView.BrightLamp[BrightNum].SetActiveEx(true);
+            if (BrightNum >= _cachedView.BrightLamp.Length-1)
+            {
+                BrightNum = 0;
+                ShutDownLight();
+            }
+            else
+            {
+                ++BrightNum;
+            }
+        }
+
+        private void ShutDownLight()
+        {
+            for (int i = 0; i < _cachedView.BrightLamp.Length; i++)
+            {
+                _cachedView.BrightLamp[i].SetActiveEx(false);
+            }
+
         }
 
         public override void OnUpdate()
@@ -148,19 +182,10 @@ namespace GameA
                 //_initSpeed = Mathf.MoveTowardsAngle((float)_cachedView.RoolPanel.rotation, 10, 0.1f*Time.deltaTime);
                 RotationEulerAngles += _initSpeed*Time.deltaTime;
                 _cachedView.RoolPanel.Rotate(new Vector3(0, 0, _initSpeed) *Time.deltaTime);
-                if (RotationEulerAngles>=270)
+                if (RotationEulerAngles>=45)
                 {
                     RotationEulerAngles = 0;
-
-                 
-                        _bright = !_bright;
-                        for (int i = 0; i < _cachedView.BrightLamp.Length; i++)
-                        {
-                            _cachedView.BrightLamp[i].SetActiveEx(_bright);
-                        }
-
-                    
-
+                    LightRotateBright();
                 }
                 //让转动的速度缓缓降低
                 _initSpeed -= _delta*Time.deltaTime;
@@ -169,6 +194,7 @@ namespace GameA
                 {
                     //转动停止
                     _isPause = true;
+                    ShutDownLight();
                 }
             }
         }
