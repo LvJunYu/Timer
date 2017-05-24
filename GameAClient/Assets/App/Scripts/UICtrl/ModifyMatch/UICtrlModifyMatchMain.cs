@@ -86,7 +86,8 @@ namespace GameA
 
 		private void RefreshViewAll () {
             RefreshUserInfo ();
-            RefreshModifyMatch ();
+            RefreshModify ();
+            RefreshMatch ();
             RefreshPublishedProject ();
 		}
 
@@ -97,7 +98,7 @@ namespace GameA
             _cachedView.CanAddNum.text = LocalUser.Instance.MatchUserData.ReformAddUnitCapacity.ToString ();
         }
 
-        private void RefreshModifyMatch () {
+        private void RefreshMatch () {
             int matchPoint = LocalUser.Instance.MatchUserData.LeftChallengeCount;
             MatchUserData.EChallengeState challengeState = LocalUser.Instance.MatchUserData.CurrentChallengeState ();
             if (MatchUserData.EChallengeState.Selecting == challengeState || 
@@ -120,6 +121,10 @@ namespace GameA
                 //_cachedView.MatchCDImage.gameObject.SetActive (false);
             }
 
+        }
+
+        private void RefreshModify () {
+            long now = DateTimeUtil.GetServerTimeNowTimestampMillis ();
 
             if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_WaitForChance) {
                 int modifyCDInSecond = LocalUser.Instance.MatchUserData.ReformIntervalSeconds
@@ -131,10 +136,10 @@ namespace GameA
                 //_cachedView.ModifyCDImage.fillAmount = (float)modifyCDInSecond / LocalUser.Instance.MatchUserData.ReformIntervalSeconds;
             } else if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_ChanceReady) {
                 //_cachedView.ModifyCDImage.fillAmount = 0;
-                _cachedView.ModifyCDText.text = string.Empty;                
+                _cachedView.ModifyCDText.text = string.Empty;
             } else if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_Editing) {
                 //_cachedView.ModifyCDImage.fillAmount = 0;
-                _cachedView.ModifyCDText.text = string.Empty;                
+                _cachedView.ModifyCDText.text = string.Empty;
             }
         }
 
