@@ -15,7 +15,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Create)]
-    public class UICtrlSceneState: UICtrlGenericBase<UIViewSceneState>
+    public class UICtrlSceneState: UICtrlInGameBase<UIViewSceneState>
     {
 
         private Dictionary<EWinCondition, UIViewSceneStateItem> _cachedItem;

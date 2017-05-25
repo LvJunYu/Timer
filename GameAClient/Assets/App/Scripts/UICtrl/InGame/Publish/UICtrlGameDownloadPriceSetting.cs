@@ -17,7 +17,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlGameDownloadPriceSetting : UICtrlGenericBase<UIViewGameDownloadPriceSetting>
+    public class UICtrlGameDownloadPriceSetting : UICtrlInGameBase<UIViewGameDownloadPriceSetting>
     {
         #region 常量与字段
         private int _price;

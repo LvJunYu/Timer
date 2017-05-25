@@ -14,7 +14,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Create)]
-    public class UICtrlCreate : UICtrlGenericBase<UIViewCreate>
+    public class UICtrlCreate : UICtrlInGameBase<UIViewCreate>
     {
 	    private ushort _curSelectId = 0;
 	    private UIDragMapItemController _dragController;

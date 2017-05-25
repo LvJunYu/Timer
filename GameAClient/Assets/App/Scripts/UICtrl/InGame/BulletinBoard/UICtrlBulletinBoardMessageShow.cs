@@ -15,7 +15,7 @@ namespace GameA
 {
 
 	[UIAutoSetup(EUIAutoSetupType.Create)]
-	public class UICtrlBulletinBoardMessageShow: UICtrlGenericBase<UIViewBulletinBoardMessageShow>
+	public class UICtrlBulletinBoardMessageShow: UICtrlInGameBase<UIViewBulletinBoardMessageShow>
 	{
 		private int _curShowCount =  0 ;
 

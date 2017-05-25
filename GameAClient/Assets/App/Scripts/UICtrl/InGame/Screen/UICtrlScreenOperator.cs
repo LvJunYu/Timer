@@ -16,7 +16,7 @@ using GameA.Game;
 namespace GameA
 {
 	[UIAutoSetup(EUIAutoSetupType.Create)]
-	public class UICtrlScreenOperator: UICtrlGenericBase<UIViewScreenOperator>
+	public class UICtrlScreenOperator: UICtrlInGameBase<UIViewScreenOperator>
 	{
 		protected override void InitGroupId()
 		{

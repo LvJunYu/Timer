@@ -18,7 +18,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlPublish : UICtrlGenericBase<UIViewPublish>
+    public class UICtrlPublish : UICtrlInGameBase<UIViewPublish>
     {
 	    public const string TagButtonSpriteNormalState = "ButtonBG_12";
 	    public const string TagButtonSpriteSelectedState = "ButtonBG_13";

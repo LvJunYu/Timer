@@ -9,10 +9,10 @@
 using SoyEngine;
 using UnityEngine;
 
-namespace GameA.Game
+namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Show)]
-    public class UICtrlGameLog: UICtrlGenericBase<UIViewGameLog>
+    public class UICtrlGameLog: UICtrlInGameBase<UIViewGameLog>
     {
         public const float FadeOutTime = 1;
         public const float DurationTime = 1;
@@ -22,7 +22,7 @@ namespace GameA.Game
 
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.Tips;
+            _groupId = (int)EUIGroupType.InGameTip;
         }
 
         public void ShowLog(string value)

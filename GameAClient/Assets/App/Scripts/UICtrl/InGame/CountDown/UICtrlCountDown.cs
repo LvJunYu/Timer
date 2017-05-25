@@ -16,7 +16,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup (EUIAutoSetupType.Add)]
-    public class UICtrlCountDown : UICtrlGenericBase<UIViewCountDown>
+    public class UICtrlCountDown : UICtrlInGameBase<UIViewCountDown>
     {
         private float _timer;
         // 界面显示的时间
