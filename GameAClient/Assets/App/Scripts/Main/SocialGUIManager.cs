@@ -1,4 +1,4 @@
-﻿/********************************************************************
+﻿﻿/********************************************************************
 ** Filename : SocialGUIManager
 ** Author : Dong
 ** Date : 2015/5/28 23:13:55
@@ -39,7 +39,7 @@ namespace GameA
         /// <summary>
         /// 游戏内UI
         /// </summary>
-        InGame,
+        InGameStart,
 
         /// <summary>
         /// 录像全屏
@@ -47,11 +47,14 @@ namespace GameA
         RecordFullScreen,
         InGameMainUI,
         InGamePopup,
+        InGameTip,
         AppGameUI,
         InputCtrl,
+        InGameEnd,
         /// <summary>
         /// 提示弹窗
         /// </summary>
+
         PopUpDialog,
         /// <summary>
         /// 小loading
@@ -187,7 +190,7 @@ namespace GameA
 			{
 				_recordRenderTexture = new RenderTexture(Screen.height, Screen.width, 24);
 			}
-			_uiRoot.SetGroupActive((int)EUIGroupType.InGame, true);
+			_uiRoot.SetGroupActive((int)EUIGroupType.InGameStart, true);
 			Messenger.Broadcast(EMessengerType.OnChangeToGameMode);
 		}
 
@@ -219,7 +222,8 @@ namespace GameA
             _currentMode = EMode.Game;
             for (int i = 0; i < (int)EUIGroupType.Max; i++)
             {
-                if (i < (int)EUIGroupType.InGame)
+                if (i < (int)EUIGroupType.InGameStart ||
+                    i > (int)EUIGroupType.InGameEnd)
                 {
                     _uiRoot.SetGroupActive(i, false);
                 } else {
@@ -277,7 +281,8 @@ namespace GameA
             CloseUI<UICtrlMenuInGame>();
             //_uiRoot.SetGroupActive((int)EUIGroupType.InGame, false);
             for (int i = 0; i < (int)EUIGroupType.Max; i++) {
-                if (i < (int)EUIGroupType.InGame) {
+                if (i < (int)EUIGroupType.InGameStart ||
+                    i > (int)EUIGroupType.InGameEnd) {
                     _uiRoot.SetGroupActive (i, true);
                 } else {
                     _uiRoot.SetGroupActive (i, false);

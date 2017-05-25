@@ -17,7 +17,7 @@ using GameA.Game;
 namespace GameA
 {
 	[UIAutoSetup(EUIAutoSetupType.Add)]
-	public class UICtrlGameSetting:UICtrlGenericBase<UIViewGameSetting>
+	public class UICtrlGameSetting:UICtrlInGameBase<UIViewGameSetting>
 	{
 
 		private GameSettingData _setting;

@@ -17,7 +17,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Create)]
-    public class UICtrlEditSwitch : UICtrlGenericBase<UIViewEditSwitch>
+    public class UICtrlEditSwitch : UICtrlInGameBase<UIViewEditSwitch>
     {
         #region 常量与字段
 

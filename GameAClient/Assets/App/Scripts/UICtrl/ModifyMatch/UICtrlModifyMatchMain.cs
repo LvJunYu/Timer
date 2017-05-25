@@ -49,12 +49,14 @@ namespace GameA
                 }
             );
             LocalUser.Instance.MatchUserData.LocalRefresh ();
+            SocialGUIManager.HideGoldEnergyBar ();
             RefreshViewAll ();
         }
 
         protected override void OnClose()
         {
             base.OnClose();
+            SocialGUIManager.ShowGoldEnergyBar (true);
         }
 
         protected override void InitEventListener()

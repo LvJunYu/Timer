@@ -9,7 +9,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup (EUIAutoSetupType.Add)]
-    public class UICtrlGameInputControl : UICtrlGenericBase<UIViewGameInputControl> {
+    public class UICtrlGameInputControl : UICtrlInGameBase<UIViewGameInputControl> {
 
         public const float MoveInputButtonRatio = 1;
 

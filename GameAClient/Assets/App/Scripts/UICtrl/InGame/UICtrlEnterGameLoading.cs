@@ -26,7 +26,7 @@ namespace GameA
         #region 继承方法
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.InGame;
+            _groupId = (int)EUIGroupType.InGameStart;
         }
 
         protected override void InitEventListener()

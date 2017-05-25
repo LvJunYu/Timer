@@ -17,7 +17,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Create)]
-    public class UICtrlEdit : UICtrlGenericBase<UIViewEdit>
+    public class UICtrlEdit : UICtrlInGameBase<UIViewEdit>
     {
         #region 常量与字段
         //private Social.UIDraggableButton _moveBtn;

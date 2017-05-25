@@ -15,7 +15,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlItem : UICtrlGenericBase<UIViewItem>
+    public class UICtrlItem : UICtrlInGameBase<UIViewItem>
     {
         private EUIType _selectedUnitType;
         private EUIType _lastSelectUnitType;

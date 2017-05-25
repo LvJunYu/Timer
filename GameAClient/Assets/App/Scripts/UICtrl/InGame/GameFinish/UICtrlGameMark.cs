@@ -12,7 +12,7 @@ using GameA.Game;
 namespace GameA
 {
 	[UIAutoSetup(EUIAutoSetupType.Add)]
-	public class UICtrlGameMark: UICtrlGenericBase<UIViewGameMark>
+	public class UICtrlGameMark: UICtrlInGameBase<UIViewGameMark>
 	{
 		protected override void InitGroupId()
 		{

@@ -15,7 +15,7 @@ using SoyEngine;
 namespace GameA
 {
 	[UIAutoSetup(EUIAutoSetupType.Add)]
-	public class UICtrlGameFinish : UICtrlGenericBase<UIViewGameFinish>
+	public class UICtrlGameFinish : UICtrlInGameBase<UIViewGameFinish>
 	{
 		private enum EShowState
 		{

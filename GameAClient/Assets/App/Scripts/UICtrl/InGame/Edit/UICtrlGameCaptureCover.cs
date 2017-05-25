@@ -17,7 +17,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlGameCaptureCover: UICtrlGenericBase<UIViewGameCaptureCover>
+    public class UICtrlGameCaptureCover: UICtrlInGameBase<UIViewGameCaptureCover>
     {
         private bool _isProcessing = false;
         private RectTransform _rootTran;

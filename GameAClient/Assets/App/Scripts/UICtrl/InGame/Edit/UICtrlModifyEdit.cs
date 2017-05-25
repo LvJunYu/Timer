@@ -17,7 +17,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Create)]
-    public class UICtrlModifyEdit : UICtrlGenericBase<UIViewModifyEdit>
+    public class UICtrlModifyEdit : UICtrlInGameBase<UIViewModifyEdit>
     {
         #region 常量与字段
         // 目前版本可能的最大数量限制
