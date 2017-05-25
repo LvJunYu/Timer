@@ -19,7 +19,7 @@ namespace GameA
 	/// <summary>
 	/// 游戏胜利条件设置界面
 	/// </summary>
-    public class UICtrlGamePlay: UICtrlGenericBase<UIViewGamePlay>
+    public class UICtrlGamePlay: UICtrlInGameBase<UIViewGamePlay>
     {
 		private FinishCondition _curCondition;
 

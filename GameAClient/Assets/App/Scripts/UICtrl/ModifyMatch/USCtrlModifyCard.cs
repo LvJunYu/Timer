@@ -52,7 +52,7 @@ namespace GameA
             _cachedView.CanPublish.SetActive (false);
             _cachedView.NotPass.SetActive (false);
             _cachedView.NotModify.SetActive (false);
-            if (!project.IsInited) {
+            if (project.AddCount == 0 && project.DeleteCount == 0 && project.ModifyCount == 0) {
                 _cachedView.NotModify.SetActive (true);
             } else if (project.PassFlag){
                 _cachedView.CanPublish.SetActive (true);

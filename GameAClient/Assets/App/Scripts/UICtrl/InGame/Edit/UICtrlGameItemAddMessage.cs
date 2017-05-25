@@ -13,7 +13,7 @@ using SoyEngine;
 namespace GameA
 {
 	[UIAutoSetup(EUIAutoSetupType.Create)]
-	public class UICtrlGameItemAddMessage: UICtrlGenericBase<UIViewGameItemAddMessage>
+	public class UICtrlGameItemAddMessage: UICtrlInGameBase<UIViewGameItemAddMessage>
 	{
 		private UnitDesc _selectItem;
 		private string _pristineValue;

@@ -293,11 +293,17 @@ namespace GameA
                         LocalUser.Instance.MatchUserData.Request(LocalUser.Instance.UserGuid, null, null);
                     } else {
                         // todo network error handle
-                    Debug.Log ("___________________Reform error result code : " + msg.ResultCode);
+                        //Debug.Log ("___________________Reform error result code : " + msg.ResultCode);
+                        _cachedView.InputBlock.SetActiveEx (false);
+                        _randomPickTimer = 0f;
+                        SocialGUIManager.ShowPopupDialog ("错误代码： " + msg.ResultCode, "出错了", new KeyValuePair<string, Action>("确认", null));
                     }
                 },
                 code => {
                     // todo network error handle
+                    _cachedView.InputBlock.SetActiveEx (false);
+                    _randomPickTimer = 0f;
+                    SocialGUIManager.ShowPopupDialog ("错误代码： " + code.ToString (), "网络错误", new KeyValuePair<string, Action> ("确认", null));
                 }
             );
         }
