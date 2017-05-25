@@ -27,6 +27,10 @@ namespace GameA
         private long _playChallengeToken;
 
         private bool _isRequestPlayChallenge;
+        /// <summary>
+        /// 上一次挑战成功奖励
+        /// </summary>
+        private Reward _lastChallengeReward = new Reward ();
         #endregion
 
         #region 属性
@@ -53,6 +57,14 @@ namespace GameA
                 } else {
                     return long.MaxValue;
                 }
+            }
+        }
+
+        public Reward LastChallengeReward
+        {
+            get
+            {
+                return _lastChallengeReward;
             }
         }
         #endregion
@@ -220,12 +232,15 @@ namespace GameA
                 usedTime,
                 msg => {
                     if ((int)ECommitMatchChallengeLevelResultCode.CMCLRC_Success == msg.ResultCode) {
+                        _lastChallengeReward.OnSyncFromParent (msg.Reward);
                         _playChallengeToken = 0;
-                        _curSelectedChallengeType = (int)EChallengeProjectType.CPT_None;
-                        _easyChallengeProjectData = new Project();
-                        _mediumChallengeProjectData = new Project();
-                        _difficultChallengeProjectData = new Project();
-                        _randomChallengeProjectData = new Project();
+                        if (isSuccess) {
+                            _curSelectedChallengeType = (int)EChallengeProjectType.CPT_None;
+                            _easyChallengeProjectData = new Project ();
+                            _mediumChallengeProjectData = new Project ();
+                            _difficultChallengeProjectData = new Project ();
+                            _randomChallengeProjectData = new Project ();
+                        }
                         if (null != successCB) {
                             successCB.Invoke ();
                         }

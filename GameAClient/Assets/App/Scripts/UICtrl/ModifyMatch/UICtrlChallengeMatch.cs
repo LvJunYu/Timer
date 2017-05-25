@@ -20,7 +20,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlChallengeMatch : UISocialCtrlBase<UIViewChallengeMatch>
+    public class UICtrlChallengeMatch : UICtrlGenericBase<UIViewChallengeMatch>
     {
         #region 常量与字段
         private USCtrlChallengeProjectCard _easyCard;
@@ -121,6 +121,7 @@ namespace GameA
                 _cachedView.RandomPickBtn.gameObject.SetActive (true);
                 _cachedView.ChallengeBtn.gameObject.SetActive (false);
                 _cachedView.AbandomBtn.gameObject.SetActive (false);
+                _cachedView.SelectTip.gameObject.SetActive (false);
             } else if (LocalUser.Instance.MatchUserData.CurrentChallengeState() == MatchUserData.EChallengeState.Selecting) {
                 _easyCard.SetProject (LocalUser.Instance.MatchUserData.EasyChallengeProjectData, EChallengeProjectType.CPT_Easy);
                 _normalCard.SetProject (LocalUser.Instance.MatchUserData.MediumChallengeProjectData, EChallengeProjectType.CPT_Medium);
@@ -129,6 +130,7 @@ namespace GameA
                 _cachedView.RandomPickBtn.gameObject.SetActive (false);
                 _cachedView.ChallengeBtn.gameObject.SetActive (false);
                 _cachedView.AbandomBtn.gameObject.SetActive (false);
+                _cachedView.SelectTip.gameObject.SetActive (true);
 //                _selectChallengeTemp = EChallengeProjectType.CPT_None;
             } else if (LocalUser.Instance.MatchUserData.CurrentChallengeState() == MatchUserData.EChallengeState.Challenging) {
                 _easyCard.SetProject (LocalUser.Instance.MatchUserData.EasyChallengeProjectData, EChallengeProjectType.CPT_Easy,
@@ -142,6 +144,8 @@ namespace GameA
                 _cachedView.RandomPickBtn.gameObject.SetActive (false);
                 _cachedView.ChallengeBtn.gameObject.SetActive (true);
                 _cachedView.AbandomBtn.gameObject.SetActive (true);
+                _cachedView.SelectTip.gameObject.SetActive (false);
+                _cachedView.ChallengeEnergyCost.text = string.Format ("-{0}", LocalUser.Instance.MatchUserData.CurMatchChallengeCount);
             } else {
                 SocialGUIManager.Instance.CloseUI<UICtrlChallengeMatch> ();
             }

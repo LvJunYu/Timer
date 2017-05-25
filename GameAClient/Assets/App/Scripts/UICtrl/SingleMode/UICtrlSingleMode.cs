@@ -260,7 +260,7 @@ namespace GameA
 		}
 
 		private void OnMatchBtnClick () {
-			SocialGUIManager.Instance.OpenPopupUI<UICtrlModifyMatchMain>();
+			SocialGUIManager.Instance.OpenUI<UICtrlModifyMatchMain>();
 		}
 
 		private void OnTreasureBtnClick () {

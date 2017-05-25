@@ -45,15 +45,16 @@ namespace GameA
         }
 
         public void SeEmpty () {
-            ImageResourceManager.Instance.SetDynamicImageDefault (
-                _cachedView.Cover, 
-                _cachedView.DefaultProjectCoverTex);
-            
+            //ImageResourceManager.Instance.SetDynamicImageDefault (
+            //_cachedView.Cover, 
+            //_cachedView.DefaultProjectCoverTex);
+            _cachedView.Empty.gameObject.SetActive (true);
+            _cachedView.Normal.gameObject.SetActive (false);
             _cachedView.ModifyNum.text = _unkown;
             _cachedView.AddNum.text = _unkown;
             _cachedView.DelNum.text = _unkown;
             _cachedView.PassingRate.text = _unkown;
-            _cachedView.SelectMark.SetActive (false);
+            _cachedView.Root.transform.localPosition = new Vector3 (0, 0, 0);
         }
 
         public void SetProject (Project project, EChallengeProjectType type, int selectType = 0) {
@@ -74,27 +75,29 @@ namespace GameA
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, 
                 section.NormalProjectList [levelId].IconPath,
                 _cachedView.DefaultProjectCoverTex);
-            _cachedView.AddNum.text = _project.AddCount.ToString();
-            _cachedView.ModifyNum.text = _project.ModifyCount.ToString();
-            _cachedView.DelNum.text = _project.DeleteCount.ToString();
-            _cachedView.PassingRate.text = string.Format("{0}%", _project.PassRate);
+            _cachedView.AddNum.text = type == EChallengeProjectType.CPT_Random ? _unkown : _project.AddCount.ToString();
+            _cachedView.ModifyNum.text = type == EChallengeProjectType.CPT_Random ? _unkown : _project.ModifyCount.ToString();
+            _cachedView.DelNum.text = type == EChallengeProjectType.CPT_Random ? _unkown : _project.DeleteCount.ToString();
+            _cachedView.PassingRate.text = type == EChallengeProjectType.CPT_Random ? _unkown : string.Format("{0}%", _project.PassRate);
 
             if (1 == selectType) {
-                _cachedView.SelectMark.SetActive (true);
+                _cachedView.Root.transform.localPosition = new Vector3 (0, 20, 0);
             } else {
-                _cachedView.SelectMark.SetActive (false);
+                _cachedView.Root.transform.localPosition = new Vector3 (0, 0, 0);
             }
+            _cachedView.Empty.gameObject.SetActive (false);
+            _cachedView.Normal.gameObject.SetActive (true);
         }
 
-        public void SetRandomSwitchProject (Project project) {
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, 
-                _project.IconPath,
-                _cachedView.DefaultProjectCoverTex);
-            _cachedView.ModifyNum.text = _unkown;
-            _cachedView.AddNum.text = _unkown;
-            _cachedView.DelNum.text = _unkown;
-            _cachedView.PassingRate.text = _unkown;
-        }
+        //public void SetRandomSwitchProject (Project project) {
+        //    ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, 
+        //        _project.IconPath,
+        //        _cachedView.DefaultProjectCoverTex);
+        //    _cachedView.ModifyNum.text = _unkown;
+        //    _cachedView.AddNum.text = _unkown;
+        //    _cachedView.DelNum.text = _unkown;
+        //    _cachedView.PassingRate.text = _unkown;
+        //}
 
         private void OnSelectBtn () {
             Messenger<EChallengeProjectType>.Broadcast (EMessengerType.OnChallengeProjectSelected, _type);

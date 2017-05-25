@@ -731,10 +731,14 @@ namespace GameA.Game
                     () => {
                         Debug.Log("——————————————————————提交挑战成功");
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                        Messenger.Broadcast (EMessengerType.GameFinishSuccessShowUI);
+                        //SocialApp.Instance.ReturnToApp ();
                     },
                     () => {
                         Debug.Log("——————————————————————提交挑战失败");
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                        Messenger.Broadcast (EMessengerType.GameFinishSuccessShowUI);
+                        //SocialApp.Instance.ReturnToApp ();
                     }
                 );                    
             }
@@ -774,9 +778,26 @@ namespace GameA.Game
 				CommitAdventureGameResult (false);
 				return;
 			}
-			else
-			{
-			}
+            else if (p.ProjectStatus == EProjectStatus.PS_Reform) {
+            } else if (p.ProjectStatus == EProjectStatus.PS_Challenge) {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading (this, "提交成绩中...");
+                LocalUser.Instance.MatchUserData.CommitChallengeResult(
+                    false,
+                    PlayMode.Instance.GameSuccessFrameCnt* ConstDefineGM2D.FixedDeltaTime,
+                    () => {
+				        Debug.Log ("——————————————————————提交挑战成功");
+				        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                        Messenger.Broadcast (EMessengerType.GameFinishFailedShowUI);
+				        //SocialApp.Instance.ReturnToApp ();
+				    },
+                    () => {
+                        Debug.Log("——————————————————————提交挑战失败");
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading (this);
+                        Messenger.Broadcast (EMessengerType.GameFinishFailedShowUI);
+                        //SocialApp.Instance.ReturnToApp();
+                    }
+                );                    
+            }
 		}
         
         private void OnGameLoadError()

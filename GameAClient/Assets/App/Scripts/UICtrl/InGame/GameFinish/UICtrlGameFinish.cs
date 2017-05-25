@@ -29,6 +29,8 @@ namespace GameA
             AdvNormalLose,
             AdvBonusWin,
             AdvBonusLose,
+            ChallengeWin,
+            ChallengeLose,
 		}
         private EShowState _showState;
 		private bool _finishRes;
@@ -62,25 +64,43 @@ namespace GameA
 			base.OnOpen(parameter);
             if (Game.PlayMode.Instance.SceneState.GameFailed) {
                 _showState = EShowState.Lose;
-                // 冒险关卡普通关卡胜利后
-                if (Game.GM2DGame.Instance.CurrentMode == Game.EMode.AdvNormal) {
-                    _showState = EShowState.AdvNormalLose;
-                }
-                // 冒险关卡奖励关卡胜利后
-                if (Game.GM2DGame.Instance.CurrentMode == Game.EMode.AdvBonus) {
-                    _showState = EShowState.AdvBonusLose;
+                if (EProjectStatus.PS_Challenge == GameManager.Instance.CurrentGame.Project.ProjectStatus)
+                {
+                    _showState = EShowState.ChallengeLose;
+                } else if (EProjectStatus.PS_Reform == GameManager.Instance.CurrentGame.Project.ProjectStatus)
+                {
+                    _showState = EShowState.EditorLose;
+                } else if (EProjectStatus.PS_Private == GameManager.Instance.CurrentGame.Project.ProjectStatus) {
+                    _showState = EShowState.EditorLose;
+                } else
+                {
+                    // 冒险关卡普通关卡胜利后
+                    if (Game.GM2DGame.Instance.CurrentMode == Game.EMode.AdvNormal) {
+                        _showState = EShowState.AdvNormalLose;
+                    }
+                    // 冒险关卡奖励关卡胜利后
+                    if (Game.GM2DGame.Instance.CurrentMode == Game.EMode.AdvBonus) {
+                        _showState = EShowState.AdvBonusLose;
+                    }
                 }
             } else if (Game.PlayMode.Instance.SceneState.GameSucceed) {
                 _showState = EShowState.Win;
-                // 冒险关卡普通关卡胜利后
-                if (Game.GM2DGame.Instance.CurrentMode == Game.EMode.AdvNormal) {
-                    _showState = EShowState.AdvNormalWin;
+                if (EProjectStatus.PS_Challenge == GameManager.Instance.CurrentGame.Project.ProjectStatus) {
+                    _showState = EShowState.ChallengeWin;
+                } else if (EProjectStatus.PS_Reform == GameManager.Instance.CurrentGame.Project.ProjectStatus) {
+                    _showState = EShowState.EditorWin;
+                } else if (EProjectStatus.PS_Private == GameManager.Instance.CurrentGame.Project.ProjectStatus) {
+                    _showState = EShowState.EditorWin;
+                } else {
+                    // 冒险关卡普通关卡胜利后
+                    if (Game.GM2DGame.Instance.CurrentMode == Game.EMode.AdvNormal) {
+                        _showState = EShowState.AdvNormalWin;
+                    }
+                    // 冒险关卡奖励关卡胜利后
+                    if (Game.GM2DGame.Instance.CurrentMode == Game.EMode.AdvBonus) {
+                        _showState = EShowState.AdvBonusWin;
+                    }
                 }
-                // 冒险关卡奖励关卡胜利后
-                if (Game.GM2DGame.Instance.CurrentMode == Game.EMode.AdvBonus) {
-                    _showState = EShowState.AdvBonusWin;
-                }
-
             } else {
                 SocialGUIManager.Instance.CloseUI <UICtrlGameFinish>();
             }
@@ -105,6 +125,7 @@ namespace GameA
             _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtn);
             _cachedView.RetryBtn.onClick.AddListener(OnRetryBtn);
             _cachedView.NextBtn.onClick.AddListener(OnNextBtn);
+            _cachedView.ContinueEditBtn.onClick.AddListener (OnContinueEditBtn);
 
             _rewardCtrl = new USCtrlGameFinishReward [_cachedView.Rewards.Length];
             for (int i = 0; i < _cachedView.Rewards.Length; i++) {
@@ -177,6 +198,11 @@ namespace GameA
         }
         private void OnNextBtn () {}
 
+        private void OnContinueEditBtn ()
+        {
+            SocialGUIManager.Instance.CloseUI<UICtrlGameFinish> ();
+            PauseGame ();
+        }
 		private void OnClickRestartGame()
 		{
             Project p = GameManager.Instance.CurrentGame.Project;
@@ -423,6 +449,7 @@ namespace GameA
                 _cachedView.Lose.SetActive (false);
                 _cachedView.RetryBtn.gameObject.SetActive (true);
                 _cachedView.ReturnBtn.gameObject.SetActive (true);
+                _cachedView.ContinueEditBtn.gameObject.SetActive (false);
                 // 如果是一章中的最后一关，则不显示下一关按钮
                 if (GameManager.Instance.CurrentGame.Project.LevelId == Game.ConstDefineGM2D.AdvNormallevelPerChapter) {
                     _cachedView.NextBtn.gameObject.SetActive (false);
@@ -435,7 +462,7 @@ namespace GameA
                 _cachedView.Score.text = Game.PlayMode.Instance.SceneState.TotalScore.ToString ();
                 _cachedView.ScoreOutLine.text = Game.PlayMode.Instance.SceneState.TotalScore.ToString ();
                 // 奖励
-                UpdateReward ();
+                UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
                 break;
             case EShowState.AdvBonusLose:
                 break;
@@ -445,12 +472,41 @@ namespace GameA
                 _cachedView.ReturnBtn.gameObject.SetActive (true);
                 _cachedView.RetryBtn.gameObject.SetActive (true);
                 _cachedView.NextBtn.gameObject.SetActive (false);
+                _cachedView.ContinueEditBtn.gameObject.SetActive (false);
                 _cachedView.Score.gameObject.SetActive (false);
                 _cachedView.ScoreOutLine.gameObject.SetActive (false);
-                UpdateReward ();
+                UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
+                break;
+            case EShowState.ChallengeWin:
+                _cachedView.Win.SetActive (true);
+                _cachedView.Lose.SetActive (false);
+                _cachedView.RetryBtn.gameObject.SetActive (false);
+                _cachedView.ReturnBtn.gameObject.SetActive (true);
+                _cachedView.NextBtn.gameObject.SetActive (false);
+                _cachedView.ContinueEditBtn.gameObject.SetActive (false);
+
+                // 得分
+                _cachedView.Score.gameObject.SetActive (true);
+                _cachedView.ScoreOutLine.gameObject.SetActive (true);
+                _cachedView.Score.text = Game.PlayMode.Instance.SceneState.TotalScore.ToString ();
+                _cachedView.ScoreOutLine.text = Game.PlayMode.Instance.SceneState.TotalScore.ToString ();
+                // 奖励
+                UpdateReward (LocalUser.Instance.MatchUserData.LastChallengeReward);
+                break;
+            case EShowState.ChallengeLose:
+                _cachedView.Win.SetActive (false);
+                _cachedView.Lose.SetActive (true);
+                _cachedView.ReturnBtn.gameObject.SetActive (true);
+                _cachedView.RetryBtn.gameObject.SetActive (false);
+                _cachedView.NextBtn.gameObject.SetActive (false);
+                _cachedView.ContinueEditBtn.gameObject.SetActive (false);
+                _cachedView.Score.gameObject.SetActive (false);
+                _cachedView.ScoreOutLine.gameObject.SetActive (false);
+                UpdateReward (LocalUser.Instance.MatchUserData.LastChallengeReward);
                 break;
             }
             return;
+
 			EShowState cur = EShowState.Win;
 			if (Game.PlayMode.Instance.SceneState.GameSucceed)
 			{
@@ -505,14 +561,11 @@ namespace GameA
 			//SetUIState(cur);
 		}
 
-        private void UpdateReward () {
-            if (null != AppData.Instance.AdventureData.LastAdvReward &&
-                        AppData.Instance.AdventureData.LastAdvReward.IsInited) {
+        private void UpdateReward (Reward reward) {
+            if (null != reward && reward.IsInited) {
                 int i = 0;
-                for (; i < _rewardCtrl.Length && i < AppData.Instance.AdventureData.LastAdvReward.ItemList.Count; i++) {
-                    _rewardCtrl [i].Set (
-                        AppData.Instance.AdventureData.LastAdvReward.ItemList [i].GetSprite (),
-                        AppData.Instance.AdventureData.LastAdvReward.ItemList[i].Count.ToString ()
+                for (; i < _rewardCtrl.Length && i < reward.ItemList.Count; i++) {
+                    _rewardCtrl [i].Set (reward.ItemList [i].GetSprite (), reward.ItemList[i].Count.ToString ()
                     );
                 }
                 for (; i < _rewardCtrl.Length; i++) {
@@ -533,8 +586,8 @@ namespace GameA
 
 		private void PauseGame()
 		{
-			//Messenger<ECommandType>.Broadcast(EMessengerType.OnCommandChanged, ECommandType.Pause);
-			//GM2DGame.Instance.ChangeToMode(EMode.Edit);
+			Messenger<Game.ECommandType>.Broadcast(EMessengerType.OnCommandChanged, Game.ECommandType.Pause);
+			Game.GM2DGame.Instance.ChangeToMode(Game.EMode.Edit);
 		}
 
         private void JumpToWinState()
