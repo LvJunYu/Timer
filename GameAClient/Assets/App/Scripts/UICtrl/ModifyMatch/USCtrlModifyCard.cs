@@ -61,23 +61,10 @@ namespace GameA
             }
             _cachedView.Title.text = string.Format ("第{0}章  第{1}关", chapterId, levelId);
 
-            // 取单人模式的project，因为改造数据中的project可能还没有获得
-            Project advProject = null;
-            int sectionIdx = LocalUser.Instance.MatchUserData.CurReformSection - 1;
-            int levelIdx = LocalUser.Instance.MatchUserData.CurReformLevel - 1;
-            if (sectionIdx >= AppData.Instance.AdventureData.ProjectList.SectionList.Count) {
-                // todo out of range exception
-                return;
-            }
-            var section = AppData.Instance.AdventureData.ProjectList.SectionList [sectionIdx];
-            if (levelIdx >= section.NormalProjectList.Count) {
-                // todo out of range exception
-                return;
-            }
-            advProject = section.NormalProjectList [levelIdx];
 
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, 
-                project.IconPath,
+            ImageResourceManager.Instance.SetDynamicImage(
+                _cachedView.Cover,
+                LocalUser.Instance.MatchUserData.GetProjectIconPath (chapterId - 1, levelId - 1),
                 _cachedView.DefaultProjectCoverTex);
         }
         #endregion

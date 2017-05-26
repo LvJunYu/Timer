@@ -26,6 +26,8 @@ namespace SoyEngine
         public const string UserInfoDetail = "/user/get";
         // 获取等级数据
         public const string UserLevel = "/user/getLevelData";
+        // 用户详细信息
+        public const string UpdateUserInfo = "/user/updateInfo";
         // 社交关系统计
         public const string UserRelationStatistic = "/relation/getUserRelationStatistic";
         // 用户与我的关系

@@ -47,10 +47,12 @@ namespace GameA
 
         public GameObject Win;
         public GameObject Lose;
+        public GameObject RewardObj;
 
         public Button ReturnBtn;
         public Button RetryBtn;
         public Button NextBtn;
+        public Button ContinueEditBtn;
 
         public USViewGameFinishReward [] Rewards;
 	}

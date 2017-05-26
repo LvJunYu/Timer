@@ -16,11 +16,16 @@ public class UMViewFashionShopCard : UMViewBase
     public Text Message;
     public RectTransform DockSelected;
     public RectTransform DockUnSelected;
-    public Button TryFashionOn;
-    public Button ChangeFashion;
+    //public Button TryFashionOn;
+    //public Button FashionBtn;
     public Button BuyFashion;
     public Button PreviewBtn;
     public Image FashionPreview;
+
+    public Image SexTitle;
+    public Image Sexbottom;
+    public Image SexLight;
+    public Image SexBg;
     //public EAvatarPart _avatarType;
     //public int Id;
     //public string Description;

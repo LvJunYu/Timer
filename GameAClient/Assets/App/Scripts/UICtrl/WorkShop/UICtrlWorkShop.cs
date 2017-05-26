@@ -630,7 +630,7 @@ namespace GameA
         #region 接口
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.MainUI;
+            _groupId = (int)EUIGroupType.PopUpUI;
         }
 //        public object GetTitle()
 //        {

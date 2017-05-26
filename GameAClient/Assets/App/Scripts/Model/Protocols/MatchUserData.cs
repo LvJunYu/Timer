@@ -101,6 +101,10 @@ namespace GameA
         /// 已发布关卡奖励积攒数量
         /// </summary>
         private int _playCountForReward;
+        /// <summary>
+        /// 已发布关卡奖励积攒数量最大值
+        /// </summary>
+        private int _playCountForRewardCapacity;
 
         // cs fields----------------------------------
         /// <summary>
@@ -341,6 +345,16 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 已发布关卡奖励积攒数量最大值
+        /// </summary>
+        public int PlayCountForRewardCapacity { 
+            get { return _playCountForRewardCapacity; }
+            set { if (_playCountForRewardCapacity != value) {
+                _playCountForRewardCapacity = value;
+                SetDirty();
+            }}
+        }
         
         // cs properties----------------------------------
         /// <summary>
@@ -465,6 +479,7 @@ namespace GameA
                 _randomChallengeProjectData.OnSyncFromParent(msg.RandomChallengeProjectData);
             }
             _playCountForReward = msg.PlayCountForReward;           
+            _playCountForRewardCapacity = msg.PlayCountForRewardCapacity;           
             OnSyncPartial();
             return true;
         }

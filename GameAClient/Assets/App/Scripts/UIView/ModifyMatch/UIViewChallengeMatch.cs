@@ -9,10 +9,12 @@ namespace GameA
     {
 		public Button CloseBtn;
 
+        public Text SelectTip;
         public Button RandomPickBtn;
         public Button ChallengeBtn;
         public Button AbandomBtn;
 
+        public Text ChallengeEnergyCost;
 
         public USViewChallengeProjectCard ChallengeProjectEasy;
         public USViewChallengeProjectCard ChallengeProjectNormal;

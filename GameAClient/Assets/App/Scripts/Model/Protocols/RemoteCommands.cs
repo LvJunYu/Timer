@@ -88,6 +88,43 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingUpdateUserInfo {
+            get { return _isRequstingUpdateUserInfo; }
+        }
+        private static bool _isRequstingUpdateUserInfo = false;
+        /// <summary>
+		/// 用户详细信息
+		/// </summary>
+		/// <param name="data">用户信息</param>
+        public static void UpdateUserInfo (
+            Msg_SC_DAT_UserInfoDetail data,
+            Action<Msg_SC_CMD_UpdateUserInfo> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpdateUserInfo) {
+                return;
+            }
+            _isRequstingUpdateUserInfo = true;
+            Msg_CS_CMD_UpdateUserInfo msg = new Msg_CS_CMD_UpdateUserInfo();
+            // 用户详细信息
+            msg.Data = data;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateUserInfo>(
+                SoyHttpApiPath.UpdateUserInfo, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpdateUserInfo = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpdateUserInfo", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpdateUserInfo = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingUpdateFollowState {
             get { return _isRequstingUpdateFollowState; }
         }
