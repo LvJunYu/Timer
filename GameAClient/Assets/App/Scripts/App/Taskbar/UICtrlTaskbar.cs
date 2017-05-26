@@ -250,7 +250,7 @@ namespace GameA
 //            {
 //                return false;
 //            }
-            SocialGUIManager.Instance.OpenMainUI(type, param);
+            SocialGUIManager.Instance.OpenUI(type, param);
             _currentUI = ui;
             return true;
         }

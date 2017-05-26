@@ -17,7 +17,7 @@ using System.Collections.Generic;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlWorkShop : UISocialCtrlBase<UIViewWorkShop>
+    public class UICtrlWorkShop : UICtrlGenericBase<UIViewWorkShop>
     {
         #region 常量与字段
         /// <summary>
