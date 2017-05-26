@@ -24,6 +24,12 @@ namespace GameA
             SocialGUIManager.Instance.GetUI<UICtrlShopingCart>().RefreshPage();
         }
 
+        private void DelMsgFromDic()
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlShopingCart>().DelFromAvatarmsgDic(_itemInfo);
+            SocialGUIManager.Instance.GetUI<UICtrlShopingCart>().RefreshPage();
+        }
+
 
         public void Set(ShopItem listItem)
         {
@@ -45,10 +51,12 @@ namespace GameA
             //    Debug.Log("____________时装" + fashion.name);
             //    _cachedView.FashionPreview.sprite = fashion;
             //}
-        }
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
+            Sprite fashion=null;
+            if (GameResourceManager.Instance.TryGetSpriteByName("icon_gift_3", out fashion))
+            {
+                Debug.Log("____________时装" + fashion.name);
+                _cachedView.FashionPreview.sprite = fashion;
+            }
         }
 
         private void Timeselect(int timeType)
@@ -94,11 +102,25 @@ namespace GameA
 
         private void Checked(bool ifChecked)
         {
+            if (!ifChecked)
+            {
+                DelMsgFromDic();
+            }
+            else
+            {
+                SetMsgToDic();
+            }
             _ifChecked = ifChecked;
         }
-        public void DestoryUmCard()
-        {
-            OnDestroy();
-        }
+
+        //public void DestoryUmCard()
+        //{
+        //    OnDestroy();
+        //}
+
+        //protected override void OnDestroy()
+        //{
+        //    base.OnDestroy();
+        //}
     }
 }
