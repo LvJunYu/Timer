@@ -1,4 +1,4 @@
-﻿/********************************************************************
+﻿﻿/********************************************************************
 ** Filename : GM2DGame
 ** Author : Dong
 ** Date : 2015/5/6 15:27:36
@@ -377,7 +377,7 @@ namespace GameA.Game
                 }
             } else if (EProjectStatus.PS_Reform == _project.ProjectStatus)
             {
-                if (_needSave) {
+                if (NeedSave) {
                     // 保存改造关卡
                     //SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "正在保存改造关卡");
                     SaveModifyProject (() => {
@@ -405,7 +405,37 @@ namespace GameA.Game
                 SocialApp.Instance.ReturnToApp ();
             } else if (EProjectStatus.PS_Private == _project.ProjectStatus)
             {
-                SocialApp.Instance.ReturnToApp ();
+                if (ELocalDataState.LDS_UnCreated == _project.LocalDataState) {
+                    _project.Name = "我的酱油大作";
+                    _project.Summary = "这个家伙没写简介";
+                    _project.DownloadPrice = 1;
+                }
+                if (NeedSave || ELocalDataState.LDS_UnCreated == _project.LocalDataState) {
+                    Save (
+                        _project.Name, 
+                        _project.Summary,
+                        _project.DownloadPrice,
+                        _project.PublishRecordFlag,
+                        () => {
+                            if (null != successCB) {
+                                successCB.Invoke ();
+                            }
+                            SocialApp.Instance.ReturnToApp ();
+                        }, result => {
+                        //保存失败
+
+                        LogHelper.Error ("Save private projcet failed {0}", result);
+                        if (null != failureCB) {
+                            failureCB.Invoke ((int)result);
+                        }
+                        SocialApp.Instance.ReturnToApp ();
+                    });
+                } else {
+                    if (null != successCB) {
+                        successCB.Invoke ();
+                    }
+                    SocialApp.Instance.ReturnToApp ();    
+                }
             } else
             {
                 SocialApp.Instance.ReturnToApp ();
