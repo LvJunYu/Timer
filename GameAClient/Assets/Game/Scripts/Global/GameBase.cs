@@ -71,8 +71,9 @@ namespace GameA
         public abstract bool Pause();
 	    public abstract bool Continue();
 	    public abstract bool Restart();
-	    public abstract float GetLogicTimeFromGameStart();
-	    public abstract int GetLogicFrameCountFromGameStart();
+        public abstract void QuitGame (System.Action successCB, System.Action<int> failureCB, bool forceQuitWhenFailed = false);
+        public abstract float GetLogicTimeFromGameStart();
+        public abstract int GetLogicFrameCountFromGameStart();
 
 		public abstract bool Stop();
 

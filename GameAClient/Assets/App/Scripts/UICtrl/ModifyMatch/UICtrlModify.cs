@@ -20,7 +20,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-	public class UICtrlModify : UISocialCtrlBase<UIViewModify>
+	public class UICtrlModify : UICtrlGenericBase<UIViewModify>
     {
         #region 常量与字段
         private const float _randomPickStateTime = 4.0f;
@@ -196,7 +196,7 @@ namespace GameA
                                     LocalUser.Instance.MatchUserData.CurPublishProject.OnSyncFromParent(msg.ProjectData);
                                     Messenger.Broadcast(EMessengerType.OnReformProjectPublished);
                                 } else {
-                                    SocialGUIManager.ShowPopupDialog ("改造关卡发布失败，代码：9");
+                                    SocialGUIManager.ShowPopupDialog ("改造关卡发布失败，代码：" + ((EProjectOperateResult)msg.ResultCode).ToString ());
                                 }
                             },
                             code => {

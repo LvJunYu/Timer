@@ -8,6 +8,7 @@ namespace GameA
     public class USViewChallengeProjectCard : USViewBase
     {
         public Button SelectBtn;
+        public Text Title;
         public Text AddNum;
         public Text ModifyNum;
         public Text DelNum;
@@ -16,6 +17,8 @@ namespace GameA
 
         public Texture DefaultProjectCoverTex;
 
-        public GameObject SelectMark;
+        public GameObject Empty;
+        public GameObject Normal;
+        public GameObject Root;
     }
 }

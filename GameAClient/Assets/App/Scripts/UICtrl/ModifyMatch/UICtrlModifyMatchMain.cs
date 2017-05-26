@@ -20,10 +20,11 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-	public class UICtrlModifyMatchMain : UISocialCtrlBase<UIViewModifyMatchMain>
+    public class UICtrlModifyMatchMain : UICtrlGenericBase<UIViewModifyMatchMain>
     {
         #region 常量与字段
-        private const long _publishedProjectValidTimeLength = 3 * GameTimer.Day2Ms;
+        //private const long _publishedProjectValidTimeLength = 3 * GameTimer.Day2Ms;
+        private const long _publishedProjectValidTimeLength = 90 * GameTimer.Minute2Ms;
 
         #endregion
 
@@ -33,6 +34,7 @@ namespace GameA
         #endregion
 
         #region 方法
+
         protected override void OnOpen (object parameter)
         {
             base.OnOpen (parameter);
@@ -149,15 +151,20 @@ namespace GameA
             bool hasValidPublishProject = CheckPublishedProjectValid ();
 
             if (hasValidPublishProject) {
-                ImageResourceManager.Instance.SetDynamicImage(_cachedView.PublishedProjectSnapShoot, 
-                    LocalUser.Instance.MatchUserData.CurPublishProject.IconPath,
+                _cachedView.PublishedProjectSnapShoot.gameObject.SetActive (true);
+                ImageResourceManager.Instance.SetDynamicImage(
+                    _cachedView.PublishedProjectSnapShoot, 
+                    LocalUser.Instance.MatchUserData.GetProjectIconPath (
+                        LocalUser.Instance.MatchUserData.CurPublishProject.TargetSection - 1,
+                        LocalUser.Instance.MatchUserData.CurPublishProject.TargetLevel - 1
+                    ),
                     _cachedView.DefaultProjectCoverTex);
                 int passRate = 0;
                 if (LocalUser.Instance.MatchUserData.CurPublishProject.ExtendData.PlayCount > 0) {
                     passRate = (int)(LocalUser.Instance.MatchUserData.CurPublishProject.ExtendData.CompleteCount /
                     (float)LocalUser.Instance.MatchUserData.CurPublishProject.ExtendData.PlayCount * 100);
                 }
-                _cachedView.PassingRate.text = passRate.ToString();
+                _cachedView.PassingRate.text = string.Format ("{0}%", passRate);
                 int validSecond = (int)((_publishedProjectValidTimeLength - 
                     (DateTimeUtil.GetServerTimeNowTimestampMillis () - LocalUser.Instance.MatchUserData.CurPublishTime)) 
                     / GameTimer.Second2Ms);
@@ -166,12 +173,15 @@ namespace GameA
                 int second = validSecond - hour * 60 * 60 - minute * 60;
                 _cachedView.ValidTime.text = string.Format ("{0:D2}:{1:D2}:{2:D2}", hour, minute, second);
                 // todo 分档位的总数
-                _cachedView.ChallengeUserCnt.text = string.Format("{0} / 0", LocalUser.Instance.MatchUserData.PlayCountForReward);                
+                _cachedView.ChallengeUserCnt.text = string.Format("{0} / 1000", LocalUser.Instance.MatchUserData.PlayCountForReward);
+                _cachedView.ChallengeUserCntBar.fillAmount = LocalUser.Instance.MatchUserData.PlayCountForReward / 1000f;
             } else {
-                ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.PublishedProjectSnapShoot, _cachedView.DefaultProjectCoverTex);
+                _cachedView.PublishedProjectSnapShoot.gameObject.SetActive (false);
+                //ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.PublishedProjectSnapShoot, _cachedView.DefaultProjectCoverTex);
                 _cachedView.PassingRate.text = "--";
                 _cachedView.ValidTime.text = "--:--:--";
-                _cachedView.ChallengeUserCnt.text = "0 / 0";
+                _cachedView.ChallengeUserCnt.text = "- / -";
+                _cachedView.ChallengeUserCntBar.fillAmount = 0;
             }
         }
 
@@ -191,8 +201,6 @@ namespace GameA
         {
 			_groupId = (int)EUIGroupType.PopUpUI;
         }
-			
-
 		private void OnCloseBtn () {
 			SocialGUIManager.Instance.CloseUI<UICtrlModifyMatchMain>();
 		}
@@ -207,7 +215,7 @@ namespace GameA
 //			);
             if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_WaitForChance) {
             } else {
-                SocialGUIManager.Instance.OpenPopupUI<UICtrlModify> ();
+                SocialGUIManager.Instance.OpenUI<UICtrlModify> ();
             }
 		}
 
@@ -215,7 +223,7 @@ namespace GameA
             if (MatchUserData.EChallengeState.WaitForChance == LocalUser.Instance.MatchUserData.CurrentChallengeState()) {
                 
             } else {
-                SocialGUIManager.Instance.OpenPopupUI<UICtrlChallengeMatch> ();
+                SocialGUIManager.Instance.OpenUI<UICtrlChallengeMatch> ();
             }
         }
 
