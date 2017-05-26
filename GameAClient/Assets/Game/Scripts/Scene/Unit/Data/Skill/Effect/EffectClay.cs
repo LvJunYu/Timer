@@ -21,6 +21,10 @@ namespace GameA.Game
                 return;
             }
             _owner.CanMotor = false;
+            if (_owner.Animation != null)
+            {
+                _owner.Animation.PlayOnce("OnClay");
+            }
         }
 
         public override void OnRemoved()

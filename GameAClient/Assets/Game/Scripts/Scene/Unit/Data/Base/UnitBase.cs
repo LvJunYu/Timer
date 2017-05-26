@@ -129,6 +129,11 @@ namespace GameA.Game
             get { return _view == null ? null : _view.Animation; }
         }
 
+        public AnimationSystem Animation
+        {
+            get { return _animation; }
+        }
+
         [SerializeField]
         protected int _dieTime;
 
