@@ -47,6 +47,7 @@ namespace GameA
 
         public GameObject Win;
         public GameObject Lose;
+        public GameObject RewardObj;
 
         public Button ReturnBtn;
         public Button RetryBtn;

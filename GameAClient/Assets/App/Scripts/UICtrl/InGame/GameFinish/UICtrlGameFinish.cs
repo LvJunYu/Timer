@@ -168,10 +168,23 @@ namespace GameA
 			//	item.Init(i + 1, OnMarkStarItemButtonClick);
 			//}
 		}
-		#region UIEvent
+        #region UIEvent
 
-        private void OnReturnBtn () {
-            InternalExitGame ();
+        private void OnReturnBtn ()
+        {
+            //InternalExitGame ();
+            SocialGUIManager.Instance.CloseUI<UICtrlGameFinish> ();
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "...");
+            Game.GM2DGame.Instance.QuitGame (
+                () => {
+                    SocialGUIManager.Instance.GetUI <UICtrlLittleLoading> ().CloseLoading (this);
+                },
+                code =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);   
+                },
+                true
+            );
         }
         private void OnRetryBtn () {
             var tableLevel = AppData.Instance.AdventureData.GetAdvLevelTable (
@@ -462,6 +475,7 @@ namespace GameA
                 _cachedView.Score.text = Game.PlayMode.Instance.SceneState.TotalScore.ToString ();
                 _cachedView.ScoreOutLine.text = Game.PlayMode.Instance.SceneState.TotalScore.ToString ();
                 // 奖励
+                _cachedView.RewardObj.SetActive (true);
                 UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
                 break;
             case EShowState.AdvBonusLose:
@@ -475,6 +489,7 @@ namespace GameA
                 _cachedView.ContinueEditBtn.gameObject.SetActive (false);
                 _cachedView.Score.gameObject.SetActive (false);
                 _cachedView.ScoreOutLine.gameObject.SetActive (false);
+                _cachedView.RewardObj.SetActive (true);
                 UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
                 break;
             case EShowState.ChallengeWin:
@@ -491,6 +506,7 @@ namespace GameA
                 _cachedView.Score.text = Game.PlayMode.Instance.SceneState.TotalScore.ToString ();
                 _cachedView.ScoreOutLine.text = Game.PlayMode.Instance.SceneState.TotalScore.ToString ();
                 // 奖励
+                _cachedView.RewardObj.SetActive (true);
                 UpdateReward (LocalUser.Instance.MatchUserData.LastChallengeReward);
                 break;
             case EShowState.ChallengeLose:
@@ -502,7 +518,30 @@ namespace GameA
                 _cachedView.ContinueEditBtn.gameObject.SetActive (false);
                 _cachedView.Score.gameObject.SetActive (false);
                 _cachedView.ScoreOutLine.gameObject.SetActive (false);
+                _cachedView.RewardObj.SetActive (true);
                 UpdateReward (LocalUser.Instance.MatchUserData.LastChallengeReward);
+                break;
+            case EShowState.EditorLose:
+                _cachedView.Win.SetActive (false);
+                _cachedView.Lose.SetActive (true);
+                _cachedView.ReturnBtn.gameObject.SetActive (true);
+                _cachedView.RetryBtn.gameObject.SetActive (true);
+                _cachedView.NextBtn.gameObject.SetActive (false);
+                _cachedView.ContinueEditBtn.gameObject.SetActive (true);
+                _cachedView.Score.gameObject.SetActive (false);
+                _cachedView.ScoreOutLine.gameObject.SetActive (false);
+                _cachedView.RewardObj.SetActive (false);
+                break;
+            case EShowState.EditorWin:
+                _cachedView.Win.SetActive (true);
+                _cachedView.Lose.SetActive (false);
+                _cachedView.ReturnBtn.gameObject.SetActive (true);
+                _cachedView.RetryBtn.gameObject.SetActive (true);
+                _cachedView.NextBtn.gameObject.SetActive (false);
+                _cachedView.ContinueEditBtn.gameObject.SetActive (true);
+                _cachedView.Score.gameObject.SetActive (false);
+                _cachedView.ScoreOutLine.gameObject.SetActive (false);
+                _cachedView.RewardObj.SetActive (false);
                 break;
             }
             return;

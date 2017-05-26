@@ -60,20 +60,9 @@ namespace GameA
         public void SetProject (Project project, EChallengeProjectType type, int selectType = 0) {
             _project = project;
             _type = type;
-            int sectionId = _project.TargetSection - 1;
-            int levelId = _project.TargetLevel - 1;
-            if (sectionId >= AppData.Instance.AdventureData.ProjectList.SectionList.Count) {
-                // todo out of range exception
-                return;
-            }
-            var section = AppData.Instance.AdventureData.ProjectList.SectionList [sectionId];
-            if (levelId >= section.NormalProjectList.Count) {
-                // todo out of range exception
-                return;
-            }
 
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, 
-                section.NormalProjectList [levelId].IconPath,
+                LocalUser.Instance.MatchUserData.GetProjectIconPath (_project.TargetSection - 1, _project.TargetLevel - 1),
                 _cachedView.DefaultProjectCoverTex);
             _cachedView.AddNum.text = type == EChallengeProjectType.CPT_Random ? _unkown : _project.AddCount.ToString();
             _cachedView.ModifyNum.text = type == EChallengeProjectType.CPT_Random ? _unkown : _project.ModifyCount.ToString();

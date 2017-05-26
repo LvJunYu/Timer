@@ -31,6 +31,11 @@ namespace GameA
         /// 上一次挑战成功奖励
         /// </summary>
         private Reward _lastChallengeReward = new Reward ();
+
+        ///// <summary>
+        ///// 当前正在进行的挑战关卡是否已经提交过成绩了
+        ///// </summary>
+        //private bool _challengeResultCommitted = false;
         #endregion
 
         #region 属性
@@ -67,6 +72,17 @@ namespace GameA
                 return _lastChallengeReward;
             }
         }
+
+        /// <summary>
+        /// 当前正在进行的挑战关卡是否已经提交过成绩了
+        /// </summary>
+        public bool ChallengeResultCommitted
+        {
+            get
+            {
+                return _playChallengeToken <= 0;
+            }
+        }
         #endregion
 
         #region 方法
@@ -84,6 +100,21 @@ namespace GameA
                 }
             }
             return 0;
+        }
+
+        public string GetProjectIconPath (int chapterIdx, int levelIdx) {
+            Project advProject = null;
+            if (chapterIdx >= AppData.Instance.AdventureData.ProjectList.SectionList.Count) {
+                // todo out of range exception
+                return string.Empty;
+            }
+            var section = AppData.Instance.AdventureData.ProjectList.SectionList [chapterIdx];
+            if (levelIdx >= section.NormalProjectList.Count) {
+                // todo out of range exception
+                return string.Empty;
+            }
+            advProject = section.NormalProjectList [levelIdx];
+            return advProject.IconPath;
         }
 
         /// <summary>
@@ -223,7 +254,7 @@ namespace GameA
             );
         }
 
-        public void CommitChallengeResult (bool isSuccess, float usedTime, Action successCB, Action failureCB) {
+        public void CommitChallengeResult (bool isSuccess, float usedTime, Action successCB, Action<ENetResultCode> failureCB) {
             if (0 == _playChallengeToken)
                 return;
             RemoteCommands.CommitMatchChallengeLevelResult (
@@ -246,13 +277,13 @@ namespace GameA
                         }
                     } else {
                         if (null != failureCB) {
-                            failureCB.Invoke();
+                            failureCB.Invoke(ENetResultCode.NR_Error);
                         }
                     }
                 },
                 code => {
                     if (null != failureCB) {
-                        failureCB.Invoke();
+                        failureCB.Invoke(code);
                     }
                 }
             );

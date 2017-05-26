@@ -196,7 +196,7 @@ namespace GameA
                                     LocalUser.Instance.MatchUserData.CurPublishProject.OnSyncFromParent(msg.ProjectData);
                                     Messenger.Broadcast(EMessengerType.OnReformProjectPublished);
                                 } else {
-                                    SocialGUIManager.ShowPopupDialog ("改造关卡发布失败，代码：9");
+                                    SocialGUIManager.ShowPopupDialog ("改造关卡发布失败，代码：" + ((EProjectOperateResult)msg.ResultCode).ToString ());
                                 }
                             },
                             code => {

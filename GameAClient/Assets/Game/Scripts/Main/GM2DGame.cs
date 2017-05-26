@@ -298,6 +298,120 @@ namespace GameA.Game
 			return true;
 	    }
 
+        public override void QuitGame (Action successCB, Action<int> failureCB, bool forceQuitWhenFailed = false)
+        {
+            //if (GM2DGame.Instance.GameInitType == GameManager.EStartType.Create
+            //|| GM2DGame.Instance.GameInitType == GameManager.EStartType.Edit) {
+            //    if (NeedSave) {
+            //        SocialGUIManager.ShowPopupDialog ("关卡做出的修改还未保存，是否退出", null,
+            //            new KeyValuePair<string, Action> ("取消", () => {
+            //            }),
+            //            new KeyValuePair<string, Action> ("保存", () => {
+            //                if (CurrentMode == EMode.EditTest) {
+            //                    Messenger<ECommandType>.Broadcast (EMessengerType.OnCommandChanged, ECommandType.Pause);
+            //                    ChangeToMode (EMode.Edit);
+            //                }
+            //            if (_project.LocalDataState == ELocalDataState.LDS_UnCreated) {
+            //                    CoroutineProxy.Instance.StartCoroutine (CoroutineProxy.RunNextFrame (() => {
+            //                        SocialGUIManager.Instance.CloseUI<UICtrlGameSetting> ();
+            //                        SocialGUIManager.Instance.OpenUI<UICtrlPublish> ();
+            //                    }));
+            //                } else {
+            //                    UICtrlPublish.SaveProject (_project.Name, _project.Summary,
+            //                        _project.DownloadPrice, _project.PublishRecordFlag, () => {
+            //                            SocialGUIManager.Instance.CloseUI<UICtrlGameSetting> ();
+            //                            SocialApp.Instance.ReturnToApp ();
+            //                        }, () => {
+            //                            //保存失败
+            //                        });
+            //                }
+            //            }),
+            //            new System.Collections.Generic.KeyValuePair<string, Action> ("退出", () => {
+            //                SocialGUIManager.Instance.CloseUI<UICtrlGameSetting> ();
+            //                SocialApp.Instance.ReturnToApp ();
+            //            }));
+            //        return;
+            //    }
+            //} else if (GM2DGame.Instance.GameInitType == GameManager.EStartType.ModifyEdit) {
+            //    if (_needSave) {
+            //        // 保存改造关卡
+            //        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "正在保存改造关卡");
+            //        GM2DGame.Instance.SaveModifyProject (() => {
+            //            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+            //            SocialGUIManager.Instance.CloseUI<UICtrlGameSetting> ();
+            //            SocialApp.Instance.ReturnToApp ();
+            //        },
+            //            code => {
+            //                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+            //                SocialGUIManager.Instance.CloseUI<UICtrlGameSetting> ();
+            //                SocialApp.Instance.ReturnToApp ();
+            //                // todo error handle
+            //                LogHelper.Error ("SaveModifyProject failed");
+            //            }
+            //        );
+            //        return;
+            //    }
+            //}
+            if (EProjectStatus.PS_Challenge == _project.ProjectStatus)
+            {
+                if (!LocalUser.Instance.MatchUserData.ChallengeResultCommitted) {
+                    CommitChallengeGameResult (
+                        () => {
+                            if (null != successCB) {
+                                successCB.Invoke ();
+                            }
+                            SocialApp.Instance.ReturnToApp ();
+                        },
+                        code => {
+                            if (null != failureCB) {
+                                failureCB.Invoke ((int)code);
+                            }
+                            SocialApp.Instance.ReturnToApp ();
+                        }
+                    );
+                } else {
+                    if (null != successCB) {
+                        successCB.Invoke ();
+                    }
+                    SocialApp.Instance.ReturnToApp ();
+                }
+            } else if (EProjectStatus.PS_Reform == _project.ProjectStatus)
+            {
+                if (_needSave) {
+                    // 保存改造关卡
+                    //SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "正在保存改造关卡");
+                    SaveModifyProject (() => {
+                            //SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+	                        if (null != successCB)
+	                        {
+	                            successCB.Invoke ();
+	                        }
+	                        SocialApp.Instance.ReturnToApp ();
+	                    },
+                        code => {
+                            //SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                            if (null != failureCB) {
+                                failureCB.Invoke ((int)code);
+                            }
+                            SocialApp.Instance.ReturnToApp ();
+                            // todo error handle
+                            LogHelper.Error ("SaveModifyProject failed");
+                        }
+                    );
+                    return;
+                }
+            } else if (EProjectStatus.PS_Public == _project.ProjectStatus)
+            {
+                SocialApp.Instance.ReturnToApp ();
+            } else if (EProjectStatus.PS_Private == _project.ProjectStatus)
+            {
+                SocialApp.Instance.ReturnToApp ();
+            } else
+            {
+                SocialApp.Instance.ReturnToApp ();
+            }
+        }
+
 	    public bool Init(GameManager.EStartType eGameInitType)
         {
 			LogHelper.Debug("GM2DGame Init " + eGameInitType);
@@ -638,12 +752,13 @@ namespace GameA.Game
             InputManager.Instance.GameInputControl = SocialGUIManager.Instance.GetUI<UICtrlGameInputControl> ();
         }
 
-		private void CommitAdventureGameResult (bool success) {
+        private void CommitAdventureGameResult (Action successCB, Action<ENetResultCode> failureCB) 
+        {
 			float usedTime = PlayMode.Instance.GameSuccessFrameCnt * ConstDefineGM2D.FixedDeltaTime;
 
-			SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "提交成绩中...");
+			//SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "提交成绩中...");
 			AppData.Instance.AdventureData.CommitLevelResult (
-				success,
+                PlayMode.Instance.SceneState.GameSucceed,
 				usedTime,
 				UnityEngine.Random.value > 0.5f,
 				UnityEngine.Random.value > 0.5f,
@@ -655,24 +770,49 @@ namespace GameA.Game
 				(int)(10 * UnityEngine.Random.value),
 				() => {
 					LogHelper.Info("游戏成绩提交成功");
-					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    if (success) {
-                        Messenger.Broadcast (EMessengerType.GameFinishSuccessShowUI);
-                    } else {
-                        Messenger.Broadcast (EMessengerType.GameFinishFailedShowUI);
+                    if (null != successCB) {
+                        successCB.Invoke ();
                     }
+					//SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    //if (PlayMode.Instance.SceneState.GameSucceed) {
+                    //    Messenger.Broadcast (EMessengerType.GameFinishSuccessShowUI);
+                    //} else {
+                    //    Messenger.Broadcast (EMessengerType.GameFinishFailedShowUI);
+                    //}
 				}, errCode => {
-					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-					CommonTools.ShowPopupDialog("游戏成绩提交失败", null,
-						new System.Collections.Generic.KeyValuePair<string, Action>("重试", ()=>{
-							CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnGameFinishSuccess));
-						}), 
-						new System.Collections.Generic.KeyValuePair<string, Action>("跳过", ()=>{
-							Messenger.Broadcast(EMessengerType.GameFinishSuccessShowUI);
-						}));
+					//SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+					//CommonTools.ShowPopupDialog("游戏成绩提交失败", null,
+						//new System.Collections.Generic.KeyValuePair<string, Action>("重试", ()=>{
+						//	CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnGameFinishSuccess));
+						//}), 
+						//new System.Collections.Generic.KeyValuePair<string, Action>("跳过", ()=>{
+						//	Messenger.Broadcast(EMessengerType.GameFinishSuccessShowUI);
+						//}));
+                    if (null != failureCB) {
+                        failureCB.Invoke (errCode);
+                    }
 				}
 			);
 		}
+
+        private void CommitChallengeGameResult (Action successCB, Action<ENetResultCode> failureCB) {
+            LocalUser.Instance.MatchUserData.CommitChallengeResult (
+                PlayMode.Instance.SceneState.GameSucceed,
+                PlayMode.Instance.GameSuccessFrameCnt * ConstDefineGM2D.FixedDeltaTime,
+                () => {
+                    LogHelper.Info ("——————————————————————提交挑战成功");
+                    if (null != successCB) {
+                        successCB.Invoke (); 
+                    }
+                },
+                code => {
+                    LogHelper.Info ("——————————————————————提交挑战失败");
+                    if (null != failureCB) {
+                        failureCB.Invoke (code);
+                    }
+                }
+            );
+        }
 
         private void OnUpdateSuccess()
         {
@@ -708,7 +848,7 @@ namespace GameA.Game
 			}
 
 			Project p = GameManager.Instance.CurrentGame.Project;
-            if (p.ProjectStatus == EProjectStatus.PS_Private) {
+            if (EProjectStatus.PS_Private == p.ProjectStatus) {
                 p.PassFlag = true;
                 Messenger.Broadcast (EMessengerType.GameFinishSuccessShowUI);
 //				byte[] record = GetRecord();
@@ -717,30 +857,51 @@ namespace GameA.Game
 //				GM2DGame.Instance.RecordUsedTime = usedTime;
 //
 //				GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>();
-            } else if (p.ProjectStatus == EProjectStatus.PS_Public)
+            } else if (EProjectStatus.PS_Public == p.ProjectStatus)
  {//				&& GameManager.Instance.GameMode == EGameMode.Normal)
-                CommitAdventureGameResult (true);
-                return;
-            } else if (p.ProjectStatus == EProjectStatus.PS_Reform) {
-                p.PassFlag = true;
-            } else if (p.ProjectStatus == EProjectStatus.PS_Challenge) {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "提交成绩中...");
-                LocalUser.Instance.MatchUserData.CommitChallengeResult (
-                    true,
-                    PlayMode.Instance.GameSuccessFrameCnt * ConstDefineGM2D.FixedDeltaTime,
-                    () => {
-                        Debug.Log("——————————————————————提交挑战成功");
+                CommitAdventureGameResult (
+                    () =>
+                    {
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                         Messenger.Broadcast (EMessengerType.GameFinishSuccessShowUI);
-                        //SocialApp.Instance.ReturnToApp ();
                     },
-                    () => {
-                        Debug.Log("——————————————————————提交挑战失败");
+                    code =>
+                    {
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                         Messenger.Broadcast (EMessengerType.GameFinishSuccessShowUI);
-                        //SocialApp.Instance.ReturnToApp ();
+                        //CommonTools.ShowPopupDialog (
+                        //    "游戏成绩提交失败",
+                        //    null,
+	                       // new System.Collections.Generic.KeyValuePair<string, Action>("重试", ()=>{
+	                       //   CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnGameFinishSuccess));
+	                       // }), 
+	                       // new System.Collections.Generic.KeyValuePair<string, Action>("跳过", ()=>{
+	                       //   Messenger.Broadcast(EMessengerType.GameFinishSuccessShowUI);
+	                       // })
+                        //);
                     }
-                );                    
+                );
+                return;
+            } else if (EProjectStatus.PS_Reform == p.ProjectStatus) {
+                
+                if (false == p.PassFlag) {
+                    p.PassFlag = true;
+                    NeedSave = true;
+                }
+                Messenger.Broadcast (EMessengerType.GameFinishSuccessShowUI);
+            } else if (EProjectStatus.PS_Challenge == p.ProjectStatus) {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "提交成绩中...");
+                CommitChallengeGameResult (
+                    () => {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                        Messenger.Broadcast (EMessengerType.GameFinishSuccessShowUI);
+                    },
+                    code => {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                        Messenger.Broadcast (EMessengerType.GameFinishSuccessShowUI);
+                    }
+                );
             }
 		}
 
@@ -775,28 +936,35 @@ namespace GameA.Game
 			else if(p.ProjectStatus == EProjectStatus.PS_Public)
 				//				&& GameManager.Instance.GameMode == EGameMode.Normal)
 			{
-				CommitAdventureGameResult (false);
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "提交成绩中...");
+                CommitAdventureGameResult (
+                    () => {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                        Messenger.Broadcast (EMessengerType.GameFinishFailedShowUI);
+                    },
+                    code => {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                        Messenger.Broadcast (EMessengerType.GameFinishFailedShowUI);
+                    }
+                );
 				return;
 			}
             else if (p.ProjectStatus == EProjectStatus.PS_Reform) {
+                Messenger.Broadcast (EMessengerType.GameFinishFailedShowUI);
             } else if (p.ProjectStatus == EProjectStatus.PS_Challenge) {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading (this, "提交成绩中...");
-                LocalUser.Instance.MatchUserData.CommitChallengeResult(
-                    false,
-                    PlayMode.Instance.GameSuccessFrameCnt* ConstDefineGM2D.FixedDeltaTime,
-                    () => {
-				        Debug.Log ("——————————————————————提交挑战成功");
-				        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                CommitChallengeGameResult (
+                    () =>
+                    {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
                         Messenger.Broadcast (EMessengerType.GameFinishFailedShowUI);
-				        //SocialApp.Instance.ReturnToApp ();
-				    },
-                    () => {
-                        Debug.Log("——————————————————————提交挑战失败");
+                    },
+                    code =>
+                    {
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading (this);
                         Messenger.Broadcast (EMessengerType.GameFinishFailedShowUI);
-                        //SocialApp.Instance.ReturnToApp();
                     }
-                );                    
+                );       
             }
 		}
         
