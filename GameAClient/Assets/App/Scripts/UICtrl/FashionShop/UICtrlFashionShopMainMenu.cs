@@ -27,10 +27,10 @@ namespace GameA
 		private USCtrlFashionShop _usctrlFashionPage3;
 		private USCtrlFashionShop _usctrlFashionPage4;
 
-        private UMCtrlFashionShopCard _headSelectedFashionCard;
-        private UMCtrlFashionShopCard _upperSelectedFashionCard;
-        private UMCtrlFashionShopCard _lowerSelectedFashionCard;
-        private UMCtrlFashionShopCard _appendageSelectedFashionCard;
+        private UMCtrlFashionShopCard _headSelectedFashionCard=null;
+        private UMCtrlFashionShopCard _upperSelectedFashionCard = null;
+        private UMCtrlFashionShopCard _lowerSelectedFashionCard = null;
+        private UMCtrlFashionShopCard _appendageSelectedFashionCard = null;
 
 
 
@@ -54,7 +54,7 @@ namespace GameA
                     //_headSelectedFashionCard.ChangeDock(true);
 
                 }
-                ;
+                
             } 
         }
         public UMCtrlFashionShopCard SelectUpper
@@ -76,7 +76,7 @@ namespace GameA
                     //_upperSelectedFashionCard.ChangeDock(true);
 
                 }
-                ;
+                
             }
         }
         public UMCtrlFashionShopCard SelectLower
@@ -98,7 +98,7 @@ namespace GameA
                     //_lowerSelectedFashionCard.ChangeDock(true);
 
                 }
-      ;
+      
             }
         }
         public UMCtrlFashionShopCard SelectAppendage
@@ -120,7 +120,7 @@ namespace GameA
                     //_appendageSelectedFashionCard.ChangeDock(true);
 
                 }
-      ;
+      
             }
         }
         #endregion
@@ -143,7 +143,7 @@ namespace GameA
         {
             base.OnClose();
             RefreshFashionShopPanel();
-
+            SocialGUIManager.Instance.GetUI<UICtrlShopingCart>().OnCloseBtnClick();
         }
         /// <summary>
         /// 初始化事件监听
@@ -163,90 +163,90 @@ namespace GameA
 /// <param name="type"></param>
 /// <param name="previewTexture"></param>
 
-	    public void TryFashionOn(ShopItem listItem)
-	    {
-            switch (listItem._avatarType)
-            {
+	    //public void TryFashionOn(ShopItem listItem)
+	    //{
+     //       switch (listItem._avatarType)
+     //       {
 
-                case EAvatarPart.AP_Head:
-                    if (_cachedView.UsingHead.text == listItem.Id.ToString())
-                    {
-                        if (LocalUser.Instance.UsingAvatarData.Head == null)
-                        {
-                            _cachedView.UsingHead.text = "none";
-                        }
-                        else
-                        {
-                            _cachedView.UsingHead.text
-                            =TableManager.Instance.GetHeadParts((int) LocalUser.Instance.UsingAvatarData.Head.Id).PreviewTexture;
-                        }
-                    }
-                    else
-                    {
-                        _cachedView.UsingHead.text = listItem.Id.ToString();
-                    }
-                    ;
-                    break;
-                case EAvatarPart.AP_Lower:
-                    if (_cachedView.UsingLower.text == listItem.Id.ToString())
-                    {
-                        if (LocalUser.Instance.UsingAvatarData.Lower == null)
-                        {
-                            _cachedView.UsingLower.text = "none";
-                        }
-                        else
-                        {
-                            _cachedView.UsingLower.text
-                            = TableManager.Instance.GetLowerBodyParts((int)LocalUser.Instance.UsingAvatarData.Lower.Id).PreviewTexture;
-                        }
-                    }
-                    else
-                    {
-                        _cachedView.UsingLower.text = listItem.Id.ToString();
-                    }
-                    ;
-                    break;
-                case EAvatarPart.AP_Upper:
-                    if (_cachedView.UsingUpper.text == listItem.Id.ToString())
-                    {
-                        if (LocalUser.Instance.UsingAvatarData.Upper == null)
-                        {
-                            _cachedView.UsingUpper.text = "none";
-                        }
-                        else
-                        {
-                            _cachedView.UsingUpper.text
-                            = TableManager.Instance.GetUpperBodyParts((int)LocalUser.Instance.UsingAvatarData.Upper.Id).PreviewTexture;
-                        }
-                    }
-                    else
-                    {
-                        _cachedView.UsingUpper.text = listItem.Id.ToString();
-                    }
-                    ;
-                    break;
+     //           case EAvatarPart.AP_Head:
+     //               if (_cachedView.UsingHead.text == listItem.Id.ToString())
+     //               {
+     //                   if (LocalUser.Instance.UsingAvatarData.Head == null)
+     //                   {
+     //                       _cachedView.UsingHead.text = "none";
+     //                   }
+     //                   else
+     //                   {
+     //                       _cachedView.UsingHead.text
+     //                       =TableManager.Instance.GetHeadParts((int) LocalUser.Instance.UsingAvatarData.Head.Id).PreviewTexture;
+     //                   }
+     //               }
+     //               else
+     //               {
+     //                   _cachedView.UsingHead.text = listItem.Id.ToString();
+     //               }
+     //               ;
+     //               break;
+     //           case EAvatarPart.AP_Lower:
+     //               if (_cachedView.UsingLower.text == listItem.Id.ToString())
+     //               {
+     //                   if (LocalUser.Instance.UsingAvatarData.Lower == null)
+     //                   {
+     //                       _cachedView.UsingLower.text = "none";
+     //                   }
+     //                   else
+     //                   {
+     //                       _cachedView.UsingLower.text
+     //                       = TableManager.Instance.GetLowerBodyParts((int)LocalUser.Instance.UsingAvatarData.Lower.Id).PreviewTexture;
+     //                   }
+     //               }
+     //               else
+     //               {
+     //                   _cachedView.UsingLower.text = listItem.Id.ToString();
+     //               }
+     //               ;
+     //               break;
+     //           case EAvatarPart.AP_Upper:
+     //               if (_cachedView.UsingUpper.text == listItem.Id.ToString())
+     //               {
+     //                   if (LocalUser.Instance.UsingAvatarData.Upper == null)
+     //                   {
+     //                       _cachedView.UsingUpper.text = "none";
+     //                   }
+     //                   else
+     //                   {
+     //                       _cachedView.UsingUpper.text
+     //                       = TableManager.Instance.GetUpperBodyParts((int)LocalUser.Instance.UsingAvatarData.Upper.Id).PreviewTexture;
+     //                   }
+     //               }
+     //               else
+     //               {
+     //                   _cachedView.UsingUpper.text = listItem.Id.ToString();
+     //               }
+     //               ;
+     //               break;
 
-                case EAvatarPart.AP_Appendage:
-                    if (_cachedView.UsingAppendage.text == listItem.Id.ToString())
-                    {
-                        if (LocalUser.Instance.UsingAvatarData.Appendage == null)
-                        {
-                            _cachedView.UsingAppendage.text = "none";
-                        }
-                        else
-                        {
-                            _cachedView.UsingAppendage.text
-                            = TableManager.Instance.GetAppendageParts((int)LocalUser.Instance.UsingAvatarData.Appendage.Id).PreviewTexture;
-                        }
-                    }
-                    else
-                    {
-                        _cachedView.UsingAppendage.text = listItem.Id.ToString();
-                    }
-                    ;
-                    break;
-            }
-        }
+     //           case EAvatarPart.AP_Appendage:
+     //               if (_cachedView.UsingAppendage.text == listItem.Id.ToString())
+     //               {
+     //                   if (LocalUser.Instance.UsingAvatarData.Appendage == null)
+     //                   {
+     //                       _cachedView.UsingAppendage.text = "none";
+     //                   }
+     //                   else
+     //                   {
+     //                       _cachedView.UsingAppendage.text
+     //                       = TableManager.Instance.GetAppendageParts((int)LocalUser.Instance.UsingAvatarData.Appendage.Id).PreviewTexture;
+     //                   }
+     //               }
+     //               else
+     //               {
+     //                   _cachedView.UsingAppendage.text = listItem.Id.ToString();
+     //               }
+     //               ;
+     //               break;
+     //       }
+     //   }
 
         /// <summary>
         /// 创建
@@ -271,7 +271,7 @@ namespace GameA
             
             LocalUser.Instance.UsingAvatarData.Request(LocalUser.Instance.UserGuid, () =>
             {
-               RefreshUsingAvatarPreview();
+               //eshUsingAvatarPreview();
             }, code =>
             {
                 LogHelper.Error("Network error when get UsingAvatarData, {0}", code);
@@ -285,37 +285,37 @@ namespace GameA
             });
         }
 
-    public void RefreshUsingAvatarPreview()
-	    {
-	        //Debug.Log(LocalUser.Instance.UsingAvatarData.Head);
-            //Debug.Log(_cachedView);
-            //Debug.Log(_cachedView.UsingHead);
-	        if (LocalUser.Instance.UsingAvatarData.Head != null)
-	        {
-	            _cachedView.UsingHead.text = LocalUser.Instance.UsingAvatarData.Head.Id.ToString();
-                //TableManager.Instance.GetHeadParts((int)LocalUser.Instance.UsingAvatarData.Head.Id).PreviewTexture;
+    //public void RefreshUsingAvatarPreview()
+	   // {
+	   //     //Debug.Log(LocalUser.Instance.UsingAvatarData.Head);
+    //        //Debug.Log(_cachedView);
+    //        //Debug.Log(_cachedView.UsingHead);
+	   //     if (LocalUser.Instance.UsingAvatarData.Head != null)
+	   //     {
+	   //         _cachedView.UsingHead.text = LocalUser.Instance.UsingAvatarData.Head.Id.ToString();
+    //            //TableManager.Instance.GetHeadParts((int)LocalUser.Instance.UsingAvatarData.Head.Id).PreviewTexture;
 
-	        }
-	        if (LocalUser.Instance.UsingAvatarData.Upper != null)
-	        {
-                _cachedView.UsingUpper.text = LocalUser.Instance.UsingAvatarData.Upper.Id.ToString();
-                //TableManager.Instance.GetUpperBodyParts((int)LocalUser.Instance.UsingAvatarData.Upper.Id).PreviewTexture;
+	   //     }
+	   //     if (LocalUser.Instance.UsingAvatarData.Upper != null)
+	   //     {
+    //            _cachedView.UsingUpper.text = LocalUser.Instance.UsingAvatarData.Upper.Id.ToString();
+    //            //TableManager.Instance.GetUpperBodyParts((int)LocalUser.Instance.UsingAvatarData.Upper.Id).PreviewTexture;
 
-            }
-	        if (LocalUser.Instance.UsingAvatarData.Lower != null)
-	        {
-                _cachedView.UsingLower.text = LocalUser.Instance.UsingAvatarData.Lower.Id.ToString();
-                //TableManager.Instance.GetUpperBodyParts((int)LocalUser.Instance.UsingAvatarData.Lower.Id).PreviewTexture;
+    //        }
+	   //     if (LocalUser.Instance.UsingAvatarData.Lower != null)
+	   //     {
+    //            _cachedView.UsingLower.text = LocalUser.Instance.UsingAvatarData.Lower.Id.ToString();
+    //            //TableManager.Instance.GetUpperBodyParts((int)LocalUser.Instance.UsingAvatarData.Lower.Id).PreviewTexture;
                
-	        }
-            if (LocalUser.Instance.UsingAvatarData.Appendage!= null)
-	        {
-                _cachedView.UsingAppendage.text = LocalUser.Instance.UsingAvatarData.Appendage.Id.ToString();
-                //TableManager.Instance.GetUpperBodyParts((int)LocalUser.Instance.UsingAvatarData.Appendage.Id).PreviewTexture;
+	   //     }
+    //        if (LocalUser.Instance.UsingAvatarData.Appendage!= null)
+	   //     {
+    //            _cachedView.UsingAppendage.text = LocalUser.Instance.UsingAvatarData.Appendage.Id.ToString();
+    //            //TableManager.Instance.GetUpperBodyParts((int)LocalUser.Instance.UsingAvatarData.Appendage.Id).PreviewTexture;
           
-	        }
+	   //     }
 
-	    }
+	   // }
 	    private void InitTagGroup()
 	    {
 
@@ -355,31 +355,34 @@ namespace GameA
 
         private void OnPurchaseAllFittingFashionBtnClick()
         {
+            //Debug.Log("————————SelectHead.ItemID——————————————" + SelectHead.ItemID);
+            //Debug.Log("————————SelectHead.ItemID——————————————" + SelectHead.ItemID);
+            //Debug.Log("————————SelectHead.ItemID——————————————" + SelectHead.ItemID);
+
             List<ShopItem> allFittingList = new List<ShopItem>();
-            //if (SelectHead.ItemID != LocalUser.Instance.UsingAvatarData.Head.Id)
-            //{
-            //    allFittingList.Add(SelectHead.ItemInfo);
-            //}
-            //if (SelectHead.ItemID != LocalUser.Instance.UsingAvatarData.Upper.Id)
-            //{
 
-            //    allFittingList.Add(SelectUpper.ItemInfo);
-            //}
-            //if (SelectHead.ItemID != LocalUser.Instance.UsingAvatarData.Lower.Id)
-            //{
-
-            //    allFittingList.Add(SelectLower.ItemInfo);
-            //}
-            //if (SelectHead.ItemID != LocalUser.Instance.UsingAvatarData.Appendage.Id)
-            //{
-
-            //    allFittingList.Add(SelectAppendage.ItemInfo);
-            //}
-
+            if (SelectHead != null )
+            {
+                if(LocalUser.Instance.ValidAvatarData.GetItemInHeadDictionary(SelectHead.ItemID) == null)
+                allFittingList.Add(SelectHead.ItemInfo);
+            }
+            if (SelectUpper!= null )
+            {
+               if( LocalUser.Instance.ValidAvatarData.GetItemInUpperDictionary(SelectUpper.ItemID) == null)
+                allFittingList.Add(SelectUpper.ItemInfo);
+            }
+            if (SelectLower!= null)
+            {
+              if(LocalUser.Instance.ValidAvatarData.GetItemInLowerDictionary(SelectLower.ItemID) == null)
+                allFittingList.Add(SelectLower.ItemInfo);
+            }
+            if (SelectAppendage!= null)
+            {
+                if (LocalUser.Instance.ValidAvatarData.GetItemInAppendageDictionary(SelectAppendage.ItemID) == null)
+                allFittingList.Add(SelectAppendage.ItemInfo);
+            }
             SocialGUIManager.Instance.OpenUI<UICtrlShopingCart>();
             SocialGUIManager.Instance.GetUI<UICtrlShopingCart>().Set(allFittingList);
-
-
         }
 
         private void OnRestoreFashionBtnClick()
@@ -406,8 +409,7 @@ namespace GameA
                 SetFashionPage();
             }
         }
-
-        private void SetFashionPage(int sex)
+        public void SetFashionPage(int sex)
         {
             var dict = new Dictionary<int, List<ShopItem>>(); //建立字典 键是分页 值为每个分页的itemlist
             List<ShopItem> list = null;
@@ -489,7 +491,6 @@ namespace GameA
             _usctrlFashionPage4.Set(dict[4]);
 
         }
-
         //private void TakeDataFromTablemanager()
         //{
         //    var headPartsDic = TableManager.Instance.Table_HeadPartsDic;
@@ -500,9 +501,6 @@ namespace GameA
         //       _itemMainDic.Add(2, _upperParts);
         //       _itemMainDic.Add(3, _lowerParts);
         //       _itemMainDic.Add(4, _appendageParts);
-
-
-
         //       for (int i = 0; i < headPartsDic.Count; i++)
         //    {
         //           ShopItem headPart = new ShopItem(headPartsDic[i]);
@@ -523,10 +521,7 @@ namespace GameA
         //           ShopItem appendage = new ShopItem(appendagePartsDic[i]);
         //           _appendageParts.Add(appendage);
         //    }
-
         //   }
-
-
         //private void MakePageList()
         // {
         //        var fashionShopDic = TableManager.Instance.Table_FashionShopDic;
@@ -606,24 +601,18 @@ namespace GameA
         //    else
         //        _usctrlFashionPage5.Close();
         //}
-
-
         #region 接口
         protected override void InitGroupId()
         {
 			_groupId = (int)EUIGroupType.MainUI;
-        }
-			
+        }			
         /// <summary>
         /// 关闭按钮
         /// </summary>
 		private void OnCloseBtnClick () {
 			SocialGUIManager.Instance.CloseUI<UICtrlFashionShopMainMenu> ();
 		}
-
-
         #endregion 接口
         #endregion
-	
     }
 }

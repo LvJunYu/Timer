@@ -34,13 +34,6 @@ namespace GameA
         {
             _cachedView.gameObject.SetActive(false);
         }
-
-	    //private void ReFreshPage()
-	    //{
-
-
-	    //}
-
 	    /// <summary>
         /// 枚举分页
         /// </summary>
@@ -74,61 +67,17 @@ namespace GameA
                     // break;
             }
 	    }
+        private List<UMCtrlFashionShopCard> _cardList = new List<UMCtrlFashionShopCard>();
 
-
-        //		/*这是我的数据,读表读出来一部分，然后自己写一部分，形成一个聚合代码*/
-        //		public class Person
-        //		{
-        //			public  int id;
-        //			private  string Name;
-        //			public  string  sex;
-
-
-        //			/**perferbuff*/
-
-
-
-        //			public string name
-        //			{
-        //				get { return Name;}
-        //			}
-        //		}
-
-                 private List<UMCtrlFashionShopCard> _cardList = new List<UMCtrlFashionShopCard>();
-        //		private Project _content;
-
-        //		/// <summary>
-        //		/// 掉这个方法的时候就是添加到list中，然后创建新的shopping
-        //		/// </summary>
-        //		/// <param name="item">Item.</param>
-        //		//public void AddShopping(UMCtrlShoppingCard item)
-        //		//{
-        //		//	_cardList.Add (item);
-
-        //		//	Console.WriteLine (_cardList.Count);
-
-        //		//}
-        //		protected override void OnViewCreated()
-        //		{
-
-        //			base.OnViewCreated ();
-
-        ////			_cachedView.
-        ////			_cachedView.TagGroup.AddButton(_cachedView.SYbutton, OnSYbuttonClick);
-        ////			_cachedView.TagGroup.AddButton(_cachedView.KZbutton, OnKZbuttonClick);
-        ////			_cachedView.TagGroup.AddButton(_cachedView.XZbutton, OnXZbuttonClick);
-        ////			_cachedView.TagGroup.AddButton(_cachedView.ZSbutton, OnZSbuttonClick);
-        ////			_cachedView.TagGroup.AddButton(_cachedView.BuyBtn, OnBuybuttonClick);
-
-        //		}
-        /*这我读去到了数据*/
-        /*销毁掉所有的UI然后再创建出来*/
         public void Set(List<ShopItem> pageList)
         {
-            //for (int i = pageList.Count; i >= 0; i--)
-            //{
-            //    _cardList[i].Destroy();
-            //}
+            if (_cardList.Count > 0)
+            {
+                for (int i = _cardList.Count - 1; i >= 0; i--)
+                {
+                    _cardList[i].Destroy();
+                }
+            }
             _cardList.Clear();
             for (int i = 0; i < pageList.Count; i++)
             {
@@ -138,7 +87,6 @@ namespace GameA
                 
                 _cardList.Add(UM);
             }
-
 
         }
 

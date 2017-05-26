@@ -126,6 +126,13 @@ namespace GameA
             {
                 AvatarmsgDic.Add(type, avatarmsg);
             }
+        }      public void DelFromAvatarmsgDic(ShopItem type)
+        {
+            // 如果已经存在key 就更改value, 否则重新生成一个 key value 对。
+            if (AvatarmsgDic.ContainsKey(type))
+            {
+                AvatarmsgDic.Remove(type);
+            }
         }
 
         /// <summary>
@@ -143,8 +150,6 @@ namespace GameA
         protected override void OnClose()
         {
             base.OnClose();
-            int a = 1;
-            //RefreshFashionShopPanel();
         }
         /// <summary>
         /// 初始化事件监听
@@ -177,7 +182,7 @@ namespace GameA
             {
                 for (int i = 0; i < _cardList.Count; i++)
                 {
-                    _cardList[i].DestoryUmCard();
+                    _cardList[i].Destroy();
                 }
             }
             //_cachedView.PriceGold.text = fittingFashion.PriceGoldDay.ToString();
@@ -195,7 +200,7 @@ namespace GameA
             {
                 for (int i = 0; i < _cardList.Count; i++)
                 {
-                    _cardList[i].DestoryUmCard();
+                    _cardList[i].Destroy();
                 }
             }
             _cardList.Clear();
@@ -243,52 +248,108 @@ namespace GameA
         /// <summary>
         /// 关闭按钮
         /// </summary>
-        private void OnCloseBtnClick()
+        public void OnCloseBtnClick()
         {
             //CardList.Clear();
             SocialGUIManager.Instance.CloseUI<UICtrlShopingCart>();
+            AvatarmsgDic.Clear();
+            _avatarmsg.Clear();
+        }
+
+        private bool JudgeWhetherThereIsEnoughCurrency(ECurrencyType buyType)
+        {
+            bool ret = false;
+            if (buyType == ECurrencyType.CT_Gold)
+            {
+                if (GameATools.CheckGold(CalculateGoldCount()))
+                {
+                    return ret = true;
+                }
+            }
+            else if (buyType == ECurrencyType.CT_Diamond)
+            {
+                if (GameATools.CheckGold(CalculateDiamondCount()))
+                {
+                    return ret = true;
+                }
+            }
+            return ret;
+
         }
 
         private void BuyFashion(ECurrencyType buyType)
         {
             SetAvatarMsgList();
-            if (_avatarmsg.Count != 0)
+            if (_avatarmsg.Count == 0)
             {
-                foreach (var item in _avatarmsg)
+                SocialGUIManager.ShowPopupDialog("请至少选择一种时装", null,
+                    new KeyValuePair<string, Action>("确定", () => {
+
+                    })
+                    );
+            }
+
+            else
+            {
+                if (JudgeWhetherThereIsEnoughCurrency(buyType))
                 {
-                    item.CurrencyType = buyType;
-                }
+                    foreach (var item in _avatarmsg)
+                    {
+                        item.CurrencyType = buyType;
+                    }
                     BuyAvatarPart(
                         _avatarmsg,
                         () =>
                         {
+                            SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().Close();
+                            SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
+
+                            SocialGUIManager.ShowPopupDialog("购买成功", null,
+                                new KeyValuePair<string, Action>("确定", () => { }));
+                            //Debug.Log("______________购买成功");
+                            OnCloseBtnClick();
                             LocalUser.Instance.ValidAvatarData.Request(LocalUser.Instance.UserGuid, () =>
                             {
                                 //Set(listItem);
                                 SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().RefreshFashionShopPanel();
-                                //_cachedView.Message.text = "购买成功";
-                                OnCloseBtnClick();
+
                             }, code =>
                             {
+                                SocialGUIManager.ShowPopupDialog("刷新已拥有时装失败", null,
+                                new KeyValuePair<string, Action>("确定", () => { }));
                                 LogHelper.Error("Network error when get BuyAvatarPart, {0}", code);
+
+                            });
+                            LocalUser.Instance.UsingAvatarData.Request(LocalUser.Instance.UserGuid, () =>
+                            {
+                                //Set(listItem);
+                                SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().RefreshFashionShopPanel();
+
+                            }, code =>
+                            {
+                                SocialGUIManager.ShowPopupDialog("刷新正使用时装失败", null,
+                                new KeyValuePair<string, Action>("确定", () => { }));
+                                LogHelper.Error("Network error when get BuyAvatarPart, {0}", code);
+
                             });
 
-                        }, () =>
+                        },
+                        () =>
                         {
-                            //_cachedView.Message.text = "购买失败";
+                            SocialGUIManager.ShowPopupDialog("购买失败", null,
+                                new KeyValuePair<string, Action>("确定", () => { }));
+                            //Debug.Log("______________购买失败");
                         }
                         );
+                }
+                else
+                {
+                    SocialGUIManager.ShowPopupDialog("货币不足", null,
+                               new KeyValuePair<string, Action>("确定", () => { }));
+                    //_cachedView.Message.text = "金币/钻石不足";
+                }
             }
-            else
-            {
-                //_cachedView.Message.text = "金币/钻石不足";
-            }
-        }
-
-        private void BuyAllFashion(ShopItem[] listItem)
-        {
-
-            
+     
         }
 
         public void BuyAvatarPart(List<Msg_BuyAvatarPartItem> buyList,Action successCallback, Action failedCallback)
@@ -320,16 +381,7 @@ namespace GameA
                   }
           );
         }
-
         #endregion 接口
         #endregion
-
     }
-
-    //public enum Ecurrency
-    //{
-    //    Gold =1;
-    //    Diamond =
-
-    //}
 }
