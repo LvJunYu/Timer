@@ -13,7 +13,7 @@ namespace GameA
         private const string _playerExpName = "冒险经验";
         private const string _creatorExpName = "工匠经验";
         private const string _fashionCouponName = "时装券";
-        private const string _raffleTicketName = "奖券";
+        private const string _defaultRaffleTicketName = "低级抽奖券";
 
         private const string _goldSprite = "icon_lottery_1";
         private const string _diamondSprite = "icon_lottery_1";
@@ -79,7 +79,12 @@ namespace GameA
                     return _fashionCouponName;
                 }
             case ERewardType.RT_RaffleTicket: {
-                    return _raffleTicketName;
+                    var table = Game.TableManager.Instance.GetTurntable ((int)Id);
+                    if (null == table) {
+                        // todo error handle
+                        return _defaultRaffleTicketName;
+                    }
+                    return table.Name;
                 }
             }
             return string.Empty;

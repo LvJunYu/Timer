@@ -1,4 +1,4 @@
-﻿/********************************************************************
+﻿﻿/********************************************************************
 ** Filename : UICtrlModifyMatchMain
 ** Author : Quan
 ** Date : 2015/4/30 16:35:16
@@ -24,8 +24,10 @@ namespace GameA
     {
         #region 常量与字段
         //private const long _publishedProjectValidTimeLength = 3 * GameTimer.Day2Ms;
-        private const long _publishedProjectValidTimeLength = 90 * GameTimer.Minute2Ms;
+        private const long _publishedProjectValidTimeLength = 90 * GameTimer.Second2Ms;
 
+        private const long _autoRefershUIInterval = 333;
+        private long _lastAutoRefreshView;
         #endregion
 
         #region 属性
@@ -40,6 +42,8 @@ namespace GameA
             base.OnOpen (parameter);
             if (LocalUser.Instance.MatchUserData.IsInited) {
                 RefreshViewAll ();
+            } else {
+                SocialGUIManager.Instance.CloseUI<UICtrlModifyMatchMain> ();
             }
             LocalUser.Instance.MatchUserData.Request (
                 LocalUser.Instance.UserGuid,
@@ -52,7 +56,8 @@ namespace GameA
             );
             LocalUser.Instance.MatchUserData.LocalRefresh ();
             SocialGUIManager.HideGoldEnergyBar ();
-            RefreshViewAll ();
+            //RefreshViewAll ();
+            _lastAutoRefreshView = DateTimeUtil.GetServerTimeNowTimestampMillis ();
         }
 
         protected override void OnClose()
@@ -82,8 +87,13 @@ namespace GameA
 
         public override void OnUpdate ()
         {
+            if (!_isOpen) return;
             base.OnUpdate ();
-
+            if (DateTimeUtil.GetServerTimeNowTimestampMillis () - _lastAutoRefreshView > _autoRefershUIInterval) {
+                _lastAutoRefreshView = DateTimeUtil.GetServerTimeNowTimestampMillis ();
+                LocalUser.Instance.MatchUserData.LocalRefresh ();
+                RefreshViewAll ();
+            }
             //
         }
 			
@@ -172,9 +182,25 @@ namespace GameA
                 int minute = validSecond / 60 - hour * 60;
                 int second = validSecond - hour * 60 * 60 - minute * 60;
                 _cachedView.ValidTime.text = string.Format ("{0:D2}:{1:D2}:{2:D2}", hour, minute, second);
-                // todo 分档位的总数
-                _cachedView.ChallengeUserCnt.text = string.Format("{0} / 1000", LocalUser.Instance.MatchUserData.PlayCountForReward);
-                _cachedView.ChallengeUserCntBar.fillAmount = LocalUser.Instance.MatchUserData.PlayCountForReward / 1000f;
+                _cachedView.ChallengeUserCnt.text = string.Format(
+                    "{0} / {1}", 
+                    LocalUser.Instance.MatchUserData.PlayCountForReward,
+                    LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity
+                );
+                float percentage = _cachedView.ChallengeUserCntBar.fillAmount = LocalUser.Instance.MatchUserData.PlayCountForReward / (float)LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity;
+                _cachedView.ChallengeUserCntBar.fillAmount = percentage;
+                _cachedView.ClaimBtn.interactable = false;
+                if (percentage > 0.25f) {
+                    _cachedView.ClaimBtn.interactable = true;
+                    _cachedView.ChallengeMark1.gameObject.SetActive (true);
+                }
+                if (percentage > 0.5f) {
+                    _cachedView.ChallengeMark2.gameObject.SetActive (true);
+                }
+                if (percentage > 0.75f) {
+                    _cachedView.ChallengeMark3.gameObject.SetActive (true);
+                }
+
             } else {
                 _cachedView.PublishedProjectSnapShoot.gameObject.SetActive (false);
                 //ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.PublishedProjectSnapShoot, _cachedView.DefaultProjectCoverTex);
@@ -182,6 +208,10 @@ namespace GameA
                 _cachedView.ValidTime.text = "--:--:--";
                 _cachedView.ChallengeUserCnt.text = "- / -";
                 _cachedView.ChallengeUserCntBar.fillAmount = 0;
+                _cachedView.ClaimBtn.interactable = false;
+                _cachedView.ChallengeMark1.gameObject.SetActive (false);
+                _cachedView.ChallengeMark2.gameObject.SetActive (false);
+                _cachedView.ChallengeMark3.gameObject.SetActive (false);
             }
         }
 
@@ -231,11 +261,27 @@ namespace GameA
             if (!CheckPublishedProjectValid ()) {
                 return;
             }
-
-            RemoteCommands.GetReformReward (1,
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "正在收取奖励");
+            int rewardLevel = (int)((float)LocalUser.Instance.MatchUserData.PlayCountForReward / LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity / 0.25f);
+            Debug.Log ("________________________________________ rewardlevel: " + rewardLevel);
+            RemoteCommands.GetReformReward (
+                rewardLevel,
                 msg => {
+                    if ((int)EGetReformRewardCode.GRRC_Success == msg.ResultCode) {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                        SocialGUIManager.ShowReward (new Reward (msg.Reward));
+                        LocalUser.Instance.MatchUserData.PlayCountForReward = 0;
+                        RefreshPublishedProject ();
+
+                    } else
+                    {
+                        // TODO error handle    
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                    }
                 },
                 code => {
+                    // TODO error handle
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
                 }
             );
 

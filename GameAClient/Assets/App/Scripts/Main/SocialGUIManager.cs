@@ -438,17 +438,17 @@ namespace GameA
         /// </summary>
         /// <param name="items">Items.</param>
         public static void ShowReward (Reward reward) {
-            Instance.OpenPopupUI<UICtrlReward> (UICtrlReward.ERewardType.Reward);
+            Instance.OpenUI<UICtrlReward> (UICtrlReward.ERewardType.Reward);
             Instance.GetUI <UICtrlReward>().SetRewards (reward);
         }
 
         public static void ShowUnlockSystem (int systemCode) {
-            Instance.OpenPopupUI<UICtrlReward> (UICtrlReward.ERewardType.Unlock);
+            Instance.OpenUI<UICtrlReward> (UICtrlReward.ERewardType.Unlock);
             Instance.GetUI <UICtrlReward> ().SetUnlockSystem (systemCode);
         }
         public static void ShowUnlockAbility (int abilityCode)
         {
-            Instance.OpenPopupUI<UICtrlReward> (UICtrlReward.ERewardType.Ability);
+            Instance.OpenUI<UICtrlReward> (UICtrlReward.ERewardType.Ability);
             Instance.GetUI<UICtrlReward> ().SetAbility (abilityCode);
         }
 
