@@ -13,6 +13,7 @@ namespace GameA
 		public Button ModifyBtn;
         //public Image ModifyCDImage;
         public Text ModifyCDText;
+        public Text ModifyChanceReady;
         public GameObject [] ModifyLightSmall;
         public GameObject [] ModifyLightBig;
 
