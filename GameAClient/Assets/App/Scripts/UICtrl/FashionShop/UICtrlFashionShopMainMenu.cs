@@ -44,17 +44,20 @@ namespace GameA
                 {
                     if (_headSelectedFashionCard != null)
                     {
+                        _headSelectedFashionCard.DownMove();
                         //_headSelectedFashionCard.ChangeDock(false);
                     }
                     //之前的归为
                     _headSelectedFashionCard = value;
+                    _headSelectedFashionCard.UpMove();
+
                     //_cachedView.SelectedHead.text = _headSelectedFashionCard.CardName;
 
                     //现在的改变位置
                     //_headSelectedFashionCard.ChangeDock(true);
 
                 }
-                
+
             } 
         }
         public UMCtrlFashionShopCard SelectUpper
@@ -66,10 +69,12 @@ namespace GameA
                 {
                     if (_upperSelectedFashionCard != null)
                     {
+                        _upperSelectedFashionCard.DownMove();
                         //_upperSelectedFashionCard.ChangeDock(false);
                     }
                     //之前的归为
                     _upperSelectedFashionCard = value;
+                    _upperSelectedFashionCard.UpMove();
                     //_cachedView.SelectedUpper.text = _upperSelectedFashionCard.CardName;
 
                     //现在的改变位置
@@ -88,11 +93,14 @@ namespace GameA
                 {
                     if (_lowerSelectedFashionCard != null)
                     {
+                        _lowerSelectedFashionCard.DownMove();
+
                         //_lowerSelectedFashionCard.ChangeDock(false);
                     }
                     //之前的归为
                     _lowerSelectedFashionCard = value;
-                   // _cachedView.SelectedLower.text = _lowerSelectedFashionCard.CardName;
+                    _lowerSelectedFashionCard.UpMove();
+                    // _cachedView.SelectedLower.text = _lowerSelectedFashionCard.CardName;
 
                     //现在的改变位置
                     //_lowerSelectedFashionCard.ChangeDock(true);
@@ -110,10 +118,12 @@ namespace GameA
                 {
                     if (_appendageSelectedFashionCard != null)
                     {
+                        _appendageSelectedFashionCard.DownMove();
                         //_appendageSelectedFashionCard.ChangeDock(false);
                     }
                     //之前的归为
                     _appendageSelectedFashionCard = value;
+                    _appendageSelectedFashionCard.UpMove();
                     //_cachedView.SelectedAppendage.text = _appendageSelectedFashionCard.CardName;
 
                     //现在的改变位置

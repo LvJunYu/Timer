@@ -5,6 +5,7 @@ using SoyEngine.Proto;
 using UnityEngine;
 using SoyEngine;
 using System;
+using DG.Tweening;
 
 namespace GameA
 {
@@ -14,6 +15,9 @@ namespace GameA
         private string _cardName;
         private ShopItem _itemInfo;
         private int _itemID;
+        private Tween _tweener;
+
+
         public string CardName
         {
             set { _cardName = value; }
@@ -43,6 +47,7 @@ namespace GameA
             _cachedView.PreviewTexture.text = listItem.PreviewTexture;
             _cachedView.PreviewBtn.onClick.AddListener(() =>
             {
+                UpMove();
                 FashionOnClick(listItem);
             });
             Sprite fashion = null;
@@ -50,7 +55,7 @@ namespace GameA
 
             if (GameResourceManager.Instance.TryGetSpriteByName("icon_gift_2", out fashion))
             {
-                Debug.Log("____________时装" + fashion.name);
+                //Debug.Log("____________时装" + fashion.name);
 
                 _cachedView.FashionPreview.sprite = fashion;
             }
@@ -67,6 +72,8 @@ namespace GameA
                 SocialGUIManager.Instance.GetUI<UICtrlShopingCart>().Set(listItem);
                 //Debug.Log("购买:" + listItem.Name);
             }
+
+
 
                 );
             //_cachedView.TryFashionOn.onClick.AddListener(() =>
@@ -151,21 +158,21 @@ namespace GameA
         {
             if (JudgeItemOccupied(listItem))
             {
-                _cachedView.Message.text = "已穿戴";
-                SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().TryOnAvatar(listItem);
+                //_cachedView.Message.text = "已穿戴";
+                //SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().TryOnAvatar(listItem);
             }
             else if (JudgeItemOwned(listItem))
             {
-                _cachedView.Message.text = "已经拥有并穿戴";
-                SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().TryOnAvatar(listItem);
+                //_cachedView.Message.text = "已经拥有并穿戴";
                 ChangeFashion(listItem);
             }
             else
             {
                 _cachedView.Message.text = "在试穿";
-                SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().TryOnAvatar(listItem);
-                SetFittingFashion(listItem);
+               
             }
+            SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().TryOnAvatar(listItem);
+            SetFittingFashion(listItem);
         }
 
         //private void BuyFashion(ShopItem listItem)
@@ -255,6 +262,19 @@ namespace GameA
         //            }
         //    );
         //}
+
+
+        public void UpMove()
+        {
+            if(_cachedView!=null)
+            _cachedView.GetComponent<RectTransform>().DOLocalMoveY(12, 0.4f, false);
+        }
+
+        public void DownMove()
+        {
+            if (_cachedView != null)
+                _cachedView.GetComponent<RectTransform>().DOLocalMoveY(-1, 0.4f, false);
+        }
 
 
 
