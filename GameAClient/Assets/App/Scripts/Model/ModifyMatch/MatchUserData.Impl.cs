@@ -20,7 +20,7 @@ namespace GameA
 //        private const int DefaultEnergyCapacity = 30;
         // 默认体力增长时间／每点
         private const int DefaultChallengeGenerateTime = 300;
-
+        public const long PublishedProjectValidTimeLength = 90 * GameTimer.Second2Ms;
         /// <summary>
         /// 玩挑战关卡的token
         /// </summary>
@@ -123,27 +123,32 @@ namespace GameA
         public void LocalRefresh () {
             long now = DateTimeUtil.GetServerTimeNowTimestampMillis ();
             // challenge
-
+            if (LeftChallengeCount >= ChallengeCapacity)
+            {
+                LeftChallengeCountRefreshTime = now;
+                LeftChallengeCount = ChallengeCapacity;
+            }
+            long passedTime = now - LeftChallengeCountRefreshTime;
+            int generatedPoint = (int)(passedTime / 1000 / UnityEngine.Mathf.Max(1, ReformIntervalSeconds));
+            if (generatedPoint > 0) {
+                LeftChallengeCountRefreshTime += generatedPoint * 1000 * ReformIntervalSeconds;
+                LeftChallengeCount += generatedPoint;
+                if (_leftChallengeCount >= ChallengeCapacity) {
+                    LeftChallengeCountRefreshTime = now;
+                    LeftChallengeCount = ChallengeCapacity;
+                }
+            }
 
 
             // modify
+            if (EReformState.RS_WaitForChance == (EReformState)CurReformState)
+            {
+                passedTime = now - CurPublishTime;
+                if (passedTime > ReformIntervalSeconds * 1000) {
+                    CurReformState = (int)EReformState.RS_ChanceReady;
+                }
+            }
 
-
-
-//            if (_energy >= _energyCapacity) {
-//                EnergyLastRefreshTime = now;
-//                return;
-//            }
-//            long passedTime = now - EnergyLastRefreshTime;
-//            int generatedEnergy = (int)(passedTime / 1000 / DefaultEnergyGenerateTime);
-//            if (generatedEnergy > 0) {
-//                EnergyLastRefreshTime += generatedEnergy * 1000 * DefaultEnergyCapacity;
-//                Energy += generatedEnergy;
-//                if (Energy >= _energyCapacity) {
-//                    EnergyLastRefreshTime = now;
-//                    Energy = _energyCapacity;
-//                }
-//            }
         }
         /// <summary>
         /// 当天挑战状态

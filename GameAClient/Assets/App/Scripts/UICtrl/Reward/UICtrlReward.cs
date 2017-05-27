@@ -10,7 +10,7 @@ using System.Collections.Generic;
 namespace GameA
 {
     [UIAutoSetup (EUIAutoSetupType.Add)]
-    public class UICtrlReward : UISocialCtrlBase<UIViewReward>
+    public class UICtrlReward : UICtrlGenericBase<UIViewReward>
     {
         public enum ERewardType {
             Reward,
