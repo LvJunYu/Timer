@@ -74,7 +74,7 @@ namespace GameA.Game
         internal virtual void Enter(UnitBase ower)
         {
             _owner = ower;
-            _radius = 160;
+            _radius = 320;
             _range = 10*ConstDefineGM2D.ServerTileScale;
             _timerCD = 0;
             _cdTime = 8;
