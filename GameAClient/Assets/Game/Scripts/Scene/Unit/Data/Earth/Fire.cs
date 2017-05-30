@@ -61,7 +61,7 @@ namespace GameA.Game
 
         public static void OnEffect(UnitBase other)
         {
-            other.OnDamage();
+            other.OnFire();
         }
     }
 }

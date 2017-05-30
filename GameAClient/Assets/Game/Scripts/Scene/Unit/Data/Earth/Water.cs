@@ -52,7 +52,7 @@ namespace GameA.Game
         private void OnWater(UnitBase other)
         {
             //播放水中动画 漂浮一会 然后死掉
-            GameParticleManager.Instance.Emit("M1EffectDeathWater", _trans.position);
+            GameParticleManager.Instance.Emit("M1EffectDeathWater", GetHitEffectPos(other, EDirectionType.Up));
             if (other.IsHero)
             {
                 other.OnWater();

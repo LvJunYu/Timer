@@ -1145,6 +1145,28 @@ namespace GameA.Game
             return false;
         }
 
+        protected Vector3 GetHitEffectPos(UnitBase other, EDirectionType hitDirectionType)
+        {
+            if (other.Trans == null)
+            {
+                return Vector3.zero;
+            }
+            var otherCenterPos = other.GetColliderPos(other.CurPos) + other.GetColliderSize() / 2;
+            var otherPos = GM2DTools.TileToWorld(otherCenterPos, other.Trans.localPosition.z);
+            switch (hitDirectionType)
+            {
+                case EDirectionType.Up:
+                    return new Vector3(otherPos.x, GM2DTools.TileToWorld(GetUpHitMin()), otherPos.z);
+                case EDirectionType.Down:
+                    return new Vector3(otherPos.x, GM2DTools.TileToWorld(GetDownHitMin(other)), otherPos.z);
+                case EDirectionType.Left:
+                    return new Vector3(GM2DTools.TileToWorld(GetLeftHitMin(other)), otherPos.y, otherPos.z);
+                case EDirectionType.Right:
+                    return new Vector3(GM2DTools.TileToWorld(GetRightHitMin()), otherPos.y, otherPos.z);
+            }
+            return Vector3.zero;
+        }
+
         protected int GetUpHitMin()
         {
             return _colliderGrid.YMax + 1;
