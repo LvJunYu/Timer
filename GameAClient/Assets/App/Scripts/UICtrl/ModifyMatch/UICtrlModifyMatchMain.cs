@@ -1,4 +1,4 @@
-﻿/********************************************************************
+﻿﻿/********************************************************************
 ** Filename : UICtrlModifyMatchMain
 ** Author : Quan
 ** Date : 2015/4/30 16:35:16
@@ -24,8 +24,12 @@ namespace GameA
     {
         #region 常量与字段
         //private const long _publishedProjectValidTimeLength = 3 * GameTimer.Day2Ms;
-        private const long _publishedProjectValidTimeLength = 90 * GameTimer.Minute2Ms;
 
+
+        private const long _autoRefershUIInterval = 200;
+        private const long _autoRequstDataInterval = 1000;
+        private long _lastAutoRefreshView;
+        private long _lastRequstDataTime;
         #endregion
 
         #region 属性
@@ -40,19 +44,37 @@ namespace GameA
             base.OnOpen (parameter);
             if (LocalUser.Instance.MatchUserData.IsInited) {
                 RefreshViewAll ();
+                LocalUser.Instance.MatchUserData.Request (
+                    LocalUser.Instance.UserGuid,
+                    () => {
+                        RefreshViewAll ();
+                    },
+                    code => {
+                        // todo request data failed
+                    }
+                );
+            } else {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "...");
+                LocalUser.Instance.MatchUserData.Request (
+                    LocalUser.Instance.UserGuid,
+                    () => {
+                        RefreshViewAll ();
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                    },
+                    code => {
+                        // todo request data failed
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                        //SocialGUIManager.Instance.CloseUI<UICtrlModifyMatchMain> ();
+                    }
+                );
             }
-            LocalUser.Instance.MatchUserData.Request (
-                LocalUser.Instance.UserGuid,
-                () => {
-                    RefreshViewAll();
-                },
-                code => {
-                    // todo request data failed
-                }
-            );
-            LocalUser.Instance.MatchUserData.LocalRefresh ();
+            if (LocalUser.Instance.MatchUserData.IsInited) {
+                LocalUser.Instance.MatchUserData.LocalRefresh ();
+            }
             SocialGUIManager.HideGoldEnergyBar ();
-            RefreshViewAll ();
+            //RefreshViewAll ();
+            _lastAutoRefreshView = DateTimeUtil.GetServerTimeNowTimestampMillis ();
+            _lastRequstDataTime = _lastAutoRefreshView;
         }
 
         protected override void OnClose()
@@ -82,9 +104,29 @@ namespace GameA
 
         public override void OnUpdate ()
         {
+            if (!_isOpen) return;
             base.OnUpdate ();
-
+            long now = DateTimeUtil.GetServerTimeNowTimestampMillis ();
+            if (now - _lastAutoRefreshView > _autoRefershUIInterval) {
+                _lastAutoRefreshView = now;
+                LocalUser.Instance.MatchUserData.LocalRefresh ();
+                RefreshViewAll ();
+            }
             //
+            if (CheckPublishedProjectValid () && 
+                now - _lastRequstDataTime > _autoRequstDataInterval) {
+                _lastRequstDataTime = now;
+                LocalUser.Instance.MatchUserData.Request (
+                    LocalUser.Instance.UserGuid,
+                    () => {
+                        RefreshViewAll ();
+                    },
+                    code => {
+                        // todo request data failed
+                    }
+                );
+                _lastRequstDataTime = now;
+            }
         }
 			
 
@@ -113,16 +155,27 @@ namespace GameA
             _cachedView.MatchPoint.text = string.Format ("{0} / {1}", matchPoint, matchPointMax);
 
             long now = DateTimeUtil.GetServerTimeNowTimestampMillis ();
-            float getMatchPointCDInSecond = 0f;
+            float getMatchPointLeftTimeInSecond = 0f;
             float getMatchPointLeftTimeInPercentage = 0f;
             if (0 == matchPoint) {
-                getMatchPointCDInSecond = 0.001f * (now - LocalUser.Instance.MatchUserData.LeftChallengeCountRefreshTime);
-                getMatchPointLeftTimeInPercentage = 1f - getMatchPointCDInSecond /
+                getMatchPointLeftTimeInSecond = 
+                    LocalUser.Instance.MatchUserData.ChallengeIntervalSecond - 
+                             0.001f * (now - LocalUser.Instance.MatchUserData.LeftChallengeCountRefreshTime);
+                getMatchPointLeftTimeInPercentage = getMatchPointLeftTimeInSecond /
                 (float)LocalUser.Instance.MatchUserData.ChallengeIntervalSecond;
-                //_cachedView.MatchCDImage.fillAmount = getMatchPointLeftTimeInPercentage;
-                //_cachedView.MatchCDImage.gameObject.SetActive (true);
+                _cachedView.MatchPoint.gameObject.SetActive (false);
+                int hour = (int)getMatchPointLeftTimeInSecond / 60 / 60;
+                int minute = (int)getMatchPointLeftTimeInSecond / 60 - hour * 60;
+                int second = (int)getMatchPointLeftTimeInSecond - hour * 60 * 60 - minute * 60;
+                _cachedView.matchCDText.text = string.Format ("{0:D2}:{1:D2}:{2:D2}", hour, minute, second);
+                _cachedView.matchCDText.gameObject.SetActive (true);
+                SetLightImageProgress (1f - getMatchPointLeftTimeInPercentage, _cachedView.MatchLightSmall, _cachedView.MatchLightBig);
+                _cachedView.MatchBtn.gameObject.SetActive (false);
             } else {
-                //_cachedView.MatchCDImage.gameObject.SetActive (false);
+                _cachedView.MatchPoint.gameObject.SetActive (true);
+                _cachedView.matchCDText.gameObject.SetActive (false);
+                SetLightImageProgress (1, _cachedView.MatchLightSmall, _cachedView.MatchLightBig);
+                _cachedView.MatchBtn.gameObject.SetActive (true);
             }
 
         }
@@ -137,13 +190,27 @@ namespace GameA
                 int minute = modifyCDInSecond / 60 - hour * 60;
                 int second = modifyCDInSecond - hour * 60 * 60 - minute * 60;
                 _cachedView.ModifyCDText.text = string.Format ("{0:D2}:{1:D2}:{2:D2}", hour, minute, second);
+                _cachedView.ModifyCDText.gameObject.SetActive (true);
+                SetLightImageProgress (
+                    (float)((now - LocalUser.Instance.MatchUserData.CurPublishTime)) / LocalUser.Instance.MatchUserData.ReformIntervalSeconds * 0.001f,
+                    _cachedView.ModifyLightSmall, _cachedView.ModifyLightBig);
+                _cachedView.ModifyBtn.gameObject.SetActive (false);
+                _cachedView.ModifyChanceReady.gameObject.SetActive (false);
                 //_cachedView.ModifyCDImage.fillAmount = (float)modifyCDInSecond / LocalUser.Instance.MatchUserData.ReformIntervalSeconds;
             } else if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_ChanceReady) {
                 //_cachedView.ModifyCDImage.fillAmount = 0;
                 _cachedView.ModifyCDText.text = string.Empty;
+                _cachedView.ModifyCDText.gameObject.SetActive (false);
+                SetLightImageProgress (1, _cachedView.ModifyLightSmall, _cachedView.ModifyLightBig);
+                _cachedView.ModifyBtn.gameObject.SetActive (true);
+                _cachedView.ModifyChanceReady.gameObject.SetActive (true);
             } else if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_Editing) {
                 //_cachedView.ModifyCDImage.fillAmount = 0;
                 _cachedView.ModifyCDText.text = string.Empty;
+                _cachedView.ModifyCDText.gameObject.SetActive (false);
+                SetLightImageProgress (1, _cachedView.ModifyLightSmall, _cachedView.ModifyLightBig);
+                _cachedView.ModifyBtn.gameObject.SetActive (true);
+                _cachedView.ModifyChanceReady.gameObject.SetActive (true);
             }
         }
 
@@ -165,16 +232,34 @@ namespace GameA
                     (float)LocalUser.Instance.MatchUserData.CurPublishProject.ExtendData.PlayCount * 100);
                 }
                 _cachedView.PassingRate.text = string.Format ("{0}%", passRate);
-                int validSecond = (int)((_publishedProjectValidTimeLength - 
+                int validSecond = (int)((MatchUserData.PublishedProjectValidTimeLength - 
                     (DateTimeUtil.GetServerTimeNowTimestampMillis () - LocalUser.Instance.MatchUserData.CurPublishTime)) 
                     / GameTimer.Second2Ms);
                 int hour = validSecond / 60 / 60;
                 int minute = validSecond / 60 - hour * 60;
                 int second = validSecond - hour * 60 * 60 - minute * 60;
                 _cachedView.ValidTime.text = string.Format ("{0:D2}:{1:D2}:{2:D2}", hour, minute, second);
-                // todo 分档位的总数
-                _cachedView.ChallengeUserCnt.text = string.Format("{0} / 1000", LocalUser.Instance.MatchUserData.PlayCountForReward);
-                _cachedView.ChallengeUserCntBar.fillAmount = LocalUser.Instance.MatchUserData.PlayCountForReward / 1000f;
+                _cachedView.ChallengeUserCnt.text = string.Format(
+                    "{0} / {1}", 
+                    LocalUser.Instance.MatchUserData.PlayCountForReward,
+                    LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity
+                );
+                float percentage = _cachedView.ChallengeUserCntBar.fillAmount = LocalUser.Instance.MatchUserData.PlayCountForReward / (float)LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity;
+                _cachedView.ChallengeUserCntBar.fillAmount = percentage;
+                if (percentage > 0.25f) {
+                    _cachedView.ClaimBtn.interactable = true;
+                    _cachedView.ChallengeMark1.gameObject.SetActive (true);
+                } else 
+                {
+                    _cachedView.ClaimBtn.interactable = false;
+                }
+                if (percentage > 0.5f) {
+                    _cachedView.ChallengeMark2.gameObject.SetActive (true);
+                }
+                if (percentage > 0.75f) {
+                    _cachedView.ChallengeMark3.gameObject.SetActive (true);
+                }
+
             } else {
                 _cachedView.PublishedProjectSnapShoot.gameObject.SetActive (false);
                 //ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.PublishedProjectSnapShoot, _cachedView.DefaultProjectCoverTex);
@@ -182,6 +267,10 @@ namespace GameA
                 _cachedView.ValidTime.text = "--:--:--";
                 _cachedView.ChallengeUserCnt.text = "- / -";
                 _cachedView.ChallengeUserCntBar.fillAmount = 0;
+                _cachedView.ClaimBtn.interactable = false;
+                _cachedView.ChallengeMark1.gameObject.SetActive (false);
+                _cachedView.ChallengeMark2.gameObject.SetActive (false);
+                _cachedView.ChallengeMark3.gameObject.SetActive (false);
             }
         }
 
@@ -189,7 +278,7 @@ namespace GameA
             bool hasValidPublishProject = LocalUser.Instance.MatchUserData.CurPublishProject != null;
 
             long now = DateTimeUtil.GetServerTimeNowTimestampMillis ();
-            if ((now - LocalUser.Instance.MatchUserData.CurPublishTime) > _publishedProjectValidTimeLength) {
+            if ((now - LocalUser.Instance.MatchUserData.CurPublishTime) > MatchUserData.PublishedProjectValidTimeLength) {
                 hasValidPublishProject = false;
             }
             return hasValidPublishProject;
@@ -231,11 +320,27 @@ namespace GameA
             if (!CheckPublishedProjectValid ()) {
                 return;
             }
-
-            RemoteCommands.GetReformReward (1,
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "正在收取奖励");
+            int rewardLevel = (int)((float)LocalUser.Instance.MatchUserData.PlayCountForReward / LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity / 0.25f);
+            Debug.Log ("________________________________________ rewardlevel: " + rewardLevel);
+            RemoteCommands.GetReformReward (
+                rewardLevel,
                 msg => {
+                    if ((int)EGetReformRewardCode.GRRC_Success == msg.ResultCode) {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                        SocialGUIManager.ShowReward (new Reward (msg.Reward));
+                        LocalUser.Instance.MatchUserData.PlayCountForReward = 0;
+                        RefreshPublishedProject ();
+
+                    } else
+                    {
+                        // TODO error handle    
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                    }
                 },
                 code => {
+                    // TODO error handle
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
                 }
             );
 
@@ -257,5 +362,26 @@ namespace GameA
         }
         #endregion
 
+        private void SetLightImageProgress (float p, GameObject[] small, GameObject[] big)
+        {
+            p = Mathf.Clamp01 (p);
+            int lightCount = small.Length;
+            int intProgress = (int)(p * lightCount);
+            int i = 0;
+            for (; i < intProgress; i++)
+            {
+                small [i].SetActive (true);
+                big [i].SetActive (false);
+            }
+            for (; i < lightCount; i++)
+            {
+                small [i].SetActive (false);
+                big [i].SetActive (false);
+            }
+            if (intProgress < lightCount)
+            {
+                big [intProgress].SetActive (true);
+            }
+        }
     }
 }
