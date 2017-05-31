@@ -18,6 +18,8 @@ namespace GameA.Game
         [SerializeField]
         protected ESkillType _eSkillType;
 
+        protected int _useMp;
+
         /// <summary>
         /// 攻击举例
         /// </summary>
@@ -56,6 +58,11 @@ namespace GameA.Game
             get { return _owner; }
         }
 
+        public int UseMp
+        {
+            get { return _useMp; }
+        }
+
         public int Radius
         {
             get { return _radius; }
@@ -81,6 +88,7 @@ namespace GameA.Game
             _bulletSpeed = 200;
             _timerAnimation = 0;
             _cdAnimation = 0;
+            _useMp = 80;
         }
 
         internal void SetValue(int cdTime, int range, int cdAnimation = 0)
