@@ -1,4 +1,4 @@
-﻿﻿/********************************************************************
+﻿﻿﻿/********************************************************************
 ** Filename : UICtrlModifyMatchMain
 ** Author : Quan
 ** Date : 2015/4/30 16:35:16
@@ -239,37 +239,36 @@ namespace GameA
                 int minute = validSecond / 60 - hour * 60;
                 int second = validSecond - hour * 60 * 60 - minute * 60;
                 _cachedView.ValidTime.text = string.Format ("{0:D2}:{1:D2}:{2:D2}", hour, minute, second);
-                _cachedView.ChallengeUserCnt.text = string.Format(
-                    "{0} / {1}", 
-                    LocalUser.Instance.MatchUserData.PlayCountForReward,
-                    LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity
-                );
-                float percentage = _cachedView.ChallengeUserCntBar.fillAmount = LocalUser.Instance.MatchUserData.PlayCountForReward / (float)LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity;
-                _cachedView.ChallengeUserCntBar.fillAmount = percentage;
-                if (percentage > 0.25f) {
-                    _cachedView.ClaimBtn.interactable = true;
-                    _cachedView.ChallengeMark1.gameObject.SetActive (true);
-                } else 
-                {
-                    _cachedView.ClaimBtn.interactable = false;
-                }
-                if (percentage > 0.5f) {
-                    _cachedView.ChallengeMark2.gameObject.SetActive (true);
-                }
-                if (percentage > 0.75f) {
-                    _cachedView.ChallengeMark3.gameObject.SetActive (true);
-                }
-
             } else {
                 _cachedView.PublishedProjectSnapShoot.gameObject.SetActive (false);
                 //ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.PublishedProjectSnapShoot, _cachedView.DefaultProjectCoverTex);
                 _cachedView.PassingRate.text = "--";
                 _cachedView.ValidTime.text = "--:--:--";
                 _cachedView.ChallengeUserCnt.text = "- / -";
-                _cachedView.ChallengeUserCntBar.fillAmount = 0;
-                _cachedView.ClaimBtn.interactable = false;
+            }
+            // claim reward
+            _cachedView.ChallengeUserCnt.text = string.Format (
+                    "{0} / {1}",
+                    LocalUser.Instance.MatchUserData.PlayCountForReward,
+                    LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity
+                );
+            float percentage = _cachedView.ChallengeUserCntBar.fillAmount = LocalUser.Instance.MatchUserData.PlayCountForReward / (float)LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity;
+            _cachedView.ChallengeUserCntBar.fillAmount = percentage;
+            if (percentage > 0.25f) {
+                _cachedView.ClaimBtn.interactable = true;
+                _cachedView.ChallengeMark1.gameObject.SetActive (true);
+            } else {
                 _cachedView.ChallengeMark1.gameObject.SetActive (false);
+                _cachedView.ClaimBtn.interactable = false;
+            }
+            if (percentage > 0.5f) {
+                _cachedView.ChallengeMark2.gameObject.SetActive (true);
+            } else {
                 _cachedView.ChallengeMark2.gameObject.SetActive (false);
+            }
+            if (percentage > 0.75f) {
+                _cachedView.ChallengeMark3.gameObject.SetActive (true);
+            } else {
                 _cachedView.ChallengeMark3.gameObject.SetActive (false);
             }
         }
@@ -317,11 +316,13 @@ namespace GameA
         }
 
         private void OnClaimBtn () {
-            if (!CheckPublishedProjectValid ()) {
-                return;
-            }
+            //if (!CheckPublishedProjectValid ()) {
+            //    return;
+            //}
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "正在收取奖励");
             int rewardLevel = (int)((float)LocalUser.Instance.MatchUserData.PlayCountForReward / LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity / 0.25f);
+            if (rewardLevel < 1) return;
+            rewardLevel = Mathf.Clamp (rewardLevel, 1, 3);
             Debug.Log ("________________________________________ rewardlevel: " + rewardLevel);
             RemoteCommands.GetReformReward (
                 rewardLevel,
