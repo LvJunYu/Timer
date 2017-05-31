@@ -540,7 +540,6 @@ namespace SoyEngine
 				var o = AssetDatabase.LoadMainAssetAtPath(assetPath);
 				if (o != null)
 				{
-                    Debug.Log("__________________localResDebugTmpParent: " + _localResDebugTmpParent);
 					Object res = GameObject.Instantiate(o,_localResDebugTmpParent.transform);
 					_cachedMainAsset.Add(path, res);
 					return res;

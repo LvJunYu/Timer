@@ -909,8 +909,6 @@ namespace GameA
 //            }, form);
 //        }
 
-        public void PublishModifyProject () {
-        }
 
         public void PrepareRes(Action successCallback, Action failedCallback = null)
         {
@@ -956,20 +954,21 @@ namespace GameA
                 }
                 return;
             }
+            _downloadResSucceedCB -= successCallback;
+            _downloadResSucceedCB += successCallback;
+            _downloadResFailedCB -= failedCallback;
+            _downloadResFailedCB += failedCallback;
             if (_isdownloadingRes) {
-                _downloadResSucceedCB -= successCallback;
-                _downloadResSucceedCB += successCallback;
-                _downloadResFailedCB -= failedCallback;
-                _downloadResFailedCB += failedCallback;
                 return;
             }
             _isdownloadingRes = true;
             SFile file = SFile.GetFileWithUrl(SoyPath.Instance.GetFileUrl(targetRes));
-            Debug.Log ("____________________download map file: " + targetRes);
+            //Debug.Log ("____________________download map file: " + targetRes + " success cb: " + _downloadResSucceedCB + " / successCallback: " + successCallback);
             file.DownloadAsync((f) =>
                 {
                     _isdownloadingRes = false;
                     LocalCacheManager.Instance.Save(f.FileBytes, LocalCacheManager.EType.File, targetRes);
+                    //Debug.Log ("__________________________ call download success cb : " + _downloadResSucceedCB);
                     if (_downloadResSucceedCB != null)
                     {
                         _downloadResSucceedCB.Invoke();
@@ -977,7 +976,7 @@ namespace GameA
                 }, sFile =>
                 {
                     _isdownloadingRes = false;
-                    Debug.Log("__________________________" + SoyPath.Instance.GetFileUrl(targetRes));
+                    //Debug.Log("__________________________" + SoyPath.Instance.GetFileUrl(targetRes));
                     if (_downloadResFailedCB != null)
                     {
                         _downloadResFailedCB.Invoke();

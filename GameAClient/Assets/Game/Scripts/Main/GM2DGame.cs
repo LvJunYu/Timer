@@ -666,7 +666,8 @@ namespace GameA.Game
         public void SaveModifyProject (Action successCallback = null, Action<EProjectOperateResult> failedCallback = null) {
             byte[] mapDataBytes = MapManager.Instance.SaveMapData();
             byte[] compressedBytes = MatrixProjectTools.CompressLZMA (mapDataBytes);
-//            _project.SetBytesData (mapDataBytes);
+            //            _project.SetBytesData (mapDataBytes);
+            //Debug.Log ("_________________________3 " + _project.ProjectId + " " + _project.PassFlag);
             _project.SaveModifyProject (compressedBytes, successCallback, failedCallback);
         }
 
@@ -914,10 +915,12 @@ namespace GameA.Game
                 );
                 return;
             } else if (EProjectStatus.PS_Reform == p.ProjectStatus) {
-                
+                //Debug.Log ("_______________________________1 " + p.ProjectId +" " + _project.PassFlag);
                 if (false == p.PassFlag) {
+                    
                     p.PassFlag = true;
                     NeedSave = true;
+                    //Debug.Log ("_______________________________2 " + p.ProjectId +" " + _project.PassFlag);
                 }
                 Messenger.Broadcast (EMessengerType.GameFinishSuccessShowUI);
             } else if (EProjectStatus.PS_Challenge == p.ProjectStatus) {
