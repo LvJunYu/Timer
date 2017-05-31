@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine;
 using SoyEngine;
 
@@ -25,15 +24,7 @@ namespace GameA
 
 
         #endregion 属性
-//        public byte[] BytesData {
-//        get {
-//            return this._bytesData;
-//        }
-//    }
         #region 方法
-//        public void SetBytesData (byte[] bytesData) {
-//            _bytesData = bytesData;
-//        }
         /// <summary>
         /// 根据DataScene2D的信息刷新ProjectUploadParam
         /// </summary>

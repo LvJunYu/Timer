@@ -72,7 +72,6 @@ namespace GameA
 //            {
 //                _curSelectType = EProjectCategory.PC_Relaxation;
 //            }
-            _uploadRecord = _project.PublishRecordFlag;
             _downloadPrice = _project.DownloadPrice;
             _cachedView.NameInputField.text = string.IsNullOrEmpty(_project.Name)? "我的匠游大作" : _project.Name;
             _cachedView.DesInputField.text = _project.Summary;
@@ -300,7 +299,7 @@ namespace GameA
 //            }
 
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(SocialGUIManager.Instance.GetUI<UICtrlPublish>(), "作品正在保存中");
-            GM2DGame.Instance.Save(name, summary, downloadPrice, publishRecordFlag,()=>{
+            GM2DGame.Instance.Save(name, summary, downloadPrice,()=>{
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(SocialGUIManager.Instance.GetUI<UICtrlPublish>());
                 CommonTools.ShowPopupDialog("保存成功");
                 if(successCallback != null)
