@@ -1,4 +1,4 @@
-﻿/********************************************************************
+﻿﻿/********************************************************************
 ** Filename : ChangePartsSpineView
 ** Author : cwc
 ** Date : 2017/03/03 星期日 下午 6:48:41
@@ -216,24 +216,27 @@ namespace GameA.Game
 					continue;
 				}
 				string attachmentName = string.Format ("{0}/{1}", _skeletonName, slotTable.Name);
-				attachment = targetSkin.GetAttachment(slotIdx, attachmentName);
-				if (attachment == null) {
-					//					LogHelper.Error("Try get attachment:{0} in {1}, skin{2} failed.",
-					//						attachmentName,
-					//						_skeletonName,
-					//						skinId);
-					//					return false;
-					continue;
-				}
-
-				_dynamicSkin.RemoveAttachment(slotIdx, attachmentName);
-
-				if (GameResourceManager.Instance != null && !GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, textureName)) {
-					LogHelper.Error ("Link texture: {0} when apply parts:{1},id{2} in {3} failed.", textureName, partsType, partsId, _unit.TableUnit.Name);
-				}
-
-				_dynamicSkin.AddAttachment(slotIdx, attachmentName, attachment);
-				slots.Items[slotIdx].Attachment = attachment;
+                attachment = targetSkin.GetAttachment(slotIdx, attachmentName);
+                _dynamicSkin.RemoveAttachment(slotIdx, attachmentName);
+                if (attachment == null) {
+                    //                  LogHelper.Error("Try get attachment:{0} in {1}, skin{2} failed.",
+                    //                      attachmentName,
+                    //                      _skeletonName,
+                    //                      skinId);
+                    //                  return false;
+                    slots.Items [slotIdx].Attachment = null;
+                    continue;
+                } else
+                {
+                    
+                    if (GameResourceManager.Instance != null && !GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, textureName)) {
+                        LogHelper.Error ("Link texture: {0} when apply parts:{1},id{2} in {3} failed.", textureName, partsType, partsId, _unit.TableUnit.Name);
+                    }
+                    
+                    _dynamicSkin.AddAttachment(slotIdx, attachmentName, attachment);
+                    
+                    slots.Items[slotIdx].Attachment = attachment;
+                }
 			}
 
 

@@ -1,4 +1,4 @@
-﻿/********************************************************************
+﻿﻿/********************************************************************
 ** Filename : GM2DGame
 ** Author : Dong
 ** Date : 2015/5/6 15:27:36
@@ -570,17 +570,39 @@ namespace GameA.Game
 			ChangePartsSpineView view = mainPlayer.View as ChangePartsSpineView;
 			if (view == null)
 				return;
-            int headId = (int)LocalUser.Instance.UsingAvatarData.Head.Id;
-            int upperId = (int)LocalUser.Instance.UsingAvatarData.Upper.Id;
-            int LowerId = (int)LocalUser.Instance.UsingAvatarData.Lower.Id;
-            int appendageId = (int)LocalUser.Instance.UsingAvatarData.Appendage.Id;
+            int headId = 1;
+            int upperId = 1;
+            int lowerId = 1;
+            int appendageId = 1;
 
-            if (EMode.PlayRecord == _mode && _gm2drecordData != null && _gm2drecordData.Avatar != null)
+            if (EMode.PlayRecord == _mode)
             {
-                headId = _gm2drecordData.Avatar.Head;
-                upperId = _gm2drecordData.Avatar.Upper;
-                LowerId = _gm2drecordData.Avatar.Lower;
-                appendageId = _gm2drecordData.Avatar.Appendage;
+                if (_gm2drecordData != null && _gm2drecordData.Avatar != null) {
+                    headId = _gm2drecordData.Avatar.Head;
+                    upperId = _gm2drecordData.Avatar.Upper;
+                    lowerId = _gm2drecordData.Avatar.Lower;
+                    appendageId = _gm2drecordData.Avatar.Appendage;
+                }
+            } else
+            {
+                if (LocalUser.Instance.UsingAvatarData.IsInited) {
+                    if (LocalUser.Instance.UsingAvatarData.Head != null &&
+                        LocalUser.Instance.UsingAvatarData.Head.IsInited) {
+                        headId = (int)LocalUser.Instance.UsingAvatarData.Head.Id;
+                    }
+                    if (LocalUser.Instance.UsingAvatarData.Upper != null &&
+                        LocalUser.Instance.UsingAvatarData.Upper.IsInited) {
+                        upperId = (int)LocalUser.Instance.UsingAvatarData.Upper.Id;
+                    }
+                    if (LocalUser.Instance.UsingAvatarData.Lower != null &&
+                        LocalUser.Instance.UsingAvatarData.Lower.IsInited) {
+                        lowerId = (int)LocalUser.Instance.UsingAvatarData.Lower.Id;
+                    }
+                    if (LocalUser.Instance.UsingAvatarData.Appendage != null &&
+                        LocalUser.Instance.UsingAvatarData.Appendage.IsInited) {
+                        appendageId = (int)LocalUser.Instance.UsingAvatarData.Appendage.Id;
+                    }
+                }
             }
             //			view.SetParts (2, SpinePartsDefine.ESpineParts.Head);
             if (LocalUser.Instance.UsingAvatarData.Head != null) {
@@ -590,7 +612,7 @@ namespace GameA.Game
                 view.SetParts (upperId, SpinePartsHelper.ESpineParts.Upper);
             }
             if (LocalUser.Instance.UsingAvatarData.Lower != null) {
-                view.SetParts (LowerId, SpinePartsHelper.ESpineParts.Lower);
+                view.SetParts (lowerId, SpinePartsHelper.ESpineParts.Lower);
             }
             if (LocalUser.Instance.UsingAvatarData.Appendage != null) {
                 view.SetParts (appendageId, SpinePartsHelper.ESpineParts.Appendage);
