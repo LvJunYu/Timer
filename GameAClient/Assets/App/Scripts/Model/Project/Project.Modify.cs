@@ -110,6 +110,39 @@ namespace GameA
 //            }
         }
 
+        public void PublishModifyProject (Action successCallback = null, Action<int> failedCallback = null)
+        {
+            if (ProjectStatus != EProjectStatus.PS_Reform) return;
+            RemoteCommands.PublishReformProject (
+                ProjectId,
+                ProgramVersion,
+                ResourcesVersion,
+                RecordUsedTime,
+                GetMsgProjectUploadParam (),
+                msg => {
+                    
+                    if (msg.ResultCode == (int)EProjectOperateResult.POR_Success) {
+                        OnSyncFromParent (msg.ProjectData);
+                        _bytesData = null;
+                        Messenger.Broadcast (EMessengerType.OnReformProjectPublished);
+                        if (null != successCallback)
+                        {
+                            successCallback.Invoke ();
+                        }
+                    } else {
+                        if (null != failedCallback) {
+                            failedCallback.Invoke (msg.ResultCode);
+                        }
+                    }
+                },
+                code => {
+                    if (null != failedCallback)
+                    {
+                        failedCallback.Invoke ((int)code);
+                    }
+                }
+            );
+        }
         public Msg_ProjectUploadParam GetMsgProjectUploadParam () {
             Msg_ProjectUploadParam msgProjectUploadParam = new Msg_ProjectUploadParam ();
             msgProjectUploadParam.MapWidth = _projectUploadParam.MapWidth;

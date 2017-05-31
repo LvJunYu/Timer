@@ -1,4 +1,4 @@
-﻿/********************************************************************
+/********************************************************************
 ** Filename : Project
 ** Author : Dong
 ** Date : 2015/10/19 星期一 下午 7:18:18
@@ -573,6 +573,92 @@ namespace GameA
             ImageResourceManager.Instance.DeleteImageCache(IconPath);
         }
 
+
+//        public void Publish(string name, string summary, byte[] dataBytes, byte[] iconBytes,
+//                         float recordUsedTime, byte[] recordBytes, 
+//                            Action onSuccess, Action<EProjectOperateResult> onError)
+//        {
+//            if (ProjectStatus == EProjectStatus.PS_Public)
+//            {
+//                return;
+//            }
+//            bool isCreate = false;
+//            if (LocalDataState == ELocalDataState.LDS_UnCreated)
+//            {
+//                isCreate = true;
+//            }
+//            if (string.IsNullOrEmpty(name))
+//            {
+//                name = string.Format("我的匠游大作");
+//            }
+//            Name = name;
+//            Summary = summary;
+//
+//            WWWForm form = new WWWForm();
+//            form.AddBinaryData("levelFile", dataBytes);
+//            form.AddBinaryData("iconFile", iconBytes);
+//            if (recordBytes != null)
+//            {
+//                form.AddBinaryData("recordFile", recordBytes);
+//            }
+//
+//            Msg_CS_CMD_PublishProject publishProject = new Msg_CS_CMD_PublishProject();
+//            publishProject.Name = Name;
+//            publishProject.Summary = Summary;
+//            publishProject.RecordUsedTime = recordUsedTime;
+//
+//            publishProject.ProgramVersion = ProgramVersion;
+//            publishProject.ResourceVersion = ResourcesVersion;
+//            if (!isCreate)
+//            {
+//                publishProject.PersonalProjectId = _projectId;
+//            }
+////            User user = LocalUser.Instance.UserLegacy;
+//			var user = LocalUser.Instance.User;
+//            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PublishProject>(SoyHttpApiPath.PublishProject, publishProject, ret => {
+//                if (ret.ResultCode == (int)EProjectOperateResult.POR_Success)
+//                {
+//                    if (isCreate)
+//                    {
+//                        user.OnProjectCreated(ret.ProjectData, this);
+//                        LocalCacheManager.Instance.Save(dataBytes, LocalCacheManager.EType.File, ResPath);
+//                        ImageResourceManager.Instance.SaveOrUpdateImageData(IconPath, iconBytes);
+//                    }
+//                    else
+//                    {
+//                        DeleteResCache();
+//                        _syncIgnoreMe = true;
+//                        ProjectManager.Instance.OnSyncProject(ret.ProjectData, true);
+//                        _syncIgnoreMe = false;
+//                        OnSyncFromParent(ret.ProjectData);
+//                    }
+//                    user.GetPublishedPrjectRequestTimer().Zero();
+//                    user.GetSavedPrjectRequestTimer().Zero();
+////                    Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
+//                    if (onSuccess != null)
+//                    {
+//                        onSuccess.Invoke();
+//                    }
+//                }
+//                else
+//                {
+//                    LogHelper.Error("level upload error, code: {0}", ret.ResultCode);
+//                    if (onError != null)
+//                    {
+//                        onError.Invoke((EProjectOperateResult)ret.ResultCode);
+//                    }
+//                }
+//            }, (intCode, str) =>
+//            {
+//                SoyHttpClient.ShowErrorTip(intCode);
+//                if (onError != null)
+//                {
+//                    onError.Invoke(EProjectOperateResult.POR_None);
+//                }
+//            }, form);
+//        }
+
+
         public void PrepareRes(Action successCallback, Action failedCallback = null)
         {
             string targetRes = ResPath;
@@ -617,20 +703,21 @@ namespace GameA
                 }
                 return;
             }
+            _downloadResSucceedCB -= successCallback;
+            _downloadResSucceedCB += successCallback;
+            _downloadResFailedCB -= failedCallback;
+            _downloadResFailedCB += failedCallback;
             if (_isdownloadingRes) {
-                _downloadResSucceedCB -= successCallback;
-                _downloadResSucceedCB += successCallback;
-                _downloadResFailedCB -= failedCallback;
-                _downloadResFailedCB += failedCallback;
                 return;
             }
             _isdownloadingRes = true;
             SFile file = SFile.GetFileWithUrl(SoyPath.Instance.GetFileUrl(targetRes));
-            Debug.Log ("____________________download map file: " + targetRes);
+            //Debug.Log ("____________________download map file: " + targetRes + " success cb: " + _downloadResSucceedCB + " / successCallback: " + successCallback);
             file.DownloadAsync((f) =>
                 {
                     _isdownloadingRes = false;
                     LocalCacheManager.Instance.Save(f.FileBytes, LocalCacheManager.EType.File, targetRes);
+                    //Debug.Log ("__________________________ call download success cb : " + _downloadResSucceedCB);
                     if (_downloadResSucceedCB != null)
                     {
                         _downloadResSucceedCB.Invoke();
@@ -638,7 +725,7 @@ namespace GameA
                 }, sFile =>
                 {
                     _isdownloadingRes = false;
-                    Debug.Log("__________________________" + SoyPath.Instance.GetFileUrl(targetRes));
+                    //Debug.Log("__________________________" + SoyPath.Instance.GetFileUrl(targetRes));
                     if (_downloadResFailedCB != null)
                     {
                         _downloadResFailedCB.Invoke();

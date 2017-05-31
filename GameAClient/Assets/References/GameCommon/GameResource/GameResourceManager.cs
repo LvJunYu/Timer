@@ -61,6 +61,7 @@ namespace SoyEngine
 
         private void OnDestroy()
         {
+            
 			//atlas
 	        {
 				var enumerator = _cachedAtlas.GetEnumerator();
@@ -520,7 +521,11 @@ namespace SoyEngine
             }
             if (_cachedMainAsset.ContainsKey(path))
             {
-                return _cachedMainAsset[path];
+                if (null == _cachedMainAsset [path]) {
+                    _cachedMainAsset.Remove (path);
+                } else {
+                    return _cachedMainAsset [path];
+                }
             }
 
 #if UNITY_EDITOR
@@ -789,6 +794,7 @@ namespace SoyEngine
 		private void InitDebugLocalRes()
 		{
 			_localResDebugTmpParent = new GameObject("_localResDebugTmpParent");
+            GameObject.DontDestroyOnLoad (_localResDebugTmpParent);
 			_localResDebugTmpParent.SetActive(false);
 			string path = Application.dataPath;
 			_localDebugResPathDic = new Dictionary<string, string>();

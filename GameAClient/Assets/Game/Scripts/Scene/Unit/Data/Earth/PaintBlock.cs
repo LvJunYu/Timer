@@ -16,7 +16,7 @@ namespace GameA.Game
     public class PaintBlock : BlockBase
     {
         public const int MinEdgeLength = 64;
-        public const int OffsetEdgeLength = 32;
+        public const int OffsetEdgeLength = 10;
         /// <summary>
         /// 被涂装的边信息，有序从小到大 
         /// </summary>
