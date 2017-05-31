@@ -38,11 +38,10 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.Content, msg);
             if(string.IsNullOrEmpty(title))
             {
-                _cachedView.Title.gameObject.SetActive(false);
+                DictionaryTools.SetContentText(_cachedView.Title, "提示");
             }
             else
             {
-                _cachedView.Title.gameObject.SetActive(true);
                 DictionaryTools.SetContentText(_cachedView.Title, title);
             }
             for (int i = 0; i < 3; i++)
@@ -51,61 +50,36 @@ namespace GameA
                 {
                     _cachedView.ButtonAry[i].gameObject.SetActive(false);
                 }
-                else {
+                else
+                {
                     _cachedView.ButtonAry[i].gameObject.SetActive(true);                    
                     DictionaryTools.SetContentText(_cachedView.ButtonTextAry[i], btnParam[i].Key);
                     _callbackAry[i] = btnParam[i].Value;
+                    if (btnParam.Length == 1)
+                    {
+                        _cachedView.ButtonBgAry[i].sprite = _cachedView.BgSprite[1];
+                    }
+                    else
+                    {
+                        _cachedView.ButtonBgAry[i].sprite = _cachedView.BgSprite[i];
+                    }
                 }
             }
             _cachedView.Trans.sizeDelta = new Vector2(40f, 40f);
             if (btnParam.Length == 0)
             {
-                _cachedView.StartCoroutine(AutoClose());
+                _cachedView.ButtonListDock.SetActive(false);
+                _cachedView.SeperatorDock.SetActive(false);
+                CoroutineProxy.Instance.StartCoroutine(AutoClose());
                 _cachedView.FullScreenMask.raycastTarget = false;
                 _cachedView.FullScreenMask.enabled = false;
             }
             else
             {
+                _cachedView.ButtonListDock.SetActive(true);
+                _cachedView.SeperatorDock.SetActive(true);
                 _cachedView.FullScreenMask.raycastTarget = true;
                 _cachedView.FullScreenMask.enabled = true;
-            }
-
-            if(btnParam.Length == 0)
-            {
-                _cachedView.ContentBg.sprite = _cachedView.BgSprite[3];
-            }
-            else
-            {
-                _cachedView.ContentBg.sprite = _cachedView.BgSprite[2];
-            }
-            Image bgImage = _cachedView.ButtonBgAry[0];
-            if(btnParam.Length == 1)
-            {
-                bgImage.sprite = _cachedView.BgSprite[2];
-                bgImage.rectTransform.localScale = new Vector3(1f, -1f, 1f);
-            }
-            else
-            {
-                bgImage.sprite = _cachedView.BgSprite[1];
-                bgImage.rectTransform.localScale = Vector3.one;
-            }
-
-            bgImage = _cachedView.ButtonBgAry[1];
-            if(btnParam.Length == 2)
-            {
-                bgImage.sprite = _cachedView.BgSprite[1];
-                bgImage.rectTransform.localScale = new Vector3(-1f, 1f, 1f);
-            }
-            else
-            {
-                bgImage.sprite = _cachedView.BgSprite[0];
-                bgImage.rectTransform.localScale = new Vector3(1f, 1f, 1f);
-            }
-
-            bgImage = _cachedView.ButtonBgAry[2];
-            {
-                bgImage.sprite = _cachedView.BgSprite[1];
-                bgImage.rectTransform.localScale = new Vector3(-1f, 1f, 1f);
             }
         }
 
@@ -113,7 +87,10 @@ namespace GameA
         IEnumerator AutoClose()
         {
             yield return new WaitForSeconds(AutoCloseSeconds);
-            this.Destroy();
+            if (this._cachedView)
+            {
+                this.Destroy();
+            }
         }
 
         private void OnButton1Click()
