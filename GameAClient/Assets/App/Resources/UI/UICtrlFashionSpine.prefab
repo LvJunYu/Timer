@@ -210,10 +210,11 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 7af3dd27e08c748b3b07e10c668c637e, type: 2}
   - {fileID: 2100000, guid: b4f3c8a300e99439291191a2494637fb, type: 2}
   - {fileID: 2100000, guid: 7af3dd27e08c748b3b07e10c668c637e, type: 2}
   - {fileID: 2100000, guid: cd96159c5fcc64ff291ba35d3c2d6afb, type: 2}
+  - {fileID: 2100000, guid: 416df73ff63c74666b88ee532f7ee096, type: 2}
+  - {fileID: 2100000, guid: 7af3dd27e08c748b3b07e10c668c637e, type: 2}
   - {fileID: 2100000, guid: 416df73ff63c74666b88ee532f7ee096, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -303,7 +304,7 @@ MonoBehaviour:
   frontFacing: 0
   logErrors: 0
   disableRenderingOnOverride: 1
-  _animationName: Run
+  _animationName: Idle2
   loop: 1
   timeScale: 1
 --- !u!114 &114737484652607264
