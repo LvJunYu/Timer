@@ -60,6 +60,11 @@ namespace GameA.Game
         private bool _needSave;
         private Table_Matrix _tableMatrix;
 
+        /// <summary>
+        /// 当前正在播放的录像数据，只有当游戏模式是录像时才有意义
+        /// </summary>
+        private GM2DRecordData _gm2drecordData;
+
 
 	    private GameSettingData _settings;
 
@@ -508,14 +513,14 @@ namespace GameA.Game
                     OnGameLoadError("录像解析失败");
                     yield break;
                 }
-                GM2DRecordData recordData = GameMapDataSerializer.Instance.Deserialize<GM2DRecordData>(recordBytes);
-                if(recordData == null)
+                _gm2drecordData = GameMapDataSerializer.Instance.Deserialize<GM2DRecordData>(recordBytes);
+                if(_gm2drecordData == null)
                 {
                     OnGameLoadError("录像解析失败");
                     yield break;
                 }
                 PlayMode.Instance.ERunMode = ERunMode.Record;
-                PlayMode.Instance.InputDatas = recordData.Data;
+                PlayMode.Instance.InputDatas = _gm2drecordData.Data;
             }
 
             yield return null;
@@ -565,8 +570,31 @@ namespace GameA.Game
 			ChangePartsSpineView view = mainPlayer.View as ChangePartsSpineView;
 			if (view == null)
 				return;
-//			view.SetParts (2, SpinePartsDefine.ESpineParts.Head);
-			
+            int headId = (int)LocalUser.Instance.UsingAvatarData.Head.Id;
+            int upperId = (int)LocalUser.Instance.UsingAvatarData.Upper.Id;
+            int LowerId = (int)LocalUser.Instance.UsingAvatarData.Lower.Id;
+            int appendageId = (int)LocalUser.Instance.UsingAvatarData.Appendage.Id;
+
+            if (EMode.PlayRecord == _mode && _gm2drecordData != null && _gm2drecordData.Avatar != null)
+            {
+                headId = _gm2drecordData.Avatar.Head;
+                upperId = _gm2drecordData.Avatar.Upper;
+                LowerId = _gm2drecordData.Avatar.Lower;
+                appendageId = _gm2drecordData.Avatar.Appendage;
+            }
+            //			view.SetParts (2, SpinePartsDefine.ESpineParts.Head);
+            if (LocalUser.Instance.UsingAvatarData.Head != null) {
+                view.SetParts (headId, SpinePartsHelper.ESpineParts.Head);
+            }
+            if (LocalUser.Instance.UsingAvatarData.Upper != null) {
+                view.SetParts (upperId, SpinePartsHelper.ESpineParts.Upper);
+            }
+            if (LocalUser.Instance.UsingAvatarData.Lower != null) {
+                view.SetParts (LowerId, SpinePartsHelper.ESpineParts.Lower);
+            }
+            if (LocalUser.Instance.UsingAvatarData.Appendage != null) {
+                view.SetParts (appendageId, SpinePartsHelper.ESpineParts.Appendage);
+            }
 		}
 
         public void ChangeToMode(EMode mode)
