@@ -36,7 +36,8 @@ namespace GameA.Game
         protected ERunMode _runMode;
         private const int JumpFirstMaxTime = 105;
         private const int JumpSecondMaxTime = 205;
-        private const int QuickenMaxTime = 5*ConstDefineGM2D.FixedFrameCount;
+        private const int QuickenMaxTime = 3*ConstDefineGM2D.FixedFrameCount;
+        private const int QuickenCDTime = 8*ConstDefineGM2D.FixedFrameCount;
 
         #region state
 
@@ -79,6 +80,7 @@ namespace GameA.Game
         [SerializeField]
         protected bool _lastQuickenInput;
         public int _quickenTime;
+        public int _quickenCDTime;
 
         [SerializeField]
         protected bool _skill1Input;
@@ -233,6 +235,7 @@ namespace GameA.Game
             _quickenInput = false;
             _lastQuickenInput = false;
             _quickenTime = 0;
+            _quickenCDTime = 0;
             _skill1Input = false;
             _lastSkill1Input = false;
             _skill2Input = false;
@@ -386,6 +389,10 @@ namespace GameA.Game
             }
             _curTime++;
             _totalTime = _curTime;
+            if (_quickenCDTime > 0)
+            {
+                _quickenCDTime--;
+            }
             if (_quickenTime > 0)
             {
                 _quickenTime--;
@@ -713,6 +720,10 @@ namespace GameA.Game
                     break;
                 case EFire2State.Quicken:
                     {
+                        if (_quickenCDTime > 0)
+                        {
+                            return;
+                        }
                         if (_quickenTime > 0)
                         {
                             return;
@@ -720,6 +731,7 @@ namespace GameA.Game
                         if (QuickenInputUp)
                         {
                             _quickenTime = QuickenMaxTime;
+                            _quickenCDTime = QuickenCDTime;
                         }
                     }
                     break;

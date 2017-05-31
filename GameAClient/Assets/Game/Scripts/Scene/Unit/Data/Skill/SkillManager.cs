@@ -18,10 +18,25 @@ namespace GameA.Game
         protected UnitBase _owner;
         [SerializeField]protected SkillBase _currentSkill;
         protected Dictionary<string, SkillBase> _skills = new Dictionary<string, SkillBase>();
+        protected float _currentMp;
+        protected float _mpSpeed = 0.2f;
+        protected float _totalMp = 500;
 
         public SkillBase CurrentSkill
         {
             get { return _currentSkill; }
+        }
+
+        public float CurrentMp
+        {
+            get { return _currentMp; }
+        }
+
+        public float AddMp(float mp)
+        {
+            var oldMp = _currentMp;
+            _currentMp = Math.Min(_totalMp, _currentMp + mp);
+            return _currentMp - oldMp;
         }
 
         public SkillManager(UnitBase owner)
@@ -77,19 +92,32 @@ namespace GameA.Game
             }
             _currentSkill = skill;
             _currentSkill.Enter(_owner);
+            _currentMp = 0;
         }
 
         public bool Fire()
         {
-            if (_currentSkill != null)
+            if (_currentSkill == null)
             {
-                return _currentSkill.Fire();
+                return false;
             }
-            return false;
+            if (_currentMp < _currentSkill.UseMp)
+            {
+                //TODO UI提示
+                LogHelper.Warning("MP is not enough!");
+                return false;
+            }
+            if (!_currentSkill.Fire())
+            {
+                return false;
+            }
+            _currentMp -= _currentSkill.UseMp;
+            return true;
         }
 
         public void UpdateLogic()
         {
+            _currentMp = Util.ConstantLerp(_currentMp, _totalMp, _mpSpeed);
             if (_currentSkill != null)
             {
                 _currentSkill.UpdateLogic();

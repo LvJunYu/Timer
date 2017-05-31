@@ -15,9 +15,9 @@ namespace GameA.Game
     [Unit(Id = 6101, Type = typeof(EnergyPool))]
     public class EnergyPool : BlockBase
     {
-        protected int _totalCount;
-        protected int _currentCount;
-        protected int _speedEnergy;
+        protected float _totalMp;
+        protected float _currentMp;
+        protected float _mpSpeed;
 
         protected EnergyPoolCtrl _energyPoolCtrl;
         protected UnityNativeParticleItem _efffect;
@@ -26,8 +26,8 @@ namespace GameA.Game
 
         protected override bool OnInit()
         {
-            _totalCount = 300;
-            _speedEnergy = 1;
+            _totalMp = 800;
+            _mpSpeed = 0.5f;
             if (!base.OnInit())
             {
                 return false;
@@ -47,7 +47,7 @@ namespace GameA.Game
 
         protected override void Clear()
         {
-            _currentCount = _totalCount;
+            _currentMp = _totalMp;
             if (_energyPoolCtrl != null)
             {
                 _energyPoolCtrl.LiquidVolume = 1;
@@ -106,11 +106,10 @@ namespace GameA.Game
         {
             if (other.SkillMgr2 != null)
             {
-                if (_currentCount > 0)
-                {
-                    _currentCount = 0;
-                    OnTrigger(other);
-                }
+                OnTrigger(other);
+                //如果技能不一样
+                var addedMp = other.SkillMgr2.AddMp(_currentMp);
+                _currentMp -= addedMp;
             }
             return base.OnUpHit(other, ref y, checkOnly);
         }
@@ -137,7 +136,7 @@ namespace GameA.Game
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            _currentCount = Util.ConstantLerp(_currentCount, _totalCount, _speedEnergy);
+            _currentMp = Util.ConstantLerp(_currentMp, _totalMp, _mpSpeed);
             if (_energyPoolCtrl != null)
             {
                 _energyPoolCtrl.LiquidVolume = GetProcess();
@@ -146,11 +145,11 @@ namespace GameA.Game
 
         private float GetProcess()
         {
-            if (_totalCount == 0)
+            if (_totalMp <= 0)
             {
                 return 1;
             }
-            return (float)_currentCount / _totalCount;
+            return (float)_currentMp / _totalMp;
         }
     }
 }
