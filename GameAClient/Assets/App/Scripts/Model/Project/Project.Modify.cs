@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine;
 using SoyEngine;
 
@@ -25,15 +24,7 @@ namespace GameA
 
 
         #endregion 属性
-//        public byte[] BytesData {
-//        get {
-//            return this._bytesData;
-//        }
-//    }
         #region 方法
-//        public void SetBytesData (byte[] bytesData) {
-//            _bytesData = bytesData;
-//        }
         /// <summary>
         /// 根据DataScene2D的信息刷新ProjectUploadParam
         /// </summary>
@@ -119,6 +110,39 @@ namespace GameA
 //            }
         }
 
+        public void PublishModifyProject (Action successCallback = null, Action<int> failedCallback = null)
+        {
+            if (ProjectStatus != EProjectStatus.PS_Reform) return;
+            RemoteCommands.PublishReformProject (
+                ProjectId,
+                ProgramVersion,
+                ResourcesVersion,
+                RecordUsedTime,
+                GetMsgProjectUploadParam (),
+                msg => {
+                    
+                    if (msg.ResultCode == (int)EProjectOperateResult.POR_Success) {
+                        OnSyncFromParent (msg.ProjectData);
+                        _bytesData = null;
+                        Messenger.Broadcast (EMessengerType.OnReformProjectPublished);
+                        if (null != successCallback)
+                        {
+                            successCallback.Invoke ();
+                        }
+                    } else {
+                        if (null != failedCallback) {
+                            failedCallback.Invoke (msg.ResultCode);
+                        }
+                    }
+                },
+                code => {
+                    if (null != failedCallback)
+                    {
+                        failedCallback.Invoke ((int)code);
+                    }
+                }
+            );
+        }
         public Msg_ProjectUploadParam GetMsgProjectUploadParam () {
             Msg_ProjectUploadParam msgProjectUploadParam = new Msg_ProjectUploadParam ();
             msgProjectUploadParam.MapWidth = _projectUploadParam.MapWidth;

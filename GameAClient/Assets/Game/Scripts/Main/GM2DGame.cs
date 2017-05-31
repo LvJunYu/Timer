@@ -1,4 +1,4 @@
-﻿﻿/********************************************************************
+﻿/********************************************************************
 ** Filename : GM2DGame
 ** Author : Dong
 ** Date : 2015/5/6 15:27:36
@@ -415,7 +415,6 @@ namespace GameA.Game
                         _project.Name, 
                         _project.Summary,
                         _project.DownloadPrice,
-                        _project.PublishRecordFlag,
                         () => {
                             if (null != successCB) {
                                 successCB.Invoke ();
@@ -610,7 +609,7 @@ namespace GameA.Game
         }
 
         public void Save(string name, string summary, int downloadPrice,
-            bool publishRecordFlag, Action successCallback = null, Action<EProjectOperateResult> failedCallback = null)
+            Action successCallback = null, Action<EProjectOperateResult> failedCallback = null)
         {
             if(name == null)
             {
@@ -647,7 +646,6 @@ namespace GameA.Game
                 passFlag, 
                 RecordUsedTime, 
                 RecordBytes,
-                publishRecordFlag,
                 EditMode.Instance.MapStatistics.TimeLimit,
                 EditMode.Instance.MapStatistics.MsgWinCondition,
                 ()=>{
@@ -666,47 +664,10 @@ namespace GameA.Game
         public void SaveModifyProject (Action successCallback = null, Action<EProjectOperateResult> failedCallback = null) {
             byte[] mapDataBytes = MapManager.Instance.SaveMapData();
             byte[] compressedBytes = MatrixProjectTools.CompressLZMA (mapDataBytes);
-//            _project.SetBytesData (mapDataBytes);
+            //            _project.SetBytesData (mapDataBytes);
+            //Debug.Log ("_________________________3 " + _project.ProjectId + " " + _project.PassFlag);
             _project.SaveModifyProject (compressedBytes, successCallback, failedCallback);
         }
-
-//        public void Publish(string name, string summary, Action successCallback=null, Action<EProjectOperateResult> failedCallback=null)
-//        {
-//            if(name == null)
-//            {
-//                name = _project.Name;
-//            }
-//            if(summary == null)
-//            {
-//                summary = _project.Summary;
-//            }
-//
-//            byte[] mapDataBytes = MapManager.Instance.SaveMapData();
-//            mapDataBytes = MatrixProjectTools.CompressLZMA(mapDataBytes);
-//            if(IconBytes == null)
-//            {
-//                IconBytes = CaptureLevel();
-//            }
-//            if (name == null
-//                || mapDataBytes == null
-//                || mapDataBytes.Length == 0)
-//            {
-//                if(failedCallback != null)
-//                {
-//                    failedCallback.Invoke(EProjectOperateResult.POR_Error);
-//                }
-//                return;
-//            }
-//            _project.Publish(name, summary, mapDataBytes, IconBytes,
-//                RecordUsedTime, RecordBytes, ()=>{
-//                NeedSave = false;
-//                MapDirty = false;
-//                if(successCallback != null)
-//                {
-//                    successCallback.Invoke();
-//                }
-//            }, failedCallback);
-//        }
 
         public bool CheckCanPublish(bool showPrompt = false)
         {
@@ -914,10 +875,12 @@ namespace GameA.Game
                 );
                 return;
             } else if (EProjectStatus.PS_Reform == p.ProjectStatus) {
-                
+                //Debug.Log ("_______________________________1 " + p.ProjectId +" " + _project.PassFlag);
                 if (false == p.PassFlag) {
+                    
                     p.PassFlag = true;
                     NeedSave = true;
+                    //Debug.Log ("_______________________________2 " + p.ProjectId +" " + _project.PassFlag);
                 }
                 Messenger.Broadcast (EMessengerType.GameFinishSuccessShowUI);
             } else if (EProjectStatus.PS_Challenge == p.ProjectStatus) {

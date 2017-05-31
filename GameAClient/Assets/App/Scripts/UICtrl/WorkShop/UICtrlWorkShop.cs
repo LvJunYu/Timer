@@ -92,7 +92,6 @@ namespace GameA
         {
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnChangeToAppMode, OnReturnToApp);
-//            RegisterEvent(SoyEngine.EMessengerType.OnAccountLoginStateChanged, OnEvent);
         }
 
         protected override void OnViewCreated()
@@ -100,7 +99,6 @@ namespace GameA
             base.OnViewCreated();
 
             _cachedView.ChangeModeBtn.onClick.AddListener(OnChangeModeBtn);
-//            _cachedView.RegisterBtn.onClick.AddListener(OnRegisterBtnClick);
             _cachedView.NewProjectBtn.onClick.AddListener(OnNewProjectBtn);
             _cachedView.PublishBtn.onClick.AddListener (OnPublishBtn);
             _cachedView.DeleteBtn.onClick.AddListener (OnDeleteBtn);
@@ -110,7 +108,6 @@ namespace GameA
             _cachedView.ConfirmTitleBtn.onClick.AddListener (OnConfirmTitleBtn);
             _cachedView.EditDescBtn.onClick.AddListener (OnEditDescBtn);
             _cachedView.ConfirmDescBtn.onClick.AddListener (OnConfirmDescBtn);
-//            _cachedView.SoyPersonalProjectList.SetUICtrl(this);
 
 
 			_cachedView.ReturnBtn.onClick.AddListener (OnReturnBtn);
@@ -621,7 +618,7 @@ namespace GameA
             if (_waitReturnToAppTimer > 0)
                 return;
             if (_wait2RequestUpdateProjects.Count == 0) {
-                SocialGUIManager.Instance.ReturnToHome ();
+                SocialGUIManager.Instance.CloseUI<UICtrlWorkShop>();
             } else {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在提交关卡修改...");
                 _waitReturnToAppTimer = _waitReturnToAppTimeOut;

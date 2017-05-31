@@ -161,6 +161,26 @@ namespace GameA
             );
         }
 
+        private void PublishProject ()
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "正在发布关卡");
+            LocalUser.Instance.MatchUserData.CurReformProject.PublishModifyProject (
+                () =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                    SocialGUIManager.Instance.CloseUI<UICtrlModify> ();
+                    SocialGUIManager.ShowPopupDialog ("改造关卡发布成功");
+                    LocalUser.Instance.MatchUserData.CurReformState = (int)EReformState.RS_WaitForChance;
+                    LocalUser.Instance.MatchUserData.CurPublishTime = LocalUser.Instance.MatchUserData.CurPublishTime;
+                },
+                (code) => 
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                    SocialGUIManager.ShowPopupDialog ("改造关卡发布失败，代码：" + code.ToString ());
+                }
+            );
+        }
+
         #region 接口
         protected override void InitGroupId()
         {
@@ -173,40 +193,47 @@ namespace GameA
 		}
 
 		private void OnPublishBtn () {
+            
             if (LocalUser.Instance.MatchUserData.CurReformProject.IsInited &&
                 true == LocalUser.Instance.MatchUserData.CurReformProject.PassFlag) {
-                SocialGUIManager.ShowPopupDialog (
-                    "关卡越难发布后获得的收益越多",
-                    "确认发布",
-                    new KeyValuePair<string, Action> ("确定", () => {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "正在发布关卡");
-                        RemoteCommands.PublishReformProject(
-                            LocalUser.Instance.MatchUserData.CurReformProject.ProjectId,
-                            LocalUser.Instance.MatchUserData.CurReformProject.ProgramVersion,
-                            LocalUser.Instance.MatchUserData.CurReformProject.ResourcesVersion,
-                            LocalUser.Instance.MatchUserData.CurReformProject.RecordUsedTime,
-                            LocalUser.Instance.MatchUserData.CurReformProject.GetMsgProjectUploadParam(),
-                            msg => {
-                                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                                if (msg.ResultCode == (int)EProjectOperateResult.POR_Success) {
-                                    SocialGUIManager.Instance.CloseUI<UICtrlModify> ();
-                                    SocialGUIManager.ShowPopupDialog ("改造关卡发布成功");
-                                    LocalUser.Instance.MatchUserData.CurReformState = (int)EReformState.RS_WaitForChance;
-                                    LocalUser.Instance.MatchUserData.CurPublishTime = LocalUser.Instance.MatchUserData.CurPublishTime;
-                                    LocalUser.Instance.MatchUserData.CurPublishProject.OnSyncFromParent(msg.ProjectData);
-                                    Messenger.Broadcast(EMessengerType.OnReformProjectPublished);
-                                } else {
-                                    SocialGUIManager.ShowPopupDialog ("改造关卡发布失败，代码：" + ((EProjectOperateResult)msg.ResultCode).ToString ());
-                                }
-                            },
-                            code => {
-                                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                                SocialGUIManager.ShowPopupDialog ("改造关卡发布失败，代码：" + code.ToString());
+
+                // 判断有没有正在生效的关卡
+                bool hasValidPublishProject = LocalUser.Instance.MatchUserData.CurPublishProject != null;
+                long now = DateTimeUtil.GetServerTimeNowTimestampMillis ();
+                if ((now - LocalUser.Instance.MatchUserData.CurPublishTime) > MatchUserData.PublishedProjectValidTimeLength) {
+                    hasValidPublishProject = false;
+                }
+                if (hasValidPublishProject)
+                {
+                    SocialGUIManager.ShowPopupDialog (
+	                    "新发布的关卡会覆盖正在生效的发布关卡，确认要发布吗？",
+	                    "确认发布",
+	                    new KeyValuePair<string, Action> ("确定", () => {
+                            if (LocalUser.Instance.MatchUserData.PlayCountForReward / (float)LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity > 0.25f) {
+                                SocialGUIManager.ShowPopupDialog (
+                                    "当前还有未领取的奖励，请先领取奖励",
+                                    null,
+                                    new KeyValuePair<string, Action> ("确定", null)
+                                );
+                                return;
                             }
+                            PublishProject ();
+                        }),
+                        new KeyValuePair<string, Action> ("取消", null)
+                    );
+                } else {
+                    // 判断有没有未收取的奖励
+                    if (LocalUser.Instance.MatchUserData.PlayCountForReward / (float)LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity > 0.25f) {
+                        SocialGUIManager.ShowPopupDialog (
+                            "当前还有未领取的奖励，请先领取奖励",
+                            null,
+                            new KeyValuePair<string, Action> ("确定", null)
                         );
-                    }),
-                    new KeyValuePair<string, Action> ("取消", null)         
-                );
+                        return;
+                    }
+                    PublishProject ();
+                }
+
             } else {
                 SocialGUIManager.ShowPopupDialog ("改造关卡还没有成功通关，不可发布");
             }

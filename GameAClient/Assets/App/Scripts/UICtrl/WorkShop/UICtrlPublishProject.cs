@@ -81,7 +81,6 @@ namespace GameA
                     CommonTools.ShowPopupDialog("发布关卡失败，错误代码 " + code.ToString());
                 }, null
             );
-
         }
 
         private void OnCancelBtn () {

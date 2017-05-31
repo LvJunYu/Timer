@@ -1,4 +1,4 @@
-﻿/********************************************************************
+/********************************************************************
 ** Filename : Project
 ** Author : Dong
 ** Date : 2015/10/19 星期一 下午 7:18:18
@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine;
 using SoyEngine;
 
@@ -22,21 +21,8 @@ namespace GameA
 
         private long _guid;
         private User _user;
-//        private string _name;
-//        private string _summary;
-//        private string _iconPath;
-//        private string _resPath;
-//        private long _createTime;
-//        private Msg_SC_DAT_Project.ELocalDataState _localDataState;
-//        private EProjectStatus _projectStatus;
-//        private int _programVersion;
         private int _resourceVersion;
         private int _downloadPrice;
-//        private EProjectCategory _projectCategory;
-//        private bool _passFlag;
-//        private float _recordUsedTime;
-        private bool _publishRecordFlag;
-//        private bool _isValid;
 
         private bool _extendReady = false;
         private int _likeCount;
@@ -56,7 +42,6 @@ namespace GameA
         private GameTimer _projectCommentListRequestTimer;
 
         private bool _userLike;
-//        private byte _userRate;
         private bool _userFavorite;
         private int _userCompleteCount;
         private long _userLastPlayTime;
@@ -105,17 +90,6 @@ namespace GameA
                 }
             }
         }
-//        public long ProjectId
-//        {
-//            get
-//            {
-//				return this._projectId;
-//            }
-//            set
-//            {
-//				_projectId = value;
-//            }
-//        }
 
         public User UserLegacy
         {
@@ -129,161 +103,11 @@ namespace GameA
             }
         }
 
-//        public string Name
-//        {
-//            get
-//            {
-//                return this._name;
-//            }
-//            set
-//            {
-//                _name = value;
-//            }
-//        }
-
-//        public string Summary
-//        {
-//            get
-//            {
-//                return this._summary;
-//            }
-//            set
-//            {
-//                _summary = value;
-//            }
-//        }
-
-//        public string IconPath
-//        {
-//            get
-//            {
-//                return this._iconPath;
-//            }
-//            set
-//            {
-//                _iconPath = value;
-//            }
-//        }
-
-//        public string ResPath
-//        {
-//            get
-//            {
-//                return this._resPath;
-//            }
-//            set
-//            {
-//                _resPath = value;
-//            }
-//        }
-
-//        public long CreateTime
-//        {
-//            get
-//            {
-//                return this._createTime;
-//            }
-//            set
-//            {
-//                _createTime = value;
-//            }
-//        }
-
-//        public Msg_SC_DAT_Project.ELocalDataState LocalDataState
-//        {
-//            get
-//            {
-//                return this._localDataState;
-//            }
-//            set
-//            {
-//                _localDataState = value;
-//            }
-//        }
-
-//        public EProjectStatus ProjectStatus
-//        {
-//            get
-//            {
-//                return this._projectStatus;
-//            }
-//            set
-//            {
-//                _projectStatus = value;
-//            }
-//        }
-
-//        public int ProgramVersion
-//        {
-//            get
-//            {
-//                return this._programVersion;
-//            }
-//            set
-//            {
-//                _programVersion = value;
-//            }
-//        }
-
-//        public int ResourceVersion
-//        {
-//            get
-//            {
-//                return this._resourceVersion;
-//            }
-//            set
-//            {
-//                _resourceVersion = value;
-//            }
-//        }
-
         public int DownloadPrice
         {
             get { return _downloadPrice; }
             set { _downloadPrice = value; }
         }
-
-//        public EProjectCategory ProjectCategory
-//        {
-//            get { return _projectCategory; }
-//            set { _projectCategory = value; }
-//        }
-
-//        public bool PassFlag
-//        {
-//            get
-//            {
-//                return _passFlag;
-//            }
-//        }
-
-//        public float RecordUsedTime
-//        {
-//            get
-//            {
-//                return _recordUsedTime;
-//            }
-//        }
-
-        public bool PublishRecordFlag
-        {
-            get
-            {
-                return _publishRecordFlag;
-            }
-        }
-
-//        public bool IsValid
-//        {
-//            get
-//            {
-//                return this._isValid;
-//            }
-//            set
-//            {
-//                _isValid = value;
-//            }
-//        }
 
         public int LikeCount
         {
@@ -446,18 +270,6 @@ namespace GameA
             }
         }
 
-//        public byte UserRate
-//        {
-//            get
-//            {
-//                return this._userRate;
-//            }
-//            set
-//            {
-//                _userRate = value;
-//            }
-//        }
-
         public bool UserFavorite
         {
             get
@@ -479,14 +291,6 @@ namespace GameA
         {
             get { return _userLastPlayTime; }
         }
-
-//        public List<ProjectComment> ProjectCommentList
-//        {
-//            get
-//            {
-//                return this._projectCommentList;
-//            }
-//        }
 
         public GameTimer ProjectCommentListRequestTimer
         {
@@ -577,20 +381,6 @@ namespace GameA
 
         #region 方法
 
-//        public Project()
-//        {
-//        }
-
-//        public Project(Msg_SC_DAT_Project msg)
-//        {
-//            OnSyncProject(msg);
-//        }
-
-//        public void BeginCreate()
-//        {
-//            GameManager.Instance.RequestCreate(this);
-//        }
-
         public void BeginEdit()
         {
             GameManager.Instance.RequestEdit(this);
@@ -675,7 +465,6 @@ namespace GameA
             bool passFlag,
             float recordUsedTime, 
             byte[] recordBytes,
-            bool publishRecordFlag,
             int timeLimit,
             int winCondition,
             Action successCallback,
@@ -701,6 +490,7 @@ namespace GameA
             {
                 form.AddBinaryData("recordFile", recordBytes);
             }
+            String oldIconPath = _iconPath;
             if (LocalDataState == ELocalDataState.LDS_UnCreated) {
                 RemoteCommands.CreateProject (
                     Name,
@@ -713,7 +503,7 @@ namespace GameA
                     winCondition,
                     msg => {
                         if (msg.ResultCode == (int)EProjectOperateResult.POR_Success) {
-                            LocalCacheManager.Instance.Save(dataBytes, LocalCacheManager.EType.File, ResPath);
+//                            LocalCacheManager.Instance.Save(dataBytes, LocalCacheManager.EType.File, ResPath);
                             ImageResourceManager.Instance.SaveOrUpdateImageData(IconPath, iconBytes);
                             LocalUser.Instance.User.GetSavedPrjectRequestTimer().Zero();
                             if (successCallback != null)
@@ -749,6 +539,10 @@ namespace GameA
                     winCondition,
                     msg => {
                         OnSyncFromParent(msg.ProjectData);
+                        if (null != iconBytes && msg.ProjectData.IconPath != oldIconPath) {
+                            ImageResourceManager.Instance.DeleteImageCache(oldIconPath);
+                            ImageResourceManager.Instance.SaveOrUpdateImageData(msg.ProjectData.IconPath, iconBytes);
+                        }
                         LocalUser.Instance.User.GetSavedPrjectRequestTimer().Zero();
                         if (successCallback != null)
                         {
@@ -765,51 +559,6 @@ namespace GameA
                     form
                 );
             }
-
-
-//
-////            User user = LocalUser.Instance.UserLegacy;
-//			var user = LocalUser.Instance.User;
-//            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpdateProject>(apiPath, msg, ret => {
-//                if (ret.ResultCode == (int)EProjectOperateResult.POR_Success)
-//                {
-//                    if (isCreate)
-//                    {
-//                        user.OnProjectCreated(ret.ProjectData, this);
-//                        LocalCacheManager.Instance.Save(dataBytes, LocalCacheManager.EType.File, ResPath);
-//                        ImageResourceManager.Instance.SaveOrUpdateImageData(IconPath, iconBytes);
-//                    }
-//                    else
-//                    {
-//                        DeleteResCache();
-//                        _syncIgnoreMe = true;
-//                        ProjectManager.Instance.OnSyncProject(ret.ProjectData, true);
-//                        _syncIgnoreMe = false;
-//						OnSyncFromParent(ret.ProjectData);
-//                    }
-//                    user.GetSavedPrjectRequestTimer().Zero();
-//
-//                    if (successCallback != null)
-//                    {
-//                        successCallback.Invoke();
-//                    }
-//                }
-//                else
-//                {
-//                    LogHelper.Error("level upload error, code: {0}", ret.ResultCode);
-//                    if (failedCallback != null)
-//                    {
-//                        failedCallback.Invoke((EProjectOperateResult)ret.ResultCode);
-//                    }
-//                }
-//            }, (intCode, str) =>
-//            {
-//                SoyHttpClient.ShowErrorTip(intCode);
-//                if (failedCallback != null)
-//                {
-//                    failedCallback.Invoke(EProjectOperateResult.POR_None);
-//                }
-//            }, form);
         }
 
         public void Delete()
@@ -909,8 +658,6 @@ namespace GameA
 //            }, form);
 //        }
 
-        public void PublishModifyProject () {
-        }
 
         public void PrepareRes(Action successCallback, Action failedCallback = null)
         {
@@ -956,20 +703,21 @@ namespace GameA
                 }
                 return;
             }
+            _downloadResSucceedCB -= successCallback;
+            _downloadResSucceedCB += successCallback;
+            _downloadResFailedCB -= failedCallback;
+            _downloadResFailedCB += failedCallback;
             if (_isdownloadingRes) {
-                _downloadResSucceedCB -= successCallback;
-                _downloadResSucceedCB += successCallback;
-                _downloadResFailedCB -= failedCallback;
-                _downloadResFailedCB += failedCallback;
                 return;
             }
             _isdownloadingRes = true;
             SFile file = SFile.GetFileWithUrl(SoyPath.Instance.GetFileUrl(targetRes));
-            Debug.Log ("____________________download map file: " + targetRes);
+            //Debug.Log ("____________________download map file: " + targetRes + " success cb: " + _downloadResSucceedCB + " / successCallback: " + successCallback);
             file.DownloadAsync((f) =>
                 {
                     _isdownloadingRes = false;
                     LocalCacheManager.Instance.Save(f.FileBytes, LocalCacheManager.EType.File, targetRes);
+                    //Debug.Log ("__________________________ call download success cb : " + _downloadResSucceedCB);
                     if (_downloadResSucceedCB != null)
                     {
                         _downloadResSucceedCB.Invoke();
@@ -977,62 +725,12 @@ namespace GameA
                 }, sFile =>
                 {
                     _isdownloadingRes = false;
-                    Debug.Log("__________________________" + SoyPath.Instance.GetFileUrl(targetRes));
+                    //Debug.Log("__________________________" + SoyPath.Instance.GetFileUrl(targetRes));
                     if (_downloadResFailedCB != null)
                     {
                         _downloadResFailedCB.Invoke();
                     }
                 });
-        }
-
-        public void UpdateRate(int rate, Action<bool> callback = null)
-        {
-//            if (_userRate == rate)
-//            {
-//                if (callback != null)
-//                {
-//                    callback.Invoke(false);
-//                }
-//                return;
-//            }
-            if (!_isValid)
-            {
-                if (callback != null)
-                {
-                    callback.Invoke(false);
-                }
-                return;
-            }
-//            Msg_CS_CMD_UpdateProjectRate msg = new Msg_CS_CMD_UpdateProjectRate();
-//            msg.ProjectGuid = _guid;
-//            msg.Rate = rate;
-//            NetworkManager.AppHttpClient.SendWithCb<Msg_AC_OperateProjectRet>(SoyHttpApiPath.RateProject, msg, ret =>
-//                {
-//                    if (ret.Result != (int)EProjectOperateResult.POR_Success)
-//                    {
-//                        if (callback != null)
-//                        {
-//                            callback.Invoke(false);
-//                        }
-//                        return;
-//                    }
-//                    var p = ProjectManager.Instance.OnSyncProject(ret.ProjectData);
-//                    if (p != this)
-//                    {
-//                        OnSyncProject(ret.ProjectData);
-//                    }
-//                    Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
-//                    if (callback != null)
-//                    {
-//                        callback.Invoke(true);
-//                    }
-//                }, (code, msgStr) =>
-//                {
-//                    if (callback != null)
-//                    {
-//                        callback.Invoke(false);
-//                    }
-//                });
         }
 
         public void UpdateLike(bool likeFlag, Action<bool> callback = null)
@@ -1225,40 +923,6 @@ namespace GameA
 //            });
 //        }
 
-//        public void OnSyncProject(Msg_SC_DAT_Project msg)
-//        {
-//            if (_syncIgnoreMe)
-//            {
-//                return;
-//            }
-//            _updateTime = msg.UpdateTime;
-//            _guid = msg.ProjectId;
-//            if (msg.UserInfo != null)
-//            {
-//                _user = UserManager.Instance.OnSyncUserData(msg.UserInfo);
-//            }
-//            _name = msg.Name;
-//            _summary = msg.Summary;
-//            _iconPath = msg.IconPath;
-//            _resPath = msg.ResPath;
-//            _createTime = msg.CreateTime;
-//            _localDataState = msg.LocalDataState;
-//            _projectStatus = msg.ProjectStatus;
-//            _programVersion = msg.ProgramVersion;
-//            _resourceVersion = msg.ResourcesVersion;
-////            _projectCategory = (EProjectCategory)msg.Category;
-//            _passFlag = msg.PassFlag;
-//            _recordUsedTime = msg.RecordUsedTime;
-//            _isValid = msg.IsValid;
-//            if (msg.ExtendData != null)
-//            {
-//                OnSyncProjectExtendData(msg.ExtendData);
-//            }
-//            if (msg.ProjectUserData != null)
-//            {
-//                OnSyncProjectUserData(msg.ProjectUserData);
-//            }
-//        }
 		protected override void OnSyncPartial ()
 		{
 			base.OnSyncPartial ();
@@ -1266,25 +930,6 @@ namespace GameA
             {
                 return;
             }
-//            _updateTime = msg.UpdateTime;
-//            _guid = msg.ProjectId;
-//			if (UserInfo!= null)
-//            {
-//				_user = UserManager.Instance.OnSyncUserData(UserInfo);
-//            }
-//            _name = msg.Name;
-//            _summary = msg.Summary;
-//            _iconPath = msg.IconPath;
-//            _resPath = msg.ResPath;
-//            _createTime = msg.CreateTime;
-//            _localDataState = msg.LocalDataState;
-//            _projectStatus = msg.ProjectStatus;
-//            _programVersion = msg.ProgramVersion;
-//            _resourceVersion = msg.ResourcesVersion;
-//            _projectCategory = (EProjectCategory)msg.Category;
-//            _passFlag = msg.PassFlag;
-//            _recordUsedTime = msg.RecordUsedTime;
-//            _isValid = msg.IsValid;
 			if (_extendData != null)
             {
 				OnSyncProjectExtendData(_extendData);
@@ -1297,42 +942,6 @@ namespace GameA
             // 
 //            _bytesData = null;
 		}
-
-//        private Msg_SC_DAT_Project ToMsg()
-//        {
-//            Msg_SC_DAT_Project msg = new Msg_SC_DAT_Project();
-//            msg.UpdateTime = _updateTime;
-//			msg.ProjectId = _projectId;
-//            if (_user != null)
-//            {
-//                msg.UserInfo = _user.ToMsgUserInfoSimple();
-//            }
-//            msg.Name = _name;
-//            msg.Summary = _summary;
-//            msg.IconPath = _iconPath;
-//            msg.ResPath = _resPath;
-//            msg.CreateTime = _createTime;
-//            msg.LocalDataState = _localDataState;
-//            msg.ProjectStatus = _projectStatus;
-//            msg.ProgramVersion = _programVersion;
-//            msg.ResourcesVersion = _resourceVersion;
-////            msg.Category = (int)_projectCategory;
-//            msg.PassFlag = _passFlag;
-//            msg.RecordUsedTime = _recordUsedTime;
-//            msg.IsValid = _isValid;
-//            msg.ExtendData = new Msg_SC_DAT_ProjectExtend();
-//            msg.ExtendData.PlayCount = _totalClickCount;
-//            msg.ExtendData.CommentCount = _totalCommentCount;
-//            msg.ExtendData.IsValid = _isValid;
-//			msg.ExtendData.ProjectId = _projectId;
-//            msg.ExtendData.Rate = _totalRate;
-//            msg.ExtendData.RateCount = _totalRateCount;
-//            msg.ExtendData.LikeCount = _likeCount;
-//            msg.ExtendData.FavoriteCount = _favoriteCount;
-//            msg.ExtendData.DownloadCount = _downloadCount;
-//            msg.ExtendData.ShareCount = _shareCount;
-//            return msg;
-//        }
 
 		public void OnSyncProjectExtendData(ProjectExtend msg)
         {
@@ -1575,8 +1184,6 @@ namespace GameA
             p.CreateTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
             p.DownloadPrice = 0;
             p._passFlag = false;
-//            p._projectCategory = EProjectCategory.PC_Relaxation;
-            p._publishRecordFlag = true;
             return p;
         }
         #endregion 方法
