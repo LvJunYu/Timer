@@ -28,9 +28,45 @@ namespace GameA
         public void Open()
         {
             _cachedView.gameObject.SetActive(true);
+            Refreash();
         }
 
-        public void Close()
+	    private void Refreash()
+	    {
+	        switch (_shoppingPage)
+	        {
+	            case EShoppingPage.FashionPage1:
+	                if (SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().SelectHead != null)
+	                {
+	                    SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().SelectHead.UpMove();
+	                }
+	                break;
+	            case EShoppingPage.FashionPage2:
+	                if (SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().SelectUpper != null)
+	                {
+	                    SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().SelectUpper.UpMove();
+	                }
+	                break;
+	            case EShoppingPage.FashionPage3:
+
+	                if (SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().SelectLower != null)
+	                {
+	                    {
+	                        SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().SelectLower.UpMove();
+	                    }
+	                }
+	                break;
+	            case EShoppingPage.FashionPage4:
+	                if (SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().SelectAppendage != null)
+	                {
+	                    SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().SelectAppendage.UpMove();
+	                }
+	                break;
+
+            }
+        }
+
+	    public void Close()
         {
             _cachedView.gameObject.SetActive(false);
         }

@@ -73,7 +73,7 @@ namespace GameA
             }
             if (LocalUser.Instance.UsingAvatarData.Appendage != null)
             {
-                _avatarView.SetParts((int)LocalUser.Instance.UsingAvatarData.Appendage.Id, SpinePartsHelper.ESpineParts.Appendage, true);
+               _avatarView.SetParts((int)LocalUser.Instance.UsingAvatarData.Appendage.Id, SpinePartsHelper.ESpineParts.Appendage, true);
             }
         }
 
