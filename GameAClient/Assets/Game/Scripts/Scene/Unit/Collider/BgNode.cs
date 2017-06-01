@@ -13,9 +13,9 @@ namespace GameA.Game
 {
     public class BgNode : SceneNode
     {
-        //public override bool IsDynamic()
-        //{
-        //    return true;
-        //}
+        public override bool IsDynamic()
+        {
+            return true;
+        }
     }
 }

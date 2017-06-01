@@ -42,7 +42,7 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (!checkOnly)
+            if (!checkOnly && other.IsAlive)
             {
                 OnWater(other);
             }

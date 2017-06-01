@@ -17,11 +17,15 @@ namespace GameA.Game
 {
     public enum EBgDepth
     {
-        Bg,
-        Far,
-        Middle,
-        Near,
-        Nearest,
+        Depth1 = 1,
+        Depth2,
+        Depth3,
+        Depth4,
+        Depth5,
+        Depth6,
+        Depth7,
+        Depth8,
+        Depth9,
         Max
     }
 
@@ -33,13 +37,11 @@ namespace GameA.Game
         private IntVec2 _focusPos;
         private Dictionary<IntVec3, BgItem> _items = new Dictionary<IntVec3, BgItem>();
         private Grid2D _followRect;
-        private Grid2D _staticRect;
-
+        private Grid2D _cloudRect;
         private Transform[] _parents;
         private Dictionary<int, List<Table_Background>> _tableBgs = new Dictionary<int, List<Table_Background>>();
-        private static readonly int[] MaxDepthCount = new int[5] { 1, 50, 100, 40, 80 };
-        private static readonly float[] MoveRatio = new float[5] { 0, 0.2f, 0.5f, 0.8f, 1 };
-        private static IntVec2 RectSize = new IntVec2(40, 30) * ConstDefineGM2D.ServerTileScale;
+        private static readonly int[] MaxDepthCount = new int[9] { 50, 50, 50, 50, 50, 50, 50, 50, 1 };
+        private static readonly float[] MoveRatio = new float[9] { 1, 1f, 0.8f, 1f, 0.5f, 0.5f, 1, 1, 1 };
 
         public static BgScene2D Instance
         {
@@ -66,25 +68,22 @@ namespace GameA.Game
 
         public float GetMoveRatio(int depth)
         {
-            return MoveRatio[depth];
+            return MoveRatio[depth - 1];
         }
 
         public int GetMaxDepthCount(int depth)
         {
-            return MaxDepthCount[depth];
+            return MaxDepthCount[depth - 1];
         }
 
         public Grid2D GetRect(int depth)
         {
-            switch ((EBgDepth)depth)
+            switch (depth)
             {
-                case EBgDepth.Bg:
-                case EBgDepth.Far:
-                case EBgDepth.Middle:
-                case EBgDepth.Near:
-                    return _followRect;
-                case EBgDepth.Nearest:
-                    return _staticRect;
+                case (int)EBgDepth.Depth3:
+                case (int)EBgDepth.Depth5:
+                case (int)EBgDepth.Depth6:
+                    return _cloudRect;
             }
             return _followRect;
         }
@@ -92,8 +91,9 @@ namespace GameA.Game
         protected override void OnInit()
         {
             base.OnInit();
-            _followRect = new Grid2D(0, 0, RectSize.x, RectSize.y);
-            _staticRect = new Grid2D(_followRect.XMin, _followRect.YMin + 11 * ConstDefineGM2D.ServerTileScale, _followRect.XMax, _followRect.YMax - 12 * ConstDefineGM2D.ServerTileScale);
+            var validMapRect = DataScene2D.Instance.ValidMapRect;
+            _followRect = new Grid2D(validMapRect.Min.x, validMapRect.Min.y, validMapRect.Max.x, validMapRect.Max.y);
+            _cloudRect = new Grid2D(validMapRect.Min.x - 15 * ConstDefineGM2D.ServerTileScale, validMapRect.Min.y, validMapRect.Max.x + 15 * ConstDefineGM2D.ServerTileScale, validMapRect.Max.y);
             var parent = new GameObject("Background").transform;
             _parents = new Transform[(int)EBgDepth.Max];
             for (int i = 0; i < (int)EBgDepth.Max; i++)
@@ -127,7 +127,7 @@ namespace GameA.Game
             {
                 return;
             }
-            RefreshFollowRect(pos);
+            //RefreshFollowRect(pos);
             var delPos = pos - _focusPos;
             _focusPos = pos;
             var iter = _items.GetEnumerator();
@@ -138,18 +138,18 @@ namespace GameA.Game
             }
         }
 
-        private void RefreshFollowRect(IntVec2 center)
-        {
-            var min = center - RectSize / 2;
-            _followRect = new Grid2D(min.x, min.y, min.x + RectSize.x - 1, min.y + RectSize.y - 1);
-            _staticRect = new Grid2D(_followRect.XMin, _followRect.YMin + 11 * ConstDefineGM2D.ServerTileScale, _followRect.XMax, _followRect.YMax - 12 * ConstDefineGM2D.ServerTileScale);
-        }
+        //private void RefreshFollowRect(IntVec2 center)
+        //{
+        //    var min = center - RectSize / 2;
+        //    _followRect = new Grid2D(min.x, min.y, min.x + RectSize.x - 1, min.y + RectSize.y - 1);
+        //    _staticRect = new Grid2D(_followRect.XMin, _followRect.YMin + 11 * ConstDefineGM2D.ServerTileScale, _followRect.XMax, _followRect.YMax - 12 * ConstDefineGM2D.ServerTileScale);
+        //}
 
         public void GenerateBackground(int seed = 0)
         {
             _run = false;
             _curSeed = seed == 0 ? Time.frameCount : seed;
-            Random.seed = _curSeed;
+            Random.InitState(_curSeed);
             foreach (var pair in _tableBgs)
             {
                 GenerateItems(pair.Value, GetMaxDepthCount(pair.Key));
@@ -189,54 +189,63 @@ namespace GameA.Game
         private bool TryAddNode(Table_Background tableBg, out SceneNode bgNode)
         {
             bgNode = null;
-            //Grid2D grid;
-            //float scale;
-            //if (!TryGetRandomGrid(tableBg, out grid, out scale))
-            //{
-            //    return false;
-            //}
-            //bgNode = new BgNode();
-            //bgNode.Init((ushort)tableBg.Id, grid, tableBg.Depth, (byte)(scale * 10), Vector2.one, 0);
-            //SceneNode node;
-            //if (SceneQuery2D.GridCast(ref grid, out node, JoyPhysics2D.LayMaskAll, this, tableBg.Depth, tableBg.Depth))
-            //{
-            //    return false;
-            //}
-            //if (!AddNode(bgNode))
-            //{
-            //    return false;
-            //}
+            Grid2D grid;
+            Vector2 scale;
+            if (!TryGetRandomGrid(tableBg, out grid, out scale))
+            {
+                return false;
+            }
+            bgNode = NodeFactory.GetBgNode((ushort)tableBg.Id, grid, tableBg.Depth, scale);
+            SceneNode node;
+            if (SceneQuery2D.GridCast(ref grid, out node, JoyPhysics2D.LayMaskAll, this, tableBg.Depth, tableBg.Depth))
+            {
+                return false;
+            }
+            if (!AddNode(bgNode))
+            {
+                return false;
+            }
             return true;
         }
 
-        private bool TryGetRandomGrid(Table_Background tableBg, out Grid2D grid, out float scale)
+        private bool TryGetRandomGrid(Table_Background tableBg, out Grid2D grid, out Vector2 scale)
         {
             IntVec2 min = IntVec2.zero;
             var size = GetSize(tableBg, out scale);
             switch ((EBgDepth)tableBg.Depth)
             {
-                case EBgDepth.Bg:
-                    min = IntVec2.zero;
+                case EBgDepth.Depth1:
+                case EBgDepth.Depth2:
+                case EBgDepth.Depth4:
+                case EBgDepth.Depth7:
+                case EBgDepth.Depth8:
+                    min = new IntVec2(Random.Range(_followRect.XMin, _followRect.XMax - size.x), _followRect.YMin);
                     break;
-                case EBgDepth.Far:
-                case EBgDepth.Middle:
-                case EBgDepth.Near:
-                    min = new IntVec2(Random.Range(_followRect.XMin, _followRect.XMax - size.x),
-                        Random.Range(_followRect.YMin, _followRect.YMax - size.y));
+                case EBgDepth.Depth3:
+                case EBgDepth.Depth5:
+                case EBgDepth.Depth6:
+                    min = new IntVec2(Random.Range(_cloudRect.XMin, _cloudRect.XMax - size.x),
+                        Random.Range(_cloudRect.YMin, _cloudRect.YMax - size.y));
                     break;
-                case EBgDepth.Nearest:
-                    min = new IntVec2(Random.Range(_staticRect.XMin, _staticRect.XMax - size.x),
-                        Random.Range(_staticRect.YMin, _staticRect.YMax - size.y));
+                case EBgDepth.Depth9:
+                    min = new IntVec2(_followRect.XMin, _followRect.YMin);
                     break;
             }
             grid = new Grid2D(min.x, min.y, min.x + size.x - 1, min.y + size.y - 1);
             return true;
         }
 
-        private IntVec2 GetSize(Table_Background tableBg, out float scale)
+        private IntVec2 GetSize(Table_Background tableBg, out Vector2 scale)
         {
-            scale = Random.Range(tableBg.MinScale, tableBg.MaxScale);
-            return new IntVec2(tableBg.Width, tableBg.Height) * 20 * scale;
+            var x = Random.Range(tableBg.MinScaleX, tableBg.MaxScaleX);
+            var y = Random.Range(tableBg.MinScaleY, tableBg.MaxScaleY);
+            if (Util.IsFloatEqual(tableBg.MinScaleX, tableBg.MinScaleY) && Util.IsFloatEqual(tableBg.MaxScaleX, tableBg.MaxScaleY))
+            {
+                x = y = Mathf.Max(x, y);
+            }
+            scale.x = x;
+            scale.y = y;
+            return new IntVec2((int) (tableBg.Width * 5 * scale.x), (int) (tableBg.Height * 5 * scale.y));
         }
 
         private bool AddView(SceneNode node, Table_Background tableBg)
@@ -245,7 +254,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            var bgItem = GetItem(tableBg);
+            var bgItem = PoolFactory<BgItem>.Get();
             if (bgItem == null || !bgItem.Init(tableBg, node))
             {
                 return false;
@@ -265,104 +274,9 @@ namespace GameA.Game
             return _items.Remove(node.Guid);
         }
 
-        private BgItem GetItem(Table_Background tableBackground)
-        {
-            BgItem bgItem;
-            if (tableBackground.Depth == (int)EBgDepth.Bg)
-            {
-                bgItem = PoolFactory<BgRoot>.Get();
-            }
-            else
-            {
-                bgItem = PoolFactory<BgItem>.Get();
-            }
-            return bgItem;
-        }
-
         private void FreeItem(BgItem bgItem)
         {
-            var root = bgItem as BgRoot;
-            if (root != null)
-            {
-                PoolFactory<BgRoot>.Free(root);
-                return;
-            }
             PoolFactory<BgItem>.Free(bgItem);
         }
-
-        //public void OnDrawGizmos()
-        //{
-        //    return;
-        //    if (_root != null)
-        //    {
-        //        if (_root.Nodes != null)
-        //        {
-        //            for (int i = 0; i < _root.Nodes.Count; i++)
-        //            {
-        //                Gizmos.color = Color.black;
-        //                for (int j = 0; j < _root.Nodes.Count; j++)
-        //                {
-        //                    _root.Nodes[j].OnDrawGizmos();
-        //                }
-        //            }
-        //        }
-        //        DrawQuadTree(_root.Children);
-        //    }
-        //}
-
-        //public void DrawQuadTree(Quadtree[] children)
-        //{
-        //    if (children != null && children.Length > 0)
-        //    {
-        //        for (int i = 0; i < children.Length; i++)
-        //        {
-        //            var quadtree = children[i];
-        //            if (quadtree != null)
-        //            {
-        //                if (quadtree.Nodes != null)
-        //                {
-        //                    Gizmos.color = Color.black;
-        //                    for (int j = 0; j < quadtree.Nodes.Count; j++)
-        //                    {
-        //                        quadtree.Nodes[j].OnDrawGizmos();
-        //                    }
-        //                }
-        //                //Gizmos.color = Color.white;
-        //                //quadtree.OnDrawGizmos();
-        //                DrawQuadTree(quadtree.Children);
-        //            }
-        //        }
-        //    }
-        //}
-
-        //private void ProcessDynamicAOI(SceneNode[] nodes, Grid2D grid, bool isSubscribe)
-        //{
-        //    for (int i = 0; i < nodes.Length; i++)
-        //    {
-        //        var node = nodes[i];
-        //        Table_Background tableBg = TableManager.Instance.GetBackground(node.Id);
-        //        if (tableBg == null)
-        //        {
-        //            LogHelper.Error("ProcessDynamicAOI Failed,GetBackground:{0}", node);
-        //            return;
-        //        }
-        //        if (isSubscribe)
-        //        {
-        //            if (!grid.Contains(node.ColliderGrid))
-        //            {
-        //                continue;
-        //            }
-        //            AddView(node, tableBg);
-        //        }
-        //        else
-        //        {
-        //            if (grid.Contains(node.ColliderGrid))
-        //            {
-        //                continue;
-        //            }
-        //            DestroyView(node);
-        //        }
-        //    }
-        //}
     }
 }

@@ -316,6 +316,7 @@ namespace GameA
 				killMonsterCount,
 				leftTime,
 				leftLife,
+                null,
 				ret => {
                     if ((int)ECommitAdventureLevelResultCode.CALRC_Success == ret.ResultCode) {
                         if (null != successCallback) {
