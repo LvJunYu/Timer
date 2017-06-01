@@ -5,7 +5,7 @@
         "Desc": "这是加速跑",
         "Icon": "icon_lottery_1",
         "Chapter": "1",
-        "Level": "3"
+        "Level": "0"
     },
     {
         "Id": "2",
@@ -13,30 +13,30 @@
         "Desc": "这是二段跳",
         "Icon": "icon_lottery_1",
         "Chapter": "1",
-        "Level": "5"
+        "Level": "0"
     },
     {
         "Id": "3",
         "Name": "射击",
         "Desc": "这是射击",
         "Icon": "icon_lottery_1",
-        "Chapter": "2",
-        "Level": "2"
+        "Chapter": "1",
+        "Level": "0"
     },
     {
         "Id": "4",
         "Name": "抽奖",
         "Desc": "这是抽奖",
         "Icon": "icon_lottery_1",
-        "Chapter": "2",
-        "Level": "5"
+        "Chapter": "1",
+        "Level": "0"
     },
     {
         "Id": "5",
         "Name": "匹配改造",
         "Desc": "这是匹配改造",
         "Icon": "icon_lottery_1",
-        "Chapter": "2",
-        "Level": "7"
+        "Chapter": "1",
+        "Level": "0"
     }
 ]
