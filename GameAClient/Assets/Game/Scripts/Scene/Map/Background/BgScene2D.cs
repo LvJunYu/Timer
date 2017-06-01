@@ -25,6 +25,7 @@ namespace GameA.Game
         Depth6,
         Depth7,
         Depth8,
+        Depth9,
         Max
     }
 
@@ -39,8 +40,8 @@ namespace GameA.Game
         private Grid2D _cloudRect;
         private Transform[] _parents;
         private Dictionary<int, List<Table_Background>> _tableBgs = new Dictionary<int, List<Table_Background>>();
-        private static readonly int[] MaxDepthCount = new int[8] {50, 50, 50, 50, 50, 50, 50, 1};
-        private static readonly float[] MoveRatio = new float[8] {1, 1f, 0.8f, 1f, 0.5f, 1, 1, 1};
+        private static readonly int[] MaxDepthCount = new int[9] { 50, 50, 50, 50, 50, 50, 50, 50, 1 };
+        private static readonly float[] MoveRatio = new float[9] { 1, 1f, 0.8f, 1f, 0.5f, 0.5f, 1, 1, 1 };
 
         public static BgScene2D Instance
         {
@@ -81,6 +82,7 @@ namespace GameA.Game
             {
                 case (int)EBgDepth.Depth3:
                 case (int)EBgDepth.Depth5:
+                case (int)EBgDepth.Depth6:
                     return _cloudRect;
             }
             return _followRect;
@@ -215,16 +217,17 @@ namespace GameA.Game
                 case EBgDepth.Depth1:
                 case EBgDepth.Depth2:
                 case EBgDepth.Depth4:
-                case EBgDepth.Depth6:
                 case EBgDepth.Depth7:
+                case EBgDepth.Depth8:
                     min = new IntVec2(Random.Range(_followRect.XMin, _followRect.XMax - size.x), _followRect.YMin);
                     break;
                 case EBgDepth.Depth3:
                 case EBgDepth.Depth5:
+                case EBgDepth.Depth6:
                     min = new IntVec2(Random.Range(_cloudRect.XMin, _cloudRect.XMax - size.x),
                         Random.Range(_cloudRect.YMin, _cloudRect.YMax - size.y));
                     break;
-                case EBgDepth.Depth8:
+                case EBgDepth.Depth9:
                     min = new IntVec2(_followRect.XMin, _followRect.YMin);
                     break;
             }
