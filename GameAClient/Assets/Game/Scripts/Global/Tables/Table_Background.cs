@@ -55,6 +55,11 @@ namespace GameA.Game
         /// </summary>
 		[ColumnMapping("MoveSpeedX")]
 		public float MoveSpeedX;
+		/// <summary>
+        /// 
+        /// </summary>
+		[ColumnMapping("Alpha")]
+		public float Alpha;
 	}
 
     public class TableBackgroundAsset:BaseTableAsset

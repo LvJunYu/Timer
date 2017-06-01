@@ -36,10 +36,11 @@ namespace GameA.Game
         private IntVec2 _focusPos;
         private Dictionary<IntVec3, BgItem> _items = new Dictionary<IntVec3, BgItem>();
         private Grid2D _followRect;
+        private Grid2D _cloudRect;
         private Transform[] _parents;
         private Dictionary<int, List<Table_Background>> _tableBgs = new Dictionary<int, List<Table_Background>>();
-        private static readonly int[] MaxDepthCount = new int[8] { 50, 50, 50, 50, 50, 50, 50, 1 };
-        private static readonly float[] MoveRatio = new float[8] { 0, 0.2f, 0.5f, 0.8f, 1,1,1,1 };
+        private static readonly int[] MaxDepthCount = new int[8] {50, 50, 50, 50, 50, 50, 50, 1};
+        private static readonly float[] MoveRatio = new float[8] {1, 1f, 0.8f, 1f, 0.5f, 1, 1, 1};
 
         public static BgScene2D Instance
         {
@@ -66,7 +67,7 @@ namespace GameA.Game
 
         public float GetMoveRatio(int depth)
         {
-            return MoveRatio[depth];
+            return MoveRatio[depth - 1];
         }
 
         public int GetMaxDepthCount(int depth)
@@ -76,6 +77,12 @@ namespace GameA.Game
 
         public Grid2D GetRect(int depth)
         {
+            switch (depth)
+            {
+                case (int)EBgDepth.Depth3:
+                case (int)EBgDepth.Depth5:
+                    return _cloudRect;
+            }
             return _followRect;
         }
 
@@ -84,6 +91,7 @@ namespace GameA.Game
             base.OnInit();
             var validMapRect = DataScene2D.Instance.ValidMapRect;
             _followRect = new Grid2D(validMapRect.Min.x, validMapRect.Min.y, validMapRect.Max.x, validMapRect.Max.y);
+            _cloudRect = new Grid2D(validMapRect.Min.x - 15 * ConstDefineGM2D.ServerTileScale, validMapRect.Min.y, validMapRect.Max.x + 15 * ConstDefineGM2D.ServerTileScale, validMapRect.Max.y);
             var parent = new GameObject("Background").transform;
             _parents = new Transform[(int)EBgDepth.Max];
             for (int i = 0; i < (int)EBgDepth.Max; i++)
@@ -213,8 +221,8 @@ namespace GameA.Game
                     break;
                 case EBgDepth.Depth3:
                 case EBgDepth.Depth5:
-                    min = new IntVec2(Random.Range(_followRect.XMin, _followRect.XMax - size.x),
-                        Random.Range(_followRect.YMin, _followRect.YMax - size.y));
+                    min = new IntVec2(Random.Range(_cloudRect.XMin, _cloudRect.XMax - size.x),
+                        Random.Range(_cloudRect.YMin, _cloudRect.YMax - size.y));
                     break;
                 case EBgDepth.Depth8:
                     min = new IntVec2(_followRect.XMin, _followRect.YMin);
@@ -265,12 +273,6 @@ namespace GameA.Game
 
         private void FreeItem(BgItem bgItem)
         {
-            var root = bgItem as BgRoot;
-            if (root != null)
-            {
-                PoolFactory<BgRoot>.Free(root);
-                return;
-            }
             PoolFactory<BgItem>.Free(bgItem);
         }
     }

@@ -9,7 +9,8 @@
         "MaxScaleX": "3",
         "MaxScaleY": "3",
         "Depth": "1",
-        "MoveSpeedX": "0"
+        "MoveSpeedX": "0",
+        "Alpha": "1"
     },
     {
         "Id": "2",
@@ -21,7 +22,8 @@
         "MaxScaleX": "3",
         "MaxScaleY": "3",
         "Depth": "1",
-        "MoveSpeedX": "0"
+        "MoveSpeedX": "0",
+        "Alpha": "1"
     },
     {
         "Id": "3",
@@ -33,7 +35,8 @@
         "MaxScaleX": "3",
         "MaxScaleY": "3",
         "Depth": "1",
-        "MoveSpeedX": "0"
+        "MoveSpeedX": "0",
+        "Alpha": "1"
     },
     {
         "Id": "4",
@@ -45,7 +48,8 @@
         "MaxScaleX": "5",
         "MaxScaleY": "5",
         "Depth": "2",
-        "MoveSpeedX": "0"
+        "MoveSpeedX": "0",
+        "Alpha": "1"
     },
     {
         "Id": "5",
@@ -57,7 +61,8 @@
         "MaxScaleX": "5",
         "MaxScaleY": "5",
         "Depth": "2",
-        "MoveSpeedX": "0"
+        "MoveSpeedX": "0",
+        "Alpha": "1"
     },
     {
         "Id": "6",
@@ -69,19 +74,21 @@
         "MaxScaleX": "5",
         "MaxScaleY": "5",
         "Depth": "2",
-        "MoveSpeedX": "0"
+        "MoveSpeedX": "0",
+        "Alpha": "1"
     },
     {
         "Id": "7",
         "Model": "BJ_cloud",
         "Width": "512",
         "Height": "250",
-        "MinScaleX": "10",
-        "MinScaleY": "10",
-        "MaxScaleX": "11",
-        "MaxScaleY": "11",
+        "MinScaleX": "5",
+        "MinScaleY": "4",
+        "MaxScaleX": "7",
+        "MaxScaleY": "7",
         "Depth": "3",
-        "MoveSpeedX": "-0.15"
+        "MoveSpeedX": "-0.15",
+        "Alpha": "0.7"
     },
     {
         "Id": "8",
@@ -93,7 +100,8 @@
         "MaxScaleX": "7",
         "MaxScaleY": "7",
         "Depth": "4",
-        "MoveSpeedX": "0"
+        "MoveSpeedX": "0",
+        "Alpha": "1"
     },
     {
         "Id": "9",
@@ -105,7 +113,8 @@
         "MaxScaleX": "7",
         "MaxScaleY": "7",
         "Depth": "4",
-        "MoveSpeedX": "0"
+        "MoveSpeedX": "0",
+        "Alpha": "1"
     },
     {
         "Id": "10",
@@ -117,19 +126,21 @@
         "MaxScaleX": "7",
         "MaxScaleY": "7",
         "Depth": "4",
-        "MoveSpeedX": "0"
+        "MoveSpeedX": "0",
+        "Alpha": "1"
     },
     {
         "Id": "11",
         "Model": "BJ_cloud",
         "Width": "512",
         "Height": "250",
-        "MinScaleX": "10",
-        "MinScaleY": "10",
-        "MaxScaleX": "11",
-        "MaxScaleY": "11",
+        "MinScaleX": "8",
+        "MinScaleY": "8",
+        "MaxScaleX": "10",
+        "MaxScaleY": "10",
         "Depth": "5",
-        "MoveSpeedX": "-0.15"
+        "MoveSpeedX": "-0.15",
+        "Alpha": "0.5"
     },
     {
         "Id": "12",
@@ -141,7 +152,8 @@
         "MaxScaleX": "6",
         "MaxScaleY": "7.5",
         "Depth": "6",
-        "MoveSpeedX": "0"
+        "MoveSpeedX": "0",
+        "Alpha": "1"
     },
     {
         "Id": "13",
@@ -153,7 +165,8 @@
         "MaxScaleX": "6",
         "MaxScaleY": "7.5",
         "Depth": "6",
-        "MoveSpeedX": "0"
+        "MoveSpeedX": "0",
+        "Alpha": "1"
     },
     {
         "Id": "14",
@@ -165,7 +178,8 @@
         "MaxScaleX": "6",
         "MaxScaleY": "7.5",
         "Depth": "6",
-        "MoveSpeedX": "0"
+        "MoveSpeedX": "0",
+        "Alpha": "1"
     },
     {
         "Id": "15",
@@ -177,7 +191,8 @@
         "MaxScaleX": "6",
         "MaxScaleY": "7.5",
         "Depth": "7",
-        "MoveSpeedX": "0"
+        "MoveSpeedX": "0",
+        "Alpha": "1"
     },
     {
         "Id": "16",
@@ -189,7 +204,8 @@
         "MaxScaleX": "6",
         "MaxScaleY": "7.5",
         "Depth": "7",
-        "MoveSpeedX": "0"
+        "MoveSpeedX": "0",
+        "Alpha": "1"
     },
     {
         "Id": "17",
@@ -201,7 +217,8 @@
         "MaxScaleX": "6",
         "MaxScaleY": "7.5",
         "Depth": "7",
-        "MoveSpeedX": "0"
+        "MoveSpeedX": "0",
+        "Alpha": "1"
     },
     {
         "Id": "18",
@@ -213,6 +230,7 @@
         "MaxScaleX": "15",
         "MaxScaleY": "7.5",
         "Depth": "8",
-        "MoveSpeedX": "0"
+        "MoveSpeedX": "0",
+        "Alpha": "1"
     }
 ]

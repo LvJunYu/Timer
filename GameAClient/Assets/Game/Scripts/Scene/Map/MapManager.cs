@@ -58,7 +58,6 @@ namespace GameA.Game
             PoolFactory<MorphUnit>.Clear();
             PoolFactory<EmptyUnit>.Clear();
             PoolFactory<BgItem>.Clear();
-            PoolFactory<BgRoot>.Clear();
 
             PoolFactory<BulletWater>.Clear();
             PoolFactory<SpineObject>.Clear();
