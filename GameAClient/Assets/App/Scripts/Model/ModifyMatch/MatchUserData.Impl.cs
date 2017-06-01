@@ -83,6 +83,14 @@ namespace GameA
                 return _playChallengeToken <= 0;
             }
         }
+
+        public long PlayChallengeToken
+        {
+            get
+            {
+                return _playChallengeToken;
+            }
+        }
         #endregion
 
         #region 方法

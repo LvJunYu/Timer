@@ -67,6 +67,14 @@ namespace GameA
                 return _lastPlayedLevelIdx;
             }
         }
+
+        public long LastRequiredLevelToken
+        {
+            get
+            {
+                return _lastRequiredLevelToken;
+            }
+        }
         #endregion 属性
 
         #region 方法

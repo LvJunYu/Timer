@@ -70,6 +70,13 @@ namespace GameA
         public static int GameFinishFailedShowUI = SoyEngine.EMessengerType.NextId++;
         public static int GameFailedDeadMark = SoyEngine.EMessengerType.NextId++;
 
+        // 进入Play模式
+        public static int OnReady2Play = SoyEngine.EMessengerType.NextId++;
+        // 增益道具选择完毕
+        public static int OnBoostItemSelectFinish = SoyEngine.EMessengerType.NextId++;
+        // 正式开始Play
+        public static int OnCountDownFinish = SoyEngine.EMessengerType.NextId++;
+
         public static int OnMainPlayerDead = SoyEngine.EMessengerType.NextId++;
 
 		public static int OnGameRestart = SoyEngine.EMessengerType.NextId++;

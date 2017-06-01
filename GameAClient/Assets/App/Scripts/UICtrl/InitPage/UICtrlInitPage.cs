@@ -305,6 +305,7 @@ namespace GameA {
             helper.AddTask(AppData.Instance.LoadAppData);
             helper.AddTask(LocalUser.Instance.LoadUserData);
             helper.AddTask(AppData.Instance.AdventureData.PrepareAllData);
+            helper.AddTask (LocalUser.Instance.LoadPropData);
         }
 
 	    private void OnUpdateGameResComplete()

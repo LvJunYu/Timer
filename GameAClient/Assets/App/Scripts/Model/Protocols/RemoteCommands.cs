@@ -906,10 +906,10 @@ namespace GameA
 		/// 使用道具
 		/// </summary>
 		/// <param name="token">令牌</param>
-		/// <param name="itemDataList"></param>
+		/// <param name="itemTypes"></param>
         public static void UseProps (
             long token,
-            List<Msg_PropItem> itemDataList,
+            List<int> itemTypes,
             Action<Msg_SC_CMD_UseProps> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -920,7 +920,7 @@ namespace GameA
             Msg_CS_CMD_UseProps msg = new Msg_CS_CMD_UseProps();
             // 使用道具
             msg.Token = token;
-            msg.ItemDataList.AddRange(itemDataList);
+            msg.ItemTypes.AddRange(itemTypes);
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UseProps>(
                 SoyHttpApiPath.UseProps, msg, ret => {
                     if (successCallback != null) {

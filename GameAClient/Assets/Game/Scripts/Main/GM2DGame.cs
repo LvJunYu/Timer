@@ -733,6 +733,44 @@ namespace GameA.Game
             return true;
         }
 
+        public void UseBoostItem (List<int> itemTypes)
+        {
+            if (null == _project) return;
+            long token = 0;
+            if (EProjectStatus.PS_Challenge == _project.ProjectStatus)
+            {
+                token = LocalUser.Instance.MatchUserData.PlayChallengeToken;
+            } else if (EProjectStatus.PS_AdvNormal == _project.ProjectStatus)
+            {
+                token = AppData.Instance.AdventureData.LastRequiredLevelToken;
+            }
+
+            if (0 != token)
+            {
+                RemoteCommands.UseProps (
+                    token,
+                    itemTypes,
+                    msg =>
+                    {
+                        if ((int)EUsePropsCode.UPC_Success == msg.ResultCode)
+                        {
+                            LogHelper.Info ("Use boost item success");
+                        } else
+                        {
+                            // todo error handle
+                            // 失败了应该终止关卡退回主菜单重新请求一遍数据
+                            LogHelper.Error ("Use boost item failed");
+                        }
+                    },
+                    code =>
+                    {
+                        // todo error handle
+                        LogHelper.Error ("Use boost item failed");
+                    }
+                );
+            }
+        }
+
         public byte[] CaptureLevel()
         {
             const int ImageWidth = 960;
