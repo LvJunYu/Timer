@@ -95,9 +95,6 @@ namespace GameA
                     break;
             }
             SetMsgToDic();
-
-
-
         }
 
         private void Checked(bool ifChecked)

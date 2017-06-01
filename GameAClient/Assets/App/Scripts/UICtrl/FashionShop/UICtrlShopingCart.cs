@@ -303,7 +303,6 @@ namespace GameA
                         {
                             SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().Close();
                             SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
-
                             SocialGUIManager.ShowPopupDialog("购买成功", null,
                                 new KeyValuePair<string, Action>("确定", () => { }));
                             //Debug.Log("______________购买成功");
@@ -324,6 +323,8 @@ namespace GameA
                             {
                                 //Set(listItem);
                                 SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().RefreshFashionShopPanel();
+                                SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().ShowAllUsingAvatar();
+
 
                             }, code =>
                             {
@@ -348,8 +349,10 @@ namespace GameA
                                new KeyValuePair<string, Action>("确定", () => { }));
                     //_cachedView.Message.text = "金币/钻石不足";
                 }
+                SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().ShowAllUsingAvatar();
+
             }
-     
+
         }
 
         public void BuyAvatarPart(List<Msg_BuyAvatarPartItem> buyList,Action successCallback, Action failedCallback)

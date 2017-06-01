@@ -14,8 +14,8 @@ public class UMViewFashionShopCard : UMViewBase
     public Text IsOccupied;
     public Text IsOwned;
     public Text Message;
-    public RectTransform DockSelected;
-    public RectTransform DockUnSelected;
+    //public RectTransform DockSelected;
+    //public RectTransform DockUnSelected;
     //public Button TryFashionOn;
     //public Button FashionBtn;
     public Button BuyFashion;
