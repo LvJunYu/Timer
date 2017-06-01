@@ -849,6 +849,7 @@ namespace GameA
 		/// <param name="killMonsterCount">击杀怪物数</param>
 		/// <param name="leftTime">剩余时间数</param>
 		/// <param name="leftLife">剩余生命</param>
+		/// <param name="deadPos">死亡位置</param>
         public static void CommitAdventureLevelResult (
             long token,
             bool success,
@@ -861,6 +862,7 @@ namespace GameA
             int killMonsterCount,
             int leftTime,
             int leftLife,
+            byte[] deadPos,
             Action<Msg_SC_CMD_CommitAdventureLevelResult> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -881,6 +883,7 @@ namespace GameA
             msg.KillMonsterCount = killMonsterCount;
             msg.LeftTime = leftTime;
             msg.LeftLife = leftLife;
+            msg.DeadPos = deadPos;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CommitAdventureLevelResult>(
                 SoyHttpApiPath.CommitAdventureLevelResult, msg, ret => {
                     if (successCallback != null) {
@@ -906,10 +909,10 @@ namespace GameA
 		/// 使用道具
 		/// </summary>
 		/// <param name="token">令牌</param>
-		/// <param name="itemDataList"></param>
+		/// <param name="itemTypes"></param>
         public static void UseProps (
             long token,
-            List<Msg_PropItem> itemDataList,
+            List<int> itemTypes,
             Action<Msg_SC_CMD_UseProps> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -920,7 +923,7 @@ namespace GameA
             Msg_CS_CMD_UseProps msg = new Msg_CS_CMD_UseProps();
             // 使用道具
             msg.Token = token;
-            msg.ItemDataList.AddRange(itemDataList);
+            msg.ItemTypes.AddRange(itemTypes);
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UseProps>(
                 SoyHttpApiPath.UseProps, msg, ret => {
                     if (successCallback != null) {

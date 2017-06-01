@@ -15,19 +15,22 @@ namespace GameA
     {
         #region 常量与字段
 
-        public readonly static LocalUser Instance = new LocalUser();
+        public readonly static LocalUser Instance = new LocalUser ();
 
         private readonly Account _account = Account.Instance;
-		private UserInfoDetail _user;
+        private UserInfoDetail _user;
 
-		private UsingAvatarPart _usingAvatarData =new UsingAvatarPart();
-		private ValidAvatarPart _validAvatarData =new ValidAvatarPart();
+        private UsingAvatarPart _usingAvatarData = new UsingAvatarPart ();
+        private ValidAvatarPart _validAvatarData = new ValidAvatarPart ();
         // 抽奖相关数据
-        private UserRaffleTicket _userRaffleTicket =new UserRaffleTicket();
+        private UserRaffleTicket _userRaffleTicket = new UserRaffleTicket ();
         // 匹配挑战相关数据
         private MatchUserData _matchUserData = new MatchUserData ();
 
-//        private User _user;
+        // 增益道具
+        private UserProp _userProp = new UserProp ();
+
+        //        private User _user;
 
 
         private PersonalProjectList _personalProjectList = new PersonalProjectList ();
@@ -37,24 +40,21 @@ namespace GameA
         #endregion
         #region 属性
 
-        public long UserGuid
-        {
+        public long UserGuid {
             get { return _account.UserGuid; }
         }
 
-        public Account Account
-        {
+        public Account Account {
             get { return _account; }
         }
 
-        public User UserLegacy
-        {
+        public User UserLegacy {
             get { return null; }
         }
 
-		public UserInfoDetail User {
-			get { return _user; }
-		}
+        public UserInfoDetail User {
+            get { return _user; }
+        }
         public UsingAvatarPart UsingAvatarData {
             get {
                 return this._usingAvatarData;
@@ -70,8 +70,7 @@ namespace GameA
         /// 抽奖相关数据
         /// </summary>
         /// <value>The raffle ticket.</value>
-        public UserRaffleTicket RaffleTicket
-        {
+        public UserRaffleTicket RaffleTicket {
             get { return this._userRaffleTicket; }
         }
         /// <summary>
@@ -93,6 +92,14 @@ namespace GameA
         public UserPublishedWorldProjectList UserPublishedWorldProjectList {
             get {
                 return this._userPublishedWorldProjectList;
+            }
+        }
+        // 增益道具
+        public UserProp UserProp
+        {
+            get 
+            {
+                return _userProp;
             }
         }
         #endregion
@@ -142,6 +149,16 @@ namespace GameA
 				successCallback,
 				failedCallback
 			);
+
+        }
+
+        public void LoadPropData (Action successCallback, Action<ENetResultCode> failedCallback)
+        {
+            _userProp.Request (
+                UserGuid,
+                successCallback,
+                failedCallback
+            );
         }
 
         private void OnLogout()

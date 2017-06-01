@@ -45,7 +45,7 @@ namespace GameA.Game
         [SerializeField]
         private IntVec2 _focusPos;
 
-        private UICtrlCountDown _countDownUI;
+        //private UICtrlCountDown _countDownUI;
 
         private int _gameSucceedTime;
         private int _gameFailedTime;
@@ -122,6 +122,7 @@ namespace GameA.Game
             transform.gameObject.AddComponent<UnitUpdateManager>();
             Messenger.AddListener(EMessengerType.GameFinishFailed, GameFinishFailed);
             Messenger.AddListener(EMessengerType.GameFinishSuccess, GameFinishSuccess);
+            Messenger.AddListener (EMessengerType.OnCountDownFinish, OnCountDownFinish);
             _unityTimeSinceGameStarted = 0f;
             _logicFrameCnt = 0;
             _allSkeletonAnimationComp.Clear ();
@@ -141,6 +142,7 @@ namespace GameA.Game
         {
             Messenger.RemoveListener(EMessengerType.GameFinishFailed, GameFinishFailed);
             Messenger.RemoveListener(EMessengerType.GameFinishSuccess, GameFinishSuccess);
+            Messenger.RemoveListener (EMessengerType.OnCountDownFinish, OnCountDownFinish);
             Instance = null;
         }
 
@@ -458,6 +460,10 @@ namespace GameA.Game
             }
         }
 
+        private void OnCountDownFinish ()
+        {
+            PlayPlay ();
+        }
 #region State
 
         public void ChangeState(ESceneState eSceneState)
@@ -618,28 +624,15 @@ namespace GameA.Game
             _logicFrameCnt = 0;
             _pausing = false;
             ColliderScene2D.Instance.SortData();
-            if (GM2DGame.Instance.GameInitType == GameManager.EStartType.Edit ||
-                GM2DGame.Instance.GameInitType == GameManager.EStartType.Create)
-            {
-                PlayPlay();
-                // GuideManager.Instance.StartGuide(EGuideType.Character2);
-            }
-            else
-            {
-                _countDownUI = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
-                if (_countDownUI != null)
-                {
-                    _countDownUI.SetCallback(() =>
-                    {
-                        _countDownUI = null;
-                        PlayPlay();
-                    });
-                }
-                else
-                {
-                    PlayPlay();
-                }
-            }
+            //if (SoyEngine.Proto.EProjectStatus.PS_Private == GM2DGame.Instance.Project.ProjectStatus || 
+            //    SoyEngine.Proto.EProjectStatus.PS_Private == GM2DGame.Instance.Project.ProjectStatus)
+            //{
+            //    Messenger.Broadcast (EMessengerType.OnCountDownFinish);
+            //}
+            //else
+            //{
+                Messenger.Broadcast (EMessengerType.OnReady2Play);
+            //}
             CrossPlatformInputManager.ClearVirtualInput();
         }
 

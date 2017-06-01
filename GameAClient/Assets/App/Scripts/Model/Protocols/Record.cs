@@ -18,6 +18,14 @@ namespace GameA
         /// </summary>
         private long _projectId;
         /// <summary>
+        /// 
+        /// </summary>
+        private int _section;
+        /// <summary>
+        /// 
+        /// </summary>
+        private int _level;
+        /// <summary>
         /// 作者
         /// </summary>
         private UserInfoSimple _userInfo;
@@ -112,6 +120,26 @@ namespace GameA
             get { return _projectId; }
             set { if (_projectId != value) {
                 _projectId = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int Section { 
+            get { return _section; }
+            set { if (_section != value) {
+                _section = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int Level { 
+            get { return _level; }
+            set { if (_level != value) {
+                _level = value;
                 SetDirty();
             }}
         }
@@ -345,6 +373,8 @@ namespace GameA
             if (null == msg) return false;
             _recordId = msg.RecordId;           
             _projectId = msg.ProjectId;           
+            _section = msg.Section;           
+            _level = msg.Level;           
             if (null == _userInfo) {
                 _userInfo = new UserInfoSimple(msg.UserInfo);
             } else {

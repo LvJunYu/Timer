@@ -33,6 +33,10 @@ namespace GameA
         /// 
         /// </summary>
         private UserInfoSimple _highScoreFriendInfo;
+        /// <summary>
+        /// 
+        /// </summary>
+        private List<Record> _recentRecordList;
 
         // cs fields----------------------------------
         /// <summary>
@@ -115,6 +119,16 @@ namespace GameA
                 SetDirty();
             }}
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public List<Record> RecentRecordList { 
+            get { return _recentRecordList; }
+            set { if (_recentRecordList != value) {
+                _recentRecordList = value;
+                SetDirty();
+            }}
+        }
         
         // cs properties----------------------------------
         /// <summary>
@@ -165,6 +179,13 @@ namespace GameA
                 }
                 if (null != _highScoreFriendInfo && _highScoreFriendInfo.IsDirty) {
                     return true;
+                }
+                if (null != _recentRecordList) {
+                    for (int i = 0; i < _recentRecordList.Count; i++) {
+                        if (null != _recentRecordList[i] && _recentRecordList[i].IsDirty) {
+                            return true;
+                        }
+                    }
                 }
                 return base.IsDirty;
             }
@@ -260,6 +281,10 @@ namespace GameA
             } else {
                 _highScoreFriendInfo.OnSyncFromParent(msg.HighScoreFriendInfo);
             }
+            _recentRecordList = new List<Record>();
+            for (int i = 0; i < msg.RecentRecordList.Count; i++) {
+                _recentRecordList.Add(new Record(msg.RecentRecordList[i]));
+            }
             OnSyncPartial();
             return true;
         }
@@ -283,6 +308,7 @@ namespace GameA
             _star2FlagRecord = new Record();
             _star3FlagRecord = new Record();
             _highScoreFriendInfo = new UserInfoSimple();
+            _recentRecordList = new List<Record>();
         }
         #endregion
     }

@@ -67,6 +67,14 @@ namespace GameA
                 return _lastPlayedLevelIdx;
             }
         }
+
+        public long LastRequiredLevelToken
+        {
+            get
+            {
+                return _lastRequiredLevelToken;
+            }
+        }
         #endregion 属性
 
         #region 方法
@@ -308,6 +316,7 @@ namespace GameA
 				killMonsterCount,
 				leftTime,
 				leftLife,
+                null,
 				ret => {
                     if ((int)ECommitAdventureLevelResultCode.CALRC_Success == ret.ResultCode) {
                         if (null != successCallback) {
