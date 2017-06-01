@@ -16,6 +16,7 @@ namespace GameA
         private ShopItem _itemInfo;
         private int _itemID;
         private Tween _tweener;
+        
 
 
         public string CardName
@@ -45,6 +46,8 @@ namespace GameA
             _cachedView.PriceDiamondDay.text = listItem.PriceDiamondDay.ToString();
             _itemInfo = listItem;
             _cachedView.PreviewTexture.text = listItem.PreviewTexture;
+            _cachedView.Message.text = GetTime(listItem).ToString();
+
             _cachedView.PreviewBtn.onClick.AddListener(() =>
             {
                 UpMove();
@@ -92,6 +95,11 @@ namespace GameA
             if (JudgeItemOwned(listItem))
             {
                 _cachedView.BuyFashion.SetActiveEx(false);
+            }
+            else
+            {
+                _cachedView.Message.SetActiveEx(false);
+
             }
             //_cachedView._avatarType = listItem._avatarType;
             //_cachedView.Id = listItem.Id;
@@ -164,16 +172,86 @@ namespace GameA
             else if (JudgeItemOwned(listItem))
             {
                 //_cachedView.Message.text = "已经拥有并穿戴";
-                ChangeFashion(listItem);
+                // ChangeFashion(listItem);
+                SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().TryOnAvatar(listItem);
+                SetFittingFashion(listItem);
             }
             else
             {
-                _cachedView.Message.text = "在试穿";
+                //_cachedView.Message.text = "在试穿";
                
             }
             SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().TryOnAvatar(listItem);
             SetFittingFashion(listItem);
         }
+
+
+        private string GetTime(ShopItem listItem)
+        {
+ 
+            long now= DateTimeUtil.GetServerTimeNowTimestampMillis();
+            long time=0;
+            if (JudgeItemOwned(listItem))
+            {
+                switch (listItem._avatarType)
+                {
+                    case EAvatarPart.AP_Head:
+                        time =  LocalUser.Instance.ValidAvatarData.GetItemInHeadDictionary(listItem.Id).ExpirationTime;
+                        break;
+                    case EAvatarPart.AP_Lower:
+                        time = LocalUser.Instance.ValidAvatarData.GetItemInLowerDictionary(listItem.Id).ExpirationTime;
+                        break;
+                    case EAvatarPart.AP_Upper:
+                        time = LocalUser.Instance.ValidAvatarData.GetItemInUpperDictionary(listItem.Id).ExpirationTime;
+                        break;
+                    case EAvatarPart.AP_Appendage:
+                        time = LocalUser.Instance.ValidAvatarData.GetItemInAppendageDictionary(listItem.Id).ExpirationTime;
+                        break;
+                    default:
+                        break;
+                }
+
+                //LocalUser.Instance.ValidAvatarData.Request(LocalUser.Instance.UserGuid, () =>
+                //{
+                //    Set(listItem);
+                //    //SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().RefreshFashionShopPanel();
+                //    _cachedView.Message.text = "购买成功";
+                //}, code => { LogHelper.Error("Network error when get BuyAvatarPart, {0}", code); });
+
+            }
+
+           return formatTime(time-now);
+        }
+
+        public  String formatTime(long ms)
+        {
+
+            int ss = 1000;
+            int mi = ss * 60;
+            int hh = mi * 60;
+            int dd = hh * 24;
+
+            long day = ms / dd;
+            long hour = (ms - day * dd) / hh;
+            long minute = (ms - day * dd - hour * hh) / mi;
+            long second = (ms - day * dd - hour * hh - minute * mi) / ss;
+            long milliSecond = ms - day * dd - hour * hh - minute * mi - second * ss;
+
+            String strDay = "" + day; //天  
+            String strHour ="" + hour;//小时  
+            String strMinute = "" + minute;//分钟  
+            String strSecond = second < 10 ? "0" + second : "" + second;//秒  
+            String strMilliSecond = milliSecond < 10 ? "0" + milliSecond : "" + milliSecond;//毫秒  
+            strMilliSecond = milliSecond < 100 ? "0" + strMilliSecond : "" + strMilliSecond;
+
+            if (day < 0 || hour < 0 || minute < 0)
+            return "已过期";
+            else if (day >= 31)
+            return "永久";
+            else
+            return "有效期："+ "\n" + strDay + " 天  " + strHour + " 小时 " + strMinute + " 分钟 " ;
+        }
+
 
         //private void BuyFashion(ShopItem listItem)
         //{
@@ -316,17 +394,17 @@ namespace GameA
 
         private bool JudgeItemOwned(ShopItem listItem)
         {
-            LocalUser.Instance.ValidAvatarData.Request(LocalUser.Instance.UserGuid, () =>
-            {
-                //Set(listItem);
-                SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().RefreshFashionShopPanel();
+            //LocalUser.Instance.ValidAvatarData.Request(LocalUser.Instance.UserGuid, () =>
+            //{
+            //    //Set(listItem);
+            //    SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().RefreshFashionShopPanel();
 
-            }, code =>
-            {
-                SocialGUIManager.ShowPopupDialog("刷新已拥有时装失败", null,
-                new KeyValuePair<string, Action>("确定", () => { }));
-                LogHelper.Error("Network error when get BuyAvatarPart, {0}", code);
-            });
+            //}, code =>
+            //{
+            //    SocialGUIManager.ShowPopupDialog("刷新已拥有时装失败", null,
+            //    new KeyValuePair<string, Action>("确定", () => { }));
+            //    LogHelper.Error("Network error when get BuyAvatarPart, {0}", code);
+            //});
             bool rst = false;
             switch (listItem._avatarType)
             {
@@ -354,88 +432,88 @@ namespace GameA
             return rst;
         }
 
-        private void ChangeFashion(ShopItem listItem)
-        {
-            if (JudgeItemOwned(listItem))
-            {
-                if (JudgeItemOccupied(listItem))
-                {
-                    _cachedView.Message.text = "正在使用";
-                }
-                else
-                {
-                    ChangeAvatarPart(
-                        listItem._avatarType,
-                        listItem.Id,
-                        () =>
-                        {
-                            LocalUser.Instance.UsingAvatarData.Request(LocalUser.Instance.UserGuid, () =>
-                            {
-                                Set(listItem);
-                                //SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().RefreshFashionShopPanel();
-                                _cachedView.Message.text = "换装成功";
-                            }, code =>
-                            {
-                                LogHelper.Error("Network error when get UsingAvatarData, {0}", code);
-                            });
+        //private void ChangeFashion(ShopItem listItem)
+        //{
+        //    if (JudgeItemOwned(listItem))
+        //    {
+        //        if (JudgeItemOccupied(listItem))
+        //        {
+        //            _cachedView.Message.text = "正在使用";
+        //        }
+        //        else
+        //        {
+        //            ChangeAvatarPart(
+        //                listItem._avatarType,
+        //                listItem.Id,
+        //                () =>
+        //                {
+        //                    LocalUser.Instance.UsingAvatarData.Request(LocalUser.Instance.UserGuid, () =>
+        //                    {
+        //                        Set(listItem);
+        //                        //SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().RefreshFashionShopPanel();
+        //                        _cachedView.Message.text = "换装成功";
+        //                    }, code =>
+        //                    {
+        //                        LogHelper.Error("Network error when get UsingAvatarData, {0}", code);
+        //                    });
 
-                        },
-                        () =>
-                        {
-                            _cachedView.Message.text = "换装失败";
-                        });
-                }
+        //                },
+        //                () =>
+        //                {
+        //                    _cachedView.Message.text = "换装失败";
+        //                });
+        //        }
 
-            }
-            else
-            {
-                _cachedView.Message.text = "未拥有请购买";
-            }
+        //    }
+        //    else
+        //    {
+        //        _cachedView.Message.text = "未拥有请购买";
+        //    }
 
-        }
+        //}
 
-        public void ChangeAvatarPart(
-            EAvatarPart type,
-            long partID,
-            Action successCallback, Action failedCallback)
-        {
-            RemoteCommands.ChangeAvatarPart(type, partID, (ret) =>
-            {
-                if (ret.ResultCode == (int)EChangeAvatarPartCode.CAPC_Success)
-                {
+        //public void ChangeAvatarPart(
+        //    EAvatarPart type,
+        //    long partID,
+        //    Action successCallback, Action failedCallback)
+        //{
+        //    RemoteCommands.ChangeAvatarPart(type, partID, (ret) =>
+        //    {
+        //        if (ret.ResultCode == (int)EChangeAvatarPartCode.CAPC_Success)
+        //        {
 
-                    if (null != successCallback)
-                    {
-                        successCallback.Invoke();
-                    }
-                }
-                else
-                {
-                    if (null != failedCallback)
-                    {
-                        failedCallback.Invoke();
-                    }
-                }
-            }, (errorCode) =>
-            {
-                if (null != failedCallback)
-                {
-                    failedCallback.Invoke();
-                }
-            });
-        }
+        //            if (null != successCallback)
+        //            {
+        //                successCallback.Invoke();
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (null != failedCallback)
+        //            {
+        //                failedCallback.Invoke();
+        //            }
+        //        }
+        //    }, (errorCode) =>
+        //    {
+        //        if (null != failedCallback)
+        //        {
+        //            failedCallback.Invoke();
+        //        }
+        //    });
+        //}
 
-        public void ChangeDock(bool selected)
-        {
-            if (selected)
-            {
-                Init(_cachedView.DockSelected as RectTransform);
-            }
-            else
-            {
-                Init(_cachedView.DockUnSelected as RectTransform);
-            }
-        }
+        //public void ChangeDock(bool selected)
+        //{
+        //    if (selected)
+        //    {
+        //        Init(_cachedView.DockSelected as RectTransform);
+        //    }
+        //    else
+        //    {
+        //        Init(_cachedView.DockUnSelected as RectTransform);
+        //    }
+        //}
 
         protected override void OnDestroy()
         {

@@ -136,6 +136,184 @@ namespace GameA
         #endregion
 
         #region 方法
+
+        private bool JudgeItemOccupied(ShopItem listItem)
+        {
+            bool rst = false;
+            switch (listItem._avatarType)
+            {
+                case EAvatarPart.AP_Head:
+                    if (LocalUser.Instance.UsingAvatarData.Head != null)
+                    {
+                        rst = listItem.Id == LocalUser.Instance.UsingAvatarData.Head.Id ? true : false;
+                    }
+                    break;
+                case EAvatarPart.AP_Lower:
+                    if (LocalUser.Instance.UsingAvatarData.Lower != null)
+                    {
+                        rst = listItem.Id == LocalUser.Instance.UsingAvatarData.Lower.Id ? true : false;
+                    }
+                    break;
+                case EAvatarPart.AP_Upper:
+                    if (LocalUser.Instance.UsingAvatarData.Upper != null)
+                    {
+                        rst = listItem.Id == LocalUser.Instance.UsingAvatarData.Upper.Id ? true : false;
+                    }
+                    break;
+                case EAvatarPart.AP_Appendage:
+                    if (LocalUser.Instance.UsingAvatarData.Appendage != null)
+                    {
+                        rst = listItem.Id == LocalUser.Instance.UsingAvatarData.Appendage.Id ? true : false;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return rst;
+        }
+
+        private bool JudgeItemOwned(ShopItem listItem)
+        {
+            LocalUser.Instance.ValidAvatarData.Request(LocalUser.Instance.UserGuid, () =>
+            {
+                //Set(listItem);
+                SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().RefreshFashionShopPanel();
+
+            }, code =>
+            {
+                SocialGUIManager.ShowPopupDialog("刷新已拥有时装失败", null,
+                new KeyValuePair<string, Action>("确定", () => { }));
+                LogHelper.Error("Network error when get BuyAvatarPart, {0}", code);
+            });
+            bool rst = false;
+            switch (listItem._avatarType)
+            {
+                case EAvatarPart.AP_Head:
+                    rst = LocalUser.Instance.ValidAvatarData.GetItemInHeadDictionary(listItem.Id) != null ? true : false;
+                    break;
+                case EAvatarPart.AP_Lower:
+                    rst = LocalUser.Instance.ValidAvatarData.GetItemInLowerDictionary(listItem.Id) != null
+                        ? true
+                        : false;
+                    break;
+                case EAvatarPart.AP_Upper:
+                    rst = LocalUser.Instance.ValidAvatarData.GetItemInUpperDictionary(listItem.Id) != null
+                        ? true
+                        : false;
+                    break;
+                case EAvatarPart.AP_Appendage:
+                    rst = LocalUser.Instance.ValidAvatarData.GetItemInAppendageDictionary(listItem.Id) != null
+                        ? true
+                        : false;
+                    break;
+                default:
+                    break;
+            }
+            return rst;
+        }
+
+	    private void OnCloseChangeFashion()
+	    {
+	        if (SelectHead != null && !JudgeItemOccupied(SelectHead.ItemInfo) && JudgeItemOwned(SelectHead.ItemInfo))
+	        {
+	            ChangeFashion(SelectHead.ItemInfo);
+	        }
+	 
+
+	        if (SelectUpper != null && !JudgeItemOccupied(SelectUpper.ItemInfo)&&JudgeItemOwned(SelectUpper.ItemInfo))
+            {
+                ChangeFashion(SelectUpper.ItemInfo);
+            }
+
+
+            if (SelectLower != null && !JudgeItemOccupied(SelectLower.ItemInfo)&&JudgeItemOwned(SelectLower.ItemInfo))
+            {
+                ChangeFashion(SelectLower.ItemInfo);
+            }
+
+
+            if (SelectAppendage != null && !JudgeItemOccupied(SelectAppendage.ItemInfo)&&JudgeItemOwned(SelectAppendage.ItemInfo))
+            {
+                ChangeFashion(SelectAppendage.ItemInfo);
+            }
+
+        }
+
+
+
+
+
+        private void ChangeFashion(ShopItem listItem)
+        {
+            if (JudgeItemOwned(listItem))
+            {
+                if (JudgeItemOccupied(listItem))
+                {
+                    
+                }
+                else
+                {
+                    ChangeAvatarPart(
+                        listItem._avatarType,
+                        listItem.Id,
+                        () =>
+                        {
+                            LocalUser.Instance.UsingAvatarData.Request(LocalUser.Instance.UserGuid, () =>
+                            {
+                                SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().ShowAllUsingAvatar();
+
+                            }, code =>
+                            {
+                                LogHelper.Error("Network error when get UsingAvatarData, {0}", code);
+                            });
+
+                        },
+                        () =>
+                        {
+                            //_cachedView.Message.text = "换装失败";
+                        });
+                }
+
+            }
+            else
+            {
+                //_cachedView.Message.text = "未拥有请购买";
+            }
+
+        }
+
+
+
+        public void ChangeAvatarPart(
+            EAvatarPart type,
+            long partID,
+            Action successCallback, Action failedCallback)
+        {
+            RemoteCommands.ChangeAvatarPart(type, partID, (ret) =>
+            {
+                if (ret.ResultCode == (int)EChangeAvatarPartCode.CAPC_Success)
+                {
+
+                    if (null != successCallback)
+                    {
+                        successCallback.Invoke();
+                    }
+                }
+                else
+                {
+                    if (null != failedCallback)
+                    {
+                        failedCallback.Invoke();
+                    }
+                }
+            }, (errorCode) =>
+            {
+                if (null != failedCallback)
+                {
+                    failedCallback.Invoke();
+                }
+            });
+        }
         /// <summary>
         /// 打开UI
         /// </summary>
@@ -152,6 +330,9 @@ namespace GameA
         protected override void OnClose()
         {
             base.OnClose();
+            SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().ShowAllUsingAvatar();
+            OnCloseChangeFashion();
+            //OnRestoreFashionBtnClick();
             RefreshFashionShopPanel();
             SocialGUIManager.Instance.GetUI<UICtrlShopingCart>().OnCloseBtnClick();
         }
@@ -371,28 +552,37 @@ namespace GameA
 
             List<ShopItem> allFittingList = new List<ShopItem>();
 
-            if (SelectHead != null )
+            if (SelectHead != null&&!JudgeItemOwned(SelectHead.ItemInfo))
             {
                 if(LocalUser.Instance.ValidAvatarData.GetItemInHeadDictionary(SelectHead.ItemID) == null)
                 allFittingList.Add(SelectHead.ItemInfo);
             }
-            if (SelectUpper!= null )
+            if (SelectUpper!= null&&!JudgeItemOwned(SelectUpper.ItemInfo))
             {
                if( LocalUser.Instance.ValidAvatarData.GetItemInUpperDictionary(SelectUpper.ItemID) == null)
                 allFittingList.Add(SelectUpper.ItemInfo);
             }
-            if (SelectLower!= null)
+            if (SelectLower!= null && !JudgeItemOwned(SelectLower.ItemInfo))
             {
               if(LocalUser.Instance.ValidAvatarData.GetItemInLowerDictionary(SelectLower.ItemID) == null)
                 allFittingList.Add(SelectLower.ItemInfo);
             }
-            if (SelectAppendage!= null)
+            if (SelectAppendage!= null&&!JudgeItemOwned(SelectAppendage.ItemInfo))
             {
                 if (LocalUser.Instance.ValidAvatarData.GetItemInAppendageDictionary(SelectAppendage.ItemID) == null)
                 allFittingList.Add(SelectAppendage.ItemInfo);
             }
-            SocialGUIManager.Instance.OpenUI<UICtrlShopingCart>();
-            SocialGUIManager.Instance.GetUI<UICtrlShopingCart>().Set(allFittingList);
+
+            if (allFittingList.Count == 0)
+            {
+                SocialGUIManager.ShowPopupDialog("请至少选择一件时装", null,
+                    new KeyValuePair<string, Action>("确定", () => { }));
+            }
+            else
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlShopingCart>();
+                SocialGUIManager.Instance.GetUI<UICtrlShopingCart>().Set(allFittingList);
+            }
         }
 
         private void OnRestoreFashionBtnClick()
