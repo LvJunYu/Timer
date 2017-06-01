@@ -53,5 +53,10 @@ namespace GameA.Game
                 UnitManager.GetDepth(tableUnit),
                 (byte)mapRect2D.Rotation, scale);
         }
+
+        public static SceneNode GetBgNode(ushort id, Grid2D grid, int depth, Vector2 scale)
+        {
+            return SoyEngine.NodeFactory.GetColliderNode(true, id, grid, depth,0, scale, 0);
+        }
     }
 }

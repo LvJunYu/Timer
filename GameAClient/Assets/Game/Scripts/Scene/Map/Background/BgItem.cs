@@ -18,7 +18,7 @@ namespace GameA.Game
     {
         protected Table_Background _tableBg;
         protected Transform _trans;
-        protected Vector2 _curPos;
+        protected Vector3 _curPos;
         protected SpriteRenderer _spriteRenderer;
         protected SceneNode _node;
         private bool _isShow;
@@ -29,20 +29,15 @@ namespace GameA.Game
             _tableBg = table;
             _node = node;
             var size = new IntVec2(_node.Grid.XMax - _node.Grid.XMin + 1, _node.Grid.YMax - _node.Grid.YMin + 1);
-            _curPos = GM2DTools.TileToWorld(new IntVec2(_node.Guid.x, _node.Guid.y) + size / 2);
+            _curPos = GM2DTools.TileToWorld(new IntVec2(_node.Guid.x, _node.Guid.y) + size / 2, table.Depth + 10);
             GameObject go;
             if (!TryCreateObject(out go))
             {
                 return false;
             }
             _trans = go.transform;
-            _trans.position = _curPos;
-            _trans.localScale = new Vector3(_node.Rotation * 0.1f, _node.Rotation * 0.1f, 0);
-            if (_tableBg.RotateSpeed != 0)
-            {
-                var r = _trans.gameObject.AddComponent<BgItemRotate>();
-                r.Init(_tableBg);
-            }
+            _trans.localPosition = _curPos;
+            _trans.localScale = new Vector3(_node.Scale.x, _node.Scale.y, 1);
             return true;
         }
 
@@ -52,69 +47,45 @@ namespace GameA.Game
             {
                 return;
             }
-            UpdateMove();
-            UpdateFollow(GM2DTools.TileToWorld(deltaPos));
-            UpdateRenderer();
-            _trans.position = _curPos;
-        }
-
-        private void UpdateRenderer()
-        {
-            //云在下面不显示
-            if (_tableBg.Depth == (int)EBgDepth.Far || _tableBg.Depth == (int)EBgDepth.Near)
-            {
-                if (_curPos.y <= 17f)
-                {
-                    if (_isShow)
-                    {
-                        _spriteRenderer.enabled = false;
-                        _isShow = false;
-                    }
-                }
-                else
-                {
-                    if (!_isShow)
-                    {
-                        _spriteRenderer.enabled = true;
-                        _isShow = true;
-                    }
-                }
-            }
+            //UpdateMove();
+            //UpdateFollow(GM2DTools.TileToWorld(deltaPos));
+            //UpdateRenderer();
+            //_trans.position = _curPos;
         }
 
         private void UpdateFollow(Vector2 deltaPos)
         {
-            _curPos += deltaPos*(1 - BgScene2D.Instance.GetMoveRatio(_tableBg.Depth));
+            //_curPos += deltaPos*(1 - BgScene2D.Instance.GetMoveRatio(_tableBg.Depth));
         }
 
         protected virtual  void UpdateMove()
         {
-            if (_tableBg.MoveSpeedX != 0 || _tableBg.MoveSpeedY != 0)
-            {
-                _curPos += new Vector2(_tableBg.MoveSpeedX, _tableBg.MoveSpeedY) * ConstDefineGM2D.FixedDeltaTime * BgScene2D.Instance.GetMoveRatio(_tableBg.Depth);
-            }
-            var followRect = BgScene2D.Instance.GetRect(_tableBg.Depth);
-            var tilePos = GM2DTools.WorldToTile(_curPos);
-            if (tilePos.x <= followRect.XMin)
-            {
-                tilePos.x += followRect.XMax - followRect.XMin + 1;
-            }
-            else if (tilePos.x > followRect.XMax)
-            {
-                tilePos.x -= followRect.XMax - followRect.XMin + 1;
-            }
-            if (_tableBg.Depth != (int) EBgDepth.Nearest)
-            {
-                if (tilePos.y <= followRect.YMin)
-                {
-                    tilePos.y += followRect.YMax - followRect.YMin + 1;
-                }
-                else if (tilePos.y > followRect.YMax)
-                {
-                    tilePos.y -= followRect.YMax - followRect.YMin + 1;
-                }
-            }
-            _curPos = GM2DTools.TileToWorld(tilePos);
+            //if (_tableBg.MoveSpeedX != 0)
+            //{
+            //    _curPos += new Vector2(_tableBg.MoveSpeedX, 0) * ConstDefineGM2D.FixedDeltaTime * BgScene2D.Instance.GetMoveRatio(_tableBg.Depth);
+            //}
+            //var followRect = BgScene2D.Instance.GetRect(_tableBg.Depth);
+            //var tilePos = GM2DTools.WorldToTile(_curPos);
+            //if (tilePos.x <= followRect.XMin)
+            //{
+            //    tilePos.x += followRect.XMax - followRect.XMin + 1;
+            //}
+            //else if (tilePos.x > followRect.XMax)
+            //{
+            //    tilePos.x -= followRect.XMax - followRect.XMin + 1;
+            //}
+            //if (_tableBg.Depth != (int) EBgDepth.Nearest)
+            //{
+            //    if (tilePos.y <= followRect.YMin)
+            //    {
+            //        tilePos.y += followRect.YMax - followRect.YMin + 1;
+            //    }
+            //    else if (tilePos.y > followRect.YMax)
+            //    {
+            //        tilePos.y -= followRect.YMax - followRect.YMin + 1;
+            //    }
+            //}
+            //_curPos = GM2DTools.TileToWorld(tilePos);
         }
 
         private bool TryCreateObject(out GameObject go)
@@ -129,7 +100,7 @@ namespace GameA.Game
             go = new GameObject();
             _spriteRenderer = go.AddComponent<SpriteRenderer>();
             _spriteRenderer.sprite = sprite;
-            _spriteRenderer.sortingOrder = _tableBg.SortingLayer;
+            _spriteRenderer.sortingOrder = (int)ESortingOrder.Item;
             go.transform.parent = BgScene2D.Instance.GetParent(_tableBg.Depth);
             return true;
         }

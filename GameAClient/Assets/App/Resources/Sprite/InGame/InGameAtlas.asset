@@ -12,13 +12,20 @@ MonoBehaviour:
   m_Name: InGameAtlas
   m_EditorClassIdentifier: 
   CachedSprites:
-  - {fileID: 21300000, guid: 81a06d847847f45edb5576abe8077832, type: 3}
-  - {fileID: 21300000, guid: 7c2ef95eae1d4439cb5947a9aa6bac19, type: 3}
-  - {fileID: 21300000, guid: 4acb673cc9477434a9b4224f024d7bf8, type: 3}
-  - {fileID: 21300000, guid: 992fa6cf457274a19bc6f9b741437b13, type: 3}
-  - {fileID: 21300000, guid: 755188b72a0b14c1ba8e89453d5524ef, type: 3}
-  - {fileID: 21300000, guid: 2a788488d67224c6994525262830df86, type: 3}
-  - {fileID: 21300000, guid: 51c5721eaee7a40ec801519e58f337e0, type: 3}
-  - {fileID: 21300000, guid: c7cbb0562600f48b1b030c5ae0d07f15, type: 3}
-  - {fileID: 21300000, guid: 6fe39c8bfccb64b2b8598ec199cd99c8, type: 3}
-  - {fileID: 21300000, guid: 01438d7bedf40435bbcae09f3f345447, type: 3}
+  - {fileID: 21300000, guid: cffd64f66cf7c0046a086ecb637bb12b, type: 3}
+  - {fileID: 21300000, guid: 0a31ed873f6c31848a6e3dbaa63f4f68, type: 3}
+  - {fileID: 21300000, guid: 78627e50ea9017e41999358783a09eb0, type: 3}
+  - {fileID: 21300000, guid: 00d7b8dd3ba66f1479f6fa2b6d271f9a, type: 3}
+  - {fileID: 21300000, guid: aadde1d7f9c383547a73464c029af18c, type: 3}
+  - {fileID: 21300000, guid: 624b1447c55c17b41b6aa71962ba1ee4, type: 3}
+  - {fileID: 21300000, guid: 84150fd456c2ba44ba16515f734b33ee, type: 3}
+  - {fileID: 21300000, guid: c394f9a08fffcfd4a8c640a7ad359377, type: 3}
+  - {fileID: 21300000, guid: 00b44930d0cbd2749bf1e0444b74b12d, type: 3}
+  - {fileID: 21300000, guid: 93aebd9fc8344b84a8aa182eb4c9606a, type: 3}
+  - {fileID: 21300000, guid: 45962a611652d5446b9da2f1480825ff, type: 3}
+  - {fileID: 21300000, guid: 5f703505be593d948a6151b2dcf33ade, type: 3}
+  - {fileID: 21300000, guid: 5a3de609223ff434096f6c1bd74ed9c0, type: 3}
+  - {fileID: 21300000, guid: 9213b4c19b57fbb44b67e532db08e567, type: 3}
+  - {fileID: 21300000, guid: 8657bd1636045ba47963e07101f5be24, type: 3}
+  - {fileID: 21300000, guid: 1346a37ffe530f9419b1d6969c4ba1b8, type: 3}
+  - {fileID: 21300000, guid: bf33da1141fdf4b4d8a4a80de92291fc, type: 3}

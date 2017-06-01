@@ -26,45 +26,35 @@ namespace GameA.Game
 		[ColumnMapping("Height")]
 		public int Height;
 		/// <summary>
-        /// 数据宽
+        /// 
         /// </summary>
-		[ColumnMapping("MinScale")]
-		public float MinScale;
+		[ColumnMapping("MinScaleX")]
+		public float MinScaleX;
+		/// <summary>
+        /// 
+        /// </summary>
+		[ColumnMapping("MinScaleY")]
+		public float MinScaleY;
 		/// <summary>
         /// MaxScale
         /// </summary>
-		[ColumnMapping("MaxScale")]
-		public float MaxScale;
+		[ColumnMapping("MaxScaleX")]
+		public float MaxScaleX;
+		/// <summary>
+        /// MaxScale
+        /// </summary>
+		[ColumnMapping("MaxScaleY")]
+		public float MaxScaleY;
 		/// <summary>
         /// Depth
         /// </summary>
 		[ColumnMapping("Depth")]
 		public int Depth;
 		/// <summary>
-        /// SortingLayer
-        /// </summary>
-		[ColumnMapping("SortingLayer")]
-		public int SortingLayer;
-		/// <summary>
         /// MoveSpeedX
         /// </summary>
 		[ColumnMapping("MoveSpeedX")]
 		public float MoveSpeedX;
-		/// <summary>
-        /// MoveSpeedY
-        /// </summary>
-		[ColumnMapping("MoveSpeedY")]
-		public float MoveSpeedY;
-		/// <summary>
-        /// RotateSpeed
-        /// </summary>
-		[ColumnMapping("RotateSpeed")]
-		public int RotateSpeed;
-		/// <summary>
-        /// RotateAngle
-        /// </summary>
-		[ColumnMapping("RotateAngle")]
-		public float RotateAngle;
 	}
 
     public class TableBackgroundAsset:BaseTableAsset

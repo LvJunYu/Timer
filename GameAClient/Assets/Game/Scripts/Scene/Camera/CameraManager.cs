@@ -190,8 +190,8 @@ namespace GameA.Game
             c.orthographic = true;
             c.transparencySortMode = TransparencySortMode.Orthographic;
             c.orthographicSize = 5; //Screen.height / ConstDefineGM2D.PixelsPerTile;
-            c.nearClipPlane = -70;
-            c.farClipPlane = 0;
+            c.nearClipPlane = -100;
+            c.farClipPlane = 20;
             c.enabled = false;
             _finalOrthoSize = c.orthographicSize;
             return c;

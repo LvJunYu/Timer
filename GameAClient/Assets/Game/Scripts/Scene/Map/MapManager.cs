@@ -19,7 +19,6 @@ namespace GameA.Game
 		private bool _generateMapComplete;
 		private MapFile _mapFile;
 		private ESceneState _eSceneState;
-		private IGameBgCreater _gameBgRoot;
 #if UNITY_EDITOR
 	    public ColliderScene2D ColliderScene = ColliderScene2D.Instance;
 #endif
@@ -41,10 +40,6 @@ namespace GameA.Game
 			get { return _generateMapComplete; }
 		}
 
-	    public IGameBgCreater GameBg
-	    {
-	        get { return _gameBgRoot; }
-	    }
 
 	    private void Awake()
 		{
@@ -55,7 +50,7 @@ namespace GameA.Game
 		{
 			DataScene2D.Instance.Dispose();
 			ColliderScene2D.Instance.Dispose();
-            //BgScene2D.Instance.Dispose();
+            BgScene2D.Instance.Dispose();
             PairUnitManager.Instance.Dispose();
             PoolFactory<SpineUnit>.Clear();
 			PoolFactory<ChangePartsSpineView>.Clear ();
@@ -397,31 +392,8 @@ namespace GameA.Game
 
 		private void GenerateBg(int randomSeed)
 		{
-            //BgScene2D.Instance.Init(ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
-            //BgScene2D.Instance.GenerateBackground(randomSeed);
-            return;
-			string resName = GM2DGame.Instance.TableMatrix.BgResName;
-			if (string.IsNullOrEmpty(resName))
-			{
-				LogHelper.Error(
-					"GenerateBg called but GM2DGame.Instance.TableMatrix.BgResName is null or empty! TableMatrix id is {0}",
-					GM2DGame.Instance.TableMatrix.Id);
-				return;
-			}
-			GameObject go = GameResourceManager.Instance.LoadClonedGameObject(resName);
-			if (go != null)
-			{
-				_gameBgRoot = GetBgCreater(go);
-				if (_gameBgRoot != null)
-				{
-					CameraManager.Instance.RendererCamera.clearFlags = CameraClearFlags.SolidColor;
-					CameraManager.Instance.RendererCamera.backgroundColor = _gameBgRoot.GetCameraSolidColor();
-					int realHeight = ConstDefineGM2D.MapTileSize.y/ConstDefineGM2D.ServerTileScale;
-					_gameBgRoot.CreateRandomBg(realHeight, realHeight, randomSeed);
-					_gameBgRoot.GetGameObject().transform.localPosition = GetMapBgPosition();
-					_gameBgRoot.InitCameraRuntime(CameraManager.Instance.RendererCamera, CameraManager.Instance.AspectRatio);
-				}
-			}
+            BgScene2D.Instance.Init(ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
+            BgScene2D.Instance.GenerateBackground(randomSeed);
 		}
 
 		private IGameBgCreater GetBgCreater(GameObject go)
