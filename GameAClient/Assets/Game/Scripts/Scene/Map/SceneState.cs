@@ -32,7 +32,7 @@ namespace GameA.Game
         [SerializeField] private int _heroRescued;
         [SerializeField] private int _keyGain;
         [SerializeField] private int _monsterKilled;
-        [SerializeField] private int _secondLeft;
+        //[SerializeField] private int _secondLeft;
 
         private MapStatistics _mapStatistics = new MapStatistics();
 
@@ -48,7 +48,32 @@ namespace GameA.Game
 
         public int SecondLeft
         {
-            get { return _secondLeft; }
+            //get { return _secondLeft; }
+            get 
+            {
+                if (_runState == ESceneState.Fail || _runState == ESceneState.Fail)
+                {
+                    return 0;
+                }
+                return (int)(RunTimeTimeLimit - _gameTimer);
+            }
+        }
+        /// <summary>
+        /// 关卡运行时时间限制（受到增益道具的影响）
+        /// </summary>
+        /// <value>The run time time limit.</value>
+        public int RunTimeTimeLimit
+        {
+            get
+            {
+                if (PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_TimeAddPercent20))
+                {
+                    return _mapStatistics.TimeLimit * 12;
+                }else
+                {
+                    return _mapStatistics.TimeLimit * 10;
+                }
+            }
         }
 
         public int TotalScore
@@ -203,7 +228,7 @@ namespace GameA.Game
                 RemoveCondition(EWinCondition.RescueHero);
             }
             _gameTimer = 0;
-            _secondLeft = _mapStatistics.TimeLimit*10;
+            //_secondLeft = _mapStatistics.TimeLimit*10;
             _runState = ESceneState.Run;
             Messenger.Broadcast(EMessengerType.OnWinDataChanged);
         }
@@ -213,6 +238,9 @@ namespace GameA.Game
             _mapStatistics.AddOrDeleteUnit(tableUnit, true);
         }
 
+        /// <summary>
+        /// 这个接口只在老的新手引导系统里用
+        /// </summary>
         public void ForceSetTimeFinish()
         {
             _gameTimer = _mapStatistics.TimeLimit*10;
@@ -262,10 +290,10 @@ namespace GameA.Game
                         // 因时间用完没有达到目标而失败
                         Messenger.Broadcast(EMessengerType.GameFinishFailed);
                     }
-                    _secondLeft = 0;
+                    //_secondLeft = 0;
                     return;
                 }
-                _secondLeft = (int) (_mapStatistics.TimeLimit*10 - _gameTimer);
+                //_secondLeft = (int) (_mapStatistics.TimeLimit*10 - _gameTimer);
             }
         }
 
@@ -369,7 +397,7 @@ namespace GameA.Game
 
         private bool CheckWinTimeLimit()
         {
-            return HasWinCondition(EWinCondition.TimeLimit) && _gameTimer >= _mapStatistics.TimeLimit*10;
+            return HasWinCondition(EWinCondition.TimeLimit) && _gameTimer >= RunTimeTimeLimit;
         }
     }
 }
