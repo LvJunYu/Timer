@@ -472,6 +472,7 @@ namespace GameA.Game
 
         private void OnBoostItemSelectFinish (List<int> items)
         {
+            Debug.Log ("OnBoostItemSelectFinish");
             _boostItems = items;
         }
 
@@ -584,12 +585,12 @@ namespace GameA.Game
             var mainPlayer = DataScene2D.Instance.MainPlayer;
             var colliderPos = new IntVec2 (mainPlayer.Grid.XMin, mainPlayer.Grid.YMin);
             UpdateWorldRegion (colliderPos, true);
-            var units = ColliderScene2D.Instance.Units.Values.ToArray();
-            for (int i = 0; i < units.Length; i++)
-            {
-                var unit = units[i];
-                unit.OnPlay ();
-            }
+//            var units = ColliderScene2D.Instance.Units.Values.ToArray();
+//            for (int i = 0; i < units.Length; i++)
+//            {
+//                var unit = units[i];
+//                unit.OnPlay ();
+//            }
             OnPlay ();
 		}
 
@@ -664,6 +665,12 @@ namespace GameA.Game
             GameAudioManager.Instance.PlayMusic(AudioNameConstDefineGM2D.GameAudioBgm01);
             _unityTimeSinceGameStarted = 0f;
             _logicFrameCnt = 0;
+            var units = ColliderScene2D.Instance.Units.Values.ToArray();
+            for (int i = 0; i < units.Length; i++)
+            {
+                var unit = units[i];
+                unit.OnPlay ();
+            }
             Messenger.Broadcast(EMessengerType.OnPlay);
         }
 

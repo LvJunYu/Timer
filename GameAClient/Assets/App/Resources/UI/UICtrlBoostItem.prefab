@@ -2704,7 +2704,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2729d8cde093141309f4e97863cde679, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BoostItemType: 3
+  BoostItemType: 2
   Btn: {fileID: 114279863367326298}
   CheckImg: {fileID: 1155986757227154}
   DiamondIcon: {fileID: 1982381369558950}
@@ -3187,7 +3187,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2729d8cde093141309f4e97863cde679, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BoostItemType: 2
+  BoostItemType: 3
   Btn: {fileID: 114979570594034750}
   CheckImg: {fileID: 1424930640484430}
   DiamondIcon: {fileID: 1875451719674252}

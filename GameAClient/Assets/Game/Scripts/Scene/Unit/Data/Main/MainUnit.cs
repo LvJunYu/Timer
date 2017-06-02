@@ -265,10 +265,16 @@ namespace GameA.Game
         internal override void OnPlay()
         {
             base.OnPlay();
+            Debug.Log ("MainUnit.OnPlay");
             _flashTime = 100;
             _revivePos = _curPos;
             _revivePosStack.Clear();
-            Life = PlayMode.Instance.SceneState.Life;
+            if (PlayMode.Instance.IsUsingBoostItem (SoyEngine.Proto.EBoostItemType.BIT_AddLifeCount1)) {
+                Life = PlayMode.Instance.SceneState.Life + 1;
+            } else
+            {
+                Life = PlayMode.Instance.SceneState.Life;
+            }
         }
 
         #region motor

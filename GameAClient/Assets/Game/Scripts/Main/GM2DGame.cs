@@ -930,14 +930,15 @@ namespace GameA.Game
             if (EProjectStatus.PS_Private == p.ProjectStatus) {
                 p.PassFlag = true;
                 Messenger.Broadcast (EMessengerType.GameFinishSuccessShowUI);
-//				byte[] record = GetRecord();
-//				float usedTime = PlayMode.Instance.GameSuccessFrameCnt * ConstDefineGM2D.FixedDeltaTime;
-//				GM2DGame.Instance.RecordBytes = record;
-//				GM2DGame.Instance.RecordUsedTime = usedTime;
-//
-//				GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>();
-            } else if (EProjectStatus.PS_Public == p.ProjectStatus)
- {//				&& GameManager.Instance.GameMode == EGameMode.Normal)
+                //				byte[] record = GetRecord();
+                //				float usedTime = PlayMode.Instance.GameSuccessFrameCnt * ConstDefineGM2D.FixedDeltaTime;
+                //				GM2DGame.Instance.RecordBytes = record;
+                //				GM2DGame.Instance.RecordUsedTime = usedTime;
+                //
+                //				GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>();
+            } else if (p.ProjectStatus == EProjectStatus.PS_AdvNormal ||
+                       p.ProjectStatus == EProjectStatus.PS_AdvBonus) 
+            {//				&& GameManager.Instance.GameMode == EGameMode.Normal)
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "提交成绩中...");
                 CommitAdventureGameResult (
                     () =>
@@ -1007,6 +1008,7 @@ namespace GameA.Game
 			Project p = GameManager.Instance.CurrentGame.Project;
 			if(p.ProjectStatus == EProjectStatus.PS_Private)
 			{
+                Messenger.Broadcast (EMessengerType.GameFinishFailedShowUI);
 				//				byte[] record = GetRecord();
 				//				float usedTime = PlayMode.Instance.GameSuccessFrameCnt * ConstDefineGM2D.FixedDeltaTime;
 				//				GM2DGame.Instance.RecordBytes = record;
@@ -1014,7 +1016,8 @@ namespace GameA.Game
 				//
 				//				GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>();
 			}
-			else if(p.ProjectStatus == EProjectStatus.PS_Public)
+            else if(p.ProjectStatus == EProjectStatus.PS_AdvNormal ||
+                   p.ProjectStatus == EProjectStatus.PS_AdvBonus)
 				//				&& GameManager.Instance.GameMode == EGameMode.Normal)
 			{
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "提交成绩中...");
