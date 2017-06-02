@@ -430,7 +430,7 @@ namespace GameA
                 Debug.Log ("________________ 关卡还未通过，无法发布");
                 return;
             }
-            SocialGUIManager.Instance.OpenPopupUI<UICtrlPublishProject> (_curSelectedPrivateProject.Content);
+            SocialGUIManager.Instance.OpenUI<UICtrlPublishProject> (_curSelectedPrivateProject.Content);
         }
 
         private void OnDeleteBtn ()

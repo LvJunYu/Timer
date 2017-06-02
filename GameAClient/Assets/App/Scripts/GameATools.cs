@@ -30,6 +30,7 @@ namespace GameA {
             } else {
                 if (showBuy) {
                     // todo buy gold ui
+                    SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
                 }
                 return false;
             }
@@ -45,6 +46,7 @@ namespace GameA {
             } else {
                 if (showBuy) {
                     // todo buy gold ui
+                    SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
                 }
                 return false;
             }
@@ -59,8 +61,7 @@ namespace GameA {
             AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh ();
             if (num > AppData.Instance.AdventureData.UserData.UserEnergyData.Energy) {
                 if (showBuy) {
-                    // todo buy energy ui
-                    SocialGUIManager.Instance.OpenPopupUI<UICtrlBuyEnergy> (num - AppData.Instance.AdventureData.UserData.UserEnergyData.Energy);
+                    SocialGUIManager.Instance.OpenUI <UICtrlBuyEnergy> (num - AppData.Instance.AdventureData.UserData.UserEnergyData.Energy);
                 }
                 return false;
             } else {

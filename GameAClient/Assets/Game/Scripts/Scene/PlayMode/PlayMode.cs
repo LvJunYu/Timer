@@ -59,6 +59,10 @@ namespace GameA.Game
         private List<SkeletonAnimation> _allSkeletonAnimationComp = new List<SkeletonAnimation>();
         private ShadowData _currentShadowData = new ShadowData();
 
+        // 这一次Play使用的增益道具
+        private List<int> _boostItems;
+
+
         public bool IsEdit
         {
             get { return _eSceneState == ESceneState.Edit; }
@@ -123,6 +127,7 @@ namespace GameA.Game
             Messenger.AddListener(EMessengerType.GameFinishFailed, GameFinishFailed);
             Messenger.AddListener(EMessengerType.GameFinishSuccess, GameFinishSuccess);
             Messenger.AddListener (EMessengerType.OnCountDownFinish, OnCountDownFinish);
+            Messenger<List<int>>.AddListener (EMessengerType.OnBoostItemSelectFinish, OnBoostItemSelectFinish);
             _unityTimeSinceGameStarted = 0f;
             _logicFrameCnt = 0;
             _allSkeletonAnimationComp.Clear ();
@@ -464,6 +469,29 @@ namespace GameA.Game
         {
             PlayPlay ();
         }
+
+        private void OnBoostItemSelectFinish (List<int> items)
+        {
+            _boostItems = items;
+        }
+
+        /// <summary>
+        /// 判断当前这次游戏有没有使用类型为type的增益道具
+        /// </summary>
+        /// <returns><c>true</c>, if using boost item was ised, <c>false</c> otherwise.</returns>
+        /// <param name="type">Type.</param>
+        public bool IsUsingBoostItem (SoyEngine.Proto.EBoostItemType type)
+        {
+            if (null == _boostItems) return false;
+            for (int i = 0; i < _boostItems.Count; i++)
+            {
+                if (_boostItems [i] == (int)type)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 #region State
 
         public void ChangeState(ESceneState eSceneState)
@@ -624,15 +652,8 @@ namespace GameA.Game
             _logicFrameCnt = 0;
             _pausing = false;
             ColliderScene2D.Instance.SortData();
-            //if (SoyEngine.Proto.EProjectStatus.PS_Private == GM2DGame.Instance.Project.ProjectStatus || 
-            //    SoyEngine.Proto.EProjectStatus.PS_Private == GM2DGame.Instance.Project.ProjectStatus)
-            //{
-            //    Messenger.Broadcast (EMessengerType.OnCountDownFinish);
-            //}
-            //else
-            //{
-                Messenger.Broadcast (EMessengerType.OnReady2Play);
-            //}
+            Messenger.Broadcast (EMessengerType.OnReady2Play);
+
             CrossPlatformInputManager.ClearVirtualInput();
         }
 

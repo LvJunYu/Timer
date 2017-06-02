@@ -11,7 +11,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlBuyEnergy : UISocialCtrlBase<UIViewBuyEnergy>
+    public class UICtrlBuyEnergy : UICtrlGenericBase<UIViewBuyEnergy>
     {
         #region 常量与字段
         /// <summary>

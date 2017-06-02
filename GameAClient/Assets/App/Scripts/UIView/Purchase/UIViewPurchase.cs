@@ -12,5 +12,7 @@ namespace GameA
 
         public Button BuyGoldBtn;
         public Button BuyDiamondBtn;
+
+        public Button CloseBtn;
     }
 }
