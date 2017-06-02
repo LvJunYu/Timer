@@ -50,7 +50,6 @@ namespace GameA
         InGameTip,
         AppGameUI,
         InputCtrl,
-        InGameEnd,
         /// <summary>
         /// 提示弹窗
         /// </summary>
@@ -60,6 +59,7 @@ namespace GameA
         /// 小loading
         /// </summary>
         LittleLoading,
+        InGameEnd,
         /// <summary>
         /// 旋转屏幕蒙版
         /// </summary>

@@ -75,9 +75,10 @@ namespace GameA
             if (0 == _number)
             {
                 _cachedView.DiamondIcon.SetActive (true);
-                var tableBoostItem = TableManager.Instance.GetBoostItem (item.Type);
+                var tableBoostItem = TableManager.Instance.GetBoostItem (_cachedView.BoostItemType);
                 if (null != tableBoostItem)
                 {
+                    _cachedView.DiamondIcon.SetActive (true);
                     _price = tableBoostItem.PriceDiamond;
                     _cachedView.Number.text = _price.ToString ();
                 }
@@ -92,18 +93,37 @@ namespace GameA
                 _cachedView.DiamondIcon.SetActive (false);
                 _cachedView.Number.text = item.Count.ToString ();
             }
+            _checked = false;
+            _cachedView.CheckImg.SetActive (false);
+        }
+
+        public void SetEmpty ()
+        {
+            _number = 0;
+            _cachedView.DiamondIcon.SetActive (true);
+            var tableBoostItem = TableManager.Instance.GetBoostItem (_cachedView.BoostItemType);
+            if (null != tableBoostItem) {
+                _cachedView.DiamondIcon.SetActive (true);
+                _price = tableBoostItem.PriceDiamond;
+                _cachedView.Number.text = _price.ToString ();
+            } else {
+                LogHelper.Error ("Get boostItem table failed, id:D {0}", _cachedView.BoostItemType);
+                _price = -1;
+                _cachedView.Number.text = "--";
+            }
         }
 
         private void OnBtn ()
         {
             if (_number <= 0) {
                 if (_price <= 0) return;
-                _checked = true;
+                _checked = !_checked;
             }
             else
             {
-                _checked = true;
+                _checked = !_checked;
             }
+            _cachedView.CheckImg.SetActive (_checked);
         }
 
         #endregion
