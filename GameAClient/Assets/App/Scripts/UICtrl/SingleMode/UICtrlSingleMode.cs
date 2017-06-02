@@ -296,7 +296,7 @@ namespace GameA
 		/// </summary>
 		/// <param name="param">Parameter.</param>
 		private void OnLevelClicked (object param) {
-            SocialGUIManager.Instance.OpenPopupUI<UICtrlAdvLvlDetail> (param);
+            SocialGUIManager.Instance.OpenUI <UICtrlAdvLvlDetail> (param);
 		}
 
 		private void OnBeginDrag (PointerEventData eventData) {

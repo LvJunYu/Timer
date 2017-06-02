@@ -30,6 +30,7 @@ namespace GameA
             _boostItems = new USCtrlBoostItem [_cachedView.BoostItems.Length];
             for (int i = 0; i < _boostItems.Length; i++)
             {
+                _boostItems [i] = new USCtrlBoostItem ();
                 _boostItems [i].Init (_cachedView.BoostItems [i]);
             }
 
@@ -46,6 +47,10 @@ namespace GameA
             }
             else
             {
+                for (int j = 0; j < _boostItems.Length; j++) 
+                {
+                    _boostItems [j].SetEmpty ();
+                }
                 for (int i = 0; i < LocalUser.Instance.UserProp.ItemDataList.Count; i++)
                 {
                     for (int j = 0; j < _boostItems.Length; j++)
@@ -80,6 +85,7 @@ namespace GameA
                         if (GameATools.CheckDiamond (totalPrice))
                         {
                             Game.GM2DGame.Instance.UseBoostItem (selectedItems);
+                            SocialGUIManager.Instance.CloseUI<UICtrlBoostItem> ();
                             Messenger<List<int>>.Broadcast (EMessengerType.OnBoostItemSelectFinish, selectedItems);
                         }
                     }),
@@ -88,6 +94,7 @@ namespace GameA
             } else
             {
                 Game.GM2DGame.Instance.UseBoostItem (selectedItems);
+                SocialGUIManager.Instance.CloseUI<UICtrlBoostItem> ();
                 Messenger<List<int>>.Broadcast (EMessengerType.OnBoostItemSelectFinish, selectedItems);
             }
         }
@@ -99,11 +106,12 @@ namespace GameA
 
         private void OnReady2Play ()
         {
+            Debug.Log ("project type: " + Game.GM2DGame.Instance.Project.ProjectStatus);
             if (EProjectStatus.PS_AdvNormal == Game.GM2DGame.Instance.Project.ProjectStatus ||
                 EProjectStatus.PS_Challenge == Game.GM2DGame.Instance.Project.ProjectStatus) {
-                Messenger<List<int>>.Broadcast (EMessengerType.OnBoostItemSelectFinish, null);
-            } else {
                 SocialGUIManager.Instance.OpenUI<UICtrlBoostItem> ();
+            } else {
+                Messenger<List<int>>.Broadcast (EMessengerType.OnBoostItemSelectFinish, null);
             }                
         }
     }

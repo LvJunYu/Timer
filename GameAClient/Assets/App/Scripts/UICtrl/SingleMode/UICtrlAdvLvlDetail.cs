@@ -10,7 +10,7 @@ using System.Collections.Generic;
 namespace GameA
 {
     [UIAutoSetup (EUIAutoSetupType.Add)]
-    public class UICtrlAdvLvlDetail : UISocialCtrlBase<UIViewAdvLvlDetail>
+    public class UICtrlAdvLvlDetail : UICtrlGenericBase<UIViewAdvLvlDetail>
     {
         #region Fields
         private USCtrlAdvLvlDetailInfo _infoPanel;

@@ -118,6 +118,7 @@ namespace GameA.Game
                     }
                 }
             }
+            Messenger.Broadcast (EMessengerType.OnSwitchTriggered);
         }
     }
 }
