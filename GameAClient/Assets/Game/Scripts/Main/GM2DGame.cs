@@ -842,7 +842,7 @@ namespace GameA.Game
 				UnityEngine.Random.value > 0.5f,
 				UnityEngine.Random.value > 0.5f,
 				UnityEngine.Random.value > 0.5f,
-				PlayMode.Instance.SceneState.TotalScore,
+                PlayMode.Instance.SceneState.CurScore,
 				(int)(10 * UnityEngine.Random.value),
 				(int)(10 * UnityEngine.Random.value),
 				(int)(10 * UnityEngine.Random.value),

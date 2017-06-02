@@ -472,8 +472,8 @@ namespace GameA
                 // 得分
                 _cachedView.Score.gameObject.SetActive (true);
                 _cachedView.ScoreOutLine.gameObject.SetActive (true);
-                _cachedView.Score.text = Game.PlayMode.Instance.SceneState.TotalScore.ToString ();
-                _cachedView.ScoreOutLine.text = Game.PlayMode.Instance.SceneState.TotalScore.ToString ();
+                _cachedView.Score.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
+                _cachedView.ScoreOutLine.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
                 // 奖励
                 _cachedView.RewardObj.SetActive (true);
                 UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
@@ -503,8 +503,8 @@ namespace GameA
                 // 得分
                 _cachedView.Score.gameObject.SetActive (true);
                 _cachedView.ScoreOutLine.gameObject.SetActive (true);
-                _cachedView.Score.text = Game.PlayMode.Instance.SceneState.TotalScore.ToString ();
-                _cachedView.ScoreOutLine.text = Game.PlayMode.Instance.SceneState.TotalScore.ToString ();
+                _cachedView.Score.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
+                _cachedView.ScoreOutLine.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
                 // 奖励
                 _cachedView.RewardObj.SetActive (true);
                 UpdateReward (LocalUser.Instance.MatchUserData.LastChallengeReward);
@@ -539,8 +539,10 @@ namespace GameA
                 _cachedView.RetryBtn.gameObject.SetActive (true);
                 _cachedView.NextBtn.gameObject.SetActive (false);
                 _cachedView.ContinueEditBtn.gameObject.SetActive (true);
-                _cachedView.Score.gameObject.SetActive (false);
-                _cachedView.ScoreOutLine.gameObject.SetActive (false);
+                _cachedView.Score.gameObject.SetActive (true);
+                _cachedView.ScoreOutLine.gameObject.SetActive (true);
+                _cachedView.Score.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
+                _cachedView.ScoreOutLine.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
                 _cachedView.RewardObj.SetActive (false);
                 break;
             }
