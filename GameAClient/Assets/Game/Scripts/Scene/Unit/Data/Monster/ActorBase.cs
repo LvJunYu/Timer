@@ -20,6 +20,7 @@ namespace GameA.Game
         Lazer,
         Water,
         Fire,
+        OutofMap,
     }
 
     public class ActorBase : RigidbodyUnit
@@ -84,6 +85,18 @@ namespace GameA.Game
             if (_animation != null)
             {
                 _animation.PlayLoop("OnFire", 1, 1);
+            }
+        }
+
+        protected override bool OutOfMap ()
+        {
+            if (base.OutOfMap ())
+            {
+                _eDieType = EDieType.OutofMap;
+                return true;
+            } else 
+            {
+                return false;
             }
         }
     }

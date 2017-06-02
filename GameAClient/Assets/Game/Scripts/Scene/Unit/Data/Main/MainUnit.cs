@@ -265,10 +265,16 @@ namespace GameA.Game
         internal override void OnPlay()
         {
             base.OnPlay();
+            Debug.Log ("MainUnit.OnPlay");
             _flashTime = 100;
             _revivePos = _curPos;
             _revivePosStack.Clear();
-            Life = PlayMode.Instance.SceneState.Life;
+            if (PlayMode.Instance.IsUsingBoostItem (SoyEngine.Proto.EBoostItemType.BIT_AddLifeCount1)) {
+                Life = PlayMode.Instance.SceneState.Life + 1;
+            } else
+            {
+                Life = PlayMode.Instance.SceneState.Life;
+            }
         }
 
         #region motor
@@ -407,6 +413,7 @@ namespace GameA.Game
                 {
                     if (_mainInput.JumpState == 101)
                     {
+                        Messenger.Broadcast (EMessengerType.OnPlayerJump);
                         _animation.PlayOnce(JumpAnimName(_mainInput._jumpLevel));
 						if (_mainInput.ClimbJump) {
 							Vector3 effectPos = _trans.position;
@@ -432,6 +439,7 @@ namespace GameA.Game
                 }
                 else if (_mainInput._jumpLevel == 1)
                 {
+                    Messenger.Broadcast (EMessengerType.OnPlayerJump);
                     if (_animation.PlayLoop(JumpAnimName(_mainInput._jumpLevel)))
                     {
                         PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_mainInput._jumpLevel), true);

@@ -250,7 +250,6 @@ namespace GameA.Game
         Arrived,
         CollectTreasure,
         KillMonster,
-        RescueHero,
         Max,
     }
 

@@ -78,10 +78,10 @@ namespace GameA
                     {
                         return GM2DUIConstDefine.FinishConditionKillMonster;
                     }
-                case Game.EWinCondition.RescueHero:
-                    {
-                        return GM2DUIConstDefine.FinishConditionRescueHero;
-                    }
+                //case Game.EWinCondition.RescueHero:
+                    //{
+                    //    return GM2DUIConstDefine.FinishConditionRescueHero;
+                    //}
                 default:
                     {
                         return "Error£¡";
@@ -105,10 +105,10 @@ namespace GameA
                     {
                         return Game.EditMode.Instance.MapStatistics.MonsterCount;
                     }
-                case Game.EWinCondition.RescueHero:
-                    {
-                        return Game.EditMode.Instance.MapStatistics.HeroCageCount;
-                    }
+                //case Game.EWinCondition.RescueHero:
+                    //{
+                    //    return Game.EditMode.Instance.MapStatistics.HeroCageCount;
+                    //}
                 default:
                     {
                         return 0;

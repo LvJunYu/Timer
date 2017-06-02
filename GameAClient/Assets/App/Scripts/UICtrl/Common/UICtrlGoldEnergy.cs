@@ -83,7 +83,7 @@ namespace GameA
                         "确定", null)
                 );
             } else {
-                SocialGUIManager.Instance.OpenPopupUI<UICtrlBuyEnergy> ();
+                SocialGUIManager.Instance.OpenUI<UICtrlBuyEnergy> ();
             }
         }
         private void OnGoldPlusBtn () {

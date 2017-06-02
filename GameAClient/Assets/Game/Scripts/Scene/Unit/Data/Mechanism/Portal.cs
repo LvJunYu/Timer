@@ -68,6 +68,10 @@ namespace GameA.Game
             var targetMin = new IntVec2(checkGrid.XMin,checkGrid.YMin);
             sender.OnPortal(sender.TableUnit.ColliderToRenderer(targetMin, sender.Rotation), speed);
             pairUnit.Sender = null;
+            if (unitDesc.Id == UnitDefine.PlayerTableId)
+            {
+                Messenger.Broadcast (EMessengerType.OnPlayerEnterPortal);
+            }
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)

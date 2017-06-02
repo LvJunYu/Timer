@@ -156,7 +156,7 @@ namespace GameA
 			if (_activeConditions.Contains(EWinCondition.CollectTreasure))
 			{
 				int curScore = PlayMode.Instance.SceneState.GemGain;
-				int totalScore = PlayMode.Instance.SceneState.TotalScore;
+				int totalScore = PlayMode.Instance.SceneState.TotalGem;
 				_cachedView.CollectionItem.Dex.text = string.Format(GM2DUIConstDefine.WinDataValueFormat,curScore,totalScore);
 			}
 			if (_activeConditions.Contains(EWinCondition.KillMonster))
