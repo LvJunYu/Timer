@@ -11,6 +11,6 @@ namespace GameA
         public Text CurrentDiamond;
 
         public Button BuyGoldBtn;
-        public Button BuyDiamBtnond;
+        public Button BuyDiamondBtn;
     }
 }

@@ -48,67 +48,12 @@ namespace GameA
         private void OnBuyGoldBtn () {
             // check energy full
 
-            AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh (false);
-            if (_buyCnt > (
-                AppData.Instance.AdventureData.UserData.UserEnergyData.EnergyCapacity -
-                AppData.Instance.AdventureData.UserData.UserEnergyData.Energy)
-               ) {
-                SocialGUIManager.ShowPopupDialog (
-                    "购买的体力超过上限了", 
-                    "不能这样买",
-                    new KeyValuePair<string, Action> (
-                        "确定", null)
-                );
-                SocialGUIManager.Instance.CloseUI<UICtrlBuyEnergy> ();
-                return;
-            }
-            // todo
-            if (GameATools.CheckDiamond (998 * _buyCnt)) {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "...");
-                RemoteCommands.BuyEnergy (
-                    _buyCnt,
-                    msg => {
-                        if ((int)EBuyEnergyCode.BEC_Success == msg.ResultCode) {
-                            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this); 
-                            GameATools.LocalSetEnergy (msg.CurEnergy);
-                            GameATools.LocalUseDiamond(998 * _buyCnt);
-                            SocialGUIManager.Instance.CloseUI<UICtrlBuyEnergy> ();
-                        } else {
-                            // todo error handle
-                            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                        }
-                    },
-                    code => {
-                        // todo error handle
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                    }
-                );
-            }
+
         }
 
-        private void OnAccBtn () {
-        }
-
-        private void OnRaiseBtn () {
-            _buyCnt++;
-            _buyCnt = Mathf.Clamp (
-                    _buyCnt,
-                    1,
-                    AppData.Instance.AdventureData.UserData.UserEnergyData.EnergyCapacity -
-                    AppData.Instance.AdventureData.UserData.UserEnergyData.Energy);
-            _cachedView.BuyCnt.text = _buyCnt.ToString ();
-            _cachedView.TotalPrice.text = (998 * _buyCnt).ToString ();
-        }
-
-        private void OnDropBtn () {
-            _buyCnt--;
-            _buyCnt = Mathf.Clamp (
-                    _buyCnt,
-                    1,
-                    AppData.Instance.AdventureData.UserData.UserEnergyData.EnergyCapacity -
-                    AppData.Instance.AdventureData.UserData.UserEnergyData.Energy);
-            _cachedView.BuyCnt.text = _buyCnt.ToString ();
-            _cachedView.TotalPrice.text = (998 * _buyCnt).ToString ();
+        private void OnBuyDiamondBtn ()
+        {
+            
         }
 
         private void OnCloseBtn () {
