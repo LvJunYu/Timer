@@ -84,8 +84,16 @@ namespace GameA
 		public static int OnCameraOrthoSpringbackChangeEnd = SoyEngine.EMessengerType.NextId++;
 
 		public static int ForceUpdateCameraMaskSize = SoyEngine.EMessengerType.NextId++;
-
-
+        // 拾取了宝石
+        public static int OnGemCollect = SoyEngine.EMessengerType.NextId++;
+        // 怪物死了
+        public static int OnMonsterDead = SoyEngine.EMessengerType.NextId++;
+        // 玩家跳跃
+        public static int OnPlayerJump = SoyEngine.EMessengerType.NextId++;
+        // 开关被触发
+        public static int OnSwitchTriggered = SoyEngine.EMessengerType.NextId++;
+        // 玩家使用了传送门
+        public static int OnPlayerEnterPortal = SoyEngine.EMessengerType.NextId++;
 		public static int OpenGameSetting = SoyEngine.EMessengerType.NextId++;
 		public static int OnCloseGameSetting = SoyEngine.EMessengerType.NextId++;
 

@@ -216,5 +216,11 @@ namespace GameA.Game
             }
             SetFacingDir(eMoveDirection);
         }
+
+        protected override void OnDead ()
+        {
+            base.OnDead ();
+            Messenger<EDieType>.Broadcast (EMessengerType.OnMonsterDead, _eDieType);
+        }
     }
 }

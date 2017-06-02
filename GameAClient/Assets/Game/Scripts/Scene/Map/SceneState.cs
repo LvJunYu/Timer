@@ -103,6 +103,7 @@ namespace GameA.Game
             {
                 _gemGain = value;
                 UpdateWinState();
+                Messenger.Broadcast (EMessengerType.OnGemCollect);
                 Messenger.Broadcast(EMessengerType.OnWinDataChanged);
             }
         }
