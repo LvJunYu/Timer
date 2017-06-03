@@ -1,4 +1,4 @@
-﻿﻿/********************************************************************
+﻿/********************************************************************
 ** Filename : ChangePartsSpineView
 ** Author : cwc
 ** Date : 2017/03/03 星期日 下午 6:48:41
@@ -149,6 +149,14 @@ namespace GameA.Game
 		}
 
 		public bool SetParts (int partsId, SpinePartsHelper.ESpineParts partsType, bool homeAvatar = false) {
+            //TODO DEL 临时代码 空指针
+            if (partsId == 1)
+            {
+                return false;
+            }
+
+
+
 			if (_partsIds[(int)partsType] == partsId) return false;
 			string textureName = "";
 			int[] slotsNameIdxList = null;

@@ -184,7 +184,6 @@ namespace GameA
             Project project = Project.CreateWorkShopProject();
             MatrixProjectTools.SetProjectVersion(project);
 //            project.ProjectCategory = category;
-            GameManager.Instance.GameMode = EGameMode.Normal;
 //            project.BeginCreate();
             SocialGUIManager.Instance.ChangeToGameMode();
         }

@@ -5,20 +5,31 @@
 ** Summary : UICtrlEdit
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using SoyEngine;
 using SoyEngine;
 using UnityEngine;
-using UnityEngine.UI;
 using GameA.Game;
 
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Create)]
     public class UICtrlEdit : UICtrlInGameBase<UIViewEdit>
-    {
+	{
+		public enum EMode
+		{
+			None,
+			// 正常编辑
+			Edit,
+			// 编辑时测试
+			EditTest,
+			// 正常游戏
+			Play,
+			// 播放录像
+			PlayRecord,
+			// 改造编辑
+			ModifyEdit,
+
+		}
+
         #region 常量与字段
         //private Social.UIDraggableButton _moveBtn;
         //private bool _moveBtnDragged = false;
@@ -289,22 +300,26 @@ namespace GameA
 				Messenger<string>.Broadcast(EMessengerType.GameErrorLog, LocaleManager.GameLocale("error_editor_test_no_main_player"));
 			}
 			Broadcast(ECommandType.Play);
-            GM2DGame.Instance.ChangeToMode(EMode.EditTest);
+            GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+            if (null != gameModeEdit)
+            {
+                gameModeEdit.ChangeMode(GameModeEdit.EMode.EditTest);
+            }
         }
 
         private void OnPause()
         {
-            Broadcast(ECommandType.Pause);
-			if (_editMode == EMode.Edit) {
-				GM2DGame.Instance.ChangeToMode (EMode.Edit);
-			} else {
-				GM2DGame.Instance.ChangeToMode (EMode.ModifyEdit);
+			Broadcast(ECommandType.Pause);
+			GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+			if (null != gameModeEdit)
+			{
+                gameModeEdit.ChangeMode(GameModeEdit.EMode.Edit);
 			}
         }
 
         private void OnClickFinishCondition()
         {
-            if (GM2DGame.Instance.CurrentMode != EMode.Edit)
+            if (GM2DGame.Instance.GameMode.GameRunMode != EGameRunMode.Edit)
             {
                 return;
             }
@@ -498,5 +513,6 @@ namespace GameA
 		#endregion
 
 		#endregion
+
 	}
 }

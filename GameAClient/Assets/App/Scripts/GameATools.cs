@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using SoyEngine;
-using SoyEngine.Proto;
-using SoyEngine;
-using Spine;
-using Spine.Unity;
-using UnityEngine;
+﻿using SoyEngine;
 
 namespace GameA {
     /// <summary>

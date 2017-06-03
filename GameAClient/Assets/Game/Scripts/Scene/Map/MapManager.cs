@@ -89,26 +89,26 @@ namespace GameA.Game
 			}
 			switch (eGameInitType)
             {
-                case GameManager.EStartType.Play:
-                    InitPlay(project, GameManager.EStartType.Play);
+                case GameManager.EStartType.WorldPlay:
+                    InitPlay(project, GameManager.EStartType.WorldPlay);
                     break;
-                case GameManager.EStartType.PlayRecord:
-                    InitPlay(project, GameManager.EStartType.PlayRecord);
+                case GameManager.EStartType.WorldPlayRecord:
+                    InitPlay(project, GameManager.EStartType.WorldPlayRecord);
                     break;
-				case GameManager.EStartType.Edit:
-                    InitEdit(project, GameManager.EStartType.Edit);
+				case GameManager.EStartType.WorkshopEdit:
+                    InitEdit(project, GameManager.EStartType.WorkshopEdit);
 					break;
 				case GameManager.EStartType.ModifyEdit:
                     InitModifyEdit (project, GameManager.EStartType.ModifyEdit);
 					break;
-				case GameManager.EStartType.Create:
+				case GameManager.EStartType.WorkshopCreate:
 					InitCreate();
 					break;
-            case GameManager.EStartType.AdventureNormal:
-                InitPlay (project, GameManager.EStartType.AdventureNormal);
+            case GameManager.EStartType.AdventureNormalPlay:
+                InitPlay (project, GameManager.EStartType.AdventureNormalPlay);
                 break;
-            case GameManager.EStartType.AdventureBonus:
-                InitPlay (project, GameManager.EStartType.AdventureBonus);
+            case GameManager.EStartType.AdventureBonusPlay:
+                InitPlay (project, GameManager.EStartType.AdventureBonusPlay);
                 break;
 			}
 			return true;
@@ -228,25 +228,25 @@ namespace GameA.Game
 	    {
             switch (GM2DGame.Instance.GameInitType)
             {
-                case GameManager.EStartType.Play:
+                case GameManager.EStartType.WorldPlay:
                 PlayMode.Instance.OnReadMapFile(tableUnit);
                 break;
-            case GameManager.EStartType.AdventureNormal:
+            case GameManager.EStartType.AdventureNormalPlay:
                 PlayMode.Instance.OnReadMapFile (tableUnit);
                 break;
-            case GameManager.EStartType.AdventureBonus:
+            case GameManager.EStartType.AdventureBonusPlay:
                 PlayMode.Instance.OnReadMapFile (tableUnit);
                 break;
-                case GameManager.EStartType.PlayRecord:
+                case GameManager.EStartType.WorldPlayRecord:
                  PlayMode.Instance.OnReadMapFile(tableUnit);
                 break;
-                case GameManager.EStartType.Edit:
+                case GameManager.EStartType.WorkshopEdit:
                 EditMode.Instance.OnReadMapFile(unitDesc, tableUnit);
                 break;
 			case GameManager.EStartType.ModifyEdit:
 				EditMode.Instance.OnReadMapFile(unitDesc, tableUnit);
 				break;
-			case GameManager.EStartType.Create:
+			case GameManager.EStartType.WorkshopCreate:
                 break;
             }
 	    }
@@ -270,7 +270,7 @@ namespace GameA.Game
             if (EditMode.Instance != null)
             {
                 EditMode.Instance.Init();
-                if (GM2DGame.Instance.GameInitType == GameManager.EStartType.Edit)
+                if (GM2DGame.Instance.GameInitType == GameManager.EStartType.WorkshopEdit)
                 {
                     EditMode.Instance.MapStatistics.InitWithMapData(mapData);
                     InitEditorCameraStartPos();
@@ -326,25 +326,25 @@ namespace GameA.Game
 			GameManager.EStartType eGameInitType = GM2DGame.Instance.GameInitType;
 			switch (eGameInitType)
             {
-                case GameManager.EStartType.Play:
+                case GameManager.EStartType.WorldPlay:
                     ChangeState(ESceneState.Play);
                     break;
-            case GameManager.EStartType.AdventureNormal:
+            case GameManager.EStartType.AdventureNormalPlay:
                 ChangeState (ESceneState.Play);
                 break;
-            case GameManager.EStartType.AdventureBonus:
+            case GameManager.EStartType.AdventureBonusPlay:
                 ChangeState (ESceneState.Play);
                 break;
-                case GameManager.EStartType.PlayRecord:
+                case GameManager.EStartType.WorldPlayRecord:
                     ChangeState(ESceneState.Play);
                     break;
-				case GameManager.EStartType.Edit:
+				case GameManager.EStartType.WorkshopEdit:
 					ChangeState(ESceneState.Edit);
 					break;
 			case GameManager.EStartType.ModifyEdit:
 				ChangeState (ESceneState.Modify);
 				break;
-				case GameManager.EStartType.Create:
+				case GameManager.EStartType.WorkshopCreate:
 					ChangeState(ESceneState.Edit);
 					break;
 			}

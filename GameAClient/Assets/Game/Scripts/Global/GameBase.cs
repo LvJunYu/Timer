@@ -57,17 +57,11 @@ namespace GameA
 		    }
 	    }
 
-		#endregion
+        #endregion
 
-		#region 方法
+        #region 方法
 
-		public abstract bool Play(Project project);
-        public abstract bool PlayAdvNormal (Project project);
-        public abstract bool PlayAdvBonus (Project project);
-        public abstract bool Create(Project project);
-        public abstract bool Edit(Project project);
-        public abstract bool PlayRecord(Project project, Record record);
-		public abstract bool ModifyEdit (Project project);
+        public abstract bool Play(Project project, object param, GameManager.EStartType startType);
         public abstract bool Pause();
 	    public abstract bool Continue();
 	    public abstract bool Restart();
