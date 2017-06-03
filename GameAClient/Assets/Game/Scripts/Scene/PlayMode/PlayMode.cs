@@ -134,8 +134,8 @@ namespace GameA.Game
         {
             Instance = this;
             transform.gameObject.AddComponent<UnitUpdateManager>();
-            Messenger.AddListener(EMessengerType.GameFinishFailed, GameFinishFailed);
-            Messenger.AddListener(EMessengerType.GameFinishSuccess, GameFinishSuccess);
+            //Messenger.AddListener(EMessengerType.GameFinishFailed, GameFinishFailed);
+            //Messenger.AddListener(EMessengerType.GameFinishSuccess, GameFinishSuccess);
             Messenger.AddListener (EMessengerType.OnCountDownFinish, OnCountDownFinish);
             Messenger<List<int>>.AddListener (EMessengerType.OnBoostItemSelectFinish, OnBoostItemSelectFinish);
             _unityTimeSinceGameStarted = 0f;
@@ -155,8 +155,8 @@ namespace GameA.Game
 
         private void OnDestroy()
         {
-            Messenger.RemoveListener(EMessengerType.GameFinishFailed, GameFinishFailed);
-            Messenger.RemoveListener(EMessengerType.GameFinishSuccess, GameFinishSuccess);
+            //Messenger.RemoveListener(EMessengerType.GameFinishFailed, GameFinishFailed);
+            //Messenger.RemoveListener(EMessengerType.GameFinishSuccess, GameFinishSuccess);
             Messenger.RemoveListener (EMessengerType.OnCountDownFinish, OnCountDownFinish);
             Instance = null;
             if (null != _statistic)
@@ -455,12 +455,19 @@ namespace GameA.Game
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
             _mainUnit.OnSucceed();
             GuideManager.Instance.OnGameSuccess();
+            if (null != _statistic) {
+                _statistic.OnGameFinishSuccess ();
+            }
         }
 
         public void GameFinishFailed()
         {
             _gameFailedTime = _logicFrameCnt;
             _run = false;
+            if (null != _statistic)
+            {
+                _statistic.OnGameFinishFailed ();
+            }
             GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.GameAudioBgm01);
         }
 
