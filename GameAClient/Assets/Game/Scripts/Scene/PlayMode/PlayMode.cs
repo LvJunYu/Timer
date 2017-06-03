@@ -62,6 +62,8 @@ namespace GameA.Game
         // 这一次Play使用的增益道具
         private List<int> _boostItems;
 
+        // 统计
+        private GameStatistic _statistic;
 
         public bool IsEdit
         {
@@ -119,6 +121,14 @@ namespace GameA.Game
         public ShadowData CurrentShadow {
             get { return _currentShadowData; }
         }
+        // 统计
+        public GameStatistic Statistic
+        {
+            get 
+            {
+                return _statistic;
+            }
+        }
 
         private void Awake()
         {
@@ -149,6 +159,11 @@ namespace GameA.Game
             Messenger.RemoveListener(EMessengerType.GameFinishSuccess, GameFinishSuccess);
             Messenger.RemoveListener (EMessengerType.OnCountDownFinish, OnCountDownFinish);
             Instance = null;
+            if (null != _statistic)
+            {
+                _statistic.Clear ();
+                _statistic = null;
+            }
         }
 
         public void OnReadMapFile(Table_Unit tableUnit)
@@ -671,6 +686,14 @@ namespace GameA.Game
                 var unit = units[i];
                 unit.OnPlay ();
             }
+
+            if (null != _statistic)
+            {
+                _statistic.Clear ();
+                _statistic = null;
+            }
+            _statistic = new GameStatistic ();
+
             Messenger.Broadcast(EMessengerType.OnPlay);
         }
 

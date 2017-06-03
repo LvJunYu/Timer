@@ -839,9 +839,6 @@ namespace GameA.Game
 			AppData.Instance.AdventureData.CommitLevelResult (
                 PlayMode.Instance.SceneState.GameSucceed,
 				usedTime,
-				UnityEngine.Random.value > 0.5f,
-				UnityEngine.Random.value > 0.5f,
-				UnityEngine.Random.value > 0.5f,
                 PlayMode.Instance.SceneState.CurScore,
 				(int)(10 * UnityEngine.Random.value),
 				(int)(10 * UnityEngine.Random.value),
