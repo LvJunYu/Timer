@@ -17,7 +17,7 @@ namespace GameA.Game
 {
     public class PaintBlock : BlockBase
     {
-        public const int MinEdgeLength = 64;
+        public const int MinEdgeLength = 0;
         public const int OffsetEdgeLength = 10;
         /// <summary>
         /// 被涂装的边信息，有序从小到大 
@@ -31,8 +31,17 @@ namespace GameA.Game
         private Texture2D _paintTexture;
         private Texture2D _maskTexture;
         private static Color32[] EmptyPixels;
-        private const int Ratio = 8;
+        private const int Ratio = 1;
+        private const int PixelsPerUnit = 256 / (Ratio * 2);
+        private const float PixelsPerTile = 256f / (640 * 2);
         private static Color CleanColor = new Color(1f, 1f, 1f, 0f);
+        private static Color EdgeColor = new Color32(111, 47, 11, 255);
+
+        private static Color PaintUpColor = new Color32(241, 213, 74, 255);
+        private static Color PaintRightColor = new Color32(181, 123, 35, 255);
+        private static Color PaintInColor = new Color32(221, 183, 53, 255);
+
+        private static Color PaintEdgeColor = new Color32(250, 234, 104, 255);
 
         public override bool CanPainted
         {
@@ -104,6 +113,7 @@ namespace GameA.Game
 
         public override void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType)
         {
+            var center = (start + end) * 0.5f * ConstDefineGM2D.ClientTileScale;
             if (!GetPos(ref start, ref end, direction))
             {
                 return;
@@ -124,8 +134,9 @@ namespace GameA.Game
             {
                 _edges.Sort(_comparisonSkillType);
             }
+            UpdateTexture(ref edge, center);
+            return;
             UpdateMesh();
-            UpdateTexture(ref edge);
             if (_paintMeshFilter == null)
             {
                 _paintMeshFilter = new GameObject("Paint").gameObject.AddComponent<MeshFilter>();
@@ -215,83 +226,63 @@ namespace GameA.Game
             return end >= start + MinEdgeLength;
         }
 
-        private void UpdateTexture(ref Edge edge)
+        private void UpdateTexture(ref Edge edge, float center)
         {
             if (_paintTexture == null)
             {
                 if (_view != null)
                 {
                     var sr = _view.Trans.GetComponent<SpriteRenderer>();
-                    int width = (int)sr.sprite.rect.width / Ratio;
-                    int height = (int)sr.sprite.rect.height / Ratio;
+                    int textureWidth = (int)sr.sprite.rect.width / Ratio;
+                    int textureHeight = (int)sr.sprite.rect.height / Ratio;
                     if (EmptyPixels == null)
                     {
-                        var count = width*height;
+                        var count = textureWidth * textureHeight;
                         EmptyPixels = new Color32[count];
                         for (int i = 0; i < count; i++)
                         {
                             EmptyPixels[i] = CleanColor;
                         }
                     }
-                    _paintTexture = new Texture2D(width, height);
+                    _paintTexture = new Texture2D(textureWidth, textureHeight);
                     _paintTexture.wrapMode = TextureWrapMode.Clamp;
+                    _paintTexture.filterMode = FilterMode.Point;
                     _paintTexture.SetPixels32(EmptyPixels);
                     _paintTexture.Apply();
 
-                    _maskTexture = new Texture2D(width, height);
+                    _maskTexture = new Texture2D(textureWidth, textureHeight);
+                    _maskTexture.filterMode = FilterMode.Point;
                     _maskTexture.SetPixels32(EmptyPixels);
                     _maskTexture.Apply();
 
                     var paintObject = new GameObject("Paint");
                     CommonTools.SetParent(paintObject.transform, _view.Trans);
-                    paintObject.transform.localPosition = Vector3.forward * (_trans.localPosition.z - 0.01f);
+                    paintObject.transform.localPosition = Vector3.back *  0.01f;
                     var paintRenderer = paintObject.AddComponent<SpriteRenderer>();
                     paintRenderer.sortingOrder = sr.sortingOrder;
                     paintRenderer.sprite = Sprite.Create(_paintTexture,
-                        new Rect(0f, 0f, _paintTexture.width, _paintTexture.height), new Vector2(0.5f, 0.5f), 16, 0,
+                        new Rect(0f, 0f, _paintTexture.width, _paintTexture.height), new Vector2(0.5f, 0.5f), PixelsPerUnit, 0,
                         SpriteMeshType.FullRect);
                 }
             }
-            Vector2 v1, v2, v3;
-            Vector2 v0 = v1 = v2 = v3 = Vector2.zero;
-            float start = edge.Start * ConstDefineGM2D.ClientTileScale;
-            float end = edge.End * ConstDefineGM2D.ClientTileScale;
+            if (_paintTexture == null)
+            {
+                return;
+            }
 
+            int pixelX = 0, pixelY = 0, offset = 0, width = 0, height = 0;
+            Texture maskingTexture = null;
             switch (edge.Direction)
             {
                 case EDirectionType.Up:
                     {
-                        float y = _colliderGrid.YMax * ConstDefineGM2D.ClientTileScale;
-                        v0 = new Vector2(start - 0.15f, y - 0.1f);
-                        v3 = new Vector2(end + 0.15f, y + 0.1f);
-                        var offset = (start + end)/2 - _trans.position.x;
-                        int pixelX = (int)((offset + v0.x - (_colliderGrid.XMin - 160) * ConstDefineGM2D.ClientTileScale) * 16);
-                        int pixelY = (int) ((v0.y - (_colliderGrid.YMin - 160) * ConstDefineGM2D.ClientTileScale) * 16);
+                        offset = (int) ((center - _trans.position.x) * PixelsPerUnit);
+                        pixelX = (int) ((edge.Start - 160 - (_colliderGrid.XMin - 320)) * PixelsPerTile);
+                        pixelY = (int) ((_colliderGrid.YMax - 70 - 45*5 - (_colliderGrid.YMin - 320)) * PixelsPerTile);
                         pixelX = Math.Max(0, pixelX);
                         pixelY = Math.Max(0, pixelY);
-                        int width = (int) ((v3.x - v0.x)*16);
-                        int height = (int) ((v3.y - v0.y)*16);
-                        var paintedColor = _paintTexture.GetPixels(pixelX, pixelY, width, height);
-                        var maskedColor = _maskTexture.GetPixels(pixelX, pixelY, width, height);
-                        var paintingColor = _paintTexture.GetPixels(pixelX, pixelY, width, height);
-                        var maskingColor = _paintTexture.GetPixels(pixelX, pixelY, width, height);
-                        for (int i = 0; i < paintingColor.Length; i++)
-                        {
-                            if (maskedColor[i].a == 0f)
-                            {
-                                maskedColor[i] = maskingColor[i];
-                            }
-                            if (maskedColor[i].a == 0f)
-                            {
-                                continue;
-                            }
-                            if (paintingColor[i].a == 0f || paintingColor[i] == paintedColor[i])
-                            {
-                                continue;
-                            }
-                            paintedColor[i] = paintingColor[i];
-                        }
-                        LogHelper.Debug("{0} | {1} | {2} | {3} | {4}", pixelX, pixelY, width, height, offset);
+                        width = (int) ((edge.End + 160 - (edge.Start - 160)) * PixelsPerTile);
+                        height = (int)((70 + 70 + 45 * 5) * PixelsPerTile);
                     }
                     break;
                 case EDirectionType.Down:
@@ -299,8 +290,76 @@ namespace GameA.Game
                 case EDirectionType.Left:
                     break;
                 case EDirectionType.Right:
+                    {
+                        offset = (int)((center - _trans.position.y) * PixelsPerUnit);
+                        pixelX = (int)((_colliderGrid.XMax - 160 - 45 * 5 - (_colliderGrid.XMin - 320)) * PixelsPerTile);
+                        pixelY = (int)((edge.Start - 70  - (_colliderGrid.YMin - 320)) * PixelsPerTile);
+                        pixelX = Math.Max(0, pixelX);
+                        pixelY = Math.Max(0, pixelY);
+                        width = (int)((160 + 160+ 45 * 5) * PixelsPerTile);
+                        height = (int)((edge.End + 70 - (edge.Start - 70)) * PixelsPerTile);
+                    }
                     break;
             }
+            if (!GameResourceManager.Instance.TryGetTextureByName(string.Format("Mask_{0}_{1}", (int)edge.Direction,UnityEngine.Random.Range(0,1)), out maskingTexture))
+            {
+                LogHelper.Error("TryGetSpriteByName Failed");
+                return;
+            }
+            if (maskingTexture == null)
+            {
+                return;
+            }
+            var paintedColor = _paintTexture.GetPixels(pixelX, pixelY, width, height);
+            var maskedColor = _maskTexture.GetPixels(pixelX, pixelY, width, height);
+            var maskingColor = ((Texture2D)maskingTexture).GetPixels(Mathf.Max(0, pixelX - offset), pixelY, width, height);
+
+            var maskBaseColor = PlayMode.Instance.MaskBaseTexture.GetPixels(pixelX, pixelY, width, height);
+            for (int i = 0; i < paintedColor.Length; i++)
+            {
+                if (maskBaseColor[i].a == 0f)
+                {
+                    continue;
+                }
+                //叠加mask
+                if (maskedColor[i].a == 0f || (maskedColor[i].maxColorComponent < 0.5f && maskingColor[i].maxColorComponent >= 0.5f))
+                {
+                    maskedColor[i] = maskingColor[i];
+                }
+                //直接不显示
+                if (maskedColor[i].a == 0f)
+                {
+                    continue;
+                }
+                if (maskedColor[i].maxColorComponent < 0.5f)
+                {
+                    paintedColor[i] = EdgeColor;
+                }
+                else
+                {
+                    if (maskBaseColor[i].r == 1f)
+                    {
+                        paintedColor[i] = PaintUpColor;
+                    }
+                    else if (maskBaseColor[i].g == 1f)
+                    {
+                        paintedColor[i] = PaintRightColor;
+                    }
+                    else if (maskBaseColor[i].b == 1f)
+                    {
+                        paintedColor[i] = PaintInColor;
+                    }
+                    else
+                    {
+                        paintedColor[i] = PaintEdgeColor;
+                    }
+                }
+            }
+            _paintTexture.SetPixels(pixelX, pixelY, width, height, paintedColor);
+            _paintTexture.Apply();
+            _maskTexture.SetPixels(pixelX, pixelY, width, height, maskedColor);
+            _maskTexture.Apply();
+            LogHelper.Debug("{0} | {1} | {2} | {3} | {4}", pixelX, pixelY, width, height, offset);
         }
 
         private void UpdateMesh()

@@ -232,6 +232,12 @@ namespace GameA.Game
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
+            //碰撞体攻击地面为1，攻击怪物为0.25，碰撞体缩减
+            var grid = _colliderGrid.Shrink(240);
+            if (!grid.Intersects(unit.ColliderGrid))
+            {
+                return;
+            }
             _blocked = true;
             if (unit.IsHero && unit.EffectMgr != null)
             {

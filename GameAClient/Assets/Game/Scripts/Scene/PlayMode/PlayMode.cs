@@ -62,6 +62,12 @@ namespace GameA.Game
         // 这一次Play使用的增益道具
         private List<int> _boostItems;
 
+        private Texture2D _maskBaseTexture;
+
+        public Texture2D MaskBaseTexture
+        {
+            get { return _maskBaseTexture; }
+        }
 
         public bool IsEdit
         {
@@ -131,6 +137,14 @@ namespace GameA.Game
             _unityTimeSinceGameStarted = 0f;
             _logicFrameCnt = 0;
             _allSkeletonAnimationComp.Clear ();
+
+            Texture t;
+            if (!GameResourceManager.Instance.TryGetTextureByName("Mask", out t))
+            {
+                LogHelper.Error("GetMask Failed");
+                return;
+            }
+            _maskBaseTexture = t as Texture2D;
         }
 
         public void Pause()
