@@ -65,6 +65,13 @@ namespace GameA.Game
         // 统计
         private GameStatistic _statistic;
 
+        private Texture2D _maskBaseTexture;
+
+        public Texture2D MaskBaseTexture
+        {
+            get { return _maskBaseTexture; }
+        }
+
         public bool IsEdit
         {
             get { return _eSceneState == ESceneState.Edit; }
@@ -141,6 +148,14 @@ namespace GameA.Game
             _unityTimeSinceGameStarted = 0f;
             _logicFrameCnt = 0;
             _allSkeletonAnimationComp.Clear ();
+
+            Texture t;
+            if (!GameResourceManager.Instance.TryGetTextureByName("Mask", out t))
+            {
+                LogHelper.Error("GetMask Failed");
+                return;
+            }
+            _maskBaseTexture = t as Texture2D;
         }
 
         public void Pause()
