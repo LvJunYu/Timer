@@ -253,8 +253,7 @@ namespace GameA.Game
                     DataScene2D.Instance.MainPlayer.Guid.y);
                 LimitRollPos(followPos,GetCameraViewSize());
             }
-            if (GM2DGame.Instance.GameInitType != GameManager.EStartType.Edit &&
-                GM2DGame.Instance.GameInitType != GameManager.EStartType.Create) {
+            if (GM2DGame.Instance.GameMode.GameRunMode != EGameRunMode.Edit) {
                 var cameraViewSize = GetCameraViewSize ();
                 RendererCameraPos = GM2DTools.TileToWorld (new IntVec2 (_rollPos.x, _rollPos.y + cameraViewSize.y / 2));
             }

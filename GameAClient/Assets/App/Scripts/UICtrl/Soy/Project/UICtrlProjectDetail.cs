@@ -652,7 +652,6 @@ namespace GameA
         {
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(SocialGUIManager.Instance.GetUI<UICtrlProjectDetail>(), "作品加载中");
             content.Project.PrepareRes(()=>{
-                GameManager.Instance.GameMode = EGameMode.Normal;
                 content.Project.BeginPlay(true, ()=>{
                     MatrixProjectTools.OnProjectBeginPlaySuccess();
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(SocialGUIManager.Instance.GetUI<UICtrlProjectDetail>());
@@ -696,7 +695,6 @@ namespace GameA
 
         private static void OnProjectResLoadSuccess(ProjectParams content)
         {
-            GameManager.Instance.GameMode = EGameMode.Normal;
             content.Project.BeginPlay(false, ()=>{
                 MatrixProjectTools.OnProjectBeginPlaySuccess();
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(SocialGUIManager.Instance.GetUI<UICtrlProjectDetail>());

@@ -11,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine.UI;
 using GameA.Game;
 
@@ -29,10 +28,7 @@ namespace GameA
         private int _downloadPrice;
 
 	    private bool _uploadRecord = false;
-
-//        private EProjectCategory _curSelectType = EProjectCategory.PC_Relaxation;
-
-//        private Dictionary<EProjectCategory, Button> _cachedButtons =  new Dictionary<EProjectCategory, Button>();
+        private GameModeEdit _gameModeEdit;
 
 		#endregion
 
@@ -67,6 +63,7 @@ namespace GameA
             base.OnOpen(parameter);
 
             _project = GM2DGame.Instance.Project;
+            _gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
 //            _curSelectType = _project.ProjectCategory;
 //            if(_curSelectType == EProjectCategory.PC_None)
 //            {
@@ -79,7 +76,7 @@ namespace GameA
             RefreshPublishCountView();
 	        UpdatePublicTagState();
 	        UpdateUploadRecordState();
-			if (GM2DGame.Instance.IconBytes == null)
+            if (_gameModeEdit.IconBytes == null)
             {
                 OnCoverButtonClick();
             }
@@ -150,9 +147,9 @@ namespace GameA
 
 		private void RefreshCover()
         {
-            if(GM2DGame.Instance.IconBytes != null)
+            if(_gameModeEdit.IconBytes != null)
             {
-                _coverTexture.LoadImage(GM2DGame.Instance.IconBytes);
+                _coverTexture.LoadImage(_gameModeEdit.IconBytes);
                 _cachedView.CoverImage.texture = _coverTexture;
                 _cachedView.CoverImage.SetAllDirty();
             }
@@ -160,8 +157,8 @@ namespace GameA
 
 		private void OnCoverButtonClick()
         {
-            var iconBytes = GM2DGame.Instance.CaptureLevel();
-            GM2DGame.Instance.IconBytes = iconBytes;
+            var iconBytes = _gameModeEdit.CaptureLevel();
+            _gameModeEdit.IconBytes = iconBytes;
             RefreshCover();
         }
 
@@ -229,7 +226,7 @@ namespace GameA
 
         private void OnPublishButtonClick()
         {
-            if (!GM2DGame.Instance.CheckCanPublish(true))
+            if (!_gameModeEdit.CheckCanPublish(true))
 			{
 				return;
 			}
@@ -299,7 +296,8 @@ namespace GameA
 //            }
 
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(SocialGUIManager.Instance.GetUI<UICtrlPublish>(), "作品正在保存中");
-            GM2DGame.Instance.Save(name, summary, downloadPrice,()=>{
+            GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+            gameModeEdit.Save(()=>{
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(SocialGUIManager.Instance.GetUI<UICtrlPublish>());
                 CommonTools.ShowPopupDialog("保存成功");
                 if(successCallback != null)

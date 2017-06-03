@@ -9,7 +9,6 @@ using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine;
 using IntVec2 = SoyEngine.IntVec2;
 
@@ -133,10 +132,8 @@ namespace GameA.Game
                         unitObject.Guid.x = node.Grid.XMin + j * size.x;
                         unitObject.Guid.y = node.Grid.YMin + k * size.y;
                         //play的时候只生成区域内的即可 不是主角
-                        if (GM2DGame.Instance.GameInitType == GameManager.EStartType.Play
-                            || GM2DGame.Instance.GameInitType == GameManager.EStartType.AdventureNormal
-                            || GM2DGame.Instance.GameInitType == GameManager.EStartType.AdventureBonus
-                            || GM2DGame.Instance.GameInitType == GameManager.EStartType.PlayRecord)
+                        if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Play
+                            || GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.PlayRecord)
                         {
                             var grid = tableUnit.GetDataGrid(unitObject.Guid.x, unitObject.Guid.y, unitObject.Rotation, unitObject.Scale);
                             if (!validMapGrid.Contains(grid) && !validMapGrid.Intersects(grid))

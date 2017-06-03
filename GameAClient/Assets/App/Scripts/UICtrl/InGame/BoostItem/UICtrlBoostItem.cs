@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 using SoyEngine.Proto;
-using SoyEngine;
+using GameA.Game;
 
 namespace GameA
 {
@@ -84,7 +84,11 @@ namespace GameA
                     new KeyValuePair<string, Action> ("确认", ()=>{
                         if (GameATools.CheckDiamond (totalPrice))
                         {
-                            Game.GM2DGame.Instance.UseBoostItem (selectedItems);
+                            GameModePlay gameModePlay = GM2DGame.Instance.GameMode as GameModePlay;
+                            if (null != gameModePlay)
+                            {
+                                gameModePlay.UseBoostItem(selectedItems);
+                            }
                             SocialGUIManager.Instance.CloseUI<UICtrlBoostItem> ();
                             Messenger<List<int>>.Broadcast (EMessengerType.OnBoostItemSelectFinish, selectedItems);
                         }
@@ -92,8 +96,12 @@ namespace GameA
                     new KeyValuePair<string, Action> ("取消", null)
                 );
             } else
-            {
-                Game.GM2DGame.Instance.UseBoostItem (selectedItems);
+			{
+				GameModePlay gameModePlay = GM2DGame.Instance.GameMode as GameModePlay;
+				if (null != gameModePlay)
+				{
+					gameModePlay.UseBoostItem(selectedItems);
+				}
                 SocialGUIManager.Instance.CloseUI<UICtrlBoostItem> ();
                 Messenger<List<int>>.Broadcast (EMessengerType.OnBoostItemSelectFinish, selectedItems);
             }

@@ -169,7 +169,7 @@ namespace GameA.Game
                 DoCameraTweenPos(_finalPos, duration, finishCallback);
             }
             
-            if (GM2DGame.Instance.CurrentMode == EMode.Edit)
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
             {
                 UpdateCameraViewRect();
                 Messenger.Broadcast(EMessengerType.OnEditorModeCameraMove);

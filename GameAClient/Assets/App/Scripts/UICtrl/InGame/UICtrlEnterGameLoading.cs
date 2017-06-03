@@ -71,8 +71,7 @@ namespace GameA
             {
                 LogHelper.Error("UICtrlEnterGameLoading OnOpen, Current Game is Null");
             }
-            if(GameManager.Instance.CurrentGame.GameInitType == GameManager.EStartType.Play
-                && GameManager.Instance.GameMode == EGameMode.Normal)
+            if(GameManager.Instance.CurrentGame.GameInitType == GameManager.EStartType.WorldPlay)
             {
                 _cachedView.NormalDock.SetActive(false);
                 _cachedView.GameDock.SetActive(true);
