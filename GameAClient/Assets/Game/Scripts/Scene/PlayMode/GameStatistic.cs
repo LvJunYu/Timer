@@ -161,9 +161,20 @@ namespace GameA.Game
         #region methods
         public GameStatistic ()
         {
-            Clear ();
-            Messenger.AddListener (EMessengerType.GameFinishSuccess, OnGameFinishSuccess);
-            Messenger.AddListener (EMessengerType.GameFinishFailed, OnGameFinishFailed);
+            _passed = false;
+            _usedTime = 0;
+            _deathCnt = 0;
+            _score = 0;
+            _collectGem = 0;
+            _monsterDeathCnt = 0;
+            _monsterKilledByFallCnt = 0;
+            _monsterKilledByLazerCnt = 0;
+            _moveDistance = 0;
+            _jumpCnt = 0;
+            _switchTriggerCnt = 0;
+            _portalUsedCnt = 0;
+            //Messenger.AddListener (EMessengerType.GameFinishSuccess, OnGameFinishSuccess);
+            //Messenger.AddListener (EMessengerType.GameFinishFailed, OnGameFinishFailed);
             Messenger.AddListener (EMessengerType.OnMainPlayerDead, OnMainPlayerDead);
             Messenger.AddListener (EMessengerType.OnGemCollect, OnGemCollect);
             Messenger<EDieType>.AddListener (EMessengerType.OnMonsterDead, OnMonsterDead);
@@ -172,7 +183,7 @@ namespace GameA.Game
             Messenger.AddListener (EMessengerType.OnPlayerEnterPortal, OnPlayerEnterPortal);
             // todo movedistance
         }
-        private void Clear ()
+        public void Clear ()
         {
             _passed = false;
             _usedTime = 0;
@@ -187,8 +198,8 @@ namespace GameA.Game
             _switchTriggerCnt = 0;
             _portalUsedCnt = 0;
 
-            Messenger.RemoveListener (EMessengerType.GameFinishSuccess, OnGameFinishSuccess);
-            Messenger.RemoveListener (EMessengerType.GameFinishFailed, OnGameFinishFailed);
+            //Messenger.RemoveListener (EMessengerType.GameFinishSuccess, OnGameFinishSuccess);
+            //Messenger.RemoveListener (EMessengerType.GameFinishFailed, OnGameFinishFailed);
             Messenger.RemoveListener (EMessengerType.OnMainPlayerDead, OnMainPlayerDead);
             Messenger.RemoveListener (EMessengerType.OnGemCollect, OnGemCollect);
             Messenger<EDieType>.RemoveListener (EMessengerType.OnMonsterDead, OnMonsterDead);
@@ -197,13 +208,13 @@ namespace GameA.Game
             Messenger.RemoveListener (EMessengerType.OnPlayerEnterPortal, OnPlayerEnterPortal);
         }
 
-        private void OnGameFinishSuccess ()
+        public void OnGameFinishSuccess ()
         {
             _passed = true;
             _usedTime = (int)PlayMode.Instance.SceneState.PassedTime;
             _score = PlayMode.Instance.SceneState.CurScore;
         }
-        private void OnGameFinishFailed ()
+        public void OnGameFinishFailed ()
         {
             _passed = false;
             _usedTime = (int)PlayMode.Instance.SceneState.PassedTime;

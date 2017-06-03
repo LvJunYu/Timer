@@ -268,8 +268,12 @@ namespace GameA
         }
 
         public void CommitChallengeResult (bool isSuccess, float usedTime, Action successCB, Action<ENetResultCode> failureCB) {
-            if (0 == _playChallengeToken)
+            if (0 == _playChallengeToken) {
+                if (null != failureCB) {
+                    failureCB.Invoke (ENetResultCode.NR_Error);
+                }
                 return;
+            }
             RemoteCommands.CommitMatchChallengeLevelResult (
                 _playChallengeToken,
                 isSuccess,

@@ -1,4 +1,4 @@
-﻿﻿/********************************************************************
+﻿/********************************************************************
 ** Filename : GM2DGame
 ** Author : Dong
 ** Date : 2015/5/6 15:27:36
@@ -380,6 +380,38 @@ namespace GameA.Game
                     }
                     SocialApp.Instance.ReturnToApp ();
                 }
+            } else if (EProjectStatus.PS_AdvNormal == _project.ProjectStatus)
+            {
+                CommitAdventureGameResult (
+                    () => {
+                        if (null != successCB) {
+                            successCB.Invoke ();
+                        }
+                        SocialApp.Instance.ReturnToApp ();
+                    },
+                    code => {
+                        if (null != failureCB) {
+                            failureCB.Invoke ((int)code);
+                        }
+                        SocialApp.Instance.ReturnToApp ();
+                    }
+                );
+            } else if (EProjectStatus.PS_AdvBonus == _project.ProjectStatus)
+            {
+                CommitAdventureGameResult (
+                    () => {
+                        if (null != successCB) {
+                            successCB.Invoke ();
+                        }
+                        SocialApp.Instance.ReturnToApp ();
+                    },
+                    code => {
+                        if (null != failureCB) {
+                            failureCB.Invoke ((int)code);
+                        }
+                        SocialApp.Instance.ReturnToApp ();
+                    }
+                );
             } else if (EProjectStatus.PS_Reform == _project.ProjectStatus)
             {
                 if (NeedSave) {
@@ -835,18 +867,16 @@ namespace GameA.Game
         {
 			float usedTime = PlayMode.Instance.GameSuccessFrameCnt * ConstDefineGM2D.FixedDeltaTime;
 
-			//SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "提交成绩中...");
-			AppData.Instance.AdventureData.CommitLevelResult (
+            //SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "提交成绩中...");
+            AppData.Instance.AdventureData.CommitLevelResult (
                 PlayMode.Instance.SceneState.GameSucceed,
-				usedTime,
-				UnityEngine.Random.value > 0.5f,
-				UnityEngine.Random.value > 0.5f,
-				UnityEngine.Random.value > 0.5f,
+                usedTime,
                 PlayMode.Instance.SceneState.CurScore,
-				(int)(10 * UnityEngine.Random.value),
-				(int)(10 * UnityEngine.Random.value),
-				(int)(10 * UnityEngine.Random.value),
-				(int)(10 * UnityEngine.Random.value),
+                PlayMode.Instance.SceneState.GemGain,
+                PlayMode.Instance.SceneState.MonsterKilled,
+                PlayMode.Instance.SceneState.SecondLeft,
+                PlayMode.Instance.MainUnit.Life,
+                GetRecord (),
 				() => {
 					LogHelper.Info("游戏成绩提交成功");
                     if (null != successCB) {
@@ -891,6 +921,62 @@ namespace GameA.Game
                     }
                 }
             );
+        }
+
+        private byte[] GetRecord ()
+        {
+            GM2DRecordData recordData = new GM2DRecordData ();
+            recordData.Version = Version;
+            recordData.FrameCount = ConstDefineGM2D.FixedFrameCount;
+            recordData.Data.AddRange(PlayMode.Instance.InputDatas);
+            recordData.BoostItem = new BoostItemData ();
+            recordData.BoostItem.ExtraLife = PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_AddLifeCount1) ? 1 : 0;
+            recordData.BoostItem.InvinsibleOnDead = PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_DeadInvincibleCount1) ? 1 : 0;
+            recordData.BoostItem.LongerInvinsible = PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_InvincibleTime2) ? 1 : 0;
+            recordData.BoostItem.ScoreBonus = PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_ScoreAddPercent20) ? 1 : 0;
+            recordData.BoostItem.TimeBonus = PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_TimeAddPercent20) ? 1 : 0;
+            recordData.Avatar = new AvatarData ();
+            if (null == LocalUser.Instance.UsingAvatarData || !LocalUser.Instance.UsingAvatarData.IsInited)
+            {
+                recordData.Avatar.Appendage = 1;
+                recordData.Avatar.Head = 1;
+                recordData.Avatar.Lower = 1;
+                recordData.Avatar.Upper = 1;    
+            } else
+            {
+                if (null != LocalUser.Instance.UsingAvatarData.Appendage && LocalUser.Instance.UsingAvatarData.Appendage.IsInited)
+                {
+                    recordData.Avatar.Appendage = (int)LocalUser.Instance.UsingAvatarData.Appendage.Id;
+                } else 
+                {
+                    recordData.Avatar.Appendage = 1;
+                }
+                if (null != LocalUser.Instance.UsingAvatarData.Head && LocalUser.Instance.UsingAvatarData.Head.IsInited) {
+                    recordData.Avatar.Head = (int)LocalUser.Instance.UsingAvatarData.Head.Id;
+                } else {
+                    recordData.Avatar.Head = 1;
+                }
+                if (null != LocalUser.Instance.UsingAvatarData.Lower && LocalUser.Instance.UsingAvatarData.Lower.IsInited) {
+                    recordData.Avatar.Lower = (int)LocalUser.Instance.UsingAvatarData.Lower.Id;
+                } else {
+                    recordData.Avatar.Lower = 1;
+                }
+                if (null != LocalUser.Instance.UsingAvatarData.Upper && LocalUser.Instance.UsingAvatarData.Upper.IsInited) {
+                    recordData.Avatar.Upper = (int)LocalUser.Instance.UsingAvatarData.Upper.Id;
+                } else {
+                    recordData.Avatar.Upper = 1;
+                }
+            }
+            byte[] recordByte = GameMapDataSerializer.Instance.Serialize(recordData);
+            if(recordByte == null)
+            {
+                LogHelper.Error("录像数据出错");
+            }
+            else
+            {
+                recordByte = MatrixProjectTools.CompressLZMA(recordByte);
+            }
+            return recordByte;
         }
 
         private void OnUpdateSuccess()

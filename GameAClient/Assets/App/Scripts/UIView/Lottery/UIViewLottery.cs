@@ -51,6 +51,7 @@ namespace GameA
 	    public Image Reward6;
 	    public Image Reward7;
 	    public Image Reward8;
+	    public Image Mask;
 
         public Text RewardType1;
         public Text RewardType2;

@@ -46,7 +46,10 @@ namespace GameA
         private string DiamondImageName= "icon_diam";
         private string ExpImageName= "icon_gift_1";
         private string CreatorExpImageName = "icon_gift_3";
-        private string NoneImageName = "icon_star";
+        private string RaffleTicket = "icon_star";
+        private string FashionCoupon = "icon_star";
+        private string BoostItem = "icon_star";
+        //private string NoneImageName = "icon_star";
         //private Reward[] _reward;
 
 
@@ -62,8 +65,9 @@ namespace GameA
             }, code => {
                 LogHelper.Error("Network error when get RaffleCount, {0}", code);
             });
+            
         }
-        private void RefreshRaffleCount()
+        public void RefreshRaffleCount()
         {
             _cachedView.NumberOfTicketlvl1.text = MakePositiveNumber(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(1));//查看数量
             _cachedView.NumberOfTicketlvl2.text = MakePositiveNumber(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(2));
@@ -115,6 +119,7 @@ namespace GameA
 
         private void ShowNoneTicketTips()
         {
+            _cachedView.Mask.SetEnableEx(false);
             if (_selectedTicketNum==0)
             {
                 SocialGUIManager.ShowPopupDialog("请选择一种抽奖券", null,
@@ -131,10 +136,12 @@ namespace GameA
                     })
                     );
             }
+           
         }
 
         private void UseRaffleTicket(int selectedTicketNum)
         {
+            _cachedView.Mask.SetEnableEx(true);
             if (LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(selectedTicketNum) > 0)
             {
                 _cachedView.SpineCat.AnimationState.SetAnimation(0, "Run", false);
@@ -211,6 +218,7 @@ namespace GameA
 
         private void WhenShutDown()
         {
+            _cachedView.Mask.SetEnableEx(false);
             ShutDownLight();
             _cachedView.BrightLamp[4].SetActiveEx(true);
             SocialGUIManager.ShowReward(LocalUser.Instance.RaffleTicket.GetReward);
@@ -252,9 +260,15 @@ namespace GameA
                 case 2:
                     return Type = "钻石";
                 case 3:
-                    return Type = "经验";
+                    return Type = "冒险经验";
                 case 4:
                     return Type = "工匠经验";
+                case 5:
+                    return Type = "时装券";
+                case 6:
+                    return Type = "低级抽奖券";
+                case 7:
+                    return Type = "道具";
                 default:
                     return Type = "None";
             }
@@ -273,6 +287,12 @@ namespace GameA
                     return Type = ExpImageName;
                 case 4:
                     return Type = CreatorExpImageName;
+                case 5:
+                    return Type = FashionCoupon;
+                case 6:
+                    return Type = RaffleTicket;
+                case 7:
+                    return Type = BoostItem;
                 default:
                     return Type = GlodImageName;
             }
@@ -335,32 +355,21 @@ namespace GameA
             _cachedView.Reward8.sprite =
                 FindImage(JudgeRewardImageName(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward8].Type1));
 
-            //{
-            //    //          RT_None = 0,
-            //    //RT_Gold = 1,
-            //    //RT_Diamond = 2,
-            //    //RT_PlayerExp = 3,
-            //    //RT_CreatorExp = 4,
-            //    //RT_FashionCoupon = 5,
-            //    //RT_RaffleTicket = 6
-            //    //ERewardType
-            //    case 1:
-            //        _cachedView.
-            //        break;
-            //    case 2:
-            //        RewardMoney(raffleUnit.Value1);
-            //        break;
-            //    case 3:
-            //        RewardDiamond(raffleUnit.Value1);
-            //        break;
-            //    case 4:
-            //        RewardPlayerExp(raffleUnit.Value1);
-            //        break;
-            //    case 5:
-            //        RewardCreatorExp(raffleUnit.Value1);
-            //        break;
-            //}
-        }
+
+
+    //[ProtoContract(Name = "ERewardType")]
+    //    public enum ERewardType
+    //    {
+    //        RT_None = 0,
+    //        RT_Gold = 1,
+    //        RT_Diamond = 2,
+    //        RT_PlayerExp = 3,
+    //        RT_CreatorExp = 4,
+    //        RT_FashionCoupon = 5,
+    //        RT_RaffleTicket = 6,
+    //        RT_BoostItem = 7
+    //    }
+    }
 
 
         #region 接口

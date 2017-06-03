@@ -62,12 +62,8 @@ namespace GameA.Game
         // 这一次Play使用的增益道具
         private List<int> _boostItems;
 
-        private Texture2D _maskBaseTexture;
-
-        public Texture2D MaskBaseTexture
-        {
-            get { return _maskBaseTexture; }
-        }
+        // 统计
+        private GameStatistic _statistic;
 
         public bool IsEdit
         {
@@ -125,26 +121,26 @@ namespace GameA.Game
         public ShadowData CurrentShadow {
             get { return _currentShadowData; }
         }
+        // 统计
+        public GameStatistic Statistic
+        {
+            get 
+            {
+                return _statistic;
+            }
+        }
 
         private void Awake()
         {
             Instance = this;
             transform.gameObject.AddComponent<UnitUpdateManager>();
-            Messenger.AddListener(EMessengerType.GameFinishFailed, GameFinishFailed);
-            Messenger.AddListener(EMessengerType.GameFinishSuccess, GameFinishSuccess);
+            //Messenger.AddListener(EMessengerType.GameFinishFailed, GameFinishFailed);
+            //Messenger.AddListener(EMessengerType.GameFinishSuccess, GameFinishSuccess);
             Messenger.AddListener (EMessengerType.OnCountDownFinish, OnCountDownFinish);
             Messenger<List<int>>.AddListener (EMessengerType.OnBoostItemSelectFinish, OnBoostItemSelectFinish);
             _unityTimeSinceGameStarted = 0f;
             _logicFrameCnt = 0;
             _allSkeletonAnimationComp.Clear ();
-
-            Texture t;
-            if (!GameResourceManager.Instance.TryGetTextureByName("Mask", out t))
-            {
-                LogHelper.Error("GetMask Failed");
-                return;
-            }
-            _maskBaseTexture = t as Texture2D;
         }
 
         public void Pause()
@@ -159,10 +155,15 @@ namespace GameA.Game
 
         private void OnDestroy()
         {
-            Messenger.RemoveListener(EMessengerType.GameFinishFailed, GameFinishFailed);
-            Messenger.RemoveListener(EMessengerType.GameFinishSuccess, GameFinishSuccess);
+            //Messenger.RemoveListener(EMessengerType.GameFinishFailed, GameFinishFailed);
+            //Messenger.RemoveListener(EMessengerType.GameFinishSuccess, GameFinishSuccess);
             Messenger.RemoveListener (EMessengerType.OnCountDownFinish, OnCountDownFinish);
             Instance = null;
+            if (null != _statistic)
+            {
+                _statistic.Clear ();
+                _statistic = null;
+            }
         }
 
         public void OnReadMapFile(Table_Unit tableUnit)
@@ -454,12 +455,19 @@ namespace GameA.Game
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
             _mainUnit.OnSucceed();
             GuideManager.Instance.OnGameSuccess();
+            if (null != _statistic) {
+                _statistic.OnGameFinishSuccess ();
+            }
         }
 
         public void GameFinishFailed()
         {
             _gameFailedTime = _logicFrameCnt;
             _run = false;
+            if (null != _statistic)
+            {
+                _statistic.OnGameFinishFailed ();
+            }
             GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.GameAudioBgm01);
         }
 
@@ -685,6 +693,14 @@ namespace GameA.Game
                 var unit = units[i];
                 unit.OnPlay ();
             }
+
+            if (null != _statistic)
+            {
+                _statistic.Clear ();
+                _statistic = null;
+            }
+            _statistic = new GameStatistic ();
+
             Messenger.Broadcast(EMessengerType.OnPlay);
         }
 
