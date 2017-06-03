@@ -241,6 +241,7 @@ namespace GameA
 			int killMonsterCount,
 			int leftTime,
 			int leftLife,
+            byte [] recordBytes,
 			Action successCallback, Action<ENetResultCode> failedCallback) {
 			if (_lastRequiredLevelToken == 0) {
 				if (null != failedCallback)
@@ -271,6 +272,10 @@ namespace GameA
             if (table.StarConditions.Length > 2) {
                 star3 = CheckStarRequire (table.StarConditions [2], table.Star3Value, Game.PlayMode.Instance.Statistic);
             }
+
+            UnityEngine.WWWForm form = new UnityEngine.WWWForm ();
+            form.AddBinaryData ("recordFile", recordBytes);
+
 			RemoteCommands.CommitAdventureLevelResult (
 				_lastRequiredLevelToken,
 				success,
@@ -303,7 +308,8 @@ namespace GameA
 					{
 						failedCallback.Invoke(code);
 					}
-				}
+				},
+                form
 			);
 		}
         // 成功提交冒险模式通关数据后，客户端自主刷洗数据
