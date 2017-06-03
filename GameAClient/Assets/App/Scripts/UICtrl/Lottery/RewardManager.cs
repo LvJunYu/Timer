@@ -37,7 +37,7 @@ namespace GameA
         public UnityEngine.Sprite GetSprite(int LotteryTicketType, int rewardNum)
         {
             if (GameResourceManager.Instance == null) return null;
-            switch ((ERewardType)(ERewardType)GetTableRewardFromDic(JudgeRewardKey(LotteryTicketType, rewardNum)).Type1)
+            switch ((ERewardType)GetTableRewardFromDic(JudgeRewardKey(LotteryTicketType, rewardNum)).Type1)
             {
                 case ERewardType.RT_Gold:
                     {
@@ -61,7 +61,7 @@ namespace GameA
                     }
                 case ERewardType.RT_RaffleTicket:
                     {
-                        switch (Id)
+                        switch (GetTableRewardFromDic(JudgeRewardKey(LotteryTicketType, rewardNum)).SubType1)
                         {
                             case 1:
                                 return GameResourceManager.Instance.GetSpriteByName(_raffleTicketSprite1);
