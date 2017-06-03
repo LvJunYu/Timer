@@ -161,7 +161,18 @@ namespace GameA.Game
         #region methods
         public GameStatistic ()
         {
-            Clear ();
+            _passed = false;
+            _usedTime = 0;
+            _deathCnt = 0;
+            _score = 0;
+            _collectGem = 0;
+            _monsterDeathCnt = 0;
+            _monsterKilledByFallCnt = 0;
+            _monsterKilledByLazerCnt = 0;
+            _moveDistance = 0;
+            _jumpCnt = 0;
+            _switchTriggerCnt = 0;
+            _portalUsedCnt = 0;
             Messenger.AddListener (EMessengerType.GameFinishSuccess, OnGameFinishSuccess);
             Messenger.AddListener (EMessengerType.GameFinishFailed, OnGameFinishFailed);
             Messenger.AddListener (EMessengerType.OnMainPlayerDead, OnMainPlayerDead);
@@ -172,7 +183,7 @@ namespace GameA.Game
             Messenger.AddListener (EMessengerType.OnPlayerEnterPortal, OnPlayerEnterPortal);
             // todo movedistance
         }
-        private void Clear ()
+        public void Clear ()
         {
             _passed = false;
             _usedTime = 0;

@@ -94,10 +94,12 @@ namespace GameA
 
         private void OnDiamondChanged ()
         {
+            if (!_isOpen) return;
             _cachedView.CurrentDiamond.text = LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond.ToString ();
         }
         private void OnGoldChanged ()
         {
+            if (!_isOpen) return;
             _cachedView.CurrentGold.text = LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin.ToString ();
         }
         #endregion
