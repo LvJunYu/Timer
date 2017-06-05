@@ -15,11 +15,12 @@ namespace GameA.Game
     {
         public override void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType)
         {
-            if (eSkillType != ESkillType.Fire)
+            //如果是火的话干掉自己生成焦土
+            if (eSkillType == ESkillType.Fire)
             {
-                return;
+                PlayMode.Instance.CreateRuntimeUnit(4013, _curPos);
+                PlayMode.Instance.DestroyUnit(this);
             }
-            base.DoPaint(start, end, direction, eSkillType);
         }
     }
 }

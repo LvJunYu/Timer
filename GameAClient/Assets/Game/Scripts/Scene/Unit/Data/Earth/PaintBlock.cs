@@ -35,11 +35,36 @@ namespace GameA.Game
         private static Color CleanColor = new Color(1f, 1f, 1f, 0f);
         private static Color EdgeColor = new Color32(111, 47, 11, 255);
 
-        private static Color PaintUpColor = new Color32(241, 213, 74, 255);
-        private static Color PaintRightColor = new Color32(181, 123, 35, 255);
-        private static Color PaintInColor = new Color32(221, 183, 53, 255);
+        private static Color[] PaintUpColor = new Color[4]
+        {
+            new Color32(255, 128, 36, 255),
+            new Color32(197, 245, 246, 255), 
+            new Color32(241, 213, 74, 255),
+            new Color32(141, 254, 184, 255)
+        };
+        private static Color[] PaintRightColor = new Color[4]
+        {
+            new Color32(214, 32, 31, 255),
+            new Color32(109, 202, 207, 255),
+            new Color32(181, 123, 35, 255),
+            new Color32(42, 185, 170, 255),
+        };
 
-        private static Color PaintEdgeColor = new Color32(250, 234, 104, 255);
+        private static Color[] PaintFrontColor = new Color[4]
+        {
+            new Color32(238, 91, 47, 255),
+            new Color32(142, 231, 246, 255),
+            new Color32(221, 183, 53, 255),
+            new Color32(40, 221, 152, 255),
+        };
+        
+        private static Color[] PaintEdgeColor = new Color[4]
+        {
+            new Color32(255, 209, 111, 255),
+            new Color32(240, 245, 246, 255),
+            new Color32(250, 234, 104, 255),
+            new Color32(210, 255, 226, 255),
+        };
 
         private static int TileOffsetX = (int)(22f / PixelsPerTile);
         private static int TileOffsetY = (int)(14 / PixelsPerTile);
@@ -278,6 +303,10 @@ namespace GameA.Game
             {
                 return;
             }
+            if (edge.ESkillType == ESkillType.Water)
+            {
+                return;
+            }
             var paintedColor = _paintTexture.GetPixels(pixelX, pixelY, width, height);
             var maskedColor = _maskTexture.GetPixels(pixelX, pixelY, width, height);
             Color[] maskingColor = ((Texture2D)maskingTexture).GetPixels(Mathf.Clamp(pixelX - offset, 0, 255), pixelY, width, height);
@@ -306,19 +335,19 @@ namespace GameA.Game
                 {
                     if (maskBaseColor[i].r == 1f)
                     {
-                        paintedColor[i] = PaintUpColor;
+                        paintedColor[i] = PaintUpColor[(int)edge.ESkillType];
                     }
                     else if (maskBaseColor[i].g == 1f)
                     {
-                        paintedColor[i] = PaintRightColor;
+                        paintedColor[i] = PaintRightColor[(int)edge.ESkillType];
                     }
                     else if (maskBaseColor[i].b == 1f)
                     {
-                        paintedColor[i] = PaintInColor;
+                        paintedColor[i] = PaintFrontColor[(int)edge.ESkillType];
                     }
                     else
                     {
-                        paintedColor[i] = PaintEdgeColor;
+                        paintedColor[i] = PaintEdgeColor[(int)edge.ESkillType];
                     }
                 }
             }
