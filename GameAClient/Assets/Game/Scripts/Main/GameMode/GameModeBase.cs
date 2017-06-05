@@ -48,16 +48,6 @@ namespace GameA.Game
             return true;
         }
 
-		public virtual bool PlayNext(Action successCb, Action failedCb)
-		{
-            GameManager.Instance.PlayNext();
-            if (successCb != null)
-            {
-                successCb.Invoke();
-            }
-            return true;
-        }
-
         public virtual bool Restart(Action successCb, Action failedCb)
         {
             PlayMode.Instance.RePlay();

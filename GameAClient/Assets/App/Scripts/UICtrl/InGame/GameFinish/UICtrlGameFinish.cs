@@ -242,7 +242,12 @@ namespace GameA
             }
 
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
-            Game.GM2DGame.Instance.GameMode.PlayNext(()=>{
+            GameModePlay gameModePlay = Game.GM2DGame.Instance.GameMode as GameModePlay;
+            if (null == gameModePlay)
+            {
+                return;
+            }
+            gameModePlay.PlayNext(()=>{
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
             }, ()=>{

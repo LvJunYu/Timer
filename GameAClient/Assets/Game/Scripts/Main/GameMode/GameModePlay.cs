@@ -25,6 +25,17 @@ namespace GameA.Game
             yield return null;
         }
 
+
+        public virtual bool PlayNext(Action successCb, Action failedCb)
+        {
+            GameManager.Instance.PlayNext();
+            if (successCb != null)
+            {
+                successCb.Invoke();
+            }
+            return true;
+        }
+
         public virtual void UseBoostItem(List<int> itemTypes)
 		{
 			if (null == _project) return;
