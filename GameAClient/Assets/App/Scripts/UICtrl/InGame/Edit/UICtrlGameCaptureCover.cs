@@ -81,10 +81,15 @@ namespace GameA
             Sequence seq = DOTween.Sequence();
             seq.AppendInterval(0.1f);
             seq.AppendCallback(()=>{
-                var iconBytes = GM2DGame.Instance.CaptureLevel();
-                GM2DGame.Instance.NeedSave = true;
+                GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+                if (null == gameModeEdit)
+                {
+                    return;
+                }
+                var iconBytes = gameModeEdit.CaptureLevel();
+                gameModeEdit.NeedSave = true;
 //                Debug.LogError("FileSize: " + iconBytes.Length/1024);
-                GM2DGame.Instance.IconBytes = iconBytes;
+                gameModeEdit.IconBytes = iconBytes;
                 _coverTexture.LoadImage(iconBytes);
                 _cachedView.RawImage.texture = _coverTexture;
                 _cachedView.RawImage.SetAllDirty();

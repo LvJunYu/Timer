@@ -5,26 +5,37 @@
 ** Summary : UICtrlEdit
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using SoyEngine;
 using SoyEngine;
 using UnityEngine;
-using UnityEngine.UI;
 using GameA.Game;
 
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Create)]
     public class UICtrlEdit : UICtrlInGameBase<UIViewEdit>
-    {
+	{
+		public enum EMode
+		{
+			None,
+			// 正常编辑
+			Edit,
+			// 编辑时测试
+			EditTest,
+			// 正常游戏
+			Play,
+			// 播放录像
+			PlayRecord,
+			// 改造编辑
+			ModifyEdit,
+
+		}
+
         #region 常量与字段
         //private Social.UIDraggableButton _moveBtn;
         //private bool _moveBtnDragged = false;
         private Vector2 _moveBtnOrigPos;
         private Vector2 _moveBtnDragOffset;
-        private float _maxMoveY = 50f;
+        private float _maxMoveY = 270f;
 
 		// 编辑类型，是正常编辑还是改造编辑
 		private EMode _editMode = EMode.Edit;
@@ -98,7 +109,7 @@ namespace GameA
         {
             base.OnOpen(parameter);
 	        UpdateEraseButtonState();
-	        UpdateEffectModeButtonState();
+//	        UpdateEffectModeButtonState();
             UpdateSwitchModeButtonState ();
             _moveBtnOrigPos = _cachedView.MoveBtn.RectTrans.localPosition;
             //_moveBtnOrigPos = new Vector2 (60, -50);
@@ -194,12 +205,12 @@ namespace GameA
 				_cachedView.Erase.gameObject.SetActive (true);
 				_cachedView.Redo.gameObject.SetActive (false);
 				_cachedView.Undo.gameObject.SetActive (true);
-				_cachedView.Publish.gameObject.SetActive (true);
+				_cachedView.Publish.gameObject.SetActive (false);
 				_cachedView.ButtonFinishCondition.SetActiveEx (true);
 				_cachedView.MoveBtn.SetActiveEx (true);
 				_cachedView.MoveBtnBg.SetActive (true);
 
-				_cachedView.EnterEffectMode.SetActiveEx (true);
+				_cachedView.EnterEffectMode.SetActiveEx (false);
 				_cachedView.ExitEffectMode.SetActiveEx (false);
 
 				_cachedView.Play.gameObject.SetActive (true);
@@ -289,22 +300,26 @@ namespace GameA
 				Messenger<string>.Broadcast(EMessengerType.GameErrorLog, LocaleManager.GameLocale("error_editor_test_no_main_player"));
 			}
 			Broadcast(ECommandType.Play);
-            GM2DGame.Instance.ChangeToMode(EMode.EditTest);
+            GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+            if (null != gameModeEdit)
+            {
+                gameModeEdit.ChangeMode(GameModeEdit.EMode.EditTest);
+            }
         }
 
         private void OnPause()
         {
-            Broadcast(ECommandType.Pause);
-			if (_editMode == EMode.Edit) {
-				GM2DGame.Instance.ChangeToMode (EMode.Edit);
-			} else {
-				GM2DGame.Instance.ChangeToMode (EMode.ModifyEdit);
+			Broadcast(ECommandType.Pause);
+			GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+			if (null != gameModeEdit)
+			{
+                gameModeEdit.ChangeMode(GameModeEdit.EMode.Edit);
 			}
         }
 
         private void OnClickFinishCondition()
         {
-            if (GM2DGame.Instance.CurrentMode != EMode.Edit)
+            if (GM2DGame.Instance.GameMode.GameRunMode != EGameRunMode.Edit)
             {
                 return;
             }
@@ -324,7 +339,7 @@ namespace GameA
             {
                 Broadcast(ECommandType.Create);
                 _cachedView.Erase.SetActiveEx (true);
-                _cachedView.EnterEffectMode.SetActiveEx (true);
+                _cachedView.EnterEffectMode.SetActiveEx (false);
             }
             else
             {
@@ -426,7 +441,7 @@ namespace GameA
 
 	    private void UpdateEraseButtonState()
 	    {
-			if (EditMode.Instance == null)
+            if (EditMode.Instance == null || EditMode.Instance.CurCommandType == ECommandType.Play)
 			{
 				_cachedView.EraseSelected.SetActiveEx(false);
 				_cachedView.Erase.SetActiveEx(false);
@@ -438,7 +453,7 @@ namespace GameA
 		}
 
         private void UpdateSwitchModeButtonState () {
-            if (null == EditMode.Instance) {
+            if (null == EditMode.Instance || EditMode.Instance.CurCommandType == ECommandType.Play) {
                 _cachedView.EnterSwitchMode.SetActiveEx (false);
                 _cachedView.ExitSwitchMode.SetActiveEx (false);
                 return;
@@ -452,8 +467,8 @@ namespace GameA
 	    {
 			if (EditMode.Instance == null)
 			{
-				_cachedView.EraseSelected.SetActiveEx(false);
-				_cachedView.Erase.SetActiveEx(false);
+                _cachedView.EnterEffectMode.SetActiveEx(false);
+                _cachedView.ExitEffectMode.SetActiveEx(false);
 				return;
 			}
 			bool isSelect = EditMode.Instance.CurEditorLayer == EEditorLayer.Effect;
@@ -498,5 +513,6 @@ namespace GameA
 		#endregion
 
 		#endregion
+
 	}
 }

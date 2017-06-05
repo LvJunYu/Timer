@@ -374,7 +374,7 @@ namespace SoyEngine
 				string assetPath = null;
 				if (!TryGetDebugResPath(textureName, out assetPath))
 				{
-					LogHelper.Error("TryGetTextureByName called use debug res but assetPath is invalid!");
+                    LogHelper.Error("TryGetTextureByName {0} called use debug res but assetPath is invalid!", textureName);
 					return false;
 				}
 				var o = AssetDatabase.LoadAssetAtPath<Texture>(assetPath);

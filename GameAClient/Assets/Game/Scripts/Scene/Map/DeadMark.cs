@@ -9,10 +9,8 @@ using System.Collections.Generic;
 
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine;
 using System.Collections;
-using SoyEngine;
 using System;
 using DG.Tweening;
 

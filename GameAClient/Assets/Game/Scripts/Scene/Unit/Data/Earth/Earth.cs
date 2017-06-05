@@ -54,18 +54,6 @@ namespace GameA.Game
             }
             return base.CanEdgeClimbed(other, eDirectionType);
         }
-
-        public override void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType)
-        {
-            //如果是火的话干掉自己生成焦土
-            if (eSkillType == ESkillType.Fire)
-            {
-                PlayMode.Instance.CreateRuntimeUnit(4013, _curPos);
-                PlayMode.Instance.DestroyUnit(this);
-                return;
-            }
-            base.DoPaint(start, end, direction, eSkillType);
-        }
     }
 
     public struct Edge

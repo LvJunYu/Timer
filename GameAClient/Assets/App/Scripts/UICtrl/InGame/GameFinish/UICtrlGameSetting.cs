@@ -90,7 +90,7 @@ namespace GameA
 
 		private void UpdateShowState()
 		{
-			if (GM2DGame.Instance.CurrentMode == EMode.Edit)
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
 			{
 				UIRectTransformStatus.SetStatus(_cachedView.UIStateController.gameObject,"1");
 			}
@@ -215,55 +215,24 @@ namespace GameA
 
 		private void OnClickRestartButton()
 		{
-			if (GM2DGame.Instance.CurrentMode == EMode.Edit)
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
 			{
 				return;
 			}
 
-            Project p = GameManager.Instance.CurrentGame.Project;
-            if(p.ProjectStatus == SoyEngine.Proto.EProjectStatus.PS_Public
-                && GameManager.Instance.GameMode == EGameMode.Normal)
-            {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
-                p.BeginPlay(false, ()=>{
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    Game.PlayMode.Instance.RePlay();
-                    SocialGUIManager.Instance.CloseUI<UICtrlGameSetting>();
-                }, code=>{
-//                    string tip = null;
-//                    if(code == EPlayProjectRetCode.PPRC_ProjectHasBeenDeleted)
-//                    {
-//                        tip = "作品已被删除，启动失败";
-//                    }
-//                    else if(code == EPlayProjectRetCode.PPRC_FrequencyTooHigh)
-//                    {
-//                        tip = "启动过于频繁，启动失败";
-//                    }
-//                    else
-//                    {
-//                        if(Application.internetReachability == NetworkReachability.NotReachable)
-//                        {
-//                            tip = "启动失败，请检查网络环境";
-//                        }
-//                        else
-//                        {
-//                            tip = "启动失败，未知错误";
-//                        }
-//                    }
-//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//                    CommonTools.ShowPopupDialog(tip, null, 
-//                        new System.Collections.Generic.KeyValuePair<string, Action>("重试", ()=>{
-//                            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnClickRestartButton));
-//                        }),
-//                        new System.Collections.Generic.KeyValuePair<string, Action>("取消", ()=>{
-//                        }));
-                });
-            }
-            else
-            {
-                Game.PlayMode.Instance.RePlay();
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
+            GM2DGame.Instance.GameMode.Restart(()=>{
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 SocialGUIManager.Instance.CloseUI<UICtrlGameSetting>();
-            }
+            }, ()=>{
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                CommonTools.ShowPopupDialog("启动失败", null, 
+                    new System.Collections.Generic.KeyValuePair<string, Action>("重试", ()=>{
+                        CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnClickRestartButton));
+                    }),
+                    new System.Collections.Generic.KeyValuePair<string, Action>("取消", ()=>{
+                    }));
+            });
 		}
 
 		private void ReceiveOpenSettingCommand()

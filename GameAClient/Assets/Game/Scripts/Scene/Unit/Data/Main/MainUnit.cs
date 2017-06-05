@@ -118,7 +118,7 @@ namespace GameA.Game
                 {
                     if (_invincibleEfffect == null)
                     {
-                        _invincibleEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1BianShenXingDian", _trans);
+                        _invincibleEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectOrbitBuff", _trans);
                         _invincibleEfffect.SetSortingOrder(ESortingOrder.EffectItem);
                     }
                     if (_invincibleEfffect != null)

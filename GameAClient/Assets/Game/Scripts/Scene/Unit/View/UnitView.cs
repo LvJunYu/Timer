@@ -229,10 +229,7 @@ namespace GameA.Game
             }
             if (tableUnit.EUnitType != EUnitType.Bullet)
             {
-                if (GM2DGame.Instance.CurrentMode == EMode.Edit || 
-					GM2DGame.Instance.CurrentMode == EMode.EditTest ||
-					GM2DGame.Instance.CurrentMode == EMode.ModifyEdit
-				)
+                if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
                 {
                     //生成方向标志
                     if (tableUnit.CanRotate || _unit.MoveDirection != EMoveDirection.None || tableUnit.Id == UnitDefine.RollerId)

@@ -74,7 +74,6 @@ namespace GameA
         private void OnPlayBtn () {
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "作品加载中");
             _project.PrepareRes(()=>{
-                GameManager.Instance.GameMode = EGameMode.Normal;
                 _project.BeginPlay(true, ()=>{
                     MatrixProjectTools.OnProjectBeginPlaySuccess();
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
