@@ -385,33 +385,33 @@ namespace GameA
         private void OnSelectedRaffleBtn1()
         {
             this._selectedTicketNum = 1;
-            _cachedView.SelectedTicketType.text = "壹";
+            _cachedView.SelectedTicketType.text = "<color=#ffb400>壹</color>";
             RefreshReward(1);
         }
 
         private void OnSelectedRaffleBtn2()
         {
             this._selectedTicketNum = 2;
-            _cachedView.SelectedTicketType.text = "贰";
+            _cachedView.SelectedTicketType.text = "<color=#ededeb>贰</color>"; 
             RefreshReward(2);
         }
         private void OnSelectedRaffleBtn3()
         {
             this._selectedTicketNum = 3;
-            _cachedView.SelectedTicketType.text = "叁";
+            _cachedView.SelectedTicketType.text = "<color=#fbf11a>叁</color>";
             RefreshReward(3);
         }
         private void OnSelectedRaffleBtn4()
         {
             this._selectedTicketNum = 4;
-            _cachedView.SelectedTicketType.text = "匠";
+            _cachedView.SelectedTicketType.text = "<color=#00ffff>匠</color>";
             RefreshReward(4);
 
         }
         private void OnSelectedRaffleBtn5()
         {
             this._selectedTicketNum = 5;
-            _cachedView.SelectedTicketType.text = "亲密";
+            _cachedView.SelectedTicketType.text = "<color=#f65656>亲</color>";
             RefreshReward(5);
         }
         #endregion 接口
