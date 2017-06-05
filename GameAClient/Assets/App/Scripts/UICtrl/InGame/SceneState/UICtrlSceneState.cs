@@ -14,7 +14,7 @@ using GameA.Game;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Create)]
+    [UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlSceneState: UICtrlInGameBase<UIViewSceneState>
     {
 
@@ -24,7 +24,7 @@ namespace GameA
 	    private int _lastShowSceonds = -100;
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.Background;
+            _groupId = (int) EUIGroupType.InGameBackgroud;
         }
 
         protected override void OnViewCreated()
@@ -46,8 +46,9 @@ namespace GameA
             RegisterEvent(EMessengerType.OnWinDataChanged, OnWinDataChanged);
             RegisterEvent(EMessengerType.OnLifeChanged, OnLifeChanged);
 			RegisterEvent(EMessengerType.OnMainPlayerCreated, OnLifeChanged);
-			RegisterEvent(EMessengerType.OnGameRestart, OnGameRestart);
-			RegisterEvent(EMessengerType.OnKeyChanged, OnKeyCountChanged);
+            RegisterEvent(EMessengerType.OnGameRestart, OnGameRestart);
+            RegisterEvent(EMessengerType.OnKeyChanged, OnKeyCountChanged);
+            RegisterEvent(EMessengerType.OnScoreChanged, OnScoreChanged);
 		}
 
 		public override void OnUpdate()
@@ -63,35 +64,91 @@ namespace GameA
 
         private void OnWinDataChanged()
         {
+            if (!_isOpen)
+            {
+                return;
+            }
 	        UpdateWinDataWithOutTimeLimit();
         }
 
 		private void OnLifeChanged()
         {
+            if (!_isOpen)
+            {
+                return;
+            }
 			UpdateLifeItemValue();
 		}
 
 	    private void OnGameRestart()
-	    {
+        {
+            if (!_isOpen)
+            {
+                return;
+            }
 			UpdateItemVisible();
 			UpdateAll();
-		}
+        }
 
-	    private void OnKeyCountChanged()
-	    {
-		    UpdateKeyCount();
-	    }
+        private void OnKeyCountChanged()
+        {
+            if (!_isOpen)
+            {
+                return;
+            }
+            UpdateKeyCount();
+        }
+
+        private void OnScoreChanged()
+        {
+            if (!_isOpen)
+            {
+                return;
+            }
+            UpdateScore();
+        }
 
         #endregion
 
         #region  private
 
 	    private void UpdateAll()
-	    {
+        {
+            if (GM2DGame.Instance.GameMode.GameSituation == EGameSituation.Adventure)
+            {
+                _cachedView.LevelInfoDock.SetActive(true);
+                _cachedView.SpaceDock.SetActive(true);
+                SituationAdventureParam param = null;
+                ISituationAdventure situation = GM2DGame.Instance.GameMode as ISituationAdventure;
+                if (situation != null && situation.GetLevelInfo() != null)
+                {
+                    param = situation.GetLevelInfo();
+                    _cachedView.SectionText.text = "第" + ClientTools.ToCNLowerCase(param.Section) + "章";
+                    if (param.ProjectType == SoyEngine.Proto.EAdventureProjectType.APT_Normal)
+                    {
+                        _cachedView.NormalLevelDock.SetActive(true);
+                        _cachedView.BonusLevelDock.SetActive(false);
+                        _cachedView.NormalLevelText.text = param.Level.ToString();
+                    }
+                    else
+                    {
+                        _cachedView.NormalLevelDock.SetActive(false);
+                        _cachedView.BonusLevelDock.SetActive(true);
+                        _cachedView.BonusLevelText.text = param.Level.ToString();
+                    }
+                }
+            }
+            else
+            {
+                _cachedView.SpaceDock.SetActive(true);
+                _cachedView.LevelInfoDock.SetActive(false);
+            }
+
 		    UpdateLifeItemValue();
 			UpdateWinDataWithOutTimeLimit();
 		    UpdateTimeLimit();
 		    UpdateKeyCount();
+            UpdateScore();
 	    }
 
         private void InitUI()
@@ -102,12 +159,6 @@ namespace GameA
             _cachedItem.Add(EWinCondition.TimeLimit, _cachedView.TimeLimitItem);
             _cachedItem.Add(EWinCondition.CollectTreasure, _cachedView.CollectionItem);
             _cachedItem.Add(EWinCondition.KillMonster, _cachedView.EnemyItem);
-
-            _cachedView.HpItem.Name.text = GM2DUIConstDefine.WinDataNameLife;
-            _cachedView.TimeLimitItem.Name.text = GM2DUIConstDefine.WinDataNameTimeLimit;
-            _cachedView.ArriveItem.Name.text = GM2DUIConstDefine.WinDataNameArrive;
-            _cachedView.CollectionItem.Name.text = GM2DUIConstDefine.WinDataNameScore;
-            _cachedView.EnemyItem.Name.text = GM2DUIConstDefine.WinDataNameEnemyKill;
         }
 
         private void UpdateItemVisible()
@@ -147,7 +198,7 @@ namespace GameA
 		}
 
 	    private void UpdateWinDataWithOutTimeLimit()
-	    {
+        {
 		    if (_activeConditions.Contains(EWinCondition.Arrived))
 		    {
 			    _cachedView.ArriveItem.Dex.text = "";
@@ -168,7 +219,7 @@ namespace GameA
 		}
 
 	    private void UpdateTimeLimit()
-	    {
+        {
 			int curValue = PlayMode.Instance.SceneState.SecondLeft;
 		    if (curValue != _lastShowSceonds)
 		    {
@@ -178,14 +229,19 @@ namespace GameA
 			    _cachedView.TimeLimitItem.Dex.text = string.Format(GM2DUIConstDefine.WinDataTimeShowFormat, minutes, seconds);
 				_lastShowSceonds = curValue;
 		    }
-	    }
+        }
 
-	    private void UpdateKeyCount()
-	    {
-	        int curValue = PlayMode.Instance.SceneState.KeyGain;
-			_cachedView.KeyItem.Dex.text = string.Format(GM2DUIConstDefine.WinDataKeyCountFormat, curValue);
-		}
+        private void UpdateKeyCount()
+        {
+            int curValue = PlayMode.Instance.SceneState.KeyGain;
+            _cachedView.KeyItem.Dex.text = string.Format(GM2DUIConstDefine.WinDataKeyCountFormat, curValue);
+        }
 
+        private void UpdateScore()
+        {
+            int curValue = PlayMode.Instance.SceneState.CurScore;
+            _cachedView.ScoreItem.Dex.text = string.Format(GM2DUIConstDefine.WinDataScoreFormat, curValue);
+        }
 
 
         #endregion

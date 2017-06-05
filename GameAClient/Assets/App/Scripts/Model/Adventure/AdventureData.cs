@@ -160,16 +160,21 @@ namespace GameA
                                 return;
 
                             } else {
-                                projectList [levelIdx - 1].PrepareRes (
-                                    () => {
-                                        if (EAdventureProjectType.APT_Bonus == type) {
-                                            GameManager.Instance.RequestPlayAdvBonus (projectList [levelIdx - 1]);
-                                        } else {
-                                            GameManager.Instance.RequestPlayAdvNormal (projectList [levelIdx - 1]);
-                                        }
-                                        SocialGUIManager.Instance.ChangeToGameMode ();
+                                projectList [levelIdx - 1].PrepareRes (() => {
+                                    var param = new SituationAdventureParam();
+                                    param.ProjectType = type;
+                                    param.Section = sectionId;
+                                    param.Level = levelIdx;
+                                    if (EAdventureProjectType.APT_Bonus == type)
+                                    {
+                                        GameManager.Instance.RequestPlayAdvBonus (projectList [levelIdx - 1], param);
                                     }
-                                );
+                                    else
+                                    {
+                                        GameManager.Instance.RequestPlayAdvNormal (projectList [levelIdx - 1], param);
+                                    }
+                                    SocialGUIManager.Instance.ChangeToGameMode ();
+                                });
                             }
                         }
 					}
