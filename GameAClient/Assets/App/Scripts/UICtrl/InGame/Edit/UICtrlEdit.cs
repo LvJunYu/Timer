@@ -35,7 +35,7 @@ namespace GameA
         //private bool _moveBtnDragged = false;
         private Vector2 _moveBtnOrigPos;
         private Vector2 _moveBtnDragOffset;
-        private float _maxMoveY = 50f;
+        private float _maxMoveY = 270f;
 
 		// 编辑类型，是正常编辑还是改造编辑
 		private EMode _editMode = EMode.Edit;
@@ -109,7 +109,7 @@ namespace GameA
         {
             base.OnOpen(parameter);
 	        UpdateEraseButtonState();
-	        UpdateEffectModeButtonState();
+//	        UpdateEffectModeButtonState();
             UpdateSwitchModeButtonState ();
             _moveBtnOrigPos = _cachedView.MoveBtn.RectTrans.localPosition;
             //_moveBtnOrigPos = new Vector2 (60, -50);
@@ -205,12 +205,12 @@ namespace GameA
 				_cachedView.Erase.gameObject.SetActive (true);
 				_cachedView.Redo.gameObject.SetActive (false);
 				_cachedView.Undo.gameObject.SetActive (true);
-				_cachedView.Publish.gameObject.SetActive (true);
+				_cachedView.Publish.gameObject.SetActive (false);
 				_cachedView.ButtonFinishCondition.SetActiveEx (true);
 				_cachedView.MoveBtn.SetActiveEx (true);
 				_cachedView.MoveBtnBg.SetActive (true);
 
-				_cachedView.EnterEffectMode.SetActiveEx (true);
+				_cachedView.EnterEffectMode.SetActiveEx (false);
 				_cachedView.ExitEffectMode.SetActiveEx (false);
 
 				_cachedView.Play.gameObject.SetActive (true);
@@ -339,7 +339,7 @@ namespace GameA
             {
                 Broadcast(ECommandType.Create);
                 _cachedView.Erase.SetActiveEx (true);
-                _cachedView.EnterEffectMode.SetActiveEx (true);
+                _cachedView.EnterEffectMode.SetActiveEx (false);
             }
             else
             {
@@ -441,7 +441,7 @@ namespace GameA
 
 	    private void UpdateEraseButtonState()
 	    {
-			if (EditMode.Instance == null)
+            if (EditMode.Instance == null || EditMode.Instance.CurCommandType == ECommandType.Play)
 			{
 				_cachedView.EraseSelected.SetActiveEx(false);
 				_cachedView.Erase.SetActiveEx(false);
@@ -453,7 +453,7 @@ namespace GameA
 		}
 
         private void UpdateSwitchModeButtonState () {
-            if (null == EditMode.Instance) {
+            if (null == EditMode.Instance || EditMode.Instance.CurCommandType == ECommandType.Play) {
                 _cachedView.EnterSwitchMode.SetActiveEx (false);
                 _cachedView.ExitSwitchMode.SetActiveEx (false);
                 return;
@@ -467,8 +467,8 @@ namespace GameA
 	    {
 			if (EditMode.Instance == null)
 			{
-				_cachedView.EraseSelected.SetActiveEx(false);
-				_cachedView.Erase.SetActiveEx(false);
+                _cachedView.EnterEffectMode.SetActiveEx(false);
+                _cachedView.ExitEffectMode.SetActiveEx(false);
 				return;
 			}
 			bool isSelect = EditMode.Instance.CurEditorLayer == EEditorLayer.Effect;
