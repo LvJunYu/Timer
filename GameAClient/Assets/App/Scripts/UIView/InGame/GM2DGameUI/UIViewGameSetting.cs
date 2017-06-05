@@ -14,25 +14,27 @@ namespace GameA
 {
 	public class UIViewGameSetting:UIViewBase
 	{
-		public Text Title;
+//		public Text Title;
 
-		public UMViewAudioItem MusicItem;
-		public UMViewAudioItem SoundsEffects;
-		public UMViewAudioItem ShowRunTimeShadowItem;
-		public UMViewAudioItem ShowEditShadowItem;
+//		public UMViewAudioItem MusicItem;
+//		public UMViewAudioItem SoundsEffects;
+//		public UMViewAudioItem ShowRunTimeShadowItem;
+//		public UMViewAudioItem ShowEditShadowItem;
 
-		public Button ButtonExit;
-		public Text ButtonExitText;
+//		public Button ButtonExit;
+//		public Text ButtonExitText;
+        public USViewGameSettingItem ShowShadow;
+        public USViewGameSettingItem ShowRoute;
 
-		public Button ButtonReturnToGame;
-		public Text ButtonReturnToGameText;
+		public Button ReturnBtn;
+//		public Text ButtonReturnToGameText;
 
-		public Button ButtonRestart;
-		public Text ButtonRestartText;
+		public Button RestartBtn;
+//		public Text ButtonRestartText;
 
-		public UIRectTransformStatus UIStateController;
+//		public UIRectTransformStatus UIStateController;
 
-		public Button ButtonClose;
+		public Button ExitBtn;
 
 	}
 }

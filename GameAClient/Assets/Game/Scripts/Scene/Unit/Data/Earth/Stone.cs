@@ -13,13 +13,18 @@ namespace GameA.Game
     [Unit(Id = 4007, Type = typeof(Stone))]
     public class Stone : PaintBlock
     {
-        public override void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType)
+        public override void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType, bool draw = true)
         {
-            if (eSkillType != ESkillType.Fire)
+            if (!_isAlive)
             {
                 return;
             }
-            base.DoPaint(start, end, direction, eSkillType);
+            //如果是火的话干掉自己生成焦土
+            if (eSkillType == ESkillType.Fire)
+            {
+                PlayMode.Instance.CreateRuntimeUnit(4013, _curPos);
+                PlayMode.Instance.DestroyUnit(this);
+            }
         }
     }
 }
