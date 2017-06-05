@@ -153,8 +153,8 @@ namespace GameA
                             return;
                         } else {
                             List<Project> projectList = EAdventureProjectType.APT_Bonus == type ?
-                                AppData.Instance.AdventureData.ProjectList.SectionList [levelIdx - 1].BonusProjectList :
-                                AppData.Instance.AdventureData.ProjectList.SectionList [levelIdx - 1].NormalProjectList;
+                                AppData.Instance.AdventureData.ProjectList.SectionList [sectionId - 1].BonusProjectList :
+                                AppData.Instance.AdventureData.ProjectList.SectionList [sectionId - 1].NormalProjectList;
                             if (projectList.Count < levelIdx) {
                                 LogHelper.Error ("No project data of level in idx {0} in chapter {1}", levelIdx, sectionId);
                                 return;

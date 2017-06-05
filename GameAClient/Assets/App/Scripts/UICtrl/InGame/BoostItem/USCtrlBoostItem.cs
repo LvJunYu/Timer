@@ -111,6 +111,8 @@ namespace GameA
                 _price = -1;
                 _cachedView.Number.text = "--";
             }
+            _checked = false;
+            _cachedView.CheckImg.SetActive (false);
         }
 
         private void OnBtn ()
