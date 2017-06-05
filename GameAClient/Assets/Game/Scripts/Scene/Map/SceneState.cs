@@ -1,4 +1,4 @@
-﻿﻿/********************************************************************
+﻿/********************************************************************
 ** Filename : SceneState  
 ** Author : ake
 ** Date : 10/19/2016 5:09:00 PM
@@ -105,6 +105,7 @@ namespace GameA.Game
                 UpdateWinState();
                 Messenger.Broadcast (EMessengerType.OnGemCollect);
                 Messenger.Broadcast(EMessengerType.OnWinDataChanged);
+                Messenger.Broadcast(EMessengerType.OnScoreChanged);
             }
         }
 
@@ -125,6 +126,7 @@ namespace GameA.Game
                 _arrived = value;
                 UpdateWinState();
                 Messenger.Broadcast(EMessengerType.OnWinDataChanged);
+                Messenger.Broadcast(EMessengerType.OnScoreChanged);
             }
         }
 
@@ -136,6 +138,7 @@ namespace GameA.Game
                 _monsterKilled = value;
                 UpdateWinState();
                 Messenger.Broadcast(EMessengerType.OnWinDataChanged);
+                Messenger.Broadcast(EMessengerType.OnScoreChanged);
             }
         }
 

@@ -21,6 +21,8 @@ namespace GameA
 	{
 
 		private GameSettingData _setting;
+        private USCtrlGameSettingItem _showShadow;
+        private USCtrlGameSettingItem _showRoute;
 		protected override void InitGroupId()
 		{
 			_groupId = (int)EUIGroupType.AppGameUI;
@@ -37,24 +39,30 @@ namespace GameA
 			base.OnViewCreated();
 			_setting = GM2DGame.Instance.Settings;
 
-			_cachedView.MusicItem.InitItem(OnClickMusicButton);
-			_cachedView.SoundsEffects.InitItem(OnClickSoundsEffectsButton);
-			_cachedView.ShowRunTimeShadowItem.InitItem(OnClickShowRuntimeShadow);
-			_cachedView.ShowEditShadowItem.InitItem(OnClickShowEditShadow);
+//			_cachedView.MusicItem.InitItem(OnClickMusicButton);
+//			_cachedView.SoundsEffects.InitItem(OnClickSoundsEffectsButton);
+//			_cachedView.ShowRunTimeShadowItem.InitItem(OnClickShowRuntimeShadow);
+//			_cachedView.ShowEditShadowItem.InitItem(OnClickShowEditShadow);
+            _showShadow = new USCtrlGameSettingItem ();
+            _showShadow.Init (_cachedView.ShowShadow);
+            _showRoute = new USCtrlGameSettingItem ();
+            _showRoute.Init(_cachedView.ShowRoute);
 
-			_cachedView.ButtonExit.onClick.AddListener(OnClickExitButton);
-			_cachedView.ButtonReturnToGame.onClick.AddListener(OnClickReturnToGameButton);
-			_cachedView.ButtonRestart.onClick.AddListener(OnClickRestartButton);
-			_cachedView.ButtonClose.onClick.AddListener(OnClickReturnToGameButton);
+            _cachedView.ExitBtn.onClick.AddListener(OnExitBtn);
+            _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtn);
+            _cachedView.RestartBtn.onClick.AddListener(OnRestartBtn);
+//			_cachedView.ButtonClose.onClick.AddListener(OnClickReturnToGameButton);
 
-			InitLocale();
+//			InitLocale();
 		}
 
 		protected override void OnOpen(object parameter)
 		{
 			base.OnOpen(parameter);
-			UpdateSettingItem();
+//			UpdateSettingItem();
 			UpdateShowState();
+            _showShadow.SetData (_setting.ShowPlayModeShadow, OnClickShowRuntimeShadow);
+            _showRoute.SetData (_setting.ShowEidtModeShadow, OnClickShowEditShadow);
 
             Game.PlayMode.Instance.Pause ();
 		}
@@ -76,46 +84,46 @@ namespace GameA
 
 		#region private 
 
-		private void InitLocale()
-		{
-			_cachedView.Title.text = LocaleManager.GameLocale("ui_setting_title");
-			_cachedView.ButtonReturnToGameText.text = LocaleManager.GameLocale("ui_setting_btn_return_game");
-			_cachedView.ButtonExitText.text = LocaleManager.GameLocale("ui_setting_btn_exit_game");
-			_cachedView.ButtonRestartText.text = LocaleManager.GameLocale("ui_setting_btn_restart_game");
-			_cachedView.MusicItem.Title.text = LocaleManager.GameLocale("ui_setting_item_title_muisc");
-			_cachedView.SoundsEffects.Title.text = LocaleManager.GameLocale("ui_setting_item_title_sounds");
-			_cachedView.ShowRunTimeShadowItem.Title.text = LocaleManager.GameLocale("ui_setting_item_show_runtime_shadow");
-			_cachedView.ShowEditShadowItem.Title.text = LocaleManager.GameLocale("ui_setting_item_show_edit_shadow");
-		}
+//		private void InitLocale()
+//		{
+////			_cachedView.Title.text = LocaleManager.GameLocale("ui_setting_title");
+//			_cachedView.ButtonReturnToGameText.text = LocaleManager.GameLocale("ui_setting_btn_return_game");
+//			_cachedView.ButtonExitText.text = LocaleManager.GameLocale("ui_setting_btn_exit_game");
+//			_cachedView.ButtonRestartText.text = LocaleManager.GameLocale("ui_setting_btn_restart_game");
+//			_cachedView.MusicItem.Title.text = LocaleManager.GameLocale("ui_setting_item_title_muisc");
+//			_cachedView.SoundsEffects.Title.text = LocaleManager.GameLocale("ui_setting_item_title_sounds");
+//			_cachedView.ShowRunTimeShadowItem.Title.text = LocaleManager.GameLocale("ui_setting_item_show_runtime_shadow");
+//			_cachedView.ShowEditShadowItem.Title.text = LocaleManager.GameLocale("ui_setting_item_show_edit_shadow");
+//		}
 
 		private void UpdateShowState()
 		{
             if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
 			{
-				UIRectTransformStatus.SetStatus(_cachedView.UIStateController.gameObject,"1");
+                _cachedView.RestartBtn.gameObject.SetActive (false);
 			}
 			else
 			{
-				UIRectTransformStatus.SetStatus(_cachedView.UIStateController.gameObject,"2");
+                _cachedView.RestartBtn.gameObject.SetActive (true);
 			}
 		}
 
-		private void UpdateSettingItem()
-		{
-			if (_setting != null)
-			{
-				_cachedView.MusicItem.UpdateShow(_setting.PlayMusic);
-				_cachedView.SoundsEffects.UpdateShow(_setting.PlaySoundsEffects);
-				_cachedView.ShowRunTimeShadowItem.UpdateShow(_setting.ShowPlayModeShadow);
-				_cachedView.ShowEditShadowItem.UpdateShow(_setting.ShowEidtModeShadow);
-			}
-		}
+//		private void UpdateSettingItem()
+//		{
+//			if (_setting != null)
+//			{
+//				_cachedView.MusicItem.UpdateShow(_setting.PlayMusic);
+//				_cachedView.SoundsEffects.UpdateShow(_setting.PlaySoundsEffects);
+//				_cachedView.ShowRunTimeShadowItem.UpdateShow(_setting.ShowPlayModeShadow);
+//				_cachedView.ShowEditShadowItem.UpdateShow(_setting.ShowEidtModeShadow);
+//			}
+//		}
 
 		private void OnClickMusicButton()
 		{
 			_setting.PlayMusic = !_setting.PlayMusic;
 			GameAudioManager.Instance.OnSettingChanged();
-			UpdateSettingItem();
+//			UpdateSettingItem();
 		}
 
 
@@ -123,23 +131,23 @@ namespace GameA
 		{
 			_setting.PlaySoundsEffects = !_setting.PlaySoundsEffects;
 			GameAudioManager.Instance.OnSettingChanged();
-			UpdateSettingItem();
+//			UpdateSettingItem();
 		}
 
 
-		private void OnClickShowRuntimeShadow()
+        private void OnClickShowRuntimeShadow(bool isOn)
 		{
-			_setting.ShowPlayModeShadow = !_setting.ShowPlayModeShadow;
-			UpdateSettingItem();
+            _setting.ShowPlayModeShadow = isOn;
+//			UpdateSettingItem();
 		}
 
-		private void OnClickShowEditShadow()
+        private void OnClickShowEditShadow(bool isOn)
 		{
-			_setting.ShowEidtModeShadow = !_setting.ShowEidtModeShadow;
-			UpdateSettingItem();
+            _setting.ShowEidtModeShadow = isOn;
+//			UpdateSettingItem();
 		}
 
-		private void OnClickExitButton()
+		private void OnExitBtn()
         {
             //if (GM2DGame.Instance.GameInitType == GameManager.EStartType.Create
             //|| GM2DGame.Instance.GameInitType == GameManager.EStartType.Edit) {
@@ -208,12 +216,12 @@ namespace GameA
             );
 		}
 
-		private void OnClickReturnToGameButton()
+		private void OnReturnBtn()
 		{
 			SocialGUIManager.Instance.CloseUI<UICtrlGameSetting>();
 		}
 
-		private void OnClickRestartButton()
+		private void OnRestartBtn()
 		{
             if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
 			{
@@ -228,7 +236,7 @@ namespace GameA
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 CommonTools.ShowPopupDialog("启动失败", null, 
                     new System.Collections.Generic.KeyValuePair<string, Action>("重试", ()=>{
-                        CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnClickRestartButton));
+                        CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnRestartBtn));
                     }),
                     new System.Collections.Generic.KeyValuePair<string, Action>("取消", ()=>{
                     }));

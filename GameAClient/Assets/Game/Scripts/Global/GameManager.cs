@@ -108,20 +108,20 @@ namespace GameA
             return RequestStartGame(project, EStartType.WorldPlay);
         }
 
-        public bool RequestPlayAdvNormal (Project project)
+        public bool RequestPlayAdvNormal (Project project, SituationAdventureParam param)
         {
             _projectList.Clear ();
             _projectList.Add (project);
             _curProjectInx = 0;
-            return RequestStartGame (project, EStartType.AdventureNormalPlay);
+            return RequestStartGame (project, EStartType.AdventureNormalPlay, param);
         }
 
-        public bool RequestPlayAdvBonus (Project project)
+        public bool RequestPlayAdvBonus (Project project, SituationAdventureParam param)
         {
             _projectList.Clear ();
             _projectList.Add (project);
             _curProjectInx = 0;
-            return RequestStartGame (project, EStartType.AdventureBonusPlay);
+            return RequestStartGame (project, EStartType.AdventureBonusPlay, param);
         }
 
         public bool RequestPlayRecord(Project project, Record record)

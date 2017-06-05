@@ -34,8 +34,9 @@ namespace GameA
 	    public const string WinDataNameArrive = "终点";
 	    public const string WinDataNameTimeLimit = "时间";
 
-		public const string WinDataLifeFormat = "{0}";
-		public const string WinDataKeyCountFormat = "{0}";
+        public const string WinDataLifeFormat = "{0}";
+        public const string WinDataKeyCountFormat = "{0}";
+        public const string WinDataScoreFormat = "{0}";
 		public const string WinDataValueFormat = "{0}/{1}";
 	    public const string WinDataTimeShowFormat = "{0:D2}:{1:D2}";
 

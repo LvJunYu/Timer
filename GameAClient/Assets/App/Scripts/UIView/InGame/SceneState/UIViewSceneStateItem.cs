@@ -14,7 +14,6 @@ namespace GameA
 {
     public class UIViewSceneStateItem:UMViewBase
     {
-        public Text Name;
         public Text Dex;
 	    public GameObject EnableState;
 	    public GameObject DisableState;

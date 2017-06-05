@@ -1,4 +1,4 @@
-﻿﻿/********************************************************************
+﻿/********************************************************************
 ** Filename : SocialGUIManager
 ** Author : Dong
 ** Date : 2015/5/28 23:13:55
@@ -45,6 +45,7 @@ namespace GameA
         /// 录像全屏
         /// </summary>
         RecordFullScreen,
+        InGameBackgroud,
         InGameMainUI,
         InGamePopup,
         InGameTip,
