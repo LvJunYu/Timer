@@ -1371,7 +1371,7 @@ namespace GameA.Game
         {
         }
 
-        public virtual void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType, bool draw = true)
+        public virtual void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType, int maskRandom, bool draw = true)
         {
         }
 

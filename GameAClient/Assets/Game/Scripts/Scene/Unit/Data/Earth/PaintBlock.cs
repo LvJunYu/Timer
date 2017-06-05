@@ -143,7 +143,7 @@ namespace GameA.Game
             return y.ESkillType.CompareTo(x.ESkillType);
         }
 
-        public override void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType, bool draw = true)
+        public override void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType, int maskRandom, bool draw = true)
         {
             var center = (start + end) * 0.5f * ConstDefineGM2D.ClientTileScale;
             if (!GetPos(ref start, ref end, direction))
@@ -168,7 +168,7 @@ namespace GameA.Game
             }
             if (draw)
             {
-                UpdateTexture(ref edge, center);
+                UpdateTexture(ref edge, center, maskRandom);
             }
         }
 
@@ -250,73 +250,82 @@ namespace GameA.Game
             return end >= start + MinEdgeLength;
         }
 
-        private void UpdateTexture(ref Edge edge, float center)
+        private void UpdateTexture(ref Edge edge, float center, int maskRandom)
         {
             if (_paintObject == null)
             {
                 CreatePaintObject();
             }
-            int pixelX = 0, pixelY = 0, offsetX = 0, offsetY = 0, width = 0, height = 0;
-            Texture maskingTexture = null;
+            Texture maskingTexture;
+            if (!GameResourceManager.Instance.TryGetTextureByName(string.Format("Mask_{0}_{1}", (int)edge.Direction, maskRandom), out maskingTexture))
+            {
+                LogHelper.Error("TryGetSpriteByName Failed");
+                return;
+            }
+            int xmin = 0, ymin = 0, xmax = 0, ymax = 0, offsetX = 0, offsetY = 0;
             switch (edge.Direction)
             {
                 case EDirectionType.Up:
                     {
                         offsetX = (int) ((center - _trans.position.x) * PixelsPerUnit);
-                        pixelX = (int)((edge.Start - TileOffsetX - (_colliderGrid.XMin - 320)) * PixelsPerTile);
-                        pixelY = (int)((_colliderGrid.YMax - TileOffsetY - TileOffsetHeight - (_colliderGrid.YMin - 320)) * PixelsPerTile);
-                        width = (int)((edge.End + TileOffsetX - (edge.Start - TileOffsetX)) * PixelsPerTile);
-                        height = (int)((TileOffsetY + TileOffsetY + TileOffsetHeight) * PixelsPerTile);
+                        xmin = edge.Start - TileOffsetX;
+                        ymin = _colliderGrid.YMax - TileOffsetY - TileOffsetHeight;
+                        xmax = edge.End + TileOffsetX;
+                        ymax = _colliderGrid.YMax + TileOffsetX;
                     }
                     break;
                 case EDirectionType.Down:
                     {
                         offsetX = (int)((center - _trans.position.x) * PixelsPerUnit);
-                        pixelX = (int)((edge.Start - TileOffsetX - (_colliderGrid.XMin - 320)) * PixelsPerTile);
-                        pixelY = (int)((_colliderGrid.YMin - TileOffsetY - (_colliderGrid.YMin - 320)) * PixelsPerTile);
-                        width = (int)((edge.End + TileOffsetX - (edge.Start - TileOffsetX)) * PixelsPerTile);
-                        height = (int)((TileOffsetY + TileOffsetY + TileOffsetHeight) * PixelsPerTile);
+                        xmin = edge.Start - TileOffsetX;
+                        ymin = _colliderGrid.YMin - TileOffsetY;
+                        xmax = edge.End + TileOffsetX;
+                        ymax = _colliderGrid.YMin + TileOffsetX+ TileOffsetHeight;
                     }
                     break;
                 case EDirectionType.Left:
                     {
                         offsetY = (int)((center - _trans.position.y) * PixelsPerUnit);
-                        pixelX = (int)((_colliderGrid.XMin - TileOffsetX - (_colliderGrid.XMin - 320)) * PixelsPerTile);
-                        pixelY = (int)((edge.Start - TileOffsetY - (_colliderGrid.YMin - 320)) * PixelsPerTile);
-                        width = (int)((TileOffsetX + TileOffsetX + TileOffsetHeight) * PixelsPerTile);
-                        height = (int)((edge.End + TileOffsetY - (edge.Start - TileOffsetY)) * PixelsPerTile);
+                        xmin = _colliderGrid.XMin - TileOffsetX;
+                        ymin = edge.Start - TileOffsetY;
+                        xmax = _colliderGrid.XMin + TileOffsetX + TileOffsetHeight;
+                        ymax = edge.End + TileOffsetY;
                     }
                     break;
                 case EDirectionType.Right:
                     {
                         offsetY = (int)((center - _trans.position.y) * PixelsPerUnit);
-                        pixelX = (int)((_colliderGrid.XMax - TileOffsetX - TileOffsetHeight - (_colliderGrid.XMin - 320)) * PixelsPerTile);
-                        pixelY = (int)((edge.Start - TileOffsetY - (_colliderGrid.YMin - 320)) * PixelsPerTile);
-                        width = (int)((TileOffsetX + TileOffsetX + TileOffsetHeight) * PixelsPerTile);
-                        height = (int)((edge.End + TileOffsetY - (edge.Start - TileOffsetY)) * PixelsPerTile);
+                        xmin = _colliderGrid.XMax - TileOffsetX - TileOffsetHeight;
+                        ymin = edge.Start - TileOffsetY;
+                        xmax = _colliderGrid.XMax + TileOffsetX;
+                        ymax = edge.End + TileOffsetY;
                     }
                     break;
             }
-            if (!GameResourceManager.Instance.TryGetTextureByName(string.Format("Mask_{0}_{1}", (int)edge.Direction,UnityEngine.Random.Range(0,2)), out maskingTexture))
-            {
-                LogHelper.Error("TryGetSpriteByName Failed");
-                return;
-            }
-            if (maskingTexture == null)
-            {
-                return;
-            }
+
             if (edge.ESkillType == ESkillType.Water)
             {
                 edge.ESkillType++;
                 //return;
             }
-            pixelX = Mathf.Clamp(pixelX, 0, 255);
-            pixelY = Mathf.Clamp(pixelY, 0, 255);
-            var paintedColor = _paintTexture.GetPixels(pixelX, pixelY, width, height);
-            var maskedColor = _maskTexture.GetPixels(pixelX, pixelY, width, height);
-            Color[] maskingColor = ((Texture2D)maskingTexture).GetPixels(Mathf.Clamp(pixelX - offsetX, 0, 255), Mathf.Clamp(pixelY - offsetY, 0, 255), width, height);
-            var maskBaseColor = PlayMode.Instance.MaskBaseTexture.GetPixels(pixelX, pixelY, width, height);
+            xmin = (int) ((xmin - (_colliderGrid.XMin - 320))*PixelsPerTile);
+            ymin = (int) ((ymin - (_colliderGrid.YMin - 320))*PixelsPerTile);
+            xmax = (int) ((xmax - (_colliderGrid.XMin - 320))*PixelsPerTile);
+            ymax = (int) ((ymax - (_colliderGrid.YMin - 320))*PixelsPerTile);
+
+            var offsetXmin = Mathf.Clamp(xmin - offsetX, 0, 255);
+            var offsetYmin = Mathf.Clamp(ymin - offsetY, 0, 255);
+            var offsetXmax = Mathf.Clamp(xmax - offsetX, 0, 255);
+            var offsetYmax = Mathf.Clamp(ymax - offsetY, 0, 255);
+
+            var width = offsetXmax - offsetXmin;
+            var height = offsetYmax - offsetYmin;
+
+            var paintedColor = _paintTexture.GetPixels(xmin, ymin, width, height);
+            var maskedColor = _maskTexture.GetPixels(xmin, ymin, width, height);
+            var maskBaseColor = PlayMode.Instance.MaskBaseTexture.GetPixels(xmin, ymin, width, height);
+            var maskingColor = ((Texture2D)maskingTexture).GetPixels(offsetXmin, offsetYmin, width, height);
+
             for (int i = 0; i < paintedColor.Length; i++)
             {
                 if (maskBaseColor[i].a == 0f)
@@ -337,8 +346,12 @@ namespace GameA.Game
                 {
                     paintedColor[i] = EdgeColor;
                 }
-                else
+                else 
                 {
+                    if (maskingColor[i].a == 0f)
+                    {
+                        continue;
+                    }
                     if (maskBaseColor[i].r == 1f)
                     {
                         paintedColor[i] = PaintUpColor[(int)edge.ESkillType];
@@ -357,11 +370,11 @@ namespace GameA.Game
                     }
                 }
             }
-            _paintTexture.SetPixels(pixelX, pixelY, width, height, paintedColor);
+            _paintTexture.SetPixels(xmin, ymin, width, height, paintedColor);
             _paintTexture.Apply();
-            _maskTexture.SetPixels(pixelX, pixelY, width, height, maskedColor);
+            _maskTexture.SetPixels(xmin, ymin, width, height, maskedColor);
             _maskTexture.Apply();
-            LogHelper.Debug("{0} | {1} | {2} | {3} | {4}", pixelX, pixelY, width, height, offsetX);
+            LogHelper.Debug("{0} | {1} | {2} | {3} | {4}", xmin, ymin, width, height, offsetX);
         }
 
         private void CreatePaintObject()

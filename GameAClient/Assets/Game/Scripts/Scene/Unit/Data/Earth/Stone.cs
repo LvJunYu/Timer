@@ -13,7 +13,7 @@ namespace GameA.Game
     [Unit(Id = 4007, Type = typeof(Stone))]
     public class Stone : PaintBlock
     {
-        public override void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType, bool draw = true)
+        public override void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType, int maskRandom, bool draw = true)
         {
             if (!_isAlive)
             {
