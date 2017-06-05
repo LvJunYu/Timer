@@ -201,6 +201,7 @@ namespace GameA.Game
 				return false;
 			}
 			ExposedList<Slot> slots = _skeleton.slots;
+            if(slotsNameIdxList!=null)
 			for (int i = 0, n = slotsNameIdxList.Length; i < n; i++) {
 				int slotIdx;
 				if (!_slotName2Index.TryGetValue (slotsNameIdxList[i], out slotIdx)) {

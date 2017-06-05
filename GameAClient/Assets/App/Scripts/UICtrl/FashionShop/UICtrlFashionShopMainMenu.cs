@@ -211,6 +211,9 @@ namespace GameA
             }
             return rst;
         }
+        /// <summary>
+        /// 如果正在选的不为空 并且 部位正在穿着的时装 并且 已经拥有 就穿上
+        /// </summary>
 
 	    private void OnCloseChangeFashion()
 	    {
@@ -289,6 +292,7 @@ namespace GameA
             long partID,
             Action successCallback, Action failedCallback)
         {
+            Debug.Log("______类型_______" + type + "______newId_______" + partID);
             RemoteCommands.ChangeAvatarPart(type, partID, (ret) =>
             {
                 if (ret.ResultCode == (int)EChangeAvatarPartCode.CAPC_Success)
@@ -330,7 +334,7 @@ namespace GameA
         protected override void OnClose()
         {
             base.OnClose();
-            SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().ShowAllUsingAvatar();
+            
             OnCloseChangeFashion();
             //OnRestoreFashionBtnClick();
             RefreshFashionShopPanel();
@@ -462,7 +466,8 @@ namespace GameA
             
             LocalUser.Instance.UsingAvatarData.Request(LocalUser.Instance.UserGuid, () =>
             {
-               //eshUsingAvatarPreview();
+                SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().ShowAllUsingAvatar();
+                //eshUsingAvatarPreview();
             }, code =>
             {
                 LogHelper.Error("Network error when get UsingAvatarData, {0}", code);
@@ -588,10 +593,10 @@ namespace GameA
         private void OnRestoreFashionBtnClick()
         {
             SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().ShowAllUsingAvatar();
-            SelectHead = null;
-            SelectUpper = null;
-            SelectLower = null;
-            SelectAppendage = null;
+            //SelectHead = null;
+            //SelectUpper = null;
+            //SelectLower = null;
+            //SelectAppendage = null;
         }
 
         public void InitPageData()
