@@ -395,7 +395,7 @@ namespace GameA.Game
             _paintTexture.Apply();
             _maskTexture.SetPixels(xmin, ymin, width, height, maskedColor);
             _maskTexture.Apply();
-            LogHelper.Debug("{0} | {1} | {2} | {3} | {4}", xmin, ymin, width, height, offsetX);
+            //LogHelper.Debug("{0} | {1} | {2} | {3} | {4}", xmin, ymin, width, height, offsetX);
         }
 
         private void CreatePaintObject()

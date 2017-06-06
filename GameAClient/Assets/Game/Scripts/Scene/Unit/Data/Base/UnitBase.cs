@@ -493,6 +493,7 @@ namespace GameA.Game
 
         internal bool Init(Table_Unit tableUnit, UnitDesc unitDesc, SceneNode dynamicCollider)
         {
+            _isDisposed = false;
             _tableUnit = tableUnit;
             _unitDesc = unitDesc;
             _friction = 6;

@@ -49,19 +49,6 @@ namespace GameA.Game
         [SerializeField]
         protected UnityNativeParticleItem _invincibleEfffect;
 
-		/// <summary>
-		/// 射击光点特效
-		/// </summary>
-		protected UnityNativeParticleItem _shooterEffect;
-		[SerializeField]
-		/// <summary>
-		/// 射击光点和主角脚下中心点的偏移
-		/// </summary>
-		protected IntVec2 _shooterEffectOffset = new IntVec2 (300,450);
-		/// <summary>
-		/// 射击光点的实际位置
-		/// </summary>
-		protected IntVec2 _shooterEffectPos;
         /// <summary>
         /// 跑步声音间隔
         /// </summary>
@@ -138,7 +125,7 @@ namespace GameA.Game
 
         public override IntVec2 FirePos
         {
-            get { return _shooterEffectPos; }
+            get { return _gun.CurPos; }
         }
 
         public IntVec2 CameraFollowPos
@@ -164,6 +151,8 @@ namespace GameA.Game
             }
         }
 
+        protected Gun _gun;
+
         protected override bool OnInit()
         {
             LogHelper.Debug("MainUnit OnInit");
@@ -174,15 +163,8 @@ namespace GameA.Game
             _mainInput = new MainInput(this);
             _skillMgr1 = new SkillManager(this);
             _skillMgr1.ChangeSkill<SkillWater>();
-
             _skillMgr2 = new SkillManager(this);
 
-            IntVec2 offset = _shooterEffectOffset;
-            if (_curMoveDirection == EMoveDirection.Right)
-            {
-                offset.x = -offset.x;
-            }
-            _shooterEffectPos = CenterPos + offset;
             return true;
         }
 
@@ -198,10 +180,6 @@ namespace GameA.Game
 				return false;
 			}
             _brakeEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem(ParticleNameConstDefineGM2D.Brake, _trans);
-            //初始化ShooterEffect
-            _shooterEffect = GameParticleManager.Instance.GetUnityNativeParticleItem(ParticleNameConstDefineGM2D.Shooter, _trans);
-			_shooterEffect.Play ();
-            _shooterEffect.Trans.position = GM2DTools.TileToWorld(_shooterEffectPos, _trans.position.z);
             return true;
         }
 
@@ -258,14 +236,16 @@ namespace GameA.Game
                 _portalEffect.Destroy();
                 _portalEffect = null;
             }
-            FreeEffect(_shooterEffect);
-            _shooterEffect = null;
         }
 
         internal override void OnPlay()
         {
             base.OnPlay();
             Debug.Log ("MainUnit.OnPlay");
+            if (_gun == null)
+            {
+                _gun = PlayMode.Instance.CreateRuntimeUnit(10000, _curPos) as Gun;
+            }
             _flashTime = 100;
             _revivePos = _curPos;
             _revivePosStack.Clear();
@@ -556,7 +536,7 @@ namespace GameA.Game
                 _portalEffect.Update();
             }
 
-			UpdateShooterPoint ();
+            //UpdateShooterPoint ();
 
             Vector3 euler = _trans.eulerAngles;
             euler.y = _curMoveDirection == EMoveDirection.Right ? 0 : 180;
@@ -1032,38 +1012,6 @@ namespace GameA.Game
             if (_isAlive)
             {
                 _mainInput.UpdateRenderer();
-            }
-        }
-
-        private void UpdateShooterPoint()
-        {
-            if (_shooterEffect != null && _shooterEffect.IsPlaying)
-            {
-                IntVec2 offset = _shooterEffectOffset;
-                if (_curMoveDirection == EMoveDirection.Right)
-                {
-                    offset.x = -offset.x;
-                }
-                IntVec2 destPos = CenterPos + offset;
-                if (_shooterEffectPos.x != destPos.x)
-                {
-                    int deltaX = (destPos.x - _shooterEffectPos.x) / 6;
-                    if (deltaX == 0)
-                    {
-                        deltaX = destPos.x > _shooterEffectPos.x ? 1 : -1;
-                    }
-                    _shooterEffectPos.x = _shooterEffectPos.x + deltaX;
-                }
-                if (_shooterEffectPos.y != destPos.y)
-                {
-                    int deltaY = (destPos.y - _shooterEffectPos.y) / 6;
-                    if (deltaY == 0)
-                    {
-                        deltaY = destPos.y > _shooterEffectPos.y ? 1 : -1;
-                    }
-                    _shooterEffectPos.y = _shooterEffectPos.y + deltaY;
-                }
-                _shooterEffect.Trans.position = GM2DTools.TileToWorld(_shooterEffectPos, _trans.position.z);
             }
         }
 
