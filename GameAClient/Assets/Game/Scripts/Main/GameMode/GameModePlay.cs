@@ -79,7 +79,7 @@ namespace GameA.Game
         protected virtual void InitUI()
 		{
 			SocialGUIManager.Instance.OpenUI<UICtrlEdit>().ChangeToPlayMode();
-			SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
+//			SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
 			SocialGUIManager.Instance.CloseUI<UICtrlScreenOperator>();
 			SocialGUIManager.Instance.OpenUI<UICtrlSceneState>();
 			InputManager.Instance.ShowGameInput();

@@ -290,7 +290,7 @@ namespace GameA.Game
 			}
 
 
-			SocialGUIManager.Instance.CloseUI<UICtrlItem>();
+//			SocialGUIManager.Instance.CloseUI<UICtrlItem>();
 			if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
 			{
 				//GM2DGUIManager.Instance.OpenUI<UICtrlCreate>();

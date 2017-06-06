@@ -38,7 +38,7 @@ namespace GameA
             _cachedView.CurSelectItemButton.onClick.AddListener(OnClickCurSelectItem);
 			_dragController = UIDragMapItemController.AddEventListenerTo(_cachedView.CurSelectItemButton.gameObject);
 				
-			Messenger<ushort>.AddListener(EMessengerType.OnSelectedItemChanged, OnSelectItemChanged);
+//			Messenger<ushort>.AddListener(EMessengerType.OnSelectedItemChanged, OnSelectItemChanged);
 		}
 
 	    protected override void InitEventListener()
@@ -52,7 +52,7 @@ namespace GameA
             base.OnDestroy();
             _cachedView.Create.onClick.RemoveListener(OnCreate);
             _cachedView.CurSelectItemButton.onClick.RemoveListener(OnClickCurSelectItem);
-            Messenger<ushort>.RemoveListener(EMessengerType.OnSelectedItemChanged, OnSelectItemChanged);
+//            Messenger<ushort>.RemoveListener(EMessengerType.OnSelectedItemChanged, OnSelectItemChanged);
 		}
 
 		private void OnCreate()
@@ -81,8 +81,8 @@ namespace GameA
 
         private void OnEditorLayerChanged()
 	    {
-		    _curSelectId = 0;
-		    UpdateCurSelectItemShow();
+//		    _curSelectId = 0;
+//		    UpdateCurSelectItemShow();
 	    }
 
 

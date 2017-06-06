@@ -16,14 +16,18 @@ namespace GameA
     public class UMCtrlItem : UMCtrlBase<UMViewItem>, IPoolableObject
     {
         private ushort _id;
+        private bool _selected;
 
         public void OnGet()
         {
+            Messenger<ushort>.AddListener (EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
         }
 
         public void OnFree()
         {
             _cachedView.Trans.SetParent(SocialGUIManager.Instance.UIRoot.Trans, false);
+            _cachedView.Trans.localPosition = Vector3.one * 65535;
+            Messenger<ushort>.RemoveListener (EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
         }
 
         protected override void OnViewCreated()
@@ -52,23 +56,26 @@ namespace GameA
             //    LogHelper.Warning("Can Not Lay.{0}",_id);
             //    return;
             //}
-            SocialGUIManager.Instance.CloseUI<UICtrlItem>();
-            Messenger<ushort>.Broadcast(EMessengerType.OnSelectedItemChanged, (ushort)PairUnitManager.Instance.GetCurrentId(_id));
+//            SocialGUIManager.Instance.CloseUI<UICtrlItem>();
+            if (!_selected) {
+                Messenger<ushort>.Broadcast (EMessengerType.OnSelectedItemChanged, (ushort)PairUnitManager.Instance.GetCurrentId (_id));
+            }
         }
 
-        internal void Set(Table_Unit tableUnit)
+        internal void Set(Table_Unit tableUnit, bool selected)
         {
             _id = (ushort) tableUnit.Id;
+            _selected = selected;
             if (!_isViewCreated)
             {
                 return;
             }
             _cachedView.SpriteIcon.sprite = null;
-            DictionaryTools.SetContentText(_cachedView.Name, tableUnit.Name);
+//            DictionaryTools.SetContentText(_cachedView.Name, tableUnit.Name);
             //DictionaryTools.SetContentText(_cachedView.Summary, tableUnit.Summary);
             //DictionaryTools.SetContentText(_cachedView.Count, "1 / 1");
             _cachedView.SpriteIcon.SetActiveEx(true);
-            _cachedView.TextureIcon.SetActiveEx(false);
+//            _cachedView.TextureIcon.SetActiveEx(false);
             Sprite texture;
             if (GameResourceManager.Instance.TryGetSpriteByName(tableUnit.Icon, out texture))
             {
@@ -79,6 +86,26 @@ namespace GameA
                 LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", tableUnit.Id,
                     tableUnit.Icon, tableUnit.EGeneratedType);
             }
+            if (_selected) {
+                _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up * 10;
+                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one * 1.1f;
+            } else {
+                _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.zero;
+                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one;
+            }
 		}
+
+        private void OnSelectedItemChanged (ushort id)
+        {
+            if (id == _id) {
+                _selected = true;
+                _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up * 10;
+                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one * 1.1f;
+            } else {
+                _selected = false;
+                _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.zero;
+                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one;
+            }
+        }
     }
 }
