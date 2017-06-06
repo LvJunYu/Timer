@@ -159,31 +159,6 @@ namespace GameA
 //            }
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.GameWideCover, project.IconPath, _cachedView.DefaultCoverTexture);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.GameWideAuthorIcon, project.UserLegacy.HeadImgUrl, _cachedView.DefaultUserTexture);
-
-            if(project.RecentPlayedUserList == null || project.RecentPlayedUserList.Count == 0)
-            {
-                for(var i=0; i<_recentCompleteUserList.Count; i++)
-                {
-                    _recentCompleteUserList[i].Hide();
-                }
-                _cachedView.GameWideRecentCompleteUserTip.gameObject.SetActive(true);
-            }
-            else
-            {
-                _cachedView.GameWideRecentCompleteUserTip.gameObject.SetActive(false);
-                for(var i=0; i<_recentCompleteUserList.Count; i++)
-                {
-                    if(i<project.RecentPlayedUserList.Count)
-                    {
-                        _recentCompleteUserList[i].Show();
-                        _recentCompleteUserList[i].Set(project.RecentPlayedUserList[i].User);
-                    }
-                    else
-                    {
-                        _recentCompleteUserList[i].Hide();
-                    }
-                }
-            }
         }
 
 

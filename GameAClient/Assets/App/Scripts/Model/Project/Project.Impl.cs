@@ -21,7 +21,6 @@ namespace GameA
 
         private long _guid;
         private User _user;
-        private int _resourceVersion;
         private int _downloadPrice;
 
         private bool _extendReady = false;
@@ -38,21 +37,10 @@ namespace GameA
         private byte[] _deadPos;
         private long _commitToken;
 
-//        private List<ProjectComment> _projectCommentList;
-        private GameTimer _projectCommentListRequestTimer;
-
-        private bool _userLike;
+        private EProjectLikeState _userLike;
         private bool _userFavorite;
         private int _userCompleteCount;
         private long _userLastPlayTime;
-
-        private List<PlayedProjectUser> _recentPlayedUserList;
-
-        private List<RecordRankHolder> _projectPlayRecordList;
-        private GameTimer _projectPlayRecordListRequestTimer;
-
-        private List<Record> _projectRecentRecordList;
-        private GameTimer _projectRecentRecordListRequestTimer;
 
         private GameTimer _projectInfoRequestTimer;
 
@@ -249,20 +237,7 @@ namespace GameA
             set { _extendReady = value; }
         }
 
-        public List<PlayedProjectUser> RecentPlayedUserList
-        {
-            get
-            {
-                return _recentPlayedUserList;
-            }
-
-            set
-            {
-                _recentPlayedUserList = value;
-            }
-        }
-
-        public bool UserLike
+        public EProjectLikeState UserLike
         {
             get
             {
@@ -292,18 +267,7 @@ namespace GameA
             get { return _userLastPlayTime; }
         }
 
-        public GameTimer ProjectCommentListRequestTimer
-        {
-            get
-            {
-                if (_projectCommentListRequestTimer == null)
-                {
-                    _projectCommentListRequestTimer = new GameTimer();
-                    _projectCommentListRequestTimer.Zero();
-                }
-                return _projectCommentListRequestTimer;
-            }
-        }
+
 
         public GameTimer ProjectIntoRequestTimer
         {
@@ -318,47 +282,6 @@ namespace GameA
             }
         }
 
-        public List<RecordRankHolder> ProjectPlayRecordList
-        {
-            get
-            {
-                return _projectPlayRecordList;
-            }
-        }
-
-        public GameTimer ProjectPlayRecordListRequestTimer
-        {
-            get
-            {
-                if (_projectPlayRecordListRequestTimer == null)
-                {
-                    _projectPlayRecordListRequestTimer = new GameTimer();
-                    _projectPlayRecordListRequestTimer.Zero();
-                }
-                return _projectPlayRecordListRequestTimer;
-            }
-        }
-
-        public List<Record> ProjectRecentRecordList
-        {
-            get
-            {
-                return _projectRecentRecordList;
-            }
-        }
-
-        public GameTimer ProjectRecentRecordListRequestTimer
-        {
-            get
-            {
-                if (_projectRecentRecordListRequestTimer == null)
-                {
-                    _projectRecentRecordListRequestTimer = new GameTimer();
-                    _projectRecentRecordListRequestTimer.Zero();
-                }
-                return _projectRecentRecordListRequestTimer;
-            }
-        }
 
         public int SectionId {
             get {
@@ -574,89 +497,48 @@ namespace GameA
         }
 
 
-//        public void Publish(string name, string summary, byte[] dataBytes, byte[] iconBytes,
-//                         float recordUsedTime, byte[] recordBytes, 
-//                            Action onSuccess, Action<EProjectOperateResult> onError)
-//        {
-//            if (ProjectStatus == EProjectStatus.PS_Public)
-//            {
-//                return;
-//            }
-//            bool isCreate = false;
-//            if (LocalDataState == ELocalDataState.LDS_UnCreated)
-//            {
-//                isCreate = true;
-//            }
-//            if (string.IsNullOrEmpty(name))
-//            {
-//                name = string.Format("我的匠游大作");
-//            }
-//            Name = name;
-//            Summary = summary;
-//
-//            WWWForm form = new WWWForm();
-//            form.AddBinaryData("levelFile", dataBytes);
-//            form.AddBinaryData("iconFile", iconBytes);
-//            if (recordBytes != null)
-//            {
-//                form.AddBinaryData("recordFile", recordBytes);
-//            }
-//
-//            Msg_CS_CMD_PublishProject publishProject = new Msg_CS_CMD_PublishProject();
-//            publishProject.Name = Name;
-//            publishProject.Summary = Summary;
-//            publishProject.RecordUsedTime = recordUsedTime;
-//
-//            publishProject.ProgramVersion = ProgramVersion;
-//            publishProject.ResourceVersion = ResourcesVersion;
-//            if (!isCreate)
-//            {
-//                publishProject.PersonalProjectId = _projectId;
-//            }
-////            User user = LocalUser.Instance.UserLegacy;
-//			var user = LocalUser.Instance.User;
-//            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PublishProject>(SoyHttpApiPath.PublishProject, publishProject, ret => {
-//                if (ret.ResultCode == (int)EProjectOperateResult.POR_Success)
-//                {
-//                    if (isCreate)
-//                    {
-//                        user.OnProjectCreated(ret.ProjectData, this);
-//                        LocalCacheManager.Instance.Save(dataBytes, LocalCacheManager.EType.File, ResPath);
-//                        ImageResourceManager.Instance.SaveOrUpdateImageData(IconPath, iconBytes);
-//                    }
-//                    else
-//                    {
-//                        DeleteResCache();
-//                        _syncIgnoreMe = true;
-//                        ProjectManager.Instance.OnSyncProject(ret.ProjectData, true);
-//                        _syncIgnoreMe = false;
-//                        OnSyncFromParent(ret.ProjectData);
-//                    }
-//                    user.GetPublishedPrjectRequestTimer().Zero();
-//                    user.GetSavedPrjectRequestTimer().Zero();
-////                    Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
-//                    if (onSuccess != null)
-//                    {
-//                        onSuccess.Invoke();
-//                    }
-//                }
-//                else
-//                {
-//                    LogHelper.Error("level upload error, code: {0}", ret.ResultCode);
-//                    if (onError != null)
-//                    {
-//                        onError.Invoke((EProjectOperateResult)ret.ResultCode);
-//                    }
-//                }
-//            }, (intCode, str) =>
-//            {
-//                SoyHttpClient.ShowErrorTip(intCode);
-//                if (onError != null)
-//                {
-//                    onError.Invoke(EProjectOperateResult.POR_None);
-//                }
-//            }, form);
-//        }
+        public void Publish(Action onSuccess, Action<EProjectOperateResult> onError)
+        {
+            var user = LocalUser.Instance.User;
+            RemoteCommands.PublishWorldProject(
+                _projectId,
+                _name,
+                _summary,
+                _programVersion,
+                _resourcesVersion,
+                _recordUsedTime,
+                _timeLimit,
+                _winCondition,
+                ret =>
+                {
+                    if (ret.ResultCode == (int)EProjectOperateResult.POR_Success)
+                    {
+                        user.GetPublishedPrjectRequestTimer().Zero();
+                        user.GetSavedPrjectRequestTimer().Zero();
+                        //                    Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
+                        if (onSuccess != null)
+                        {
+                            onSuccess.Invoke();
+                        }
+                    }
+                else
+                {
+                    LogHelper.Error("level upload error, code: {0}", ret.ResultCode);
+                    if (onError != null)
+                    {
+                        onError.Invoke((EProjectOperateResult)ret.ResultCode);
+                    }
+                }
+                },
+                code =>
+                {
+                    SoyHttpClient.ShowErrorTip(code);
+                    if (onError != null)
+                    {
+                        onError.Invoke(EProjectOperateResult.POR_None);
+                    }
+                });
+        }
 
 
         public void PrepareRes(Action successCallback, Action failedCallback = null)
@@ -733,9 +615,9 @@ namespace GameA
                 });
         }
 
-        public void UpdateLike(bool likeFlag, Action<bool> callback = null)
+        public void UpdateLike(EProjectLikeState likeState, Action<bool> callback = null)
         {
-            if (_userLike == likeFlag)
+            if (_projectUserData.LikeState == likeState)
             {
                 if (callback != null)
                 {
@@ -743,44 +625,28 @@ namespace GameA
                 }
                 return;
             }
-//            Msg_CS_CMD_UpdateProjectLike msg = new Msg_CS_CMD_UpdateProjectLike();
-//            msg.ProjectGuid = _guid;
-//            msg.LikeFlag = likeFlag;
-//            NetworkManager.AppHttpClient.SendWithCb<Msg_AC_OperateProjectRet>(SoyHttpApiPath.LikeProject, msg, ret =>
-//                {
-//                    Project p;
-//                    if (ret.Result != (int)EProjectOperateResult.POR_Success)
-//                    {
-//                        if (ret.ProjectData != null)
-//                        {
-//                            p = ProjectManager.Instance.OnSyncProject(ret.ProjectData);
-//                            if (p != this)
-//                            {
-//                                OnSyncProject(ret.ProjectData);
-//                            }
-//                        }
-//                        if (callback != null)
-//                        {
-//                            callback.Invoke(false);
-//                        }
-//                        return;
-//                    }
-//                    p = ProjectManager.Instance.OnSyncProject(ret.ProjectData);
-//                    if (p != this)
-//                    {
-//                        OnSyncProject(ret.ProjectData);
-//                    }
-//                    if (callback != null)
-//                    {
-//                        callback.Invoke(true);
-//                    }
-//                }, (code, msgStr) =>
-//                {
-//                    if (callback != null)
-//                    {
-//                        callback.Invoke(false);
-//                    }
-//                });
+            RemoteCommands.UpdateWorldProjectLike(_projectId, likeState, ret =>
+                {
+                    if (ret.ResultCode != (int)EUpdateWorldProjectLikeCode.UWPLC_Success)
+                    {
+                        if (callback != null)
+                        {
+                            callback.Invoke(false);
+                        }
+                        return;
+                    }
+                    _userLike = likeState;
+                    if (callback != null)
+                    {
+                        callback.Invoke(true);
+                    }
+                }, code =>
+                {
+                    if (callback != null)
+                    {
+                        callback.Invoke(false);
+                    }
+                });
         }
 
         public void AddShareCount(Action<bool> callback = null)
@@ -817,111 +683,38 @@ namespace GameA
 
         public void UpdateFavorite(bool favorite, Action<bool> callback = null)
         {
-//            if (_userFavorite == favorite)
-//            {
-//                if (callback != null)
-//                {
-//                    callback.Invoke(false);
-//                }
-//                return;
-//            }
-//            Msg_CS_CMD_UpdateProjectFavorite msg = new Msg_CS_CMD_UpdateProjectFavorite();
-//            msg.ProjectGuid = _guid;
-//            msg.Favorite = favorite;
-//            NetworkManager.AppHttpClient.SendWithCb<Msg_AC_OperateProjectRet>(SoyHttpApiPath.UpdateProjectFavorite, msg, ret =>
-//                {
-//                    Project p;
-//                    if (ret.Result != (int)EProjectOperateResult.POR_Success)
-//                    {
-//                        if (ret.ProjectData != null)
-//                        {
-//                            p = ProjectManager.Instance.OnSyncProject(ret.ProjectData);
-//                            if (p != this)
-//                            {
-//                                OnSyncProject(ret.ProjectData);
-//                            }
-//                        }
-//                        if (callback != null)
-//                        {
-//                            callback.Invoke(false);
-//                        }
-//                        return;
-//                    }
-//                    p = ProjectManager.Instance.OnSyncProject(ret.ProjectData);
-//                    if (p != this)
-//                    {
-//                        OnSyncProject(ret.ProjectData);
-//                    }
-//                    if (callback != null)
-//                    {
-//                        callback.Invoke(true);
-//                    }
-//                }, (code, msgStr) =>
-//                {
-//                    if (callback != null)
-//                    {
-//                        callback.Invoke(false);
-//                    }
-//                });
+            if (_userFavorite == favorite)
+            {
+                if (callback != null)
+                {
+                    callback.Invoke(false);
+                }
+                return;
+            }
+            RemoteCommands.UpdateWorldProjectFavorite(_projectId, favorite, ret =>
+                {
+                    Project p;
+                    if (ret.ResultCode != (int)EUpdateWorldProjectFavoriteCode.UWPFC_Success)
+                    {
+                        if (callback != null)
+                        {
+                            callback.Invoke(false);
+                        }
+                        return;
+                    }
+                    _userFavorite = favorite;
+                    if (callback != null)
+                    {
+                        callback.Invoke(true);
+                    }
+                }, code =>
+                {
+                    if (callback != null)
+                    {
+                        callback.Invoke(false);
+                    }
+                });
         }
-
-//        public void SendComment(string comment, Action<bool> callback, User replyUser = null)
-//        {
-//            if (!_isValid)
-//            {
-//                if (callback != null)
-//                {
-//                    callback.Invoke(false);
-//                }
-//                return;
-//            }
-//            if (string.IsNullOrEmpty(comment) || comment.Length > SoyConstDefine.MaxProjectCommentLength)
-//            {
-//                if (callback != null)
-//                {
-//                    callback.Invoke(false);
-//                }
-//                return;
-//            }
-//            Msg_CA_PostProjectComment msg = new Msg_CA_PostProjectComment();
-//            msg.ProjectGuid = _guid;
-//            msg.Comment = comment;
-//            if (replyUser != null)
-//            {
-//                msg.TargetUserGuid = replyUser.UserGuid;
-//            }
-//            NetworkManager.AppHttpClient.SendWithCb<Msg_AC_PostProjectComment>(SoyHttpApiPath.CommentProject, msg, ret =>
-//            {
-//                if (ret.ResultCode == ECommonResultCode.CRC_Error)
-//                {
-//                    if (callback != null)
-//                    {
-//                        callback.Invoke(false);
-//                    }
-//                    return;
-//                }
-//                _projectCommentListRequestTimer.Zero();
-//                if (_projectCommentList == null)
-//                {
-//                    _projectCommentList = new List<ProjectComment>();
-//                    LogHelper.Warning("SendComment warning, commentList not init");
-//                }
-//                _projectCommentList.Add(new ProjectComment(ret.ProjectComment));
-//                _projectCommentList.Sort((pc1, pc2) => -pc1.CreateTime.CompareTo(pc2.CreateTime));
-//                Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
-//                if (callback != null)
-//                {
-//                    callback.Invoke(true);
-//                }
-//            }, (code, msgStr) =>
-//            {
-//
-//                if (callback != null)
-//                {
-//                    callback.Invoke(false);
-//                }
-//            });
-//        }
 
 		protected override void OnSyncPartial ()
 		{
@@ -961,74 +754,18 @@ namespace GameA
 //            }
         }
 
-//        public void OnSyncRecentPlayedUserDataList(Msg_AC_ProjectRecentPlayedUserList msg)
-//        {
-//            if (_recentPlayedUserList == null)
-//            {
-//                _recentPlayedUserList = new List<PlayedProjectUser>();
-//                if (msg.Result == ECachedDataState.CDS_None
-//                   || msg.Result == ECachedDataState.CDS_Uptodate)
-//                {
-//                    MessengerAsync.Broadcast(EMessengerType.OnProjectRecentPlayedChanged);
-//                }
-//            }
-//            if (msg.Result == ECachedDataState.CDS_None
-//                || msg.Result == ECachedDataState.CDS_Uptodate)
-//            {
-//                return;
-//            }
-//            if (msg.Result == ECachedDataState.CDS_Recreate)
-//            {
-//                _recentPlayedUserList.Clear();
-//            }
-//            msg.DataList.ForEach(msgItem =>
-//                                 _recentPlayedUserList.Add(new PlayedProjectUser(msgItem)));
-//            _recentPlayedUserList.Sort((p1, p2) =>
-//                                       -p1.LastPlayTime.CompareTo(p2.LastPlayTime));
-//            MessengerAsync.Broadcast(EMessengerType.OnProjectRecentPlayedChanged);
-//        }
-
-//        public void OnSyncProjectCommentList(Msg_AC_ProjectCommentList msg)
-//        {
-//            if (_projectCommentList == null)
-//            {
-//                _projectCommentList = new List<ProjectComment>();
-//                if (msg.Result == ECachedDataState.CDS_None
-//                   || msg.Result == ECachedDataState.CDS_Uptodate)
-//                {
-//                    MessengerAsync.Broadcast(EMessengerType.OnProjectCommentChanged);
-//                }
-//            }
-//            _totalCommentCount = msg.TotalCount;
-//            if (msg.Result == ECachedDataState.CDS_None
-//                || msg.Result == ECachedDataState.CDS_Uptodate)
-//            {
-//                return;
-//            }
-//            if (msg.Result == ECachedDataState.CDS_Recreate)
-//            {
-//                _projectCommentList.Clear();
-//            }
-//            msg.DataList.ForEach(msgItem =>
-//                _projectCommentList.Add(new ProjectComment(msgItem)));
-//            _projectCommentList.Sort((p1, p2) =>
-//                                     -p1.CreateTime.CompareTo(p2.CreateTime));
-//            MessengerAsync.Broadcast(EMessengerType.OnProjectCommentChanged);
-//        }
 
 		public void OnSyncProjectUserData(ProjectUserData msg)
         {
-//            _userRate = (byte)msg.Rate;
             _userFavorite = msg.Favorite;
             _userLastPlayTime = msg.LastPlayTime;
             _userCompleteCount = msg.CompleteCount;
-//            _userLike = msg.LikeFlag;
+            _userLike = msg.LikeState;
         }
 
         public void ClearProjectUserData()
         {
-            _userLike = false;
-//            _userRate = 0;
+            _userLike = EProjectLikeState.PLS_None;
             _userFavorite = false;
             _userLastPlayTime = 0;
             _userCompleteCount = 0;
@@ -1117,59 +854,6 @@ namespace GameA
 //            });
         }
 
-
-//        public void OnSyncProjectPlayRecordList(Msg_AC_ProjectPlayRecordList msg)
-//        {
-//            if (_projectPlayRecordList == null)
-//            {
-//                _projectPlayRecordList = new List<RecordRankHolder>();
-//                if (msg.Result == ECachedDataState.CDS_None
-//                   || msg.Result == ECachedDataState.CDS_Uptodate)
-//                {
-//                    MessengerAsync.Broadcast(EMessengerType.OnProjectPlayRecordChanged);
-//                }
-//            }
-//            if (msg.Result == ECachedDataState.CDS_None
-//                || msg.Result == ECachedDataState.CDS_Uptodate)
-//            {
-//                return;
-//            }
-//            if (msg.Result == ECachedDataState.CDS_Recreate)
-//            {
-//                _projectPlayRecordList.Clear();
-//            }
-//            int rank = 0;
-//            msg.DataList.ForEach(msgItem =>
-//                                 _projectPlayRecordList.Add(new RecordRankHolder(msgItem, this, rank++)));
-//            MessengerAsync.Broadcast(EMessengerType.OnProjectPlayRecordChanged);
-//        }
-
-//        public void OnSyncProjectRecentRecordList(Msg_AC_ProjectPlayRecordList msg)
-//        {
-//            if (_projectRecentRecordList == null)
-//            {
-//                _projectRecentRecordList = new List<Record>();
-//                if (msg.Result == ECachedDataState.CDS_None
-//                   || msg.Result == ECachedDataState.CDS_Uptodate)
-//                {
-//                    //MessengerAsync.Broadcast(EMessengerType.OnProjectPlayRecordChanged);
-//                }
-//            }
-//            if (msg.Result == ECachedDataState.CDS_None
-//                || msg.Result == ECachedDataState.CDS_Uptodate)
-//            {
-//                return;
-//            }
-//            if (msg.Result == ECachedDataState.CDS_Recreate)
-//            {
-//                _projectRecentRecordList.Clear();
-//            }
-//            msg.DataList.ForEach(msgItem =>
-//                                 _projectRecentRecordList.Add(new Record(msgItem, this, false)));
-//            //MessengerAsync.Broadcast(EMessengerType.OnProjectPlayRecordChanged);
-//        }
-
-
         public static Project CreateWorkShopProject()
         {
             Project p = new Project();
@@ -1209,90 +893,6 @@ namespace GameA
         #endregion 枚举
 
         #region 内部类
-        public class CompleteProjectUser
-        {
-            private User _user;
-            private long _completeTime;
-            public User User
-            {
-                get
-                {
-                    return _user;
-                }
-
-                set
-                {
-                    _user = value;
-                }
-            }
-
-            public long CompleteTime
-            {
-                get
-                {
-                    return _completeTime;
-                }
-
-                set
-                {
-                    _completeTime = value;
-                }
-            }
-
-//            public CompleteProjectUser(Msg_CompleteProjectUserData msg)
-//            {
-//                Set(msg);
-//            }
-//
-//            public void Set(Msg_CompleteProjectUserData msg)
-//            {
-//                _user = UserManager.Instance.OnSyncUserData(msg.UserData);
-//                _completeTime = msg.CompleteTime;
-//            }
-        }
-
-        public class PlayedProjectUser
-        {
-            private User _user;
-            private long _lastPlayTime;
-            public User User
-            {
-                get
-                {
-                    return _user;
-                }
-
-                set
-                {
-                    _user = value;
-                }
-            }
-
-            public long LastPlayTime
-            {
-                get
-                {
-                    return _lastPlayTime;
-                }
-
-                set
-                {
-                    _lastPlayTime = value;
-                }
-            }
-
-//            public PlayedProjectUser(Msg_ProjectRecentPlayedUserData msg)
-//            {
-//                Set(msg);
-//            }
-
-//            public void Set(Msg_ProjectRecentPlayedUserData msg)
-//            {
-//                _user = UserManager.Instance.OnSyncUserData(msg.UserData);
-//                _lastPlayTime = msg.LastPlayTime;
-//            }
-        }
-
         #endregion
     }
 }

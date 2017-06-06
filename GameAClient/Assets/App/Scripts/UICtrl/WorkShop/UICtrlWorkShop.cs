@@ -9,7 +9,6 @@ using System;
 using System.Collections;
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
@@ -74,7 +73,7 @@ namespace GameA
             );
 
             if (null == _curSelectedPrivateProject) {
-                AotoSelectFirstProject ();
+                AutoSelectFirstProject ();
             }
             RefreshView();
         }
@@ -216,7 +215,7 @@ namespace GameA
             }
         }
 
-        private void AotoSelectFirstProject () {
+        private void AutoSelectFirstProject () {
             _autoSelectFirstProject = true;
         }
 
@@ -508,7 +507,7 @@ namespace GameA
                             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                             LocalUser.Instance.PersonalProjectList.ProjectList.Remove(_curSelectedPrivateProject.Content);
                             _curSelectedPrivateProject = null;
-                            AotoSelectFirstProject ();
+                            AutoSelectFirstProject ();
                             RefreshView ();
                             LocalUser.Instance.PersonalProjectList.Request (0,
                                 int.MaxValue,
@@ -575,6 +574,7 @@ namespace GameA
             if (_state == EWorkShopState.Edit) {
                 _cachedView.Private.SetActive (true);
                 _cachedView.Public.SetActive (false);
+                DictionaryTools.SetContentText(_cachedView.ChangeModeBtnText, "工坊中的关卡");
             } else if (_state == EWorkShopState.PublishList) {
                 LocalUser.Instance.UserPublishedWorldProjectList.Request(
                     LocalUser.Instance.UserGuid,
@@ -590,6 +590,7 @@ namespace GameA
                 );
                 _cachedView.Private.SetActive (false);
                 _cachedView.Public.SetActive (true);
+                DictionaryTools.SetContentText(_cachedView.ChangeModeBtnText, "已发布的关卡");
             }
             RefreshView ();
         }

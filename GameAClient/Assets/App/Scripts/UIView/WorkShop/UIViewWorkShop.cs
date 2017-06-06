@@ -11,6 +11,7 @@ namespace GameA
         
         public Button ReturnBtn;
         public Button ChangeModeBtn;
+        public Text ChangeModeBtnText;
 
 
 

@@ -42,7 +42,7 @@ namespace GameA.Game
 			//        }));
 			//});
 
-            GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Lose);
+            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Lose);
 		}
 
         public override void OnGameSuccess()
@@ -99,7 +99,7 @@ namespace GameA.Game
             //        }));
             //});
 
-            GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Win);
+            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Win);
 		}
 
         private byte[] GetRecord()

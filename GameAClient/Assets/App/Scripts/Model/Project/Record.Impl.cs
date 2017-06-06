@@ -695,14 +695,14 @@ namespace GameA
 
     public class RecordRankHolder
     {
-        private Record _projectPlayRecord;
+        private Record _record;
         private int _rank;
 
-        public Record ProjectPlayRecord
+        public Record Record
         {
             get
             {
-                return _projectPlayRecord;
+                return _record;
             }
         }
 
@@ -714,9 +714,15 @@ namespace GameA
             }
         }
 
-		public RecordRankHolder(Msg_SC_DAT_Record msg, Project project, int rank)
+        public RecordRankHolder(Msg_SC_DAT_Record msg, Project project, int rank)
         {
-            _projectPlayRecord = RecordManager.Instance.OnSync(msg, project, false);
+            _record = RecordManager.Instance.OnSync(msg, project, false);
+            _rank = rank;
+        }
+
+        public RecordRankHolder(Record record, int rank)
+        {
+            _record = record;
             _rank = rank;
         }
     }

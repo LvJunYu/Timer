@@ -234,7 +234,7 @@ namespace GameA
                 DictionaryTools.SetContentText(_cachedView.FavoriteBtnText, "收藏");
             }
 
-            if(_content.Project.UserLike)
+            if(_content.Project.UserLike == EProjectLikeState.PLS_Like)
             {
                 _cachedView.LikeBtnImage.sprite = _cachedView.LikeSprite;
             }
@@ -286,17 +286,17 @@ namespace GameA
 
         private void RefreshRecentPlayedUser()
         {
-            if(_content.Project.RecentPlayedUserList == null || _content.Project.RecentPlayedUserList.Count == 0)
-            {
-                _cachedView.RecentPlayedProjectUserList.Hide();
-                _cachedView.RecentPlayedProjectUserTip.SetActive(true);
-            }
-            else
-            {
-                _cachedView.RecentPlayedProjectUserList.Show();
-                _cachedView.RecentPlayedProjectUserList.Set(_content.Project.RecentPlayedUserList);
-                _cachedView.RecentPlayedProjectUserTip.SetActive(false);
-            }
+//            if(_content.Project.RecentPlayedUserList == null || _content.Project.RecentPlayedUserList.Count == 0)
+//            {
+//                _cachedView.RecentPlayedProjectUserList.Hide();
+//                _cachedView.RecentPlayedProjectUserTip.SetActive(true);
+//            }
+//            else
+//            {
+//                _cachedView.RecentPlayedProjectUserList.Show();
+//                _cachedView.RecentPlayedProjectUserList.Set(_content.Project.RecentPlayedUserList);
+//                _cachedView.RecentPlayedProjectUserTip.SetActive(false);
+//            }
         }
 
         private void OnChangeToAppMode()
@@ -304,8 +304,6 @@ namespace GameA
             if(_isViewCreated && _isOpen)
             {
                 _content.Project.ProjectIntoRequestTimer.Zero();
-                _content.Project.ProjectPlayRecordListRequestTimer.Zero();
-                _content.Project.ProjectRecentRecordListRequestTimer.Zero();
                 RequestData();
                 RefreshView();
             }
@@ -537,33 +535,33 @@ namespace GameA
         private bool _isLikeRequest = false;
         private void OnLikeBtnClick()
         {
-            if(!AppLogicUtil.CheckAndRequiredLogin())
-            {
-                return;
-            }
-
-            if(!_content.Project.UserLike && !CheckValidAndTip())
-            {
-                return;
-            }
-
-            if(_isLikeRequest)
-            {
-                return;
-            }
-
-            Project project = _content.Project;
-            _isLikeRequest = true;
-            _content.Project.UpdateLike(!_content.Project.UserLike, flag=>{
-                _isLikeRequest = false;
-                if(flag)
-                {
-                    if(_isOpen && _content != null && _content.Project != null && project.ProjectId == _content.Project.ProjectId)
-                    {
-                        RefreshStatisticAndUserInfo();
-                    }
-                }
-            });
+//            if(!AppLogicUtil.CheckAndRequiredLogin())
+//            {
+//                return;
+//            }
+//
+//            if(!_content.Project.UserLike && !CheckValidAndTip())
+//            {
+//                return;
+//            }
+//
+//            if(_isLikeRequest)
+//            {
+//                return;
+//            }
+//
+//            Project project = _content.Project;
+//            _isLikeRequest = true;
+//            _content.Project.UpdateLike(!_content.Project.UserLike, flag=>{
+//                _isLikeRequest = false;
+//                if(flag)
+//                {
+//                    if(_isOpen && _content != null && _content.Project != null && project.ProjectId == _content.Project.ProjectId)
+//                    {
+//                        RefreshStatisticAndUserInfo();
+//                    }
+//                }
+//            });
         }
 
         private bool CheckValidAndTip()
