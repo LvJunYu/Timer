@@ -65,11 +65,12 @@ namespace GameA.Game
     {
         None,
         Actor,
-        Controller,
         Earth,
         Mechanism,
         Collection,
         Decoration,
+        Controller,
+        Max,
         Effect,
     }
 

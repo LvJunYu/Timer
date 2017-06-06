@@ -494,7 +494,7 @@ namespace GameA
 		private void Broadcast(ECommandType type)
         {
             //关掉UICtrlItem
-            SocialGUIManager.Instance.CloseUI<UICtrlItem>();
+//            SocialGUIManager.Instance.CloseUI<UICtrlItem>();
             Messenger<ECommandType>.Broadcast(EMessengerType.OnCommandChanged, type);
         }
 

@@ -73,7 +73,7 @@ namespace GameA.Game
         protected virtual void InitUI()
         {
             SocialGUIManager.Instance.OpenUI<UICtrlEdit>().ChangeToPlayRecordMode();
-            SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
+//            SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
             SocialGUIManager.Instance.CloseUI<UICtrlScreenOperator>();
             SocialGUIManager.Instance.OpenUI<UICtrlSceneState>();
             InputManager.Instance.HideGameInput();

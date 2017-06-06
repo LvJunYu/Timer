@@ -14,12 +14,14 @@ namespace GameA
 {
     public class UIViewItem : UIViewBase
     {
-        public Button Actor;
-        public Button Earth;
-        public Button Mechanism;
-        public Button Monster;
-        public Button Collection;
-        public Button Decoration;
+//        public Button Actor;
+//        public Button Earth;
+//        public Button Mechanism;
+//        public Button Collection;
+//        public Button Control;
+//        public Button Decoration;
+        public Button[] CategoryButtns;
+        public GameObject[] SelectedCategorys;
         public ScrollRect ScrollRect;
         public HorizontalLayoutGroup LayoutGroup;
 

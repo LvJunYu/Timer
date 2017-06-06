@@ -186,7 +186,7 @@ namespace GameA.Game
             if (mode == EMode.EditTest)
             {
                 SocialGUIManager.Instance.CloseUI<UICtrlItem>();
-                SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
+//                SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
                 SocialGUIManager.Instance.OpenUI<UICtrlEdit>();
                 SocialGUIManager.Instance.GetUI<UICtrlEdit>().ChangeToEditTestMode();
                 SocialGUIManager.Instance.CloseUI<UICtrlScreenOperator>();
@@ -196,7 +196,7 @@ namespace GameA.Game
             }
             else if (mode == EMode.Edit)
             {
-                SocialGUIManager.Instance.OpenUI<UICtrlCreate>();
+                SocialGUIManager.Instance.OpenUI<UICtrlItem>();
                 SocialGUIManager.Instance.OpenUI<UICtrlScreenOperator>();
                 SocialGUIManager.Instance.OpenUI<UICtrlEdit>();
                 SocialGUIManager.Instance.GetUI<UICtrlEdit>().ChangeToEditMode();

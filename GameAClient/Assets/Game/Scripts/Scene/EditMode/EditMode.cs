@@ -346,7 +346,7 @@ namespace GameA.Game
             if (id != _selectedItemId)
             {
                 _selectedItemId = id;
-                SocialGUIManager.Instance.GetUI<UICtrlCreate>().OnSelectItemChanged((ushort)_selectedItemId);
+                SocialGUIManager.Instance.GetUI<UICtrlItem>().OnSelectItemChanged((ushort)_selectedItemId);
             }
         }
 
@@ -732,7 +732,7 @@ namespace GameA.Game
             }
 
 
-            SocialGUIManager.Instance.CloseUI<UICtrlItem>();
+//            SocialGUIManager.Instance.CloseUI<UICtrlItem>();
             if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
             {
                 //GM2DGUIManager.Instance.OpenUI<UICtrlCreate>();
@@ -917,12 +917,12 @@ namespace GameA.Game
         {
             if (Input.GetKey (KeyCode.M)) {
                 if (_commandType != ECommandType.Move) {
-                    SocialGUIManager.Instance.CloseUI<UICtrlItem> ();
+//                    SocialGUIManager.Instance.CloseUI<UICtrlItem> ();
                     Messenger<ECommandType>.Broadcast (EMessengerType.OnCommandChanged, ECommandType.Move);
                 }
             } else {
                 if (_commandType == ECommandType.Move) {
-                    SocialGUIManager.Instance.CloseUI<UICtrlItem> ();
+//                    SocialGUIManager.Instance.CloseUI<UICtrlItem> ();
                     Messenger<ECommandType>.Broadcast (EMessengerType.OnCommandChanged, ECommandType.Create);
                 }
             }

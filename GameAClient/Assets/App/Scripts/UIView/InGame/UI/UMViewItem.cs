@@ -15,8 +15,8 @@ namespace GameA
     {
         public Button Item;
         public Image SpriteIcon;
-	    public RawImage TextureIcon;
-        public Text Name;
-        public Text Summary;
+//	    public RawImage TextureIcon;
+//        public Text Name;
+//        public Text Summary;
     }
 }
