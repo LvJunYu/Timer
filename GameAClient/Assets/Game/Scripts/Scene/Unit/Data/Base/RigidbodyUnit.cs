@@ -276,6 +276,7 @@ namespace GameA.Game
                 unit.OnIntersect(this);
             }
         }
+
         private void CheckHit(UnitBase unit, EDirectionType eDirectionType)
         {
             if (!_cacheHitUnits.Contains(unit.Guid))
