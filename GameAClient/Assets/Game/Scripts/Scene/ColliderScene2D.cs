@@ -40,7 +40,6 @@ namespace GameA.Game
             get { return _allUnits; }
         }
 
-
         public override void Dispose()
         {
             base.Dispose();
@@ -156,6 +155,7 @@ namespace GameA.Game
                 LogHelper.Error("DeleteNode Failed,{0}", unitDesc.ToString());
                 return false;
             }
+            unit.OnDispose();
             _allUnits.Remove(unit);
             _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 1;
             return _units.Remove(unitDesc.Guid);
