@@ -111,10 +111,7 @@ namespace GameA.Game
                 }
                 UpdateCollider(GetColliderPos(_curPos));
                 _curPos = GetPos(_colliderPos);
-                if (_view != null)
-                {
-                    _trans.position = GetTransPos();
-                }
+                UpdateTransPos();
                 if (_blocked)
                 {
                     OnBlocked();
@@ -124,6 +121,12 @@ namespace GameA.Game
 
         protected virtual void OnBlocked()
         {
+            ////检查地块范围
+            //var units = ColliderScene2D.CircleCastAllReturnUnits(_curPos, _skill.Radius, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer));
+            //for (int i = 0; i < units.Count; i++)
+            //{
+            //    LogHelper.Debug(units[i].ToString());
+            //}
             _isAlive = false;
             --Life;
             if (_view != null)
@@ -234,12 +237,6 @@ namespace GameA.Game
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
-            //碰撞体攻击地面为1，攻击怪物为0.25，碰撞体缩减
-            var grid = _colliderGrid.Shrink(240);
-            if (!grid.Intersects(unit.ColliderGrid))
-            {
-                return;
-            }
             _blocked = true;
             if (unit.IsHero && unit.EffectMgr != null)
             {
