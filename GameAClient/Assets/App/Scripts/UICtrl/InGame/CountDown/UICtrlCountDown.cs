@@ -30,7 +30,7 @@ namespace GameA
         protected override void InitEventListener ()
         {
             base.InitEventListener ();
-            Messenger.AddListener (EMessengerType.OnReady2Play, OnReady2Play);
+//            Messenger.AddListener (EMessengerType.OnReady2Play, OnReady2Play);
             Messenger<System.Collections.Generic.List<int>>.AddListener (EMessengerType.OnBoostItemSelectFinish, OnBoostItemSelectFinish);
         }
 
@@ -91,26 +91,25 @@ namespace GameA
             base.OnUpdate ();
             _timer += Time.deltaTime;
             if (_timer > _showTime) {
-                Close ();
                 Messenger.Broadcast (EMessengerType.OnCountDownFinish);
+                Close ();
             }
         }
 
-        private void OnReady2Play ()
-        {
-            // 除了当人模式的普通关卡和挑战关卡需要先选增益道具再展示胜利条件，其他情况下直接展示胜利条件
-            if (EProjectStatus.PS_AdvNormal == GM2DGame.Instance.Project.ProjectStatus ||
-                EProjectStatus.PS_Challenge == GM2DGame.Instance.Project.ProjectStatus
-               )
-                return;
-            SocialGUIManager.Instance.OpenUI<UICtrlCountDown> ();
-        }
+//        private void OnReady2Play ()
+//        {
+//            // 除了当人模式的普通关卡和挑战关卡需要先选增益道具再展示胜利条件，其他情况下直接展示胜利条件
+//            if (EProjectStatus.PS_AdvNormal == GM2DGame.Instance.Project.ProjectStatus ||
+//                EProjectStatus.PS_Challenge == GM2DGame.Instance.Project.ProjectStatus
+//               )
+//                return;
+//            SocialGUIManager.Instance.OpenUI<UICtrlCountDown> ();
+//        }
 
         private void OnBoostItemSelectFinish (System.Collections.Generic.List<int> selectedItems)
         {
-            if (EProjectStatus.PS_Private == GM2DGame.Instance.Project.ProjectStatus ||
-                EProjectStatus.PS_Reform == GM2DGame.Instance.Project.ProjectStatus
-               ) {
+            UnityEngine.Debug.Log (" GM2DGame.Instance.GameMode.GameRunMode: " + GM2DGame.Instance.GameMode.GameRunMode);
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit) {
                 Messenger.Broadcast (EMessengerType.OnCountDownFinish);
                 return;
             } else {
