@@ -303,11 +303,6 @@ namespace GameA.Game
                     break;
             }
 
-            if (edge.ESkillType == ESkillType.Water)
-            {
-                edge.ESkillType++;
-                //return;
-            }
             xmin = (int) ((xmin - (_colliderGrid.XMin - 320))*PixelsPerTile);
             ymin = (int) ((ymin - (_colliderGrid.YMin - 320))*PixelsPerTile);
             xmax = (int) ((xmax - (_colliderGrid.XMin - 320))*PixelsPerTile);
@@ -330,6 +325,27 @@ namespace GameA.Game
             {
                 if (maskBaseColor[i].a == 0f)
                 {
+                    continue;
+                }
+                if (edge.ESkillType == ESkillType.Water)
+                {
+                    if (maskingColor[i].a > 0)
+                    {
+                        //边缘
+                        if (maskingColor[i].maxColorComponent < 0.2f)
+                        {
+                            maskedColor[i] = maskingColor[i];
+                            if (paintedColor[i].a > 0)
+                            {
+                                paintedColor[i] = EdgeColor;
+                            }
+                        }
+                        else
+                        {
+                            maskedColor[i] = CleanColor;
+                            paintedColor[i] = CleanColor;
+                        }
+                    }
                     continue;
                 }
                 //叠加mask
