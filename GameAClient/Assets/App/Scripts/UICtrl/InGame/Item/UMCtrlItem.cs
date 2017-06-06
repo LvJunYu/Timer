@@ -87,11 +87,11 @@ namespace GameA
                     tableUnit.Icon, tableUnit.EGeneratedType);
             }
             if (_selected) {
-                _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up * 10;
-                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one * 1.1f;
+                _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up * 15;
+//                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one * 1.1f;
             } else {
                 _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.zero;
-                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one;
+//                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one;
             }
 		}
 
@@ -99,12 +99,14 @@ namespace GameA
         {
             if (id == _id) {
                 _selected = true;
-                _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up * 10;
-                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one * 1.1f;
+                _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up * 15;
+//                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one * 1.1f;
+                _cachedView.ShadowTrans.localScale = Vector3.one * 0.7f;
             } else {
                 _selected = false;
                 _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.zero;
-                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one;
+//                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one;
+                _cachedView.ShadowTrans.localScale = Vector3.one;
             }
         }
     }

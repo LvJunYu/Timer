@@ -15,6 +15,7 @@ namespace GameA
     {
         public Button Item;
         public Image SpriteIcon;
+        public UnityEngine.Transform ShadowTrans;
 //	    public RawImage TextureIcon;
 //        public Text Name;
 //        public Text Summary;

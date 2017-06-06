@@ -58,7 +58,7 @@ namespace GameA
 		private void OnCreate()
         {
             //GM2DGUIManager.Instance.CloseUI<UICtrlCreate>();
-            SocialGUIManager.Instance.OpenUI<UICtrlItem>();
+//            SocialGUIManager.Instance.OpenUI<UICtrlItem>();
         }
 
         private void OnClickCurSelectItem()

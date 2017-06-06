@@ -24,12 +24,12 @@ public class UIViewModifySelectItem : MonoBehaviour {
 
     public void SetSelected (bool selected) {
         if (selected) {
-            IconTrans.localPosition = Vector3.up * 30;
-            IconTrans.localScale = Vector3.one * 1.1f;
+            IconTrans.localPosition = Vector3.up * 15;
+//            IconTrans.localScale = Vector3.one * 1.1f;
             ShadowTrans.localScale = Vector3.one * 0.7f;
         } else {
             IconTrans.localPosition = Vector3.zero;
-            IconTrans.localScale = Vector3.one;
+//            IconTrans.localScale = Vector3.one;
             ShadowTrans.localScale = Vector3.one;
         }
     }
