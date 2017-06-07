@@ -51,16 +51,16 @@ namespace GameA
         InGameTip,
         AppGameUI,
         InputCtrl,
+        InGameEnd,
         /// <summary>
         /// 提示弹窗
         /// </summary>
-
         PopUpDialog,
+        Purchase,
         /// <summary>
         /// 小loading
         /// </summary>
         LittleLoading,
-        InGameEnd,
         /// <summary>
         /// 旋转屏幕蒙版
         /// </summary>
@@ -223,8 +223,8 @@ namespace GameA
             _currentMode = EMode.Game;
             for (int i = 0; i < (int)EUIGroupType.Max; i++)
             {
-                if (i < (int)EUIGroupType.InGameStart ||
-                    i > (int)EUIGroupType.InGameEnd)
+                if (i < (int)EUIGroupType.InGameStart)// ||
+//                    i > (int)EUIGroupType.InGameEnd)
                 {
                     _uiRoot.SetGroupActive(i, false);
                 } else {
@@ -283,7 +283,8 @@ namespace GameA
             //_uiRoot.SetGroupActive((int)EUIGroupType.InGame, false);
             for (int i = 0; i < (int)EUIGroupType.Max; i++) {
                 if (i < (int)EUIGroupType.InGameStart ||
-                    i > (int)EUIGroupType.InGameEnd) {
+                    i > (int)EUIGroupType.InGameEnd) 
+                {
                     _uiRoot.SetGroupActive (i, true);
                 } else {
                     _uiRoot.SetGroupActive (i, false);
