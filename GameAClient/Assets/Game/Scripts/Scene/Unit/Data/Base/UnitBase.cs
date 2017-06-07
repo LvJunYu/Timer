@@ -558,7 +558,6 @@ namespace GameA.Game
 
         internal virtual void OnEdit()
         {
-            Reset();
         }
 
         internal virtual void OnPlay()

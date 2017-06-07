@@ -29,10 +29,8 @@ namespace GameA.Game
 
         [SerializeField] private bool _arrived;
         [SerializeField] private int _gemGain;
-        [SerializeField] private int _heroRescued;
         [SerializeField] private int _keyGain;
         [SerializeField] private int _monsterKilled;
-        //[SerializeField] private int _secondLeft;
 
         private MapStatistics _mapStatistics = new MapStatistics();
 
@@ -142,17 +140,6 @@ namespace GameA.Game
             }
         }
 
-        public int HeroRescued
-        {
-            get { return _heroRescued; }
-            set
-            {
-                _heroRescued = value;
-                UpdateWinState();
-                Messenger.Broadcast(EMessengerType.OnWinDataChanged);
-            }
-        }
-
         public int KeyGain
         {
             get { return _keyGain; }
@@ -216,26 +203,17 @@ namespace GameA.Game
             _mapStatistics.LifeCount = levelData.LifeCount;
         }
 
-        private void Reset()
+        public void Reset()
         {
             _runState = ESceneState.Run;
             _gameTimer = 0;
-
             _arrived = false;
             _gemGain = 0;
             _monsterKilled = 0;
-            _heroRescued = 0;
             _keyGain = 0;
-            _runState = 0;
         }
 
-        public void RePlay()
-        {
-            Reset();
-            OnPlay();
-        }
-
-        public void OnPlay()
+        public void StartPlay()
         {
             if (_mapStatistics.FinalCount == 0)
             {
@@ -249,12 +227,7 @@ namespace GameA.Game
             {
                 RemoveCondition(EWinCondition.KillMonster);
             }
-            //if (_mapStatistics.HeroCageCount == 0)
-            //{
-            //    RemoveCondition(EWinCondition.RescueHero);
-            //}
             _gameTimer = 0;
-            //_secondLeft = _mapStatistics.TimeLimit*10;
             _runState = ESceneState.Run;
             Messenger.Broadcast(EMessengerType.OnWinDataChanged);
         }

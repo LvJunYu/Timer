@@ -12,55 +12,40 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    public partial class CameraManager : MonoBehaviour
+    public partial class CameraManager : IDisposable
     {
-        private static CameraManager _instance;
-        [SerializeField] private Camera _mainCamera;
-        [SerializeField] private Transform _mainCamaraTrans;
+        #region private
 
-        [SerializeField] private Camera _rendererCamera;
-        [SerializeField] private Transform _rendererCamaraTrans;
-
-        //private Vector3 _rendererCameraPos;
-        //private float _pixelSize;
-        //private float _invPixelSize;
-
-        private MainUnit _followTarget;
-
-        //private Vector2 _originPos;
-
-        // 摄像机的最终位置
-        private Vector3 _finalPos;
-        // 摄像机最终大小
-        private float _finalOrthoSize;
-
-        private Rect _cameraViewRect;
-        private Rect _validMapRect;
-        private Rect _cameraMoveRect;
+        public static CameraManager _instance;
 
         private float _aspectRatio;
+        private Rect _cameraMoveRect;
         private Tweener _cameraPosTweener;
-
-        private float _visibleDistance = 0;
-        private float _visibleDistanceMin = 0;
-        // 游戏运行时摄像机跟随主角的lerp速度
-        private float _runtimeCameraPosLerpSpeed = 5f;
-        // 摄像机根据角色朝向的偏移（－1，1）
-        private float _runtimeCameraHOffset = 0;
-        // Play时摄像机的标准大小
-        //private float [] _cameraStandardPlaySize = new float [] { 2.5f, 3.75f, 5f, 6.25f };
-
-        // Play状态下摄像机最小尺寸
-        private float _minCameraPlaySize = 2.5f;
-        // Play状态下摄像机最大尺寸
+        private Rect _cameraViewRect;
+        private float _finalOrthoSize;
+        private Vector3 _finalPos;
+        private MainUnit _followTarget;
+        [SerializeField] private Transform _mainCamaraTrans;
+        [SerializeField] private Camera _mainCamera;
         private float _maxCameraPlaySize = 6.5f;
-        [SerializeField]
-        private IntVec2 _rollPos;
+        private float _minCameraPlaySize = 2.5f;
+
+        [SerializeField] private Transform _rendererCamaraTrans;
+        [SerializeField] private Camera _rendererCamera;
+        [SerializeField] private IntVec2 _rollPos;
+        private float _runtimeCameraHOffset = 0;
+        private float _runtimeCameraPosLerpSpeed = 5f;
+
+        private Rect _validMapRect;
+
+        private float _visibleDistance;
+        private float _visibleDistanceMin;
+        // 游戏运行时摄像机跟随主角的lerp速度
         private int _yRollTarget;
 
         public static CameraManager Instance
         {
-            get { return _instance; }
+            get { return _instance ?? (_instance = new CameraManager()); }
         }
 
         public Camera MainCamera
@@ -103,15 +88,14 @@ namespace GameA.Game
             get { return _cameraViewRect; }
         }
 
-        public int CameraViewWidth {
-            get {
-                return (int)(_cameraViewRect.width * ConstDefineGM2D.ServerTileScale);
-            }
+        public int CameraViewWidth
+        {
+            get { return (int) (_cameraViewRect.width*ConstDefineGM2D.ServerTileScale); }
         }
-        public int CameraViewHeight {
-            get {
-                return (int)(_cameraViewRect.height * ConstDefineGM2D.ServerTileScale);
-            }
+
+        public int CameraViewHeight
+        {
+            get { return (int) (_cameraViewRect.height*ConstDefineGM2D.ServerTileScale); }
         }
 
         public float VisibleDistance
@@ -130,31 +114,45 @@ namespace GameA.Game
             set
             {
                 _rendererCamaraTrans.position = value;
-                //float z = value.z;
-                //Vector3 v = _rendererCameraPos * _invPixelSize;
-                //_rendererCamaraTrans.position = new Vector3(
-                //    Mathf.Round(v.x) * _pixelSize,
-                //    Mathf.Round(v.y) * _pixelSize,
-                //    z
-                //);
             }
         }
 
         // 注意！！这个接口只能新手引导用
-        public IntVec2 CurRollPos {
-            get {
-                return _rollPos;
+        public IntVec2 CurRollPos
+        {
+            get { return _rollPos; }
+            set { _rollPos = value; }
+        }
+
+        public void Dispose()
+        {
+            if (_cameraPosTweener != null)
+            {
+                _cameraPosTweener.Kill();
+                _cameraPosTweener = null;
             }
-            set {
-                _rollPos = value;
+            if (_rendererCamera != null)
+            {
+                _rendererCamera.targetTexture = null;
+            }
+            if (_mainCamaraTrans != null)
+            {
+                UnityEngine.Object.Destroy(_mainCamaraTrans.gameObject);
+            }
+            if (_instance != null)
+            {
+                Messenger<IntRect>.RemoveListener(EMessengerType.OnValidMapRectChanged, OnValidMapRectChanged);
+                Messenger.RemoveListener(EMessengerType.OnGameStartComplete, OnGameStartComplete);
+                Messenger<EScreenOperator>.RemoveListener(EMessengerType.OnScreenOperatorSuccess, OnScreenOperatorSuccess);
+                Messenger.RemoveListener(EMessengerType.OnPlay, OnPlay);
+                Messenger.RemoveListener(EMessengerType.ClearAppRecordState, ClearAppRecordState);
+                _instance = null;
             }
         }
 
 
-        private void Awake()
+        public void Init()
         {
-            _instance = this;
-
             _mainCamera = SetCamera("MainCamera");
             _mainCamaraTrans = _mainCamera.transform;
             _mainCamera.tag = "MainCamera";
@@ -162,24 +160,21 @@ namespace GameA.Game
             _rendererCamera = SetCamera("RendererCamera");
             _rendererCamaraTrans = _rendererCamera.transform;
             _rendererCamaraTrans.SetParent(_mainCamaraTrans);
-            //_pixelSize = 0.0001f;
-            //_invPixelSize = 10000f;
 
             Messenger<IntRect>.AddListener(EMessengerType.OnValidMapRectChanged, OnValidMapRectChanged);
-            Messenger.AddListener(GameA.EMessengerType.OnGameStartComplete, OnGameStartComplete);
+            Messenger.AddListener(EMessengerType.OnGameStartComplete, OnGameStartComplete);
             Messenger<EScreenOperator>.AddListener(EMessengerType.OnScreenOperatorSuccess, OnScreenOperatorSuccess);
-            Messenger.AddListener (EMessengerType.OnPlay, OnPlay);
-			Messenger.AddListener(GameA.EMessengerType.ClearAppRecordState, ClearAppRecordState);
+            Messenger.AddListener(EMessengerType.OnPlay, OnPlay);
+            Messenger.AddListener(EMessengerType.ClearAppRecordState, ClearAppRecordState);
 
             _finalPos = _mainCamaraTrans.position;
-            _aspectRatio = 1f*GM2DGame.Instance.GameScreenWidth/ GM2DGame.Instance.GameScreenHeight;
+            _aspectRatio = 1f*GM2DGame.Instance.GameScreenWidth/GM2DGame.Instance.GameScreenHeight;
 
             _positionEffect = _rendererCamera.gameObject.AddComponent<PositionSpringbackEffect>();
             _positionEffect.Init(_rendererCamera.transform, SetFinalPos);
 
             _orthoEffect = _rendererCamera.gameObject.AddComponent<OrthoSizeSpringbackEffect>();
             _orthoEffect.Init(_rendererCamera, SetFinalOrtho);
-
         }
 
         private Camera SetCamera(string cameraName)
@@ -197,22 +192,7 @@ namespace GameA.Game
             return c;
         }
 
-        private void OnDestroy()
-        {
-            Messenger<IntRect>.RemoveListener(EMessengerType.OnValidMapRectChanged, OnValidMapRectChanged);
-            Messenger.RemoveListener(GameA.EMessengerType.OnGameStartComplete, OnGameStartComplete);
-            Messenger<EScreenOperator>.RemoveListener(EMessengerType.OnScreenOperatorSuccess, OnScreenOperatorSuccess);
-            Messenger.RemoveListener (EMessengerType.OnPlay, OnPlay);
-
-			Messenger.RemoveListener(GameA.EMessengerType.ClearAppRecordState, ClearAppRecordState);
-	        if (_rendererCamera != null)
-	        {
-		        _rendererCamera.targetTexture = null;
-	        }
-			_instance = null;
-        }
-
-        public void Init(Vector2 pos)
+        private void Init(Vector2 pos)
         {
             //Debug.Log ("Camera.Init, pos: " + pos);
             //_originPos = pos;
@@ -221,7 +201,6 @@ namespace GameA.Game
             StratifiedGameBg.BaseCameraPos = _finalPos;
             _rendererCamaraTrans.localPosition = Vector3.zero;
             RendererCameraPos = _rendererCamaraTrans.position;
-
         }
 
         public void SetRenderCameraPosOffset(Vector3 offset)
@@ -230,52 +209,6 @@ namespace GameA.Game
             _finalPos = RendererCameraPos;
         }
 
-        #region event
-
-        private void OnGameStartComplete()
-        {
-            SetMinMax();
-            _rendererCamera.enabled = true;
-            //_pixelSize =  _rendererCamera.orthographicSize * 2 / Screen.height;
-            //_invPixelSize = 1 / _pixelSize;
-
-            //初始化主摄像机位置
-            var cameraPos =
-                GM2DTools.TileToWorld (new IntVec2 (
-                    ConstDefineGM2D.MapStartPos.x + CameraViewWidth / 2, ConstDefineGM2D.MapStartPos.y + CameraViewHeight / 2));
-            cameraPos.x -= 0.5f * _cameraViewRect.width * ConstDefineGM2D.CameraMoveOutSizeX;
-            cameraPos.y -= _cameraViewRect.height * ConstDefineGM2D.CameraMoveOutSizeYBottom;
-            //Debug.Log (" w/h: " + CameraManager.Instance.CameraViewWidth + "/" + CameraManager.Instance.CameraViewHeight);
-            Init (cameraPos);
-            if (DataScene2D.Instance.MainPlayer != null)
-            {
-                var followPos = new IntVec2(DataScene2D.Instance.MainPlayer.Guid.x,
-                    DataScene2D.Instance.MainPlayer.Guid.y);
-                LimitRollPos(followPos,GetCameraViewSize());
-            }
-            if (GM2DGame.Instance.GameMode.GameRunMode != EGameRunMode.Edit) {
-                var cameraViewSize = GetCameraViewSize ();
-                RendererCameraPos = GM2DTools.TileToWorld (new IntVec2 (_rollPos.x, _rollPos.y + cameraViewSize.y / 2));
-            }
-            SetFinalPos(RendererCameraPos);
-            //Debug.Log ("CameraStartPos: " + GM2DTools.TileToWorld (ConstDefineGM2D.MapStartPos));
-        }
-
-        private void OnPlay ()
-        {
-            StandardizationCameraSize ();
-        }
-
-	    private void ClearAppRecordState()
-	    {
-		    if (_rendererCamera != null)
-		    {
-			    _rendererCamera.targetTexture = null;
-		    }
-	    }
-
-        #endregion
-
         private IntVec2 GetCameraViewSize()
         {
             return GM2DTools.WorldToTile(new Vector2(_cameraViewRect.width, _cameraViewRect.height));
@@ -283,7 +216,7 @@ namespace GameA.Game
 
         internal void UpdateLogic(float deltaTime)
         {
-            var mainUnit = PlayMode.Instance.MainUnit;
+            MainUnit mainUnit = PlayMode.Instance.MainUnit;
             if (mainUnit == null)
             {
                 return;
@@ -304,17 +237,17 @@ namespace GameA.Game
             }
             else
             {
-                _rollPos.x += num / 5;
+                _rollPos.x += num/5;
             }
-            var cameraViewSize = GetCameraViewSize();
+            IntVec2 cameraViewSize = GetCameraViewSize();
             if (mainUnit.Grounded || mainUnit.MainInput.ClimbJump || !mainUnit.IsAlive)
             {
-                _yRollTarget = mainUnit.CameraFollowPos.y - cameraViewSize.y / 2;
+                _yRollTarget = mainUnit.CameraFollowPos.y - cameraViewSize.y/2;
             }
-            num = (mainUnit.CameraFollowPos.y - cameraViewSize.y / 2) - _rollPos.y;
+            num = (mainUnit.CameraFollowPos.y - cameraViewSize.y/2) - _rollPos.y;
             if ((num < 0) && (num > -40))
             {
-                _rollPos.y = mainUnit.CameraFollowPos.y - cameraViewSize.y / 2;
+                _rollPos.y = mainUnit.CameraFollowPos.y - cameraViewSize.y/2;
             }
             else if ((num > -100) && (num < 0))
             {
@@ -322,7 +255,7 @@ namespace GameA.Game
             }
             else if (num < 0)
             {
-                _rollPos.y += num / 10;
+                _rollPos.y += num/10;
             }
             else
             {
@@ -337,11 +270,11 @@ namespace GameA.Game
                 }
                 else if (num > 0)
                 {
-                    _rollPos.y += num / 25;
+                    _rollPos.y += num/25;
                 }
             }
             LimitRollPos(mainUnit.CameraFollowPos, cameraViewSize);
-            RendererCameraPos = GM2DTools.TileToWorld(new IntVec2(_rollPos.x, _rollPos.y + cameraViewSize.y / 2));
+            RendererCameraPos = GM2DTools.TileToWorld(new IntVec2(_rollPos.x, _rollPos.y + cameraViewSize.y/2));
         }
 
 
@@ -353,9 +286,6 @@ namespace GameA.Game
             UpdateCameraViewRect();
         }
 
-
-        #region private
-
         public void UpdateVisibleDistance()
         {
             float height = _finalOrthoSize*2;
@@ -363,7 +293,6 @@ namespace GameA.Game
             _visibleDistanceMin = Mathf.Sqrt(height*height + width*width);
             _visibleDistance = _visibleDistanceMin*ConstDefineGM2D.VisibleFactor;
         }
-
 
 
         private void UpdateCameraViewRect()
@@ -386,7 +315,7 @@ namespace GameA.Game
 
         private void UpdateVaildMapRect()
         {
-            var limit = DataScene2D.Instance.ValidMapRect;
+            IntRect limit = DataScene2D.Instance.ValidMapRect;
 
             _validMapRect = GM2DTools.TileRectToWorldRect(limit);
         }
@@ -406,7 +335,7 @@ namespace GameA.Game
 
         private void SetMinMax(bool doClampOrtho = false)
         {
-            var limit = DataScene2D.Instance.ValidMapRect;
+            IntRect limit = DataScene2D.Instance.ValidMapRect;
 
             UpdateVaildMapRect();
             _orthoEffect.SetValidMapRect(limit);
@@ -433,7 +362,7 @@ namespace GameA.Game
         }
 
         // 标准化镜头大小，将镜头大小设为标准值中的最接近的值
-        private void StandardizationCameraSize ()
+        private void StandardizationCameraSize()
         {
             //float [] rangeValues = new float [_cameraStandardPlaySize.Length - 1];
             //for (int i = 0; i < rangeValues.Length; i++) {
@@ -452,34 +381,34 @@ namespace GameA.Game
             //if (fixedSize != _finalOrthoSize) {
             //    SetFinalOrthoSize (fixedSize);
             //}
-            float fixedSize = Mathf.Clamp (_finalOrthoSize, _minCameraPlaySize, _maxCameraPlaySize);
-            SetFinalOrthoSize (fixedSize);
+            float fixedSize = Mathf.Clamp(_finalOrthoSize, _minCameraPlaySize, _maxCameraPlaySize);
+            SetFinalOrthoSize(fixedSize);
         }
 
         internal void SetRollByMainPlayerPos(IntVec2 mainPlayerPos)
         {
-            var cameraViewSize = GetCameraViewSize();
-            _rollPos = mainPlayerPos - new IntVec2(0, cameraViewSize.y / 2);
+            IntVec2 cameraViewSize = GetCameraViewSize();
+            _rollPos = mainPlayerPos - new IntVec2(0, cameraViewSize.y/2);
             LimitRollPos(mainPlayerPos, cameraViewSize);
-            RendererCameraPos = GM2DTools.TileToWorld(new IntVec2(_rollPos.x, _rollPos.y + cameraViewSize.y / 2));
+            RendererCameraPos = GM2DTools.TileToWorld(new IntVec2(_rollPos.x, _rollPos.y + cameraViewSize.y/2));
             SetFinalPos(RendererCameraPos);
             //LogHelper.Debug("{0} || {1} || {2}", _rollPos, _finalPos , _cameraViewRect);
         }
 
         /// <summary>
-        /// 最终确保摄像机在位置一个合理的范围内
+        ///     最终确保摄像机在位置一个合理的范围内
         /// </summary>
         /// <param name="followPos">Follow position.</param>
         /// <param name="cameraViewSize">Camera view size.</param>
         private void LimitRollPos(IntVec2 followPos, IntVec2 cameraViewSize)
         {
             // 保证主角在视野中
-            if (_rollPos.y < followPos.y - cameraViewSize.y + 2 * ConstDefineGM2D.ServerTileScale)
+            if (_rollPos.y < followPos.y - cameraViewSize.y + 2*ConstDefineGM2D.ServerTileScale)
             {
-                _rollPos.y = followPos.y - cameraViewSize.y + 2 * ConstDefineGM2D.ServerTileScale;
+                _rollPos.y = followPos.y - cameraViewSize.y + 2*ConstDefineGM2D.ServerTileScale;
                 //Debug.Log ("rollpos: " + _rollPos + " mainunitPos: " + _mainUnit.CameraFollowPos.y + " cameraHeight: " +cameraViewHeight);
             }
-            var validMapRect = DataScene2D.Instance.ValidMapRect;
+            IntRect validMapRect = DataScene2D.Instance.ValidMapRect;
             // 地图显示边界
             if (_rollPos.y > validMapRect.Max.y - cameraViewSize.y)
             {
@@ -489,17 +418,64 @@ namespace GameA.Game
             {
                 _rollPos.y = validMapRect.Min.y;
             }
-            if (_rollPos.x < validMapRect.Min.x + cameraViewSize.x / 2)
+            if (_rollPos.x < validMapRect.Min.x + cameraViewSize.x/2)
             {
-                _rollPos.x = validMapRect.Min.x + cameraViewSize.x / 2;
+                _rollPos.x = validMapRect.Min.x + cameraViewSize.x/2;
             }
-            if (_rollPos.x > validMapRect.Max.x - cameraViewSize.x / 2)
+            if (_rollPos.x > validMapRect.Max.x - cameraViewSize.x/2)
             {
-                _rollPos.x = validMapRect.Max.x - cameraViewSize.x / 2;
+                _rollPos.x = validMapRect.Max.x - cameraViewSize.x/2;
             }
         }
-    }
 
+        #region event
+
+        private void OnGameStartComplete()
+        {
+            SetMinMax();
+            _rendererCamera.enabled = true;
+            //_pixelSize =  _rendererCamera.orthographicSize * 2 / Screen.height;
+            //_invPixelSize = 1 / _pixelSize;
+
+            //初始化主摄像机位置
+            Vector3 cameraPos =
+                GM2DTools.TileToWorld(new IntVec2(
+                    ConstDefineGM2D.MapStartPos.x + CameraViewWidth/2,
+                    ConstDefineGM2D.MapStartPos.y + CameraViewHeight/2));
+            cameraPos.x -= 0.5f*_cameraViewRect.width*ConstDefineGM2D.CameraMoveOutSizeX;
+            cameraPos.y -= _cameraViewRect.height*ConstDefineGM2D.CameraMoveOutSizeYBottom;
+            //Debug.Log (" w/h: " + CameraManager.Instance.CameraViewWidth + "/" + CameraManager.Instance.CameraViewHeight);
+            Init(cameraPos);
+            if (DataScene2D.Instance.MainPlayer != null)
+            {
+                var followPos = new IntVec2(DataScene2D.Instance.MainPlayer.Guid.x,
+                    DataScene2D.Instance.MainPlayer.Guid.y);
+                LimitRollPos(followPos, GetCameraViewSize());
+            }
+            if (GM2DGame.Instance.GameMode.GameRunMode != EGameRunMode.Edit)
+            {
+                IntVec2 cameraViewSize = GetCameraViewSize();
+                RendererCameraPos = GM2DTools.TileToWorld(new IntVec2(_rollPos.x, _rollPos.y + cameraViewSize.y/2));
+            }
+            SetFinalPos(RendererCameraPos);
+            //Debug.Log ("CameraStartPos: " + GM2DTools.TileToWorld (ConstDefineGM2D.MapStartPos));
+        }
+
+        private void OnPlay()
+        {
+            StandardizationCameraSize();
+        }
+
+        private void ClearAppRecordState()
+        {
+            if (_rendererCamera != null)
+            {
+                _rendererCamera.targetTexture = null;
+            }
+        }
+
+        #endregion
+    }
 
     #endregion
 }

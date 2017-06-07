@@ -5,50 +5,61 @@
 ** Summary : InputManager
 ***********************************************************************/
 
-using SoyEngine;
+using System;
 using UnityEngine;
-using UnitySampleAssets.CrossPlatformInput;
+using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
-    public class InputManager : MonoBehaviour
+    public class InputManager : IDisposable
     {
-        public readonly static string TagJump = "Jump";
-        public readonly static string [] TagSkill = { "Fire1", "Fire2" };
-        public readonly static string TagHorizontal = "Horizontal";
-        public readonly static string TagVertical = "Vertical";
-        public static InputManager Instance;
+        public static InputManager _instance;
+
+        public static readonly string TagJump = "Jump";
+        public static readonly string[] TagSkill = {"Fire1", "Fire2"};
+        public static readonly string TagHorizontal = "Horizontal";
+        public static readonly string TagVertical = "Vertical";
 
         public UICtrlGameInputControl GameInputControl;
-		private bool _touchDown;
+        private GameObject _easyTouchObject;
         private bool _keyJump;
+        private bool _touchDown;
+
+        public static InputManager Instance
+        {
+            get { return _instance ?? (_instance = new InputManager()); }
+        }
 
         public bool IsTouchDown
         {
             get { return _touchDown; }
         }
 
-        public void Awake()
+        public void Dispose()
         {
-            Instance = this;
-            gameObject.AddComponent<EasyTouch>();
+            if (_easyTouchObject != null)
+            {
+                Object.Destroy(_easyTouchObject);
+                _easyTouchObject = null;
+            }
+            if (_instance != null)
+            {
+                EasyTouch.On_TouchStart -= EasyTouchOnOnTouchStart;
+                EasyTouch.On_TouchDown -= EasyTouchOnOnTouchDown;
+                EasyTouch.On_TouchUp -= EasyTouchOnOnTouchUp;
+                _instance = null;
+            }
+        }
+
+        public void Init()
+        {
+            _easyTouchObject = new GameObject("EasyTouch");
+            _easyTouchObject.AddComponent<EasyTouch>();
             EasyTouch.On_TouchStart += EasyTouchOnOnTouchStart;
             EasyTouch.On_TouchDown += EasyTouchOnOnTouchDown;
             EasyTouch.On_TouchUp += EasyTouchOnOnTouchUp;
-        }
-
-        private void Start()
-        {
             EasyTouch.SetEnable2DCollider(true);
             EasyTouch.AddCamera(CameraManager.Instance.RendererCamera);
-        }
-
-        private void OnDestroy()
-        {
-            Instance = null;
-            EasyTouch.On_TouchStart -= EasyTouchOnOnTouchStart;
-            EasyTouch.On_TouchDown -= EasyTouchOnOnTouchDown;
-            EasyTouch.On_TouchUp -= EasyTouchOnOnTouchUp;
         }
 
         private void EasyTouchOnOnTouchStart(Gesture gesture)
@@ -67,22 +78,24 @@ namespace GameA.Game
 
         public void ShowGameInput()
         {
-	        if (Application.isEditor || Application.platform == RuntimePlatform.WindowsPlayer)
-	        {
-		        HideGameInput();
-				return;
-	        }
-            if (null != GameInputControl) {
-                GameInputControl.Show ();
-                GameInputControl.ShowAttack1Btn ();
-                GameInputControl.SetM1YoyoFireBtnState (true);
+            if (Application.isEditor || Application.platform == RuntimePlatform.WindowsPlayer)
+            {
+                HideGameInput();
+                return;
+            }
+            if (null != GameInputControl)
+            {
+                GameInputControl.Show();
+                GameInputControl.ShowAttack1Btn();
+                GameInputControl.SetM1YoyoFireBtnState(true);
             }
         }
 
         public void HideGameInput()
         {
-            if (null != GameInputControl) {
-                GameInputControl.Hide ();
+            if (null != GameInputControl)
+            {
+                GameInputControl.Hide();
             }
         }
     }

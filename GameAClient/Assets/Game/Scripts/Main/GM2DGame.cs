@@ -53,8 +53,6 @@ namespace GameA.Game
         private GameObject _inputControl;
         private bool _resDone;
 
-        private Table_Matrix _tableMatrix;
-
         private GameSettingData _settings;
 
         private bool _runInApp = false;
@@ -72,14 +70,6 @@ namespace GameA.Game
         public GameModeBase GameMode
         {
             get { return _gameMode; }
-        }
-
-        public Table_Matrix TableMatrix
-        {
-            get
-            {
-                return _tableMatrix;
-            }
         }
 
         public override ScreenOrientation ScreenOrientation
@@ -168,6 +158,11 @@ namespace GameA.Game
             return Init();
         }
 
+        public void Update()
+        {
+            _gameMode.Update();
+        }
+
         public override bool Pause()
         {
             return _gameMode.Pause();
@@ -186,7 +181,6 @@ namespace GameA.Game
             {
                 MapManager.Instance.Stop();
             }
-            Destroy(_inputControl);
             LocaleManager.Instance.ExitGame();
             return true;
         }
@@ -202,11 +196,11 @@ namespace GameA.Game
 
         public override int GetLogicFrameCountFromGameStart()
         {
-            if (PlayMode.Instance == null)
+            if (GameRun.Instance == null)
             {
                 return 0;
             }
-            return PlayMode.Instance.LogicFrameCnt;
+            return GameRun.Instance.LogicFrameCnt;
         }
 
         public override bool Restart()
@@ -236,71 +230,22 @@ namespace GameA.Game
             {
                 yield return new WaitForSeconds(0.1f);
             }
-            EnvManager.Instance.Init();
             LocaleManager.Instance.EnterGame();
-            //GameResourceManager rm = gameObject.AddComponent<GameResourceManager>();
-            //if (!rm.Init(GameName))
-            //{
-            //    LogHelper.Error("GameResourceManager initFailed");
-            //}
-            //gameObject.AddComponent<GameLocaleManager>();
-            if (gameObject.GetComponent<GameParticleManager> () == null) {
-                gameObject.AddComponent<GameParticleManager> ();
-            } else {
-                gameObject.GetComponent<GameParticleManager> ().ClearAll ();
-            }
-            if (gameObject.GetComponent<GameAudioManager> () == null) {
-                gameObject.AddComponent<GameAudioManager> ();
-            } else {
-                gameObject.GetComponent<GameAudioManager> ().ClearAll ();
-            }
+            GameRun.Instance.Init(_eGameInitType, _project);
 
-
-            if (_project != null)
-            {
-                _tableMatrix = TableManager.Instance.GetMatrix(1);
-            }
-            if (gameObject.GetComponent<UnitManager> () == null) {
-                gameObject.AddComponent<UnitManager> ();
-                UnitManager.Instance.Init();
-            }
-            if (gameObject.GetComponent<CameraManager> () == null) {
-                gameObject.AddComponent<CameraManager> ();
-            }
-            var playObject = new GameObject("PlayMode");
-            if (gameObject.GetComponent<PlayMode> () == null) {
-                playObject.AddComponent<PlayMode> ();
-            }
-            DeadMarkManager.Instance.Init();
-
-            yield return null;
-            if (gameObject.GetComponent<InputManager> () == null) {
-                gameObject.AddComponent<InputManager> ();
-            }
-            //gameObject.AddComponent<GM2DGUIManager>();
-            if (gameObject.GetComponent<MapManager> () == null) {
-                gameObject.AddComponent<MapManager> ();
-            } else {
-                gameObject.GetComponent<MapManager> ().Clear ();
-            }
-            MapManager.Instance.Init(_eGameInitType, _project);
-            yield return null;
             while (!MapManager.Instance.GenerateMapComplete)
             {
                 Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 0.8f + MapManager.Instance.MapProcess * 0.2f);
                 yield return new WaitForSeconds(0.2f);
             }
-            //LoadGameInputController();
             Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 1f);
+
             if (SocialGUIManager.Instance.RunRecordInApp)
             {
-                var tex = SocialGUIManager.Instance.RenderRecordTexture;
-                //GM2DGUIManager.Instance.RenderUICamera.targetTexture = tex;
-                CameraManager.Instance.RendererCamera.targetTexture = tex;
+                CameraManager.Instance.RendererCamera.targetTexture = SocialGUIManager.Instance.RenderRecordTexture;
             }
-
-            yield return _gameMode.InitByStep();
-            Messenger.Broadcast(GameA.EMessengerType.OnGameStartComplete);
+            _gameMode.InitByStep();
+            Messenger.Broadcast(EMessengerType.OnGameStartComplete);
         }
 
         private void OnDestroy()

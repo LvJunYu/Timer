@@ -18,11 +18,10 @@ namespace GameA.Game
             return true;
 		}
 
-        public override IEnumerator InitByStep()
+        public override void InitByStep()
 		{
 			InitUI();
 			InitGame();
-            yield return null;
         }
 
 

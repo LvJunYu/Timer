@@ -22,10 +22,6 @@ namespace GameA.Game
         private Transform _tran;
         private SpriteRenderer _spriteRenderer;
 
-        public DeadMark()
-        {
-        }
-
         public void Set(Vector2 pos, int inx)
         {
             TryInit();

@@ -375,7 +375,7 @@ namespace GameA.Game
                     {
                         PlayMode.Instance.CurrentShadow.RecordAnimation(ClimbAnimName(), true);
                     }
-                    if (PlayMode.Instance.LogicFrameCnt % 5 == 0)
+                    if (GameRun.Instance.LogicFrameCnt % 5 == 0)
                     {
                         Vector3 effectPos = _trans.position;
 						if (_curMoveDirection == EMoveDirection.Left)
@@ -1405,7 +1405,7 @@ namespace GameA.Game
             var b = new Color(0.9f, 0.41f, 0.804f, 0.804f);
             var c = new Color(1f, 0.745f, 0.63f, 0.804f);
             const int interval = 5;
-            int t = PlayMode.Instance.LogicFrameCnt % (3 * interval);
+            int t = GameRun.Instance.LogicFrameCnt % (3 * interval);
             if (t < interval)
             {
                 _view.SetRendererColor(Color.Lerp(a, b, t * (1f / interval)));

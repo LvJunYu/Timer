@@ -55,7 +55,7 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            if (PlayMode.Instance.LogicFrameCnt % 5 == 0)
+            if (GameRun.Instance.LogicFrameCnt % 5 == 0)
             {
                 if (!_trigger)
                 {

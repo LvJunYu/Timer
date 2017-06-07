@@ -13,9 +13,15 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-	public class MapManager : MonoBehaviour
+	public class MapManager : IDisposable
 	{
-		public static MapManager Instance;
+        public static MapManager _instance;
+
+        public static MapManager Instance
+        {
+            get { return _instance ?? (_instance = new MapManager()); }
+        }
+
 		private bool _generateMapComplete;
 		private MapFile _mapFile;
 		private ESceneState _eSceneState;
@@ -40,35 +46,20 @@ namespace GameA.Game
 			get { return _generateMapComplete; }
 		}
 
-
-	    private void Awake()
-		{
-			Instance = this;
-		}
-
-		private void OnDestroy()
-		{
-            Clear ();
-		    Instance = null;
-		}
-        public void Clear ()
-        {
+        public void Dispose()
+	    {
+            if (_mapFile != null)
+            {
+                UnityEngine.Object.Destroy(_mapFile.gameObject);
+            }
             DataScene2D.Instance.Dispose();
             ColliderScene2D.Instance.Dispose();
             BgScene2D.Instance.Dispose();
             PairUnitManager.Instance.Dispose();
-            PoolFactory<SpineUnit>.Clear();
-            PoolFactory<ChangePartsSpineView>.Clear ();
-            PoolFactory<SpriteUnit>.Clear();
-            PoolFactory<MorphUnit>.Clear();
-            PoolFactory<EmptyUnit>.Clear();
-            PoolFactory<BgItem>.Clear();
+	        _instance = null;
+	    }
 
-            PoolFactory<BulletWater>.Clear();
-            PoolFactory<SpineObject>.Clear();
-        }
-
-		public bool Init(GameManager.EStartType eGameInitType, Project project)
+	    public bool Init(GameManager.EStartType eGameInitType, Project project)
 		{
 			LogHelper.Debug("{0} | {1}", ConstDefineGM2D.RegionTileSize, ConstDefineGM2D.MapTileSize);
             if (!MapConfig.Init())
@@ -77,8 +68,7 @@ namespace GameA.Game
                 return false;
             }
 
-			DataScene2D.Instance.Init(ConstDefineGM2D.MapTileSize.x,
-				ConstDefineGM2D.MapTileSize.y);
+			DataScene2D.Instance.Init(ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
             if (MapConfig.UseAOI)
 		    {
                 ColliderScene2D.Instance.Init(ConstDefineGM2D.RegionTileSize, ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
@@ -87,14 +77,8 @@ namespace GameA.Game
 		    {
                 ColliderScene2D.Instance.Init(ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
 		    }
-            if (_mapFile == null)
-			{
-                _mapFile = gameObject.GetComponent<MapFile>();
-                if (_mapFile == null) {
-                    _mapFile = gameObject.AddComponent<MapFile>();
-                }
-			}
-			switch (eGameInitType)
+            _mapFile = new GameObject("MapFile").AddComponent<MapFile>();
+            switch (eGameInitType)
             {
                 case GameManager.EStartType.WorldPlay:
                     InitPlay(project, GameManager.EStartType.WorldPlay);
@@ -102,22 +86,22 @@ namespace GameA.Game
                 case GameManager.EStartType.WorldPlayRecord:
                     InitPlay(project, GameManager.EStartType.WorldPlayRecord);
                     break;
-				case GameManager.EStartType.WorkshopEdit:
+                case GameManager.EStartType.WorkshopEdit:
                     InitEdit(project, GameManager.EStartType.WorkshopEdit);
-					break;
-				case GameManager.EStartType.ModifyEdit:
-                    InitModifyEdit (project, GameManager.EStartType.ModifyEdit);
-					break;
-				case GameManager.EStartType.WorkshopCreate:
-					InitCreate();
-					break;
-            case GameManager.EStartType.AdventureNormalPlay:
-                InitPlay (project, GameManager.EStartType.AdventureNormalPlay);
-                break;
-            case GameManager.EStartType.AdventureBonusPlay:
-                InitPlay (project, GameManager.EStartType.AdventureBonusPlay);
-                break;
-			}
+                    break;
+                case GameManager.EStartType.ModifyEdit:
+                    InitModifyEdit(project, GameManager.EStartType.ModifyEdit);
+                    break;
+                case GameManager.EStartType.WorkshopCreate:
+                    InitCreate();
+                    break;
+                case GameManager.EStartType.AdventureNormalPlay:
+                    InitPlay(project, GameManager.EStartType.AdventureNormalPlay);
+                    break;
+                case GameManager.EStartType.AdventureBonusPlay:
+                    InitPlay(project, GameManager.EStartType.AdventureBonusPlay);
+                    break;
+            }
 			return true;
 		}
 
