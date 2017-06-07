@@ -22,7 +22,7 @@ namespace GameA
         #region 方法
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.PopUpDialog;
+            _groupId = (int)EUIGroupType.Purchase;
         }
 
         protected override void InitEventListener()

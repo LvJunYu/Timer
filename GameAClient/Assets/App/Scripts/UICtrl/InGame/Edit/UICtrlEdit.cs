@@ -279,7 +279,7 @@ namespace GameA
 					_cachedView.Capture.gameObject.SetActive(false);
 				}
 				break;
-			}
+            }
 		}
 
         private void OnEdit()

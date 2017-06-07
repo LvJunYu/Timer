@@ -87,8 +87,10 @@ namespace GameA
             }
         }
         private void OnGoldPlusBtn () {
+            SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
         }
         private void OnDiamondPlusBtn () {
+            SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
         }
 
         private void OnEnergyChanged () {
