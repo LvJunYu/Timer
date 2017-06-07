@@ -13,14 +13,14 @@ using UnityEngine;
 namespace GameA.Game
 {
     // 编辑模式下的部分逻辑
-    public partial class CameraManager : MonoBehaviour
+    public partial class CameraManager : IDisposable
     {
+        #region private
+
         // 编辑模式下拖拽摄像机回弹的动作
-        private PositionSpringbackEffect _positionEffect;
         // 编辑模式下缩放摄像机回弹的动作
         private OrthoSizeSpringbackEffect _orthoEffect;
-
-
+        private PositionSpringbackEffect _positionEffect;
 
         public void SetEditorModeStartPos(Vector3 pos)
         {
@@ -31,7 +31,7 @@ namespace GameA.Game
         }
 
         /// <summary>
-        /// 编辑器状态下设定摄像机的位置
+        ///     编辑器状态下设定摄像机的位置
         /// </summary>
         /// <param name="offset">Offset.</param>
         public void MovePosInEditor(Vector2 offset)
@@ -40,7 +40,8 @@ namespace GameA.Game
             Messenger.Broadcast(EMessengerType.OnEditorModeCameraMove);
         }
 
-        public void LerpPosInEditor (Vector2 pos) {
+        public void LerpPosInEditor(Vector2 pos)
+        {
             _positionEffect.Lerp(pos);
         }
 
@@ -89,6 +90,55 @@ namespace GameA.Game
             return false;
         }
 
+        private void UpdatePos(Vector2 pos, bool immediately = false, Action finishCallback = null, bool clampPos = true)
+        {
+            _finalPos = pos;
+            if (clampPos)
+            {
+                _finalPos.x = Mathf.Clamp(_finalPos.x, _cameraMoveRect.xMin, _cameraMoveRect.xMax);
+                _finalPos.y = Mathf.Clamp(_finalPos.y, _cameraMoveRect.yMin, _cameraMoveRect.yMax);
+            }
+
+            if (immediately)
+            {
+                RendererCameraPos = _finalPos;
+            }
+            else
+            {
+                const float duration = 1;
+                DoCameraTweenPos(_finalPos, duration, finishCallback);
+            }
+
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+            {
+                UpdateCameraViewRect();
+                Messenger.Broadcast(EMessengerType.OnEditorModeCameraMove);
+            }
+        }
+
+        private void DoCameraTweenPos(Vector3 finalPos, float duration, Action finisCallback = null)
+        {
+            if (_cameraPosTweener == null || !_cameraPosTweener.IsActive())
+            {
+                _cameraPosTweener = DOTween.To(() => RendererCameraPos, v => { RendererCameraPos = v; }, _finalPos,
+                    duration);
+            }
+            else
+            {
+                _cameraPosTweener.ChangeEndValue(finalPos, true);
+            }
+            _cameraPosTweener.SetUpdate(true);
+            _cameraPosTweener.SetEase(Ease.OutCubic);
+            if (finisCallback == null)
+            {
+                _cameraPosTweener.OnComplete(null);
+            }
+            else
+            {
+                _cameraPosTweener.OnComplete(new TweenCallback(finisCallback));
+            }
+        }
+
         #region event
 
         private void OnValidMapRectChanged(IntRect changedTileSize)
@@ -131,13 +181,13 @@ namespace GameA.Game
             Action finishCallback = null;
             if (GM2DTools.CheckIsDeleteScreenOperator(type))
             {
-                finishCallback = OnFinishTweenCameraPos; 
+                finishCallback = OnFinishTweenCameraPos;
             }
             else
             {
                 Messenger.Broadcast(EMessengerType.ForceUpdateCameraMaskSize);
             }
-            UpdatePos(new Vector2(x, y), false, finishCallback,false);
+            UpdatePos(new Vector2(x, y), false, finishCallback, false);
         }
 
         private void OnFinishTweenCameraPos()
@@ -145,60 +195,8 @@ namespace GameA.Game
             Messenger.Broadcast(EMessengerType.ForceUpdateCameraMaskSize);
         }
 
-
         #endregion
-
-        #region private
-        
-        private void UpdatePos(Vector2 pos, bool immediately = false, Action finishCallback = null,bool clampPos = true)
-        {
-            _finalPos = pos;
-            if (clampPos)
-            {
-                _finalPos.x = Mathf.Clamp(_finalPos.x, _cameraMoveRect.xMin, _cameraMoveRect.xMax);
-                _finalPos.y = Mathf.Clamp(_finalPos.y, _cameraMoveRect.yMin, _cameraMoveRect.yMax);
-            }
-            
-            if (immediately)
-            {
-                RendererCameraPos = _finalPos;
-            }
-            else
-            {
-                const float duration = 1;
-                DoCameraTweenPos(_finalPos, duration, finishCallback);
-            }
-            
-            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
-            {
-                UpdateCameraViewRect();
-                Messenger.Broadcast(EMessengerType.OnEditorModeCameraMove);
-            }
-        }
-
-        private void DoCameraTweenPos(Vector3 finalPos, float duration, Action finisCallback = null)
-        {
-            if (_cameraPosTweener == null || !_cameraPosTweener.IsActive())
-            {
-                _cameraPosTweener = DOTween.To(()=>RendererCameraPos, (v)=>{RendererCameraPos = v;}, _finalPos, duration);
-            }
-            else
-            {
-                _cameraPosTweener.ChangeEndValue(finalPos, true);
-            }
-            _cameraPosTweener.SetUpdate(true);
-            _cameraPosTweener.SetEase(Ease.OutCubic);
-            if (finisCallback == null)
-            {
-                _cameraPosTweener.OnComplete(null);
-            }
-            else
-            {
-                _cameraPosTweener.OnComplete(new TweenCallback(finisCallback));
-            }
-        }
     }
-
 
     #endregion
 }

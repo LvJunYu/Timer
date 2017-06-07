@@ -90,8 +90,9 @@ namespace GameA
         {
             base.OnUpdate ();
             _timer += Time.deltaTime;
-            if (_timer > _showTime) {
-                Messenger.Broadcast (EMessengerType.OnCountDownFinish);
+            if (_timer > _showTime)
+            {
+                GameRun.Instance.Playing();
                 Close ();
             }
         }
@@ -109,11 +110,13 @@ namespace GameA
         private void OnBoostItemSelectFinish (System.Collections.Generic.List<int> selectedItems)
         {
             UnityEngine.Debug.Log (" GM2DGame.Instance.GameMode.GameRunMode: " + GM2DGame.Instance.GameMode.GameRunMode);
-            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit) {
-                Messenger.Broadcast (EMessengerType.OnCountDownFinish);
-                return;
-            } else {
-                SocialGUIManager.Instance.OpenUI<UICtrlCountDown> ();
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+            {
+                GameRun.Instance.Playing();
+            }
+            else
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
             }
         }
     }

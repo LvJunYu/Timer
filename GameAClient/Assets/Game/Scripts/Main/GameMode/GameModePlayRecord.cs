@@ -22,12 +22,11 @@ namespace GameA.Game
             return true;
 		}
 
-        public override IEnumerator InitByStep()
+        public override void InitByStep()
 		{
             InitRecord();
             InitUI();
             InitGame();
-            yield return null;
         }
 
         public override void OnGameFailed()

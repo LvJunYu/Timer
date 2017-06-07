@@ -75,10 +75,6 @@ namespace GameA.Game
 	    {
 		    get { return _compositeEditor; }
 	    }
-		[SerializeField]
-		private int _logicFrameCnt;
-		[SerializeField]
-		private float _unityTimeSinceGameStarted;
 
         public ECommandType CurCommandType
         {
@@ -913,7 +909,7 @@ namespace GameA.Game
             }
         }
 
-        void Update ()
+        public void Update()
         {
             if (Input.GetKey (KeyCode.M)) {
                 if (_commandType != ECommandType.Move) {
@@ -924,15 +920,6 @@ namespace GameA.Game
                 if (_commandType == ECommandType.Move) {
 //                    SocialGUIManager.Instance.CloseUI<UICtrlItem> ();
                     Messenger<ECommandType>.Broadcast (EMessengerType.OnCommandChanged, ECommandType.Create);
-                }
-            }
-            _unityTimeSinceGameStarted += Time.deltaTime * GM2DGame.Instance.GamePlaySpeed;
-            while (_logicFrameCnt * ConstDefineGM2D.FixedDeltaTime < _unityTimeSinceGameStarted)
-            {
-                if (_logicFrameCnt * ConstDefineGM2D.FixedDeltaTime < _unityTimeSinceGameStarted)
-                {
-                    PlayMode.Instance.UpdateLogicEdit();
-                    _logicFrameCnt++;
                 }
             }
         }

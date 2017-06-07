@@ -238,7 +238,10 @@ namespace GameA.Game
 
         public void Reset()
         {
-
+            for (int i = 0; i < _allUnits.Count; i++)
+            {
+                _allUnits[i].Reset();
+            }
         }
 
         #region Comparison SortData

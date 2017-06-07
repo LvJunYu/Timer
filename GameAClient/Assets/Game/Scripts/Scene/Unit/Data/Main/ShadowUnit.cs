@@ -115,23 +115,25 @@ namespace GameA.Game
             if (_trans != null) {
                 UpdateTransPos();
                 if (_deadFrameIdx > 0) {
-                    if (PlayMode.Instance.LogicFrameCnt - _deadFrameIdx == 20) {
+                    if (GameRun.Instance.LogicFrameCnt - _deadFrameIdx == 20)
+                    {
                         SpeedY = 150;
                     }
-                    if (PlayMode.Instance.LogicFrameCnt - _deadFrameIdx > 20) {
+                    if (GameRun.Instance.LogicFrameCnt - _deadFrameIdx > 20)
+                    {
                         SpeedY -= 15;
                         if (SpeedY < -160) {
                             SpeedY = -160;
                         }
                         _curPos += Speed;
-                        UpdateRotation ((PlayMode.Instance.LogicFrameCnt - _deadFrameIdx - 20) * 0.3f);
+                        UpdateRotation((GameRun.Instance.LogicFrameCnt - _deadFrameIdx - 20) * 0.3f);
                     }
                 }
                 if (_view != null)
                 {
                     if (_normalDeadFrameIdx > 0)
                     {
-                        float a = _color.a * (1f - (PlayMode.Instance.LogicFrameCnt - _normalDeadFrameIdx) * 0.02f);
+                        float a = _color.a * (1f - (GameRun.Instance.LogicFrameCnt - _normalDeadFrameIdx) * 0.02f);
                         if (a < 0) a = 0;
                         _view.SetRendererColor(new Color(_color.r, _color.g, _color.b, a));
                     }

@@ -1,70 +1,58 @@
-﻿  /********************************************************************
+﻿/********************************************************************
   ** Filename : DeadMarkManager.cs
   ** Author : quan
   ** Date : 11/25/2016 4:46 PM
   ** Summary : DeadMarkManager.cs
   ***********************************************************************/
 
+using System;
 using System.Collections.Generic;
-
-using SoyEngine;
-using SoyEngine.Proto;
 using SoyEngine;
 using UnityEngine;
-using System.Collections;
-using SoyEngine;
-using System;
 
 namespace GameA.Game
 {
-    public class DeadMarkManager : MonoBehaviour
+    public class DeadMarkManager : IDisposable
     {
-        private LinkedList<Vector2> _deadPosList = new LinkedList<Vector2>();
-        private List<Vector2> _curDeadPosList = new List<Vector2>();
-        private Stack<DeadMark> _pool = new Stack<DeadMark>(50);
-        private List<DeadMark> _deadMarkActiveList = new List<DeadMark>();
-        LinkedList<Vector2>.Enumerator _iterator;
-        private Transform _tran;
-        private bool _isPlay = false;
+        public static DeadMarkManager _instance;
+
+        private readonly List<Vector2> _curDeadPosList = new List<Vector2>();
+        private readonly List<DeadMark> _deadMarkActiveList = new List<DeadMark>();
+        private readonly LinkedList<Vector2> _deadPosList = new LinkedList<Vector2>();
+        private readonly Stack<DeadMark> _pool = new Stack<DeadMark>(50);
+        private bool _isPlay;
+        private LinkedList<Vector2>.Enumerator _iterator;
         private int _leftFrameCount;
-        private static DeadMarkManager _instance;
+        private Transform _tran;
+
         public static DeadMarkManager Instance
         {
-            get
+            get { return _instance ?? (_instance = new DeadMarkManager()); }
+        }
+
+        public void Dispose()
+        {
+            foreach (var mark in _deadMarkActiveList)
             {
-                if(_instance == null)
+                if (mark != null)
                 {
-                    GameObject go = new GameObject("DeadMarkManager");
-                    CommonTools.ResetTransform(go.transform);
-                    _instance = go.AddComponent<DeadMarkManager>();
+                    UnityEngine.Object.Destroy(mark.gameObject);
                 }
-                return _instance;
             }
-        }
-
-        private void Awake()
-        {
-            if(_instance == null)
+            _deadMarkActiveList.Clear();
+            foreach (var mark in _pool)
             {
-                _instance = this;
-                _tran = transform;
-                Messenger.AddListener(EMessengerType.GameFailedDeadMark, OnGameFinishDeadMark);
-                Messenger.AddListener(EMessengerType.OnMainPlayerDead, OnMainPlayerDead);
-                Messenger.AddListener(EMessengerType.OnGameRestart, OnGameRestart);
-                Messenger.AddListener(EMessengerType.OnEdit, OnGameRestart);
+                if (mark != null)
+                {
+                    UnityEngine.Object.Destroy(mark.gameObject);
+                }
             }
-            else
+            _pool.Clear();
+            if (_tran != null)
             {
-                LogHelper.Error("DeadMarkManager Awake, instance != null");
-                OnDestroy();
-                _instance = this;
-                _tran = transform;
+                UnityEngine.Object.Destroy(_tran.gameObject);
             }
-        }
-
-        private void OnDestroy()
-        {
-            if(_instance != null)
+            if (_instance != null)
             {
                 _instance = null;
                 Messenger.RemoveListener(EMessengerType.GameFailedDeadMark, OnGameFinishDeadMark);
@@ -77,22 +65,27 @@ namespace GameA.Game
         public void Init()
         {
             _isPlay = false;
+            _tran = new GameObject("DeadMarkRoot").transform;
+            Messenger.AddListener(EMessengerType.GameFailedDeadMark, OnGameFinishDeadMark);
+            Messenger.AddListener(EMessengerType.OnMainPlayerDead, OnMainPlayerDead);
+            Messenger.AddListener(EMessengerType.OnGameRestart, OnGameRestart);
+            Messenger.AddListener(EMessengerType.OnEdit, OnGameRestart);
         }
 
         public byte[] GetDeadPosition()
         {
-            if(_curDeadPosList.Count == 0)
+            if (_curDeadPosList.Count == 0)
             {
                 return new byte[0];
             }
-            using(PooledFixedByteBufHolder holder = PoolFactory<PooledFixedByteBufHolder>.Get())
+            using (PooledFixedByteBufHolder holder = PoolFactory<PooledFixedByteBufHolder>.Get())
             {
                 holder.Content.Clear();
-                for(int i=0; i<_curDeadPosList.Count; i++)
+                for (int i = 0; i < _curDeadPosList.Count; i++)
                 {
                     Vector2 pos = _curDeadPosList[i];
-                    holder.Content.WriteUShort((ushort)(pos.x * 10));
-                    holder.Content.WriteUShort((ushort)(pos.y * 10));
+                    holder.Content.WriteUShort((ushort) (pos.x*10));
+                    holder.Content.WriteUShort((ushort) (pos.y*10));
                 }
                 return holder.Content.ReadableBytesToArray();
             }
@@ -100,22 +93,22 @@ namespace GameA.Game
 
         public void OnSync(byte[] deadPosAry)
         {
-            if(deadPosAry == null)
+            if (deadPosAry == null)
             {
                 return;
             }
             _deadPosList.Clear();
-            using(PooledEmptyByteBufHolder holder = PoolFactory<PooledEmptyByteBufHolder>.Get())
+            using (PooledEmptyByteBufHolder holder = PoolFactory<PooledEmptyByteBufHolder>.Get())
             {
                 holder.Content.SetBufForRead(deadPosAry);
-                while(holder.Content.CanRead)
+                while (holder.Content.CanRead)
                 {
                     try
                     {
-                        Vector2 v = new Vector2();
-                        v.x = holder.Content.ReadUShort() * 0.1f;
-                        v.y = holder.Content.ReadUShort() * 0.1f;
-                        if(v.x < 1 || v.y < 1)
+                        var v = new Vector2();
+                        v.x = holder.Content.ReadUShort()*0.1f;
+                        v.y = holder.Content.ReadUShort()*0.1f;
+                        if (v.x < 1 || v.y < 1)
                         {
                             break;
                         }
@@ -131,20 +124,17 @@ namespace GameA.Game
 
         public void Update()
         {
-            if(!_isPlay)
+            if (!_isPlay)
             {
                 return;
             }
-            if(_leftFrameCount >0)
+            if (_leftFrameCount > 0)
             {
                 _leftFrameCount--;
                 return;
             }
-            else
-            {
-                _leftFrameCount=1;
-            }
-            if(_iterator.MoveNext())
+            _leftFrameCount = 1;
+            if (_iterator.MoveNext())
             {
                 DeadMark dm = GetItem();
                 dm.Set(_iterator.Current, _deadMarkActiveList.Count);
@@ -164,7 +154,7 @@ namespace GameA.Game
 
         public void Stop()
         {
-            for(int i=0; i<_deadMarkActiveList.Count; i++)
+            for (int i = 0; i < _deadMarkActiveList.Count; i++)
             {
                 FreeItem(_deadMarkActiveList[i]);
             }
@@ -181,7 +171,7 @@ namespace GameA.Game
         private DeadMark GetItem()
         {
             DeadMark item = null;
-            if(_pool.Count > 0)
+            if (_pool.Count > 0)
             {
                 item = _pool.Pop();
                 item.gameObject.SetActive(true);
@@ -202,17 +192,17 @@ namespace GameA.Game
 
         private void OnMainPlayerDead()
         {
-            Vector3 deadPos = PlayMode.Instance.MainUnit.Trans.position + Vector3.up * 0.5f;
+            Vector3 deadPos = PlayMode.Instance.MainUnit.Trans.position + Vector3.up*0.5f;
             _curDeadPosList.Add(new Vector2(deadPos.x, deadPos.y));
         }
 
         private void OnGameRestart()
         {
             Stop();
-            for(int i=0; i<_curDeadPosList.Count; i++)
+            for (int i = 0; i < _curDeadPosList.Count; i++)
             {
                 _deadPosList.AddFirst(_curDeadPosList[i]);
-                if(_deadPosList.Count > 50)
+                if (_deadPosList.Count > 50)
                 {
                     _deadPosList.RemoveLast();
                 }

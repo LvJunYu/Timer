@@ -11,20 +11,8 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    public class UnitUpdateManager : MonoBehaviour
+    public class UnitUpdateManager
     {
-        public static UnitUpdateManager Instance;
-
-        private void Awake()
-        {
-            Instance = this;
-        }
-
-        private void OnDestroy()
-        {
-            Instance = null;
-        }
-
         public void UpdateLogic(float deltaTime)
         {
             var allUnits = ColliderScene2D.Instance.AllUnits;

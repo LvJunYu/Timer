@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using SoyEngine;
@@ -8,7 +9,7 @@ namespace GameA.Game
     /// <summary>
     /// 一次游戏（关卡）运行过程中的统计数据，涉及单人模式的三星条件、玩家成就等系统
     /// </summary>
-    public class GameStatistic
+    public class GameStatistic : IDisposable
     {
         #region fields
         /// <summary>
@@ -183,7 +184,8 @@ namespace GameA.Game
             Messenger.AddListener (EMessengerType.OnPlayerEnterPortal, OnPlayerEnterPortal);
             // todo movedistance
         }
-        public void Clear ()
+
+        public void Reset()
         {
             _passed = false;
             _usedTime = 0;
@@ -197,15 +199,6 @@ namespace GameA.Game
             _jumpCnt = 0;
             _switchTriggerCnt = 0;
             _portalUsedCnt = 0;
-
-            //Messenger.RemoveListener (EMessengerType.GameFinishSuccess, OnGameFinishSuccess);
-            //Messenger.RemoveListener (EMessengerType.GameFinishFailed, OnGameFinishFailed);
-            Messenger.RemoveListener (EMessengerType.OnMainPlayerDead, OnMainPlayerDead);
-            Messenger.RemoveListener (EMessengerType.OnGemCollect, OnGemCollect);
-            Messenger<EDieType>.RemoveListener (EMessengerType.OnMonsterDead, OnMonsterDead);
-            Messenger.RemoveListener (EMessengerType.OnPlayerJump, OnPlayerJump);
-            Messenger.RemoveListener (EMessengerType.OnSwitchTriggered, OnSwitchTriggered);
-            Messenger.RemoveListener (EMessengerType.OnPlayerEnterPortal, OnPlayerEnterPortal);
         }
 
         public void OnGameFinishSuccess ()
@@ -255,5 +248,15 @@ namespace GameA.Game
             _portalUsedCnt++;
         }
         #endregion
+
+        public void Dispose()
+        {
+            Messenger.RemoveListener(EMessengerType.OnMainPlayerDead, OnMainPlayerDead);
+            Messenger.RemoveListener(EMessengerType.OnGemCollect, OnGemCollect);
+            Messenger<EDieType>.RemoveListener(EMessengerType.OnMonsterDead, OnMonsterDead);
+            Messenger.RemoveListener(EMessengerType.OnPlayerJump, OnPlayerJump);
+            Messenger.RemoveListener(EMessengerType.OnSwitchTriggered, OnSwitchTriggered);
+            Messenger.RemoveListener(EMessengerType.OnPlayerEnterPortal, OnPlayerEnterPortal);
+        }
     }
 }

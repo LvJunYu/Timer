@@ -27,9 +27,14 @@ namespace GameA.Game
             _startType = startType;
             return true;
         }
-		public abstract IEnumerator InitByStep();
+		public abstract void InitByStep();
         public abstract void OnGameSuccess();
         public abstract void OnGameFailed();
+
+        public virtual void Update()
+        {
+            GameRun.Instance.Update();
+        }
 
         public virtual bool Pause()
         {

@@ -18,9 +18,10 @@ using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
-    public class PlayMode : MonoBehaviour
+    public class PlayMode : IDisposable
     {
-        public static PlayMode Instance;
+        private static PlayMode _instance;
+        private UnitUpdateManager _unitUpdateManager;
         [SerializeField]
         private bool _run;
         private bool _pausing;
@@ -30,22 +31,16 @@ namespace GameA.Game
         private List<int> _inputDatas = new List<int>();
         [SerializeField] private ESceneState _eSceneState = ESceneState.Play;
         [SerializeField] private ERunMode _eRunMode = ERunMode.Normal;
-        private bool _executeLogic;
-        [SerializeField] private int _logicFrameCnt;
-        [SerializeField] private float _unityTimeSinceGameStarted;
         [SerializeField] private MainUnit _mainUnit;
 
         private List<UnitBase> _waitDestroyUnits = new List<UnitBase>();
-
+        private List<Action> _nextActions = new List<Action>();
         private HashSet<UnitDesc> _addedDatas = new HashSet<UnitDesc>();
         private List<UnitDesc> _deletedDatas = new List<UnitDesc>();
 
-        private List<Action> _nextActions = new List<Action>();
 
         [SerializeField]
         private IntVec2 _focusPos;
-
-        //private UICtrlCountDown _countDownUI;
 
         private int _gameSucceedTime;
         private int _gameFailedTime;
@@ -55,8 +50,6 @@ namespace GameA.Game
         // 调试用的 逐帧逻辑播放
         private int _testStepByStep;
 
-        [SerializeField]
-        private List<SkeletonAnimation> _allSkeletonAnimationComp = new List<SkeletonAnimation>();
         private ShadowData _currentShadowData = new ShadowData();
 
         // 这一次Play使用的增益道具
@@ -66,6 +59,11 @@ namespace GameA.Game
         private GameStatistic _statistic;
 
         private Texture2D _maskBaseTexture;
+
+        public static PlayMode Instance
+        {
+            get { return _instance ?? (_instance = new PlayMode()); }
+        }
 
         public Texture2D MaskBaseTexture
         {
@@ -77,11 +75,6 @@ namespace GameA.Game
             get { return _eSceneState == ESceneState.Edit; }
         }
 
-        public bool Run
-        {
-            get { return _run; }
-        }
-
         public IntVec2 FocusPos
         {
             get { return _focusPos; }
@@ -91,11 +84,6 @@ namespace GameA.Game
         {
             get { return _mainUnit; }
             set { _mainUnit = value; }
-        }
-
-        public int LogicFrameCnt
-        {
-            get { return _logicFrameCnt; }
         }
 
         public int GameSuccessFrameCnt
@@ -137,25 +125,63 @@ namespace GameA.Game
             }
         }
 
-        private void Awake()
+        public bool Init()
         {
-            Instance = this;
-            transform.gameObject.AddComponent<UnitUpdateManager>();
-            //Messenger.AddListener(EMessengerType.GameFinishFailed, GameFinishFailed);
-            //Messenger.AddListener(EMessengerType.GameFinishSuccess, GameFinishSuccess);
-            Messenger.AddListener (EMessengerType.OnCountDownFinish, OnCountDownFinish);
-            Messenger<List<int>>.AddListener (EMessengerType.OnBoostItemSelectFinish, OnBoostItemSelectFinish);
-            _unityTimeSinceGameStarted = 0f;
-            _logicFrameCnt = 0;
-            _allSkeletonAnimationComp.Clear ();
+            Messenger<List<int>>.AddListener(EMessengerType.OnBoostItemSelectFinish, OnBoostItemSelectFinish);
+            
+            _unitUpdateManager = new UnitUpdateManager();
+            _statistic = new GameStatistic();
 
             Texture t;
             if (!GameResourceManager.Instance.TryGetTextureByName("Mask", out t))
             {
                 LogHelper.Error("GetMask Failed");
-                return;
+                return false;
             }
             _maskBaseTexture = t as Texture2D;
+            return true;
+        }
+
+        private void Reset()
+        {
+            for (int i = 0; i < _freezingNodes.Count; i++)
+            {
+                UnFreeze(_freezingNodes[i]);
+            }
+            _freezingNodes.Clear();
+            _nextActions.Clear();
+            _waitDestroyUnits.Clear();
+            _statistic.Reset();
+
+            foreach (var unitDesc in _addedDatas)
+            {
+                var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+                ColliderScene2D.Instance.DestroyView(unitDesc);
+                ColliderScene2D.Instance.DeleteUnit(unitDesc, tableUnit);
+            }
+            _addedDatas.Clear();
+            for (int i = 0; i < _deletedDatas.Count; i++)
+            {
+                var unitDesc = _deletedDatas[i];
+                var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+                ColliderScene2D.Instance.AddUnit(unitDesc, tableUnit);
+            }
+            _deletedDatas.Clear();
+            ColliderScene2D.Instance.Reset();
+            GameAudioManager.Instance.StopAll();
+            GameParticleManager.Instance.ClearAll();
+            PairUnitManager.Instance.Reset();
+            _sceneState.Reset();
+        }
+
+        public void Dispose()
+        {
+            Messenger<List<int>>.RemoveListener(EMessengerType.OnBoostItemSelectFinish, OnBoostItemSelectFinish);
+            if (_statistic != null)
+            {
+                _statistic.Dispose();
+            }
+            _instance = null;
         }
 
         public void Pause()
@@ -168,99 +194,31 @@ namespace GameA.Game
             _pausing = false;
         }
 
-        private void OnDestroy()
-        {
-            //Messenger.RemoveListener(EMessengerType.GameFinishFailed, GameFinishFailed);
-            //Messenger.RemoveListener(EMessengerType.GameFinishSuccess, GameFinishSuccess);
-            Messenger.RemoveListener (EMessengerType.OnCountDownFinish, OnCountDownFinish);
-            Instance = null;
-            if (null != _statistic)
-            {
-                _statistic.Clear ();
-                _statistic = null;
-            }
-        }
-
         public void OnReadMapFile(Table_Unit tableUnit)
         {
             _sceneState.Check(tableUnit);
         }
 
-        private void Update()
+        public void UpdateLogic(float deltaTime)
         {
-            CrossPlatformInputManager.Update();
-            if (MapManager.Instance == null || !MapManager.Instance.GenerateMapComplete)
-            {
-                return;
-            }
             if (!_run)
             {
                 return;
             }
-            GuideManager.Instance.Update();
-#if UNITY_EDITOR
-            if (Input.GetKeyDown (KeyCode.P)) {
-                _testStepByStep++;
-            }
-#endif
-            if (_pausing && _testStepByStep <= 0)
+            if (_pausing && _mainUnit.Life <= 0)
             {
-                if (_mainUnit.Life <= 0)
-                {
-                    //_mainUnit.UpdateSpeedY();
-                    _mainUnit.UpdateView(ConstDefineGM2D.FixedDeltaTime);
-                    //_mainUnit.AfterUpdatePhysics(ConstDefineGM2D.FixedDeltaTime);
-                    for (int i = 0; i < _allSkeletonAnimationComp.Count; i++)
-                    {
-                        _allSkeletonAnimationComp[i].Update(ConstDefineGM2D.FixedDeltaTime);
-                    }
-                    return;
-                }
+                _mainUnit.UpdateView(ConstDefineGM2D.FixedDeltaTime);
                 return;
             }
-            _unityTimeSinceGameStarted += Time.deltaTime * GM2DGame.Instance.GamePlaySpeed;
-            if (_testStepByStep > 0)
-            {
-                _testStepByStep--;
-                _unityTimeSinceGameStarted = (_logicFrameCnt + 1) * ConstDefineGM2D.FixedDeltaTime;
-            }
-            while (_logicFrameCnt*ConstDefineGM2D.FixedDeltaTime < _unityTimeSinceGameStarted)
-            {
-                _executeLogic = _logicFrameCnt*ConstDefineGM2D.FixedDeltaTime < _unityTimeSinceGameStarted;
-                UpdateRenderer(Mathf.Min(Time.deltaTime, ConstDefineGM2D.FixedDeltaTime));
-                CheckUnit();
-                if (_executeLogic)
-                {
-                    BeforeUpdateLogic();
-                    UpdateLogic(ConstDefineGM2D.FixedDeltaTime);
-                    _logicFrameCnt++;
-                }
-                if (!_sceneState.GameRunning)
-                {
-                    if (_logicFrameCnt - _gameSucceedTime == 100)
-                    {
-						// 改成提交成绩成功后，广播消息 在GM2DGame里
-//                        Messenger.Broadcast(EMessengerType.GameFinishSuccessShowUI);
-                    }
-                    return;
-                }
-            }
-        }
-
-        private void UpdateLogic(float deltaTime)
-        {
+            BeforeUpdateLogic();
             ColliderScene2D.Instance.UpdateLogic(_focusPos);
-            if (_mainUnit != null)
+            if (_mainUnit != null && _unitUpdateManager != null)
             {
-                UnitUpdateManager.Instance.UpdateLogic(deltaTime);
+                _unitUpdateManager.UpdateLogic(deltaTime);
             }
             if (_sceneState != null)
             {
                 _sceneState.UpdateLogic(deltaTime);
-            }
-            for (int i = 0; i < _allSkeletonAnimationComp.Count; i++)
-            {
-                _allSkeletonAnimationComp[i].Update(ConstDefineGM2D.FixedDeltaTime);
             }
             if (_mainUnit != null && _mainUnit.Life > 0)
             {
@@ -269,28 +227,16 @@ namespace GameA.Game
             if (_mainUnit != null)
             {
                 _focusPos = GetFocusPos(_mainUnit.CameraFollowPos);
-
-                //var r = _mainUnit.View as ChangePartsSpineView;
-                //if (r != null) {
-                //    r.SetParts (_logicFrameCnt / 50 % 3 + 1, SpinePartsHelper.ESpineParts.Head);
-                //}
-            }
-        }
-
-        public void UpdateLogicEdit()
-        {
-            if (_run)
-            {
-                return;
-            }
-            for (int i = 0; i < _allSkeletonAnimationComp.Count; i++)
-            {
-                _allSkeletonAnimationComp[i].Update(ConstDefineGM2D.FixedDeltaTime);
             }
         }
 
         private void BeforeUpdateLogic()
         {
+            for (int i = _waitDestroyUnits.Count - 1; i >= 0; i--)
+            {
+                DeleteUnit(_waitDestroyUnits[i]);
+                _waitDestroyUnits.RemoveAt(i);
+            }
             if (_nextActions.Count > 0)
             {
                 for (int i = 0; i < _nextActions.Count; i++)
@@ -309,17 +255,11 @@ namespace GameA.Game
             _nextActions.Add(action);
         }
 
-        private void UpdateRenderer(float deltaTime)
+        public void UpdateRenderer(float deltaTime)
         {
-            UnitUpdateManager.Instance.UpdateRenderer(deltaTime);
-        }
-
-        private void CheckUnit()
-        {
-            for (int i = _waitDestroyUnits.Count - 1; i >= 0; i--)
+            if (_unitUpdateManager != null)
             {
-                DeleteUnit(_waitDestroyUnits[i]);
-                _waitDestroyUnits.RemoveAt(i);
+                _unitUpdateManager.UpdateRenderer(deltaTime);
             }
         }
 
@@ -465,7 +405,7 @@ namespace GameA.Game
 
         public void GameFinishSuccess()
         {
-            _gameSucceedTime = _logicFrameCnt;
+            _gameSucceedTime = GameRun.Instance.LogicFrameCnt;
             GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.GameAudioBgm01);
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
             _mainUnit.OnSucceed();
@@ -477,34 +417,13 @@ namespace GameA.Game
 
         public void GameFinishFailed()
         {
-            _gameFailedTime = _logicFrameCnt;
             _run = false;
+            _gameFailedTime = GameRun.Instance.LogicFrameCnt; 
             if (null != _statistic)
             {
                 _statistic.OnGameFinishFailed ();
             }
             GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.GameAudioBgm01);
-        }
-
-        public void RegistSpineSkeletonAnimation(SkeletonAnimation skeletonAnimation)
-        {
-            if (!_allSkeletonAnimationComp.Contains(skeletonAnimation))
-            {
-                _allSkeletonAnimationComp.Add(skeletonAnimation);
-            }
-        }
-
-        public void UnRegistSpineSkeletonAnimation(SkeletonAnimation skeletonAnimation)
-        {
-            if (_allSkeletonAnimationComp.Contains(skeletonAnimation))
-            {
-                _allSkeletonAnimationComp.Remove(skeletonAnimation);
-            }
-        }
-
-        private void OnCountDownFinish ()
-        {
-            PlayPlay ();
         }
 
         private void OnBoostItemSelectFinish (List<int> items)
@@ -549,23 +468,6 @@ namespace GameA.Game
             }
         }
 
-        private void Clear()
-        {
-            for (int i = 0; i < _freezingNodes.Count; i++)
-            {
-                UnFreeze(_freezingNodes[i]);
-            }
-            _freezingNodes.Clear();
-            _nextActions.Clear();
-            _waitDestroyUnits.Clear();
-            ColliderScene2D.Instance.Reset();
-            GameAudioManager.Instance.StopAll();
-            GameParticleManager.Instance.ClearAll();
-            _sceneState.RePlay();
-            PairUnitManager.Instance.Reset();
-            RevertData();
-        }
-
         public bool CheckPlayerValid()
         {
             var mainPlayer = DataScene2D.Instance.MainPlayer;
@@ -582,82 +484,75 @@ namespace GameA.Game
             return true;
         }
 
-		private void StartEdit()
+		public bool StartEdit()
 		{
-            LogHelper.Debug("StartEdit");
-            _run = false;
-            Clear();
             if (!CheckPlayerValid())
             {
-                return;
+                return false;
             }
+            _run = false;
+            Reset();
             if (_cameraEditPosCache != Vector2.zero)
             {
                 CameraManager.Instance.SetEditorModeStartPos(_cameraEditPosCache);
             }
             UpdateWorldRegion(GM2DTools.WorldToTile(CameraManager.Instance.FinalPos), true);
-            //Clear
             var units = ColliderScene2D.Instance.Units.Values.ToArray();
             for (int i = 0; i < units.Length; i++)
             {
-                var unit = units[i];
-		        unit.OnEdit();
+                units[i].OnEdit();
 		    }
-            _unityTimeSinceGameStarted = 0;
-            _logicFrameCnt = 0;
-			Messenger.Broadcast(EMessengerType.OnEdit);
+            return true;
 		}
 
-        private void StartPlay ()
+        public bool StartPlay()
         {
-            _run = false;
+            if (!CheckPlayerValid())
+            {
+                return false;
+            }
             _cameraEditPosCache = CameraManager.Instance.FinalPos;
-            LogHelper.Debug ("StartPlay");
-            _sceneState.OnPlay ();
+            PreparePlay();
+            return true;
+        }
+
+        public bool RePlay()
+        {
             if (!CheckPlayerValid())
             {
-                return;
+                return false;
             }
-            BeforePlay();
-            var mainPlayer = DataScene2D.Instance.MainPlayer;
-            var colliderPos = new IntVec2 (mainPlayer.Grid.XMin, mainPlayer.Grid.YMin);
-            UpdateWorldRegion (colliderPos, true);
-//            var units = ColliderScene2D.Instance.Units.Values.ToArray();
-//            for (int i = 0; i < units.Length; i++)
-//            {
-//                var unit = units[i];
-//                unit.OnPlay ();
-//            }
-            OnPlay ();
-		}
+            Reset();
+            PreparePlay();
+            return true;
+        }
 
-        public void RePlay()
+        private void PreparePlay()
         {
             _run = false;
-            SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
-            LogHelper.Debug("RePlay");
-            Clear();
-            if (!CheckPlayerValid())
-            {
-                return;
-            }
             BeforePlay();
+            _sceneState.StartPlay();
             var mainPlayer = DataScene2D.Instance.MainPlayer;
             var colliderPos = new IntVec2(mainPlayer.Grid.XMin, mainPlayer.Grid.YMin);
             UpdateWorldRegion(colliderPos, true);
-            //Clear
+        }
+
+        public bool Playing()
+        {
+            _pausing = false;
+            _run = true;
+            ColliderScene2D.Instance.SortData();
+            CrossPlatformInputManager.ClearVirtualInput();
             var units = ColliderScene2D.Instance.Units.Values.ToArray();
             for (int i = 0; i < units.Length; i++)
             {
                 var unit = units[i];
-                unit.Reset();
                 unit.OnPlay();
             }
-            OnPlay();
-            Messenger.Broadcast(EMessengerType.OnGameRestart);
+            return true;
         }
 
-         internal void BeforePlay()
+        private void BeforePlay()
         {
             bool flag = false;
             var iter = PairUnitManager.Instance.PairUnits.GetEnumerator();
@@ -682,41 +577,6 @@ namespace GameA.Game
             {
                 Messenger<string>.Broadcast(EMessengerType.GameLog, "已移除没有成双的机关喔~");
             }
-        }
-
-        private void OnPlay()
-        {
-            _unityTimeSinceGameStarted = 0f;
-            _logicFrameCnt = 0;
-            _pausing = false;
-            ColliderScene2D.Instance.SortData();
-            Messenger.Broadcast (EMessengerType.OnReady2Play);
-
-            CrossPlatformInputManager.ClearVirtualInput();
-        }
-
-        private void PlayPlay()
-        {
-            _run = true;
-            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioStartGame);
-            GameAudioManager.Instance.PlayMusic(AudioNameConstDefineGM2D.GameAudioBgm01);
-            _unityTimeSinceGameStarted = 0f;
-            _logicFrameCnt = 0;
-            var units = ColliderScene2D.Instance.Units.Values.ToArray();
-            for (int i = 0; i < units.Length; i++)
-            {
-                var unit = units[i];
-                unit.OnPlay ();
-            }
-
-            if (null != _statistic)
-            {
-                _statistic.Clear ();
-                _statistic = null;
-            }
-            _statistic = new GameStatistic ();
-
-            Messenger.Broadcast(EMessengerType.OnPlay);
         }
 
         /// <summary>
@@ -745,24 +605,6 @@ namespace GameA.Game
             followPos.x = Mathf.Clamp(followPos.x, validMapRect.Min.x + size.x, validMapRect.Max.x + 1 - size.x);
             followPos.y = Mathf.Clamp(followPos.y, validMapRect.Min.y + size.y, validMapRect.Max.y + 1 - size.y);
             return followPos;
-        }
-
-        private void RevertData()
-        {
-            foreach (var unitDesc in _addedDatas)
-            {
-                var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-                ColliderScene2D.Instance.DestroyView(unitDesc);
-                ColliderScene2D.Instance.DeleteUnit(unitDesc, tableUnit);
-            }
-            _addedDatas.Clear();
-            for (int i = 0; i < _deletedDatas.Count; i++)
-            {
-                var unitDesc = _deletedDatas[i];
-                var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-                ColliderScene2D.Instance.AddUnit(unitDesc, tableUnit);
-            }
-            _deletedDatas.Clear();
         }
       
 #endregion
