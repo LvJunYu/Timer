@@ -121,11 +121,16 @@ namespace GameA.Game
 
         protected virtual void OnBlocked()
         {
-            ////检查地块范围
+            //检查地块范围
             //var units = ColliderScene2D.CircleCastAllReturnUnits(_curPos, _skill.Radius, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer));
             //for (int i = 0; i < units.Count; i++)
             //{
-            //    LogHelper.Debug(units[i].ToString());
+            //    var unit = units[i];
+            //    if (unit.CanPainted)
+            //    {
+            //        LogHelper.Debug(units[i].ToString());
+            //        DoPaint(unit, eDirectionType);
+            //    }
             //}
             _isAlive = false;
             --Life;
