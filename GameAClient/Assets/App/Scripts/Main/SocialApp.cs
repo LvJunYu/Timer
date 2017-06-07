@@ -136,6 +136,7 @@ namespace GameA
 	    {
 			gameObject.AddComponent<TableManager>();
 			TableManager.Instance.Init();
+            UnitManager.Instance.Init();
 			SocialGUIManager.Instance.ShowAppView();
 		}
 

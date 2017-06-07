@@ -41,7 +41,6 @@ namespace GameA.Game
             EnvManager.Instance.Init();
             GameParticleManager.Instance.Init();
             GameAudioManager.Instance.Init();
-            UnitManager.Instance.Init();
             DeadMarkManager.Instance.Init();
             InputManager.Instance.Init();
             if (!MapManager.Instance.Init(eGameInitType, project))
@@ -79,7 +78,6 @@ namespace GameA.Game
             PoolFactory<BulletWater>.Clear();
             PoolFactory<SpineObject>.Clear();
 
-            UnitManager.Instance.Dispose();
             CameraManager.Instance.Dispose();
             _instance = null;
         }
