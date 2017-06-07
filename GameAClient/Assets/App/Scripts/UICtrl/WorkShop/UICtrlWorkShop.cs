@@ -1,8 +1,8 @@
 ﻿/********************************************************************
-** Filename : UICtrlMatrixDetail
-** Author : Quan
-** Date : 2015/4/30 16:35:16
-** Summary : UICtrlMatrixDetail
+** Filename : UICtrlWorkShop.cs
+** Author : quan
+** Date : 6/7/2017 10:54 AM
+** Summary : UICtrlWorkShop.cs
 ***********************************************************************/
 
 using System;
@@ -11,6 +11,7 @@ using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
 namespace GameA
@@ -574,7 +575,7 @@ namespace GameA
             if (_state == EWorkShopState.Edit) {
                 _cachedView.Private.SetActive (true);
                 _cachedView.Public.SetActive (false);
-                DictionaryTools.SetContentText(_cachedView.ChangeModeBtnText, "工坊中的关卡");
+                DictionaryTools.SetContentText(_cachedView.ChangeModeBtnText, "创作中的关卡");
             } else if (_state == EWorkShopState.PublishList) {
                 LocalUser.Instance.UserPublishedWorldProjectList.Request(
                     LocalUser.Instance.UserGuid,
@@ -693,6 +694,7 @@ namespace GameA
             _cachedView.TitleInput.gameObject.SetActive (true);
             _cachedView.EditTitleBtn.gameObject.SetActive (false);
             _cachedView.ConfirmTitleBtn.gameObject.SetActive (true);
+            EventSystem.current.SetSelectedGameObject(_cachedView.TitleInput.gameObject);
         }
 
         private void OnConfirmTitleBtn () {
@@ -717,6 +719,7 @@ namespace GameA
             _cachedView.DescInput.gameObject.SetActive (true);
             _cachedView.EditDescBtn.gameObject.SetActive (false);
             _cachedView.ConfirmDescBtn.gameObject.SetActive (true);
+            EventSystem.current.SetSelectedGameObject(_cachedView.DescInput.gameObject);
         }
         private void OnConfirmDescBtn () {
             string newDesc = _cachedView.DescInput.text;
