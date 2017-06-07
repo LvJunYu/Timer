@@ -67,6 +67,12 @@ namespace GameA
 			//UpdateLifeItem();
 		}
 
+        public override void OnUpdate ()
+        {
+            base.OnUpdate ();
+            _cachedView.ShineRotateRoot.localRotation = Quaternion.Euler (0, 0, -Time.realtimeSinceStartup * 20f);
+        }
+
 		#region   private
 
 		private void UpdateLifeItem()
@@ -328,6 +334,8 @@ namespace GameA
                 // 奖励
                 _cachedView.RewardObj.SetActive (true);
                 UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
+
+                _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishWin3Star");
                 break;
             case EShowState.AdvBonusLose:
                 break;
@@ -342,6 +350,8 @@ namespace GameA
                 _cachedView.ScoreOutLine.gameObject.SetActive (false);
                 _cachedView.RewardObj.SetActive (true);
                 UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
+
+                _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishLose");
                 break;
             case EShowState.ChallengeWin:
                 _cachedView.Win.SetActive (true);
@@ -359,6 +369,8 @@ namespace GameA
                 // 奖励
                 _cachedView.RewardObj.SetActive (true);
                 UpdateReward (LocalUser.Instance.MatchUserData.LastChallengeReward);
+
+                _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishWin3Star");
                 break;
             case EShowState.ChallengeLose:
                 _cachedView.Win.SetActive (false);
@@ -371,6 +383,8 @@ namespace GameA
                 _cachedView.ScoreOutLine.gameObject.SetActive (false);
                 _cachedView.RewardObj.SetActive (true);
                 UpdateReward (LocalUser.Instance.MatchUserData.LastChallengeReward);
+
+                _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishLose");
                 break;
             case EShowState.EditorLose:
                 _cachedView.Win.SetActive (false);
@@ -382,6 +396,8 @@ namespace GameA
                 _cachedView.Score.gameObject.SetActive (false);
                 _cachedView.ScoreOutLine.gameObject.SetActive (false);
                 _cachedView.RewardObj.SetActive (false);
+
+                _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishLose");
                 break;
             case EShowState.EditorWin:
                 _cachedView.Win.SetActive (true);
@@ -395,6 +411,8 @@ namespace GameA
                 _cachedView.Score.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
                 _cachedView.ScoreOutLine.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
                 _cachedView.RewardObj.SetActive (false);
+
+                _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishWin3Star");
                 break;
             }
             return;
