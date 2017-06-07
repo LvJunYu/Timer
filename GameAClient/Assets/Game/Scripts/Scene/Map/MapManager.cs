@@ -48,12 +48,17 @@ namespace GameA.Game
 
 		private void OnDestroy()
 		{
-			DataScene2D.Instance.Dispose();
-			ColliderScene2D.Instance.Dispose();
+            Clear ();
+		    Instance = null;
+		}
+        public void Clear ()
+        {
+            DataScene2D.Instance.Dispose();
+            ColliderScene2D.Instance.Dispose();
             BgScene2D.Instance.Dispose();
             PairUnitManager.Instance.Dispose();
             PoolFactory<SpineUnit>.Clear();
-			PoolFactory<ChangePartsSpineView>.Clear ();
+            PoolFactory<ChangePartsSpineView>.Clear ();
             PoolFactory<SpriteUnit>.Clear();
             PoolFactory<MorphUnit>.Clear();
             PoolFactory<EmptyUnit>.Clear();
@@ -61,8 +66,7 @@ namespace GameA.Game
 
             PoolFactory<BulletWater>.Clear();
             PoolFactory<SpineObject>.Clear();
-		    Instance = null;
-		}
+        }
 
 		public bool Init(GameManager.EStartType eGameInitType, Project project)
 		{
@@ -85,7 +89,10 @@ namespace GameA.Game
 		    }
             if (_mapFile == null)
 			{
-				_mapFile = gameObject.AddComponent<MapFile>();
+                _mapFile = gameObject.GetComponent<MapFile>();
+                if (_mapFile == null) {
+                    _mapFile = gameObject.AddComponent<MapFile>();
+                }
 			}
 			switch (eGameInitType)
             {

@@ -92,6 +92,54 @@ namespace GameA.Game
             });
         }
 
+        public override bool Restart (Action successCb, Action failedCb)
+        {
+
+            var tableLevel = AppData.Instance.AdventureData.GetAdvLevelTable (
+                AppData.Instance.AdventureData.LastPlayedChapterIdx + 1,
+                AppData.Instance.AdventureData.LastPlayedLevelIdx + 1,
+                AppData.Instance.AdventureData.LastPlayedLevelType
+            );
+            if (null == tableLevel) return false;
+            if (GameATools.CheckEnergy (tableLevel.EnergyCost)) {
+//                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (
+//                    this, "...");
+                AppData.Instance.AdventureData.RetryAdvLevel (
+                    () => {
+//                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                        // set local energy data
+                        GameATools.LocalUseEnergy (tableLevel.EnergyCost);
+//                        if (null != successCb) {
+//                            successCb.Invoke ();
+//                        }
+                        base.Restart (successCb, failedCb);
+                    },
+                    (error) => {
+                        if (null != failedCb) {
+                            failedCb.Invoke ();
+                        }
+//                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                    }
+                );
+                return true;
+            } else {
+                SocialGUIManager.ShowPopupDialog(
+                    "体力不够了",
+                    null,
+                    new System.Collections.Generic.KeyValuePair<string, Action> (
+                        "确定",
+                        () => {
+                            if (null != failedCb) {
+                                failedCb.Invoke ();
+                            }
+                        }
+                    )
+                );
+                return false;
+            }
+            return false;
+        }
+
 
 		private void CommitGameResult(Action successCB, Action<ENetResultCode> failureCB)
 		{

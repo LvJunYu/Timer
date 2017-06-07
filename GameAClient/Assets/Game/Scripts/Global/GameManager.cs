@@ -204,14 +204,24 @@ namespace GameA
 
         private bool RequestStartGame(Project project, EStartType eStartType, object param = null)
         {
+            GameBase game;
+            GameObject go = GameObject.Find (_gameType.Name);
+            if (null != go) {
+                game = go.GetComponent(_gameType) as GameBase;
+            } else {
+                go = new GameObject(_gameType.Name);
+                game = go.AddComponent(_gameType) as GameBase;
+            }
             //做成Component 为了切换Game时候的内存释放
-            var go = new GameObject(_gameType.Name);
-            var game = go.AddComponent(_gameType) as GameBase;
+
+
             if (game == null)
             {
                 return false;
             }
-            go.AddComponent<ResourceManager>();
+            if (go.GetComponent<ResourceManager> () == null) {
+                go.AddComponent<ResourceManager> ();
+            }
             game.Play(project, param, eStartType);
             _currentGame = game;
             Messenger.Broadcast(EMessengerType.OnRequestStartGame);
