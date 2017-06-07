@@ -19,44 +19,20 @@ namespace GameA.Game
     {
         public static GameRun _instance;
 
+        [SerializeField] private readonly List<SkeletonAnimation> _allSkeletonAnimationComp =
+            new List<SkeletonAnimation>();
+
+        private int _logicFrameCnt;
+        private float _unityTimeSinceGameStarted;
+
         public static GameRun Instance
         {
             get { return _instance ?? (_instance = new GameRun()); }
         }
 
-        private int _logicFrameCnt;
-        private float _unityTimeSinceGameStarted;
-
-        [SerializeField]
-        private List<SkeletonAnimation> _allSkeletonAnimationComp = new List<SkeletonAnimation>();
-
         public int LogicFrameCnt
         {
             get { return _logicFrameCnt; }
-        }
-
-        public bool Init(GameManager.EStartType eGameInitType, Project project)
-        {
-            CameraManager.Instance.Init();
-            EnvManager.Instance.Init();
-            GameParticleManager.Instance.Init();
-            GameAudioManager.Instance.Init();
-            DeadMarkManager.Instance.Init();
-            InputManager.Instance.Init();
-            if (!MapManager.Instance.Init(eGameInitType, project))
-            {
-                return false;
-            }
-            if (!PlayMode.Instance.Init())
-            {
-                return false;
-            }
-            return true;
-        }
-
-        public void Clear()
-        {
-            _allSkeletonAnimationComp.Clear();
         }
 
         public void Dispose()
@@ -68,7 +44,7 @@ namespace GameA.Game
             DeadMarkManager.Instance.Dispose();
             InputManager.Instance.Dispose();
             MapManager.Instance.Dispose();
-         
+
             PoolFactory<SpineUnit>.Clear();
             PoolFactory<ChangePartsSpineView>.Clear();
             PoolFactory<SpriteUnit>.Clear();
@@ -80,6 +56,45 @@ namespace GameA.Game
 
             CameraManager.Instance.Dispose();
             _instance = null;
+        }
+
+        public IEnumerator Init(GameManager.EStartType eGameInitType, Project project)
+        {
+            CameraManager.Instance.Init();
+            EnvManager.Instance.Init();
+            GameParticleManager.Instance.Init();
+            GameAudioManager.Instance.Init();
+            DeadMarkManager.Instance.Init();
+            InputManager.Instance.Init();
+            PlayMode.Instance.Init();
+            MapManager.Instance.Init(eGameInitType, project);
+            while (!MapManager.Instance.GenerateMapComplete)
+            {
+                Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 0.8f + MapManager.Instance.MapProcess * 0.2f);
+                yield return new WaitForSeconds(0.1f);
+            }
+            Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 1f);
+            yield return null;
+        }
+
+        public void Clear()
+        {
+            _allSkeletonAnimationComp.Clear();
+        }
+
+        internal void Pause()
+        {
+            PlayMode.Instance.Pause();
+        }
+
+        internal void Continue()
+        {
+            PlayMode.Instance.Continue();
+        }
+
+        internal void Stop()
+        {
+            MapManager.Instance.Stop();
         }
 
         public void RegistSpineSkeletonAnimation(SkeletonAnimation skeletonAnimation)
@@ -100,16 +115,21 @@ namespace GameA.Game
 
         public void Update()
         {
+            if (!MapManager.Instance.GenerateMapComplete)
+            {
+                return;
+            }
             CrossPlatformInputManager.Update();
             if (EditMode.Instance != null)
             {
                 EditMode.Instance.Update();
             }
-            _unityTimeSinceGameStarted += Time.deltaTime * GM2DGame.Instance.GamePlaySpeed;
-            while (_logicFrameCnt * ConstDefineGM2D.FixedDeltaTime < _unityTimeSinceGameStarted)
+            MapManager.Instance.Update();
+            _unityTimeSinceGameStarted += Time.deltaTime*GM2DGame.Instance.GamePlaySpeed;
+            while (_logicFrameCnt*ConstDefineGM2D.FixedDeltaTime < _unityTimeSinceGameStarted)
             {
                 UpdateRenderer(Mathf.Min(Time.deltaTime, ConstDefineGM2D.FixedDeltaTime));
-                if (_logicFrameCnt * ConstDefineGM2D.FixedDeltaTime < _unityTimeSinceGameStarted)
+                if (_logicFrameCnt*ConstDefineGM2D.FixedDeltaTime < _unityTimeSinceGameStarted)
                 {
                     UpdateLogic(ConstDefineGM2D.FixedDeltaTime);
                     _logicFrameCnt++;
@@ -160,7 +180,7 @@ namespace GameA.Game
         }
 
         /// <summary>
-        /// 重新开始
+        ///     重新开始
         /// </summary>
         public bool RePlay()
         {

@@ -6,59 +6,45 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 using UnitySampleAssets.CrossPlatformInput;
-using Spine.Unity;
-using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
     public class PlayMode : IDisposable
     {
         private static PlayMode _instance;
-        private UnitUpdateManager _unitUpdateManager;
-        [SerializeField]
-        private bool _run;
-        private bool _pausing;
+        private readonly HashSet<UnitDesc> _addedDatas = new HashSet<UnitDesc>();
+        private readonly ShadowData _currentShadowData = new ShadowData();
+        private readonly List<UnitDesc> _deletedDatas = new List<UnitDesc>();
 
         private readonly List<UnitBase> _freezingNodes = new List<UnitBase>();
-        private SceneState _sceneState = new SceneState();
-        private List<int> _inputDatas = new List<int>();
-        [SerializeField] private ESceneState _eSceneState = ESceneState.Play;
+        private readonly List<Action> _nextActions = new List<Action>();
+        private readonly SceneState _sceneState = new SceneState();
+
+        private readonly List<UnitBase> _waitDestroyUnits = new List<UnitBase>();
+        private List<int> _boostItems;
+        private Vector2 _cameraEditPosCache = Vector2.zero;
         [SerializeField] private ERunMode _eRunMode = ERunMode.Normal;
+        [SerializeField] private ESceneState _eSceneState = ESceneState.Play;
+
+
+        [SerializeField] private IntVec2 _focusPos;
+
+        private int _gameFailedTime;
+        private int _gameSucceedTime;
+        private List<int> _inputDatas = new List<int>();
         [SerializeField] private MainUnit _mainUnit;
 
-        private List<UnitBase> _waitDestroyUnits = new List<UnitBase>();
-        private List<Action> _nextActions = new List<Action>();
-        private HashSet<UnitDesc> _addedDatas = new HashSet<UnitDesc>();
-        private List<UnitDesc> _deletedDatas = new List<UnitDesc>();
-
-
-        [SerializeField]
-        private IntVec2 _focusPos;
-
-        private int _gameSucceedTime;
-        private int _gameFailedTime;
-
-        private Vector2 _cameraEditPosCache = Vector2.zero;
-
-        // 调试用的 逐帧逻辑播放
-        private int _testStepByStep;
-
-        private ShadowData _currentShadowData = new ShadowData();
-
-        // 这一次Play使用的增益道具
-        private List<int> _boostItems;
-
-        // 统计
-        private GameStatistic _statistic;
-
         private Texture2D _maskBaseTexture;
+        private bool _pausing;
+        [SerializeField] private bool _run;
+        private GameStatistic _statistic;
+        private UnitUpdateManager _unitUpdateManager;
 
         public static PlayMode Instance
         {
@@ -93,18 +79,18 @@ namespace GameA.Game
 
         public int GameFailFrameCnt
         {
-            get { return this._gameFailedTime; }
+            get { return _gameFailedTime; }
         }
 
-	    public SceneState SceneState
-	    {
-		    get { return _sceneState; }
-	    }
+        public SceneState SceneState
+        {
+            get { return _sceneState; }
+        }
 
         public ERunMode ERunMode
         {
             get { return _eRunMode; }
-            set { _eRunMode = value;}
+            set { _eRunMode = value; }
         }
 
         public List<int> InputDatas
@@ -113,22 +99,31 @@ namespace GameA.Game
             set { _inputDatas = value; }
         }
 
-        public ShadowData CurrentShadow {
+        public ShadowData CurrentShadow
+        {
             get { return _currentShadowData; }
         }
+
         // 统计
         public GameStatistic Statistic
         {
-            get 
+            get { return _statistic; }
+        }
+
+        public void Dispose()
+        {
+            Messenger<List<int>>.RemoveListener(EMessengerType.OnBoostItemSelectFinish, OnBoostItemSelectFinish);
+            if (_statistic != null)
             {
-                return _statistic;
+                _statistic.Dispose();
             }
+            _instance = null;
         }
 
         public bool Init()
         {
             Messenger<List<int>>.AddListener(EMessengerType.OnBoostItemSelectFinish, OnBoostItemSelectFinish);
-            
+
             _unitUpdateManager = new UnitUpdateManager();
             _statistic = new GameStatistic();
 
@@ -153,17 +148,17 @@ namespace GameA.Game
             _waitDestroyUnits.Clear();
             _statistic.Reset();
 
-            foreach (var unitDesc in _addedDatas)
+            foreach (UnitDesc unitDesc in _addedDatas)
             {
-                var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
                 ColliderScene2D.Instance.DestroyView(unitDesc);
                 ColliderScene2D.Instance.DeleteUnit(unitDesc, tableUnit);
             }
             _addedDatas.Clear();
             for (int i = 0; i < _deletedDatas.Count; i++)
             {
-                var unitDesc = _deletedDatas[i];
-                var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+                UnitDesc unitDesc = _deletedDatas[i];
+                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
                 ColliderScene2D.Instance.AddUnit(unitDesc, tableUnit);
             }
             _deletedDatas.Clear();
@@ -172,16 +167,6 @@ namespace GameA.Game
             GameParticleManager.Instance.ClearAll();
             PairUnitManager.Instance.Reset();
             _sceneState.Reset();
-        }
-
-        public void Dispose()
-        {
-            Messenger<List<int>>.RemoveListener(EMessengerType.OnBoostItemSelectFinish, OnBoostItemSelectFinish);
-            if (_statistic != null)
-            {
-                _statistic.Dispose();
-            }
-            _instance = null;
         }
 
         public void Pause()
@@ -265,10 +250,10 @@ namespace GameA.Game
 
         public UnitBase CreateUnitView(UnitDesc unitDesc)
         {
-            var unit = UnitManager.Instance.GetUnit(unitDesc.Id);
+            UnitBase unit = UnitManager.Instance.GetUnit(unitDesc.Id);
             if (unit != null)
             {
-                var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
                 if (tableUnit == null)
                 {
                     LogHelper.Error("CreateUnitView Failed,{0}", unitDesc);
@@ -284,14 +269,16 @@ namespace GameA.Game
 
         public UnitBase CreateRuntimeUnit(int id, IntVec2 pos, byte rotation = 0)
         {
-            return CreateUnit(new UnitDesc(id, new IntVec3(pos.x, pos.y, GM2DTools.GetRuntimeCreatedUnitDepth()), rotation, Vector2.one));
+            return
+                CreateUnit(new UnitDesc(id, new IntVec3(pos.x, pos.y, GM2DTools.GetRuntimeCreatedUnitDepth()), rotation,
+                    Vector2.one));
         }
 
         public UnitBase CreateUnit(UnitDesc unitDesc)
         {
             for (int i = _waitDestroyUnits.Count - 1; i >= 0; i--)
             {
-                var current = _waitDestroyUnits[i];
+                UnitBase current = _waitDestroyUnits[i];
                 if (current.UnitDesc == unitDesc)
                 {
                     _waitDestroyUnits.RemoveAt(i);
@@ -376,7 +363,7 @@ namespace GameA.Game
             {
                 return false;
             }
-			return true;
+            return true;
         }
 
         public void Freeze(UnitBase unit)
@@ -390,7 +377,7 @@ namespace GameA.Game
         }
 
         /// <summary>
-        /// 此方法必须在RunNextFrame里面调用，确保下一帧执行
+        ///     此方法必须在RunNextFrame里面调用，确保下一帧执行
         /// </summary>
         /// <param name="unit"></param>
         public void UnFreeze(UnitBase unit)
@@ -410,46 +397,48 @@ namespace GameA.Game
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
             _mainUnit.OnSucceed();
             GuideManager.Instance.OnGameSuccess();
-            if (null != _statistic) {
-                _statistic.OnGameFinishSuccess ();
+            if (null != _statistic)
+            {
+                _statistic.OnGameFinishSuccess();
             }
         }
 
         public void GameFinishFailed()
         {
             _run = false;
-            _gameFailedTime = GameRun.Instance.LogicFrameCnt; 
+            _gameFailedTime = GameRun.Instance.LogicFrameCnt;
             if (null != _statistic)
             {
-                _statistic.OnGameFinishFailed ();
+                _statistic.OnGameFinishFailed();
             }
             GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.GameAudioBgm01);
         }
 
-        private void OnBoostItemSelectFinish (List<int> items)
+        private void OnBoostItemSelectFinish(List<int> items)
         {
-            Debug.Log ("OnBoostItemSelectFinish");
+            Debug.Log("OnBoostItemSelectFinish");
             _boostItems = items;
         }
 
         /// <summary>
-        /// 判断当前这次游戏有没有使用类型为type的增益道具
+        ///     判断当前这次游戏有没有使用类型为type的增益道具
         /// </summary>
         /// <returns><c>true</c>, if using boost item was ised, <c>false</c> otherwise.</returns>
         /// <param name="type">Type.</param>
-        public bool IsUsingBoostItem (SoyEngine.Proto.EBoostItemType type)
+        public bool IsUsingBoostItem(EBoostItemType type)
         {
             if (null == _boostItems) return false;
             for (int i = 0; i < _boostItems.Count; i++)
             {
-                if (_boostItems [i] == (int)type)
+                if (_boostItems[i] == (int) type)
                 {
                     return true;
                 }
             }
             return false;
         }
-#region State
+
+        #region State
 
         public void ChangeState(ESceneState eSceneState)
         {
@@ -459,9 +448,9 @@ namespace GameA.Game
                 case ESceneState.Edit:
                     StartEdit();
                     break;
-			case ESceneState.Modify:
-				StartEdit ();
-				break;
+                case ESceneState.Modify:
+                    StartEdit();
+                    break;
                 case ESceneState.Play:
                     StartPlay();
                     break;
@@ -470,7 +459,7 @@ namespace GameA.Game
 
         public bool CheckPlayerValid()
         {
-            var mainPlayer = DataScene2D.Instance.MainPlayer;
+            SceneNode mainPlayer = DataScene2D.Instance.MainPlayer;
             if (mainPlayer == null)
             {
                 LogHelper.Error("No MainPlayer");
@@ -484,8 +473,8 @@ namespace GameA.Game
             return true;
         }
 
-		public bool StartEdit()
-		{
+        public bool StartEdit()
+        {
             if (!CheckPlayerValid())
             {
                 return false;
@@ -497,13 +486,13 @@ namespace GameA.Game
                 CameraManager.Instance.SetEditorModeStartPos(_cameraEditPosCache);
             }
             UpdateWorldRegion(GM2DTools.WorldToTile(CameraManager.Instance.FinalPos), true);
-            var units = ColliderScene2D.Instance.Units.Values.ToArray();
+            UnitBase[] units = ColliderScene2D.Instance.Units.Values.ToArray();
             for (int i = 0; i < units.Length; i++)
             {
                 units[i].OnEdit();
-		    }
+            }
             return true;
-		}
+        }
 
         public bool StartPlay()
         {
@@ -532,7 +521,7 @@ namespace GameA.Game
             _run = false;
             BeforePlay();
             _sceneState.StartPlay();
-            var mainPlayer = DataScene2D.Instance.MainPlayer;
+            SceneNode mainPlayer = DataScene2D.Instance.MainPlayer;
             var colliderPos = new IntVec2(mainPlayer.Grid.XMin, mainPlayer.Grid.YMin);
             UpdateWorldRegion(colliderPos, true);
         }
@@ -543,10 +532,10 @@ namespace GameA.Game
             _run = true;
             ColliderScene2D.Instance.SortData();
             CrossPlatformInputManager.ClearVirtualInput();
-            var units = ColliderScene2D.Instance.Units.Values.ToArray();
+            UnitBase[] units = ColliderScene2D.Instance.Units.Values.ToArray();
             for (int i = 0; i < units.Length; i++)
             {
-                var unit = units[i];
+                UnitBase unit = units[i];
                 unit.OnPlay();
             }
             return true;
@@ -555,19 +544,19 @@ namespace GameA.Game
         private void BeforePlay()
         {
             bool flag = false;
-            var iter = PairUnitManager.Instance.PairUnits.GetEnumerator();
+            Dictionary<EPairType, PairUnit[]>.Enumerator iter = PairUnitManager.Instance.PairUnits.GetEnumerator();
             while (iter.MoveNext())
             {
                 if (iter.Current.Value != null)
                 {
                     for (int i = 0; i < iter.Current.Value.Length; i++)
                     {
-                        var pairUnit = iter.Current.Value[i];
+                        PairUnit pairUnit = iter.Current.Value[i];
                         //删掉不成双的
                         if (!pairUnit.IsEmpty && !pairUnit.IsFull)
                         {
                             flag = true;
-                            var unitObject = pairUnit.UnitA == UnitDesc.zero ? pairUnit.UnitB : pairUnit.UnitA;
+                            UnitDesc unitObject = pairUnit.UnitA == UnitDesc.zero ? pairUnit.UnitB : pairUnit.UnitA;
                             DeleteUnit(unitObject);
                         }
                     }
@@ -580,7 +569,7 @@ namespace GameA.Game
         }
 
         /// <summary>
-        /// isInit 是为了解决移动物体已经消失不见，重新开始的时候需要根据Node数据强制重新生成地图
+        ///     isInit 是为了解决移动物体已经消失不见，重新开始的时候需要根据Node数据强制重新生成地图
         /// </summary>
         /// <param name="mainPlayerPos"></param>
         /// <param name="isInit"></param>
@@ -601,12 +590,12 @@ namespace GameA.Game
         private IntVec2 GetFocusPos(IntVec2 followPos)
         {
             IntRect validMapRect = DataScene2D.Instance.ValidMapRect;
-            var size = ConstDefineGM2D.HalfMaxScreenSize;
+            IntVec2 size = ConstDefineGM2D.HalfMaxScreenSize;
             followPos.x = Mathf.Clamp(followPos.x, validMapRect.Min.x + size.x, validMapRect.Max.x + 1 - size.x);
             followPos.y = Mathf.Clamp(followPos.y, validMapRect.Min.y + size.y, validMapRect.Max.y + 1 - size.y);
             return followPos;
         }
-      
-#endregion
+
+        #endregion
     }
 }

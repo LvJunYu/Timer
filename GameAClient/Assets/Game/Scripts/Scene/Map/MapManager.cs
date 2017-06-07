@@ -202,7 +202,7 @@ namespace GameA.Game
 	        }
 	    }
 
-	    private void Update()
+	    public void Update()
 	    {
 	        var pos = GM2DTools.WorldToTile(CameraManager.Instance.RendererCamaraTrans.position);
 	        if (_eSceneState == ESceneState.Edit)
@@ -313,7 +313,6 @@ namespace GameA.Game
 
 		private void GenerateMap(int randomSeed)
 		{
-			//ServerScene2D.Instance.Update(_targetPos);
 			GameManager.EStartType eGameInitType = GM2DGame.Instance.GameInitType;
 			switch (eGameInitType)
             {
