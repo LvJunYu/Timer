@@ -15,15 +15,15 @@ namespace GameA
         private const string _fashionCouponName = "时装券";
         private const string _defaultRaffleTicketName = "低级抽奖券";
 
-        private const string _goldSprite = "icon_lottery_1";
+        private const string _goldSprite = "icon_gold";
         private const string _diamondSprite = "icon_lottery_1";
         private const string _playerExpSprite = "icon_lottery_1";
         private const string _creatorExpSprite = "icon_lottery_1";
         private const string _fashionCouponSprite = "icon_lottery_1";
         private const string _raffleTicketSprite1 = "icon_lottery_1";
-        private const string _raffleTicketSprite2 = "icon_lottery_1";
-        private const string _raffleTicketSprite3 = "icon_lottery_1";
-        private const string _raffleTicketSprite4 = "icon_lottery_1";
+        private const string _raffleTicketSprite2 = "icon_lottery_2";
+        private const string _raffleTicketSprite3 = "icon_lottery_3";
+        private const string _raffleTicketSprite4 = "icon_lottery_4";
 
 
         public UnityEngine.Sprite GetSprite () {
