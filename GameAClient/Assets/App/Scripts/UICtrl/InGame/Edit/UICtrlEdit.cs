@@ -93,10 +93,6 @@ namespace GameA
             _cachedView.MoveBtn.OnDragBegin += OnMoveBtnDragBegin;
             _cachedView.MoveBtn.OnDragMove += OnMoveBtnMove;
             _cachedView.MoveBtn.OnDragEnd += OnMoveBtnDragEnd;
-	        if (SocialGUIManager.Instance.RunRecordInApp)
-	        {
-		        _cachedView.Home.SetActiveEx(false);
-	        }
         }
 
 	    protected override void InitEventListener()

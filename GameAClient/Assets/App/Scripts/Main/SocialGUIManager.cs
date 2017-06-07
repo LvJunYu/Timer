@@ -80,18 +80,11 @@ namespace GameA
         private bool _exitDialogIsOpen = false;
 
 	    private RenderTexture _recordRenderTexture;
-	    private bool _runRecordInApp = false;
 	    private bool _recordFullScreen = false;
 
 	    public RenderTexture RenderRecordTexture
 	    {
 		    get { return _recordRenderTexture; }
-	    }
-
-	    public bool RunRecordInApp
-	    {
-		    set { _runRecordInApp = value; }
-		    get { return _runRecordInApp; }
 	    }
 
 	    public bool RecordFullScreen
@@ -148,28 +141,6 @@ namespace GameA
             return root.GetFirstGroupTrans ();
         }
 
-	    public void ChangeToFullScreenRecord()
-	    {
-			GetUI<UICtrlScreenRotate>().ChangeScreenOrientation(ScreenOrientation.Landscape);
-			UIRoot.CanvasScaler.referenceResolution = new Vector2(UIConstDefine.UINormalScreenWidth,UIConstDefine.UINormalScreenHeight);
-		    UIRoot.CanvasScaler.matchWidthOrHeight = 1;
-		    _recordFullScreen = true;
-			_uiRoot.SetGroupActive((int)EUIGroupType.MainUI, false);
-			Messenger.Broadcast(EMessengerType.OnRecordFullScreenStateChanged);
-			JoyNativeTool.Instance.SetStatusBarShow(false);
-		}
-
-	    public void ReturnToNormalRecord()
-	    {
-			GetUI<UICtrlScreenRotate>().ChangeScreenOrientation(ScreenOrientation.Portrait);
-			UIRoot.CanvasScaler.referenceResolution = new Vector2(UIConstDefine.UINormalScreenWidth, UIConstDefine.UINormalScreenHeight);
-			UIRoot.CanvasScaler.matchWidthOrHeight = 0;
-			_uiRoot.SetGroupActive((int)EUIGroupType.MainUI, true);
-		    _recordFullScreen = false;
-			Messenger.Broadcast(EMessengerType.OnRecordFullScreenStateChanged);
-			JoyNativeTool.Instance.SetStatusBarShow(true);
-		}
-
 	    public void ShowAppView()
 		{
 			JoyNativeTool.Instance.SetStatusBarShow (true);
@@ -204,7 +175,6 @@ namespace GameA
 				DestroyImmediate(_recordRenderTexture, true);
 			    _recordRenderTexture = null;
 		    }
-		    _runRecordInApp = false;
 	    }
 
 		internal void ChangeToGameMode()

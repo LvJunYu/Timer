@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using GameA.Game;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -62,6 +63,7 @@ namespace SoyEngine
         {
             _cachedAudioGo = new GameObject("AudioRoot");
             _cachedAudioGo.AddComponent<AudioListener>();
+            _setting = GM2DGame.Instance.Settings;
         }
 
         public void PlayMusic(string audioName)

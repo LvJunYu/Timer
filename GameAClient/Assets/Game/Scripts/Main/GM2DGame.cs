@@ -82,10 +82,6 @@ namespace GameA.Game
         {
             get
             {
-                if (SocialGUIManager.Instance.RunRecordInApp && !SocialGUIManager.Instance.RecordFullScreen)
-                {
-                    return Screen.height;
-                }
                 return Screen.width;
             }
         }
@@ -94,10 +90,6 @@ namespace GameA.Game
         {
             get
             {
-                if (SocialGUIManager.Instance.RunRecordInApp && !SocialGUIManager.Instance.RecordFullScreen)
-                {
-                    return Screen.width;
-                }
                 return Screen.height;
             }
         }
@@ -177,10 +169,6 @@ namespace GameA.Game
         {
             _gameMode.Stop();
             StopAllCoroutines();
-            if (MapManager.Instance != null)
-            {
-                MapManager.Instance.Stop();
-            }
             LocaleManager.Instance.ExitGame();
             return true;
         }
@@ -196,10 +184,6 @@ namespace GameA.Game
 
         public override int GetLogicFrameCountFromGameStart()
         {
-            if (GameRun.Instance == null)
-            {
-                return 0;
-            }
             return GameRun.Instance.LogicFrameCnt;
         }
 
@@ -231,19 +215,7 @@ namespace GameA.Game
                 yield return new WaitForSeconds(0.1f);
             }
             LocaleManager.Instance.EnterGame();
-            GameRun.Instance.Init(_eGameInitType, _project);
-
-            while (!MapManager.Instance.GenerateMapComplete)
-            {
-                Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 0.8f + MapManager.Instance.MapProcess * 0.2f);
-                yield return new WaitForSeconds(0.2f);
-            }
-            Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 1f);
-
-            if (SocialGUIManager.Instance.RunRecordInApp)
-            {
-                CameraManager.Instance.RendererCamera.targetTexture = SocialGUIManager.Instance.RenderRecordTexture;
-            }
+            yield return GameRun.Instance.Init(_eGameInitType, _project);
             _gameMode.InitByStep();
             Messenger.Broadcast(EMessengerType.OnGameStartComplete);
         }

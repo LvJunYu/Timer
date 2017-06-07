@@ -1,13 +1,11 @@
-using UnityEngine;
-using System.Collections;
 using System;
 
 namespace GameA.Game
 {
     public abstract class GameModeBase
     {
-        protected EGameSituation _gameSituation;
         protected EGameRunMode _gameRunMode;
+        protected EGameSituation _gameSituation;
         protected Project _project;
         protected GameManager.EStartType _startType;
 
@@ -27,7 +25,8 @@ namespace GameA.Game
             _startType = startType;
             return true;
         }
-		public abstract void InitByStep();
+
+        public abstract void InitByStep();
         public abstract void OnGameSuccess();
         public abstract void OnGameFailed();
 
@@ -38,24 +37,25 @@ namespace GameA.Game
 
         public virtual bool Pause()
         {
-            PlayMode.Instance.Pause();
+            GameRun.Instance.Pause();
             return true;
         }
 
         public virtual bool Continue()
         {
-            PlayMode.Instance.Continue();
+            GameRun.Instance.Continue();
             return true;
         }
 
         public virtual bool Stop()
         {
+            GameRun.Instance.Stop();
             return true;
         }
 
         public virtual bool Restart(Action successCb, Action failedCb)
         {
-            PlayMode.Instance.RePlay();
+            GameRun.Instance.RePlay();
             if (successCb != null)
             {
                 successCb.Invoke();
@@ -63,10 +63,9 @@ namespace GameA.Game
             return true;
         }
 
-        public virtual void QuitGame (Action successCB, Action<int> failureCB, bool forceQuitWhenFailed = false)
-		{
-			SocialApp.Instance.ReturnToApp();
+        public virtual void QuitGame(Action successCB, Action<int> failureCB, bool forceQuitWhenFailed = false)
+        {
+            SocialApp.Instance.ReturnToApp();
         }
     }
 }
-

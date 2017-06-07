@@ -92,17 +92,8 @@ namespace SoyEngine
 		    {
 			    return;
 		    }
-			if (SocialGUIManager.Instance.RunRecordInApp && !SocialGUIManager.Instance.RecordFullScreen)
-			{
-				scaler.referenceResolution = new Vector2(UIConstDefine.UINormalScreenWidth,
-					UIConstDefine.UINormalScreenHeight);
-				scaler.matchWidthOrHeight = 0;
-			}
-			else
-			{
-				scaler.matchWidthOrHeight = 1;
-				scaler.referenceResolution = new Vector2(UIConstDefine.UINormalScreenWidth, UIConstDefine.UINormalScreenHeight);
-			}
+            scaler.matchWidthOrHeight = 1;
+            scaler.referenceResolution = new Vector2(UIConstDefine.UINormalScreenWidth, UIConstDefine.UINormalScreenHeight);
 		}
 
 		#endregion

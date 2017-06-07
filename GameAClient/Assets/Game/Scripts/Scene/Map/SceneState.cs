@@ -266,8 +266,7 @@ namespace GameA.Game
                 _gameTimer >= GM2DGame.Instance.Record.UsedTime + 5)
             {
                 _runState = ESceneState.Win;
-                bool value = SocialGUIManager.Instance.RunRecordInApp;
-                SocialApp.Instance.ReturnToApp(!value);
+                SocialApp.Instance.ReturnToApp();
                 return;
             }
             if (HasWinCondition(EWinCondition.TimeLimit))

@@ -11,10 +11,9 @@ namespace GameA
     public static partial class EMessengerType
     {
         public static readonly int OnAppDataChanged = SoyEngine.EMessengerType.NextId++;
-        public static readonly int OnAllNewsFeedListChanged = SoyEngine.EMessengerType.NextId++;
-        public static readonly int OnFollowedUserNewsFeedListChanged = SoyEngine.EMessengerType.NextId++;
-        public static readonly int OnScrollBannerChanged = SoyEngine.EMessengerType.NextId++;
-        public static readonly int OnAllMatrixChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnNewestProjectListChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnUserFavoriteProjectListChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnUserWorldProjectPlayHistoryListChanged = SoyEngine.EMessengerType.NextId++;
 
         public static readonly int OnProjectCommentChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnProjectRecentCompleteChanged = SoyEngine.EMessengerType.NextId++;

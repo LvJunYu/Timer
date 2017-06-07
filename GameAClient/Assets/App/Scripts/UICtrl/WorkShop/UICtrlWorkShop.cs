@@ -630,52 +630,19 @@ namespace GameA
         {
             _groupId = (int)EUIGroupType.PopUpUI;
         }
-//        public object GetTitle()
-//        {
-//            return "创作";
-//        }
-
-//        public Button GetRightButton()
-//        {
-//            if(_state == EWorkShopState.None || _personalProjectCount == 0)
-//            {
-//                return null;
-//            }
-//            else if(_state == EWorkShopState.Normal)
-//            {
-//                return _cachedView.EditButtonRightResource;
-//            }
-//            else if(_state == EWorkShopState.Edit)
-//            {
-//                return _cachedView.CancelButtonRightResource;
-//            }
-//            return null;
-//        }
-
-//        public void OnRightButtonClick(UICtrlTitlebar titleBar)
-//        {
-//            if(_mode == EMode.Edit)
-//            {
-//                SetMode(EMode.Normal);
-//            }
-//            else
-//            {
-//                SetMode(EMode.Edit);
-//            }
-//        }
 
 
         private void OnReturnToApp () {
-//            LocalUser.Instance.PersonalProjectList.Request (0, int.MaxValue, 
-//                EPersonalProjectOrderBy.PePOB_CreateTime,
-//                EOrderType.OT_Asc,
-//                () => {
-//                    RefreshView();
-//                },
-//                code => {
-//                    // todo error handle
-//                }
-//            );
+            LocalUser.Instance.PersonalProjectList.Request (0, int.MaxValue, 
+                EPersonalProjectOrderBy.PePOB_CreateTime,
+                EOrderType.OT_Asc,
+                () => {
+                    RefreshView();
+                },
+                code => {
+                    // todo error handle
+                }
+            );
         }
 
         private void OnChangeModeBtn () {
