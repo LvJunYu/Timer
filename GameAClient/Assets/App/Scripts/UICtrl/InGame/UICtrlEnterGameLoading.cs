@@ -200,28 +200,16 @@ namespace GameA
         #region 事件响应
         private void OnGameStartComplete()
         {
-			if (SocialGUIManager.Instance.RunRecordInApp)
-			{
-				return;
-			}
 			SocialGUIManager.Instance.CloseUI<UICtrlEnterGameLoading>();
         }
 
         private void OnRequestStartGame()
         {
-	        if (SocialGUIManager.Instance.RunRecordInApp)
-	        {
-		        return;
-	        }
             SocialGUIManager.Instance.OpenUI<UICtrlEnterGameLoading>();
         }
 
 	    private void OnLoadingErrorCloseUI()
 	    {
-			if (SocialGUIManager.Instance.RunRecordInApp)
-			{
-				return;
-			}
 			SocialGUIManager.Instance.CloseUI<UICtrlEnterGameLoading>();
 		}
 

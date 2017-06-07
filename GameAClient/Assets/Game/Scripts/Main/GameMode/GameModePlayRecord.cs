@@ -34,8 +34,7 @@ namespace GameA.Game
 			CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(2f,()=>{
                 if(GameManager.Instance.CurrentGame != null)
                 {
-                    bool value = SocialGUIManager.Instance.RunRecordInApp;
-                    SocialApp.Instance.ReturnToApp(!value);
+                    SocialApp.Instance.ReturnToApp();
                 }
             }));
 		}
@@ -45,8 +44,7 @@ namespace GameA.Game
 			CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(2f,()=>{
 		        if(GameManager.Instance.CurrentGame != null)
 		        {
-		            bool value = SocialGUIManager.Instance.RunRecordInApp;
-		            SocialApp.Instance.ReturnToApp(!value);
+		            SocialApp.Instance.ReturnToApp();
 		        }
             }));
 		}

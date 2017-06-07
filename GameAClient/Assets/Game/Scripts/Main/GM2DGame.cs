@@ -82,10 +82,6 @@ namespace GameA.Game
         {
             get
             {
-                if (SocialGUIManager.Instance.RunRecordInApp && !SocialGUIManager.Instance.RecordFullScreen)
-                {
-                    return Screen.height;
-                }
                 return Screen.width;
             }
         }
@@ -94,10 +90,6 @@ namespace GameA.Game
         {
             get
             {
-                if (SocialGUIManager.Instance.RunRecordInApp && !SocialGUIManager.Instance.RecordFullScreen)
-                {
-                    return Screen.width;
-                }
                 return Screen.height;
             }
         }
@@ -239,11 +231,6 @@ namespace GameA.Game
                 yield return new WaitForSeconds(0.2f);
             }
             Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 1f);
-
-            if (SocialGUIManager.Instance.RunRecordInApp)
-            {
-                CameraManager.Instance.RendererCamera.targetTexture = SocialGUIManager.Instance.RenderRecordTexture;
-            }
             _gameMode.InitByStep();
             Messenger.Broadcast(EMessengerType.OnGameStartComplete);
         }

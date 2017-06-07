@@ -66,13 +66,11 @@ namespace GameA.Game
 			eventSystem.Init();
 			eventSystem.Trans.SetParent(transform);
 			Messenger.AddListener(GameA.EMessengerType.ClearAppRecordState, ClearAppRecordState);
-			Messenger.AddListener(GameA.EMessengerType.OnRecordFullScreenStateChanged, OnRecordFullScreenStateChanged);
 		}
 
 		protected override void OnDestroy()
         {
 			Messenger.RemoveListener(GameA.EMessengerType.ClearAppRecordState, ClearAppRecordState);
-			Messenger.RemoveListener(GameA.EMessengerType.OnRecordFullScreenStateChanged, OnRecordFullScreenStateChanged);
 
 			if (_renderUICamera != null)
 			{
@@ -89,20 +87,6 @@ namespace GameA.Game
 			    _renderUICamera.targetTexture = null;
 		    }
 	    }
-
-	    private void OnRecordFullScreenStateChanged()
-	    {
-		    if (SocialGUIManager.Instance.RunRecordInApp && UIRoot != null && UIRoot.CanvasScaler != null)
-		    {
-				GameUIRoot r = UIRoot as GameUIRoot;
-			    if (r != null)
-			    {
-				    r.OnScreenChanged();
-			    }
-
-		    }
-	    }
-
 	}
 
     public class UMCtrlBase<T> : UMCtrlGenericBase<T> where T : UMViewBase
