@@ -23,7 +23,7 @@ namespace GameA.Game
             _owner.CanMotor = false;
             if (_owner.Animation != null)
             {
-                _owner.Animation.PlayOnce("OnClay");
+                _owner.Animation.PlayLoop("OnClay");
             }
         }
 
