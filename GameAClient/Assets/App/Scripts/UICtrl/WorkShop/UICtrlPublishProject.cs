@@ -2,7 +2,6 @@
 using System.Collections;
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
@@ -55,32 +54,25 @@ namespace GameA
         
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.PopUpUI;
+            _groupId = (int)EUIGroupType.PopUpUI2;
         }
 
-        private void OnOKBtn () {
+        private void OnOKBtn ()
+        {
             SocialGUIManager.Instance.CloseUI<UICtrlPublishProject> ();
             if (null == _project)
+            {
                 return;
+            }
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在发布");
-            RemoteCommands.PublishWorldProject (
-                _project.ProjectId,
-                _project.Name,
-                _project.Summary,
-                _project.ProgramVersion,
-                _project.ResourcesVersion,
-                _project.RecordUsedTime,
-                _project.TimeLimit,
-                _project.WinCondition,
-                msg => {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    CommonTools.ShowPopupDialog("发布关卡成功");
-                },
-                code => {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    CommonTools.ShowPopupDialog("发布关卡失败，错误代码 " + code.ToString());
-                }, null
-            );
+            _project.Publish(()=> {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                CommonTools.ShowPopupDialog("发布关卡成功");
+            },
+            code => {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                CommonTools.ShowPopupDialog("发布关卡失败，错误代码 " + code.ToString());
+            });
         }
 
         private void OnCancelBtn () {

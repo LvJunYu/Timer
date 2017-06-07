@@ -851,7 +851,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1576423689961210
 GameObject:
   m_ObjectHideFlags: 1
@@ -4013,6 +4013,7 @@ MonoBehaviour:
   DefaultCoverTexture: {fileID: 2800000, guid: c4a5e038fdfe746a9bbd66a1f499128f, type: 3}
   ReturnBtn: {fileID: 114224521293341648}
   ChangeModeBtn: {fileID: 114965487298039568}
+  ChangeModeBtnText: {fileID: 114536435499771834}
   Private: {fileID: 1596201969506190}
   Cover: {fileID: 114287204556270584}
   EditBtn: {fileID: 114688642163708424}
@@ -5388,7 +5389,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 540, y: 2}
+  m_SizeDelta: {x: 540, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!224 &224223709987160474
 RectTransform:

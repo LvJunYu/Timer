@@ -873,7 +873,8 @@ namespace GameA.Game
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, size, _tableUnit);
                 }
             }
-            float z =- (_curPos.x + _curPos.y ) * 0.00078125f + _viewZOffset;
+            var halfColliderSize = GetColliderSize() / 2;
+            float z =- (_curPos.x + halfColliderSize.x + _curPos.y  + halfColliderSize.y) * 0.00078125f + _viewZOffset;
             if (UnitDefine.IsDownY(_tableUnit))
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, -0.1f, z);

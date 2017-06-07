@@ -18,7 +18,7 @@ namespace GameA.Game
 
         public override void OnGameFailed()
 		{
-            GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.EditorLose);
+            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.EditorLose);
         }
 
         public override void OnGameSuccess()
@@ -28,7 +28,7 @@ namespace GameA.Game
             RecordBytes = record;
             RecordUsedTime = usedTime;
 
-            GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.EditorWin);
+            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.EditorWin);
 		}
 
         public override void QuitGame(Action successCB, Action<int> failureCB, bool forceQuitWhenFailed = false)

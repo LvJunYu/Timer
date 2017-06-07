@@ -79,7 +79,7 @@ namespace GameA
             RemoteCommands.SaveReformProject (
                 _projectId,
                 _programVersion,
-                _resourceVersion,
+                _resourcesVersion,
                 _passFlag,
                 100f,
                 GetMsgProjectUploadParam(),

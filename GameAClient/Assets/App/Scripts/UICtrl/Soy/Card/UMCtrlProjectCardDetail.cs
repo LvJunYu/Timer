@@ -148,30 +148,6 @@ namespace GameA
                 _cachedView.CommentDock.gameObject.SetActive(true);
                 _cachedView.CommentTip.SetActive(false);
             }
-            if(_content.RecentPlayedUserList == null || _content.RecentPlayedUserList.Count == 0)
-            {
-                for(var i=0; i<_recentCompleteUserList.Count; i++)
-                {
-                    _recentCompleteUserList[i].Hide();
-                }
-                _cachedView.RecentCompleteUserTip.gameObject.SetActive(true);
-            }
-            else
-            {
-                _cachedView.RecentCompleteUserTip.gameObject.SetActive(false);
-                for(var i=0; i<_recentCompleteUserList.Count; i++)
-                {
-                    if(i<_content.RecentPlayedUserList.Count)
-                    {
-                        _recentCompleteUserList[i].Show();
-                        _recentCompleteUserList[i].Set(_content.RecentPlayedUserList[i].User);
-                    }
-                    else
-                    {
-                        _recentCompleteUserList[i].Hide();
-                    }
-                }
-            }
         }
 
         public override void Unload()
