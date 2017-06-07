@@ -81,10 +81,11 @@ namespace GameA.Game
             switch (eGameInitType)
             {
                 case GameManager.EStartType.WorldPlay:
-                    InitPlay(project, GameManager.EStartType.WorldPlay);
-                    break;
                 case GameManager.EStartType.WorldPlayRecord:
-                    InitPlay(project, GameManager.EStartType.WorldPlayRecord);
+                case GameManager.EStartType.AdventureNormalPlayRecord:
+                case GameManager.EStartType.AdventureNormalPlay:
+                case GameManager.EStartType.AdventureBonusPlay:
+                    InitPlay(project, eGameInitType);
                     break;
                 case GameManager.EStartType.WorkshopEdit:
                     InitEdit(project, GameManager.EStartType.WorkshopEdit);
@@ -94,12 +95,6 @@ namespace GameA.Game
                     break;
                 case GameManager.EStartType.WorkshopCreate:
                     InitCreate();
-                    break;
-                case GameManager.EStartType.AdventureNormalPlay:
-                    InitPlay(project, GameManager.EStartType.AdventureNormalPlay);
-                    break;
-                case GameManager.EStartType.AdventureBonusPlay:
-                    InitPlay(project, GameManager.EStartType.AdventureBonusPlay);
                     break;
             }
 			return true;
@@ -217,28 +212,13 @@ namespace GameA.Game
         /// </summary>
 	    public void OnReadMapFile(UnitDesc unitDesc, Table_Unit tableUnit)
 	    {
-            switch (GM2DGame.Instance.GameInitType)
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
             {
-                case GameManager.EStartType.WorldPlay:
-                PlayMode.Instance.OnReadMapFile(tableUnit);
-                break;
-            case GameManager.EStartType.AdventureNormalPlay:
-                PlayMode.Instance.OnReadMapFile (tableUnit);
-                break;
-            case GameManager.EStartType.AdventureBonusPlay:
-                PlayMode.Instance.OnReadMapFile (tableUnit);
-                break;
-                case GameManager.EStartType.WorldPlayRecord:
-                 PlayMode.Instance.OnReadMapFile(tableUnit);
-                break;
-                case GameManager.EStartType.WorkshopEdit:
                 EditMode.Instance.OnReadMapFile(unitDesc, tableUnit);
-                break;
-			case GameManager.EStartType.ModifyEdit:
-				EditMode.Instance.OnReadMapFile(unitDesc, tableUnit);
-				break;
-			case GameManager.EStartType.WorkshopCreate:
-                break;
+            }
+            else
+            {
+                PlayMode.Instance.OnReadMapFile(tableUnit);
             }
 	    }
 
@@ -261,11 +241,8 @@ namespace GameA.Game
             if (EditMode.Instance != null)
             {
                 EditMode.Instance.Init();
-                if (GM2DGame.Instance.GameInitType == GameManager.EStartType.WorkshopEdit)
+                if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
                 {
-                    EditMode.Instance.MapStatistics.InitWithMapData(mapData);
-                    InitEditorCameraStartPos();
-				} else if (GM2DGame.Instance.GameInitType == GameManager.EStartType.ModifyEdit) {
 					EditMode.Instance.MapStatistics.InitWithMapData(mapData);
 					InitEditorCameraStartPos();
 				}
@@ -313,30 +290,14 @@ namespace GameA.Game
 
 		private void GenerateMap(int randomSeed)
 		{
-			GameManager.EStartType eGameInitType = GM2DGame.Instance.GameInitType;
-			switch (eGameInitType)
+            EGameRunMode eGameRunMode = GM2DGame.Instance.GameMode.GameRunMode;
+            if (eGameRunMode == EGameRunMode.Edit)
             {
-                case GameManager.EStartType.WorldPlay:
-                    ChangeState(ESceneState.Play);
-                    break;
-            case GameManager.EStartType.AdventureNormalPlay:
-                ChangeState (ESceneState.Play);
-                break;
-            case GameManager.EStartType.AdventureBonusPlay:
-                ChangeState (ESceneState.Play);
-                break;
-                case GameManager.EStartType.WorldPlayRecord:
-                    ChangeState(ESceneState.Play);
-                    break;
-				case GameManager.EStartType.WorkshopEdit:
-					ChangeState(ESceneState.Edit);
-					break;
-			case GameManager.EStartType.ModifyEdit:
-				ChangeState (ESceneState.Modify);
-				break;
-				case GameManager.EStartType.WorkshopCreate:
-					ChangeState(ESceneState.Edit);
-					break;
+                ChangeState(ESceneState.Edit);
+            }
+            else
+            {
+                ChangeState(ESceneState.Play);
 			}
 			GenerateBg(randomSeed);
 			_generateMapComplete = true;

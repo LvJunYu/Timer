@@ -448,9 +448,6 @@ namespace GameA.Game
                 case ESceneState.Edit:
                     StartEdit();
                     break;
-                case ESceneState.Modify:
-                    StartEdit();
-                    break;
                 case ESceneState.Play:
                     StartPlay();
                     break;

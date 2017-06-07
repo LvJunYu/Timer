@@ -241,7 +241,6 @@ namespace GameA.Game
         None,
         Play,
         Edit,
-		Modify,
         Max
     }
 
