@@ -144,27 +144,22 @@ namespace GameA
             );
         }
         private void OnRetryBtn () {
-            var tableLevel = AppData.Instance.AdventureData.GetAdvLevelTable (
-                AppData.Instance.AdventureData.LastPlayedChapterIdx + 1,
-                AppData.Instance.AdventureData.LastPlayedLevelIdx + 1,
-                AppData.Instance.AdventureData.LastPlayedLevelType
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在重新开始");
+            Game.GM2DGame.Instance.GameMode.Restart(()=>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
+                },() => {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                    CommonTools.ShowPopupDialog("启动失败", null, 
+//                        new System.Collections.Generic.KeyValuePair<string, Action>("重试", ()=>{
+//                            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnClickRestartGame));
+//                        }),
+//                        new System.Collections.Generic.KeyValuePair<string, Action>("取消", ()=>{
+//                        }));
+                    OnReturnBtn();
+                }
             );
-            if (null == tableLevel) return;
-            if (GameATools.CheckEnergy (tableLevel.EnergyCost)) {
-                SocialGUIManager.Instance.CloseUI <UICtrlGameFinish>();
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (
-                    this, "...");
-                AppData.Instance.AdventureData.RetryAdvLevel (
-                    () => {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                        // set local energy data
-                        GameATools.LocalUseEnergy (tableLevel.EnergyCost);
-                    },
-                    (error) => {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                    }
-                );
-            }
         }
         private void OnNextBtn () {}
 
@@ -173,23 +168,23 @@ namespace GameA
             SocialGUIManager.Instance.CloseUI<UICtrlGameFinish> ();
             PauseGame ();
         }
-		private void OnClickRestartGame()
-		{
-			SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
-            Game.GM2DGame.Instance.GameMode.Restart(()=>
-            {
-				SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-				SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
-            },() => {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                CommonTools.ShowPopupDialog("启动失败", null, 
-                    new System.Collections.Generic.KeyValuePair<string, Action>("重试", ()=>{
-                        CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnClickRestartGame));
-                    }),
-                    new System.Collections.Generic.KeyValuePair<string, Action>("取消", ()=>{
-                    }));
-			});
-        }
+//		private void OnClickRestartGame()
+//		{
+//			SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
+//            Game.GM2DGame.Instance.GameMode.Restart(()=>
+//            {
+//				SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//				SocialGUIManager.Instance.CloseUI<UICtrlGameFinish>();
+//            },() => {
+//                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                CommonTools.ShowPopupDialog("启动失败", null, 
+//                    new System.Collections.Generic.KeyValuePair<string, Action>("重试", ()=>{
+//                        CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnClickRestartGame));
+//                    }),
+//                    new System.Collections.Generic.KeyValuePair<string, Action>("取消", ()=>{
+//                    }));
+//			});
+//        }
 
 
         private void InternalExitGame()

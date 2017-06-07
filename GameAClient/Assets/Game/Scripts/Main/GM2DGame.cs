@@ -244,25 +244,45 @@ namespace GameA.Game
             //    LogHelper.Error("GameResourceManager initFailed");
             //}
             //gameObject.AddComponent<GameLocaleManager>();
-            gameObject.AddComponent<GameParticleManager>();
-            gameObject.AddComponent<GameAudioManager>();
+            if (gameObject.GetComponent<GameParticleManager> () == null) {
+                gameObject.AddComponent<GameParticleManager> ();
+            } else {
+                gameObject.GetComponent<GameParticleManager> ().ClearAll ();
+            }
+            if (gameObject.GetComponent<GameAudioManager> () == null) {
+                gameObject.AddComponent<GameAudioManager> ();
+            } else {
+                gameObject.GetComponent<GameAudioManager> ().ClearAll ();
+            }
 
 
             if (_project != null)
             {
                 _tableMatrix = TableManager.Instance.GetMatrix(1);
             }
-            gameObject.AddComponent<UnitManager>();
-            UnitManager.Instance.Init();
-            gameObject.AddComponent<CameraManager>();
+            if (gameObject.GetComponent<UnitManager> () == null) {
+                gameObject.AddComponent<UnitManager> ();
+                UnitManager.Instance.Init();
+            }
+            if (gameObject.GetComponent<CameraManager> () == null) {
+                gameObject.AddComponent<CameraManager> ();
+            }
             var playObject = new GameObject("PlayMode");
-            playObject.AddComponent<PlayMode>();
+            if (gameObject.GetComponent<PlayMode> () == null) {
+                playObject.AddComponent<PlayMode> ();
+            }
             DeadMarkManager.Instance.Init();
 
             yield return null;
-            gameObject.AddComponent<InputManager>();
+            if (gameObject.GetComponent<InputManager> () == null) {
+                gameObject.AddComponent<InputManager> ();
+            }
             //gameObject.AddComponent<GM2DGUIManager>();
-            gameObject.AddComponent<MapManager>();
+            if (gameObject.GetComponent<MapManager> () == null) {
+                gameObject.AddComponent<MapManager> ();
+            } else {
+                gameObject.GetComponent<MapManager> ().Clear ();
+            }
             MapManager.Instance.Init(_eGameInitType, _project);
             yield return null;
             while (!MapManager.Instance.GenerateMapComplete)

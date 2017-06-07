@@ -281,6 +281,10 @@ namespace SoyEngine
 			_cachedAudioGo.AddComponent<AudioListener>();
 		}
 
+        public void ClearAll ()
+        {
+        }
+
 		#endregion
 
 	}
