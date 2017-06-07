@@ -24,11 +24,11 @@ namespace GameA
 		/// <summary>
 		/// 每个章节界面间的水平距离
 		/// </summary>
-		public const int ChapterDistance = 1664;
+		public const int ChapterDistance = 1770;
 		/// <summary>
 		/// 总章节数
 		/// </summary>
-		public const int ChapterCnt = 2;
+		public const int ChapterCnt = 4;
 		/// <summary>
 		/// 当前显示章节
 		/// </summary>
