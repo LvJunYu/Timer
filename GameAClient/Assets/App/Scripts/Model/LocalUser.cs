@@ -26,11 +26,13 @@ namespace GameA
         private UserRaffleTicket _userRaffleTicket = new UserRaffleTicket ();
         // 匹配挑战相关数据
         private MatchUserData _matchUserData = new MatchUserData ();
-
+        // 单人模式排名
+        private AdventureLevelRankList _adventureLevelRankList = new AdventureLevelRankList();
         // 增益道具
         private UserProp _userProp = new UserProp ();
 
         //        private User _user;
+        private AdventureUserLevelDataDetail _adventureUserLevelDataDetail = new AdventureUserLevelDataDetail();
 
 
         private PersonalProjectList _personalProjectList = new PersonalProjectList ();
@@ -77,9 +79,26 @@ namespace GameA
         /// 匹配挑战相关数据
         /// </summary>
         /// <value>The using avatar data.</value>
-        public MatchUserData MatchUserData {
+        public AdventureUserLevelDataDetail AdventureUserLevelDataDetail
+        {
             get {
+                return this._adventureUserLevelDataDetail;
+            }
+        }
+
+        public MatchUserData MatchUserData
+        {
+            get
+            {
                 return this._matchUserData;
+            }
+        }
+
+        public AdventureLevelRankList AdventureLevelRankList
+        {
+            get
+            {
+                return this._adventureLevelRankList;
             }
         }
 
