@@ -16,10 +16,14 @@ namespace GameA
         private USCtrlAdvLvlDetailInfo _infoPanel;
         private USCtrlAdvLvlDetailRecord _recordPanel;
         private USCtrlAdvLvlDetailRank _rankPanel;
+        private List<Record> RecordList = new List<Record>();
 
         private int _chapterIdx;
         private int _levelIdx;
         private bool _isBonus;
+
+        private int EndDisplayOnRank = 10;
+        private int BeginningDisplayOnRank = 0;
 
         private Game.Table_StandaloneLevel _table;
         #endregion
@@ -70,6 +74,8 @@ namespace GameA
             }
 
             OpenInfoPanel ();
+            RefreshRankData();
+            RefreshAdventureUserLevelDataDetail();
         }
         
         protected override void OnClose() {
@@ -96,6 +102,19 @@ namespace GameA
             _cachedView.InfoBtn1.onClick.AddListener (OnInfoBtn1);
             _cachedView.RecordBtn1.onClick.AddListener (OnRecordBtn1);
             _cachedView.RankBtn1.onClick.AddListener (OnRankBtn1);
+            
+        }
+
+        private void RefreshAdventureUserLevelDataDetail()
+        {
+            LocalUser.Instance.AdventureUserLevelDataDetail.Request(
+                LocalUser.Instance.UserGuid,
+                _chapterIdx,
+                JudgeBonus(),
+                _levelIdx,
+                null
+                , null);
+
         }
 
         public override void OnUpdate ()
@@ -106,6 +125,28 @@ namespace GameA
         protected override void InitGroupId()
         {
             _groupId = (int)EUIGroupType.PopUpUI;
+        }
+
+        private void RefreshRankData()
+        {
+            LocalUser.Instance.AdventureLevelRankList.Request(
+            _chapterIdx,
+            JudgeBonus(),
+            _levelIdx,
+            BeginningDisplayOnRank,
+            EndDisplayOnRank,
+            null, null)
+            ;
+
+        }
+
+        private EAdventureProjectType JudgeBonus()
+        {
+            if (_isBonus)
+                return EAdventureProjectType.APT_Bonus;
+            else if (_isBonus == false)
+                return EAdventureProjectType.APT_Normal;
+            else return EAdventureProjectType.APT_None;
         }
 
         private void OpenInfoPanel () {
@@ -149,6 +190,7 @@ namespace GameA
             _cachedView.RecordBtn2.gameObject.SetActive (true);
             _cachedView.RankBtn1.gameObject.SetActive (true);
             _cachedView.RankBtn2.gameObject.SetActive (false);
+            _recordPanel.Set();
         }
         private void OpenRankPanel ()
         {
@@ -162,6 +204,7 @@ namespace GameA
             _cachedView.RecordBtn2.gameObject.SetActive (false);
             _cachedView.RankBtn1.gameObject.SetActive (false);
             _cachedView.RankBtn2.gameObject.SetActive (true);
+            _rankPanel.Set(LocalUser.Instance.AdventureLevelRankList.RecordList);
         }
         private void OnCloseBtn () {
             SocialGUIManager.Instance.CloseUI <UICtrlAdvLvlDetail> ();

@@ -8,5 +8,6 @@ namespace GameA
     public class USViewAdvLvlDetailRecord : USViewBase
     {
         public GridDataScroller RecordsGridScroller;
+        public RectTransform Dock;
     }
 }
