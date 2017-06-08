@@ -207,6 +207,10 @@ namespace GameA.Game
                 ColliderScene2D.Instance.UpdateLogic(pos);
 	        }
             BgScene2D.Instance.UpdateLogic(pos);
+	        if (EditMode.Instance != null)
+	        {
+                EditMode.Instance.Update();
+	        }
 	    }
 
 	    /// <summary>

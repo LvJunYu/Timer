@@ -228,7 +228,6 @@ namespace GameA.Game
 		{
 			base.Init ();
 			_commandType = ECommandType.Modify;
-
 		}
 
         protected override void OnCommandChanged(ECommandType eCommandType)

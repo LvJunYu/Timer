@@ -35,7 +35,10 @@ namespace GameA.Game
             {
                 for (int i = 0; i < _unitParents.Length; i++)
                 {
-                    Object.Destroy(_unitParents[i].gameObject);
+                    if (_unitParents[i] != null)
+                    {
+                        Object.Destroy(_unitParents[i].gameObject);
+                    }
                 }
                 _unitParents = null;
             }
@@ -116,6 +119,10 @@ namespace GameA.Game
 
         public Transform GetOriginParent()
         {
+            if (_unitParents == null)
+            {
+                return null;
+            }
             return _unitParents[0];
         }
 

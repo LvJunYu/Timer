@@ -22,6 +22,11 @@ namespace GameA.Game
         protected SpriteRenderer _spriteRenderer;
         protected SceneNode _node;
 
+        public Transform Trans
+        {
+            get { return _trans; }
+        }
+
         public virtual bool Init(Table_Background table, SceneNode node)
         {
             _tableBg = table;

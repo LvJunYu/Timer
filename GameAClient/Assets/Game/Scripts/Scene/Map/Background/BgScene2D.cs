@@ -39,6 +39,7 @@ namespace GameA.Game
         private Grid2D _followRect;
         private Grid2D _cloudRect;
         private Transform[] _parents;
+        private Transform _parent;
         private Dictionary<int, List<Table_Background>> _tableBgs = new Dictionary<int, List<Table_Background>>();
         private static readonly int[] MaxDepthCount = new int[9] { 50, 50, 50, 50, 50, 50, 50, 50, 1 };
         private static readonly float[] MoveRatio = new float[9] { 1, 1f, 0.8f, 1f, 0.5f, 0.5f, 1, 1, 1 };
@@ -61,7 +62,18 @@ namespace GameA.Game
         public override void Dispose()
         {
             base.Dispose();
+            foreach (var bgItem in _items.Values)
+            {
+                if (bgItem != null && bgItem.Trans != null)
+                {
+                    UnityEngine.Object.Destroy(bgItem.Trans.gameObject);
+                }
+            }
             _items.Clear();
+            if (_parent != null)
+            {
+                UnityEngine.Object.Destroy(_parent.gameObject);
+            }
             _tableBgs.Clear();
             _instance = null;
         }
@@ -94,12 +106,12 @@ namespace GameA.Game
             var validMapRect = DataScene2D.Instance.ValidMapRect;
             _followRect = new Grid2D(validMapRect.Min.x, validMapRect.Min.y, validMapRect.Max.x, validMapRect.Max.y);
             _cloudRect = new Grid2D(validMapRect.Min.x - 15 * ConstDefineGM2D.ServerTileScale, validMapRect.Min.y, validMapRect.Max.x + 15 * ConstDefineGM2D.ServerTileScale, validMapRect.Max.y);
-            var parent = new GameObject("Background").transform;
+            _parent = new GameObject("Background").transform;
             _parents = new Transform[(int)EBgDepth.Max];
             for (int i = 0; i < (int)EBgDepth.Max; i++)
             {
                 _parents[i] = new GameObject(((EBgDepth)i).ToString()).transform;
-                _parents[i].parent = parent;
+                _parents[i].parent = _parent;
             }
             _focusPos = GM2DTools.WorldToTile(CameraManager.Instance.RendererCamaraTrans.position);
 
