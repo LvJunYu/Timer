@@ -24,6 +24,7 @@ namespace GameA.Game
 
         private int _logicFrameCnt;
         private float _unityTimeSinceGameStarted;
+        private ESceneState _eSceneState;
 
         public static GameRun Instance
         {
@@ -33,6 +34,11 @@ namespace GameA.Game
         public int LogicFrameCnt
         {
             get { return _logicFrameCnt; }
+        }
+
+        public bool IsEdit
+        {
+            get { return _eSceneState == ESceneState.Edit; }
         }
 
         public void Dispose()
@@ -74,7 +80,6 @@ namespace GameA.Game
                 yield return new WaitForSeconds(0.1f);
             }
             Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 1f);
-            yield return null;
         }
 
         public void Clear()
@@ -95,6 +100,7 @@ namespace GameA.Game
         internal void Stop()
         {
             MapManager.Instance.Stop();
+            Dispose();
         }
 
         public void RegistSpineSkeletonAnimation(SkeletonAnimation skeletonAnimation)
@@ -125,6 +131,9 @@ namespace GameA.Game
                 EditMode.Instance.Update();
             }
             MapManager.Instance.Update();
+            GameParticleManager.Instance.Update();
+            GameAudioManager.Instance.Update();
+            DeadMarkManager.Instance.Update();
             _unityTimeSinceGameStarted += Time.deltaTime*GM2DGame.Instance.GamePlaySpeed;
             while (_logicFrameCnt*ConstDefineGM2D.FixedDeltaTime < _unityTimeSinceGameStarted)
             {
@@ -145,6 +154,7 @@ namespace GameA.Game
         private void UpdateLogic(float deltaTime)
         {
             PlayMode.Instance.UpdateLogic(deltaTime);
+            CameraManager.Instance.UpdateLogic(deltaTime);
             for (int i = 0; i < _allSkeletonAnimationComp.Count; i++)
             {
                 _allSkeletonAnimationComp[i].Update(ConstDefineGM2D.FixedDeltaTime);
@@ -153,7 +163,24 @@ namespace GameA.Game
 
         #region GameState
 
-        public bool StartEdit()
+        public bool ChangeState(ESceneState eSceneState)
+        {
+            if (_eSceneState == eSceneState)
+            {
+                return true;
+            }
+            _eSceneState = eSceneState;
+            switch (_eSceneState)
+            {
+                case ESceneState.Edit:
+                    return StartEdit();
+                case ESceneState.Play:
+                    return StartPlay();
+            }
+            return false;
+        }
+
+        private bool StartEdit()
         {
             LogHelper.Debug("StartEdit");
             if (!PlayMode.Instance.StartEdit())
@@ -167,7 +194,7 @@ namespace GameA.Game
             return true;
         }
 
-        public bool StartPlay()
+        private bool StartPlay()
         {
             LogHelper.Debug("StartPlay");
             if (!PlayMode.Instance.StartPlay())

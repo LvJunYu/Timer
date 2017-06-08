@@ -128,7 +128,7 @@ namespace SoyEngine
 
         #region  private 
 
-        private void Update()
+        public void Update()
         {
             //检查所有正在播放的音效
             RemoveInvalidAudioItem();

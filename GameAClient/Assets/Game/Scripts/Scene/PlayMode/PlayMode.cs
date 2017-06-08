@@ -30,8 +30,6 @@ namespace GameA.Game
         private List<int> _boostItems;
         private Vector2 _cameraEditPosCache = Vector2.zero;
         [SerializeField] private ERunMode _eRunMode = ERunMode.Normal;
-        [SerializeField] private ESceneState _eSceneState = ESceneState.Play;
-
 
         [SerializeField] private IntVec2 _focusPos;
 
@@ -54,11 +52,6 @@ namespace GameA.Game
         public Texture2D MaskBaseTexture
         {
             get { return _maskBaseTexture; }
-        }
-
-        public bool IsEdit
-        {
-            get { return _eSceneState == ESceneState.Edit; }
         }
 
         public IntVec2 FocusPos
@@ -204,10 +197,6 @@ namespace GameA.Game
             if (_sceneState != null)
             {
                 _sceneState.UpdateLogic(deltaTime);
-            }
-            if (_mainUnit != null && _mainUnit.Life > 0)
-            {
-                CameraManager.Instance.UpdateLogic(deltaTime);
             }
             if (_mainUnit != null)
             {
@@ -439,23 +428,6 @@ namespace GameA.Game
         }
 
         #region State
-
-        public void ChangeState(ESceneState eSceneState)
-        {
-            _eSceneState = eSceneState;
-            switch (eSceneState)
-            {
-                case ESceneState.Edit:
-                    StartEdit();
-                    break;
-                case ESceneState.Modify:
-                    StartEdit();
-                    break;
-                case ESceneState.Play:
-                    StartPlay();
-                    break;
-            }
-        }
 
         public bool CheckPlayerValid()
         {

@@ -1359,7 +1359,7 @@ namespace GameA.Game
 
         protected void OnDeadAll()
         {
-            PlayMode.Instance.Pause();
+            GameRun.Instance.Pause();
             _animation.PlayOnce(DeathAnimName());
             PlayMode.Instance.CurrentShadow.RecordAnimation(DeathAnimName(), false);
         }

@@ -1037,7 +1037,7 @@ namespace GameA.Game
             if (_isPlaying)
             {
                 PlayMode.Instance.SceneState.Init(_mapStatistics);
-                MapManager.Instance.ChangeState(ESceneState.Play);
+                GameRun.Instance.ChangeState(ESceneState.Play);
             }
         }
 
@@ -1049,7 +1049,7 @@ namespace GameA.Game
             }
             _isPlaying = false;
             Messenger<bool>.Broadcast(EMessengerType.OnPlayChanged, _isPlaying);
-            MapManager.Instance.ChangeState(ESceneState.Edit);
+            GameRun.Instance.ChangeState(ESceneState.Edit);
         }
 
         private bool CheckReceiveTwoFingerEvent()

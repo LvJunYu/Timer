@@ -38,7 +38,7 @@ namespace GameA.Game
                 return false;
             }
             _spriteRenderer = _view.Trans.GetComponent<SpriteRenderer>();
-            if (PlayMode.Instance.IsEdit)
+            if (GameRun.Instance.IsEdit)
             {
                 PlayAnimation();
             }
@@ -68,7 +68,7 @@ namespace GameA.Game
             CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(2f - Time.realtimeSinceStartup % 2f,
                 () =>
                 {
-                    if (PlayMode.Instance.IsEdit)
+                    if (GameRun.Instance.IsEdit)
                     {
                         _editSequence = DOTween.Sequence();
                         _editSequence.Append(_spriteRenderer.DOFade(0, 0.5f));

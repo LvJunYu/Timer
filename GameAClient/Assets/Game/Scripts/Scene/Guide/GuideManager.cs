@@ -95,7 +95,7 @@ namespace GameA.Game
 			if (_gamePauseTimer > 0) {
 				_gamePauseTimer--;
 				if (_gamePauseTimer == 0) {
-					PlayMode.Instance.Pause();
+                    GameRun.Instance.Pause();
 					if (_gamePauseCB != null) {
 						_gamePauseCB();
 					}

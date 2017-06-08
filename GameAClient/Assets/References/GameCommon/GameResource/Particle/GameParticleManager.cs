@@ -179,7 +179,7 @@ namespace SoyEngine
             return com;
         }
 
-        private void Update()
+        public void Update()
         {
             UpdatePlayingParticleItem();
         }

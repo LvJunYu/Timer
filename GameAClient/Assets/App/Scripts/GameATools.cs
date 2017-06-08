@@ -259,5 +259,105 @@ namespace GameA {
             Messenger.Broadcast (EMessengerType.OnDiamondChanged);
         }
         #endregion
+
+    
+       public static string GetYearMonthDayHourMinuteSecondByMilli(long timeMillis, int DateType)
+        {
+            int timezone = 8; // 时区  
+            long totalSeconds = timeMillis / 1000;
+            totalSeconds += 60 * 60 * timezone;
+            int second = (int)(totalSeconds % 60);// 秒  
+            long totalMinutes = totalSeconds / 60;
+            int minute = (int)(totalMinutes % 60);// 分  
+            long totalHours = totalMinutes / 60;
+            int hour = (int)(totalHours % 24);// 时  
+            int totalDays = (int)(totalHours / 24);
+            int _year = 1970;
+            int year = _year + totalDays / 366;
+            int month = 1;
+            int day = 1;
+            int diffDays;
+            bool leapYear;
+            while (true)
+            {
+                int diff = (year - _year) * 365;
+                diff += (year - 1) / 4 - (_year - 1) / 4;
+                diff -= ((year - 1) / 100 - (_year - 1) / 100);
+                diff += (year - 1) / 400 - (_year - 1) / 400;
+                diffDays = totalDays - diff;
+                leapYear = (year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0);
+                if (!leapYear && diffDays < 365 || leapYear && diffDays < 366)
+                {
+                    break;
+                }
+                else
+                {
+                    year++;
+                }
+            }
+            int[] monthDays;
+            if (diffDays >= 59 && leapYear)
+            {
+                monthDays = new int[] { -1, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335 };
+            }
+            else
+            {
+                monthDays = new int[] { -1, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
+            }
+            for (int i = monthDays.Length - 1; i >= 1; i--)
+            {
+                if (diffDays >= monthDays[i])
+                {
+                    month = i;
+                    day = diffDays - monthDays[i] + 1;
+                    break;
+                }
+            }
+            switch (DateType)
+            {
+                case 1:
+                    return year + "年" + month + "月" + day + "日";
+                default:
+                    return null;
+
+
+            }
+        }
+
+        public static string SecondToHour(float time)
+        {
+            string str = "";
+            int hour = 0;
+            int minute = 0;
+            float second = time;
+            //second = Convert.ToInt32(time);
+
+            if (second > 60)
+            {
+                minute = (int)second / 60;
+                second = second % 60;
+            }
+            if (minute > 60)
+            {
+                hour = minute / 60;
+                minute = minute % 60;
+            }
+
+            if(hour>0)
+            { 
+            return (hour + "小时" + minute + "分钟"
+                + second + "秒");
+            }
+            else if (minute > 0)
+            {
+                return (minute + "分钟"
+                        + second + "秒");
+            }
+            else
+            {
+                return (second + "秒");
+            }
+
+        }
     }
 }
