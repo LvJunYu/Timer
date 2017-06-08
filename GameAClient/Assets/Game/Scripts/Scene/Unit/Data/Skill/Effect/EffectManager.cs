@@ -66,6 +66,7 @@ namespace GameA.Game
 
         public virtual bool AddEffect<T>(BulletBase bullet) where T : class
         {
+            Clear();
             EffectBase effect;
             if (!_effects.TryGetValue(typeof(T).Name, out effect))
             {
@@ -118,10 +119,10 @@ namespace GameA.Game
 
         private bool CanAddEffect(EffectBase effect)
         {
-            if (HasEffect(ESkillType.Ice) && effect.ESkillType == ESkillType.Clay)
-            {
-                return false;
-            }
+            //if (HasEffect(ESkillType.Ice) && effect.ESkillType == ESkillType.Clay)
+            //{
+            //    return false;
+            //}
             return true;
         }
     }

@@ -30,8 +30,6 @@ namespace GameA.Game
             {
                 return;
             }
-            _owner.EffectMgr.RemoveEffect<EffectFire>();
-            _owner.EffectMgr.RemoveEffect<EffectClay>();
             _owner.CanMotor = false;
             _owner.CanAttack = false;
             if (_owner.Animation != null)

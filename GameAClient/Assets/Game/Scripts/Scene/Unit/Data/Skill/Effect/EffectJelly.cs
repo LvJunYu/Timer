@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using SoyEngine;
 
 namespace GameA.Game
 {
@@ -22,14 +23,16 @@ namespace GameA.Game
         public override void OnAttached(BulletBase bullet)
         {
             var angle = bullet.Angle;
-            _owner.ExtraSpeed.y = angle <= 90 || angle >= 270 ? 180 : -180;
+            _owner.Speed = IntVec2.zero;
+            _owner.CurBanInputTime = 20;
+            _owner.ExtraSpeed.y = angle <= 90 || angle >= 270 ? 150 : -150;
             if (angle <= 90)
             {
-                _owner.ExtraSpeed.x = 100;
+                _owner.ExtraSpeed.x = 150;
             }
             else if (angle >= 270)
             {
-                _owner.ExtraSpeed.x = -100;
+                _owner.ExtraSpeed.x = -150;
             }
         }
     }

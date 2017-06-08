@@ -25,12 +25,7 @@ namespace GameA.Game
         /// <param name="bullet"></param>
         public override void OnAttached(BulletBase bullet)
         {
-            if (_owner.IsMain)
-            {
-                return;
-            }
-            _owner.EffectMgr.RemoveEffect<EffectFire>();
-            _owner.EffectMgr.RemoveEffect<EffectClay>();
+
         }
 
         public override void OnRemoved()
