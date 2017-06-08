@@ -205,10 +205,6 @@ namespace GameA.Game
             {
                 _sceneState.UpdateLogic(deltaTime);
             }
-            if (_mainUnit != null && _mainUnit.Life > 0)
-            {
-                CameraManager.Instance.UpdateLogic(deltaTime);
-            }
             if (_mainUnit != null)
             {
                 _focusPos = GetFocusPos(_mainUnit.CameraFollowPos);
