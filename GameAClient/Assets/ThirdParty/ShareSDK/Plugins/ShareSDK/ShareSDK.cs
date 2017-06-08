@@ -46,7 +46,12 @@ namespace cn.sharesdk.unity3d
 			foreach (FieldInfo devInfoField in devInfoFields) 
 			{	
 				DevInfo info = (DevInfo) devInfoField.GetValue(devInfo);
-				int platformId = (int) info.GetType().GetField("type").GetValue(info);
+                if (null == info)
+                    continue;
+                var fieldInfo = info.GetType ().GetField ("type");
+                if (null == fieldInfo)
+                    continue;
+                int platformId = (int)fieldInfo.GetValue (info);
 				FieldInfo[] fields = info.GetType().GetFields();
 				Hashtable table = new Hashtable();
 				foreach (FieldInfo field in fields) 
@@ -66,9 +71,14 @@ namespace cn.sharesdk.unity3d
 			shareSDKUtils = new AndroidImpl(gameObject);
 			#elif UNITY_IPHONE
 			shareSDKUtils = new iOSImpl(gameObject);
-			#endif
-			shareSDKUtils.InitSDK(appKey);
-			shareSDKUtils.SetPlatformConfig(platformConfigs);
+            #endif
+
+            #if UNITY_STANDALONE
+            #elif UNITY_STANDALONE_OSX
+            #else
+            shareSDKUtils.InitSDK(appKey);
+            shareSDKUtils.SetPlatformConfig(platformConfigs);
+            #endif
 		}
 		
 		/// <summary>
