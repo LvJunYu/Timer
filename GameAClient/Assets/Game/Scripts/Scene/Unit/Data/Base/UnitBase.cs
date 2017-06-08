@@ -732,18 +732,28 @@ namespace GameA.Game
             return false;
         }
 
+        public virtual bool StepOnClay()
+        {
+            return false;
+        }
+
+        public virtual bool StepOnIce()
+        {
+            return false;
+        }
+
         /// <summary>
         /// 被电
         /// </summary>
-        internal virtual void OnLazer()
+        internal virtual void InLazer()
         {
         }
 
-        internal virtual void OnWater()
+        internal virtual void InWater()
         {
         }
 
-        internal virtual void OnFire()
+        internal virtual void InFire()
         {
         }
 
@@ -1396,16 +1406,6 @@ namespace GameA.Game
         public virtual Edge GetUpEdge(UnitBase other)
         {
             return Edge.zero;
-        }
-
-        public virtual bool OnClay()
-        {
-            return false;
-        }
-
-        public virtual bool OnIce()
-        {
-            return false;
         }
 
         protected void FreeEffect(UnityNativeParticleItem effect)

@@ -55,7 +55,7 @@ namespace GameA.Game
             GameParticleManager.Instance.Emit("M1EffectDeathWater", GetHitEffectPos(other, EDirectionType.Up));
             if (other.IsHero)
             {
-                other.OnWater();
+                other.InWater();
             }
         }
     }

@@ -13,6 +13,12 @@ namespace GameA.Game
     [Effect(Name = "EffectJelly", Type = typeof(EffectJelly))]
     public class EffectJelly : EffectBase
     {
+        public override void Init(UnitBase target)
+        {
+            base.Init(target);
+            _eSkillType = ESkillType.Jelly;
+        }
+
         public override void OnAttached(BulletBase bullet)
         {
             var angle = bullet.Angle;

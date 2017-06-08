@@ -10,7 +10,8 @@ namespace GameA
         public Texture DefaultCoverTexture;
         
         public Button ReturnBtn;
-        public Dropdown DropDown;
+        public Dropdown MenuDropDown;
+        public Button TopBtn;
         public Button ShowDetailBtn;
         public Button HideDetailBtn;
 
@@ -32,10 +33,13 @@ namespace GameA
         public Button UnfavoriteBtn;
 
         public GameObject DetailInfo;
-        public UITagGroup TagGroup;
+        public UITabGroup TabGroup;
         public Button RecentRecordTab;
+        public Button RecentRecordTab2;
         public Button RankRecordTab;
+        public Button RankRecordTab2;
         public Button CommentListTab;
+        public Button CommentListTab2;
 
         public GameObject RecentRecordDock;
         public GridDataScroller RecentRecordGridScroller;

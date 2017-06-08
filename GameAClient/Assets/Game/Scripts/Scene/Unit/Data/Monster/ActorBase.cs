@@ -52,7 +52,7 @@ namespace GameA.Game
             }
         }
 
-        internal override void OnLazer()
+        internal override void InLazer()
         {
             _eDieType = EDieType.Lazer;
             OnDead();
@@ -62,7 +62,7 @@ namespace GameA.Game
             }
         }
 
-        internal override void OnWater()
+        internal override void InWater()
         {
             if (_eDieType == EDieType.Fire)
             {
@@ -79,7 +79,7 @@ namespace GameA.Game
             }
         }
 
-        internal override void OnFire()
+        internal override void InFire()
         {
             _eDieType = EDieType.Fire;
             if (_animation != null)

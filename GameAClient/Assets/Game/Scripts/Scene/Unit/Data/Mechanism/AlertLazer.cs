@@ -158,7 +158,7 @@ namespace GameA.Game
                                     {
                                         if (unit != null && unit.IsAlive && unit.IsHero)
                                         {
-                                            unit.OnLazer();
+                                            unit.InLazer();
                                         }
                                     }
                                 }

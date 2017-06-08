@@ -71,6 +71,16 @@ namespace GameA.Game
 
         protected override void UpdateMonsterAI()
         {
+            if (!_canMotor)
+            {
+                SpeedX = 0;
+                ChangeState(EMonsterState.None);
+                return;
+            }
+            if (_eState == EMonsterState.None)
+            {
+                ChangeState(EMonsterState.Think);
+            }
             if (_path != null)
             {
                 for (int i = 0; i < _path.Count - 1; i++)
@@ -93,7 +103,6 @@ namespace GameA.Game
                     OnSeek();
                     break;
                 case EMonsterState.Attack:
-                    SpeedX = Util.ConstantLerp(SpeedX, 0, _curFriction);
                     OnAttack();
                     break;
             }
@@ -102,7 +111,7 @@ namespace GameA.Game
         private void ChangeState(EMonsterState state)
         {
             _eState = state;
-            LogHelper.Debug("ChangeState : {0}", _eState);
+            //LogHelper.Debug("ChangeState : {0}", _eState);
         }
 
         protected void MoveTo()
@@ -155,7 +164,7 @@ namespace GameA.Game
                 return;
             }
             //如果此次寻路的终点举例目标点差距太远的话，就重新寻路。
-            IntVec2 distance = _path[_path.Count - 1] - PlayMode.Instance.MainUnit.CurPos/ConstDefineGM2D.ServerTileScale;
+            IntVec2 distance = _path[_path.Count - 1] - PlayMode.Instance.MainUnit.CurPos / ConstDefineGM2D.ServerTileScale;
             if (Mathf.Abs(distance.x) > PathRange.x || Mathf.Abs(distance.y) > PathRange.y)
             {
                 ++_reSeekTimer;
@@ -190,9 +199,14 @@ namespace GameA.Game
                 return;
             }
             var pathPos = GetColliderPos(_curPos);
-            if (!reachedX)
+            if (_curBanInputTime <= 0)
             {
-                if (_canMotor)
+                //着火了 迅速跑
+                if (_eDieType == EDieType.Fire)
+                {
+
+                }
+                if (!reachedX)
                 {
                     if (currentDest.x - pathPos.x > ConstDefineGM2D.AIMaxPositionError)
                     {
@@ -207,28 +221,27 @@ namespace GameA.Game
                         SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, _curFriction);
                     }
                 }
-            }
-            else if (_path.Count > _currentNodeId + 1 && !destOnGround)
-            {
-                int checkedX = 0;
-
-                var size = GetColliderSize();
-                //下落时解决提前落地的问题
-                if (_path[_currentNodeId + 1].x != _path[_currentNodeId].x)
+                else if (_path.Count > _currentNodeId + 1 && !destOnGround)
                 {
-                    if (_path[_currentNodeId + 1].x > _path[_currentNodeId].x)
-                    {
-                        checkedX = pathPos.x + size.x;
-                    }
-                    else
-                    {
-                        checkedX = pathPos.x - 1;
-                    }
-                }
+                    int checkedX = 0;
 
-                if (checkedX != 0 && !ColliderScene2D.Instance.HasBlockInLine(checkedX / ConstDefineGM2D.ServerTileScale, pathPos.y / ConstDefineGM2D.ServerTileScale, _path[_currentNodeId + 1].y))
-                {
-                    if (_canMotor)
+                    var size = GetColliderSize();
+                    //下落时解决提前落地的问题
+                    if (_path[_currentNodeId + 1].x != _path[_currentNodeId].x)
+                    {
+                        if (_path[_currentNodeId + 1].x > _path[_currentNodeId].x)
+                        {
+                            checkedX = pathPos.x + size.x;
+                        }
+                        else
+                        {
+                            checkedX = pathPos.x - 1;
+                        }
+                    }
+
+                    if (checkedX != 0 &&
+                        !ColliderScene2D.Instance.HasBlockInLine(checkedX/ConstDefineGM2D.ServerTileScale,
+                            pathPos.y/ConstDefineGM2D.ServerTileScale, _path[_currentNodeId + 1].y))
                     {
                         if (nextDest.x - pathPos.x > ConstDefineGM2D.AIMaxPositionError)
                         {
@@ -242,13 +255,12 @@ namespace GameA.Game
                             SetFacingDir(EMoveDirection.Left);
                             SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, _curFriction);
                         }
-                    }
 
-                    if (ReachedNodeOnXAxis(pathPos, currentDest, nextDest) &&
-                        ReachedNodeOnYAxis(pathPos, currentDest, nextDest))
-                    {
-                        _currentNodeId += 1;
-                        return;
+                        if (ReachedNodeOnXAxis(pathPos, currentDest, nextDest) &&
+                            ReachedNodeOnYAxis(pathPos, currentDest, nextDest))
+                        {
+                            _currentNodeId += 1;
+                        }
                     }
                 }
             }
@@ -256,22 +268,19 @@ namespace GameA.Game
 
         private int GetJumpSpeedForNode(int lastNodeId)
         {
-            if (_canMotor)
+            int currentNodeId = lastNodeId + 1;
+            if (_path[currentNodeId].y - _path[lastNodeId].y > 0 && _grounded)
             {
-                int currentNodeId = lastNodeId + 1;
-                if (_path[currentNodeId].y - _path[lastNodeId].y > 0 && _grounded)
+                int jumpHeight = 1;
+                for (int i = currentNodeId; i < _path.Count; ++i)
                 {
-                    int jumpHeight = 1;
-                    for (int i = currentNodeId; i < _path.Count; ++i)
+                    if (_path[i].y - _path[lastNodeId].y >= jumpHeight)
                     {
-                        if (_path[i].y - _path[lastNodeId].y >= jumpHeight)
-                        {
-                            jumpHeight = _path[i].y - _path[lastNodeId].y;
-                        }
-                        if (_path[i].y - _path[lastNodeId].y < jumpHeight || ColliderScene2D.Instance.IsGround(_path[i].x, _path[i].y - 1))
-                        {
-                            return GetJumpSpeed(jumpHeight);
-                        }
+                        jumpHeight = _path[i].y - _path[lastNodeId].y;
+                    }
+                    if (_path[i].y - _path[lastNodeId].y < jumpHeight || ColliderScene2D.Instance.IsGround(_path[i].x, _path[i].y - 1))
+                    {
+                        return GetJumpSpeed(jumpHeight);
                     }
                 }
             }

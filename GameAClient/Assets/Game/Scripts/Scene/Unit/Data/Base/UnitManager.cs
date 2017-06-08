@@ -35,7 +35,10 @@ namespace GameA.Game
             {
                 for (int i = 0; i < _unitParents.Length; i++)
                 {
-                    Object.Destroy(_unitParents[i].gameObject);
+                    if (_unitParents[i] != null)
+                    {
+                        Object.Destroy(_unitParents[i].gameObject);
+                    }
                 }
                 _unitParents = null;
             }
@@ -47,10 +50,13 @@ namespace GameA.Game
             _unitParents = new Transform[(int)EUnitType.Max];
             for (int i = 0; i < (int)EUnitType.Max; i++)
             {
+                if (i == (int)EUnitType.MainPlayer)
+                {
+                    continue;
+                }
                 _unitParents[i] = new GameObject(((EUnitType)i).ToString()).transform;
                 _unitParents[i].parent = App.GamePoolTrans;
             }
-            _unitParents[(int)EUnitType.MainPlayer] = null;
             Type curType = GetType();
             Type[] types = curType.Assembly.GetTypes();
             Type attrType = typeof(UnitAttribute);
@@ -116,6 +122,10 @@ namespace GameA.Game
 
         public Transform GetOriginParent()
         {
+            if (_unitParents == null)
+            {
+                return null;
+            }
             return _unitParents[0];
         }
 

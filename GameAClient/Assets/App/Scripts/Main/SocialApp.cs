@@ -136,7 +136,6 @@ namespace GameA
 	    {
 			gameObject.AddComponent<TableManager>();
 			TableManager.Instance.Init();
-            UnitManager.Instance.Init();
 			SocialGUIManager.Instance.ShowAppView();
 		}
 
@@ -149,7 +148,7 @@ namespace GameA
         internal void ReturnToApp(bool withScreenEffect = true)
         {
             GameManager.Instance.RequestStopGame();
-            JoySceneManager.Instance.LoadEmptyScene();
+            //JoySceneManager.Instance.LoadEmptyScene();
 
             SocialGUIManager.Instance.ChangeToAppMode();
         }

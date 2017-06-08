@@ -66,11 +66,11 @@ namespace GameA.Game
                                 _curFriction = unit.Friction;
                             }
                             var edge = unit.GetUpEdge(this);
-                            if (unit.OnClay() || edge.ESkillType == ESkillType.Clay)
+                            if (unit.StepOnClay() || edge.ESkillType == ESkillType.Clay)
                             {
                                 _onClay = true;
                             }
-                            else if (unit.OnIce() || edge.ESkillType == ESkillType.Ice)
+                            else if (unit.StepOnIce() || edge.ESkillType == ESkillType.Ice)
                             {
                                 _onIce = true;
                             }
@@ -118,22 +118,6 @@ namespace GameA.Game
                     }
                 }
                 UpdateMonsterAI();
-                if (_canMotor && _curBanInputTime <= 0)
-                {
-                    //着火了 迅速跑
-                    if (_eDieType == EDieType.Fire)
-                    {
-                        
-                    }
-                    if (_curMoveDirection == EMoveDirection.Right)
-                    {
-                        SpeedX = Util.ConstantLerp(SpeedX, _monsterSpeed, _curFriction);
-                    }
-                    else
-                    {
-                        SpeedX = Util.ConstantLerp(SpeedX, -_monsterSpeed, _curFriction);
-                    }
-                }
                 if (!_grounded)
                 {
                     SpeedY -= 12;

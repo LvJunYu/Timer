@@ -252,6 +252,17 @@ namespace SoyEngine
             return so;
         }
 
+        internal SpineObject EmitLoop(string path, Transform parent)
+        {
+            SpineObject so;
+            if (GM2DTools.TryGetSpineObject(path, out so))
+            {
+                so.Trans.SetParent(parent, false);
+                so.SkeletonAnimation.state.SetAnimation(0, "Run", true);
+            }
+            return so;
+        }
+
         #region private
 
         private UnityNativeParticleItem GetParticleItem(string itemName)

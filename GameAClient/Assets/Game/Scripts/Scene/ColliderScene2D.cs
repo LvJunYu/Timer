@@ -43,10 +43,14 @@ namespace GameA.Game
         public override void Dispose()
         {
             base.Dispose();
-            foreach (var unit in _units.Values)
+            foreach (var unit in _allUnits)
             {
                 if (unit != null)
                 {
+                    if (unit.View != null)
+                    {
+                        UnityEngine.Object.Destroy(unit.View.Trans.gameObject);
+                    }
                     unit.OnObjectDestroy();
                     unit.OnDispose();
                 }

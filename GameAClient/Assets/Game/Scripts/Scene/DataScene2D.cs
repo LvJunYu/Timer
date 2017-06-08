@@ -246,6 +246,7 @@ namespace GameA.Game
 
         public void ProcessUnitExtra(IntVec3 guid, UnitExtra unitExtra)
         {
+            EditMode.Instance.MapStatistics.NeedSave = true;
             if (unitExtra.Equals(UnitExtra.zero))
             {
                 DeleteUnitExtra(guid);
