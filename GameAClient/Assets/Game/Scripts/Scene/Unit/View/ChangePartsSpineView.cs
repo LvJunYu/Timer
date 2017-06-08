@@ -150,10 +150,10 @@ namespace GameA.Game
 
 		public bool SetParts (int partsId, SpinePartsHelper.ESpineParts partsType, bool homeAvatar = false) {
             //TODO DEL 临时代码 空指针
-            if (partsId == 1)
-            {
-                return false;
-            }
+            //if (partsId == 1)
+            //{
+            //    return false;
+            //}
 
 
 
