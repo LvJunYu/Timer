@@ -183,6 +183,18 @@ namespace GameA.Game
                 _connectLineEffectCache [i].DestroySelf ();
             }
             _connectLineEffectCache.Clear ();
+            if (_backgroundObject != null)
+            {
+                UnityEngine.Object.Destroy(_backgroundObject);
+            }
+            if (_mapRectMask != null)
+            {
+                UnityEngine.Object.Destroy(_mapRectMask.gameObject);
+            }
+            if (_cameraMask != null)
+            {
+                UnityEngine.Object.Destroy(_cameraMask.gameObject);
+            }
         }
 
 		public virtual void Init()

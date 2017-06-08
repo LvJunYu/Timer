@@ -152,7 +152,7 @@ namespace GameA
                 if (_currentGame != null)
                 {
                     RequestStopGame();
-                    Messenger.Broadcast(EMessengerType.LoadEmptyScene);
+                    //Messenger.Broadcast(EMessengerType.LoadEmptyScene);
                     CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() => {
                         System.GC.Collect();
                         _curProjectInx++;

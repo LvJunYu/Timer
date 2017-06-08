@@ -54,6 +54,10 @@ namespace GameA.Game
                 UnityEngine.Object.Destroy(_mapFile.gameObject);
                 _mapFile = null;
             }
+            if (EditMode.Instance != null)
+            {
+                UnityEngine.Object.Destroy(EditMode.Instance.gameObject);
+            }
             DataScene2D.Instance.Dispose();
             ColliderScene2D.Instance.Dispose();
             BgScene2D.Instance.Dispose();
@@ -207,6 +211,10 @@ namespace GameA.Game
                 ColliderScene2D.Instance.UpdateLogic(pos);
 	        }
             BgScene2D.Instance.UpdateLogic(pos);
+	        if (EditMode.Instance != null)
+	        {
+                EditMode.Instance.Update();
+	        }
 	    }
 
 	    /// <summary>

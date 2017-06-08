@@ -72,6 +72,11 @@ namespace GameA.Game
             get { return _gameMode; }
         }
 
+        public EGameRunMode EGameRunMode
+        {
+            get { return _gameMode.GameRunMode; }
+        }
+
         public override ScreenOrientation ScreenOrientation
         {
             get { return ScreenOrientation.LandscapeLeft; }

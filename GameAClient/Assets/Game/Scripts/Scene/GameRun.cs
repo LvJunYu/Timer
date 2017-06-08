@@ -44,6 +44,7 @@ namespace GameA.Game
         public void Dispose()
         {
             Clear();
+
             EnvManager.Instance.Dispose();
             GameParticleManager.Instance.Dispose();
             GameAudioManager.Instance.Dispose();
@@ -61,11 +62,13 @@ namespace GameA.Game
             PoolFactory<SpineObject>.Clear();
 
             CameraManager.Instance.Dispose();
+            UnitManager.Instance.Dispose();
             _instance = null;
         }
 
         public IEnumerator Init(GameManager.EStartType eGameInitType, Project project)
         {
+            UnitManager.Instance.Init();
             CameraManager.Instance.Init();
             EnvManager.Instance.Init();
             GameParticleManager.Instance.Init();
@@ -126,10 +129,6 @@ namespace GameA.Game
                 return;
             }
             CrossPlatformInputManager.Update();
-            if (EditMode.Instance != null)
-            {
-                EditMode.Instance.Update();
-            }
             MapManager.Instance.Update();
             GameParticleManager.Instance.Update();
             GameAudioManager.Instance.Update();
