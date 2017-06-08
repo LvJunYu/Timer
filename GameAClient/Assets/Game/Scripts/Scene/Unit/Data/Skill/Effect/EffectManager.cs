@@ -57,15 +57,16 @@ namespace GameA.Game
 
         public void Clear()
         {
-            _currentEffects.Clear();
             for (int i = 0; i < _currentEffects.Count; i++)
             {
                 _currentEffects[i].OnRemoved();
             }
+            _currentEffects.Clear();
         }
 
         public virtual bool AddEffect<T>(BulletBase bullet) where T : class
         {
+            Clear();
             EffectBase effect;
             if (!_effects.TryGetValue(typeof(T).Name, out effect))
             {
@@ -83,6 +84,7 @@ namespace GameA.Game
             }
             _currentEffects.Add(effect);
             effect.OnAttached(bullet);
+            LogHelper.Debug(string.Format("{0} OnAttached", effect.ESkillType));
             return true;
         }
 
@@ -99,11 +101,28 @@ namespace GameA.Game
                 return false;
             }
             effect.OnRemoved();
+            LogHelper.Debug(string.Format("{0} OnRemoved", effect.ESkillType));
             return true;
+        }
+
+        private bool HasEffect(ESkillType eSkillType) 
+        {
+            for (int i = 0; i < _currentEffects.Count; i++)
+            {
+                if (_currentEffects[i].ESkillType == eSkillType)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private bool CanAddEffect(EffectBase effect)
         {
+            //if (HasEffect(ESkillType.Ice) && effect.ESkillType == ESkillType.Clay)
+            //{
+            //    return false;
+            //}
             return true;
         }
     }

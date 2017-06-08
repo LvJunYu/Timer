@@ -13,6 +13,12 @@ namespace GameA.Game
     public class EffectBase
     {
         protected UnitBase _owner;
+        protected ESkillType _eSkillType;
+
+        public ESkillType ESkillType
+        {
+            get { return _eSkillType; }
+        }
 
         public virtual void Init(UnitBase target)
         {

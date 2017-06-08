@@ -584,11 +584,11 @@ namespace GameA.Game
                             friction = unit.Friction;
                         }
                         var edge = unit.GetUpEdge(this);
-                        if (unit.OnClay() || edge.ESkillType == ESkillType.Clay)
+                        if (unit.StepOnClay() || edge.ESkillType == ESkillType.Clay)
                         {
                             _onClay = true;
                         }
-                        else if (unit.OnIce() || edge.ESkillType == ESkillType.Ice)
+                        else if (unit.StepOnIce() || edge.ESkillType == ESkillType.Ice)
                         {
                             _onIce = true;
                         }
@@ -620,8 +620,8 @@ namespace GameA.Game
             if (_onClay)
             {
                 friction = 30;
-                _curMaxSpeedX /= ClayRatio;
-                _curMaxQuickenSpeedX /= ClayRatio;
+                _curMaxSpeedX = (int) (_curMaxSpeedX * SpeedClayRatio);
+                _curMaxQuickenSpeedX = (int) (_curMaxQuickenSpeedX * SpeedClayRatio);
             }
             else if (_onIce)
             {
@@ -1340,7 +1340,7 @@ namespace GameA.Game
 
         protected bool _inWater;
 
-        internal override void OnWater()
+        internal override void InWater()
         {
             if (_inWater)
             {

@@ -210,12 +210,12 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: b4f3c8a300e99439291191a2494637fb, type: 2}
-  - {fileID: 2100000, guid: 7af3dd27e08c748b3b07e10c668c637e, type: 2}
-  - {fileID: 2100000, guid: cd96159c5fcc64ff291ba35d3c2d6afb, type: 2}
-  - {fileID: 2100000, guid: 416df73ff63c74666b88ee532f7ee096, type: 2}
-  - {fileID: 2100000, guid: 7af3dd27e08c748b3b07e10c668c637e, type: 2}
-  - {fileID: 2100000, guid: 416df73ff63c74666b88ee532f7ee096, type: 2}
+  - {fileID: 2100000, guid: 61611f8193241514f8a1667dc1922b5e, type: 2}
+  - {fileID: 2100000, guid: e9b82ac0ac109cf46a8e7029433c2bc6, type: 2}
+  - {fileID: 2100000, guid: 4ac76b976075d5e488c3b01d4724efbc, type: 2}
+  - {fileID: 2100000, guid: 2eb4791d585ceb14dab2d5522bc4e4a4, type: 2}
+  - {fileID: 2100000, guid: e9b82ac0ac109cf46a8e7029433c2bc6, type: 2}
+  - {fileID: 2100000, guid: 2eb4791d585ceb14dab2d5522bc4e4a4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -287,7 +287,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1036748122994824}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
@@ -441,8 +441,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -55, y: -109}
-  m_SizeDelta: {x: 256, y: 512}
+  m_AnchoredPosition: {x: -399, y: -93}
+  m_SizeDelta: {x: 281, y: 563}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224555610998903978
 RectTransform:

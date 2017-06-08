@@ -251,13 +251,9 @@ namespace GameA.Game
                 {
                     case ESkillType.Water:
                         //解除火、黏液；速度变慢
-                        effectMgr.RemoveEffect<EffectFire>();
-                        effectMgr.RemoveEffect<EffectClay>();
                         effectMgr.AddEffect<EffectWater>(this);
                         break;
                     case ESkillType.Fire:
-                        //解除冰；着火后四处逃窜 2s 后 死亡，如果此时碰到水，火消灭。水块的话1秒内朝着泥土跳跃，跳不上被淹死。
-                        effectMgr.RemoveEffect<EffectIce>();
                         effectMgr.AddEffect<EffectFire>(this);
                         break;
                     case ESkillType.Ice:

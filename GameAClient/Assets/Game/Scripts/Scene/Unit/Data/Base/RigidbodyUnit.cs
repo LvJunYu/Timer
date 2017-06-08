@@ -29,7 +29,8 @@ namespace GameA.Game
         private static HashSet<IntVec3> _cacheIntersectUnits = new HashSet<IntVec3>();
         protected bool _onClay;
         protected bool _onIce;
-        protected const int ClayRatio = 5;
+        protected const float SpeedClayRatio = 0.2f;
+        protected const float SpeedFireRatio = 1.5f;
 
         protected override void Clear()
         {

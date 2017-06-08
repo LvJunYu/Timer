@@ -17,6 +17,7 @@ namespace GameA.Game
         protected int _monsterSpeed;
         protected int _curMaxSpeedX;
         protected int _curFriction;
+        protected int _fireTimer;
 
         protected override bool OnInit()
         {
@@ -66,11 +67,11 @@ namespace GameA.Game
                                 _curFriction = unit.Friction;
                             }
                             var edge = unit.GetUpEdge(this);
-                            if (unit.OnClay() || edge.ESkillType == ESkillType.Clay)
+                            if (unit.StepOnClay() || edge.ESkillType == ESkillType.Clay)
                             {
                                 _onClay = true;
                             }
-                            else if (unit.OnIce() || edge.ESkillType == ESkillType.Ice)
+                            else if (unit.StepOnIce() || edge.ESkillType == ESkillType.Ice)
                             {
                                 _onIce = true;
                             }
@@ -96,11 +97,20 @@ namespace GameA.Game
                 if (_onClay)
                 {
                     _curFriction = 30;
-                    _curMaxSpeedX /= ClayRatio;
+                    _curMaxSpeedX = (int)(_curMaxSpeedX * SpeedClayRatio);
                 }
                 else if (_onIce)
                 {
                     _curFriction = 1;
+                }
+                if (_eDieType == EDieType.Fire)
+                {
+                    OnFire();
+                }
+                else
+                {
+                    _fireTimer = 0;
+                    UpdateMonsterAI();
                 }
                 if (!air)
                 {
@@ -117,23 +127,6 @@ namespace GameA.Game
                         }
                     }
                 }
-                UpdateMonsterAI();
-                if (_canMotor && _curBanInputTime <= 0)
-                {
-                    //着火了 迅速跑
-                    if (_eDieType == EDieType.Fire)
-                    {
-                        
-                    }
-                    if (_curMoveDirection == EMoveDirection.Right)
-                    {
-                        SpeedX = Util.ConstantLerp(SpeedX, _monsterSpeed, _curFriction);
-                    }
-                    else
-                    {
-                        SpeedX = Util.ConstantLerp(SpeedX, -_monsterSpeed, _curFriction);
-                    }
-                }
                 if (!_grounded)
                 {
                     SpeedY -= 12;
@@ -141,6 +134,37 @@ namespace GameA.Game
                     {
                         SpeedY = -120;
                     }
+                }
+            }
+        }
+
+        protected virtual void OnFire()
+        {
+            _curMaxSpeedX = (int)(_curMaxSpeedX * SpeedFireRatio);
+            if (_curMoveDirection == EMoveDirection.Right)
+            {
+                SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, _curFriction);
+            }
+            else
+            {
+                SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, _curFriction);
+            }
+            _fireTimer++;
+            //碰到墙壁转头
+            CheckWay();
+            //每隔两秒转头
+            if (_fireTimer == 100)
+            {
+                ChangeWay(_curMoveDirection == EMoveDirection.Right ? EMoveDirection.Left : EMoveDirection.Right);
+            }
+            //五秒后还是这个状态挂掉
+            else if (_fireTimer == 250)
+            {
+                OnDead();
+                if (_animation != null)
+                {
+                    _animation.Reset();
+                    _animation.PlayOnce("DeathFire");
                 }
             }
         }
@@ -189,32 +213,34 @@ namespace GameA.Game
         {
         }
 
-        protected void CheckWay()
+        protected bool CheckWay()
         {
             if (_hitUnits != null)
             {
                 if (_curMoveDirection == EMoveDirection.Left && _hitUnits[(int)EDirectionType.Left] != null)
                 {
-                    ChangeWay(EMoveDirection.Right);
+                    return ChangeWay(EMoveDirection.Right);
                 }
                 else if (_curMoveDirection == EMoveDirection.Right && _hitUnits[(int)EDirectionType.Right] != null)
                 {
-                    ChangeWay(EMoveDirection.Left);
+                    return ChangeWay(EMoveDirection.Left);
                 }
             }
+            return false;
         }
 
-        public override void ChangeWay(EMoveDirection eMoveDirection)
+        public override bool ChangeWay(EMoveDirection eMoveDirection)
         {
             if (!_isMonster)
             {
-                return;
+                return false;
             }
             if (_curMaxSpeedX != 0)
             {
                 SpeedX = eMoveDirection == EMoveDirection.Right ? _curMaxSpeedX : -_curMaxSpeedX;
             }
             SetFacingDir(eMoveDirection);
+            return true;
         }
 
         protected override void OnDead ()

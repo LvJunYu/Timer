@@ -21,6 +21,8 @@ namespace GameA.Game
 
         #region base data
 
+        protected int _hp;
+
         protected bool _isFreezed;
 
         [SerializeField]
@@ -124,6 +126,11 @@ namespace GameA.Game
             get { return _view == null ? null : _view.Trans; }
         }
 
+        public virtual EDieType EDieType
+        {
+            get { return EDieType.None; }
+        }
+
         protected AnimationSystem _animation
         {
             get { return _view == null ? null : _view.Animation; }
@@ -146,6 +153,11 @@ namespace GameA.Game
         public virtual bool CanControlledBySwitch
         {
             get { return false; }
+        }
+
+        public int Hp
+        {
+            get { return _hp; }
         }
 
         /// <summary>
@@ -732,18 +744,28 @@ namespace GameA.Game
             return false;
         }
 
+        public virtual bool StepOnClay()
+        {
+            return false;
+        }
+
+        public virtual bool StepOnIce()
+        {
+            return false;
+        }
+
         /// <summary>
         /// 被电
         /// </summary>
-        internal virtual void OnLazer()
+        internal virtual void InLazer()
         {
         }
 
-        internal virtual void OnWater()
+        internal virtual void InWater()
         {
         }
 
-        internal virtual void OnFire()
+        internal virtual void InFire()
         {
         }
 
@@ -960,9 +982,9 @@ namespace GameA.Game
             });
         }
 
-        public virtual void ChangeWay(EMoveDirection eMoveDirection)
+        public virtual bool ChangeWay(EMoveDirection eMoveDirection)
         {
-
+            return false;
         }
 
         public virtual void OnRevivePos(IntVec2 pos)
@@ -1396,16 +1418,6 @@ namespace GameA.Game
         public virtual Edge GetUpEdge(UnitBase other)
         {
             return Edge.zero;
-        }
-
-        public virtual bool OnClay()
-        {
-            return false;
-        }
-
-        public virtual bool OnIce()
-        {
-            return false;
         }
 
         protected void FreeEffect(UnityNativeParticleItem effect)

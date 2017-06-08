@@ -97,7 +97,7 @@ namespace GameA.Game
         internal static bool IsGround(int id)
         {
             return id != SwitchTriggerId && id != LaserId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
-                   !IsBoard(id) && !IsMain(id);
+                   !IsBoard(id) && !IsMain(id) && !IsBullet(id);
         }
 
         public static bool IsDownY(Table_Unit tableUnit)
