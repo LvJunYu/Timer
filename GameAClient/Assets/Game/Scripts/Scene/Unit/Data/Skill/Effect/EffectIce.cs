@@ -17,6 +17,12 @@ namespace GameA.Game
     {
         private SpineObject _effect;
 
+        public override void Init(UnitBase target)
+        {
+            base.Init(target);
+            _eSkillType = ESkillType.Ice;
+        }
+
         public override void OnAttached(BulletBase bullet)
         {
             //黏液不能攻击主角，直接喷涂到地面上
@@ -24,18 +30,20 @@ namespace GameA.Game
             {
                 return;
             }
+            _owner.EffectMgr.RemoveEffect<EffectFire>();
             _owner.CanMotor = false;
             _owner.CanAttack = false;
             if (_owner.Animation != null)
             {
+                _owner.Animation.Reset();
                 _owner.Animation.PlayOnce("OnIce");
-                LogHelper.Debug("OnIce");
             }
             if (_effect == null)
             {
                 _effect = GameParticleManager.Instance.EmitLoop("M1Ice1", _owner.Trans);
-                _effect.Trans.localPosition = new Vector3(0, -0.1f, 0.01f);
             }
+            _effect.Trans.localPosition = new Vector3(0, -0.1f, _owner.CurMoveDirection == EMoveDirection.Right ? -0.01f : 0.01f);
+            _effect.Trans.rotation = Quaternion.identity;
             _effect.SetActive(true);
         }
 

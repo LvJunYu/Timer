@@ -257,7 +257,7 @@ namespace SoyEngine
             SpineObject so;
             if (GM2DTools.TryGetSpineObject(path, out so))
             {
-                so.Trans.SetParent(parent);
+                so.Trans.SetParent(parent, false);
                 so.SkeletonAnimation.state.SetAnimation(0, "Run", true);
             }
             return so;
