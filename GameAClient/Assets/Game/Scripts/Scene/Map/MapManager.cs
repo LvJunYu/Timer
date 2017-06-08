@@ -50,7 +50,9 @@ namespace GameA.Game
 	    {
             if (_mapFile != null)
             {
+                _mapFile.Stop();
                 UnityEngine.Object.Destroy(_mapFile.gameObject);
+                _mapFile = null;
             }
             DataScene2D.Instance.Dispose();
             ColliderScene2D.Instance.Dispose();

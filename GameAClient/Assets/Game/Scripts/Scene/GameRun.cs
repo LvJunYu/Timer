@@ -74,7 +74,6 @@ namespace GameA.Game
                 yield return new WaitForSeconds(0.1f);
             }
             Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 1f);
-            yield return null;
         }
 
         public void Clear()

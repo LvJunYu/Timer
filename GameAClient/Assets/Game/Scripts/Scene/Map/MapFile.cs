@@ -40,7 +40,6 @@ namespace GameA.Game
             {
             case 0:
             case 1:
-//                StartCoroutine ("ParseData", mapData);
                 StartCoroutine (ParseData (mapData, startType));
                 break;
             }
