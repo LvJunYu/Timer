@@ -54,6 +54,10 @@ namespace GameA.Game
                 UnityEngine.Object.Destroy(_mapFile.gameObject);
                 _mapFile = null;
             }
+            if (EditMode.Instance != null)
+            {
+                UnityEngine.Object.Destroy(EditMode.Instance.gameObject);
+            }
             DataScene2D.Instance.Dispose();
             ColliderScene2D.Instance.Dispose();
             BgScene2D.Instance.Dispose();

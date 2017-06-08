@@ -50,10 +50,13 @@ namespace GameA.Game
             _unitParents = new Transform[(int)EUnitType.Max];
             for (int i = 0; i < (int)EUnitType.Max; i++)
             {
+                if (i == (int)EUnitType.MainPlayer)
+                {
+                    continue;
+                }
                 _unitParents[i] = new GameObject(((EUnitType)i).ToString()).transform;
                 _unitParents[i].parent = App.GamePoolTrans;
             }
-            _unitParents[(int)EUnitType.MainPlayer] = null;
             Type curType = GetType();
             Type[] types = curType.Assembly.GetTypes();
             Type attrType = typeof(UnitAttribute);
