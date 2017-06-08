@@ -26,6 +26,8 @@ namespace GameA.Game
             {
                 return;
             }
+            //黏液->火->冰->黏液（火）
+            _owner.EffectMgr.RemoveEffect<EffectFire>();
             _owner.CanMotor = false;
             if (_owner.Animation != null)
             {
