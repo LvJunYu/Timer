@@ -19,7 +19,7 @@ namespace GameA.Game
         None,
         Think,
         Seek,
-        Attack
+        Attack,
     }
 
     public class MonsterAI : MonsterBase
@@ -201,11 +201,6 @@ namespace GameA.Game
             var pathPos = GetColliderPos(_curPos);
             if (_curBanInputTime <= 0)
             {
-                //着火了 迅速跑
-                if (_eDieType == EDieType.Fire)
-                {
-
-                }
                 if (!reachedX)
                 {
                     if (currentDest.x - pathPos.x > ConstDefineGM2D.AIMaxPositionError)

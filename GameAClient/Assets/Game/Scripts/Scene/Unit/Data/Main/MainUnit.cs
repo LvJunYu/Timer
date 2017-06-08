@@ -620,8 +620,8 @@ namespace GameA.Game
             if (_onClay)
             {
                 friction = 30;
-                _curMaxSpeedX /= ClayRatio;
-                _curMaxQuickenSpeedX /= ClayRatio;
+                _curMaxSpeedX = (int) (_curMaxSpeedX * SpeedClayRatio);
+                _curMaxQuickenSpeedX = (int) (_curMaxQuickenSpeedX * SpeedClayRatio);
             }
             else if (_onIce)
             {

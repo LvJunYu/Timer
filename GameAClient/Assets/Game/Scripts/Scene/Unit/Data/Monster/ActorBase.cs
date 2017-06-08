@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using SoyEngine;
 
 namespace GameA.Game
 {
@@ -31,6 +32,11 @@ namespace GameA.Game
         public override EffectManager EffectMgr
         {
             get { return _effectManager; }
+        }
+
+        public override EDieType EDieType
+        {
+            get { return _eDieType; }
         }
 
         protected override bool OnInit()
@@ -68,7 +74,6 @@ namespace GameA.Game
             {
                 //跳出水里
                 OutFire();
-                _eDieType = EDieType.None;
                 return;
             }
             _eDieType = EDieType.Water;
@@ -81,6 +86,10 @@ namespace GameA.Game
 
         internal override void InFire()
         {
+            if (_eDieType == EDieType.Fire)
+            {
+                return;
+            }
             _eDieType = EDieType.Fire;
             if (_animation != null)
             {
@@ -88,15 +97,30 @@ namespace GameA.Game
             }
         }
 
-        protected override bool OutOfMap ()
+        internal override void OutFire()
         {
-            if (base.OutOfMap ())
+            _animation.ClearTrack(1);
+            _eDieType = EDieType.None;
+        }
+
+        protected override bool OutOfMap()
+        {
+            if (base.OutOfMap())
             {
                 _eDieType = EDieType.OutofMap;
                 return true;
-            } else 
+            }
+            return false;
+        }
+
+        protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
+        {
+            if (_isAlive && _eDieType == EDieType.Fire)
             {
-                return false;
+                if (unit.IsAlive)
+                {
+                    unit.InFire();
+                }
             }
         }
     }
