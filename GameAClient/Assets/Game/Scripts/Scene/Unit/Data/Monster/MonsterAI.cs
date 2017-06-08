@@ -75,8 +75,11 @@ namespace GameA.Game
             {
                 SpeedX = 0;
                 ChangeState(EMonsterState.None);
-                _path.Clear();
                 return;
+            }
+            if (_eState == EMonsterState.None)
+            {
+                ChangeState(EMonsterState.Think);
             }
             if (_path != null)
             {
