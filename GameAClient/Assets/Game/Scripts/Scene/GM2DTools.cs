@@ -403,7 +403,8 @@ namespace GameA.Game
             res.MoveDirection = (byte)data.MoveDirection;
             res.RollerDirection = (byte)data.RollerDirection;
             res.Msg = data.Msg;
-            res.UnitChild = ToProto(data.Child); 
+            res.UnitChild = ToProto(data.Child);
+            res.EnergyType = data.EnergyType;
             return res;
         }
 
