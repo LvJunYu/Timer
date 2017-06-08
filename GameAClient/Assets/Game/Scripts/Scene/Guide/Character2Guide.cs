@@ -52,7 +52,7 @@ namespace GameA.Game
 			// 	});
 			} else if (_step == idx++) {	// 5
 				// BlockTouchInput();
-				PlayMode.Instance.Continue();
+                GameRun.Instance.Continue();
 				GuideManager.Instance.UnlockJumpButton();
 				GuideManager.Instance.LockAxisInput("Horizontal", 1f);
 				PauseGame(18, ()=>{
@@ -68,7 +68,7 @@ namespace GameA.Game
 				GuideManager.Instance.UnlockAxisInput();
 				CloseMask();
 				BlockTouchInput();
-				PlayMode.Instance.Continue();
+                GameRun.Instance.Continue();
 				ShowText("干的漂亮！");
 			} else if (_step == idx++) {	// 8
 				ShowText("反墙跳可以跳上一些平常上不去的地方，是不是有种武林高手的感觉？");
@@ -110,7 +110,7 @@ namespace GameA.Game
 			} else if (_step == idx++) {	// 14
 				GuideManager.Instance.LockJumpButton();
 				CloseMask();
-				PlayMode.Instance.Continue();
+                GameRun.Instance.Continue();
 				BlockTouchInput();
 			} else if (_step == idx++) {	// 15
 				GuideManager.Instance.UnlockJumpButton();
@@ -122,7 +122,7 @@ namespace GameA.Game
 			} else if (_step == idx++) {	// 16
 				GuideManager.Instance.LockJumpButton();
 				CloseMask();
-				PlayMode.Instance.Continue();
+                GameRun.Instance.Continue();
 				BlockTouchInput();
 			}
 			else if (_step == idx++) {	// 17
@@ -135,7 +135,7 @@ namespace GameA.Game
 			} else if (_step == idx++) {	// 18
 				GuideManager.Instance.LockJumpButton();
 				CloseMask();
-				PlayMode.Instance.Continue();
+                GameRun.Instance.Continue();
 				BlockTouchInput();
 			} else if (_step == idx++) {	// 19
 				PauseGame(1, null); 
@@ -149,7 +149,7 @@ namespace GameA.Game
 			} else if (_step == idx++) {	// 21
 				ShowText("好的身手需要合适的地方才能施展，幸好我们有好多制作精良的关卡，快去挑战吧～");
 			} else if (_step == idx++) {
-				PlayMode.Instance.Continue();
+                GameRun.Instance.Continue();
 				Finish();
 			}
 		}

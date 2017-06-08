@@ -64,7 +64,7 @@ namespace GameA
             _showShadow.SetData (_setting.ShowPlayModeShadow, OnClickShowRuntimeShadow);
             _showRoute.SetData (_setting.ShowEidtModeShadow, OnClickShowEditShadow);
 
-            Game.PlayMode.Instance.Pause ();
+            GameRun.Instance.Pause ();
 		}
 
 		protected override void OnClose()
@@ -77,7 +77,7 @@ namespace GameA
 			{
 				return;
 			}
-            Game.PlayMode.Instance.Continue ();
+            GameRun.Instance.Continue();
 			Messenger.Broadcast(EMessengerType.OnCloseGameSetting);
 			base.OnClose();
 		}
