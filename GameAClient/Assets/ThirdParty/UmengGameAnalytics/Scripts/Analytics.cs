@@ -388,6 +388,7 @@ namespace Umeng
 			var info = util.CallStatic<string>("getDeviceInfo", Context);
 			return info;
 #endif
+            return null;
 
         }
 
