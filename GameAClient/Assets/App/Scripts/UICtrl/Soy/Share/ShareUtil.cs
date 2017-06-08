@@ -242,104 +242,104 @@ namespace GameA
 
         private static bool JumpToProject(string command)
         {
-            string[] strAry = command.Split('|');
-            if(strAry.Length != 2 || string.IsNullOrEmpty(strAry[1]))
-            {
-                return false;
-            }
-            long projectId = 0;
-            if(!long.TryParse(strAry[1], out projectId))
-            {
-                return false;
-            }
-            if(SocialGUIManager.Instance.CurrentMode == SocialGUIManager.EMode.Game)
-            {
-                return false;
-            }
-            if(SocialGUIManager.Instance.GetUI<UICtrlProjectDetail>().IsOpen)
-            {
-                return false;
-            }
-            UICtrlProjectDetail uiCtrlProjectDetail = SocialGUIManager.Instance.GetUI<UICtrlProjectDetail>();
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(uiCtrlProjectDetail, "正在打开作品");
-            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(0.1f, ()=>{
-                MatrixProjectTools.PreparePublishedProject(projectId, ()=>{
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(uiCtrlProjectDetail);
-                    Project project = null;
-                    if(ProjectManager.Instance.TryGetData(projectId, out project))
-                    {
-                        ProjectParams param = new ProjectParams(){
-                            Type = EProjectParamType.Project,
-                            Project = project
-                        };
-                        SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(param);
-                    }
-                    else
-                    {
-                        LogHelper.Error("PreparePublishedProject project is null, id: " + projectId);
-                    }
-                }, ()=>{
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(uiCtrlProjectDetail);
-                    CommonTools.ShowPopupDialog("作品数据请求失败，作品打开失败");
-                });
-            }));
+//            string[] strAry = command.Split('|');
+//            if(strAry.Length != 2 || string.IsNullOrEmpty(strAry[1]))
+//            {
+//                return false;
+//            }
+//            long projectId = 0;
+//            if(!long.TryParse(strAry[1], out projectId))
+//            {
+//                return false;
+//            }
+//            if(SocialGUIManager.Instance.CurrentMode == SocialGUIManager.EMode.Game)
+//            {
+//                return false;
+//            }
+//            if(SocialGUIManager.Instance.GetUI<UICtrlProjectDetail>().IsOpen)
+//            {
+//                return false;
+//            }
+//            UICtrlProjectDetail uiCtrlProjectDetail = SocialGUIManager.Instance.GetUI<UICtrlProjectDetail>();
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(uiCtrlProjectDetail, "正在打开作品");
+//            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(0.1f, ()=>{
+//                MatrixProjectTools.PreparePublishedProject(projectId, ()=>{
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(uiCtrlProjectDetail);
+//                    Project project = null;
+//                    if(ProjectManager.Instance.TryGetData(projectId, out project))
+//                    {
+//                        ProjectParams param = new ProjectParams(){
+//                            Type = EProjectParamType.Project,
+//                            Project = project
+//                        };
+//                        SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(param);
+//                    }
+//                    else
+//                    {
+//                        LogHelper.Error("PreparePublishedProject project is null, id: " + projectId);
+//                    }
+//                }, ()=>{
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(uiCtrlProjectDetail);
+//                    CommonTools.ShowPopupDialog("作品数据请求失败，作品打开失败");
+//                });
+//            }));
             return true;
         }
 
         private static bool JumpToRecord(string command)
         {
-            string[] strAry = command.Split('|');
-            if(strAry.Length != 2 || string.IsNullOrEmpty(strAry[1]))
-            {
-                return false;
-            }
-            long recordId = 0;
-            if(!long.TryParse(strAry[1], out recordId))
-            {
-                return false;
-            }
-            if(SocialGUIManager.Instance.CurrentMode == SocialGUIManager.EMode.Game)
-            {
-                return false;
-            }
+//            string[] strAry = command.Split('|');
+//            if(strAry.Length != 2 || string.IsNullOrEmpty(strAry[1]))
+//            {
+//                return false;
+//            }
+//            long recordId = 0;
+//            if(!long.TryParse(strAry[1], out recordId))
+//            {
+//                return false;
+//            }
+//            if(SocialGUIManager.Instance.CurrentMode == SocialGUIManager.EMode.Game)
+//            {
+//                return false;
+//            }
 //            if(SocialGUIManager.Instance.GetUI<UICtrlProjectRecord>().IsOpen)
 //            {
 //                return false;
 //            }
-            UICtrlProjectDetail uiCtrlProjectDetail = SocialGUIManager.Instance.GetUI<UICtrlProjectDetail>();
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(uiCtrlProjectDetail, "正在打开录像");
-            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(0.1f, ()=>{
-               
-                MatrixProjectTools.PrepareRecord(recordId, ()=>{
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(uiCtrlProjectDetail);
-                    Record record = null;
-                    Project project = null;
-                    if(RecordManager.Instance.TryGetData(recordId, out record))
-                    {
-                    }
-                    else
-                    {
-                        LogHelper.Error("PrepareRecord record is null, id: " + recordId);
-                        return;
-                    }
-                    if(ProjectManager.Instance.TryGetData(record.ProjectId, out project))
-                    {
+//            UICtrlProjectDetail uiCtrlProjectDetail = SocialGUIManager.Instance.GetUI<UICtrlProjectDetail>();
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(uiCtrlProjectDetail, "正在打开录像");
+//            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(0.1f, ()=>{
+//               
+//                MatrixProjectTools.PrepareRecord(recordId, ()=>{
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(uiCtrlProjectDetail);
+//                    Record record = null;
+//                    Project project = null;
+//                    if(RecordManager.Instance.TryGetData(recordId, out record))
+//                    {
+//                    }
+//                    else
+//                    {
+//                        LogHelper.Error("PrepareRecord record is null, id: " + recordId);
+//                        return;
+//                    }
+//                    if(ProjectManager.Instance.TryGetData(record.ProjectId, out project))
+//                    {
 //                        RecordParams param = new RecordParams(){
 //                            Record = record,
 //                            Project = project
 //                        };
 //                        SocialGUIManager.Instance.OpenUI<UICtrlProjectRecord>(param);
-                    }
-                    else
-                    {
-                        LogHelper.Error("PrepareRecord project is null, id: " + recordId);
-                        return;
-                    }
-                }, ()=>{
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(uiCtrlProjectDetail);
-                    CommonTools.ShowPopupDialog("录像数据请求失败，录像打开失败");
-                });
-            }));
+//                    }
+//                    else
+//                    {
+//                        LogHelper.Error("PrepareRecord project is null, id: " + recordId);
+//                        return;
+//                    }
+//                }, ()=>{
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(uiCtrlProjectDetail);
+//                    CommonTools.ShowPopupDialog("录像数据请求失败，录像打开失败");
+//                });
+//            }));
             return true;
         }
     }

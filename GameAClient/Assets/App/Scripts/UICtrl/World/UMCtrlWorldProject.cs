@@ -41,12 +41,12 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.CardBtn.onClick.AddListener(OnCardClick);
+            _cachedView.Button.onClick.AddListener(OnCardClick);
         }
 
         protected override void OnDestroy()
         {
-            _cachedView.CardBtn.onClick.RemoveAllListeners();
+            _cachedView.Button.onClick.RemoveAllListeners();
             base.OnDestroy();
         }
 
@@ -73,47 +73,32 @@ namespace GameA
         {
             if(_wrapper == null)
             {
-                ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
-                _cachedView.SeletedMark.SetActiveEx (false);
+                Unload();
                 return;
             }
-//            RefreshCardMode(_wrapper.CardMode, _wrapper.IsSelected);
-            if(_wrapper.Content == null)
+            Project p = _wrapper.Content;
+            DictionaryTools.SetContentText(_cachedView.Title, p.Name);
+            if (false)//subtitle
             {
-//                _cachedView.EmptyDock.SetActive(true);
-//                _cachedView.InfoDock.SetActive(false);
+                _cachedView.SubTitle.gameObject.SetActive(true);
+                DictionaryTools.SetContentText(_cachedView.SubTitle, String.Empty);
             }
             else
             {
-//                _cachedView.EmptyDock.SetActive(false);
-//                _cachedView.InfoDock.SetActive(true);
-                DictionaryTools.SetContentText(_cachedView.Title, _wrapper.Content.Name);
-                ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _wrapper.Content.IconPath, _cachedView.DefaultCoverTexture);
-//                _cachedView.SeletedMark.SetActiveEx (_wrapper.IsSelected);
-//                DictionaryTools.SetContentText(_cachedView.ProjectCategoryText, EnumStringDefine.GetProjectCategoryString(_wrapper.Content.ProjectCategory));
+                _cachedView.SubTitle.gameObject.SetActive(false);
             }
+            DictionaryTools.SetContentText(_cachedView.PlayCount, p.ExtendData.PlayCount.ToString());
+            DictionaryTools.SetContentText(_cachedView.LikeCount, p.ExtendData.LikeCount.ToString());
+            DictionaryTools.SetContentText(_cachedView.CompleteRate, GameATools.GetCompleteRateString(p.CompleteRate));
+            DictionaryTools.SetContentText(_cachedView.CommentCount, p.ExtendData.CommentCount.ToString());
+            DictionaryTools.SetContentText(_cachedView.PublishTime, DateTimeUtil.GetServerSmartDateStringByTimestampMillis(p.PublishTime));
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath, _cachedView.DefaultCoverTexture);
+            _cachedView.SeletedMark.SetActiveEx (_wrapper.IsSelected);
         }
 
         public void Unload()
         {
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
-        }
-
-        protected void RefreshCardMode(ECardMode mode, bool isSelected)
-        {
-//            _cardMode = mode;
-//            if(_cardMode == ECardMode.Selectable)
-//            {
-//                _cachedView.SelectableMask.enabled = true;
-//                _cachedView.SeletedMark.enabled = isSelected;
-//                _cachedView.UnsetectMark.enabled = !isSelected;
-//            }
-//            else
-//            {
-//                _cachedView.SelectableMask.enabled = false;
-//                _cachedView.SeletedMark.enabled = false;
-//                _cachedView.UnsetectMark.enabled = false;
-//            }
         }
     }
 }

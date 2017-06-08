@@ -35,7 +35,6 @@ namespace GameA
         public RawImage GameWideAuthorIcon;
         public Text GameWideAuthorName;
         public Text GameWideSummary;
-        public UIProjectCompleteRate GameWideCompleteRate;
         public RectTransform GameWideRecentCompleteUserDock;
         public Text GameWideRecentCompleteUserTip;
         public Image GameWideProgressImage;

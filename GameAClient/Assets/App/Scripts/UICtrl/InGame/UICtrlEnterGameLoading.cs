@@ -137,7 +137,7 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.GameWideTitle, project.Name);
 //            DictionaryTools.SetContentText(_cachedView.GameWideAuthorName, project.UserLegacy.NickName);
             DictionaryTools.SetContentText(_cachedView.GameWideSummary, "简介：" + project.Summary);
-            _cachedView.GameWideCompleteRate.Set(project.ExtendReady, project.CompleteCount, project.FailCount);
+//            _cachedView.GameWideCompleteRate.Set(project.ExtendReady, project.CompleteCount, project.FailCount);
 //            Matrix matrix = project.Matrix;
 //            if(matrix != null)
 //            {

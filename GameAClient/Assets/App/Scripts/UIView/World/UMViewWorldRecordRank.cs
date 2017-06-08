@@ -16,16 +16,15 @@ namespace GameA
 {
     public class UMViewWorldRecordRank : UMViewBase
     {
-        public Texture DefaultCoverTexture;
-        public RawImage Cover;
-        public Text Title;
+        public Texture DefaultUserIconTexture;
+        public Button Button;
+        public Text Rank;
+        public RawImage UserIcon;
+        public Text UserName;
+        public Text UserLevel;
         public Text CreateTime;
-        public Text ProjectCategoryText;
-        public Image SelectableMask;
-        public Image UnsetectMark;
+        public Text UsedTime;
+        public Text Score;
         public Image SeletedMark;
-        public GameObject InfoDock;
-        public GameObject EmptyDock;
-        public Button CardBtn;
     }
 }

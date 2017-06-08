@@ -1,4 +1,5 @@
 ﻿using SoyEngine;
+using UnityEngine;
 
 namespace GameA {
     /// <summary>
@@ -357,7 +358,16 @@ namespace GameA {
             {
                 return (second + "秒");
             }
+        }
 
+        public static string GetLevelString(int level)
+        {
+            return string.Format("Lv.{0}", level);
+        }
+
+        public static string GetCompleteRateString(float rate)
+        {
+            return "" + Mathf.CeilToInt(rate * 1000) / 10f + " %";
         }
     }
 }

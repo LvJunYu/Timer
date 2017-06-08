@@ -250,7 +250,6 @@ namespace GameA
 				}
 			}
 
-            CloseUI<UICtrlMenuInGame>();
             //_uiRoot.SetGroupActive((int)EUIGroupType.InGame, false);
             for (int i = 0; i < (int)EUIGroupType.Max; i++) {
                 if (i < (int)EUIGroupType.InGameStart ||

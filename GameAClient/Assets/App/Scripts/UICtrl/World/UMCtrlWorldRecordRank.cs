@@ -14,7 +14,7 @@ namespace GameA
 {
     public class UMCtrlWorldRecordRank : UMCtrlBase<UMViewWorldRecordRank>, IDataItemRenderer
     {
-        private CardDataRendererWrapper<Project> _wrapper;
+        private CardDataRendererWrapper<RecordRankHolder> _wrapper;
         private int _index;
         public int Index
         {
@@ -41,12 +41,12 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.CardBtn.onClick.AddListener(OnCardClick);
+            _cachedView.Button.onClick.AddListener(OnCardClick);
         }
 
         protected override void OnDestroy()
         {
-            _cachedView.CardBtn.onClick.RemoveAllListeners();
+            _cachedView.Button.onClick.RemoveAllListeners();
             base.OnDestroy();
         }
 
@@ -61,7 +61,7 @@ namespace GameA
             {
                 _wrapper.OnDataChanged -= RefreshView;
             }
-            _wrapper = obj as CardDataRendererWrapper<Project>;
+            _wrapper = obj as CardDataRendererWrapper<RecordRankHolder>;
             if(_wrapper != null)
             {
                 _wrapper.OnDataChanged += RefreshView;
@@ -73,47 +73,24 @@ namespace GameA
         {
             if(_wrapper == null)
             {
-                ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
-                _cachedView.SeletedMark.SetActiveEx (false);
+                Unload();
                 return;
             }
-//            RefreshCardMode(_wrapper.CardMode, _wrapper.IsSelected);
-            if(_wrapper.Content == null)
-            {
-//                _cachedView.EmptyDock.SetActive(true);
-//                _cachedView.InfoDock.SetActive(false);
-            }
-            else
-            {
-//                _cachedView.EmptyDock.SetActive(false);
-//                _cachedView.InfoDock.SetActive(true);
-                DictionaryTools.SetContentText(_cachedView.Title, _wrapper.Content.Name);
-                ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _wrapper.Content.IconPath, _cachedView.DefaultCoverTexture);
-//                _cachedView.SeletedMark.SetActiveEx (_wrapper.IsSelected);
-//                DictionaryTools.SetContentText(_cachedView.ProjectCategoryText, EnumStringDefine.GetProjectCategoryString(_wrapper.Content.ProjectCategory));
-            }
+            RecordRankHolder holder = _wrapper.Content;
+            Record record = holder.Record;
+            User user = record.User;
+            DictionaryTools.SetContentText(_cachedView.Rank, (holder.Rank + 1).ToString());
+            DictionaryTools.SetContentText(_cachedView.UserName, user.NickName);
+            DictionaryTools.SetContentText(_cachedView.UserLevel, GameATools.GetLevelString(user.PlayerLevel));
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl, _cachedView.DefaultUserIconTexture);
+            DictionaryTools.SetContentText(_cachedView.CreateTime, DateTimeUtil.GetServerSmartDateStringByTimestampMillis(record.CreateTime));
+            DictionaryTools.SetContentText(_cachedView.UsedTime, GameATools.SecondToHour(record.UsedTime));
+            DictionaryTools.SetContentText(_cachedView.Score, record.Score.ToString());
         }
 
         public void Unload()
         {
-            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
-        }
-
-        protected void RefreshCardMode(ECardMode mode, bool isSelected)
-        {
-//            _cardMode = mode;
-//            if(_cardMode == ECardMode.Selectable)
-//            {
-//                _cachedView.SelectableMask.enabled = true;
-//                _cachedView.SeletedMark.enabled = isSelected;
-//                _cachedView.UnsetectMark.enabled = !isSelected;
-//            }
-//            else
-//            {
-//                _cachedView.SelectableMask.enabled = false;
-//                _cachedView.SeletedMark.enabled = false;
-//                _cachedView.UnsetectMark.enabled = false;
-//            }
+            ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.UserIcon, _cachedView.DefaultUserIconTexture);
         }
     }
 }

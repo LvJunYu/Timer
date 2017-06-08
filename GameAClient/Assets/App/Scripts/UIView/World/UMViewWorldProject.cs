@@ -16,16 +16,16 @@ namespace GameA
 {
     public class UMViewWorldProject : UMViewBase
     {
+        public Button Button;
         public Texture DefaultCoverTexture;
         public RawImage Cover;
         public Text Title;
-        public Text CreateTime;
-        public Text ProjectCategoryText;
-        public Image SelectableMask;
-        public Image UnsetectMark;
+        public Text SubTitle;
+        public Text PlayCount;
+        public Text LikeCount;
+        public Text CompleteRate;
+        public Text CommentCount;
+        public Text PublishTime;
         public Image SeletedMark;
-        public GameObject InfoDock;
-        public GameObject EmptyDock;
-        public Button CardBtn;
     }
 }
