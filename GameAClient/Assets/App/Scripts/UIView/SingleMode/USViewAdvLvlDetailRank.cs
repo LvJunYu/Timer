@@ -9,5 +9,6 @@ namespace GameA
     {
         public Image Icon;
         public Text Name;
+        public RectTransform Dock;
     }
 }
