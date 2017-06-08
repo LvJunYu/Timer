@@ -36,7 +36,7 @@ namespace GameA.Game
                 }
                 if (_effect != null)
                 {
-                    _effect.SetRendererEnabled(_currentTrigger);
+                    _effect.SetActive(_currentTrigger);
                 }
             }
         }
@@ -58,7 +58,7 @@ namespace GameA.Game
             }
             if (_effect != null)
             {
-                _effect.SetRendererEnabled(_currentTrigger);
+                _effect.SetActive(_currentTrigger);
             }
         }
 
@@ -82,7 +82,7 @@ namespace GameA.Game
             {
                 _view.SetRendererEnabled(!_currentTrigger);
                 _effect = GameParticleManager.Instance.EmitLoop("M1EffectSwitchEarth", _trans.position + new Vector3(0,-0.6f,0));
-                _effect.SetRendererEnabled(_currentTrigger);
+                _effect.SetActive(_currentTrigger);
             }
             return true;
         }

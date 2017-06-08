@@ -25,6 +25,7 @@ namespace GameA.Game
                     if (_animation != null)
                     {
                         _animation.PlayLoop("Idle");
+                        LogHelper.Debug("Idle");
                     }
                     break;
                 case EMonsterState.Seek:

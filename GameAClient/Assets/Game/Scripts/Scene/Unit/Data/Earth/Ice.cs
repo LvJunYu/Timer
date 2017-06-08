@@ -32,7 +32,7 @@ namespace GameA.Game
             return true;
         }
 
-        public override bool OnIce()
+        public override bool StepOnIce()
         {
             return true;
         }

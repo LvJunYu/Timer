@@ -38,7 +38,7 @@ namespace GameA.Game
             return true;
         }
 
-        public override bool OnClay()
+        public override bool StepOnClay()
         {
             return true;
         }

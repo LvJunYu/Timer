@@ -86,11 +86,11 @@ namespace GameA.Game
             return true;
         }
 
-        public void SetRendererEnabled(bool value)
+        public void SetActive(bool value)
         {
-            if (_renderer != null)
+            if (_trans != null)
             {
-                _renderer.enabled = value;
+                _trans.gameObject.SetActive(value);
             }
         }
 
