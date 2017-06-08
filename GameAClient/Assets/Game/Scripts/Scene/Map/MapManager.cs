@@ -295,24 +295,14 @@ namespace GameA.Game
             EGameRunMode eGameRunMode = GM2DGame.Instance.GameMode.GameRunMode;
             if (eGameRunMode == EGameRunMode.Edit)
             {
-                ChangeState(ESceneState.Edit);
+                GameRun.Instance.ChangeState(ESceneState.Edit);
             }
             else
             {
-                ChangeState(ESceneState.Play);
+                GameRun.Instance.ChangeState(ESceneState.Play);
 			}
 			GenerateBg(randomSeed);
 			_generateMapComplete = true;
-		}
-
-		public void ChangeState(ESceneState eSceneState)
-		{
-			if (_eSceneState == eSceneState)
-			{
-				return;
-			}
-			_eSceneState = eSceneState;
-			PlayMode.Instance.ChangeState(_eSceneState);
 		}
 
 		private void InitEditorCameraStartPos()

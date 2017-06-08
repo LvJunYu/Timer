@@ -24,6 +24,7 @@ namespace GameA.Game
 
         private int _logicFrameCnt;
         private float _unityTimeSinceGameStarted;
+        private ESceneState _eSceneState;
 
         public static GameRun Instance
         {
@@ -33,6 +34,11 @@ namespace GameA.Game
         public int LogicFrameCnt
         {
             get { return _logicFrameCnt; }
+        }
+
+        public bool IsEdit
+        {
+            get { return _eSceneState == ESceneState.Edit; }
         }
 
         public void Dispose()
@@ -157,7 +163,24 @@ namespace GameA.Game
 
         #region GameState
 
-        public bool StartEdit()
+        public bool ChangeState(ESceneState eSceneState)
+        {
+            if (_eSceneState == eSceneState)
+            {
+                return true;
+            }
+            _eSceneState = eSceneState;
+            switch (_eSceneState)
+            {
+                case ESceneState.Edit:
+                    return StartEdit();
+                case ESceneState.Play:
+                    return StartPlay();
+            }
+            return false;
+        }
+
+        private bool StartEdit()
         {
             LogHelper.Debug("StartEdit");
             if (!PlayMode.Instance.StartEdit())
@@ -171,7 +194,7 @@ namespace GameA.Game
             return true;
         }
 
-        public bool StartPlay()
+        private bool StartPlay()
         {
             LogHelper.Debug("StartPlay");
             if (!PlayMode.Instance.StartPlay())
