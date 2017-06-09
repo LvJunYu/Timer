@@ -106,7 +106,10 @@ namespace GameA.Game
         {
             Instance = this;
             ///编辑器下增加鼠标拖拽屏幕逻辑
-            if (Application.isEditor || Application.platform == RuntimePlatform.WindowsPlayer)
+            if (Application.isEditor ||
+                Application.platform == RuntimePlatform.WindowsPlayer ||
+                Application.platform == RuntimePlatform.OSXPlayer
+            )
             {
                 gameObject.AddComponent<MouseDragListener>();
                 gameObject.AddComponent<MousePinchListener>();

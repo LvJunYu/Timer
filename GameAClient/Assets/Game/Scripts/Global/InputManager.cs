@@ -78,7 +78,7 @@ namespace GameA.Game
 
         public void ShowGameInput()
         {
-            if (Application.isEditor || Application.platform == RuntimePlatform.WindowsPlayer)
+            if (Application.isEditor)
             {
                 HideGameInput();
                 return;

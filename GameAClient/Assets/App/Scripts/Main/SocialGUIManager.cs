@@ -187,10 +187,7 @@ namespace GameA
             Messenger.RemoveListener(EMessengerType.OnEscapeClick, OnEscapeClick);
             Application.targetFrameRate = 60;
             ScreenOrientation so = GameManager.Instance.CurrentGame.ScreenOrientation;
-            if (Application.platform == RuntimePlatform.WindowsPlayer)
-            {
-                Screen.SetResolution(960, 640, false, 60);
-            }
+
             _currentMode = EMode.Game;
             for (int i = 0; i < (int)EUIGroupType.Max; i++)
             {
@@ -225,10 +222,7 @@ namespace GameA
             
             Messenger.AddListener(EMessengerType.OnEscapeClick, OnEscapeClick);
             Application.targetFrameRate = 60;
-            if (Application.platform == RuntimePlatform.WindowsPlayer)
-            {
-                Screen.SetResolution(640, 960, false, 60);
-            }
+
             _currentMode = EMode.App;
 	        if (RecordFullScreen)
 	        {
