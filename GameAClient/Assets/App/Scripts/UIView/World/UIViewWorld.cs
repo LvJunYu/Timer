@@ -32,7 +32,7 @@ namespace GameA
         public Button FavoriteBtn;
         public Button UnfavoriteBtn;
 
-        public GameObject DetailInfo;
+        public RectTransform DetailPanel;
         public UITabGroup TabGroup;
         public Button RecentRecordTab;
         public Button RecentRecordTab2;

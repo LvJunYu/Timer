@@ -255,7 +255,6 @@ namespace GameA
 //                    }
 //                    else
                     {
-                        wrapper.CardMode = ECardMode.Normal;
                         wrapper.IsSelected = list [i].ProjectId == preSelectPRojectId;
                         _curSelectedPrivateProject = wrapper.IsSelected ? wrapper : _curSelectedPrivateProject;
                     }
@@ -331,8 +330,6 @@ namespace GameA
                     //                    }
                     //                    else
                     {
-                        wrapper.CardMode = ECardMode.Normal;
-//                        wrapper.IsSelected = list [i].ProjectId == preSelectPRojectId;
 //                        _curSelectedPrivateProject = wrapper.IsSelected ? wrapper : _curSelectedPrivateProject;
                     }
                     _publicContents.Add(wrapper);

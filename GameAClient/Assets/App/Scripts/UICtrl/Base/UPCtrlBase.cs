@@ -21,6 +21,9 @@ namespace SoyEngine
 		protected virtual void OnViewCreated()
 		{
 		}
+
+        public virtual void Open() {}
+        public virtual void Close() {}
 	}
 }
 

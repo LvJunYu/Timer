@@ -93,7 +93,6 @@ namespace SoyEngine
             }
         }
 
-
         public void SetItemCount(int count)
         {
             if(!_hasInited)

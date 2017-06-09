@@ -21,10 +21,6 @@ namespace GameA
     {
         #region 常量与字段
 
-        private UICtrlBase _currentUI;
-//        private UnityEngine.UI.Button[] _buttonList;
-//        private Color[] DefaultColorList;
-//        private Color[] SelectedColorList;
 
 		//private ChangePartsSpineView _avatarView;
 	    //public RenderTexture AvatarRenderTexture { get;  set; }
@@ -68,43 +64,13 @@ namespace GameA
         {
             base.OnViewCreated();
 
-//            _buttonList = new UnityEngine.UI.Button[]{
-//                _cachedView.Soy.Button,
-//                _cachedView.News.Button,
-//                _cachedView.Create.Button,
-//                _cachedView.Daily.Button,
-//                _cachedView.Me.Button,
-//            };
-//            DefaultColorList = new Color[]{
-//                new Color(155f/255, 155f/255, 155f/255),
-//                new Color(155f/255, 155f/255, 155f/255),
-//                new Color(155f/255, 155f/255, 155f/255),
-//                new Color(155f/255, 155f/255, 155f/255),
-//                new Color(155f/255, 155f/255, 155f/255),
-//            };
-//            SelectedColorList = new Color[]{
-//                new Color(255f/255, 126f/255, 126f/255),
-//                new Color(255f/255, 126f/255, 126f/255),
-//                new Color(255f/255, 255f/255, 255f/255),
-//                new Color(255f/255, 126f/255, 126f/255),
-//                new Color(255f/255, 126f/255, 126f/255),
-//            };
-
-//            Vector2 size = _cachedView.ScaleRoot.sizeDelta;
-//            float factor = SocialUIConfig.TaskBarHeight / size.y;
-//            _cachedView.ScaleRoot.localScale = new Vector3(factor, factor, 1);
-//            size.x = UIConstDefine.UINormalScreenWidth / factor;
-//            _cachedView.ScaleRoot.sizeDelta = size;
-
-//            RefreshMeNewMessageState();
             #if UNITY_EDITOR
             SocialGUIManager.Instance.OpenPopupUI<UICtrlGMTool>();
             #endif
 
-			_cachedView.WorldButton.onClick.AddListener (OnNewsBtn);
+            _cachedView.WorldButton.onClick.AddListener (OnWorldBtn);
 			_cachedView.WorkshopButton.onClick.AddListener (OnCreateBtn);
 			_cachedView.SingleModeButton.onClick.AddListener (OnSingleGameBtn);
-
 
 
 
@@ -159,18 +125,6 @@ namespace GameA
 
 		}
 			
-//        public void ShowDefaultPage()
-//        {
-//            OnSoy();
-//        }
-
-//        public void OnSoy()
-//        {
-////            if(OpenMainUI(typeof (UICtrlSoy)))
-////            {
-////                SelectButton(_cachedView.Soy.Button);
-////            }
-//        }
 
 		private void OnTestChangeAvatar () {
 //			SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求换装...");
@@ -207,53 +161,21 @@ namespace GameA
 //				});
 		}
 
-        public void OnNewsBtn()
-        {
-//            if(OpenMainUI(typeof (UICtrlNewsFeed)))
-//            {
-//                SelectButton(_cachedView.News.Button);
-//            }
-        }
 
         public void OnCreateBtn()
         {
-            if(OpenMainUI(typeof (UICtrlWorkShop)))
-            {
-//                SelectButton(_cachedView.Create.Button);
-            }
+            SocialGUIManager.Instance.OpenUI<UICtrlWorkShop>();
         }
 
-//        public void OnDaily()
-//        {
-////            if(OpenMainUI(typeof (UICtrlDaily)))
-////            {
-////                SelectButton(_cachedView.Daily.Button);
-////            }
-//        }
-//
-//        public void OnMe()
-//        {
-//            if(OpenMainUI(typeof (UICtrlMe)))
-//            {
-//                SelectButton(_cachedView.Me.Button);
-//            }
-//        }
+        public void OnWorldBtn()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlWorld>();
+        }
 
 		private void OnSingleGameBtn () {
-			OpenMainUI(typeof (UICtrlSingleMode));
+            SocialGUIManager.Instance.OpenUI<UICtrlSingleMode>();
 		}
 
-        private bool OpenMainUI(Type type, object param = null)
-        {
-            UICtrlBase ui = SocialGUIManager.Instance.GetUI(type);
-//            if(_currentUI == ui)
-//            {
-//                return false;
-//            }
-            SocialGUIManager.Instance.OpenUI(type, param);
-            _currentUI = ui;
-            return true;
-        }
 
 		/// <summary>
 		/// 家园角色被点击
@@ -263,81 +185,15 @@ namespace GameA
 		//	SocialGUIManager.Instance.OpenPopupUI<UICtrlFashionShopMainMenu>();
 		//}
 
-//        private void SelectButton(UnityEngine.UI.Button button)
-//        {
-//            for (int i = 0; i < _buttonList.Length; i++)
-//            {
-//                var btn = _buttonList[i];
-//                if(btn == null)
-//                {
-//                    continue;
-//                }
-//                Image image = (Image) btn.targetGraphic;
-//                if(btn == button)
-//                {
-//                    image.sprite = btn.spriteState.pressedSprite;
-//                    Text text = btn.GetComponentInChildren<Text>();
-//                    if(text != null)
-//                    {
-//                        text.color = SelectedColorList[i];
-//                    }
-//                    btn.enabled = false;
-//                }
-//                else
-//                {
-//                    image.sprite = btn.spriteState.disabledSprite;
-//                    Text text = btn.GetComponentInChildren<Text>();
-//                    if(text != null)
-//                    {
-//                        text.color = DefaultColorList[i];
-//                    }
-//                    btn.enabled = true;
-//                }
-//            }
-//        }
-
 
 		private void OnAvatarBtn () {
-			SocialGUIManager.Instance.OpenPopupUI<UICtrlFashionShopMainMenu>();
+            SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
 		}
         private void OnLotteryBtn()
         {
             Debug.Log("_________________________OnLotteryBtn");
-            SocialGUIManager.Instance.OpenPopupUI<UICtrlLottery>();
+            SocialGUIManager.Instance.OpenUI<UICtrlLottery>();
         }
-
-        //        private void SelectButton(UnityEngine.UI.Button button)
-        //        {
-        //            for (int i = 0; i < _buttonList.Length; i++)
-        //            {
-        //                var btn = _buttonList[i];
-        //                if(btn == null)
-        //                {
-        //                    continue;
-        //                }
-        //                Image image = (Image) btn.targetGraphic;
-        //                if(btn == button)
-        //                {
-        //                    image.sprite = btn.spriteState.pressedSprite;
-        //                    Text text = btn.GetComponentInChildren<Text>();
-        //                    if(text != null)
-        //                    {
-        //                        text.color = SelectedColorList[i];
-        //                    }
-        //                    btn.enabled = false;
-        //                }
-        //                else
-        //                {
-        //                    image.sprite = btn.spriteState.disabledSprite;
-        //                    Text text = btn.GetComponentInChildren<Text>();
-        //                    if(text != null)
-        //                    {
-        //                        text.color = DefaultColorList[i];
-        //                    }
-        //                    btn.enabled = true;
-        //                }
-        //            }
-        //        }
 
         private void RefreshUserInfo () {
 
@@ -361,25 +217,5 @@ namespace GameA
 
 
         #endregion
-
-//        private void RefreshMeNewMessageState()
-//        {
-////            NotificationData nd = AppData.Instance.NotificationData;
-////            bool hasNew = (
-////                nd.UnreadAnnounceCount+
-////                nd.UnreadProjectCommentCount+
-////                nd.UnreadProjectRateCount+
-////                nd.UnreadProjectReplyCount+
-////                nd.UnreadNewFollowerCount
-////            )>0;
-////            if(hasNew)
-////            {
-////                _cachedView.Me.MarkUnread();
-////            }
-////            else
-////            {
-////                _cachedView.Me.MarkAllRead();
-////            }
-//        }
     }
 }

@@ -32,7 +32,7 @@ namespace GameA
         #endregion
 
         #region 方法
-        public void Open()
+        public override void Open()
         {
             _isOpen = true;
             _data = AppData.Instance.WorldData.NewestProjectList;
@@ -41,7 +41,7 @@ namespace GameA
             _cachedView.GridScroller.ContentPosition = _pagePosition;
         }
 
-        public void Close()
+        public override void Close()
         {
             _isOpen = false;
             _pagePosition = _cachedView.GridScroller.ContentPosition;
@@ -49,17 +49,7 @@ namespace GameA
 
         private void OnItemClick(CardDataRendererWrapper<Project> item)
         {
-            if (_curSelectedProject != null)
-            {
-                _curSelectedProject.IsSelected = false;
-                _curSelectedProject.BroadcastDataChanged();
-            }
-            _curSelectedProject = item;
-            if (_curSelectedProject != null)
-            {
-                _curSelectedProject.IsSelected = true;
-                _curSelectedProject.BroadcastDataChanged();
-            }
+            SelectItem(item);
         }
 
         public void OnItemRefresh(IDataItemRenderer item, int inx)
@@ -100,6 +90,7 @@ namespace GameA
             List<Project> list = _data.AllList;
             _content.Clear();
             _content.Capacity = Mathf.Max(_content.Capacity, list.Count);
+            bool findFlag = false;
             for (int i = 0; i < list.Count; i++)
             {
                 Project p = list[i];
@@ -107,10 +98,41 @@ namespace GameA
                 if (_curSelectedProject != null
                     && _curSelectedProject.Content.ProjectId == p.ProjectId)
                 {
-                    
+                    w.IsSelected = true;
+                    _curSelectedProject = w;
+                    findFlag = true;
+                }
+                w.IsSelected = false;
+                _content.Add(w);
+            }
+            if (!findFlag)
+            {
+                if (_content.Count > 0)
+                {
+                    SelectItem(_content[0]);
+                }
+                else
+                {
+                    SelectItem(null);
                 }
             }
             _cachedView.GridScroller.SetItemCount(_content.Count);
+        }
+
+        private void SelectItem(CardDataRendererWrapper<Project> item)
+        {
+            if (_curSelectedProject != null)
+            {
+                _curSelectedProject.IsSelected = false;
+                _curSelectedProject.BroadcastDataChanged();
+            }
+            _curSelectedProject = item;
+            if (_curSelectedProject != null)
+            {
+                _curSelectedProject.IsSelected = true;
+                _curSelectedProject.BroadcastDataChanged();
+            }
+            _mainCtrl.SetProject(item == null ? null : item.Content);
         }
         #endregion private
 
