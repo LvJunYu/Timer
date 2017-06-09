@@ -377,7 +377,7 @@ namespace SoyEngine
             }
             outTex = Resources.Load (assetPath) as Texture;
             if (outTex != null) {
-                _cachedTexture.Add (name, outTex);
+                _cachedTexture.Add (textureName, outTex);
                 return true;
             }
             return false;
@@ -460,7 +460,7 @@ namespace SoyEngine
             }
             outClip = Resources.Load (assetPath) as AudioClip;
             if (outClip != null) {
-                _cachedAudioClip.Add (name, outClip);
+                _cachedAudioClip.Add (audioName, outClip);
                 return true;
             }
             return false;
@@ -518,7 +518,7 @@ namespace SoyEngine
             }
             outSprite = Resources.Load (assetPath) as Sprite;
             if (outSprite != null) {
-                _cachedSingleSprite.Add (name, outSprite);
+                _cachedSingleSprite.Add (spriteName, outSprite);
                 return true;
             }
             return false;
