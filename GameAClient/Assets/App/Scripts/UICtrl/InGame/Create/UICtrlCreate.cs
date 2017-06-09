@@ -13,7 +13,7 @@ using GameA.Game;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Create)]
+    [UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlCreate : UICtrlInGameBase<UIViewCreate>
     {
 	    private ushort _curSelectId = 0;

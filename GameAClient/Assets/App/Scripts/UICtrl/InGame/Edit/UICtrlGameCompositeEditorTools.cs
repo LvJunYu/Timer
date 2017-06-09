@@ -12,7 +12,7 @@ using UnityEngine.Events;
 
 namespace GameA.Game
 {
-	[UIAutoSetup(EUIAutoSetupType.Create)]
+    [UIAutoSetup(EUIAutoSetupType.Add)]
 	public class UICtrlGameCompositeEditorTools: UICtrlGenericBase<UIViewGameCompositeEditorTools>
 	{
 		protected override void InitGroupId()
