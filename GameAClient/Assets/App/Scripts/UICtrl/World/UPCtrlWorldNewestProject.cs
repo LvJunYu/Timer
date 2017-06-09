@@ -47,7 +47,7 @@ namespace GameA
             _pagePosition = _cachedView.GridScroller.ContentPosition;
         }
 
-        public void OnItemClick(CardDataRendererWrapper<Project> item)
+        private void OnItemClick(CardDataRendererWrapper<Project> item)
         {
             if (_curSelectedProject != null)
             {
@@ -102,7 +102,10 @@ namespace GameA
             _content.Capacity = Mathf.Max(_content.Capacity, list.Count);
             for (int i = 0; i < list.Count; i++)
             {
-                if (_curSelectedProject != null)
+                Project p = list[i];
+                CardDataRendererWrapper<Project> w = new CardDataRendererWrapper<Project>(p, OnItemClick);
+                if (_curSelectedProject != null
+                    && _curSelectedProject.Content.ProjectId == p.ProjectId)
                 {
                     
                 }

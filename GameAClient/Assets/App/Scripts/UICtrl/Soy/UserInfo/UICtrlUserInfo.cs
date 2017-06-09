@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Create)]
+    [UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlUserInfo : UISocialContentCtrlBase<UIViewUserInfo>, IUIWithTitle
     {
         #region 常量与字段

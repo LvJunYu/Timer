@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Create)]
+    [UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlMe : UISocialContentCtrlBase<UIViewMe>, IUIWithTitle, IUIWithTaskBar, IUIWithRightCustomButton
     {
         #region 常量与字段

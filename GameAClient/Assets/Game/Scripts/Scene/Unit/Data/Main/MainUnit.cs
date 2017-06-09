@@ -1496,8 +1496,13 @@ namespace GameA.Game
 
         internal void OnStun(ActorBase actor)
         {
-            //晕3秒
+            //晕2秒
             _stunTimer = 100;
+
+            Speed = IntVec2.zero;
+            ExtraSpeed.y = 150;
+            ExtraSpeed.x = actor.CenterPos.x > CenterPos.x ? -100 : 100;
+
             if (_animation != null && !_animation.IsPlaying("Stun", 1))
             {
                 _animation.PlayOnce("Stun", 1, 1);

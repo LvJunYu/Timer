@@ -23,7 +23,7 @@ using Spine.Unity;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Create)]
+    [UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlLottery : UISocialCtrlBase<UIViewLottery>
     {
         #region 常量与字段
