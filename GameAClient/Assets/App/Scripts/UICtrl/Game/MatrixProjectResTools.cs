@@ -9,7 +9,6 @@ using UnityEngine;
 using SoyEngine;
 using SevenZip;
 using SoyEngine.Proto;
-using SoyEngine;
 
 namespace GameA
 {

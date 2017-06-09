@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using System.IO;
 
 namespace GameA {

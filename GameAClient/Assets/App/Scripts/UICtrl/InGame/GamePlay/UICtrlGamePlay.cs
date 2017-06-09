@@ -5,12 +5,8 @@
 ** Summary : 游戏胜利条件设置界面 
 ***********************************************************************/
 
-
-using System.Diagnostics;
-
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using GameA.Game;
 
 namespace GameA

@@ -6,7 +6,6 @@
 ***********************************************************************/
 
 using SoyEngine;
-using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
 

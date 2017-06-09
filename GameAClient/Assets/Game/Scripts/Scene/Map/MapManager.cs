@@ -8,7 +8,6 @@
 using System;
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game

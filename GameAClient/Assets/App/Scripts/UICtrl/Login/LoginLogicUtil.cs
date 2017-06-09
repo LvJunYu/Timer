@@ -10,7 +10,6 @@ using cn.sharesdk.unity3d;
 using System.Text;
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine;
 
 namespace GameA

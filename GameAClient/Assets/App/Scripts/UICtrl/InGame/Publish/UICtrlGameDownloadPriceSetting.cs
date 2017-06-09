@@ -10,7 +10,6 @@ using SoyEngine;
 using System;
 using UnityEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine.UI;
 using GameA.Game;
 

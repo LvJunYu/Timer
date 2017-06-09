@@ -12,7 +12,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine;
 
 namespace GameA

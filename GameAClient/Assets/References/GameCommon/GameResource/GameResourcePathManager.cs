@@ -204,7 +204,7 @@ namespace SoyEngine
             }
             else if (Application.platform == RuntimePlatform.OSXPlayer)
             {
-                return BuildToolsConstDefine.StandaloneOSX;
+                return BuildToolsConstDefine.StandaloneWindows;
             }
 			else
 			{

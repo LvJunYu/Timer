@@ -12,7 +12,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using cn.sharesdk.unity3d;
 using SoyEngine.Proto;
-using SoyEngine;
 using System.Text;
 using GameA.Game;
 

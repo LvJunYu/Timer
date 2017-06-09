@@ -11,7 +11,6 @@ using System.Collections;
 using UnityEngine;
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 
 namespace GameA
 {

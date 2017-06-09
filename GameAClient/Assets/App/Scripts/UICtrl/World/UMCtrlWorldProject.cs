@@ -47,6 +47,10 @@ namespace GameA
         protected override void OnDestroy()
         {
             _cachedView.Button.onClick.RemoveAllListeners();
+            if(_wrapper != null)
+            {
+                _wrapper.OnDataChanged -= RefreshView;
+            }
             base.OnDestroy();
         }
 
@@ -78,15 +82,15 @@ namespace GameA
             }
             Project p = _wrapper.Content;
             DictionaryTools.SetContentText(_cachedView.Title, p.Name);
-            if (false)//subtitle
-            {
-                _cachedView.SubTitle.gameObject.SetActive(true);
-                DictionaryTools.SetContentText(_cachedView.SubTitle, String.Empty);
-            }
-            else
-            {
+//            if (false)//subtitle
+//            {
+//                _cachedView.SubTitle.gameObject.SetActive(true);
+//                DictionaryTools.SetContentText(_cachedView.SubTitle, String.Empty);
+//            }
+//            else
+//            {
                 _cachedView.SubTitle.gameObject.SetActive(false);
-            }
+//            }
             DictionaryTools.SetContentText(_cachedView.PlayCount, p.ExtendData.PlayCount.ToString());
             DictionaryTools.SetContentText(_cachedView.LikeCount, p.ExtendData.LikeCount.ToString());
             DictionaryTools.SetContentText(_cachedView.CompleteRate, GameATools.GetCompleteRateString(p.CompleteRate));

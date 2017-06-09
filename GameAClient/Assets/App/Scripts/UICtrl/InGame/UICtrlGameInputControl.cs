@@ -2,7 +2,6 @@
 using System.Collections;
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnitySampleAssets.CrossPlatformInput;
 using GameA.Game;
 
@@ -124,8 +123,9 @@ namespace GameA
             _cachedView.M2Fire2BtnNumber.sprite = sprite;
         }
 
-        void Awake()
+        protected override void OnViewCreated()
         {
+            base.OnViewCreated();
 #if MOBILE_INPUT
             //_joystick.onMove.AddListener(OnJoystickMove);
             //_joystick.onMoveEnd.AddListener(OnJoystickMoveEnd);
@@ -205,8 +205,9 @@ namespace GameA
             CrossPlatformInputManager.SetButtonDown (InputManager.TagSkill [1]);
         }
 
-        void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
 #if MOBILE_INPUT
             //_joystick.onMove.RemoveAllListeners();
             for (int i = 0; i < _fire1Btns.Length; i++) {

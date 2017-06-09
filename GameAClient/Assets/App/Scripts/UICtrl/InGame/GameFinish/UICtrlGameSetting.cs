@@ -11,7 +11,6 @@ using SoyEngine;
 using UnityEngine;
 using System;
 using SoyEngine.Proto;
-using SoyEngine;
 using GameA.Game;
 
 namespace GameA

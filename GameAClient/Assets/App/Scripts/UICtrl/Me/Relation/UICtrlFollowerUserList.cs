@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
 

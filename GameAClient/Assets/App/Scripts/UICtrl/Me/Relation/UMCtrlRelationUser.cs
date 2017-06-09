@@ -9,7 +9,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 
 namespace GameA
 {

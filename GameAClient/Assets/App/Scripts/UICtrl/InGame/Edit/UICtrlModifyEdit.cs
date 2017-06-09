@@ -9,7 +9,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
-using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
 using GameA.Game;
