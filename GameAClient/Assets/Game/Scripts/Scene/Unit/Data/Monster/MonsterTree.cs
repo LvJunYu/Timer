@@ -15,36 +15,25 @@ namespace GameA.Game
     [Unit(Id = 2001, Type = typeof(MonsterTree))]
     public class MonsterTree : MonsterAI
     {
-        protected override void UpdateMonsterView()
+        protected override void UpdateMonsterView(float deltaTime)
         {
-            //LogHelper.Debug("UpdateMonsterView : {0} {1}", _eState, _speed);
-            base.UpdateMonsterView();
-            switch (_eState)
+            base.UpdateMonsterView(deltaTime);
+            if (_eState == EMonsterState.Attack)
             {
-                case EMonsterState.Think:
-                    if (_animation != null)
+                if (_animation != null && !_animation.IsPlaying("Attack", 1))
+                {
+                    _animation.PlayOnce("Attack", 1, 1).Complete += delegate
                     {
-                        _animation.PlayLoop("Idle");
-                    }
-                    break;
-                case EMonsterState.Seek:
-                    if (_animation != null)
-                    {
-                        _animation.PlayLoop("Run");
-                    }
-                    break;
-                case EMonsterState.Attack:
-                    if (_canAttack && _animation != null && !_animation.IsPlaying("Attack", 1))
-                    {
-                        _animation.PlayOnce("Attack", 1, 1).Complete += delegate
+                        if (_trans != null)
                         {
-                            if (_trans != null)
-                            {
-                                GameParticleManager.Instance.Emit("M1EffectMonsterTree", _trans.position + Vector3.forward*0.1f);
-                            }
-                        };
-                    }
-                    break;
+                            GameParticleManager.Instance.Emit("M1EffectMonsterTree", _trans.position + Vector3.forward * 0.1f);
+                        }
+                        if (IsInAttackRange())
+                        {
+                            PlayMode.Instance.MainUnit.OnStun(this);
+                        }
+                    };
+                }
             }
         }
     }

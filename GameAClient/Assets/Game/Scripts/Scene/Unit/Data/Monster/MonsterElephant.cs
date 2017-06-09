@@ -25,36 +25,36 @@ namespace GameA.Game
             return true;
         }
 
-        protected override void UpdateMonsterView()
+        protected override bool IsInAttackRange()
+        {
+            if (!base.IsInAttackRange())
+            {
+                return false;
+            }
+            //必须比主角位置低
+            return _curPos.y <= PlayMode.Instance.MainUnit.CurPos.y;
+        }
+
+        protected override void UpdateMonsterView(float deltaTime)
         {
             //LogHelper.Debug("UpdateMonsterView : {0} {1}", _eState, _speed);
-            base.UpdateMonsterView();
-            switch (_eState)
+            base.UpdateMonsterView(deltaTime);
+            if (_eState == EMonsterState.Attack)
             {
-                case EMonsterState.Think:
-                    if (_animation != null)
+                if (_animation != null && !_animation.IsPlaying("Attack", 1))
+                {
+                    _animation.PlayOnce("Attack", 1, 1).Complete += delegate
                     {
-                        _animation.PlayLoop("Idle");
-                    }
-                    break;
-                case EMonsterState.Seek:
-                    if (_animation != null)
-                    {
-                        _animation.PlayLoop("Run");
-                    }
-                    break;
-                case EMonsterState.Attack:
-                    if (_canAttack && _animation != null && !_animation.IsPlaying("Attack", 1))
-                    {
-                        _animation.PlayOnce("Attack", 1, 1).Complete += delegate
+                        if (_trans != null)
                         {
-                            if (_trans != null)
-                            {
-                                //GameParticleManager.Instance.Emit("M1EffectMonsterTree", _trans.position + Vector3.forward * 0.1f, Vector3.one);
-                            }
-                        };
-                    }
-                    break;
+                            //GameParticleManager.Instance.Emit("M1EffectMonsterTree", _trans.position + Vector3.forward * 0.1f, Vector3.one);
+                        }
+                        if (IsInAttackRange())
+                        {
+                            PlayMode.Instance.MainUnit.OnKnockBack(this);
+                        }
+                    };
+                }
             }
         }
     }

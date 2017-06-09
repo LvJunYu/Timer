@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -187,7 +188,7 @@ namespace GameA.Game
                 {
                     return;
                 }
-                UpdateMonsterView();
+                UpdateMonsterView(deltaTime);
                 _lastGrounded = _grounded;
                 _lastPos = _curPos;
             }
@@ -201,8 +202,22 @@ namespace GameA.Game
             }
         }
 
-        protected virtual void UpdateMonsterView()
+        protected virtual void UpdateMonsterView(float deltaTime)
         {
+            if (_animation != null)
+            {
+                if (_speed.x == 0)
+                {
+                    _animation.PlayLoop("Idle");
+                }
+                else
+                {
+                    float speed = (int)(SpeedX * 0.7f);
+                    speed = Math.Abs(speed);
+                    speed = Mathf.Clamp(speed, 30, 100) * deltaTime;
+                    _animation.PlayLoop("Run", speed);
+                }
+            }
         }
 
         protected virtual void OnRightStampedEmpty()
