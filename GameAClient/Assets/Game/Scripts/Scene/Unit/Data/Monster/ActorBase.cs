@@ -29,6 +29,7 @@ namespace GameA.Game
         protected EffectManager _effectManager;
         protected EDieType _eDieType;
         protected int _stunTimer;
+        protected int _fireTimer;
 
         public override EffectManager EffectMgr
         {
@@ -57,6 +58,9 @@ namespace GameA.Game
             {
                 _effectManager.Clear();
             }
+            _eDieType = EDieType.None;
+            _stunTimer = 0;
+            _fireTimer = 0;
         }
 
         internal override void InLazer()
@@ -76,7 +80,7 @@ namespace GameA.Game
                 //跳出水里
                 ExtraSpeed.y = 240;
                 _animation.ClearTrack(1);
-                _eDieType = EDieType.None;
+                OutFire();
                 return;
             }
             _eDieType = EDieType.Water;
@@ -85,6 +89,11 @@ namespace GameA.Game
             {
                 _animation.PlayOnce("DeathWater");
             }
+        }
+
+        protected virtual void OutFire()
+        {
+            _eDieType = EDieType.None;
         }
 
         internal override void InFire()

@@ -48,6 +48,7 @@ namespace GameA.Game
         protected UnityNativeParticleItem _brakeEfffect;
         [SerializeField]
         protected UnityNativeParticleItem _invincibleEfffect;
+        protected UnityNativeParticleItem _inFireEfffect;
 
         /// <summary>
         /// 跑步声音间隔
@@ -162,9 +163,7 @@ namespace GameA.Game
             }
             _mainInput = new MainInput(this);
             _skillMgr1 = new SkillManager(this);
-            _skillMgr1.ChangeSkill<SkillWater>();
             _skillMgr2 = new SkillManager(this);
-
             return true;
         }
 
@@ -189,12 +188,20 @@ namespace GameA.Game
             {
                 _mainInput.Reset();
             }
+            if (_skillMgr1 != null)
+            {
+                _skillMgr1.Clear();
+                _skillMgr1.ChangeSkill<SkillWater>();
+            }
+            if (_skillMgr2 != null)
+            {
+                _skillMgr2.Clear();
+            }
             _big = 0;
             _dieTime = 0;
             _flashTime = 0;
             _invincibleTime = 0;
             _box = null;
-            _inWater = false;
             _eBoxOperateType = EBoxOperateType.None;
             //view
             if (_view != null)
@@ -219,6 +226,10 @@ namespace GameA.Game
             if (_invincibleEfffect != null)
             {
                 _invincibleEfffect.Stop();
+            }
+            if (_inFireEfffect != null)
+            {
+                _inFireEfffect.Stop();
             }
             base.Clear();
         }
@@ -639,6 +650,14 @@ namespace GameA.Game
             {
                 friction = 1;
             }
+            if (_eDieType == EDieType.Fire)
+            {
+                OnFire();
+            }
+            else
+            {
+                _fireTimer = 0;
+            }
             if (air)
             {
                 _mainInput._brakeTime = 0;
@@ -984,6 +1003,21 @@ namespace GameA.Game
             }
         }
 
+        private void OnFire()
+        {
+            _fireTimer++;
+            //2秒后还是这个状态挂掉
+            if (_fireTimer ==150)
+            {
+                OnDead();
+                if (_animation != null)
+                {
+                    _animation.Reset();
+                    _animation.PlayOnce("DeathFire");
+                }
+            }
+        }
+
         protected virtual void CheckClimb()
         {
             _mainInput._eClimbState = EClimbState.None;
@@ -1190,6 +1224,10 @@ namespace GameA.Game
             {
                 _invincibleEfffect.Stop();
             }
+            if (_inFireEfffect != null)
+            {
+                _inFireEfffect.Stop();
+            }
             _mainInput.Clear();
             Messenger.Broadcast(EMessengerType.OnMainPlayerDead);
             base.OnDead();
@@ -1229,7 +1267,6 @@ namespace GameA.Game
                                     _flashTime = 100;
                                     _dieTime = 0;
                                     _box = null;
-                                    _inWater = false;
                                     _trans.eulerAngles = new Vector3(0, 0, 0);
                                     SetPos(_revivePos);
                                     PlayMode.Instance.UpdateWorldRegion(_curPos);
@@ -1348,25 +1385,6 @@ namespace GameA.Game
             {
 				GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Land, _trans.position);
             }
-        }
-
-        protected bool _inWater;
-
-        internal override void InWater()
-        {
-            if (_inWater)
-            {
-                return;
-            }
-            _inWater = true;
-            if (_animation != null)
-            {
-                _animation.PlayOnce("DeathWater", 1, 1).Complete+= delegate
-                {
-                    OnDamage();
-                };
-            }
-            LogHelper.Debug("OnWater");
         }
 
         protected void OnDeadAll()
@@ -1515,6 +1533,40 @@ namespace GameA.Game
             _curBanInputTime = 20;
             ExtraSpeed.y = 180;
             ExtraSpeed.x = actor.CenterPos.x > CenterPos.x ? -120 : 120;
+        }
+
+        internal override void InFire()
+        {
+            if (_eDieType == EDieType.Fire)
+            {
+                return;
+            }
+            _eDieType = EDieType.Fire;
+            if (_inFireEfffect == null)
+            {
+                _inFireEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectDeathFire", _trans);
+            }
+            if (_inFireEfffect != null)
+            {
+                _inFireEfffect.Play();
+            }
+            if (_view != null)
+            {
+                _view.SetRendererColor(Color.black);
+            }
+        }
+
+        protected override void OutFire()
+        {
+            base.OutFire();
+            if (_inFireEfffect != null)
+            {
+                _inFireEfffect.Stop();
+            }
+            if (_view != null)
+            {
+                _view.SetRendererColor(Color.white);
+            }
         }
     }
 }
