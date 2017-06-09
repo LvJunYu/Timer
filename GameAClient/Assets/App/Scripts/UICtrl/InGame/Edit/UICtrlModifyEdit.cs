@@ -15,7 +15,7 @@ using GameA.Game;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Create)]
+    [UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlModifyEdit : UICtrlInGameBase<UIViewModifyEdit>
     {
         #region 常量与字段

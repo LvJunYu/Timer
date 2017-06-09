@@ -11,7 +11,7 @@ using GameA.Game;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Create)]
+    [UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlEdit : UICtrlInGameBase<UIViewEdit>
 	{
 		public enum EMode
