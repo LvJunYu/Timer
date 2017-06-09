@@ -12,8 +12,6 @@ MonoBehaviour:
   m_Name: WorkShopAtlas
   m_EditorClassIdentifier: 
   CachedSprites:
-  - {fileID: 21300000, guid: 9491fd9557ea84fcc8da1c118fedc83c, type: 3}
-  - {fileID: 21300000, guid: a25437320caf54d0997e2be1bcf70867, type: 3}
   - {fileID: 21300000, guid: 37c26aa8a0e844eb79cb5b197f9fb3b3, type: 3}
   - {fileID: 21300000, guid: 91d89b56cf00b4540a5c696e58d42625, type: 3}
   - {fileID: 21300000, guid: 6633c3762c7c4459abf119d46ca072db, type: 3}

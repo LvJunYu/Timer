@@ -99,10 +99,6 @@ namespace GameA
             {
                 ClearCache();
             }
-            if (Application.platform == RuntimePlatform.WindowsPlayer)
-            {
-                Screen.SetResolution(640, 960, false, 60);
-            }
 	        InitLocalResource();
 			RegisterGameTypeVersion();
             VersionManager.Instance.Init();

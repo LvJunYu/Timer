@@ -19,16 +19,16 @@ namespace GameA
             switch (item._avatarType)
             {
                 case EAvatarPart.AP_Head:
-                    _avatarView.SetParts(item.Id, SpinePartsHelper.ESpineParts.Head, true);
+//                    _avatarView.SetParts(item.Id, SpinePartsHelper.ESpineParts.Head, true);
                     break;
                 case EAvatarPart.AP_Lower:
-                    _avatarView.SetParts(item.Id, SpinePartsHelper.ESpineParts.Lower, true);
+//                    _avatarView.SetParts(item.Id, SpinePartsHelper.ESpineParts.Lower, true);
                     break;
                 case EAvatarPart.AP_Upper:
-                    _avatarView.SetParts(item.Id, SpinePartsHelper.ESpineParts.Upper, true);
+//                    _avatarView.SetParts(item.Id, SpinePartsHelper.ESpineParts.Upper, true);
                     break;
                 case EAvatarPart.AP_Appendage:
-                    _avatarView.SetParts(item.Id, SpinePartsHelper.ESpineParts.Appendage, true);
+//                    _avatarView.SetParts(item.Id, SpinePartsHelper.ESpineParts.Appendage, true);
                     break;
                 default:
                     break;
@@ -61,19 +61,19 @@ namespace GameA
             _cachedView.AvatarImage.SetActiveEx(true);
             if (LocalUser.Instance.UsingAvatarData.Head != null)
             {
-                _avatarView.SetParts((int)LocalUser.Instance.UsingAvatarData.Head.Id, SpinePartsHelper.ESpineParts.Head, true);
+//                _avatarView.SetParts((int)LocalUser.Instance.UsingAvatarData.Head.Id, SpinePartsHelper.ESpineParts.Head, true);
             }
             if (LocalUser.Instance.UsingAvatarData.Upper != null)
             {
-                _avatarView.SetParts((int)LocalUser.Instance.UsingAvatarData.Upper.Id, SpinePartsHelper.ESpineParts.Upper, true);
+//                _avatarView.SetParts((int)LocalUser.Instance.UsingAvatarData.Upper.Id, SpinePartsHelper.ESpineParts.Upper, true);
             }
             if (LocalUser.Instance.UsingAvatarData.Lower != null)
             {
-                _avatarView.SetParts((int)LocalUser.Instance.UsingAvatarData.Lower.Id, SpinePartsHelper.ESpineParts.Lower, true);
+//                _avatarView.SetParts((int)LocalUser.Instance.UsingAvatarData.Lower.Id, SpinePartsHelper.ESpineParts.Lower, true);
             }
             if (LocalUser.Instance.UsingAvatarData.Appendage != null)
             {
-               _avatarView.SetParts((int)LocalUser.Instance.UsingAvatarData.Appendage.Id, SpinePartsHelper.ESpineParts.Appendage, true);
+//               _avatarView.SetParts((int)LocalUser.Instance.UsingAvatarData.Appendage.Id, SpinePartsHelper.ESpineParts.Appendage, true);
             }
         }
 
@@ -93,9 +93,9 @@ namespace GameA
 
 
             _avatarView = new ChangePartsSpineView();
-            _avatarView.HomePlayerAvatarViewInit(_cachedView.PlayerAvatarAnimation);
+//            _avatarView.HomePlayerAvatarViewInit(_cachedView.PlayerAvatarAnimation);
 
-            _cachedView.AvatarImage.SetActiveEx(false);
+//            _cachedView.AvatarImage.SetActiveEx(false);
 
             LocalUser.Instance.UsingAvatarData.Request(
                 LocalUser.Instance.UserGuid,

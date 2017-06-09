@@ -110,13 +110,14 @@ namespace SoyEngine
 			_appResVersionChecking = versionValue;
             if(_appResVersionCheckState != EAppResVersionCheckState.Checking)
             {
-				StartCoroutine("StartCheckAppVersion", versionValue);
-				_appResVersionCheckState = EAppResVersionCheckState.Checking;
+//				StartCoroutine("StartCheckAppVersion", versionValue);
+                _appResVersionCheckState = EAppResVersionCheckState.Checked;
             }
 		}
 
 		public EGameUpdateCheckResult CheckGameLocalFile(string gameType)
 		{
+            return EGameUpdateCheckResult.CanPlay;
 			GameLocalFileVersionPack data;
 			if (_curGameLocalFileData.TryGetValue(gameType, out data))
 			{
@@ -316,6 +317,8 @@ namespace SoyEngine
 
         public float GetNeedDownloadSizeMB(string gameType)
         {
+            // todo
+            return 0;
             GameLocalFileVersionPack data;
 			GameLocalFileVersionPack buildInPack = LocalResourceManager.Instance.GetBuildInPackageFileVersionPack(gameType);
 			if (_curGameLocalFileData.TryGetValue(gameType, out data))
@@ -510,19 +513,19 @@ namespace SoyEngine
 
 			yield return UpdatePackageConfigData(SocialApp.Instance.PackageAppResourceVersion, versionValue);
 
-            if (versionValue == _appResVersionChecking && gameResWebRoot == GameResourcePathManager.Instance.WebServerRoot)
-            {
-                _appResVersionCheckState = EAppResVersionCheckState.Checked;
-	            if (CheckAppLocaleNeedToUpdate())
-	            {
-		            StartCoroutine("UpdateAppLocale");
-	            }
-                Messenger.Broadcast(GameA.EMessengerType.CheckAppVersionComplete);
-            }
-            else
-            {
-                StartCoroutine("StartCheckAppVersion", _appResVersionChecking);
-            }
+//            if (versionValue == _appResVersionChecking && gameResWebRoot == GameResourcePathManager.Instance.WebServerRoot)
+//            {
+//                _appResVersionCheckState = EAppResVersionCheckState.Checked;
+//	            if (CheckAppLocaleNeedToUpdate())
+//	            {
+//		            StartCoroutine("UpdateAppLocale");
+//	            }
+//                Messenger.Broadcast(GameA.EMessengerType.CheckAppVersionComplete);
+//            }
+//            else
+//            {
+//                StartCoroutine("StartCheckAppVersion", _appResVersionChecking);
+//            }
 		}
 
 		/// <summary>

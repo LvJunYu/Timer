@@ -86,13 +86,13 @@ namespace GameA
                 state = EMatrixProjectResState.AppResVersionNotReady;
                 return false;
             }
-            if(AppData.Instance.AppResVersion > LocalResourceManager.Instance.CurAppVersion.VersionId)
-            {
-                LogHelper.Info("AppData.Instance.AppResVersion: {0}, LocalResourceManager.Instance.CurAppVersion.VersionId: {1}",
-                    AppData.Instance.AppResVersion, LocalResourceManager.Instance.CurAppVersion.VersionId);
-                state = EMatrixProjectResState.AppResVersionExpired;
-                return false;
-            }
+//            if(AppData.Instance.AppResVersion > LocalResourceManager.Instance.CurAppVersion.VersionId)
+//            {
+//                LogHelper.Info("AppData.Instance.AppResVersion: {0}, LocalResourceManager.Instance.CurAppVersion.VersionId: {1}",
+//                    AppData.Instance.AppResVersion, LocalResourceManager.Instance.CurAppVersion.VersionId);
+//                state = EMatrixProjectResState.AppResVersionExpired;
+//                return false;
+//            }
             var gameResCheckResult = LocalResourceManager.Instance.CheckGameLocalFile("GameMaker2D");
             if(gameResCheckResult == EGameUpdateCheckResult.Error)
             {
@@ -112,11 +112,12 @@ namespace GameA
 //                state = EMatrixProjectResState.ProjectProgramVersionAhead;
 //                return false;
 //            }
-            if(project.ResourcesVersion > LocalResourceManager.Instance.CurAppVersion.VersionId)
-            {
-                state = EMatrixProjectResState.ProjectResourceVersionAhead;
-                return false;
-            }
+            // todo
+//            if(project.ResourcesVersion > LocalResourceManager.Instance.CurAppVersion.VersionId)
+//            {
+//                state = EMatrixProjectResState.ProjectResourceVersionAhead;
+//                return false;
+//            }
             if(project.GetData() == null
                 && Application.internetReachability == NetworkReachability.NotReachable)
             {
