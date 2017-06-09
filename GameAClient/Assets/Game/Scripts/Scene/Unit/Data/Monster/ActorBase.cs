@@ -74,7 +74,9 @@ namespace GameA.Game
             if (_eDieType == EDieType.Fire)
             {
                 //跳出水里
-                OutFire();
+                _animation.ClearTrack(1);
+                ExtraSpeed.y = 240;
+                _eDieType = EDieType.None;
                 return;
             }
             _eDieType = EDieType.Water;
@@ -96,12 +98,6 @@ namespace GameA.Game
             {
                 _animation.PlayLoop("OnFire", 1, 1);
             }
-        }
-
-        internal override void OutFire()
-        {
-            _animation.ClearTrack(1);
-            _eDieType = EDieType.None;
         }
 
         protected override bool OutOfMap()
