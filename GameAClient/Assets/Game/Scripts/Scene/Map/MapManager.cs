@@ -345,24 +345,5 @@ namespace GameA.Game
             BgScene2D.Instance.Init(ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
             BgScene2D.Instance.GenerateBackground(randomSeed);
 		}
-
-		private IGameBgCreater GetBgCreater(GameObject go)
-		{
-			StratifiedGameBg bg2 = go.GetComponent<StratifiedGameBg>();
-			if (bg2 != null)
-			{
-				return bg2;
-			}
-			return null;
-		}
-
-		private Vector3 GetMapBgPosition()
-		{
-			Vector3 res;
-			Vector3 offset = GM2DTools.TileToWorld(ConstDefineGM2D.MapStartPos);
-            res = DataScene2D.Instance.StartPos;
-			res.y += offset.y;
-			return res;
-		}
 	}
 }
