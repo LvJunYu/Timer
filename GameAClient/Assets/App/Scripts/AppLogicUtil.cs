@@ -71,7 +71,7 @@ namespace GameA
             project.PrepareRes(()=>{
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(project);
                 project.BeginEdit();
-                MatrixProjectTools.SetProjectVersion(project);
+//                MatrixProjectTools.SetProjectVersion(project);
                 SocialGUIManager.Instance.ChangeToGameMode();
             }, ()=>{
                 LogHelper.Error("EditPersonalProject, Project GetRes Error");

@@ -12,7 +12,6 @@ using System.Linq;
 using System.Security.Policy;
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game

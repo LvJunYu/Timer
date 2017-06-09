@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using SoyEngine.Proto;
 using SoyEngine;
 using UnityEngine;
-using SoyEngine;
 
 namespace GameA
 {

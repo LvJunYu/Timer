@@ -19,3 +19,10 @@ GameAClient/GameAClient.Editor.csproj
 Build
 JoyYou
 Resources
+GameAClient/Assets/BuildingTmp
+BackupBundles
+BuildingTmp.meta
+GameAClient/bfd.StandaloneOSXIntel64
+GameAClient/bfd.StandaloneWindows
+StreamingAssets.meta
+GameAClient/Assets/StreamingAssets

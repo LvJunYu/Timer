@@ -14,14 +14,17 @@ namespace SoyEngine
 {
     public class PathManager
     {
+        private static string _bundleFileExtension = ".soy";
         public string GetManifestPath(string gameName)
         {
-            return string.Format("{0}/{1}/{2}", GameResourcePathManager.Instance.RootPath, gameName, BuildToolsConstDefine.ExportManifestAssetName);
+//            return string.Format("{0}/{1}/{2}", GameResourcePathManager.Instance.RootPath, gameName, BuildToolsConstDefine.ExportManifestAssetName);
+            return string.Format ("{0}/{1}/{2}{3}", Application.streamingAssetsPath, gameName, BuildToolsConstDefine.ExportManifestAssetName, _bundleFileExtension);
         }
 
         public string GetGameLocalAssetBundlePath(string assetName,string gameName)
         {
-            return string.Format("{0}/{1}/{2}", GameResourcePathManager.Instance.RootPath, gameName, assetName);
+//            return string.Format("{0}/{1}/{2}", GameResourcePathManager.Instance.RootPath, gameName, assetName);
+            return string.Format ("{0}/{1}/{2}{3}", Application.streamingAssetsPath, gameName, assetName, _bundleFileExtension);
         }	
 
 	    public string GetGameLoadlConfig(string configName,string gameName)

@@ -2,7 +2,6 @@
 using System.Collections;
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;

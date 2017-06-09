@@ -46,6 +46,11 @@ namespace GameA.Game
             return (Id == other.Id) && (Guid == other.Guid) && (Rotation == other.Rotation);
         }
 
+        public override bool Equals(object obj)
+        {
+            return Equals((UnitDesc)obj);
+        }
+
         public override string ToString()
         {
             return string.Format("Id: {0}, Guid: {1}, Rotation: {2}, Scale: {3}", Id, Guid, Rotation, Scale);

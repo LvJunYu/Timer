@@ -20,7 +20,13 @@ namespace SoyEngine
 
         // private UI elements //
         private ScrollRect _scroller;
-        private RectTransform _scrollerTransform;
+//        private RectTransform _scrollerTransform;
+
+        public Vector2 ContentPosition
+        {
+            get { return _scrollContent.anchoredPosition; }
+            set { _scrollContent.anchoredPosition = value; }
+        }
 
         // define //
         public enum Movement
@@ -129,7 +135,7 @@ namespace SoyEngine
         {
             // Init Scroller //
             _scroller = GetComponent<ScrollRect>();
-            _scrollerTransform = _scroller.GetComponent<RectTransform>();
+//            _scrollerTransform = _scroller.GetComponent<RectTransform>();
 
             if (_moveType == Movement.Horizontal)
             {
@@ -255,8 +261,6 @@ namespace SoyEngine
 
         public void OnValueChanged(Vector2 normalizedPosition)
         {
-//            Vector2 scrollerSize = _scroller.viewport.rect.size;
-
             int startIndex = 0;
             if (_moveType == Movement.Horizontal)
             {

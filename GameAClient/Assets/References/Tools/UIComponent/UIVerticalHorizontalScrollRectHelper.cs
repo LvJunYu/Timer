@@ -39,11 +39,14 @@ namespace SoyEngine
                 return;
             }
             var bda = go.GetComponents<IBeginDragHandler>();
-            _aryBeginDragHandler[inx] = Array.Find(bda, handler => handler != this);
+            IBeginDragHandler ib = this as IBeginDragHandler;
+            _aryBeginDragHandler[inx] = Array.Find(bda, handler => handler != ib);
             var da = go.GetComponents<IDragHandler>();
-            _aryDragHandler[inx] = Array.Find(da, handler => handler != this);
+            IDragHandler id = this as IDragHandler;
+            _aryDragHandler[inx] = Array.Find(da, handler => handler != id);
             var eda = go.GetComponents<IEndDragHandler>();
-            _aryEndDragHandler[inx] = Array.Find(eda, handler => handler != this);
+            IEndDragHandler ie = this as IEndDragHandler;
+            _aryEndDragHandler[inx] = Array.Find(eda, handler => handler != id);
         }
 
         public void OnBeginDrag(PointerEventData eventData)

@@ -20,6 +20,7 @@ namespace GameA
     public class UICtrlWorld : UICtrlGenericBase<UIViewWorld>
     {
         #region 常量与字段
+
         #endregion
 
         #region 属性
@@ -27,6 +28,30 @@ namespace GameA
         #endregion
 
         #region 方法
+
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            InitUI();
+        }
+
+        #region private
+        private void InitUI()
+        {
+            List<string> menuList = new List<string>();
+            menuList.Add("最新关卡");
+            menuList.Add("最近玩过的关卡");
+            menuList.Add("收藏的关卡");
+            _cachedView.MenuDropDown.AddOptions(menuList);
+            _cachedView.MenuDropDown.onValueChanged.AddListener(OnMenuChanged);
+        }
+
+        private void OnMenuChanged(int selectInx)
+        {
+            
+        }
+        #endregion private
+
         #region 接口
         protected override void InitGroupId()
         {
@@ -37,11 +62,11 @@ namespace GameA
 
         #endregion
 
-        private enum EWorkShopState
+        private enum EState
         {
-            None,
-            Edit,
-            PublishList,
+            NewestProject,
+            UserPlayHistory,
+            UserFavorite,
         }
     }
 }

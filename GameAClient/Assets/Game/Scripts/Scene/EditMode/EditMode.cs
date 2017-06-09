@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Security.Policy;
 using SoyEngine;
-using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game

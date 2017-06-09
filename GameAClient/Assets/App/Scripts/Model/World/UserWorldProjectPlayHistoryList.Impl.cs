@@ -15,6 +15,7 @@ namespace GameA
     public partial class UserWorldProjectPlayHistoryList : SyncronisticData
     {
         private List<Project> _allList = new List<Project>();
+        public bool IsEnd { get; private set; }
 
         public List<Project> AllList
         {
@@ -29,6 +30,7 @@ namespace GameA
             {
                 if (!_inited)
                 {
+                    IsEnd = true;
                     MessengerAsync.Broadcast(EMessengerType.OnUserWorldProjectPlayHistoryListChanged);
                 }
                 return;
@@ -38,6 +40,7 @@ namespace GameA
                 _allList.Clear();
             }
             _allList.AddRange(_projectList);
+            IsEnd = _projectList.Count < _cs_maxCount;
             MessengerAsync.Broadcast(EMessengerType.OnUserWorldProjectPlayHistoryListChanged);
         }
     }

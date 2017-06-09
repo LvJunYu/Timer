@@ -9,7 +9,6 @@
 using System.Diagnostics;
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine;
 using GameA.Game;
 

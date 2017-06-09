@@ -15,7 +15,7 @@ namespace GameA
 {
 	public partial class UMViewItemScreenButton : UMViewBase
 	{
-		private void Awake()
+        protected override void Awake()
 		{
 			if (ClickButton != null)
 			{
@@ -23,7 +23,7 @@ namespace GameA
 			}
 		}
 
-		void OnDestory()
+        void OnDestory()
 		{
 			if (ClickButton != null)
 			{
