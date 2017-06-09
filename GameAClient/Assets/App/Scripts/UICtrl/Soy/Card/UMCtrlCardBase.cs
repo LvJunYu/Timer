@@ -72,7 +72,6 @@ namespace GameA
     {
         #region field
         private T _content;
-        private ECardMode _cardMode;
         private bool _isSelected;
         private Action _onDataChanged;
         private Action<CardDataRendererWrapper<T>> _onClickHandler;
@@ -84,18 +83,6 @@ namespace GameA
             get
             {
                 return this._content;
-            }
-        }
-
-        public ECardMode CardMode
-        {
-            get
-            {
-                return this._cardMode;
-            }
-            set
-            {
-                _cardMode = value;
             }
         }
 
