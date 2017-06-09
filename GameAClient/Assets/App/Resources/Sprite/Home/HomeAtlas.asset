@@ -12,4 +12,20 @@ MonoBehaviour:
   m_Name: HomeAtlas
   m_EditorClassIdentifier: 
   CachedSprites:
+  - {fileID: 21300000, guid: 416aaec1a27364874b32026d9f918796, type: 3}
+  - {fileID: 21300000, guid: 2e3e7887cbd2b479abd2917e2911e315, type: 3}
+  - {fileID: 21300000, guid: a06c4f55932514d379a284786159dbca, type: 3}
+  - {fileID: 21300000, guid: 988b8378e61d74c1c9098377060e5b8e, type: 3}
+  - {fileID: 21300000, guid: 5e65bd9a3c44d4c9d9abfc774a541fc2, type: 3}
+  - {fileID: 21300000, guid: c15f7c8edce81469087970dc6e4ac176, type: 3}
+  - {fileID: 21300000, guid: d9aa61b7bcc5e48529106feffa18a9af, type: 3}
+  - {fileID: 21300000, guid: 30c192879f72248c49508fd8fd5de990, type: 3}
+  - {fileID: 21300000, guid: 953188a9025574e70b832069cee645ab, type: 3}
+  - {fileID: 21300000, guid: d8d8bc530ecc64d90a0459097bb23e33, type: 3}
+  - {fileID: 21300000, guid: 27ef00ec012eb4520975559bcd0a1588, type: 3}
+  - {fileID: 21300000, guid: e8d2ec3a1a1df4bc6a4ac2c135449334, type: 3}
+  - {fileID: 21300000, guid: d2adbfc0eb8324aa280e445561f79117, type: 3}
+  - {fileID: 21300000, guid: 61ba149bfbbbc48d6ac3dc1389b93019, type: 3}
+  - {fileID: 21300000, guid: c4bd667786bdd45739cb3b81c1d23f98, type: 3}
+  - {fileID: 21300000, guid: e341fdcc5b7c545a1b700705ccff277c, type: 3}
   - {fileID: 21300000, guid: 603d5258502ce6a4a934fa8bd67fec0a, type: 3}
