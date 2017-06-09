@@ -101,7 +101,6 @@ GameObject:
   - component: {fileID: 574366971}
   - component: {fileID: 574366972}
   - component: {fileID: 574366974}
-  - component: {fileID: 574366973}
   m_Layer: 0
   m_Name: Main
   m_TagString: Untagged
@@ -129,7 +128,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 574366970}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d135b218dffcbd4a984183ca663df03, type: 3}
   m_Name: 
@@ -141,7 +140,7 @@ MonoBehaviour:
     _trans: {fileID: 0}
   _run: 0
   Language: 0
-  _env: 0
+  _env: 1
   _clearCache: 0
   _appServerAddress:
   - Enable: 0
@@ -159,7 +158,7 @@ MonoBehaviour:
   - Enable: 0
     AppServerApiRoot: http://127.0.0.1:8080/GameAServer/gameaapi
     GameResoureRoot: http://www.joy-you.com:9081
-  - Enable: 1
+  - Enable: 0
     AppServerApiRoot: http://dev.joy-you.com/gameaapi
     GameResoureRoot: http://127.0.0.1:7888
   - Enable: 0
@@ -168,17 +167,6 @@ MonoBehaviour:
   AppVersion: 1
   PackageAppResourceVersion: 0
   UseLocalDebugRes: 0
---- !u!114 &574366973
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 574366970}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d43e767f5a63406297e958e71b2221e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &574366974
 MonoBehaviour:
   m_ObjectHideFlags: 0
