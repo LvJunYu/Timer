@@ -269,12 +269,15 @@ namespace GameA.Game
         {
             if (_isAlive && _isStart && !_isFreezed)
             {
-                _mainInput.UpdateLogic();
-                _skillMgr1.UpdateLogic();
-                _skillMgr2.UpdateLogic();
                 if (_stunTimer > 0)
                 {
                     _stunTimer--;
+                }
+                if (_stunTimer <= 0)
+                {
+                    _mainInput.UpdateLogic();
+                    _skillMgr1.UpdateLogic();
+                    _skillMgr2.UpdateLogic();
                 }
                 CheckGround();
                 CheckClimb();
@@ -639,7 +642,7 @@ namespace GameA.Game
             if (air)
             {
                 _mainInput._brakeTime = 0;
-                if (_curBanInputTime <= 0 && _stunTimer <= 0)
+                if (_curBanInputTime <= 0)
                 {
                     if (_mainInput.LeftInput == 1)
                     {
@@ -743,7 +746,7 @@ namespace GameA.Game
             }
             else if (_lastGrounded)
             {
-                if (_curBanInputTime <= 0 && _stunTimer <= 0)
+                if (_curBanInputTime <= 0)
                 {
                     if (_mainInput.LeftInput == 1)
                     {

@@ -209,7 +209,7 @@ namespace GameA.Game
                 return;
             }
             var pathPos = GetColliderPos(_curPos);
-            if (_curBanInputTime <= 0 && _stunTimer <= 0)
+            if (_curBanInputTime <= 0)
             {
                 if (!reachedX)
                 {
