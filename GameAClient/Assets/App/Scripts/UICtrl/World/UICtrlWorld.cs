@@ -78,6 +78,7 @@ namespace GameA
             Array.ForEach(_menuCtrlArray, c=>c.Init(this, _cachedView));
             _projectInfoPanel = new UPCtrlWorldProjectInfo();
             _projectInfoPanel.Init(this, _cachedView);
+            _cachedView.GridScroller.SetCallback(OnItemRefresh, GetItemRenderer);
         }
 
 
@@ -144,6 +145,29 @@ namespace GameA
         private void OnReturnBtnClick()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlWorld>();
+        }
+
+        private IDataItemRenderer GetItemRenderer(RectTransform parent)
+        {
+            var item = new UMCtrlWorldProject();
+            item.Init(parent, Vector3.zero);
+            return item;
+        }
+
+        private void OnItemRefresh(IDataItemRenderer item, int inx)
+        {
+            if (EMenu.NewestProject == _curMenu)
+            {
+                ((UPCtrlWorldNewestProject)_menuCtrlArray[0]).OnItemRefresh(item, inx);
+            }
+            else if (EMenu.UserPlayHistory == _curMenu)
+            {
+
+            }
+            else if (EMenu.UserFavorite == _curMenu)
+            {
+
+            }
         }
 
         #endregion 接口
