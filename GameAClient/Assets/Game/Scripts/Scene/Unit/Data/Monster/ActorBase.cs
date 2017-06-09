@@ -28,6 +28,7 @@ namespace GameA.Game
     {
         protected EffectManager _effectManager;
         protected EDieType _eDieType;
+        protected int _stunTimer;
 
         public override EffectManager EffectMgr
         {

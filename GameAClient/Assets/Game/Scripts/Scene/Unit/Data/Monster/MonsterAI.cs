@@ -24,8 +24,8 @@ namespace GameA.Game
 
     public class MonsterAI : MonsterBase
     {
-        public static IntVec2 SeekRange = new IntVec2(13, 4) * ConstDefineGM2D.ServerTileScale;
-        public static IntVec2 AttackRange = new IntVec2(1, 1) * ConstDefineGM2D.ServerTileScale;
+        protected IntVec2 _seekRange = new IntVec2(13, 4) * ConstDefineGM2D.ServerTileScale;
+        protected IntVec2 _attackRange = new IntVec2(1, 1) * ConstDefineGM2D.ServerTileScale;
         public static IntVec2 PathRange = new IntVec2(2, 2);
         private const int MaxStuckFrames = 30;
         private const int MaxReSeekFrames = 5;
@@ -103,6 +103,7 @@ namespace GameA.Game
                     OnSeek();
                     break;
                 case EMonsterState.Attack:
+                    SpeedX = Util.ConstantLerp(SpeedX, 0, _curFriction);
                     OnAttack();
                     break;
             }
@@ -140,7 +141,7 @@ namespace GameA.Game
         protected void OnThink()
         {
             IntVec2 rel = CenterPos - PlayMode.Instance.MainUnit.CenterPos;
-            if (Mathf.Abs(rel.x) <= SeekRange.x && Mathf.Abs(rel.y) <= SeekRange.y)
+            if (Mathf.Abs(rel.x) <= _seekRange.x && Mathf.Abs(rel.y) <= _seekRange.y)
             {
                 MoveTo();
             }
@@ -149,16 +150,25 @@ namespace GameA.Game
         protected void OnAttack()
         {
             IntVec2 rel = CenterPos - PlayMode.Instance.MainUnit.CenterPos;
-            if (Mathf.Abs(rel.x) > AttackRange.x || Mathf.Abs(rel.y) > AttackRange.y)
+            if (Mathf.Abs(rel.x) > _attackRange.x || Mathf.Abs(rel.y) > _attackRange.y)
             {
                 ChangeState(EMonsterState.Seek);
             }
         }
 
-        protected void OnSeek()
+        protected virtual bool IsInAttackRange()
         {
             IntVec2 rel = CenterPos - PlayMode.Instance.MainUnit.CenterPos;
-            if (Mathf.Abs(rel.x) <= AttackRange.x && Mathf.Abs(rel.y) <= AttackRange.y)
+            if (Mathf.Abs(rel.x) <= _attackRange.x && Mathf.Abs(rel.y) <= _attackRange.y)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        protected void OnSeek()
+        {
+            if (IsInAttackRange())
             {
                 ChangeState(EMonsterState.Attack);
                 return;
@@ -199,7 +209,7 @@ namespace GameA.Game
                 return;
             }
             var pathPos = GetColliderPos(_curPos);
-            if (_curBanInputTime <= 0)
+            if (_curBanInputTime <= 0 && _stunTimer <= 0)
             {
                 if (!reachedX)
                 {
@@ -346,9 +356,9 @@ namespace GameA.Game
                    || (Mathf.Abs(pathPos.y - currentDest.y) <= ConstDefineGM2D.AIMaxPositionError);
         }
 
-        protected override void UpdateMonsterView()
+        protected override void UpdateMonsterView(float deltaTime)
         {
-            base.UpdateMonsterView();
+            base.UpdateMonsterView(deltaTime);
             if (_eState == EMonsterState.Seek)
             {
                 if (_curPos == _lastPos)

@@ -272,6 +272,10 @@ namespace GameA.Game
                 _mainInput.UpdateLogic();
                 _skillMgr1.UpdateLogic();
                 _skillMgr2.UpdateLogic();
+                if (_stunTimer > 0)
+                {
+                    _stunTimer--;
+                }
                 CheckGround();
                 CheckClimb();
                 UpdateSpeedY();
@@ -293,20 +297,25 @@ namespace GameA.Game
                 _curPos = GetPos(_colliderPos);
                 UpdateTransPos();
             }
-            if (!_isAlive) {
+            if (!_isAlive)
+            {
                 _dieTime++;
-                if (_life <= 0) {
-                    if (_dieTime == 20) {
-                        Messenger.Broadcast (EMessengerType.GameFailedDeadMark);
+                if (_life <= 0)
+                {
+                    if (_dieTime == 20)
+                    {
+                        Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
                         SpeedY = 150;
                     }
-                    if (_dieTime > 20) {
-                        UpdateRotation ((_dieTime - 20) * 0.3f);
+                    if (_dieTime > 20)
+                    {
+                        UpdateRotation((_dieTime - 20)*0.3f);
                     }
-                    if (_dieTime == 100) {
-                        PlayMode.Instance.SceneState.MainUnitSiTouLe ();
+                    if (_dieTime == 100)
+                    {
+                        PlayMode.Instance.SceneState.MainUnitSiTouLe();
                         // 因生命用完而失败
-                        Messenger.Broadcast (EMessengerType.GameFinishFailed);
+                        Messenger.Broadcast(EMessengerType.GameFinishFailed);
                     }
                 }
             }
@@ -630,7 +639,7 @@ namespace GameA.Game
             if (air)
             {
                 _mainInput._brakeTime = 0;
-                if (_curBanInputTime <= 0)
+                if (_curBanInputTime <= 0 && _stunTimer <= 0)
                 {
                     if (_mainInput.LeftInput == 1)
                     {
@@ -734,7 +743,7 @@ namespace GameA.Game
             }
             else if (_lastGrounded)
             {
-                if (_curBanInputTime <= 0)
+                if (_curBanInputTime <= 0 && _stunTimer <= 0)
                 {
                     if (_mainInput.LeftInput == 1)
                     {
@@ -1481,5 +1490,23 @@ namespace GameA.Game
         }
 
         #endregion
+
+        internal void OnStun(ActorBase actor)
+        {
+            //晕3秒
+            _stunTimer = 100;
+            if (_animation != null && !_animation.IsPlaying("Stun", 1))
+            {
+                _animation.PlayOnce("Stun", 1, 1);
+            }
+        }
+
+        internal void OnKnockBack(ActorBase actor)
+        {
+            Speed = IntVec2.zero;
+            _curBanInputTime = 20;
+            ExtraSpeed.y = 180;
+            ExtraSpeed.x = actor.CenterPos.x > CenterPos.x ? -120 : 120;
+        }
     }
 }

@@ -198,7 +198,6 @@ namespace GameA.Game
             //_originPos = pos;
             _finalPos = pos;
             _mainCamaraTrans.position = _finalPos;
-            StratifiedGameBg.BaseCameraPos = _finalPos;
             _rendererCamaraTrans.localPosition = Vector3.zero;
             RendererCameraPos = _rendererCamaraTrans.position;
         }
