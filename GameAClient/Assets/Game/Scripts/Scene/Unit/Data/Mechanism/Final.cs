@@ -14,6 +14,7 @@ namespace GameA.Game
     public class Final : BlockBase
     {
         protected static Final _instance;
+        protected UnityNativeParticleItem _efffect;
 
         public static Vector3 Position
         {
@@ -35,6 +36,27 @@ namespace GameA.Game
             }
             _instance = this;
             return true;
+        }
+
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            _efffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectFinal", _trans);
+            if (_efffect != null)
+            {
+                _efffect.Play();
+            }
+            return true;
+        }
+
+        internal override void OnObjectDestroy()
+        {
+            base.OnObjectDestroy();
+            FreeEffect(_efffect);
+            _efffect = null;
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
