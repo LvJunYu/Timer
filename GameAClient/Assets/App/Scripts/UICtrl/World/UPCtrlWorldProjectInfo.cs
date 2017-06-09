@@ -20,6 +20,7 @@ namespace GameA
     {
         #region 常量与字段
         private Project _content;
+        private bool _isRequestFavorite = false;
         #endregion
 
         #region 属性
@@ -27,14 +28,10 @@ namespace GameA
         #endregion
 
         #region 方法
-        public RectTransform GetRoot()
-        {
-            return _cachedView.InfoPanel;
-        }
-
         public void SetData(Project project)
         {
             _content = project;
+            _isRequestFavorite = false;
             if (_content == null)
             {
                 SetViewEmpty();
@@ -42,6 +39,7 @@ namespace GameA
             else
             {
                 RefreshView();
+                RequestData();
             }
         }
         #region private
@@ -76,12 +74,72 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.Desc, p.Summary);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, u.HeadImgUrl, _cachedView.DefaultCoverTexture);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath, _cachedView.DefaultCoverTexture);
-            bool favorite = p.ProjectUserData != null && p.ProjectUserData.Favorite;
+            RefreshFavoriteBtnView();
+        }
+
+        private void RefreshFavoriteBtnView()
+        {
+            bool favorite = _content.ProjectUserData != null && _content.ProjectUserData.Favorite;
             _cachedView.FavoriteBtn.gameObject.SetActive(!favorite);
             _cachedView.UnfavoriteBtn.gameObject.SetActive(favorite);
         }
-        #region 接口
 
+        private void RequestData()
+        {
+            if (_content == null)
+            {
+                return;
+            }
+            Project requestP = _content;
+            requestP.Request(requestP.ProjectId, () => {
+                if (_content != null && _content.ProjectId == requestP.ProjectId) {
+                    RefreshView();
+                }
+            }, code=>{
+
+            });
+        }
+
+        private void RequestUpdateFavorite(bool favorite)
+        {
+            if (_content == null)
+            {
+                return;
+            }
+            if (_isRequestFavorite)
+            {
+                return;
+            }
+            Project requestP = _content;
+            requestP.UpdateFavorite(favorite, () => {
+                if (_content != null && _content.ProjectId == requestP.ProjectId) {
+                    _isRequestFavorite = false;
+                    RefreshFavoriteBtnView();
+                }
+            }, code=>{
+                if (_content != null && _content.ProjectId == requestP.ProjectId) {
+                    _isRequestFavorite = false;
+                    RefreshFavoriteBtnView();
+                }
+            });
+        }
+        #region 接口
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _cachedView.FavoriteBtn.onClick.AddListener(OnFavoriteBtnClick);
+            _cachedView.UnfavoriteBtn.onClick.AddListener(OnUnFavoriteBtnClick);
+        }
+
+        private void OnFavoriteBtnClick()
+        {
+            RequestUpdateFavorite(true);
+        }
+
+        private void OnUnFavoriteBtnClick()
+        {
+            RequestUpdateFavorite(false);
+        }
         #endregion 接口
 
         #endregion

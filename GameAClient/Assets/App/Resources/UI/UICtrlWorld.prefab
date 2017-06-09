@@ -2046,8 +2046,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 10
-    m_Right: 10
+    m_Left: 0
+    m_Right: 0
     m_Top: 2
     m_Bottom: 2
   m_ChildAlignment: 0
@@ -3776,8 +3776,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 10
-    m_Right: 10
+    m_Left: 0
+    m_Right: 0
     m_Top: 2
     m_Bottom: 2
   m_ChildAlignment: 0
@@ -5096,14 +5096,14 @@ MonoBehaviour:
   TabGroup: {fileID: 114642197500417808}
   RecentRecordTab: {fileID: 114299691917832146}
   RecentRecordTab2: {fileID: 114290129900371238}
-  RankRecordTab: {fileID: 114646935098911196}
-  RankRecordTab2: {fileID: 114060305159290990}
+  RecordRankTab: {fileID: 114646935098911196}
+  RecordRankTab2: {fileID: 114060305159290990}
   CommentListTab: {fileID: 114247617827821662}
   CommentListTab2: {fileID: 114518425537187162}
   RecentRecordDock: {fileID: 1690058027423124}
   RecentRecordGridScroller: {fileID: 114511399077721878}
-  RankRecordDock: {fileID: 1408186037978328}
-  RankRecordGridScroller: {fileID: 114457576831660404}
+  RecordRankDock: {fileID: 1408186037978328}
+  RecordRankGridScroller: {fileID: 114457576831660404}
   CommentListDock: {fileID: 1147658612135518}
   CommentListTableScroller: {fileID: 114586599867815984}
   CommentInput: {fileID: 114240480515082774}

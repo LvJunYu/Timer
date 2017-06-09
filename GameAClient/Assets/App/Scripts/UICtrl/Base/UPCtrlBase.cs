@@ -8,6 +8,7 @@ namespace SoyEngine
 	{
 		protected V _cachedView;
         protected C _mainCtrl;
+        protected bool _isOpen = false;
 
         public virtual void Init(C ctrl, V view)
 		{
@@ -22,8 +23,8 @@ namespace SoyEngine
 		{
 		}
 
-        public virtual void Open() {}
-        public virtual void Close() {}
+        public virtual void Open() { _isOpen = true; }
+        public virtual void Close() { _isOpen = false; }
 	}
 }
 

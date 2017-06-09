@@ -15,7 +15,7 @@ namespace GameA
     public partial class WorldProjectCommentList : SyncronisticData
     {
         private List<ProjectComment> _allList = new List<ProjectComment>();
-
+        public bool IsEnd { get; private set; }
         public List<ProjectComment> AllList
         {
             get { return _allList; }
@@ -29,6 +29,7 @@ namespace GameA
             {
                 if (!_inited)
                 {
+                    IsEnd = true;
                     MessengerAsync.Broadcast(EMessengerType.OnProjectCommentChanged);
                 }
                 return;
@@ -39,6 +40,7 @@ namespace GameA
             }
             _allList.AddRange(_commentList);
             _allList.Sort((p1, p2) => -p1.CreateTime.CompareTo(p2.CreateTime));
+            IsEnd = _commentList.Count < _cs_maxCount;
             MessengerAsync.Broadcast(EMessengerType.OnProjectCommentChanged);
         }
 

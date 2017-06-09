@@ -27,6 +27,7 @@ namespace SoyEngine
             _normalButtonList.Add(btn);
             _selectedButtonList.Add(selectedBtn);
             selectedBtn.enabled = false;
+            selectedBtn.gameObject.SetActive(false);
             _callbackList.Add(callback);
             btn.onClick.AddListener(()=>{
                 OnClickTag(inx);

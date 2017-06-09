@@ -33,19 +33,19 @@ namespace GameA
 //            }
 //        }
 
-        public List<RecordRankHolder> ProjectPlayRecordList
+        public WorldProjectRecordRankList ProjectRecordRankList
         {
             get
             {
-                return _recordRankList.AllList;
+                return _recordRankList;
             }
         }
 
-        public List<Record> ProjectRecentRecordList
+        public WorldProjectRecentRecordList ProjectRecentRecordList
         {
             get
             {
-                return _recentRecordList.AllList;
+                return _recentRecordList;
             }
         }
 
