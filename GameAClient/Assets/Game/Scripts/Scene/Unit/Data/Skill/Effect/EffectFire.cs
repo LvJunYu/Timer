@@ -26,7 +26,6 @@ namespace GameA.Game
 
         public override void OnRemoved()
         {
-            _owner.OutFire();
         }
     }
 }
