@@ -18,7 +18,6 @@ namespace GameA.Game
         protected int _monsterSpeed;
         protected int _curMaxSpeedX;
         protected int _curFriction;
-        protected int _fireTimer;
 
         protected override bool OnInit()
         {
@@ -153,13 +152,13 @@ namespace GameA.Game
             _fireTimer++;
             //碰到墙壁转头
             CheckWay();
-            //每隔两秒转头
-            if (_fireTimer == 100)
+            //每隔转头
+            if (_fireTimer == 80)
             {
                 ChangeWay(_curMoveDirection == EMoveDirection.Right ? EMoveDirection.Left : EMoveDirection.Right);
             }
-            //五秒后还是这个状态挂掉
-            else if (_fireTimer == 250)
+            //4秒后还是这个状态挂掉
+            else if (_fireTimer == 200)
             {
                 OnDead();
                 if (_animation != null)

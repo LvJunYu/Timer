@@ -95,6 +95,12 @@ namespace GameA.Game
             _currentMp = 0;
         }
 
+        public void Clear()
+        {
+            _currentSkill = null;
+            _currentMp = 0;
+        }
+
         public bool Fire()
         {
             if (_currentSkill == null)
