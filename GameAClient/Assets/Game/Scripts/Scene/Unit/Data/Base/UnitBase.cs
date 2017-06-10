@@ -904,6 +904,16 @@ namespace GameA.Game
             return  -(pos.x + pos.y) * 0.00078125f ;
         }
 
+        protected void SetUpTrans(Transform trans)
+        {
+            if (trans == null)
+            {
+                return;
+            }
+            var pos = trans.position;
+            trans.position = new Vector3(pos.x, pos.y, GetZ(_curPos + IntVec2.up));
+        }
+
         #endregion
 
         internal void DoProcessMorph(bool add)

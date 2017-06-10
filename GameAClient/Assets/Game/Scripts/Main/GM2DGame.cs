@@ -321,5 +321,13 @@ namespace GameA.Game
 
 
         #endregion
+
+        public void OnDrawGizmos()
+        {
+            if (_gameMode != null)
+            {
+                _gameMode.OnDrawGizmos();
+            }
+        }
     }
 }

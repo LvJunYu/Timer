@@ -8,9 +8,9 @@ namespace GameA.Game
 	public class TableManager : MonoBehaviour
 	{
 		#region 常量与字段
-//		#if UNITY_EDITOR
+		#if UNITY_EDITOR
 		private const string editorJsonDataPath = "JsonTableData/";
-//		#endif
+		#endif
 		private static TableManager _instance;
 		public readonly Dictionary<int,Table_Unit> Table_UnitDic = new Dictionary<int, Table_Unit>();
 		public readonly Dictionary<int,Table_StandaloneLevel> Table_StandaloneLevelDic = new Dictionary<int, Table_StandaloneLevel>();
@@ -80,7 +80,7 @@ namespace GameA.Game
 		}
 		public void Init()
 		{
-//			#if UNITY_EDITOR
+			#if UNITY_EDITOR
 			var UnitTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "Unit"));
 			_tableUnits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Unit[]>(UnitTextAsset.text);
 			var StandaloneLevelTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "StandaloneLevel"));
@@ -133,192 +133,192 @@ namespace GameA.Game
 			_tableProgressUnlocks = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_ProgressUnlock[]>(ProgressUnlockTextAsset.text);
 			var BoostItemTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "BoostItem"));
 			_tableBoostItems = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_BoostItem[]>(BoostItemTextAsset.text);
-//			#else
-//			_loader = new TableResLoader("GameMaker2D");
-//
-//			var UnitAsset = _loader.GetConfigAssetData<TableUnitAsset>("Unit");
-//			if (UnitAsset == null)
-//			{
-//				LogHelper.Error("UnitAsset is null");
-//				return;
-//			}
-//			_tableUnits = UnitAsset.DataArray;
-//			var StandaloneLevelAsset = _loader.GetConfigAssetData<TableStandaloneLevelAsset>("StandaloneLevel");
-//			if (StandaloneLevelAsset == null)
-//			{
-//				LogHelper.Error("StandaloneLevelAsset is null");
-//				return;
-//			}
-//			_tableStandaloneLevels = StandaloneLevelAsset.DataArray;
-//			var StarRequireAsset = _loader.GetConfigAssetData<TableStarRequireAsset>("StarRequire");
-//			if (StarRequireAsset == null)
-//			{
-//				LogHelper.Error("StarRequireAsset is null");
-//				return;
-//			}
-//			_tableStarRequires = StarRequireAsset.DataArray;
-//			var StandaloneChapterAsset = _loader.GetConfigAssetData<TableStandaloneChapterAsset>("StandaloneChapter");
-//			if (StandaloneChapterAsset == null)
-//			{
-//				LogHelper.Error("StandaloneChapterAsset is null");
-//				return;
-//			}
-//			_tableStandaloneChapters = StandaloneChapterAsset.DataArray;
-//			var RewardAsset = _loader.GetConfigAssetData<TableRewardAsset>("Reward");
-//			if (RewardAsset == null)
-//			{
-//				LogHelper.Error("RewardAsset is null");
-//				return;
-//			}
-//			_tableRewards = RewardAsset.DataArray;
-//			var FashionShopAsset = _loader.GetConfigAssetData<TableFashionShopAsset>("FashionShop");
-//			if (FashionShopAsset == null)
-//			{
-//				LogHelper.Error("FashionShopAsset is null");
-//				return;
-//			}
-//			_tableFashionShops = FashionShopAsset.DataArray;
-//			var UpperBodyPartsAsset = _loader.GetConfigAssetData<TableUpperBodyPartsAsset>("UpperBodyParts");
-//			if (UpperBodyPartsAsset == null)
-//			{
-//				LogHelper.Error("UpperBodyPartsAsset is null");
-//				return;
-//			}
-//			_tableUpperBodyPartss = UpperBodyPartsAsset.DataArray;
-//			var HeadPartsAsset = _loader.GetConfigAssetData<TableHeadPartsAsset>("HeadParts");
-//			if (HeadPartsAsset == null)
-//			{
-//				LogHelper.Error("HeadPartsAsset is null");
-//				return;
-//			}
-//			_tableHeadPartss = HeadPartsAsset.DataArray;
-//			var LowerBodyPartsAsset = _loader.GetConfigAssetData<TableLowerBodyPartsAsset>("LowerBodyParts");
-//			if (LowerBodyPartsAsset == null)
-//			{
-//				LogHelper.Error("LowerBodyPartsAsset is null");
-//				return;
-//			}
-//			_tableLowerBodyPartss = LowerBodyPartsAsset.DataArray;
-//			var AppendagePartsAsset = _loader.GetConfigAssetData<TableAppendagePartsAsset>("AppendageParts");
-//			if (AppendagePartsAsset == null)
-//			{
-//				LogHelper.Error("AppendagePartsAsset is null");
-//				return;
-//			}
-//			_tableAppendagePartss = AppendagePartsAsset.DataArray;
-//			var TreasureMapAsset = _loader.GetConfigAssetData<TableTreasureMapAsset>("TreasureMap");
-//			if (TreasureMapAsset == null)
-//			{
-//				LogHelper.Error("TreasureMapAsset is null");
-//				return;
-//			}
-//			_tableTreasureMaps = TreasureMapAsset.DataArray;
-//			var TurntableAsset = _loader.GetConfigAssetData<TableTurntableAsset>("Turntable");
-//			if (TurntableAsset == null)
-//			{
-//				LogHelper.Error("TurntableAsset is null");
-//				return;
-//			}
-//			_tableTurntables = TurntableAsset.DataArray;
-//			var FashionCouponAsset = _loader.GetConfigAssetData<TableFashionCouponAsset>("FashionCoupon");
-//			if (FashionCouponAsset == null)
-//			{
-//				LogHelper.Error("FashionCouponAsset is null");
-//				return;
-//			}
-//			_tableFashionCoupons = FashionCouponAsset.DataArray;
-//			var BackgroundAsset = _loader.GetConfigAssetData<TableBackgroundAsset>("Background");
-//			if (BackgroundAsset == null)
-//			{
-//				LogHelper.Error("BackgroundAsset is null");
-//				return;
-//			}
-//			_tableBackgrounds = BackgroundAsset.DataArray;
-//			var DecorateAsset = _loader.GetConfigAssetData<TableDecorateAsset>("Decorate");
-//			if (DecorateAsset == null)
-//			{
-//				LogHelper.Error("DecorateAsset is null");
-//				return;
-//			}
-//			_tableDecorates = DecorateAsset.DataArray;
-//			var MatrixAsset = _loader.GetConfigAssetData<TableMatrixAsset>("Matrix");
-//			if (MatrixAsset == null)
-//			{
-//				LogHelper.Error("MatrixAsset is null");
-//				return;
-//			}
-//			_tableMatrixs = MatrixAsset.DataArray;
-//			var MorphAsset = _loader.GetConfigAssetData<TableMorphAsset>("Morph");
-//			if (MorphAsset == null)
-//			{
-//				LogHelper.Error("MorphAsset is null");
-//				return;
-//			}
-//			_tableMorphs = MorphAsset.DataArray;
-//			var PuzzleSummonAsset = _loader.GetConfigAssetData<TablePuzzleSummonAsset>("PuzzleSummon");
-//			if (PuzzleSummonAsset == null)
-//			{
-//				LogHelper.Error("PuzzleSummonAsset is null");
-//				return;
-//			}
-//			_tablePuzzleSummons = PuzzleSummonAsset.DataArray;
-//			var PuzzleAsset = _loader.GetConfigAssetData<TablePuzzleAsset>("Puzzle");
-//			if (PuzzleAsset == null)
-//			{
-//				LogHelper.Error("PuzzleAsset is null");
-//				return;
-//			}
-//			_tablePuzzles = PuzzleAsset.DataArray;
-//			var AvatarStructAsset = _loader.GetConfigAssetData<TableAvatarStructAsset>("AvatarStruct");
-//			if (AvatarStructAsset == null)
-//			{
-//				LogHelper.Error("AvatarStructAsset is null");
-//				return;
-//			}
-//			_tableAvatarStructs = AvatarStructAsset.DataArray;
-//			var AvatarSlotNameAsset = _loader.GetConfigAssetData<TableAvatarSlotNameAsset>("AvatarSlotName");
-//			if (AvatarSlotNameAsset == null)
-//			{
-//				LogHelper.Error("AvatarSlotNameAsset is null");
-//				return;
-//			}
-//			_tableAvatarSlotNames = AvatarSlotNameAsset.DataArray;
-//			var PlayerLvToExpAsset = _loader.GetConfigAssetData<TablePlayerLvToExpAsset>("PlayerLvToExp");
-//			if (PlayerLvToExpAsset == null)
-//			{
-//				LogHelper.Error("PlayerLvToExpAsset is null");
-//				return;
-//			}
-//			_tablePlayerLvToExps = PlayerLvToExpAsset.DataArray;
-//			var PlayerLvToModifyLimitAsset = _loader.GetConfigAssetData<TablePlayerLvToModifyLimitAsset>("PlayerLvToModifyLimit");
-//			if (PlayerLvToModifyLimitAsset == null)
-//			{
-//				LogHelper.Error("PlayerLvToModifyLimitAsset is null");
-//				return;
-//			}
-//			_tablePlayerLvToModifyLimits = PlayerLvToModifyLimitAsset.DataArray;
-//			var ModifyRewardAsset = _loader.GetConfigAssetData<TableModifyRewardAsset>("ModifyReward");
-//			if (ModifyRewardAsset == null)
-//			{
-//				LogHelper.Error("ModifyRewardAsset is null");
-//				return;
-//			}
-//			_tableModifyRewards = ModifyRewardAsset.DataArray;
-//			var ProgressUnlockAsset = _loader.GetConfigAssetData<TableProgressUnlockAsset>("ProgressUnlock");
-//			if (ProgressUnlockAsset == null)
-//			{
-//				LogHelper.Error("ProgressUnlockAsset is null");
-//				return;
-//			}
-//			_tableProgressUnlocks = ProgressUnlockAsset.DataArray;
-//			var BoostItemAsset = _loader.GetConfigAssetData<TableBoostItemAsset>("BoostItem");
-//			if (BoostItemAsset == null)
-//			{
-//				LogHelper.Error("BoostItemAsset is null");
-//				return;
-//			}
-//			_tableBoostItems = BoostItemAsset.DataArray;
-//			#endif
+			#else
+			_loader = new TableResLoader("GameMaker2D");
+
+			var UnitAsset = _loader.GetConfigAssetData<TableUnitAsset>("Unit");
+			if (UnitAsset == null)
+			{
+				LogHelper.Error("UnitAsset is null");
+				return;
+			}
+			_tableUnits = UnitAsset.DataArray;
+			var StandaloneLevelAsset = _loader.GetConfigAssetData<TableStandaloneLevelAsset>("StandaloneLevel");
+			if (StandaloneLevelAsset == null)
+			{
+				LogHelper.Error("StandaloneLevelAsset is null");
+				return;
+			}
+			_tableStandaloneLevels = StandaloneLevelAsset.DataArray;
+			var StarRequireAsset = _loader.GetConfigAssetData<TableStarRequireAsset>("StarRequire");
+			if (StarRequireAsset == null)
+			{
+				LogHelper.Error("StarRequireAsset is null");
+				return;
+			}
+			_tableStarRequires = StarRequireAsset.DataArray;
+			var StandaloneChapterAsset = _loader.GetConfigAssetData<TableStandaloneChapterAsset>("StandaloneChapter");
+			if (StandaloneChapterAsset == null)
+			{
+				LogHelper.Error("StandaloneChapterAsset is null");
+				return;
+			}
+			_tableStandaloneChapters = StandaloneChapterAsset.DataArray;
+			var RewardAsset = _loader.GetConfigAssetData<TableRewardAsset>("Reward");
+			if (RewardAsset == null)
+			{
+				LogHelper.Error("RewardAsset is null");
+				return;
+			}
+			_tableRewards = RewardAsset.DataArray;
+			var FashionShopAsset = _loader.GetConfigAssetData<TableFashionShopAsset>("FashionShop");
+			if (FashionShopAsset == null)
+			{
+				LogHelper.Error("FashionShopAsset is null");
+				return;
+			}
+			_tableFashionShops = FashionShopAsset.DataArray;
+			var UpperBodyPartsAsset = _loader.GetConfigAssetData<TableUpperBodyPartsAsset>("UpperBodyParts");
+			if (UpperBodyPartsAsset == null)
+			{
+				LogHelper.Error("UpperBodyPartsAsset is null");
+				return;
+			}
+			_tableUpperBodyPartss = UpperBodyPartsAsset.DataArray;
+			var HeadPartsAsset = _loader.GetConfigAssetData<TableHeadPartsAsset>("HeadParts");
+			if (HeadPartsAsset == null)
+			{
+				LogHelper.Error("HeadPartsAsset is null");
+				return;
+			}
+			_tableHeadPartss = HeadPartsAsset.DataArray;
+			var LowerBodyPartsAsset = _loader.GetConfigAssetData<TableLowerBodyPartsAsset>("LowerBodyParts");
+			if (LowerBodyPartsAsset == null)
+			{
+				LogHelper.Error("LowerBodyPartsAsset is null");
+				return;
+			}
+			_tableLowerBodyPartss = LowerBodyPartsAsset.DataArray;
+			var AppendagePartsAsset = _loader.GetConfigAssetData<TableAppendagePartsAsset>("AppendageParts");
+			if (AppendagePartsAsset == null)
+			{
+				LogHelper.Error("AppendagePartsAsset is null");
+				return;
+			}
+			_tableAppendagePartss = AppendagePartsAsset.DataArray;
+			var TreasureMapAsset = _loader.GetConfigAssetData<TableTreasureMapAsset>("TreasureMap");
+			if (TreasureMapAsset == null)
+			{
+				LogHelper.Error("TreasureMapAsset is null");
+				return;
+			}
+			_tableTreasureMaps = TreasureMapAsset.DataArray;
+			var TurntableAsset = _loader.GetConfigAssetData<TableTurntableAsset>("Turntable");
+			if (TurntableAsset == null)
+			{
+				LogHelper.Error("TurntableAsset is null");
+				return;
+			}
+			_tableTurntables = TurntableAsset.DataArray;
+			var FashionCouponAsset = _loader.GetConfigAssetData<TableFashionCouponAsset>("FashionCoupon");
+			if (FashionCouponAsset == null)
+			{
+				LogHelper.Error("FashionCouponAsset is null");
+				return;
+			}
+			_tableFashionCoupons = FashionCouponAsset.DataArray;
+			var BackgroundAsset = _loader.GetConfigAssetData<TableBackgroundAsset>("Background");
+			if (BackgroundAsset == null)
+			{
+				LogHelper.Error("BackgroundAsset is null");
+				return;
+			}
+			_tableBackgrounds = BackgroundAsset.DataArray;
+			var DecorateAsset = _loader.GetConfigAssetData<TableDecorateAsset>("Decorate");
+			if (DecorateAsset == null)
+			{
+				LogHelper.Error("DecorateAsset is null");
+				return;
+			}
+			_tableDecorates = DecorateAsset.DataArray;
+			var MatrixAsset = _loader.GetConfigAssetData<TableMatrixAsset>("Matrix");
+			if (MatrixAsset == null)
+			{
+				LogHelper.Error("MatrixAsset is null");
+				return;
+			}
+			_tableMatrixs = MatrixAsset.DataArray;
+			var MorphAsset = _loader.GetConfigAssetData<TableMorphAsset>("Morph");
+			if (MorphAsset == null)
+			{
+				LogHelper.Error("MorphAsset is null");
+				return;
+			}
+			_tableMorphs = MorphAsset.DataArray;
+			var PuzzleSummonAsset = _loader.GetConfigAssetData<TablePuzzleSummonAsset>("PuzzleSummon");
+			if (PuzzleSummonAsset == null)
+			{
+				LogHelper.Error("PuzzleSummonAsset is null");
+				return;
+			}
+			_tablePuzzleSummons = PuzzleSummonAsset.DataArray;
+			var PuzzleAsset = _loader.GetConfigAssetData<TablePuzzleAsset>("Puzzle");
+			if (PuzzleAsset == null)
+			{
+				LogHelper.Error("PuzzleAsset is null");
+				return;
+			}
+			_tablePuzzles = PuzzleAsset.DataArray;
+			var AvatarStructAsset = _loader.GetConfigAssetData<TableAvatarStructAsset>("AvatarStruct");
+			if (AvatarStructAsset == null)
+			{
+				LogHelper.Error("AvatarStructAsset is null");
+				return;
+			}
+			_tableAvatarStructs = AvatarStructAsset.DataArray;
+			var AvatarSlotNameAsset = _loader.GetConfigAssetData<TableAvatarSlotNameAsset>("AvatarSlotName");
+			if (AvatarSlotNameAsset == null)
+			{
+				LogHelper.Error("AvatarSlotNameAsset is null");
+				return;
+			}
+			_tableAvatarSlotNames = AvatarSlotNameAsset.DataArray;
+			var PlayerLvToExpAsset = _loader.GetConfigAssetData<TablePlayerLvToExpAsset>("PlayerLvToExp");
+			if (PlayerLvToExpAsset == null)
+			{
+				LogHelper.Error("PlayerLvToExpAsset is null");
+				return;
+			}
+			_tablePlayerLvToExps = PlayerLvToExpAsset.DataArray;
+			var PlayerLvToModifyLimitAsset = _loader.GetConfigAssetData<TablePlayerLvToModifyLimitAsset>("PlayerLvToModifyLimit");
+			if (PlayerLvToModifyLimitAsset == null)
+			{
+				LogHelper.Error("PlayerLvToModifyLimitAsset is null");
+				return;
+			}
+			_tablePlayerLvToModifyLimits = PlayerLvToModifyLimitAsset.DataArray;
+			var ModifyRewardAsset = _loader.GetConfigAssetData<TableModifyRewardAsset>("ModifyReward");
+			if (ModifyRewardAsset == null)
+			{
+				LogHelper.Error("ModifyRewardAsset is null");
+				return;
+			}
+			_tableModifyRewards = ModifyRewardAsset.DataArray;
+			var ProgressUnlockAsset = _loader.GetConfigAssetData<TableProgressUnlockAsset>("ProgressUnlock");
+			if (ProgressUnlockAsset == null)
+			{
+				LogHelper.Error("ProgressUnlockAsset is null");
+				return;
+			}
+			_tableProgressUnlocks = ProgressUnlockAsset.DataArray;
+			var BoostItemAsset = _loader.GetConfigAssetData<TableBoostItemAsset>("BoostItem");
+			if (BoostItemAsset == null)
+			{
+				LogHelper.Error("BoostItemAsset is null");
+				return;
+			}
+			_tableBoostItems = BoostItemAsset.DataArray;
+			#endif
 			for (int i = 0; i < _tableUnits.Length; i++)
 			{
 				if (!Table_UnitDic.ContainsKey(_tableUnits[i].Id))

@@ -120,10 +120,10 @@ namespace GameA
             base.OnOpen (parameter);
             SocialGUIManager.ShowGoldEnergyBar (false);
 			RefreshUserInfo ();
+            _cachedView.SpineCat.AnimationState.SetAnimation(0, "Run", true);
+            //RefreshAvatar ();
 
-			//RefreshAvatar ();
-
-		}
+        }
 			
 
 		private void OnTestChangeAvatar () {
@@ -191,8 +191,8 @@ namespace GameA
 		}
         private void OnLotteryBtn()
         {
-            Debug.Log("_________________________OnLotteryBtn");
-            SocialGUIManager.Instance.OpenUI<UICtrlLottery>();
+            //Debug.Log("_________________________OnLotteryBtn");
+           SocialGUIManager.Instance.OpenUI<UICtrlLottery>();
         }
 
         private void RefreshUserInfo () {
@@ -213,7 +213,28 @@ namespace GameA
 				_cachedView.MaleIcon.gameObject.SetActive (true);
 				_cachedView.FemaleIcon.gameObject.SetActive (false);
 			}
-		}
+            SetExp();
+
+        }
+
+        private void SetExp()
+        {
+
+            long currentPlayerExp = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerExp;
+            //Debug.Log("______currentPlayerExp_______"+ currentPlayerExp);
+            int MaxPlayerExp =
+                TableManager.Instance.Table_PlayerLvToExpDic[
+                    LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel].AdvExp;
+            //Debug.Log("MaxPlayerExp" + MaxPlayerExp);
+
+            _cachedView.AdventureExperience.fillAmount = (float)currentPlayerExp / MaxPlayerExp;
+
+            long currentCreatorExp = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorExp;
+            int MaxCreatorExp =
+                TableManager.Instance.Table_PlayerLvToExpDic[
+                    LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorLevel].MakerExp;
+            _cachedView.CreatorExperience.fillAmount = (float)currentCreatorExp / MaxCreatorExp;
+        }
 
 
         #endregion
