@@ -15,7 +15,7 @@ namespace GameA
     public partial class WorldProjectRecordRankList : SyncronisticData
     {
         private List<RecordRankHolder> _allList = new List<RecordRankHolder>();
-
+        public bool IsEnd { get; private set; }
         public List<RecordRankHolder> AllList
         {
             get { return _allList; }
@@ -29,6 +29,7 @@ namespace GameA
             {
                 if (!_inited)
                 {
+                    IsEnd = true;
                     MessengerAsync.Broadcast(EMessengerType.OnProjectRecordRankChanged);
                 }
                 return;
@@ -39,6 +40,7 @@ namespace GameA
             }
             int i = _allList.Count;
             _recordList.ForEach(r => _allList.Add(new RecordRankHolder(r, i++)));
+            IsEnd = _recordList.Count < _cs_maxCount;
             MessengerAsync.Broadcast(EMessengerType.OnProjectRecordRankChanged);
         }
     }
