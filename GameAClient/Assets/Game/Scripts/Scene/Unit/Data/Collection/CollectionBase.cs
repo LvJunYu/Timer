@@ -25,22 +25,6 @@ namespace GameA.Game
             return true;
         }
 
-        internal override bool InstantiateView()
-        {
-            if (!base.InstantiateView())
-            {
-                return false;
-            }
-            //_tweener = _trans.DOMoveY(_trans.position.y + 0.1f, 0.6f);
-            //_tweener.Play();
-            //_tweener.SetLoops(-1, LoopType.Yoyo);
-
-            _tweener = _trans.DOScale(1.2f, 0.4f);
-            _tweener.Play();
-            _tweener.SetLoops(-1, LoopType.Yoyo);
-            return true;
-        }
-
         internal override void OnObjectDestroy()
         {
             if (_tweener != null)
