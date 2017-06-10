@@ -375,9 +375,11 @@ namespace SoyEngine
                 LogHelper.Error("TryGetTextureByName {0} called use debug res but assetPath is invalid!", textureName);
                 return false;
             }
-            outTex = Resources.Load (assetPath) as Texture;
-            if (outTex != null) {
-                _cachedTexture.Add (textureName, outTex);
+            var origObj = Resources.Load (assetPath) as Texture;
+            if (origObj != null) {
+                var instance = Object.Instantiate(origObj);
+                _cachedTexture.Add (textureName, instance);
+                outTex = instance;
                 return true;
             }
             return false;
@@ -458,9 +460,11 @@ namespace SoyEngine
                 LogHelper.Error("TryGetAudioClipByName called use debug res but assetPath is invalid!");
                 return false;
             }
-            outClip = Resources.Load (assetPath) as AudioClip;
-            if (outClip != null) {
-                _cachedAudioClip.Add (audioName, outClip);
+            var origObj = Resources.Load (assetPath) as AudioClip;
+            if (origObj != null) {
+                var instance = Object.Instantiate (origObj);
+                _cachedAudioClip.Add (audioName, instance);
+                outClip = instance;
                 return true;
             }
             return false;
@@ -516,9 +520,11 @@ namespace SoyEngine
                 LogHelper.Error("TryGetSingleSprite called use debug res but assetPath is invalid!");
                 return false;
             }
-            outSprite = Resources.Load (assetPath) as Sprite;
-            if (outSprite != null) {
-                _cachedSingleSprite.Add (spriteName, outSprite);
+            var origObj = Resources.Load (assetPath) as Sprite;
+            if (origObj != null) {
+                var instance = Object.Instantiate (origObj);
+                _cachedSingleSprite.Add (spriteName, instance);
+                outSprite = instance;
                 return true;
             }
             return false;
@@ -573,13 +579,13 @@ namespace SoyEngine
                 LogHelper.Error("LoadMainAssetObject called use debug res but assetPath is invalid!");
                 return null;
             }
-            var obj = Resources.Load (assetPath);
-            if (obj != null) {
-                Debug.Log ("LoadMainAssetObject suceed, path: " + assetPath);
-                _cachedMainAsset.Add (name, obj);
-                return obj;
+            var origObj = Resources.Load (assetPath);
+            if (origObj != null) {
+                var instance = Object.Instantiate (origObj);
+                _cachedMainAsset.Add (name, instance);
+//                return Object.Instantiate(origObj);
+                return instance;
             }
-            Debug.Log ("LoadMainAssetObject failed, path: " + assetPath);
             return null;
 
 //#if UNITY_EDITOR
@@ -670,6 +676,7 @@ namespace SoyEngine
 
         private bool TrtGetAtlas(string atlasName,out SoyAtlas atlas)
         {
+            atlas = null;
             if (string.IsNullOrEmpty(atlasName))
             {
                 LogHelper.Error("TrtGetAtlas called but atlasName is null or empty");
@@ -687,9 +694,11 @@ namespace SoyEngine
                 LogHelper.Error("TrtGetAtlas called use debug res but assetPath is invalid!");
                 return false;
             }
-            atlas = Resources.Load (assetPath) as SoyAtlas;
-            if (atlas != null) {
-                _cachedAtlas.Add(atlasName, atlas);
+            var origObj = Resources.Load (assetPath) as SoyAtlas;
+            if (origObj != null) {
+                var instance = Object.Instantiate (origObj);
+                _cachedAtlas.Add(atlasName, instance);
+                atlas = instance;
                 return true;
             }
             return false;
@@ -745,23 +754,15 @@ namespace SoyEngine
                 return false;
             }
 
-            data = Resources.Load (assetPath) as SkeletonDataAsset;
-            if (data != null) {
-                Debug.Log ("TryGetSkeletonDataAssetByName suceed, path: " + assetPath);
-                _cachedSpineData.Add(spineDataName, data);
+            var origObj = Resources.Load (assetPath) as SkeletonDataAsset;
+            if (origObj != null) {
+                var instance = CopyDebugResSpineData (origObj);
+                _cachedSpineData.Add(spineDataName, instance);
+                data = instance;
                 return true;
             }
-            Debug.Log ("TryGetSkeletonDataAssetByName failed, path: " + assetPath);
             return false;
 
-//            string assetPath = null;
-//            if (!TryGetDebugResPath(spineDataName, out assetPath))
-//            {
-//                LogHelper.Error("TryGetSkeletonDataAssetByName called use debug res but assetPath is invalid!");
-//                return false;
-//            }
-//
-//            data = Resources.load
 
 //#if UNITY_EDITOR
 //	        if (SocialApp.Instance.UseLocalDebugRes)
