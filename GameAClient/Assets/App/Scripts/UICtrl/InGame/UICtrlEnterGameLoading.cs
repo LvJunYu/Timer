@@ -158,7 +158,7 @@ namespace GameA
 //                _cachedView.GameWideMatrixLabelBg.gameObject.SetActive(false);
 //            }
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.GameWideCover, project.IconPath, _cachedView.DefaultCoverTexture);
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.GameWideAuthorIcon, project.UserLegacy.HeadImgUrl, _cachedView.DefaultUserTexture);
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.GameWideAuthorIcon, project.UserInfo.HeadImgUrl, _cachedView.DefaultUserTexture);
         }
 
 

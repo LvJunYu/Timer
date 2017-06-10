@@ -65,9 +65,9 @@ namespace GameA
                 _project.UserInfo.HeadImgUrl,
                 _cachedView.DefaultHeadImg);
 
-            _cachedView.ServedPlayerCnt.text = _project.ExtendData.PlayCount.ToString();
-            _cachedView.LikedPlayerCnt.text = _project.ExtendData.LikeCount.ToString();
-            _cachedView.PassRate.text = string.Format ("{0:F1}%", _project.PassRate);
+            _cachedView.ServedPlayerCnt.text = _project.PlayCount.ToString();
+            _cachedView.LikedPlayerCnt.text = _project.LikeCount.ToString();
+            _cachedView.PassRate.text = string.Format ("{0:F1}%", _project.CompleteRate);
         }
 
         private void OnPlayBtn () {
