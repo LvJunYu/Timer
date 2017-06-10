@@ -238,5 +238,10 @@ namespace GameA.Game
         }
 
         #endregion
+
+        public void OnDrawGizmos()
+        {
+            MapManager.Instance.OnDrawGizmos();
+        }
     }
 }
