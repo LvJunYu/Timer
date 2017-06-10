@@ -120,10 +120,10 @@ namespace GameA
             base.OnOpen (parameter);
             SocialGUIManager.ShowGoldEnergyBar (false);
 			RefreshUserInfo ();
+            _cachedView.SpineCat.AnimationState.SetAnimation(0, "Run", true);
+            //RefreshAvatar ();
 
-			//RefreshAvatar ();
-
-		}
+        }
 			
 
 		private void OnTestChangeAvatar () {
@@ -191,8 +191,8 @@ namespace GameA
 		}
         private void OnLotteryBtn()
         {
-            Debug.Log("_________________________OnLotteryBtn");
-            SocialGUIManager.Instance.OpenUI<UICtrlLottery>();
+            //Debug.Log("_________________________OnLotteryBtn");
+           SocialGUIManager.Instance.OpenUI<UICtrlLottery>();
         }
 
         private void RefreshUserInfo () {
