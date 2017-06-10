@@ -77,6 +77,10 @@ namespace GameA
         /// 男性别的小图标
         /// </summary>
 		public Image MaleIcon;
+
+        public Image AdventureExperience;
+
+        public Image CreatorExperience;
         /// <summary>
         /// 女性别的小图标
         /// </summary>
