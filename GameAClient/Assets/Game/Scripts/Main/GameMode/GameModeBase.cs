@@ -67,5 +67,10 @@ namespace GameA.Game
         {
             SocialApp.Instance.ReturnToApp();
         }
+
+        public void OnDrawGizmos()
+        {
+            GameRun.Instance.OnDrawGizmos();
+        }
     }
 }

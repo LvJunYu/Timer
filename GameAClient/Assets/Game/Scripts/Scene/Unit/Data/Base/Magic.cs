@@ -120,7 +120,7 @@ namespace GameA.Game
                             Speed = IntVec2.zero;
                             _magicRotate = null;
                             ChangeMoveDirection();
-                            //break;
+                            break;
                         }
                     }
                     if (_magicRotate != null)

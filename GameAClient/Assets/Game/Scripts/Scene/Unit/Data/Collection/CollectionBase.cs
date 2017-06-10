@@ -7,11 +7,14 @@
 
 using System;
 using System.Collections;
+using DG.Tweening;
 
 namespace GameA.Game
 {
     public class CollectionBase : Magic
     {
+        protected Tweener _tweener;
+
         protected override bool OnInit()
         {
             if (!base.OnInit())
@@ -20,6 +23,32 @@ namespace GameA.Game
             }
             SetSortingOrderBack();
             return true;
+        }
+
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            //_tweener = _trans.DOMoveY(_trans.position.y + 0.1f, 0.6f);
+            //_tweener.Play();
+            //_tweener.SetLoops(-1, LoopType.Yoyo);
+
+            _tweener = _trans.DOScale(1.2f, 0.4f);
+            _tweener.Play();
+            _tweener.SetLoops(-1, LoopType.Yoyo);
+            return true;
+        }
+
+        internal override void OnObjectDestroy()
+        {
+            if (_tweener != null)
+            {
+                DOTween.Kill(_trans);
+                _tweener = null;
+            }
+            base.OnObjectDestroy();
         }
 
         public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)

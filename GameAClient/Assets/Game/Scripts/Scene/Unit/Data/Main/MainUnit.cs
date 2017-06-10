@@ -1013,7 +1013,7 @@ namespace GameA.Game
                 if (_animation != null)
                 {
                     _animation.Reset();
-                    _animation.PlayOnce("DeathFire");
+                    _animation.PlayOnce("Death");
                 }
             }
         }
@@ -1552,7 +1552,7 @@ namespace GameA.Game
             }
             if (_view != null)
             {
-                _view.SetRendererColor(Color.black);
+                _view.SetRendererColor(new Color(0.2f, 0.2f, 0.2f, 1f));
             }
         }
 
