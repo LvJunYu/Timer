@@ -20,27 +20,11 @@ namespace GameA
         private bool _syncIgnoreMe = false;
 
         private long _guid;
-        private User _user;
         private int _downloadPrice;
 
         private bool _extendReady = false;
-        private int _likeCount;
-        private int _favoriteCount;
-        private int _downloadCount;
-        private int _shareCount;
-        private float _totalRate;
-        private int _totalRateCount;
-        private int _totalCommentCount;
-        private long _totalClickCount;
-        private int _completeCount;
-        private int _failCount;
         private byte[] _deadPos;
         private long _commitToken;
-
-        private EProjectLikeState _userLike;
-        private bool _userFavorite;
-        private int _userCompleteCount;
-        private long _userLastPlayTime;
 
         private GameTimer _projectInfoRequestTimer;
 
@@ -69,27 +53,6 @@ namespace GameA
 
         #region 属性
 
-        public float PassRate {
-            get {
-                if (null != ExtendData && ExtendData.PlayCount > 0) {
-                    return (float)ExtendData.CompleteCount / ExtendData.PlayCount;
-                } else {
-                    return 0f;
-                }
-            }
-        }
-
-        public User UserLegacy
-        {
-            get
-            {
-                return this._user;
-            }
-            set
-            {
-                _user = value;
-            }
-        }
 
         public int DownloadPrice
         {
@@ -101,7 +64,11 @@ namespace GameA
         {
             get
             {
-                return _likeCount;
+                if (_extendReady)
+                {
+                    return _extendData.LikeCount;
+                }
+                return 0;
             }
         }
 
@@ -109,47 +76,11 @@ namespace GameA
         {
             get
             {
-                return _favoriteCount;
-            }
-        }
-
-        public int DownloadCount
-        {
-            get
-            {
-                return _downloadCount;
-            }
-        }
-
-        public int ShareCount
-        {
-            get
-            {
-                return _shareCount;
-            }
-        }
-
-        public float TotalRate
-        {
-            get
-            {
-                return this._totalRate;
-            }
-            set
-            {
-                _totalRate = value;
-            }
-        }
-
-        public int TotalRateCount
-        {
-            get
-            {
-                return this._totalRateCount;
-            }
-            set
-            {
-                _totalRateCount = value;
+                if (_extendReady)
+                {
+                    return _extendData.FavoriteCount;
+                }
+                return 0;
             }
         }
 
@@ -157,23 +88,23 @@ namespace GameA
         {
             get
             {
-                return this._totalCommentCount;
-            }
-            set
-            {
-                _totalCommentCount = value;
+                if (_extendReady)
+                {
+                    return _extendData.CommentCount;
+                }
+                return 0;
             }
         }
 
-        public long TotalClickCount
+        public long PlayCount
         {
             get
             {
-                return this._totalClickCount;
-            }
-            set
-            {
-                _totalClickCount = value;
+                if (_extendReady)
+                {
+                    return _extendData.PlayCount;
+                }
+                return 0;
             }
         }
 
@@ -181,12 +112,11 @@ namespace GameA
         {
             get
             {
-                return _completeCount;
-            }
-
-            set
-            {
-                _completeCount = value;
+                if (_extendReady)
+                {
+                    return _extendData.CompleteCount;
+                }
+                return 0;
             }
         }
 
@@ -194,12 +124,11 @@ namespace GameA
         {
             get
             {
-                return _failCount;
-            }
-
-            set
-            {
-                _failCount = value;
+                if (_extendReady)
+                {
+                    return _extendData.FailCount;
+                }
+                return 0;
             }
         }
 
@@ -207,13 +136,13 @@ namespace GameA
         {
             get
             {
-                if (_completeCount == 0)
+                if (CompleteCount == 0)
                 {
                     return 0;
                 }
                 else
                 {
-                    return 1f * _completeCount / (_completeCount + _failCount);
+                    return 1f * CompleteCount / (CompleteCount + FailCount);
                 }
             }
         }
@@ -241,7 +170,11 @@ namespace GameA
         {
             get
             {
-                return _userLike;
+                if (_projectUserData != null)
+                {
+                    return _projectUserData.LikeState;
+                }
+                return EProjectLikeState.PLS_None;
             }
         }
 
@@ -249,39 +182,37 @@ namespace GameA
         {
             get
             {
-                return this._userFavorite;
-            }
-            set
-            {
-                _userFavorite = value;
+                if (_projectUserData != null)
+                {
+                    return _projectUserData.Favorite;
+                }
+                return false;
             }
         }
 
         public int UserCompleteCount
         {
-            get { return _userCompleteCount; }
+            get
+            {
+                if (_projectUserData != null)
+                {
+                    return _projectUserData.CompleteCount;
+                }
+                return 0;
+            }
         }
 
         public long UserLastPlayTime
         {
-            get { return _userLastPlayTime; }
-        }
-
-
-
-        public GameTimer ProjectIntoRequestTimer
-        {
             get
             {
-                if (_projectInfoRequestTimer == null)
+                if (_projectUserData != null)
                 {
-                    _projectInfoRequestTimer = new GameTimer();
-                    _projectInfoRequestTimer.Zero();
+                    return _projectUserData.LastPlayTime;
                 }
-                return _projectInfoRequestTimer;
+                return 0;
             }
         }
-
 
         public int SectionId {
             get {
@@ -635,7 +566,9 @@ namespace GameA
                         }
                         return;
                     }
-                    _userLike = likeState;
+                    if (_projectUserData != null) {
+                        _projectUserData.LikeState = likeState;
+                    }
                     if (successCallback != null)
                     {
                         successCallback.Invoke();
@@ -683,7 +616,7 @@ namespace GameA
 
         public void UpdateFavorite(bool favorite, Action successCallback = null, Action<ENetResultCode> failedCallback = null)
         {
-            if (_userFavorite == favorite)
+            if (UserFavorite == favorite)
             {
                 if (failedCallback != null)
                 {
@@ -701,8 +634,9 @@ namespace GameA
                         }
                         return;
                     }
-                    _userFavorite = favorite;
-                    _projectUserData.Favorite = true;
+                    if (_projectUserData != null) {
+                        _projectUserData.Favorite = true;
+                    }
                     if (successCallback != null)
                     {
                         successCallback.Invoke();
@@ -727,49 +661,15 @@ namespace GameA
             {
 				OnSyncProjectExtendData(_extendData);
             }
-			if (_projectUserData != null)
-            {
-				OnSyncProjectUserData(_projectUserData);
-            }
-
-            // 
-//            _bytesData = null;
 		}
 
 		public void OnSyncProjectExtendData(ProjectExtend msg)
         {
             _extendReady = true;
             _isValid = msg.IsValid;
-            _totalCommentCount = msg.CommentCount;
-            _totalClickCount = msg.PlayCount;
-            _completeCount = msg.CompleteCount;
-            _failCount = msg.FailCount;
-            _likeCount = msg.LikeCount;
-            _favoriteCount = msg.FavoriteCount;
-            _downloadCount = msg.DownloadCount;
-            _shareCount = msg.ShareCount;
-//            if (msg.CommentList != null)
-//            {
-//                OnSyncProjectCommentList(msg.CommentList);
-//            }
         }
+            
 
-
-		public void OnSyncProjectUserData(ProjectUserData msg)
-        {
-            _userFavorite = msg.Favorite;
-            _userLastPlayTime = msg.LastPlayTime;
-            _userCompleteCount = msg.CompleteCount;
-            _userLike = msg.LikeState;
-        }
-
-        public void ClearProjectUserData()
-        {
-            _userLike = EProjectLikeState.PLS_None;
-            _userFavorite = false;
-            _userLastPlayTime = 0;
-            _userCompleteCount = 0;
-        }
 
 //        public void CommitPlayResult(bool success, float usedTime, byte[] playRecord, byte[] deadPos, Action<int, bool> successCallback, Action<EPlayProjectResultRetCode> failedCallback)
 //        {

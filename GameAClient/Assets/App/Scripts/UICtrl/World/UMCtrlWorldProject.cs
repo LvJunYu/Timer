@@ -91,8 +91,8 @@ namespace GameA
 //            {
                 _cachedView.SubTitle.gameObject.SetActive(false);
 //            }
-            DictionaryTools.SetContentText(_cachedView.PlayCount, p.ExtendData.PlayCount.ToString());
-            DictionaryTools.SetContentText(_cachedView.LikeCount, p.ExtendData.LikeCount.ToString());
+            DictionaryTools.SetContentText(_cachedView.PlayCount, p.PlayCount.ToString());
+            DictionaryTools.SetContentText(_cachedView.LikeCount, p.LikeCount.ToString());
             DictionaryTools.SetContentText(_cachedView.CompleteRate, GameATools.GetCompleteRateString(p.CompleteRate));
             DictionaryTools.SetContentText(_cachedView.CommentCount, p.ExtendData.CommentCount.ToString());
             DictionaryTools.SetContentText(_cachedView.PublishTime, DateTimeUtil.GetServerSmartDateStringByTimestampMillis(p.PublishTime));

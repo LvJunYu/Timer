@@ -1,4 +1,4 @@
-﻿﻿/********************************************************************
+﻿/********************************************************************
 ** Filename : UICtrlModifyMatchMain
 ** Author : Quan
 ** Date : 2015/4/30 16:35:16
@@ -225,9 +225,9 @@ namespace GameA
                     ),
                     _cachedView.DefaultProjectCoverTex);
                 int passRate = 0;
-                if (LocalUser.Instance.MatchUserData.CurPublishProject.ExtendData.PlayCount > 0) {
+                if (LocalUser.Instance.MatchUserData.CurPublishProject.PlayCount > 0) {
                     passRate = (int)(LocalUser.Instance.MatchUserData.CurPublishProject.ExtendData.CompleteCount /
-                    (float)LocalUser.Instance.MatchUserData.CurPublishProject.ExtendData.PlayCount * 100);
+                    (float)LocalUser.Instance.MatchUserData.CurPublishProject.PlayCount * 100);
                 }
                 _cachedView.PassingRate.text = string.Format ("{0}%", passRate);
                 int validSecond = (int)((MatchUserData.PublishedProjectValidTimeLength - 

@@ -81,7 +81,9 @@ namespace GameA
         {
             _worldProjectCommentList.Request(_projectId, startInx, maxCount,
                 EProjectCommentOrderBy.PCOB_CreateTime, EOrderType.OT_Desc, ()=>{
-                _totalCommentCount = _worldProjectCommentList.TotalCount;
+                if (_extendData != null) {
+                    _extendData.CommentCount = _worldProjectCommentList.TotalCount;
+                }
                 if (successCallback != null)
                 {
                     successCallback.Invoke();
