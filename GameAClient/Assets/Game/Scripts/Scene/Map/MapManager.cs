@@ -23,7 +23,6 @@ namespace GameA.Game
 
 		private bool _generateMapComplete;
 		private MapFile _mapFile;
-		private ESceneState _eSceneState;
 #if UNITY_EDITOR
 	    public ColliderScene2D ColliderScene = ColliderScene2D.Instance;
 #endif
@@ -205,13 +204,10 @@ namespace GameA.Game
 	    public void Update()
 	    {
 	        var pos = GM2DTools.WorldToTile(CameraManager.Instance.RendererCamaraTrans.position);
-	        if (_eSceneState == ESceneState.Edit)
-	        {
-                ColliderScene2D.Instance.UpdateLogic(pos);
-	        }
             BgScene2D.Instance.UpdateLogic(pos);
 	        if (EditMode.Instance != null)
 	        {
+                ColliderScene2D.Instance.UpdateLogic(pos);
                 EditMode.Instance.Update();
 	        }
 	    }
