@@ -65,7 +65,7 @@ namespace GameA
             _cachedView.AddNum.text = type == EChallengeProjectType.CPT_Random ? _unkown : _project.AddCount.ToString();
             _cachedView.ModifyNum.text = type == EChallengeProjectType.CPT_Random ? _unkown : _project.ModifyCount.ToString();
             _cachedView.DelNum.text = type == EChallengeProjectType.CPT_Random ? _unkown : _project.DeleteCount.ToString();
-            _cachedView.PassingRate.text = type == EChallengeProjectType.CPT_Random ? _unkown : string.Format("{0}%", _project.PassRate);
+            _cachedView.PassingRate.text = type == EChallengeProjectType.CPT_Random ? _unkown : string.Format("{0}%", _project.CompleteRate);
 
             if (1 == selectType) {
                 _cachedView.Root.transform.localPosition = new Vector3 (0, 20, 0);

@@ -68,8 +68,8 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.SubTitleText, "");
             DictionaryTools.SetContentText(_cachedView.UserNickNameText, u.NickName);
             DictionaryTools.SetContentText(_cachedView.UserLevelText, GameATools.GetLevelString(u.LevelData.PlayerLevel));
-            DictionaryTools.SetContentText(_cachedView.PlayCountText, p.ExtendReady ? p.ExtendData.PlayCount.ToString() : "-");
-            DictionaryTools.SetContentText(_cachedView.LikeCountText, p.ExtendReady ? p.ExtendData.LikeCount.ToString() : "-");
+            DictionaryTools.SetContentText(_cachedView.PlayCountText, p.ExtendReady ? p.PlayCount.ToString() : "-");
+            DictionaryTools.SetContentText(_cachedView.LikeCountText, p.ExtendReady ? p.LikeCount.ToString() : "-");
             DictionaryTools.SetContentText(_cachedView.CompleteRateText, p.ExtendReady ? GameATools.GetCompleteRateString(p.CompleteRate) : "-");
             DictionaryTools.SetContentText(_cachedView.Desc, p.Summary);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, u.HeadImgUrl, _cachedView.DefaultCoverTexture);
