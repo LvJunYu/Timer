@@ -20,9 +20,8 @@ namespace GameA
     {
         #region 常量与字段
         private const int PageSize = 10;
-        private List<CardDataRendererWrapper<Project>> _content = new List<CardDataRendererWrapper<Project>>();
+        private List<CardDataRendererWrapper<Project>> _contentList = new List<CardDataRendererWrapper<Project>>();
         private WorldNewestProjectList _data;
-        private bool _isOpen = false;
         private Vector2 _pagePosition = Vector2.zero;
         private CardDataRendererWrapper<Project> _curSelectedProject;
         #endregion
@@ -34,7 +33,7 @@ namespace GameA
         #region 方法
         public override void Open()
         {
-            _isOpen = true;
+            base.Open();
             _data = AppData.Instance.WorldData.NewestProjectList;
             RefreshView();
             RequestData();
@@ -43,8 +42,8 @@ namespace GameA
 
         public override void Close()
         {
-            _isOpen = false;
             _pagePosition = _cachedView.GridScroller.ContentPosition;
+            base.Close();
         }
 
         private void OnItemClick(CardDataRendererWrapper<Project> item)
@@ -54,15 +53,15 @@ namespace GameA
 
         public void OnItemRefresh(IDataItemRenderer item, int inx)
         {
-            if(inx >= _content.Count)
+            if(inx >= _contentList.Count)
             {
                 LogHelper.Error("OnItemRefresh Error Inx > count");
                 return;
             }
-            item.Set(_content[inx]);
+            item.Set(_contentList[inx]);
             if (!_data.IsEnd)
             {
-                if(inx > _content.Count - 2)
+                if(inx > _contentList.Count - 2)
                 {
                     RequestData(true);
                 }
@@ -74,7 +73,7 @@ namespace GameA
             int startInx = 0;
             if (append)
             {
-                startInx = _content.Count;
+                startInx = _contentList.Count;
             }
             _data.Request(startInx, PageSize, ()=>{
                 if (!_isOpen) {
@@ -88,8 +87,8 @@ namespace GameA
         private void RefreshView()
         {
             List<Project> list = _data.AllList;
-            _content.Clear();
-            _content.Capacity = Mathf.Max(_content.Capacity, list.Count);
+            _contentList.Clear();
+            _contentList.Capacity = Mathf.Max(_contentList.Capacity, list.Count);
             bool findFlag = false;
             for (int i = 0; i < list.Count; i++)
             {
@@ -98,25 +97,24 @@ namespace GameA
                 if (_curSelectedProject != null
                     && _curSelectedProject.Content.ProjectId == p.ProjectId)
                 {
-                    w.IsSelected = true;
-                    _curSelectedProject = w;
+                    SelectItem(w);
                     findFlag = true;
                 }
                 w.IsSelected = false;
-                _content.Add(w);
+                _contentList.Add(w);
             }
             if (!findFlag)
             {
-                if (_content.Count > 0)
+                if (_contentList.Count > 0)
                 {
-                    SelectItem(_content[0]);
+                    SelectItem(_contentList[0]);
                 }
                 else
                 {
                     SelectItem(null);
                 }
             }
-            _cachedView.GridScroller.SetItemCount(_content.Count);
+            _cachedView.GridScroller.SetItemCount(_contentList.Count);
         }
 
         private void SelectItem(CardDataRendererWrapper<Project> item)

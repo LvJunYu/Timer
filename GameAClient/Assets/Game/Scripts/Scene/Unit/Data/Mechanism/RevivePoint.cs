@@ -56,7 +56,10 @@ namespace GameA.Game
         internal override void Reset()
         {
             base.Reset();
-            _animation.Reset();
+            if (_animation != null)
+            {
+                _animation.Reset();
+            }
             _trigger = false;
         }
 

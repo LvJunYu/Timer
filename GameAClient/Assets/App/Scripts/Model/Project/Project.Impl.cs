@@ -615,13 +615,13 @@ namespace GameA
                 });
         }
 
-        public void UpdateLike(EProjectLikeState likeState, Action<bool> callback = null)
+        public void UpdateLike(EProjectLikeState likeState, Action successCallback = null, Action<ENetResultCode> failedCallback = null)
         {
             if (_projectUserData.LikeState == likeState)
             {
-                if (callback != null)
+                if (failedCallback != null)
                 {
-                    callback.Invoke(false);
+                    failedCallback.Invoke(ENetResultCode.NR_None);
                 }
                 return;
             }
@@ -629,22 +629,22 @@ namespace GameA
                 {
                     if (ret.ResultCode != (int)EUpdateWorldProjectLikeCode.UWPLC_Success)
                     {
-                        if (callback != null)
+                        if (failedCallback != null)
                         {
-                            callback.Invoke(false);
+                            failedCallback.Invoke(ENetResultCode.NR_None);
                         }
                         return;
                     }
                     _userLike = likeState;
-                    if (callback != null)
+                    if (successCallback != null)
                     {
-                        callback.Invoke(true);
+                        successCallback.Invoke();
                     }
                 }, code =>
                 {
-                    if (callback != null)
+                    if (failedCallback != null)
                     {
-                        callback.Invoke(false);
+                        failedCallback.Invoke(ENetResultCode.NR_None);
                     }
                 });
         }
@@ -681,37 +681,37 @@ namespace GameA
 //            });
         }
 
-        public void UpdateFavorite(bool favorite, Action<bool> callback = null)
+        public void UpdateFavorite(bool favorite, Action successCallback = null, Action<ENetResultCode> failedCallback = null)
         {
             if (_userFavorite == favorite)
             {
-                if (callback != null)
+                if (failedCallback != null)
                 {
-                    callback.Invoke(false);
+                    failedCallback.Invoke(ENetResultCode.NR_None);
                 }
                 return;
             }
             RemoteCommands.UpdateWorldProjectFavorite(_projectId, favorite, ret =>
                 {
-                    Project p;
                     if (ret.ResultCode != (int)EUpdateWorldProjectFavoriteCode.UWPFC_Success)
                     {
-                        if (callback != null)
+                        if (failedCallback != null)
                         {
-                            callback.Invoke(false);
+                            failedCallback.Invoke(ENetResultCode.NR_None);
                         }
                         return;
                     }
                     _userFavorite = favorite;
-                    if (callback != null)
+                    _projectUserData.Favorite = true;
+                    if (successCallback != null)
                     {
-                        callback.Invoke(true);
+                        successCallback.Invoke();
                     }
                 }, code =>
                 {
-                    if (callback != null)
+                    if (failedCallback != null)
                     {
-                        callback.Invoke(false);
+                        failedCallback.Invoke(code);
                     }
                 });
         }

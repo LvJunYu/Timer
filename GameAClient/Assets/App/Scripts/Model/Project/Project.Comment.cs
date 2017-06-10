@@ -19,9 +19,9 @@ namespace GameA
         #endregion 变量
 
         #region 属性
-        public List<ProjectComment> CommentList
+        public WorldProjectCommentList CommentList
         {
-            get { return _worldProjectCommentList.AllList; }
+            get { return _worldProjectCommentList; }
         }
         #endregion 属性
         #region 方法

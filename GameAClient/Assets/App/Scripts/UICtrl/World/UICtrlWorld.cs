@@ -27,6 +27,7 @@ namespace GameA
 
         private EMenu _curMenu = EMenu.None;
         private UPCtrlWorldProjectInfo _projectInfoPanel;
+        private UPCtrlWorldProjectDetail _detailPanel;
         private UPCtrlBase<UICtrlWorld, UIViewWorld> _curMenuCtrl;
         private UPCtrlBase<UICtrlWorld, UIViewWorld>[] _menuCtrlArray;
         #endregion
@@ -40,6 +41,7 @@ namespace GameA
         public void SetProject(Project project)
         {
             _projectInfoPanel.SetData(project);
+            _detailPanel.SetData(project);
         }
 
         protected override void OnOpen(object parameter)
@@ -78,6 +80,10 @@ namespace GameA
             Array.ForEach(_menuCtrlArray, c=>c.Init(this, _cachedView));
             _projectInfoPanel = new UPCtrlWorldProjectInfo();
             _projectInfoPanel.Init(this, _cachedView);
+
+            _detailPanel = new UPCtrlWorldProjectDetail();
+            _detailPanel.Init(this, _cachedView);
+
             _cachedView.GridScroller.SetCallback(OnItemRefresh, GetItemRenderer);
         }
 
@@ -107,6 +113,7 @@ namespace GameA
             _cachedView.DetailPanel.anchoredPosition = RightPos;
             _cachedView.ShowDetailBtn.gameObject.SetActive(false);
             _cachedView.HideDetailBtn.gameObject.SetActive(true);
+            _detailPanel.Open();
         }
 
         private void HideDetail()
@@ -116,6 +123,7 @@ namespace GameA
             _cachedView.DetailPanel.anchoredPosition = RightHidePos;
             _cachedView.ShowDetailBtn.gameObject.SetActive(true);
             _cachedView.HideDetailBtn.gameObject.SetActive(false);
+            _detailPanel.Close();
         }
 
         private void ClickTop()
@@ -162,11 +170,11 @@ namespace GameA
             }
             else if (EMenu.UserPlayHistory == _curMenu)
             {
-
+                ((UPCtrlWorldUserPlayHistory)_menuCtrlArray[1]).OnItemRefresh(item, inx);
             }
             else if (EMenu.UserFavorite == _curMenu)
             {
-
+                ((UPCtrlWorldUserFavorite)_menuCtrlArray[2]).OnItemRefresh(item, inx);
             }
         }
 

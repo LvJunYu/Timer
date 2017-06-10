@@ -36,15 +36,15 @@ namespace GameA
         public UITabGroup TabGroup;
         public Button RecentRecordTab;
         public Button RecentRecordTab2;
-        public Button RankRecordTab;
-        public Button RankRecordTab2;
+        public Button RecordRankTab;
+        public Button RecordRankTab2;
         public Button CommentListTab;
         public Button CommentListTab2;
 
         public GameObject RecentRecordDock;
         public GridDataScroller RecentRecordGridScroller;
-        public GameObject RankRecordDock;
-        public GridDataScroller RankRecordGridScroller;
+        public GameObject RecordRankDock;
+        public GridDataScroller RecordRankGridScroller;
         public GameObject CommentListDock;
         public TableDataScroller CommentListTableScroller;
 
