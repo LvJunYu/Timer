@@ -64,9 +64,9 @@ namespace GameA
         {
             base.OnViewCreated();
 
-            #if UNITY_EDITOR
+//            #if UNITY_EDITOR
             SocialGUIManager.Instance.OpenPopupUI<UICtrlGMTool>();
-            #endif
+//            #endif
 
             _cachedView.WorldButton.onClick.AddListener (OnWorldBtn);
 			_cachedView.WorkshopButton.onClick.AddListener (OnCreateBtn);

@@ -143,12 +143,16 @@ namespace SoyEngine
         {
             _gameName = gameName;
             _pathManager = new PathManager();
-            _manifest = LoadAssetBundleMainAsset<SoyResourceManifest>(_pathManager.GetManifestPath(_gameName), true);
+//            _manifest = LoadAssetBundleMainAsset<SoyResourceManifest>(_pathManager.GetManifestPath(_gameName), true);
+            // todo
+            var origManifeset = Resources.Load ("Global/Manifest") as SoyResourceManifest;
+            _manifest = Object.Instantiate (origManifeset);
             if (_manifest == null)
             {
                 LogHelper.Error("Game {0} load manifest failed path is {1}.", _gameName, _pathManager.GetManifestPath(_gameName));
                 return false;
             }
+//            Debug.Log ("______________________________0");
             _manifest.MappingAllAndClearRedundancy();
             _cachedAtlas = new Dictionary<string, SoyAtlas>();
             _cachedSpineData = new Dictionary<string, SkeletonDataAsset>();
@@ -167,6 +171,7 @@ namespace SoyEngine
 
         public Sprite GetSpriteByName(string spName)
         {
+//            Debug.Log ("______________________________2 " + spName);
             if (string.IsNullOrEmpty(spName))
             {
                 LogHelper.Error("GetSpriteByName failed,{0}", spName);
@@ -184,6 +189,7 @@ namespace SoyEngine
 	        if (!useLocale)
 	        {
 				atlasName = _manifest.GetAtlasNameBySpriteName(spName);
+//                Debug.Log ("______________________________3 " + atlasName);
 			}
 			SoyAtlas atlas = null;
             if (!TrtGetAtlas(atlasName, out atlas))
@@ -268,6 +274,7 @@ namespace SoyEngine
 			    return true;
 		    }
 #endif
+            return true;
 			if (string.IsNullOrEmpty(textureName))
 		    {
 				LogHelper.Error("LinkAvatarSpineTexture called but textureName is null or empty!");
@@ -370,7 +377,7 @@ namespace SoyEngine
 				return true;
 			}
 
-            if (!TryGetDebugResPath(textureName, out assetPath))
+            if (!_manifest.AssetName2Path(textureName, out assetPath))
             {
                 LogHelper.Error("TryGetTextureByName {0} called use debug res but assetPath is invalid!", textureName);
                 return false;
@@ -455,7 +462,7 @@ namespace SoyEngine
 		    }
 
             string assetPath = null;
-            if (!TryGetDebugResPath(audioName, out assetPath))
+            if (!_manifest.AssetName2Path(audioName, out assetPath))
             {
                 LogHelper.Error("TryGetAudioClipByName called use debug res but assetPath is invalid!");
                 return false;
@@ -515,7 +522,7 @@ namespace SoyEngine
 			}
 
             string assetPath = null;
-            if (!TryGetDebugResPath(spriteName, out assetPath))
+            if (!_manifest.AssetName2Path(spriteName, out assetPath))
             {
                 LogHelper.Error("TryGetSingleSprite called use debug res but assetPath is invalid!");
                 return false;
@@ -574,7 +581,7 @@ namespace SoyEngine
                 }
             }
             string assetPath = null;
-            if (!TryGetDebugResPath(name, out assetPath))
+            if (!_manifest.AssetName2Path(name, out assetPath))
             {
                 LogHelper.Error("LoadMainAssetObject called use debug res but assetPath is invalid!");
                 return null;
@@ -689,7 +696,7 @@ namespace SoyEngine
             }
 
             string assetPath = null;
-            if (!TryGetDebugResPath(atlasName, out assetPath))
+            if (!_manifest.AssetName2Path(atlasName, out assetPath))
             {
                 LogHelper.Error("TrtGetAtlas called use debug res but assetPath is invalid!");
                 return false;
@@ -748,7 +755,7 @@ namespace SoyEngine
             }
 
             string assetPath = null;
-            if (!TryGetDebugResPath(spineDataName, out assetPath))
+            if (!_manifest.AssetName2Path(spineDataName, out assetPath))
             {
                 LogHelper.Error("TryGetSkeletonDataAssetByName called use debug res but assetPath is invalid!");
                 return false;
@@ -1023,28 +1030,29 @@ namespace SoyEngine
             return true;
 	    }
 
-	    private SkeletonDataAsset CopyDebugResSpineData(SkeletonDataAsset data)
-	    {
-		    if (data == null)
-		    {
-			    return null;
-		    }
-		    SkeletonDataAsset res = Object.Instantiate(data);
-			res.atlasAssets = new AtlasAsset[data.atlasAssets.Length];
-		    for (int i = 0; i < data.atlasAssets.Length; i++)
-		    {
-			    res.atlasAssets[i] = Object.Instantiate(data.atlasAssets[i]);
-				res.atlasAssets[i].materials = new Material[data.atlasAssets[i].materials.Length];
-				for (int j = 0; j < res.atlasAssets[i].materials.Length; j++)
-			    {
-				    res.atlasAssets[i].materials[j] = Object.Instantiate(data.atlasAssets[i].materials[j]);
-			    }
-		    }
-			res.scale = 1f / BuildToolsConstDefine.SpirtePixelsPerUnit;
-			return res;
-	    }
+	    
+        #else
 #endif
-
+        private SkeletonDataAsset CopyDebugResSpineData(SkeletonDataAsset data)
+        {
+            if (data == null)
+            {
+                return null;
+            }
+            SkeletonDataAsset res = Object.Instantiate(data);
+            res.atlasAssets = new AtlasAsset[data.atlasAssets.Length];
+            for (int i = 0; i < data.atlasAssets.Length; i++)
+            {
+                res.atlasAssets[i] = Object.Instantiate(data.atlasAssets[i]);
+                res.atlasAssets[i].materials = new Material[data.atlasAssets[i].materials.Length];
+                for (int j = 0; j < res.atlasAssets[i].materials.Length; j++)
+                {
+                    res.atlasAssets[i].materials[j] = Object.Instantiate(data.atlasAssets[i].materials[j]);
+                }
+            }
+            res.scale = 1f / BuildToolsConstDefine.SpirtePixelsPerUnit;
+            return res;
+        }
 #endregion
 	}
 }
