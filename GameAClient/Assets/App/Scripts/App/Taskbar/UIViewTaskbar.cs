@@ -10,6 +10,7 @@ using System.Collections;
 using SoyEngine;
 using UnityEngine.UI;
 using UnityEngine;
+using Spine.Unity;
 
 namespace GameA
 {
@@ -58,12 +59,12 @@ namespace GameA
         /// </summary>
 		public Button TestChangeAvatarBtn;
 
-
-		// user info
+        public SkeletonGraphic SpineCat;
+        // user info
         /// <summary>
         /// 用户名字
         /// </summary>
-		public Text NickName;
+        public Text NickName;
         /// <summary>
         /// 头像
         /// </summary>

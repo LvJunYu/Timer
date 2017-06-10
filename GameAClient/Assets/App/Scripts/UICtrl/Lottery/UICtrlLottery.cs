@@ -24,7 +24,7 @@ using Spine.Unity;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlLottery : UISocialCtrlBase<UIViewLottery>
+    public class UICtrlLottery : UICtrlGenericBase<UIViewLottery>
     {
         #region 常量与字段
         private int _selectedTicketNum = 0;
@@ -109,7 +109,7 @@ namespace GameA
             _cachedView.RaffleTicketlvl5Btn.onClick.AddListener(OnSelectedRaffleBtn5);
             _cachedView.RaffleBtn.onClick.AddListener(() => UseRaffleTicket(this._selectedTicketNum));
             _cachedView.CatBtn.onClick.AddListener(OnCatBtnClick);
-
+            _cachedView.SpineCat.AnimationState.SetAnimation(0, "Run", true);
         }
 
         private void OnCatBtnClick()
@@ -144,7 +144,7 @@ namespace GameA
             _cachedView.Mask.SetEnableEx(true);
             if (LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(selectedTicketNum) > 0)
             {
-                _cachedView.SpineCat.AnimationState.SetAnimation(0, "Run", false);
+                _cachedView.SpineCat.AnimationState.SetAnimation(0, "Start", false);
                 _isPause = false;
                 this._initSpeed = _initialSpeed;
                 LocalUser.Instance.RaffleTicket.UseRaffleTicket(selectedTicketNum, DecelerateThePanel
@@ -222,7 +222,7 @@ namespace GameA
             ShutDownLight();
             _cachedView.BrightLamp[4].SetActiveEx(true);
             SocialGUIManager.ShowReward(LocalUser.Instance.RaffleTicket.GetReward);
-
+            _cachedView.SpineCat.AnimationState.SetAnimation(0, "Run", true);
         }
 
         public override void OnUpdate()
@@ -375,7 +375,7 @@ namespace GameA
         #region 接口
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.PopUpUI;
+            _groupId = (int)EUIGroupType.MainUI;
         }
         private void OnCloseBtnClick()
         {
