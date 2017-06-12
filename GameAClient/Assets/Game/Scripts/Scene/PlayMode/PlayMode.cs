@@ -385,6 +385,7 @@ namespace GameA.Game
 
         public void GameFinishSuccess()
         {
+            _run = false;
             _gameSucceedTime = GameRun.Instance.LogicFrameCnt;
             GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.GameAudioBgm01);
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
