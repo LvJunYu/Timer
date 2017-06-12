@@ -88,7 +88,7 @@ namespace GameA.Game
             _bulletSpeed = 200;
             _timerAnimation = 0;
             _cdAnimation = 0;
-            _useMp = 80;
+            _useMp = 400;
         }
 
         internal void SetValue(int cdTime, int range, int cdAnimation = 0)
