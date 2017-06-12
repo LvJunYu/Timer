@@ -40,7 +40,7 @@ namespace GameA
         {
             base.OnViewCreated();
 
-            //_cachedView.PlayBtn.onClick.AddListener(OnPlayBtn);
+            _cachedView.PlayBtn.onClick.AddListener(OnPlayBtn);
         }
 
         protected override void OnDestroy()
@@ -52,6 +52,26 @@ namespace GameA
 
         private void OnPlayBtn()
         {
+            if (_record == null)
+            {
+                return;
+            }
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, string.Format ("请求进入录像"));
+
+            _record.RequestPlay (() => {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                UICtrlAdvLvlDetail uictrlAdvLvlDetail = SocialGUIManager.Instance.GetUI<UICtrlAdvLvlDetail>();
+                SituationAdventureParam param = new SituationAdventureParam();
+                param.ProjectType = uictrlAdvLvlDetail.ProjectType;
+                param.Section = uictrlAdvLvlDetail.ChapterIdx;
+                param.Level = uictrlAdvLvlDetail.LevelIdx;
+                param.Record = _record;
+                GameManager.Instance.RequestPlayAdvRecord (uictrlAdvLvlDetail.Project, param);
+                SocialGUIManager.Instance.ChangeToGameMode ();
+            }, (error) => {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                SocialGUIManager.ShowPopupDialog("进入录像失败");
+            });
         }
 
         public void Set(object obj,string name)

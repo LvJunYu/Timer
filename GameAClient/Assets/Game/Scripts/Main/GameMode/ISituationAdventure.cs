@@ -15,6 +15,7 @@ namespace GameA
         public EAdventureProjectType ProjectType;
         public int Section;
         public int Level;
+        public Record Record;
     }
 }
 

@@ -20,7 +20,6 @@ namespace GameA
         protected EGameType _eGameType;
         protected Project _project;
         protected GameManager.EStartType _eGameInitType;
-        protected Record _record;
 	    protected float _gamePlaySpeed = 1;
 
 		#endregion
@@ -37,11 +36,6 @@ namespace GameA
         public Project Project
         {
             get { return _project; }
-        }
-
-        public Record Record
-        {
-            get { return _record; }
         }
 
         public GameManager.EStartType GameInitType
