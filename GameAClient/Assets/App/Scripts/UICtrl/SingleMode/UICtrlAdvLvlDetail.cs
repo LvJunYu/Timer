@@ -28,6 +28,34 @@ namespace GameA
         #endregion
 
         #region Properties
+        public int ChapterIdx
+        {
+            get
+            {
+                return this._chapterIdx;
+            }
+        }
+
+        public int LevelIdx
+        {
+            get
+            {
+                return this._levelIdx;
+            }
+        }
+
+        public EAdventureProjectType ProjectType
+        {
+            get
+            {
+                return this._isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal;
+            }
+        }
+
+        public Project Project
+        {
+            get { return AppData.Instance.AdventureData.GetAdvLevelProject(ChapterIdx, LevelIdx, ProjectType); }
+        }
         #endregion
 
         #region Methods

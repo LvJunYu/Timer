@@ -246,10 +246,18 @@ namespace GameA
                     {
                         _projectUserData.LastPlayTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
                     }
-                    if (successCallback != null)
-                    {
-                        successCallback.Invoke();
-                    }
+
+                    PrepareRes (() => {
+                        if (successCallback != null)
+                        {
+                            successCallback.Invoke();
+                        }
+                    }, () => {
+                        if (failedCallback != null)
+                        {
+                            failedCallback.Invoke(ENetResultCode.NR_None);
+                        }
+                    });
                 }
                 else
                 {

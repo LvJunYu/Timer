@@ -263,7 +263,7 @@ namespace GameA.Game
             }
             //录像模式下如果出了问题至少保证时间超过录像长度就退出。
             if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.PlayRecord &&
-                _gameTimer >= GM2DGame.Instance.Record.UsedTime + 5)
+                _gameTimer >= ((GameModePlayRecord)GM2DGame.Instance.GameMode).Record.UsedTime + 5)
             {
                 _runState = ESceneState.Win;
                 SocialApp.Instance.ReturnToApp();

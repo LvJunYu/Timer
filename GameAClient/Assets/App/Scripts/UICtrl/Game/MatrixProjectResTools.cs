@@ -292,62 +292,62 @@ namespace GameA
             }
         }
 
-        public static void PrepareRecord(long recordId, Action successCallback, Action failedCallback)
-        {
-            ParallelTaskHelper helper = new ParallelTaskHelper(3, successCallback, failedCallback);
-//            if(MatrixManager.Instance.AllMatrixList.Count > 0)
+//        public static void PrepareRecord(long recordId, Action successCallback, Action failedCallback)
+//        {
+//            ParallelTaskHelper helper = new ParallelTaskHelper(3, successCallback, failedCallback);
+////            if(MatrixManager.Instance.AllMatrixList.Count > 0)
+////            {
+//                helper.CompleteOne();
+////            }
+////            else
+////            {
+////                Msg_CA_RequestAllMatrixData msg = new Msg_CA_RequestAllMatrixData();
+////                msg.UpdateTime = 0;
+////                NetworkManager.AppHttpClient.SendWithCb<Msg_AC_AllMatrixs>(SoyHttpApiPath.getAllMatrixData, msg, ret=>{
+////                    MatrixManager.Instance.OnSyncAllMatrixs(ret);
+////                    helper.CompleteOne();
+////                }, (errCode, errMsg)=>{
+////                    helper.FailOne();
+////                });
+////            }
+//
+//            Action<long> prepareProject = projectId=>{
+//                Project project = null;
+//                if(ProjectManager.Instance.TryGetData(projectId, out project))
+//                {
+//                    helper.CompleteOne();
+//                }
+//                else
+//                {
+//                    Msg_CS_DAT_Project msg = new Msg_CS_DAT_Project();
+//                    msg.ProjectId = projectId;
+//                    NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_Project>(SoyHttpApiPath.Project, msg, ret=>{
+//                        ProjectManager.Instance.OnSyncProject(ret);
+//                        helper.CompleteOne();
+//                    }, (code, msgStr)=>{
+//                        helper.FailOne();
+//                    });
+//                }
+//            };
+//
+//            Record record = null;
+//            if(RecordManager.Instance.TryGetData(recordId, out record))
 //            {
-                helper.CompleteOne();
+//                helper.CompleteOne();
+//                prepareProject(record.ProjectId);
 //            }
 //            else
 //            {
-//                Msg_CA_RequestAllMatrixData msg = new Msg_CA_RequestAllMatrixData();
-//                msg.UpdateTime = 0;
-//                NetworkManager.AppHttpClient.SendWithCb<Msg_AC_AllMatrixs>(SoyHttpApiPath.getAllMatrixData, msg, ret=>{
-//                    MatrixManager.Instance.OnSyncAllMatrixs(ret);
-//                    helper.CompleteOne();
-//                }, (errCode, errMsg)=>{
+//                Msg_CS_DAT_Record msg = new Msg_CS_DAT_Record();
+//                msg.RecordId= recordId;
+//                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_Record>(SoyHttpApiPath.Record, msg, ret=>{
+//                    record = RecordManager.Instance.OnSync(ret, null, true);
+//                    prepareProject(record.ProjectId);
+//                }, (failedCode, failedMsg) => {
 //                    helper.FailOne();
 //                });
 //            }
-
-            Action<long> prepareProject = projectId=>{
-                Project project = null;
-                if(ProjectManager.Instance.TryGetData(projectId, out project))
-                {
-                    helper.CompleteOne();
-                }
-                else
-                {
-                    Msg_CS_DAT_Project msg = new Msg_CS_DAT_Project();
-                    msg.ProjectId = projectId;
-                    NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_Project>(SoyHttpApiPath.Project, msg, ret=>{
-                        ProjectManager.Instance.OnSyncProject(ret);
-                        helper.CompleteOne();
-                    }, (code, msgStr)=>{
-                        helper.FailOne();
-                    });
-                }
-            };
-
-            Record record = null;
-            if(RecordManager.Instance.TryGetData(recordId, out record))
-            {
-                helper.CompleteOne();
-                prepareProject(record.ProjectId);
-            }
-            else
-            {
-                Msg_CS_DAT_Record msg = new Msg_CS_DAT_Record();
-                msg.RecordId= recordId;
-                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_Record>(SoyHttpApiPath.Record, msg, ret=>{
-                    record = RecordManager.Instance.OnSync(ret, null, true);
-                    prepareProject(record.ProjectId);
-                }, (failedCode, failedMsg) => {
-                    helper.FailOne();
-                });
-            }
-        }
+//        }
 
         public enum EPreparePlayRecordFailedReason
         {

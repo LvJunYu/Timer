@@ -17,6 +17,7 @@ namespace GameA.Game
             }
             _gameSituation = EGameSituation.Adventure;
             _adventureLevelInfo = param as SituationAdventureParam;
+            _record = _adventureLevelInfo.Record;
             return true;
 		}
 
