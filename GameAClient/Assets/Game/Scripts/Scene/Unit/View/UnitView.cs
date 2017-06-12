@@ -260,10 +260,15 @@ namespace GameA.Game
                         {
                             _dirTrans.localEulerAngles = new Vector3(0, 0, GetRotation((byte)(rollerUnit.RollerDirection - 1)));
                         }
-                    }
+                    } 
                     else
                     {
                         _dirTrans.localEulerAngles = new Vector3(0, 0, GetRotation((byte)(_unit.MoveDirection - 1)));
+                    }
+                    //角色单独处理
+                    if (UnitDefine.IsHero(tableUnit.Id))
+                    {
+                        _dirTrans.localEulerAngles = new Vector3(0, 0, GetRotation((byte)(EMoveDirection.Right - 1)));
                     }
                 }
             }
