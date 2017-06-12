@@ -105,7 +105,9 @@ namespace GameA.Game
 
         public void Dispose()
         {
+            //            Debug.Log ("PlayMode.Dispose");
             Messenger<List<int>>.RemoveListener(EMessengerType.OnBoostItemSelectFinish, OnBoostItemSelectFinish);
+            Messenger<EDieType>.RemoveListener(EMessengerType.OnMonsterDead, OnMonsterDead);
             if (_statistic != null)
             {
                 _statistic.Dispose();
@@ -115,7 +117,9 @@ namespace GameA.Game
 
         public bool Init()
         {
+            //            Debug.Log ("PlayMode.Init");
             Messenger<List<int>>.AddListener(EMessengerType.OnBoostItemSelectFinish, OnBoostItemSelectFinish);
+            Messenger<EDieType>.AddListener(EMessengerType.OnMonsterDead, OnMonsterDead);
 
             _unitUpdateManager = new UnitUpdateManager();
             _statistic = new GameStatistic();
@@ -179,6 +183,7 @@ namespace GameA.Game
 
         public void UpdateLogic(float deltaTime)
         {
+            BeforeUpdateLogic();
             if (!_run)
             {
                 return;
@@ -188,7 +193,6 @@ namespace GameA.Game
                 _mainUnit.UpdateView(ConstDefineGM2D.FixedDeltaTime);
                 return;
             }
-            BeforeUpdateLogic();
             ColliderScene2D.Instance.UpdateLogic(_focusPos);
             if (_mainUnit != null && _unitUpdateManager != null)
             {
@@ -381,6 +385,7 @@ namespace GameA.Game
 
         public void GameFinishSuccess()
         {
+            _run = false;
             _gameSucceedTime = GameRun.Instance.LogicFrameCnt;
             GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.GameAudioBgm01);
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
@@ -425,6 +430,12 @@ namespace GameA.Game
                 }
             }
             return false;
+        }
+
+        private void OnMonsterDead (EDieType dieType)
+        {
+//            Debug.Log ("OnMonsterDead, dieType: " + dieType);
+            _sceneState.MonsterKilled++;
         }
 
         #region State

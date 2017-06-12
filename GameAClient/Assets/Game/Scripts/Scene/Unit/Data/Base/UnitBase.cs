@@ -890,7 +890,7 @@ namespace GameA.Game
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, size, _tableUnit);
                 }
             }
-            var halfColliderSize = GetColliderSize() / 2;
+            var halfColliderSize = GetDataSize() / 2;
             float z =- (_curPos.x + halfColliderSize.x + _curPos.y  + halfColliderSize.y) * 0.00078125f + _viewZOffset;
             if (UnitDefine.IsDownY(_tableUnit))
             {
@@ -1018,7 +1018,7 @@ namespace GameA.Game
             for (int i = 0; i < units.Count; i++)
             {
                 var unit = units[i];
-                if ((unit.CanClimbed || CanEdgeClimbed(this, EDirectionType.Left)) && CheckRightFloor(unit))
+                if ((unit.CanClimbed || unit.CanEdgeClimbed(this, EDirectionType.Left)) && CheckRightFloor(unit))
                 {
                     return true;
                 }

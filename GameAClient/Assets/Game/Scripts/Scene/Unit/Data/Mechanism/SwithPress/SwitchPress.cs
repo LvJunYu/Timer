@@ -19,18 +19,20 @@ namespace GameA.Game
         protected bool _trigger;
         protected bool _triggerReverse;
         protected List<UnitBase> _units;
+        protected SwitchTrigger _switchTrigger;
 
-        internal override void OnPlay()
+        protected override bool OnInit()
         {
-            base.OnPlay();
-            _units = DataScene2D.Instance.GetControlledUnits(_guid);
-            _trigger = false;
+            if (!base.OnInit())
+            {
+                return false;
+            }
             IntVec3 guid = _guid;
             guid.z = GM2DTools.GetRuntimeCreatedUnitDepth();
             Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(UnitDefine.SwitchTriggerId);
             IntVec2 dataSize = tableUnit.GetDataSize(0, Vector2.one);
             var triggerDir = EDirectionType.Up;
-            switch ((EDirectionType) _unitDesc.Rotation)
+            switch ((EDirectionType)_unitDesc.Rotation)
             {
                 case EDirectionType.Up:
                     triggerDir = _triggerReverse ? EDirectionType.Down : EDirectionType.Up;
@@ -49,14 +51,32 @@ namespace GameA.Game
                     guid.x = _triggerReverse ? guid.x - dataSize.x : _colliderGrid.XMax + 1;
                     break;
             }
-            var switchTrigger = PlayMode.Instance.CreateUnit(new UnitDesc(UnitDefine.SwitchTriggerId, guid,(byte) triggerDir, Vector2.one)) as SwitchTrigger;
-            if (switchTrigger == null)
+            _switchTrigger = PlayMode.Instance.CreateUnit(new UnitDesc(UnitDefine.SwitchTriggerId, guid, (byte)triggerDir, Vector2.one)) as SwitchTrigger;
+            if (_switchTrigger == null)
             {
                 LogHelper.Error("CreateUnit switchTrigger Faield,{0}", ToString());
-                return;
+                return false;
             }
-            switchTrigger.OnPlay();
-            switchTrigger.SwitchPress = this;
+            _switchTrigger.OnPlay();
+            _switchTrigger.SwitchPress = this;
+            return true;
+        }
+
+        internal override void OnObjectDestroy()
+        {
+            base.OnObjectDestroy();
+            if (_switchTrigger != null)
+            {
+                PlayMode.Instance.DestroyUnit(_switchTrigger);
+                _switchTrigger = null;
+            }
+        }
+
+        internal override void OnPlay()
+        {
+            base.OnPlay();
+            _units = DataScene2D.Instance.GetControlledUnits(_guid);
+            _trigger = false;
         }
 
         protected override void Clear()

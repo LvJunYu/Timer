@@ -50,6 +50,7 @@ namespace GameA.Game
             GameAudioManager.Instance.Dispose();
             DeadMarkManager.Instance.Dispose();
             InputManager.Instance.Dispose();
+            PlayMode.Instance.Dispose();
             MapManager.Instance.Dispose();
 
             PoolFactory<SpineUnit>.Clear();
