@@ -15,6 +15,8 @@ namespace GameA.Game
     [Unit(Id = 5003, Type = typeof(Portal))]
     public class Portal : BlockBase
     {
+        protected UnityNativeParticleItem _effect;
+
         internal override bool InstantiateView()
         {
             if (!base.InstantiateView())
@@ -22,7 +24,20 @@ namespace GameA.Game
                 return false;
             }
             InitAssetRotation(true);
+            _effect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectPortalRun", _trans);
+            if (_effect != null)
+            {
+                _effect.Play();
+                SetRelativeEffectPos(_effect.Trans, (EDirectionType)Rotation);
+            }
             return true;
+        }
+
+        internal override void OnObjectDestroy()
+        {
+            base.OnObjectDestroy();
+            FreeEffect(_effect);
+            _effect = null;
         }
 
         public static void OnPortal(PairUnit pairUnit, UnitDesc unitDesc)
