@@ -471,6 +471,7 @@ namespace GameA.Game
             _unitDesc.Scale = Vector3.one;
             InitAssetPath();
             UpdateExtraData();
+            OnInit();
             if (!InstantiateView())
             {
                 LogHelper.Error("InstantiateView Failed, {0}", tableUnit.Id);
@@ -890,7 +891,7 @@ namespace GameA.Game
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, size, _tableUnit);
                 }
             }
-            var halfColliderSize = GetColliderSize() / 2;
+            var halfColliderSize = GetDataSize() / 2;
             float z =- (_curPos.x + halfColliderSize.x + _curPos.y  + halfColliderSize.y) * 0.00078125f + _viewZOffset;
             if (UnitDefine.IsDownY(_tableUnit))
             {

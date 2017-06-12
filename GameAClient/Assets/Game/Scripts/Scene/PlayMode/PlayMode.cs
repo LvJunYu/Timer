@@ -183,6 +183,7 @@ namespace GameA.Game
 
         public void UpdateLogic(float deltaTime)
         {
+            BeforeUpdateLogic();
             if (!_run)
             {
                 return;
@@ -192,7 +193,6 @@ namespace GameA.Game
                 _mainUnit.UpdateView(ConstDefineGM2D.FixedDeltaTime);
                 return;
             }
-            BeforeUpdateLogic();
             ColliderScene2D.Instance.UpdateLogic(_focusPos);
             if (_mainUnit != null && _unitUpdateManager != null)
             {
