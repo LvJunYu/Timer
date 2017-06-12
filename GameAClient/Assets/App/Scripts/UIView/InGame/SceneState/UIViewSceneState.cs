@@ -20,6 +20,7 @@ namespace GameA
         public Text NormalLevelText;
         public GameObject BonusLevelDock;
         public Text BonusLevelText;
+        public Button Home;
         public UIViewSceneStateItem HpItem;
         public UIViewSceneStateItem CollectionItem;
         public UIViewSceneStateItem EnemyItem;
@@ -27,5 +28,16 @@ namespace GameA
         public UIViewSceneStateItem TimeLimitItem;
         public UIViewSceneStateItem KeyItem;
         public UIViewSceneStateItem ScoreItem;
+
+        public Image HP;
+        public Image MP;
+
+        public Image SpeedUpCDImg;
+        public Text SpeedUpCDText;
+        public GameObject SpeedUpReady;
+
+        public GameObject StarConditions;
+        public Text[] StarConditionText;
+        public Image[] StarConditionStar;
 	}
 }

@@ -197,23 +197,24 @@ namespace GameA
 
 		private void SetButtonState (EMode mode) {
 			switch (mode) {
-			case EMode.Edit:
-				_cachedView.Erase.gameObject.SetActive (true);
-				_cachedView.Redo.gameObject.SetActive (false);
-				_cachedView.Undo.gameObject.SetActive (true);
-				_cachedView.Publish.gameObject.SetActive (false);
-				_cachedView.ButtonFinishCondition.SetActiveEx (true);
+            case EMode.Edit:
+                _cachedView.Erase.gameObject.SetActive (true);
+                _cachedView.Redo.gameObject.SetActive (false);
+                _cachedView.Undo.gameObject.SetActive (true);
+                _cachedView.Publish.gameObject.SetActive (false);
+                _cachedView.ButtonFinishCondition.SetActiveEx (true);
 //				_cachedView.MoveBtn.SetActiveEx (true);
-				_cachedView.MoveBtnBg.SetActive (true);
+                _cachedView.MoveBtnBg.SetActive (true);
 
-				_cachedView.EnterEffectMode.SetActiveEx (false);
-				_cachedView.ExitEffectMode.SetActiveEx (false);
+                _cachedView.EnterEffectMode.SetActiveEx (false);
+                _cachedView.ExitEffectMode.SetActiveEx (false);
 
-				_cachedView.Play.gameObject.SetActive (true);
-				_cachedView.Pause.gameObject.SetActive (false);
-				if (_cachedView.Capture != null) {
-					_cachedView.Capture.gameObject.SetActive (false);
-				}
+                _cachedView.Play.gameObject.SetActive (true);
+                _cachedView.Pause.gameObject.SetActive (false);
+                if (_cachedView.Capture != null) {
+                    _cachedView.Capture.gameObject.SetActive (false);
+                }
+                _cachedView.Home.gameObject.SetActive (true);
 				break;
 			case EMode.EditTest:
 				_cachedView.Erase.gameObject.SetActive(false);
@@ -234,6 +235,7 @@ namespace GameA
 				{
 					_cachedView.Capture.gameObject.SetActive(false);
 				}
+                _cachedView.Home.gameObject.SetActive (false);
 				break;
 			case EMode.PlayRecord:
 				_cachedView.Erase.gameObject.SetActive(false);
@@ -274,6 +276,7 @@ namespace GameA
 				{
 					_cachedView.Capture.gameObject.SetActive(false);
 				}
+                _cachedView.Home.gameObject.SetActive (true);
 				break;
             }
 		}

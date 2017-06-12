@@ -49,7 +49,19 @@ namespace GameA
             RegisterEvent(EMessengerType.OnGameRestart, OnGameRestart);
             RegisterEvent(EMessengerType.OnKeyChanged, OnKeyCountChanged);
             RegisterEvent(EMessengerType.OnScoreChanged, OnScoreChanged);
+
+            Messenger<int, int>.AddListener (EMessengerType.OnHPChanged, OnHPChanged);
+            Messenger<int, int>.AddListener (EMessengerType.OnMPChanged, OnMPChanged);
+            Messenger<int, int>.AddListener (EMessengerType.OnSpeedUpCDChanged, OnSpeedUpCDChanged);
 		}
+
+        protected override void OnDestroy ()
+        {
+            base.OnDestroy ();
+            Messenger<int, int>.RemoveListener (EMessengerType.OnHPChanged, OnHPChanged);
+            Messenger<int, int>.RemoveListener (EMessengerType.OnMPChanged, OnMPChanged);
+            Messenger<int, int>.RemoveListener (EMessengerType.OnSpeedUpCDChanged, OnSpeedUpCDChanged);
+        }
 
 		public override void OnUpdate()
 	    {
@@ -129,12 +141,38 @@ namespace GameA
                         _cachedView.NormalLevelDock.SetActive(true);
                         _cachedView.BonusLevelDock.SetActive(false);
                         _cachedView.NormalLevelText.text = param.Level.ToString();
+
+                        _cachedView.StarConditions.SetActive (true);
+                        var table = param.Table;
+                        var tableStarRequire1 = Game.TableManager.Instance.GetStarRequire (table.StarConditions [0]);
+                        if (null == tableStarRequire1) {
+                            LogHelper.Error ("Cant find table starrequire of id: {0}", table.StarConditions [0]);
+                        } else {
+                            _cachedView.StarConditionText [0].text = string.Format (tableStarRequire1.Desc, table.Star1Value);
+                            _cachedView.StarConditionStar [0].gameObject.SetActive (false);
+                        }
+                        var tableStarRequire2 = Game.TableManager.Instance.GetStarRequire (table.StarConditions [1]);
+                        if (null == tableStarRequire2) {
+                            LogHelper.Error ("Cant find table starrequire of id: {0}", table.StarConditions [1]);
+                        } else {
+                            _cachedView.StarConditionText [1].text = string.Format (tableStarRequire2.Desc, table.Star2Value);
+                            _cachedView.StarConditionStar [1].gameObject.SetActive (false);
+                        }
+                        var tableStarRequire3 = Game.TableManager.Instance.GetStarRequire (table.StarConditions [2]);
+                        if (null == tableStarRequire3) {
+                            LogHelper.Error ("Cant find table starrequire of id: {0}", table.StarConditions [2]);
+                        } else {
+                            _cachedView.StarConditionText [2].text = string.Format (tableStarRequire3.Desc, table.Star3Value);
+                            _cachedView.StarConditionStar [2].gameObject.SetActive (false);
+                        }
+
                     }
                     else
                     {
                         _cachedView.NormalLevelDock.SetActive(false);
                         _cachedView.BonusLevelDock.SetActive(true);
                         _cachedView.BonusLevelText.text = param.Level.ToString();
+                        _cachedView.StarConditions.SetActive (false);
                     }
                 }
             }
@@ -142,6 +180,7 @@ namespace GameA
             {
                 _cachedView.SpaceDock.SetActive(true);
                 _cachedView.LevelInfoDock.SetActive(false);
+                _cachedView.StarConditions.SetActive (false);
             }
 
 		    UpdateLifeItemValue();
@@ -149,6 +188,8 @@ namespace GameA
 		    UpdateTimeLimit();
 		    UpdateKeyCount();
             UpdateScore();
+
+            UpdateSpeedUpCD ();
 	    }
 
         private void InitUI()
@@ -159,6 +200,7 @@ namespace GameA
             _cachedItem.Add(EWinCondition.TimeLimit, _cachedView.TimeLimitItem);
             _cachedItem.Add(EWinCondition.CollectTreasure, _cachedView.CollectionItem);
             _cachedItem.Add(EWinCondition.KillMonster, _cachedView.EnemyItem);
+            _cachedView.Home.onClick.AddListener (OnHomeBtn);
         }
 
         private void UpdateItemVisible()
@@ -243,7 +285,47 @@ namespace GameA
             _cachedView.ScoreItem.Dex.text = string.Format(GM2DUIConstDefine.WinDataScoreFormat, curValue);
         }
 
+        private void UpdateSpeedUpCD ()
+        {
+            _cachedView.SpeedUpReady.SetActive (true);
+            _cachedView.SpeedUpCDImg.fillAmount = 0;
+            _cachedView.SpeedUpCDText.text = string.Empty;
+        }
 
+
+        private void OnHomeBtn ()
+        {
+            Messenger.Broadcast(EMessengerType.OpenGameSetting);
+        }
+
+        private void OnHPChanged (int currentValue, int maxValue)
+        {
+            if (!_isOpen)
+                return;
+            _cachedView.HP.fillAmount = (float)currentValue / maxValue;
+        }
+        private void OnMPChanged (int currentValue, int maxValue)
+        {
+            if (!_isOpen)
+                return;
+            _cachedView.MP.fillAmount = (float)currentValue / maxValue;
+        }
+
+        private void OnSpeedUpCDChanged (int currentCD, int maxCD)
+        {
+            if (maxCD == 0)
+                return;
+            currentCD = UnityEngine.Mathf.Clamp (currentCD, 0, maxCD);
+            if (currentCD <= 0) {
+                _cachedView.SpeedUpReady.SetActive (true);
+                _cachedView.SpeedUpCDImg.fillAmount = 0;
+                _cachedView.SpeedUpCDText.text = string.Empty;
+            } else {
+                _cachedView.SpeedUpReady.SetActive (false);
+                _cachedView.SpeedUpCDImg.fillAmount = (float)currentCD / maxCD;
+                _cachedView.SpeedUpCDText.text = (currentCD / ConstDefineGM2D.FixedFrameCount).ToString();
+            }
+        }
         #endregion
     }
 }
