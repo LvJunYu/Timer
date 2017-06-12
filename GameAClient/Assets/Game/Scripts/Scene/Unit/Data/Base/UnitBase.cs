@@ -1460,5 +1460,15 @@ namespace GameA.Game
                 GameParticleManager.FreeParticleItem(effect);
             }
         }
+
+        internal virtual int AddMp(int mp)
+        {
+            return 0;
+        }
+
+        public virtual void ChangeSkill<T>() where T : class
+        {
+
+        }
     }
 }

@@ -15,9 +15,9 @@ namespace GameA.Game
     [Unit(Id = 6101, Type = typeof(EnergyPool))]
     public class EnergyPool : BlockBase
     {
-        protected float _totalMp;
-        protected float _currentMp;
-        protected float _mpSpeed;
+        protected int _totalMp;
+        protected int _currentMp;
+        protected int _mpSpeed;
 
         protected EnergyPoolCtrl _energyPoolCtrl;
         protected UnityNativeParticleItem _efffect;
@@ -26,8 +26,8 @@ namespace GameA.Game
 
         protected override bool OnInit()
         {
-            _totalMp = 800;
-            _mpSpeed = 0.5f;
+            _totalMp = 4000;
+            _mpSpeed = 2;
             if (!base.OnInit())
             {
                 return false;
@@ -108,7 +108,7 @@ namespace GameA.Game
             {
                 OnTrigger(other);
                 //如果技能不一样
-                var addedMp = other.SkillMgr2.AddMp(_currentMp);
+                var addedMp = other.AddMp(_currentMp);
                 _currentMp -= addedMp;
             }
             return base.OnUpHit(other, ref y, checkOnly);
@@ -119,16 +119,16 @@ namespace GameA.Game
             switch (_eSkillType)
             {
                 case ESkillType.Fire:
-                    other.SkillMgr2.ChangeSkill<SkillFire>();
+                    other.ChangeSkill<SkillFire>();
                     break;
                 case ESkillType.Ice:
-                    other.SkillMgr2.ChangeSkill<SkillIce>();
+                    other.ChangeSkill<SkillIce>();
                     break;
                 case ESkillType.Jelly:
-                    other.SkillMgr2.ChangeSkill<SkillJelly>();
+                    other.ChangeSkill<SkillJelly>();
                     break;
                 case ESkillType.Clay:
-                    other.SkillMgr2.ChangeSkill<SkillClay>();
+                    other.ChangeSkill<SkillClay>();
                     break;
             }
         }
@@ -147,7 +147,7 @@ namespace GameA.Game
         {
             if (_totalMp <= 0)
             {
-                return 1;
+                return 0;
             }
             return (float)_currentMp / _totalMp;
         }

@@ -20,19 +20,13 @@ namespace GameA.Game
             get { return _rollerDirection; }
         }
 
-        protected override bool OnInit()
-        {
-            if (!base.OnInit())
-            {
-                return false;
-            }
-            _rollerDirection = DataScene2D.Instance.GetUnitExtra(_guid).RollerDirection;
-            return true;
-        }
-
         public override void UpdateExtraData()
         {
             _rollerDirection = DataScene2D.Instance.GetUnitExtra(_guid).RollerDirection;
+            if (_animation != null)
+            {
+                _animation.Init(_rollerDirection == EMoveDirection.Left ? "LeftRun" : "RightRun");
+            }
             base.UpdateExtraData();
         }
 

@@ -22,6 +22,9 @@ namespace GameA.Game
         [SerializeField]
         protected MainInput _mainInput;
 
+        protected int _currentMp;
+        protected int _mpSpeed = 1;
+        protected int _totalMp = 2500;
         protected SkillManager _skillMgr1;
         protected SkillManager _skillMgr2;
 
@@ -197,6 +200,7 @@ namespace GameA.Game
             {
                 _skillMgr2.Clear();
             }
+            _currentMp = 0;
             _big = 0;
             _dieTime = 0;
             _flashTime = 0;
@@ -288,7 +292,10 @@ namespace GameA.Game
                 {
                     _mainInput.UpdateLogic();
                     _skillMgr1.UpdateLogic();
-                    _skillMgr2.UpdateLogic();
+                    if (_skillMgr2.UpdateLogic())
+                    {
+                        UpdateMp(Util.ConstantLerp(_currentMp, _totalMp, _mpSpeed));
+                    }
                 }
                 CheckGround();
                 CheckClimb();
@@ -1571,5 +1578,65 @@ namespace GameA.Game
                 _view.SetRendererColor(Color.white);
             }
         }
+
+        #region skill
+
+        public override void ChangeSkill<T>()
+        {
+            if (_skillMgr2 != null)
+            {
+                if (_skillMgr2.ChangeSkill<T>())
+                {
+                    _currentMp = 0;
+                }
+            }
+        }
+
+        private void UpdateMp(int mp)
+        {
+            if (_currentMp == mp)
+            {
+                return;
+            }
+            _currentMp = Math.Min(_totalMp, mp);
+            Messenger<int, int>.Broadcast(EMessengerType.OnMPChanged, _currentMp, _totalMp);
+        }
+
+        internal override int AddMp(int mp)
+        {
+            var oldMp = _currentMp;
+            UpdateMp(_currentMp + mp);
+            return _currentMp - oldMp;
+        }
+
+        internal bool Skill()
+        {
+            if (_skillMgr2 == null)
+            {
+                return false;
+            }
+            if (_currentMp < _skillMgr2.UseMp)
+            {
+                //TODO UI提示
+                LogHelper.Warning("MP is not enough!");
+                return false;
+            }
+            if (!_skillMgr2.Fire())
+            {
+                return false;
+            }
+            UpdateMp(_currentMp - _skillMgr2.UseMp);
+            return true;
+        }
+
+        internal void SkillWater()
+        {
+            if (_skillMgr1 != null)
+            {
+                _skillMgr1.Fire();
+            }
+        }
+
+        #endregion
     }
 }

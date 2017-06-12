@@ -124,6 +124,14 @@ namespace GameA
             return RequestStartGame (project, EStartType.AdventureBonusPlay, param);
         }
 
+        public bool RequestPlayAdvRecord(Project project, SituationAdventureParam param)
+        {
+            _projectList.Clear();
+            _projectList.Add(project);
+            _curProjectInx = 0;
+            return RequestStartGame(project, EStartType.AdventureNormalPlayRecord, param);
+        }
+
         public bool RequestPlayRecord(Project project, Record record)
         {
             _projectList.Clear();

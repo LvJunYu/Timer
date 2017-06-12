@@ -19,6 +19,7 @@ namespace GameA
         public GridDataScroller GridScroller;
 
         public RectTransform InfoPanel;
+        public Button PlayBtn;
         public Text TitleText;
         public Text SubTitleText;
         public RawImage UserIcon;

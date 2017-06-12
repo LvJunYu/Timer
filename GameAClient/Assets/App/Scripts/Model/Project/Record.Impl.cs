@@ -15,70 +15,6 @@ namespace GameA
 
 	public partial class Record : SyncronisticData
     {
-        public const long RecordFullInfoRequestInterval = 1 * GameTimer.Minute2Ticks;
-        public const long RecordTimelineCommentRequestInterval = 2*GameTimer.Minute2Ticks;
-
-        private long _id;
-        private User _user;
-        private Project _project;
-//        private float _usedTime;
-//        private long _createTime;
-//        private string _recordPath;
-//        private long _projectId;
-//        private EGameResult _result;
-//        private long _playCount;
-//        private long _lastPlayTime;
-//        private long _playUserCount;
-//        private int _favoriteCount;
-//        private int _likeCount;
-//        private int _commentCount;
-//        private int _shareCount;
-//        private bool _userBuy;
-//        private bool _userLike;
-//        private bool _userFavorite;
-
-        private GameTimer _recordFullInfoRequestTimer;
-
-//        private List<RecordComment> _recordCommentList;
-        private GameTimer _recordCommentListRequestTimer;
-
-//        private List<RecordComment> _timelineRecordCommentList;
-        private GameTimer _timelineRecordCommentListRequestTimer;
-
-        private int _timelineLastSyncTimePos;
-        private long _timelineLastSyncCreateTime;
-        private bool _timelineLastSyncIsEnd;
-
-        public long Id
-        {
-            get { return _id; }
-        }
-
-        public User User
-        {
-            get { return _user; }
-        }
-
-        public Project Project
-        {
-            get { return _project; }
-        }
-
-//        public float UsedTime
-//        {
-//            get { return _usedTime; }
-//        }
-
-//        public long CreateTime
-//        {
-//            get { return _createTime; }
-//        }
-
-//        public string RecordPath
-//        {
-//            get { return _recordPath; }
-//        }
-
         public byte[] RecordData
         {
             get
@@ -94,275 +30,21 @@ namespace GameA
             }
         }
 
-//        public long ProjectId
-//        {
-//            get
-//            {
-//                return _projectId;
-//            }
-//        }
 
-//        public EGameResult Result
-//        {
-//            get
-//            {
-//                return _result;
-//            }
-//        }
-
-//        public long PlayCount
-//        {
-//            get
-//            {
-//                return _playCount;
-//            }
-//        }
-
-//        public long LastPlayTime
-//        {
-//            get
-//            {
-//                return _lastPlayTime;
-//            }
-//        }
-//
-//        public long PlayUserCount
-//        {
-//            get
-//            {
-//                return _playUserCount;
-//            }
-//        }
-//
-//        public int FavoriteCount
-//        {
-//            get
-//            {
-//                return _favoriteCount;
-//            }
-//        }
-//
-//        public int LikeCount
-//        {
-//            get
-//            {
-//                return _likeCount;
-//            }
-//        }
-
-//        public int CommentCount
-//        {
-//            get
-//            {
-//                return _commentCount;
-//            }
-//        }
-//
-//        public int ShareCount
-//        {
-//            get
-//            {
-//                return _shareCount;
-//            }
-//        }
-//
-//        public bool UserBuy
-//        {
-//            get
-//            {
-//                return _userBuy;
-//            }
-//        }
-//
-//        public bool UserLike
-//        {
-//            get
-//            {
-//                return _userLike;
-//            }
-//        }
-//
-//        public bool UserFavorite
-//        {
-//            get
-//            {
-//                return _userFavorite;
-//            }
-//        }
-
-        public GameTimer RecordFullInfoRequestTimer
+        public void RequestPlay(Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            get
-            {
-                if (_recordFullInfoRequestTimer == null)
+            PrepareRecord (() => {
+                if (successCallback != null)
                 {
-                    _recordFullInfoRequestTimer = new GameTimer();
-                    _recordFullInfoRequestTimer.Zero();
+                    successCallback.Invoke();
                 }
-                return _recordFullInfoRequestTimer;
-            }
-        }
-
-//        public List<RecordComment> RecordCommentList
-//        {
-//            get
-//            {
-//                return _recordCommentList;
-//            }
-//        }
-
-        public GameTimer RecordCommentListRequestTimer
-        {
-            get
-            {
-                if (_recordCommentListRequestTimer == null)
+            }, () => {
+                if (failedCallback != null)
                 {
-                    _recordCommentListRequestTimer = new GameTimer();
-                    _recordCommentListRequestTimer.Zero();
+                    failedCallback.Invoke(ENetResultCode.NR_None);
                 }
-                return _recordCommentListRequestTimer;
-            }
+            });
         }
-
-//        public List<RecordComment> TimelineRecordCommentList
-//        {
-//            get
-//            {
-//                return _timelineRecordCommentList;
-//            }
-//        }
-
-        public GameTimer TimelineRecordCommentListRequestTimer
-        {
-            get
-            {
-                if (_timelineRecordCommentListRequestTimer == null)
-                {
-                    _timelineRecordCommentListRequestTimer = new GameTimer();
-                    _timelineRecordCommentListRequestTimer.Zero();
-                }
-                return _timelineRecordCommentListRequestTimer;
-            }
-        }
-
-        public int TimelineLastSyncTimePos
-        {
-            get
-            {
-                return _timelineLastSyncTimePos;
-            }
-        }
-
-        public long TimelineLastSyncCreateTime
-        {
-            get
-            {
-                return _timelineLastSyncCreateTime;
-            }
-        }
-
-        public bool TimelineLastSyncIsEnd
-        {
-            get
-            {
-                return _timelineLastSyncIsEnd;
-            }
-        }
-
-//        public Record()
-//        {
-//        }
-
-        public Record(Msg_SC_DAT_Record msg, Project project, bool full = true)
-        {
-            Set(msg, project, full);
-        }
-
-        public void Set(Msg_SC_DAT_Record msg, Project project, bool full = true)
-        {
-            Project oldProject = _project;
-            _id = msg.RecordId;
-//			_user = UserManager.Instance.OnSyncUserData(_userInfo);
-            _usedTime = msg.UsedTime;
-            _createTime = msg.CreateTime;
-            _recordPath = msg.RecordPath;
-            _project = project;
-            if (msg.ProjectData != null)
-            {
-                _project = ProjectManager.Instance.OnSyncProject(msg.ProjectData);
-            }
-            _projectId = msg.ProjectId;
-            _result = msg.Result;
-            _playCount = msg.PlayCount;
-            _lastPlayTime = msg.LastPlayTime;
-            _playUserCount = msg.PlayUserCount;
-            _favoriteCount = msg.FavoriteCount;
-            _likeCount = msg.LikeCount;
-            _commentCount = msg.CommentCount;
-            _shareCount = msg.ShareCount;
-            _userBuy = msg.UserBuy;
-            _userLike = msg.UserLike;
-            _userFavorite = msg.UserFavorite;
-            if (_project == null)
-            {
-                ProjectManager.Instance.TryGetData(_projectId, out _project);
-                if (_project == null && oldProject != null && oldProject.ProjectId == _projectId)
-                {
-                    _project = oldProject;
-                }
-            }
-            if (full)
-            {
-                RecordFullInfoRequestTimer.Reset();
-            }
-        }
-
-//        public void RequestPlay(EPlayRecordTicket ticket, Action successCallback, Action<EPlayRecordRetCode> failedCallback = null)
-//        {
-//            Msg_CA_RequestPlayRecord msg = new Msg_CA_RequestPlayRecord();
-//            msg.RecordId = _id;
-//            msg.Ticket = ticket;
-//            NetworkManager.AppHttpClient.SendWithCb<Msg_AC_PlayRecordRet>(SoyHttpApiPath.PlayRecord, msg, ret =>
-//            {
-//                if (ret.ResultCode == (int)EPlayRecordRetCode.PRRC_Success)
-//                {
-//                    if (ticket == EPlayRecordTicket.PRT_UseFreeOpportunity)
-//                    {
-//                        //UserMatrixData.Item item = AppData.Instance.UserMatrixData.GetData(_project.MatrixGuid);
-//                        //item.TodayRecordFreeOpportunityCount++;
-//                        _userBuy = true;
-//                    }
-//                    else if(ticket == EPlayRecordTicket.PRT_Buy)
-//                    {
-//                        if (LocalUser.Instance.User != null)
-//                        {
-//                            LocalUser.Instance.User.UserInfoRequestGameTimer.Zero();
-//                        }
-//                        _userBuy = true;
-//                        RecordFullInfoRequestTimer.Zero();
-//                    }
-//                    if (successCallback != null)
-//                    {
-//                        successCallback.Invoke();
-//                    }
-//                }
-//                else
-//                {
-//                    if (failedCallback != null)
-//                    {
-//                        failedCallback.Invoke((EPlayRecordRetCode)ret.ResultCode);
-//                    }
-//                }
-//
-//            }, (errCode, errMsg) =>
-//            {
-//                SoyHttpClient.ShowErrorTip(errCode);
-//                if (failedCallback != null)
-//                {
-//                    failedCallback.Invoke(EPlayRecordRetCode.PRRC_None);
-//                }
-//            });
-//        }
 
         public void PrepareRecord(Action successCallback, Action failedCallback = null)
         {
@@ -713,11 +395,11 @@ namespace GameA
             }
         }
 
-        public RecordRankHolder(Msg_SC_DAT_Record msg, Project project, int rank)
-        {
-            _record = RecordManager.Instance.OnSync(msg, project, false);
-            _rank = rank;
-        }
+//        public RecordRankHolder(Msg_SC_DAT_Record msg, Project project, int rank)
+//        {
+//            _record = RecordManager.Instance.OnSync(msg, project, false);
+//            _rank = rank;
+//        }
 
         public RecordRankHolder(Record record, int rank)
         {

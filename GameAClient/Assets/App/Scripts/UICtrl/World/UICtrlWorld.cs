@@ -130,6 +130,7 @@ namespace GameA
         {
             _cachedView.GridScroller.ContentPosition = Vector2.zero;
         }
+
         #endregion private
 
         #region 接口

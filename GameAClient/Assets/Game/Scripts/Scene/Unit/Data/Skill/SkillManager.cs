@@ -6,7 +6,6 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
@@ -15,46 +14,26 @@ namespace GameA.Game
 {
     public class SkillManager
     {
+        [SerializeField] protected SkillBase _currentSkill;
         protected UnitBase _owner;
-        [SerializeField]protected SkillBase _currentSkill;
         protected Dictionary<string, SkillBase> _skills = new Dictionary<string, SkillBase>();
-        protected float _currentMp;
-        protected float _mpSpeed = 0.2f;
-        protected float _totalMp = 500;
-
-        public SkillBase CurrentSkill
-        {
-            get { return _currentSkill; }
-        }
-
-        public float CurrentMp
-        {
-            get { return _currentMp; }
-        }
-
-        public float AddMp(float mp)
-        {
-            var oldMp = _currentMp;
-            _currentMp = Math.Min(_totalMp, _currentMp + mp);
-            return _currentMp - oldMp;
-        }
 
         public SkillManager(UnitBase owner)
         {
             _owner = owner;
             Type curType = GetType();
             Type[] types = curType.Assembly.GetTypes();
-            Type attrType = typeof(SkillAttribute);
-            foreach (var type in types)
+            Type attrType = typeof (SkillAttribute);
+            foreach (Type type in types)
             {
                 if (Attribute.IsDefined(type, attrType) && type.Namespace == curType.Namespace)
                 {
-                    var atts = Attribute.GetCustomAttributes(type, attrType);
+                    Attribute[] atts = Attribute.GetCustomAttributes(type, attrType);
                     if (atts.Length > 0)
                     {
                         for (int i = 0; i < atts.Length; i++)
                         {
-                            var att = (SkillAttribute)atts[i];
+                            var att = (SkillAttribute) atts[i];
                             if (type != att.Type)
                             {
                                 continue;
@@ -64,7 +43,7 @@ namespace GameA.Game
                                 LogHelper.Error("_skills.ContainsKey {0}，class type is {1}", att.Name, type.ToString());
                                 break;
                             }
-                            var skill = (SkillBase)Activator.CreateInstance(att.Type);
+                            var skill = (SkillBase) Activator.CreateInstance(att.Type);
                             _skills.Add(att.Name, skill);
                             break;
                         }
@@ -73,32 +52,41 @@ namespace GameA.Game
             }
         }
 
-        public void ChangeSkill<T>() where T : class
+        public SkillBase CurrentSkill
+        {
+            get { return _currentSkill; }
+        }
+
+        public int UseMp
+        {
+            get { return _currentSkill != null ? _currentSkill.UseMp : 0; }
+        }
+
+        public bool ChangeSkill<T>() where T : class
         {
             if (_currentSkill != null)
             {
-                if (_currentSkill.GetType() == typeof(T))
+                if (_currentSkill.GetType() == typeof (T))
                 {
-                    return;
+                    return false;
                 }
                 _currentSkill.Exit();
                 _currentSkill = null;
             }
             SkillBase skill;
-            if (!_skills.TryGetValue(typeof(T).Name, out skill))
+            if (!_skills.TryGetValue(typeof (T).Name, out skill))
             {
-                LogHelper.Error("ChangeSkill Failed, {0}", typeof(T).Name);
-                return;
+                LogHelper.Error("ChangeSkill Failed, {0}", typeof (T).Name);
+                return false;
             }
             _currentSkill = skill;
             _currentSkill.Enter(_owner);
-            _currentMp = 0;
+            return true;
         }
 
         public void Clear()
         {
             _currentSkill = null;
-            _currentMp = 0;
         }
 
         public bool Fire()
@@ -107,27 +95,21 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (_currentMp < _currentSkill.UseMp)
-            {
-                //TODO UI提示
-                LogHelper.Warning("MP is not enough!");
-                return false;
-            }
             if (!_currentSkill.Fire())
             {
                 return false;
             }
-            _currentMp -= _currentSkill.UseMp;
             return true;
         }
 
-        public void UpdateLogic()
+        public bool UpdateLogic()
         {
-            _currentMp = Util.ConstantLerp(_currentMp, _totalMp, _mpSpeed);
-            if (_currentSkill != null)
+            if (_currentSkill == null)
             {
-                _currentSkill.UpdateLogic();
+                return false;
             }
+            _currentSkill.UpdateLogic();
+            return true;
         }
     }
 }
