@@ -25,11 +25,11 @@ namespace GameA.Game
 
         protected override bool OnInit()
         {
+            _triggerReverse = true;
             if (!base.OnInit())
             {
                 return false;
             }
-            _triggerReverse = true;
             return true;
         }
 
