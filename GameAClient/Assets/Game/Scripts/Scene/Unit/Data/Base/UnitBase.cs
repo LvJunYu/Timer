@@ -1018,7 +1018,7 @@ namespace GameA.Game
             for (int i = 0; i < units.Count; i++)
             {
                 var unit = units[i];
-                if ((unit.CanClimbed || CanEdgeClimbed(this, EDirectionType.Left)) && CheckRightFloor(unit))
+                if ((unit.CanClimbed || unit.CanEdgeClimbed(this, EDirectionType.Left)) && CheckRightFloor(unit))
                 {
                     return true;
                 }
