@@ -15,7 +15,6 @@ namespace GameA
         private USCtrlAdvLvlDetailInfo _infoPanel;
         private USCtrlAdvLvlDetailRecord _recordPanel;
         private USCtrlAdvLvlDetailRank _rankPanel;
-        private List<Record> RecordList = new List<Record>();
 
         private int _chapterIdx;
         private int _levelIdx;
@@ -69,33 +68,10 @@ namespace GameA
             _levelIdx = intVec3Param.y;
             _isBonus = intVec3Param.z == 1;
 
-            var tableChapter = Game.TableManager.Instance.GetStandaloneChapter (_chapterIdx);
-            if (null == tableChapter) {
-                LogHelper.Error ("Find tableChapter failed, {0}", _chapterIdx);
-                SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail> ();
-                return;
-            }
-            int levelId = 0;
-            if (_isBonus) {
-                if (_levelIdx < tableChapter.BonusLevels.Length) {
-                    levelId = tableChapter.BonusLevels [_levelIdx];
-                } else {
-                    LogHelper.Error ("Find {0}'s bonus level of chapter {1} failed.", _levelIdx, _chapterIdx);
-                    SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail> ();
-                    return;
-                }
-            } else {
-                if (_levelIdx < tableChapter.NormalLevels.Length) {
-                    levelId = tableChapter.NormalLevels [_levelIdx];
-                } else {
-                    LogHelper.Error ("Find {0}'s normal level of chapter {1} failed.", _levelIdx, _chapterIdx);
-                    SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail> ();
-                    return;
-                }
-            }
-            _table = Game.TableManager.Instance.GetStandaloneLevel (levelId);
+            _table = AppData.Instance.AdventureData.GetAdvLevelTable(_chapterIdx, _levelIdx,
+                _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal);
             if (null == _table) {
-                LogHelper.Error ("Get table standalonelevel failed. id: {0}", levelId);
+                LogHelper.Error ("Get table standalonelevel failed");
                 SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail> ();
                 return;
             }
