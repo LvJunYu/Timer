@@ -777,11 +777,11 @@ namespace GameA.Game
 
             if (_skill1Input)
             {
-                _unit.SkillMgr1.Fire();
+                _unit.SkillWater();
             }
             if (Skill2InputDown)
             {
-                _unit.SkillMgr2.Fire();
+                _unit.Skill();
             }
         }
 
