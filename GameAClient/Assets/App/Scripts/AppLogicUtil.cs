@@ -70,7 +70,7 @@ namespace GameA
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(project, "作品加载中");
             project.PrepareRes(()=>{
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(project);
-                project.BeginEdit();
+                GameManager.Instance.RequestEdit(project);
 //                MatrixProjectTools.SetProjectVersion(project);
                 SocialGUIManager.Instance.ChangeToGameMode();
             }, ()=>{

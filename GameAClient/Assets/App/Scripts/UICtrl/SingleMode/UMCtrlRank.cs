@@ -95,6 +95,10 @@ namespace GameA
                     _cachedView.RankBg.sprite = fashion;
                 }
             }
+            else
+            {
+                _cachedView.RankBg.SetActiveEx(false);
+            }
 
         }
 

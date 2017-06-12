@@ -235,66 +235,35 @@ namespace GameA
 
         #region 方法
 
-        public void BeginEdit()
+        public void RequestPlay(Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            GameManager.Instance.RequestEdit(this);
-        }
-
-		public void BeginPlay(bool startGame, Action successCallback, Action<int> failedCallback) { }
-//        public void BeginPlay(bool startGame, Action successCallback, Action<EPlayProjectRetCode> failedCallback)
-//        {
-//            if (GameManager.Instance.GameMode != EGameMode.Normal)
-//            {
-//                if (startGame)
-//                {
-//                    GameManager.Instance.RequestPlay(this);
-//                }
-//                if (successCallback != null)
-//                {
-//                    successCallback.Invoke();
-//                }
-//            }
-//            else
-//            {
-//                Msg_CA_PlayProject msg = new Msg_CA_PlayProject();
-//                msg.ProjectGuid = _guid;
-//                NetworkManager.AppHttpClient.SendWithCb<Msg_AC_PlayProjectRet>(SoyHttpApiPath.ClickPlayProject, msg, ret =>
-//                {
-//                    if (ret.ResultCode == EPlayProjectRetCode.PPRC_Success)
-//                    {
-//                        _commitToken = ret.Token;
-//                        _deadPos = ret.DeadPos;
-//                        if (startGame)
-//                        {
-//                            GameManager.Instance.RequestPlay(this);
-//                        }
-//                        _userLastPlayTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
-//                        Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
-//                        if (successCallback != null)
-//                        {
-//                            successCallback.Invoke();
-//                        }
-//                    }
-//                    else
-//                    {
-//                        if (failedCallback != null)
-//                        {
-//                            failedCallback.Invoke(ret.ResultCode);
-//                        }
-//                    }
-//                }, (errCode, errMsg) =>
-//                {
-//                    if (failedCallback != null)
-//                    {
-//                        failedCallback.Invoke(EPlayProjectRetCode.PPRC_Error);
-//                    }
-//                });
-//            }
-//        }
-
-        public void BeginPlayRecord(Record record)
-        {
-            GameManager.Instance.RequestPlayRecord(this, record);
+            RemoteCommands.PlayWorldProject(_projectId, ret => {
+                if (ret.ResultCode == (int)EPlayWorldProjectCode.PWPC_Success)
+                {
+                    _commitToken = ret.Token;
+                    _deadPos = ret.DeadPos;
+                    if (_projectUserData != null)
+                    {
+                        _projectUserData.LastPlayTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
+                    }
+                    if (successCallback != null)
+                    {
+                        successCallback.Invoke();
+                    }
+                }
+                else
+                {
+                    if (failedCallback != null)
+                    {
+                        failedCallback.Invoke(ENetResultCode.NR_None);
+                    }
+                }
+            }, code => {
+                if (failedCallback != null)
+                {
+                    failedCallback.Invoke(code);
+                }
+            });
         }
 
         public byte[] GetData()
@@ -624,30 +593,29 @@ namespace GameA
                 }
                 return;
             }
-            RemoteCommands.UpdateWorldProjectFavorite(_projectId, favorite, ret =>
-                {
-                    if (ret.ResultCode != (int)EUpdateWorldProjectFavoriteCode.UWPFC_Success)
-                    {
-                        if (failedCallback != null)
-                        {
-                            failedCallback.Invoke(ENetResultCode.NR_None);
-                        }
-                        return;
-                    }
-                    if (_projectUserData != null) {
-                        _projectUserData.Favorite = true;
-                    }
-                    if (successCallback != null)
-                    {
-                        successCallback.Invoke();
-                    }
-                }, code =>
+            RemoteCommands.UpdateWorldProjectFavorite(_projectId, favorite, ret => {
+                if (ret.ResultCode != (int)EUpdateWorldProjectFavoriteCode.UWPFC_Success)
                 {
                     if (failedCallback != null)
                     {
-                        failedCallback.Invoke(code);
+                        failedCallback.Invoke(ENetResultCode.NR_None);
                     }
-                });
+                    return;
+                }
+                if (_projectUserData != null) {
+                    _projectUserData.Favorite = true;
+                }
+                if (successCallback != null)
+                {
+                    successCallback.Invoke();
+                }
+            }, code =>
+            {
+                if (failedCallback != null)
+                {
+                    failedCallback.Invoke(code);
+                }
+            });
         }
 
 		protected override void OnSyncPartial ()
@@ -668,49 +636,63 @@ namespace GameA
             _extendReady = true;
             _isValid = msg.IsValid;
         }
-            
 
-
-//        public void CommitPlayResult(bool success, float usedTime, byte[] playRecord, byte[] deadPos, Action<int, bool> successCallback, Action<EPlayProjectResultRetCode> failedCallback)
-//        {
-//            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
-//            {
-//                WWWForm wwwForm = null;
-//                Msg_CA_PlayProjectResult msg = new Msg_CA_PlayProjectResult();
-//                msg.ProjectId = _guid;
-//                msg.Token = _commitToken;
-//                msg.Success = success;
-//                msg.DeadPos = deadPos;
-//                msg.UsedTime = usedTime;
-//                wwwForm = new WWWForm();
-//                wwwForm.AddBinaryData("recordFile", playRecord);
-//                NetworkManager.AppHttpClient.SendWithCb<Msg_AC_PlayProjectResultRet>(SoyHttpApiPath.CommitPlayProjectResult, msg, ret =>
-//                {
-//                    if (ret.ResultCode == EPlayProjectResultRetCode.PPRRC_Success)
-//                    {
-//                        Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
-//                        if (successCallback != null)
-//                        {
-//                            successCallback.Invoke(ret.Rank, ret.NewRecord);
-//                        }
-//                    }
-//                    else
-//                    {
-//                        if (failedCallback != null)
-//                        {
-//                            failedCallback.Invoke(ret.ResultCode);
-//                        }
-//                    }
-//                }, (failCode, failMsg) =>
-//                {
-//                    SoyHttpClient.ShowErrorTip(failCode);
-//                    if (failedCallback != null)
-//                    {
-//                        failedCallback.Invoke(EPlayProjectResultRetCode.PPRRC_None);
-//                    }
-//                }, wwwForm);
-//            }));
-//        }
+        public void CommitPlayResult(
+            bool success,
+            float usedTime,
+            int score,
+            int scoreItemCount,
+            int killMonsterCount,
+            int leftTime,
+            int leftLife,
+            byte [] recordBytes,
+            byte [] deadPos, 
+            Action successCallback, Action<ENetResultCode> failedCallback)
+        {
+            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() => {
+                if (_commitToken == 0)
+                {
+                    if (null != failedCallback)
+                    {
+                        failedCallback.Invoke(ENetResultCode.NR_None);
+                    }
+                    return;
+                }
+                WWWForm wwwForm = new WWWForm();
+                wwwForm.AddBinaryData("recordFile", recordBytes);
+                RemoteCommands.CommitWorldProjectResult(
+                    _commitToken,
+                    success,
+                    deadPos,
+                    usedTime,
+                    score,
+                    scoreItemCount,
+                    killMonsterCount,
+                    leftTime,
+                    leftLife,
+                    ret => {
+                    if (ret.ResultCode == (int)ECommitWorldProjectResultCode.CWPRC_Success)
+                    {
+                        if (successCallback != null)
+                        {
+                            successCallback.Invoke();
+                        }
+                    }
+                    else
+                    {
+                        if (failedCallback != null)
+                        {
+                            failedCallback.Invoke(ENetResultCode.NR_None);
+                        }
+                    }
+                }, code => {
+                    if (failedCallback != null)
+                    {
+                        failedCallback.Invoke(ENetResultCode.NR_None);
+                    }
+                }, wwwForm);
+            }));
+        }
 
 
         public void DownloadProject(Action successCallback, Action<EProjectOperateResult> failedCallback)
