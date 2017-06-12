@@ -49,6 +49,7 @@ namespace GameA
         private string RaffleTicket = "icon_star";
         private string FashionCoupon = "icon_star";
         private string BoostItem = "icon_star";
+        private bool IfLight = true;
         //private string NoneImageName = "icon_star";
         //private Reward[] _reward;
 
@@ -195,15 +196,35 @@ namespace GameA
 
         private void LightRotateBright()
         {
-            _cachedView.BrightLamp[BrightNum].SetActiveEx(true);
-            if (BrightNum >= _cachedView.BrightLamp.Length-1)
+            if (IfLight)
             {
-                BrightNum = 0;
-                ShutDownLight();
+                _cachedView.BrightLamp[BrightNum].SetActiveEx(true);
+                if (BrightNum >= _cachedView.BrightLamp.Length-1)
+                {
+                    BrightNum = 0;
+                    IfLight = false;
+                    //ShutDownLight();
+                }
+                else
+                {
+                    ++BrightNum;
+                }
             }
             else
             {
-                ++BrightNum;
+                _cachedView.BrightLamp[BrightNum].SetActiveEx(false);
+                if (BrightNum >= _cachedView.BrightLamp.Length-1)
+                {
+                    BrightNum = 0;
+                    IfLight = true;
+                    //ShutDownLight();
+                }
+                else
+                {
+                    ++BrightNum;
+                }
+
+
             }
         }
 
@@ -218,6 +239,8 @@ namespace GameA
 
         private void WhenShutDown()
         {
+            BrightNum = 0;
+            IfLight = true;
             _cachedView.Mask.SetEnableEx(false);
             ShutDownLight();
             _cachedView.BrightLamp[4].SetActiveEx(true);
