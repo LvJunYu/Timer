@@ -105,6 +105,13 @@ namespace GameA
         public static int OnSkillChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnAmmoChanged = SoyEngine.EMessengerType.NextId++;
 
+        // 主角mp发生变化
+        public static int OnMPChanged = SoyEngine.EMessengerType.NextId++;
+        // 主角hp发生变化
+        public static int OnHPChanged = SoyEngine.EMessengerType.NextId++;
+        // 主角加速跑技能cd发生变化
+        public static int OnSpeedUpCDChanged = SoyEngine.EMessengerType.NextId++;
+
         // 主玩家复活
         public static int OnMainPlayerRevive = SoyEngine.EMessengerType.NextId++;
 

@@ -64,12 +64,12 @@ namespace GameA.Game
     public enum EUIType
     {
         None,
-        Actor,
-        Earth,
-        Mechanism,
-        Collection,
-        Decoration,
-        Controller,
+        Actor = 1,
+        Earth = 2,
+        Mechanism = 3,
+        Collection = 4,
+        Decoration = 5,
+        Controller = 6,
         Max,
         Effect,
     }

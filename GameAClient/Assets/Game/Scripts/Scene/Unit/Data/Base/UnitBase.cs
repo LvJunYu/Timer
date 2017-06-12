@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
+using UnityEngine.Rendering;
 using Object = System.Object;
 
 namespace GameA.Game
@@ -890,8 +891,8 @@ namespace GameA.Game
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, size, _tableUnit);
                 }
             }
-            var halfColliderSize = GetColliderSize() / 2;
-            float z =- (_curPos.x + halfColliderSize.x + _curPos.y  + halfColliderSize.y) * 0.00078125f + _viewZOffset;
+            var halfSize = GetDataSize() / 2;
+            float z =- (_curPos.x + halfSize.x + _curPos.y  + halfSize.y) * 0.00078125f + _viewZOffset;
             if (UnitDefine.IsDownY(_tableUnit))
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, -0.1f, z);
@@ -904,14 +905,40 @@ namespace GameA.Game
             return  -(pos.x + pos.y) * 0.00078125f ;
         }
 
-        protected void SetUpTrans(Transform trans)
+        protected void SetRelativeEffectPos(Transform trans, EDirectionType eDirectionType)
         {
             if (trans == null)
             {
                 return;
             }
-            var pos = trans.position;
-            trans.position = new Vector3(pos.x, pos.y, GetZ(_curPos + IntVec2.up));
+            var size = GetColliderSize();
+            var halfSize = size / 2;
+            IntVec2 pos = _curPos;
+            IntVec2 offset = IntVec2.zero;
+            switch (eDirectionType)
+            {
+                case EDirectionType.Up:
+                    pos.y += size.y;
+                    offset.x += halfSize.x;
+                    break;
+                case EDirectionType.Down:
+                    pos.y -= size.y;
+                    offset.x += halfSize.x;
+                    offset.y += size.y;
+                    break;
+                case EDirectionType.Left:
+                    pos.x -= size.x;
+                    offset.y += halfSize.y;
+                    offset.x += size.x;
+                    break;
+                case EDirectionType.Right:
+                    pos.x += size.x;
+                    offset.y += halfSize.y;
+                    break;
+            }
+            float z = -(pos.x + halfSize.x + pos.y + halfSize.y) * 0.00078125f + _viewZOffset;
+            trans.position = GM2DTools.TileToWorld(pos + offset) + new Vector3(0, 0, z);
+            trans.eulerAngles = Vector3.back * 90 * (int) eDirectionType;
         }
 
         #endregion
@@ -1018,7 +1045,7 @@ namespace GameA.Game
             for (int i = 0; i < units.Count; i++)
             {
                 var unit = units[i];
-                if ((unit.CanClimbed || CanEdgeClimbed(this, EDirectionType.Left)) && CheckRightFloor(unit))
+                if ((unit.CanClimbed || unit.CanEdgeClimbed(this, EDirectionType.Left)) && CheckRightFloor(unit))
                 {
                     return true;
                 }

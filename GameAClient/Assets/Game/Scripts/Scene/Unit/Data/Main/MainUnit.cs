@@ -323,7 +323,7 @@ namespace GameA.Game
                     }
                     if (_dieTime > 20)
                     {
-                        UpdateRotation((_dieTime - 20)*0.3f);
+//                        UpdateRotation((_dieTime - 20)*0.3f);
                     }
                     if (_dieTime == 100)
                     {
@@ -389,7 +389,9 @@ namespace GameA.Game
             //        }
             //    }
             //}
-            if (_isAlive && !_grounded)
+            if (!_isAlive) {
+            }
+            else if (!_grounded)
             {
                 _mainInput._brakeTime = 0;
                 if (_mainInput._eClimbState > 0)
@@ -1390,6 +1392,7 @@ namespace GameA.Game
         protected void OnDeadAll()
         {
             GameRun.Instance.Pause();
+//            Debug.Log ("MainUnit.OnDeadAll");
             _animation.PlayOnce(DeathAnimName());
             PlayMode.Instance.CurrentShadow.RecordAnimation(DeathAnimName(), false);
         }
