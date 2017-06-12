@@ -23,6 +23,11 @@ namespace GameA.Game
 
 		private bool _generateMapComplete;
 		private MapFile _mapFile;
+
+        /// <summary>
+        /// 默认地图大小，可以在创建新地图时通过设置界面设置
+        /// </summary>
+        private IntVec2 _defaultMapSize = new IntVec2(60, 30);
 #if UNITY_EDITOR
 	    public ColliderScene2D ColliderScene = ColliderScene2D.Instance;
 #endif
@@ -73,6 +78,9 @@ namespace GameA.Game
             }
 
 			DataScene2D.Instance.Init(ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
+            if (GameManager.EStartType.WorkshopCreate == eGameInitType) {
+                DataScene2D.Instance.SetDefaultMapSize (_defaultMapSize * ConstDefineGM2D.ServerTileScale);
+            }
             if (MapConfig.UseAOI)
 		    {
                 ColliderScene2D.Instance.Init(ConstDefineGM2D.RegionTileSize, ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
@@ -259,6 +267,15 @@ namespace GameA.Game
 		{
 			Messenger.Broadcast(EMessengerType.OnGameLoadError);
 		}
+
+        /// <summary>
+        /// 设置默认创建地图的尺寸，目前只能在工坊创建关卡时从设置关卡尺寸界面调用
+        /// </summary>
+        /// <param name="size">Size.</param>
+        public void SetDefaultMapSize (IntVec2 size)
+        {
+            _defaultMapSize = size;
+        }
 
 		public void CreateDefaultScene()
 		{

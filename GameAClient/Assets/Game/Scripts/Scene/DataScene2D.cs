@@ -113,6 +113,15 @@ namespace GameA.Game
             _validMapRect = new IntRect(ConstDefineGM2D.MapStartPos, ConstDefineGM2D.DefaultValidMapRectSize + ConstDefineGM2D.MapStartPos - IntVec2.one);
         }
 
+        /// <summary>
+        /// 这个方法只能被MapManager访问，只能是创建地图并设置初始大小时访问
+        /// </summary>
+        /// <param name="rect">Rect.</param>
+        public void SetDefaultMapSize (IntVec2 size)
+        {
+            _validMapRect = new IntRect(ConstDefineGM2D.MapStartPos, size + ConstDefineGM2D.MapStartPos - IntVec2.one);
+        }
+
         public override void Dispose()
         {
             base.Dispose();
