@@ -179,6 +179,8 @@ namespace GameA
         }
         private void OpenRecordPanel ()
         {
+            RefreshRankData();
+            RefreshAdventureUserLevelDataDetail();
             _infoPanel.Close ();
             _recordPanel.Open ();
             _rankPanel.Close ();

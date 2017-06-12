@@ -27,7 +27,7 @@ namespace GameA.Game
         /// <summary>
         /// 是否被阻挡
         /// </summary>
-        protected bool _blocked;
+        protected byte _blocked;
         /// <summary>
         /// 角度
         /// </summary>
@@ -70,7 +70,7 @@ namespace GameA.Game
             _run = false;
             _skill = null;
             _speed = IntVec2.zero;
-            _blocked = false;
+            _blocked = 0;
             _angle = 0;
             _originPos = IntVec2.zero;
             base.Clear();
@@ -107,12 +107,12 @@ namespace GameA.Game
                 {
                     var rad = _angle*Mathf.Deg2Rad;
                     CenterPos = _originPos + new IntVec2((int)(_skill.Range * Math.Sin(rad)), (int)(_skill.Range * Math.Cos(rad)));
-                    _blocked = true;
+                    _blocked = 1;
                 }
                 UpdateCollider(GetColliderPos(_curPos));
                 _curPos = GetPos(_colliderPos);
                 UpdateTransPos();
-                if (_blocked)
+                if (_blocked > 0)
                 {
                     OnBlocked();
                 }
@@ -137,7 +137,12 @@ namespace GameA.Game
             if (_view != null)
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
-                GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position, new Vector3(0, 0, _angle), Vector3.one);
+                string effectName = _tableUnit.DestroyEffectName;
+                if (_blocked == 1)
+                {
+                    effectName = "M1EffectBlisterStart";
+                }
+                GameParticleManager.Instance.Emit(effectName, _trans.position, new Vector3(0, 0, _angle), Vector3.one);
             }
             Clear();
             PlayMode.Instance.DestroyUnit(this);
@@ -145,9 +150,9 @@ namespace GameA.Game
 
         protected override void HitForPaint(UnitBase unit, EDirectionType eDirectionType)
         {
-            _blocked = true;
             if (unit.CanPainted)
             {
+                _blocked = 2;
                 DoPaint(unit, eDirectionType);
             }
         }
@@ -242,7 +247,7 @@ namespace GameA.Game
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
-            _blocked = true;
+            _blocked = 2;
             if (unit.IsHero && unit.EffectMgr != null)
             {
                 LogHelper.Debug("OnSkilled:{0}", _skill);
