@@ -328,7 +328,7 @@ namespace GameA.Game
                 return false;
             }
 
-            if (_mapStatistics.WinCondition == (int)EWinCondition.TimeLimit)
+            if (_mapStatistics.WinCondition == 1 << (int)EWinCondition.TimeLimit)
             {
                 if (CheckWinTimeLimit())
                 {
