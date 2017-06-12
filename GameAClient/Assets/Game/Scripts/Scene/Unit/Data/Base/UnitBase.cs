@@ -471,7 +471,6 @@ namespace GameA.Game
             _unitDesc.Scale = Vector3.one;
             InitAssetPath();
             UpdateExtraData();
-            OnInit();
             if (!InstantiateView())
             {
                 LogHelper.Error("InstantiateView Failed, {0}", tableUnit.Id);
