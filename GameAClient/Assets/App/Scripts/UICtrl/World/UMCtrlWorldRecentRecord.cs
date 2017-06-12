@@ -77,9 +77,9 @@ namespace GameA
                 return;
             }
             Record record = _wrapper.Content;
-            User user = record.User;
+            UserInfoSimple user = record.UserInfo;
             DictionaryTools.SetContentText(_cachedView.UserName, user.NickName);
-            DictionaryTools.SetContentText(_cachedView.UserLevel, GameATools.GetLevelString(user.PlayerLevel));
+            DictionaryTools.SetContentText(_cachedView.UserLevel, GameATools.GetLevelString(user.LevelData.PlayerLevel));
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl, _cachedView.DefaultUserIconTexture);
             DictionaryTools.SetContentText(_cachedView.CreateTime, DateTimeUtil.GetServerSmartDateStringByTimestampMillis(record.CreateTime));
             DictionaryTools.SetContentText(_cachedView.UsedTime, GameATools.SecondToHour(record.UsedTime));

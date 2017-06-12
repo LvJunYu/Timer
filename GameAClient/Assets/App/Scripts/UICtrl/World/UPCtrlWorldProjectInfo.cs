@@ -123,12 +123,32 @@ namespace GameA
                 }
             });
         }
+
+        private void PlayProject()
+        {
+            if (_content == null)
+            {
+                return;
+            }
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, string.Format ("请求进入关卡"));
+
+            _content.RequestPlay (() => {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+
+                GameManager.Instance.RequestPlay (_content);
+                SocialGUIManager.Instance.ChangeToGameMode ();
+            }, (error) => {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                SocialGUIManager.ShowPopupDialog("进入关卡失败");
+            });
+        }
         #region 接口
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _cachedView.FavoriteBtn.onClick.AddListener(OnFavoriteBtnClick);
             _cachedView.UnfavoriteBtn.onClick.AddListener(OnUnFavoriteBtnClick);
+            _cachedView.PlayBtn.onClick.AddListener(OnPlayBtnClick);
         }
 
         private void OnFavoriteBtnClick()
@@ -139,6 +159,11 @@ namespace GameA
         private void OnUnFavoriteBtnClick()
         {
             RequestUpdateFavorite(false);
+        }
+
+        private void OnPlayBtnClick()
+        {
+            PlayProject();
         }
         #endregion 接口
 

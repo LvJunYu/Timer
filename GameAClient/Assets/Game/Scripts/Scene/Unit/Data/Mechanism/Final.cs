@@ -47,7 +47,7 @@ namespace GameA.Game
             _efffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectFinal", _trans);
             if (_efffect != null)
             {
-                SetUpTrans(_efffect.Trans);
+                SetRelativeEffectPos(_efffect.Trans, EDirectionType.Up);
                 _efffect.Play();
             }
             return true;

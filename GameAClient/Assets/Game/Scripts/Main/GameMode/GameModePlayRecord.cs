@@ -10,6 +10,11 @@ namespace GameA.Game
     {
         protected Record _record;
         protected GM2DRecordData _gm2drecordData;
+
+        public virtual Record Record
+        {
+            get { return _record; }
+        }
         
         public override bool Init(Project project, object param, GameManager.EStartType startType)
         {

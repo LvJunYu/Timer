@@ -104,6 +104,14 @@ namespace GameA
 
         private void OnItemClick(CardDataRendererWrapper<Record> item)
         {
+            item.Content.RequestPlay (() => {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                GameManager.Instance.RequestPlayRecord (_content, item.Content);
+                SocialGUIManager.Instance.ChangeToGameMode ();
+            }, (error) => {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                SocialGUIManager.ShowPopupDialog("进入录像失败");
+            });
         }
 
         private void OnItemRefresh(IDataItemRenderer item, int inx)

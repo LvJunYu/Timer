@@ -212,8 +212,15 @@ namespace GameA.Game
             meshRenderer.sortingOrder = (int)ESortingOrder.AttTexture;
             var tweener = _dirTrans.DOScale(0.7f, 0.5f);
             tweener.SetLoops(-1, LoopType.Yoyo);
+            string attName = ConstDefineGM2D.DirectionTextureName;
+            //当不可动但却能动，说明有蓝石
+            if ( _unit.MoveDirection != EMoveDirection.None)
+            {
+                //生成蓝石
+                attName = "M1Blue_1";
+            }
             Sprite arrowTexture;
-            if (GameResourceManager.Instance.TryGetSpriteByName(ConstDefineGM2D.DirectionTextureName, out arrowTexture))
+            if (GameResourceManager.Instance.TryGetSpriteByName(attName, out arrowTexture))
             {
                 meshRenderer.sprite = arrowTexture;
             }
@@ -232,7 +239,7 @@ namespace GameA.Game
                 if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
                 {
                     //生成方向标志
-                    if (tableUnit.CanRotate || _unit.MoveDirection != EMoveDirection.None || tableUnit.Id == UnitDefine.RollerId)
+                    if (tableUnit.CanRotate || tableUnit.Id == UnitDefine.RollerId || _unit.MoveDirection != EMoveDirection.None)
                     {
                         CreateDirTrans();
                     }

@@ -117,7 +117,7 @@ namespace GameA
                     if (null != failedCallback) {
                         failedCallback.Invoke (ENetResultCode.NR_None);
                     }
-                    return;    
+                    return;
                 }
                 project = _projectList.SectionList [sectionId - 1].NormalProjectList [levelIdx - 1];
             }
@@ -221,6 +221,31 @@ namespace GameA
                 }
             }
             return Game.TableManager.Instance.GetStandaloneLevel (levelId);
+        }
+
+        public Project GetAdvLevelProject (int chapteIdx, int levelIdx, EAdventureProjectType type) {
+            if (chapteIdx <= 0 || levelIdx <= 0) return null;
+            int chapteInx = chapteIdx - 1;
+            int levelInx = levelIdx - 1;
+            if (_projectList.SectionList == null || _projectList.SectionList.Count <= chapteInx)
+            {
+                return null;
+            }
+            AdventureSection section = _projectList.SectionList[chapteInx];
+            List<Project> projectList = null;
+            if (EAdventureProjectType.APT_Normal == type)
+            {
+                projectList = section.NormalProjectList;
+            }
+            else
+            {
+                projectList = section.BonusProjectList;
+            }
+            if (projectList == null || projectList.Count <= levelInx)
+            {
+                return null;
+            }
+            return projectList[levelInx];
         }
 
 		/// <summary>

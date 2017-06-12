@@ -436,7 +436,8 @@ namespace GameA
         }
         private void OnNewProjectBtn ()
         {
-            ProcessCreate ();
+            SocialGUIManager.Instance.OpenUI<UICtrlSetProjectSize> ();
+//            ProcessCreate ();
         }
 
 //        private void OnRunBtnClick()
@@ -455,41 +456,41 @@ namespace GameA
 //            });
 //        }
 
-        public void ProcessCreate()
-        {
-//            var userMatrixData = AppData.Instance.UserMatrixData.GetData(_content.MatrixGuid);
-//            int localCount = LocalUser.Instance.User.GetSavedProjectCount();
-//            if(userMatrixData.PersonalProjectWorkshopSize <= localCount)
+//        public void ProcessCreate()
+//        {
+////            var userMatrixData = AppData.Instance.UserMatrixData.GetData(_content.MatrixGuid);
+////            int localCount = LocalUser.Instance.User.GetSavedProjectCount();
+////            if(userMatrixData.PersonalProjectWorkshopSize <= localCount)
+////            {
+////                CommonTools.ShowPopupDialog("工坊已满，请升级匠人等级或者前去工坊整理");
+////                return;
+////            }
+//
+//            EMatrixProjectResState resState = EMatrixProjectResState.None;
+//            if(!MatrixProjectTools.CheckMatrixStateForRun(out resState))
 //            {
-//                CommonTools.ShowPopupDialog("工坊已满，请升级匠人等级或者前去工坊整理");
+//                MatrixProjectTools.ShowMatrixProjectResCheckTip(resState);
 //                return;
 //            }
-
-            EMatrixProjectResState resState = EMatrixProjectResState.None;
-            if(!MatrixProjectTools.CheckMatrixStateForRun(out resState))
-            {
-                MatrixProjectTools.ShowMatrixProjectResCheckTip(resState);
-                return;
-            }
-            float needDownloadSize = LocalResourceManager.Instance.GetNeedDownloadSizeMB("GameMaker2D");
-            if(Application.internetReachability != NetworkReachability.NotReachable
-                && !Util.IsFloatEqual(needDownloadSize, 0))
-            {
-                CommonTools.ShowPopupDialog(string.Format("本次进入游戏需要更新 {0:N2}MB 资源，可能会产生费用，是否继续？", Mathf.Max(needDownloadSize, 0.01f)),
-                    null,
-                    new System.Collections.Generic.KeyValuePair<string, Action>("继续", ()=>{
-                        InternalCreate();
-                    }),
-                    new System.Collections.Generic.KeyValuePair<string, Action>("取消", ()=>{
-                        LogHelper.Debug("Cancel RunCreate");
-                    })
-                );
-            }
-            else
-            {
-                InternalCreate();
-            }
-        }
+//            float needDownloadSize = LocalResourceManager.Instance.GetNeedDownloadSizeMB("GameMaker2D");
+//            if(Application.internetReachability != NetworkReachability.NotReachable
+//                && !Util.IsFloatEqual(needDownloadSize, 0))
+//            {
+//                CommonTools.ShowPopupDialog(string.Format("本次进入游戏需要更新 {0:N2}MB 资源，可能会产生费用，是否继续？", Mathf.Max(needDownloadSize, 0.01f)),
+//                    null,
+//                    new System.Collections.Generic.KeyValuePair<string, Action>("继续", ()=>{
+//                        InternalCreate();
+//                    }),
+//                    new System.Collections.Generic.KeyValuePair<string, Action>("取消", ()=>{
+//                        LogHelper.Debug("Cancel RunCreate");
+//                    })
+//                );
+//            }
+//            else
+//            {
+//                InternalCreate();
+//            }
+//        }
 
         private void ProcessDelete () {
             if (null == _curSelectedPrivateProject || null == _curSelectedPrivateProject.Content)
@@ -546,14 +547,14 @@ namespace GameA
 //            }
 //        }
 
-        private void InternalCreate()
-        {
-            Project project = Project.CreateWorkShopProject();
-            MatrixProjectTools.SetProjectVersion(project);
-//            project.ProjectCategory = category;
-            GameManager.Instance.RequestCreate (project);
-            SocialGUIManager.Instance.ChangeToGameMode();
-        }
+//        private void InternalCreate()
+//        {
+//            Project project = Project.CreateWorkShopProject();
+//            MatrixProjectTools.SetProjectVersion(project);
+////            project.ProjectCategory = category;
+//            GameManager.Instance.RequestCreate (project);
+//            SocialGUIManager.Instance.ChangeToGameMode();
+//        }
 
 
 //        private void OnEvent()

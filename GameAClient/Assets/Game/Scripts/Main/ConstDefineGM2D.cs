@@ -103,7 +103,7 @@ namespace GameA.Game
 
 	    public const int CombinedItemReleaseResId = 4007;
 
-	    public const string DirectionTextureName = "M1Arrow";
+	    public const string DirectionTextureName = "M1Yellow_1";
 		public const string BillboardTextureName = "M1Editor";
 
 		public const float DefaultParticlePlayTime = 4;
