@@ -73,9 +73,10 @@ namespace GameA
         private void OnPlayBtn () {
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "作品加载中");
             _project.PrepareRes(()=>{
-                _project.BeginPlay(true, ()=>{
+                _project.RequestPlay(()=>{
                     MatrixProjectTools.OnProjectBeginPlaySuccess();
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    GameManager.Instance.RequestPlay(_project);
                     SocialGUIManager.Instance.ChangeToGameMode();
                 }, code=>{
                     //                    if(code == EPlayProjectRetCode.PPRC_ProjectHasBeenDeleted)
