@@ -26,9 +26,9 @@ namespace GameA
 	    private bool _workshopAvailable = true;
 	    private bool _lotteryAvailable = true;
 	    private bool _fashionShopAvailable = true;
-	    private bool _puzzleAvailable = true;
-	    private bool _mailBoxAvailable = true;
-	    private bool _friendsAvailable = true;
+	    private bool _puzzleAvailable = false;
+	    private bool _mailBoxAvailable = false;
+	    private bool _friendsAvailable = false;
         
 
 		//private ChangePartsSpineView _avatarView;
@@ -88,14 +88,14 @@ namespace GameA
 			_cachedView.WorkshopButton.onClick.AddListener (OnCreateBtn);
 			_cachedView.SingleModeButton.onClick.AddListener (OnSingleGameBtn);
             _cachedView.LotteryBtn.onClick.AddListener(OnLotteryBtn);
-            SetLock(UIFunction.UI_FashionShop, true);
-            SetLock(UIFunction.UI_Friends, true);
-            SetLock(UIFunction.UI_Lottery, true);
-            SetLock(UIFunction.UI_MailBox, true);
-            SetLock(UIFunction.UI_Puzzle, true);
-            SetLock(UIFunction.UI_SingleMode, true);
-            SetLock(UIFunction.UI_Workshop, true);
-            SetLock(UIFunction.UI_World, false);
+            SetLock(UIFunction.UI_FashionShop, _fashionShopAvailable);
+            SetLock(UIFunction.UI_Friends, _friendsAvailable);
+            SetLock(UIFunction.UI_Lottery, _lotteryAvailable);
+            SetLock(UIFunction.UI_MailBox, _mailBoxAvailable);
+            SetLock(UIFunction.UI_Puzzle, _puzzleAvailable);
+            SetLock(UIFunction.UI_SingleMode, _singleModeAvailable);
+            SetLock(UIFunction.UI_Workshop, _workshopAvailable);
+            SetLock(UIFunction.UI_World, _worldAvailable);
             //_cachedView.DebugClearUserDataBtn.onClick.AddListener (OnDebugClearUserData);
 
             // Debug.Log("______UICtrlTaskbar_______" + _cachedView.PlayerAvatarAnimation + "_______UICtrlTaskbar______" + _cachedView.PlayerAvatarAnimation.skeleton);
@@ -168,7 +168,7 @@ namespace GameA
                         _cachedView.FriendsDisable.SetActiveEx(!ifunlock);
                         _friendsAvailable = ifunlock;
 
-    }
+                }
                     break;
                 case UIFunction.UI_MailBox:
                     {
