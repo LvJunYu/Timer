@@ -80,7 +80,7 @@ namespace GameA.Game
             for (int i = _itemsToUnlock.Count - 1; i >= 0 ; i--) {
 //                Debug.Log ("_itemsToUnlock [i].Process: " + _itemsToUnlock [i].Process);
                 if (_itemsToUnlock [i].Process <= currentProcess) {
-//                    Debug.Log ("Try to play process: " + _itemsToUnlock [i].Process);
+//                    Debug.Log ("Try to pla  y process: " + _itemsToUnlock [i].Process);
                     var newProcess = UnlockProcessCreator.GetUnlockProcess (_itemsToUnlock [i]);
                     if (null != newProcess) _wait2ShowProcessQueue.Enqueue (newProcess);
                     newItemUnlocked = true;
