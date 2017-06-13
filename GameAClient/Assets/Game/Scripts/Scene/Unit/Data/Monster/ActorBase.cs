@@ -98,19 +98,13 @@ namespace GameA.Game
                 _fireTimer = 0;
                 _animation.Reset();
                 _eDieType = EDieType.None;
-                LogHelper.Debug("OutFire" + ToString());
             }
         }
 
         internal override void InFire()
         {
-            LogHelper.Debug("InFire" + ToString());
-            if (_eDieType == EDieType.Fire)
-            {
-                return;
-            }
             _eDieType = EDieType.Fire;
-            if (_animation != null)
+            if (_animation != null && !_animation.IsPlaying("OnFire", 1))
             {
                 _animation.PlayLoop("OnFire", 1, 1);
             }
