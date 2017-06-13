@@ -250,7 +250,6 @@ namespace GameA.Game
             _blocked = 2;
             if (unit.IsHero && unit.EffectMgr != null)
             {
-                LogHelper.Debug("OnSkilled:{0}", _skill);
                 var effectMgr = unit.EffectMgr;
                 switch (_skill.ESkillType)
                 {

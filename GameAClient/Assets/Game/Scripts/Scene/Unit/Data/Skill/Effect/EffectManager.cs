@@ -84,7 +84,7 @@ namespace GameA.Game
             }
             _currentEffects.Add(effect);
             effect.OnAttached(bullet);
-            LogHelper.Debug(string.Format("{0} OnAttached", effect.ESkillType));
+            //LogHelper.Debug(string.Format("{0} OnAttached", effect.ESkillType));
             return true;
         }
 

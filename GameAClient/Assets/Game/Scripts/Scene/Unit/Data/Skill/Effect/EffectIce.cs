@@ -41,7 +41,6 @@ namespace GameA.Game
             {
                 _effect = GameParticleManager.Instance.EmitLoop("M1Ice1", _owner.Trans);
             }
-            LogHelper.Debug(_owner.CurMoveDirection+"~~~~~~~~");
             _effect.Trans.localPosition = new Vector3(0, -0.1f, _owner.CurMoveDirection == EMoveDirection.Left ? 0.01f : -0.01f);
             _effect.Trans.rotation = Quaternion.identity;
             _effect.SetActive(true);

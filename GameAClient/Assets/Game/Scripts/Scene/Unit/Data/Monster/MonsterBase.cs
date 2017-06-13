@@ -207,7 +207,10 @@ namespace GameA.Game
             {
                 if (_speed.x == 0)
                 {
-                    _animation.PlayLoop("Idle");
+                    if (_canMotor)
+                    {
+                        _animation.PlayLoop("Idle");
+                    }
                 }
                 else
                 {
