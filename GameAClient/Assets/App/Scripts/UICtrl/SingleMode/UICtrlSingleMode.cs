@@ -296,7 +296,33 @@ namespace GameA
 		/// </summary>
 		/// <param name="param">Parameter.</param>
 		private void OnLevelClicked (object param) {
-            SocialGUIManager.Instance.OpenUI <UICtrlAdvLvlDetail> (param);
+            IntVec3 intVec3Param = (IntVec3)param;
+            if (intVec3Param == null)
+                return;
+            var chapterIdx = intVec3Param.x;
+            var levelIdx = intVec3Param.y;
+            bool isBonus = intVec3Param.z == 1;
+            EAdventureProjectType eAPType = isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal;
+            if (!isBonus) {
+                SocialGUIManager.Instance.OpenUI <UICtrlAdvLvlDetail> (param);
+            } else {
+                // 奖励关直接进去游戏 todo
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (
+                    this, 
+                    string.Format ("请求进入冒险[{0}]关卡， 第{1}章，第{2}关...", isBonus ? "奖励" : "普通", chapterIdx, levelIdx));
+
+                AppData.Instance.AdventureData.PlayAdventureLevel (
+                    chapterIdx,
+                    levelIdx,
+                    eAPType,
+                    () => {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                    },
+                    (error) => {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                    }
+                );
+            }
 		}
 
 		private void OnBeginDrag (PointerEventData eventData) {

@@ -193,6 +193,21 @@ namespace GameA
 		{
             switch (_showState) {
             case EShowState.AdvBonusWin:
+                _cachedView.Win.SetActive (true);
+                _cachedView.Lose.SetActive (false);
+                _cachedView.RetryBtn.gameObject.SetActive (false);
+                _cachedView.ReturnBtn.gameObject.SetActive (true);
+                _cachedView.ContinueEditBtn.gameObject.SetActive (false);
+                _cachedView.NextBtn.gameObject.SetActive (false);
+                _cachedView.Score.gameObject.SetActive (true);
+                _cachedView.ScoreOutLine.gameObject.SetActive (true);
+                _cachedView.Score.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
+                _cachedView.ScoreOutLine.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
+                // 奖励
+                _cachedView.RewardObj.SetActive (true);
+                UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
+
+                _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishWin3Star");
                 break;
             case EShowState.AdvNormalWin:
                 _cachedView.Win.SetActive (true);
@@ -220,6 +235,18 @@ namespace GameA
                 _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishWin3Star");
                 break;
             case EShowState.AdvBonusLose:
+                _cachedView.Win.SetActive (false);
+                _cachedView.Lose.SetActive (true);
+                _cachedView.ReturnBtn.gameObject.SetActive (true);
+                _cachedView.RetryBtn.gameObject.SetActive (false);
+                _cachedView.NextBtn.gameObject.SetActive (false);
+                _cachedView.ContinueEditBtn.gameObject.SetActive (false);
+                _cachedView.Score.gameObject.SetActive (false);
+                _cachedView.ScoreOutLine.gameObject.SetActive (false);
+                _cachedView.RewardObj.SetActive (true);
+                UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
+
+                _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishLose");
                 break;
             case EShowState.AdvNormalLose:
                 _cachedView.Win.SetActive (false);

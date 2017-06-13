@@ -59,10 +59,11 @@ namespace GameA
 				}
 			}
 
-			if (table.Id > AppData.Instance.AdventureData.UserData.AdventureUserProgress.SectionUnlockProgress) {
-				LockImage.SetActive (true);
-			} else {
-				LockImage.SetActive(false);
+//			if (table.Id > AppData.Instance.AdventureData.UserData.AdventureUserProgress.SectionUnlockProgress) {
+//				LockImage.SetActive (true);
+//			} else 
+            {
+//				LockImage.SetActive(false);
 				for (int i = 0, n = NormalLevels.Length; i < n; i++) {
 					var tableLevel = Game.TableManager.Instance.GetStandaloneLevel(table.NormalLevels [i]);
 					if (tableLevel == null) {
