@@ -81,11 +81,11 @@ namespace GameA.Game
             }
         }
 
-        protected void CreateSwitchTrigger()
+        protected bool CreateSwitchTrigger()
         {
             if (_switchTrigger != null)
             {
-                return;
+                return false;
             }
             IntVec3 guid = _guid;
             guid.z = GM2DTools.GetRuntimeCreatedUnitDepth();
