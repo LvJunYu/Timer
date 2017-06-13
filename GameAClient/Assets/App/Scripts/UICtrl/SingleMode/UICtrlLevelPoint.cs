@@ -58,6 +58,7 @@ namespace GameA
 		public void RefreshInfo (int chapterId, int levelIdx, Game.Table_StandaloneLevel tableLevel) {
 			_chapterId = chapterId;
 			_levelIdx = levelIdx;
+//            Debug.Log ("level refresh info chapter: " + _chapterId + " level: " + levelIdx);
 			_isBonus = tableLevel.Type != 0;
 			// normal level
 			if (!_isBonus) {
@@ -81,7 +82,7 @@ namespace GameA
                     StarDark1.SetActive (false);
                     StarDark2.SetActive (false);
                     StarDark3.SetActive (false);
-					if (levelIdx == AppData.Instance.AdventureData.UserData.AdventureUserProgress.CompleteLevel + 1) {
+                    if (IsCurrentLevel()) {
                         Current.gameObject.SetActive (true);
 						Active.SetActive (false);
 						Disactive.SetActive (false);
@@ -117,9 +118,26 @@ namespace GameA
 						Disactive.SetActive (true);
 					}
 //				}
+                if (AppData.Instance.AdventureData.UserData.SectionList.Count > (chapterId - 1)) {
+                    StartText.text = string.Format ("{0} / {1}",
+                        Mathf.Clamp (AppData.Instance.AdventureData.UserData.SectionList [chapterId - 1].GotStarCnt, 0, 9 * tableLevel.Type),
+                        9 * tableLevel.Type
+                    );
+                } else {
+                    StartText.text = string.Format ("0 / {0}",
+                        9 * tableLevel.Type
+                    );
+                }
 			}
 			LevelTitle.text = tableLevel.Name;
 		}
+
+        private bool IsCurrentLevel ()
+        {
+            return (_levelIdx == AppData.Instance.AdventureData.UserData.AdventureUserProgress.CompleteLevel + 1) ||
+                (_chapterId == (AppData.Instance.AdventureData.UserData.AdventureUserProgress.CompleteSection + 1) &&
+                    (_levelIdx == 1 && AppData.Instance.AdventureData.UserData.AdventureUserProgress.CompleteLevel == 9));
+        }
         
 		private void OnClick () {
 			SendMessageUpwards ("OnLevelClicked", new IntVec3(_chapterId, _levelIdx, _isBonus ? 1 : 0), SendMessageOptions.RequireReceiver);

@@ -290,17 +290,18 @@ namespace GameA
             }
 
             bool star1 = false;
-            if (table.StarConditions.Length > 0)
-            {
-                star1 = CheckStarRequire (table.StarConditions [0], table.Star1Value, Game.PlayMode.Instance.Statistic);
-            }
             bool star2 = false;
-            if (table.StarConditions.Length > 1) {
-                star2 = CheckStarRequire (table.StarConditions [1], table.Star2Value, Game.PlayMode.Instance.Statistic);
-            }
             bool star3 = false;
-            if (table.StarConditions.Length > 2) {
-                star3 = CheckStarRequire (table.StarConditions [2], table.Star3Value, Game.PlayMode.Instance.Statistic);
+            if (null != table.StarConditions) {
+                if (table.StarConditions.Length > 0) {
+                    star1 = CheckStarRequire (table.StarConditions [0], table.Star1Value, Game.PlayMode.Instance.Statistic);
+                }
+                if (table.StarConditions.Length > 1) {
+                    star2 = CheckStarRequire (table.StarConditions [1], table.Star2Value, Game.PlayMode.Instance.Statistic);
+                }
+                if (table.StarConditions.Length > 2) {
+                    star3 = CheckStarRequire (table.StarConditions [2], table.Star3Value, Game.PlayMode.Instance.Statistic);
+                }
             }
 
             UnityEngine.WWWForm form = new UnityEngine.WWWForm ();

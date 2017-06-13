@@ -21,6 +21,15 @@ namespace GameA
     {
         #region 常量与字段
 
+	    private bool _singleModeAvailable = true;
+	    private bool _worldAvailable = true;
+	    private bool _workshopAvailable = true;
+	    private bool _lotteryAvailable = true;
+	    private bool _fashionShopAvailable = true;
+	    private bool _puzzleAvailable = true;
+	    private bool _mailBoxAvailable = true;
+	    private bool _friendsAvailable = true;
+        
 
 		//private ChangePartsSpineView _avatarView;
 	    //public RenderTexture AvatarRenderTexture { get;  set; }
@@ -29,11 +38,18 @@ namespace GameA
 
         #region 属性
 
+	    public bool FashionShopAvailable 
+	    {
+	        get { return _fashionShopAvailable; }
+
+	    }
+
+
         #endregion
 
         #region 方法
 
-		public override void OnUpdate ()
+        public override void OnUpdate ()
 		{
 			base.OnUpdate ();
 			//if (_cachedView.PlayerAvatarAnimation != null) {
@@ -71,48 +87,47 @@ namespace GameA
             _cachedView.WorldButton.onClick.AddListener (OnWorldBtn);
 			_cachedView.WorkshopButton.onClick.AddListener (OnCreateBtn);
 			_cachedView.SingleModeButton.onClick.AddListener (OnSingleGameBtn);
-
-
-
             _cachedView.LotteryBtn.onClick.AddListener(OnLotteryBtn);
+            SetLock(UIFunction.UI_FashionShop, false);
+            SetLock(UIFunction.UI_Friends, false);
+            SetLock(UIFunction.UI_Lottery, false);
+            SetLock(UIFunction.UI_MailBox, false);
+            SetLock(UIFunction.UI_Puzzle, false);
+            SetLock(UIFunction.UI_SingleMode, false);
+            SetLock(UIFunction.UI_Workshop, false);
+            SetLock(UIFunction.UI_World, false);
+            //_cachedView.DebugClearUserDataBtn.onClick.AddListener (OnDebugClearUserData);
 
-
-
-
-
-            _cachedView.TestChangeAvatarBtn.onClick.AddListener (OnTestChangeAvatar);
-			//_cachedView.DebugClearUserDataBtn.onClick.AddListener (OnDebugClearUserData);
-
-           // Debug.Log("______UICtrlTaskbar_______" + _cachedView.PlayerAvatarAnimation + "_______UICtrlTaskbar______" + _cachedView.PlayerAvatarAnimation.skeleton);
+            // Debug.Log("______UICtrlTaskbar_______" + _cachedView.PlayerAvatarAnimation + "_______UICtrlTaskbar______" + _cachedView.PlayerAvatarAnimation.skeleton);
 
             // todo player avatar at home
-   //         AvatarRenderTexture = new RenderTexture (256, 512, 0);
-			//_cachedView.AvatarRenderCamera.targetTexture = AvatarRenderTexture;
-   //         _cachedView.AvatarImage.texture = _cachedView.AvatarRenderCamera.targetTexture;
-                //AvatarRenderTexture;
-           // Debug.Log("_______UICtrlTaskbar______" + _cachedView.PlayerAvatarAnimation+ "____UICtrlTaskbar_________" + _cachedView.PlayerAvatarAnimation.skeleton);
+            //         AvatarRenderTexture = new RenderTexture (256, 512, 0);
+            //_cachedView.AvatarRenderCamera.targetTexture = AvatarRenderTexture;
+            //         _cachedView.AvatarImage.texture = _cachedView.AvatarRenderCamera.targetTexture;
+            //AvatarRenderTexture;
+            // Debug.Log("_______UICtrlTaskbar______" + _cachedView.PlayerAvatarAnimation+ "____UICtrlTaskbar_________" + _cachedView.PlayerAvatarAnimation.skeleton);
 
-   //         _avatarView = new ChangePartsSpineView ();
-			//_avatarView.HomePlayerAvatarViewInit (_cachedView.PlayerAvatarAnimation);
+            //         _avatarView = new ChangePartsSpineView ();
+            //_avatarView.HomePlayerAvatarViewInit (_cachedView.PlayerAvatarAnimation);
 
-//			var levels = TableManager.Instance.Table_StandaloneLevelDic;
-//			foreach (var level in levels) {
-//				Debug.Log (level.Value.Id + " " + level.Value.Name);
-//			}
-			//_cachedView.AvatarImage.SetActiveEx(false);
-//			LocalUser.Instance.UserLegacy.AvatarData.LoadUsingData(()=>{
-//				RefreshAvatar();
-//			}, (networkError) => {
-//				LogHelper.Error("Network error when get avatarData, {0}", networkError);
-//			});
-			//LocalUser.Instance.UsingAvatarData.Request(
-			//	LocalUser.Instance.UserGuid,
-			//	() => {
-			//		RefreshAvatar();
-			//	}, code => {
-			//		LogHelper.Error("Network error when get avatarData, {0}", code);
-			//	}
-			//);
+            //			var levels = TableManager.Instance.Table_StandaloneLevelDic;
+            //			foreach (var level in levels) {
+            //				Debug.Log (level.Value.Id + " " + level.Value.Name);
+            //			}
+            //_cachedView.AvatarImage.SetActiveEx(false);
+            //			LocalUser.Instance.UserLegacy.AvatarData.LoadUsingData(()=>{
+            //				RefreshAvatar();
+            //			}, (networkError) => {
+            //				LogHelper.Error("Network error when get avatarData, {0}", networkError);
+            //			});
+            //LocalUser.Instance.UsingAvatarData.Request(
+            //	LocalUser.Instance.UserGuid,
+            //	() => {
+            //		RefreshAvatar();
+            //	}, code => {
+            //		LogHelper.Error("Network error when get avatarData, {0}", code);
+            //	}
+            //);
         }
 
 		protected override void OnOpen (object parameter)
@@ -120,13 +135,111 @@ namespace GameA
             base.OnOpen (parameter);
             SocialGUIManager.ShowGoldEnergyBar (false);
 			RefreshUserInfo ();
-            _cachedView.SpineCat.AnimationState.SetAnimation(0, "Run", true);
-            //RefreshAvatar ();
+		    if (_lotteryAvailable)
+		    {
+		        _cachedView.SpineCat.AnimationState.SetAnimation(0, "Run", true);
+		    }
+		    //RefreshAvatar ();
 
         }
-			
 
-		private void OnTestChangeAvatar () {
+        
+        
+        
+        
+        
+
+        public void SetLock(UIFunction UI,bool ifunlock)
+	    {
+	        switch (UI)
+	        {
+	              case  UIFunction.UI_SingleMode:
+	            {
+	                _cachedView.SingleMode.SetActiveEx(ifunlock);
+	                _cachedView.SingleModeDisable.SetActiveEx(!ifunlock);
+                    _singleModeAvailable = ifunlock;
+
+                }
+	                break;
+
+                  case UIFunction.UI_Friends:
+                    {
+                        _cachedView.Friends.SetActiveEx(ifunlock);
+                        _cachedView.FriendsDisable.SetActiveEx(!ifunlock);
+                        _friendsAvailable = ifunlock;
+
+    }
+                    break;
+                case UIFunction.UI_MailBox:
+                    {
+                        _cachedView.MailBox.SetActiveEx(ifunlock);
+                        _cachedView.MailBoxDisable.SetActiveEx(!ifunlock);
+                        _mailBoxAvailable = ifunlock;
+                    }
+                    break;
+                case UIFunction.UI_Puzzle:
+                    {
+                        _cachedView.Puzzle.SetActiveEx(ifunlock);
+                        _cachedView.PuzzleDisable.SetActiveEx(!ifunlock);
+                        _puzzleAvailable = ifunlock;
+                    }
+                    break;
+                case UIFunction.UI_Workshop:
+                    {
+                        _cachedView.Workshop.SetActiveEx(ifunlock);
+                        _cachedView.WorkshopDisable.SetActiveEx(!ifunlock);
+                        _workshopAvailable = ifunlock;
+                    }
+                    break;
+                case UIFunction.UI_World:
+                    {
+                        _cachedView.World.SetActiveEx(ifunlock);
+                        _cachedView.WorldDisable.SetActiveEx(!ifunlock);
+                        _worldAvailable = ifunlock;
+
+                    }
+                    break;
+                case UIFunction.UI_Lottery:
+                    {
+                        _cachedView.Lottery.SetActiveEx(ifunlock);
+                        _cachedView.LotteryDisable.SetActiveEx(!ifunlock);
+                        _lotteryAvailable = ifunlock;
+                    }
+                    break;
+                case UIFunction.UI_FashionShop:
+                    {
+                        _cachedView.AvatarText.SetActiveEx(ifunlock);
+                        _cachedView.AvatarBtn.enabled=  ifunlock;
+                        _fashionShopAvailable = ifunlock;
+                        if (SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().IsOpen)
+                        {
+                            SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().Set(ifunlock);
+                        }
+                    }
+                    break;
+
+
+            }
+
+
+        }
+
+
+	    public enum UIFunction
+        {
+            UI_SingleMode = 0,
+            UI_World = 1,
+            UI_Workshop = 2,
+            UI_FashionShop = 3,
+            UI_Lottery = 4,
+            UI_Puzzle = 5,
+            UI_MailBox = 6,
+            UI_Friends = 7,
+            
+        }
+
+
+        private void OnTestChangeAvatar () {
 //			SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求换装...");
 //			int type = UnityEngine.Random.Range (0, 3);
 //			LocalUser.Instance.UserLegacy.AvatarData.SendChangeAvatarPart (
@@ -235,6 +348,8 @@ namespace GameA
                     LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorLevel].MakerExp;
             _cachedView.CreatorExperience.fillAmount = (float)currentCreatorExp / MaxCreatorExp;
         }
+
+
 
 
         #endregion

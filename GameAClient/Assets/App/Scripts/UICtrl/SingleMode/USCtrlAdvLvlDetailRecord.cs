@@ -59,6 +59,7 @@ namespace GameA
                 for (int i = 0; i < _cardList.Count; i++)
                 {
                     _cardList[i].Destroy();
+                    Debug.Log("_____销毁______"+ i);
                 }
             }
 

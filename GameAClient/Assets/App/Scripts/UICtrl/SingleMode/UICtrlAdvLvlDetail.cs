@@ -138,7 +138,12 @@ namespace GameA
             _levelIdx,
             BeginningDisplayOnRank,
             EndDisplayOnRank,
-            null, null)
+                () =>
+                {
+                    RefreshAdventureUserLevelDataDetail();
+                    _recordPanel.Set();
+                }
+            , null)
             ;
 
         }
@@ -184,7 +189,9 @@ namespace GameA
         private void OpenRecordPanel ()
         {
             RefreshRankData();
-            RefreshAdventureUserLevelDataDetail();
+            //RefreshAdventureUserLevelDataDetail();
+            _recordPanel.Set();
+
             _infoPanel.Close ();
             _recordPanel.Open ();
             _rankPanel.Close ();
@@ -195,7 +202,7 @@ namespace GameA
             _cachedView.RecordBtn2.gameObject.SetActive (true);
             _cachedView.RankBtn1.gameObject.SetActive (true);
             _cachedView.RankBtn2.gameObject.SetActive (false);
-            _recordPanel.Set();
+            
         }
         private void OpenRankPanel ()
         {
