@@ -20,7 +20,7 @@ namespace GameA.Game
         public override void OnGameStart()
         {
             base.OnGameStart();
-            GameRun.Instance.Playing();
+            GameRun.Instance.ChangeState(ESceneState.Edit);
         }
 
         public override void OnGameFailed()

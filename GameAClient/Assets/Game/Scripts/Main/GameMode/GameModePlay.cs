@@ -21,6 +21,7 @@ namespace GameA.Game
 
         public override void InitByStep()
 		{
+            GameRun.Instance.ChangeState(ESceneState.Play);
 			InitUI();
 			InitGame();
         }

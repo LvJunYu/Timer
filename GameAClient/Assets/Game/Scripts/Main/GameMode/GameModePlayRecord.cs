@@ -3,7 +3,6 @@ using System.Collections;
 using System;
 using SoyEngine;
 using SoyEngine.Proto;
-using UnityEngine;
 
 namespace GameA.Game
 {
@@ -29,7 +28,8 @@ namespace GameA.Game
 		}
 
         public override void InitByStep()
-		{
+        {
+            GameRun.Instance.ChangeState(ESceneState.Play);
             InitRecord();
             InitUI();
             InitGame();

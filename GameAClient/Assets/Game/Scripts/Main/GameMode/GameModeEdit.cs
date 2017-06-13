@@ -105,6 +105,7 @@ namespace GameA.Game
 
         public override void InitByStep()
 		{
+            GameRun.Instance.ChangeState(ESceneState.Edit);
             InitUI();
             InitGame();
         }

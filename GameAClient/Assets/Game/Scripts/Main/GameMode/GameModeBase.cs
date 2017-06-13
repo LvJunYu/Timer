@@ -73,6 +73,10 @@ namespace GameA.Game
 
         public virtual void QuitGame(Action successCB, Action<int> failureCB, bool forceQuitWhenFailed = false)
         {
+            if (successCB != null)
+            {
+                successCB.Invoke();
+            }
             SocialApp.Instance.ReturnToApp();
         }
 

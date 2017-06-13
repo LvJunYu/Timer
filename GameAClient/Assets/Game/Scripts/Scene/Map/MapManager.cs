@@ -312,15 +312,6 @@ namespace GameA.Game
 
 		private void GenerateMap(int randomSeed)
 		{
-            EGameRunMode eGameRunMode = GM2DGame.Instance.GameMode.GameRunMode;
-            if (eGameRunMode == EGameRunMode.Edit)
-            {
-                GameRun.Instance.ChangeState(ESceneState.Edit);
-            }
-            else
-            {
-                GameRun.Instance.ChangeState(ESceneState.Play);
-			}
 			GenerateBg(randomSeed);
 			_generateMapComplete = true;
 		}
