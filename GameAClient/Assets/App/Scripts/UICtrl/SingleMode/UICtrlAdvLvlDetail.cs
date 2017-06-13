@@ -162,12 +162,12 @@ namespace GameA
                 List<Project> projectList = _isBonus ?
                     AppData.Instance.AdventureData.ProjectList.SectionList [_chapterIdx - 1].BonusProjectList :
                     AppData.Instance.AdventureData.ProjectList.SectionList [_chapterIdx - 1].NormalProjectList;
-                if (projectList.Count <= _levelIdx) {
+                if (projectList.Count <= _levelIdx - 1) {
                     LogHelper.Error ("No project data of level in idx {0} in chapter {1}", _levelIdx, _chapterIdx);
                     SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail> ();
                     return;
                 } else {
-                    project = projectList [_levelIdx];
+                    project = projectList [_levelIdx - 1];
                 }
             }
             _infoPanel.Open (project, _table);
