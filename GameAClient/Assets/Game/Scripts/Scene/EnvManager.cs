@@ -78,6 +78,10 @@ namespace GameA.Game
             JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Bullet, (int)ESceneLayer.Item);
             JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Bullet, (int)ESceneLayer.RigidbodyItem);
             JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Bullet, (int)ESceneLayer.Hero);
+
+            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Gun, (int)ESceneLayer.Item);
+            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Gun, (int)ESceneLayer.RigidbodyItem);
+            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Gun, (int)ESceneLayer.Hero);
 		}
 
         public void Dispose()
@@ -108,6 +112,7 @@ namespace GameA.Game
         AttackMonsterItem,  // 可以和Monster、Player、Earth碰撞
         RigidbodyItem,  // 可以和Monster、Player、Earth碰撞
         Bullet,
+        Gun,
 		HomeAvatar = 30,
         Max = 31
     }

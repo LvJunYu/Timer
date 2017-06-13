@@ -167,6 +167,8 @@ namespace GameA.Game
                     return (int) ESceneLayer.RigidbodyItem;
                 case (int) ELayerType.Bullet:
                     return (int) ESceneLayer.Bullet;
+                case (int)ELayerType.Gun:
+                    return (int)ESceneLayer.Gun;
             }
             LogHelper.Error("GetLayer Failed,LayerType:{0}", tableUnit.Layer);
             return (int) ESceneLayer.Item;
