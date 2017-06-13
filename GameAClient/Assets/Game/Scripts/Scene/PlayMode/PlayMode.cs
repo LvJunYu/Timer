@@ -106,7 +106,6 @@ namespace GameA.Game
         public void Dispose()
         {
             //            Debug.Log ("PlayMode.Dispose");
-            Messenger<List<int>>.RemoveListener(EMessengerType.OnBoostItemSelectFinish, OnBoostItemSelectFinish);
             Messenger<EDieType>.RemoveListener(EMessengerType.OnMonsterDead, OnMonsterDead);
             if (_statistic != null)
             {
@@ -118,7 +117,6 @@ namespace GameA.Game
         public bool Init()
         {
             //            Debug.Log ("PlayMode.Init");
-            Messenger<List<int>>.AddListener(EMessengerType.OnBoostItemSelectFinish, OnBoostItemSelectFinish);
             Messenger<EDieType>.AddListener(EMessengerType.OnMonsterDead, OnMonsterDead);
 
             _unitUpdateManager = new UnitUpdateManager();

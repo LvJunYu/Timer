@@ -135,7 +135,6 @@ namespace GameA.Game
                         }
                     )
                 );
-                return false;
             }
             return false;
         }
@@ -241,7 +240,6 @@ namespace GameA.Game
             }
             return recordByte;
         }
-
 
     }
 }

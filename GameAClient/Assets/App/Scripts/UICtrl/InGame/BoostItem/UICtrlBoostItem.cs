@@ -11,7 +11,19 @@ namespace GameA
     public class UICtrlBoostItem : UICtrlInGameBase<UIViewBoostItem>
     {
         private USCtrlBoostItem[] _boostItems;
+        private List<int> _selectedItems = new List<int> ();
+        private bool _selectComplete;
 
+        public bool SelectComplete
+        {
+            get
+            {
+                return this._selectComplete;
+            }
+        }
+
+        public List<int> SelectedItems
+        { get { return _selectedItems; } }
 
         protected override void InitGroupId ()
         {
@@ -21,7 +33,6 @@ namespace GameA
         protected override void InitEventListener ()
         {
             base.InitEventListener ();
-            Messenger.AddListener (EMessengerType.OnReady2Play, OnReady2Play);
         }
 
         protected override void OnViewCreated ()
@@ -47,6 +58,8 @@ namespace GameA
             }
             else
             {
+                _selectComplete = false;
+                _selectedItems.Clear();
                 for (int j = 0; j < _boostItems.Length; j++) 
                 {
                     _boostItems [j].SetEmpty ();
@@ -66,13 +79,12 @@ namespace GameA
         }
         private void OnOKBtn ()
         {
-            List<int> selectedItems = new List<int> ();
             int totalPrice = 0;
             for (int i = 0; i < _boostItems.Length; i++)
             {
                 if (_boostItems[i].Checked)
                 {
-                    selectedItems.Add (_boostItems[i].BoostItemType);
+                    _selectedItems.Add (_boostItems[i].BoostItemType);
                     totalPrice += _boostItems [i].Price;
                 }
             }
@@ -87,10 +99,10 @@ namespace GameA
                             GameModePlay gameModePlay = GM2DGame.Instance.GameMode as GameModePlay;
                             if (null != gameModePlay)
                             {
-                                gameModePlay.UseBoostItem(selectedItems);
+                                gameModePlay.UseBoostItem(_selectedItems);
                             }
                             SocialGUIManager.Instance.CloseUI<UICtrlBoostItem> ();
-                            Messenger<List<int>>.Broadcast (EMessengerType.OnBoostItemSelectFinish, selectedItems);
+                            _selectComplete = true;
                         }
                     }),
                     new KeyValuePair<string, Action> ("取消", null)
@@ -100,10 +112,10 @@ namespace GameA
 				GameModePlay gameModePlay = GM2DGame.Instance.GameMode as GameModePlay;
 				if (null != gameModePlay)
 				{
-					gameModePlay.UseBoostItem(selectedItems);
+					gameModePlay.UseBoostItem(_selectedItems);
 				}
                 SocialGUIManager.Instance.CloseUI<UICtrlBoostItem> ();
-                Messenger<List<int>>.Broadcast (EMessengerType.OnBoostItemSelectFinish, selectedItems);
+                _selectComplete = true;
             }
         }
 
@@ -119,7 +131,7 @@ namespace GameA
                 EProjectStatus.PS_Challenge == Game.GM2DGame.Instance.Project.ProjectStatus) {
                 SocialGUIManager.Instance.OpenUI<UICtrlBoostItem> ();
             } else {
-                Messenger<List<int>>.Broadcast (EMessengerType.OnBoostItemSelectFinish, null);
+                _selectComplete = true;
             }                
         }
     }
