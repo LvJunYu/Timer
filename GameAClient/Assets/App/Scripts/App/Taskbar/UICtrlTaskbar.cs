@@ -88,13 +88,13 @@ namespace GameA
 			_cachedView.WorkshopButton.onClick.AddListener (OnCreateBtn);
 			_cachedView.SingleModeButton.onClick.AddListener (OnSingleGameBtn);
             _cachedView.LotteryBtn.onClick.AddListener(OnLotteryBtn);
-            SetLock(UIFunction.UI_FashionShop, false);
-            SetLock(UIFunction.UI_Friends, false);
-            SetLock(UIFunction.UI_Lottery, false);
-            SetLock(UIFunction.UI_MailBox, false);
-            SetLock(UIFunction.UI_Puzzle, false);
-            SetLock(UIFunction.UI_SingleMode, false);
-            SetLock(UIFunction.UI_Workshop, false);
+            SetLock(UIFunction.UI_FashionShop, true);
+            SetLock(UIFunction.UI_Friends, true);
+            SetLock(UIFunction.UI_Lottery, true);
+            SetLock(UIFunction.UI_MailBox, true);
+            SetLock(UIFunction.UI_Puzzle, true);
+            SetLock(UIFunction.UI_SingleMode, true);
+            SetLock(UIFunction.UI_Workshop, true);
             SetLock(UIFunction.UI_World, false);
             //_cachedView.DebugClearUserDataBtn.onClick.AddListener (OnDebugClearUserData);
 
