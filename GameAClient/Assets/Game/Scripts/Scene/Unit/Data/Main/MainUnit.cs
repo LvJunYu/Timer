@@ -1555,6 +1555,14 @@ namespace GameA.Game
 
         internal override void InFire()
         {
+            if (!_isAlive)
+            {
+                return;
+            }
+            if (IsInvincible)
+            {
+                return;
+            }
             if (_eDieType == EDieType.Fire)
             {
                 return;

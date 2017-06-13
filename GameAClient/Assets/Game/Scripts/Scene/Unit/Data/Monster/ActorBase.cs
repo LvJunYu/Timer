@@ -66,6 +66,10 @@ namespace GameA.Game
 
         internal override void InLazer()
         {
+            if (!_isAlive || IsInvincible)
+            {
+                return;
+            }
             _eDieType = EDieType.Lazer;
             OnDead();
             if (_animation != null)
@@ -81,6 +85,10 @@ namespace GameA.Game
                 //跳出水里
                 ExtraSpeed.y = 240;
                 OutFire();
+                return;
+            }
+            if (!_isAlive || IsInvincible)
+            {
                 return;
             }
             _eDieType = EDieType.Water;
@@ -103,8 +111,16 @@ namespace GameA.Game
 
         internal override void InFire()
         {
+            if (!_isAlive || IsInvincible)
+            {
+                return;
+            }
+            if (_eDieType == EDieType.Fire)
+            {
+                return;
+            }
             _eDieType = EDieType.Fire;
-            if (_animation != null && !_animation.IsPlaying("OnFire", 1))
+            if (_animation != null)
             {
                 _animation.PlayLoop("OnFire", 1, 1);
             }
