@@ -96,6 +96,11 @@ namespace GameA.Game
             }
         }
 
+        private bool Intersect(UnitBase unit)
+        {
+            return _dynamicCollider.Grid.Intersects(unit.ColliderGrid);
+        }
+
         protected virtual void CheckUp()
         {
             if (_deltaPos.y > 0)
@@ -113,7 +118,7 @@ namespace GameA.Game
                     {
                         CheckIntersect(unit);
                         int ymin = 0;
-                        if (unit.OnDownHit(this, ref ymin))
+                        if (!Intersect(unit) && unit.OnDownHit(this, ref ymin))
                         {
                             CheckHit(unit, EDirectionType.Up);
                             flag = true;
@@ -154,7 +159,7 @@ namespace GameA.Game
                     {
                         CheckIntersect(unit);
                         int ymin = 0;
-                        if (unit.OnUpHit(this, ref ymin))
+                        if (!Intersect(unit) && unit.OnUpHit(this, ref ymin))
                         {
                             CheckHit(unit, EDirectionType.Down);
                             flag = true;
@@ -211,7 +216,7 @@ namespace GameA.Game
                     {
                         CheckIntersect(unit);
                         int xmin = 0;
-                        if (unit.OnRightHit(this, ref xmin))
+                        if (!Intersect(unit) && unit.OnRightHit(this, ref xmin))
                         {
                             CheckHit(unit, EDirectionType.Left);
                             flag = true;
@@ -249,7 +254,7 @@ namespace GameA.Game
                     {
                         CheckIntersect(unit);
                         int xmin = 0;
-                        if (unit.IsAlive && unit.OnLeftHit(this, ref xmin))
+                        if (!Intersect(unit) && unit.OnLeftHit(this, ref xmin))
                         {
                             CheckHit(unit, EDirectionType.Right);
                             flag = true;

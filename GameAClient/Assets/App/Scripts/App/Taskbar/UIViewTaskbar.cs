@@ -26,22 +26,44 @@ namespace GameA
         /// 选择游戏按钮
         /// </summary>
 		public Button WorkshopButton;
+		public GameObject Workshop;
+		public GameObject WorkshopDisable;
         /// <summary>
         /// 世界切换按钮
         /// </summary>
 		public Button WorldButton;
+		public GameObject World;
+		public GameObject WorldDisable;
         /// <summary>
         ///单人游戏按钮
         /// </summary>
 		public Button SingleModeButton;
+		public GameObject SingleMode;
+		public GameObject SingleModeDisable;
         /// <summary>
         /// 人物按钮，时装商店
         /// </summary>
 		public Button AvatarBtn;
+		public Text AvatarText;
+		//public GameObject AvatarDisable;
         /// <summary>
         /// 人物动画
         /// </summary>
         public Button LotteryBtn;
+        public GameObject Lottery;
+        public GameObject LotteryDisable;
+
+        public Button MailBoxBtn;
+        public GameObject MailBox;
+        public GameObject MailBoxDisable;
+
+        public Button FriendsBtn;
+        public GameObject Friends;
+        public GameObject FriendsDisable;
+
+        public Button PuzzleBtn;
+        public GameObject Puzzle;
+        public GameObject PuzzleDisable;
         /// <summary>
         /// 人物动画
         /// </summary>
@@ -57,7 +79,6 @@ namespace GameA
         /// <summary>
         /// 换装按钮
         /// </summary>
-		public Button TestChangeAvatarBtn;
 
         public SkeletonGraphic SpineCat;
         // user info
