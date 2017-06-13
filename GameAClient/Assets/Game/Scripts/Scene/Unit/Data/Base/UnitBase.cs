@@ -595,14 +595,16 @@ namespace GameA.Game
 
         internal virtual void Reset()
         {
+            //先view
+            if (_view != null)
+            {
+                _view.Reset();
+            }
+            //而后Clear
             Clear();
             if (_dynamicCollider != null)
             {
                 _dynamicCollider.Reset();
-            }
-            if (_view != null)
-            {
-                _view.Reset();
             }
             if (_animation != null)
             {
