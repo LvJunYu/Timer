@@ -227,7 +227,7 @@ namespace GameA
 
             AppData.Instance.AdventureData.PlayAdventureLevel (
                 _chapterIdx,
-                _levelIdx + 1,
+                _levelIdx,
                 eAPType,
                 () => {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
