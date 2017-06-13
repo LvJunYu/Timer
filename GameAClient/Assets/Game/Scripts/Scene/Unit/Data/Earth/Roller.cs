@@ -27,6 +27,15 @@ namespace GameA.Game
             {
                 _animation.Init(_rollerDirection == EMoveDirection.Left ? "LeftRun" : "RightRun");
             }
+            switch (_rollerDirection)
+            {
+                case EMoveDirection.Right:
+                    _deltaImpactPos.x = 50;
+                    break;
+                case EMoveDirection.Left:
+                    _deltaImpactPos.x = -50;
+                    break;
+            }
             base.UpdateExtraData();
         }
 
@@ -38,20 +47,6 @@ namespace GameA.Game
             }
             _animation.Init(_rollerDirection == EMoveDirection.Left ? "LeftRun" : "RightRun");
             return true;
-        }
-
-        protected override void Clear()
-        {
-            base.Clear();
-            switch (_rollerDirection)
-            {
-                case EMoveDirection.Right:
-                    _deltaImpactPos.x = 50;
-                    break;
-                case EMoveDirection.Left:
-                    _deltaImpactPos.x = -50;
-                    break;
-            }
         }
     }
 }

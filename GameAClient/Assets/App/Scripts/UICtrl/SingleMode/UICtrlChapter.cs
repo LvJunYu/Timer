@@ -68,14 +68,14 @@ namespace GameA
 					if (tableLevel == null) {
 						LogHelper.Error ("Can't find tableLevel when refresh ui, chapter: {0}, level: {1}", table.Id, i);
 					}
-					NormalLevels [i].RefreshInfo (table.Id, i, tableLevel);
+					NormalLevels [i].RefreshInfo (table.Id, i+1, tableLevel);
 				}
 				for (int i = 0, n = BonusLevels.Length; i < n; i++) {
 					var tableLevel = Game.TableManager.Instance.GetStandaloneLevel(table.BonusLevels [i]);
 					if (tableLevel == null) {
 						LogHelper.Error ("Can't find tableLevel when refresh ui, chapter: {0}, level: {1}", table.Id, i);
 					}
-					BonusLevels [i].RefreshInfo (table.Id, i, tableLevel);
+					BonusLevels [i].RefreshInfo (table.Id, i+1, tableLevel);
 					// refresh block imgs state
 					if (AppData.Instance.AdventureData.UserData.SectionList.Count > (table.Id - 1) &&
 						AppData.Instance.AdventureData.UserData.SectionList [table.Id - 1].BonusLevelUserDataList.Count > i) {

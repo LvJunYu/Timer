@@ -37,7 +37,7 @@ namespace GameA.Game
 			    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
 			    if (!PlayMode.Instance.SceneState.GameFailed) return;
 			    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioFailed);
-                GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Lose);
+                SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Lose);
 			}, (errCode)=>{
 			    LogHelper.Info("游戏成绩提交失败");
 			    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
@@ -48,7 +48,7 @@ namespace GameA.Game
 			        }), 
 			        new System.Collections.Generic.KeyValuePair<string, Action>("跳过", ()=>{
 			            //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
-                        GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Lose);
+                        SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Lose);
 			        }));
 			});
 		}
@@ -74,7 +74,7 @@ namespace GameA.Game
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 if (!PlayMode.Instance.SceneState.GameSucceed) return;
                 GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
-                GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Win);
+                SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Win);
             }, (errCode)=>{
                 LogHelper.Info("游戏成绩提交失败");
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
@@ -85,7 +85,7 @@ namespace GameA.Game
                     }), 
                     new System.Collections.Generic.KeyValuePair<string, Action>("跳过", ()=>{
                         //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
-                        GM2DGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Win);
+                        SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Win);
                     }));
             });
 		}

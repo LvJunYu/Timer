@@ -75,7 +75,7 @@ namespace GameA
                 CardDataRendererWrapper<RecordRankHolder> w = new CardDataRendererWrapper<RecordRankHolder>(r, OnItemClick);
                 _contentList.Add(w);
             }
-            _cachedView.GridScroller.SetItemCount(_contentList.Count);
+            _cachedView.RecordRankGridScroller.SetItemCount(_contentList.Count);
         }
 
 

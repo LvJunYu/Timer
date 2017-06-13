@@ -19,6 +19,7 @@ namespace GameA.Game
         protected List<UnitBase> _units;
         protected UnityNativeParticleItem _effectStart;
         protected UnityNativeParticleItem _effectRun;
+        protected int _cdTimer;
 
         internal override bool InstantiateView()
         {
@@ -53,6 +54,7 @@ namespace GameA.Game
         {
             base.Clear();
             _units = null;
+            _cdTimer = 0;
         }
 
         internal override void OnPlay()
@@ -103,6 +105,11 @@ namespace GameA.Game
 
         protected void OnTrigger()
         {
+            //if (_cdTimer > 0)
+            //{
+            //    return;
+            //}
+            //_cdTimer = 50;
             if (_effectStart != null && !_effectStart.IsPlaying)
             {
                 _effectStart.Play(0.5f);
@@ -119,6 +126,15 @@ namespace GameA.Game
                 }
             }
             Messenger.Broadcast (EMessengerType.OnSwitchTriggered);
+        }
+
+        public override void UpdateLogic()
+        {
+            base.UpdateLogic();
+            if (_cdTimer > 0)
+            {
+                _cdTimer--;
+            }
         }
     }
 }

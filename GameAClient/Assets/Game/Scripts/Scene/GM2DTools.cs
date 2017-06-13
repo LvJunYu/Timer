@@ -70,25 +70,25 @@ namespace GameA.Game
             return 1;
         }
 
-        public static void GetBorderPoint(Grid2D grid, EDirectionType direction, ref IntVec2 pointA, ref IntVec2 pointB)
+        public static void GetBorderPoint(Grid2D grid, EDirectionType direction, ref IntVec2 pointA, ref IntVec2 pointB, int num = 0)
         {
             switch (direction)
             {
                 case EDirectionType.Up:
-                    pointA = new IntVec2(grid.XMin, grid.YMax + 1);
-                    pointB = new IntVec2(grid.XMax, grid.YMax + 1);
+                    pointA = new IntVec2(grid.XMin - num, grid.YMax + 1);
+                    pointB = new IntVec2(grid.XMax + num, grid.YMax + 1);
                     break;
                 case EDirectionType.Down:
-                    pointA = new IntVec2(grid.XMin, grid.YMin - 1);
-                    pointB = new IntVec2(grid.XMax, grid.YMin - 1);
+                    pointA = new IntVec2(grid.XMin - num, grid.YMin - 1);
+                    pointB = new IntVec2(grid.XMax + num, grid.YMin - 1);
                     break;
                 case EDirectionType.Left:
-                    pointA = new IntVec2(grid.XMin - 1, grid.YMin);
-                    pointB = new IntVec2(grid.XMin - 1, grid.YMax);
+                    pointA = new IntVec2(grid.XMin - 1, grid.YMin - num);
+                    pointB = new IntVec2(grid.XMin - 1, grid.YMax + num);
                     break;
                 case EDirectionType.Right:
-                    pointA = new IntVec2(grid.XMax + 1, grid.YMin);
-                    pointB = new IntVec2(grid.XMax + 1, grid.YMax);
+                    pointA = new IntVec2(grid.XMax + 1, grid.YMin - num);
+                    pointB = new IntVec2(grid.XMax + 1, grid.YMax + num);
                     break;
             }
         }

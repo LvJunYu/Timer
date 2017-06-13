@@ -128,11 +128,13 @@ namespace GameA
             ShareUtil.Init();
         }
 
-	    public void InitAfterUpdateResComplete()
-	    {
-			gameObject.AddComponent<TableManager>();
-			TableManager.Instance.Init();
-			SocialGUIManager.Instance.ShowAppView();
+        public void InitAfterUpdateResComplete()
+        {
+            gameObject.AddComponent<TableManager>();
+            TableManager.Instance.Init();
+            SocialGUIManager.Instance.ShowAppView();
+
+            GameProcessManager.Instance.Init ();
 		}
 
 	    private void InitLocalResource()

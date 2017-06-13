@@ -403,19 +403,19 @@ namespace GameA
         /// 展示奖励，传入奖励数组x：type，y：id，z：cnt
         /// </summary>
         /// <param name="items">Items.</param>
-        public static void ShowReward (Reward reward) {
+        public static void ShowReward (Reward reward, Action closeCB = null) {
             Instance.OpenUI<UICtrlReward> (UICtrlReward.ERewardType.Reward);
-            Instance.GetUI <UICtrlReward>().SetRewards (reward);
+            Instance.GetUI <UICtrlReward>().SetRewards (reward, closeCB);
         }
 
-        public static void ShowUnlockSystem (int systemCode) {
+        public static void ShowUnlockSystem (string title, string icon, Action closeCB = null) {
             Instance.OpenUI<UICtrlReward> (UICtrlReward.ERewardType.Unlock);
-            Instance.GetUI <UICtrlReward> ().SetUnlockSystem (systemCode);
+            Instance.GetUI <UICtrlReward> ().SetUnlockSystem (title, icon, closeCB);
         }
-        public static void ShowUnlockAbility (int abilityCode)
+        public static void ShowUnlockAbility (string title, string icon, Action closeCB = null)
         {
             Instance.OpenUI<UICtrlReward> (UICtrlReward.ERewardType.Ability);
-            Instance.GetUI<UICtrlReward> ().SetAbility (abilityCode);
+            Instance.GetUI<UICtrlReward> ().SetAbility (title, icon, closeCB);
         }
 
         /// <summary>

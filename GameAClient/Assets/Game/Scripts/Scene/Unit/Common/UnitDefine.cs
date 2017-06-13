@@ -76,6 +76,11 @@ namespace GameA.Game
             return id >= 10001 && id <=10010;
         }
 
+        public static bool IsEditClick(int id)
+        {
+            return id == 7001 || IsEnergy(id);
+        }
+
         public static bool IsSameDirectionSwitchTrigger(SceneNode node, byte rotation)
         {
             return node.Id == SwitchTriggerId &&

@@ -194,7 +194,7 @@ namespace GameA.Game
             }
         }
 
-        private void CreateDirTrans()
+        private void CreateDirTrans(string attName)
         {
             if (_dirTrans != null)
             {
@@ -212,13 +212,6 @@ namespace GameA.Game
             meshRenderer.sortingOrder = (int)ESortingOrder.AttTexture;
             var tweener = _dirTrans.DOScale(0.7f, 0.5f);
             tweener.SetLoops(-1, LoopType.Yoyo);
-            string attName = ConstDefineGM2D.DirectionTextureName;
-            //当不可动但却能动，说明有蓝石
-            if ( _unit.MoveDirection != EMoveDirection.None)
-            {
-                //生成蓝石
-                attName = "M1Blue_1";
-            }
             Sprite arrowTexture;
             if (GameResourceManager.Instance.TryGetSpriteByName(attName, out arrowTexture))
             {
@@ -229,19 +222,25 @@ namespace GameA.Game
         public void UpdateSign()
         {
             var tableUnit = _unit.TableUnit;
-            //当不可动但却能动，说明有蓝石
-            if (!tableUnit.CanMove && _unit.MoveDirection != EMoveDirection.None)
-            {
-                //生成蓝石
-            }
             if (tableUnit.EUnitType != EUnitType.Bullet)
             {
                 if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
                 {
-                    //生成方向标志
-                    if (tableUnit.CanRotate || tableUnit.Id == UnitDefine.RollerId || _unit.MoveDirection != EMoveDirection.None)
+                    if (_unit.MoveDirection != EMoveDirection.None)
                     {
-                        CreateDirTrans();
+                        CreateDirTrans("M1Move");
+                    }
+                    else if (tableUnit.Id == UnitDefine.BlueStoneRotateId)
+                    {
+                        CreateDirTrans("M1Rotate_1");
+                    }
+                    else if (tableUnit.CanRotate || tableUnit.Id == UnitDefine.RollerId)
+                    {
+                        CreateDirTrans("M1Rotate");
+                    }
+                    else if (UnitDefine.IsEditClick(tableUnit.Id))
+                    {
+                        CreateDirTrans("M1Click");
                     }
                 }
             }
