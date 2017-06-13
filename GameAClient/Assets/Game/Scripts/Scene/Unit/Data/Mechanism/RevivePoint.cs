@@ -72,7 +72,7 @@ namespace GameA.Game
                     if (!_trigger)
                     {
                         _trigger = true;
-                        other.OnRevivePos(_curPos);
+                        other.OnRevivePos(new IntVec2(_curPos.x, _curPos.y + ConstDefineGM2D.ServerTileScale));
                         _animation.PlayOnce("Start").Complete +=
                             (state, index, count) => _animation.PlayLoop("End");
                         Messenger<IntVec3>.Broadcast(EMessengerType.OnRespawnPointTrigger, _guid);
