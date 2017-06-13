@@ -1015,7 +1015,7 @@ namespace GameA.Game
         private void OnFire()
         {
             _fireTimer++;
-            //2秒后还是这个状态挂掉
+            //3秒后还是这个状态挂掉
             if (_fireTimer ==150)
             {
                 OnDead();
@@ -1257,7 +1257,6 @@ namespace GameA.Game
                     GameParticleManager.Instance.Emit("M1EffectAirDeath", _trans.position + Vector3.up * 0.5f);
                 }
                 OnRevive();
-                _trans.eulerAngles = new Vector3(90, 0, 0);
             }
         }
 

@@ -153,12 +153,12 @@ namespace GameA.Game
             //碰到墙壁转头
             CheckWay();
             //每隔转头
-            if (_fireTimer == 80)
+            if (_fireTimer == 50)
             {
                 ChangeWay(_curMoveDirection == EMoveDirection.Right ? EMoveDirection.Left : EMoveDirection.Right);
             }
             //4秒后还是这个状态挂掉
-            else if (_fireTimer == 200)
+            else if (_fireTimer == 100)
             {
                 OnDead();
                 if (_animation != null)
