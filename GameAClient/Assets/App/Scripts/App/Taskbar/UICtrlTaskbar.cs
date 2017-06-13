@@ -140,7 +140,7 @@ namespace GameA
 		        _cachedView.SpineCat.AnimationState.SetAnimation(0, "Run", true);
 		    }
 		    //RefreshAvatar ();
-
+            GameProcessManager.Instance.RefreshHomeUIUnlock();
         }
 
         

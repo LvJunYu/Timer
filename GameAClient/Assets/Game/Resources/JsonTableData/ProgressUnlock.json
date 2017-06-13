@@ -2,7 +2,7 @@
     {
         "Id": "1",
         "Name": "加速跑",
-        "Desc": "这是加速跑",
+        "Desc": "匠酱学会了<加速跑>",
         "Icon": "icon_lottery_1",
         "Chapter": "1",
         "Level": "1"
@@ -10,7 +10,7 @@
     {
         "Id": "2",
         "Name": "二段跳",
-        "Desc": "这是二段跳",
+        "Desc": "匠酱学会了<二段跳>",
         "Icon": "icon_lottery_1",
         "Chapter": "1",
         "Level": "2"
@@ -18,7 +18,7 @@
     {
         "Id": "3",
         "Name": "射击",
-        "Desc": "这是射击",
+        "Desc": "匠酱学会了<射击>",
         "Icon": "icon_lottery_1",
         "Chapter": "1",
         "Level": "3"
@@ -26,17 +26,41 @@
     {
         "Id": "4",
         "Name": "抽奖",
-        "Desc": "这是抽奖",
+        "Desc": "开启<抽奖>",
         "Icon": "icon_lottery_1",
         "Chapter": "1",
         "Level": "5"
     },
     {
         "Id": "5",
-        "Name": "匹配改造",
-        "Desc": "这是匹配改造",
+        "Name": "时装",
+        "Desc": "开启<时装>",
+        "Icon": "icon_lottery_1",
+        "Chapter": "1",
+        "Level": "7"
+    },
+    {
+        "Id": "6",
+        "Name": "工坊",
+        "Desc": "开启<工坊>",
         "Icon": "icon_lottery_1",
         "Chapter": "2",
-        "Level": "2"
+        "Level": "3"
+    },
+    {
+        "Id": "7",
+        "Name": "匹配改造",
+        "Desc": "开启<匹配改造>",
+        "Icon": "icon_lottery_1",
+        "Chapter": "2",
+        "Level": "6"
+    },
+    {
+        "Id": "8",
+        "Name": "世界",
+        "Desc": "开启<世界>",
+        "Icon": "icon_lottery_1",
+        "Chapter": "2",
+        "Level": "9"
     }
 ]
