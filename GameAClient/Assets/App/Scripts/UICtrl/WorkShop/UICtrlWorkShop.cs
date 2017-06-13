@@ -56,7 +56,7 @@ namespace GameA
             LocalUser.Instance.PersonalProjectList.Request (0, 
                 int.MaxValue,
                 EPersonalProjectOrderBy.PePOB_LastUpdateTime,
-                EOrderType.OT_Asc,
+                EOrderType.OT_Desc,
                 () => {
                     RefreshView();
                 },
@@ -500,31 +500,28 @@ namespace GameA
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在删除");
                     var projList = new List<long>();
                     projList.Add(_curSelectedPrivateProject.Content.ProjectId);
-                    RemoteCommands.DeleteProject(
-                        projList,
-                        msg => {
-                            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                            LocalUser.Instance.PersonalProjectList.ProjectList.Remove(_curSelectedPrivateProject.Content);
-                            _curSelectedPrivateProject = null;
-                            AutoSelectFirstProject ();
-                            RefreshView ();
-                            LocalUser.Instance.PersonalProjectList.Request (0,
-                                int.MaxValue,
-                                EPersonalProjectOrderBy.PePOB_CreateTime,
-                                EOrderType.OT_Asc,
-                                () => {
-                                    RefreshView();
-                                },
-                                code => {
-                                    // todo error handle
-                                }
-                            );
-                        },
-                        code => {
-                            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                            CommonTools.ShowPopupDialog("删除失败");
-                        }
-                    );
+                    RemoteCommands.DeleteProject(projList, msg => {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                        LocalUser.Instance.PersonalProjectList.ProjectList.Remove(_curSelectedPrivateProject.Content);
+                        _curSelectedPrivateProject = null;
+                        AutoSelectFirstProject ();
+                        RefreshView ();
+                        LocalUser.Instance.PersonalProjectList.Request (0,
+                            int.MaxValue,
+                            EPersonalProjectOrderBy.PePOB_LastUpdateTime,
+                            EOrderType.OT_Desc,
+                            () => {
+                                RefreshView();
+                            },
+                            code => {
+                                // todo error handle
+                            }
+                        );
+                    },
+                    code => {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                        CommonTools.ShowPopupDialog("删除失败");
+                    });
                 }), new KeyValuePair<string, Action>("取消", ()=>{
                     LogHelper.Info("Cancel Delete");
             }));
@@ -632,8 +629,8 @@ namespace GameA
 
         private void OnReturnToApp () {
             LocalUser.Instance.PersonalProjectList.Request (0, int.MaxValue, 
-                EPersonalProjectOrderBy.PePOB_CreateTime,
-                EOrderType.OT_Asc,
+                EPersonalProjectOrderBy.PePOB_LastUpdateTime,
+                EOrderType.OT_Desc,
                 () => {
                     RefreshView();
                 },

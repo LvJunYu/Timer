@@ -243,7 +243,7 @@ namespace GameA
         {
 		    if (_activeConditions.Contains(EWinCondition.Arrived))
 		    {
-			    _cachedView.ArriveItem.Dex.text = "";
+			    _cachedView.ArriveItem.Dex.text = "到达终点";
 		    }
 
 			if (_activeConditions.Contains(EWinCondition.CollectTreasure))

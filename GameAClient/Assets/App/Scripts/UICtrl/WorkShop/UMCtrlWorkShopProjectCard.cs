@@ -90,8 +90,7 @@ namespace GameA
                 DictionaryTools.SetContentText(_cachedView.Title, _wrapper.Content.Name);
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _wrapper.Content.IconPath, _cachedView.DefaultCoverTexture);
                 _cachedView.SeletedMark.SetActiveEx (_wrapper.IsSelected);
-                _cachedView.CreateTime.text = DateTimeUtil.GetServerSmartDateStringByTimestampMillis(_wrapper.Content.CreateTime);
-//                DictionaryTools.SetContentText(_cachedView.ProjectCategoryText, EnumStringDefine.GetProjectCategoryString(_wrapper.Content.ProjectCategory));
+                _cachedView.CreateTime.text = DateTimeUtil.GetServerSmartDateStringByTimestampMillis(_wrapper.Content.UpdateTime);
             }
         }
 
