@@ -20,6 +20,14 @@ namespace GameA
         private float _timer;
         // 界面显示的时间
         private const float _showTime = 1.5f;
+        private bool _showComplete = false;
+        public bool ShowComplete
+        {
+            get
+            {
+                return this._showComplete;
+            }
+        }
 
         protected override void InitGroupId ()
         {
@@ -29,15 +37,13 @@ namespace GameA
         protected override void InitEventListener ()
         {
             base.InitEventListener ();
-//            Messenger.AddListener (EMessengerType.OnReady2Play, OnReady2Play);
-            Messenger<System.Collections.Generic.List<int>>.AddListener (EMessengerType.OnBoostItemSelectFinish, OnBoostItemSelectFinish);
         }
 
         protected override void OnOpen (object parameter)
         {
             base.OnOpen (parameter);
             _timer = 0f;
-
+            _showComplete = false;
             int winConditionCnt = 0;
             if (Game.PlayMode.Instance.SceneState.HasWinCondition (Game.EWinCondition.Arrived)) {
                 Sprite sprite = null;
@@ -87,35 +93,16 @@ namespace GameA
 
         public override void OnUpdate ()
         {
+            if (!_isOpen)
+            {
+                return;
+            }
             base.OnUpdate ();
             _timer += Time.deltaTime;
             if (_timer > _showTime)
             {
-                GameRun.Instance.Playing();
                 Close ();
-            }
-        }
-
-//        private void OnReady2Play ()
-//        {
-//            // 除了当人模式的普通关卡和挑战关卡需要先选增益道具再展示胜利条件，其他情况下直接展示胜利条件
-//            if (EProjectStatus.PS_AdvNormal == GM2DGame.Instance.Project.ProjectStatus ||
-//                EProjectStatus.PS_Challenge == GM2DGame.Instance.Project.ProjectStatus
-//               )
-//                return;
-//            SocialGUIManager.Instance.OpenUI<UICtrlCountDown> ();
-//        }
-
-        private void OnBoostItemSelectFinish (System.Collections.Generic.List<int> selectedItems)
-        {
-            UnityEngine.Debug.Log (" GM2DGame.Instance.GameMode.GameRunMode: " + GM2DGame.Instance.GameMode.GameRunMode);
-            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
-            {
-                GameRun.Instance.Playing();
-            }
-            else
-            {
-                SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
+                _showComplete = true;
             }
         }
     }

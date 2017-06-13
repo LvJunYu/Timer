@@ -1,20 +1,29 @@
 using System;
 using SoyEngine.Proto;
 using SoyEngine;
+using UnityEngine;
+using System.Collections;
 
 namespace GameA.Game
 {
     public class GameModeWorldPlay : GameModePlay
     {
-        public override bool Init(Project project, object param, GameManager.EStartType startType)
+        public override bool Init(Project project, object param, GameManager.EStartType startType, MonoBehaviour corountineProxy)
         {
-            if (!base.Init(project, param, startType))
+            if (!base.Init(project, param, startType, corountineProxy))
             {
                 return false;
             }
             _gameSituation = EGameSituation.World;
             return true;
-		}
+        }
+
+        public override void OnGameStart()
+        {
+            base.OnGameStart();
+            _coroutineProxy.StopAllCoroutines();
+            _coroutineProxy.StartCoroutine(GameFlow());
+        }
 
         public override void OnGameFailed()
 		{
@@ -107,6 +116,13 @@ namespace GameA.Game
                 record = MatrixProjectTools.CompressLZMA(recordByte);
             }
             return record;
+        }
+
+        private IEnumerator GameFlow()
+        {
+            UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
+            yield return new WaitUntil(()=>uictrlCountDown.ShowComplete);
+            GameRun.Instance.Playing();
         }
     }
 }

@@ -202,7 +202,6 @@ namespace GameA.Game
                 LogHelper.Debug("StartPlay failed");
                 return false;
             }
-            Messenger.Broadcast(EMessengerType.OnReady2Play);
             return true;
         }
 
@@ -218,7 +217,6 @@ namespace GameA.Game
                 return false;
             }
             Messenger.Broadcast(EMessengerType.OnGameRestart);
-            Messenger.Broadcast(EMessengerType.OnReady2Play);
             return true;
         }
 
