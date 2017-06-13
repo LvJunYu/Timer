@@ -1555,6 +1555,14 @@ namespace GameA.Game
 
         internal override void InFire()
         {
+            if (!_isAlive)
+            {
+                return;
+            }
+            if (IsInvincible)
+            {
+                return;
+            }
             if (_eDieType == EDieType.Fire)
             {
                 return;
@@ -1574,16 +1582,19 @@ namespace GameA.Game
             }
         }
 
-        protected override void OutFire()
+        internal override void OutFire()
         {
             base.OutFire();
-            if (_inFireEfffect != null)
+            if (_eDieType == EDieType.Fire)
             {
-                _inFireEfffect.Stop();
-            }
-            if (_view != null)
-            {
-                _view.SetRendererColor(Color.white);
+                if (_inFireEfffect != null)
+                {
+                    _inFireEfffect.Stop();
+                }
+                if (_view != null)
+                {
+                    _view.SetRendererColor(Color.white);
+                }
             }
         }
 

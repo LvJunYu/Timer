@@ -26,6 +26,10 @@ namespace GameA.Game
 
         public override void OnRemoved()
         {
+            if (_owner.IsAlive)
+            {
+                _owner.OutFire();
+            }
         }
     }
 }

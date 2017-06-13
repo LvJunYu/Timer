@@ -1,20 +1,27 @@
 using SoyEngine;
 using System;
 using SoyEngine.Proto;
+using UnityEngine;
 
 namespace GameA.Game
 {
     public class GameModeModifyEdit : GameModeEdit
     {
-        public override bool Init(Project project, object param, GameManager.EStartType startType)
+        public override bool Init(Project project, object param, GameManager.EStartType startType, MonoBehaviour corountineProxy)
         {
-            if (!base.Init(project, param, startType))
+            if (!base.Init(project, param, startType, corountineProxy))
             {
                 return false;
             }
             _gameSituation = EGameSituation.Match;
             return true;
 		}
+
+        public override void OnGameStart()
+        {
+            base.OnGameStart();
+            GameRun.Instance.Playing();
+        }
 
         public override void OnGameFailed()
 		{
@@ -83,18 +90,14 @@ namespace GameA.Game
 
 			if (mode == EMode.EditTest)
 			{
-//				SocialGUIManager.Instance.CloseUI<UICtrlItem>();
-//				SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
 				SocialGUIManager.Instance.OpenUI<UICtrlEdit>();
 				SocialGUIManager.Instance.GetUI<UICtrlEdit>().ChangeToEditTestMode();
-				SocialGUIManager.Instance.CloseUI<UICtrlScreenOperator>();
 				SocialGUIManager.Instance.OpenUI<UICtrlSceneState>();
 				SocialGUIManager.Instance.CloseUI<UICtrlModifyEdit>();
 				InputManager.Instance.ShowGameInput();
 			}
 			else if (mode == EMode.Edit)
 			{
-//                SocialGUIManager.Instance.OpenUI<UICtrlItem>();
 				SocialGUIManager.Instance.OpenUI<UICtrlEdit>().ChangeToModifyMode();
 				SocialGUIManager.Instance.CloseUI<UICtrlSceneState>();
 				SocialGUIManager.Instance.OpenUI<UICtrlModifyEdit>();

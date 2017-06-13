@@ -1,6 +1,9 @@
 using SoyEngine;
 using System;
 using SoyEngine.Proto;
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace GameA.Game
 {
@@ -14,9 +17,9 @@ namespace GameA.Game
             return _adventureLevelInfo;
         }
 
-        public override bool Init(Project project, object param, GameManager.EStartType startType)
+        public override bool Init(Project project, object param, GameManager.EStartType startType, MonoBehaviour corountineProxy)
         {
-            if (!base.Init(project, param, startType))
+            if (!base.Init(project, param, startType, corountineProxy))
             {
                 return false;
 			}
@@ -24,6 +27,13 @@ namespace GameA.Game
             _adventureLevelInfo = param as SituationAdventureParam;
             return true;
 		}
+
+        public override void OnGameStart()
+        {
+            base.OnGameStart();
+            _coroutineProxy.StopAllCoroutines();
+            _coroutineProxy.StartCoroutine(GameFlow());
+        }
 
         public override void OnGameFailed()
 		{
@@ -94,50 +104,8 @@ namespace GameA.Game
 
         public override bool Restart (Action successCb, Action failedCb)
         {
-
-            var tableLevel = AppData.Instance.AdventureData.GetAdvLevelTable (
-                AppData.Instance.AdventureData.LastPlayedChapterIdx + 1,
-                AppData.Instance.AdventureData.LastPlayedLevelIdx + 1,
-                AppData.Instance.AdventureData.LastPlayedLevelType
-            );
-            if (null == tableLevel) return false;
-            if (GameATools.CheckEnergy (tableLevel.EnergyCost)) {
-//                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (
-//                    this, "...");
-                AppData.Instance.AdventureData.RetryAdvLevel (
-                    () => {
-//                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                        // set local energy data
-                        GameATools.LocalUseEnergy (tableLevel.EnergyCost);
-//                        if (null != successCb) {
-//                            successCb.Invoke ();
-//                        }
-                        base.Restart (successCb, failedCb);
-                    },
-                    (error) => {
-                        if (null != failedCb) {
-                            failedCb.Invoke ();
-                        }
-//                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                    }
-                );
-                return true;
-            } else {
-                SocialGUIManager.ShowPopupDialog(
-                    "体力不够了",
-                    null,
-                    new System.Collections.Generic.KeyValuePair<string, Action> (
-                        "确定",
-                        () => {
-                            if (null != failedCb) {
-                                failedCb.Invoke ();
-                            }
-                        }
-                    )
-                );
-                return false;
-            }
-            return false;
+            SocialApp.Instance.ReturnToApp ();
+            return true;
         }
 
 
@@ -242,6 +210,15 @@ namespace GameA.Game
             return recordByte;
         }
 
-
+        private IEnumerator GameFlow()
+        {
+            UICtrlBoostItem uictrlBoostItem = SocialGUIManager.Instance.OpenUI<UICtrlBoostItem>();
+            yield return new WaitUntil(()=>uictrlBoostItem.SelectComplete);
+            List<int> useItems = uictrlBoostItem.SelectedItems;
+            PlayMode.Instance.OnBoostItemSelectFinish(useItems);
+            UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
+            yield return new WaitUntil(()=>uictrlCountDown.ShowComplete);
+            GameRun.Instance.Playing();
+        }
     }
 }

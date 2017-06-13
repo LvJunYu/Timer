@@ -3,6 +3,7 @@ using System.Collections;
 using System;
 using SoyEngine;
 using SoyEngine.Proto;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -15,10 +16,10 @@ namespace GameA.Game
         {
             get { return _record; }
         }
-        
-        public override bool Init(Project project, object param, GameManager.EStartType startType)
+
+        public override bool Init(Project project, object param, GameManager.EStartType startType, MonoBehaviour corountineProxy)
         {
-            if (!base.Init(project, param, startType))
+            if (!base.Init(project, param, startType, corountineProxy))
             {
                 return false;
             }
@@ -76,7 +77,7 @@ namespace GameA.Game
         {
             SocialGUIManager.Instance.OpenUI<UICtrlEdit>().ChangeToPlayRecordMode();
 //            SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
-            SocialGUIManager.Instance.CloseUI<UICtrlScreenOperator>();
+//            SocialGUIManager.Instance.CloseUI<UICtrlScreenOperator>();
             SocialGUIManager.Instance.OpenUI<UICtrlSceneState>();
             InputManager.Instance.HideGameInput();
         }

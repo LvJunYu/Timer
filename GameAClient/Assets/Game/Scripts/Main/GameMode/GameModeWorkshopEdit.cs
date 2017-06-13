@@ -1,20 +1,27 @@
 using System;
 using SoyEngine.Proto;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
     public class GameModeWorkshopEdit : GameModeEdit
     {
-        public override bool Init(Project project, object param, GameManager.EStartType startType)
+        public override bool Init(Project project, object param, GameManager.EStartType startType, MonoBehaviour corountineProxy)
         {
-            if (!base.Init(project, param, startType))
+            if (!base.Init(project, param, startType, corountineProxy))
             {
                 return false;
             }
             _gameSituation = EGameSituation.World;
             return true;
 		}
+
+        public override void OnGameStart()
+        {
+            base.OnGameStart();
+            GameRun.Instance.Playing();
+        }
 
         public override void OnGameFailed()
 		{

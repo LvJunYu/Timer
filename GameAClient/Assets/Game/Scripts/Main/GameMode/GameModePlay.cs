@@ -3,14 +3,15 @@ using System;
 using SoyEngine;
 using SoyEngine.Proto;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace GameA.Game
 {
     public abstract class GameModePlay : GameModeBase
     {
-        public override bool Init(Project project, object param, GameManager.EStartType startType)
+        public override bool Init(Project project, object param, GameManager.EStartType startType, MonoBehaviour corountineProxy)
         {
-            if (!base.Init(project, param, startType))
+            if (!base.Init(project, param, startType, corountineProxy))
             {
                 return false;
             }
@@ -77,9 +78,6 @@ namespace GameA.Game
 
         protected virtual void InitUI()
 		{
-//			SocialGUIManager.Instance.OpenUI<UICtrlEdit>().ChangeToPlayMode();
-            SocialGUIManager.Instance.CloseUI<UICtrlEdit>();
-			SocialGUIManager.Instance.CloseUI<UICtrlScreenOperator>();
 			SocialGUIManager.Instance.OpenUI<UICtrlSceneState>();
 			InputManager.Instance.ShowGameInput();
         }

@@ -27,7 +27,7 @@ namespace GameA
 		{
 			base.OnViewCreated();
 			Messenger.AddListener(EMessengerType.OnEditorModeCameraMove, OnEditorModeCameraMove);
-			Messenger.AddListener(GameA.EMessengerType.OnGameStartComplete, OnGameStartedComplete);
+//			Messenger.AddListener(GameA.EMessengerType.OnGameStartComplete, OnGameStartedComplete);
 
 		}
 
@@ -35,7 +35,7 @@ namespace GameA
 		{
 			base.OnDestroy();
 			Messenger.RemoveListener(EMessengerType.OnEditorModeCameraMove, OnEditorModeCameraMove);
-			Messenger.RemoveListener(GameA.EMessengerType.OnGameStartComplete, OnGameStartedComplete);
+//			Messenger.RemoveListener(GameA.EMessengerType.OnGameStartComplete, OnGameStartedComplete);
 		}
 
 

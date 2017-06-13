@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -65,6 +66,10 @@ namespace GameA.Game
 
         internal override void InLazer()
         {
+            if (!_isAlive || IsInvincible)
+            {
+                return;
+            }
             _eDieType = EDieType.Lazer;
             OnDead();
             if (_animation != null)
@@ -79,8 +84,11 @@ namespace GameA.Game
             {
                 //跳出水里
                 ExtraSpeed.y = 240;
-                _animation.ClearTrack(1);
                 OutFire();
+                return;
+            }
+            if (!_isAlive || IsInvincible)
+            {
                 return;
             }
             _eDieType = EDieType.Water;
@@ -91,13 +99,22 @@ namespace GameA.Game
             }
         }
 
-        protected virtual void OutFire()
+        internal override void OutFire()
         {
-            _eDieType = EDieType.None;
+            if (_eDieType == EDieType.Fire)
+            {
+                _fireTimer = 0;
+                _animation.Reset();
+                _eDieType = EDieType.None;
+            }
         }
 
         internal override void InFire()
         {
+            if (!_isAlive || IsInvincible)
+            {
+                return;
+            }
             if (_eDieType == EDieType.Fire)
             {
                 return;
