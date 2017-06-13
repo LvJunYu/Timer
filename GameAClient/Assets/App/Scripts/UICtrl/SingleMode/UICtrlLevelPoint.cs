@@ -62,9 +62,9 @@ namespace GameA
 			// normal level
 			if (!_isBonus) {
 				if (AppData.Instance.AdventureData.UserData.SectionList.Count > (chapterId - 1) &&
-					AppData.Instance.AdventureData.UserData.SectionList [chapterId - 1].NormalLevelUserDataList.Count > levelIdx) {
+					AppData.Instance.AdventureData.UserData.SectionList [chapterId - 1].NormalLevelUserDataList.Count > levelIdx-1) {
 
-					var levelData = AppData.Instance.AdventureData.UserData.SectionList [chapterId - 1].NormalLevelUserDataList [levelIdx];
+					var levelData = AppData.Instance.AdventureData.UserData.SectionList [chapterId - 1].NormalLevelUserDataList [levelIdx - 1];
 					StarLight1.SetActive (levelData.SimpleData.Star1Flag);
 					StarLight2.SetActive (levelData.SimpleData.Star2Flag);
 					StarLight3.SetActive (levelData.SimpleData.Star3Flag);
@@ -81,7 +81,7 @@ namespace GameA
                     StarDark1.SetActive (false);
                     StarDark2.SetActive (false);
                     StarDark3.SetActive (false);
-					if (levelIdx == AppData.Instance.AdventureData.UserData.AdventureUserProgress.CompleteLevel) {
+					if (levelIdx == AppData.Instance.AdventureData.UserData.AdventureUserProgress.CompleteLevel + 1) {
                         Current.gameObject.SetActive (true);
 						Active.SetActive (false);
 						Disactive.SetActive (false);
@@ -94,9 +94,9 @@ namespace GameA
 				}
 			} else {
 				if (AppData.Instance.AdventureData.UserData.SectionList.Count > (chapterId - 1) &&
-					AppData.Instance.AdventureData.UserData.SectionList [chapterId - 1].BonusLevelUserDataList.Count > levelIdx) {
+					AppData.Instance.AdventureData.UserData.SectionList [chapterId - 1].BonusLevelUserDataList.Count > levelIdx - 1) {
 
-					var levelData = AppData.Instance.AdventureData.UserData.SectionList [chapterId - 1].BonusLevelUserDataList [levelIdx];
+					var levelData = AppData.Instance.AdventureData.UserData.SectionList [chapterId - 1].BonusLevelUserDataList [levelIdx - 1];
 					if (levelData.SimpleData.SuccessCount > 0) {
 						StarLight1.SetActive (true);	
 					} else {
@@ -109,7 +109,7 @@ namespace GameA
 				}
 //				} else {
 				if (AppData.Instance.AdventureData.UserData.SectionList.Count > (chapterId - 1) &&
-					AppData.Instance.AdventureData.UserData.SectionList [chapterId - 1].GotStarCnt >= (levelIdx * 9 + 9)) {
+                    AppData.Instance.AdventureData.UserData.SectionList [chapterId - 1].GotStarCnt >= ((levelIdx - 1) * 9 + 9)) {
 						Active.SetActive (true);
 						Disactive.SetActive (false);
 					} else {
