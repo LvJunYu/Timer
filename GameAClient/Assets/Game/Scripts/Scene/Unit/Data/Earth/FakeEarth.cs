@@ -91,7 +91,7 @@ namespace GameA.Game
             base.OnObjectDestroy();
             if (_editSequence != null)
             {
-                DOTween.Kill(_trans);
+                _editSequence.Rewind();
                 _editSequence.Kill();
                 _editSequence = null;
             }

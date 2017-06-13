@@ -84,32 +84,34 @@ namespace GameA.Game
                     }
                     if (!blocked)
                     {
-                        var unit = PlayMode.Instance.CreateUnit(new UnitDesc(BridgeUnitId,
-                                new IntVec3(_checkGrid.XMin, _checkGrid.YMin, _guid.z), 0, Vector2.one));
-                        if (_curCreatingQueue == null)
+                        var unit = PlayMode.Instance.CreateRuntimeUnit(BridgeUnitId, new IntVec2(_checkGrid.XMin, _checkGrid.YMin));
+                        if (unit != null)
                         {
-                            _curCreatingQueue = AllocQueue();
-                        }
-                        _curCreatingQueue.Enqueue(unit);
-                        _checkGrid = GM2DTools.CalculateFireColliderGrid(BridgeUnitId, _checkGrid, _unitDesc.Rotation);
-
-                        for (int i = 0; i < nodes.Count; i++)
-                        {
-                            SceneNode node = nodes[i];
-                            if (node.Id == UnitDefine.SwitchTriggerId)
+                            if (_curCreatingQueue == null)
                             {
-                                UnitBase switchTrigger;
-                                if (ColliderScene2D.Instance.TryGetUnit(node, out switchTrigger))
+                                _curCreatingQueue = AllocQueue();
+                            }
+                            _curCreatingQueue.Enqueue(unit);
+                            _checkGrid = GM2DTools.CalculateFireColliderGrid(BridgeUnitId, _checkGrid, _unitDesc.Rotation);
+
+                            for (int i = 0; i < nodes.Count; i++)
+                            {
+                                SceneNode node = nodes[i];
+                                if (node.Id == UnitDefine.SwitchTriggerId)
                                 {
-                                    List<GridCheck> lists;
-                                    if (!_gridChecks.TryGetValue(unit.Guid, out lists))
+                                    UnitBase switchTrigger;
+                                    if (ColliderScene2D.Instance.TryGetUnit(node, out switchTrigger))
                                     {
-                                        lists = new List<GridCheck>();
-                                        _gridChecks.Add(unit.Guid, lists);
+                                        List<GridCheck> lists;
+                                        if (!_gridChecks.TryGetValue(unit.Guid, out lists))
+                                        {
+                                            lists = new List<GridCheck>();
+                                            _gridChecks.Add(unit.Guid, lists);
+                                        }
+                                        var gridCheck = new GridCheck(unit);
+                                        gridCheck.Do((SwitchTrigger)switchTrigger);
+                                        _gridChecks[unit.Guid].Add(gridCheck);
                                     }
-                                    var gridCheck = new GridCheck(unit);
-                                    gridCheck.Do((SwitchTrigger)switchTrigger);
-                                    _gridChecks[unit.Guid].Add(gridCheck);
                                 }
                             }
                         }

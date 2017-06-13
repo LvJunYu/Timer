@@ -104,6 +104,7 @@ namespace GameA.Game
         AttackMonsterItem = 8,  // 可以和Monster、Player、Earth碰撞
         RigidbodyItem = 9,
         Bullet = 10,
+        Gun = 11,
         Max
     }
 
@@ -215,6 +216,7 @@ namespace GameA.Game
 		Earth = 0,
 		Dynamic,
 		Effect,
+        Gun,
 		RuntimeCreate =10,
 		Max,
 	}
