@@ -239,42 +239,6 @@ namespace GameA
         }
 
 
-        private void OnTestChangeAvatar () {
-//			SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请求换装...");
-//			int type = UnityEngine.Random.Range (0, 3);
-//			LocalUser.Instance.UserLegacy.AvatarData.SendChangeAvatarPart (
-//				(EAvatarPart)(type + 1),  
-//				(_avatarView.EquipedPartsIds [type] + 1) % 2 + 1,
-//				() => {
-//					_avatarView.SetParts ((_avatarView.EquipedPartsIds [type] + 1) % 2 + 1,
-//						(SpinePartsHelper.ESpineParts)type, true);
-//					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//				}, (netError) => {
-//					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//				}
-//			);
-		}
-
-		private void OnDebugClearUserData () {
-//			SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "清空数据");
-//			RemoteCommands.ClearUserAll (LocalUser.Instance.UserGuid,
-//				ret => {
-//					ParallelTaskHelper<ENetResultCode> helper = new ParallelTaskHelper<ENetResultCode>(()=>{
-//						SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);	
-//					}, code=>{
-//						LogHelper.Error("Refresh user data failed.");
-//						SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//					});
-//					helper.AddTask(AppData.Instance.LoadAppData);
-//					helper.AddTask(LocalUser.Instance.LoadUserData);
-//					helper.AddTask(AppData.Instance.AdventureData.PrepareAllData);
-//				}, code => {
-//					LogHelper.Error("Clear user data failed.");
-//					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//				});
-		}
-
-
         public void OnCreateBtn()
         {
             SocialGUIManager.Instance.OpenUI<UICtrlWorkShop>();
