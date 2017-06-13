@@ -16,9 +16,9 @@ namespace GameA.Game
     [Unit(Id = 5104, Type = typeof(SwitchPress))]
     public class SwitchPress : BlockBase
     {
+        protected List<UnitBase> _units;
         protected bool _trigger;
         protected bool _triggerReverse;
-        protected List<UnitBase> _units;
         protected SwitchTrigger _switchTrigger;
 
         internal override void OnObjectDestroy()
