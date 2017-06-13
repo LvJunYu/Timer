@@ -1237,6 +1237,10 @@ namespace GameA.Game
             {
                 _inFireEfffect.Stop();
             }
+            if (_gun != null)
+            {
+                _gun.Stop();
+            }
             _mainInput.Clear();
             Messenger.Broadcast(EMessengerType.OnMainPlayerDead);
             base.OnDead();
@@ -1279,6 +1283,10 @@ namespace GameA.Game
                                     _trans.eulerAngles = new Vector3(0, 0, 0);
                                     SetPos(_revivePos);
                                     PlayMode.Instance.UpdateWorldRegion(_curPos);
+                                    if (_gun != null)
+                                    {
+                                        _gun.Play();
+                                    }
                                     _animation.Reset();
                                     _animation.PlayLoop(IdleAnimName());
                                     PlayMode.Instance.CurrentShadow.RecordAnimation(IdleAnimName(), true);

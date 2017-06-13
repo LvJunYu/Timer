@@ -45,7 +45,7 @@ namespace GameA.Game
         private void Calculate()
         {
             IntVec2 pointA = IntVec2.zero, pointB = IntVec2.zero;
-            GM2DTools.GetBorderPoint(_colliderGrid, (EDirectionType)Rotation, ref pointA, ref pointB);
+            GM2DTools.GetBorderPoint(_colliderGrid, (EDirectionType)Rotation, ref pointA, ref pointB, -240);
             _distance = GM2DTools.GetDistanceToBorder(pointA, Rotation);
             _checkGrid = SceneQuery2D.GetGrid(pointA, pointB, Rotation, _distance);
             _borderCenterPoint = (pointA + pointB) / 2;

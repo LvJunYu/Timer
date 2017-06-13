@@ -36,6 +36,27 @@ namespace GameA.Game
             return true;
         }
 
+        public void Stop()
+        {
+            if (_shooterEffect != null)
+            {
+                _shooterEffect.Stop();
+            }
+        }
+
+        public void Play()
+        {
+            _curPos = _mainUnit.CurMoveDirection == EMoveDirection.Right
+                ? _mainUnit.CenterPos + new IntVec2(-_shooterEffectOffset.x, _shooterEffectOffset.y)
+                : _mainUnit.CenterPos +
+                  new IntVec2(_shooterEffectOffset.x - GetColliderSize().x, _shooterEffectOffset.y);
+            SetPos(_curPos);
+            if (_shooterEffect != null)
+            {
+                _shooterEffect.Play();
+            }
+        }
+
         internal override bool InstantiateView()
         {
             if (!base.InstantiateView())
@@ -57,7 +78,7 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            if (_isStart && _isAlive && _mainUnit != null)
+            if (_isStart && _isAlive && _mainUnit != null && _mainUnit.IsAlive)
             {
                 var destPos = _mainUnit.CurMoveDirection == EMoveDirection.Right
                     ? _mainUnit.CenterPos + new IntVec2(-_shooterEffectOffset.x, _shooterEffectOffset.y)
