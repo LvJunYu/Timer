@@ -26,6 +26,8 @@ namespace GameA
         private ERewardType _openType;
 
         private USCtrlRewardItem [] _rewardItemCtrls;
+
+        private Action _closeCB;
         #endregion
 
         #region Properties
@@ -68,6 +70,11 @@ namespace GameA
         protected override void OnClose() {
             
             base.OnClose ();
+            if (null != _closeCB)
+            {
+                _closeCB.Invoke ();
+                _closeCB = null;
+            }
         }
         
         protected override void InitEventListener() {
@@ -105,7 +112,7 @@ namespace GameA
             _groupId = (int)EUIGroupType.PopUpUI;
         }
 
-        public void SetRewards (Reward reward) {
+        public void SetRewards (Reward reward, Action closeCB = null) {
             if (null == reward) {
                 // todo error handle
                 return;
@@ -119,18 +126,24 @@ namespace GameA
             for (; i < _cachedView.ItemList.Length; i++) {
                 _cachedView.ItemList [i].gameObject.SetActive (false);
             }
+
+            _closeCB = closeCB;
         }
 
-        public void SetUnlockSystem (int systemCode) {
+        public void SetUnlockSystem (string title, string icon, Action closeCB = null) {
             for (int i = 1; i < _cachedView.ItemList.Length; i++) {
                 _cachedView.ItemList [i].gameObject.SetActive (false);
             }
+            _rewardItemCtrls [0].SetItem (title, icon);
+            _closeCB = closeCB;
         }
 
-        public void SetAbility (int abilityCode) {
+        public void SetAbility (string title, string icon, Action closeCB = null) {
             for (int i = 1; i < _cachedView.ItemList.Length; i++) {
                 _cachedView.ItemList [i].gameObject.SetActive (false);
             }
+            _rewardItemCtrls [0].SetItem (title, icon);
+            _closeCB = closeCB;
         }
 
         private void OnBGBtn () {
