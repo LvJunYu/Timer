@@ -118,6 +118,7 @@ namespace GameA.Game
                     }
                     _invincibleTime = value;
                     _flashTime = 1;
+                    OutFire();
                 }
             }
         }

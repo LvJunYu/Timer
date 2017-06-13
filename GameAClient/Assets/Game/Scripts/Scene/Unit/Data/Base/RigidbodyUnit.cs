@@ -98,7 +98,12 @@ namespace GameA.Game
 
         private bool Intersect(UnitBase unit)
         {
-            return _dynamicCollider.Grid.Intersects(unit.ColliderGrid);
+            //俩移动物体不相交
+            if (unit.DynamicCollider != null)
+            {
+                return false;
+            }
+            return _colliderGrid.Intersects(unit.ColliderGrid);
         }
 
         protected virtual void CheckUp()
