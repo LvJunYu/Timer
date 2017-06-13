@@ -406,7 +406,7 @@ namespace GameA.Game
             GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.GameAudioBgm01);
         }
 
-        private void OnBoostItemSelectFinish(List<int> items)
+        public void OnBoostItemSelectFinish(List<int> items)
         {
             Debug.Log("OnBoostItemSelectFinish");
             _boostItems = items;

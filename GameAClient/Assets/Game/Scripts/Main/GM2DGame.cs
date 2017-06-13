@@ -151,7 +151,7 @@ namespace GameA.Game
                     LogHelper.Error("GM2D Play startType error, startType: {0}", startType);
                     return false;
             }
-            _gameMode.Init(project, param, startType);
+            _gameMode.Init(project, param, startType, this);
             return Init();
         }
 
@@ -222,7 +222,11 @@ namespace GameA.Game
             LocaleManager.Instance.EnterGame();
             yield return GameRun.Instance.Init(_eGameInitType, _project);
             _gameMode.InitByStep();
-            Messenger.Broadcast(EMessengerType.OnGameStartComplete);
+            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(()=>{
+                
+                Messenger.Broadcast(EMessengerType.OnGameStartComplete);
+                _gameMode.OnGameStart();
+            }));
         }
 
         private void OnDestroy()

@@ -1,20 +1,30 @@
 using System;
 using SoyEngine.Proto;
 using SoyEngine;
+using UnityEngine;
+using System.Collections.Generic;
+using System.Collections;
 
 namespace GameA.Game
 {
     public class GameModeChallengePlay : GameModePlay
     {
-        public override bool Init(Project project, object param, GameManager.EStartType startType)
+        public override bool Init(Project project, object param, GameManager.EStartType startType, MonoBehaviour corountineProxy)
         {
-            if (!base.Init(project, param, startType))
+            if (!base.Init(project, param, startType, corountineProxy))
             {
                 return false;
             }
             _gameSituation = EGameSituation.Match;
             return true;
-		}
+        }
+
+        public override void OnGameStart()
+        {
+            base.OnGameStart();
+            _coroutineProxy.StopAllCoroutines();
+            _coroutineProxy.StartCoroutine(GameFlow());
+        }
 
         public override void OnGameFailed()
 		{
@@ -100,5 +110,16 @@ namespace GameA.Game
 				}
 			);
 		}
+
+        private IEnumerator GameFlow()
+        {
+            UICtrlBoostItem uictrlBoostItem = SocialGUIManager.Instance.OpenUI<UICtrlBoostItem>();
+            yield return new WaitUntil(()=>uictrlBoostItem.SelectComplete);
+            List<int> useItems = uictrlBoostItem.SelectedItems;
+            PlayMode.Instance.OnBoostItemSelectFinish(useItems);
+            UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
+            yield return new WaitUntil(()=>uictrlCountDown.ShowComplete);
+            GameRun.Instance.Playing();
+        }
     }
 }

@@ -93,9 +93,9 @@ namespace GameA.Game
 			set { _iconBytes = value; }
 		}
 
-        public override bool Init(Project project, object param, GameManager.EStartType startType)
+        public override bool Init(Project project, object param, GameManager.EStartType startType, MonoBehaviour corountineProxy)
         {
-            if (!base.Init(project, param, startType))
+            if (!base.Init(project, param, startType, corountineProxy))
             {
                 return false;
             }
@@ -188,7 +188,7 @@ namespace GameA.Game
 //                SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
                 SocialGUIManager.Instance.OpenUI<UICtrlEdit>();
                 SocialGUIManager.Instance.GetUI<UICtrlEdit>().ChangeToEditTestMode();
-                SocialGUIManager.Instance.CloseUI<UICtrlScreenOperator>();
+//                SocialGUIManager.Instance.CloseUI<UICtrlScreenOperator>();
                 SocialGUIManager.Instance.OpenUI<UICtrlSceneState>();
                 SocialGUIManager.Instance.CloseUI<UICtrlModifyEdit>();
                 InputManager.Instance.ShowGameInput();
@@ -196,7 +196,7 @@ namespace GameA.Game
             else if (mode == EMode.Edit)
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlItem>();
-                SocialGUIManager.Instance.OpenUI<UICtrlScreenOperator>();
+//                SocialGUIManager.Instance.OpenUI<UICtrlScreenOperator>();
                 SocialGUIManager.Instance.OpenUI<UICtrlEdit>();
                 SocialGUIManager.Instance.GetUI<UICtrlEdit>().ChangeToEditMode();
                 SocialGUIManager.Instance.CloseUI<UICtrlSceneState>();
