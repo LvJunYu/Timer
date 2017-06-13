@@ -82,6 +82,7 @@ namespace GameA.Game
             {
                 _view.SetRendererEnabled(!_currentTrigger);
                 _effect = GameParticleManager.Instance.EmitLoop("M1EffectSwitchEarth", _trans.position + new Vector3(0,-0.6f,0));
+                _effect.Trans.parent = _trans;
                 _effect.SetActive(_currentTrigger);
             }
             return true;
