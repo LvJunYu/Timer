@@ -80,6 +80,8 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
+            _cachedView.AvatarBtn.enabled =  SocialGUIManager.Instance.OpenUI<UICtrlTaskbar>().FashionShopAvailable;
+
             _cachedView.AvatarBtn.onClick.AddListener(OnAvatarBtn);
 
             //Debug.Log("_____________" + _cachedView.PlayerAvatarAnimation+ "_____________" +_cachedView.PlayerAvatarAnimation.skeleton);
@@ -125,7 +127,16 @@ namespace GameA
 
         private void OnAvatarBtn()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
+
+                SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
+
+        }
+
+        public void Set(bool ifUsable )
+        {
+
+            _cachedView.AvatarBtn.enabled = ifUsable;
+
         }
     }
 }
