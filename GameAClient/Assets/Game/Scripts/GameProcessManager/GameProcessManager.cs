@@ -28,6 +28,8 @@ namespace GameA.Game
             InitItemsToUnlock ();
             _wait2ShowProcessQueue.Clear ();
             _currentShowingUnlockProcess = null;
+
+            RefreshHomeUIUnlock ();
         }
 
         public void Clear ()
@@ -45,7 +47,7 @@ namespace GameA.Game
                     AppData.Instance.AdventureData.UserData.AdventureUserProgress.CompleteSection,
                     AppData.Instance.AdventureData.UserData.AdventureUserProgress.CompleteLevel
                 );
-            Debug.Log ("Current process: " + currentProcess);
+//            Debug.Log ("Current process: " + currentProcess);
             _itemsToUnlock.Clear ();
             var tableDic = TableManager.Instance.Table_ProgressUnlockDic;
             var itor = tableDic.GetEnumerator ();
@@ -59,7 +61,7 @@ namespace GameA.Game
                     item.Table = itor.Current.Value;
                     item.Process = process;
                     _itemsToUnlock.Add (item);
-                    Debug.Log ("Add new process: " + process);
+//                    Debug.Log ("Add new process: " + process + " id: " + itor.Current.Value.Id);
                 }
             }
             _itemsToUnlock = _itemsToUnlock.OrderBy (i => i.Process).ToList();
@@ -72,14 +74,16 @@ namespace GameA.Game
                     AppData.Instance.AdventureData.UserData.AdventureUserProgress.CompleteSection,
                     AppData.Instance.AdventureData.UserData.AdventureUserProgress.CompleteLevel
                 );
-            Debug.Log ("__________________OnChangeToAppMode");
-            Debug.Log ("current: " + currentProcess);
+//            Debug.Log ("__________________OnChangeToAppMode");
+//            Debug.Log ("current: " + currentProcess);
+            bool newItemUnlocked = false;
             for (int i = _itemsToUnlock.Count - 1; i >= 0 ; i--) {
-                Debug.Log ("_itemsToUnlock [i].Process: " + _itemsToUnlock [i].Process);
+//                Debug.Log ("_itemsToUnlock [i].Process: " + _itemsToUnlock [i].Process);
                 if (_itemsToUnlock [i].Process <= currentProcess) {
-                    Debug.Log ("Try to play process: " + _itemsToUnlock [i].Process);
+//                    Debug.Log ("Try to play process: " + _itemsToUnlock [i].Process);
                     var newProcess = UnlockProcessCreator.GetUnlockProcess (_itemsToUnlock [i]);
                     if (null != newProcess) _wait2ShowProcessQueue.Enqueue (newProcess);
+                    newItemUnlocked = true;
                     _itemsToUnlock.RemoveAt (i);
                 }
             }
@@ -95,6 +99,35 @@ namespace GameA.Game
             }
             if (null != _currentShowingUnlockProcess) {
                 _currentShowingUnlockProcess.Start ();
+            }
+
+            if (newItemUnlocked) {
+                RefreshHomeUIUnlock ();
+            }
+        }
+
+        public void RefreshHomeUIUnlock() 
+        {
+            var uiTaskBar = SocialGUIManager.Instance.GetUI<UICtrlTaskbar> ();
+            if (null != uiTaskBar) {
+                uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_Lottery, true);
+                uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_FashionShop, true);
+                uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_Workshop, true);
+                uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_World, true);
+                // todo 改表结构，增加枚举列，不能判断id
+                for (int i = 0; i < _itemsToUnlock.Count; i++) {
+                    if (_itemsToUnlock [i].Table.Id == 4) {
+                        uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_Lottery, false);
+                    } else if (_itemsToUnlock [i].Table.Id == 5) {
+                        uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_FashionShop, false);
+                    } else if (_itemsToUnlock [i].Table.Id == 6) {
+                        uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_Workshop, false);
+                    } else if (_itemsToUnlock [i].Table.Id == 7) {
+//                    uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_Lottery, false);
+                    } else if (_itemsToUnlock [i].Table.Id == 8) {
+                        uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_World, false);
+                    }
+                }
             }
         }
         #endregion
@@ -204,7 +237,6 @@ namespace GameA.Game
 
         public void Start ()
         {
-            Debug.Log ("_____________________start");
             _run = true;
             Next ();
         }
