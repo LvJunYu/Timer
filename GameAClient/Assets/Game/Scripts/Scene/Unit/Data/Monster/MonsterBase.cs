@@ -214,7 +214,7 @@ namespace GameA.Game
                 }
                 else
                 {
-                    float speed = (int)(SpeedX * 0.7f);
+                    float speed = (int)(SpeedX * 1f);
                     speed = Math.Abs(speed);
                     speed = Mathf.Clamp(speed, 30, 100) * deltaTime;
                     _animation.PlayLoop("Run", speed);

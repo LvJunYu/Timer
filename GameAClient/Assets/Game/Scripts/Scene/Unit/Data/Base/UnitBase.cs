@@ -770,6 +770,10 @@ namespace GameA.Game
         {
         }
 
+        internal virtual void OutFire()
+        {
+        }
+
         /// <summary>
         /// 怪物触碰打击
         /// </summary>

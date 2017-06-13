@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -79,7 +80,6 @@ namespace GameA.Game
             {
                 //跳出水里
                 ExtraSpeed.y = 240;
-                _animation.ClearTrack(1);
                 OutFire();
                 return;
             }
@@ -91,13 +91,20 @@ namespace GameA.Game
             }
         }
 
-        protected virtual void OutFire()
+        internal override void OutFire()
         {
-            _eDieType = EDieType.None;
+            if (_eDieType == EDieType.Fire)
+            {
+                _fireTimer = 0;
+                _animation.Reset();
+                _eDieType = EDieType.None;
+                LogHelper.Debug("OutFire" + ToString());
+            }
         }
 
         internal override void InFire()
         {
+            LogHelper.Debug("InFire" + ToString());
             if (_eDieType == EDieType.Fire)
             {
                 return;
