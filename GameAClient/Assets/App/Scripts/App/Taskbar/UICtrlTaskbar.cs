@@ -243,12 +243,16 @@ namespace GameA
 
         public void OnCreateBtn()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlWorkShop>();
+            if (GameProcessManager.Instance.IsGameSystemAvailable (EGameSystem.WorkShop)) {
+                SocialGUIManager.Instance.OpenUI<UICtrlWorkShop> ();
+            }
         }
 
         public void OnWorldBtn()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlWorld>();
+            if (GameProcessManager.Instance.IsGameSystemAvailable (EGameSystem.World)) {
+                SocialGUIManager.Instance.OpenUI<UICtrlWorld> ();
+            }
         }
 
 		private void OnSingleGameBtn () {
@@ -266,12 +270,16 @@ namespace GameA
 
 
 		private void OnAvatarBtn () {
-            SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
+            if (GameProcessManager.Instance.IsGameSystemAvailable (EGameSystem.Fashion)) {
+                SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu> ();
+            }
 		}
         private void OnLotteryBtn()
         {
             //Debug.Log("_________________________OnLotteryBtn");
-           SocialGUIManager.Instance.OpenUI<UICtrlLottery>();
+            if (GameProcessManager.Instance.IsGameSystemAvailable (EGameSystem.Lottery)) {
+                SocialGUIManager.Instance.OpenUI<UICtrlLottery> ();
+            }
         }
 
         private void RefreshUserInfo () {
