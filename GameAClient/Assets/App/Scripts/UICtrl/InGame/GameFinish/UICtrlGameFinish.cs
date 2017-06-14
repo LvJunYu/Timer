@@ -192,6 +192,34 @@ namespace GameA
         private void UpdateView()
 		{
             switch (_showState) {
+                case EShowState.Win:
+                    _cachedView.Win.SetActive (true);
+                    _cachedView.Lose.SetActive (false);
+                    _cachedView.RetryBtn.gameObject.SetActive (true);
+                    _cachedView.ReturnBtn.gameObject.SetActive (true);
+                    _cachedView.ContinueEditBtn.gameObject.SetActive (false);
+                    _cachedView.NextBtn.gameObject.SetActive (false);
+                    _cachedView.Score.gameObject.SetActive (true);
+                    _cachedView.ScoreOutLine.gameObject.SetActive (true);
+                    _cachedView.Score.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
+                    _cachedView.ScoreOutLine.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
+                    // 奖励
+                    _cachedView.RewardObj.SetActive (false);
+                    //                    UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
+
+                    //                    _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishWin3Star");
+                    break;
+                case EShowState.Lose:
+                    _cachedView.Win.SetActive (false);
+                    _cachedView.Lose.SetActive (true);
+                    _cachedView.ReturnBtn.gameObject.SetActive (true);
+                    _cachedView.RetryBtn.gameObject.SetActive (true);
+                    _cachedView.NextBtn.gameObject.SetActive (false);
+                    _cachedView.ContinueEditBtn.gameObject.SetActive (false);
+                    _cachedView.Score.gameObject.SetActive (false);
+                    _cachedView.ScoreOutLine.gameObject.SetActive (false);
+                    _cachedView.RewardObj.SetActive (false);
+                    break;
             case EShowState.AdvBonusWin:
                 _cachedView.Win.SetActive (true);
                 _cachedView.Lose.SetActive (false);
