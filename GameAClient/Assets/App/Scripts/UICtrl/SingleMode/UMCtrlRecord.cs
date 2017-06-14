@@ -76,6 +76,7 @@ namespace GameA
 
         public void Set(object obj,string name)
         {
+            Debug.Log("_________set___"+ name);
             _record = obj as Record;
             _cachedView.TapName.text = name;
             _cachedView.SubmitTime.text = GetSubmitTime();
