@@ -54,6 +54,12 @@ namespace GameA.Game
 			});
         }
 
+        public override bool Restart (Action successCb, Action failedCb)
+        {
+            SocialApp.Instance.ReturnToApp ();
+            return true;
+        }
+
         public override void QuitGame(Action successCB, Action<int> failureCB, bool forceQuitWhenFailed = false)
 		{
 			if (!LocalUser.Instance.MatchUserData.ChallengeResultCommitted)
