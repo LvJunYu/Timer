@@ -19,24 +19,19 @@ namespace GameA.Game
         public static CameraManager _instance;
 
         private float _aspectRatio;
-        private Rect _cameraMoveRect;
+        private Rect _cameraMoveRect = new Rect();
         private Tweener _cameraPosTweener;
-        private Rect _cameraViewRect;
+        private Rect _cameraViewRect = new Rect();
         private float _finalOrthoSize;
         private Vector3 _finalPos;
         private MainUnit _followTarget;
         [SerializeField] private Transform _mainCamaraTrans;
         [SerializeField] private Camera _mainCamera;
-        private float _maxCameraPlaySize = 6.5f;
-        private float _minCameraPlaySize = 2.5f;
-
-        private Vector2 _cameraEditSize;
+        private float _cameraPlaySize = 5f;
 
         [SerializeField] private Transform _rendererCamaraTrans;
         [SerializeField] private Camera _rendererCamera;
         [SerializeField] private IntVec2 _rollPos;
-        private float _runtimeCameraHOffset = 0;
-        private float _runtimeCameraPosLerpSpeed = 5f;
 
         private Rect _validMapRect;
 
@@ -286,19 +281,6 @@ namespace GameA.Game
             UpdateCameraViewRect();
         }
 
-        public void SetCameraEditSize(float value)
-        {
-            _cameraEditSize = new Vector2(2.5f, value);
-        }
-
-        public void AddCameraEditSize(float value)
-        {
-            _finalOrthoSize += value;
-            _finalOrthoSize = Mathf.Clamp(_finalOrthoSize, _cameraEditSize.x, _cameraEditSize.y);
-            _rendererCamera.orthographicSize = _finalOrthoSize;
-            UpdateCameraViewRect();
-        }
-
         public void UpdateVisibleDistance()
         {
             float height = _finalOrthoSize*2;
@@ -376,7 +358,7 @@ namespace GameA.Game
         // 标准化镜头大小，将镜头大小设为标准值中的最接近的值
         private void StandardizationCameraSize()
         {
-            float fixedSize = Mathf.Clamp(_finalOrthoSize, _minCameraPlaySize, _maxCameraPlaySize);
+            float fixedSize = _cameraPlaySize;
             SetFinalOrthoSize(fixedSize);
         }
 
@@ -429,8 +411,6 @@ namespace GameA.Game
         {
             SetMinMax();
             _rendererCamera.enabled = true;
-            //_pixelSize =  _rendererCamera.orthographicSize * 2 / Screen.height;
-            //_invPixelSize = 1 / _pixelSize;
 
             //初始化主摄像机位置
             Vector3 cameraPos =

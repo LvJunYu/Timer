@@ -104,6 +104,7 @@ namespace GameA
 
         private void OnItemClick(CardDataRendererWrapper<RecordRankHolder> item)
         {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "请求播放录像");
             item.Content.Record.RequestPlay (() => {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
                 GameManager.Instance.RequestPlayRecord (_content, item.Content.Record);

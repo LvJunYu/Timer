@@ -236,7 +236,6 @@ namespace GameA.Game
 		{
 			var cameraPosOffset = GM2DTools.TileToWorld(ConstDefineGM2D.MapStartPos);
 			CameraManager.Instance.SetRenderCameraPosOffset(cameraPosOffset);
-            CameraManager.Instance.SetCameraEditSize(((float)_defaultMapSize.y) / 2);
             CameraManager.Instance.SetFinalOrthoSize((float)_defaultMapSize.y / 2);
             DataScene2D.Instance.SetDefaultMapSize(_defaultMapSize * ConstDefineGM2D.ServerTileScale);
 			var go = new GameObject("EditMode");

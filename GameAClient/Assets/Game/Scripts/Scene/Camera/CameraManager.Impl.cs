@@ -58,9 +58,9 @@ namespace GameA.Game
         public void UpdateFadeCameraOrthoSizeOffset(float offset)
         {
             _orthoEffect.UpdateOffset(offset);
-            //   _finalOrthoSize += offset;
-            //Tweener t = _rendererCamera.DOOrthoSize(_finalOrthoSize, ConstDefineGM2D.CameraOrthoSizeFadeTime);
-            //t.SetEase(Ease.OutQuart);
+//            _finalOrthoSize += offset;
+//            Tweener t = _rendererCamera.DOOrthoSize(_finalOrthoSize, ConstDefineGM2D.CameraOrthoSizeFadeTime);
+//            t.SetEase(Ease.OutQuart);
         }
 
         public bool CheckReachLimitLeft(Vector3 pos)

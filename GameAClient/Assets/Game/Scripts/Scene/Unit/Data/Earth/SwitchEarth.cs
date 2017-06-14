@@ -16,28 +16,28 @@ namespace GameA.Game
     [Unit(Id = 4003, Type = typeof(SwitchEarth))]
     public class SwitchEarth : BlockBase
     {
-        protected bool _finalTrigger;
-        protected bool _currentTrigger;
+        protected bool _finalCtrlBySwitch;
+        protected bool _currentCtrlBySwitch;
         protected SpineObject _effect;
-        protected List<UnitBase> _switchPressUnits = new List<UnitBase>();
 
-        public bool CurrentTrigger
+        public bool CurrentCtrlBySwitch
         {
             set
             {
-                if (_currentTrigger == value)
+                if (_currentCtrlBySwitch == value)
                 {
                     return;
                 }
-                _currentTrigger = value;
+                _currentCtrlBySwitch = value;
                 if (_view != null)
                 {
-                    _view.SetRendererEnabled(!_currentTrigger);
+                    _view.SetRendererEnabled(!_currentCtrlBySwitch);
                 }
                 if (_effect != null)
                 {
-                    _effect.SetActive(_currentTrigger);
+                    _effect.SetActive(_currentCtrlBySwitch);
                 }
+                _canLazerCross = _currentCtrlBySwitch;
             }
         }
 
@@ -49,16 +49,16 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
-            _finalTrigger = false;
-            _currentTrigger = false;
-            _switchPressUnits.Clear();
+            _canLazerCross = false;
+            _finalCtrlBySwitch = false;
+            _currentCtrlBySwitch = false;
             if (_view != null)
             {
-                _view.SetRendererEnabled(!_currentTrigger);
+                _view.SetRendererEnabled(!_currentCtrlBySwitch);
             }
             if (_effect != null)
             {
-                _effect.SetActive(_currentTrigger);
+                _effect.SetActive(_currentCtrlBySwitch);
             }
         }
 
@@ -80,10 +80,10 @@ namespace GameA.Game
             }
             if (_trans != null)
             {
-                _view.SetRendererEnabled(!_currentTrigger);
+                _view.SetRendererEnabled(!_currentCtrlBySwitch);
                 _effect = GameParticleManager.Instance.EmitLoop("M1EffectSwitchEarth", _trans.position + new Vector3(0,-0.6f,0));
                 _effect.Trans.parent = _trans;
-                _effect.SetActive(_currentTrigger);
+                _effect.SetActive(_currentCtrlBySwitch);
             }
             return true;
         }
@@ -93,39 +93,43 @@ namespace GameA.Game
             base.OnOtherSwitch();
             if (_switchPressUnits.Count == 0)
             {
-                _finalTrigger = !_finalTrigger;
-                SetState(_finalTrigger);
+                _finalCtrlBySwitch = !_finalCtrlBySwitch;
+                SetCtrlBySwitchState(_finalCtrlBySwitch);
             }
         }
 
-        internal override void OnSwitchPressStart(SwitchPress switchPress)
+        internal override bool OnSwitchPressStart(SwitchPress switchPress)
         {
-            if (_switchPressUnits.Contains(switchPress))
+            if (!base.OnSwitchPressStart(switchPress))
             {
-                return;
+                return false;
             }
-            _switchPressUnits.Add(switchPress);
-            _finalTrigger = true;
-            SetState(_finalTrigger);
+            _finalCtrlBySwitch = true;
+            SetCtrlBySwitchState(_finalCtrlBySwitch);
+            return true;
         }
 
-        internal override void OnSwitchPressEnd(SwitchPress switchPress)
+        internal override bool OnSwitchPressEnd(SwitchPress switchPress)
         {
-            _switchPressUnits.Remove(switchPress);
+            if (!base.OnSwitchPressEnd(switchPress))
+            {
+                return false;
+            }
             if (_switchPressUnits.Count == 0)
             {
-                _finalTrigger = false;
-                SetState(_finalTrigger);
+                _finalCtrlBySwitch = false;
+                SetCtrlBySwitchState(_finalCtrlBySwitch);
             }
+            return true;
         }
 
-        private void SetState(bool value)
+        private void SetCtrlBySwitchState(bool value)
         {
-            if (_currentTrigger == value)
+            if (_currentCtrlBySwitch == value)
             {
                 return;
             }
-            if (_currentTrigger && !_finalTrigger)
+            if (_currentCtrlBySwitch && !_finalCtrlBySwitch)
             {
                 var units = ColliderScene2D.GridCastAllReturnUnits(_colliderGrid);
                 for (int i = 0; i < units.Count; i++)
@@ -136,23 +140,23 @@ namespace GameA.Game
                         return;
                     }
                 }
-                CurrentTrigger = value;
+                CurrentCtrlBySwitch = value;
             }
             else
             {
-                CurrentTrigger = value;
+                CurrentCtrlBySwitch = value;
             }
         }
 
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            SetState(_finalTrigger);
+            SetCtrlBySwitchState(_finalCtrlBySwitch);
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (_currentTrigger)
+            if (_currentCtrlBySwitch)
             {
                 return false;
             }
@@ -161,7 +165,7 @@ namespace GameA.Game
 
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (_currentTrigger)
+            if (_currentCtrlBySwitch)
             {
                 return false;
             }
@@ -170,7 +174,7 @@ namespace GameA.Game
 
         public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (_currentTrigger)
+            if (_currentCtrlBySwitch)
             {
                 return false;
             }
@@ -179,7 +183,7 @@ namespace GameA.Game
 
         public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (_currentTrigger)
+            if (_currentCtrlBySwitch)
             {
                 return false;
             }

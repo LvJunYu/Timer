@@ -23,7 +23,15 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
+        private long _lastLikeTime;
+        /// <summary>
+        /// 
+        /// </summary>
         private bool _favorite;
+        /// <summary>
+        /// 
+        /// </summary>
+        private long _lastFavoriteTime;
         /// <summary>
         /// 
         /// </summary>
@@ -68,10 +76,30 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
+        public long LastLikeTime { 
+            get { return _lastLikeTime; }
+            set { if (_lastLikeTime != value) {
+                _lastLikeTime = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         public bool Favorite { 
             get { return _favorite; }
             set { if (_favorite != value) {
                 _favorite = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public long LastFavoriteTime { 
+            get { return _lastFavoriteTime; }
+            set { if (_lastFavoriteTime != value) {
+                _lastFavoriteTime = value;
                 SetDirty();
             }}
         }
@@ -104,7 +132,9 @@ namespace GameA
             _projectId = msg.ProjectId;     
             _userId = msg.UserId;     
             _likeState = msg.LikeState;     
+            _lastLikeTime = msg.LastLikeTime;     
             _favorite = msg.Favorite;     
+            _lastFavoriteTime = msg.LastFavoriteTime;     
             _completeCount = msg.CompleteCount;     
             _lastPlayTime = msg.LastPlayTime;     
             OnSyncPartial();

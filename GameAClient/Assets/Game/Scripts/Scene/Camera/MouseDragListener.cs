@@ -25,10 +25,6 @@ namespace GameA.Game
 
 		void Update()
 		{
-			if (EditMode.Instance.CurCommandType != ECommandType.Move)
-			{
-				return;
-			}
 			bool mouse2 = Input.GetMouseButton(1);
 			if (_is2MouseButtonPress)
 			{

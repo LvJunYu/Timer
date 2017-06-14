@@ -897,11 +897,11 @@ namespace GameA.Game
 
         private void OnPinchMouseButtonEnd()
         {
-//            if (!_isPlaying)
-//            {
-//                CameraManager.Instance.OnPinchEnd();
-//                CameraManager.Instance.OnDragEnd(Vector2.zero);
-//            }
+            if (!_isPlaying)
+            {
+                CameraManager.Instance.OnPinchEnd();
+                CameraManager.Instance.OnDragEnd(Vector2.zero);
+            }
         }
 
 		protected virtual void On_Cancel2Fingers(Gesture gesture)
@@ -925,6 +925,10 @@ namespace GameA.Game
 
         public void Update()
         {
+            if (_isPlaying)
+            {
+                return;
+            }
             if (Input.GetKey(KeyCode.Mouse1))
             {
                 if (_commandType != ECommandType.Move)
@@ -938,11 +942,6 @@ namespace GameA.Game
                 {
                     Messenger<ECommandType>.Broadcast(EMessengerType.OnCommandChanged, ECommandType.Create);
                 }
-            }
-            var mouseValue = Input.GetAxis("Mouse ScrollWheel");
-            if (mouseValue > 0.1f || mouseValue < -0.1f)
-            {
-                CameraManager.Instance.AddCameraEditSize(mouseValue);
             }
         }
 

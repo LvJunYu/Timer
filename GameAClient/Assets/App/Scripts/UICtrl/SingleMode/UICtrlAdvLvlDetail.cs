@@ -20,7 +20,7 @@ namespace GameA
         private int _levelIdx;
         private bool _isBonus;
 
-        private int EndDisplayOnRank = 10;
+        private int EndDisplayOnRank = 20;
         private int BeginningDisplayOnRank = 0;
 
         private Game.Table_StandaloneLevel _table;
@@ -77,8 +77,8 @@ namespace GameA
             }
 
             OpenInfoPanel ();
-            RefreshRankData();
-            RefreshAdventureUserLevelDataDetail();
+            //RefreshRankData();
+            //RefreshAdventureUserLevelDataDetail();
         }
         
         protected override void OnClose() {
@@ -115,7 +115,7 @@ namespace GameA
                 _chapterIdx,
                 JudgeBonus(),
                 _levelIdx,
-                null
+                () => { _recordPanel.Set(); }
                 , null);
 
         }
@@ -140,8 +140,8 @@ namespace GameA
             EndDisplayOnRank,
                 () =>
                 {
-                    RefreshAdventureUserLevelDataDetail();
-                    _recordPanel.Set();
+                    //RefreshAdventureUserLevelDataDetail();
+                    _rankPanel.Set(LocalUser.Instance.AdventureLevelRankList.RecordList);
                 }
             , null)
             ;
@@ -188,9 +188,9 @@ namespace GameA
         }
         private void OpenRecordPanel ()
         {
-            RefreshRankData();
-            //RefreshAdventureUserLevelDataDetail();
-            _recordPanel.Set();
+            //RefreshRankData();
+            RefreshAdventureUserLevelDataDetail();
+            //_recordPanel.Set();
 
             _infoPanel.Close ();
             _recordPanel.Open ();
@@ -209,6 +209,7 @@ namespace GameA
             _infoPanel.Close ();
             _recordPanel.Close ();
             _rankPanel.Open ();
+            RefreshRankData();
 
             _cachedView.InfoBtn1.gameObject.SetActive (true);
             _cachedView.InfoBtn2.gameObject.SetActive (false);
@@ -216,7 +217,7 @@ namespace GameA
             _cachedView.RecordBtn2.gameObject.SetActive (false);
             _cachedView.RankBtn1.gameObject.SetActive (false);
             _cachedView.RankBtn2.gameObject.SetActive (true);
-            _rankPanel.Set(LocalUser.Instance.AdventureLevelRankList.RecordList);
+            
         }
         private void OnCloseBtn () {
             SocialGUIManager.Instance.CloseUI <UICtrlAdvLvlDetail> ();

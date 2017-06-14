@@ -24,13 +24,13 @@ namespace GameA.Game
             }
             _record = param as Record;
             _gameRunMode = EGameRunMode.PlayRecord;
+            InitRecord();
             return true;
 		}
 
         public override void InitByStep()
         {
             GameRun.Instance.ChangeState(ESceneState.Play);
-            InitRecord();
             InitUI();
             InitGame();
         }
@@ -70,7 +70,7 @@ namespace GameA.Game
                 return;
 			}
 			PlayMode.Instance.ERunMode = ERunMode.Record;
-			PlayMode.Instance.InputDatas = _gm2drecordData.Data;
+            PlayMode.Instance.InputDatas.AddRange(_gm2drecordData.Data);
         }
 
         protected virtual void InitUI()

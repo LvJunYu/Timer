@@ -50,6 +50,8 @@ namespace GameA
         private string FashionCoupon = "icon_star";
         private string BoostItem = "icon_star";
         private bool IfLight = true;
+        //键是抽奖券编号 值是编号对应的奖励列表
+        private Dictionary<int, List<RewardItem>> _rewardDict = new Dictionary<int, List<RewardItem>>();
         //private string NoneImageName = "icon_star";
         //private Reward[] _reward;
 
@@ -111,11 +113,41 @@ namespace GameA
             _cachedView.RaffleBtn.onClick.AddListener(() => UseRaffleTicket(this._selectedTicketNum));
             _cachedView.CatBtn.onClick.AddListener(OnCatBtnClick);
             _cachedView.SpineCat.AnimationState.SetAnimation(0, "Run", true);
+            InitSelected();
         }
 
         private void OnCatBtnClick()
         {
             UseRaffleTicket(this._selectedTicketNum);
+        }
+
+        private void InitSelected()
+        {
+            if (LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(1) > 1)
+            {
+                OnSelectedRaffleBtn1();
+            }
+            else if (LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(2) > 1)
+            {
+                OnSelectedRaffleBtn2();
+            }
+            else if(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(3) > 1)
+            {
+                OnSelectedRaffleBtn3();
+            }
+            else if(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(4) > 1)
+            {
+                OnSelectedRaffleBtn4();
+            }
+            else if(LocalUser.Instance.RaffleTicket.GetCountInRaffleDictionary(5) > 1)
+            {
+                OnSelectedRaffleBtn5();
+            }
+            else
+            {
+                OnSelectedRaffleBtn1();
+            }
+
         }
 
         private void ShowNoneTicketTips()
@@ -334,6 +366,101 @@ namespace GameA
 
         }
 
+        private void SetRewardItemList(int rewardNUm)
+        {
+            var TurntableUnit = TableManager.Instance.Table_TurntableDic[rewardNUm];
+            //private Dictionary<int, List<RewardItem>> _rewardDict = new Dictionary<int, List<RewardItem>>();
+
+                    RewardItem rewarditem1 = new RewardItem();
+                    RewardItem rewarditem2 = new RewardItem();
+                    RewardItem rewarditem3 = new RewardItem();
+                    RewardItem rewarditem4 = new RewardItem();
+                    RewardItem rewarditem5 = new RewardItem();
+                    RewardItem rewarditem6 = new RewardItem();
+                    RewardItem rewarditem7 = new RewardItem();
+                    RewardItem rewarditem8 = new RewardItem();
+                    //rewarditem.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward1].Type1;
+                    //rewarditem.SubType = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward1].Type1;
+            rewarditem1.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward1].Type1;
+            rewarditem1.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward1].Value1;
+            rewarditem1.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward1].Id1;
+            Debug.Log("_____id1_______"+ rewarditem1.Id);
+            _cachedView.RewardType1.text = rewarditem1.GetName();
+            _cachedView.Reward1.sprite = rewarditem1.GetSprite();
+
+            rewarditem2.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Type1;
+            rewarditem2.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Value1;
+            //if(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Id1!=null)
+            rewarditem2.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Id1;
+            Debug.Log("_____id2_______" + rewarditem2.Id);
+            _cachedView.RewardType2.text = rewarditem2.GetName();
+            _cachedView.Reward2.sprite = rewarditem2.GetSprite();
+
+            rewarditem3.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward3].Type1;
+            rewarditem3.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward3].Value1;
+            rewarditem3.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward3].Id1;
+            Debug.Log("_____id3_______" + rewarditem3.Id);
+            _cachedView.RewardType3.text = rewarditem3.GetName();
+            _cachedView.Reward3.sprite = rewarditem3.GetSprite();
+
+            rewarditem4.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward4].Type1;
+            rewarditem4.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward4].Value1;
+            rewarditem4.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward4].Id1;
+            Debug.Log("_____id4_______" + rewarditem4.Id);
+            _cachedView.RewardType4.text = rewarditem4.GetName();
+            _cachedView.Reward4.sprite = rewarditem4.GetSprite();
+
+            rewarditem5.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward5].Type1;
+            rewarditem5.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward5].Value1;
+            rewarditem5.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward5].Id1;
+            Debug.Log("_____id5_______" + rewarditem5.Id);
+
+            _cachedView.RewardType5.text = rewarditem5.GetName();
+            _cachedView.Reward5.sprite = rewarditem5.GetSprite();
+
+            rewarditem6.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward6].Type1;
+            rewarditem6.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward6].Value1;
+            rewarditem6.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward6].Id1;
+            Debug.Log("_____id6_______" + rewarditem6.Id);
+
+            _cachedView.RewardType6.text = rewarditem6.GetName();
+            _cachedView.Reward6.sprite = rewarditem6.GetSprite();
+
+            rewarditem7.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward7].Type1;
+            rewarditem7.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward7].Value1;
+            rewarditem7.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward7].Id1;
+            Debug.Log("_____id7_______" + rewarditem7.Id);
+
+            _cachedView.RewardType7.text = rewarditem7.GetName();
+            _cachedView.Reward7.sprite = rewarditem7.GetSprite();
+
+            rewarditem8.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward8].Type1;
+            rewarditem8.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward8].Value1;
+            rewarditem8.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward8].Id1;
+            Debug.Log("_____id8_______" + rewarditem8.Id);
+
+            _cachedView.RewardType8.text = rewarditem8.GetName();
+            _cachedView.Reward8.sprite = rewarditem8.GetSprite();
+
+
+
+
+        }
+
+        //public enum ERewardType
+        //{
+        //    RT_None = 0,
+        //    RT_Gold = 1,
+        //    RT_Diamond = 2,
+        //    RT_PlayerExp = 3,
+        //    RT_CreatorExp = 4,
+        //    RT_FashionCoupon = 5,
+        //    RT_RaffleTicket = 6,
+        //    RT_BoostItem = 7,
+        //    RT_RandomReformUnit = 8,
+        //    RT_ReformUnit = 9
+        //}
+
         private void RefreshReward(int rewardNUm)//1 2 3
         {
             var TurntableUnit = TableManager.Instance.Table_TurntableDic[rewardNUm];
@@ -343,7 +470,7 @@ namespace GameA
             _cachedView.Reward1.sprite =
                 FindImage(JudgeRewardImageName(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward1].Type1));
 
-            ;_cachedView.RewardType2.text = JudgeRewardType(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Type1)
+            _cachedView.RewardType2.text = JudgeRewardType(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Type1)
             +TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Value1;
             _cachedView.Reward2.sprite =
                 FindImage(JudgeRewardImageName(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Type1));
@@ -380,18 +507,6 @@ namespace GameA
 
 
 
-    //[ProtoContract(Name = "ERewardType")]
-    //    public enum ERewardType
-    //    {
-    //        RT_None = 0,
-    //        RT_Gold = 1,
-    //        RT_Diamond = 2,
-    //        RT_PlayerExp = 3,
-    //        RT_CreatorExp = 4,
-    //        RT_FashionCoupon = 5,
-    //        RT_RaffleTicket = 6,
-    //        RT_BoostItem = 7
-    //    }
     }
 
 
@@ -409,33 +524,38 @@ namespace GameA
         {
             this._selectedTicketNum = 1;
             _cachedView.SelectedTicketType.text = "<color=#ffb400>壹</color>";
-            RefreshReward(1);
+            SetRewardItemList(1);
+            //RefreshReward(1);
         }
 
         private void OnSelectedRaffleBtn2()
         {
             this._selectedTicketNum = 2;
-            _cachedView.SelectedTicketType.text = "<color=#ededeb>贰</color>"; 
-            RefreshReward(2);
+            _cachedView.SelectedTicketType.text = "<color=#ededeb>贰</color>";
+            SetRewardItemList(2);
+            //RefreshReward(2);
         }
         private void OnSelectedRaffleBtn3()
         {
             this._selectedTicketNum = 3;
             _cachedView.SelectedTicketType.text = "<color=#fbf11a>叁</color>";
-            RefreshReward(3);
+            SetRewardItemList(3);
+            //RefreshReward(3);
         }
         private void OnSelectedRaffleBtn4()
         {
             this._selectedTicketNum = 4;
             _cachedView.SelectedTicketType.text = "<color=#00ffff>匠</color>";
-            RefreshReward(4);
+            SetRewardItemList(4);
+            //RefreshReward(4);
 
         }
         private void OnSelectedRaffleBtn5()
         {
             this._selectedTicketNum = 5;
             _cachedView.SelectedTicketType.text = "<color=#f65656>亲</color>";
-            RefreshReward(5);
+            SetRewardItemList(5);
+            //RefreshReward(5);
         }
         #endregion 接口
         #endregion

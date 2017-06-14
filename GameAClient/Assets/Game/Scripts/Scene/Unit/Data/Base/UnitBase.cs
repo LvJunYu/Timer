@@ -46,6 +46,7 @@ namespace GameA.Game
 
         [SerializeField]
         protected bool _isAlive;
+        protected bool _canLazerCross;
         [SerializeField]
         protected bool _isStart;
         protected int _friction;
@@ -154,6 +155,11 @@ namespace GameA.Game
         public virtual bool CanControlledBySwitch
         {
             get { return false; }
+        }
+
+        public bool CanLazerCross
+        {
+            get { return _canLazerCross; }
         }
 
         public int Hp
@@ -621,7 +627,6 @@ namespace GameA.Game
             _isAlive = true;
             _dieTime = 0;
             _deltaPos = IntVec2.zero;
-            _deltaImpactPos = IntVec2.zero;
             _colliderPos = GetColliderPos(_curPos);
             _colliderGrid = _tableUnit.GetColliderGrid(ref _unitDesc);
             _curMoveDirection = _moveDirection;
@@ -1437,12 +1442,14 @@ namespace GameA.Game
         {
         }
 
-        internal virtual void OnSwitchPressStart(SwitchPress switchPress)
+        internal virtual bool OnSwitchPressStart(SwitchPress switchPress)
         {
+            return false;
         }
 
-        internal virtual void OnSwitchPressEnd(SwitchPress switchPress)
+        internal virtual bool OnSwitchPressEnd(SwitchPress switchPress)
         {
+            return false;
         }
 
         public bool IsBlockedBy(UnitBase unit)
