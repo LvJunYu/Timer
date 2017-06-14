@@ -38,6 +38,7 @@ namespace GameA.Game
                 {
                     _effect.SetActive(_currentTrigger);
                 }
+                _canLazerCross = _currentTrigger;
             }
         }
 
@@ -49,6 +50,7 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
+            _canLazerCross = false;
             _finalTrigger = false;
             _currentTrigger = false;
             _switchPressUnits.Clear();

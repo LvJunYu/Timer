@@ -29,7 +29,8 @@ namespace GameA.Game
         protected int _timer;
         protected bool _shoot = true;
 
-        protected UnityNativeParticleItem _effect;
+        protected UnityNativeParticleItem _effectStart;
+        protected UnityNativeParticleItem _effectEnd;
         protected LazerEffect _lazerEffect1;
         protected LazerEffect _lazerEffect2;
 
@@ -66,9 +67,13 @@ namespace GameA.Game
             _timer = 0;
             _shoot = true;
             _gridCheck.Clear();
-            if (_effect != null)
+            if (_effectStart != null)
             {
-                _effect.Stop();
+                _effectStart.Stop();
+            }
+            if (_effectEnd != null)
+            {
+                _effectEnd.Stop();
             }
             if (_lazerEffect1 != null)
             {
@@ -83,11 +88,10 @@ namespace GameA.Game
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();
-            if (_effect != null)
-            {
-                _effect.DestroySelf();
-                _effect = null;
-            }
+            FreeEffect(_effectStart);
+            _effectStart = null;
+            FreeEffect(_effectEnd);
+            _effectEnd = null;
             if (_lazerEffect1 != null)
             {
                 _lazerEffect1.OnObjectDestroy();
@@ -112,9 +116,9 @@ namespace GameA.Game
                 {
                     Calculate();
                 }
-                if (_effect != null)
+                if (_effectStart != null)
                 {
-                    _effect.StopEmit();
+                    _effectStart.StopEmit();
                 }
                 var hits = ColliderScene2D.GridCastAll(_checkGrid, Rotation, EnvManager.LazerShootLayer);
                 if (hits.Count > 0)
@@ -167,6 +171,11 @@ namespace GameA.Game
                             _lazerEffect2 = new LazerEffect(this, ConstDefineGM2D.M1LazerEffect2);
                         }
                         _lazerEffect2.Update((float)_distance / ConstDefineGM2D.ServerTileScale);
+                        if (_effectEnd == null)
+                        {
+                            _effectEnd = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectAlertLazerEnd", _trans);
+                        }
+                        UpdateEndEffect();
                         if (hits.Count > 0)
                         {
                             for (int i = 0; i < hits.Count; i++)
@@ -191,6 +200,10 @@ namespace GameA.Game
             if (_timer == 100)
             {
                 _shoot = false;
+                if (_effectEnd != null)
+                {
+                    _effectEnd.Stop();
+                }
                 if (_lazerEffect1 != null)
                 {
                     _lazerEffect1.Stop();
@@ -199,12 +212,12 @@ namespace GameA.Game
                 {
                     _lazerEffect2.Stop();
                 }
-                if (_effect == null)
+                if (_effectStart == null)
                 {
-                    _effect = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectAlertLazerPoint, _trans);
-                    _effect.Trans.position += Vector3.back*0.1f;
+                    _effectStart = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectAlertLazerPoint, _trans);
+                    _effectStart.Trans.position += Vector3.back*0.1f;
                 }
-                _effect.Play();
+                _effectStart.Play();
             }
             else if (_timer == 200)
             {
@@ -212,6 +225,35 @@ namespace GameA.Game
                 _timer = 0;
             }
             _gridCheck.After();
+        }
+
+        private void UpdateEndEffect()
+        {
+            if (_effectEnd != null)
+            {
+                _effectEnd.Play();
+                var distanceWorld = (float)_distance / ConstDefineGM2D.ServerTileScale;
+                float z;
+                switch (Rotation)
+                {
+                    case 0:
+                        z = GetZ(_borderCenterPoint + _distance * IntVec2.up);
+                        _effectEnd.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, z)+ distanceWorld * Vector3.up;
+                        break;
+                    case 1:
+                        z = GetZ(_borderCenterPoint + _distance * IntVec2.right);
+                        _effectEnd.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, z) + distanceWorld * Vector3.right;
+                        break;
+                    case 2:
+                        z = GetZ(_borderCenterPoint + _distance * IntVec2.down);
+                        _effectEnd.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, z) + distanceWorld * Vector3.down;
+                        break;
+                    case 3:
+                        z = GetZ(_borderCenterPoint + _distance * IntVec2.left);
+                        _effectEnd.Trans.position = GM2DTools.TileToWorld(_borderCenterPoint, z) + distanceWorld * Vector3.left;
+                        break;
+                }
+            }
         }
     }
 
