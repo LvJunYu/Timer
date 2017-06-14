@@ -307,7 +307,6 @@ namespace GameA.Game
             _visibleDistance = _visibleDistanceMin*ConstDefineGM2D.VisibleFactor;
         }
 
-
         private void UpdateCameraViewRect()
         {
             float value = _finalOrthoSize;

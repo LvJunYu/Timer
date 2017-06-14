@@ -145,8 +145,8 @@ namespace GameA.Game
             }
             if (_trans != null)
             {
-                _unit.UpdateTransPos(); ;
                 _trans.localScale = new Vector3(_unit.UnitDesc.Scale.x, _unit.UnitDesc.Scale.y, 1);
+                _trans.localRotation = Quaternion.identity;
                 _trans.parent = UnitManager.Instance.GetParent(_unit.TableUnit.EUnitType);
             }
             if (_dirTrans != null)
