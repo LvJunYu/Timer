@@ -195,7 +195,7 @@ namespace GameA.Game
             _skillMgr2 = _skillMgr2 ?? new SkillManager(this);
             _skillMgr2.Clear();
 
-            _currentMp = 0;
+            UpdateMp(0);
             _big = 0;
             _dieTime = 0;
             _flashTime = 0;
@@ -1600,7 +1600,7 @@ namespace GameA.Game
             {
                 if (_skillMgr2.ChangeSkill<T>())
                 {
-                    _currentMp = 0;
+                    UpdateMp(0);
                 }
             }
         }
