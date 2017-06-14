@@ -175,6 +175,17 @@ namespace GameA.Game
 			}
         }
 
+        public override bool Restart(Action successCb, Action failedCb)
+        {
+            ChangeMode(EMode.Edit);
+            ChangeMode(EMode.EditTest);
+            if (successCb != null)
+            {
+                successCb.Invoke();
+            }
+            return true;
+        }
+
         public virtual void ChangeMode(EMode mode)
         {
             if (mode == _mode)
@@ -185,6 +196,10 @@ namespace GameA.Game
 
             if (mode == EMode.EditTest)
             {
+                EditMode.Instance.HandlePlay();
+                GameRun.Instance.ChangeState(ESceneState.Play);
+                GameRun.Instance.Playing();
+
                 SocialGUIManager.Instance.CloseUI<UICtrlItem>();
 //                SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
                 SocialGUIManager.Instance.OpenUI<UICtrlEdit>();
@@ -196,6 +211,8 @@ namespace GameA.Game
             }
             else if (mode == EMode.Edit)
             {
+                EditMode.Instance.HandlePause();
+                GameRun.Instance.ChangeState(ESceneState.Edit);
                 SocialGUIManager.Instance.OpenUI<UICtrlItem>();
 //                SocialGUIManager.Instance.OpenUI<UICtrlScreenOperator>();
                 SocialGUIManager.Instance.OpenUI<UICtrlEdit>();
