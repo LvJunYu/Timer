@@ -32,8 +32,6 @@ namespace GameA
 
         public static int OnActorFlip = SoyEngine.EMessengerType.NextId++;
 
-        public static int OnPlayChanged = SoyEngine.EMessengerType.NextId++;
-
 		/// <summary>
 		/// 鼠标右键按下拖拽
 		/// </summary>

@@ -78,9 +78,6 @@ namespace GameA.Game
             }
 
 			DataScene2D.Instance.Init(ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
-            if (GameManager.EStartType.WorkshopCreate == eGameInitType) {
-                DataScene2D.Instance.SetDefaultMapSize (_defaultMapSize * ConstDefineGM2D.ServerTileScale);
-            }
             if (MapConfig.UseAOI)
 		    {
                 ColliderScene2D.Instance.Init(ConstDefineGM2D.RegionTileSize, ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
@@ -239,6 +236,9 @@ namespace GameA.Game
 		{
 			var cameraPosOffset = GM2DTools.TileToWorld(ConstDefineGM2D.MapStartPos);
 			CameraManager.Instance.SetRenderCameraPosOffset(cameraPosOffset);
+            CameraManager.Instance.SetCameraEditSize(((float)_defaultMapSize.y) / 2);
+            CameraManager.Instance.SetFinalOrthoSize((float)_defaultMapSize.y / 2);
+            DataScene2D.Instance.SetDefaultMapSize(_defaultMapSize * ConstDefineGM2D.ServerTileScale);
 			var go = new GameObject("EditMode");
 			var editMode = go.AddComponent<EditMode>();
 			editMode.Init();

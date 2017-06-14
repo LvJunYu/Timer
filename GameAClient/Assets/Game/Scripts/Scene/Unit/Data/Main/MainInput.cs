@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 using UnitySampleAssets.CrossPlatformInput;
+using UnityEngine.EventSystems;
 
 namespace GameA.Game
 {
@@ -259,6 +260,18 @@ namespace GameA.Game
 
             _curHorizontal = CrossPlatformInputManager.GetAxis("Horizontal");
             _curVertical = CrossPlatformInputManager.GetAxis("Vertical");
+#if IPHONE || ANDROID
+#else
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                for (int i = 0; i < _curInputs.Length; i++)
+                {
+                    _curInputs[i] = false;
+                }
+                return;
+            }
+#endif
+
             if (KeyDown(EInputType.Left))
             {
                 _curInputs[(int)EInputType.Left] = true;
