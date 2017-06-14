@@ -17,6 +17,12 @@ namespace GameA.Game
         protected int _timeScale;
         protected const int AnimationLength = 15;
         protected UnityNativeParticleItem _effect;
+        protected bool _currentCtrlBySwitch;
+
+        public override bool CanControlledBySwitch
+        {
+            get { return true; }
+        }
 
         protected override bool OnInit()
         {
@@ -26,9 +32,15 @@ namespace GameA.Game
             }
             _shootAngle = (_unitDesc.Rotation) * 90;
             _skillManager = new SkillManager(this);
-            _skillManager.ChangeSkill<SkillWater>();
+            _skillManager.ChangeSkill<SkillFire>();
             _timeScale = 1;
             return true;
+        }
+
+        protected override void Clear()
+        {
+            base.Clear();
+            _currentCtrlBySwitch = true;
         }
 
         internal override bool InstantiateView()
@@ -39,7 +51,7 @@ namespace GameA.Game
             }
             InitAssetRotation();
 
-            _effect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectJetWaterRun", _trans);
+            _effect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectJetFireRun", _trans);
             if (_effect != null)
             {
                 _effect.Play();
@@ -54,17 +66,50 @@ namespace GameA.Game
             _effect = null;
         }
 
+        internal override void OnOtherSwitch()
+        {
+            base.OnOtherSwitch();
+            _currentCtrlBySwitch = !_currentCtrlBySwitch;
+        }
+
+        internal override bool OnSwitchPressStart(SwitchPress switchPress)
+        {
+            if (!base.OnSwitchPressStart(switchPress))
+            {
+                return false;
+            }
+            _currentCtrlBySwitch = false;
+            return true;
+        }
+
+        internal override bool OnSwitchPressEnd(SwitchPress switchPress)
+        {
+            if (!base.OnSwitchPressEnd(switchPress))
+            {
+                return false;
+            }
+            if (_switchPressUnits.Count == 0)
+            {
+                _currentCtrlBySwitch = true;
+            }
+            return true;
+        }
+
+
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            if (_skillManager != null)
+            if (_currentCtrlBySwitch)
             {
-                _skillManager.UpdateLogic();
-                if (_skillManager.Fire())
+                if (_skillManager != null)
                 {
-                    if (_animation != null)
+                    _skillManager.UpdateLogic();
+                    if (_skillManager.Fire())
                     {
-                        _animation.PlayOnce(((EDirectionType)_unitDesc.Rotation).ToString(), _timeScale);
+                        if (_animation != null)
+                        {
+                            _animation.PlayOnce(((EDirectionType)_unitDesc.Rotation).ToString(), _timeScale);
+                        }
                     }
                 }
             }

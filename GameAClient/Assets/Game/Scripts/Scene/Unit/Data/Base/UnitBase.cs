@@ -1442,12 +1442,14 @@ namespace GameA.Game
         {
         }
 
-        internal virtual void OnSwitchPressStart(SwitchPress switchPress)
+        internal virtual bool OnSwitchPressStart(SwitchPress switchPress)
         {
+            return false;
         }
 
-        internal virtual void OnSwitchPressEnd(SwitchPress switchPress)
+        internal virtual bool OnSwitchPressEnd(SwitchPress switchPress)
         {
+            return false;
         }
 
         public bool IsBlockedBy(UnitBase unit)
