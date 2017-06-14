@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 48f2ee621b3cd4cadbabc3ec7bbdab3d
-timeCreated: 1497440244
+guid: 0e41aef3186aa40ff94b2aa80d05f553
+timeCreated: 1497443202
 licenseType: Pro
 TextureImporter:
   fileIDToRecycleName: {}
@@ -86,7 +86,7 @@ TextureImporter:
     serializedVersion: 2
     sprites: []
     outline: []
-  spritePackingTag: WorkShop
+  spritePackingTag: FashionShop
   userData: 
   assetBundleName: 
   assetBundleVariant: 
