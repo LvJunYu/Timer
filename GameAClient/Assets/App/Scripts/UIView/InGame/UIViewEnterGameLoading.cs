@@ -14,31 +14,35 @@ namespace GameA
 {
     public class UIViewEnterGameLoading : UIViewBase
     {
-        public GameObject NormalDock;
-        public GameObject NormalTall;
-        public GameObject NormalWide;
-        public GameObject GameDock;
-        public GameObject GameTall;
-        public GameObject GameWide;
-        public Texture DefaultCoverTexture;
-        public Texture DefaultUserTexture;
+//        public GameObject NormalDock;
+//        public GameObject NormalTall;
+//        public GameObject NormalWide;
+//        public GameObject GameDock;
+//        public GameObject GameTall;
+//        public GameObject GameWide;
+//        public Texture DefaultCoverTexture;
+//        public Texture DefaultUserTexture;
+//
+//        public Image NormalWideLoadingImage;
+//        public Image NormalWideProgressImage;
+//        public Text NormalWideProgressText;
+//        public Text NormalWideInfoText;
+//
+//        public Text GameWideTitle;
+//        public RawImage GameWideCover;
+//        public Text GameWideMatrixLabel;
+//        public Image GameWideMatrixLabelBg;
+//        public RawImage GameWideAuthorIcon;
+//        public Text GameWideAuthorName;
+//        public Text GameWideSummary;
+//        public RectTransform GameWideRecentCompleteUserDock;
+//        public Text GameWideRecentCompleteUserTip;
+//        public Image GameWideProgressImage;
+//        public Text GameWideProgressText;
+//        public Text GameWideInfoText;
 
-        public Image NormalWideLoadingImage;
-        public Image NormalWideProgressImage;
-        public Text NormalWideProgressText;
-        public Text NormalWideInfoText;
 
-        public Text GameWideTitle;
-        public RawImage GameWideCover;
-        public Text GameWideMatrixLabel;
-        public Image GameWideMatrixLabelBg;
-        public RawImage GameWideAuthorIcon;
-        public Text GameWideAuthorName;
-        public Text GameWideSummary;
-        public RectTransform GameWideRecentCompleteUserDock;
-        public Text GameWideRecentCompleteUserTip;
-        public Image GameWideProgressImage;
-        public Text GameWideProgressText;
-        public Text GameWideInfoText;
+        public Image ProcessImg;
+        public Text ProcessText;
     }
 }
