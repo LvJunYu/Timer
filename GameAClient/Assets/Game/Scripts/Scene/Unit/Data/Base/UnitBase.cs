@@ -46,6 +46,7 @@ namespace GameA.Game
 
         [SerializeField]
         protected bool _isAlive;
+        protected bool _canLazerCross;
         [SerializeField]
         protected bool _isStart;
         protected int _friction;
@@ -154,6 +155,11 @@ namespace GameA.Game
         public virtual bool CanControlledBySwitch
         {
             get { return false; }
+        }
+
+        public bool CanLazerCross
+        {
+            get { return _canLazerCross; }
         }
 
         public int Hp

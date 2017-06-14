@@ -33,6 +33,9 @@ namespace GameA.Game
         protected LazerEffect _lazerEffect1;
         protected LazerEffect _lazerEffect2;
 
+        protected IntVec2 _pointA;
+        protected IntVec2 _pointB;
+
         protected override bool OnInit()
         {
             if (!base.OnInit())
@@ -46,11 +49,10 @@ namespace GameA.Game
 
         private void Calculate()
         {
-            IntVec2 pointA = IntVec2.zero, pointB = IntVec2.zero;
-            GM2DTools.GetBorderPoint(_colliderGrid, (EDirectionType)Rotation, ref pointA, ref pointB);
-            _distance = GM2DTools.GetDistanceToBorder(pointA, Rotation);
-            _checkGrid = SceneQuery2D.GetGrid(pointA, pointB, Rotation, _distance);
-            _borderCenterPoint = (pointA + pointB) / 2;
+            GM2DTools.GetBorderPoint(_colliderGrid, (EDirectionType)Rotation, ref _pointA, ref _pointB);
+            _distance = GM2DTools.GetDistanceToBorder(_pointA, Rotation);
+            _checkGrid = SceneQuery2D.GetGrid(_pointA, _pointB, Rotation, _distance);
+            _borderCenterPoint = (_pointA + _pointB) / 2;
         }
 
         protected override void InitAssetPath()
@@ -105,6 +107,7 @@ namespace GameA.Game
             _gridCheck.Before();
             if (_shoot)
             {
+                _distance = GM2DTools.GetDistanceToBorder(_pointA, Rotation);
                 if (_dynamicCollider != null)
                 {
                     Calculate();
@@ -131,8 +134,21 @@ namespace GameA.Game
                                     break;
                                 }
                             }
-                            _distance = hit.distance;
-                            break;
+                            bool flag = false;
+                            var units = ColliderScene2D.GetUnits(hit, SceneQuery2D.GetGrid(_pointA, _pointB, Rotation, hit.distance + 1));
+                            for (int j = 0; j < units.Count; j++)
+                            {
+                                if (units[j].IsAlive && !units[j].CanLazerCross)
+                                {
+                                    _distance = hit.distance;
+                                    flag = true;
+                                    break;
+                                }
+                            }
+                            if (flag)
+                            {
+                                break;
+                            }
                         }
                     }
                 }

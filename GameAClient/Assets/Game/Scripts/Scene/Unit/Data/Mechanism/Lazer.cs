@@ -25,6 +25,9 @@ namespace GameA.Game
         protected UnityNativeParticleItem _lazerEffect;
         protected UnityNativeParticleItem _lazerEffectEnd;
 
+        protected IntVec2 _pointA;
+        protected IntVec2 _pointB;
+
         protected override void InitAssetPath()
         {
             InitAssetRotation();
@@ -44,11 +47,10 @@ namespace GameA.Game
 
         private void Calculate()
         {
-            IntVec2 pointA = IntVec2.zero, pointB = IntVec2.zero;
-            GM2DTools.GetBorderPoint(_colliderGrid, (EDirectionType)Rotation, ref pointA, ref pointB, -240);
-            _distance = GM2DTools.GetDistanceToBorder(pointA, Rotation);
-            _checkGrid = SceneQuery2D.GetGrid(pointA, pointB, Rotation, _distance);
-            _borderCenterPoint = (pointA + pointB) / 2;
+            GM2DTools.GetBorderPoint(_colliderGrid, (EDirectionType)Rotation, ref _pointA, ref _pointB, -240);
+            _distance = GM2DTools.GetDistanceToBorder(_pointA, Rotation);
+            _checkGrid = SceneQuery2D.GetGrid(_pointA, _pointB, Rotation, _distance);
+            _borderCenterPoint = (_pointA + _pointB) / 2;
         }
 
         internal override bool InstantiateView()
@@ -112,6 +114,7 @@ namespace GameA.Game
         {
             base.UpdateLogic();
             _gridCheck.Before();
+            _distance = GM2DTools.GetDistanceToBorder(_pointA, Rotation);
             if (_dynamicCollider != null)
             {
                 Calculate();
@@ -134,8 +137,21 @@ namespace GameA.Game
                                 break;
                             }
                         }
-                        _distance = hit.distance;
-                        break;
+                        bool flag = false;
+                        var units = ColliderScene2D.GetUnits(hit, SceneQuery2D.GetGrid(_pointA, _pointB, Rotation, hit.distance + 1));
+                        for (int j = 0; j < units.Count; j++)
+                        {
+                            if (units[j].IsAlive && !units[j].CanLazerCross)
+                            {
+                                _distance = hit.distance;
+                                flag = true;
+                                break;
+                            }
+                        }
+                        if (flag)
+                        {
+                            break;
+                        }
                     }
                     if (UnitDefine.IsLaserDamage(hit.node.Layer))
                     {
