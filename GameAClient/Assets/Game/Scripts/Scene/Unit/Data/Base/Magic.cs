@@ -25,7 +25,6 @@ namespace GameA.Game
         protected UnitBase _magicRotate;
         protected bool _run = true;
         protected bool _enabled = true;
-        protected List<UnitBase> _switchPressUnits = new List<UnitBase>();
 
         public override bool CanControlledBySwitch
         {
@@ -44,7 +43,6 @@ namespace GameA.Game
             _run = true;
             _enabled = true;
             _magicRotate = null;
-            _switchPressUnits.Clear();
             InitSpeed();
         }
 
@@ -73,30 +71,9 @@ namespace GameA.Game
             }
         }
 
-        internal override void OnOtherSwitch()
+        internal override void OnCtrlBySwitch()
         {
             _run = !_run;
-        }
-
-        internal override bool OnSwitchPressStart(SwitchPress switchPress)
-        {
-            if (_switchPressUnits.Contains(switchPress))
-            {
-                return false;
-            }
-            _switchPressUnits.Add(switchPress);
-            _run = !_run;
-            return true;
-        }
-
-        internal override bool OnSwitchPressEnd(SwitchPress switchPress)
-        {
-            if (!_switchPressUnits.Remove(switchPress))
-            {
-                return false;
-            }
-            _run = !_run;
-            return true;
         }
 
         internal void SetEnabled(bool value)
