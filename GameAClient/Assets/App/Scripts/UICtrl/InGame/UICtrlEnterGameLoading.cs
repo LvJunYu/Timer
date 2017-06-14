@@ -220,7 +220,7 @@ namespace GameA
 
 		private void UpdateProgress(float rate)
 		{
-            Debug.Log ("UpdateProgress: " + rate);
+//            Debug.Log ("UpdateProgress: " + rate);
             rate = Mathf.Clamp01(rate);
             _cachedView.ProcessText.text = string.Format ("{0:F1} %", rate * 100);
             _cachedView.ProcessImg.fillAmount = rate;
