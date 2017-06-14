@@ -66,12 +66,13 @@ namespace GameA
 					AppData.Instance.AdventureData.UserData.SectionList [chapterId - 1].NormalLevelUserDataList.Count > levelIdx-1) {
 
 					var levelData = AppData.Instance.AdventureData.UserData.SectionList [chapterId - 1].NormalLevelUserDataList [levelIdx - 1];
-					StarLight1.SetActive (levelData.SimpleData.Star1Flag);
-					StarLight2.SetActive (levelData.SimpleData.Star2Flag);
-					StarLight3.SetActive (levelData.SimpleData.Star3Flag);
-                    StarDark1.SetActive (!levelData.SimpleData.Star1Flag);
-                    StarDark2.SetActive (!levelData.SimpleData.Star2Flag);
-                    StarDark3.SetActive (!levelData.SimpleData.Star3Flag);
+                    int starCnt = levelData.SimpleData.GotStarCnt;
+                    StarLight1.SetActive (starCnt > 0);
+                    StarLight2.SetActive (starCnt > 1);
+                    StarLight3.SetActive (starCnt > 2);
+                    StarDark1.SetActive (starCnt < 1);
+                    StarDark2.SetActive (starCnt < 2);
+                    StarDark3.SetActive (starCnt < 3);
                     Current.gameObject.SetActive (false);
 					Active.SetActive (true);
 					Disactive.SetActive (false);
