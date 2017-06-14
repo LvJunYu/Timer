@@ -384,7 +384,7 @@ namespace GameA
             rewarditem1.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward1].Type1;
             rewarditem1.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward1].Value1;
             rewarditem1.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward1].Id1;
-            Debug.Log("_____id1_______"+ rewarditem1.Id);
+            //Debug.Log("_____id1_______"+ rewarditem1.Id);
             _cachedView.RewardType1.text = rewarditem1.GetName();
             _cachedView.Reward1.sprite = rewarditem1.GetSprite();
 
@@ -392,28 +392,28 @@ namespace GameA
             rewarditem2.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Value1;
             //if(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Id1!=null)
             rewarditem2.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward2].Id1;
-            Debug.Log("_____id2_______" + rewarditem2.Id);
+            //Debug.Log("_____id2_______" + rewarditem2.Id);
             _cachedView.RewardType2.text = rewarditem2.GetName();
             _cachedView.Reward2.sprite = rewarditem2.GetSprite();
 
             rewarditem3.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward3].Type1;
             rewarditem3.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward3].Value1;
             rewarditem3.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward3].Id1;
-            Debug.Log("_____id3_______" + rewarditem3.Id);
+            //Debug.Log("_____id3_______" + rewarditem3.Id);
             _cachedView.RewardType3.text = rewarditem3.GetName();
             _cachedView.Reward3.sprite = rewarditem3.GetSprite();
 
             rewarditem4.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward4].Type1;
             rewarditem4.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward4].Value1;
             rewarditem4.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward4].Id1;
-            Debug.Log("_____id4_______" + rewarditem4.Id);
+            //Debug.Log("_____id4_______" + rewarditem4.Id);
             _cachedView.RewardType4.text = rewarditem4.GetName();
             _cachedView.Reward4.sprite = rewarditem4.GetSprite();
 
             rewarditem5.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward5].Type1;
             rewarditem5.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward5].Value1;
             rewarditem5.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward5].Id1;
-            Debug.Log("_____id5_______" + rewarditem5.Id);
+            //Debug.Log("_____id5_______" + rewarditem5.Id);
 
             _cachedView.RewardType5.text = rewarditem5.GetName();
             _cachedView.Reward5.sprite = rewarditem5.GetSprite();
@@ -421,7 +421,7 @@ namespace GameA
             rewarditem6.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward6].Type1;
             rewarditem6.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward6].Value1;
             rewarditem6.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward6].Id1;
-            Debug.Log("_____id6_______" + rewarditem6.Id);
+            //Debug.Log("_____id6_______" + rewarditem6.Id);
 
             _cachedView.RewardType6.text = rewarditem6.GetName();
             _cachedView.Reward6.sprite = rewarditem6.GetSprite();
@@ -429,7 +429,7 @@ namespace GameA
             rewarditem7.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward7].Type1;
             rewarditem7.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward7].Value1;
             rewarditem7.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward7].Id1;
-            Debug.Log("_____id7_______" + rewarditem7.Id);
+            //Debug.Log("_____id7_______" + rewarditem7.Id);
 
             _cachedView.RewardType7.text = rewarditem7.GetName();
             _cachedView.Reward7.sprite = rewarditem7.GetSprite();
@@ -437,7 +437,7 @@ namespace GameA
             rewarditem8.Type = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward8].Type1;
             rewarditem8.Count = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward8].Value1;
             rewarditem8.Id = TableManager.Instance.Table_RewardDic[TurntableUnit.Reward8].Id1;
-            Debug.Log("_____id8_______" + rewarditem8.Id);
+            //Debug.Log("_____id8_______" + rewarditem8.Id);
 
             _cachedView.RewardType8.text = rewarditem8.GetName();
             _cachedView.Reward8.sprite = rewarditem8.GetSprite();
