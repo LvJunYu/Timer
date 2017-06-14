@@ -14,6 +14,7 @@ namespace GameA
         private const string _creatorExpName = "工匠经验";
         private const string _fashionCouponName = "时装券";
         private const string _defaultRaffleTicketName = "低级抽奖券";
+        private const string _randomUnitName = "随机改造地块";
 
         private const string _goldSprite = "icon_gold";
         private const string _diamondSprite = "icon_lottery_1";
@@ -24,6 +25,7 @@ namespace GameA
         private const string _raffleTicketSprite2 = "icon_lottery_2";
         private const string _raffleTicketSprite3 = "icon_lottery_3";
         private const string _raffleTicketSprite4 = "icon_lottery_4";
+        private const string _randomUnitSprite = "icon_gift_1";
 
 
         public UnityEngine.Sprite GetSprite () {
@@ -57,6 +59,24 @@ namespace GameA
                     }
                     return GameResourceManager.Instance.GetSpriteByName (_raffleTicketSprite1);
                 }
+            case ERewardType.RT_BoostItem:
+                {
+                    var table = Game.TableManager.Instance.GetBoostItem ((int)_id);
+                    if (null == table)
+                        return null;
+                    return GameResourceManager.Instance.GetSpriteByName (table.Icon);
+                }
+            case ERewardType.RT_ReformUnit:
+                {
+                    var table = Game.TableManager.Instance.GetUnit ((int)_id);
+                    if (null == table)
+                        return null;
+                    return GameResourceManager.Instance.GetSpriteByName (table.Icon);
+                }
+            case ERewardType.RT_RandomReformUnit:
+                {
+                    return GameResourceManager.Instance.GetSpriteByName (_randomUnitSprite);
+                }
             }
             return null;
         }
@@ -85,6 +105,24 @@ namespace GameA
                         return _defaultRaffleTicketName;
                     }
                     return table.Name;
+                }
+            case ERewardType.RT_BoostItem:
+                {
+                    var table = Game.TableManager.Instance.GetBoostItem ((int)_id);
+                    if (null == table)
+                        return string.Empty;
+                    return table.Name;
+                }
+            case ERewardType.RT_ReformUnit:
+                {
+                    var table = Game.TableManager.Instance.GetUnit ((int)_id);
+                    if (null == table)
+                        return null;
+                    return table.Name;
+                }
+            case ERewardType.RT_RandomReformUnit:
+                {
+                    return _randomUnitName;
                 }
             }
             return string.Empty;
