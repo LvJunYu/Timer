@@ -23,10 +23,6 @@ namespace GameA.Game
 
 		void Update()
 		{
-			if (EditMode.Instance.CurCommandType != ECommandType.Move)
-			{
-				return;
-			}
 			bool isValidInput;
 			float value = Input.GetAxis("Mouse ScrollWheel");
 			isValidInput = !(Mathf.Abs(value) - SensibilityValue < 0);
