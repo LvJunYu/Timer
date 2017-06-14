@@ -16,7 +16,6 @@ namespace SoyEngine
 		protected Transform _trans;
 
 		protected bool _isPlaying = false;
-        protected bool _isPause = false;
 
 		protected float _createTime = 0;
 		protected bool _autoDestroy = false;
@@ -40,9 +39,6 @@ namespace SoyEngine
 			get { return _isPlaying; }
 		}
 
-        public bool IsPause {
-            get { return _isPause; }
-        }
 
 		public bool NeedToDestroy
 		{
@@ -113,7 +109,6 @@ namespace SoyEngine
 			_lifeTime = Mathf.Max(0, lifeTime);
 			_hasBeenDestroy = false;
 			_isPlaying = false;
-			_isPause = false;
 		}
 	}
 }

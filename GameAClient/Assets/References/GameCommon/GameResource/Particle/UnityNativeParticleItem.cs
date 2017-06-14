@@ -18,8 +18,6 @@ namespace SoyEngine
 	{
 		protected Renderer[] _cachedRenders;
 
-        protected ParticleSystem[] _cachedPS;
-
 		protected float _lastPlayTime;
 
 		protected bool _autoStop = false;
@@ -45,10 +43,6 @@ namespace SoyEngine
 		{
 			base.InitGo(go, itemName);
 			InitRender();
-            if (_cachedGo != null)
-			{
-                _cachedPS = _cachedGo.GetComponentsInChildren<ParticleSystem> (true);
-            }
 			_cachedGo.SetActiveEx(false);
 		}
 
@@ -64,9 +58,9 @@ namespace SoyEngine
             if (!_isPlaying) {
                 _autoStop = false;
                 PlayItem ();
-                for (int i = 0; i < _cachedPS.Length; i++) {
-                    var emission = _cachedPS [i].emission;
-                    emission.enabled = true;
+                for (int i = 0; i < _cachedRenders.Length; i++)
+                {
+                    _cachedRenders[i].enabled = true;
                 }
                 _isPlaying = true;
             }
@@ -78,9 +72,9 @@ namespace SoyEngine
                 _autoStop = true;
                 _playTime = Mathf.Max (playTime, 0);
                 PlayItem ();
-                for (int i = 0; i < _cachedPS.Length; i++) {
-                    var emission = _cachedPS [i].emission;
-                    emission.enabled = true;
+                for (int i = 0; i < _cachedRenders.Length; i++)
+                {
+                    _cachedRenders[i].enabled = true;
                 }
                 _isPlaying = true;
             }
@@ -90,39 +84,22 @@ namespace SoyEngine
 
 		public override void Stop()
 		{
-			_cachedGo.SetActiveEx(false);
-			_isPlaying = false;
+		    if (_isPlaying)
+		    {
+                _cachedGo.SetActiveEx(false);
+                _isPlaying = false;
+		    }
 		}
 
-        public void StopEmit ()
+        public void Pause()
         {
-            if (_isPlaying) {
-                for (int i = 0; i < _cachedPS.Length; i++) {
-                    var emission = _cachedPS [i].emission;
-                    emission.enabled = false;
+            if (_isPlaying)
+            {
+                for (int i = 0; i < _cachedRenders.Length; i++)
+                {
+                    _cachedRenders[i].enabled = false;
                 }
                 _isPlaying = false;
-            }
-        }
-
-        public void PauseEmit ()
-        {
-            if (_isPlaying) {
-                for (int i = 0; i < _cachedPS.Length; i++) {
-                    var emission = _cachedPS [i].emission;
-                    emission.enabled = false;
-                }
-                _isPause = true;
-            }
-        }
-
-        public void ContinueEmit () {
-            if (_isPause) {
-                for (int i = 0; i < _cachedPS.Length; i++) {
-                    var emission = _cachedPS [i].emission;
-                    emission.enabled = true;
-                }
-                _isPause = false;
             }
         }
 

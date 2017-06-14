@@ -414,7 +414,7 @@ namespace GameA.Game
             _totalTime = _curTime;
             if (_quickenCDTime > 0)
             {
-                UpdateQuickenCDTime(--_quickenCDTime);
+                UpdateQuickenCDTime(_quickenCDTime - 1);
             }
             if (_quickenTime > 0)
             {

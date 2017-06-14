@@ -28,6 +28,11 @@ namespace GameA.Game
         protected IntVec2 _pointA;
         protected IntVec2 _pointB;
 
+        public override bool CanControlledBySwitch
+        {
+            get { return true; }
+        }
+
         protected override void InitAssetPath()
         {
             InitAssetRotation();
@@ -110,9 +115,28 @@ namespace GameA.Game
             _lazerEffectEnd = null;
         }
 
+        private void Pause()
+        {
+            _gridCheck.Clear();
+            if (_lazerEffect != null)
+            {
+                _lazerEffect.Pause();
+            }
+            if (_lazerEffectEnd != null)
+            {
+                _lazerEffectEnd.Pause();
+            }
+        }
+
         public override void UpdateLogic()
         {
             base.UpdateLogic();
+            //停止
+            if (_ctrlBySwitch)
+            {
+                Pause();
+                return;
+            }
             _gridCheck.Before();
             _distance = GM2DTools.GetDistanceToBorder(_pointA, Rotation);
             if (_dynamicCollider != null)

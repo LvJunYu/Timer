@@ -59,6 +59,7 @@ namespace GameA.Game
         protected int _shootAngle;
 
         protected List<UnitBase> _switchPressUnits = new List<UnitBase>();
+        protected bool _ctrlBySwitch;
 
         #endregion
 
@@ -645,6 +646,7 @@ namespace GameA.Game
             _curBanInputTime = 0;
             _eUnitState = EUnitState.Normal;
             _switchPressUnits.Clear();
+            _ctrlBySwitch = false;
             if (_dynamicCollider != null)
             {
                 CalculateMinMax();
@@ -1466,6 +1468,7 @@ namespace GameA.Game
 
         internal virtual void OnCtrlBySwitch()
         {
+            _ctrlBySwitch = !_ctrlBySwitch;
         }
 
         public bool IsBlockedBy(UnitBase unit)
