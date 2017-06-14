@@ -195,7 +195,7 @@ namespace GameA.Game
             _skillMgr2 = _skillMgr2 ?? new SkillManager(this);
             _skillMgr2.Clear();
 
-            _currentMp = 0;
+            UpdateMp(0);
             _big = 0;
             _dieTime = 0;
             _flashTime = 0;
@@ -1260,7 +1260,7 @@ namespace GameA.Game
             LogHelper.Debug("MainPlayer OnRevive");
             if (_view !=null && _reviveEffect == null)
             {
-                var particle = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null);
+                var particle = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null, ESortingOrder.LazerEffect);
                 _reviveEffect = new ReviveEffect(particle);
             }
             _eUnitState = EUnitState.Reviving;
@@ -1310,7 +1310,7 @@ namespace GameA.Game
             _trans.eulerAngles = new Vector3(90, 0, 0);
             if (_portalEffect == null)
             {
-                var particle = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null);
+                var particle = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null,  ESortingOrder.LazerEffect);
                 _portalEffect = new ReviveEffect(particle);
             }
             _portalEffect.Play(_trans.position + Vector3.up * 0.5f,
@@ -1600,7 +1600,7 @@ namespace GameA.Game
             {
                 if (_skillMgr2.ChangeSkill<T>())
                 {
-                    _currentMp = 0;
+                    UpdateMp(0);
                 }
             }
         }

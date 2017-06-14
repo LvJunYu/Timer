@@ -57,9 +57,9 @@ namespace GameA
             //    return;
             //}
 //            SocialGUIManager.Instance.CloseUI<UICtrlItem>();
-            if (!_selected) {
+//            if (!_selected) {
                 Messenger<ushort>.Broadcast (EMessengerType.OnSelectedItemChanged, (ushort)PairUnitManager.Instance.GetCurrentId (_id));
-            }
+//            }
         }
 
         internal void Set(Table_Unit tableUnit, bool selected)

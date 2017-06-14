@@ -18,7 +18,8 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
-            if (_opened)
+            _canLazerCross = false;
+            //if (_opened)
             {
                 if (_view != null)
                 {
@@ -80,7 +81,10 @@ namespace GameA.Game
                         SetEnabled(false);
                         if (_view != null)
                         {
+                            _canLazerCross = true;
                             _view.ChangeView(_tableUnit.Model + "_1");
+                            SetSortingOrderBack();
+                            UpdateTransPos();
                         }
                     }
                 }

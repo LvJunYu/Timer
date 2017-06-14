@@ -46,6 +46,7 @@ namespace GameA.Game
 
         [SerializeField]
         protected bool _isAlive;
+        protected bool _canLazerCross;
         [SerializeField]
         protected bool _isStart;
         protected int _friction;
@@ -154,6 +155,11 @@ namespace GameA.Game
         public virtual bool CanControlledBySwitch
         {
             get { return false; }
+        }
+
+        public bool CanLazerCross
+        {
+            get { return _canLazerCross; }
         }
 
         public int Hp
@@ -509,6 +515,7 @@ namespace GameA.Game
             _isDisposed = false;
             _tableUnit = tableUnit;
             _unitDesc = unitDesc;
+            _curPos = new IntVec2(_guid.x, _guid.y);
             _friction = 6;
             if (dynamicCollider != null)
             {
@@ -595,11 +602,13 @@ namespace GameA.Game
 
         internal virtual void Reset()
         {
-            Clear();
             if (_view != null)
             {
                 _view.Reset();
             }
+            _curPos = new IntVec2(_guid.x, _guid.y);
+            Clear();
+            UpdateTransPos();
             if (_dynamicCollider != null)
             {
                 _dynamicCollider.Reset();
@@ -618,8 +627,6 @@ namespace GameA.Game
             _isAlive = true;
             _dieTime = 0;
             _deltaPos = IntVec2.zero;
-            _deltaImpactPos = IntVec2.zero;
-            _curPos = new IntVec2(_guid.x, _guid.y);
             _colliderPos = GetColliderPos(_curPos);
             _colliderGrid = _tableUnit.GetColliderGrid(ref _unitDesc);
             _curMoveDirection = _moveDirection;
@@ -1049,7 +1056,7 @@ namespace GameA.Game
             for (int i = 0; i < units.Count; i++)
             {
                 var unit = units[i];
-                if ((unit.CanClimbed || unit.CanEdgeClimbed(this, EDirectionType.Left)) && CheckRightFloor(unit))
+                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, EDirectionType.Left)) && CheckRightFloor(unit))
                 {
                     return true;
                 }
@@ -1065,7 +1072,7 @@ namespace GameA.Game
             for (int i = 0; i < units.Count; i++)
             {
                 var unit = units[i];
-                if ((unit.CanClimbed || CanEdgeClimbed(this, EDirectionType.Right)) && CheckLeftFloor(unit))
+                if (unit.IsAlive && (unit.CanClimbed || CanEdgeClimbed(this, EDirectionType.Right)) && CheckLeftFloor(unit))
                 {
                     return true;
                 }

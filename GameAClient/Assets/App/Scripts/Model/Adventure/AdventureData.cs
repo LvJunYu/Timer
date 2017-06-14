@@ -28,6 +28,10 @@ namespace GameA
         /// 上次冒险关卡奖励
         /// </summary>
         private Reward _lastAdvReward;
+        /// <summary>
+        /// 上次冒险关卡得星数
+        /// </summary>
+        private int _lastAdvStarCnt;
         #endregion 字段
 
         #region 属性
@@ -40,7 +44,9 @@ namespace GameA
         public Reward LastAdvReward {
             get { return _lastAdvReward; }
         }
-
+        public int LastAdvStarCnt {
+            get { return _lastAdvStarCnt; }
+        }
         public EAdventureProjectType LastPlayedLevelType {
             get {
                 return _lastPlayedLevelType;
@@ -303,6 +309,9 @@ namespace GameA
                     star3 = CheckStarRequire (table.StarConditions [2], table.Star3Value, Game.PlayMode.Instance.Statistic);
                 }
             }
+
+            // 记录得星数以便在结算界面显示
+            _lastAdvStarCnt = (star1 ? 1 : 0) + (star2 ? 1 : 0) + (star3 ? 1 : 0);
 
             UnityEngine.WWWForm form = new UnityEngine.WWWForm ();
             form.AddBinaryData ("recordFile", recordBytes);

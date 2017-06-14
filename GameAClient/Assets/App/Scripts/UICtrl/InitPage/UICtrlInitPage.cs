@@ -153,13 +153,13 @@ namespace GameA {
                     break;
                 case EAppStartStep.LoginByToken:
                     {
-                        DictionaryTools.SetContentText(_cachedView.UpdateResProcessValue, "正在登录");
+                    DictionaryTools.SetContentText(_cachedView.StateText, "正在登录...");
                         LoginByToken();
                     }
                     break;
                 case EAppStartStep.LoadUserData:
                     {
-                        DictionaryTools.SetContentText(_cachedView.UpdateResProcessValue, "正在加载用户数据");
+                    DictionaryTools.SetContentText(_cachedView.StateText, "正在加载用户数据...");
                         LoadUserData();
                     }
                     break;
@@ -262,7 +262,8 @@ namespace GameA {
 	    private void EnterAppStartCompleteState()
 	    {
 			SocialApp.Instance.InitAfterUpdateResComplete();
-			CoroutineProxy.Instance.StartCoroutine(FinishStartApp());
+            SocialGUIManager.Instance.CloseUI<UICtrlInitPage>();
+//			CoroutineProxy.Instance.StartCoroutine(FinishStartApp());
 		}
 
 	    private void EnterUpdateResState()
@@ -394,22 +395,22 @@ namespace GameA {
 			SocialApp.Instance.Init();
 		}
 
-	    private IEnumerator FinishStartApp()
-		{
-			for (int i = 20; i > 0; i--)
-			{
-				yield return null;
-			}
-			_cachedView.LoadingImage.gameObject.SetActive(false);
-			for (int i = FadeFrameCount; i > 0; i--)
-			{
-				Color c = Color.white;
-				c.a = 1f * (FadeFrameCount - i) / FadeFrameCount;
-				_cachedView.BgImage.color = c;
-				yield return null;
-			}
-			SocialGUIManager.Instance.CloseUI<UICtrlInitPage>();
-		}
+//	    private IEnumerator FinishStartApp()
+//		{
+//			for (int i = 20; i > 0; i--)
+//			{
+//				yield return null;
+//			}
+////			_cachedView.LoadingImage.gameObject.SetActive(false);
+//			for (int i = FadeFrameCount; i > 0; i--)
+//			{
+//				Color c = Color.white;
+//				c.a = 1f * (FadeFrameCount - i) / FadeFrameCount;
+//				_cachedView.BgImage.color = c;
+//				yield return null;
+//			}
+//			SocialGUIManager.Instance.CloseUI<UICtrlInitPage>();
+//		}
 
 	    #endregion
     }

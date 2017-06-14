@@ -235,8 +235,8 @@ namespace GameA.Game
             _stepY = 0;
             _quickenInput = false;
             _lastQuickenInput = false;
+            UpdateQuickenCDTime(0);
             _quickenTime = 0;
-            _quickenCDTime = 0;
             _skill1Input = false;
             _lastSkill1Input = false;
             _skill2Input = false;
@@ -246,6 +246,16 @@ namespace GameA.Game
                 _curInputs[i] = false;
                 _lastInputs[i] = false;
             }
+        }
+
+        private void UpdateQuickenCDTime(int value)
+        {
+            if (_quickenCDTime == value)
+            {
+                return;
+            }
+            _quickenCDTime = value;
+            Messenger<int, int>.Broadcast(EMessengerType.OnSpeedUpCDChanged, _quickenCDTime, QuickenCDTime);
         }
 
         public void UpdateRenderer()
@@ -260,11 +270,9 @@ namespace GameA.Game
 
             _curHorizontal = CrossPlatformInputManager.GetAxis("Horizontal");
             _curVertical = CrossPlatformInputManager.GetAxis("Vertical");
-            #if IPHONE || ANDROID
-            if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
-            #else
+#if IPHONE || ANDROID
+#else
             if (EventSystem.current.IsPointerOverGameObject())
-            #endif
             {
                 for (int i = 0; i < _curInputs.Length; i++)
                 {
@@ -272,6 +280,7 @@ namespace GameA.Game
                 }
                 return;
             }
+#endif
 
             if (KeyDown(EInputType.Left))
             {
@@ -405,8 +414,7 @@ namespace GameA.Game
             _totalTime = _curTime;
             if (_quickenCDTime > 0)
             {
-                _quickenCDTime--;
-                Messenger<int, int>.Broadcast(EMessengerType.OnSpeedUpCDChanged, _quickenCDTime, QuickenCDTime);
+                UpdateQuickenCDTime(--_quickenCDTime);
             }
             if (_quickenTime > 0)
             {
@@ -746,8 +754,7 @@ namespace GameA.Game
                         if (QuickenInputUp && IsCharacterAbilityAvailable(ECharacterAbility.SpeedUp))
                         {
                             _quickenTime = QuickenMaxTime;
-                            _quickenCDTime = QuickenCDTime;
-                            Messenger<int, int>.Broadcast(EMessengerType.OnSpeedUpCDChanged, _quickenCDTime, QuickenCDTime);
+                            UpdateQuickenCDTime(QuickenCDTime);
                         }
                     }
                     break;

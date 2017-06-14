@@ -298,7 +298,6 @@ namespace GameA
 			{
 				Messenger<string>.Broadcast(EMessengerType.GameErrorLog, LocaleManager.GameLocale("error_editor_test_no_main_player"));
 			}
-			Broadcast(ECommandType.Play);
             GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
             if (null != gameModeEdit)
             {
@@ -308,7 +307,6 @@ namespace GameA
 
         private void OnPause()
         {
-			Broadcast(ECommandType.Pause);
 			GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
 			if (null != gameModeEdit)
 			{

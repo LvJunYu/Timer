@@ -192,6 +192,34 @@ namespace GameA
         private void UpdateView()
 		{
             switch (_showState) {
+                case EShowState.Win:
+                    _cachedView.Win.SetActive (true);
+                    _cachedView.Lose.SetActive (false);
+                    _cachedView.RetryBtn.gameObject.SetActive (true);
+                    _cachedView.ReturnBtn.gameObject.SetActive (true);
+                    _cachedView.ContinueEditBtn.gameObject.SetActive (false);
+                    _cachedView.NextBtn.gameObject.SetActive (false);
+                    _cachedView.Score.gameObject.SetActive (true);
+                    _cachedView.ScoreOutLine.gameObject.SetActive (true);
+                    _cachedView.Score.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
+                    _cachedView.ScoreOutLine.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
+                    // 奖励
+                    _cachedView.RewardObj.SetActive (false);
+                    //                    UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
+
+                    //                    _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishWin3Star");
+                    break;
+                case EShowState.Lose:
+                    _cachedView.Win.SetActive (false);
+                    _cachedView.Lose.SetActive (true);
+                    _cachedView.ReturnBtn.gameObject.SetActive (true);
+                    _cachedView.RetryBtn.gameObject.SetActive (true);
+                    _cachedView.NextBtn.gameObject.SetActive (false);
+                    _cachedView.ContinueEditBtn.gameObject.SetActive (false);
+                    _cachedView.Score.gameObject.SetActive (false);
+                    _cachedView.ScoreOutLine.gameObject.SetActive (false);
+                    _cachedView.RewardObj.SetActive (false);
+                    break;
             case EShowState.AdvBonusWin:
                 _cachedView.Win.SetActive (true);
                 _cachedView.Lose.SetActive (false);
@@ -212,10 +240,10 @@ namespace GameA
             case EShowState.AdvNormalWin:
                 _cachedView.Win.SetActive (true);
                 _cachedView.Lose.SetActive (false);
-                    _cachedView.RetryBtn.gameObject.SetActive (false);
+                _cachedView.RetryBtn.gameObject.SetActive (false);
                 _cachedView.ReturnBtn.gameObject.SetActive (true);
                 _cachedView.ContinueEditBtn.gameObject.SetActive (false);
-                    _cachedView.NextBtn.gameObject.SetActive (false);
+                _cachedView.NextBtn.gameObject.SetActive (false);
 
                 // 如果是一章中的最后一关，则不显示下一关按钮
 //                if (GameManager.Instance.CurrentGame.Project.LevelId == Game.ConstDefineGM2D.AdvNormallevelPerChapter) {
@@ -232,7 +260,17 @@ namespace GameA
                 _cachedView.RewardObj.SetActive (true);
                 UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
 
-                _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishWin3Star");
+                int starCnt = AppData.Instance.AdventureData.LastAdvStarCnt;
+                if (starCnt == 3) {
+                    _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishWin3Star");
+                } else if (starCnt == 2) {
+                    _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishWin2Star");
+                } else if (starCnt == 1) {
+                    _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishWin1Star");
+                } else
+                {
+                    _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishWin1Star");
+                }
                 break;
             case EShowState.AdvBonusLose:
                 _cachedView.Win.SetActive (false);

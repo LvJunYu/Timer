@@ -925,16 +925,24 @@ namespace GameA.Game
 
         public void Update()
         {
-            if (Input.GetKey (KeyCode.M)) {
-                if (_commandType != ECommandType.Move) {
-//                    SocialGUIManager.Instance.CloseUI<UICtrlItem> ();
-                    Messenger<ECommandType>.Broadcast (EMessengerType.OnCommandChanged, ECommandType.Move);
+            if (Input.GetKey(KeyCode.Mouse1))
+            {
+                if (_commandType != ECommandType.Move)
+                {
+                    Messenger<ECommandType>.Broadcast(EMessengerType.OnCommandChanged, ECommandType.Move);
                 }
-            } else {
-                if (_commandType == ECommandType.Move) {
-//                    SocialGUIManager.Instance.CloseUI<UICtrlItem> ();
-                    Messenger<ECommandType>.Broadcast (EMessengerType.OnCommandChanged, ECommandType.Create);
+            }
+            else
+            {
+                if (_commandType == ECommandType.Move)
+                {
+                    Messenger<ECommandType>.Broadcast(EMessengerType.OnCommandChanged, ECommandType.Create);
                 }
+            }
+            var mouseValue = Input.GetAxis("Mouse ScrollWheel");
+            if (mouseValue > 0.1f || mouseValue < -0.1f)
+            {
+                CameraManager.Instance.AddCameraEditSize(mouseValue);
             }
         }
 
@@ -1001,12 +1009,6 @@ namespace GameA.Game
                 case ECommandType.Undo:
 					_commandManager.Undo();
                     return;
-                case ECommandType.Play:
-                    HandlePlay();
-                    break;
-                case ECommandType.Pause:
-                    HandlePause();
-                    break;
                 case ECommandType.Publish:
                     break;
                 case ECommandType.Create:
@@ -1039,32 +1041,25 @@ namespace GameA.Game
             }
         }
 
-        private void HandlePlay()
+        public void HandlePlay()
         {
             if (_isPlaying)
             {
                 return;
             }
             _isPlaying = true;
-            //TODO 弹出提示：Enjoy The Show
-            Messenger<bool>.Broadcast(EMessengerType.OnPlayChanged, _isPlaying);
-            if (_isPlaying)
-            {
-                PlayMode.Instance.SceneState.Init(_mapStatistics);
-                GameRun.Instance.ChangeState(ESceneState.Play);
-                GameRun.Instance.Playing();
-            }
+            PlayMode.Instance.SceneState.Init(_mapStatistics);
+            OnCommandChanged(ECommandType.Play);
         }
 
-        private void HandlePause()
+        public void HandlePause()
         {
             if (!_isPlaying)
             {
                 return;
             }
             _isPlaying = false;
-            Messenger<bool>.Broadcast(EMessengerType.OnPlayChanged, _isPlaying);
-            GameRun.Instance.ChangeState(ESceneState.Edit);
+            OnCommandChanged(ECommandType.Pause);
         }
 
         private bool CheckReceiveTwoFingerEvent()

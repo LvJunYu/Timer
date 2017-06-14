@@ -133,7 +133,7 @@ namespace GameA.Game
 
         #endregion
 
-        #region 判断能力解锁的接口
+        #region 判断解锁的接口
         public bool IsCharacterAbilityAvailable (ECharacterAbility ability)
         {
             // todo 改表结构，增加枚举列，不能判断id
@@ -145,6 +145,30 @@ namespace GameA.Game
                     return false;
                 }
                 if (_itemsToUnlock [i].Table.Id == 3 && ECharacterAbility.Shoot == ability) {
+                    return false;
+                }
+
+            }
+            return true;
+        }
+
+        public bool IsGameSystemAvailable (EGameSystem system)
+        {
+            // todo 改表结构，增加枚举列，不能判断id
+            for (int i = 0; i < _itemsToUnlock.Count; i++) {
+                if (_itemsToUnlock [i].Table.Id == 4 && EGameSystem.Lottery == system) {
+                    return false;
+                }
+                if (_itemsToUnlock [i].Table.Id == 5 && EGameSystem.Fashion == system) {
+                    return false;
+                }
+                if (_itemsToUnlock [i].Table.Id == 6 && EGameSystem.WorkShop == system) {
+                    return false;
+                }
+                if (_itemsToUnlock [i].Table.Id == 7 && EGameSystem.ModifyMatch == system) {
+                    return false;
+                }
+                if (_itemsToUnlock [i].Table.Id == 8 && EGameSystem.World == system) {
                     return false;
                 }
 
@@ -353,5 +377,17 @@ namespace GameA.Game
         SpeedUp,
         DoubleJump,
         Shoot,
+    }
+
+    /// <summary>
+    /// 系统功能
+    /// </summary>
+    public enum EGameSystem
+    {
+        Lottery,
+        Fashion,
+        WorkShop,
+        ModifyMatch,
+        World,
     }
 }

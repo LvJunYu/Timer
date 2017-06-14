@@ -55,6 +55,8 @@ namespace GameA
 			//if (_cachedView.PlayerAvatarAnimation != null) {
 			//	_cachedView.PlayerAvatarAnimation.Update (Time.deltaTime);
 			//}
+            _cachedView.SingleModeParent.localPosition = Vector3.up * Mathf.Sin(Time.time * 0.75f) * 10;
+
 		}
 
 		protected override void OnDestroy ()
@@ -231,12 +233,16 @@ namespace GameA
 
         public void OnCreateBtn()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlWorkShop>();
+            if (GameProcessManager.Instance.IsGameSystemAvailable (EGameSystem.WorkShop)) {
+                SocialGUIManager.Instance.OpenUI<UICtrlWorkShop> ();
+            }
         }
 
         public void OnWorldBtn()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlWorld>();
+            if (GameProcessManager.Instance.IsGameSystemAvailable (EGameSystem.World)) {
+                SocialGUIManager.Instance.OpenUI<UICtrlWorld> ();
+            }
         }
 
 		private void OnSingleGameBtn () {
@@ -254,12 +260,16 @@ namespace GameA
 
 
 		private void OnAvatarBtn () {
-            SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
+            if (GameProcessManager.Instance.IsGameSystemAvailable (EGameSystem.Fashion)) {
+                SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu> ();
+            }
 		}
         private void OnLotteryBtn()
         {
             //Debug.Log("_________________________OnLotteryBtn");
-           SocialGUIManager.Instance.OpenUI<UICtrlLottery>();
+            if (GameProcessManager.Instance.IsGameSystemAvailable (EGameSystem.Lottery)) {
+                SocialGUIManager.Instance.OpenUI<UICtrlLottery> ();
+            }
         }
 
         private void RefreshUserInfo () {

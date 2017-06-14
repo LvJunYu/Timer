@@ -59,9 +59,12 @@ namespace GameA.Game
                 JoyPhysics2D.GetColliderLayerMask(sender.DynamicCollider.Layer));
             for (int i = 0; i < units.Count; i++)
             {
-                if (GM2DTools.OnDirectionHit(units[i], sender, (EMoveDirection)(unitDesc.Rotation + 1)))
+                if (units[i].IsAlive)
                 {
-                    return;
+                    if (GM2DTools.OnDirectionHit(units[i], sender, (EMoveDirection)(unitDesc.Rotation + 1)))
+                    {
+                        return;
+                    }
                 }
             }
             var speed = IntVec2.zero;

@@ -13,6 +13,17 @@ namespace GameA.Game
     [Unit(Id = 4102, Type = typeof(BlueStoneBan))]
     public class BlueStoneBan : UnitBase
     {
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            _canLazerCross = true;
+            SetSortingOrderBack();
+            return true;
+        }
+
         public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
         {
             if (checkOnly)

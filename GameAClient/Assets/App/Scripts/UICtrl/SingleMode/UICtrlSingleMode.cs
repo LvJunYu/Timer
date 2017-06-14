@@ -108,6 +108,12 @@ namespace GameA
 //			);
 //			RefreshEnergyInfo ();
 			RefreshChapterInfo ();
+
+            if (GameProcessManager.Instance.IsGameSystemAvailable (EGameSystem.ModifyMatch)) {
+                _cachedView.MatchBtn.gameObject.SetActive (true);
+            } else {
+                _cachedView.MatchBtn.gameObject.SetActive (false);
+            }
         }
 
         protected override void OnClose()
@@ -260,7 +266,9 @@ namespace GameA
 		}
 
 		private void OnMatchBtnClick () {
-			SocialGUIManager.Instance.OpenUI<UICtrlModifyMatchMain>();
+            if (GameProcessManager.Instance.IsGameSystemAvailable (EGameSystem.ModifyMatch)) {
+                SocialGUIManager.Instance.OpenUI<UICtrlModifyMatchMain> ();
+            }
 		}
 
 		private void OnTreasureBtnClick () {
@@ -385,6 +393,12 @@ namespace GameA
 					);
 				}
 			}
+
+            if (GameProcessManager.Instance.IsGameSystemAvailable (EGameSystem.ModifyMatch)) {
+                _cachedView.MatchBtn.gameObject.SetActive (true);
+            } else {
+                _cachedView.MatchBtn.gameObject.SetActive (false);
+            }
 		}
         #endregion 接口
         #endregion
