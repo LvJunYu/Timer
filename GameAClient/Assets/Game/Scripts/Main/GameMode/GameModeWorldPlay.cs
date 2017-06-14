@@ -99,6 +99,20 @@ namespace GameA.Game
             });
 		}
 
+        public override bool Restart(Action successCb, Action failedCb)
+        {
+            _project.RequestPlay(() => {
+                GameRun.Instance.RePlay();
+                OnGameStart();
+                if (successCb != null)
+                {
+                    successCb.Invoke();
+                }
+            }, code => failedCb());
+            return true;
+        }
+
+
         private byte[] GetRecord()
         {
             GM2DRecordData recordData = new GM2DRecordData();
