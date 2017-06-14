@@ -148,22 +148,16 @@ namespace GameA.Game
 
         private void UpdateRenderer(float deltaTime)
         {
-            if (_eSceneState == ESceneState.Play)
-            {
-                PlayMode.Instance.UpdateRenderer(deltaTime);
-            }
+            PlayMode.Instance.UpdateRenderer(deltaTime);
         }
 
         private void UpdateLogic(float deltaTime)
         {
-            if (_eSceneState == ESceneState.Play)
+            PlayMode.Instance.UpdateLogic(deltaTime);
+            CameraManager.Instance.UpdateLogic(deltaTime);
+            for (int i = 0; i < _allSkeletonAnimationComp.Count; i++)
             {
-                PlayMode.Instance.UpdateLogic(deltaTime);
-                CameraManager.Instance.UpdateLogic(deltaTime);
-                for (int i = 0; i < _allSkeletonAnimationComp.Count; i++)
-                {
-                    _allSkeletonAnimationComp[i].Update(ConstDefineGM2D.FixedDeltaTime);
-                }
+                _allSkeletonAnimationComp[i].Update(ConstDefineGM2D.FixedDeltaTime);
             }
         }
 

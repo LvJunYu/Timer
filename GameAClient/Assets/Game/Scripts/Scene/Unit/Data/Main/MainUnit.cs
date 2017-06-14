@@ -165,9 +165,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            _mainInput = new MainInput(this);
-            _skillMgr1 = new SkillManager(this);
-            _skillMgr2 = new SkillManager(this);
             return true;
         }
 
@@ -188,19 +185,16 @@ namespace GameA.Game
 
         protected override void Clear()
         {
-            if (_mainInput != null)
-            {
-                _mainInput.Reset();
-            }
-            if (_skillMgr1 != null)
-            {
-                _skillMgr1.Clear();
-                _skillMgr1.ChangeSkill<SkillWater>();
-            }
-            if (_skillMgr2 != null)
-            {
-                _skillMgr2.Clear();
-            }
+            _mainInput = _mainInput ?? new MainInput(this);
+            _mainInput.Reset();
+
+            _skillMgr1 = _skillMgr1 ?? new SkillManager(this);
+            _skillMgr1.Clear();
+            _skillMgr1.ChangeSkill<SkillWater>();
+
+            _skillMgr2 = _skillMgr2 ?? new SkillManager(this);
+            _skillMgr2.Clear();
+
             _currentMp = 0;
             _big = 0;
             _dieTime = 0;
