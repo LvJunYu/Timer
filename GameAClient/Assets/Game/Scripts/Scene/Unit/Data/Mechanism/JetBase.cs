@@ -17,7 +17,6 @@ namespace GameA.Game
         protected int _timeScale;
         protected const int AnimationLength = 15;
         protected UnityNativeParticleItem _effect;
-        protected bool _currentCtrlBySwitch;
 
         public override bool CanControlledBySwitch
         {
@@ -35,12 +34,6 @@ namespace GameA.Game
             _skillManager.ChangeSkill<SkillFire>();
             _timeScale = 1;
             return true;
-        }
-
-        protected override void Clear()
-        {
-            base.Clear();
-            _currentCtrlBySwitch = false;
         }
 
         internal override bool InstantiateView()
@@ -66,16 +59,10 @@ namespace GameA.Game
             _effect = null;
         }
 
-        internal override void OnCtrlBySwitch()
-        {
-            base.OnCtrlBySwitch();
-            _currentCtrlBySwitch = !_currentCtrlBySwitch;
-        }
-
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            if (!_currentCtrlBySwitch)
+            if (!_ctrlBySwitch)
             {
                 if (_skillManager != null)
                 {

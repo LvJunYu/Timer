@@ -546,7 +546,7 @@ namespace GameA.Game
                 {
                     if (_brakeEfffect.IsPlaying)
                     {
-                        _brakeEfffect.StopEmit();
+                        _brakeEfffect.Pause();
                         _animation.ClearTrack(1);
                         PlayMode.Instance.CurrentShadow.RecordClearAnimTrack(1);
                     }

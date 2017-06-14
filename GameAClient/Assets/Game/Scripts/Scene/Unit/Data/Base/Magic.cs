@@ -73,6 +73,7 @@ namespace GameA.Game
 
         internal override void OnCtrlBySwitch()
         {
+            base.OnCtrlBySwitch();
             _run = !_run;
         }
 

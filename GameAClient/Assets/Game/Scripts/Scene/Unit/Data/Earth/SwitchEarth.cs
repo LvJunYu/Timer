@@ -16,7 +16,6 @@ namespace GameA.Game
     [Unit(Id = 4003, Type = typeof(SwitchEarth))]
     public class SwitchEarth : BlockBase
     {
-        protected bool _finalCtrlBySwitch;
         protected bool _currentCtrlBySwitch;
         protected SpineObject _effect;
 
@@ -50,7 +49,6 @@ namespace GameA.Game
         {
             base.Clear();
             _canLazerCross = false;
-            _finalCtrlBySwitch = false;
             _currentCtrlBySwitch = false;
             if (_view != null)
             {
@@ -88,20 +86,13 @@ namespace GameA.Game
             return true;
         }
 
-        internal override void OnCtrlBySwitch()
-        {
-            base.OnCtrlBySwitch();
-            _finalCtrlBySwitch = !_finalCtrlBySwitch;
-            SetCtrlBySwitchState(_finalCtrlBySwitch);
-        }
-
         private void SetCtrlBySwitchState(bool value)
         {
             if (_currentCtrlBySwitch == value)
             {
                 return;
             }
-            if (_currentCtrlBySwitch && !_finalCtrlBySwitch)
+            if (_currentCtrlBySwitch && !_ctrlBySwitch)
             {
                 var units = ColliderScene2D.GridCastAllReturnUnits(_colliderGrid);
                 for (int i = 0; i < units.Count; i++)
@@ -123,7 +114,7 @@ namespace GameA.Game
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            SetCtrlBySwitchState(_finalCtrlBySwitch);
+            SetCtrlBySwitchState(_ctrlBySwitch);
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)

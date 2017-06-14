@@ -37,6 +37,11 @@ namespace GameA.Game
         protected IntVec2 _pointA;
         protected IntVec2 _pointB;
 
+        public override bool CanControlledBySwitch
+        {
+            get { return true; }
+        }
+
         protected override bool OnInit()
         {
             if (!base.OnInit())
@@ -104,9 +109,34 @@ namespace GameA.Game
             }
         }
 
+        private void Pause()
+        {
+            if (_effectEnd != null)
+            {
+                _effectEnd.Pause();
+            }
+            if (_lazerEffect1 != null)
+            {
+                _lazerEffect1.Pause();
+            }
+            if (_lazerEffect2 != null)
+            {
+                _lazerEffect2.Pause();
+            }
+            if (_effectStart != null)
+            {
+                _effectStart.Pause();
+            }
+        }
+
         public override void UpdateLogic()
         {
             base.UpdateLogic();
+            if (_ctrlBySwitch)
+            {
+                Pause();
+                return;
+            }
             _timer++;
             _gridCheck.Before();
             if (_shoot)
@@ -118,7 +148,7 @@ namespace GameA.Game
                 }
                 if (_effectStart != null)
                 {
-                    _effectStart.StopEmit();
+                    _effectStart.Stop();
                 }
                 var hits = ColliderScene2D.GridCastAll(_checkGrid, Rotation, EnvManager.LazerShootLayer);
                 if (hits.Count > 0)
@@ -306,6 +336,14 @@ namespace GameA.Game
                 _trans = null;
             }
             _renderer = null;
+        }
+
+        internal void Pause()
+        {
+            if (_renderer != null)
+            {
+                _renderer.enabled = false;
+            }
         }
 
         internal void Stop()
