@@ -280,7 +280,7 @@ namespace GameA.Game
 
         public void SetFinalOrthoSize(float value)
         {
-            Debug.LogError("CameraManager.SetFinalOrthoSize, orig: " + _finalOrthoSize + " new: " + value);
+            //Debug.LogError("CameraManager.SetFinalOrthoSize, orig: " + _finalOrthoSize + " new: " + value);
             _finalOrthoSize = value;
             _rendererCamera.orthographicSize = _finalOrthoSize;
             UpdateCameraViewRect();
@@ -289,7 +289,6 @@ namespace GameA.Game
         public void SetCameraEditSize(float value)
         {
             _cameraEditSize = new Vector2(2.5f, value);
-            LogHelper.Debug(_cameraEditSize.ToString());
         }
 
         public void AddCameraEditSize(float value)
