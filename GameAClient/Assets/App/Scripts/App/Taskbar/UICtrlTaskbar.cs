@@ -143,12 +143,6 @@ namespace GameA
             GameProcessManager.Instance.RefreshHomeUIUnlock();
         }
 
-        
-        
-        
-        
-        
-
         public void SetLock(UIFunction UI,bool ifunlock)
 	    {
 	        switch (UI)
@@ -217,11 +211,7 @@ namespace GameA
                         }
                     }
                     break;
-
-
             }
-
-
         }
 
 
