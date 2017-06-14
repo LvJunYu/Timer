@@ -81,6 +81,7 @@ namespace GameA.Game
                         if (_view != null)
                         {
                             _view.ChangeView(_tableUnit.Model + "_1");
+                            SetSortingOrderBack();
                         }
                     }
                 }

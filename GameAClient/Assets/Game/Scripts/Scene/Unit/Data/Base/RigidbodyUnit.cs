@@ -295,14 +295,9 @@ namespace GameA.Game
                 _cacheHitUnits.Add(unit.Guid);
                 Hit(unit, eDirectionType);
             }
-            HitForPaint(unit, eDirectionType);
         }
 
         protected virtual void Hit(UnitBase unit, EDirectionType eDirectionType)
-        {
-        }
-
-        protected virtual void HitForPaint(UnitBase unit, EDirectionType eDirectionType)
         {
         }
     }

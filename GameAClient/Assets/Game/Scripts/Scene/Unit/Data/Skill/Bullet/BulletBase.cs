@@ -122,16 +122,13 @@ namespace GameA.Game
         protected virtual void OnBlocked()
         {
             //检查地块范围
-            //var units = ColliderScene2D.CircleCastAllReturnUnits(_curPos, _skill.Radius, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer));
-            //for (int i = 0; i < units.Count; i++)
-            //{
-            //    var unit = units[i];
-            //    if (unit.CanPainted)
-            //    {
-            //        LogHelper.Debug(units[i].ToString());
-            //        DoPaint(unit, eDirectionType);
-            //    }
-            //}
+            var checkGrid = _colliderGrid.Enlarge(_skill.Radius);
+            var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer));
+            for (int i = 0; i < units.Count; i++)
+            {
+                var unit = units[i];
+                Effect(unit, checkGrid);
+            }
             _isAlive = false;
             --Life;
             if (_view != null)
@@ -148,108 +145,51 @@ namespace GameA.Game
             PlayMode.Instance.DestroyUnit(this);
         }
 
-        protected override void HitForPaint(UnitBase unit, EDirectionType eDirectionType)
+        protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
+        {
+            _blocked = 1;
+        }
+
+        protected void Effect(UnitBase unit, Grid2D checkGrid)
         {
             if (unit.CanPainted)
             {
                 _blocked = 2;
-                DoPaint(unit, eDirectionType);
+                int length = ConstDefineGM2D.ServerTileScale;
+                var guid = unit.Guid;
+                UnitBase neighborUnit;
+                if (_curPos.y < unit.ColliderGrid.YMin)
+                {
+                    if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y - length, guid.z), out neighborUnit))
+                    {
+                        DoPaint(unit, EDirectionType.Down);
+                    }
+                }
+                else if (_curPos.y > unit.ColliderGrid.YMax)
+                {
+                    if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y + length, guid.z), out neighborUnit))
+                    {
+                        DoPaint(unit, EDirectionType.Up);
+                    }
+                }
+                if (_curPos.x < unit.ColliderGrid.XMin)
+                {
+                    if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x - length, guid.y, guid.z), out neighborUnit))
+                    {
+                        DoPaint(unit, EDirectionType.Left);
+                    }
+                }
+                else if (_curPos.x > unit.ColliderGrid.XMax)
+                {
+                    if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x + length, guid.y, guid.z), out neighborUnit))
+                    {
+                        DoPaint(unit, EDirectionType.Right);
+                    }
+                }
             }
-        }
-
-        protected virtual void DoPaint(UnitBase unit, EDirectionType eDirectionType)
-        {
-            var paintDepth = PaintBlock.TileOffsetHeight;
-            switch (eDirectionType)
+            else if (unit.IsHero && unit.EffectMgr != null)
             {
-                case EDirectionType.Up:
-                    {
-                        int centerPoint = (_colliderGrid.XMax + 1 + _colliderGrid.XMin) / 2;
-                        var start = centerPoint - _skill.Radius;
-                        var end = centerPoint + _skill.Radius;
-                        unit.DoPaint(start, end, EDirectionType.Down, _skill.ESkillType, _maskRandom);
-                        if (start <= unit.ColliderGrid.XMin)
-                        {
-                            start = unit.ColliderGrid.YMin;
-                            end = unit.ColliderGrid.YMin + paintDepth;
-                            unit.DoPaint(start, end, EDirectionType.Left, _skill.ESkillType, _maskRandom, false);
-                        }
-                        if (end >= unit.ColliderGrid.XMax)
-                        {
-                            start = unit.ColliderGrid.YMin;
-                            end = unit.ColliderGrid.YMin + paintDepth;
-                            unit.DoPaint(start, end, EDirectionType.Right, _skill.ESkillType, _maskRandom, false);
-                        }
-                    }
-                    break;
-                case EDirectionType.Down:
-                    {
-                        int centerPoint = (_colliderGrid.XMax + 1 + _colliderGrid.XMin) / 2;
-                        var start = centerPoint - _skill.Radius;
-                        var end = centerPoint + _skill.Radius;
-                        unit.DoPaint(start, end, EDirectionType.Up, _skill.ESkillType, _maskRandom);
-                        if (start <= unit.ColliderGrid.XMin)
-                        {
-                            start = unit.ColliderGrid.YMax - paintDepth;
-                            end = unit.ColliderGrid.YMax;
-                            unit.DoPaint(start, end, EDirectionType.Left, _skill.ESkillType, _maskRandom, false);
-                        }
-                        if (end >= unit.ColliderGrid.XMax)
-                        {
-                            start = unit.ColliderGrid.YMax - paintDepth;
-                            end = unit.ColliderGrid.YMax;
-                            unit.DoPaint(start, end, EDirectionType.Right, _skill.ESkillType, _maskRandom, false);
-                        }
-                    }
-                    break;
-                case EDirectionType.Left:
-                    {
-                        int centerPoint = (_colliderGrid.YMax + 1 + _colliderGrid.YMin) / 2;
-                        var start = centerPoint - _skill.Radius;
-                        var end = centerPoint + _skill.Radius;
-                        unit.DoPaint(start, end, EDirectionType.Right, _skill.ESkillType, _maskRandom);
-                        if (start <= unit.ColliderGrid.YMin)
-                        {
-                            start = unit.ColliderGrid.XMax - paintDepth;
-                            end = unit.ColliderGrid.XMax;
-                            unit.DoPaint(start, end, EDirectionType.Down, _skill.ESkillType, _maskRandom, false);
-                        }
-                        if (end >= unit.ColliderGrid.YMax)
-                        {
-                            start = unit.ColliderGrid.XMax - paintDepth;
-                            end = unit.ColliderGrid.XMax;
-                            unit.DoPaint(start, end, EDirectionType.Up, _skill.ESkillType, _maskRandom, false);
-                        }
-                    }
-                    break;
-                case EDirectionType.Right:
-                    {
-                        int centerPoint = (_colliderGrid.YMax + 1 + _colliderGrid.YMin) / 2;
-                        var start = centerPoint - _skill.Radius;
-                        var end = centerPoint + _skill.Radius;
-                        unit.DoPaint(start, end, EDirectionType.Left, _skill.ESkillType, _maskRandom);
-                        if (start <= unit.ColliderGrid.YMin)
-                        {
-                            start = unit.ColliderGrid.XMin;
-                            end = unit.ColliderGrid.XMin + paintDepth;
-                            unit.DoPaint(start, end, EDirectionType.Down, _skill.ESkillType, _maskRandom, false);
-                        }
-                        if (end >= unit.ColliderGrid.YMax)
-                        {
-                            start = unit.ColliderGrid.XMin;
-                            end = unit.ColliderGrid.XMin + paintDepth;
-                            unit.DoPaint(start, end, EDirectionType.Up, _skill.ESkillType, _maskRandom, false);
-                        }
-                    }
-                    break;
-            }
-        }
-
-        protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
-        {
-            _blocked = 2;
-            if (unit.IsHero && unit.EffectMgr != null)
-            {
+                _blocked = 2;
                 var effectMgr = unit.EffectMgr;
                 switch (_skill.ESkillType)
                 {
@@ -275,6 +215,115 @@ namespace GameA.Game
                         break;
                 }
             }
+        }
+
+        protected virtual void DoPaint(UnitBase unit, EDirectionType eDirectionType)
+        {
+            var paintDepth = PaintBlock.TileOffsetHeight;
+            switch (eDirectionType)
+            {
+                case EDirectionType.Down:
+                    {
+                        int centerPoint = (_colliderGrid.XMax + 1 + _colliderGrid.XMin) / 2;
+                        var start = centerPoint - _skill.Radius;
+                        var end = centerPoint + _skill.Radius;
+                        unit.DoPaint(start, end, EDirectionType.Down, _skill.ESkillType, _maskRandom);
+
+                        if (start <= unit.ColliderGrid.XMin)
+                        {
+                            start = unit.ColliderGrid.YMin;
+                            end = unit.ColliderGrid.YMin + paintDepth;
+                            unit.DoPaint(start, end, EDirectionType.Left, _skill.ESkillType, _maskRandom, false);
+                        }
+                        if (end >= unit.ColliderGrid.XMax)
+                        {
+                            start = unit.ColliderGrid.YMin;
+                            end = unit.ColliderGrid.YMin + paintDepth;
+                            unit.DoPaint(start, end, EDirectionType.Right, _skill.ESkillType, _maskRandom, false);
+                        }
+                    }
+                    break;
+                case EDirectionType.Up:
+                    {
+                        int centerPoint = (_colliderGrid.XMax + 1 + _colliderGrid.XMin) / 2;
+                        var start = centerPoint - _skill.Radius;
+                        var end = centerPoint + _skill.Radius;
+                        unit.DoPaint(start, end, EDirectionType.Up, _skill.ESkillType, _maskRandom);
+                        if (start <= unit.ColliderGrid.XMin)
+                        {
+                            start = unit.ColliderGrid.YMax - paintDepth;
+                            end = unit.ColliderGrid.YMax;
+                            unit.DoPaint(start, end, EDirectionType.Left, _skill.ESkillType, _maskRandom, false);
+                        }
+                        if (end >= unit.ColliderGrid.XMax)
+                        {
+                            start = unit.ColliderGrid.YMax - paintDepth;
+                            end = unit.ColliderGrid.YMax;
+                            unit.DoPaint(start, end, EDirectionType.Right, _skill.ESkillType, _maskRandom, false);
+                        }
+                    }
+                    break;
+                case EDirectionType.Right:
+                    {
+                        int centerPoint = (_colliderGrid.YMax + 1 + _colliderGrid.YMin) / 2;
+                        var start = centerPoint - _skill.Radius;
+                        var end = centerPoint + _skill.Radius;
+                        unit.DoPaint(start, end, EDirectionType.Right, _skill.ESkillType, _maskRandom);
+                        if (start <= unit.ColliderGrid.YMin)
+                        {
+                            start = unit.ColliderGrid.XMax - paintDepth;
+                            end = unit.ColliderGrid.XMax;
+                            unit.DoPaint(start, end, EDirectionType.Down, _skill.ESkillType, _maskRandom, false);
+                        }
+                        if (end >= unit.ColliderGrid.YMax)
+                        {
+                            start = unit.ColliderGrid.XMax - paintDepth;
+                            end = unit.ColliderGrid.XMax;
+                            unit.DoPaint(start, end, EDirectionType.Up, _skill.ESkillType, _maskRandom, false);
+                        }
+                    }
+                    break;
+                case EDirectionType.Left:
+                    {
+                        int centerPoint = (_colliderGrid.YMax + 1 + _colliderGrid.YMin) / 2;
+                        var start = centerPoint - _skill.Radius;
+                        var end = centerPoint + _skill.Radius;
+                        unit.DoPaint(start, end, EDirectionType.Left, _skill.ESkillType, _maskRandom);
+                        if (start <= unit.ColliderGrid.YMin)
+                        {
+                            start = unit.ColliderGrid.XMin;
+                            end = unit.ColliderGrid.XMin + paintDepth;
+                            unit.DoPaint(start, end, EDirectionType.Down, _skill.ESkillType, _maskRandom, false);
+                        }
+                        if (end >= unit.ColliderGrid.YMax)
+                        {
+                            start = unit.ColliderGrid.XMin;
+                            end = unit.ColliderGrid.XMin + paintDepth;
+                            unit.DoPaint(start, end, EDirectionType.Up, _skill.ESkillType, _maskRandom, false);
+                        }
+                    }
+                    break;
+            }
+        }
+
+        private bool IsShootUp()
+        {
+            return _angle < 90 || _angle > 270;
+        }
+
+        private bool IsShootDown()
+        {
+            return _angle > 90 && _angle < 270;
+        }
+
+        private bool IsShootRight()
+        {
+            return _angle > 0 && _angle < 180;
+        }
+
+        private bool IsShootLeft()
+        {
+            return _angle > 180;
         }
     }
 }

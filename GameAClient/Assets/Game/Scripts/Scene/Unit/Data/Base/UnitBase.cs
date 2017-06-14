@@ -509,6 +509,7 @@ namespace GameA.Game
             _isDisposed = false;
             _tableUnit = tableUnit;
             _unitDesc = unitDesc;
+            _curPos = new IntVec2(_guid.x, _guid.y);
             _friction = 6;
             if (dynamicCollider != null)
             {
@@ -599,6 +600,7 @@ namespace GameA.Game
             {
                 _view.Reset();
             }
+            _curPos = new IntVec2(_guid.x, _guid.y);
             Clear();
             UpdateTransPos();
             if (_dynamicCollider != null)
@@ -620,7 +622,6 @@ namespace GameA.Game
             _dieTime = 0;
             _deltaPos = IntVec2.zero;
             _deltaImpactPos = IntVec2.zero;
-            _curPos = new IntVec2(_guid.x, _guid.y);
             _colliderPos = GetColliderPos(_curPos);
             _colliderGrid = _tableUnit.GetColliderGrid(ref _unitDesc);
             _curMoveDirection = _moveDirection;

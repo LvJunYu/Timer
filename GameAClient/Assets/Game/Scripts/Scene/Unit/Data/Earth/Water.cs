@@ -47,7 +47,7 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (!checkOnly && other.IsAlive)
+            if (!checkOnly)
             {
                 OnWater(other);
             }
@@ -57,7 +57,7 @@ namespace GameA.Game
         private void OnWater(UnitBase other)
         {
             //播放水中动画 漂浮一会 然后死掉
-            GameParticleManager.Instance.Emit("M1EffectDeathWater", GetHitEffectPos(other, EDirectionType.Up));
+            //GameParticleManager.Instance.Emit("M1EffectDeathWater", GetHitEffectPos(other, EDirectionType.Up));
             if (other.IsHero)
             {
                 other.InWater();
