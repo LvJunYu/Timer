@@ -109,19 +109,22 @@ namespace GameA.Game
                         : EnvManager.MovingEarthBlockLayer, float.MinValue, float.MaxValue, _dynamicCollider);
                     for (int i = 0; i < units.Count; i++)
                     {
-                        if (IsValidBlueStoneRotation(units[i]))
+                        if (units[i].IsAlive)
                         {
-                            _magicRotate = units[i];
-                            break;
-                        }
-                        //if (GM2DTools.OnDirectionHit(units[i], PlayMode.Instance.MainUnit, _curMoveDirection))
-                        if(_magicRotate == null)
-                        {
-                            _timerMagic = 0;
-                            Speed = IntVec2.zero;
-                            _magicRotate = null;
-                            ChangeMoveDirection();
-                            break;
+                            if (IsValidBlueStoneRotation(units[i]))
+                            {
+                                _magicRotate = units[i];
+                                break;
+                            }
+                            //if (GM2DTools.OnDirectionHit(units[i], PlayMode.Instance.MainUnit, _curMoveDirection))
+                            if (_magicRotate == null)
+                            {
+                                _timerMagic = 0;
+                                Speed = IntVec2.zero;
+                                _magicRotate = null;
+                                ChangeMoveDirection();
+                                break;
+                            }
                         }
                     }
                     if (_magicRotate != null)
