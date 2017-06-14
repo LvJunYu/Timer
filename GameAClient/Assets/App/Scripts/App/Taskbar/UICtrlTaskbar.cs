@@ -55,6 +55,8 @@ namespace GameA
 			//if (_cachedView.PlayerAvatarAnimation != null) {
 			//	_cachedView.PlayerAvatarAnimation.Update (Time.deltaTime);
 			//}
+            _cachedView.SingleModeParent.localPosition = Vector3.up * Mathf.Sin(Time.time * 0.75f) * 10;
+
 		}
 
 		protected override void OnDestroy ()

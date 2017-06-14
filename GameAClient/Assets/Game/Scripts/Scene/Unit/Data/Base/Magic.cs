@@ -115,6 +115,7 @@ namespace GameA.Game
                             break;
                         }
                         //if (GM2DTools.OnDirectionHit(units[i], PlayMode.Instance.MainUnit, _curMoveDirection))
+                        if(_magicRotate == null)
                         {
                             _timerMagic = 0;
                             Speed = IntVec2.zero;

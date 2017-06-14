@@ -41,6 +41,10 @@ namespace GameA
 		public GameObject SingleMode;
 		public GameObject SingleModeDisable;
         /// <summary>
+        /// 单人模式父物体，做动画用
+        /// </summary>
+        public Transform SingleModeParent;
+        /// <summary>
         /// 人物按钮，时装商店
         /// </summary>
 		public Button AvatarBtn;

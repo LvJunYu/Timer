@@ -595,11 +595,12 @@ namespace GameA.Game
 
         internal virtual void Reset()
         {
-            Clear();
             if (_view != null)
             {
                 _view.Reset();
             }
+            Clear();
+            UpdateTransPos();
             if (_dynamicCollider != null)
             {
                 _dynamicCollider.Reset();
