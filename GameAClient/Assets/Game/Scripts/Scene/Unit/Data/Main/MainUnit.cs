@@ -1260,7 +1260,7 @@ namespace GameA.Game
             LogHelper.Debug("MainPlayer OnRevive");
             if (_view !=null && _reviveEffect == null)
             {
-                var particle = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null);
+                var particle = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null, ESortingOrder.LazerEffect);
                 _reviveEffect = new ReviveEffect(particle);
             }
             _eUnitState = EUnitState.Reviving;
@@ -1310,7 +1310,7 @@ namespace GameA.Game
             _trans.eulerAngles = new Vector3(90, 0, 0);
             if (_portalEffect == null)
             {
-                var particle = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null);
+                var particle = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null,  ESortingOrder.LazerEffect);
                 _portalEffect = new ReviveEffect(particle);
             }
             _portalEffect.Play(_trans.position + Vector3.up * 0.5f,
