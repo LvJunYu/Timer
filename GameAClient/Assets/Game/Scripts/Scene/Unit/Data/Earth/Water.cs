@@ -13,6 +13,11 @@ using UnityEngine;
 
 namespace GameA.Game
 {
+    [Unit(Id = 24008, Type = typeof(MoWater))]
+    public class MoWater : Water
+    {
+    }
+
     [Unit(Id = 4008, Type = typeof(Water))]
     public class Water : BlockBase
     {
