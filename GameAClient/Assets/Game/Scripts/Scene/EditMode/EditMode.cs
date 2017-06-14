@@ -925,16 +925,24 @@ namespace GameA.Game
 
         public void Update()
         {
-            if (Input.GetKey (KeyCode.M)) {
-                if (_commandType != ECommandType.Move) {
-//                    SocialGUIManager.Instance.CloseUI<UICtrlItem> ();
-                    Messenger<ECommandType>.Broadcast (EMessengerType.OnCommandChanged, ECommandType.Move);
+            if (Input.GetKey(KeyCode.Mouse1))
+            {
+                if (_commandType != ECommandType.Move)
+                {
+                    Messenger<ECommandType>.Broadcast(EMessengerType.OnCommandChanged, ECommandType.Move);
                 }
-            } else {
-                if (_commandType == ECommandType.Move) {
-//                    SocialGUIManager.Instance.CloseUI<UICtrlItem> ();
-                    Messenger<ECommandType>.Broadcast (EMessengerType.OnCommandChanged, ECommandType.Create);
+            }
+            else
+            {
+                if (_commandType == ECommandType.Move)
+                {
+                    Messenger<ECommandType>.Broadcast(EMessengerType.OnCommandChanged, ECommandType.Create);
                 }
+            }
+            var mouseValue = Input.GetAxis("Mouse ScrollWheel");
+            if (mouseValue > 0.1f || mouseValue < -0.1f)
+            {
+                CameraManager.Instance.AddCameraEditSize(mouseValue);
             }
         }
 

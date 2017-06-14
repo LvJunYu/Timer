@@ -30,6 +30,8 @@ namespace GameA.Game
         private float _maxCameraPlaySize = 6.5f;
         private float _minCameraPlaySize = 2.5f;
 
+        private Vector2 _cameraEditSize;
+
         [SerializeField] private Transform _rendererCamaraTrans;
         [SerializeField] private Camera _rendererCamera;
         [SerializeField] private IntVec2 _rollPos;
@@ -149,7 +151,6 @@ namespace GameA.Game
                 _instance = null;
             }
         }
-
 
         public void Init()
         {
@@ -279,9 +280,23 @@ namespace GameA.Game
 
         public void SetFinalOrthoSize(float value)
         {
-            //Debug.LogError("CameraManager.SetFinalOrthoSize, orig: " + _finalOrthoSize + " new: " + value);
+            Debug.LogError("CameraManager.SetFinalOrthoSize, orig: " + _finalOrthoSize + " new: " + value);
             _finalOrthoSize = value;
-            _rendererCamera.orthographicSize = value;
+            _rendererCamera.orthographicSize = _finalOrthoSize;
+            UpdateCameraViewRect();
+        }
+
+        public void SetCameraEditSize(float value)
+        {
+            _cameraEditSize = new Vector2(2.5f, value);
+            LogHelper.Debug(_cameraEditSize.ToString());
+        }
+
+        public void AddCameraEditSize(float value)
+        {
+            _finalOrthoSize += value;
+            _finalOrthoSize = Mathf.Clamp(_finalOrthoSize, _cameraEditSize.x, _cameraEditSize.y);
+            _rendererCamera.orthographicSize = _finalOrthoSize;
             UpdateCameraViewRect();
         }
 
@@ -363,23 +378,6 @@ namespace GameA.Game
         // 标准化镜头大小，将镜头大小设为标准值中的最接近的值
         private void StandardizationCameraSize()
         {
-            //float [] rangeValues = new float [_cameraStandardPlaySize.Length - 1];
-            //for (int i = 0; i < rangeValues.Length; i++) {
-            //    rangeValues [i] = (_cameraStandardPlaySize [i] + _cameraStandardPlaySize [i + 1]) * 0.5f;
-            //}
-            //float fixedSize = 0f;
-            //for (int i = 0; i < rangeValues.Length; i++) {
-            //    if (_finalOrthoSize < rangeValues [i]) {
-            //        fixedSize = _cameraStandardPlaySize [i];
-            //        break;
-            //    }
-            //}
-            //if (fixedSize == 0f) {
-            //    fixedSize = _cameraStandardPlaySize [_cameraStandardPlaySize.Length - 1];
-            //}
-            //if (fixedSize != _finalOrthoSize) {
-            //    SetFinalOrthoSize (fixedSize);
-            //}
             float fixedSize = Mathf.Clamp(_finalOrthoSize, _minCameraPlaySize, _maxCameraPlaySize);
             SetFinalOrthoSize(fixedSize);
         }
