@@ -627,7 +627,6 @@ namespace GameA.Game
             _isAlive = true;
             _dieTime = 0;
             _deltaPos = IntVec2.zero;
-            _deltaImpactPos = IntVec2.zero;
             _colliderPos = GetColliderPos(_curPos);
             _colliderGrid = _tableUnit.GetColliderGrid(ref _unitDesc);
             _curMoveDirection = _moveDirection;
