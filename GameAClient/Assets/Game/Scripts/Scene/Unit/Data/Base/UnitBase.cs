@@ -58,6 +58,8 @@ namespace GameA.Game
 
         protected int _shootAngle;
 
+        protected List<UnitBase> _switchPressUnits = new List<UnitBase>();
+
         #endregion
 
         #region motor
@@ -642,6 +644,7 @@ namespace GameA.Game
             _downUnit = null;
             _curBanInputTime = 0;
             _eUnitState = EUnitState.Normal;
+            _switchPressUnits.Clear();
             if (_dynamicCollider != null)
             {
                 CalculateMinMax();
@@ -1430,26 +1433,39 @@ namespace GameA.Game
             _isDisposed = true;
         }
 
-        internal virtual void OnOtherSwitch()
-        {
-        }
-
-        internal virtual void OnSwitch(bool value)
-        {
-        }
-
         public virtual void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType, int maskRandom, bool draw = true)
         {
         }
 
-        internal virtual bool OnSwitchPressStart(SwitchPress switchPress)
+        internal bool OnSwitchPressStart(SwitchPress switchPress)
         {
-            return false;
+            if (_switchPressUnits.Contains(switchPress))
+            {
+                return false;
+            }
+            _switchPressUnits.Add(switchPress);
+            if (_switchPressUnits.Count == 1)
+            {
+                OnCtrlBySwitch();
+            }
+            return true;
         }
 
-        internal virtual bool OnSwitchPressEnd(SwitchPress switchPress)
+        internal bool OnSwitchPressEnd(SwitchPress switchPress)
         {
-            return false;
+            if (!_switchPressUnits.Remove(switchPress))
+            {
+                return false;
+            }
+            if (_switchPressUnits.Count == 0)
+            {
+                OnCtrlBySwitch();
+            }
+            return true;
+        }
+
+        internal virtual void OnCtrlBySwitch()
+        {
         }
 
         public bool IsBlockedBy(UnitBase unit)

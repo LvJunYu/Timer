@@ -88,39 +88,11 @@ namespace GameA.Game
             return true;
         }
 
-        internal override void OnOtherSwitch()
+        internal override void OnCtrlBySwitch()
         {
-            base.OnOtherSwitch();
-            if (_switchPressUnits.Count == 0)
-            {
-                _finalCtrlBySwitch = !_finalCtrlBySwitch;
-                SetCtrlBySwitchState(_finalCtrlBySwitch);
-            }
-        }
-
-        internal override bool OnSwitchPressStart(SwitchPress switchPress)
-        {
-            if (!base.OnSwitchPressStart(switchPress))
-            {
-                return false;
-            }
-            _finalCtrlBySwitch = true;
+            base.OnCtrlBySwitch();
+            _finalCtrlBySwitch = !_finalCtrlBySwitch;
             SetCtrlBySwitchState(_finalCtrlBySwitch);
-            return true;
-        }
-
-        internal override bool OnSwitchPressEnd(SwitchPress switchPress)
-        {
-            if (!base.OnSwitchPressEnd(switchPress))
-            {
-                return false;
-            }
-            if (_switchPressUnits.Count == 0)
-            {
-                _finalCtrlBySwitch = false;
-                SetCtrlBySwitchState(_finalCtrlBySwitch);
-            }
-            return true;
         }
 
         private void SetCtrlBySwitchState(bool value)

@@ -40,7 +40,7 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
-            _currentCtrlBySwitch = true;
+            _currentCtrlBySwitch = false;
         }
 
         internal override bool InstantiateView()
@@ -66,40 +66,16 @@ namespace GameA.Game
             _effect = null;
         }
 
-        internal override void OnOtherSwitch()
+        internal override void OnCtrlBySwitch()
         {
-            base.OnOtherSwitch();
+            base.OnCtrlBySwitch();
             _currentCtrlBySwitch = !_currentCtrlBySwitch;
         }
-
-        internal override bool OnSwitchPressStart(SwitchPress switchPress)
-        {
-            if (!base.OnSwitchPressStart(switchPress))
-            {
-                return false;
-            }
-            _currentCtrlBySwitch = false;
-            return true;
-        }
-
-        internal override bool OnSwitchPressEnd(SwitchPress switchPress)
-        {
-            if (!base.OnSwitchPressEnd(switchPress))
-            {
-                return false;
-            }
-            if (_switchPressUnits.Count == 0)
-            {
-                _currentCtrlBySwitch = true;
-            }
-            return true;
-        }
-
 
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            if (_currentCtrlBySwitch)
+            if (!_currentCtrlBySwitch)
             {
                 if (_skillManager != null)
                 {
