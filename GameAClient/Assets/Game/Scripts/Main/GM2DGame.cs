@@ -223,7 +223,6 @@ namespace GameA.Game
             yield return GameRun.Instance.Init(_eGameInitType, _project);
             _gameMode.InitByStep();
             CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(()=>{
-                
                 Messenger.Broadcast(EMessengerType.OnGameStartComplete);
                 _gameMode.OnGameStart();
             }));
