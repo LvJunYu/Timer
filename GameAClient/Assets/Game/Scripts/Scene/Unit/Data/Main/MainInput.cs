@@ -38,7 +38,7 @@ namespace GameA.Game
         private const int JumpFirstMaxTime = 105;
         private const int JumpSecondMaxTime = 205;
         private const int QuickenMaxTime = 3*ConstDefineGM2D.FixedFrameCount;
-        private const int QuickenCDTime = 8*ConstDefineGM2D.FixedFrameCount;
+        private const int QuickenCDTime = 20*ConstDefineGM2D.FixedFrameCount;
 
         #region state
 
@@ -406,6 +406,7 @@ namespace GameA.Game
             if (_quickenCDTime > 0)
             {
                 _quickenCDTime--;
+                Messenger<int, int>.Broadcast(EMessengerType.OnSpeedUpCDChanged, _quickenCDTime, QuickenCDTime);
             }
             if (_quickenTime > 0)
             {
@@ -663,7 +664,7 @@ namespace GameA.Game
                     }
                     _jumpState = 100;
                 }
-                else if ((_jumpState > 0 && _jumpState < 200) && !_lastJumpInput && _jumpLevel == 0)
+                else if ((_jumpState > 0 && _jumpState < 200) && !_lastJumpInput && _jumpLevel == 0 && IsCharacterAbilityAvailable(ECharacterAbility.DoubleJump))
                 {
                     _unit.SpeedY = 0;
                     _unit.ExtraSpeed.y = 0;
@@ -742,10 +743,11 @@ namespace GameA.Game
                         {
                             return;
                         }
-                        if (QuickenInputUp)
+                        if (QuickenInputUp && IsCharacterAbilityAvailable(ECharacterAbility.SpeedUp))
                         {
                             _quickenTime = QuickenMaxTime;
                             _quickenCDTime = QuickenCDTime;
+                            Messenger<int, int>.Broadcast(EMessengerType.OnSpeedUpCDChanged, _quickenCDTime, QuickenCDTime);
                         }
                     }
                     break;
@@ -789,11 +791,11 @@ namespace GameA.Game
             }
             _unit.ShootAngle = (int)eShootDir;
 
-            if (_skill1Input)
+            if (_skill1Input && IsCharacterAbilityAvailable(ECharacterAbility.Shoot))
             {
                 _unit.SkillWater();
             }
-            if (Skill2InputDown)
+            if (Skill2InputDown && IsCharacterAbilityAvailable(ECharacterAbility.Shoot))
             {
                 _unit.Skill();
             }
@@ -802,6 +804,11 @@ namespace GameA.Game
         public void ChangeFire2State(EFire2State eFire2State)
         {
             _fire2State = eFire2State;
+        }
+
+        private bool IsCharacterAbilityAvailable(ECharacterAbility eCharacterAbility)
+        {
+            return GameProcessManager.Instance.IsCharacterAbilityAvailable(eCharacterAbility);
         }
     }
 

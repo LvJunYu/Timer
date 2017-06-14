@@ -13,6 +13,11 @@ using UnityEngine;
 
 namespace GameA.Game
 {
+    [Unit(Id = 25011, Type = typeof(MoAlertLazer))]
+    public class MoAlertLazer : AlertLazer
+    {
+    }
+
     [Unit(Id = 5011, Type = typeof(AlertLazer))]
     public class AlertLazer : BlockBase
     {

@@ -12,6 +12,11 @@ using UnityEngine;
 
 namespace GameA.Game
 {
+    [Unit(Id = 22001, Type = typeof(MoMonsterTree))]
+    public class MoMonsterTree : MonsterTree
+    {
+    }
+
     [Unit(Id = 2001, Type = typeof(MonsterTree))]
     public class MonsterTree : MonsterAI
     {

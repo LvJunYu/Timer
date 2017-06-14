@@ -130,6 +130,28 @@ namespace GameA.Game
                 }
             }
         }
+
+        #endregion
+
+        #region 判断能力解锁的接口
+        public bool IsCharacterAbilityAvailable (ECharacterAbility ability)
+        {
+            // todo 改表结构，增加枚举列，不能判断id
+            for (int i = 0; i < _itemsToUnlock.Count; i++) {
+                if (_itemsToUnlock [i].Table.Id == 1 && ECharacterAbility.SpeedUp == ability) {
+                    return false;
+                }
+                if (_itemsToUnlock [i].Table.Id == 2 && ECharacterAbility.DoubleJump == ability) {
+                    return false;
+                }
+                if (_itemsToUnlock [i].Table.Id == 3 && ECharacterAbility.Shoot == ability) {
+                    return false;
+                }
+
+            }
+            return true;
+        }
+
         #endregion
     }
 
@@ -321,5 +343,15 @@ namespace GameA.Game
             }
             return process;
         }
+    }
+
+    /// <summary>
+    /// 角色能力枚举
+    /// </summary>
+    public enum ECharacterAbility
+    {
+        SpeedUp,
+        DoubleJump,
+        Shoot,
     }
 }
