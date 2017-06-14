@@ -31,7 +31,7 @@
         "PriceDiamondPermanent": "0",
         "BigTexture": "MainBoy02",
         "SmallTexture": "SMainBoy02",
-        "PreviewTexture": "UpperMale01",
+        "PreviewTexture": "shop_T-shirt",
         "SkinId": "0"
     },
     {
@@ -50,7 +50,7 @@
         "PriceDiamondPermanent": "350",
         "BigTexture": "MainBoy02",
         "SmallTexture": "SMainBoy05",
-        "PreviewTexture": "UpperMale02",
+        "PreviewTexture": "shop_vest",
         "SkinId": "1"
     },
     {
@@ -69,7 +69,7 @@
         "PriceDiamondPermanent": "0",
         "BigTexture": "MainBoy02",
         "SmallTexture": "SMainBoy08",
-        "PreviewTexture": "UpperMale03",
+        "PreviewTexture": "shop_coat",
         "SkinId": "2"
     },
     {
