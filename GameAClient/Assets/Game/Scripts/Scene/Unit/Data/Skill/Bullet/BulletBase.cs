@@ -127,7 +127,10 @@ namespace GameA.Game
             for (int i = 0; i < units.Count; i++)
             {
                 var unit = units[i];
-                Effect(unit, checkGrid);
+                if (unit.IsAlive)
+                {
+                    Effect(unit, checkGrid);
+                }
             }
             _isAlive = false;
             --Life;
