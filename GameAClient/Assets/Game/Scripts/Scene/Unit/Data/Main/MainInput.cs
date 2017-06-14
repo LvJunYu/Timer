@@ -260,11 +260,9 @@ namespace GameA.Game
 
             _curHorizontal = CrossPlatformInputManager.GetAxis("Horizontal");
             _curVertical = CrossPlatformInputManager.GetAxis("Vertical");
-            #if IPHONE || ANDROID
-            if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
-            #else
+#if IPHONE || ANDROID
+#else
             if (EventSystem.current.IsPointerOverGameObject())
-            #endif
             {
                 for (int i = 0; i < _curInputs.Length; i++)
                 {
@@ -272,6 +270,7 @@ namespace GameA.Game
                 }
                 return;
             }
+#endif
 
             if (KeyDown(EInputType.Left))
             {
