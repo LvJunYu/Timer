@@ -50,19 +50,17 @@ namespace GameA.Game
             {
                 return;
             }
-            if (UpdateMove())
-            {
-                _trans.position = _curPos;
-            }
+            UpdateMove();
+            UpdateFollow(GM2DTools.TileToWorld(deltaPos));
+            _trans.position = _curPos;
         }
 
         protected virtual  bool UpdateMove()
         {
-            if (_tableBg.MoveSpeedX == 0)
+            if (_tableBg.MoveSpeedX != 0)
             {
-                return false;
+                _curPos += new Vector3(_tableBg.MoveSpeedX, 0) * ConstDefineGM2D.FixedDeltaTime * BgScene2D.Instance.GetMoveRatio(_tableBg.Depth);
             }
-            _curPos += new Vector3(_tableBg.MoveSpeedX, 0) * ConstDefineGM2D.FixedDeltaTime * BgScene2D.Instance.GetMoveRatio(_tableBg.Depth);
             var followRect = BgScene2D.Instance.GetRect(_tableBg.Depth);
             var tilePos = GM2DTools.WorldToTile(_curPos);
             var sizeX = _node.Grid.XMax - _node.Grid.XMin + 1;
@@ -72,6 +70,11 @@ namespace GameA.Game
             }
             _curPos = GM2DTools.TileToWorld(tilePos, _curPos.z);
             return true;
+        }
+
+        private void UpdateFollow(Vector3 deltaPos)
+        {
+            _curPos += deltaPos * (1 - BgScene2D.Instance.GetMoveRatio(_tableBg.Depth));
         }
 
         private bool TryCreateObject(out GameObject go)

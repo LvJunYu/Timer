@@ -42,7 +42,9 @@ namespace GameA.Game
         private Transform _parent;
         private Dictionary<int, List<Table_Background>> _tableBgs = new Dictionary<int, List<Table_Background>>();
         private static readonly int[] MaxDepthCount = new int[9] { 50, 50, 50, 50, 50, 50, 50, 50, 1 };
-        private static readonly float[] MoveRatio = new float[9] { 1, 1f, 0.8f, 1f, 0.5f, 0.5f, 1, 1, 1 };
+        private static readonly float[] MoveRatio = new float[9] { 0.8f, 0.7f, 0.6f, 0.5f, 0.4f, 0.3f, 0.2f, 0.1f, 0f };
+
+        private static IntVec2 RectSize = new IntVec2(60, 30) * ConstDefineGM2D.ServerTileScale;
 
         public static BgScene2D Instance
         {
@@ -104,7 +106,7 @@ namespace GameA.Game
         {
             base.OnInit();
             var validMapRect = DataScene2D.Instance.ValidMapRect;
-            _followRect = new Grid2D(validMapRect.Min.x, validMapRect.Min.y, validMapRect.Max.x, validMapRect.Max.y);
+            _followRect = new Grid2D(validMapRect.Min.x, validMapRect.Min.y, validMapRect.Min.x + RectSize.x -1 , validMapRect.Min.y + RectSize.y -1);
             _cloudRect = new Grid2D(validMapRect.Min.x - 15 * ConstDefineGM2D.ServerTileScale, validMapRect.Min.y, validMapRect.Max.x + 15 * ConstDefineGM2D.ServerTileScale, validMapRect.Max.y);
             _parent = new GameObject("Background").transform;
             _parents = new Transform[(int)EBgDepth.Max];
@@ -139,8 +141,8 @@ namespace GameA.Game
             {
                 return;
             }
-            //RefreshFollowRect(pos);
             var delPos = pos - _focusPos;
+            RefreshFollowRect(delPos);
             _focusPos = pos;
             var iter = _items.GetEnumerator();
             while (iter.MoveNext())
@@ -150,12 +152,12 @@ namespace GameA.Game
             }
         }
 
-        //private void RefreshFollowRect(IntVec2 center)
-        //{
-        //    var min = center - RectSize / 2;
-        //    _followRect = new Grid2D(min.x, min.y, min.x + RectSize.x - 1, min.y + RectSize.y - 1);
-        //    _staticRect = new Grid2D(_followRect.XMin, _followRect.YMin + 11 * ConstDefineGM2D.ServerTileScale, _followRect.XMax, _followRect.YMax - 12 * ConstDefineGM2D.ServerTileScale);
-        //}
+        private void RefreshFollowRect(IntVec2 delPos)
+        {
+            var min = new IntVec2(_followRect.XMin, _followRect.YMin) + delPos;
+            _followRect = new Grid2D(min.x, min.y, min.x + RectSize.x - 1, min.y + RectSize.y - 1);
+            //_staticRect = new Grid2D(_followRect.XMin, _followRect.YMin + 11 * ConstDefineGM2D.ServerTileScale, _followRect.XMax, _followRect.YMax - 12 * ConstDefineGM2D.ServerTileScale);
+        }
 
         public void GenerateBackground(int seed = 0)
         {
