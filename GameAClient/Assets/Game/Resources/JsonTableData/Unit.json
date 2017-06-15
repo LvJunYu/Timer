@@ -1005,7 +1005,7 @@
     {
         "Id": "5014",
         "Name": "机关门",
-        "Use": "1",
+        "Use": "0",
         "Icon": "M1SwitchGateIcon",
         "Model": "M1SwitchGate",
         "UnitType": "5",
