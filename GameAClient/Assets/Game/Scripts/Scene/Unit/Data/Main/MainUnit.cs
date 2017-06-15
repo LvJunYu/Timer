@@ -536,7 +536,6 @@ namespace GameA.Game
                 _animation.PlayOnce(LandAnimName());
                 PlayMode.Instance.CurrentShadow.RecordAnimation(LandAnimName(), false);
                 OnLand();
-                _attackedTimer = 0;
             }
             else if (!_animation.IsPlaying(LandAnimName()))
             {
@@ -613,6 +612,7 @@ namespace GameA.Game
                     {
                         downExist = true;
                         _grounded = true;
+                        _attackedTimer = 0;
                         _downUnits.Add(unit);
                         _mainInput._jumpState = 0;
                         _mainInput._jumpLevel = 0;
@@ -1574,16 +1574,18 @@ namespace GameA.Game
             //晕2秒
             _attackedTimer = 100;
             Speed = IntVec2.zero;
-            ExtraSpeed.y = 150;
+            ExtraSpeed.y = 120;
             ExtraSpeed.x = actor.CenterPos.x > CenterPos.x ? -100 : 100;
+            _mainInput.ClearInput();
         }
 
         internal void OnKnockBack(ActorBase actor)
         {
             _attackedTimer = 100;
             Speed = IntVec2.zero;
-            ExtraSpeed.y = 180;
-            ExtraSpeed.x = actor.CenterPos.x > CenterPos.x ? -120 : 120;
+            ExtraSpeed.y = 280;
+            ExtraSpeed.x = actor.CenterPos.x > CenterPos.x ? -80 : 80;
+            _mainInput.ClearInput();
         }
 
         internal override void InFire()

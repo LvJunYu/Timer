@@ -150,7 +150,14 @@ namespace GameA.Game
             else
             {
                 _currentNodeId = -1;
-                ChangeState(EMonsterState.Think);
+                if (IsInAttackRange())
+                {
+                    ChangeState(EMonsterState.Attack);
+                }
+                else
+                {
+                    ChangeState(EMonsterState.Think);
+                }
             }
         }
 
@@ -165,10 +172,17 @@ namespace GameA.Game
 
         protected void OnAttack()
         {
-            IntVec2 rel = CenterPos - PlayMode.Instance.MainUnit.CenterPos;
-            if (Mathf.Abs(rel.x) > _attackRange.x || Mathf.Abs(rel.y) > _attackRange.y)
+            if (_path.Count == 0)
             {
-                ChangeState(EMonsterState.Seek);
+                ChangeState(EMonsterState.Think);
+            }
+            else
+            {
+                IntVec2 rel = CenterPos - PlayMode.Instance.MainUnit.CenterPos;
+                if (Mathf.Abs(rel.x) > _attackRange.x || Mathf.Abs(rel.y) > _attackRange.y)
+                {
+                    ChangeState(EMonsterState.Seek);
+                }
             }
         }
 

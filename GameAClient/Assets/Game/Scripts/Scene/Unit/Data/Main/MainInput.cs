@@ -215,6 +215,12 @@ namespace GameA.Game
 
         public void Clear()
         {
+            ClearInput();
+            UpdateQuickenCDTime(0);
+        }
+
+        public void ClearInput()
+        {
             _lastJumpInput = false;
             _lastHorizontal = 0;
             _curHorizontal = 0;
@@ -235,8 +241,6 @@ namespace GameA.Game
             _stepY = 0;
             _quickenInput = false;
             _lastQuickenInput = false;
-            UpdateQuickenCDTime(0);
-            _quickenTime = 0;
             _skill1Input = false;
             _lastSkill1Input = false;
             _skill2Input = false;
