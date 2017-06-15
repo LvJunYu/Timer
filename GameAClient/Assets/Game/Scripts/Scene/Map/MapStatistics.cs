@@ -135,8 +135,8 @@ namespace GameA.Game
         public MapStatistics()
         {
             _winCondition = 1 << (int) EWinCondition.Arrived | 1 << (int) EWinCondition.TimeLimit;
-            _timeLimit = 3;
-            _lifeCount = 5;
+            _timeLimit = 30;
+            _lifeCount = 3;
         }
 
         public void SetWinCondition(EWinCondition eWinCondition, bool value)
