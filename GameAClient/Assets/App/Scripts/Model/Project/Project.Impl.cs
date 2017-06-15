@@ -17,8 +17,6 @@ namespace GameA
         MaxPoolSize = ConstDefine.MaxLRUProjectCount)]
 	public partial class Project : SyncronisticData {
         #region 变量
-        private bool _syncIgnoreMe = false;
-
         private long _guid;
         private int _downloadPrice;
 
@@ -629,14 +627,11 @@ namespace GameA
 		protected override void OnSyncPartial ()
 		{
 			base.OnSyncPartial ();
-			if (_syncIgnoreMe)
-            {
-                return;
-            }
 			if (_extendData != null)
             {
 				OnSyncProjectExtendData(_extendData);
             }
+            FireProjectDataChangeEvent();
 		}
 
 		public void OnSyncProjectExtendData(ProjectExtend msg)
@@ -759,6 +754,11 @@ namespace GameA
             p.DownloadPrice = 0;
             p._passFlag = false;
             return p;
+        }
+
+        public void FireProjectDataChangeEvent()
+        {
+            Messenger<long>.Broadcast(EMessengerType.OnProjectDataChanged, _projectId);
         }
         #endregion 方法
 

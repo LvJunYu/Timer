@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlProjectDetailInfo : UISocialCtrlBase<UIViewProjectDetailInfo>
+    public class UICtrlProjectDetailInfo : UICtrlGenericBase<UIViewProjectDetailInfo>
     {
         #region Fields
         private Project _project;
