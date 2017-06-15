@@ -28,12 +28,12 @@ namespace GameA
 		protected override void OnViewCreated()
 		{
 			base.OnViewCreated();
-			MessageOperator(true); 
+//			MessageOperator(true); 
 		}
 
 		protected override void OnDestroy()
 		{
-			MessageOperator(false);
+//			MessageOperator(false);
 			base.OnDestroy();
 		}
 
@@ -48,6 +48,8 @@ namespace GameA
 			base.InitEventListener();
 			RegisterEvent(EMessengerType.OnEdit, OnEditMode);
 			RegisterEvent(EMessengerType.OnPlay, OnPlayMode);
+            Messenger<IntVec3>.AddListener (EMessengerType.OnTriggerBulletinBoardEnter, OnTriggerBulletinBoardEnter);
+            Messenger.AddListener(EMessengerType.OnTriggerBulletinBoardExit, OnTriggerBulletinBoardExit);
 		}
 
 		#region event
@@ -62,19 +64,19 @@ namespace GameA
 			ClearAndClose();
 		}
 
-		private void MessageOperator(bool value)
-		{
-			if (value)
-			{
-				Messenger<IntVec3>.AddListener(EMessengerType.OnTriggerBulletinBoardEnter, OnTriggerBulletinBoardEnter);
-				Messenger.AddListener(EMessengerType.OnTriggerBulletinBoardExit, OnTriggerBulletinBoardExit);
-			}
-			else
-			{
-				Messenger<IntVec3>.RemoveListener(EMessengerType.OnTriggerBulletinBoardEnter, OnTriggerBulletinBoardEnter);
-				Messenger.RemoveListener(EMessengerType.OnTriggerBulletinBoardExit, OnTriggerBulletinBoardExit);
-			}
-		}
+//		private void MessageOperator(bool value)
+//		{
+//			if (value)
+//			{
+//				Messenger<IntVec3>.AddListener(EMessengerType.OnTriggerBulletinBoardEnter, OnTriggerBulletinBoardEnter);
+//				Messenger.AddListener(EMessengerType.OnTriggerBulletinBoardExit, OnTriggerBulletinBoardExit);
+//			}
+//			else
+//			{
+//				Messenger<IntVec3>.RemoveListener(EMessengerType.OnTriggerBulletinBoardEnter, OnTriggerBulletinBoardEnter);
+//				Messenger.RemoveListener(EMessengerType.OnTriggerBulletinBoardExit, OnTriggerBulletinBoardExit);
+//			}
+//		}
 
 		private void OnTriggerBulletinBoardEnter(IntVec3 index)
 		{
