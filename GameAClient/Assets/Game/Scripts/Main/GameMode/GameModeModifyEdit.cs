@@ -2,6 +2,7 @@ using SoyEngine;
 using System;
 using SoyEngine.Proto;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace GameA.Game
 {
@@ -61,8 +62,10 @@ namespace GameA.Game
 							if (null != failureCB)
 						{
 							failureCB.Invoke((int)code);
-						}
-						SocialApp.Instance.ReturnToApp();
+                        }
+                        SocialGUIManager.ShowPopupDialog("关卡保存失败，是否放弃修改退出", null,
+                            new KeyValuePair<string, Action>("取消", ()=>{}),
+                            new KeyValuePair<string, Action>("确定", ()=>SocialApp.Instance.ReturnToApp()));
 							// todo error handle
 							LogHelper.Error("SaveModifyProject failed");
 					}

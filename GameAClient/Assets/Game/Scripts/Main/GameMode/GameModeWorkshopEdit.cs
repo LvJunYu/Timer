@@ -2,6 +2,7 @@ using System;
 using SoyEngine.Proto;
 using SoyEngine;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace GameA.Game
 {
@@ -104,22 +105,23 @@ namespace GameA.Game
 			{
 				Save(
 					() =>
-					{
+                    {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().Close();
 						if (null != successCB)
 						{
 							successCB.Invoke();
 						}
 						SocialApp.Instance.ReturnToApp();
 					}, result =>
-					{
-							//保存失败
-
-							LogHelper.Error("Save private projcet failed {0}", result);
+                    {
+						LogHelper.Error("Save private project failed {0}", result);
 						if (null != failureCB)
 						{
 							failureCB.Invoke((int)result);
 						}
-						SocialApp.Instance.ReturnToApp();
+                        SocialGUIManager.ShowPopupDialog("关卡保存失败，是否放弃修改退出", null,
+                            new KeyValuePair<string, Action>("取消", ()=>{}),
+                            new KeyValuePair<string, Action>("确定", ()=>SocialApp.Instance.ReturnToApp()));
 					});
 			}
 			else
