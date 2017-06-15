@@ -477,6 +477,11 @@ namespace GameA.Game
                     int speed = (int)(SpeedX * 0.7f);
                     speed = Math.Abs(speed);
                     speed = Mathf.Clamp(speed, 30, 100);
+                    //临时如此 应该修改动画播放速度！TODO
+                    if (IsHoldingBox())
+                    {
+                        speed = 50;
+                    }
                     if (speed <= 56)
                     {
                         if (_animation.PlayLoop(RunAnimName(speed), speed * deltaTime))
@@ -521,7 +526,6 @@ namespace GameA.Game
                         }
                         _walkAudioInternal = 35;
                     }
-
                 }
                 // 新手引导需要知道主角落地了
                 if (!_lastGrounded)
@@ -668,6 +672,10 @@ namespace GameA.Game
             else
             {
                 _fireTimer = 0;
+            }
+            if (IsHoldingBox())
+            {
+                _curMaxSpeedX = (int)(_curMaxSpeedX * SpeedHoldingBoxRatio);
             }
             if (air)
             {
@@ -1098,6 +1106,7 @@ namespace GameA.Game
             if (IsValidBox(_hitUnits[(int)EDirectionType.Right]))
             {
                 //弹出UI给提示
+                Messenger<string>.Broadcast(EMessengerType.GameLog, "按 L 键可以推拉木箱");
                 _box = _hitUnits[(int)EDirectionType.Right] as Box;
                 if (_box != null)
                 {
@@ -1107,6 +1116,8 @@ namespace GameA.Game
             }
             else if (IsValidBox(_hitUnits[(int)EDirectionType.Left]))
             {
+                //弹出UI给提示
+                Messenger<string>.Broadcast(EMessengerType.GameLog, "按 L 键可以推拉木箱");
                 _box = _hitUnits[(int)EDirectionType.Left] as Box;
                 if (_box != null)
                 {
@@ -1471,13 +1482,25 @@ namespace GameA.Game
 
         protected virtual string RunAnimName(float speed)
         {
+            if (IsHoldingBox())
+            {
+                if ((_box.DirectionRelativeMain == EDirectionType.Right &&  _speed.x > 0)
+                    || _box.DirectionRelativeMain == EDirectionType.Left && _speed.x < 0)
+                {
+                    return "Push";
+                }
+                else
+                {
+                    return "Pull";
+                }
+            }
             if (speed <= 56)
             {
                 return "Run";
             }
             else if (speed <= 94)
             {
-                return "Run";
+                return "Run1";
             }
             else
             {
@@ -1498,6 +1521,10 @@ namespace GameA.Game
         }
         protected virtual string IdleAnimName()
         {
+            if (IsHoldingBox())
+            {
+                return "Prepare";
+            }
             return "Idle";
         }
         protected virtual string ClimbAnimName()
