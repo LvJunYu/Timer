@@ -131,9 +131,9 @@ namespace GameA.Game
             }
         }
 
-        protected override bool OutOfMap()
+        protected override bool CheckOutOfMap()
         {
-            if (base.OutOfMap())
+            if (base.CheckOutOfMap())
             {
                 _eDieType = EDieType.OutofMap;
                 return true;

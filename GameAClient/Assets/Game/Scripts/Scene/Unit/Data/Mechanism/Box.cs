@@ -127,10 +127,7 @@ namespace GameA.Game
                 UpdateCollider(GetColliderPos(_curPos));
                 _curPos = GetPos(_colliderPos);
                 UpdateTransPos();
-                if (OutOfMap())
-                {
-                    return;
-                }
+                CheckOutOfMap();
             }
         }
     }

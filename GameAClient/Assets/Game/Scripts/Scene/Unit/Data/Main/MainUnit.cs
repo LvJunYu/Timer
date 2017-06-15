@@ -335,10 +335,7 @@ namespace GameA.Game
                     }
                 }
             }
-            if (OutOfMap())
-            {
-                return;
-            }
+            CheckOutOfMap();
             CheckBox();
             if (SpeedY != 0 && _mainInput._jumpState == 0)
             {

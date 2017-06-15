@@ -91,7 +91,7 @@ public class ReviveEffect {
             _particle.Trans.localScale = Vector3.one;
             _particle.Play();
         }
-        _startPos = startPos;
+        _startPos = new Vector3(startPos.x, startPos.y, 0);
         _curPos = _startPos;
         _endPos = endPos;
         _callback = callback;

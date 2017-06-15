@@ -747,7 +747,7 @@ namespace GameA.Game
             _curPos.y = Mathf.Clamp(_curPos.y, _minPos.y - 1, _maxPos.y);
         }
 
-        protected virtual bool OutOfMap()
+        protected virtual bool CheckOutOfMap()
         {
             if (_curPos.y < _minPos.y)
             {
