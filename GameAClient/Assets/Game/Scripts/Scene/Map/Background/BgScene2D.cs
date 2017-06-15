@@ -130,6 +130,12 @@ namespace GameA.Game
             }
         }
 
+        public void OnPlay()
+        {
+            _focusPos = GM2DTools.WorldToTile(CameraManager.Instance.MainCamaraTrans.position);
+            _run = true;
+        }
+
         public Transform GetParent(int eBgDepth)
         {
             return _parents[eBgDepth];
@@ -168,7 +174,6 @@ namespace GameA.Game
             {
                 GenerateItems(pair.Value, GetMaxDepthCount(pair.Key));
             }
-            _run = true;
         }
 
         private void GenerateItems(List<Table_Background> tableBgs, int count)

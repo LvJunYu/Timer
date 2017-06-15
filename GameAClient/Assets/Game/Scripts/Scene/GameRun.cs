@@ -236,6 +236,7 @@ namespace GameA.Game
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioStartGame);
             GameAudioManager.Instance.PlayMusic(AudioNameConstDefineGM2D.GameAudioBgm01);
             Messenger.Broadcast(EMessengerType.OnPlay);
+            BgScene2D.Instance.OnPlay();
             return true;
         }
 
