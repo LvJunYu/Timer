@@ -205,9 +205,9 @@ namespace GameA
                     _cachedView.ScoreOutLine.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
                     // 奖励
                     _cachedView.RewardObj.SetActive (false);
-                    //                    UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
+//                    UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
 
-                    //                    _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishWin3Star");
+                    _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishWin3Star");
                     break;
                 case EShowState.Lose:
                     _cachedView.Win.SetActive (false);
@@ -219,6 +219,7 @@ namespace GameA
                     _cachedView.Score.gameObject.SetActive (false);
                     _cachedView.ScoreOutLine.gameObject.SetActive (false);
                     _cachedView.RewardObj.SetActive (false);
+                    _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishLose");
                     break;
             case EShowState.AdvBonusWin:
                 _cachedView.Win.SetActive (true);

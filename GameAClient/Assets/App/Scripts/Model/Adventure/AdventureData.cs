@@ -362,12 +362,13 @@ namespace GameA
 			int score) {
 
 			AdventureUserSection sectionData;
-			if (_lastPlayedChapterIdx >= _userData.SectionList.Count) {
-				LogHelper.Error("Can't get chapterData of idx {0}", _lastPlayedChapterIdx);
-				return;
-			} else {
-				sectionData = _userData.SectionList[_lastPlayedChapterIdx];
+			while (_lastPlayedChapterIdx >= _userData.SectionList.Count) {
+//				LogHelper.Error("Can't get chapterData of idx {0}", _lastPlayedChapterIdx);
+//				return;
+                _userData.SectionList.Add (new AdventureUserSection());
 			}
+				sectionData = _userData.SectionList[_lastPlayedChapterIdx];
+//			}
 			List<AdventureUserLevelDataDetail> levelDataList = _lastPlayedLevelType == EAdventureProjectType.APT_Bonus ? 
 				sectionData.BonusLevelUserDataList : 
 				sectionData.NormalLevelUserDataList;
@@ -395,7 +396,10 @@ namespace GameA
 //				},null
 //			);
 
-			if (_userData.AdventureUserProgress.CompleteLevel < (_lastPlayedLevelIdx + 1)) {
+            if (_userData.AdventureUserProgress.CompleteSection < (_lastPlayedChapterIdx + 1)) {
+                _userData.AdventureUserProgress.CompleteSection = _lastPlayedChapterIdx + 1;
+                _userData.AdventureUserProgress.CompleteLevel = 1;
+            } else if (_userData.AdventureUserProgress.CompleteLevel < (_lastPlayedLevelIdx + 1)) {
 				_userData.AdventureUserProgress.CompleteLevel = _lastPlayedLevelIdx + 1;
 			}
 		}
