@@ -111,7 +111,7 @@ namespace GameA.Game
                         : EnvManager.MovingEarthBlockLayer, float.MinValue, float.MaxValue, _dynamicCollider);
                     for (int i = 0; i < units.Count; i++)
                     {
-                        if (units[i].IsAlive)
+                        if (units[i].IsAlive && UnitDefine.IsMagciBlock(units[i].Id))
                         {
                             if (IsValidBlueStoneRotation(units[i]))
                             {
