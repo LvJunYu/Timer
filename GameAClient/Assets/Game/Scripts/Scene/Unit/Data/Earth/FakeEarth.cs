@@ -92,7 +92,7 @@ namespace GameA.Game
             if (_editSequence != null)
             {
                 _editSequence.Rewind();
-                _editSequence.Kill();
+                DOTween.Kill(_trans);
                 _editSequence = null;
             }
         }
