@@ -211,7 +211,12 @@ namespace GameA
                     });
                     break;
                 case 7:
-                    MatchUnitData();
+                    LocalUser.Instance.LoadPropData(null, code =>
+                    {
+                        LogHelper.Error(
+                            "Network error when get RaffleCount, {0}",
+                            code);
+                    });
                     break;
                 case 8:
                     MatchUnitData();
