@@ -421,7 +421,7 @@ namespace GameA.Game
                 _quickenTime--;
             }
             CheckInput();
-            if (_unit.IsAlive && _unit.CurBanInputTime == 0)
+            if (_unit.IsAlive && _unit.CurBanInputTime == 0 && !_unit.IsHoldingBox())
             {
                 if (_leftInput > 0)
                 {

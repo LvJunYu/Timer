@@ -31,6 +31,7 @@ namespace GameA.Game
         protected bool _onIce;
         protected const float SpeedClayRatio = 0.2f;
         protected const float SpeedFireRatio = 2f;
+        protected const float SpeedHoldingBoxRatio = 0.3f;
 
         protected override void Clear()
         {
