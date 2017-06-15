@@ -59,6 +59,7 @@ public class    ShopItem
 		this.Sex = headParts.Sex;
 		this.Character = headParts.Character;
 		this.PriceGoldDay = headParts.PriceGoldDay;
+		this.PriceGoldWeek = headParts.PriceGoldWeek;
 		this.PriceGoldMonth = headParts.PriceGoldMonth;
 		this.PriceGoldPermanent = headParts.PriceGoldPermanent;
 		this.PriceDiamondDay = headParts.PriceDiamondDay;
@@ -81,6 +82,7 @@ public class    ShopItem
 		this.Sex = UpperBodyParts.Sex;
 		this.Character = UpperBodyParts.Character;
 		this.PriceGoldDay = UpperBodyParts.PriceGoldDay;
+		this.PriceGoldWeek = UpperBodyParts.PriceGoldWeek;
 		this.PriceGoldMonth = UpperBodyParts.PriceGoldMonth;
 		this.PriceGoldPermanent = UpperBodyParts.PriceGoldPermanent;
 		this.PriceDiamondDay = UpperBodyParts.PriceDiamondDay;
@@ -105,6 +107,7 @@ public class    ShopItem
 		this.Sex = LowerBodyParts.Sex;
 		this.Character = LowerBodyParts.Character;
 		this.PriceGoldDay = LowerBodyParts.PriceGoldDay;
+		this.PriceGoldWeek = LowerBodyParts.PriceGoldWeek;
 		this.PriceGoldMonth = LowerBodyParts.PriceGoldMonth;
 		this.PriceGoldPermanent = LowerBodyParts.PriceGoldPermanent;
 		this.PriceDiamondDay = LowerBodyParts.PriceDiamondDay;
@@ -131,6 +134,7 @@ public class    ShopItem
 		this.Character = AppendageParts.Character;
 		this.PriceGoldDay = AppendageParts.PriceGoldDay;
 		this.PriceGoldMonth = AppendageParts.PriceGoldMonth;
+		this.PriceGoldWeek = AppendageParts.PriceGoldWeek;
 		this.PriceGoldPermanent = AppendageParts.PriceGoldPermanent;
 		this.PriceDiamondDay = AppendageParts.PriceDiamondDay;
 		this.PriceDiamondWeek = AppendageParts.PriceDiamondWeek;

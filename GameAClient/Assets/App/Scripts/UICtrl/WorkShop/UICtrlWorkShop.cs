@@ -363,7 +363,7 @@ namespace GameA
         private void OnPublicProjectCardClick (CardDataRendererWrapper<Project> item) {
             return;
             if (null != item && null != item.Content) {
-                SocialGUIManager.Instance.OpenPopupUI<UICtrlProjectDetailInfo> (item.Content);
+                SocialGUIManager.Instance.OpenUI<UICtrlProjectDetailInfo> (item.Content);
             }
         }
 

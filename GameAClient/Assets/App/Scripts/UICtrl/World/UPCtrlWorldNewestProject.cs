@@ -16,11 +16,12 @@ using System.Collections.Generic;
 
 namespace GameA
 {
-    public class UPCtrlWorldNewestProject : UPCtrlBase<UICtrlWorld, UIViewWorld>
+    public class UPCtrlWorldNewestProject : UPCtrlBase<UICtrlWorld, UIViewWorld>, IOnChangeHandler<long>
     {
         #region 常量与字段
         private const int PageSize = 10;
         private List<CardDataRendererWrapper<Project>> _contentList = new List<CardDataRendererWrapper<Project>>();
+        private Dictionary<long, CardDataRendererWrapper<Project>> _dict = new Dictionary<long, CardDataRendererWrapper<Project>>();
         private WorldNewestProjectList _data;
         private Vector2 _pagePosition = Vector2.zero;
         private CardDataRendererWrapper<Project> _curSelectedProject;
@@ -89,6 +90,7 @@ namespace GameA
             List<Project> list = _data.AllList;
             _contentList.Clear();
             _contentList.Capacity = Mathf.Max(_contentList.Capacity, list.Count);
+            _dict.Clear();
             bool findFlag = false;
             for (int i = 0; i < list.Count; i++)
             {
@@ -102,6 +104,7 @@ namespace GameA
                 }
                 w.IsSelected = false;
                 _contentList.Add(w);
+                _dict.Add(p.ProjectId, w);
             }
             if (!findFlag)
             {
@@ -135,7 +138,14 @@ namespace GameA
         #endregion private
 
         #region 接口
-
+        public void OnChangeHandler(long val)
+        {
+            CardDataRendererWrapper<Project> w;
+            if (_dict.TryGetValue(val, out w))
+            {
+                w.BroadcastDataChanged();
+            }
+        }
         #endregion 接口
 
         #endregion

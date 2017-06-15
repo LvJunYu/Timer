@@ -145,6 +145,12 @@ namespace GameA
             _groupId = (int)EUIGroupType.PopUpUI;
         }
 
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            RegisterEvent<long>(EMessengerType.OnProjectDataChanged, OnProjectDataChanged);
+            RegisterEvent(EMessengerType.OnChangeToAppMode, OnChangeToApp);
+        }
 
         private void OnMenuChanged(int selectInx)
         {
@@ -180,7 +186,27 @@ namespace GameA
         }
 
         #endregion 接口
+        private void OnProjectDataChanged(long projectId)
+        {
+            if (!_isOpen)
+            {
+                return;
+            }
+            _projectInfoPanel.OnChangeHandler(projectId);
+            if (_curMenuCtrl != null)
+            {
+                ((IOnChangeHandler<long>)_curMenuCtrl).OnChangeHandler(projectId);
+            }
+        }
 
+        private void OnChangeToApp()
+        {
+            if (!_isOpen)
+            {
+                return;
+            }
+            _projectInfoPanel.OnChangeToApp();
+        }
         #endregion
 
         private enum EMenu

@@ -98,6 +98,7 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.PublishTime, DateTimeUtil.GetServerSmartDateStringByTimestampMillis(p.CreateTime));
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath, _cachedView.DefaultCoverTexture);
             _cachedView.SeletedMark.SetActiveEx (_wrapper.IsSelected);
+            _cachedView.Button.enabled = !_wrapper.IsSelected;
         }
 
         public void Unload()

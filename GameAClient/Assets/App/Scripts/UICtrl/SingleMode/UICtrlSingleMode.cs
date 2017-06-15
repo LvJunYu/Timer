@@ -18,7 +18,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-	public class UICtrlSingleMode : UISocialCtrlBase<UIViewSingleMode>
+    public class UICtrlSingleMode : UICtrlGenericBase<UIViewSingleMode>
     {
         #region 常量与字段
 		/// <summary>

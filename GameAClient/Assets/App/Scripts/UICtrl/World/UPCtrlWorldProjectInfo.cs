@@ -16,7 +16,7 @@ using System.Collections.Generic;
 
 namespace GameA
 {
-    public class UPCtrlWorldProjectInfo : UPCtrlBase<UICtrlWorld, UIViewWorld>
+    public class UPCtrlWorldProjectInfo : UPCtrlBase<UICtrlWorld, UIViewWorld>, IOnChangeHandler<long>
     {
         #region 常量与字段
         private Project _content;
@@ -82,6 +82,11 @@ namespace GameA
             bool favorite = _content.ProjectUserData != null && _content.ProjectUserData.Favorite;
             _cachedView.FavoriteBtn.gameObject.SetActive(!favorite);
             _cachedView.UnfavoriteBtn.gameObject.SetActive(favorite);
+        }
+
+        public void OnChangeToApp()
+        {
+            RequestData();
         }
 
         private void RequestData()
@@ -164,6 +169,18 @@ namespace GameA
         private void OnPlayBtnClick()
         {
             PlayProject();
+        }
+
+        /// <summary>
+        /// ProjectDataChange
+        /// </summary>
+        /// <param name="val">Value.</param>
+        public void OnChangeHandler(long val)
+        {
+            if (_content != null && _content.ProjectId == val)
+            {
+                RefreshView();
+            }
         }
         #endregion 接口
 
