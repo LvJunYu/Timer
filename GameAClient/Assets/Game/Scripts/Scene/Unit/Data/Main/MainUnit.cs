@@ -1356,16 +1356,18 @@ namespace GameA.Game
             {
                 _view.SetRendererEnabled(true);
             }
-            if (PlayMode.Instance.SceneState.Arrived)
-            {
-                _animation.PlayLoop(EnterDoorAnimName());
-                PlayMode.Instance.CurrentShadow.RecordAnimation(EnterDoorAnimName(), true);
-            }
-            else
-            {
-                _animation.PlayOnce(VictoryAnimName());
-                PlayMode.Instance.CurrentShadow.RecordAnimation(VictoryAnimName(), false);
-            }
+            _animation.PlayLoop(VictoryAnimName(), 1, 1);
+            PlayMode.Instance.CurrentShadow.RecordAnimation(VictoryAnimName(), true);
+            //if (PlayMode.Instance.SceneState.Arrived)
+            //{
+            //    _animation.PlayLoop(EnterDoorAnimName());
+            //    PlayMode.Instance.CurrentShadow.RecordAnimation(EnterDoorAnimName(), true);
+            //}
+            //else
+            //{
+            //    _animation.PlayOnce(VictoryAnimName());
+            //    PlayMode.Instance.CurrentShadow.RecordAnimation(VictoryAnimName(), false);
+            //}
         }
 
         public override void OnRevivePos(IntVec2 pos)
