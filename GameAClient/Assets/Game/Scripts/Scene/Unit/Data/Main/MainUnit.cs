@@ -279,11 +279,11 @@ namespace GameA.Game
         {
             if (_isAlive && _isStart && !_isFreezed)
             {
-                if (_stunTimer > 0)
+                if (_attackedTimer > 0)
                 {
-                    _stunTimer--;
+                    _attackedTimer--;
                 }
-                if (_stunTimer <= 0)
+                if (_attackedTimer <= 0)
                 {
                     _mainInput.UpdateLogic();
                     _skillMgr1.UpdateLogic();
@@ -532,9 +532,11 @@ namespace GameA.Game
             }
             else if (!_lastGrounded)
             {
+                //临时如此 应该加动画 TODO
                 _animation.PlayOnce(LandAnimName());
                 PlayMode.Instance.CurrentShadow.RecordAnimation(LandAnimName(), false);
                 OnLand();
+                _attackedTimer = 0;
             }
             else if (!_animation.IsPlaying(LandAnimName()))
             {
@@ -1506,6 +1508,10 @@ namespace GameA.Game
         }
         protected virtual string JumpAnimName(int jumpLevel)
         {
+            if (_attackedTimer > 0)
+            {
+                return "StunStart";
+            }
             if (jumpLevel == 0)
             {
                 return "Jump";
@@ -1530,6 +1536,10 @@ namespace GameA.Game
         }
         protected virtual string FallAnimName()
         {
+            if (_attackedTimer > 0)
+            {
+                return "StunRun";
+            }
             return "Fall";
         }
         protected virtual string DeathAnimName()
@@ -1538,6 +1548,10 @@ namespace GameA.Game
         }
         protected virtual string LandAnimName()
         {
+            if (_attackedTimer > 0)
+            {
+                return "StunEnd";
+            }
             return "Land";
         }
         protected virtual string VictoryAnimName()
@@ -1558,22 +1572,16 @@ namespace GameA.Game
         internal void OnStun(ActorBase actor)
         {
             //晕2秒
-            _stunTimer = 100;
-
+            _attackedTimer = 100;
             Speed = IntVec2.zero;
             ExtraSpeed.y = 150;
             ExtraSpeed.x = actor.CenterPos.x > CenterPos.x ? -100 : 100;
-
-            if (_animation != null && !_animation.IsPlaying("Stun", 1))
-            {
-                _animation.PlayOnce("Stun", 1, 1);
-            }
         }
 
         internal void OnKnockBack(ActorBase actor)
         {
+            _attackedTimer = 100;
             Speed = IntVec2.zero;
-            _curBanInputTime = 20;
             ExtraSpeed.y = 180;
             ExtraSpeed.x = actor.CenterPos.x > CenterPos.x ? -120 : 120;
         }

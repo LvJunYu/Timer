@@ -38,6 +38,7 @@ namespace GameA.Game
         protected int _thinkTimer;
         protected int _stuckTimer;
         protected int _reSeekTimer;
+        protected int _attackTimer;
 
         protected override bool OnInit()
         {
@@ -60,6 +61,7 @@ namespace GameA.Game
             _stuckTimer = 0;
             _reSeekTimer = 0;
             _curFriction = _friction;
+            _attackTimer = 0;
             base.Clear();
         }
 
@@ -120,7 +122,21 @@ namespace GameA.Game
             _path.Clear();
             _stuckTimer = 0;
             _reSeekTimer = 0;
-            var path = ColliderScene2D.Instance.FindPath(this, PlayMode.Instance.MainUnit, 3);
+            //晕的时候就不找了
+            var mainUnit = PlayMode.Instance.MainUnit;
+            if (mainUnit.AttackedTimer > 0)
+            {
+                _currentNodeId = -1;
+                ChangeState(EMonsterState.Think);
+                return;
+            }
+            //如果怪物就在人的脚下，直接改为攻击。
+            if (mainUnit.DownUnits.Contains(this))
+            {
+                ChangeState(EMonsterState.Attack);
+                return;
+            }
+            var path = ColliderScene2D.Instance.FindPath(this, mainUnit, 3);
             if (path != null && path.Count > 1)
             {
                 for (int i = path.Count - 1; i >= 0; i--)
