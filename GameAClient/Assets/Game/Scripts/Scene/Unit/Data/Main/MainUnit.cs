@@ -1111,7 +1111,7 @@ namespace GameA.Game
                 {
                     _box.DirectionRelativeMain = EDirectionType.Right;
                 }
-                _mainInput.ChangeFire2State(EFire2State.HoldBox);
+                _mainInput.ChangeLittleSkillState(ELittleSkillState.HoldBox);
             }
             else if (IsValidBox(_hitUnits[(int)EDirectionType.Left]))
             {
@@ -1122,11 +1122,11 @@ namespace GameA.Game
                 {
                     _box.DirectionRelativeMain = EDirectionType.Left;
                 }
-                _mainInput.ChangeFire2State(EFire2State.HoldBox);
+                _mainInput.ChangeLittleSkillState(ELittleSkillState.HoldBox);
             }
             if (_box == null)
             {
-                _mainInput.ChangeFire2State(EFire2State.Quicken);
+                _mainInput.ChangeLittleSkillState(ELittleSkillState.Quicken);
             }
         }
 
