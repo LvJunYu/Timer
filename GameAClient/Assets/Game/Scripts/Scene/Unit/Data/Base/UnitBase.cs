@@ -921,11 +921,16 @@ namespace GameA.Game
             return  -(pos.x + pos.y) * 0.00078125f ;
         }
 
-        protected void SetRelativeEffectPos(Transform trans, EDirectionType eDirectionType)
+        protected void SetRelativeEffectPos(Transform trans, EDirectionType eDirectionType, float viewZOffset = 0)
         {
             if (trans == null)
             {
                 return;
+            }
+            //默认等同于此Unit
+            if (viewZOffset == 0)
+            {
+                viewZOffset = _viewZOffset;
             }
             var size = GetColliderSize();
             var halfSize = size / 2;
@@ -952,7 +957,7 @@ namespace GameA.Game
                     offset.y += halfSize.y;
                     break;
             }
-            float z = -(pos.x + halfSize.x + pos.y + halfSize.y) * 0.00078125f + _viewZOffset;
+            float z = -(pos.x + halfSize.x + pos.y + halfSize.y) * 0.00078125f + viewZOffset;
             trans.position = GM2DTools.TileToWorld(pos + offset) + new Vector3(0, 0, z);
             trans.eulerAngles = Vector3.back * 90 * (int) eDirectionType;
         }

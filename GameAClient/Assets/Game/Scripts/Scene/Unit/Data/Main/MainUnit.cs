@@ -368,7 +368,14 @@ namespace GameA.Game
                 _flashTime--;
                 FlashRenderer(_flashTime);
             }
-            bool isRunning = false;
+            if (_eDieType == EDieType.Fire)
+            {
+                if (_inFireEfffect != null)
+                {
+                    _inFireEfffect.Trans.localPosition = Vector3.forward *(_curMoveDirection == EMoveDirection.Left ? 0.01f : -0.01f);
+                    _inFireEfffect.Trans.rotation = Quaternion.identity;
+                }
+            }
             //if (!_isAlive)
             //{
             //    _dieTime++;

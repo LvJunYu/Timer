@@ -357,6 +357,7 @@ namespace GameA
         }
 
         private void OnPublicProjectCardClick (CardDataRendererWrapper<Project> item) {
+            return;
             if (null != item && null != item.Content) {
                 SocialGUIManager.Instance.OpenPopupUI<UICtrlProjectDetailInfo> (item.Content);
             }
@@ -424,7 +425,7 @@ namespace GameA
             if (null == _curSelectedPrivateProject || null == _curSelectedPrivateProject.Content)
                 return;
             if (_curSelectedPrivateProject.Content.PassFlag == false) {
-                Debug.Log ("________________ 关卡还未通过，无法发布");
+                SocialGUIManager.ShowPopupDialog("关卡还未通过，无法发布，请先在关卡编辑中测试过关");
                 return;
             }
             SocialGUIManager.Instance.OpenUI<UICtrlPublishProject> (_curSelectedPrivateProject.Content);
