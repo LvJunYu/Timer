@@ -580,14 +580,15 @@ namespace SoyEngine
 
 		private bool CheckAppLocaleNeedToUpdate()
 		{
-			string appLocaleFileName = GameResourcePathManager.Instance.GetLocaleDataFileName(SocialApp.Instance.Language);
-			var curValue = LocaleManager.Instance.CurAppLocaleVersion;
-			string targetMD5;
-			if (!_curAppVersion.TryGetMd5Value(appLocaleFileName,out targetMD5))
-			{
-				return false;
-			}
-			return String.CompareOrdinal(targetMD5, curValue) != 0;
+            return false;
+//			string appLocaleFileName = GameResourcePathManager.Instance.GetLocaleDataFileName(SocialApp.Instance.Language);
+//			var curValue = LocaleManager.Instance.CurAppLocaleVersion;
+//			string targetMD5;
+//			if (!_curAppVersion.TryGetMd5Value(appLocaleFileName,out targetMD5))
+//			{
+//				return false;
+//			}
+//			return String.CompareOrdinal(targetMD5, curValue) != 0;
 		}
 
 		private IEnumerator UpdateAppLocale()
@@ -623,7 +624,7 @@ namespace SoyEngine
 			File.WriteAllBytes(path,ww.bytes);
 			pack.LinkDataToFile(path);
 
-			LocaleManager.Instance.ReloadAppLocaleData();
+//			LocaleManager.Instance.ReloadAppLocaleData();
 		}
 
 		private void ClearOverdueRes()
