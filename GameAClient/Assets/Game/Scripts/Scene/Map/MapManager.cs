@@ -254,8 +254,9 @@ namespace GameA.Game
                 EditMode.Instance.Init();
                 if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
                 {
+                    Rect validMapRect = GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect);
 					EditMode.Instance.MapStatistics.InitWithMapData(mapData);
-                    CameraManager.Instance.SetFinalOrthoSize((float)_defaultMapSize.y / 2);
+                    CameraManager.Instance.SetFinalOrthoSize((float)validMapRect.height / 2);
                     InitEditorCameraStartPos();
 				}
             }
