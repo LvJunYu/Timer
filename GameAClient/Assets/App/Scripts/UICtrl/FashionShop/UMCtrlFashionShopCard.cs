@@ -56,7 +56,7 @@ namespace GameA
             Sprite fashion = null;
             //Debug.Log("____________预览图" + listItem.PreviewTexture);
 
-            if (GameResourceManager.Instance.TryGetSpriteByName("icon_gift_2", out fashion))
+            if (GameResourceManager.Instance.TryGetSpriteByName(listItem.PreviewTexture, out fashion))
             {
                 //Debug.Log("____________时装" + fashion.name);
 

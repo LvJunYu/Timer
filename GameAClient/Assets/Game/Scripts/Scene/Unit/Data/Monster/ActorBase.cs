@@ -42,6 +42,11 @@ namespace GameA.Game
             get { return _eDieType; }
         }
 
+        public override bool CanControlledBySwitch
+        {
+            get { return false; }
+        }
+
         protected override bool OnInit()
         {
             if (!base.OnInit())
