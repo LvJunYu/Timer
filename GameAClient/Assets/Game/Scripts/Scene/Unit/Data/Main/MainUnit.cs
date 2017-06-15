@@ -1487,7 +1487,16 @@ namespace GameA.Game
             {
                 if (_speed.x == 0)
                 {
-                    return "Prepare";
+                    if (_mainInput.RightInput == 0 && _mainInput.LeftInput == 0)
+                    {
+                        return "Prepare";
+                    }
+                    if (_mainInput.RightInput > 0 && _box.DirectionRelativeMain == EDirectionType.Right
+                        || (_mainInput.LeftInput > 0 && _box.DirectionRelativeMain == EDirectionType.Left))
+                    {
+                        return "Push";
+                    }
+                    return "Pull";
                 }
                 if ((_speed.x > 0 && _box.DirectionRelativeMain == EDirectionType.Right)
                     || (_speed.x < 0 && _box.DirectionRelativeMain == EDirectionType.Left))
