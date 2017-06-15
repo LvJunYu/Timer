@@ -46,7 +46,11 @@ public class    ShopItem
 
 	public ShopItem(Table_HeadParts headParts)
 	{
+	    //Debug.Log("headParts"+ headParts);
+	    //Debug.Log("headParts id"+ headParts.Id);
+	    //Debug.Log("headParts name"+ headParts.Name);
 	    this._avatarType = EAvatarPart.AP_Head;
+        if(headParts.Id!=null)
         this.Id = headParts.Id;
         this.Name = headParts.Name;
 		this.Description = headParts.Description;
@@ -68,7 +72,8 @@ public class    ShopItem
 	public ShopItem(Table_UpperBodyParts UpperBodyParts)
 	{
 		this._avatarType = EAvatarPart.AP_Upper;
-        this.Id = UpperBodyParts.Id;
+        if (UpperBodyParts.Id != null)
+            this.Id = UpperBodyParts.Id;
         this.Name = UpperBodyParts.Name;
 		this.Description = UpperBodyParts.Description;
 		this.Sex = UpperBodyParts.Sex;
@@ -91,7 +96,8 @@ public class    ShopItem
 	{
 		//this._lowerBodyParts = LowerBodyParts;
 		this._avatarType = EAvatarPart.AP_Lower;
-	    this.Id = LowerBodyParts.Id;
+        if (LowerBodyParts.Id != null)
+            this.Id = LowerBodyParts.Id;
         this.Name = LowerBodyParts.Name;
 		this.Description = LowerBodyParts.Description;
 		this.Sex = LowerBodyParts.Sex;
@@ -115,7 +121,8 @@ public class    ShopItem
 	{
 		//this._appendageParts = AppendageParts;
 		this._avatarType = EAvatarPart.AP_Appendage;
-        this.Id = AppendageParts.Id;
+        if (AppendageParts.Id != null)
+            this.Id = AppendageParts.Id;
         this.Name = AppendageParts.Name;
 		this.Description = AppendageParts.Description;
 		this.Sex = AppendageParts.Sex;

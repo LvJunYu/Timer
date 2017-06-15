@@ -29,8 +29,13 @@ namespace GameA.Game
     {
         protected EffectManager _effectManager;
         protected EDieType _eDieType;
-        protected int _stunTimer;
+        protected int _attackedTimer;
         protected int _fireTimer;
+
+        public int AttackedTimer
+        {
+            get { return _attackedTimer; }
+        }
 
         public override EffectManager EffectMgr
         {
@@ -65,7 +70,7 @@ namespace GameA.Game
                 _effectManager.Clear();
             }
             _eDieType = EDieType.None;
-            _stunTimer = 0;
+            _attackedTimer = 0;
             _fireTimer = 0;
         }
 

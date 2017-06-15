@@ -43,17 +43,23 @@ namespace GameA.Game
             {
                 if (_animation != null && !_animation.IsPlaying("Attack", 1))
                 {
-                    _animation.PlayOnce("Attack", 1, 1).Complete += delegate
+                    _animation.PlayOnce("Attack", 1, 1);
+                    _attackTimer = 15;
+                }
+            }
+            if (_attackTimer > 0)
+            {
+                _attackTimer--;
+                if (_attackTimer == 0)
+                {
+                    if (_trans != null)
                     {
-                        if (_trans != null)
-                        {
-                            //GameParticleManager.Instance.Emit("M1EffectMonsterTree", _trans.position + Vector3.forward * 0.1f, Vector3.one);
-                        }
-                        if (IsInAttackRange())
-                        {
-                            PlayMode.Instance.MainUnit.OnKnockBack(this);
-                        }
-                    };
+                        //GameParticleManager.Instance.Emit("M1EffectMonsterTree", _trans.position + Vector3.forward * 0.1f, Vector3.one);
+                    }
+                    if (IsInAttackRange())
+                    {
+                        PlayMode.Instance.MainUnit.OnKnockBack(this);
+                    }
                 }
             }
         }
