@@ -20,6 +20,7 @@ namespace GameA.Game
         protected UnitBase _unit;
         protected SpriteRenderer _spriteRenderer;
         protected Sequence _editSequence;
+        private Coroutine _coroutine;
 
         protected override bool OnInit()
         {
@@ -65,7 +66,7 @@ namespace GameA.Game
 
         private void PlayAnimation()
         {
-            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(2f - Time.realtimeSinceStartup % 2f,
+            _coroutine = CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(2f - Time.realtimeSinceStartup % 2f,
                 () =>
                 {
                     if (GameRun.Instance.IsEdit)
@@ -76,6 +77,7 @@ namespace GameA.Game
                         _editSequence.AppendInterval(0.7f);
                         _editSequence.SetLoops(-1);
                     }
+                    _coroutine = null;
                 }));
         }
 
@@ -89,15 +91,15 @@ namespace GameA.Game
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();
-            if (_editSequence != null && _spriteRenderer != null)
+            if (_coroutine != null)
             {
-                _spriteRenderer.DORewind();
-                _spriteRenderer.DOPause();
-                DOTween.Kill(_spriteRenderer);
+                CoroutineProxy.Instance.StopCoroutine(_coroutine);
+                _coroutine = null;
+            }
+            if (_editSequence != null)
+            {
                 _editSequence.Rewind();
-                _editSequence.Pause();
                 _editSequence.Kill();
-                DOTween.Kill(_editSequence);
                 _editSequence = null;
             }
         }
