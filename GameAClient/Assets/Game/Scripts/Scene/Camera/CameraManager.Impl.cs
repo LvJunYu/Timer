@@ -101,7 +101,7 @@ namespace GameA.Game
 
             if (immediately)
             {
-                RendererCameraPos = _finalPos;
+                MainCameraPos = _finalPos;
             }
             else
             {
@@ -120,7 +120,7 @@ namespace GameA.Game
         {
             if (_cameraPosTweener == null || !_cameraPosTweener.IsActive())
             {
-                _cameraPosTweener = DOTween.To(() => RendererCameraPos, v => { RendererCameraPos = v; }, _finalPos,
+                _cameraPosTweener = DOTween.To(() => MainCameraPos, v => { MainCameraPos = v; }, _finalPos,
                     duration);
             }
             else

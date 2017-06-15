@@ -64,13 +64,10 @@ namespace GameA.Game
 			var eventSystem = new UIEventSystem();
 			eventSystem.Init();
 			eventSystem.Trans.SetParent(transform);
-			Messenger.AddListener(GameA.EMessengerType.ClearAppRecordState, ClearAppRecordState);
 		}
 
 		protected override void OnDestroy()
         {
-			Messenger.RemoveListener(GameA.EMessengerType.ClearAppRecordState, ClearAppRecordState);
-
 			if (_renderUICamera != null)
 			{
 				_renderUICamera.targetTexture = null;
@@ -79,13 +76,6 @@ namespace GameA.Game
             Instance = null;
         }
 
-	    private void ClearAppRecordState()
-	    {
-		    if (_renderUICamera != null)
-		    {
-			    _renderUICamera.targetTexture = null;
-		    }
-	    }
 	}
 
     public class UMCtrlBase<T> : UMCtrlGenericBase<T> where T : UMViewBase

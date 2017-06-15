@@ -76,22 +76,7 @@ namespace GameA
         private EMode _currentMode = EMode.App;
         private UIStack _defaultUIStack;
         private Stack<UIStack> _uiStackStack = new Stack<UIStack>(5);
-        private UIGlobalGestureReturn _globalGestureReturn;
         private bool _exitDialogIsOpen = false;
-
-	    private RenderTexture _recordRenderTexture;
-	    private bool _recordFullScreen = false;
-
-	    public RenderTexture RenderRecordTexture
-	    {
-		    get { return _recordRenderTexture; }
-	    }
-
-	    public bool RecordFullScreen
-	    {
-		    get { return _recordFullScreen; }
-		    set { _recordFullScreen = value; }
-	    }
 
         public EMode CurrentMode
         {
@@ -119,7 +104,6 @@ namespace GameA
 
         void Start()
         {
-            _globalGestureReturn = new UIGlobalGestureReturn(OnGestureReturnBegin, OnGestureReturnUpdate, OnGestureReturnEnd);
         }
 
         protected override void Update()
@@ -130,7 +114,6 @@ namespace GameA
 
 	    protected override void OnDestroy()
 	    {
-			ClearRecordRes();
 		    base.OnDestroy();
 	    }
 
@@ -159,23 +142,9 @@ namespace GameA
 			Messenger.RemoveListener(EMessengerType.OnEscapeClick, OnEscapeClick);
 			Application.targetFrameRate = 60;
 			_currentMode = EMode.Game;
-			if (_recordRenderTexture == null)
-			{
-				_recordRenderTexture = new RenderTexture(Screen.height, Screen.width, 24);
-			}
 			_uiRoot.SetGroupActive((int)EUIGroupType.InGameStart, true);
 			Messenger.Broadcast(EMessengerType.OnChangeToGameMode);
 		}
-
-	    public void ClearRecordRes()
-	    {
-			Messenger.Broadcast(EMessengerType.ClearAppRecordState);
-			if (_recordRenderTexture != null)
-		    {
-				DestroyImmediate(_recordRenderTexture, true);
-			    _recordRenderTexture = null;
-		    }
-	    }
 
 		internal void ChangeToGameMode()
         {
@@ -224,24 +193,17 @@ namespace GameA
             Application.targetFrameRate = 60;
 
             _currentMode = EMode.App;
-	        if (RecordFullScreen)
-	        {
-		        
-	        }
-	        else
-	        {
-				JoyNativeTool.Instance.SetStatusBarShow(true);
-				CanvasScaler cs = _uiRoot.GetComponent<CanvasScaler>();
-				if (cs)
-				{
-					cs.referenceResolution = new Vector2(UIConstDefine.UINormalScreenWidth, UIConstDefine.UINormalScreenHeight);
-					cs.matchWidthOrHeight = 0;
-				}
+			JoyNativeTool.Instance.SetStatusBarShow(true);
+			CanvasScaler cs = _uiRoot.GetComponent<CanvasScaler>();
+			if (cs)
+			{
+				cs.referenceResolution = new Vector2(UIConstDefine.UINormalScreenWidth, UIConstDefine.UINormalScreenHeight);
+				cs.matchWidthOrHeight = 0;
+			}
 
-				for (int i = 0; i < (int)EUIGroupType.Max; i++)
-				{
-					_uiRoot.SetGroupActive(i, true);
-				}
+			for (int i = 0; i < (int)EUIGroupType.Max; i++)
+			{
+				_uiRoot.SetGroupActive(i, true);
 			}
 
             //_uiRoot.SetGroupActive((int)EUIGroupType.InGame, false);

@@ -29,7 +29,6 @@ namespace GameA.Game
         [SerializeField] private Camera _mainCamera;
         private float _cameraPlaySize = 5f;
 
-        [SerializeField] private Transform _rendererCamaraTrans;
         [SerializeField] private Camera _rendererCamera;
         [SerializeField] private IntVec2 _rollPos;
 
@@ -58,11 +57,6 @@ namespace GameA.Game
         public Camera RendererCamera
         {
             get { return _rendererCamera; }
-        }
-
-        public Transform RendererCamaraTrans
-        {
-            get { return _rendererCamaraTrans; }
         }
 
         public Vector2 FinalPos
@@ -105,12 +99,12 @@ namespace GameA.Game
             get { return _visibleDistanceMin; }
         }
 
-        public Vector3 RendererCameraPos
+        public Vector3 MainCameraPos
         {
-            get { return _rendererCamaraTrans.position; }
+            get { return _mainCamaraTrans.position; }
             set
             {
-                _rendererCamaraTrans.position = value;
+                _mainCamaraTrans.position = value;
             }
         }
 
@@ -128,10 +122,6 @@ namespace GameA.Game
                 _cameraPosTweener.Kill();
                 _cameraPosTweener = null;
             }
-            if (_rendererCamera != null)
-            {
-                _rendererCamera.targetTexture = null;
-            }
             if (_mainCamaraTrans != null)
             {
                 UnityEngine.Object.Destroy(_mainCamaraTrans.gameObject);
@@ -140,9 +130,8 @@ namespace GameA.Game
             {
                 Messenger<IntRect>.RemoveListener(EMessengerType.OnValidMapRectChanged, OnValidMapRectChanged);
                 Messenger.RemoveListener(EMessengerType.OnGameStartComplete, OnGameStartComplete);
-                Messenger<EScreenOperator>.RemoveListener(EMessengerType.OnScreenOperatorSuccess, OnScreenOperatorSuccess);
+//                Messenger<EScreenOperator>.RemoveListener(EMessengerType.OnScreenOperatorSuccess, OnScreenOperatorSuccess);
                 Messenger.RemoveListener(EMessengerType.OnPlay, OnPlay);
-                Messenger.RemoveListener(EMessengerType.ClearAppRecordState, ClearAppRecordState);
                 _instance = null;
             }
         }
@@ -154,20 +143,18 @@ namespace GameA.Game
             _mainCamera.tag = "MainCamera";
 
             _rendererCamera = SetCamera("RendererCamera");
-            _rendererCamaraTrans = _rendererCamera.transform;
-            _rendererCamaraTrans.SetParent(_mainCamaraTrans);
+            CommonTools.SetParent(_rendererCamera.transform, _mainCamaraTrans);
 
             Messenger<IntRect>.AddListener(EMessengerType.OnValidMapRectChanged, OnValidMapRectChanged);
             Messenger.AddListener(EMessengerType.OnGameStartComplete, OnGameStartComplete);
-            Messenger<EScreenOperator>.AddListener(EMessengerType.OnScreenOperatorSuccess, OnScreenOperatorSuccess);
+//            Messenger<EScreenOperator>.AddListener(EMessengerType.OnScreenOperatorSuccess, OnScreenOperatorSuccess);
             Messenger.AddListener(EMessengerType.OnPlay, OnPlay);
-            Messenger.AddListener(EMessengerType.ClearAppRecordState, ClearAppRecordState);
 
             _finalPos = _mainCamaraTrans.position;
             _aspectRatio = 1f*GM2DGame.Instance.GameScreenWidth/GM2DGame.Instance.GameScreenHeight;
 
             _positionEffect = _rendererCamera.gameObject.AddComponent<PositionSpringbackEffect>();
-            _positionEffect.Init(_rendererCamera.transform, SetFinalPos);
+            _positionEffect.Init(_mainCamaraTrans, SetFinalPos);
 
             _orthoEffect = _rendererCamera.gameObject.AddComponent<OrthoSizeSpringbackEffect>();
             _orthoEffect.Init(_rendererCamera, SetFinalOrtho);
@@ -190,18 +177,14 @@ namespace GameA.Game
 
         private void Init(Vector2 pos)
         {
-            //Debug.Log ("Camera.Init, pos: " + pos);
-            //_originPos = pos;
             _finalPos = pos;
             _mainCamaraTrans.position = _finalPos;
-            _rendererCamaraTrans.localPosition = Vector3.zero;
-            RendererCameraPos = _rendererCamaraTrans.position;
         }
 
         public void SetRenderCameraPosOffset(Vector3 offset)
         {
-            RendererCameraPos += offset;
-            _finalPos = RendererCameraPos;
+            MainCameraPos += offset;
+            _finalPos = MainCameraPos;
         }
 
         private IntVec2 GetCameraViewSize()
@@ -269,7 +252,7 @@ namespace GameA.Game
                 }
             }
             LimitRollPos(mainUnit.CameraFollowPos, cameraViewSize);
-            RendererCameraPos = GM2DTools.TileToWorld(new IntVec2(_rollPos.x, _rollPos.y + cameraViewSize.y/2));
+            MainCameraPos = GM2DTools.TileToWorld(new IntVec2(_rollPos.x, _rollPos.y + cameraViewSize.y/2));
         }
 
 
@@ -367,8 +350,8 @@ namespace GameA.Game
             IntVec2 cameraViewSize = GetCameraViewSize();
             _rollPos = mainPlayerPos - new IntVec2(0, cameraViewSize.y/2);
             LimitRollPos(mainPlayerPos, cameraViewSize);
-            RendererCameraPos = GM2DTools.TileToWorld(new IntVec2(_rollPos.x, _rollPos.y + cameraViewSize.y/2));
-            SetFinalPos(RendererCameraPos);
+            MainCameraPos = GM2DTools.TileToWorld(new IntVec2(_rollPos.x, _rollPos.y + cameraViewSize.y/2));
+            SetFinalPos(MainCameraPos);
             //LogHelper.Debug("{0} || {1} || {2}", _rollPos, _finalPos , _cameraViewRect);
         }
 
@@ -412,15 +395,6 @@ namespace GameA.Game
             SetMinMax();
             _rendererCamera.enabled = true;
 
-            //初始化主摄像机位置
-            Vector3 cameraPos =
-                GM2DTools.TileToWorld(new IntVec2(
-                    ConstDefineGM2D.MapStartPos.x + CameraViewWidth/2,
-                    ConstDefineGM2D.MapStartPos.y + CameraViewHeight/2));
-            cameraPos.x -= 0.5f*_cameraViewRect.width*ConstDefineGM2D.CameraMoveOutSizeX;
-            cameraPos.y -= _cameraViewRect.height*ConstDefineGM2D.CameraMoveOutSizeYBottom;
-            //Debug.Log (" w/h: " + CameraManager.Instance.CameraViewWidth + "/" + CameraManager.Instance.CameraViewHeight);
-            Init(cameraPos);
             if (DataScene2D.Instance.MainPlayer != null)
             {
                 var followPos = new IntVec2(DataScene2D.Instance.MainPlayer.Guid.x,
@@ -429,10 +403,20 @@ namespace GameA.Game
             }
             if (GM2DGame.Instance.GameMode.GameRunMode != EGameRunMode.Edit)
             {
+                //初始化主摄像机位置
+                Vector3 cameraPos =
+                    GM2DTools.TileToWorld(new IntVec2(
+                        ConstDefineGM2D.MapStartPos.x + CameraViewWidth/2,
+                        ConstDefineGM2D.MapStartPos.y + CameraViewHeight/2));
+                cameraPos.x -= 0.5f*_cameraViewRect.width*ConstDefineGM2D.CameraMoveOutSizeX;
+                cameraPos.y -= _cameraViewRect.height*ConstDefineGM2D.CameraMoveOutSizeYBottom;
+                //Debug.Log (" w/h: " + CameraManager.Instance.CameraViewWidth + "/" + CameraManager.Instance.CameraViewHeight);
+                Init(cameraPos);
+
                 IntVec2 cameraViewSize = GetCameraViewSize();
-                RendererCameraPos = GM2DTools.TileToWorld(new IntVec2(_rollPos.x, _rollPos.y + cameraViewSize.y/2));
+                MainCameraPos = GM2DTools.TileToWorld(new IntVec2(_rollPos.x, _rollPos.y + cameraViewSize.y/2));
+                SetFinalPos(MainCameraPos);
             }
-            SetFinalPos(RendererCameraPos);
             //Debug.Log ("CameraStartPos: " + GM2DTools.TileToWorld (ConstDefineGM2D.MapStartPos));
         }
 
@@ -441,13 +425,6 @@ namespace GameA.Game
             StandardizationCameraSize();
         }
 
-        private void ClearAppRecordState()
-        {
-            if (_rendererCamera != null)
-            {
-                _rendererCamera.targetTexture = null;
-            }
-        }
 
         #endregion
     }

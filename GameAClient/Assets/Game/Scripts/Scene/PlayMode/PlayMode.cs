@@ -29,6 +29,7 @@ namespace GameA.Game
         private readonly List<UnitBase> _waitDestroyUnits = new List<UnitBase>();
         private List<int> _boostItems;
         private Vector2 _cameraEditPosCache = Vector2.zero;
+        private float _cameraEditOrthoSizeCache = 0f;
         [SerializeField] private ERunMode _eRunMode = ERunMode.Normal;
 
         [SerializeField] private IntVec2 _focusPos;
@@ -465,6 +466,7 @@ namespace GameA.Game
             if (_cameraEditPosCache != Vector2.zero)
             {
                 CameraManager.Instance.SetEditorModeStartPos(_cameraEditPosCache);
+                CameraManager.Instance.SetFinalOrthoSize(_cameraEditOrthoSizeCache);
             }
             UpdateWorldRegion(GM2DTools.WorldToTile(CameraManager.Instance.FinalPos), true);
             UnitBase[] units = ColliderScene2D.Instance.Units.Values.ToArray();
@@ -482,6 +484,7 @@ namespace GameA.Game
                 return false;
             }
             _cameraEditPosCache = CameraManager.Instance.FinalPos;
+            _cameraEditOrthoSizeCache = CameraManager.Instance.FinalOrthoSize;
             PreparePlay();
             return true;
         }

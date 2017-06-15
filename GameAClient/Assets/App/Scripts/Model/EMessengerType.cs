@@ -79,8 +79,6 @@ namespace GameA
 
         public static readonly int CheckAppVersionComplete = SoyEngine.EMessengerType.NextId ++;
 
-        public static int ClearAppRecordState = SoyEngine.EMessengerType.NextId++;
-
         public static int OnGamePlaySpeedChanged = SoyEngine.EMessengerType.NextId++;
 
         //public static readonly int OnAOISubscribe = SoyEngine.EMessengerType.NextId++;
