@@ -29,7 +29,7 @@
         "PriceDiamondWeek": "0",
         "PriceDiamondMonth": "0",
         "PriceDiamondPermanent": "0",
-        "PreviewTexture": "shop_flower",
+        "PreviewTexture": "shop_flower_240",
         "SkinId": "0"
     },
     {
@@ -47,7 +47,7 @@
         "PriceDiamondMonth": "0",
         "PriceDiamondPermanent": "0",
         "BigTexture": "MainBoy05",
-        "PreviewTexture": "shop_axe",
+        "PreviewTexture": "shop_axe_240",
         "SkinId": "1"
     },
     {
@@ -65,7 +65,7 @@
         "PriceDiamondMonth": "0",
         "PriceDiamondPermanent": "0",
         "BigTexture": "MainBoy05",
-        "PreviewTexture": "shop_drumstick",
+        "PreviewTexture": "shop_drumstick_240",
         "SkinId": "2"
     },
     {
