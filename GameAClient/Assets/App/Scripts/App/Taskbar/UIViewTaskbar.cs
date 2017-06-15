@@ -119,5 +119,7 @@ namespace GameA
         /// </summary>
 		public Text CreatorLevel;
 
+
+        public Button UnlockAll;
     }
 }

@@ -90,6 +90,7 @@ namespace GameA
 			_cachedView.WorkshopButton.onClick.AddListener (OnCreateBtn);
 			_cachedView.SingleModeButton.onClick.AddListener (OnSingleGameBtn);
             _cachedView.LotteryBtn.onClick.AddListener(OnLotteryBtn);
+            _cachedView.UnlockAll.onClick.AddListener (OnUnlockAll);
             SetLock(UIFunction.UI_FashionShop, _fashionShopAvailable);
             SetLock(UIFunction.UI_Friends, _friendsAvailable);
             SetLock(UIFunction.UI_Lottery, _lotteryAvailable);
@@ -314,7 +315,38 @@ namespace GameA
         }
 
 
-
+        private void OnUnlockAll ()
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "正在执行GM命令");
+            RemoteCommands.ExecuteCommand (
+                LocalUser.Instance.UserGuid,
+                "set advcompletelevel 4 9",
+                msg => {
+//                    if (msg.ResultCode == (int)EExecuteCommandCode.ECC_Success) {
+//                        ParallelTaskHelper<ENetResultCode> helper = new ParallelTaskHelper<ENetResultCode>(()=>{
+//                            SocialGUIManager.Instance.CloseUI<UICtrlTaskbar> ();
+//                            SocialGUIManager.Instance.OpenUI<UICtrlTaskbar> ();
+//                        }, code=>{
+//                            SocialGUIManager.ShowPopupDialog("网络错误");
+//                        });
+//                        helper.AddTask(AppData.Instance.LoadAppData);
+//                        helper.AddTask(LocalUser.Instance.LoadUserData);
+//                        helper.AddTask(AppData.Instance.AdventureData.PrepareAllData);
+//                        helper.AddTask (LocalUser.Instance.LoadPropData);
+//
+//                    } else {
+//                        SocialGUIManager.ShowPopupDialog("网络错误");
+//                    }
+                    SocialGUIManager.ShowPopupDialog("执行成功，请重新启动程序", null, 
+                        new System.Collections.Generic.KeyValuePair<string, Action>("OK", ()=>{Application.Quit();}));
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                },
+                code => {
+                    SocialGUIManager.ShowPopupDialog("网络错误");
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                }
+            );
+        }
 
         #endregion
     }
