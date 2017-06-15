@@ -288,15 +288,15 @@ namespace GameA
 
         private void OnPublish()
         {
-            Broadcast(ECommandType.Publish);
-            SocialGUIManager.Instance.OpenUI<UICtrlPublish>();
+//            Broadcast(ECommandType.Publish);
+//            SocialGUIManager.Instance.OpenUI<UICtrlPublish>();
         }
         
         private void OnPlay()
         {
 			if (DataScene2D.Instance.MainPlayer == null || !Game.PlayMode.Instance.CheckPlayerValid())
 			{
-				Messenger<string>.Broadcast(EMessengerType.GameErrorLog, LocaleManager.GameLocale("error_editor_test_no_main_player"));
+                Messenger<string>.Broadcast (EMessengerType.GameErrorLog, "没有主玩家");//LocaleManager.GameLocale("error_editor_test_no_main_player"));
 			}
             GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
             if (null != gameModeEdit)
