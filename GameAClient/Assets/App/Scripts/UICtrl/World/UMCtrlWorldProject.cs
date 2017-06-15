@@ -95,7 +95,7 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.LikeCount, p.LikeCount.ToString());
             DictionaryTools.SetContentText(_cachedView.CompleteRate, GameATools.GetCompleteRateString(p.CompleteRate));
             DictionaryTools.SetContentText(_cachedView.CommentCount, p.ExtendData.CommentCount.ToString());
-            DictionaryTools.SetContentText(_cachedView.PublishTime, DateTimeUtil.GetServerSmartDateStringByTimestampMillis(p.PublishTime));
+            DictionaryTools.SetContentText(_cachedView.PublishTime, DateTimeUtil.GetServerSmartDateStringByTimestampMillis(p.CreateTime));
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath, _cachedView.DefaultCoverTexture);
             _cachedView.SeletedMark.SetActiveEx (_wrapper.IsSelected);
         }
