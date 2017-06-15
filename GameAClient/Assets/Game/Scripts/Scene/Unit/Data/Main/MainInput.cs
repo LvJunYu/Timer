@@ -168,7 +168,15 @@ namespace GameA.Game
         public bool Step
         {
             get { return _step; }
-            set { _step = value; }
+            set
+            {
+                if (value)
+                {
+                    _jumpLevel = 0;
+                    _jumpState = 0;
+                }
+                _step = value;
+            }
         }
 
         public int StepY
@@ -670,10 +678,10 @@ namespace GameA.Game
                 {
                     if (_step)
                     {
-                        _unit.SpeedY = 0;
                         _unit.ExtraSpeed.y = _stepY;
-                        _jumpLevel = 0;
                     }
+                    _unit.SpeedY = 0;
+                    _jumpLevel = 0;
                     _jumpState = 100;
                 }
                 else if ((_jumpState > 0 && _jumpState < 200) && !_lastJumpInput && _jumpLevel == 0 && IsCharacterAbilityAvailable(ECharacterAbility.DoubleJump))
