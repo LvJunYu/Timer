@@ -337,10 +337,10 @@ namespace GameA.Game
             }
             CheckOutOfMap();
             CheckBox();
-            if (SpeedY != 0 && _mainInput._jumpState == 0)
-            {
-                _mainInput._jumpState = 1;
-            }
+            //if (SpeedY != 0 && _mainInput._jumpState == 0)
+            //{
+            //    _mainInput._jumpState = 1;
+            //}
             if (_invincibleTime > 0)
             {
                 _invincibleTime--;
@@ -440,7 +440,7 @@ namespace GameA.Game
 						}
                         PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_mainInput._jumpLevel), false);
                     }
-                    else if (_mainInput.JumpState == 1)
+                    else if (SpeedY !=0 || _mainInput.JumpState == 1)
                     {
                         if (_animation.PlayLoop(FallAnimName()))
                         {
