@@ -23,10 +23,10 @@ namespace GameA.Game
 		public const float SpringbackDuringTime = 0.3f;
 
 		private Transform _cachedTrans; 
-		private Rect _validRect;
-		private Rect _outerRect;
+        private Rect _validRect = new Rect();
+        private Rect _outerRect = new Rect();
 
-		private Rect _validMoveRect;
+        private Rect _validMoveRect = new Rect();
 
 		private Rect _cameraViewRect;
 
@@ -40,10 +40,6 @@ namespace GameA.Game
 		private ESpingState _curState;
 		private Vector2 _springbackAimPos;
 
-        /// <summary>
-        /// 编辑状态下锁住摄像机移动
-        /// </summary>
-        private bool _lockMove;
         /// <summary>
         /// 差值移动目标坐标
         /// </summary>
@@ -107,7 +103,6 @@ namespace GameA.Game
 
         public void Lerp (Vector2 pos) {
             _lerpTargetPos = ClampValidRect(pos);
-            _lockMove = true;
             _curState = ESpingState.LerpMove;
         }
 
@@ -158,9 +153,8 @@ namespace GameA.Game
                     DoUpdateLerpMove ();
                     break;
                 }
-                Messenger.Broadcast(EMessengerType.OnEditorModeCameraMove);
-			}
-
+            }
+            Messenger.Broadcast(EMessengerType.OnEditorModeCameraMove);
 		}
 
 		private bool UpdateSpeed()

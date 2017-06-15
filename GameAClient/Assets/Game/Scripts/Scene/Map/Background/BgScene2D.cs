@@ -113,7 +113,7 @@ namespace GameA.Game
                 _parents[i] = new GameObject(((EBgDepth)i).ToString()).transform;
                 _parents[i].parent = _parent;
             }
-            _focusPos = GM2DTools.WorldToTile(CameraManager.Instance.RendererCamaraTrans.position);
+            _focusPos = GM2DTools.WorldToTile(CameraManager.Instance.MainCamaraTrans.position);
 
             var bgs = TableManager.Instance.Table_BackgroundDic;
             foreach (Table_Background bg in bgs.Values)

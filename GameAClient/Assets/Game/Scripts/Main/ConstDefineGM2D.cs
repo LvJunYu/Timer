@@ -84,7 +84,7 @@ namespace GameA.Game
 		public const float CameraMoveExceedValueY = 0.8f;
 
 
-	    public const float CameraOrthoSizeMaxValue = 6.5f;
+	    public const float CameraOrthoSizeMaxValue = 15f;
 	    public const float CameraOrthoSizeMinValue = 2.5f;
 
 	    public const float TouchEffectiveDelayTime = 0.01f;
@@ -94,7 +94,7 @@ namespace GameA.Game
 	    public const float VisibleFactor = 1.5f;
 
 	    public const float CameraMoveOutSizeYTop = 0.12f;
-		public const float CameraMoveOutSizeYBottom = 0.17f;
+		public const float CameraMoveOutSizeYBottom = 0.25f;
 
 		public const float CameraMoveOutSizeX = 0.15f;
 

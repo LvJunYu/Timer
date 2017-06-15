@@ -208,7 +208,7 @@ namespace GameA.Game
 
 	    public void Update()
 	    {
-	        var pos = GM2DTools.WorldToTile(CameraManager.Instance.RendererCamaraTrans.position);
+            var pos = GM2DTools.WorldToTile(CameraManager.Instance.MainCamaraTrans.position);
             BgScene2D.Instance.UpdateLogic(pos);
 	        if (EditMode.Instance != null)
 	        {
@@ -247,7 +247,6 @@ namespace GameA.Game
 
 		public void OnSetMapDataSuccess(GM2DMapData mapData)
 		{
-		    CameraManager.Instance.SetFinalOrthoSize(mapData.CameraOrthoSize);
             PlayMode.Instance.SceneState.Init(mapData);
 			DataScene2D.Instance.InitPlay(GM2DTools.ToEngine(mapData.ValidMapRect));
             if (EditMode.Instance != null)
@@ -256,7 +255,8 @@ namespace GameA.Game
                 if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
                 {
 					EditMode.Instance.MapStatistics.InitWithMapData(mapData);
-					InitEditorCameraStartPos();
+                    CameraManager.Instance.SetFinalOrthoSize((float)_defaultMapSize.y / 2);
+                    InitEditorCameraStartPos();
 				}
             }
 			GenerateMap(mapData.BgRandomSeed);
