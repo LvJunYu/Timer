@@ -22,6 +22,9 @@ namespace GameA
         private List<EWinCondition> _activeConditions;
 	    private bool _hasTimeLimit = false;
 	    private int _lastShowSceonds = -100;
+
+        private float _showHelpTimer;
+
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.InGameBackgroud;
@@ -70,7 +73,26 @@ namespace GameA
 		    {
 			    UpdateTimeLimit();
 		    }
+
+            if (_showHelpTimer > 0)
+                _showHelpTimer-= UnityEngine.Time.deltaTime;
+            if (UnityEngine.Input.GetKey (UnityEngine.KeyCode.H) || _showHelpTimer > 0) {
+                _cachedView.HelpPage.SetActive (true);
+            } else {
+                _cachedView.HelpPage.SetActive (false);
+            }
 	    }
+
+        public void ShowHelpPage3Seconds ()
+        {
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Play) {
+                _showHelpTimer = 3;
+                _cachedView.HelpPage.SetActive (true);
+            } else {
+                _showHelpTimer = 0;
+                _cachedView.HelpPage.SetActive (false);
+            }
+        }
 
 	    #region event
 
