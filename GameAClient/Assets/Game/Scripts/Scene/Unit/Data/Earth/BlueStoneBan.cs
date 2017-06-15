@@ -11,7 +11,7 @@ using System.Collections;
 namespace GameA.Game
 {
     [Unit(Id = 4102, Type = typeof(BlueStoneBan))]
-    public class BlueStoneBan : UnitBase
+    public class BlueStoneBan : Magic
     {
         protected override bool OnInit()
         {
@@ -20,7 +20,7 @@ namespace GameA.Game
                 return false;
             }
             _canLazerCross = true;
-            SetSortingOrderBack();
+            SetSortingOrderBackground();
             return true;
         }
 

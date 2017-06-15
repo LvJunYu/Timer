@@ -43,5 +43,7 @@ namespace GameA
         public Text MostPopulerProjectName;
         public GridDataScroller PublicProjectsGridScroller;
 
+        public GameObject[] ObjectsShowWhenEmpty;
+
     }
 }

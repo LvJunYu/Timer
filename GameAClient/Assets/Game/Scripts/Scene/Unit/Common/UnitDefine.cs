@@ -76,6 +76,11 @@ namespace GameA.Game
             return id >= 10000 && id <=10010;
         }
 
+        public static bool IsCollection(int id)
+        {
+            return (id >= 6001 && id <= 6010) || id == 5012;//key
+        }
+
         public static bool IsEditClick(int id)
         {
             return id == 7001 || IsEnergy(id);
@@ -87,11 +92,16 @@ namespace GameA.Game
                    (node.Rotation + rotation == 2 || node.Rotation + rotation == 4);
         }
 
+        public static bool IsMagciBlock(int id)
+        {
+            return id != SwitchTriggerId && !IsPlant(id) && !IsBoard(id) && !IsCollection(id);
+        }
+
         public static bool IsLaserBlock(SceneNode node)
         {
             ushort id = node.Id;
             return id != TransparentEarthId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
-                   !IsBoard(id) && (((1 << node.Layer) & EnvManager.LazerBlockLayer) != 0);
+                   !IsBoard(id) && !IsCollection(id) && (((1 << node.Layer) & EnvManager.LazerBlockLayer) != 0);
         }
 
         public static bool IsLaserDamage(int layer)
@@ -102,7 +112,7 @@ namespace GameA.Game
         internal static bool IsGround(int id)
         {
             return id != SwitchTriggerId && id != LaserId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
-                   !IsBoard(id) && !IsMain(id) && !IsBullet(id);
+                   !IsBoard(id) && !IsCollection(id) && !IsMain(id) && !IsBullet(id);
         }
 
         public static bool IsDownY(Table_Unit tableUnit)

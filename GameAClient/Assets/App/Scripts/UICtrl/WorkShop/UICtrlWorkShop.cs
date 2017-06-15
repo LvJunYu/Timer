@@ -128,7 +128,7 @@ namespace GameA
                     null != _curSelectedPrivateProject.Content &&
                     _curSelectedPrivateProject.Content.IsDirty) {
                     WeakReference projectWR = new WeakReference (_curSelectedPrivateProject.Content);
-                    Debug.Log ("_________Request update current select project");
+//                    Debug.Log ("_________Request update current select project");
                     RemoteCommands.UpdateProject (
                         _curSelectedPrivateProject.Content.ProjectId,
                         _curSelectedPrivateProject.Content.Name,
@@ -164,7 +164,7 @@ namespace GameA
                         if (null != wr.Target) {
                             Project project = wr.Target as Project;
                             if (null != project && project.IsDirty) {
-                                Debug.Log ("_________Request update project");
+//                                Debug.Log ("_________Request update project");
                                 RemoteCommands.UpdateProject (
                                     project.ProjectId,
                                     project.Name,
@@ -267,6 +267,9 @@ namespace GameA
                     }
                 }
 //                _currentSelectedCount = 0;
+                for (int i = 0; i < _cachedView.ObjectsShowWhenEmpty.Length; i++) {
+                    _cachedView.ObjectsShowWhenEmpty [i].SetActive (list.Count == 0);
+                }
             }
         }
 
@@ -287,8 +290,8 @@ namespace GameA
                 DictionaryTools.SetContentText(_cachedView.Desc, _curSelectedPrivateProject.Content.Summary);
             } else {
                 ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
-                DictionaryTools.SetContentText(_cachedView.Title, "----");
-                DictionaryTools.SetContentText(_cachedView.Desc, "--------");
+                DictionaryTools.SetContentText(_cachedView.Title, "关卡标题");
+                DictionaryTools.SetContentText(_cachedView.Desc, "关卡简介");
             }
         }
 
@@ -331,6 +334,9 @@ namespace GameA
 //                        _curSelectedPrivateProject = wrapper.IsSelected ? wrapper : _curSelectedPrivateProject;
                     }
                     _publicContents.Add(wrapper);
+                }
+                for (int i = 0; i < _cachedView.ObjectsShowWhenEmpty.Length; i++) {
+                    _cachedView.ObjectsShowWhenEmpty [i].SetActive (list.Count == 0);
                 }
                 _cachedView.PublicProjectsGridScroller.SetItemCount(_publicContents.Count);
 //                if (_autoSelectFirstProject && null == _curSelectedPrivateProject) {
