@@ -99,7 +99,7 @@ namespace GameA
             {
                 ClearCache();
             }
-	        InitLocalResource();
+//	        InitLocalResource();
 			RegisterGameTypeVersion();
             VersionManager.Instance.Init();
             JoyNativeTool.Instance.Init();
@@ -137,11 +137,11 @@ namespace GameA
             GameProcessManager.Instance.Init ();
 		}
 
-	    private void InitLocalResource()
-	    {
-			LocalResourceManager.Instance.Init();
-			LocaleManager.Instance.Init();
-		}
+//	    private void InitLocalResource()
+//	    {
+//			LocalResourceManager.Instance.Init();
+//			LocaleManager.Instance.Init();
+//		}
 
         internal void ReturnToApp(bool withScreenEffect = true)
         {

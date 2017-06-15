@@ -243,8 +243,7 @@ namespace GameA.Game
 			{
 				if (showPrompt)
 				{
-					Messenger<string>.Broadcast(EMessengerType.GameErrorLog,
-						LocaleManager.GameLocale("ui_publish_failed_finish_first"));
+					Messenger<string>.Broadcast(EMessengerType.GameErrorLog, "请先自己通关再发布");
 				}
 				return false;
 			}

@@ -416,19 +416,19 @@ namespace GameA.Game
             _mapStatistics.AddOrDeleteUnit(tableUnit, true, isInit);
         }
 
-        public bool CheckCanPublic(bool showPrompt)
-        {
-            if (_mapStatistics.LevelFinishCount < 1)
-            {
-                if (showPrompt)
-                {
-                    Messenger<string>.Broadcast(EMessengerType.GameErrorLog,
-                        LocaleManager.GameLocale("ui_publish_failed_finish_first"));
-                }
-                return false;
-            }
-            return true;
-        }
+//        public bool CheckCanPublic(bool showPrompt)
+//        {
+//            if (_mapStatistics.LevelFinishCount < 1)
+//            {
+//                if (showPrompt)
+//                {
+//                    Messenger<string>.Broadcast(EMessengerType.GameErrorLog,
+//                        LocaleManager.GameLocale("ui_publish_failed_finish_first"));
+//                }
+//                return false;
+//            }
+//            return true;
+//        }
 
         public bool TryGetReplaceUnit(int id, out UnitDesc outUnitDesc)
         {

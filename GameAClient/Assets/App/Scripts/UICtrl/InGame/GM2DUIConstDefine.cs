@@ -19,7 +19,7 @@ namespace GameA
         #region  locale
 
 	    public const string FinishConditionArrive = "到达终点";
-	    public const string FinishConditionCollectTreasure = "收集全部钻石";
+	    public const string FinishConditionCollectTreasure = "收集全部兽牙";
 	    public const string FinishConditionKillMonster = "击杀全部怪物";
 	    public const string FinishConditionRescueHero = "解救伙伴";
 	    public const string FinishConditionTimeLimit = "限时完成";
