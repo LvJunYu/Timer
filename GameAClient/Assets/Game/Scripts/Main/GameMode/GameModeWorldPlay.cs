@@ -136,6 +136,8 @@ namespace GameA.Game
         {
             UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
             yield return new WaitUntil(()=>uictrlCountDown.ShowComplete);
+            SocialGUIManager.Instance.GetUI<UICtrlSceneState> ().ShowHelpPage3Seconds();
+            yield return new WaitForSeconds(3);
             GameRun.Instance.Playing();
         }
     }

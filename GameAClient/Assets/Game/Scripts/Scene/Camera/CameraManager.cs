@@ -181,12 +181,6 @@ namespace GameA.Game
             _mainCamaraTrans.position = _finalPos;
         }
 
-        public void SetRenderCameraPosOffset(Vector3 offset)
-        {
-            MainCameraPos += offset;
-            _finalPos = MainCameraPos;
-        }
-
         private IntVec2 GetCameraViewSize()
         {
             return GM2DTools.WorldToTile(new Vector2(_cameraViewRect.width, _cameraViewRect.height));

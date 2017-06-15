@@ -337,10 +337,10 @@ namespace GameA.Game
             }
             CheckOutOfMap();
             CheckBox();
-            if (SpeedY != 0 && _mainInput._jumpState == 0)
-            {
-                _mainInput._jumpState = 1;
-            }
+            //if (SpeedY != 0 && _mainInput._jumpState == 0)
+            //{
+            //    _mainInput._jumpState = 1;
+            //}
             if (_invincibleTime > 0)
             {
                 _invincibleTime--;
@@ -440,7 +440,7 @@ namespace GameA.Game
 						}
                         PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_mainInput._jumpLevel), false);
                     }
-                    else if (_mainInput.JumpState == 1)
+                    else if (SpeedY !=0 || _mainInput.JumpState == 1)
                     {
                         if (_animation.PlayLoop(FallAnimName()))
                         {
@@ -1111,7 +1111,7 @@ namespace GameA.Game
                 {
                     _box.DirectionRelativeMain = EDirectionType.Right;
                 }
-                _mainInput.ChangeFire2State(EFire2State.HoldBox);
+                _mainInput.ChangeLittleSkillState(ELittleSkillState.HoldBox);
             }
             else if (IsValidBox(_hitUnits[(int)EDirectionType.Left]))
             {
@@ -1122,11 +1122,11 @@ namespace GameA.Game
                 {
                     _box.DirectionRelativeMain = EDirectionType.Left;
                 }
-                _mainInput.ChangeFire2State(EFire2State.HoldBox);
+                _mainInput.ChangeLittleSkillState(ELittleSkillState.HoldBox);
             }
             if (_box == null)
             {
-                _mainInput.ChangeFire2State(EFire2State.Quicken);
+                _mainInput.ChangeLittleSkillState(ELittleSkillState.Quicken);
             }
         }
 
@@ -1356,16 +1356,18 @@ namespace GameA.Game
             {
                 _view.SetRendererEnabled(true);
             }
-            if (PlayMode.Instance.SceneState.Arrived)
-            {
-                _animation.PlayLoop(EnterDoorAnimName());
-                PlayMode.Instance.CurrentShadow.RecordAnimation(EnterDoorAnimName(), true);
-            }
-            else
-            {
-                _animation.PlayOnce(VictoryAnimName());
-                PlayMode.Instance.CurrentShadow.RecordAnimation(VictoryAnimName(), false);
-            }
+            _animation.PlayLoop(VictoryAnimName(), 1, 1);
+            PlayMode.Instance.CurrentShadow.RecordAnimation(VictoryAnimName(), true);
+            //if (PlayMode.Instance.SceneState.Arrived)
+            //{
+            //    _animation.PlayLoop(EnterDoorAnimName());
+            //    PlayMode.Instance.CurrentShadow.RecordAnimation(EnterDoorAnimName(), true);
+            //}
+            //else
+            //{
+            //    _animation.PlayOnce(VictoryAnimName());
+            //    PlayMode.Instance.CurrentShadow.RecordAnimation(VictoryAnimName(), false);
+            //}
         }
 
         public override void OnRevivePos(IntVec2 pos)
@@ -1483,15 +1485,25 @@ namespace GameA.Game
         {
             if (IsHoldingBox())
             {
-                if ((_box.DirectionRelativeMain == EDirectionType.Right &&  _mainInput.RightInput > 0)
-                    || _box.DirectionRelativeMain == EDirectionType.Left && _mainInput.LeftInput > 0)
+                if (_speed.x == 0)
+                {
+                    if (_mainInput.RightInput == 0 && _mainInput.LeftInput == 0)
+                    {
+                        return "Prepare";
+                    }
+                    if (_mainInput.RightInput > 0 && _box.DirectionRelativeMain == EDirectionType.Right
+                        || (_mainInput.LeftInput > 0 && _box.DirectionRelativeMain == EDirectionType.Left))
+                    {
+                        return "Push";
+                    }
+                    return "Pull";
+                }
+                if ((_speed.x > 0 && _box.DirectionRelativeMain == EDirectionType.Right)
+                    || (_speed.x < 0 && _box.DirectionRelativeMain == EDirectionType.Left))
                 {
                     return "Push";
                 }
-                else
-                {
-                    return "Pull";
-                }
+                return "Pull";
             }
             if (speed <= 56)
             {

@@ -43,7 +43,7 @@ namespace GameA.Game
         #region state
 
         [SerializeField]
-        protected EFire2State _fire2State;
+        protected ELittleSkillState _littleSkillState;
 
         [SerializeField]
         protected bool[] _curInputs = new bool[(int)EInputType.Max];
@@ -168,7 +168,15 @@ namespace GameA.Game
         public bool Step
         {
             get { return _step; }
-            set { _step = value; }
+            set
+            {
+                if (value)
+                {
+                    _jumpLevel = 0;
+                    _jumpState = 0;
+                }
+                _step = value;
+            }
         }
 
         public int StepY
@@ -670,10 +678,10 @@ namespace GameA.Game
                 {
                     if (_step)
                     {
-                        _unit.SpeedY = 0;
                         _unit.ExtraSpeed.y = _stepY;
-                        _jumpLevel = 0;
                     }
+                    _unit.SpeedY = 0;
+                    _jumpLevel = 0;
                     _jumpState = 100;
                 }
                 else if ((_jumpState > 0 && _jumpState < 200) && !_lastJumpInput && _jumpLevel == 0 && IsCharacterAbilityAvailable(ECharacterAbility.DoubleJump))
@@ -735,9 +743,9 @@ namespace GameA.Game
 
         protected void CheckQuicken()
         {
-            switch (_fire2State)
+            switch (_littleSkillState)
             {
-                case EFire2State.HoldBox:
+                case ELittleSkillState.HoldBox:
                     {
                         if (QuickenInputUp)
                         {
@@ -745,7 +753,7 @@ namespace GameA.Game
                         }
                     }
                     break;
-                case EFire2State.Quicken:
+                case ELittleSkillState.Quicken:
                     {
                         if (_quickenCDTime > 0)
                         {
@@ -812,9 +820,14 @@ namespace GameA.Game
             }
         }
 
-        public void ChangeFire2State(EFire2State eFire2State)
+        public void ChangeLittleSkillState(ELittleSkillState eLittleSkillState)
         {
-            _fire2State = eFire2State;
+            if (_littleSkillState == eLittleSkillState)
+            {
+                return;
+            }
+            _littleSkillState = eLittleSkillState;
+            Messenger<ELittleSkillState>.Broadcast(EMessengerType.OnLittleSkillChanged, _littleSkillState);
         }
 
         private bool IsCharacterAbilityAvailable(ECharacterAbility eCharacterAbility)
@@ -823,7 +836,7 @@ namespace GameA.Game
         }
     }
 
-    public enum EFire2State
+    public enum ELittleSkillState
     {
         Quicken,
         HoldBox
