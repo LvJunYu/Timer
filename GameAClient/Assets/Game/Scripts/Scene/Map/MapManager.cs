@@ -255,8 +255,7 @@ namespace GameA.Game
                 if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
                 {
 					EditMode.Instance.MapStatistics.InitWithMapData(mapData);
-                    CameraManager.Instance.SetFinalOrthoSize((float)_defaultMapSize.y / 2);
-                    InitEditorCameraStartPos();
+                    InitEditorCameraStartParam();
 				}
             }
 			GenerateMap(mapData.BgRandomSeed);
@@ -315,10 +314,11 @@ namespace GameA.Game
 			_generateMapComplete = true;
 		}
 
-		private void InitEditorCameraStartPos()
+		private void InitEditorCameraStartParam()
 		{
 			Rect cameraViewRect = CameraManager.Instance.CurCameraViewRect;
-			Rect vaildMapRect = GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect);
+            Rect vaildMapRect = GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect);
+            CameraManager.Instance.SetFinalOrthoSize((float)vaildMapRect.height / 2);
 			Vector3 pos = Vector3.zero;
 			pos.x = vaildMapRect.xMin + cameraViewRect.width/2;
 			pos.y = vaildMapRect.yMin + cameraViewRect.height/2;
