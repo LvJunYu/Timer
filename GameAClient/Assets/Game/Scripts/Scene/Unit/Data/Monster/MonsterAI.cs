@@ -165,10 +165,17 @@ namespace GameA.Game
 
         protected void OnAttack()
         {
-            IntVec2 rel = CenterPos - PlayMode.Instance.MainUnit.CenterPos;
-            if (Mathf.Abs(rel.x) > _attackRange.x || Mathf.Abs(rel.y) > _attackRange.y)
+            if (_path.Count == 0)
             {
-                ChangeState(EMonsterState.Seek);
+                ChangeState(EMonsterState.Think);
+            }
+            else
+            {
+                IntVec2 rel = CenterPos - PlayMode.Instance.MainUnit.CenterPos;
+                if (Mathf.Abs(rel.x) > _attackRange.x || Mathf.Abs(rel.y) > _attackRange.y)
+                {
+                    ChangeState(EMonsterState.Seek);
+                }
             }
         }
 
