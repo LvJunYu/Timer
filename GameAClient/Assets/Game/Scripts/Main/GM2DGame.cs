@@ -174,7 +174,7 @@ namespace GameA.Game
         {
             _gameMode.Stop();
             StopAllCoroutines();
-            LocaleManager.Instance.ExitGame();
+//            LocaleManager.Instance.ExitGame();
             return true;
         }
 
@@ -219,7 +219,7 @@ namespace GameA.Game
             {
                 yield return new WaitForSeconds(0.1f);
             }
-            LocaleManager.Instance.EnterGame();
+//            LocaleManager.Instance.EnterGame();
             yield return GameRun.Instance.Init(_eGameInitType, _project);
             _gameMode.InitByStep();
             CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(()=>{

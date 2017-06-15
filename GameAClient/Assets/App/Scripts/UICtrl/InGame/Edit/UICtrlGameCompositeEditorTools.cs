@@ -92,7 +92,7 @@ namespace GameA.Game
 		{
 			if (!EditMode.Instance.CompositeModule.HasSelectSomething)
 			{
-				Messenger<string>.Broadcast(EMessengerType.GameErrorLog,LocaleManager.GameLocale("ui_error_enter_move_mode_select_none"));
+//				Messenger<string>.Broadcast(EMessengerType.GameErrorLog,LocaleManager.GameLocale("ui_error_enter_move_mode_select_none"));
 				return;
 			}
 			EditMode.Instance.CompositeModule.EnterMoveMode();
