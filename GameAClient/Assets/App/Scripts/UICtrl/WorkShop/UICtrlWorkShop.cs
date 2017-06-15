@@ -24,7 +24,6 @@ namespace GameA
         /// 当前的状态
         /// </summary>
         private EWorkShopState _state = EWorkShopState.None;
-        private int _personalProjectCount;
 
         private CardDataRendererWrapper<Project> _curSelectedPrivateProject;
         private List<CardDataRendererWrapper<Project>> _privateContents = new List<CardDataRendererWrapper<Project>>();
@@ -50,7 +49,6 @@ namespace GameA
         #region 方法
         protected override void OnOpen (object parameter)
         {
-            _personalProjectCount = 0;
             base.OnOpen (parameter);
             SetMode(EWorkShopState.Edit);
             LocalUser.Instance.PersonalProjectList.Request (0, 
