@@ -171,14 +171,20 @@ namespace GameA
             //var raffleUnit =TableManager.Instance.Table_RewardDic[(int)currentRewardId];
             switch (rewardItem.Type)
             {
-                //          RT_None = 0,
-                //RT_Gold = 1,
-                //RT_Diamond = 2,
-                //RT_PlayerExp = 3,
-                //RT_CreatorExp = 4,
-                //RT_FashionCoupon = 5,
-                //RT_RaffleTicket = 6
-                //ERewardType
+              
+        //public enum ERewardType
+        //{
+        //    RT_None = 0,
+        //    RT_Gold = 1,
+        //    RT_Diamond = 2,
+        //    RT_PlayerExp = 3,
+        //    RT_CreatorExp = 4,
+        //    RT_FashionCoupon = 5,
+        //    RT_RaffleTicket = 6,
+        //    RT_BoostItem = 7,
+        //    RT_RandomReformUnit = 8   ,
+        //    RT_ReformUnit = 9
+        //}
                 case 0:
                     break;
                 case 1:
@@ -196,7 +202,7 @@ namespace GameA
                 case 5:
                     break;
                 case 6:
-                    AddTicketsInRaffleDictionary(rewardItem.SubType, (int) rewardItem.Count);
+                    AddTicketsInRaffleDictionary((int)rewardItem.Id, (int) rewardItem.Count);
                     LocalUser.Instance.RaffleTicket.Request(LocalUser.Instance.UserGuid, () => {
                         SocialGUIManager.Instance.GetUI<UICtrlLottery>().RefreshRaffleCount();
 
@@ -208,6 +214,9 @@ namespace GameA
                     MatchUnitData();
                     break;
                 case 8:
+                    MatchUnitData();
+                    break;
+                case 9:
                     MatchUnitData();
                     break;
             }
