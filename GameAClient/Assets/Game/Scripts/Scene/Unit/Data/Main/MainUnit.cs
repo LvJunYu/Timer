@@ -1574,7 +1574,7 @@ namespace GameA.Game
             //晕2秒
             _attackedTimer = 100;
             Speed = IntVec2.zero;
-            ExtraSpeed.y = 150;
+            ExtraSpeed.y = 120;
             ExtraSpeed.x = actor.CenterPos.x > CenterPos.x ? -100 : 100;
             _mainInput.ClearInput();
         }
@@ -1583,8 +1583,8 @@ namespace GameA.Game
         {
             _attackedTimer = 100;
             Speed = IntVec2.zero;
-            ExtraSpeed.y = 180;
-            ExtraSpeed.x = actor.CenterPos.x > CenterPos.x ? -120 : 120;
+            ExtraSpeed.y = 280;
+            ExtraSpeed.x = actor.CenterPos.x > CenterPos.x ? -80 : 80;
             _mainInput.ClearInput();
         }
 

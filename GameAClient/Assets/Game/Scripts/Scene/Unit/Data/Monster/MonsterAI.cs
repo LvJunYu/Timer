@@ -150,7 +150,14 @@ namespace GameA.Game
             else
             {
                 _currentNodeId = -1;
-                ChangeState(EMonsterState.Think);
+                if (IsInAttackRange())
+                {
+                    ChangeState(EMonsterState.Attack);
+                }
+                else
+                {
+                    ChangeState(EMonsterState.Think);
+                }
             }
         }
 
