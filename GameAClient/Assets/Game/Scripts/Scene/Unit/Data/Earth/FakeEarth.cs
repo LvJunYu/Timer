@@ -89,10 +89,15 @@ namespace GameA.Game
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();
-            if (_editSequence != null)
+            if (_editSequence != null && _spriteRenderer != null)
             {
+                _spriteRenderer.DORewind();
+                _spriteRenderer.DOPause();
+                DOTween.Kill(_spriteRenderer);
                 _editSequence.Rewind();
-                DOTween.Kill(_trans);
+                _editSequence.Pause();
+                _editSequence.Kill();
+                DOTween.Kill(_editSequence);
                 _editSequence = null;
             }
         }

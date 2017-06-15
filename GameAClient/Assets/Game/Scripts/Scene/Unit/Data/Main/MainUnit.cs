@@ -1500,7 +1500,7 @@ namespace GameA.Game
             }
             else if (speed <= 94)
             {
-                return "Run1";
+                return "Run2";
             }
             else
             {
