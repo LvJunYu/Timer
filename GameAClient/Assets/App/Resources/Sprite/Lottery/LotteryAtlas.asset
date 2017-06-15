@@ -12,10 +12,6 @@ MonoBehaviour:
   m_Name: LotteryAtlas
   m_EditorClassIdentifier: 
   CachedSprites:
-  - {fileID: 21300000, guid: 14485164961101e4fa5a1750e6dc5633, type: 3}
-  - {fileID: 21300000, guid: 2937b04de54cd664e87de90f51ee40d2, type: 3}
-  - {fileID: 21300000, guid: 39fcba7cb81cb5d45b1f694e5f92b7ea, type: 3}
-  - {fileID: 21300000, guid: a3648a0e2f66c2d4e878bb263510cf93, type: 3}
   - {fileID: 21300000, guid: 8a780e7b2bf31af43a6de63087c336e3, type: 3}
   - {fileID: 21300000, guid: 41f6fe01373e6fd4e85501d3612c3ebb, type: 3}
   - {fileID: 21300000, guid: 5e00d8ed0e8ba9e4ab6220ac3fed14ce, type: 3}
