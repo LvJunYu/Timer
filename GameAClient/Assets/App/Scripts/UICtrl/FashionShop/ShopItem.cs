@@ -50,9 +50,11 @@ public class    ShopItem
 	    //Debug.Log("headParts id"+ headParts.Id);
 	    //Debug.Log("headParts name"+ headParts.Name);
 	    this._avatarType = EAvatarPart.AP_Head;
-        if(headParts.Id!=null)
-        this.Id = headParts.Id;
-        this.Name = headParts.Name;
+	    if (headParts.Id != null)
+	    {
+	        this.Id = headParts.Id;
+	    }
+	    this.Name = headParts.Name;
 		this.Description = headParts.Description;
 		this.Sex = headParts.Sex;
 		this.Character = headParts.Character;

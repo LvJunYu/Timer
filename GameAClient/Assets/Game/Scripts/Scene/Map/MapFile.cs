@@ -268,7 +268,6 @@ namespace GameA.Game
             gm2DMapData.WinCondition = mapEditor.MapStatistics.WinCondition;
             gm2DMapData.TimeLimit = mapEditor.MapStatistics.TimeLimit;
             gm2DMapData.LifeCount = mapEditor.MapStatistics.LifeCount;
-            gm2DMapData.CameraOrthoSize = CameraManager.Instance.FinalOrthoSize;
             gm2DMapData.FinishCount = mapEditor.MapStatistics.LevelFinishCount;
 		    gm2DMapData.BgRandomSeed = BgScene2D.Instance.CurSeed;
             return GameMapDataSerializer.Instance.Serialize(gm2DMapData);

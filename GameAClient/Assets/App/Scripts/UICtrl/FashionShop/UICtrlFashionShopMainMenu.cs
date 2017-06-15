@@ -603,58 +603,80 @@ namespace GameA
         {
             if (LocalUser.Instance.User.UserInfoSimple.Sex == ESex.S_Male)
             {
-                SetFashionPage(1);
+                SetFashionPage((int)ESex.S_Male);
             }
             else if (LocalUser.Instance.User.UserInfoSimple.Sex == ESex.S_Female)
             {
-                SetFashionPage(2);
+                SetFashionPage((int)ESex.S_Male);
             }
             else
             {
                 SetFashionPage();
             }
         }
-        public void SetFashionPage(int sex)
-        {
-            var dict = new Dictionary<int, List<ShopItem>>(); //建立字典 键是分页 值为每个分页的itemlist
-            List<ShopItem> list = null;
 
-            for (int i = 1; i <= TableManager.Instance.Table_FashionShopDic.Count; i++)//便利tablemanager
-            {
-                if (TableManager.Instance.Table_FashionShopDic[i].Sex == sex)
-                {
-                    var item = TableManager.Instance.Table_FashionShopDic[i]; //拿到tablemanager每一列
-                    ShopItem shopitem = null;//建立shopitem
-                    switch ((EAvatarPart)item.Type)
-                    {
-                        case EAvatarPart.AP_Appendage: //根据序号找到对应的item
-                            shopitem = new ShopItem(TableManager.Instance.GetAppendageParts(item.ItemIdx));
-                            break;
-                        case EAvatarPart.AP_Head:
-                            shopitem = new ShopItem(TableManager.Instance.GetHeadParts(item.ItemIdx));
-                            break;
-                        case EAvatarPart.AP_Lower:
-                            shopitem = new ShopItem(TableManager.Instance.GetLowerBodyParts(item.ItemIdx));
-                            break;
-                        case EAvatarPart.AP_Upper:
-                            shopitem = new ShopItem(TableManager.Instance.GetUpperBodyParts(item.ItemIdx));
-                            break;
-                    }
+	    public void SetFashionPage(int sex)
+	    {
+	        var dict = new Dictionary<int, List<ShopItem>>(); //建立字典 键是分页 值为每个分页的itemlist
+	        List<ShopItem> list = null;
 
-                    if (!dict.TryGetValue(item.PageIdx, out list))
-                    {                                     //没拿到
-                        list = new List<ShopItem>();    //建立list
-                        dict.Add(item.PageIdx, list);   //放入字典 key：list value：list
-                    }
-                    list.Add(shopitem);//放入shopitem
-                }
-            }
-            _usctrlFashionPage2.Set(dict[2]);
-            _usctrlFashionPage1.Set(dict[1]);
-            _usctrlFashionPage3.Set(dict[3]);
-            _usctrlFashionPage4.Set(dict[4]);
+	        foreach (var itemKV in TableManager.Instance.Table_FashionShopDic)
+	        {
+	            var item = itemKV.Value;
+	            if (item.Sex != sex)
+	            {
+	                continue;
+	            }
+	            ShopItem shopitem = null; //建立shopitem
+	            switch ((EAvatarPart) item.Type)
+	            {
+	                case EAvatarPart.AP_Appendage: //根据序号找到对应的item
+	                    if (TableManager.Instance.GetAppendageParts(item.ItemIdx) == null)
+	                    {
+	                        LogHelper.Error("Network error when setFashionPage, {0}", item.Type);
+	                        continue;
+	                    }
+	                    shopitem = new ShopItem(TableManager.Instance.GetAppendageParts(item.ItemIdx));
+	                    break;
+	                case EAvatarPart.AP_Head:
+	                    if (TableManager.Instance.GetAppendageParts(item.ItemIdx) == null)
+	                    {
+	                        LogHelper.Error("Network error when setFashionPage, {0}", item.Type);
+	                        continue;
+	                    }
+	                    shopitem = new ShopItem(TableManager.Instance.GetHeadParts(item.ItemIdx));
+	                    break;
+	                case EAvatarPart.AP_Lower:
+	                    if (TableManager.Instance.GetAppendageParts(item.ItemIdx) == null)
+	                    {
+	                        LogHelper.Error("Network error when setFashionPage, {0}", item.Type);
+	                        continue;
+	                    }
+	                    shopitem = new ShopItem(TableManager.Instance.GetLowerBodyParts(item.ItemIdx));
+	                    break;
+	                case EAvatarPart.AP_Upper:
+	                    if (TableManager.Instance.GetAppendageParts(item.ItemIdx) == null)
+	                    {
+	                        LogHelper.Error("Network error when setFashionPage, {0}", item.Type);
+	                        continue;
+	                    }
+	                    shopitem = new ShopItem(TableManager.Instance.GetUpperBodyParts(item.ItemIdx));
+	                    break;
+	            }
 
-        }
+	            if (!dict.TryGetValue(item.PageIdx, out list))
+	            {
+	                //没拿到
+	                list = new List<ShopItem>(); //建立list
+	                dict.Add(item.PageIdx, list); //放入字典 key：list value：list
+	            }
+	            list.Add(shopitem); //放入shopitem
+	        }
+	        _usctrlFashionPage2.Set(dict[2]);
+	        _usctrlFashionPage1.Set(dict[1]);
+	        _usctrlFashionPage3.Set(dict[3]);
+	        _usctrlFashionPage4.Set(dict[4]);
+	    }
 
         private void SetFashionPage()
         {
@@ -669,16 +691,36 @@ namespace GameA
                     switch ((EAvatarPart)item.Type)
                     {
                         case EAvatarPart.AP_Appendage: //根据序号找到对应的item
-                            shopitem = new ShopItem(TableManager.Instance.GetAppendageParts(item.ItemIdx));
+                        if (TableManager.Instance.GetAppendageParts(item.ItemIdx) == null)
+                        {
+                            LogHelper.Error("Network error when setFashionPage, {0}", item.Type);
+                            continue;
+                        }
+                        shopitem = new ShopItem(TableManager.Instance.GetAppendageParts(item.ItemIdx));
                             break;
                         case EAvatarPart.AP_Head:
-                            shopitem = new ShopItem(TableManager.Instance.GetHeadParts(item.ItemIdx));
+                        if (TableManager.Instance.GetAppendageParts(item.ItemIdx) == null)
+                        {
+                            LogHelper.Error("Network error when setFashionPage, {0}", item.Type);
+                            continue;
+                        }
+                        shopitem = new ShopItem(TableManager.Instance.GetHeadParts(item.ItemIdx));
                             break;
                         case EAvatarPart.AP_Lower:
-                            shopitem = new ShopItem(TableManager.Instance.GetLowerBodyParts(item.ItemIdx));
+                        if (TableManager.Instance.GetAppendageParts(item.ItemIdx) == null)
+                        {
+                            LogHelper.Error("Network error when setFashionPage, {0}", item.Type);
+                            continue;
+                        }
+                        shopitem = new ShopItem(TableManager.Instance.GetLowerBodyParts(item.ItemIdx));
                             break;
                         case EAvatarPart.AP_Upper:
-                            shopitem = new ShopItem(TableManager.Instance.GetUpperBodyParts(item.ItemIdx));
+                        if (TableManager.Instance.GetAppendageParts(item.ItemIdx) == null)
+                        {
+                            LogHelper.Error("Network error when setFashionPage, {0}", item.Type);
+                            continue;
+                        }
+                        shopitem = new ShopItem(TableManager.Instance.GetUpperBodyParts(item.ItemIdx));
                             break;
                     }
 
