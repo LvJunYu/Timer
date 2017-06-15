@@ -1484,8 +1484,8 @@ namespace GameA.Game
         {
             if (IsHoldingBox())
             {
-                if ((_box.DirectionRelativeMain == EDirectionType.Right &&  _speed.x > 0)
-                    || _box.DirectionRelativeMain == EDirectionType.Left && _speed.x < 0)
+                if ((_box.DirectionRelativeMain == EDirectionType.Right &&  _mainInput.RightInput > 0)
+                    || _box.DirectionRelativeMain == EDirectionType.Left && _mainInput.LeftInput > 0)
                 {
                     return "Push";
                 }
