@@ -30,6 +30,9 @@ namespace J3Tech
 
         private static UnityVersion _customVersion;
 
+        private static string _apkPath;
+        private static bool _preBuild;
+
         [MenuItem("Tools/J3Tech/CodeEncipher-Android")]
         static void OpenWindow()
         {
@@ -176,7 +179,9 @@ namespace J3Tech
                         _projPath = Application.dataPath;
                         _projPath = _projPath.Remove(_projPath.Length - 6, 6);
                     }
-                    Build(appPath,true);
+                    _apkPath = appPath;
+                    _preBuild = true;
+                    EditorApplication.delayCall += Build;
                 }
             }
             GUILayout.Space(5);
@@ -195,7 +200,9 @@ namespace J3Tech
                 string appPath = EditorUtility.OpenFilePanel("Please select an apk file to encrypt", _projPath, "apk");
                 if (!string.IsNullOrEmpty(appPath))
                 {
-                    Build(appPath, false);
+                    _apkPath = appPath;
+                    _preBuild = false;
+                    EditorApplication.delayCall += Build;
                 }
             }
 
@@ -209,6 +216,11 @@ namespace J3Tech
         private static void Build(string apkPath, bool prebuild)
         {
             Build(apkPath, prebuild, PlayerSettings.Android.keystorePass, PlayerSettings.Android.keyaliasPass);
+        }
+
+        private static void Build()
+        {
+            Build(_apkPath, _preBuild, PlayerSettings.Android.keystorePass, PlayerSettings.Android.keyaliasPass);
         }
 
         private static void Build(string apkPath, bool prebuild, string keystorePass, string keyaliasPass)
@@ -400,8 +412,26 @@ namespace J3Tech
                     if (!String.IsNullOrEmpty(zipAlignPath) && File.Exists(zipAlignPath))
                     {
                         FileUtil.DeleteFileOrDirectory(_projPath + @"Temp/StagingArea/Package.apk");
+
+#if UNITY_5_4_OR_NEWER                        
+
+                        Type postProcessorContextType = asm.GetType("UnityEditor.Android.PostProcessor.PostProcessorContext");
+                        System.Object postProcessorContextInstance = Activator.CreateInstance(postProcessorContextType, true);
+                        MethodInfo setMethod = postProcessorContextType.GetMethod("Set", BindingFlags.Public | BindingFlags.Instance);
+                        MethodInfo setGeneric = setMethod.MakeGenericMethod(androidSdkToolsType);
+                        setGeneric.Invoke(postProcessorContextInstance, new object[] { "SDKTools", androidSdkToolsInstance });
+                        Type buildApkType = asm.GetType("UnityEditor.Android.PostProcessor.Tasks.BuildAPK");
+                        System.Object buildApkInstance = Activator.CreateInstance(buildApkType, true);
+
+                        FieldInfo stagingArea = buildApkType.GetField("_stagingArea", BindingFlags.NonPublic | BindingFlags.Instance);
+                        stagingArea.SetValue(buildApkInstance, _projPath + @"Temp/StagingArea");
+                        
+                        MethodInfo alignPackageMethod = buildApkType.GetMethod("AlignPackage", BindingFlags.NonPublic | BindingFlags.Instance);
+                        alignPackageMethod.Invoke(buildApkInstance, new object[] { postProcessorContextInstance });                        
+#else
                         alignPackage.Invoke(postProcessAndroidPlayerInstance,
                             new object[] {_projPath + @"Temp/StagingArea"});
+#endif
                     }
                     else
                     {
