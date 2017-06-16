@@ -19,6 +19,8 @@ namespace GameA.Game
         {
             base.Clear();
             _canLazerCross = false;
+            _canMagicCross = false;
+            _canBridgeCross = false;
             //if (_opened)
             {
                 if (_view != null)
@@ -82,6 +84,8 @@ namespace GameA.Game
                         if (_view != null)
                         {
                             _canLazerCross = true;
+                            _canMagicCross = true;
+                            _canBridgeCross = true;
                             _view.ChangeView(_tableUnit.Model + "_1");
                             SetSortingOrderBack();
                             UpdateTransPos();

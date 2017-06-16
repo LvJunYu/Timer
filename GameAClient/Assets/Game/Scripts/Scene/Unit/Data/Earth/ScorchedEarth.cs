@@ -39,6 +39,8 @@ namespace GameA.Game
                 _view.SetRendererEnabled(true);
             }
             _canLazerCross = false;
+            _canMagicCross = false;
+            _canBridgeCross = false;
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
@@ -115,6 +117,8 @@ namespace GameA.Game
                     //开始爆炸
                     _state = 2;
                     _canLazerCross = true;
+                    _canMagicCross = true;
+                    _canBridgeCross = true;
                     if (_view != null)
                     {
                         _view.SetRendererEnabled(false);
@@ -141,6 +145,8 @@ namespace GameA.Game
                     //复原
                     _state = 0;
                     _canLazerCross = false;
+                    _canMagicCross = false;
+                    _canBridgeCross = false;
                     if (UseMagic())
                     {
                         _run = true;

@@ -92,11 +92,6 @@ namespace GameA.Game
                    (node.Rotation + rotation == 2 || node.Rotation + rotation == 4);
         }
 
-        public static bool IsMagciBlock(int id)
-        {
-            return id != SwitchTriggerId && !IsPlant(id) && !IsBoard(id) && !IsCollection(id);
-        }
-
         public static bool IsLaserBlock(SceneNode node)
         {
             ushort id = node.Id;
