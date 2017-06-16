@@ -327,7 +327,12 @@ namespace GameA
                 msg => {
                     if ((int)EGetReformRewardCode.GRRC_Success == msg.ResultCode) {
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                        SocialGUIManager.ShowReward (new Reward (msg.Reward));
+                        var reward = new Reward (msg.Reward);
+                        for (int i = 0; i < reward.ItemList.Count; i++)
+                        {
+                            reward.ItemList[i].AddToLocal();
+                        }
+                        SocialGUIManager.ShowReward (reward);
                         LocalUser.Instance.MatchUserData.PlayCountForReward = 0;
                         RefreshPublishedProject ();
 

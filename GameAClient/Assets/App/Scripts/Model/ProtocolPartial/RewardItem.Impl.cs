@@ -18,8 +18,8 @@ namespace GameA
 
         private const string _goldSprite = "icon_gold_240";
         private const string _diamondSprite = "icon_diam_240";
-        private const string _playerExpSprite = "icon_one_240";
-        private const string _creatorExpSprite = "icon_one_240";
+        private const string _playerExpSprite = "icon_exp_240";
+        private const string _creatorExpSprite = "icon_exp_240";
         private const string _fashionCouponSprite = "icon_one_240";
         private const string _raffleTicketSprite1 = "icon_one_240";
         private const string _raffleTicketSprite2 = "icon_two_240";
