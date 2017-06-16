@@ -80,88 +80,88 @@ namespace GameA
 		public void LoadUsingData(Action successAction,
                               Action<ENetResultCode> failedAction)
         {
-            LoadData(EUsingState.US_Using, EExpirationState.ES_Unexpired, ret =>
-            {
-                _avatarPartUsingDict.Clear();
-                for (int i = 0; i < ret.ItemDataList.Count; i++)
-                {
-                    Msg_AvatarPartItem msgItem = ret.ItemDataList[i];
-                    Item item = new Item((EAvatarPart)msgItem.Type, msgItem.Id);
-                    if (!_avatarPartUsingDict.ContainsKey(item.AvatarPartType))
-                    {
-                        _avatarPartUsingDict.Add(item.AvatarPartType, item);
-                    }
-                    else
-                    {
-                        LogHelper.Error("Using type duplication");
-                    }
-					Dictionary<long, Item> targetDic;
-					if (_avatarPartDic.TryGetValue(item.AvatarPartType, out targetDic)) {
-						targetDic[item.Id] = item;
-					} else {
-						LogHelper.Error("Unrecognized avatar type when loadUsingData {0}", item);
-					}
-                }
-					_inited = true;
-                if (successAction != null)
-                {
-                    successAction.Invoke();
-                }
-            }, failedAction);
+//            LoadData(EUsingState.US_Using, EExpirationState.ES_Unexpired, ret =>
+//            {
+//                _avatarPartUsingDict.Clear();
+//                for (int i = 0; i < ret.ItemDataList.Count; i++)
+//                {
+//                    Msg_AvatarPartItem msgItem = ret.ItemDataList[i];
+//                    Item item = new Item((EAvatarPart)msgItem.Type, msgItem.Id);
+//                    if (!_avatarPartUsingDict.ContainsKey(item.AvatarPartType))
+//                    {
+//                        _avatarPartUsingDict.Add(item.AvatarPartType, item);
+//                    }
+//                    else
+//                    {
+//                        LogHelper.Error("Using type duplication");
+//                    }
+//					Dictionary<long, Item> targetDic;
+//					if (_avatarPartDic.TryGetValue(item.AvatarPartType, out targetDic)) {
+//						targetDic[item.Id] = item;
+//					} else {
+//						LogHelper.Error("Unrecognized avatar type when loadUsingData {0}", item);
+//					}
+//                }
+//					_inited = true;
+//                if (successAction != null)
+//                {
+//                    successAction.Invoke();
+//                }
+//            }, failedAction);
         }
 
 		public void LoadUnexpiredData(Action successAction,
                               Action<ENetResultCode> failedAction)
         {
-            LoadData(EUsingState.US_All, EExpirationState.ES_Unexpired, ret =>
-            {
-				_avatarPartUsingDict.Clear();
-				_avatarPartDic[EAvatarPart.AP_Head].Clear();
-				_avatarPartDic[EAvatarPart.AP_Upper].Clear();
-				_avatarPartDic[EAvatarPart.AP_Lower].Clear();
-				_avatarPartDic[EAvatarPart.AP_Appendage].Clear();
-                for (int i = 0; i < ret.ItemDataList.Count; i++)
-                {
-                    Msg_AvatarPartItem msgItem = ret.ItemDataList[i];
-                    Item item = new Item((EAvatarPart)msgItem.Type, msgItem.Id);
-					Dictionary<long, Item> targetDic;
-					if (_avatarPartDic.TryGetValue(item.AvatarPartType, out targetDic)) {
-						targetDic[item.Id] = item;
-					} else {
-						LogHelper.Error("Unrecognized avatar type when LoadUnexpiredData {0}", item);
-					}
-					if (item.Using) {
-						_avatarPartUsingDict[item.AvatarPartType] = item;
-					}
-                }
-					_inited = true;
-                if (successAction != null)
-                {
-                    successAction.Invoke();
-                }
-            }, failedAction);
+//            LoadData(EUsingState.US_All, EExpirationState.ES_Unexpired, ret =>
+//            {
+//				_avatarPartUsingDict.Clear();
+//				_avatarPartDic[EAvatarPart.AP_Head].Clear();
+//				_avatarPartDic[EAvatarPart.AP_Upper].Clear();
+//				_avatarPartDic[EAvatarPart.AP_Lower].Clear();
+//				_avatarPartDic[EAvatarPart.AP_Appendage].Clear();
+//                for (int i = 0; i < ret.ItemDataList.Count; i++)
+//                {
+//                    Msg_AvatarPartItem msgItem = ret.ItemDataList[i];
+//                    Item item = new Item((EAvatarPart)msgItem.Type, msgItem.Id);
+//					Dictionary<long, Item> targetDic;
+//					if (_avatarPartDic.TryGetValue(item.AvatarPartType, out targetDic)) {
+//						targetDic[item.Id] = item;
+//					} else {
+//						LogHelper.Error("Unrecognized avatar type when LoadUnexpiredData {0}", item);
+//					}
+//					if (item.Using) {
+//						_avatarPartUsingDict[item.AvatarPartType] = item;
+//					}
+//                }
+//					_inited = true;
+//                if (successAction != null)
+//                {
+//                    successAction.Invoke();
+//                }
+//            }, failedAction);
         }
 
-        private void LoadData(EUsingState usingState,
-                              EExpirationState expirationState,
-                              Action<Msg_SC_DAT_AvatarPart> successAction,
-                              Action<ENetResultCode> failedAction)
-        {
-            Msg_CS_DAT_AvatarPart msg = new Msg_CS_DAT_AvatarPart();
-            msg.UserId = _userId;
-            msg.UsingState = usingState;
-            msg.ExpirationState = expirationState;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AvatarPart>(
-				SoyHttpApiPath.AvatarPart,
-                msg,
-                successAction,
-                (errCode, errMsg) => {
-                    if (failedAction != null)
-                    {
-                        failedAction.Invoke(errCode);
-                }
-            });
-        }
+//        private void LoadData(EUsingState usingState,
+//                              EExpirationState expirationState,
+//                              Action<Msg_SC_DAT_AvatarPart> successAction,
+//                              Action<ENetResultCode> failedAction)
+//        {
+//            Msg_CS_DAT_AvatarPart msg = new Msg_CS_DAT_AvatarPart();
+//            msg.UserId = _userId;
+//            msg.UsingState = usingState;
+//            msg.ExpirationState = expirationState;
+//            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_AvatarPart>(
+//				SoyHttpApiPath.AvatarPart,
+//                msg,
+//                successAction,
+//                (errCode, errMsg) => {
+//                    if (failedAction != null)
+//                    {
+//                        failedAction.Invoke(errCode);
+//                }
+//            });
+//        }
 
 		public void SendChangeAvatarPart (EAvatarPart type, long newId,
 			Action successAction,

@@ -11,7 +11,6 @@ using SoyEngine.Proto;
 using SoyEngine;
 using UnityEngine;
 using System;
-using SoyEngine;
 
 namespace GameA
 {
@@ -26,6 +25,7 @@ namespace GameA
 //        private string _imageUrlRoot;
 //        private string _newestAppVersion;
         private AdventureData _adventureData;
+        private WorldData _worldData;
 
 		private static AppData _instance = new AppData();
 
@@ -72,14 +72,19 @@ namespace GameA
             get { return _adventureData; }
         }
 
+        public WorldData WorldData
+        {
+            get { return this._worldData; }
+        }
+
         #endregion property
 
         #region methond
-//		public AppData() { }
 
         public void Init()
         {
             _adventureData = new AdventureData();
+            _worldData = new WorldData();
             Messenger.AddListener(SoyEngine.EMessengerType.OnNetworkReachableStateChange, OnNetworkReachableStateChange);
             Messenger.AddListener(SoyEngine.EMessengerType.OnAccountLoginStateChanged, OnAccountLoginStateChanged);
         }

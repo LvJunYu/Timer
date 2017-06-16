@@ -7,7 +7,6 @@
 
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -50,8 +49,13 @@ namespace GameA.Game
                 mapRect2D.Scale==null ? 1 : mapRect2D.Scale.Y);
             return new NodeData((ushort) mapRect2D.Id,
                 new Grid2D(mapRect2D.XMin, mapRect2D.YMin, mapRect2D.XMax, mapRect2D.YMax),
-                UnitManager.Instance.GetDepth(tableUnit),
+                UnitManager.GetDepth(tableUnit),
                 (byte)mapRect2D.Rotation, scale);
+        }
+
+        public static SceneNode GetBgNode(ushort id, Grid2D grid, int depth, Vector2 scale)
+        {
+            return SoyEngine.NodeFactory.GetColliderNode(true, id, grid, depth,0, scale, 0);
         }
     }
 }

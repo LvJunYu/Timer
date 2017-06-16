@@ -11,7 +11,7 @@ using System.Collections;
 namespace GameA.Game
 {
     [Unit(Id = 4014, Type = typeof(Lodestone))]
-    public class Lodestone : Earth
+    public class Lodestone : BlockBase
     {
     }
 }

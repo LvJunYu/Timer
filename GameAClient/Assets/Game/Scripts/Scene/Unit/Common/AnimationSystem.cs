@@ -24,42 +24,54 @@ namespace GameA.Game
         private readonly Dictionary<string, Animation> _animations = new Dictionary<string, Animation>();
 		// 默认动作，初始状态时播放
         private string _initAniName;
+        private bool _initAniLoop;
 		/// <summary>
 		/// 动画事件回调
 		/// </summary>
 		private Dictionary<string, Action> _eventHandles = new Dictionary<string, Action> ();
 
-        public bool Init(UnitBase unit)
+        public AnimationSystem(SkeletonAnimation skeletonAnimation)
         {
-            if (unit.Trans == null)
-            {
-                return false;
-            }
-            _skeletonAnimation = unit.Trans.GetComponent<SkeletonAnimation>();
-            if (_skeletonAnimation == null)
-            {
-                LogHelper.Error("SkeletonAnimation is null, {0}", unit);
-                return false;
-            }
+            _skeletonAnimation = skeletonAnimation;
+        }
+
+        public void Set()
+        {
             Animation[] animations = _skeletonAnimation.state.Data.skeletonData.animations.Items;
             for (int i = 0; i < animations.Length; i++)
             {
                 _animations.Add(animations[i].Name, animations[i]);
             }
-			_eventHandles.Clear ();
-            return true;
+            _skeletonAnimation.state.Event += OnEvent;
         }
 
-        public bool Init(UnitBase unit, string aniName)
+        internal void OnFree()
         {
-            if (!Init(unit))
+            _animations.Clear();
+            _eventHandles.Clear();
+            _initAniName = null;
+            _initAniLoop = false;
+            for (int i = 0; i < _currentAnimation.Length; i++)
             {
-                return false;
+                _currentAnimation[i] = null;
             }
-            _initAniName = aniName;
-            PlayLoop(_initAniName);
-			_skeletonAnimation.state.Event += OnEvent;
-            return true;
+        }
+
+        public void Init(string aniName, bool loop = true)
+        {
+            _initAniLoop = loop;
+            if (!string.IsNullOrEmpty(aniName))
+            {
+                _initAniName = aniName;
+                if (_initAniLoop)
+                {
+                    PlayLoop(_initAniName);
+                }
+                else
+                {
+                    PlayOnce(_initAniName);
+                }
+            }
         }
 
         private TrackEntry SetAnimation(string aniName, int trackIndex = 0, float timeScale = 1, bool loop = false)
@@ -154,7 +166,14 @@ namespace GameA.Game
             }
             if (_initAniName != null)
             {
-                PlayLoop(_initAniName);
+                if (_initAniLoop)
+                {
+                    PlayLoop(_initAniName);
+                }
+                else
+                {
+                    PlayOnce(_initAniName);
+                }
             }
         }
 
@@ -173,13 +192,16 @@ namespace GameA.Game
 		/// <returns><c>true</c>, if event handle was added, <c>false</c> otherwise.</returns>
 		/// <param name="eventName">Event name.</param>
 		/// <param name="handle">Handle.</param>
-		public bool AddEventHandle (string eventName, Action handle) {
-			if (_eventHandles.ContainsKey (eventName)) {
-				LogHelper.Warning ("Already contains event name {0} when add animation event on {1}", eventName, _skeletonAnimation.name);
-				return false;
-			}
-			_eventHandles [eventName] = handle;
-			return true;
+		public bool AddEventHandle(string eventName, Action handle)
+		{
+		    if (_eventHandles.ContainsKey(eventName))
+		    {
+		        LogHelper.Warning("Already contains event name {0} when add animation event on {1}", eventName,
+		            _skeletonAnimation.name);
+		        return false;
+		    }
+		    _eventHandles[eventName] = handle;
+		    return true;
 		}
     }
 }

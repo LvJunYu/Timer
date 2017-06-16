@@ -46,12 +46,17 @@ namespace GameA.Game
         public const string Jump = "M1EffectJumpStart";
         public const string Land = "M1EffectLand";
         public const string Run = "M1EffectEarthWalk";
-		public const int MudId = 4011;
 		public const string RunOnMud = "M1EffectClayWalk";
         public const string Brake = "M1EffectBrake";
         public const string WallJump = "M1EffectWallJump";
 		public const string WallClimb = "M1EffectWallClimb";
+        public const string Shooter = "M1EffectShooter";
 
         public const string Invincible = "M1OrbitBuff";
+
+        public const string RedMask = "RedMaskEffect";
+        public const string YellowMask = "YellowMaskEffect";
+        public const string HereItIs = "HereItIsEffect";
+        public const string ConnectLine = "SwitchConnectionEffect";
     }
 }

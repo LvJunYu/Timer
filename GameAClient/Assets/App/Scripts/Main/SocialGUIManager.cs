@@ -18,10 +18,10 @@ namespace GameA
         None = -1,
         Background,
 
-		/// <summary>
-		///     主体ui架子
-		/// </summary>
-		MainFrame,
+        /// <summary>
+        ///     主体ui架子
+        /// </summary>
+        MainFrame,
         /// <summary>
         ///     主体ui
         /// </summary>
@@ -32,19 +32,32 @@ namespace GameA
         ///     主体Ui打开后弹出的二级三级界面 持续向上叠加
         /// </summary>
         PopUpUI,
+        PopUpUI2,
+        /// <summary>
+        /// 在所有主界面和一般弹出界面之上的界面
+        /// </summary>
+        FrontUI,
         /// <summary>
         /// 游戏内UI
         /// </summary>
-        InGame,
+        InGameStart,
 
-		/// <summary>
-		/// 录像全屏
-		/// </summary>
-		RecordFullScreen,
+        /// <summary>
+        /// 录像全屏
+        /// </summary>
+        RecordFullScreen,
+        InGameBackgroud,
+        InGameMainUI,
+        InGamePopup,
+        InGameTip,
+        AppGameUI,
+        InputCtrl,
+        InGameEnd,
         /// <summary>
         /// 提示弹窗
         /// </summary>
         PopUpDialog,
+        Purchase,
         /// <summary>
         /// 小loading
         /// </summary>
@@ -53,9 +66,9 @@ namespace GameA
         /// 旋转屏幕蒙版
         /// </summary>
         ScreenRotateMask,
-        Max, 
+        Max,
     }
-
+    /*社交管理器*/
     public class SocialGUIManager : GUIManager
     {
         public static SocialGUIManager Instance;
@@ -63,29 +76,7 @@ namespace GameA
         private EMode _currentMode = EMode.App;
         private UIStack _defaultUIStack;
         private Stack<UIStack> _uiStackStack = new Stack<UIStack>(5);
-        private UIGlobalGestureReturn _globalGestureReturn;
         private bool _exitDialogIsOpen = false;
-
-	    private RenderTexture _recordRenderTexture;
-	    private bool _runRecordInApp = false;
-	    private bool _recordFullScreen = false;
-
-	    public RenderTexture RenderRecordTexture
-	    {
-		    get { return _recordRenderTexture; }
-	    }
-
-	    public bool RunRecordInApp
-	    {
-		    set { _runRecordInApp = value; }
-		    get { return _runRecordInApp; }
-	    }
-
-	    public bool RecordFullScreen
-	    {
-		    get { return _recordFullScreen; }
-		    set { _recordFullScreen = value; }
-	    }
 
         public EMode CurrentMode
         {
@@ -113,47 +104,31 @@ namespace GameA
 
         void Start()
         {
-            _globalGestureReturn = new UIGlobalGestureReturn(OnGestureReturnBegin, OnGestureReturnUpdate, OnGestureReturnEnd);
         }
 
         protected override void Update()
         {
             base.Update();
-            _globalGestureReturn.Update();
+//            _globalGestureReturn.Update();
         }
 
 	    protected override void OnDestroy()
 	    {
-			ClearRecordRes();
 		    base.OnDestroy();
 	    }
 
-	    public void ChangeToFullScreenRecord()
-	    {
-			GetUI<UICtrlScreenRotate>().ChangeScreenOrientation(ScreenOrientation.Landscape);
-			UIRoot.CanvasScaler.referenceResolution = new Vector2(UIConstDefine.UINormalScreenWidth,UIConstDefine.UINormalScreenHeight);
-		    UIRoot.CanvasScaler.matchWidthOrHeight = 1;
-		    _recordFullScreen = true;
-			_uiRoot.SetGroupActive((int)EUIGroupType.MainUI, false);
-			Messenger.Broadcast(EMessengerType.OnRecordFullScreenStateChanged);
-			JoyNativeTool.Instance.SetStatusBarShow(false);
-		}
+        public Transform GetFirstGroupParent ()
+        {
+            SocialUIRoot root = _uiRoot as SocialUIRoot;
 
-	    public void ReturnToNormalRecord()
-	    {
-			GetUI<UICtrlScreenRotate>().ChangeScreenOrientation(ScreenOrientation.Portrait);
-			UIRoot.CanvasScaler.referenceResolution = new Vector2(UIConstDefine.UINormalScreenWidth, UIConstDefine.UINormalScreenHeight);
-			UIRoot.CanvasScaler.matchWidthOrHeight = 0;
-			_uiRoot.SetGroupActive((int)EUIGroupType.MainUI, true);
-		    _recordFullScreen = false;
-			Messenger.Broadcast(EMessengerType.OnRecordFullScreenStateChanged);
-			JoyNativeTool.Instance.SetStatusBarShow(true);
-		}
+            return root.GetFirstGroupTrans ();
+        }
 
 	    public void ShowAppView()
 		{
 			JoyNativeTool.Instance.SetStatusBarShow (true);
 			OpenUI<UICtrlTaskbar>();//.ShowDefaultPage();
+            OpenUI<UICtrlFashionSpine>();
             Messenger.AddListener(EMessengerType.OnEscapeClick, OnEscapeClick);
         }
 
@@ -167,24 +142,9 @@ namespace GameA
 			Messenger.RemoveListener(EMessengerType.OnEscapeClick, OnEscapeClick);
 			Application.targetFrameRate = 60;
 			_currentMode = EMode.Game;
-			if (_recordRenderTexture == null)
-			{
-				_recordRenderTexture = new RenderTexture(Screen.height, Screen.width, 24);
-			}
-			_uiRoot.SetGroupActive((int)EUIGroupType.InGame, true);
+			_uiRoot.SetGroupActive((int)EUIGroupType.InGameStart, true);
 			Messenger.Broadcast(EMessengerType.OnChangeToGameMode);
 		}
-
-	    public void ClearRecordRes()
-	    {
-			Messenger.Broadcast(EMessengerType.ClearAppRecordState);
-			if (_recordRenderTexture != null)
-		    {
-				DestroyImmediate(_recordRenderTexture, true);
-			    _recordRenderTexture = null;
-		    }
-		    _runRecordInApp = false;
-	    }
 
 		internal void ChangeToGameMode()
         {
@@ -196,26 +156,26 @@ namespace GameA
             Messenger.RemoveListener(EMessengerType.OnEscapeClick, OnEscapeClick);
             Application.targetFrameRate = 60;
             ScreenOrientation so = GameManager.Instance.CurrentGame.ScreenOrientation;
-            if (Application.platform == RuntimePlatform.WindowsPlayer)
-            {
-                Screen.SetResolution(960, 640, false, 60);
-            }
+
             _currentMode = EMode.Game;
             for (int i = 0; i < (int)EUIGroupType.Max; i++)
             {
-                if (i < (int)EUIGroupType.InGame)
+                if (i < (int)EUIGroupType.InGameStart)// ||
+//                    i > (int)EUIGroupType.InGameEnd)
                 {
                     _uiRoot.SetGroupActive(i, false);
+                } else {
+                    _uiRoot.SetGroupActive (i, true);
                 }
             }
-            _uiRoot.SetGroupActive((int)EUIGroupType.InGame, true);
+            //_uiRoot.SetGroupActive((int)EUIGroupType.InGame, true);
             if (so == ScreenOrientation.LandscapeLeft)
             {
                CanvasScaler cs = _uiRoot.GetComponent<CanvasScaler>();
                 if (cs)
                 {
-                    cs.referenceResolution = new Vector2(UIConstDefine.UINormalScreenHeight,
-                        UIConstDefine.UINormalScreenWidth);
+                    cs.referenceResolution = new Vector2(UIConstDefine.UINormalScreenWidth,
+                        UIConstDefine.UINormalScreenHeight);
                     cs.matchWidthOrHeight = 1;
                 }
             }
@@ -231,33 +191,31 @@ namespace GameA
             
             Messenger.AddListener(EMessengerType.OnEscapeClick, OnEscapeClick);
             Application.targetFrameRate = 60;
-            if (Application.platform == RuntimePlatform.WindowsPlayer)
-            {
-                Screen.SetResolution(640, 960, false, 60);
-            }
-            _currentMode = EMode.App;
-	        if (RecordFullScreen)
-	        {
-		        
-	        }
-	        else
-	        {
-				JoyNativeTool.Instance.SetStatusBarShow(true);
-				CanvasScaler cs = _uiRoot.GetComponent<CanvasScaler>();
-				if (cs)
-				{
-					cs.referenceResolution = new Vector2(UIConstDefine.UINormalScreenWidth, UIConstDefine.UINormalScreenHeight);
-					cs.matchWidthOrHeight = 0;
-				}
 
-				for (int i = 0; i < (int)EUIGroupType.Max; i++)
-				{
-					_uiRoot.SetGroupActive(i, true);
-				}
+            _currentMode = EMode.App;
+			JoyNativeTool.Instance.SetStatusBarShow(true);
+			CanvasScaler cs = _uiRoot.GetComponent<CanvasScaler>();
+			if (cs)
+			{
+				cs.referenceResolution = new Vector2(UIConstDefine.UINormalScreenWidth, UIConstDefine.UINormalScreenHeight);
+				cs.matchWidthOrHeight = 0;
 			}
 
-            CloseUI<UICtrlMenuInGame>();
-            _uiRoot.SetGroupActive((int)EUIGroupType.InGame, false);
+			for (int i = 0; i < (int)EUIGroupType.Max; i++)
+			{
+				_uiRoot.SetGroupActive(i, true);
+			}
+
+            //_uiRoot.SetGroupActive((int)EUIGroupType.InGame, false);
+            for (int i = 0; i < (int)EUIGroupType.Max; i++) {
+                if (i < (int)EUIGroupType.InGameStart ||
+                    i > (int)EUIGroupType.InGameEnd) 
+                {
+                    _uiRoot.SetGroupActive (i, true);
+                } else {
+                    _uiRoot.SetGroupActive (i, false);
+                }
+            }
             Messenger.Broadcast(EMessengerType.OnChangeToAppMode);
         }
 
@@ -328,6 +286,10 @@ namespace GameA
 
 		public void ReturnToHome () {
 			_defaultUIStack.CloseAll();
+            UICtrlTaskbar taskBar = SocialGUIManager.Instance.GetUI<UICtrlTaskbar>();
+            if (taskBar != null && taskBar.IsViewCreated) {
+                taskBar.Open (null);
+            }
 //			ClearUIStackStack();
 		}
 
@@ -397,6 +359,47 @@ namespace GameA
         public static void ShowPopupDialog(string msg, string title = null, params KeyValuePair<string, Action>[] btnParam)
         {
             Messenger<string, string, KeyValuePair<string, Action>[]>.Broadcast(GameA.EMessengerType.ShowDialog, msg, title, btnParam);
+        }
+
+        /// <summary>
+        /// 展示奖励，传入奖励数组x：type，y：id，z：cnt
+        /// </summary>
+        /// <param name="items">Items.</param>
+        public static void  ShowReward (Reward reward, Action closeCB = null) {
+            Instance.OpenUI<UICtrlReward> (UICtrlReward.ERewardType.Reward);
+            Instance.GetUI <UICtrlReward>().SetRewards (reward, closeCB);
+        }
+
+        public static void ShowUnlockSystem (string title, string icon, Action closeCB = null) {
+            Instance.OpenUI<UICtrlReward> (UICtrlReward.ERewardType.Unlock);
+            Instance.GetUI <UICtrlReward> ().SetUnlockSystem (title, icon, closeCB);
+        }
+        public static void ShowUnlockAbility (string title, string icon, Action closeCB = null)
+        {
+            Instance.OpenUI<UICtrlReward> (UICtrlReward.ERewardType.Ability);
+            Instance.GetUI<UICtrlReward> ().SetAbility (title, icon, closeCB);
+        }
+
+        /// <summary>
+        /// 打开金钱体力栏
+        /// </summary>
+        /// <param name="showEnergy">If set to <c>true</c> show energy.</param>
+        public static void ShowGoldEnergyBar (bool showEnergy = false) {
+            var ui = Instance.GetUI<UICtrlGoldEnergy> ();
+            if (!ui.IsOpen) {
+                ui = Instance.OpenUI<UICtrlGoldEnergy> ();
+            }
+            ui.Show (showEnergy);
+        }
+
+        /// <summary>
+        /// 关闭金钱体力栏
+        /// </summary>
+        public static void HideGoldEnergyBar () {
+            var ui = Instance.GetUI<UICtrlGoldEnergy> ();
+            if (ui.IsOpen) {
+                ui.Hide ();
+            }
         }
 
         public enum EMode

@@ -26,10 +26,18 @@ namespace SoyEngine
         public const string UserInfoDetail = "/user/get";
         // 获取等级数据
         public const string UserLevel = "/user/getLevelData";
+        // 用户详细信息
+        public const string UpdateUserInfo = "/user/updateInfo";
         // 社交关系统计
         public const string UserRelationStatistic = "/relation/getUserRelationStatistic";
         // 用户与我的关系
         public const string UserRelationWithMe = "/relation/getUserRelationWithMe";
+        // 更新关注状态
+        public const string UpdateFollowState = "/relation/updateFollowState";
+        // 更新关注状态
+        public const string UpdateBlockState = "/relation/updateBlockState";
+        // 获取社交用户列表
+        public const string RelationUserList = "/relation/getUserList";
         // 获取关卡数据
         public const string Project = "/project/get";
         // 关卡扩展信息
@@ -43,10 +51,36 @@ namespace SoyEngine
         // 工坊关卡
         public const string PersonalProjectList = "/project/getPersonalList";
         // 发布关卡
-        public const string PublishProject = "/project/publish";
+        public const string PublishWorldProject = "/world/publishProject";
         // 取消发布
-        public const string UnpublishProject = "/project/unpublish";
-        // 工坊关卡
+        public const string UnpublishWorldProject = "/world/unpublishProject";
+        // 用户发布的关卡
+        public const string UserPublishedWorldProjectList = "/world/getUserPublishedProjectList";
+        // Msg_CS_CMD_PlayWorldProject
+        public const string PlayWorldProject = "/world/playProject";
+        // 提交过关世界关卡数据
+        public const string CommitWorldProjectResult = "/world/commitProjectResult";
+        // 获取世界关卡评论列表
+        public const string WorldProjectCommentList = "/world/getProjectCommentList";
+        // 提交世界关卡评论
+        public const string PostWorldProjectComment = "/world/postProjectComment";
+        // 修改关卡顶踩
+        public const string UpdateWorldProjectLike = "/world/updateProjectLike";
+        // 修改关卡收藏状态
+        public const string UpdateWorldProjectFavorite = "/world/updateProjectFavorite";
+        // 删除收藏关卡
+        public const string DeleteWorldProjectFavorite = "/world/deleteProjectFavorite";
+        // 用户收藏的关卡
+        public const string UserFavoriteWorldProjectList = "/world/getUserFavoriteProjectList";
+        // 最近玩过
+        public const string UserWorldProjectPlayHistoryList = "/world/getUserProjectPlayHistoryList";
+        // 最近录像
+        public const string WorldProjectRecentRecordList = "/world/getProjectRecentRecordList";
+        // 高分排行榜
+        public const string WorldProjectRecordRankList = "/world/getProjectRecordRankList";
+        // 最新关卡
+        public const string WorldNewestProjectList = "/world/getNewestProjectList";
+        // 录像
         public const string Record = "/record/get";
         // 冒险模式关卡列表
         public const string AdventureProjectList = "/adventure/getProjectList";
@@ -54,10 +88,14 @@ namespace SoyEngine
         public const string AdventureUserProgress = "/adventure/getUserProgress";
         // 获取冒险关卡用户数据
         public const string AdventureUserLevelDataDetail = "/adventure/getUserLevelDataDetail";
+        // 请求单人模式关卡排行
+        public const string AdventureLevelRankList = "/adventure/getLevelRankList";
         // 获取冒险章节用户数据
         public const string AdventureUserSection = "/adventure/getUserSectionData";
         // 获取体力数据
         public const string UserEnergy = "/adventure/getUserEnergyData";
+        // 购买体力
+        public const string BuyEnergy = "/adventure/buyEnergy";
         // 冒险模式用户数据
         public const string AdventureUserData = "/adventure/getUserData";
         // 进入冒险关卡
@@ -74,8 +112,10 @@ namespace SoyEngine
         public const string HomePartData = "/home/getUserPartData";
         // 解锁装饰
         public const string UnlockHomePart = "/home/unlockHomePart";
-        // 角色时装数据
-        public const string AvatarPart = "/home/getUserAvatarPartData";
+        // 角色正在使用时装数据
+        public const string UsingAvatarPart = "/home/getUserUsingAvatarPartData";
+        // 角色可以使用的时装数据
+        public const string ValidAvatarPart = "/home/getUserValidAvatarPartData";
         // 角色换装
         public const string ChangeAvatarPart = "/home/changeAvatarPart";
         // 时装打折券
@@ -86,7 +126,29 @@ namespace SoyEngine
         public const string BuyAvatarPart = "/home/buyAvatarPart";
         // 转盘抽奖
         public const string Raffle = "/home/raffle";
-        // 清空用户数据
-        public const string ClearUserAll = "/gm/clearUserAll";
+        // 用户匹配改造数据
+        public const string MatchUserData = "/match/getUserData";
+        // 改造
+        public const string Reform = "/match/reform";
+        // 随机改造关卡
+        public const string ReselectReformLevel = "/match/reselectReformLevel";
+        // 领取改造奖励
+        public const string GetReformReward = "/match/getReformReward";
+        // 上传改造关卡
+        public const string SaveReformProject = "/match/saveReformProject";
+        // 发布改造关卡
+        public const string PublishReformProject = "/match/publishReformProject";
+        // 获取挑战关卡
+        public const string GetMatchChallengeProject = "/match/getChallengeProject";
+        // 选取挑战关卡
+        public const string SelectMatchChallengeProject = "/match/selectChallengeProject";
+        // 开始挑战
+        public const string PlayMatchChallengeLevel = "/match/playChallengeLevel";
+        // 提交匹配挑战关卡数据
+        public const string CommitMatchChallengeLevelResult = "/match/commitChallengeLevelResult";
+        // 跳过本次挑战
+        public const string MatchSkipChallenge = "/match/skipChallenge";
+        // 执行GM指令
+        public const string ExecuteCommand = "/gm/executeCommand";
     }
 }

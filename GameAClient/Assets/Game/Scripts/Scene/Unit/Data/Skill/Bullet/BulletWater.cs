@@ -14,6 +14,6 @@ namespace GameA.Game
     [Unit(Id = 10001, Type = typeof(BulletWater))]
     public class BulletWater : BulletBase
     {
-
+        
     }
 }

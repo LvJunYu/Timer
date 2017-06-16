@@ -16,28 +16,21 @@ namespace GameA.Game
     {
         protected SpriteRenderer _spriteRenderer;
 
-        public override void OnGet()
+        public SpriteUnit()
         {
-            base.OnGet();
             _spriteRenderer = _trans.gameObject.AddComponent<SpriteRenderer>();
         }
 
         protected override bool OnInit()
         {
-            var tableUnit = _unit.TableUnit;
-            string assetPath = tableUnit.Model;
-            if (tableUnit.Id == 4001 || tableUnit.Id == 4002)
-            {
-                assetPath = string.Format("{0}_{1}", tableUnit.Model, Random.Range(1,3));
-            }
             Sprite sprite;
-            if (!GameResourceManager.Instance.TryGetSpriteByName(assetPath, out sprite))
+            if (!GameResourceManager.Instance.TryGetSpriteByName(_unit.AssetPath, out sprite))
             {
-                LogHelper.Error("TryGetSpriteByName failed,{0}", assetPath);
+                LogHelper.Error("TryGetSpriteByName failed,{0}", _unit.AssetPath);
                 return false;
             }
             _spriteRenderer.sprite = sprite;
-            _spriteRenderer.sortingOrder = UnitManager.Instance.GetSortingOrder(tableUnit);
+            _spriteRenderer.sortingOrder = UnitManager.Instance.GetSortingOrder(_unit.TableUnit);
             return true;
         }
 
@@ -85,5 +78,10 @@ namespace GameA.Game
 		    base.OnCancelSelect();
 			_spriteRenderer.color = NormalColor;
 		}
+
+        public override void SetRendererColor (Color color)
+        {
+            _spriteRenderer.color = color;
+        }
     }
 }

@@ -11,7 +11,7 @@ using Spine.Unity;
 namespace GameA.Game
 {
     [Unit(Id = 5005, Type = typeof (Roller))]
-    public class Roller : Earth
+    public class Roller : BlockBase
     {
         private EMoveDirection _rollerDirection;
 
@@ -20,29 +20,13 @@ namespace GameA.Game
             get { return _rollerDirection; }
         }
 
-        protected override bool OnInit()
+        public override void UpdateExtraData()
         {
-            if (!base.OnInit())
-            {
-                return false;
-            }
             _rollerDirection = DataScene2D.Instance.GetUnitExtra(_guid).RollerDirection;
-            return true;
-        }
-
-        internal override bool InstantiateView()
-        {
-            if (!base.InstantiateView())
+            if (_animation != null)
             {
-                return false;
+                _animation.Init(_rollerDirection == EMoveDirection.Left ? "LeftRun" : "RightRun");
             }
-            _animation = new AnimationSystem();
-            return _animation.Init(this, _rollerDirection == EMoveDirection.Left ? "LeftRun" : "RightRun");
-        }
-
-        protected override void Clear()
-        {
-            base.Clear();
             switch (_rollerDirection)
             {
                 case EMoveDirection.Right:
@@ -52,6 +36,17 @@ namespace GameA.Game
                     _deltaImpactPos.x = -50;
                     break;
             }
+            base.UpdateExtraData();
+        }
+
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            _animation.Init(_rollerDirection == EMoveDirection.Left ? "LeftRun" : "RightRun");
+            return true;
         }
     }
 }

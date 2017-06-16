@@ -9,10 +9,8 @@ using System.Collections.Generic;
 
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine;
 using System.Collections;
-using SoyEngine;
 using System;
 using DG.Tweening;
 
@@ -23,10 +21,6 @@ namespace GameA.Game
         private Sequence _sequence;
         private Transform _tran;
         private SpriteRenderer _spriteRenderer;
-
-        public DeadMark()
-        {
-        }
 
         public void Set(Vector2 pos, int inx)
         {
@@ -82,7 +76,7 @@ namespace GameA.Game
             SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
             sr.sortingOrder = (int)ESortingOrder.DeadMark;
             Sprite s = null;
-            GameResourceManager.Instance.TryGetSingleSprite("death", out s);
+            GameResourceManager.Instance.TryGetSpriteByName("death", out s);
             sr.sprite = s;
             return dm;
         }

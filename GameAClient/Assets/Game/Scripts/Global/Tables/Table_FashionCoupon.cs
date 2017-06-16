@@ -5,25 +5,39 @@ namespace GameA.Game
     [Serializable]
 	public partial class Table_FashionCoupon
 	{
-		// 序号
+		/// <summary>
+        /// 序号
+        /// </summary>
 		[ColumnMapping("Id")]
 		public int Id;
-		// 名字
+		/// <summary>
+        /// 名字
+        /// </summary>
 		[ColumnMapping("Name")]
 		public string Name;
-		// 部件类型
+		/// <summary>
+        /// 部件类型
+        /// </summary>
 		[ColumnMapping("Type")]
 		public int Type;
-		// 部件Id
+		/// <summary>
+        /// 部件Id
+        /// </summary>
 		[ColumnMapping("ItemIdx")]
 		public int ItemIdx;
-		// 部件时长
+		/// <summary>
+        /// 部件时长
+        /// </summary>
 		[ColumnMapping("ItemTime")]
 		public int ItemTime;
-		// 折扣
+		/// <summary>
+        /// 折扣
+        /// </summary>
 		[ColumnMapping("Discount")]
 		public int Discount;
-		// 有效期（天）
+		/// <summary>
+        /// 有效期（天）
+        /// </summary>
 		[ColumnMapping("ValidTime")]
 		public int ValidTime;
 	}

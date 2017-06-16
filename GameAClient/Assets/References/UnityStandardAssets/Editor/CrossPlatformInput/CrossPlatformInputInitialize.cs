@@ -23,6 +23,8 @@ namespace UnitySampleAssets.CrossPlatformInput.Inspector
         }
 
 
+        #if GM2DPROJECT
+        #elif
         [MenuItem("Mobile Input/Enable")]
         private static void Enable()
         {
@@ -45,7 +47,6 @@ namespace UnitySampleAssets.CrossPlatformInput.Inspector
                     break;
             }
         }
-
 
         [MenuItem("Mobile Input/Enable", true)]
         private static bool EnableValidate()
@@ -79,7 +80,7 @@ namespace UnitySampleAssets.CrossPlatformInput.Inspector
             var defines = GetDefinesList(mobileBuildTargetGroups[0]);
             return defines.Contains("MOBILE_INPUT");
         }
-
+        #endif
 
         private static BuildTargetGroup[] buildTargetGroups = new BuildTargetGroup[]
             {

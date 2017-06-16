@@ -11,13 +11,24 @@ using System.Collections;
 namespace GameA.Game
 {
     [Unit(Id = 4102, Type = typeof(BlueStoneBan))]
-    public class BlueStoneBan : UnitBase
+    public class BlueStoneBan : Magic
     {
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            _canLazerCross = true;
+            SetSortingOrderBackground();
+            return true;
+        }
+
         public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
         {
             if (checkOnly)
             {
-                if (other is Magic)
+                if (other.UseMagic())
                 {
                     return true;
                 }
@@ -29,7 +40,7 @@ namespace GameA.Game
         {
             if (checkOnly)
             {
-                if (other is Magic)
+                if (other.UseMagic())
                 {
                     return true;
                 }
@@ -41,7 +52,7 @@ namespace GameA.Game
         {
             if (checkOnly)
             {
-                if (other is Magic)
+                if (other.UseMagic())
                 {
                     return true;
                 }
@@ -53,7 +64,7 @@ namespace GameA.Game
         {
             if (checkOnly)
             {
-                if (other is Magic)
+                if (other.UseMagic())
                 {
                     return true;
                 }

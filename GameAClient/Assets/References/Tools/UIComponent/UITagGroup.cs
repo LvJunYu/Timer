@@ -13,7 +13,7 @@ namespace SoyEngine
 {
     public class UITagGroup : MonoBehaviour
     {
-        public RectTransform FlagTran;
+//        public RectTransform FlagTran;
         public bool FreezeButtonPressState;
 
         private List<Sprite> _defaultSpriteList = new List<Sprite>();
@@ -102,16 +102,16 @@ namespace SoyEngine
                     btn.image.sprite = _defaultSpriteList[inx];
                 }
             }
-            if(FlagTran != null && selected)
-            {
-                RectTransform btnTran = btn.rectTransform();
-                FlagTran.pivot = btnTran.pivot;
-                FlagTran.anchorMax = btnTran.anchorMax;
-                FlagTran.anchorMin = btnTran.anchorMin;
-                FlagTran.localPosition = btnTran.localPosition;
-                FlagTran.anchoredPosition = btnTran.anchoredPosition;
-                FlagTran.sizeDelta = btnTran.sizeDelta;
-            }
+//            if(FlagTran != null && selected)
+//            {
+//                RectTransform btnTran = btn.rectTransform();
+//                FlagTran.pivot = btnTran.pivot;
+//                FlagTran.anchorMax = btnTran.anchorMax;
+//                FlagTran.anchorMin = btnTran.anchorMin;
+//                FlagTran.localPosition = btnTran.localPosition;
+//                FlagTran.anchoredPosition = btnTran.anchoredPosition;
+//                FlagTran.sizeDelta = btnTran.sizeDelta;
+//            }
         }
 
         private void OnClickTag(int inx)

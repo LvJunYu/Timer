@@ -11,9 +11,10 @@ using UnityEngine;
 namespace GameA.Game
 {
     [Unit(Id = 5001, Type = typeof(Final))]
-    public class Final : Magic
+    public class Final : BlockBase
     {
         protected static Final _instance;
+        protected UnityNativeParticleItem _efffect;
 
         public static Vector3 Position
         {
@@ -37,15 +38,34 @@ namespace GameA.Game
             return true;
         }
 
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            _efffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectFinal", _trans);
+            if (_efffect != null)
+            {
+                SetRelativeEffectPos(_efffect.Trans, EDirectionType.Up, BackZOffset);
+                _efffect.Play();
+            }
+            return true;
+        }
+
+        internal override void OnObjectDestroy()
+        {
+            base.OnObjectDestroy();
+            FreeEffect(_efffect);
+            _efffect = null;
+        }
+
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.IsMain)
+            if (!checkOnly && other.IsMain)
             {
                 //播放动画
-                if (PlayMode.Instance.SceneState.CheckWinWithoutConditionArrived())
-                {
-                    PlayMode.Instance.SceneState.Arrived = true;
-                }
+                PlayMode.Instance.SceneState.Arrived = true;
             }
             return base.OnUpHit(other, ref y, checkOnly);
         }

@@ -157,7 +157,7 @@ namespace GameA.Game
 
         private void RecordAnim(byte nameIdx, bool loop, byte timeScale, byte trackIdx)
         {
-            _animRec.Add(new AnimRec(PlayMode.Instance.LogicFrameCnt, nameIdx, loop, timeScale, trackIdx));
+            _animRec.Add(new AnimRec(GameRun.Instance.LogicFrameCnt, nameIdx, loop, timeScale, trackIdx));
         }
     }
 }

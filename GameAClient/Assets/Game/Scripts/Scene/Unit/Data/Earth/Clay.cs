@@ -11,22 +11,36 @@ using System.Collections;
 namespace GameA.Game
 {
     [Unit(Id = 4011, Type = typeof(Clay))]
-    public class Clay : Earth
+    public class Clay : BlockBase
     {
+        public override bool CanClimbed
+        {
+            get { return true; }
+        }
+
         protected override bool OnInit()
         {
             if (!base.OnInit())
             {
                 return false;
             }
-            _canClimbed = true;
+            _friction = 30;
             return true;
         }
 
-        public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
+        internal override bool InstantiateView()
         {
-            //速度变慢 跳的不高。TODO 
-            return base.OnUpHit(other, ref y, checkOnly);
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            _animation.Init("Run");
+            return true;
+        }
+
+        public override bool StepOnClay()
+        {
+            return true;
         }
     }
 }

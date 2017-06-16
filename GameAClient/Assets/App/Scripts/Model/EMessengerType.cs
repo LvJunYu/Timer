@@ -8,18 +8,19 @@ using System;
 
 namespace GameA
 {
-    public static class EMessengerType
+    public static partial class EMessengerType
     {
         public static readonly int OnAppDataChanged = SoyEngine.EMessengerType.NextId++;
-        public static readonly int OnAllNewsFeedListChanged = SoyEngine.EMessengerType.NextId++;
-        public static readonly int OnFollowedUserNewsFeedListChanged = SoyEngine.EMessengerType.NextId++;
-        public static readonly int OnScrollBannerChanged = SoyEngine.EMessengerType.NextId++;
-        public static readonly int OnAllMatrixChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnNewestProjectListChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnUserFavoriteProjectListChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnUserWorldProjectPlayHistoryListChanged = SoyEngine.EMessengerType.NextId++;
 
+        public static readonly int OnProjectDataChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnProjectCommentChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnProjectRecentCompleteChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnProjectRecentPlayedChanged = SoyEngine.EMessengerType.NextId++;
-        public static readonly int OnProjectPlayRecordChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnProjectRecentRecordChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnProjectRecordRankChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnUserPublishedProjectChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnUserFavoriteChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnUserProjectPlayHistoryChanged = SoyEngine.EMessengerType.NextId++;
@@ -79,8 +80,6 @@ namespace GameA
 
         public static readonly int CheckAppVersionComplete = SoyEngine.EMessengerType.NextId ++;
 
-        public static int ClearAppRecordState = SoyEngine.EMessengerType.NextId++;
-
         public static int OnGamePlaySpeedChanged = SoyEngine.EMessengerType.NextId++;
 
         //public static readonly int OnAOISubscribe = SoyEngine.EMessengerType.NextId++;
@@ -88,6 +87,15 @@ namespace GameA
         //public static readonly int OnDynamicSubscribe = SoyEngine.EMessengerType.NextId++;
         //public static readonly int OnDynamicUnsubscribe = SoyEngine.EMessengerType.NextId++;
         public static int OnRecordFullScreenStateChanged = SoyEngine.EMessengerType.NextId++;
+
+        // 匹配改造相关
+        public static int OnReformProjectPublished = SoyEngine.EMessengerType.NextId++;
+        public static int OnChallengeProjectSelected = SoyEngine.EMessengerType.NextId++;
+
+        // 金钱、体力变化
+        public static int OnGoldChanged = SoyEngine.EMessengerType.NextId++;
+        public static int OnDiamondChanged = SoyEngine.EMessengerType.NextId++;
+        public static int OnEnergyChanged = SoyEngine.EMessengerType.NextId++;
     }
 }
 

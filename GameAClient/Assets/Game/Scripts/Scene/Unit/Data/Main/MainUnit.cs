@@ -15,12 +15,19 @@ namespace GameA.Game
 {
     [Serializable]
     [Unit(Id = 1001, Type = typeof(MainUnit))]
-    public class MainUnit : RigidbodyUnit
+    public class MainUnit : ActorBase
     {
         protected const int FlashTime = 100;
 
         [SerializeField]
         protected MainInput _mainInput;
+
+        protected int _currentMp;
+        protected int _mpSpeed = 1;
+        protected int _totalMp = 2500;
+        protected SkillManager _skillMgr1;
+        protected SkillManager _skillMgr2;
+
         [SerializeField] protected int _big;
         [SerializeField] protected int _flashTime;
         [SerializeField] protected int _invincibleTime;
@@ -29,16 +36,23 @@ namespace GameA.Game
         protected Box _box;
         protected EBoxOperateType _eBoxOperateType;
 
+        protected int _curMaxSpeedX;
+        protected int _curMaxQuickenSpeedX;
+
+        protected const int MaxSpeedX = 80;
+        protected const int MaxQuickenSpeedX = 160;
+
         #region view
 
         protected ReviveEffect _reviveEffect;
         protected ReviveEffect _portalEffect;
-//        [SerializeField] 
-//        protected UnityNativeParticleItem _runEfffect;
+
         [SerializeField]
         protected UnityNativeParticleItem _brakeEfffect;
         [SerializeField]
         protected UnityNativeParticleItem _invincibleEfffect;
+        protected UnityNativeParticleItem _inFireEfffect;
+
         /// <summary>
         /// 跑步声音间隔
         /// </summary>
@@ -46,18 +60,24 @@ namespace GameA.Game
 
         #endregion
 
+        public override SkillManager SkillMgr1
+        {
+            get { return _skillMgr1; }
+        }
+
+        public override SkillManager SkillMgr2
+        {
+            get { return _skillMgr2; }
+        }
+
+        public bool OnClay
+        {
+            get { return _onClay; }
+        }
+
         public Box Box
         {
             get { return _box; }
-        }
-
-        public IntVec2 FirePos
-        {
-            get
-            {
-                var dataSize = GetDataSize();
-                return new IntVec2(_curPos.x + dataSize.x, (int) (_curPos.y +dataSize.y*0.8f));
-            }
         }
 
         public override bool CanPortal
@@ -89,7 +109,7 @@ namespace GameA.Game
                 {
                     if (_invincibleEfffect == null)
                     {
-                        _invincibleEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1BianShenXingDian", _trans);
+                        _invincibleEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectOrbitBuff", _trans);
                         _invincibleEfffect.SetSortingOrder(ESortingOrder.EffectItem);
                     }
                     if (_invincibleEfffect != null)
@@ -98,6 +118,7 @@ namespace GameA.Game
                     }
                     _invincibleTime = value;
                     _flashTime = 1;
+                    OutFire();
                 }
             }
         }
@@ -105,6 +126,11 @@ namespace GameA.Game
         public IntVec2 RevivePos
         {
             get { return _revivePos; }
+        }
+
+        public override IntVec2 FirePos
+        {
+            get { return _gun.CurPos; }
         }
 
         public IntVec2 CameraFollowPos
@@ -130,6 +156,8 @@ namespace GameA.Game
             }
         }
 
+        protected Gun _gun;
+
         protected override bool OnInit()
         {
             LogHelper.Debug("MainUnit OnInit");
@@ -137,7 +165,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            _mainInput = new MainInput(this);
             return true;
         }
 
@@ -147,23 +174,28 @@ namespace GameA.Game
             {
                 return false;
             }
-            LogHelper.Debug("InstantiateView {0}", ToString());
-            _animation = new AnimationSystem();
-            if (!_animation.Init(this, "Idle"))
+            _animation.Init("Idle");
+			if (!_animation.AddEventHandle ("Step", OnStep)) 
             {
-                return false;
-            }
-			if (!_animation.AddEventHandle ("Step", OnStep)) {
 				return false;
 			}
-//            _runEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem(ParticleNameConstDefineGM2D.Run, _trans);
             _brakeEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem(ParticleNameConstDefineGM2D.Brake, _trans);
             return true;
         }
 
-        internal override void Reset()
+        protected override void Clear()
         {
+            _mainInput = _mainInput ?? new MainInput(this);
             _mainInput.Reset();
+
+            _skillMgr1 = _skillMgr1 ?? new SkillManager(this);
+            _skillMgr1.Clear();
+            _skillMgr1.ChangeSkill<SkillWater>();
+
+            _skillMgr2 = _skillMgr2 ?? new SkillManager(this);
+            _skillMgr2.Clear();
+
+            UpdateMp(0);
             _big = 0;
             _dieTime = 0;
             _flashTime = 0;
@@ -186,10 +218,6 @@ namespace GameA.Game
                 _portalEffect.Destroy();
                 _portalEffect = null;
             }
-//            if (_runEfffect != null)
-//            {
-//                _runEfffect.Stop();
-//            }
             if (_brakeEfffect != null)
             {
                 _brakeEfffect.Stop();
@@ -198,16 +226,45 @@ namespace GameA.Game
             {
                 _invincibleEfffect.Stop();
             }
-            base.Reset();
+            if (_inFireEfffect != null)
+            {
+                _inFireEfffect.Stop();
+            }
+            base.Clear();
+        }
+
+        internal override void OnObjectDestroy()
+        {
+            base.OnObjectDestroy();
+            if (_reviveEffect != null)
+            {
+                _reviveEffect.Destroy();
+                _reviveEffect = null;
+            }
+            if (_portalEffect != null)
+            {
+                _portalEffect.Destroy();
+                _portalEffect = null;
+            }
         }
 
         internal override void OnPlay()
         {
             base.OnPlay();
+            Debug.Log ("MainUnit.OnPlay");
+            if (_gun == null)
+            {
+                _gun = PlayMode.Instance.CreateRuntimeUnit(10000, _curPos) as Gun;
+            }
             _flashTime = 100;
             _revivePos = _curPos;
             _revivePosStack.Clear();
-            Life = PlayMode.Instance.SceneState.Life;
+            if (PlayMode.Instance.IsUsingBoostItem (SoyEngine.Proto.EBoostItemType.BIT_AddLifeCount1)) {
+                Life = PlayMode.Instance.SceneState.Life + 1;
+            } else
+            {
+                Life = PlayMode.Instance.SceneState.Life;
+            }
         }
 
         #region motor
@@ -220,9 +277,21 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            if (_isAlive && _isStart)
+            if (_isAlive && _isStart && !_isFreezed)
             {
-                _mainInput.UpdateLogic();
+                if (_attackedTimer > 0)
+                {
+                    _attackedTimer--;
+                }
+                if (_attackedTimer <= 0)
+                {
+                    _mainInput.UpdateLogic();
+                    _skillMgr1.UpdateLogic();
+                    if (_skillMgr2.UpdateLogic())
+                    {
+                        UpdateMp(Util.ConstantLerp(_currentMp, _totalMp, _mpSpeed));
+                    }
+                }
                 CheckGround();
                 CheckClimb();
                 UpdateSpeedY();
@@ -242,20 +311,36 @@ namespace GameA.Game
                 LimitPos();
                 UpdateCollider(GetColliderPos(_curPos));
                 _curPos = GetPos(_colliderPos);
-                if (_view != null)
+                UpdateTransPos();
+            }
+            if (!_isAlive)
+            {
+                _dieTime++;
+                if (_life <= 0)
                 {
-                    _trans.position = GetTransPos();
+                    if (_dieTime == 20)
+                    {
+                        Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
+                        SpeedY = 150;
+                    }
+                    if (_dieTime > 20)
+                    {
+//                        UpdateRotation((_dieTime - 20)*0.3f);
+                    }
+                    if (_dieTime == 100)
+                    {
+                        PlayMode.Instance.SceneState.MainUnitSiTouLe();
+                        // 因生命用完而失败
+                        Messenger.Broadcast(EMessengerType.GameFinishFailed);
+                    }
                 }
             }
-            if (OutOfMap())
-            {
-                return;
-            }
+            CheckOutOfMap();
             CheckBox();
-            if (SpeedY != 0 && _mainInput._jumpState == 0)
-            {
-                _mainInput._jumpState = 1;
-            }
+            //if (SpeedY != 0 && _mainInput._jumpState == 0)
+            //{
+            //    _mainInput._jumpState = 1;
+            //}
             if (_invincibleTime > 0)
             {
                 _invincibleTime--;
@@ -280,27 +365,37 @@ namespace GameA.Game
                 _flashTime--;
                 FlashRenderer(_flashTime);
             }
-            bool isRunning = false;
-            if (!_isAlive)
+            if (_eDieType == EDieType.Fire)
             {
-                _dieTime++;
-                if (_life <= 0)
+                if (_inFireEfffect != null)
                 {
-                    if (_dieTime == 20)
-                    {
-                        Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
-                        SpeedY = 150;
-                    }
-                    if (_dieTime > 20)
-                    {
-                        UpdateRotation((_dieTime - 20) * 0.3f);
-                    }
-                    if (_dieTime == 100)
-                    {
-                        PlayMode.Instance.SceneState.MainUnitSiTouLe();
-                        Messenger.Broadcast(EMessengerType.GameFinishFailed);
-                    }
+                    _inFireEfffect.Trans.localPosition = Vector3.forward *(_curMoveDirection == EMoveDirection.Left ? 0.01f : -0.01f);
+                    _inFireEfffect.Trans.rotation = Quaternion.identity;
                 }
+            }
+            //if (!_isAlive)
+            //{
+            //    _dieTime++;
+            //    if (_life <= 0)
+            //    {
+            //        if (_dieTime == 20)
+            //        {
+            //            Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
+            //            SpeedY = 150;
+            //        }
+            //        if (_dieTime > 20)
+            //        {
+            //            UpdateRotation((_dieTime - 20) * 0.3f);
+            //        }
+            //        if (_dieTime == 100)
+            //        {
+            //            PlayMode.Instance.SceneState.MainUnitSiTouLe();
+            //            // 因生命用完而失败
+            //            Messenger.Broadcast(EMessengerType.GameFinishFailed);
+            //        }
+            //    }
+            //}
+            if (!_isAlive) {
             }
             else if (!_grounded)
             {
@@ -311,7 +406,7 @@ namespace GameA.Game
                     {
                         PlayMode.Instance.CurrentShadow.RecordAnimation(ClimbAnimName(), true);
                     }
-                    if (PlayMode.Instance.LogicFrameCnt % 5 == 0)
+                    if (GameRun.Instance.LogicFrameCnt % 5 == 0)
                     {
                         Vector3 effectPos = _trans.position;
 						if (_curMoveDirection == EMoveDirection.Left)
@@ -322,17 +417,17 @@ namespace GameA.Game
 						{
 							effectPos += Vector3.right * 0.25f + Vector3.forward * 0.6f;
 						}
-						GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallClimb, effectPos, Vector3.one);
+						GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallClimb, effectPos);
                     }
                 }
                 else if(_mainInput._jumpLevel == 0)
                 {
                     if (_mainInput.JumpState == 101)
                     {
+                        Messenger.Broadcast (EMessengerType.OnPlayerJump);
                         _animation.PlayOnce(JumpAnimName(_mainInput._jumpLevel));
 						if (_mainInput.ClimbJump) {
 							Vector3 effectPos = _trans.position;
-							Debug.Log ("Waaaaaaa " + _curMoveDirection);
 							if (_curMoveDirection == EMoveDirection.Left)
 							{
 								effectPos += Vector3.right * 0.25f + Vector3.forward * 0.6f;
@@ -341,11 +436,11 @@ namespace GameA.Game
 							{
 								effectPos += Vector3.left * 0.25f + Vector3.forward * 0.6f;
 							}
-							GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallJump, effectPos, Vector3.one);
+							GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallJump, effectPos);
 						}
                         PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_mainInput._jumpLevel), false);
                     }
-                    else if (_mainInput.JumpState == 1)
+                    else if (SpeedY !=0 || _mainInput.JumpState == 1)
                     {
                         if (_animation.PlayLoop(FallAnimName()))
                         {
@@ -355,6 +450,7 @@ namespace GameA.Game
                 }
                 else if (_mainInput._jumpLevel == 1)
                 {
+                    Messenger.Broadcast (EMessengerType.OnPlayerJump);
                     if (_animation.PlayLoop(JumpAnimName(_mainInput._jumpLevel)))
                     {
                         PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_mainInput._jumpLevel), true);
@@ -378,6 +474,11 @@ namespace GameA.Game
                     int speed = (int)(SpeedX * 0.7f);
                     speed = Math.Abs(speed);
                     speed = Mathf.Clamp(speed, 30, 100);
+                    //临时如此 应该修改动画播放速度！TODO
+                    if (IsHoldingBox())
+                    {
+                        speed = 50;
+                    }
                     if (speed <= 56)
                     {
                         if (_animation.PlayLoop(RunAnimName(speed), speed * deltaTime))
@@ -405,7 +506,6 @@ namespace GameA.Game
                         }
                         _walkAudioInternal -= 7;
                     }
-                    isRunning = true;
                     if (_walkAudioInternal <= 0)
                     {
                         int randomValue = UnityEngine.Random.Range(0, 3);
@@ -423,7 +523,6 @@ namespace GameA.Game
                         }
                         _walkAudioInternal = 35;
                     }
-
                 }
                 // 新手引导需要知道主角落地了
                 if (!_lastGrounded)
@@ -433,6 +532,7 @@ namespace GameA.Game
             }
             else if (!_lastGrounded)
             {
+                //临时如此 应该加动画 TODO
                 _animation.PlayOnce(LandAnimName());
                 PlayMode.Instance.CurrentShadow.RecordAnimation(LandAnimName(), false);
                 OnLand();
@@ -445,17 +545,6 @@ namespace GameA.Game
                     PlayMode.Instance.CurrentShadow.RecordAnimation(IdleAnimName(), true);
                 }
             }
-//            if (_runEfffect != null)
-//            {
-//                if (isRunning)
-//                {
-//                    _runEfffect.Play();
-//                }
-//                else
-//                {
-//                    _runEfffect.StopEmit();
-//                }
-//            }
             if (_brakeEfffect != null)
             {
                 if (_mainInput._brakeTime > 0)
@@ -466,7 +555,7 @@ namespace GameA.Game
                 {
                     if (_brakeEfffect.IsPlaying)
                     {
-                        _brakeEfffect.StopEmit();
+                        _brakeEfffect.Pause();
                         _animation.ClearTrack(1);
                         PlayMode.Instance.CurrentShadow.RecordClearAnimTrack(1);
                     }
@@ -482,6 +571,8 @@ namespace GameA.Game
             {
                 _portalEffect.Update();
             }
+
+            //UpdateShooterPoint ();
 
             Vector3 euler = _trans.eulerAngles;
             euler.y = _curMoveDirection == EMoveDirection.Right ? 0 : 180;
@@ -507,6 +598,8 @@ namespace GameA.Game
             }
             if (!air)
             {
+                _onClay = false;
+                _onIce = false;
                 bool downExist = false;
                 int deltaX = int.MaxValue;
                 List<UnitBase> units = EnvManager.RetriveDownUnits(this);
@@ -514,18 +607,27 @@ namespace GameA.Game
                 {
                     UnitBase unit = units[i];
                     int ymin = 0;
-                    if (unit != null && unit.IsAlive && unit.HasMainFloor && CheckOnFloor(unit) &&
+                    if (unit != null && unit.IsAlive && CheckOnFloor(unit) &&
                         unit.OnUpHit(this, ref ymin, true))
                     {
                         downExist = true;
                         _grounded = true;
+                        _attackedTimer = 0;
                         _downUnits.Add(unit);
-                        unit.UpUnits.Add(this);
                         _mainInput._jumpState = 0;
                         _mainInput._jumpLevel = 0;
                         if (unit.Friction > friction)
                         {
                             friction = unit.Friction;
+                        }
+                        var edge = unit.GetUpEdge(this);
+                        if (unit.StepOnClay() || edge.ESkillType == ESkillType.Clay)
+                        {
+                            _onClay = true;
+                        }
+                        else if (unit.StepOnIce() || edge.ESkillType == ESkillType.Ice)
+                        {
+                            _onIce = true;
                         }
                         var delta = Mathf.Abs(CenterPos.x - unit.CenterPos.x);
                         if (deltaX > delta)
@@ -550,6 +652,30 @@ namespace GameA.Game
                     OnJump();
                 }
             }
+            _curMaxSpeedX = MaxSpeedX;
+            _curMaxQuickenSpeedX = MaxQuickenSpeedX;
+            if (_onClay)
+            {
+                friction = 30;
+                _curMaxSpeedX = (int) (_curMaxSpeedX * SpeedClayRatio);
+                _curMaxQuickenSpeedX = (int) (_curMaxQuickenSpeedX * SpeedClayRatio);
+            }
+            else if (_onIce)
+            {
+                friction = 1;
+            }
+            if (_eDieType == EDieType.Fire)
+            {
+                OnFire();
+            }
+            else
+            {
+                _fireTimer = 0;
+            }
+            if (IsHoldingBox())
+            {
+                _curMaxSpeedX = (int)(_curMaxSpeedX * SpeedHoldingBoxRatio);
+            }
             if (air)
             {
                 _mainInput._brakeTime = 0;
@@ -560,13 +686,13 @@ namespace GameA.Game
                         _isMoving = true;
                         if (_mainInput._quickenTime == 0)
                         {
-                            if (SpeedX <= -84)
+                            if (SpeedX <= -_curMaxSpeedX + 4)
                             {
                                 SpeedX += 4;
                             }
-                            else if (SpeedX <= -80)
+                            else if (SpeedX <= -_curMaxSpeedX)
                             {
-                                SpeedX = -80;
+                                SpeedX = -_curMaxSpeedX;
                             }
                             else if (SpeedX <= 0)
                             {
@@ -579,17 +705,17 @@ namespace GameA.Game
                         }
                         else
                         {
-                            if (SpeedX <= -164)
+                            if (SpeedX <= -_curMaxQuickenSpeedX + 4)
                             {
                                 SpeedX += 4;
                             }
-                            else if (SpeedX <= -160)
+                            else if (SpeedX <= -_curMaxQuickenSpeedX)
                             {
-                                SpeedX = -160;
+                                SpeedX = -_curMaxQuickenSpeedX;
                             }
                             else if (SpeedX <= 0)
                             {
-                                if (SpeedX <= -80)
+                                if (SpeedX <= -_curMaxSpeedX)
                                 {
                                     SpeedX--;
                                 }
@@ -609,13 +735,13 @@ namespace GameA.Game
                         _isMoving = true;
                         if (_mainInput._quickenTime == 0)
                         {
-                            if (SpeedX >= 84)
+                            if (SpeedX >= _curMaxSpeedX + 4)
                             {
                                 SpeedX -= 4;
                             }
-                            else if (SpeedX >= 80)
+                            else if (SpeedX >= _curMaxSpeedX)
                             {
-                                SpeedX = 80;
+                                SpeedX = _curMaxSpeedX;
                             }
                             else if (SpeedX >= 0)
                             {
@@ -628,17 +754,17 @@ namespace GameA.Game
                         }
                         else
                         {
-                            if (SpeedX >= 164)
+                            if (SpeedX >= _curMaxQuickenSpeedX + 4)
                             {
                                 SpeedX -= 4;
                             }
-                            else if (SpeedX >= 160)
+                            else if (SpeedX >= _curMaxQuickenSpeedX)
                             {
-                                SpeedX = 160;
+                                SpeedX = _curMaxQuickenSpeedX;
                             }
                             else if (SpeedX >= 0)
                             {
-                                if (SpeedX > 80)
+                                if (SpeedX > _curMaxSpeedX)
                                 {
                                     SpeedX++;
                                 }
@@ -677,13 +803,13 @@ namespace GameA.Game
                                     _mainInput._brakeTime = 10;
                                 }
                             }
-                            else if (SpeedX < (-80 - friction / 2))
+                            else if (SpeedX < (-_curMaxSpeedX - friction / 2))
                             {
                                 SpeedX += friction / 2;
                             }
-                            else if (SpeedX <= -80)
+                            else if (SpeedX <= -_curMaxSpeedX)
                             {
-                                SpeedX = -80;
+                                SpeedX = -_curMaxSpeedX;
                             }
                             else if (SpeedX <= 0)
                             {
@@ -718,17 +844,17 @@ namespace GameA.Game
                                     _mainInput._brakeTime = 10;
                                 }
                             }
-                            else if (SpeedX < (-160 - friction / 2))
+                            else if (SpeedX < (-_curMaxQuickenSpeedX - friction / 2))
                             {
                                 SpeedX += friction / 2;
                             }
-                            else if (SpeedX <= -160)
+                            else if (SpeedX <= -_curMaxQuickenSpeedX)
                             {
-                                SpeedX = -160;
+                                SpeedX = -_curMaxQuickenSpeedX;
                             }
                             else if (SpeedX <= 0)
                             {
-                                if (SpeedX < -80)
+                                if (SpeedX < -_curMaxSpeedX)
                                 {
                                     SpeedX--;
                                 }
@@ -770,13 +896,13 @@ namespace GameA.Game
                                     _mainInput._brakeTime = 10;
                                 }
                             }
-                            else if (SpeedX > (80 + friction / 2))
+                            else if (SpeedX > (_curMaxSpeedX + friction / 2))
                             {
                                 SpeedX -= friction / 2;
                             }
-                            else if (SpeedX >= 80)
+                            else if (SpeedX >= _curMaxSpeedX)
                             {
-                                SpeedX = 80;
+                                SpeedX = _curMaxSpeedX;
                             }
                             else if (SpeedX >= 0)
                             {
@@ -811,17 +937,17 @@ namespace GameA.Game
                                     _mainInput._brakeTime = 10;
                                 }
                             }
-                            else if (SpeedX > (160 + friction / 2))
+                            else if (SpeedX > (_curMaxQuickenSpeedX + friction / 2))
                             {
                                 SpeedX -= friction / 2;
                             }
-                            else if (SpeedX >= 160)
+                            else if (SpeedX >= _curMaxQuickenSpeedX)
                             {
-                                SpeedX = 160;
+                                SpeedX = _curMaxQuickenSpeedX;
                             }
                             else if (SpeedX >= 0)
                             {
-                                if (SpeedX > 80)
+                                if (SpeedX > _curMaxSpeedX)
                                 {
                                     SpeedX++;
                                 }
@@ -895,6 +1021,21 @@ namespace GameA.Game
             }
         }
 
+        private void OnFire()
+        {
+            _fireTimer++;
+            //3秒后还是这个状态挂掉
+            if (_fireTimer ==150)
+            {
+                OnDead();
+                if (_animation != null)
+                {
+                    _animation.Reset();
+                    _animation.PlayOnce("Death");
+                }
+            }
+        }
+
         protected virtual void CheckClimb()
         {
             _mainInput._eClimbState = EClimbState.None;
@@ -922,9 +1063,9 @@ namespace GameA.Game
                 else
                 {
                     SpeedY -= 12;
-                    if (SpeedY < -160)
+                    if (SpeedY < -120)
                     {
-                        SpeedY = -160;
+                        SpeedY = -120;
                     }
                 }
             }
@@ -964,25 +1105,28 @@ namespace GameA.Game
             if (IsValidBox(_hitUnits[(int)EDirectionType.Right]))
             {
                 //弹出UI给提示
+                Messenger<string>.Broadcast(EMessengerType.GameLog, "按 L 键可以推拉木箱");
                 _box = _hitUnits[(int)EDirectionType.Right] as Box;
                 if (_box != null)
                 {
                     _box.DirectionRelativeMain = EDirectionType.Right;
                 }
-                _mainInput.ChangeFire2State(EFire2State.HoldBox);
+                _mainInput.ChangeLittleSkillState(ELittleSkillState.HoldBox);
             }
             else if (IsValidBox(_hitUnits[(int)EDirectionType.Left]))
             {
+                //弹出UI给提示
+                Messenger<string>.Broadcast(EMessengerType.GameLog, "按 L 键可以推拉木箱");
                 _box = _hitUnits[(int)EDirectionType.Left] as Box;
                 if (_box != null)
                 {
                     _box.DirectionRelativeMain = EDirectionType.Left;
                 }
-                _mainInput.ChangeFire2State(EFire2State.HoldBox);
+                _mainInput.ChangeLittleSkillState(ELittleSkillState.HoldBox);
             }
             if (_box == null)
             {
-                _mainInput.ChangeFire2State(EFire2State.Quicken);
+                _mainInput.ChangeLittleSkillState(ELittleSkillState.Quicken);
             }
         }
 
@@ -998,7 +1142,7 @@ namespace GameA.Game
 
         private bool IsValidBox(UnitBase unit)
         {
-            return unit != null && unit.Id == ConstDefineGM2D.BoxId && unit.ColliderGrid.YMin == _colliderGrid.YMin;
+            return unit != null && unit.Id == UnitDefine.BoxId && unit.ColliderGrid.YMin == _colliderGrid.YMin;
         }
 
         public bool IsHoldingBox()
@@ -1093,10 +1237,6 @@ namespace GameA.Game
             _invincibleTime = 0;
             _flashTime = 0;
             _big = 0;
-//            if (_runEfffect != null)
-//            {
-//                _runEfffect.Stop();
-//            }
             if (_brakeEfffect != null)
             {
                 _brakeEfffect.Stop();
@@ -1104,6 +1244,14 @@ namespace GameA.Game
             if (_invincibleEfffect != null)
             {
                 _invincibleEfffect.Stop();
+            }
+            if (_inFireEfffect != null)
+            {
+                _inFireEfffect.Stop();
+            }
+            if (_gun != null)
+            {
+                _gun.Stop();
             }
             _mainInput.Clear();
             Messenger.Broadcast(EMessengerType.OnMainPlayerDead);
@@ -1118,10 +1266,9 @@ namespace GameA.Game
                 PlayMode.Instance.CurrentShadow.RecordNormalDeath();
                 if (_view != null)
                 {
-					GameParticleManager.Instance.Emit("M1KongZhongSiWang", _trans.position + Vector3.up * 0.5f, Vector3.one);
+                    GameParticleManager.Instance.Emit("M1EffectAirDeath", _trans.position + Vector3.up * 0.5f);
                 }
                 OnRevive();
-                _trans.eulerAngles = new Vector3(90, 0, 0);
             }
         }
 
@@ -1130,12 +1277,12 @@ namespace GameA.Game
             LogHelper.Debug("MainPlayer OnRevive");
             if (_view !=null && _reviveEffect == null)
             {
-                var particle = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.MarioSoulSEPrefabName, null);
+                var particle = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null, ESortingOrder.LazerEffect);
                 _reviveEffect = new ReviveEffect(particle);
             }
             _eUnitState = EUnitState.Reviving;
             _reviveEffect.Play(_trans.position + Vector3.up * 0.5f,
-                                GM2DTools.TileToWorld(_revivePos), 6, () =>
+                                GM2DTools.TileToWorld(_revivePos), 20, () =>
                                 {
                                     _eUnitState = EUnitState.Normal;
                                     _mainInput.Clear();
@@ -1143,9 +1290,14 @@ namespace GameA.Game
                                     _isAlive = true;
                                     _flashTime = 100;
                                     _dieTime = 0;
+                                    _box = null;
                                     _trans.eulerAngles = new Vector3(0, 0, 0);
                                     SetPos(_revivePos);
                                     PlayMode.Instance.UpdateWorldRegion(_curPos);
+                                    if (_gun != null)
+                                    {
+                                        _gun.Play();
+                                    }
                                     _animation.Reset();
                                     _animation.PlayLoop(IdleAnimName());
                                     PlayMode.Instance.CurrentShadow.RecordAnimation(IdleAnimName(), true);
@@ -1162,10 +1314,6 @@ namespace GameA.Game
             }
             _eUnitState = EUnitState.Portaling;
             PlayMode.Instance.Freeze(this);
-//            if (_runEfffect != null)
-//            {
-//                _runEfffect.Stop();
-//            }
             if (_brakeEfffect != null)
             {
                 _brakeEfffect.Stop();
@@ -1179,11 +1327,11 @@ namespace GameA.Game
             _trans.eulerAngles = new Vector3(90, 0, 0);
             if (_portalEffect == null)
             {
-                var particle = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.MarioPortalParticle, null);
+                var particle = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null,  ESortingOrder.LazerEffect);
                 _portalEffect = new ReviveEffect(particle);
             }
             _portalEffect.Play(_trans.position + Vector3.up * 0.5f,
-                    GM2DTools.TileToWorld(targetPos), 3, () => PlayMode.Instance.RunNextLogic(() =>
+                GM2DTools.TileToWorld(targetPos), 30, () => PlayMode.Instance.RunNextLogic(() =>
                     {
                         _eUnitState = EUnitState.Normal;
                         PlayMode.Instance.UnFreeze(this);
@@ -1208,31 +1356,18 @@ namespace GameA.Game
             {
                 _view.SetRendererEnabled(true);
             }
-            if (PlayMode.Instance.SceneState.Arrived)
-            {
-                _animation.PlayLoop(EnterDoorAnimName());
-                PlayMode.Instance.CurrentShadow.RecordAnimation(EnterDoorAnimName(), true);
-            }
-            else
-            {
-                _animation.PlayOnce(VictoryAnimName());
-                PlayMode.Instance.CurrentShadow.RecordAnimation(VictoryAnimName(), false);
-            }
-        }
-
-        internal override void OnObjectDestroy()
-        {
-            base.OnObjectDestroy();
-            if (_reviveEffect != null)
-            {
-                _reviveEffect.Destroy();
-                _reviveEffect = null;
-            }
-            if (_portalEffect != null)
-            {
-                _portalEffect.Destroy();
-                _portalEffect = null;
-            }
+            _animation.PlayLoop(VictoryAnimName(), 1, 1);
+            PlayMode.Instance.CurrentShadow.RecordAnimation(VictoryAnimName(), true);
+            //if (PlayMode.Instance.SceneState.Arrived)
+            //{
+            //    _animation.PlayLoop(EnterDoorAnimName());
+            //    PlayMode.Instance.CurrentShadow.RecordAnimation(EnterDoorAnimName(), true);
+            //}
+            //else
+            //{
+            //    _animation.PlayOnce(VictoryAnimName());
+            //    PlayMode.Instance.CurrentShadow.RecordAnimation(VictoryAnimName(), false);
+            //}
         }
 
         public override void OnRevivePos(IntVec2 pos)
@@ -1256,25 +1391,36 @@ namespace GameA.Game
 
         protected void OnJump()
         {
-            if (_view != null)
+            if (!GameAudioManager.Instance.IsPlaying(AudioNameConstDefineGM2D.GameAudioSpingEffect))
             {
-				GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Jump, _trans.position, Vector3.one);
-                //如果底下物体没有音乐的情况下才播放 TODO
                 GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioLightingJump);
+            }
+            if (_downUnit == null || _view == null)
+            {
+                return;
+            }
+            if (_downUnit.Id == UnitDefine.ClayId)
+            {
+				GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Jump, _trans.position);
             }
         }
 
         protected void OnLand()
         {
-            if (_view != null)
+            if (_downUnit == null || _view == null)
             {
-				GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Land, _trans.position, Vector3.one);
+                return;
+            }
+            if (_downUnit.Id == UnitDefine.ClayId)
+            {
+				GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Land, _trans.position);
             }
         }
 
         protected void OnDeadAll()
         {
-            PlayMode.Instance.Pause();
+            GameRun.Instance.Pause();
+//            Debug.Log ("MainUnit.OnDeadAll");
             _animation.PlayOnce(DeathAnimName());
             PlayMode.Instance.CurrentShadow.RecordAnimation(DeathAnimName(), false);
         }
@@ -1282,15 +1428,17 @@ namespace GameA.Game
 		/// <summary>
 		/// 播放跑步烟尘
 		/// </summary>
-		protected void OnStep () {
-			Vector3 scale = _curMoveDirection == EMoveDirection.Right ? Vector3.one : new Vector3 (-1, 1, 1);
-			if (_downUnit == null) {
-			} else if (_downUnit.Id == ParticleNameConstDefineGM2D.MudId) {
-				GameParticleManager.Instance.Emit (ParticleNameConstDefineGM2D.RunOnMud, _trans.position + Vector3.up * 0.2f, scale, 1);
-			} else {
-				// default
-				GameParticleManager.Instance.Emit (ParticleNameConstDefineGM2D.Run, _trans.position + Vector3.up * 0.2f, scale, 1);
-			}
+		protected void OnStep()
+		{
+		    if (_downUnit == null || _view == null)
+		    {
+                return;
+		    }
+		    Vector3 scale = _curMoveDirection == EMoveDirection.Right ? Vector3.one : new Vector3(-1, 1, 1);
+            if (_downUnit.Id == UnitDefine.ClayId)
+		    {
+		        GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.RunOnMud, _trans.position + Vector3.up*0.2f, scale, 1);
+		    }
 		}
 
         #endregion
@@ -1318,7 +1466,7 @@ namespace GameA.Game
             var b = new Color(0.9f, 0.41f, 0.804f, 0.804f);
             var c = new Color(1f, 0.745f, 0.63f, 0.804f);
             const int interval = 5;
-            int t = PlayMode.Instance.LogicFrameCnt % (3 * interval);
+            int t = GameRun.Instance.LogicFrameCnt % (3 * interval);
             if (t < interval)
             {
                 _view.SetRendererColor(Color.Lerp(a, b, t * (1f / interval)));
@@ -1335,13 +1483,35 @@ namespace GameA.Game
 
         protected virtual string RunAnimName(float speed)
         {
+            if (IsHoldingBox())
+            {
+                if (_speed.x == 0)
+                {
+                    if (_mainInput.RightInput == 0 && _mainInput.LeftInput == 0)
+                    {
+                        return "Prepare";
+                    }
+                    if (_mainInput.RightInput > 0 && _box.DirectionRelativeMain == EDirectionType.Right
+                        || (_mainInput.LeftInput > 0 && _box.DirectionRelativeMain == EDirectionType.Left))
+                    {
+                        return "Push";
+                    }
+                    return "Pull";
+                }
+                if ((_speed.x > 0 && _box.DirectionRelativeMain == EDirectionType.Right)
+                    || (_speed.x < 0 && _box.DirectionRelativeMain == EDirectionType.Left))
+                {
+                    return "Push";
+                }
+                return "Pull";
+            }
             if (speed <= 56)
             {
                 return "Run";
             }
             else if (speed <= 94)
             {
-                return "Run";
+                return "Run2";
             }
             else
             {
@@ -1350,6 +1520,10 @@ namespace GameA.Game
         }
         protected virtual string JumpAnimName(int jumpLevel)
         {
+            if (_attackedTimer > 0)
+            {
+                return "StunStart";
+            }
             if (jumpLevel == 0)
             {
                 return "Jump";
@@ -1362,6 +1536,10 @@ namespace GameA.Game
         }
         protected virtual string IdleAnimName()
         {
+            if (IsHoldingBox())
+            {
+                return "Prepare";
+            }
             return "Idle";
         }
         protected virtual string ClimbAnimName()
@@ -1370,6 +1548,10 @@ namespace GameA.Game
         }
         protected virtual string FallAnimName()
         {
+            if (_attackedTimer > 0)
+            {
+                return "StunRun";
+            }
             return "Fall";
         }
         protected virtual string DeathAnimName()
@@ -1378,6 +1560,10 @@ namespace GameA.Game
         }
         protected virtual string LandAnimName()
         {
+            if (_attackedTimer > 0)
+            {
+                return "StunEnd";
+            }
             return "Land";
         }
         protected virtual string VictoryAnimName()
@@ -1391,6 +1577,130 @@ namespace GameA.Game
         protected virtual string BrakeAnimName()
         {
             return "Brake";
+        }
+
+        #endregion
+
+        internal void OnStun(ActorBase actor)
+        {
+            //晕2秒
+            _attackedTimer = 100;
+            Speed = IntVec2.zero;
+            ExtraSpeed.y = 120;
+            ExtraSpeed.x = actor.CenterPos.x > CenterPos.x ? -100 : 100;
+            _mainInput.ClearInput();
+        }
+
+        internal void OnKnockBack(ActorBase actor)
+        {
+            _attackedTimer = 100;
+            Speed = IntVec2.zero;
+            ExtraSpeed.y = 280;
+            ExtraSpeed.x = actor.CenterPos.x > CenterPos.x ? -80 : 80;
+            _mainInput.ClearInput();
+        }
+
+        internal override void InFire()
+        {
+            if (!_isAlive)
+            {
+                return;
+            }
+            if (IsInvincible)
+            {
+                return;
+            }
+            if (_eDieType == EDieType.Fire)
+            {
+                return;
+            }
+            _eDieType = EDieType.Fire;
+            if (_inFireEfffect == null)
+            {
+                _inFireEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectDeathFire", _trans);
+            }
+            if (_inFireEfffect != null)
+            {
+                _inFireEfffect.Play();
+            }
+            if (_view != null)
+            {
+                _view.SetRendererColor(new Color(0.2f, 0.2f, 0.2f, 1f));
+            }
+        }
+
+        internal override void OutFire()
+        {
+            base.OutFire();
+            if (_eDieType == EDieType.Fire)
+            {
+                if (_inFireEfffect != null)
+                {
+                    _inFireEfffect.Stop();
+                }
+                if (_view != null)
+                {
+                    _view.SetRendererColor(Color.white);
+                }
+            }
+        }
+
+        #region skill
+
+        public override void ChangeSkill<T>()
+        {
+            if (_skillMgr2 != null)
+            {
+                if (_skillMgr2.ChangeSkill<T>())
+                {
+                    UpdateMp(0);
+                }
+            }
+        }
+
+        private void UpdateMp(int mp)
+        {
+            if (_currentMp == mp)
+            {
+                return;
+            }
+            _currentMp = Math.Min(_totalMp, mp);
+            Messenger<int, int>.Broadcast(EMessengerType.OnMPChanged, _currentMp, _totalMp);
+        }
+
+        internal override int AddMp(int mp)
+        {
+            var oldMp = _currentMp;
+            UpdateMp(_currentMp + mp);
+            return _currentMp - oldMp;
+        }
+
+        internal bool Skill()
+        {
+            if (_skillMgr2 == null)
+            {
+                return false;
+            }
+            if (_currentMp < _skillMgr2.UseMp)
+            {
+                //TODO UI提示
+                LogHelper.Warning("MP is not enough!");
+                return false;
+            }
+            if (!_skillMgr2.Fire())
+            {
+                return false;
+            }
+            UpdateMp(_currentMp - _skillMgr2.UseMp);
+            return true;
+        }
+
+        internal void SkillWater()
+        {
+            if (_skillMgr1 != null)
+            {
+                _skillMgr1.Fire();
+            }
         }
 
         #endregion

@@ -17,27 +17,27 @@ namespace GameA.Game
         protected SkeletonAnimation _skeletonAnimation;
 		protected Renderer _renderer;
 
-        public override void OnGet()
+        public SpineUnit()
         {
-            base.OnGet();
             _skeletonAnimation = _trans.gameObject.AddComponent<SkeletonAnimation>();
             _skeletonAnimation.enabled = false;
+            _animation = new AnimationSystem(_skeletonAnimation);
         }
 
         protected override bool OnInit()
         {
-            var tableUnit = _unit.TableUnit;
             SkeletonDataAsset data;
-            if (!GameResourceManager.Instance.TryGetSpineDataByName(tableUnit.Model, out data))
+            if (!GameResourceManager.Instance.TryGetSpineDataByName(_unit.AssetPath, out data))
             {
-                LogHelper.Error("TryGetSpineDataByName Failed! {0}", tableUnit.Model);
+                LogHelper.Error("TryGetSpineDataByName Failed! {0}", _unit.AssetPath);
                 return false;
             }
             _skeletonAnimation.skeletonDataAsset = data;
             _skeletonAnimation.Initialize(true);
             _skeletonAnimation.enabled = true;
+            _animation.Set();
             _renderer = _skeletonAnimation.GetComponent<Renderer>();
-            _renderer.sortingOrder = UnitManager.Instance.GetSortingOrder(tableUnit);
+            _renderer.sortingOrder = UnitManager.Instance.GetSortingOrder(_unit.TableUnit);
             return true;
         }
 
@@ -63,9 +63,14 @@ namespace GameA.Game
 
         public override void OnFree()
         {
+            if (_animation != null)
+            {
+                _animation.OnFree();
+            }
             if (_skeletonAnimation != null)
             {
                 _skeletonAnimation.Clear();
+                _skeletonAnimation.enabled = false;
             }
             ClearComponents();
             base.OnFree();

@@ -8,14 +8,20 @@ namespace GameA
 {
     public partial class Struct : SyncronisticData {
         #region 字段
-        // Id
+        /// <summary>
+        /// Id
+        /// </summary>
         private long _id;
-        // 名字
+        /// <summary>
+        /// 名字
+        /// </summary>
         private string _name;
         #endregion
 
         #region 属性
-        // Id
+        /// <summary>
+        /// Id
+        /// </summary>
         public long Id { 
             get { return _id; }
             set { if (_id != value) {
@@ -23,7 +29,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 名字
+        /// <summary>
+        /// 名字
+        /// </summary>
         public string Name { 
             get { return _name; }
             set { if (_name != value) {

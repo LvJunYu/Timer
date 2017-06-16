@@ -5,22 +5,34 @@ namespace GameA.Game
     [Serializable]
 	public partial class Table_AvatarStruct
 	{
-		// 序号
+		/// <summary>
+        /// 序号
+        /// </summary>
 		[ColumnMapping("Id")]
 		public int Id;
-		// 说明
+		/// <summary>
+        /// 说明
+        /// </summary>
 		[ColumnMapping("Description")]
 		public string Description;
-		// 头部插槽
+		/// <summary>
+        /// 头部插槽
+        /// </summary>
 		[ColumnMapping("HeadSlots")]
 		public int[] HeadSlots;
-		// 上身插槽
+		/// <summary>
+        /// 上身插槽
+        /// </summary>
 		[ColumnMapping("UpperSlots")]
 		public int[] UpperSlots;
-		// 下身插槽
+		/// <summary>
+        /// 下身插槽
+        /// </summary>
 		[ColumnMapping("LowerSlots")]
 		public int[] LowerSlots;
-		// 附加物插槽
+		/// <summary>
+        /// 附加物插槽
+        /// </summary>
 		[ColumnMapping("AppendageSlots")]
 		public int[] AppendageSlots;
 	}

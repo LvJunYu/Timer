@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Security.Cryptography.X509Certificates;
 using DG.Tweening;
 using SoyEngine;
 using UnityEngine;
@@ -21,8 +22,11 @@ namespace GameA.Game
         protected Transform _trans;
 
 		protected Transform _dirTrans;
+        protected Transform _dirTrans2;
 
         protected UnitBase _unit;
+
+        protected AnimationSystem _animation;
 
 		public Transform Trans
         {
@@ -34,10 +38,22 @@ namespace GameA.Game
 		    get { return _dirTrans; }
 	    }
 
-        public virtual void OnGet()
+        public AnimationSystem Animation
+        {
+            get { return _animation; }
+        }
+
+        public UnitView()
         {
             _trans = new GameObject(GetType().Name).transform;
-            _trans.parent = UnitManager.Instance.GetOriginParent();
+			if (UnitManager.Instance != null) 
+            {
+				_trans.parent = UnitManager.Instance.GetOriginParent ();
+			}
+        }
+
+        public virtual void OnGet()
+        {
         }
 
         public bool Init(UnitBase unit)
@@ -85,7 +101,7 @@ namespace GameA.Game
             _unit = null;
             _trans.SetActiveEx(true);
             _trans.position = _hidePos;
-            _trans.localScale = Vector2.one;
+            _trans.localScale = Vector3.one;
             _trans.localRotation = Quaternion.identity;
             _trans.parent = UnitManager.Instance.GetOriginParent();
 			if (_dirTrans != null)
@@ -93,7 +109,12 @@ namespace GameA.Game
 				Object.Destroy(_dirTrans.gameObject);
 			    _dirTrans = null;
 			}
-		}
+            if (_dirTrans2 != null)
+            {
+                Object.Destroy(_dirTrans2.gameObject);
+                _dirTrans2 = null;
+            }
+        }
 
 	    public static Color SelectedColor = Color.red;
 	    public static Color NormalColor = Color.white;
@@ -118,16 +139,23 @@ namespace GameA.Game
             {
                 return;
             }
+            if (_animation != null)
+            {
+                _animation.Reset();
+            }
             if (_trans != null)
             {
-                _trans.position = _unit.GetTransPos();
-                _trans.localScale = _unit.UnitDesc.Scale;
-                _trans.rotation = Quaternion.identity;
+                _trans.localScale = new Vector3(_unit.UnitDesc.Scale.x, _unit.UnitDesc.Scale.y, 1);
+                _trans.localRotation = Quaternion.identity;
                 _trans.parent = UnitManager.Instance.GetParent(_unit.TableUnit.EUnitType);
             }
             if (_dirTrans != null)
             {
                 _dirTrans.SetActiveEx(true);
+            }
+            if (_dirTrans2 != null)
+            {
+                _dirTrans2.SetActiveEx(true);
             }
             UpdateSign();
         }
@@ -137,6 +165,10 @@ namespace GameA.Game
             if (_dirTrans != null)
             {
                 _dirTrans.SetActiveEx(false);
+            }
+            if (_dirTrans2 != null)
+            {
+                _dirTrans2.SetActiveEx(false);
             }
         }
 
@@ -155,9 +187,13 @@ namespace GameA.Game
             {
                 _dirTrans.SetActiveEx(false);
             }
+            if (_dirTrans2 != null)
+            {
+                _dirTrans2.SetActiveEx(false);
+            }
         }
 
-        private void CreateDirTrans()
+        private void CreateDirTrans(string attName)
         {
             if (_dirTrans != null)
             {
@@ -176,54 +212,68 @@ namespace GameA.Game
             var tweener = _dirTrans.DOScale(0.7f, 0.5f);
             tweener.SetLoops(-1, LoopType.Yoyo);
             Sprite arrowTexture;
-            if (GameResourceManager.Instance.TryGetSpriteByName(ConstDefineGM2D.DirectionTextureName, out arrowTexture))
+            if (GameResourceManager.Instance.TryGetSpriteByName(attName, out arrowTexture))
             {
                 meshRenderer.sprite = arrowTexture;
             }
         }
 
-        private void UpdateSign()
+        public void UpdateSign()
         {
             var tableUnit = _unit.TableUnit;
-            //当不可动但却能动，说明有蓝石
-            if (!tableUnit.CanMove && _unit.MoveDirection != EMoveDirection.None)
+            if (tableUnit.EUnitType != EUnitType.Bullet)
             {
-                //生成蓝石
-            }
-            if (GM2DGame.Instance.CurrentMode == EMode.Edit || GM2DGame.Instance.CurrentMode == EMode.EditTest)
-            {
-                //生成方向标志
-                if (tableUnit.CanRotate || _unit.MoveDirection != EMoveDirection.None || tableUnit.Id == ConstDefineGM2D.RollerId)
+                if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
                 {
-                    CreateDirTrans();
+                    if (_unit.MoveDirection != EMoveDirection.None)
+                    {
+                        CreateDirTrans("M1Move");
+                    }
+                    else if (tableUnit.Id == UnitDefine.BlueStoneRotateId)
+                    {
+                        CreateDirTrans("M1Rotate_1");
+                    }
+                    else if (tableUnit.CanRotate || tableUnit.Id == UnitDefine.RollerId)
+                    {
+                        CreateDirTrans("M1Rotate");
+                    }
+                    else if (UnitDefine.IsEditClick(tableUnit.Id))
+                    {
+                        CreateDirTrans("M1Click");
+                    }
                 }
+            }
+            if (tableUnit.EPairType != EPairType.None)
+            {
+                SetPairRenderer();
             }
             if (_dirTrans != null)
             {
                 if (tableUnit.CanRotate)
                 {
-                    Vector3 offset = GetRotationPosOffset();
-                    _trans.localEulerAngles = new Vector3(0, 0, GetRotation(_unit.UnitDesc.Rotation));
-                    _trans.localPosition = offset + _unit.GetTransPos();
+                    //Vector3 offset = GetRotationPosOffset();
+                    _dirTrans.localEulerAngles = new Vector3(0, 0, GetRotation(_unit.UnitDesc.Rotation));
+                    //_dirTrans.localPosition = offset + _unit.GetTransPos();
                 }
-                if (_unit.MoveDirection != EMoveDirection.None || tableUnit.Id == ConstDefineGM2D.RollerId)
+
+                if (_unit.MoveDirection != EMoveDirection.None || tableUnit.Id == UnitDefine.RollerId)
                 {
-                    float y = 0;
-                    if (_unit.IsMonster)
-                    {
-                        y = _unit.MoveDirection != EMoveDirection.Right ? 180 : 0;
-                    }
-                    if (tableUnit.Id == ConstDefineGM2D.RollerId)
+                    if (tableUnit.Id == UnitDefine.RollerId)
                     {
                         var rollerUnit = _unit as Roller;
                         if (rollerUnit != null)
                         {
-                            _dirTrans.localEulerAngles = new Vector3(0, y, GetRotation((byte)(rollerUnit.RollerDirection - 1)));
+                            _dirTrans.localEulerAngles = new Vector3(0, 0, GetRotation((byte)(rollerUnit.RollerDirection - 1)));
                         }
-                    }
+                    } 
                     else
                     {
-                        _dirTrans.localEulerAngles = new Vector3(0, y, GetRotation((byte)(_unit.MoveDirection - 1)));
+                        _dirTrans.localEulerAngles = new Vector3(0, 0, GetRotation((byte)(_unit.MoveDirection - 1)));
+                    }
+                    //角色单独处理
+                    if (UnitDefine.IsHero(tableUnit.Id))
+                    {
+                        _dirTrans.localEulerAngles = new Vector3(0, 0, GetRotation((byte)(EMoveDirection.Right - 1)));
                     }
                 }
             }
@@ -231,19 +281,32 @@ namespace GameA.Game
 
         private void SetPairRenderer()
         {
-            //var meshRenderer = _dirTrans2.gameObject.AddComponent<SpriteRenderer>();
-            //meshRenderer.sortingOrder = (int)ESortingOrder.AttTexture2;
-            //PairUnit pairUnit;
-            //if (!PairUnitManager.Instance.TryGetPairUnit(_unit.TableUnit.EPairType, _unit.UnitDesc,out pairUnit))
-            //{
-            //    LogHelper.Debug("TryGetPairUnit Faield,{0}",_unit.UnitDesc);
-            //    return;
-            //}
-            //Sprite arrowTexture;
-            //if (GameResourceManager.Instance.TryGetSpriteByName("Letter_"+pairUnit.Num, out arrowTexture))
-            //{
-            //    meshRenderer.sprite = arrowTexture;
-            //}
+            SpriteRenderer spriteRenderer;
+            if (_dirTrans2 == null)
+            {
+                _dirTrans2 = new GameObject("Pair").transform;
+                CommonTools.SetParent(_dirTrans2, _trans);
+                spriteRenderer = _dirTrans2.gameObject.AddComponent<SpriteRenderer>();
+                spriteRenderer.sortingOrder = (int)ESortingOrder.AttTexture2;
+                if (this is SpineUnit)
+                {
+                    var offset = GM2DTools.TileToWorld(_unit.GetDataSize()) * 0.5f;
+                    offset.x = 0;
+                    _dirTrans2.localPosition = offset;
+                }
+            }
+            spriteRenderer = _dirTrans2.GetComponent<SpriteRenderer>();
+            PairUnit pairUnit;
+            if (!PairUnitManager.Instance.TryGetPairUnit(_unit.TableUnit.EPairType, _unit.UnitDesc, out pairUnit))
+            {
+                LogHelper.Debug("TryGetPairUnit Faield,{0}", _unit.UnitDesc);
+                return;
+            }
+            Sprite arrowTexture;
+            if (GameResourceManager.Instance.TryGetSpriteByName("Letter_" + pairUnit.Num, out arrowTexture))
+            {
+                spriteRenderer.sprite = arrowTexture;
+            }
         }
 
         public Vector2 GetRotationPosOffset()
@@ -254,16 +317,16 @@ namespace GameA.Game
             }
             Vector2 res = Vector2.zero;
             Vector2 size = GM2DTools.TileToWorld(_unit.GetDataSize() * 0.5f);
-            switch ((ERotationType)_unit.Rotation)
+            switch ((EDirectionType)_unit.Rotation)
             {
-                case ERotationType.Right:
+                case EDirectionType.Right:
                     res.x = -size.x;
                     res.y = size.y;
                     break;
-                case ERotationType.Down:
+                case EDirectionType.Down:
                     res.y = size.y * 2;
                     break;
-                case ERotationType.Left:
+                case EDirectionType.Left:
                     res.x = size.x;
                     res.y = size.y;
                     break;

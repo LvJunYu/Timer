@@ -6,66 +6,53 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 using UnitySampleAssets.CrossPlatformInput;
-using Spine.Unity;
-using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
-    public class PlayMode : MonoBehaviour
+    public class PlayMode : IDisposable
     {
-        public static PlayMode Instance;
-        [SerializeField]
-        private bool _run;
-        private bool _pausing;
+        private static PlayMode _instance;
+        private readonly HashSet<UnitDesc> _addedDatas = new HashSet<UnitDesc>();
+        private readonly ShadowData _currentShadowData = new ShadowData();
+        private readonly List<UnitDesc> _deletedDatas = new List<UnitDesc>();
 
-        private SceneState _sceneState = new SceneState();
-        private List<int> _inputDatas = new List<int>();
-        [SerializeField] private ESceneState _eSceneState = ESceneState.Play;
+        private readonly List<UnitBase> _freezingNodes = new List<UnitBase>();
+        private readonly List<Action> _nextActions = new List<Action>();
+        private readonly SceneState _sceneState = new SceneState();
+
+        private readonly List<UnitBase> _waitDestroyUnits = new List<UnitBase>();
+        private List<int> _boostItems;
+        private Vector2 _cameraEditPosCache = Vector2.zero;
+        private float _cameraEditOrthoSizeCache = 0f;
         [SerializeField] private ERunMode _eRunMode = ERunMode.Normal;
-        private bool _executeLogic;
-        [SerializeField] private int _logicFrameCnt;
-        [SerializeField] private float _unityTimeSinceGameStarted;
+
+        [SerializeField] private IntVec2 _focusPos;
+
+        private int _gameFailedTime;
+        private int _gameSucceedTime;
+        private List<int> _inputDatas = new List<int>();
         [SerializeField] private MainUnit _mainUnit;
 
-        private List<UnitBase> _waitDestroyUnits = new List<UnitBase>();
+        private Texture2D _maskBaseTexture;
+        private bool _pausing;
+        [SerializeField] private bool _run;
+        private GameStatistic _statistic;
+        private UnitUpdateManager _unitUpdateManager;
 
-        private HashSet<UnitDesc> _addedDatas = new HashSet<UnitDesc>();
-        private List<UnitDesc> _deletedDatas = new List<UnitDesc>();
-
-        private List<Action> _nextActions = new List<Action>();
-
-        [SerializeField]
-        private IntVec2 _focusPos;
-
-        private UICtrlCountDown _countDownUI;
-
-        private int _gameSucceedTime;
-        private int _gameFailedTime;
-
-        private Vector2 _cameraEditPosCache = Vector2.zero;
-
-        // 调试用的 逐帧逻辑播放
-        private int _testStepByStep;
-
-        [SerializeField]
-        private List<SkeletonAnimation> _allSkeletonAnimationComp = new List<SkeletonAnimation>();
-        private ShadowData _currentShadowData = new ShadowData();
-
-        public bool IsEdit
+        public static PlayMode Instance
         {
-            get { return _eSceneState == ESceneState.Edit; }
+            get { return _instance ?? (_instance = new PlayMode()); }
         }
 
-        public bool Run
+        public Texture2D MaskBaseTexture
         {
-            get { return _run; }
+            get { return _maskBaseTexture; }
         }
 
         public IntVec2 FocusPos
@@ -79,11 +66,6 @@ namespace GameA.Game
             set { _mainUnit = value; }
         }
 
-        public int LogicFrameCnt
-        {
-            get { return _logicFrameCnt; }
-        }
-
         public int GameSuccessFrameCnt
         {
             get { return _gameSucceedTime; }
@@ -91,18 +73,18 @@ namespace GameA.Game
 
         public int GameFailFrameCnt
         {
-            get { return this._gameFailedTime; }
+            get { return _gameFailedTime; }
         }
 
-	    public SceneState SceneState
-	    {
-		    get { return _sceneState; }
-	    }
+        public SceneState SceneState
+        {
+            get { return _sceneState; }
+        }
 
         public ERunMode ERunMode
         {
             get { return _eRunMode; }
-            set { _eRunMode = value;}
+            set { _eRunMode = value; }
         }
 
         public List<int> InputDatas
@@ -111,19 +93,76 @@ namespace GameA.Game
             set { _inputDatas = value; }
         }
 
-        public ShadowData CurrentShadow {
+        public ShadowData CurrentShadow
+        {
             get { return _currentShadowData; }
         }
 
-        private void Awake()
+        // 统计
+        public GameStatistic Statistic
         {
-            Instance = this;
-            transform.gameObject.AddComponent<UnitUpdateManager>();
-//            Messenger.AddListener(EMessengerType.GameFinishFailed, GameFinishFailed);
-//            Messenger.AddListener(EMessengerType.GameFinishSuccess, GameFinishSuccess);
-            _unityTimeSinceGameStarted = 0f;
-            _logicFrameCnt = 0;
-            _allSkeletonAnimationComp.Clear ();
+            get { return _statistic; }
+        }
+
+        public void Dispose()
+        {
+            //            Debug.Log ("PlayMode.Dispose");
+            Messenger<EDieType>.RemoveListener(EMessengerType.OnMonsterDead, OnMonsterDead);
+            if (_statistic != null)
+            {
+                _statistic.Dispose();
+            }
+            _instance = null;
+        }
+
+        public bool Init()
+        {
+            //            Debug.Log ("PlayMode.Init");
+            Messenger<EDieType>.AddListener(EMessengerType.OnMonsterDead, OnMonsterDead);
+
+            _unitUpdateManager = new UnitUpdateManager();
+            _statistic = new GameStatistic();
+
+            Texture t;
+            if (!GameResourceManager.Instance.TryGetTextureByName("Mask", out t))
+            {
+                LogHelper.Error("GetMask Failed");
+                return false;
+            }
+            _maskBaseTexture = t as Texture2D;
+            return true;
+        }
+
+        private void Reset()
+        {
+            for (int i = 0; i < _freezingNodes.Count; i++)
+            {
+                UnFreeze(_freezingNodes[i]);
+            }
+            _freezingNodes.Clear();
+            _nextActions.Clear();
+            _waitDestroyUnits.Clear();
+            _statistic.Reset();
+
+            foreach (UnitDesc unitDesc in _addedDatas)
+            {
+                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+                ColliderScene2D.Instance.DestroyView(unitDesc);
+                ColliderScene2D.Instance.DeleteUnit(unitDesc, tableUnit);
+            }
+            _addedDatas.Clear();
+            for (int i = 0; i < _deletedDatas.Count; i++)
+            {
+                UnitDesc unitDesc = _deletedDatas[i];
+                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+                ColliderScene2D.Instance.AddUnit(unitDesc, tableUnit);
+            }
+            _deletedDatas.Clear();
+            ColliderScene2D.Instance.Reset();
+            GameAudioManager.Instance.StopAll();
+            GameParticleManager.Instance.ClearAll();
+            PairUnitManager.Instance.Reset();
+            _sceneState.Reset();
         }
 
         public void Pause()
@@ -136,124 +175,45 @@ namespace GameA.Game
             _pausing = false;
         }
 
-        private void OnDestroy()
+        public void OnReadMapFile(Table_Unit tableUnit)
         {
-            Messenger.RemoveListener(EMessengerType.GameFinishFailed, GameFinishFailed);
-            Messenger.RemoveListener(EMessengerType.GameFinishSuccess, GameFinishSuccess);
-            Instance = null;
+            _sceneState.Check(tableUnit);
         }
 
-        public void OnReadMapFile(UnitDesc unitDesc, Table_Unit tableUnit)
+        public void UpdateLogic(float deltaTime)
         {
-            _sceneState.Check(unitDesc, tableUnit);
-        }
-
-        private void Update()
-        {
-            CrossPlatformInputManager.Update();
-            if (MapManager.Instance == null || !MapManager.Instance.GenerateMapComplete)
-            {
-                return;
-            }
+            BeforeUpdateLogic();
             if (!_run)
             {
                 return;
             }
-            GuideManager.Instance.Update();
-#if UNITY_EDITOR
-            if (Input.GetKeyDown (KeyCode.P)) {
-                _testStepByStep++;
-            }
-#endif
-            if (_pausing && _testStepByStep <= 0)
+            if (_pausing && _mainUnit.Life <= 0)
             {
-                if (_mainUnit.Life <= 0)
-                {
-                    //_mainUnit.UpdateSpeedY();
-                    //_mainUnit.UpdateDataView();
-                    //_mainUnit.AfterUpdatePhysics(ConstDefineGM2D.FixedDeltaTime);
-                    for (int i = 0; i < _allSkeletonAnimationComp.Count; i++)
-                    {
-                        _allSkeletonAnimationComp[i].Update(ConstDefineGM2D.FixedDeltaTime);
-                    }
-                    return;
-                }
+                _mainUnit.UpdateView(ConstDefineGM2D.FixedDeltaTime);
                 return;
             }
-            _unityTimeSinceGameStarted += Time.deltaTime * GM2DGame.Instance.GamePlaySpeed;
-            if (_testStepByStep > 0)
-            {
-                _testStepByStep--;
-                _unityTimeSinceGameStarted = (_logicFrameCnt + 1) * ConstDefineGM2D.FixedDeltaTime;
-            }
-
-            while (_logicFrameCnt*ConstDefineGM2D.FixedDeltaTime < _unityTimeSinceGameStarted)
-            {
-                _executeLogic = _logicFrameCnt*ConstDefineGM2D.FixedDeltaTime < _unityTimeSinceGameStarted;
-                UpdateRenderer(Mathf.Min(Time.deltaTime, ConstDefineGM2D.FixedDeltaTime));
-                CheckUnit();
-                if (_executeLogic)
-                {
-                    BeforeUpdateLogic();
-                    UpdateLogic(ConstDefineGM2D.FixedDeltaTime);
-                    _logicFrameCnt++;
-                }
-                if (!_sceneState.GameRunning)
-                {
-                    if (_logicFrameCnt - _gameSucceedTime == 100)
-                    {
-						// 改成提交成绩成功后，广播消息 在GM2DGame里
-//                        Messenger.Broadcast(EMessengerType.GameFinishSuccessShowUI);
-                    }
-                    return;
-                }
-            }
-        }
-
-        private void UpdateLogic(float deltaTime)
-        {
             ColliderScene2D.Instance.UpdateLogic(_focusPos);
-            if (_mainUnit != null)
+            if (_mainUnit != null && _unitUpdateManager != null)
             {
-                UnitUpdateManager.Instance.UpdateLogic(deltaTime);
+                _unitUpdateManager.UpdateLogic(deltaTime);
             }
             if (_sceneState != null)
             {
                 _sceneState.UpdateLogic(deltaTime);
             }
-            for (int i = 0; i < _allSkeletonAnimationComp.Count; i++)
-            {
-                _allSkeletonAnimationComp[i].Update(ConstDefineGM2D.FixedDeltaTime);
-            }
-            if (_mainUnit != null && _mainUnit.Life > 0)
-            {
-                CameraManager.Instance.UpdateLogic(deltaTime);
-            }
             if (_mainUnit != null)
             {
                 _focusPos = GetFocusPos(_mainUnit.CameraFollowPos);
-
-				var r = _mainUnit.View as ChangePartsSpineView;
-				if (r != null) {
-					r.SetParts (_logicFrameCnt / 50 % 3 + 1, SpinePartsHelper.ESpineParts.Head);
-				}
-            }
-        }
-
-        public void UpdateLogicEdit()
-        {
-            if (_run)
-            {
-                return;
-            }
-            for (int i = 0; i < _allSkeletonAnimationComp.Count; i++)
-            {
-                _allSkeletonAnimationComp[i].Update(ConstDefineGM2D.FixedDeltaTime);
             }
         }
 
         private void BeforeUpdateLogic()
         {
+            for (int i = _waitDestroyUnits.Count - 1; i >= 0; i--)
+            {
+                DeleteUnit(_waitDestroyUnits[i]);
+                _waitDestroyUnits.RemoveAt(i);
+            }
             if (_nextActions.Count > 0)
             {
                 for (int i = 0; i < _nextActions.Count; i++)
@@ -272,26 +232,20 @@ namespace GameA.Game
             _nextActions.Add(action);
         }
 
-        private void UpdateRenderer(float deltaTime)
+        public void UpdateRenderer(float deltaTime)
         {
-            UnitUpdateManager.Instance.UpdateRenderer(deltaTime);
-        }
-
-        private void CheckUnit()
-        {
-            for (int i = _waitDestroyUnits.Count - 1; i >= 0; i--)
+            if (_unitUpdateManager != null)
             {
-                DeleteUnit(_waitDestroyUnits[i]);
-                _waitDestroyUnits.RemoveAt(i);
+                _unitUpdateManager.UpdateRenderer(deltaTime);
             }
         }
 
         public UnitBase CreateUnitView(UnitDesc unitDesc)
         {
-            var unit = UnitManager.Instance.GetUnit(unitDesc.Id);
+            UnitBase unit = UnitManager.Instance.GetUnit(unitDesc.Id);
             if (unit != null)
             {
-                var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
                 if (tableUnit == null)
                 {
                     LogHelper.Error("CreateUnitView Failed,{0}", unitDesc);
@@ -305,16 +259,18 @@ namespace GameA.Game
             return unit;
         }
 
-        public UnitBase CreateRuntimeUnit(int id, IntVec2 pos, byte rotation, Vector2 scale)
+        public UnitBase CreateRuntimeUnit(int id, IntVec2 pos, byte rotation = 0)
         {
-            return CreateUnit(new UnitDesc(id, new IntVec3(pos.x, pos.y, GM2DTools.GetRuntimeCreatedUnitDepth()), rotation, scale));
+            return
+                CreateUnit(new UnitDesc(id, new IntVec3(pos.x, pos.y, GM2DTools.GetRuntimeCreatedUnitDepth()), rotation,
+                    Vector2.one));
         }
 
         public UnitBase CreateUnit(UnitDesc unitDesc)
         {
             for (int i = _waitDestroyUnits.Count - 1; i >= 0; i--)
             {
-                var current = _waitDestroyUnits[i];
+                UnitBase current = _waitDestroyUnits[i];
                 if (current.UnitDesc == unitDesc)
                 {
                     _waitDestroyUnits.RemoveAt(i);
@@ -365,7 +321,7 @@ namespace GameA.Game
             }
             if (!ColliderScene2D.Instance.InstantiateView(unitDesc, tableUnit))
             {
-                return false;
+                //return false;
             }
             return true;
         }
@@ -391,102 +347,101 @@ namespace GameA.Game
             {
                 _deletedDatas.Add(unitDesc);
             }
+            if (!ColliderScene2D.Instance.DestroyView(unitDesc))
+            {
+                return false;
+            }
             if (!ColliderScene2D.Instance.DeleteUnit(unitDesc, tableUnit))
             {
                 return false;
             }
-			return true;
+            return true;
         }
 
         public void Freeze(UnitBase unit)
         {
-            if (unit == null || unit.DynamicCollider == null)
+            if (unit == null || unit.IsFreezed)
             {
                 return;
             }
-            JoyPhysics2D.Freeze(unit.DynamicCollider);
+            unit.IsFreezed = true;
+            _freezingNodes.Add(unit);
         }
 
         /// <summary>
-        /// 此方法必须在RunNextFrame里面调用，确保下一帧执行
+        ///     此方法必须在RunNextFrame里面调用，确保下一帧执行
         /// </summary>
         /// <param name="unit"></param>
         public void UnFreeze(UnitBase unit)
         {
-            if (unit == null || unit.DynamicCollider == null)
+            if (unit == null || !unit.IsFreezed)
             {
                 return;
             }
-            JoyPhysics2D.UnFreeze(unit.DynamicCollider);
+            unit.IsFreezed = false;
+            _freezingNodes.Remove(unit);
         }
 
         public void GameFinishSuccess()
         {
-            _gameSucceedTime = _logicFrameCnt;
+            _run = false;
+            _gameSucceedTime = GameRun.Instance.LogicFrameCnt;
             GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.GameAudioBgm01);
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
             _mainUnit.OnSucceed();
             GuideManager.Instance.OnGameSuccess();
+            if (null != _statistic)
+            {
+                _statistic.OnGameFinishSuccess();
+            }
         }
 
         public void GameFinishFailed()
         {
-            _gameFailedTime = _logicFrameCnt;
             _run = false;
+            _gameFailedTime = GameRun.Instance.LogicFrameCnt;
+            if (null != _statistic)
+            {
+                _statistic.OnGameFinishFailed();
+            }
             GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.GameAudioBgm01);
         }
 
-        public void RegistSpineSkeletonAnimation(SkeletonAnimation skeletonAnimation)
+        public void OnBoostItemSelectFinish(List<int> items)
         {
-            if (!_allSkeletonAnimationComp.Contains(skeletonAnimation))
+            Debug.Log("OnBoostItemSelectFinish");
+            _boostItems = items;
+        }
+
+        /// <summary>
+        ///     判断当前这次游戏有没有使用类型为type的增益道具
+        /// </summary>
+        /// <returns><c>true</c>, if using boost item was ised, <c>false</c> otherwise.</returns>
+        /// <param name="type">Type.</param>
+        public bool IsUsingBoostItem(EBoostItemType type)
+        {
+            if (null == _boostItems) return false;
+            for (int i = 0; i < _boostItems.Count; i++)
             {
-                _allSkeletonAnimationComp.Add(skeletonAnimation);
+                if (_boostItems[i] == (int) type)
+                {
+                    return true;
+                }
             }
+            return false;
         }
 
-        public void UnRegistSpineSkeletonAnimation(SkeletonAnimation skeletonAnimation)
+        private void OnMonsterDead (EDieType dieType)
         {
-            if (_allSkeletonAnimationComp.Contains(skeletonAnimation))
-            {
-                _allSkeletonAnimationComp.Remove(skeletonAnimation);
-            }
+//            Debug.Log ("OnMonsterDead, dieType: " + dieType);
+            _sceneState.MonsterKilled++;
         }
 
-#region State
-
-        public void ChangeState(ESceneState eSceneState)
-        {
-            _eSceneState = eSceneState;
-            switch (eSceneState)
-            {
-                case ESceneState.Edit:
-                    StartEdit();
-                    break;
-			case ESceneState.Modify:
-				StartEdit ();
-				break;
-                case ESceneState.Play:
-                    StartPlay();
-                    break;
-            }
-        }
-
-        private void Clear()
-        {
-            JoyPhysics2D.Reset();
-            _nextActions.Clear();
-            _waitDestroyUnits.Clear();
-            ColliderScene2D.Instance.Reset();
-            GameAudioManager.Instance.StopAll();
-            GameParticleManager.Instance.ClearAll();
-            _sceneState.RePlay();
-            PairUnitManager.Instance.Reset();
-            RevertData();
-        }
+        #region State
 
         public bool CheckPlayerValid()
         {
-            var mainPlayer = DataScene2D.Instance.MainPlayer;
+            SceneNode mainPlayer = DataScene2D.Instance.MainPlayer;
             if (mainPlayer == null)
             {
                 LogHelper.Error("No MainPlayer");
@@ -500,97 +455,92 @@ namespace GameA.Game
             return true;
         }
 
-		private void StartEdit()
-		{
-            LogHelper.Debug("StartEdit");
-            _run = false;
-            Clear();
+        public bool StartEdit()
+        {
             if (!CheckPlayerValid())
             {
-                return;
+                return false;
             }
+            _run = false;
+            Reset();
             if (_cameraEditPosCache != Vector2.zero)
             {
                 CameraManager.Instance.SetEditorModeStartPos(_cameraEditPosCache);
+                CameraManager.Instance.SetFinalOrthoSize(_cameraEditOrthoSizeCache);
             }
             UpdateWorldRegion(GM2DTools.WorldToTile(CameraManager.Instance.FinalPos), true);
-            //Clear
-            var units = ColliderScene2D.Instance.Units.Values.ToArray();
+            UnitBase[] units = ColliderScene2D.Instance.Units.Values.ToArray();
             for (int i = 0; i < units.Length; i++)
             {
-                var unit = units[i];
-		        unit.OnEdit();
-		    }
-            _unityTimeSinceGameStarted = 0;
-            _logicFrameCnt = 0;
-			Messenger.Broadcast(EMessengerType.OnEdit);
-		}
-
-        private void StartPlay ()
-        {
-            _run = false;
-            _cameraEditPosCache = CameraManager.Instance.FinalPos;
-            LogHelper.Debug ("StartPlay");
-            _sceneState.OnPlay ();
-            if (!CheckPlayerValid())
-            {
-                return;
+                units[i].OnEdit();
             }
-            BeforePlay();
-            var mainPlayer = DataScene2D.Instance.MainPlayer;
-            var colliderPos = new IntVec2 (mainPlayer.Grid.XMin, mainPlayer.Grid.YMin);
-            UpdateWorldRegion (colliderPos, true);
-            var units = ColliderScene2D.Instance.Units.Values.ToArray();
-            for (int i = 0; i < units.Length; i++)
-            {
-                var unit = units[i];
-                unit.OnPlay ();
-            }
-            OnPlay ();
-		}
-
-        public void RePlay()
-        {
-            _run = false;
-            GM2DGUIManager.Instance.CloseUI<UICtrlGameFinish>();
-            LogHelper.Debug("RePlay");
-            Clear();
-            if (!CheckPlayerValid())
-            {
-                return;
-            }
-            BeforePlay();
-            var mainPlayer = DataScene2D.Instance.MainPlayer;
-            var colliderPos = new IntVec2(mainPlayer.Grid.XMin, mainPlayer.Grid.YMin);
-            UpdateWorldRegion(colliderPos, true);
-            //Clear
-            var units = ColliderScene2D.Instance.Units.Values.ToArray();
-            for (int i = 0; i < units.Length; i++)
-            {
-                var unit = units[i];
-                unit.Reset();
-                unit.OnPlay();
-            }
-            OnPlay();
-            Messenger.Broadcast(EMessengerType.OnGameRestart);
+            return true;
         }
 
-         internal void BeforePlay()
+        public bool StartPlay()
+        {
+            if (!CheckPlayerValid())
+            {
+                return false;
+            }
+            _cameraEditPosCache = CameraManager.Instance.FinalPos;
+            _cameraEditOrthoSizeCache = CameraManager.Instance.FinalOrthoSize;
+            PreparePlay();
+            return true;
+        }
+
+        public bool RePlay()
+        {
+            if (!CheckPlayerValid())
+            {
+                return false;
+            }
+            Reset();
+            PreparePlay();
+            return true;
+        }
+
+        private void PreparePlay()
+        {
+            _run = false;
+            BeforePlay();
+            _sceneState.StartPlay();
+            SceneNode mainPlayer = DataScene2D.Instance.MainPlayer;
+            var colliderPos = new IntVec2(mainPlayer.Grid.XMin, mainPlayer.Grid.YMin);
+            UpdateWorldRegion(colliderPos, true);
+        }
+
+        public bool Playing()
+        {
+            _pausing = false;
+            _run = true;
+            ColliderScene2D.Instance.SortData();
+            CrossPlatformInputManager.ClearVirtualInput();
+            UnitBase[] units = ColliderScene2D.Instance.Units.Values.ToArray();
+            for (int i = 0; i < units.Length; i++)
+            {
+                UnitBase unit = units[i];
+                unit.OnPlay();
+            }
+            return true;
+        }
+
+        private void BeforePlay()
         {
             bool flag = false;
-            var iter = PairUnitManager.Instance.PairUnits.GetEnumerator();
+            Dictionary<EPairType, PairUnit[]>.Enumerator iter = PairUnitManager.Instance.PairUnits.GetEnumerator();
             while (iter.MoveNext())
             {
                 if (iter.Current.Value != null)
                 {
                     for (int i = 0; i < iter.Current.Value.Length; i++)
                     {
-                        var pairUnit = iter.Current.Value[i];
+                        PairUnit pairUnit = iter.Current.Value[i];
                         //删掉不成双的
                         if (!pairUnit.IsEmpty && !pairUnit.IsFull)
                         {
                             flag = true;
-                            var unitObject = pairUnit.UnitA == UnitDesc.zero ? pairUnit.UnitB : pairUnit.UnitA;
+                            UnitDesc unitObject = pairUnit.UnitA == UnitDesc.zero ? pairUnit.UnitB : pairUnit.UnitA;
                             DeleteUnit(unitObject);
                         }
                     }
@@ -602,49 +552,8 @@ namespace GameA.Game
             }
         }
 
-        private void OnPlay()
-        {
-            _unityTimeSinceGameStarted = 0f;
-            _logicFrameCnt = 0;
-            _pausing = false;
-            ColliderScene2D.Instance.SortData();
-            if (GM2DGame.Instance.GameInitType == GameManager.EStartType.Edit ||
-                GM2DGame.Instance.GameInitType == GameManager.EStartType.Create)
-            {
-                PlayPlay();
-                // GuideManager.Instance.StartGuide(EGuideType.Character2);
-            }
-            else
-            {
-                _countDownUI = GM2DGUIManager.Instance.OpenUI<UICtrlCountDown>();
-                if (_countDownUI != null)
-                {
-                    _countDownUI.SetCallback(() =>
-                    {
-                        _countDownUI = null;
-                        PlayPlay();
-                    });
-                }
-                else
-                {
-                    PlayPlay();
-                }
-            }
-            CrossPlatformInputManager.ClearVirtualInput();
-        }
-
-        private void PlayPlay()
-        {
-            _run = true;
-            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioStartGame);
-            GameAudioManager.Instance.PlayMusic(AudioNameConstDefineGM2D.GameAudioBgm01);
-            _unityTimeSinceGameStarted = 0f;
-            _logicFrameCnt = 0;
-            Messenger.Broadcast(EMessengerType.OnPlay);
-        }
-
         /// <summary>
-        /// isInit 是为了解决移动物体已经消失不见，重新开始的时候需要根据Node数据强制重新生成地图
+        ///     isInit 是为了解决移动物体已经消失不见，重新开始的时候需要根据Node数据强制重新生成地图
         /// </summary>
         /// <param name="mainPlayerPos"></param>
         /// <param name="isInit"></param>
@@ -665,32 +574,12 @@ namespace GameA.Game
         private IntVec2 GetFocusPos(IntVec2 followPos)
         {
             IntRect validMapRect = DataScene2D.Instance.ValidMapRect;
-            var size = ConstDefineGM2D.HalfMaxScreenSize;
+            IntVec2 size = ConstDefineGM2D.HalfMaxScreenSize;
             followPos.x = Mathf.Clamp(followPos.x, validMapRect.Min.x + size.x, validMapRect.Max.x + 1 - size.x);
             followPos.y = Mathf.Clamp(followPos.y, validMapRect.Min.y + size.y, validMapRect.Max.y + 1 - size.y);
             return followPos;
         }
 
-        private void RevertData()
-        {
-            foreach (var unitObject in _addedDatas)
-            {
-                //var tableUnit = UnitManager.Instance.GetTableUnit(unitObject.Id);
-                ////需要单次调用，因为模型可能不存在，但是必须得先删除数据
-                //ColliderScene2D.Instance.DeleteCollider(unitObject, tableUnit);
-                ////删除模型
-                //ColliderScene2D.Instance.DestroyView(unitObject);
-            }
-            _addedDatas.Clear();
-            for (int i = 0; i < _deletedDatas.Count; i++)
-            {
-                var unitObject = _deletedDatas[i];
-                var tableUnit = UnitManager.Instance.GetTableUnit(unitObject.Id);
-                ColliderScene2D.Instance.AddUnit(unitObject, tableUnit);
-            }
-            _deletedDatas.Clear();
-        }
-      
-#endregion
+        #endregion
     }
 }

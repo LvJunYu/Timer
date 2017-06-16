@@ -16,7 +16,7 @@ namespace GameA.Game
         protected Color _color = Color.white;
 
         protected SkeletonAnimation _animation;
-        protected ERotationType RotationType;
+        protected EDirectionType DirectionType;
 
         protected int _deadFrameIdx;
         protected int _normalDeadFrameIdx;
@@ -113,25 +113,27 @@ namespace GameA.Game
         public void UpdateDataView ()
         {
             if (_trans != null) {
-                _trans.position = GetTransPos ();
+                UpdateTransPos();
                 if (_deadFrameIdx > 0) {
-                    if (PlayMode.Instance.LogicFrameCnt - _deadFrameIdx == 20) {
+                    if (GameRun.Instance.LogicFrameCnt - _deadFrameIdx == 20)
+                    {
                         SpeedY = 150;
                     }
-                    if (PlayMode.Instance.LogicFrameCnt - _deadFrameIdx > 20) {
+                    if (GameRun.Instance.LogicFrameCnt - _deadFrameIdx > 20)
+                    {
                         SpeedY -= 15;
                         if (SpeedY < -160) {
                             SpeedY = -160;
                         }
                         _curPos += Speed;
-                        UpdateRotation ((PlayMode.Instance.LogicFrameCnt - _deadFrameIdx - 20) * 0.3f);
+                        UpdateRotation((GameRun.Instance.LogicFrameCnt - _deadFrameIdx - 20) * 0.3f);
                     }
                 }
                 if (_view != null)
                 {
                     if (_normalDeadFrameIdx > 0)
                     {
-                        float a = _color.a * (1f - (PlayMode.Instance.LogicFrameCnt - _normalDeadFrameIdx) * 0.02f);
+                        float a = _color.a * (1f - (GameRun.Instance.LogicFrameCnt - _normalDeadFrameIdx) * 0.02f);
                         if (a < 0) a = 0;
                         _view.SetRendererColor(new Color(_color.r, _color.g, _color.b, a));
                     }
@@ -143,16 +145,16 @@ namespace GameA.Game
             }
         }
 
-        //public override void SetFacingDir(ERotationType eRotationType)
+        //public override void SetFacingDir(EDirectionType EDirectionType)
         //{
-        //    if (RotationType == eRotationType)
+        //    if (DirectionType == EDirectionType)
         //    {
         //        return;
         //    }
         //    if (_trans == null) return;
-        //    RotationType = eRotationType;
+        //    DirectionType = EDirectionType;
         //    Vector3 euler = Trans.eulerAngles;
-        //    _trans.eulerAngles = RotationType == ERotationType.Right
+        //    _trans.eulerAngles = DirectionType == EDirectionType.Right
         //        ? new Vector3(euler.x, 0, euler.z)
         //        : new Vector3(euler.x, 180, euler.z);
         //}
@@ -175,7 +177,7 @@ namespace GameA.Game
 
         protected void UpdateRotation (float rad)
         {
-            float y = RotationType == ERotationType.Right
+            float y = DirectionType == EDirectionType.Right
                 ? 0
                 : 180;
             _trans.rotation = Quaternion.Euler(0, y, rad * Mathf.Rad2Deg);

@@ -7,12 +7,32 @@
 
 using System;
 using System.Collections;
+using UnityEngine;
 
 namespace GameA.Game
 {
     [Unit(Id = 4103, Type = typeof(BlueStoneRotate))]
-    public class BlueStoneRotate : UnitBase
+    public class BlueStoneRotate : Magic
     {
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            _canLazerCross = true;
+            SetSortingOrderBackground();
+            return true;
+        }
 
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            InitAssetRotation(true);
+            return true;
+        }
     }
 }

@@ -20,6 +20,7 @@ namespace GameA.Game
         protected UnitBase _unit;
         protected SpriteRenderer _spriteRenderer;
         protected Sequence _editSequence;
+        private Coroutine _coroutine;
 
         protected override bool OnInit()
         {
@@ -27,7 +28,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            _hasMainFloor = false;
             _useCorner = false;
             return true;
         }
@@ -39,7 +39,7 @@ namespace GameA.Game
                 return false;
             }
             _spriteRenderer = _view.Trans.GetComponent<SpriteRenderer>();
-            if (PlayMode.Instance.IsEdit)
+            if (GameRun.Instance.IsEdit)
             {
                 PlayAnimation();
             }
@@ -58,18 +58,18 @@ namespace GameA.Game
 
         internal override void OnEdit()
         {
-            if (_editSequence == null)
+            if (_editSequence != null)
             {
-                PlayAnimation();
+                _editSequence.Play();
             }
         }
 
         private void PlayAnimation()
         {
-            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(2f - Time.realtimeSinceStartup % 2f,
+            _coroutine = CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(2f - Time.realtimeSinceStartup % 2f,
                 () =>
                 {
-                    if (PlayMode.Instance.IsEdit)
+                    if (GameRun.Instance.IsEdit)
                     {
                         _editSequence = DOTween.Sequence();
                         _editSequence.Append(_spriteRenderer.DOFade(0, 0.5f));
@@ -77,6 +77,7 @@ namespace GameA.Game
                         _editSequence.AppendInterval(0.7f);
                         _editSequence.SetLoops(-1);
                     }
+                    _coroutine = null;
                 }));
         }
 
@@ -84,18 +85,20 @@ namespace GameA.Game
         {
             _trigger = false;
             _unit = null;
-            if (_editSequence != null)
-            {
-                _editSequence.Play();
-            }
             base.Clear();
         }
 
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();
+            if (_coroutine != null)
+            {
+                CoroutineProxy.Instance.StopCoroutine(_coroutine);
+                _coroutine = null;
+            }
             if (_editSequence != null)
             {
+                _editSequence.Rewind();
                 _editSequence.Kill();
                 _editSequence = null;
             }
@@ -165,11 +168,6 @@ namespace GameA.Game
             {
                 _spriteRenderer.DOFade(0, 0.2f);
             }
-        }
-
-        public IntVec3 GetGuid()
-        {
-            return _guid;
         }
 
         public override void UpdateLogic()

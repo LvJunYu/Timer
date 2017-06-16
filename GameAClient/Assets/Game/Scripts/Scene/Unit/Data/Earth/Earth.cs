@@ -5,105 +5,116 @@
 ** Summary : Earth
 ***********************************************************************/
 
+using System;
+using System.Collections.Generic;
 using SoyEngine;
+using UnityEngine;
+using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 namespace GameA.Game
 {
     [Unit(Id = 4001, Type = typeof(Earth))]
-    public class Earth : Magic
+    public class Earth : PaintBlock
     {
-        protected override bool OnInit()
+        protected override void InitAssetPath()
         {
-            if (!base.OnInit())
-            {
-                return false;
-            }
-            _useCorner = true;
-            return true;
+            _assetPath = string.Format("{0}_{1}", _tableUnit.Model, Random.Range(1, 3));
         }
 
-        public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
+        public override Edge GetUpEdge(UnitBase other)
         {
-            if (!checkOnly)
+            int start, end;
+            if (GetPos(other, EDirectionType.Up, out start, out end))
             {
-                OnUpClampSpeed(other);
-                y = GetUpHitMin();
+                for (int i = 0; i < _edges.Count; i++)
+                {
+                    if (_edges[i].Direction == EDirectionType.Up && _edges[i].Intersect(start, end))
+                    {
+                        //取靠近中间的？
+                        return _edges[i];
+                    }
+                }
             }
-            return true;
+            return base.GetUpEdge(other);
         }
 
-        public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
+        protected override bool CanEdgeClimbed(UnitBase other, EDirectionType eDirectionType)
         {
-            if (!checkOnly)
+            int start, end;
+            if (GetPos(other, eDirectionType, out start, out end))
             {
-                OnDownClampSpeed(other);
-                y = GetDownHitMin(other);
+                for (int i = 0; i < _edges.Count; i++)
+                {
+                    if (_edges[i].Direction == eDirectionType && _edges[i].Intersect(start, end))
+                    {
+                        return _edges[i].ESkillType == ESkillType.Clay;
+                    }
+                }
             }
-            return true;
+            return base.CanEdgeClimbed(other, eDirectionType);
+        }
+    }
+
+    public struct Edge
+    {
+        public static Edge zero = new Edge();
+        public int Start;
+        public int End;
+        public EDirectionType Direction;
+        public ESkillType ESkillType;
+
+        public Edge(int start, int end, EDirectionType direction, ESkillType eSkillType)
+        {
+            Start = start;
+            End = end;
+            Direction = direction;
+            ESkillType = eSkillType;
         }
 
-        public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
+        public override string ToString()
         {
-            if (!checkOnly)
-            {
-                OnLeftClampSpeed(other);
-                x = GetLeftHitMin(other);
-            }
-            return true;
+            return string.Format("Start: {0}, End: {1}, Direction: {2}, ESkillType: {3}", Start, End, Direction, ESkillType);
         }
 
-        public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
+        private bool Intersect(ref Edge edge)
         {
-            if (!checkOnly)
-            {
-                OnRightClampSpeed(other);
-                x = GetRightHitMin();
-            }
-            return true;
+            return edge.Start <= End && edge.End >= Start;
         }
 
-        public override bool OnLeftUpHit(UnitBase other, ref int x, ref int y, bool checkOnly = false)
+        public bool Intersect(int start, int end)
         {
-            if (!checkOnly)
-            {
-                OnUpClampSpeed(other);
-                x = other.ColliderGrid.XMin;
-                y = GetUpHitMin();
-            }
-            return true;
+            return start <= End && end >= Start;
         }
 
-        public override bool OnRightUpHit(UnitBase other, ref int x, ref int y, bool checkOnly = false)
+        public bool Merge(ref Edge edge)
         {
-            if (!checkOnly)
+            if (Intersect(ref edge))
             {
-                OnUpClampSpeed(other);
-                x = other.ColliderGrid.XMin;
-                y = GetUpHitMin();
+                Start = Math.Min(edge.Start, Start);
+                End = Math.Max(edge.End, End);
+                return true;
             }
-            return true;
+            return false;
         }
 
-        public override bool OnLeftDownHit(UnitBase other, ref int x, ref int y, bool checkOnly = false)
+        public void Cut(ref Edge edge, List<Edge> edges)
         {
-            if (!checkOnly)
+            if (!Intersect(ref edge))
             {
-                OnLeftClampSpeed(other);
-                x = GetLeftHitMin(other);
-                y = other.ColliderGrid.YMin;
+                return;
             }
-            return true;
-        }
-
-        public override bool OnRightDownHit(UnitBase other, ref int x, ref int y, bool checkOnly = false)
-        {
-            if (!checkOnly)
+            edges.Remove(this);
+            int cutStart = Math.Max(Start, edge.Start);
+            int cutEnd = Math.Min(End, edge.End);
+            if (cutStart - 1 >= Start + Earth.MinEdgeLength)
             {
-                OnRightClampSpeed(other);
-                x = GetRightHitMin();
-                y = other.ColliderGrid.YMin;
+                edges.Add(new Edge(Start, cutStart - 1, Direction, ESkillType));
             }
-            return true;
+            if (End >= cutEnd + 1 + +Earth.MinEdgeLength)
+            {
+                edges.Add(new Edge(cutEnd + 1, End, Direction, ESkillType));
+            }
         }
     }
 }

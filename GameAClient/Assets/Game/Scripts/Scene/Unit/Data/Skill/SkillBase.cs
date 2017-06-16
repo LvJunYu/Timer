@@ -8,67 +8,165 @@
 using System;
 using System.Collections;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
+    [Serializable]
     public class SkillBase
     {
+        [SerializeField]
+        protected ESkillType _eSkillType;
+
+        protected int _useMp;
+
         /// <summary>
-        /// 攻击范围
+        /// 攻击举例
         /// </summary>
-        protected int _range;
+        [SerializeField] protected int _range;
+        [SerializeField]protected int _radius;
         /// <summary>
         /// CD时间
         /// </summary>
+        [SerializeField]
         protected int _cdTime;
-        /// <summary>
-        /// 是否强力
-        /// </summary>
-        protected bool _plus;
+
         /// <summary>
         /// 定时器
         /// </summary>
+        [SerializeField]
         protected int _timerCD;
 
-        protected IntVec2 _bulletSpeed;
+        protected int _timerAnimation;
+        protected int _cdAnimation;
 
-        internal virtual void Enter(bool plus)
+        [SerializeField]
+        protected int _bulletSpeed;
+
+        [SerializeField]
+        protected UnitBase _owner;
+
+        protected int _bulletId;
+
+        public int BulletSpeed
         {
-            _plus = plus;
+            get { return _bulletSpeed; }
+        }
+
+        public UnitBase Owner
+        {
+            get { return _owner; }
+        }
+
+        public int UseMp
+        {
+            get { return _useMp; }
+        }
+
+        public int Radius
+        {
+            get { return _radius; }
+        }
+
+        public int Range
+        {
+            get { return _range; }
+        }
+
+        public ESkillType ESkillType
+        {
+            get { return _eSkillType; }
+        }
+
+        internal virtual void Enter(UnitBase ower)
+        {
+            _owner = ower;
+            _radius = 320;
+            _range = 10*ConstDefineGM2D.ServerTileScale;
             _timerCD = 0;
+            _cdTime = 8;
+            _bulletSpeed = 200;
+            _timerAnimation = 0;
+            _cdAnimation = 0;
+            _useMp = 400;
+        }
+
+        internal void SetValue(int cdTime, int range, int cdAnimation = 0)
+        {
+            _cdTime = cdTime;
+            _range = range * ConstDefineGM2D.ServerTileScale;
+            _cdAnimation = cdAnimation;
+            if (_cdAnimation > _cdTime)
+            {
+                LogHelper.Error("Error: _cdAnimation{0} > _cdTime{1}", _cdAnimation, _cdTime);
+            }
         }
 
         internal virtual void Exit()
         {
         }
 
-        public void Fire()
-        {
-            if (_timerCD > 0)
-            {
-                return;
-            }
-            _timerCD = _cdTime;
-            //生成子弹
-            var bullet = CreateBullet();
-            if (bullet == null)
-            {
-                return;
-            }
-            bullet.Run(PlayMode.Instance.MainUnit.FirePos, _bulletSpeed);
-        }
-
-        protected virtual BulletBase CreateBullet()
-        {
-            return null;
-        }
-
-        public void Update()
+        public void UpdateLogic()
         {
             if (_timerCD > 0)
             {
                 _timerCD--;
             }
+            if (_timerAnimation > 0)
+            {
+                _timerAnimation--;
+                if (_timerAnimation == 0)
+                {
+                    //生成子弹
+                    CreateBullet();
+                }
+            }
+        }
+
+        public bool Fire()
+        {
+            if (_timerCD > 0)
+            {
+                return false;
+            }
+            _timerCD = _cdTime;
+            _timerAnimation = _cdAnimation;
+            if (_timerAnimation == 0)
+            {
+                //生成子弹
+                CreateBullet();
+                //LogHelper.Debug("Skill: {0} CreateBullet: {1}",this, bullet);
+            }
+            return true;
+        }
+
+        private void CreateBullet()
+        {
+            if (_bulletId == 0)
+            {
+                return;
+            }
+            var bullet =  PlayMode.Instance.CreateRuntimeUnit(_bulletId, GetBulletPos(_bulletId)) as BulletBase;
+            if (bullet != null)
+            {
+                bullet.Run(this);
+            }
+        }
+
+        private IntVec2 GetBulletPos(int bulletId)
+        {
+            var tableUnit = UnitManager.Instance.GetTableUnit(bulletId);
+            if (tableUnit == null)
+            {
+                return IntVec2.zero;
+            }
+            var dataSize = tableUnit.GetDataSize(0, Vector2.one);
+            return _owner.FirePos - dataSize * 0.5f;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("ESkillType: {0}, Range: {1}, Radius: {2}, BulletId: {3}", _eSkillType, _range, _radius, _bulletId);
         }
     }
 }

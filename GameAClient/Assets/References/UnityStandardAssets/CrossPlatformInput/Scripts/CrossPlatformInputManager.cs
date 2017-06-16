@@ -1,4 +1,5 @@
 using System;
+using GameA.Game;
 using UnityEngine;
 using UnitySampleAssets.CrossPlatformInput.PlatformSpecific;
 using PlayMode = GameA.Game.PlayMode;
@@ -250,7 +251,8 @@ namespace UnitySampleAssets.CrossPlatformInput
             {
                 if (pressed) {
                     // 如果这一逻辑帧发生了按下又发生了抬起
-                    if (releasedFrame == PlayMode.Instance.LogicFrameCnt + 1) {
+                    if (releasedFrame == GameRun.Instance.LogicFrameCnt + 1)
+                    {
                         // 撤销抬起输入
                         releasedFrame = -1;
                         //Debug.Log (name + " 1 0 1");
@@ -258,13 +260,14 @@ namespace UnitySampleAssets.CrossPlatformInput
                     //Debug.Log (name + " 1 1");
                 } else {
                     // 如果这一逻辑帧发生了抬起事件
-                    if (releasedFrame == PlayMode.Instance.LogicFrameCnt) {
+                    if (releasedFrame == GameRun.Instance.LogicFrameCnt)
+                    {
                         // 避免同一逻辑帧同时发生按下和抬起事件，把后来的事件安排在后一帧
-                        lastPressedFrame = PlayMode.Instance.LogicFrameCnt + 1;
+                        lastPressedFrame = GameRun.Instance.LogicFrameCnt + 1;
                         //Debug.Log (name + " 0 1");
                     } else {
                         pressed = true;
-                        lastPressedFrame = PlayMode.Instance.LogicFrameCnt;
+                        lastPressedFrame = GameRun.Instance.LogicFrameCnt;
                         //Debug.Log (name + " 1 " + PlayMode.Instance.LogicFrameCnt);
                     }
                 }
@@ -276,7 +279,8 @@ namespace UnitySampleAssets.CrossPlatformInput
             {
                 if (!pressed) {
                     // 如果这一逻辑帧发生了抬起又发生了按下
-                    if (lastPressedFrame == PlayMode.Instance.LogicFrameCnt + 1) {
+                    if (lastPressedFrame == GameRun.Instance.LogicFrameCnt + 1)
+                    {
                         // 撤销按下输入
                         lastPressedFrame = -1;
                         //Debug.Log (name + " 0 1 0");
@@ -284,13 +288,14 @@ namespace UnitySampleAssets.CrossPlatformInput
                     //Debug.Log (name + " 0 0");
                 } else {
                     // 如果这一逻辑帧发生了按下事件
-                    if (lastPressedFrame == PlayMode.Instance.LogicFrameCnt) {
+                    if (lastPressedFrame == GameRun.Instance.LogicFrameCnt)
+                    {
                         // 避免同一逻辑帧同时发生按下和抬起事件，把后来的事件安排在后一帧
-                        releasedFrame = PlayMode.Instance.LogicFrameCnt + 1;
+                        releasedFrame = GameRun.Instance.LogicFrameCnt + 1;
                         //Debug.Log (name + " 1 0");
                     } else {
                         pressed = false;
-                        releasedFrame = PlayMode.Instance.LogicFrameCnt;
+                        releasedFrame = GameRun.Instance.LogicFrameCnt;
                         //Debug.Log (name + " 0 " + PlayMode.Instance.LogicFrameCnt);
                     }
                 }
@@ -309,10 +314,12 @@ namespace UnitySampleAssets.CrossPlatformInput
             {
                 get {
                     // 先修正延后的事件
-                    if (lastPressedFrame == PlayMode.Instance.LogicFrameCnt) {
+                    if (lastPressedFrame == GameRun.Instance.LogicFrameCnt)
+                    {
                         pressed = true;
                     }
-                    if (releasedFrame == PlayMode.Instance.LogicFrameCnt) {
+                    if (releasedFrame == GameRun.Instance.LogicFrameCnt)
+                    {
                         pressed = false;
                     }
                     return pressed; 
@@ -324,7 +331,7 @@ namespace UnitySampleAssets.CrossPlatformInput
             {
                 get
                 {
-                    return lastPressedFrame - PlayMode.Instance.LogicFrameCnt == 0;
+                    return lastPressedFrame - GameRun.Instance.LogicFrameCnt == 0;
                 }
             }
 
@@ -333,7 +340,7 @@ namespace UnitySampleAssets.CrossPlatformInput
             {
                 get
                 {
-                    return (releasedFrame == PlayMode.Instance.LogicFrameCnt - 0);
+                    return (releasedFrame == GameRun.Instance.LogicFrameCnt - 0);
                 }
             }
         }

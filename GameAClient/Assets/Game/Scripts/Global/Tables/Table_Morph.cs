@@ -5,19 +5,29 @@ namespace GameA.Game
     [Serializable]
 	public partial class Table_Morph
 	{
-		// 序号
+		/// <summary>
+        /// 序号
+        /// </summary>
 		[ColumnMapping("Id")]
 		public int Id;
-		// 名称
+		/// <summary>
+        /// 名称
+        /// </summary>
 		[ColumnMapping("Status")]
 		public string Status;
-		// 名称
+		/// <summary>
+        /// 名称
+        /// </summary>
 		[ColumnMapping("Name")]
 		public string Name;
-		// ZRot
+		/// <summary>
+        /// ZRot
+        /// </summary>
 		[ColumnMapping("ZRot")]
 		public float ZRot;
-		// Count
+		/// <summary>
+        /// Count
+        /// </summary>
 		[ColumnMapping("Count")]
 		public int Count;
 	}

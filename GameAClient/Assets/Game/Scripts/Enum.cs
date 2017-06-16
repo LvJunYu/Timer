@@ -18,12 +18,16 @@ namespace GameA.Game
         Left,
     }
 
-    public enum ERotationType : byte
+    public enum EShootDirectionType
     {
-        Up,
-        Right,
-        Down,
-        Left,
+        Up = 0,
+        Right = 90,
+        Down = 180,
+        Left = 270,
+        RightUp = 45,
+        RightDown = 135,
+        LeftDown = 225,
+        LeftUp = 315
     }
 
     public enum EMoveDirection : byte
@@ -57,6 +61,19 @@ namespace GameA.Game
         Max
     }
 
+    public enum EUIType
+    {
+        None,
+        Actor = 1,
+        Earth = 2,
+        Mechanism = 3,
+        Collection = 4,
+        Decoration = 5,
+        Controller = 6,
+        Max,
+        Effect,
+    }
+
     public enum EUnitType
     {
         None,
@@ -87,6 +104,7 @@ namespace GameA.Game
         AttackMonsterItem = 8,  // 可以和Monster、Player、Earth碰撞
         RigidbodyItem = 9,
         Bullet = 10,
+        Gun = 11,
         Max
     }
 
@@ -116,9 +134,20 @@ namespace GameA.Game
         Pause,
 		Drag,
 		Move,
+		Modify,
+        Switch,     // 编辑开关
         Max,
     }
-
+	/// <summary>
+	/// 改造类型
+	/// </summary>
+	public enum EModifyType {
+		None,
+		Add,
+		Erase,
+		Modify,
+		Max,
+	}
 	public enum ECompositeEditorState
 	{
 		None,
@@ -163,14 +192,14 @@ namespace GameA.Game
         CanJumpAnywhereAnyNumberOfTimes
     }
 
-    public enum EModifyType
-    {
-        None,
-        Speed = 1,
-        AccOnGround = 2,
-        JumpEnabled = 3,
-        PushForce = 4,
-    }
+//    public enum EModifyType
+//    {
+//        None,
+//        Speed = 1,
+//        AccOnGround = 2,
+//        JumpEnabled = 3,
+//        PushForce = 4,
+//    }
 
     public enum ESlotType
     {
@@ -187,6 +216,7 @@ namespace GameA.Game
 		Earth = 0,
 		Dynamic,
 		Effect,
+        Gun,
 		RuntimeCreate =10,
 		Max,
 	}
@@ -213,7 +243,6 @@ namespace GameA.Game
         None,
         Play,
         Edit,
-		Modify,
         Max
     }
 
@@ -223,7 +252,6 @@ namespace GameA.Game
         Arrived,
         CollectTreasure,
         KillMonster,
-        RescueHero,
         Max,
     }
 
@@ -258,10 +286,8 @@ namespace GameA.Game
     public enum EPairType
     {
         None,
-        TrapDoor,
         ProtalDoor,
-        ControlledRotator90,
-        ControlledRotator180,
+        TrapDoor,
         Max
     }
 
@@ -311,5 +337,15 @@ namespace GameA.Game
         /// 举盾怪
         /// </summary>
         Broforce_Shield0 = 230,
+    }
+
+    public enum ESkillType
+    {
+        Water = -1,
+        Fire,
+        Ice,
+        Clay,
+        Jelly,
+        Max
     }
 }

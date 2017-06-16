@@ -61,6 +61,7 @@ namespace SoyEngine
 
         private void OnDestroy()
         {
+            
 			//atlas
 	        {
 				var enumerator = _cachedAtlas.GetEnumerator();
@@ -142,12 +143,16 @@ namespace SoyEngine
         {
             _gameName = gameName;
             _pathManager = new PathManager();
-            _manifest = LoadAssetBundleMainAsset<SoyResourceManifest>(_pathManager.GetManifestPath(_gameName), true);
+//            _manifest = LoadAssetBundleMainAsset<SoyResourceManifest>(_pathManager.GetManifestPath(_gameName), true);
+            // todo
+            var origManifeset = Resources.Load ("Global/Manifest") as SoyResourceManifest;
+            _manifest = Object.Instantiate (origManifeset);
             if (_manifest == null)
             {
                 LogHelper.Error("Game {0} load manifest failed path is {1}.", _gameName, _pathManager.GetManifestPath(_gameName));
                 return false;
             }
+//            Debug.Log ("______________________________0");
             _manifest.MappingAllAndClearRedundancy();
             _cachedAtlas = new Dictionary<string, SoyAtlas>();
             _cachedSpineData = new Dictionary<string, SkeletonDataAsset>();
@@ -166,6 +171,12 @@ namespace SoyEngine
 
         public Sprite GetSpriteByName(string spName)
         {
+//            Debug.Log ("______________________________2 " + spName);
+            if (string.IsNullOrEmpty(spName))
+            {
+                LogHelper.Error("GetSpriteByName failed,{0}", spName);
+                return null;
+            }
             string atlasName = null;
 	        bool useLocale = false;
 #if UNITY_EDITOR
@@ -178,6 +189,7 @@ namespace SoyEngine
 	        if (!useLocale)
 	        {
 				atlasName = _manifest.GetAtlasNameBySpriteName(spName);
+//                Debug.Log ("______________________________3 " + atlasName);
 			}
 			SoyAtlas atlas = null;
             if (!TrtGetAtlas(atlasName, out atlas))
@@ -262,6 +274,7 @@ namespace SoyEngine
 			    return true;
 		    }
 #endif
+            return true;
 			if (string.IsNullOrEmpty(textureName))
 		    {
 				LogHelper.Error("LinkAvatarSpineTexture called but textureName is null or empty!");
@@ -358,41 +371,56 @@ namespace SoyEngine
 				return false;
 			}
 
+            string assetPath = null;
 			if (_cachedTexture.TryGetValue(textureName, out outTex))
 			{
 				return true;
 			}
-#if UNITY_EDITOR
-			if (SocialApp.Instance.UseLocalDebugRes)
-			{
-				string assetPath = null;
-				if (!TryGetDebugResPath(textureName, out assetPath))
-				{
-					LogHelper.Error("TryGetTextureByName called use debug res but assetPath is invalid!");
-					return false;
-				}
-				var o = AssetDatabase.LoadAssetAtPath<Texture>(assetPath);
-				if (o != null)
-				{
-					outTex = Object.Instantiate(o);
-					if (outTex != null)
-					{
-						_cachedTexture.Add(textureName, outTex);
-						return true;
-					}
-				}
-				return false;
-			}
-#endif
-			string wholePath = _pathManager.GetGameLocalAssetBundlePath(textureName, _gameName);
-			outTex = LoadAssetBundleMainAsset<Texture>(wholePath);
-			if (outTex == null)
-			{
-				LogHelper.Error("Get Texture {0} failed ,whole path is {1}", textureName, wholePath);
-				return false;
-			}
-			_cachedTexture.Add(textureName, outTex);
-			return true;
+
+            if (!_manifest.AssetName2Path(textureName, out assetPath))
+            {
+                LogHelper.Error("TryGetTextureByName {0} called use debug res but assetPath is invalid!", textureName);
+                return false;
+            }
+            var origObj = Resources.Load (assetPath) as Texture;
+            if (origObj != null) {
+                var instance = Object.Instantiate(origObj);
+                _cachedTexture.Add (textureName, instance);
+                outTex = instance;
+                return true;
+            }
+            return false;
+//#if UNITY_EDITOR
+//			if (SocialApp.Instance.UseLocalDebugRes)
+//			{
+//				string assetPath = null;
+//				if (!TryGetDebugResPath(textureName, out assetPath))
+//				{
+//                    LogHelper.Error("TryGetTextureByName {0} called use debug res but assetPath is invalid!", textureName);
+//					return false;
+//				}
+//				var o = AssetDatabase.LoadAssetAtPath<Texture>(assetPath);
+//				if (o != null)
+//				{
+//					outTex = Object.Instantiate(o);
+//					if (outTex != null)
+//					{
+//						_cachedTexture.Add(textureName, outTex);
+//						return true;
+//					}
+//				}
+//				return false;
+//			}
+//#endif
+//			string wholePath = _pathManager.GetGameLocalAssetBundlePath(textureName, _gameName);
+//			outTex = LoadAssetBundleMainAsset<Texture>(wholePath);
+//			if (outTex == null)
+//			{
+//				LogHelper.Error("Get Texture {0} failed ,whole path is {1}", textureName, wholePath);
+//				return false;
+//			}
+//			_cachedTexture.Add(textureName, outTex);
+//			return true;
 		}
 
 	    public bool TryGetAvatarSpineTextureByName(string textureName, out Texture outTex)
@@ -432,37 +460,52 @@ namespace SoyEngine
 		    {
 			    return true;
 		    }
-#if UNITY_EDITOR
-			if (SocialApp.Instance.UseLocalDebugRes)
-			{
-				string assetPath = null;
-				if (!TryGetDebugResPath(audioName, out assetPath))
-				{
-					LogHelper.Error("TryGetAudioClipByName called use debug res but assetPath is invalid!");
-					return false;
-				}
-				var o = AssetDatabase.LoadAssetAtPath<AudioClip>(assetPath);
-				if (o != null)
-				{
-					outClip = Object.Instantiate(o);
-					if (outClip != null)
-					{
-						_cachedAudioClip.Add(audioName, outClip);
-						return true;
-					}
-				}
-				return false;
-			}
-#endif
-			string wholePath = _pathManager.GetGameLocalAssetBundlePath(audioName, _gameName);
-		    outClip = LoadAssetBundleMainAsset<AudioClip>(wholePath);
-		    if (outClip == null)
-		    {
-			    LogHelper.Error("Get audioClip {0} failed,whole path is {1}",audioName,wholePath);
-			    return false;
-		    }
-			_cachedAudioClip.Add(audioName,outClip);
-		    return true;
+
+            string assetPath = null;
+            if (!_manifest.AssetName2Path(audioName, out assetPath))
+            {
+                LogHelper.Error("TryGetAudioClipByName called use debug res but assetPath is invalid!");
+                return false;
+            }
+            var origObj = Resources.Load (assetPath) as AudioClip;
+            if (origObj != null) {
+                var instance = Object.Instantiate (origObj);
+                _cachedAudioClip.Add (audioName, instance);
+                outClip = instance;
+                return true;
+            }
+            return false;
+//#if UNITY_EDITOR
+//			if (SocialApp.Instance.UseLocalDebugRes)
+//			{
+//				string assetPath = null;
+//				if (!TryGetDebugResPath(audioName, out assetPath))
+//				{
+//					LogHelper.Error("TryGetAudioClipByName called use debug res but assetPath is invalid!");
+//					return false;
+//				}
+//				var o = AssetDatabase.LoadAssetAtPath<AudioClip>(assetPath);
+//				if (o != null)
+//				{
+//					outClip = Object.Instantiate(o);
+//					if (outClip != null)
+//					{
+//						_cachedAudioClip.Add(audioName, outClip);
+//						return true;
+//					}
+//				}
+//				return false;
+//			}
+//#endif
+//			string wholePath = _pathManager.GetGameLocalAssetBundlePath(audioName, _gameName);
+//		    outClip = LoadAssetBundleMainAsset<AudioClip>(wholePath);
+//		    if (outClip == null)
+//		    {
+//			    LogHelper.Error("Get audioClip {0} failed,whole path is {1}",audioName,wholePath);
+//			    return false;
+//		    }
+//			_cachedAudioClip.Add(audioName,outClip);
+//		    return true;
 	    }
 
 	    public bool TryGetSingleSprite(string spriteName, out Sprite outSprite)
@@ -477,97 +520,132 @@ namespace SoyEngine
 			{
 				return true;
 			}
-#if UNITY_EDITOR
-			if (SocialApp.Instance.UseLocalDebugRes)
-			{
-				string assetPath = null;
-				if (!TryGetDebugResPath(spriteName, out assetPath))
-				{
-					LogHelper.Error("TryGetSingleSprite called use debug res but assetPath is invalid!");
-					return false;
-				}
-				var o = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
-				outSprite = o;
-				bool res = o != null;
-				if (res)
-				{
-					_cachedSingleSprite.Add(spriteName, outSprite);
-				}
-				return res;
-			}
-#endif
-			string wholePath = _pathManager.GetGameLocalAssetBundlePath(spriteName, _gameName);
-			outSprite = LoadAssetBundleMainAsset<Sprite>(wholePath);
-			if (outSprite == null)
-			{
-				LogHelper.Error("Get SingleSprite {0} failed,whole path is {1}", spriteName, wholePath);
-				return false;
-			}
-			_cachedSingleSprite.Add(spriteName, outSprite);
-			return true;
+
+            string assetPath = null;
+            if (!_manifest.AssetName2Path(spriteName, out assetPath))
+            {
+                LogHelper.Error("TryGetSingleSprite called use debug res but assetPath is invalid!");
+                return false;
+            }
+            var origObj = Resources.Load (assetPath) as Sprite;
+            if (origObj != null) {
+                var instance = Object.Instantiate (origObj);
+                _cachedSingleSprite.Add (spriteName, instance);
+                outSprite = instance;
+                return true;
+            }
+            return false;
+
+//#if UNITY_EDITOR
+//			if (SocialApp.Instance.UseLocalDebugRes)
+//			{
+//				string assetPath = null;
+//				if (!TryGetDebugResPath(spriteName, out assetPath))
+//				{
+//					LogHelper.Error("TryGetSingleSprite called use debug res but assetPath is invalid!");
+//					return false;
+//				}
+//				var o = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+//				outSprite = o;
+//				bool res = o != null;
+//				if (res)
+//				{
+//					_cachedSingleSprite.Add(spriteName, outSprite);
+//				}
+//				return res;
+//			}
+//#endif
+//			string wholePath = _pathManager.GetGameLocalAssetBundlePath(spriteName, _gameName);
+//			outSprite = LoadAssetBundleMainAsset<Sprite>(wholePath);
+//			if (outSprite == null)
+//			{
+//				LogHelper.Error("Get SingleSprite {0} failed,whole path is {1}", spriteName, wholePath);
+//				return false;
+//			}
+//			_cachedSingleSprite.Add(spriteName, outSprite);
+//			return true;
 		}
 
-		public Object LoadMainAssetObject(string path)
+		public Object LoadMainAssetObject(string name)
         {
-			if (string.IsNullOrEmpty(path))
+			if (string.IsNullOrEmpty(name))
             {
                 return null;
             }
-            if (_cachedMainAsset.ContainsKey(path))
+            if (_cachedMainAsset.ContainsKey(name))
             {
-                return _cachedMainAsset[path];
-            }
-
-#if UNITY_EDITOR
-			if (SocialApp.Instance.UseLocalDebugRes)
-			{
-				string assetPath = null;
-				if (!TryGetDebugResPath(path, out assetPath))
-				{
-					LogHelper.Error("LoadMainAssetObject called use debug res but assetPath is invalid!");
-					return null;
-				}
-				var o = AssetDatabase.LoadMainAssetAtPath(assetPath);
-				if (o != null)
-				{
-					Object res = GameObject.Instantiate(o,_localResDebugTmpParent.transform);
-					_cachedMainAsset.Add(path, res);
-					return res;
-				}
-				else
-				{
-					LogHelper.Error("LoadMainAssetObject called but debug res {0} is invalid，path is {1}", path, assetPath);
-					return null;
-				}
-			}
-#endif
-
-			SoyAssetInfo asset = _manifest.GetAssetInfoByName(path);
-
-            if (asset == null || asset.ResType != EResType.Prefab)
-            {
-                LogHelper.Error("LoadMainAssetObject {0} falied , by asset == null || asset.ResType != EResType.Prefab! ",path);
-                return null;
-            }
-            if (!LoadDependsList(asset.Depends))
-            {
-                LogHelper.Error("LoadMainAssetObject {0} failed! LoadDependsList is false ", asset.AssetName);
-            }
-            SoyMainAsset mainAsset = LoadAssetBundleMainAsset<SoyMainAsset>(_pathManager.GetGameLocalAssetBundlePath(asset.AssetName, _gameName));
-            if (mainAsset == null || mainAsset.MainAsset == null)
-            {
-                LogHelper.Error("LoadMainAssetObject called but mainAsset{0} is invalid!");
-                return null;
-            }
-            if (mainAsset.InjectItems != null)
-            {
-                for (int i = 0; i < mainAsset.InjectItems.Length; i++)
-                {
-                    InjectAssetDepends(mainAsset.InjectItems[i]);
+                if (null == _cachedMainAsset [name]) {
+                    _cachedMainAsset.Remove (name);
+                } else {
+                    return _cachedMainAsset [name];
                 }
             }
-            _cachedMainAsset.Add(path, mainAsset.MainAsset);
-            return mainAsset.MainAsset;
+            string assetPath = null;
+            if (!_manifest.AssetName2Path(name, out assetPath))
+            {
+                LogHelper.Error("LoadMainAssetObject called use debug res but assetPath is invalid!");
+                return null;
+            }
+            var origObj = Resources.Load (assetPath);
+            if (origObj != null) {
+                var instance = Object.Instantiate (origObj);
+                _cachedMainAsset.Add (name, instance);
+//                return Object.Instantiate(origObj);
+                return instance;
+            }
+            return null;
+
+//#if UNITY_EDITOR
+//			if (SocialApp.Instance.UseLocalDebugRes)
+//			{
+//				string assetPath = null;
+//				if (!TryGetDebugResPath(path, out assetPath))
+//				{
+//					LogHelper.Error("LoadMainAssetObject called use debug res but assetPath is invalid!");
+//					return null;
+//				}
+//				var o = AssetDatabase.LoadMainAssetAtPath(assetPath);
+//				if (o != null)
+//				{
+//					Object res = GameObject.Instantiate(o,_localResDebugTmpParent.transform);
+//					_cachedMainAsset.Add(path, res);
+//					return res;
+//				}
+//				else
+//				{
+//					LogHelper.Error("LoadMainAssetObject called but debug res {0} is invalid，path is {1}", path, assetPath);
+//					return null;
+//				}
+//			}
+//#endif
+//
+//			SoyAssetInfo asset = _manifest.GetAssetInfoByName(path);
+//
+//            if (asset == null || asset.ResType != EResType.Prefab)
+//            {
+//                LogHelper.Error("LoadMainAssetObject {0} falied , by asset == null || asset.ResType != EResType.Prefab! ",path);
+//                return null;
+//            }
+//            if (!LoadDependsList(asset.Depends))
+//            {
+//                LogHelper.Error("LoadMainAssetObject {0} failed! LoadDependsList is false ", asset.AssetName);
+//            }
+//            SoyMainAsset mainAsset = LoadAssetBundleMainAsset<SoyMainAsset>(_pathManager.GetGameLocalAssetBundlePath(asset.AssetName, _gameName));
+//            if (mainAsset == null || mainAsset.MainAsset == null)
+//            {
+//                LogHelper.Error("LoadMainAssetObject called but mainAsset{0} is invalid!");
+//                return null;
+//            }
+//            if (mainAsset.InjectItems != null)
+//            {
+//                for (int i = 0; i < mainAsset.InjectItems.Length; i++)
+//                {
+//                    InjectAssetDepends(mainAsset.InjectItems[i]);
+//                }
+//            }
+//            _cachedMainAsset.Add(path, mainAsset.MainAsset);
+//            return mainAsset.MainAsset;
+            return null;
         }
 
 
@@ -605,6 +683,7 @@ namespace SoyEngine
 
         private bool TrtGetAtlas(string atlasName,out SoyAtlas atlas)
         {
+            atlas = null;
             if (string.IsNullOrEmpty(atlasName))
             {
                 LogHelper.Error("TrtGetAtlas called but atlasName is null or empty");
@@ -615,35 +694,50 @@ namespace SoyEngine
             {
                 return true;
             }
-#if UNITY_EDITOR
-	        if (SocialApp.Instance.UseLocalDebugRes)
-	        {
-				string assetPath = null;
-				if (!TryGetDebugResPath(atlasName, out assetPath))
-				{
-					LogHelper.Error("TrtGetAtlas called use debug res but assetPath is invalid!");
-					return false;
-				}
 
-				var o = AssetDatabase.LoadAssetAtPath<SoyAtlas>(assetPath);
-				if (o!=null)
-				{
-					SoyAtlas resObj = Object.Instantiate(o) as SoyAtlas;
-					atlas = resObj;
-					_cachedAtlas.Add(atlasName, resObj);
-					return resObj!=null;
-				}
-		        return false;
-	        }
-#endif
-			atlas = LoadAssetBundleMainAsset<SoyAtlas>(_pathManager.GetGameLocalAssetBundlePath(atlasName, _gameName));
-            if (atlas == null)
+            string assetPath = null;
+            if (!_manifest.AssetName2Path(atlasName, out assetPath))
             {
-                LogHelper.Error("Get atlas {0} falied ,whole path is {1}", atlasName, _pathManager.GetGameLocalAssetBundlePath(atlasName, _gameName));
+                LogHelper.Error("TrtGetAtlas called use debug res but assetPath is invalid!");
                 return false;
             }
-            _cachedAtlas.Add(atlasName, atlas);
-            return true;
+            var origObj = Resources.Load (assetPath) as SoyAtlas;
+            if (origObj != null) {
+                var instance = Object.Instantiate (origObj);
+                _cachedAtlas.Add(atlasName, instance);
+                atlas = instance;
+                return true;
+            }
+            return false;
+//#if UNITY_EDITOR
+//	        if (SocialApp.Instance.UseLocalDebugRes)
+//	        {
+//				string assetPath = null;
+//				if (!TryGetDebugResPath(atlasName, out assetPath))
+//				{
+//					LogHelper.Error("TrtGetAtlas called use debug res but assetPath is invalid!");
+//					return false;
+//				}
+//
+//				var o = AssetDatabase.LoadAssetAtPath<SoyAtlas>(assetPath);
+//				if (o!=null)
+//				{
+//					SoyAtlas resObj = Object.Instantiate(o) as SoyAtlas;
+//					atlas = resObj;
+//					_cachedAtlas.Add(atlasName, resObj);
+//					return resObj!=null;
+//				}
+//		        return false;
+//	        }
+//#endif
+//			atlas = LoadAssetBundleMainAsset<SoyAtlas>(_pathManager.GetGameLocalAssetBundlePath(atlasName, _gameName));
+//            if (atlas == null)
+//            {
+//                LogHelper.Error("Get atlas {0} falied ,whole path is {1}", atlasName, _pathManager.GetGameLocalAssetBundlePath(atlasName, _gameName));
+//                return false;
+//            }
+//            _cachedAtlas.Add(atlasName, atlas);
+//            return true;
         }
 
 
@@ -659,40 +753,58 @@ namespace SoyEngine
             {
                 return true;
             }
-#if UNITY_EDITOR
-	        if (SocialApp.Instance.UseLocalDebugRes)
-	        {
-		        string assetPath = null;
-		        if (!TryGetDebugResPath(spineDataName, out assetPath))
-		        {
-					LogHelper.Error("TryGetSkeletonDataAssetByName called use debug res but assetPath is invalid!");
-			        return false;
-		        }
-				
-		        var o =  AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(assetPath);
-		        if (o!=null)
-		        {
-					SkeletonDataAsset resObj = CopyDebugResSpineData(o);
-			        data = resObj;
-					_cachedSpineData.Add(spineDataName, resObj);
-			        return resObj != null;
-		        }
-		        return false;
-	        }
-#endif
-			string wholePath = _pathManager.GetGameLocalAssetBundlePath(spineDataName, _gameName);
-            data = LoadAssetBundleMainAsset<SkeletonDataAsset>(wholePath);
-            if (data == null)
+
+            string assetPath = null;
+            if (!_manifest.AssetName2Path(spineDataName, out assetPath))
             {
-                LogHelper.Error("Get SkeletonDataAsset {0} falied ,whole path is {1}", spineDataName, wholePath);
+                LogHelper.Error("TryGetSkeletonDataAssetByName called use debug res but assetPath is invalid!");
                 return false;
             }
-	        if (Application.platform == RuntimePlatform.OSXEditor)
-	        {
-				data.atlasAssets[0].materials[0].shader = Shader.Find(data.atlasAssets[0].materials[0].shader.name);
-			}
-			_cachedSpineData.Add(spineDataName, data);
-            return true;
+
+            var origObj = Resources.Load (assetPath) as SkeletonDataAsset;
+            if (origObj != null) {
+                var instance = CopyDebugResSpineData (origObj);
+                _cachedSpineData.Add(spineDataName, instance);
+                data = instance;
+                return true;
+            }
+            return false;
+
+
+//#if UNITY_EDITOR
+//	        if (SocialApp.Instance.UseLocalDebugRes)
+//	        {
+//		        string assetPath = null;
+//		        if (!TryGetDebugResPath(spineDataName, out assetPath))
+//		        {
+//					LogHelper.Error("TryGetSkeletonDataAssetByName called use debug res but assetPath is invalid!");
+//			        return false;
+//		        }
+//				
+//		        var o =  AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(assetPath);
+//		        if (o!=null)
+//		        {
+//					SkeletonDataAsset resObj = CopyDebugResSpineData(o);
+//			        data = resObj;
+//					_cachedSpineData.Add(spineDataName, resObj);
+//			        return resObj != null;
+//		        }
+//		        return false;
+//	        }
+//#endif
+//			string wholePath = _pathManager.GetGameLocalAssetBundlePath(spineDataName, _gameName);
+//            data = LoadAssetBundleMainAsset<SkeletonDataAsset>(wholePath);
+//            if (data == null)
+//            {
+//                LogHelper.Error("Get SkeletonDataAsset {0} falied ,whole path is {1}", spineDataName, wholePath);
+//                return false;
+//            }
+//	        if (Application.platform == RuntimePlatform.OSXEditor)
+//	        {
+//				data.atlasAssets[0].materials[0].shader = Shader.Find(data.atlasAssets[0].materials[0].shader.name);
+//			}
+//			_cachedSpineData.Add(spineDataName, data);
+//            return true;
         }
 
         private bool LoadDependsList(List<string> dependsList)
@@ -784,6 +896,7 @@ namespace SoyEngine
 		private void InitDebugLocalRes()
 		{
 			_localResDebugTmpParent = new GameObject("_localResDebugTmpParent");
+            GameObject.DontDestroyOnLoad (_localResDebugTmpParent);
 			_localResDebugTmpParent.SetActive(false);
 			string path = Application.dataPath;
 			_localDebugResPathDic = new Dictionary<string, string>();
@@ -793,22 +906,24 @@ namespace SoyEngine
 			string rootPath = Path.Combine(path, BuildToolsConstDefine.ExportAssetRootFolder);
 			rootPath= rootPath.Replace('\\', '/');
 			///main asset
-			PrepareResPathData(string.Format("{0}/{1}", rootPath, BuildToolsConstDefine.ExportMainAssetFolder), subStartCount,false, "*.prefab");
-			//图集
-			var atlasAssetPathList = PrepareResPathData(string.Format("{0}/{1}/{2}", rootPath, BuildToolsConstDefine.ExportDependsAssetFolder, BuildToolsConstDefine.ExportDependsAtlasAssetPathFolder),
+            PrepareResPathData(string.Format("{0}/{1}/{2}", rootPath, "Resources", BuildToolsConstDefine.ExportMainAssetFolder), subStartCount,false, "*.prefab");
+            //图集
+            //var atlasAssetPathList = PrepareResPathData(string.Format("{0}/{1}/{2}", rootPath, BuildToolsConstDefine.ExportDependsAssetFolder, BuildToolsConstDefine.ExportDependsAtlasAssetPathFolder),
+            // todo 临时改为在客户端工程构造atlas，之后改回在art工程构造atlas
+            var atlasAssetPathList = PrepareResPathData (string.Format ("{0}/{1}", path, "App/Resources/Sprite"),
 				subStartCount, true, "*.asset");
 			InitLocalSpriteAtlasRelation(atlasAssetPathList);
 			//音频
-			PrepareResPathData(string.Format("{0}/{1}/{2}", rootPath, BuildToolsConstDefine.ExportDependsAssetFolder, BuildToolsConstDefine.ExportDependsAudioPathFolder),
+            PrepareResPathData(string.Format("{0}/{1}/{2}/{3}", rootPath, "Resources", BuildToolsConstDefine.ExportDependsAssetFolder, BuildToolsConstDefine.ExportDependsAudioPathFolder),
 				subStartCount, false, "*.ogg", "*.mp3");
 			//sigle sprite
-			PrepareResPathData(string.Format("{0}/{1}/{2}", rootPath, BuildToolsConstDefine.ExportDependsAssetFolder, BuildToolsConstDefine.ExportDependsSingleSpriteFolder),
+            PrepareResPathData(string.Format("{0}/{1}/{2}/{3}", rootPath, "Resources", BuildToolsConstDefine.ExportDependsAssetFolder, BuildToolsConstDefine.ExportDependsSingleSpriteFolder),
 				subStartCount, false,"*.jpg", "*.png");
 			//spine data
-			PrepareResPathData(string.Format("{0}/{1}/{2}", rootPath, BuildToolsConstDefine.ExportDependsAssetFolder, BuildToolsConstDefine.ExportDependsSpineDataPathFolder),
+            PrepareResPathData(string.Format("{0}/{1}/{2}/{3}", rootPath, "Resources", BuildToolsConstDefine.ExportDependsAssetFolder, BuildToolsConstDefine.ExportDependsSpineDataPathFolder),
 				subStartCount, false,"*_SkeletonData.asset");
 			//texture
-			PrepareResPathData(string.Format("{0}/{1}/{2}",rootPath,BuildToolsConstDefine.ExportDependsAssetFolder,BuildToolsConstDefine.ExportDependsTextureAssetPathFolder),
+            PrepareResPathData(string.Format("{0}/{1}/{2}/{3}",rootPath, "Resources", BuildToolsConstDefine.ExportDependsAssetFolder,BuildToolsConstDefine.ExportDependsTextureAssetPathFolder),
 				subStartCount, false, "*.jpg", "*.png");
 		}
 
@@ -905,31 +1020,39 @@ namespace SoyEngine
 
 	    private bool TryGetDebugResPath(string assetName,out string outValue)
 	    {
-		    return _localDebugResPathDic.TryGetValue(assetName, out outValue);
+            if (!_localDebugResPathDic.TryGetValue (assetName, out outValue)) {
+                return false;
+            }
+            if (string.IsNullOrEmpty (outValue))
+                return false;
+            var parts = outValue.Split (new string[] { "Resources/"}, System.StringSplitOptions.None);
+            outValue = parts [parts.Length - 1].Split ('.')[0];
+            return true;
 	    }
 
-	    private SkeletonDataAsset CopyDebugResSpineData(SkeletonDataAsset data)
-	    {
-		    if (data == null)
-		    {
-			    return null;
-		    }
-		    SkeletonDataAsset res = Object.Instantiate(data);
-			res.atlasAssets = new AtlasAsset[data.atlasAssets.Length];
-		    for (int i = 0; i < data.atlasAssets.Length; i++)
-		    {
-			    res.atlasAssets[i] = Object.Instantiate(data.atlasAssets[i]);
-				res.atlasAssets[i].materials = new Material[data.atlasAssets[i].materials.Length];
-				for (int j = 0; j < res.atlasAssets[i].materials.Length; j++)
-			    {
-				    res.atlasAssets[i].materials[j] = Object.Instantiate(data.atlasAssets[i].materials[j]);
-			    }
-		    }
-			res.scale = 1f / BuildToolsConstDefine.SpirtePixelsPerUnit;
-			return res;
-	    }
+	    
+        #else
 #endif
-
+        private SkeletonDataAsset CopyDebugResSpineData(SkeletonDataAsset data)
+        {
+            if (data == null)
+            {
+                return null;
+            }
+            SkeletonDataAsset res = Object.Instantiate(data);
+            res.atlasAssets = new AtlasAsset[data.atlasAssets.Length];
+            for (int i = 0; i < data.atlasAssets.Length; i++)
+            {
+                res.atlasAssets[i] = Object.Instantiate(data.atlasAssets[i]);
+                res.atlasAssets[i].materials = new Material[data.atlasAssets[i].materials.Length];
+                for (int j = 0; j < res.atlasAssets[i].materials.Length; j++)
+                {
+                    res.atlasAssets[i].materials[j] = Object.Instantiate(data.atlasAssets[i].materials[j]);
+                }
+            }
+            res.scale = 1f / BuildToolsConstDefine.SpirtePixelsPerUnit;
+            return res;
+        }
 #endregion
 	}
 }

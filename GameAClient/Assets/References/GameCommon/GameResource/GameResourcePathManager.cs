@@ -198,6 +198,14 @@ namespace SoyEngine
 			{
 				return BuildToolsConstDefine.Ios;
 			}
+            else if (Application.platform == RuntimePlatform.WindowsPlayer)
+            {
+                return BuildToolsConstDefine.StandaloneWindows;
+            }
+            else if (Application.platform == RuntimePlatform.OSXPlayer)
+            {
+                return BuildToolsConstDefine.StandaloneWindows;
+            }
 			else
 			{
 				return BuildToolsConstDefine.StandaloneWindows;

@@ -22,12 +22,28 @@ namespace GameA.Game
             return true;
         }
 
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            _animation.Init("Run");
+            return true;
+        }
+
+        public override bool StepOnIce()
+        {
+            return true;
+        }
+
         public override void OnShootHit(UnitBase other)
         {
-            if (other is BulletWater)
+            if (other is BulletFire)
             {
                 PlayMode.Instance.DestroyUnit(this);
                 PushChild();
+                OnDead();
             }
         }
     }

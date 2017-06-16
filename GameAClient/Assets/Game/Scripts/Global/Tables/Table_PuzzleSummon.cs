@@ -5,10 +5,14 @@ namespace GameA.Game
     [Serializable]
 	public partial class Table_PuzzleSummon
 	{
-		// 序号
+		/// <summary>
+        /// 序号
+        /// </summary>
 		[ColumnMapping("Id")]
 		public int Id;
-		// 消耗
+		/// <summary>
+        /// 消耗
+        /// </summary>
 		[ColumnMapping("Cost")]
 		public int Cost;
 	}

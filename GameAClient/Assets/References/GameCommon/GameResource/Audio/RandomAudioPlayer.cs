@@ -6,6 +6,7 @@
 ***********************************************************************/
 
 
+using GameA.Game;
 using SoyEngine;
 using UnityEngine;
 using PlayMode = GameA.Game.PlayMode;
@@ -48,11 +49,11 @@ namespace SoyEngine
 				//LogHelper.Warning("RandomAudioPlayer {0} .Play called but _isEnable is false!",_name);
 				return;
 			}
-            if (PlayMode.Instance.LogicFrameCnt == _lastTriggerFrame)
+            if (GameRun.Instance.LogicFrameCnt == _lastTriggerFrame)
 			{
 				return;
 			}
-            _lastTriggerFrame = PlayMode.Instance.LogicFrameCnt;
+            _lastTriggerFrame = GameRun.Instance.LogicFrameCnt;
 			Stop();
 			int randomValue = Random.Range(0, _randomMaxValue);
 			GameAudioManager.Instance.PlaySoundsEffects(_audioNameArray[randomValue]);

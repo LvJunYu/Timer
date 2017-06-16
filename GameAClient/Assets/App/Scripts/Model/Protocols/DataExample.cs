@@ -9,27 +9,43 @@ namespace GameA
     public partial class DataExample : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        // 关卡 id
+        /// <summary>
+        /// 关卡 id
+        /// </summary>
         private long _id;
-        // 名字
+        /// <summary>
+        /// 名字
+        /// </summary>
         private string _name;
-        // 分数
+        /// <summary>
+        /// 分数
+        /// </summary>
         private float _score;
-        // 关卡内容
+        /// <summary>
+        /// 关卡内容
+        /// </summary>
         private List<Struct> _struct;
 
         // cs fields----------------------------------
-        // 关卡 id
+        /// <summary>
+        /// 关卡 id
+        /// </summary>
         private long _cs_id;
-        // 名字
+        /// <summary>
+        /// 名字
+        /// </summary>
         private string _cs_name;
-        // 类型
+        /// <summary>
+        /// 类型
+        /// </summary>
         private ESomeEnum _cs_type;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        // 关卡 id
+        /// <summary>
+        /// 关卡 id
+        /// </summary>
         public long Id { 
             get { return _id; }
             set { if (_id != value) {
@@ -37,7 +53,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 名字
+        /// <summary>
+        /// 名字
+        /// </summary>
         public string Name { 
             get { return _name; }
             set { if (_name != value) {
@@ -45,7 +63,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 分数
+        /// <summary>
+        /// 分数
+        /// </summary>
         public float Score { 
             get { return _score; }
             set { if (_score != value) {
@@ -53,7 +73,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 关卡内容
+        /// <summary>
+        /// 关卡内容
+        /// </summary>
         public List<Struct> Struct { 
             get { return _struct; }
             set { if (_struct != value) {
@@ -63,17 +85,23 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        // 关卡 id
+        /// <summary>
+        /// 关卡 id
+        /// </summary>
         public long CS_Id { 
             get { return _cs_id; }
             set { _cs_id = value; }
         }
-        // 名字
+        /// <summary>
+        /// 名字
+        /// </summary>
         public string CS_Name { 
             get { return _cs_name; }
             set { _cs_name = value; }
         }
-        // 类型
+        /// <summary>
+        /// 类型
+        /// </summary>
         public ESomeEnum CS_Type { 
             get { return _cs_type; }
             set { _cs_type = value; }
@@ -106,20 +134,39 @@ namespace GameA
             ESomeEnum type,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            OnRequest (successCallback, failedCallback);
+            if (_isRequesting) {
+                if (_cs_id != id) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_name != name) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_type != type) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest (successCallback, failedCallback);
+            } else {
+                _cs_id = id;
+                _cs_name = name;
+                _cs_type = type;
+                OnRequest (successCallback, failedCallback);
 
-            Msg_CS_DAT_DataExample msg = new Msg_CS_DAT_DataExample();
-            msg.Id = id;
-            msg.Name = name;
-            msg.Type = type;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_DataExample>(
-                SoyHttpApiPath.DataExample, msg, ret => {
-                    if (OnSync(ret)) {
-                        OnSyncSucceed(); 
-                    }
-                }, (failedCode, failedMsg) => {
-                    OnSyncFailed(failedCode, failedMsg);
-            });
+                Msg_CS_DAT_DataExample msg = new Msg_CS_DAT_DataExample();
+                msg.Id = id;
+                msg.Name = name;
+                msg.Type = type;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_DataExample>(
+                    SoyHttpApiPath.DataExample, msg, ret => {
+                        if (OnSync(ret)) {
+                            OnSyncSucceed(); 
+                        }
+                    }, (failedCode, failedMsg) => {
+                        OnSyncFailed(failedCode, failedMsg);
+                });            
+            }            
         }
 
         public bool OnSync (Msg_SC_DAT_DataExample msg)

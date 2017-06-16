@@ -13,30 +13,31 @@ using Spine.Unity;
 namespace GameA.Game
 {
     [Unit(Id = 5003, Type = typeof(Portal))]
-    public class Portal : Earth
+    public class Portal : BlockBase
     {
-        protected SkeletonAnimation _animation;
+        protected UnityNativeParticleItem _effect;
 
-        protected override bool OnInit()
+        internal override bool InstantiateView()
         {
-            if (!base.OnInit())
+            if (!base.InstantiateView())
             {
                 return false;
             }
-            _animation = _trans.GetComponent<SkeletonAnimation>();
+            InitAssetRotation(true);
+            _effect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectPortalRun", _trans);
+            if (_effect != null)
+            {
+                _effect.Play();
+                SetRelativeEffectPos(_effect.Trans, (EDirectionType)Rotation);
+            }
             return true;
         }
 
-        internal override void OnPlay()
+        internal override void OnObjectDestroy()
         {
-            base.OnPlay();
-            _animation.state.SetAnimation(0, "Run", true);
-        }
-
-        internal override void Reset()
-        {
-            base.Reset();
-            _animation.Reset();
+            base.OnObjectDestroy();
+            FreeEffect(_effect);
+            _effect = null;
         }
 
         public static void OnPortal(PairUnit pairUnit, UnitDesc unitDesc)
@@ -56,39 +57,46 @@ namespace GameA.Game
             var checkGrid = GM2DTools.CalculateFireColliderGrid(sender.Id, colliderGrid, unitDesc.Rotation);
             var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid,
                 JoyPhysics2D.GetColliderLayerMask(sender.DynamicCollider.Layer));
-            var speed = IntVec2.zero;
-            //for (int i = 0; i < units.Count; i++)
-            //{
-            //    if (GM2DTools.OnDirectionHit(units[i], sender, unitDesc.Rotation))
-            //    {
-            //        return;
-            //    }
-            //}
-            switch ((ERotationType)unitDesc.Rotation)
+            for (int i = 0; i < units.Count; i++)
             {
-                case ERotationType.Up:
+                if (units[i].IsAlive)
+                {
+                    if (GM2DTools.OnDirectionHit(units[i], sender, (EMoveDirection)(unitDesc.Rotation + 1)))
+                    {
+                        return;
+                    }
+                }
+            }
+            var speed = IntVec2.zero;
+            switch ((EDirectionType)unitDesc.Rotation)
+            {
+                case EDirectionType.Up:
                     speed.x = (pairUnit.TriggeredCnt / 2) % 2 == 0 ? 45 : -45;
                     speed.y = 165;
                     break;
-                case ERotationType.Down:
+                case EDirectionType.Down:
                     break;
-                case ERotationType.Left:
+                case EDirectionType.Left:
                     speed.x = -60;
                     break;
-                case ERotationType.Right:
+                case EDirectionType.Right:
                     speed.x = 60;
                     break;
             }
             var targetMin = new IntVec2(checkGrid.XMin,checkGrid.YMin);
             sender.OnPortal(sender.TableUnit.ColliderToRenderer(targetMin, sender.Rotation), speed);
             pairUnit.Sender = null;
+            if (unitDesc.Id == UnitDefine.PlayerTableId)
+            {
+                Messenger.Broadcast (EMessengerType.OnPlayerEnterPortal);
+            }
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
             if (!checkOnly)
             {
-                if (other.SpeedY <= 0 && Rotation == (int)ERotationType.Up)
+                if (other.SpeedY <= 0 && Rotation == (int)EDirectionType.Up)
                 {
                     OnTrigger(other);
                 }
@@ -100,7 +108,7 @@ namespace GameA.Game
         {
             if (!checkOnly)
             {
-                if (other.SpeedY > 0 && Rotation == (int)ERotationType.Down)
+                if (other.SpeedY > 0 && Rotation == (int)EDirectionType.Down)
                 {
                     OnTrigger(other);
                 }
@@ -112,7 +120,7 @@ namespace GameA.Game
         {
             if (!checkOnly)
             {
-                if (Rotation == (int)ERotationType.Left)
+                if (Rotation == (int)EDirectionType.Left)
                 {
                     OnTrigger(other);
                 }
@@ -124,7 +132,7 @@ namespace GameA.Game
         {
             if (!checkOnly)
             {
-                if (Rotation == (int)ERotationType.Right)
+                if (Rotation == (int)EDirectionType.Right)
                 {
                     OnTrigger(other);
                 }

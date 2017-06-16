@@ -16,7 +16,7 @@ namespace GameA.Game
     public class Trigger : UnitBase
     {
         private Callback _callback;
-        public override void OnHit(UnitBase other)
+        public override void OnIntersect(UnitBase other)
         {
             if (other.IsMain)
             {

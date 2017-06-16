@@ -99,11 +99,7 @@ namespace GameA
             {
                 ClearCache();
             }
-            if (Application.platform == RuntimePlatform.WindowsPlayer)
-            {
-                Screen.SetResolution(640, 960, false, 60);
-            }
-	        InitLocalResource();
+//	        InitLocalResource();
 			RegisterGameTypeVersion();
             VersionManager.Instance.Init();
             JoyNativeTool.Instance.Init();
@@ -111,6 +107,10 @@ namespace GameA
             Application.targetFrameRate = 60;
             QualitySettings.vSyncCount = 1;
             gameObject.AddComponent<SocialGUIManager>();
+            GameResourceManager rm = gameObject.AddComponent<GameResourceManager> ();
+            if (!rm.Init ("GameMaker2D")) {
+                LogHelper.Error ("GameResourceManager initFailed");
+            }
         }
 
         public void Init()
@@ -128,23 +128,25 @@ namespace GameA
             ShareUtil.Init();
         }
 
-	    public void InitAfterUpdateResComplete()
-	    {
-			gameObject.AddComponent<TableManager>();
-			TableManager.Instance.Init();
-			SocialGUIManager.Instance.ShowAppView();
+        public void InitAfterUpdateResComplete()
+        {
+            gameObject.AddComponent<TableManager>();
+            TableManager.Instance.Init();
+            SocialGUIManager.Instance.ShowAppView();
+
+            GameProcessManager.Instance.Init ();
 		}
 
-	    private void InitLocalResource()
-	    {
-			LocalResourceManager.Instance.Init();
-			LocaleManager.Instance.Init();
-		}
+//	    private void InitLocalResource()
+//	    {
+//			LocalResourceManager.Instance.Init();
+//			LocaleManager.Instance.Init();
+//		}
 
         internal void ReturnToApp(bool withScreenEffect = true)
         {
             GameManager.Instance.RequestStopGame();
-            JoySceneManager.Instance.LoadEmptyScene();
+            //JoySceneManager.Instance.LoadEmptyScene();
 
             SocialGUIManager.Instance.ChangeToAppMode();
         }

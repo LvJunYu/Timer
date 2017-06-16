@@ -3,231 +3,84 @@
         "Id": "1",
         "PageIdx": "1",
         "Type": "1",
-        "ItemIdx": "3",
+        "ItemIdx": "1",
         "Sex": "1"
     },
     {
         "Id": "2",
         "PageIdx": "1",
-        "Type": "2",
-        "ItemIdx": "3",
+        "Type": "1",
+        "ItemIdx": "2",
         "Sex": "1"
     },
     {
         "Id": "3",
         "PageIdx": "1",
-        "Type": "3",
-        "ItemIdx": "3",
-        "Sex": "1"
-    },
-    {
-        "Id": "4",
-        "PageIdx": "1",
-        "Type": "4",
-        "ItemIdx": "3",
-        "Sex": "1"
-    },
-    {
-        "Id": "5",
-        "PageIdx": "1",
         "Type": "1",
-        "ItemIdx": "7",
-        "Sex": "2"
-    },
-    {
-        "Id": "6",
-        "PageIdx": "1",
-        "Type": "2",
-        "ItemIdx": "7",
-        "Sex": "2"
-    },
-    {
-        "Id": "7",
-        "PageIdx": "1",
-        "Type": "3",
-        "ItemIdx": "7",
-        "Sex": "2"
-    },
-    {
-        "Id": "8",
-        "PageIdx": "1",
-        "Type": "4",
-        "ItemIdx": "7",
-        "Sex": "2"
+        "ItemIdx": "3",
+        "Sex": "1"
     },
     {
         "Id": "9",
         "PageIdx": "2",
-        "Type": "1",
-        "ItemIdx": "0",
+        "Type": "2",
+        "ItemIdx": "1",
         "Sex": "1"
     },
     {
         "Id": "10",
         "PageIdx": "2",
         "Type": "2",
-        "ItemIdx": "1",
+        "ItemIdx": "2",
         "Sex": "1"
     },
     {
         "Id": "11",
         "PageIdx": "2",
-        "Type": "3",
-        "ItemIdx": "2",
-        "Sex": "1"
-    },
-    {
-        "Id": "12",
-        "PageIdx": "2",
-        "Type": "4",
+        "Type": "2",
         "ItemIdx": "3",
         "Sex": "1"
     },
     {
-        "Id": "13",
-        "PageIdx": "2",
-        "Type": "1",
-        "ItemIdx": "4",
-        "Sex": "2"
-    },
-    {
-        "Id": "14",
-        "PageIdx": "2",
-        "Type": "2",
-        "ItemIdx": "5",
-        "Sex": "2"
-    },
-    {
-        "Id": "15",
-        "PageIdx": "2",
-        "Type": "3",
-        "ItemIdx": "6",
-        "Sex": "2"
-    },
-    {
-        "Id": "16",
-        "PageIdx": "2",
-        "Type": "4",
-        "ItemIdx": "7",
-        "Sex": "2"
-    },
-    {
         "Id": "17",
         "PageIdx": "3",
-        "Type": "1",
-        "ItemIdx": "0",
+        "Type": "3",
+        "ItemIdx": "1",
         "Sex": "1"
     },
     {
         "Id": "18",
         "PageIdx": "3",
-        "Type": "2",
-        "ItemIdx": "1",
+        "Type": "3",
+        "ItemIdx": "2",
         "Sex": "1"
     },
     {
         "Id": "19",
         "PageIdx": "3",
         "Type": "3",
-        "ItemIdx": "2",
-        "Sex": "1"
-    },
-    {
-        "Id": "20",
-        "PageIdx": "3",
-        "Type": "4",
         "ItemIdx": "3",
         "Sex": "1"
     },
     {
-        "Id": "21",
-        "PageIdx": "3",
-        "Type": "1",
-        "ItemIdx": "4",
-        "Sex": "2"
-    },
-    {
-        "Id": "22",
-        "PageIdx": "3",
-        "Type": "2",
-        "ItemIdx": "5",
-        "Sex": "2"
-    },
-    {
-        "Id": "23",
-        "PageIdx": "3",
-        "Type": "3",
-        "ItemIdx": "6",
-        "Sex": "2"
-    },
-    {
-        "Id": "24",
-        "PageIdx": "3",
-        "Type": "4",
-        "ItemIdx": "7",
-        "Sex": "2"
-    },
-    {
         "Id": "25",
         "PageIdx": "4",
-        "Type": "1",
-        "ItemIdx": "0",
+        "Type": "4",
+        "ItemIdx": "1",
         "Sex": "1"
     },
     {
         "Id": "26",
         "PageIdx": "4",
-        "Type": "2",
-        "ItemIdx": "1",
+        "Type": "4",
+        "ItemIdx": "2",
         "Sex": "1"
     },
     {
         "Id": "27",
         "PageIdx": "4",
-        "Type": "3",
-        "ItemIdx": "2",
-        "Sex": "1"
-    },
-    {
-        "Id": "28",
-        "PageIdx": "4",
         "Type": "4",
         "ItemIdx": "3",
-        "Sex": "1"
-    },
-    {
-        "Id": "29",
-        "PageIdx": "4",
-        "Type": "1",
-        "ItemIdx": "4",
-        "Sex": "2"
-    },
-    {
-        "Id": "30",
-        "PageIdx": "4",
-        "Type": "2",
-        "ItemIdx": "5",
-        "Sex": "2"
-    },
-    {
-        "Id": "31",
-        "PageIdx": "4",
-        "Type": "3",
-        "ItemIdx": "6",
-        "Sex": "2"
-    },
-    {
-        "Id": "32",
-        "PageIdx": "4",
-        "Type": "4",
-        "ItemIdx": "7",
-        "Sex": "2"
-    },
-    {
-        "Id": "33",
-        "PageIdx": "5",
-        "Type": "1",
-        "ItemIdx": "0",
         "Sex": "1"
     },
     {
@@ -250,33 +103,5 @@
         "Type": "4",
         "ItemIdx": "3",
         "Sex": "1"
-    },
-    {
-        "Id": "37",
-        "PageIdx": "5",
-        "Type": "1",
-        "ItemIdx": "4",
-        "Sex": "2"
-    },
-    {
-        "Id": "38",
-        "PageIdx": "5",
-        "Type": "2",
-        "ItemIdx": "5",
-        "Sex": "2"
-    },
-    {
-        "Id": "39",
-        "PageIdx": "5",
-        "Type": "3",
-        "ItemIdx": "6",
-        "Sex": "2"
-    },
-    {
-        "Id": "40",
-        "PageIdx": "5",
-        "Type": "4",
-        "ItemIdx": "7",
-        "Sex": "2"
     }
 ]

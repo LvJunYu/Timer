@@ -5,34 +5,44 @@ namespace GameA.Game
     [Serializable]
 	public partial class Table_Matrix
 	{
-		// 序号
+		/// <summary>
+        /// 序号
+        /// </summary>
 		[ColumnMapping("Id")]
 		public int Id;
-		// Name
+		/// <summary>
+        /// Name
+        /// </summary>
 		[ColumnMapping("Name")]
 		public string Name;
-		// GameType
+		/// <summary>
+        /// GameType
+        /// </summary>
 		[ColumnMapping("GameType")]
 		public string GameType;
-		// MatrixType
+		/// <summary>
+        /// MatrixType
+        /// </summary>
 		[ColumnMapping("MatrixType")]
 		public int MatrixType;
-		// CasualUnitIds
-		[ColumnMapping("CasualUnitIds")]
-		public int[] CasualUnitIds;
-		// PuzzleUnitIds
-		[ColumnMapping("PuzzleUnitIds")]
-		public int[] PuzzleUnitIds;
-		// ExtremeUnitIds
-		[ColumnMapping("ExtremeUnitIds")]
-		public int[] ExtremeUnitIds;
-		// Icon
+		/// <summary>
+        /// UnitIds
+        /// </summary>
+		[ColumnMapping("UnitIds")]
+		public int[] UnitIds;
+		/// <summary>
+        /// Icon
+        /// </summary>
 		[ColumnMapping("Icon")]
 		public string Icon;
-		// Summary
+		/// <summary>
+        /// Summary
+        /// </summary>
 		[ColumnMapping("Summary")]
 		public string Summary;
-		// BgResName
+		/// <summary>
+        /// BgResName
+        /// </summary>
 		[ColumnMapping("BgResName")]
 		public string BgResName;
 	}

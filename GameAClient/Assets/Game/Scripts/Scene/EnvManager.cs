@@ -38,7 +38,7 @@ namespace GameA.Game
         public const int MovingEarthBlockLayer = MainPlayerLayer | HeroLayer | ItemLayer;
         public const int MovingEarthBlockUpLayer = 1 << (int)ESceneLayer.Item;
 
-        public const int BulletHitLayer = MainPlayerLayer | HeroLayer | ItemLayer;
+        public const int BulletHitLayer = HeroLayer | ItemLayer;
 
 		public static EnvManager Instance
         {
@@ -74,6 +74,14 @@ namespace GameA.Game
             JoyPhysics2D.SetLayerCollision((int)ESceneLayer.RigidbodyItem, (int)ESceneLayer.RigidbodyItem);
             JoyPhysics2D.SetLayerCollision((int)ESceneLayer.RigidbodyItem, (int)ESceneLayer.MainPlayer);
             JoyPhysics2D.SetLayerCollision((int)ESceneLayer.RigidbodyItem, (int)ESceneLayer.Hero);
+
+            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Bullet, (int)ESceneLayer.Item);
+            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Bullet, (int)ESceneLayer.RigidbodyItem);
+            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Bullet, (int)ESceneLayer.Hero);
+
+            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Gun, (int)ESceneLayer.Item);
+            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Gun, (int)ESceneLayer.RigidbodyItem);
+            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Gun, (int)ESceneLayer.Hero);
 		}
 
         public void Dispose()
@@ -104,6 +112,7 @@ namespace GameA.Game
         AttackMonsterItem,  // 可以和Monster、Player、Earth碰撞
         RigidbodyItem,  // 可以和Monster、Player、Earth碰撞
         Bullet,
+        Gun,
 		HomeAvatar = 30,
         Max = 31
     }

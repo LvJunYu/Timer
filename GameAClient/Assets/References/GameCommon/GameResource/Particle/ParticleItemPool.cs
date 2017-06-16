@@ -6,12 +6,14 @@
 ***********************************************************************/
 
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace SoyEngine
 {
-	public class ParticleItemPool
+	public class ParticleItemPool : IDisposable
 	{
 		public string PoolName
 		{
@@ -24,7 +26,7 @@ namespace SoyEngine
 
 		private string _poolName;
 
-		private Stack<UnityNativeParticleItem> _freeParticleItems;
+		private Stack<UnityNativeParticleItem> _freeParticleItems = new Stack<UnityNativeParticleItem>();
 		private Transform _poolRoot;
 
 		private float _lastRequestTime;
@@ -32,13 +34,25 @@ namespace SoyEngine
 		public ParticleItemPool(string name,Transform parent)
 		{
 			_poolName = name;
-			_freeParticleItems = new Stack<UnityNativeParticleItem>();
 			_poolRoot = new GameObject(name + "_pool").transform;
 			CommonTools.SetParent(_poolRoot, parent);
 		}
 
+        public void Dispose()
+        {
+            foreach (UnityNativeParticleItem unityNativeParticleItem in _freeParticleItems)
+            {
+                unityNativeParticleItem.Release();
+            }
+            _freeParticleItems.Clear();
+            if (_poolRoot != null)
+            {
+                Object.Destroy(_poolRoot.gameObject);
+            }
+        }
 
-		public int Tick()
+
+	    public int Tick()
 		{
 			if (_freeParticleItems.Count == 0)
 			{

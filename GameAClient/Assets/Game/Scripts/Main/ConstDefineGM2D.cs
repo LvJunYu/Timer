@@ -25,7 +25,8 @@ namespace GameA.Game
         /// <summary>
         /// 8+16 = 24
         /// </summary>
-        public static IntVec2 RegionTileSize = new IntVec2(16, 16) * ServerTileScale;
+        //public static IntVec2 RegionTileSize = new IntVec2(16, 16) * ServerTileScale;
+        public static IntVec2 RegionTileSize = new IntVec2(120, 120) * ServerTileScale;
         //小于RegionTileSize 16 大于半屏幕格子数6.5*2=13
         public static IntVec2 Start = new IntVec2(14,30) * ServerTileScale;
 
@@ -35,7 +36,7 @@ namespace GameA.Game
 
         public const float InverseTextureSize = 0.0078125f;
 
-        public static IntVec2 DefaultValidMapRectSize = new IntVec2(30, 30) * ServerTileScale;
+        public static IntVec2 DefaultValidMapRectSize = new IntVec2(60, 30) * ServerTileScale;
         public static IntVec2 DefaultChangedTileSize = new IntVec2(10, 10) * ServerTileScale;
         public static IntVec2 MapTileSize = new IntVec2(300, 300) * ServerTileScale;
         public const int MaxMapDistance = 300 * ServerTileScale;
@@ -44,6 +45,8 @@ namespace GameA.Game
         public const int DefaultGeneratedTileHeight = 3 * ServerTileScale;
         public const int DefaultGeneratedTileWidth = 30 * ServerTileScale;
         public const int MaxHeightTileCount = 10;
+
+        public const float AIMaxPositionError = 10;
 
 
         public static Vector2 RatioPlayerPos = new Vector2(0.5f,0.5f);
@@ -82,7 +85,7 @@ namespace GameA.Game
 		public const float CameraMoveExceedValueY = 0.8f;
 
 
-	    public const float CameraOrthoSizeMaxValue = 6.5f;
+	    public const float CameraOrthoSizeMaxValue = 15f;
 	    public const float CameraOrthoSizeMinValue = 2.5f;
 
 	    public const float TouchEffectiveDelayTime = 0.01f;
@@ -92,7 +95,7 @@ namespace GameA.Game
 	    public const float VisibleFactor = 1.5f;
 
 	    public const float CameraMoveOutSizeYTop = 0.12f;
-		public const float CameraMoveOutSizeYBottom = 0.17f;
+		public const float CameraMoveOutSizeYBottom = 0.25f;
 
 		public const float CameraMoveOutSizeX = 0.15f;
 
@@ -101,19 +104,15 @@ namespace GameA.Game
 
 	    public const int CombinedItemReleaseResId = 4007;
 
-	    public const string DirectionTextureName = "M1Arrow";
-		public const string BillboardTextureName = "M1Editor";
-
 		public const float DefaultParticlePlayTime = 4;
 
         // 熊猫死后魂飞特效的资源名
         public const string PandaSoulSEPrefabName = "M2PandaSoul";
-        public const string MarioSoulSEPrefabName = "M1Soul";
-        public const string MarioPortalParticle = "M1GenSui";
-        public const string MarioLazerParticle = "M1HuiJu";
-        public const string MarioLazerEffect1 = "M1LazerEffect1";
-        public const string MarioLazerEffect2 = "M1LazerEffect2";
-        public const string MarioLazerEffect3 = "M1LazerEffect3";
+        public const string M1EffectSoul = "M1EffectSoul";
+        public const string PortalingEffect = "M1EffectPortaling";
+        public const string M1EffectAlertLazerPoint = "M1EffectAlertLazerPoint";
+        public const string M1LazerEffect1 = "M1LazerEffect1";
+        public const string M1LazerEffect2 = "M1LazerEffect2";
         // 主角无敌时长
         public const float HeroInvincibleTime = 2.03125f;
         // 主角无敌效果id
@@ -127,10 +126,10 @@ namespace GameA.Game
         // 高摩擦力的地块ID
         public const int HighFrictionEarthID = 4011;
 
-        public const int BlueStoneId = 4101;
-        public const int BlueStoneRotateId = 4103;
-        public const int BoxId = 5004;
-        public const int RollerId = 5005;
-        public const int BillboardId = 7001;
+
+        // 冒险模式每章普通关卡数
+        public const int AdvNormallevelPerChapter = 9;
+        // 冒险模式每章奖励关卡数
+        public const int AdvBonuslevelPerChapter = 3;
     }
 }

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 
@@ -19,17 +20,32 @@ namespace GameA.Game
         /// 必须可以被640整除
         /// </summary>
         protected int _velocity;
-        protected IntVec2 _pointA;
-        protected IntVec2 _pointB;
+        protected IntVec2 _pointACheck;
+        protected IntVec2 _pointBCheck;
         protected UnitBase _magicRotate;
         protected bool _run = true;
+        protected bool _enabled = true;
+
+        public override void UpdateExtraData()
+        {
+            base.UpdateExtraData();
+            InitSpeed();
+        }
 
         protected override void Clear()
         {
             base.Clear();
+            _run = true;
+            _enabled = true;
             _magicRotate = null;
+            InitSpeed();
+        }
+
+        protected void InitSpeed()
+        {
             if (!IsHero && _curMoveDirection != EMoveDirection.None)
             {
+                Speed = IntVec2.zero;
                 _timerMagic = 0;
                 _velocity = 20;
                 switch (_curMoveDirection)
@@ -50,19 +66,20 @@ namespace GameA.Game
             }
         }
 
-        internal override void OnSwitchTrigger()
+        internal override void OnCtrlBySwitch()
         {
+            base.OnCtrlBySwitch();
             _run = !_run;
         }
 
-        public bool UseMagic()
+        internal void SetEnabled(bool value)
         {
-            return _curMoveDirection != EMoveDirection.None;
+            _enabled = value;
         }
 
         public override void UpdateLogic()
         {
-            if (!_run || !UseMagic())
+            if (!_enabled || !_run || !UseMagic())
             {
                 return;
             }
@@ -70,8 +87,8 @@ namespace GameA.Game
             {
                 if (Speed != IntVec2.zero)
                 {
-                    GM2DTools.GetBorderPoint(ColliderGrid, _curMoveDirection, ref _pointA, ref _pointB);
-                    var checkGrid = SceneQuery2D.GetGrid(_pointA, _pointB, (byte)(_curMoveDirection - 1), _velocity);
+                    GM2DTools.GetBorderPoint(_colliderGrid, _curMoveDirection, ref _pointACheck, ref _pointBCheck);
+                    var checkGrid = SceneQuery2D.GetGrid(_pointACheck, _pointBCheck, (byte)(_curMoveDirection - 1), _velocity);
                     if (!DataScene2D.Instance.IsInTileMap(checkGrid))
                     {
                         _timerMagic = 0;
@@ -84,18 +101,22 @@ namespace GameA.Game
                         : EnvManager.MovingEarthBlockLayer, float.MinValue, float.MaxValue, _dynamicCollider);
                     for (int i = 0; i < units.Count; i++)
                     {
-                        if (GM2DTools.OnDirectionHit(units[i], this, _curMoveDirection))
+                        if (units[i].IsAlive && !units[i].CanMagicCross)
                         {
-                            _timerMagic = 0;
-                            Speed = IntVec2.zero;
-                            _magicRotate = null;
-                            ChangeMoveDirection();
-                            break;
-                        }
-                        if (IsValidBlueStoneRotation(units[i]))
-                        {
-                            _magicRotate = units[i];
-                            break;
+                            if (IsValidBlueStoneRotation(units[i]))
+                            {
+                                _magicRotate = units[i];
+                                break;
+                            }
+                            //if (GM2DTools.OnDirectionHit(units[i], PlayMode.Instance.MainUnit, _curMoveDirection))
+                            if (_magicRotate == null)
+                            {
+                                _timerMagic = 0;
+                                Speed = IntVec2.zero;
+                                _magicRotate = null;
+                                ChangeMoveDirection();
+                                break;
+                            }
                         }
                     }
                     if (_magicRotate != null)
@@ -136,7 +157,7 @@ namespace GameA.Game
 
         private bool IsValidBlueStoneRotation(UnitBase unit)
         {
-            if (unit == null || unit.Id != ConstDefineGM2D.BlueStoneRotateId)
+            if (unit == null || unit.Id != UnitDefine.BlueStoneRotateId)
             {
                 return false;
             }
@@ -178,10 +199,8 @@ namespace GameA.Game
                 _deltaPos = _speed + _extraDeltaPos;
                 _curPos += _deltaPos;
                 UpdateCollider(GetColliderPos(_curPos));
-                if (_view != null)
-                {
-                    _trans.position = GetTransPos();
-                }
+                _curPos = GetPos(_colliderPos);
+                UpdateTransPos();
             }
         }
 
@@ -196,7 +215,7 @@ namespace GameA.Game
             if (!_lastColliderGrid.Equals(_colliderGrid))
             {
                 _dynamicCollider.Grid = _colliderGrid;
-                ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider, new IntVec2(_lastColliderGrid.XMin, _lastColliderGrid.YMin));
+                ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider);
                 _lastColliderGrid = _colliderGrid;
             }
         }
@@ -207,6 +226,7 @@ namespace GameA.Game
             {
                 return _deltaImpactPos;
             }
+            return _deltaImpactPos + Speed;
             if (!_isCalculated && _dynamicCollider != null)
             {
                 if (_downUnits.Count > 0)

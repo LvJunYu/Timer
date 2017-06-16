@@ -9,29 +9,43 @@ namespace GameA
     public partial class PersonalProjectList : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
-        // ECachedDataState
+        /// <summary>
+        /// ECachedDataState
+        /// </summary>
         private int _resultCode;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private long _updateTime;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private List<Project> _projectList;
 
         // cs fields----------------------------------
-        // 关卡Id
-        private List<long> _cs_projectId;
-        // 
-        private long _cs_minUpdateTime;
-        // 
-        private long _cs_maxUpdateTime;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
+        private int _cs_startInx;
+        /// <summary>
+        /// 
+        /// </summary>
         private int _cs_maxCount;
-        // 
-        private int _cs_totalCount;
+        /// <summary>
+        /// 排序字段
+        /// </summary>
+        private EPersonalProjectOrderBy _cs_orderBy;
+        /// <summary>
+        /// 升序降序
+        /// </summary>
+        private EOrderType _cs_orderType;
         #endregion
 
         #region 属性
         // sc properties----------------------------------
-        // ECachedDataState
+        /// <summary>
+        /// ECachedDataState
+        /// </summary>
         public int ResultCode { 
             get { return _resultCode; }
             set { if (_resultCode != value) {
@@ -39,7 +53,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public long UpdateTime { 
             get { return _updateTime; }
             set { if (_updateTime != value) {
@@ -47,7 +63,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public List<Project> ProjectList { 
             get { return _projectList; }
             set { if (_projectList != value) {
@@ -57,30 +75,33 @@ namespace GameA
         }
         
         // cs properties----------------------------------
-        // 关卡Id
-        public List<long> CS_ProjectId { 
-            get { return _cs_projectId; }
-            set { _cs_projectId = value; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int CS_StartInx { 
+            get { return _cs_startInx; }
+            set { _cs_startInx = value; }
         }
-        // 
-        public long CS_MinUpdateTime { 
-            get { return _cs_minUpdateTime; }
-            set { _cs_minUpdateTime = value; }
-        }
-        // 
-        public long CS_MaxUpdateTime { 
-            get { return _cs_maxUpdateTime; }
-            set { _cs_maxUpdateTime = value; }
-        }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public int CS_MaxCount { 
             get { return _cs_maxCount; }
             set { _cs_maxCount = value; }
         }
-        // 
-        public int CS_TotalCount { 
-            get { return _cs_totalCount; }
-            set { _cs_totalCount = value; }
+        /// <summary>
+        /// 排序字段
+        /// </summary>
+        public EPersonalProjectOrderBy CS_OrderBy { 
+            get { return _cs_orderBy; }
+            set { _cs_orderBy = value; }
+        }
+        /// <summary>
+        /// 升序降序
+        /// </summary>
+        public EOrderType CS_OrderType { 
+            get { return _cs_orderType; }
+            set { _cs_orderType = value; }
         }
 
         public override bool IsDirty {
@@ -101,35 +122,56 @@ namespace GameA
         /// <summary>
 		/// 工坊关卡
 		/// </summary>
-		/// <param name="projectId">关卡Id.</param>
-		/// <param name="minUpdateTime">.</param>
-		/// <param name="maxUpdateTime">.</param>
+		/// <param name="startInx">.</param>
 		/// <param name="maxCount">.</param>
-		/// <param name="totalCount">.</param>
+		/// <param name="orderBy">排序字段.</param>
+		/// <param name="orderType">升序降序.</param>
         public void Request (
-            List<long> projectId,
-            long minUpdateTime,
-            long maxUpdateTime,
+            int startInx,
             int maxCount,
-            int totalCount,
+            EPersonalProjectOrderBy orderBy,
+            EOrderType orderType,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            OnRequest (successCallback, failedCallback);
+            if (_isRequesting) {
+                if (_cs_startInx != startInx) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_maxCount != maxCount) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_orderBy != orderBy) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                if (_cs_orderType != orderType) {
+                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest (successCallback, failedCallback);
+            } else {
+                _cs_startInx = startInx;
+                _cs_maxCount = maxCount;
+                _cs_orderBy = orderBy;
+                _cs_orderType = orderType;
+                OnRequest (successCallback, failedCallback);
 
-            Msg_CS_DAT_PersonalProjectList msg = new Msg_CS_DAT_PersonalProjectList();
-            msg.ProjectId.AddRange(projectId);
-            msg.MinUpdateTime = minUpdateTime;
-            msg.MaxUpdateTime = maxUpdateTime;
-            msg.MaxCount = maxCount;
-            msg.TotalCount = totalCount;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_PersonalProjectList>(
-                SoyHttpApiPath.PersonalProjectList, msg, ret => {
-                    if (OnSync(ret)) {
-                        OnSyncSucceed(); 
-                    }
-                }, (failedCode, failedMsg) => {
-                    OnSyncFailed(failedCode, failedMsg);
-            });
+                Msg_CS_DAT_PersonalProjectList msg = new Msg_CS_DAT_PersonalProjectList();
+                msg.StartInx = startInx;
+                msg.MaxCount = maxCount;
+                msg.OrderBy = orderBy;
+                msg.OrderType = orderType;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_PersonalProjectList>(
+                    SoyHttpApiPath.PersonalProjectList, msg, ret => {
+                        if (OnSync(ret)) {
+                            OnSyncSucceed(); 
+                        }
+                    }, (failedCode, failedMsg) => {
+                        OnSyncFailed(failedCode, failedMsg);
+                });            
+            }            
         }
 
         public bool OnSync (Msg_SC_DAT_PersonalProjectList msg)

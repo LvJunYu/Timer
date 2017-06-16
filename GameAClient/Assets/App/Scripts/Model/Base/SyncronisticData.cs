@@ -18,8 +18,12 @@ namespace GameA
 		#region Fields
 		protected long _lastSyncTime;
 		protected long _lastDirtyTime;
+        protected long _firstDirtyTime;
 		// got dirty when local modified
 		protected bool _dirty;
+		protected bool _inited;
+
+        protected bool _isRequesting;
 
 		protected Action _syncSuccessCB;
 		protected Action<ENetResultCode> _syncFailedCB;
@@ -29,22 +33,44 @@ namespace GameA
 		public virtual bool IsDirty {
 			get { return _dirty; }
 		}
+		public bool IsInited {
+			get { return _inited; }
+		}
+        public long LastSyncTime {
+            get { return _lastSyncTime; }
+        }
+        public long LastDirtyTime {
+            get { return _lastDirtyTime; }
+        }
+        public long FirstDirtyTime {
+            get { return _firstDirtyTime; }
+        }
 		#endregion
 
-		#region Functions
+		#region Methods
+		public SyncronisticData () {
+			_dirty = false;
+			_inited = false;
+		}
 		protected void SetDirty () {
+            long now = DateTimeUtil.GetServerTimeNowTimestampMillis();
+            if (!_dirty) {
+                _firstDirtyTime = now;
+            }
 			_dirty = true;
-			_lastDirtyTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
+            _lastDirtyTime = now;
 		}
 
 		protected void OnSyncSucceed () {
 			_lastSyncTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
+			_inited = true;
 			_dirty = false;
 			if (_syncSuccessCB != null) {
 				_syncSuccessCB.Invoke ();
 				_syncSuccessCB = null;
 			}
 			_syncFailedCB = null;
+            _isRequesting = false;
 		}
 
 		protected void OnSyncFailed (ENetResultCode netResultCode, string errorMsg) {
@@ -53,26 +79,18 @@ namespace GameA
 				_syncFailedCB.Invoke (netResultCode);
 			}
 			_syncSuccessCB = null;
+            _isRequesting = false;
 		}
 
-		protected void OnRequest (Action successCallback, Action<ENetResultCode> failedCallback) {
-			_syncSuccessCB = successCallback;
-			_syncFailedCB = failedCallback;
+        protected void OnRequest (Action successCallback, Action<ENetResultCode> failedCallback) {
+            _syncSuccessCB -= successCallback;
+            _syncFailedCB -= failedCallback;
+			_syncSuccessCB += successCallback;
+			_syncFailedCB += failedCallback;
+            _isRequesting = true;
 		}
 
 		protected virtual void OnSyncPartial () { }
-		#endregion
-	}
-
-	public class PartialSyncronisticData<T> : SyncronisticData{
-		#region Fields
-		protected T _owner;
-		#endregion
-
-		#region Properties
-		#endregion
-
-		#region Functions
 		#endregion
 	}
 }

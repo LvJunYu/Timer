@@ -11,27 +11,23 @@ using Spine.Unity;
 namespace GameA.Game
 {
     [Unit(Id = 5013, Type = typeof (Gate))]
-    public class Gate : Earth
+    public class Gate : BlockBase
     {
         private bool _opened;
-
-        internal override bool InstantiateView()
-        {
-            if (!base.InstantiateView())
-            {
-                return false;
-            }
-            _animation = new AnimationSystem();
-            return _animation.Init(this); ;
-        }
 
         protected override void Clear()
         {
             base.Clear();
-            _opened = false;
-            if (_animation != null)
+            _canLazerCross = false;
+            _canMagicCross = false;
+            _canBridgeCross = false;
+            //if (_opened)
             {
-                _animation.Reset();
+                if (_view != null)
+                {
+                    _view.ChangeView(_tableUnit.Model);
+                }
+                _opened = false;
             }
         }
 
@@ -84,7 +80,16 @@ namespace GameA.Game
                     if (_opened == false && PlayMode.Instance.SceneState.UseKey())
                     {
                         _opened = true;
-                        //播放动画
+                        SetEnabled(false);
+                        if (_view != null)
+                        {
+                            _canLazerCross = true;
+                            _canMagicCross = true;
+                            _canBridgeCross = true;
+                            _view.ChangeView(_tableUnit.Model + "_1");
+                            SetSortingOrderBack();
+                            UpdateTransPos();
+                        }
                     }
                 }
             }

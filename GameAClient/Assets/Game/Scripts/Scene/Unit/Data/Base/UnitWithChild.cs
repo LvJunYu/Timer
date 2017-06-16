@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    public class UnitWithChild : Earth
+    public class UnitWithChild : BlockBase
     {
         protected UnitChild _unitChild;
         protected UnitBase _childUnit;
@@ -37,7 +37,7 @@ namespace GameA.Game
             }
             if (_unitChild.Id > 0)
             {
-                _childUnit = PlayMode.Instance.CreateRuntimeUnit(_childUnit.Id, _curPos, _childUnit.Rotation, Vector2.one);
+                _childUnit = PlayMode.Instance.CreateRuntimeUnit(_childUnit.Id, _curPos, _childUnit.Rotation);
                 _childUnit.SetFacingDir(_unitChild.MoveDirection);
                 PlayMode.Instance.Freeze(_childUnit);
             }
@@ -52,7 +52,10 @@ namespace GameA.Game
 
         internal override void OnObjectDestroy()
         {
-            PlayMode.Instance.DestroyUnit(_childUnit);
+            if (PlayMode.Instance != null)
+            {
+                PlayMode.Instance.DestroyUnit(_childUnit);
+            }
         }
 
         protected virtual void PushChild()

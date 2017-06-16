@@ -24,17 +24,17 @@ namespace GameA
             }
             return false;
         }
-
-        public Record OnSync(Msg_SC_DAT_Record msg, Project project, bool full = true)
-        {
-            Record data = null;
-            if (!_caches.TryGetItem(msg.RecordId, out data))
-            {
-                data = new Record();
-                _caches.Insert(msg.RecordId, data);
-            }
-            data.Set(msg, project, full);
-            return data;
-        }
+//
+//        public Record OnSync(Msg_SC_DAT_Record msg, Project project, bool full = true)
+//        {
+//            Record data = null;
+//            if (!_caches.TryGetItem(msg.RecordId, out data))
+//            {
+//                data = new Record();
+//                _caches.Insert(msg.RecordId, data);
+//            }
+//            data.Set(msg, project, full);
+//            return data;
+//        }
     }
 }

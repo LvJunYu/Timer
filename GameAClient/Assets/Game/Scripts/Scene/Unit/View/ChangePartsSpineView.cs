@@ -43,6 +43,8 @@ namespace GameA.Game
 			LinkBaseSkinTextures ();
 			_skeletonAnimation.Initialize(true);
 			_skeletonAnimation.enabled = true;
+            _animation.Set();
+
 			_renderer = _skeletonAnimation.GetComponent<Renderer>();
 			_renderer.sortingOrder = UnitManager.Instance.GetSortingOrder(tableUnit);
 
@@ -147,6 +149,14 @@ namespace GameA.Game
 		}
 
 		public bool SetParts (int partsId, SpinePartsHelper.ESpineParts partsType, bool homeAvatar = false) {
+            //TODO DEL 临时代码 空指针
+            //if (partsId == 1)
+            //{
+            //    return false;
+            //}
+
+
+
 			if (_partsIds[(int)partsType] == partsId) return false;
 			string textureName = "";
 			int[] slotsNameIdxList = null;
@@ -199,6 +209,7 @@ namespace GameA.Game
 				return false;
 			}
 			ExposedList<Slot> slots = _skeleton.slots;
+            if(slotsNameIdxList!=null)
 			for (int i = 0, n = slotsNameIdxList.Length; i < n; i++) {
 				int slotIdx;
 				if (!_slotName2Index.TryGetValue (slotsNameIdxList[i], out slotIdx)) {
@@ -214,24 +225,27 @@ namespace GameA.Game
 					continue;
 				}
 				string attachmentName = string.Format ("{0}/{1}", _skeletonName, slotTable.Name);
-				attachment = targetSkin.GetAttachment(slotIdx, attachmentName);
-				if (attachment == null) {
-					//					LogHelper.Error("Try get attachment:{0} in {1}, skin{2} failed.",
-					//						attachmentName,
-					//						_skeletonName,
-					//						skinId);
-					//					return false;
-					continue;
-				}
-
-				_dynamicSkin.RemoveAttachment(slotIdx, attachmentName);
-
-				if (GameResourceManager.Instance != null && !GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, textureName)) {
-					LogHelper.Error ("Link texture: {0} when apply parts:{1},id{2} in {3} failed.", textureName, partsType, partsId, _unit.TableUnit.Name);
-				}
-
-				_dynamicSkin.AddAttachment(slotIdx, attachmentName, attachment);
-				slots.Items[slotIdx].Attachment = attachment;
+                attachment = targetSkin.GetAttachment(slotIdx, attachmentName);
+                _dynamicSkin.RemoveAttachment(slotIdx, attachmentName);
+                if (attachment == null) {
+                    //                  LogHelper.Error("Try get attachment:{0} in {1}, skin{2} failed.",
+                    //                      attachmentName,
+                    //                      _skeletonName,
+                    //                      skinId);
+                    //                  return false;
+                    slots.Items [slotIdx].Attachment = null;
+                    continue;
+                } else
+                {
+                    
+                    if (GameResourceManager.Instance != null && !GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, textureName)) {
+                        LogHelper.Error ("Link texture: {0} when apply parts:{1},id{2} in {3} failed.", textureName, partsType, partsId, _unit.TableUnit.Name);
+                    }
+                    
+                    _dynamicSkin.AddAttachment(slotIdx, attachmentName, attachment);
+                    
+                    slots.Items[slotIdx].Attachment = attachment;
+                }
 			}
 
 

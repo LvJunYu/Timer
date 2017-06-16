@@ -7,11 +7,18 @@
 
 using System;
 using System.Collections;
+using UnityEngine;
 
 namespace GameA.Game
 {
     [Skill(Name = "SkillClay", Type = typeof(SkillClay))]
     public class SkillClay : SkillBase
     {
+        internal override void Enter(UnitBase ower)
+        {
+            base.Enter(ower);
+            _eSkillType = ESkillType.Clay;
+            _bulletId = 10005;
+        }
     }
 }

@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using SoyEngine;
 using UnityEngine;
 
@@ -28,6 +29,19 @@ namespace GameA.Game
         protected Dictionary<IntVec3, UnitExtra> _unitExtras = new Dictionary<IntVec3, UnitExtra>();
         protected Dictionary<IntVec3, List<IntVec3>> _switchedUnits = new Dictionary<IntVec3, List<IntVec3>>();
         private static List<UnitBase> _cachedUnits = new List<UnitBase>();
+
+		/// <summary>
+		/// 删除修改的物体堆栈
+		/// </summary>
+		private List<ModifyData> _removedUnits = new List<ModifyData>();
+		/// <summary>
+		/// 改动修改的物体堆栈
+		/// </summary>
+		private List<ModifyData> _modifiedUnits = new List<ModifyData> ();
+		/// <summary>
+		/// 添加修改的物体堆栈
+		/// </summary>
+		private List<ModifyData> _addedUnits = new List<ModifyData>();
 
         #endregion
 
@@ -63,6 +77,29 @@ namespace GameA.Game
             get { return _unitExtras; }
         }
 
+		public List<ModifyData> RemovedUnits {
+			get {
+				return this._removedUnits;
+			}
+		}
+
+		public List<ModifyData> ModifiedUnits {
+			get {
+				return this._modifiedUnits;
+			}
+		}
+
+		public List<ModifyData> AddedUnits {
+			get {
+				return this._addedUnits;
+			}
+		}
+
+        public Dictionary<IntVec3, List<IntVec3>> SwitchedUnits {
+            get {
+                return this._switchedUnits;
+            }
+        }
         #endregion
 
         #region 方法
@@ -74,6 +111,15 @@ namespace GameA.Game
             var worldPos = GM2DTools.TileToWorld(new IntVec2(_mapGrid.XMin, _mapGrid.YMin));
             _startPos = new Vector2(worldPos.x, worldPos.y);
             _validMapRect = new IntRect(ConstDefineGM2D.MapStartPos, ConstDefineGM2D.DefaultValidMapRectSize + ConstDefineGM2D.MapStartPos - IntVec2.one);
+        }
+
+        /// <summary>
+        /// 这个方法只能被MapManager访问，只能是创建地图并设置初始大小时访问
+        /// </summary>
+        /// <param name="rect">Rect.</param>
+        public void SetDefaultMapSize (IntVec2 size)
+        {
+            _validMapRect = new IntRect(ConstDefineGM2D.MapStartPos, size + ConstDefineGM2D.MapStartPos - IntVec2.one);
         }
 
         public override void Dispose()
@@ -125,7 +171,7 @@ namespace GameA.Game
                 ? (int)(tile.y * ConstDefineGM2D.ClientTileScale + 0.5f) * ConstDefineGM2D.ServerTileScale
                 : (int)((float)tile.y / size.y + 0.5f) * size.y;
 
-            return new IntVec3(x, y, UnitManager.Instance.GetDepth(tableUnit));
+            return new IntVec3(x, y, UnitManager.GetDepth(tableUnit));
         }
 
         #endregion
@@ -167,7 +213,7 @@ namespace GameA.Game
                     ProcessUnitExtra(unitDesc.Guid, unitExtra);
                 }
             }
-            if (tableUnit.Id == ConstDefineGM2D.RollerId)
+            if (tableUnit.Id == UnitDefine.RollerId)
             {
                 UnitExtra unitExtra;
                 if (!TryGetUnitExtra(unitDesc.Guid, out unitExtra))
@@ -209,12 +255,23 @@ namespace GameA.Game
 
         public void ProcessUnitExtra(IntVec3 guid, UnitExtra unitExtra)
         {
+            if (null != EditMode.Instance) {
+                EditMode.Instance.MapStatistics.NeedSave = true;
+            }
             if (unitExtra.Equals(UnitExtra.zero))
             {
                 DeleteUnitExtra(guid);
-                return;
             }
-            _unitExtras.AddOrReplace(guid, unitExtra);
+            else
+            {
+                _unitExtras.AddOrReplace(guid, unitExtra);
+            }
+            // 更新unit
+            UnitBase unit;
+            if (ColliderScene2D.Instance.TryGetUnit(guid, out unit))
+            {
+                unit.UpdateExtraData ();
+            }
         }
 
         public void ProcessUnitChild(IntVec3 guid, UnitChild unitChild)
@@ -235,8 +292,12 @@ namespace GameA.Game
         #endregion
 
         #region Switch
-
-        public List<UnitBase> GetSwitchedUnits(IntVec3 guid)
+        /// <summary>
+        /// 查找开关控制的Unit
+        /// </summary>
+        /// <returns>The switched units.</returns>
+        /// <param name="guid">开关id.</param>
+        public List<UnitBase> GetControlledUnits(IntVec3 guid)
         {
             List<IntVec3> unitsGuid;
             if (!_switchedUnits.TryGetValue(guid, out unitsGuid))
@@ -252,31 +313,57 @@ namespace GameA.Game
                     _cachedUnits.Add(unit);
                 }
             }
-            return _cachedUnits;
+            return _cachedUnits.ToList();
         }
 
-        public void BindSwitch(IntVec3 switchGuid, IntVec3 unitGuid)
+        /// <summary>
+        /// 查找控制unit的开关
+        /// </summary>
+        /// <returns>The switch units connected.</returns>
+        /// <param name="guid">GUID.</param>
+        public List<IntVec3> GetSwitchUnitsConnected(IntVec3 guid)
+        {
+            var result = new List<IntVec3>();
+            Dictionary<IntVec3, List<IntVec3>>.Enumerator itor = _switchedUnits.GetEnumerator();
+            while (itor.MoveNext())
+            {
+                List<IntVec3> units = itor.Current.Value;
+                if (units.Contains(guid))
+                {
+                    result.Add(itor.Current.Key);
+                }
+            }
+            return result;
+        }
+
+        public bool BindSwitch(IntVec3 switchGuid, IntVec3 unitGuid)
         {
             if (!_switchedUnits.ContainsKey(switchGuid))
             {
                 _switchedUnits.Add(switchGuid, new List<IntVec3>());
             }
+            if (_switchedUnits[switchGuid].Contains(unitGuid))
+            {
+                return false;
+            }
             _switchedUnits[switchGuid].Add(unitGuid);
+            return true;
         }
 
-        public void UnbindSwitch(IntVec3 switchGuid, IntVec3 unitGuid)
+        public bool UnbindSwitch(IntVec3 switchGuid, IntVec3 unitGuid)
         {
             List<IntVec3> unitsGuid;
             if (!_switchedUnits.TryGetValue(switchGuid, out unitsGuid))
             {
                 LogHelper.Error("UnbindSwitch Failed, {0}, {1}", switchGuid, unitGuid);
-                return;
+                return false;
             }
             unitsGuid.Remove(unitGuid);
             if (unitsGuid.Count == 0)
             {
                 _switchedUnits.Remove(switchGuid);
             }
+            return true;
         }
 
         #endregion
@@ -355,4 +442,82 @@ namespace GameA.Game
 
         #endregion
     }
+
+	public struct ModifyData {
+		public UnitEditData OrigUnit;
+		public UnitEditData ModifiedUnit;
+		public ModifyData (UnitEditData orig, UnitEditData modified) {
+			OrigUnit = orig;
+			ModifiedUnit = modified;
+		}
+        // 从地图文件方序列化出来的构造函数
+        public ModifyData (SoyEngine.Proto.ModifyItemData modifyItemData) {
+            OrigUnit = new UnitEditData ();
+            ModifiedUnit = new UnitEditData ();
+            if (DataScene2D.Instance == null) {
+                LogHelper.Error ("Instantiate modifyData failed, datascene2d not exist");
+                return;
+            }
+            Table_Unit table = TableManager.Instance.GetUnit (modifyItemData.OrigData.Id);
+            if (null == table) {
+                LogHelper.Error ("ParseModifyData error, unit with invalid id {0}", modifyItemData.OrigData.Id);
+                return;
+            }
+            int depth = UnitManager.GetDepth (table);
+            UnitDesc origDesc = new UnitDesc (
+                modifyItemData.OrigData.Id,
+                new IntVec3(modifyItemData.OrigData.XMin, modifyItemData.OrigData.YMin, depth),
+                (byte)modifyItemData.OrigData.Rotation,
+                new Vector2(modifyItemData.OrigData.Scale== null ? 1 : modifyItemData.OrigData.Scale.X,
+                    modifyItemData.OrigData.Scale==null ? 1 : modifyItemData.OrigData.Scale.Y)
+            );
+            UnitExtra origExtra = new UnitExtra ();
+            origExtra.Child = new UnitChild (
+                (ushort)modifyItemData.OrigExtra.UnitChild.Id,
+                (byte)modifyItemData.OrigExtra.UnitChild.Rotation,
+                (EMoveDirection)modifyItemData.OrigExtra.UnitChild.MoveDirection
+            );
+            origExtra.MoveDirection = (EMoveDirection)modifyItemData.OrigExtra.MoveDirection;
+            origExtra.RollerDirection = (EMoveDirection)modifyItemData.OrigExtra.RollerDirection;
+            OrigUnit = new UnitEditData (origDesc, origExtra);
+            UnitDesc modifiedDesc = new UnitDesc (
+                modifyItemData.ModifiedData.Id,
+                new IntVec3(modifyItemData.ModifiedData.XMin, modifyItemData.ModifiedData.YMin, depth),
+                (byte)modifyItemData.ModifiedData.Rotation,
+                new Vector2(modifyItemData.ModifiedData.Scale== null ? 1 : modifyItemData.ModifiedData.Scale.X,
+                    modifyItemData.ModifiedData.Scale==null ? 1 : modifyItemData.ModifiedData.Scale.Y)
+            );
+            UnitExtra modifiedExtra;
+            DataScene2D.Instance.TryGetUnitExtra (modifiedDesc.Guid, out modifiedExtra);
+            ModifiedUnit = new UnitEditData (modifiedDesc, modifiedExtra);
+        }
+
+        public SoyEngine.Proto.ModifyItemData ToModifyItemData () {
+            SoyEngine.Proto.ModifyItemData mid = new SoyEngine.Proto.ModifyItemData ();
+            mid.OrigData = new SoyEngine.Proto.MapRect2D ();
+            mid.OrigData.Id = OrigUnit.UnitDesc.Id;
+            mid.OrigData.Rotation = (int)OrigUnit.UnitDesc.Rotation;
+            mid.OrigData.Scale = new SoyEngine.Proto.Vec2Proto ();
+            mid.OrigData.Scale.X = OrigUnit.UnitDesc.Scale.x;
+            mid.OrigData.Scale.Y = OrigUnit.UnitDesc.Scale.y;
+            mid.OrigData.XMin = OrigUnit.UnitDesc.Guid.x;
+            mid.OrigData.XMax = OrigUnit.UnitDesc.Guid.x + ConstDefineGM2D.ServerTileScale;
+            mid.OrigData.YMin = OrigUnit.UnitDesc.Guid.y;
+            mid.OrigData.YMax = OrigUnit.UnitDesc.Guid.y + ConstDefineGM2D.ServerTileScale;
+            mid.OrigExtra = GM2DTools.ToProto (OrigUnit.UnitDesc.Guid, OrigUnit.UnitExtra);
+
+            mid.ModifiedData = new SoyEngine.Proto.MapRect2D ();
+            mid.ModifiedData.Id = ModifiedUnit.UnitDesc.Id;
+            mid.ModifiedData.Rotation = (int)ModifiedUnit.UnitDesc.Rotation;
+            mid.ModifiedData.Scale = new SoyEngine.Proto.Vec2Proto ();
+            mid.ModifiedData.Scale.X = ModifiedUnit.UnitDesc.Scale.x;
+            mid.ModifiedData.Scale.Y = ModifiedUnit.UnitDesc.Scale.y;
+            mid.ModifiedData.XMin = ModifiedUnit.UnitDesc.Guid.x;
+            mid.ModifiedData.XMax = ModifiedUnit.UnitDesc.Guid.x + ConstDefineGM2D.ServerTileScale;
+            mid.ModifiedData.YMin = ModifiedUnit.UnitDesc.Guid.y;
+            mid.ModifiedData.YMax = ModifiedUnit.UnitDesc.Guid.y + ConstDefineGM2D.ServerTileScale;
+
+            return mid;
+        }
+	}
 }

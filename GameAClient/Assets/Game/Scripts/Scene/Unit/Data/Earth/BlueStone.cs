@@ -12,15 +12,8 @@ using SoyEngine;
 namespace GameA.Game
 {
     [Unit(Id = 4101, Type = typeof(BlueStone))]
-    public class BlueStone : Earth
+    public class BlueStone : BlockBase
     {
-        protected override bool OnInit()
-        {
-            if (!base.OnInit())
-            {
-                return false;
-            }
-            return true;
-        }
+
     }
 }

@@ -11,7 +11,7 @@ using Spine.Unity;
 namespace GameA.Game
 {
     [Unit(Id = 5002, Type = typeof(RevivePoint))]
-    public class RevivePoint : Earth
+    public class RevivePoint : BlockBase
     {
         private bool _trigger;
 
@@ -31,8 +31,8 @@ namespace GameA.Game
             {
                 return false;
             }
-            _animation = new AnimationSystem();
-            return _animation.Init(this, "Run");
+            _animation.Init("Run");
+            return true;
         }
 
         private void OnRespawnPointTrigger(IntVec3 guid)
@@ -56,7 +56,10 @@ namespace GameA.Game
         internal override void Reset()
         {
             base.Reset();
-            _animation.Reset();
+            if (_animation != null)
+            {
+                _animation.Reset();
+            }
             _trigger = false;
         }
 
@@ -69,7 +72,7 @@ namespace GameA.Game
                     if (!_trigger)
                     {
                         _trigger = true;
-                        other.OnRevivePos(_curPos);
+                        other.OnRevivePos(new IntVec2(_curPos.x, _curPos.y + ConstDefineGM2D.ServerTileScale));
                         _animation.PlayOnce("Start").Complete +=
                             (state, index, count) => _animation.PlayLoop("End");
                         Messenger<IntVec3>.Broadcast(EMessengerType.OnRespawnPointTrigger, _guid);

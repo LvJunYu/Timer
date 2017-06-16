@@ -15,10 +15,13 @@ namespace GameA.Game
 {
     public class ClickItemCommand : CommandBase, ICommand
     {
+		/// <summary>
+		/// 点击命令下指针/手指一动超过该值则变成拖拽命令
+		/// </summary>
         public const float DragCommandTakeEffectOffsetValue = 0.2f;
-        private UnitDesc _clickedUnit;
-        private Vector2 _startMousePos;
-        private Table_Unit _clickedTableUnit;
+		protected UnitDesc _clickedDesc;
+		protected Vector2 _startMousePos;
+		protected Table_Unit _clickedTableUnit;
 
         public static List<byte> DirectionList = new List<byte>()
 		{
@@ -28,20 +31,38 @@ namespace GameA.Game
 			(byte)EDirectionType.Left,
 		};
 
+
+//		protected UnitDesc _origDesc;
+		/// <summary>
+		/// 原始物体的额外信息
+		/// </summary>
+		protected UnitExtra _clickedExtra;
+		/// <summary>
+		/// 修改后物体的信息
+		/// </summary>
+		protected UnitDesc _modifiedDesc;
+		/// <summary>
+		/// 修改后物体的额外信息
+		/// </summary>
+		protected UnitExtra _modifiedExtra;
+
         public ClickItemCommand(UnitDesc clickUnit, Vector2 startMousePos)
         {
-            _clickedUnit = clickUnit;
+            _clickedDesc = clickUnit;
+            _clickedExtra = DataScene2D.Instance.GetUnitExtra(_clickedDesc.Guid);
+			_modifiedDesc = _clickedDesc;
+			_modifiedExtra = _clickedExtra;
             _startMousePos = startMousePos;
             _clickedTableUnit = UnitManager.Instance.GetTableUnit(clickUnit.Id);
         }
 
-        public bool Execute(Vector2 mousePos)
+        public virtual bool Execute(Vector2 mousePos)
         {
-            if (InputManager.Instance.OnTouchDown)
+            if (InputManager.Instance.IsTouchDown)
             {
                 if (CheckDragCondition(mousePos))
                 {
-                    EditMode.Instance.ChangeCurCommand(new DragCommand(_clickedUnit, mousePos));
+                    EditMode.Instance.ChangeCurCommand(new DragCommand(_clickedDesc, mousePos));
                 }
                 _pushFlag = false;
             }
@@ -66,118 +87,116 @@ namespace GameA.Game
             return false;
         }
 
-        private bool CheckDragCondition(Vector2 mousePos)
+        protected bool CheckDragCondition(Vector2 mousePos)
         {
             var delta = _startMousePos - mousePos;
             return delta.magnitude >= DragCommandTakeEffectOffsetValue;
         }
 
-        private bool DoClickOperator()
+		protected bool DoClickOperator()
         {
-            if (_clickedTableUnit.CanRotate)
+            //蓝石优先判断。
+            if (_clickedTableUnit.CanMove || _clickedTableUnit.OriginMagicDirection != 0)
+            {
+                //说明是静止的 肯定没有蓝石
+                if (_clickedExtra.MoveDirection != 0)
+                {
+                    return DoMove();
+                }
+            }
+            if (UnitDefine.IsEnergy(_clickedTableUnit.Id))
+		    {
+		        return DoEnergy();
+		    }
+		    if (_clickedTableUnit.CanRotate)
             {
                 return DoRotate();
             }
-            if (_clickedUnit.Id == ConstDefineGM2D.BillboardId)
+            if (_clickedDesc.Id == UnitDefine.BillboardId)
             {
                 return DoAddMsg();
             }
-            if (_clickedUnit.Id == ConstDefineGM2D.RollerId)
+            if (_clickedDesc.Id == UnitDefine.RollerId)
             {
                 return DoRoller();
             }
-            if (_clickedTableUnit.CanMove || _clickedTableUnit.OriginMagicDirection != 0)
+            return false;
+        }
+
+        protected bool DoEnergy()
+        {
+            _clickedExtra.EnergyType++;
+            if (_clickedExtra.EnergyType >= (int)ESkillType.Max)
             {
-                return DoMove();
+                _clickedExtra.EnergyType = 0;
+            }
+            _modifiedExtra.EnergyType = _clickedExtra.EnergyType;
+            SaveUnitExtra();
+            return true;
+        }
+
+        protected virtual bool DoAddMsg()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlGameItemAddMessage>(_clickedDesc);
+            return false;
+        }
+
+		protected bool DoRotate()
+        {
+            byte dir;
+			if (!CalculateNextDir(_clickedDesc.Rotation, _clickedTableUnit.RotationMask, out dir))
+            {
+                return false;
+            }
+            if (!EditMode.Instance.DeleteUnit(_clickedDesc))
+            {
+                return false;
+            }
+            _modifiedDesc.Rotation = dir;
+            if (EditMode.Instance.AddUnit(_modifiedDesc))
+            {
+                SaveUnitExtra();
+                return true;
             }
             return false;
         }
 
-        private bool DoAddMsg()
+		protected bool DoRoller()
         {
-            GM2DGUIManager.Instance.OpenUI<UICtrlGameItemAddMessage>(_clickedUnit);
-            return false;
+            byte dir;
+            if (!CalculateNextDir((byte)(_clickedExtra.RollerDirection - 1), 10, out dir))
+            {
+                return false;
+            }
+            _modifiedExtra.RollerDirection = (EMoveDirection)(dir + 1);
+            SaveUnitExtra();
+            return true;
         }
 
-        private bool DoRotate()
+		protected bool DoMove()
         {
-            var curValue = _clickedUnit.Rotation;
+            byte dir;
+            if (!CalculateNextDir((byte)(_clickedExtra.MoveDirection - 1), _clickedTableUnit.MoveDirectionMask, out dir))
+            {
+                return false;
+            }
+            _modifiedExtra.MoveDirection = (EMoveDirection) (dir + 1);
+		    SaveUnitExtra();
+		    return true;
+        }
+
+        protected void SaveUnitExtra()
+        {
+            DataScene2D.Instance.ProcessUnitExtra(_modifiedDesc.Guid, _modifiedExtra);
+        }
+
+        protected bool CalculateNextDir(byte curValue, int mask, out byte dir)
+        {
             if (!CheckDirectionValid(curValue))
             {
+                dir = 0;
                 return false;
             }
-            byte dir;
-            if (!CalculateNextDir(curValue, _clickedTableUnit.RotationMask, out dir))
-            {
-                return false;
-            }
-            if (!EditMode.Instance.DeleteUnit(_clickedUnit))
-            {
-                return false;
-            }
-            _clickedUnit.Rotation = dir;
-            return EditMode.Instance.AddUnit(_clickedUnit);
-        }
-
-        private bool DoRoller()
-        {
-            UnitExtra unitExtra;
-            if (!DataScene2D.Instance.TryGetUnitExtra(_clickedUnit.Guid, out unitExtra))
-            {
-                return false;
-            }
-            var curValue = (byte)(unitExtra.RollerDirection - 1);
-            if (!CheckDirectionValid(curValue))
-            {
-                return false;
-            }
-            byte dir;
-            if (!CalculateNextDir(curValue, 10, out dir))
-            {
-                return false;
-            }
-            if (!EditMode.Instance.DeleteUnit(_clickedUnit))
-            {
-                return false;
-            }
-            unitExtra.RollerDirection = (EMoveDirection)(dir + 1);
-            DataScene2D.Instance.ProcessUnitExtra(_clickedUnit.Guid, unitExtra);
-            return EditMode.Instance.AddUnit(_clickedUnit);
-        }
-
-        private bool DoMove()
-        {
-            UnitExtra unitExtra;
-            if (!DataScene2D.Instance.TryGetUnitExtra(_clickedUnit.Guid, out unitExtra))
-            {
-                return false;
-            }
-            //说明是静止的 肯定没有蓝石
-            if (unitExtra.MoveDirection == 0)
-            {
-                return false;
-            }
-            var curValue = (byte) (unitExtra.MoveDirection - 1);
-            if (!CheckDirectionValid(curValue))
-            {
-                return false;
-            }
-            byte dir;
-            if (!CalculateNextDir(curValue,_clickedTableUnit.MoveDirectionMask, out dir))
-            {
-                return false;
-            }
-            if (!EditMode.Instance.DeleteUnit(_clickedUnit))
-            {
-                return false;
-            }
-            unitExtra.MoveDirection = (EMoveDirection) (dir + 1);
-            DataScene2D.Instance.ProcessUnitExtra(_clickedUnit.Guid, unitExtra);
-            return EditMode.Instance.AddUnit(_clickedUnit);
-        }
-
-        private bool CalculateNextDir(byte curValue, int mask, out byte dir)
-        {
             dir = 0;
             int index = 0;
             bool hasFind = false;
@@ -209,7 +228,7 @@ namespace GameA.Game
             return res;
         }
 
-        private bool CheckDirectionValid(byte value)
+		protected bool CheckDirectionValid(byte value)
         {
             return value == (byte)EDirectionType.Up ||
                    value == (byte)EDirectionType.Right ||
@@ -217,7 +236,7 @@ namespace GameA.Game
                    value == (byte)EDirectionType.Left;
         }
 
-        private byte GetRepeatDirByIndex(int index)
+		protected byte GetRepeatDirByIndex(int index)
         {
             int realIndex = index % 4;
             return DirectionList[realIndex];

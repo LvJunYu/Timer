@@ -75,7 +75,6 @@ namespace GameA.Game
                             downExist = true;
                             _grounded = true;
                             _downUnits.Add(unit);
-                            unit.UpUnits.Add(this);
                             if (unit.Friction > friction)
                             {
                                 friction = unit.Friction;
@@ -127,50 +126,9 @@ namespace GameA.Game
                 LimitPos();
                 UpdateCollider(GetColliderPos(_curPos));
                 _curPos = GetPos(_colliderPos);
-                if (_view != null)
-                {
-                    _trans.position = GetTransPos();
-                }
-                if (OutOfMap())
-                {
-                    return;
-                }
+                UpdateTransPos();
+                CheckOutOfMap();
             }
-        }
-
-        protected override bool CheckDown()
-        {
-            if (_deltaPos.y < 0)
-            {
-                bool flag = false;
-                int y = 0;
-                UnitBase hit = null;
-                var min = new IntVec2(_colliderGrid.XMin, _colliderGrid.YMin + _deltaPos.y);
-                var grid = new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
-                var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue, _dynamicCollider);
-                for (int i = 0; i < units.Count; i++)
-                {
-                    var unit = units[i];
-                    int ymin = 0;
-                    if (unit.IsAlive && unit.OnUpHit(this, ref ymin))
-                    {
-                        flag = true;
-                        if (ymin > y)
-                        {
-                            y = ymin;
-                            hit = unit;
-                        }
-                    }
-                }
-                if (flag)
-                {
-                    _colliderPos.y = y;
-                    _deltaPos.y = y - _colliderPos.y;
-                    _hitUnits[(int)EDirectionType.Down] = hit;
-                    return true;
-                }
-            }
-            return false;
         }
     }
 }

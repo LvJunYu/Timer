@@ -15,15 +15,12 @@ namespace GameA.Game
     [Skill(Name = "SkillWater", Type = typeof(SkillWater))]
     public class SkillWater : SkillBase
     {
-        internal override void Enter(bool plus)
+        internal override void Enter(UnitBase ower)
         {
-            base.Enter(plus);
-            _bulletSpeed = IntVec2.right * 50;
-        }
-
-        protected override BulletBase CreateBullet()
-        {
-            return PlayMode.Instance.CreateRuntimeUnit(10001, PlayMode.Instance.MainUnit.FirePos, 1, Vector2.one) as BulletWater;
+            base.Enter(ower);
+            _eSkillType = ESkillType.Water;
+            _bulletId = 10001;
+            _useMp = 0;
         }
     }
 }

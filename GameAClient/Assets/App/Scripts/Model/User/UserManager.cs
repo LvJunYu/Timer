@@ -9,16 +9,15 @@ using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
 using SoyEngine;
-using SoyEngine;
 
 namespace GameA
 {
-    public class UserManager : ICacheDataManager<User>
+	public class UserManager : ICacheDataManager<UserInfoDetail>
     {
         public static readonly UserManager Instance = new UserManager();
-        private readonly LRUCache<long, User> _caches = new LRUCache<long, User>(ConstDefine.MaxLRUUserCount);
+		private readonly LRUCache<long, UserInfoDetail> _caches = new LRUCache<long, UserInfoDetail>(ConstDefine.MaxLRUUserCount);
         
-        public override bool TryGetData(long guid,out User user)
+		public override bool TryGetData(long guid,out UserInfoDetail user)
         {
             ReactiveLocalUser ();
             if (_caches.TryGetItem(guid, out user))
@@ -34,17 +33,17 @@ namespace GameA
             return true;
         }
 
-		public User OnSyncUserData(Msg_SC_DAT_UserInfoDetail msg, bool save = false)
+		public UserInfoDetail OnSyncUserData(Msg_SC_DAT_UserInfoDetail msg, bool save = false)
         {
             ReactiveLocalUser ();
-            User user;
+			UserInfoDetail user;
 			if (!_caches.TryGetItem(msg.UserInfoSimple.UserId, out user))
             {
                 //user = PoolFactory<User>.Get();
-                user = new User();
+				user = new UserInfoDetail();
 				_caches.Insert(msg.UserInfoSimple.UserId, user);
             }
-            user.OnSyncUserData(msg);
+			user.OnSyncFromParent(msg);
             if (save)
             {
 				LocalCacheManager.Instance.SaveObject(ECacheDataType.CDT_UserData, msg, msg.UserInfoSimple.UserId);
@@ -65,19 +64,19 @@ namespace GameA
 //            user.OnSyncUserData(msg);
 //            return user;
 //        }
-		public User OnSyncUserData(UserInfoSimple userSimple)
-		{
-			ReactiveLocalUser ();
-			User user;
-			if (!_caches.TryGetItem(userSimple.UserId, out user))
-			{
-				//user = PoolFactory<User>.Get();
-				user = new User();
-				_caches.Insert(userSimple.UserId, user);
-			}
-			user.OnSyncUserData(userSimple);
-			return user;
-		}
+//		public UserInfoDetail OnSyncUserData(UserInfoDetail userDetail)
+//		{
+//			ReactiveLocalUser ();
+//			UserInfoDetail user;
+//			if (!_caches.TryGetItem(userDetail.UserInfoSimple.UserId, out user))
+//			{
+//				//user = PoolFactory<User>.Get();
+//				user = new UserInfoDetail();
+//				_caches.Insert(userDetail.UserInfoSimple.UserId, user);
+//			}
+//			user.OnSync(userSimple);
+//			return user;
+//		}
 
 
         public void BatchRequestUserInfo(List<long> userGuidList, bool force, Action onSuccess, Action onError)
@@ -125,10 +124,10 @@ namespace GameA
 
         private void ReactiveLocalUser ()
         {
-            if (LocalUser.Instance.User != null)
-            {
-				_caches.Insert (LocalUser.Instance.User.UserId, LocalUser.Instance.User);
-            }
+//            if (LocalUser.Instance.UserLegacy != null)
+//            {
+//				_caches.Insert (LocalUser.Instance.UserLegacy.UserId, LocalUser.Instance.UserLegacy);
+//            }
         }
     }
 }

@@ -17,7 +17,7 @@ namespace SoyEngine
 	{
 		public static void SetActiveEx(this GameObject go, bool value)
 		{
-			if (go != null)
+			if (go != null && go.activeSelf != value)
 			{
 				go.SetActive(value);
 			}
@@ -25,7 +25,7 @@ namespace SoyEngine
 
 		public static void SetActiveEx(this Component com, bool value)
 		{
-			if (com != null && com.gameObject!=null)
+			if (com != null && com.gameObject!=null && com.gameObject.activeSelf != value)
 			{
 				com.gameObject.SetActive(value);
 			}
@@ -33,7 +33,7 @@ namespace SoyEngine
 
 		public static void SetEnableEx(this MonoBehaviour com, bool value)
 		{
-			if (com != null )
+			if (com != null)
 			{
 				com.enabled = value;
 			}

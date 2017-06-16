@@ -114,5 +114,17 @@
     {
         "Id": "28",
         "Name": "CeZuoJiao"
+    },
+    {
+        "Id": "29",
+        "Name": "Kua"
+    },
+    {
+        "Id": "30",
+        "Name": "CeKua"
+    },
+    {
+        "Id": "31",
+        "Name": "ZhuangShi"
     }
 ]

@@ -9,7 +9,6 @@ using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine;
 using IntVec2 = SoyEngine.IntVec2;
 
@@ -32,17 +31,17 @@ namespace GameA.Game
             StopCoroutine("ParseData");
         }
 
-        public void Read(GM2DMapData mapData)
+        public void Read(GM2DMapData mapData, GameManager.EStartType startType)
         {
             _run = true;
             _mapProcess = 0;
             var version = mapData.Version;
             switch (version)
             {
-                case 0:
-                case 1:
-                    StartCoroutine("ParseData", mapData);
-                    break;
+            case 0:
+            case 1:
+                StartCoroutine (ParseData (mapData, startType));
+                break;
             }
         }
 
@@ -52,7 +51,7 @@ namespace GameA.Game
             StopCoroutine("ParseData");
         }
 
-        private IEnumerator ParseData(GM2DMapData mapData)
+        private IEnumerator ParseData(GM2DMapData mapData, GameManager.EStartType startType)
         {
             _mapProcess = 0f;
             var timer = new GameTimer();
@@ -69,7 +68,6 @@ namespace GameA.Game
                     AddAttrTo(GM2DTools.ToEngine(item.Guid), item);
                 }
             }
-
             var pairUnits = new Dictionary<IntVec3, PairUnitData>();
             var pairUnitDatas = mapData.PairUnitDatas;
             if (pairUnitDatas != null)
@@ -78,6 +76,14 @@ namespace GameA.Game
                 {
                     pairUnits.Add(GM2DTools.ToEngine(pairUnitDatas[i].UnitA), pairUnitDatas[i]);
                     pairUnits.Add(GM2DTools.ToEngine(pairUnitDatas[i].UnitB), pairUnitDatas[i]);
+                }
+            }
+
+            var switchUnitDatas = mapData.SwitchUnitDatas;
+            for (int i = 0; i < switchUnitDatas.Count; i++) {
+                for (int j = 0; j < switchUnitDatas [i].ControlledGUIDs.Count; j++) {
+                    DataScene2D.Instance.BindSwitch(GM2DTools.ToEngine(switchUnitDatas[i].SwitchGUID),
+                        GM2DTools.ToEngine(switchUnitDatas [i].ControlledGUIDs[j]));
                 }
             }
 
@@ -125,8 +131,8 @@ namespace GameA.Game
                         unitObject.Guid.x = node.Grid.XMin + j * size.x;
                         unitObject.Guid.y = node.Grid.YMin + k * size.y;
                         //play的时候只生成区域内的即可 不是主角
-                        if (GM2DGame.Instance.GameInitType == GameManager.EStartType.Play
-                            || GM2DGame.Instance.GameInitType == GameManager.EStartType.PlayRecord)
+                        if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Play
+                            || GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.PlayRecord)
                         {
                             var grid = tableUnit.GetDataGrid(unitObject.Guid.x, unitObject.Guid.y, unitObject.Rotation, unitObject.Scale);
                             if (!validMapGrid.Contains(grid) && !validMapGrid.Intersects(grid))
@@ -134,6 +140,14 @@ namespace GameA.Game
                                 num++;
                                 _mapProcess = num * ratio;
                                 continue;
+                            }
+                        }
+                        if (tableUnit.EPairType > 0)
+                        {
+                            PairUnitData pairUnitData;
+                            if (pairUnits.TryGetValue(unitObject.Guid, out pairUnitData))
+                            {
+                                PairUnitManager.Instance.OnReadMapFile(unitObject, tableUnit, pairUnitData);
                             }
                         }
                         if (!AddUnit(unitObject))
@@ -150,6 +164,10 @@ namespace GameA.Game
                         }
                     }
                 }
+            }
+            // 只有在改造编辑的时候才读取地图的改造信息数据
+            if (startType == GameManager.EStartType.ModifyEdit) {
+                ParseModifyData (mapData);
             }
             _mapProcess = 1;
             MapManager.Instance.OnSetMapDataSuccess(mapData);
@@ -175,44 +193,81 @@ namespace GameA.Game
 			return true;
 		}
 
-		public byte[] Save()
-        {
-            var gm2DMapData = new GM2DMapData();
-            gm2DMapData.Version = GM2DGame.MapVersion;
-            //DynamicCollider -> RendererData 回头修改为多线程或者两份同时计算
-            //2016.7.18 修改为直接按照ColliderData存取
-            //2016.9.12 修改为按照RendererData存取
-		    var nodes = DataScene2D.Instance.GetAllNodes();
-		    for (int i = 0; i < nodes.Count; i++)
-		    {
-                gm2DMapData.Data.Add(GM2DTools.ToProto(nodes[i]));
-		    }
-            var enumerator = DataScene2D.Instance.UnitExtras.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                gm2DMapData.UnitExtraInfos.Add(GM2DTools.ToProto(enumerator.Current.Key, enumerator.Current.Value));
-            }
-		    var pairUnitIter = PairUnitManager.Instance.PairUnits.Values.GetEnumerator();
-            while (pairUnitIter.MoveNext())
-            {
-                if (pairUnitIter.Current != null)
-                {
-                    for (int i = 0; i < pairUnitIter.Current.Length; i++)
-                    {
-                        if (pairUnitIter.Current[i].UnitA.Guid != IntVec3.zero)
-                        {
-                            gm2DMapData.PairUnitDatas.Add(GM2DTools.ToProto(pairUnitIter.Current[i]));
-                        }
-                    }
+        /// <summary>
+        /// 处理改造数据
+        /// </summary>
+        private void ParseModifyData (GM2DMapData mapData) {
+            for (int i = 0; i < mapData.ModifyDatas.Count; i++) {
+                if (mapData.ModifyDatas [i].Type == SoyEngine.Proto.EModifyType.MT_Modify) {
+                    DataScene2D.Instance.ModifiedUnits.Add (new ModifyData(mapData.ModifyDatas [i]));
+                } else if (mapData.ModifyDatas [i].Type == SoyEngine.Proto.EModifyType.MT_Erase) {
+                    DataScene2D.Instance.RemovedUnits.Add (new ModifyData(mapData.ModifyDatas [i]));
+                } else if (mapData.ModifyDatas [i].Type == SoyEngine.Proto.EModifyType.MT_Add) {
+                    DataScene2D.Instance.AddedUnits.Add (new ModifyData(mapData.ModifyDatas [i]));
                 }
             }
+        }
+
+		public byte[] Save()
+		{
+			var gm2DMapData = new GM2DMapData ();
+			gm2DMapData.Version = GM2DGame.MapVersion;
+			//DynamicCollider -> RendererData 回头修改为多线程或者两份同时计算
+			//2016.7.18 修改为直接按照ColliderData存取
+			//2016.9.12 修改为按照RendererData存取
+			var nodes = DataScene2D.Instance.GetAllNodes ();
+			for (int i = 0; i < nodes.Count; i++) {
+				gm2DMapData.Data.Add (GM2DTools.ToProto (nodes [i]));
+			}
+			var enumerator = DataScene2D.Instance.UnitExtras.GetEnumerator ();
+			while (enumerator.MoveNext ()) {
+				gm2DMapData.UnitExtraInfos.Add (GM2DTools.ToProto (enumerator.Current.Key, enumerator.Current.Value));
+			}
+			var pairUnitIter = PairUnitManager.Instance.PairUnits.Values.GetEnumerator ();
+			while (pairUnitIter.MoveNext ()) {
+				if (pairUnitIter.Current != null) {
+					for (int i = 0; i < pairUnitIter.Current.Length; i++) {
+						if (pairUnitIter.Current [i].UnitA.Guid != IntVec3.zero) {
+							gm2DMapData.PairUnitDatas.Add (GM2DTools.ToProto (pairUnitIter.Current [i]));
+						}
+					}
+				}
+			}
+
+            var switchUnitItor = DataScene2D.Instance.SwitchedUnits.GetEnumerator ();
+            while (switchUnitItor.MoveNext ()) {
+                SwitchUnitData newData = new SwitchUnitData ();
+                newData.SwitchGUID = GM2DTools.ToProto (switchUnitItor.Current.Key);
+                for (int i = 0; i < switchUnitItor.Current.Value.Count; i++) {
+                    newData.ControlledGUIDs.Add(GM2DTools.ToProto(switchUnitItor.Current.Value[i]));
+                }
+                gm2DMapData.SwitchUnitDatas.Add (newData);
+            }
+
+            gm2DMapData.ModifyDatas.Clear ();
+            for (int i = 0; i < DataScene2D.Instance.ModifiedUnits.Count; i++) {
+                var mid = DataScene2D.Instance.ModifiedUnits [i].ToModifyItemData ();
+                mid.Type = SoyEngine.Proto.EModifyType.MT_Modify;
+                gm2DMapData.ModifyDatas.Add (mid);
+			}
+            for (int i = 0; i < DataScene2D.Instance.AddedUnits.Count; i++) {
+                var mid = DataScene2D.Instance.AddedUnits [i].ToModifyItemData ();
+                mid.Type = SoyEngine.Proto.EModifyType.MT_Add;
+                gm2DMapData.ModifyDatas.Add (mid);
+            }
+            for (int i = 0; i < DataScene2D.Instance.RemovedUnits.Count; i++) {
+                var mid = DataScene2D.Instance.RemovedUnits [i].ToModifyItemData ();
+                mid.Type = SoyEngine.Proto.EModifyType.MT_Erase;
+                gm2DMapData.ModifyDatas.Add (mid);
+            }
+
+
             gm2DMapData.UserGUID = LocalUser.Instance.UserGuid;
             gm2DMapData.ValidMapRect = GM2DTools.ToProto(DataScene2D.Instance.ValidMapRect);
             var mapEditor = EditMode.Instance;
             gm2DMapData.WinCondition = mapEditor.MapStatistics.WinCondition;
             gm2DMapData.TimeLimit = mapEditor.MapStatistics.TimeLimit;
             gm2DMapData.LifeCount = mapEditor.MapStatistics.LifeCount;
-            gm2DMapData.CameraOrthoSize = CameraManager.Instance.FinalOrthoSize;
             gm2DMapData.FinishCount = mapEditor.MapStatistics.LevelFinishCount;
 		    gm2DMapData.BgRandomSeed = BgScene2D.Instance.CurSeed;
             return GameMapDataSerializer.Instance.Serialize(gm2DMapData);
@@ -224,6 +279,7 @@ namespace GameA.Game
             unitExtra.MoveDirection = (EMoveDirection)unitExtraInfo.MoveDirection;
             unitExtra.RollerDirection = (EMoveDirection) unitExtraInfo.RollerDirection;
             unitExtra.Msg = unitExtraInfo.Msg;
+            unitExtra.EnergyType = (byte) unitExtraInfo.EnergyType;
             if (unitExtraInfo.UnitChild != null)
             {
                 unitExtra.Child = new UnitChild((ushort)unitExtraInfo.UnitChild.Id, (byte)unitExtraInfo.UnitChild.Rotation, (EMoveDirection)unitExtraInfo.UnitChild.MoveDirection);

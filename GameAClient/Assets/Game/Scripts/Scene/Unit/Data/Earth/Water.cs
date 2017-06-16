@@ -13,18 +13,35 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 4008, Type = typeof(Water))]
-    public class Water : Earth
+    [Unit(Id = 24008, Type = typeof(MoWater))]
+    public class MoWater : Water
     {
+    }
+
+    [Unit(Id = 4008, Type = typeof(Water))]
+    public class Water : BlockBase
+    {
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            SetSortingOrderBack();
+            return true;
+        }
+
         internal override bool InstantiateView()
         {
             if (!base.InstantiateView())
             {
                 return false;
             }
-            _animation = new AnimationSystem();
-            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(1.6f - Time.realtimeSinceStartup % 1.6f,
-                () => _animation.Init(this, "Run")));
+            if (_view1 != null)
+            {
+                _view1.Animation.Init("Run");
+            }
+            _animation.Init("Run");
             return true;
         }
 
@@ -40,13 +57,10 @@ namespace GameA.Game
         private void OnWater(UnitBase other)
         {
             //播放水中动画 漂浮一会 然后死掉
+            //GameParticleManager.Instance.Emit("M1EffectDeathWater", GetHitEffectPos(other, EDirectionType.Up));
             if (other.IsHero)
             {
-                
-            }
-            else
-            {
-                //播放水中特效
+                other.InWater();
             }
         }
     }

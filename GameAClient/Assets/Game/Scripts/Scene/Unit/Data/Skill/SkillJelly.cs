@@ -7,11 +7,18 @@
 
 using System;
 using System.Collections;
+using UnityEngine;
 
 namespace GameA.Game
 {
     [Skill(Name = "SkillJelly", Type = typeof(SkillJelly))]
     public class SkillJelly : SkillBase
     {
+        internal override void Enter(UnitBase ower)
+        {
+            base.Enter(ower);
+            _eSkillType = ESkillType.Jelly;
+            _bulletId = 10004;
+        }
     }
 }

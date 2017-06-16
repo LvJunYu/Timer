@@ -8,7 +8,6 @@
 using System;
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using UnityEngine;
 using IntRect = SoyEngine.IntRect;
 
@@ -108,6 +107,26 @@ namespace GameA.Game
             set { _winCondition = value; }
         }
 
+        public int MsgWinCondition {
+            get {
+                int result = 0;
+                if (HasWinCondition (EWinCondition.KillMonster)) {
+                    result |= 1 << (int)SoyEngine.Proto.EWinCondition.WC_Monster;
+                }
+                if (HasWinCondition (EWinCondition.CollectTreasure)) {
+                    result |= 1 << (int)SoyEngine.Proto.EWinCondition.WC_Collect;
+                }
+                if (HasWinCondition (EWinCondition.Arrived)) {
+                    result |= 1 << (int)SoyEngine.Proto.EWinCondition.WC_Arrive;
+                }
+                // 
+                if (result == 0) {
+                    result |= 1 << (int)SoyEngine.Proto.EWinCondition.WC_None;
+                }
+                return result;
+            }
+        }
+
 	    public int LevelFinishCount
 	    {
 		    get { return _levelFinishCount; }
@@ -116,8 +135,8 @@ namespace GameA.Game
         public MapStatistics()
         {
             _winCondition = 1 << (int) EWinCondition.Arrived | 1 << (int) EWinCondition.TimeLimit;
-            _timeLimit = 60;
-            _lifeCount = 5;
+            _timeLimit = 30;
+            _lifeCount = 3;
         }
 
         public void SetWinCondition(EWinCondition eWinCondition, bool value)
@@ -150,6 +169,11 @@ namespace GameA.Game
             return (_winCondition & (1 << (int) eWinCondition)) != 0;
         }
 
+        public void RemoveCondition(EWinCondition eWinCondition)
+        {
+            _winCondition = (byte)(_winCondition & ~(1 << (int)eWinCondition));
+        }
+
         public void AddFinishCount()
         {
             _levelFinishCount ++;
@@ -160,7 +184,7 @@ namespace GameA.Game
             _levelFinishCount = 0;
         }
 
-        public void AddOrDelete(Table_Unit tableUnit, bool value, bool isInit = false)
+        public void AddOrDeleteUnit(Table_Unit tableUnit, bool value, bool isInit = false)
         {
             if (!isInit)
             {
@@ -191,6 +215,10 @@ namespace GameA.Game
                     }
                     break;
             }
+        }
+
+        public void AddOrDeleteConnection () {
+            NeedSave = true;
         }
     }
 }

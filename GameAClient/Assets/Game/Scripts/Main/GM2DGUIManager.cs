@@ -6,7 +6,6 @@
 ***********************************************************************/
 
 using SoyEngine;
-using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -65,15 +64,10 @@ namespace GameA.Game
 			var eventSystem = new UIEventSystem();
 			eventSystem.Init();
 			eventSystem.Trans.SetParent(transform);
-			Messenger.AddListener(GameA.EMessengerType.ClearAppRecordState, ClearAppRecordState);
-			Messenger.AddListener(GameA.EMessengerType.OnRecordFullScreenStateChanged, OnRecordFullScreenStateChanged);
 		}
 
 		protected override void OnDestroy()
         {
-			Messenger.RemoveListener(GameA.EMessengerType.ClearAppRecordState, ClearAppRecordState);
-			Messenger.RemoveListener(GameA.EMessengerType.OnRecordFullScreenStateChanged, OnRecordFullScreenStateChanged);
-
 			if (_renderUICamera != null)
 			{
 				_renderUICamera.targetTexture = null;
@@ -81,27 +75,6 @@ namespace GameA.Game
 			base.OnDestroy();
             Instance = null;
         }
-
-	    private void ClearAppRecordState()
-	    {
-		    if (_renderUICamera != null)
-		    {
-			    _renderUICamera.targetTexture = null;
-		    }
-	    }
-
-	    private void OnRecordFullScreenStateChanged()
-	    {
-		    if (SocialGUIManager.Instance.RunRecordInApp && UIRoot != null && UIRoot.CanvasScaler != null)
-		    {
-				GameUIRoot r = UIRoot as GameUIRoot;
-			    if (r != null)
-			    {
-				    r.OnScreenChanged();
-			    }
-
-		    }
-	    }
 
 	}
 

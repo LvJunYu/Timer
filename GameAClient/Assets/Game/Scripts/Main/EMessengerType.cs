@@ -8,9 +8,9 @@
 using System;
 using System.Collections;
 
-namespace GameA.Game
+namespace GameA
 {
-    public class EMessengerType
+    public static partial class EMessengerType
     {
         public static int OnTableInited = SoyEngine.EMessengerType.NextId++;
 
@@ -18,16 +18,28 @@ namespace GameA.Game
         public static int OnSelectedItemChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnUndoChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnRedoChanged = SoyEngine.EMessengerType.NextId++;
+        public static int OnSelectedItemChangedOnSwitchMode = SoyEngine.EMessengerType.NextId++;
+
+        public static int OnSwitchConnectionChanged = SoyEngine.EMessengerType.NextId++;
+
+		public static int OnModifyEditDeleted = SoyEngine.EMessengerType.NextId++;
+		public static int OnModifyEditAdded = SoyEngine.EMessengerType.NextId++;
+		public static int OnModifyModified = SoyEngine.EMessengerType.NextId++;
+		public static int OnModifyUnitChanged = SoyEngine.EMessengerType.NextId++;
 
         public static int OnScreenOperator = SoyEngine.EMessengerType.NextId++;
         public static int OnValidMapRectChanged = SoyEngine.EMessengerType.NextId++;
 
         public static int OnActorFlip = SoyEngine.EMessengerType.NextId++;
 
-        public static int OnPlayChanged = SoyEngine.EMessengerType.NextId++;
-
-		public static int OnDrag_2MouseButton = SoyEngine.EMessengerType.NextId++;
-		public static int OnDrag_2MouseEnd = SoyEngine.EMessengerType.NextId++;
+		/// <summary>
+		/// 鼠标右键按下拖拽
+		/// </summary>
+		public static int OnDrag_MouseBtn2 = SoyEngine.EMessengerType.NextId++;
+		/// <summary>
+		/// 鼠标右键按下拖拽结束
+		/// </summary>
+		public static int OnDrag_MouseBtn2End = SoyEngine.EMessengerType.NextId++;
 
 
 		public static int OnPinchMouseButton = SoyEngine.EMessengerType.NextId++;
@@ -45,6 +57,7 @@ namespace GameA.Game
         public static int OnLifeChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnKeyChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnWinDataChanged = SoyEngine.EMessengerType.NextId++;
+        public static int OnScoreChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnMainPlayerCreated = SoyEngine.EMessengerType.NextId++;
 
 	    public static int GameLog = SoyEngine.EMessengerType.NextId++;
@@ -53,6 +66,7 @@ namespace GameA.Game
 	    public static int GameFinishSuccess  = SoyEngine.EMessengerType.NextId++;
         public static int GameFinishSuccessShowUI = SoyEngine.EMessengerType.NextId++;
         public static int GameFinishFailed = SoyEngine.EMessengerType.NextId++;
+        public static int GameFinishFailedShowUI = SoyEngine.EMessengerType.NextId++;
         public static int GameFailedDeadMark = SoyEngine.EMessengerType.NextId++;
 
         public static int OnMainPlayerDead = SoyEngine.EMessengerType.NextId++;
@@ -62,8 +76,16 @@ namespace GameA.Game
 		public static int OnCameraOrthoSpringbackChangeEnd = SoyEngine.EMessengerType.NextId++;
 
 		public static int ForceUpdateCameraMaskSize = SoyEngine.EMessengerType.NextId++;
-
-
+        // 拾取了宝石
+        public static int OnGemCollect = SoyEngine.EMessengerType.NextId++;
+        // 怪物死了
+        public static int OnMonsterDead = SoyEngine.EMessengerType.NextId++;
+        // 玩家跳跃
+        public static int OnPlayerJump = SoyEngine.EMessengerType.NextId++;
+        // 开关被触发
+        public static int OnSwitchTriggered = SoyEngine.EMessengerType.NextId++;
+        // 玩家使用了传送门
+        public static int OnPlayerEnterPortal = SoyEngine.EMessengerType.NextId++;
 		public static int OpenGameSetting = SoyEngine.EMessengerType.NextId++;
 		public static int OnCloseGameSetting = SoyEngine.EMessengerType.NextId++;
 
@@ -73,6 +95,13 @@ namespace GameA.Game
 
         public static int OnSkillChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnAmmoChanged = SoyEngine.EMessengerType.NextId++;
+
+        // 主角mp发生变化
+        public static int OnMPChanged = SoyEngine.EMessengerType.NextId++;
+        // 主角hp发生变化
+        public static int OnHPChanged = SoyEngine.EMessengerType.NextId++;
+        // 主角加速跑技能cd发生变化
+        public static int OnSpeedUpCDChanged = SoyEngine.EMessengerType.NextId++;
 
         // 主玩家复活
         public static int OnMainPlayerRevive = SoyEngine.EMessengerType.NextId++;
@@ -107,5 +136,6 @@ namespace GameA.Game
 		public static int OnCurCompositeEditorStateChanged = SoyEngine.EMessengerType.NextId++;
 
 		public static int OnCancelSelectState = SoyEngine.EMessengerType.NextId++;
+		public static int OnLittleSkillChanged = SoyEngine.EMessengerType.NextId++;
 	}
 }

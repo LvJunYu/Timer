@@ -70,9 +70,8 @@ namespace GameA
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(project, "作品加载中");
             project.PrepareRes(()=>{
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(project);
-                GameManager.Instance.GameMode = EGameMode.Normal;
-                project.BeginEdit();
-                MatrixProjectTools.SetProjectVersion(project);
+                GameManager.Instance.RequestEdit(project);
+//                MatrixProjectTools.SetProjectVersion(project);
                 SocialGUIManager.Instance.ChangeToGameMode();
             }, ()=>{
                 LogHelper.Error("EditPersonalProject, Project GetRes Error");

@@ -47,7 +47,7 @@ namespace SoyEngine
 			if (_curDragingItem != null)
 			{
 				AddOrCoverCommand command = new AddOrCoverCommand(_curDragingItem);
-				CommandManager.Instance.Execute(command, eventData.position);
+				EditMode.Instance.CommandManager.Execute(command, eventData.position);
 				_curDragingItem = null;
 				EditMode.Instance.SetDraggingState(false);
 			}
@@ -57,7 +57,7 @@ namespace SoyEngine
 		{ 
 			if (_curSelectTable != null)
 			{
-                Messenger<ushort>.Broadcast(GameA.Game.EMessengerType.OnSelectedItemChanged, (ushort)_curSelectTable.Id);
+                Messenger<ushort>.Broadcast(GameA.EMessengerType.OnSelectedItemChanged, (ushort)_curSelectTable.Id);
 			}
 		}
 
@@ -67,7 +67,7 @@ namespace SoyEngine
 			{
 				if (data.hovered.Count == 0)
 				{
-					_curDragingItem = UnitManager.Instance.GetUnit(_curSelectTable, ERotationType.Up);
+					_curDragingItem = UnitManager.Instance.GetUnit(_curSelectTable, EDirectionType.Up);
 					EditMode.Instance.SetDraggingState(true);
 				}
 			}

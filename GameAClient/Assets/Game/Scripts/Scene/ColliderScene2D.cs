@@ -23,6 +23,7 @@ namespace GameA.Game
         [SerializeField] private readonly List<UnitBase> _allUnits = new List<UnitBase>();
         private Comparison<UnitBase> _comparisonMoving = SortRectIndex;
         private InterestArea _interestArea;
+        private byte[,] _pathGrid;
 
         public static ColliderScene2D Instance
         {
@@ -39,14 +40,17 @@ namespace GameA.Game
             get { return _allUnits; }
         }
 
-
         public override void Dispose()
         {
             base.Dispose();
-            foreach (var unit in _units.Values)
+            foreach (var unit in _allUnits)
             {
                 if (unit != null)
                 {
+                    if (unit.View != null)
+                    {
+                        UnityEngine.Object.Destroy(unit.View.Trans.gameObject);
+                    }
                     unit.OnObjectDestroy();
                     unit.OnDispose();
                 }
@@ -65,6 +69,15 @@ namespace GameA.Game
             Init(width, height);
             InitRegions(regionTilesCount);
             _interestArea = new InterestArea(RegionTileSize * 1.5f, RegionTileSize * 2.5f, this);
+            _pathGrid = new byte[Mathf.NextPowerOfTwo(width / JoyConfig.ServerTileScale), Mathf.NextPowerOfTwo(height / JoyConfig.ServerTileScale)];
+            for (int i = 0; i < _pathGrid.GetLength(0); i++)
+            {
+                for (int j = 0; j < _pathGrid.GetLength(1); j++)
+                {
+                    _pathGrid[i, j] = 1;
+                }
+            }
+            InitPathFinder(_pathGrid);
         }
 
         protected override void OnInit()
@@ -119,31 +132,36 @@ namespace GameA.Game
             {
                 PlayMode.Instance.MainUnit = (MainUnit)unit;
             }
+            else if(UnitDefine.IsGround(unit.Id))
+            {
+                _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 0;
+            }
             _allUnits.Add(unit);
             return true;
         }
 
         public bool DeleteUnit(UnitDesc unitDesc, Table_Unit tableUnit)
         {
+            UnitBase unit;
+            if (!_units.TryGetValue(unitDesc.Guid, out unit))
+            {
+                LogHelper.Warning("DeleteUnit Failed, {0}", unitDesc);
+                return true;
+            }
             var colliderNode = NodeFactory.GetColliderNode(unitDesc, tableUnit);
             if (colliderNode == null)
             {
-                LogHelper.Error("DeleteCollider Failed,{0}", unitDesc.ToString());
+                LogHelper.Error("GetColliderNode Failed,{0}", unitDesc.ToString());
                 return false;
             }
             if (!DeleteNode(colliderNode))
             {
-                LogHelper.Error("DeleteCollider Failed,{0}", unitDesc.ToString());
+                LogHelper.Error("DeleteNode Failed,{0}", unitDesc.ToString());
                 return false;
             }
-            UnitBase unit;
-            if (!_units.TryGetValue(unitDesc.Guid, out unit))
-            {
-                //LogHelper.Warning("DeleteUnit Failed, {0}", UnitDesc);
-                return true;
-            }
+            unit.OnDispose();
             _allUnits.Remove(unit);
-            UnitManager.Instance.FreeUnitView(unit);
+            _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 1;
             return _units.Remove(unitDesc.Guid);
         }
 
@@ -152,7 +170,7 @@ namespace GameA.Game
             UnitBase unit;
             if (!_units.TryGetValue(unitDesc.Guid, out unit))
             {
-                //LogHelper.Warning("InstantiateView Failed, {0}", UnitDesc);
+                LogHelper.Warning("InstantiateView Failed, {0}", unitDesc);
                 return false;
             }
             if (unit.View !=null)
@@ -175,7 +193,7 @@ namespace GameA.Game
             UnitBase unit;
             if (!_units.TryGetValue(unitDesc.Guid, out unit))
             {
-                //LogHelper.Warning("DeleteUnit Failed, {0}", UnitDesc);
+                LogHelper.Warning("DestroyView Failed, {0}", unitDesc);
                 return false;
             }
             if (unit.TableUnit.EGeneratedType == EGeneratedType.Morph)
@@ -188,7 +206,11 @@ namespace GameA.Game
 
         public bool TryGetUnit(IntVec3 guid, out UnitBase unit)
         {
-            return _units.TryGetValue(guid, out unit);
+            if (!_units.TryGetValue(guid, out unit))
+            {
+                return false;
+            }
+            return !unit.IsFreezed;
         }
 
         public bool TryGetUnit(SceneNode colliderNode, out UnitBase unit)
@@ -204,12 +226,26 @@ namespace GameA.Game
 
         #region AOI
 
+        public bool UpdateDynamicNode(SceneNode node, Grid2D lastGrid)
+        {
+            if (base.UpdateDynamicNode(node))
+            {
+                if (UnitDefine.IsGround(node.Id))
+                {
+                    _pathGrid[lastGrid.XMin / ConstDefineGM2D.ServerTileScale, lastGrid.YMin / ConstDefineGM2D.ServerTileScale] = 1;
+                    _pathGrid[node.Grid.XMin / ConstDefineGM2D.ServerTileScale, node.Grid.YMin / ConstDefineGM2D.ServerTileScale] = 0;
+                }
+                return true;
+            }
+            return false;
+        }
+
         public void Reset()
         {
-            //foreach (var dynamicNode in _dynamicNodes)
-            //{
-            //    dynamicNode.Value.Reset();
-            //}
+            for (int i = 0; i < _allUnits.Count; i++)
+            {
+                _allUnits[i].Reset();
+            }
         }
 
         #region Comparison SortData
@@ -351,7 +387,7 @@ namespace GameA.Game
 
         private bool CheckCanDelete(Table_Unit tableUnit)
         {
-            if (tableUnit.EUnitType == EUnitType.MainPlayer || tableUnit.Id == 65535 || UnitDefine.Instance.IsSwitch(tableUnit.Id))
+            if (tableUnit.EUnitType == EUnitType.MainPlayer || tableUnit.Id == 65535 || UnitDefine.IsSwitch(tableUnit.Id))
             {
                 return false;
             }
@@ -363,7 +399,6 @@ namespace GameA.Game
         #region Physics
 
         private static List<RayHit2D> _cachedRayHits = new List<RayHit2D>();
-        private static readonly List<UnitDesc> _cachedUnitObjects = new List<UnitDesc>();
         private static readonly List<UnitBase> _cachedUnits = new List<UnitBase>();
 
         internal static bool PointCast(Vector2 point, out SceneNode sceneNode, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue)
@@ -493,10 +528,16 @@ namespace GameA.Game
         }
 
         internal static List<GridHit2D> GridCastAll(IntVec2 pointA, IntVec2 pointB, byte direction, int distance = ConstDefineGM2D.MaxMapDistance, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue,
-    float maxDepth = float.MaxValue, SceneNode excludeNode = null)
+            float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
             return SceneQuery2D.GridCastAll(pointA, pointB, direction, distance, layerMask, Instance, minDepth, maxDepth,
                 excludeNode);
+        }
+
+        internal static List<GridHit2D> GridCastAll(Grid2D grid, byte direction, int distance = ConstDefineGM2D.MaxMapDistance, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue,
+            float maxDepth = float.MaxValue, SceneNode excludeNode = null)
+        {
+            return SceneQuery2D.GridCastAll(ref grid, direction, layerMask, Instance, minDepth, maxDepth,excludeNode);
         }
 
         public static List<UnitBase> GridCastAllReturnUnits(Grid2D one, int layerMask = JoyPhysics2D.LayMaskAll,
@@ -517,9 +558,9 @@ namespace GameA.Game
                 {
                     var guid = tableUnit.ColliderToRenderer(node.Guid, node.Rotation);
                     UnitBase unit;
-                    if (!_instance.Units.TryGetValue(guid, out unit))
+                    if (!_instance.TryGetUnit(guid, out unit))
                     {
-                        LogHelper.Warning("TryGetUnits failed,{0}", node);
+                        //LogHelper.Warning("TryGetUnits failed,{0}", node);
                         continue;
                     }
                     _cachedUnits.Add(unit);
@@ -536,9 +577,9 @@ namespace GameA.Game
                             var guid = new IntVec3(newGrid.XMin + j * size.x, newGrid.YMin + k * size.y, node.Depth);
                             guid = tableUnit.ColliderToRenderer(guid, node.Rotation);
                             UnitBase unit;
-                            if (!_instance.Units.TryGetValue(guid, out unit))
+                            if (!_instance.TryGetUnit(guid, out unit))
                             {
-                                LogHelper.Warning("TryGetUnit failed,{0}", node);
+                                //LogHelper.Warning("TryGetUnit failed,{0}", node);
                                 continue;
                             }
                             _cachedUnits.Add(unit);
@@ -563,9 +604,9 @@ namespace GameA.Game
             {
                 IntVec3 guid = tableUnit.ColliderToRenderer(node.Guid, node.Rotation);
                 UnitBase unit;
-                if (!_instance.Units.TryGetValue(guid, out unit))
+                if (!_instance.TryGetUnit(guid, out unit))
                 {
-                    LogHelper.Warning("TryGetUnits failed,{0}", node);
+                    //LogHelper.Warning("TryGetUnits failed,{0}", node);
                     return null;
                 }
                 _cachedUnits.Add(unit);
@@ -582,9 +623,8 @@ namespace GameA.Game
                         var guid = new IntVec3(newGrid.XMin + j * size.x, newGrid.YMin + k * size.y, node.Depth);
                         guid = tableUnit.ColliderToRenderer(guid, node.Rotation);
                         UnitBase unit;
-                        if (!_instance.Units.TryGetValue(guid, out unit))
+                        if (!_instance.TryGetUnit(guid, out unit))
                         {
-                            LogHelper.Warning("TryGetUnit failed,{0}", node);
                             continue;
                         }
                         _cachedUnits.Add(unit);
@@ -594,37 +634,31 @@ namespace GameA.Game
             return _cachedUnits;
         }
 
-        public static List<SceneNode> CircleCastAll(Vector2 center, float radius, int layerMask = JoyPhysics2D.LayMaskAll,
+        public static List<SceneNode> CircleCastAll(IntVec2 center, int radius, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue,
             SceneNode excludeNode = null)
         {
-            return SceneQuery2D.CircleCastAll(center * ConstDefineGM2D.ServerTileScale,
-                radius * ConstDefineGM2D.ServerTileScale, layerMask, Instance, minDepth, maxDepth,
+            return SceneQuery2D.CircleCastAll(center, radius, layerMask, Instance, minDepth, maxDepth,
                 excludeNode);
         }
 
-        public static List<UnitDesc> CircleCastAllReturnUnits(Vector2 center, float radius, int layerMask = JoyPhysics2D.LayMaskAll,
-            float minDepth = float.MinValue, float maxDepth = float.MaxValue,
-            SceneNode excludeNode = null)
+        public static List<UnitBase> CircleCastAllReturnUnits(IntVec2 center, int radius, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
-            _cachedUnitObjects.Clear();
-            var grid = new Grid2D(GM2DTools.WorldToTile(center.x - radius), GM2DTools.WorldToTile(center.y - radius),
-                GM2DTools.WorldToTile(center.x + radius) - 1, GM2DTools.WorldToTile(center.y + radius) - 1);
+            _cachedUnits.Clear();
+            var grid = new Grid2D(center.x - radius, center.y - radius, center.x + radius - 1, center.y + radius - 1);
             grid = grid.IntersectWith(DataScene2D.Instance.RootGrid);
-            List<SceneNode> nodes = CircleCastAll(center, radius, layerMask, minDepth, maxDepth, excludeNode);
-            center *= ConstDefineGM2D.ServerTileScale;
-            radius *= ConstDefineGM2D.ServerTileScale;
+            List<SceneNode> nodes = SceneQuery2D.CircleCastAll(center, radius, layerMask, Instance, minDepth, maxDepth, excludeNode);
             for (int i = 0; i < nodes.Count; i++)
             {
-                if (!SplitSceneNodeCacheToUnitObject(center, radius, grid, nodes[i]))
+                if (!SplitNode(center, radius, grid, nodes[i]))
                 {
-                    LogHelper.Error("SplitSceneNodeCacheToUnitObject failed.{0}, {1}", nodes[i], grid);
+                    LogHelper.Error("SplitNode failed.{0}, {1}", nodes[i], grid);
                 }
             }
-            return _cachedUnitObjects;
+            return _cachedUnits;
         }
 
-        private static bool SplitSceneNodeCacheToUnitObject(Vector2 center, float radius, Grid2D grid, SceneNode node)
+        private static bool SplitNode(IntVec2 center, int radius, Grid2D grid, SceneNode node)
         {
             Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(node.Id);
             if (tableUnit == null)
@@ -635,9 +669,16 @@ namespace GameA.Game
             //动态物体
             if (node.IsDynamic())
             {
-                _cachedUnitObjects.Add(new UnitDesc(node.Id, tableUnit.ColliderToRenderer(node.Guid, node.Rotation), node.Rotation, node.Scale));
+                var guid = tableUnit.ColliderToRenderer(node.Guid, node.Rotation);
+                UnitBase unit;
+                if (!_instance.TryGetUnit(guid, out unit))
+                {
+                    return false;
+                }
+                _cachedUnits.Add(unit);
                 return true;
             }
+
             Grid2D newGrid = GM2DTools.IntersectWith(grid, node, tableUnit, false);
             var colliderSize = tableUnit.GetColliderSize(node);
             var count = tableUnit.GetColliderCount(newGrid, node.Rotation, node.Scale);
@@ -645,11 +686,17 @@ namespace GameA.Game
             {
                 for (int k = 0; k < count.y; k++)
                 {
-                    var rectIndex = new IntVec3(newGrid.XMin + j * colliderSize.x, newGrid.YMin + k * colliderSize.y, node.Depth);
-                    var splitedGrid = tableUnit.GetBaseColliderGrid(rectIndex);
+                    var guid = new IntVec3(newGrid.XMin + j * colliderSize.x, newGrid.YMin + k * colliderSize.y, node.Depth);
+                    guid = tableUnit.ColliderToRenderer(guid, node.Rotation);
+                    var splitedGrid = tableUnit.GetColliderGrid(guid.x, guid.y, node.Rotation, node.Scale);
                     if (splitedGrid.Intersect(center, radius))
                     {
-                        _cachedUnitObjects.Add(new UnitDesc(node.Id, tableUnit.ColliderToRenderer(rectIndex, node.Rotation), node.Rotation, node.Scale));
+                        UnitBase unit;
+                        if (!_instance.TryGetUnit(guid, out unit))
+                        {
+                            continue;
+                        }
+                        _cachedUnits.Add(unit);
                     }
                 }
             }
@@ -657,5 +704,75 @@ namespace GameA.Game
         }
 
         #endregion
+
+        #region path
+
+        public List<IntVec2> FindPath(UnitBase unit, UnitBase target, short maxCharacterJumpHeight)
+        {
+            var start = unit.GetCurColliderPos() ;
+            var end = target.GetCurColliderPos();
+            //不在空中的时候
+            if (!target.Grounded)
+            {
+                IntVec2 pointA = IntVec2.zero, pointB = IntVec2.zero;
+                GM2DTools.GetBorderPoint(target.ColliderGrid, EDirectionType.Down, ref pointA, ref pointB);
+                var distance = GM2DTools.GetDistanceToBorder(pointA, 2);
+                var hits = GridCastAll(pointA, pointB, 2, distance, EnvManager.UnitLayer, float.MinValue, float.MaxValue, unit.DynamicCollider);
+                for (int i = 0; i < hits.Count; i++)
+                {
+                    var hit = hits[i];
+                    if (UnitDefine.IsGround(hit.node.Id))
+                    {
+                        end.y -= hit.distance;
+                        break;
+                    }
+                }
+            }
+            var size = unit.GetColliderSize() / ConstDefineGM2D.ServerTileScale;
+            return FindPath(start / ConstDefineGM2D.ServerTileScale, end / ConstDefineGM2D.ServerTileScale, Math.Max(1, size.x), Math.Max(1, size.y), maxCharacterJumpHeight);
+        }
+
+        public override bool IsOnewayPlatform(int x, int y)
+        {
+            return base.IsOnewayPlatform(x, y);
+        }
+
+        public override bool IsGround(int x, int y)
+        {
+            if (x < 0 || y < 0)
+            {
+                return false;
+            }
+            if (_pathGrid[x, y] == 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        #endregion
+
+        internal bool HasBlockInLine(int x, int y0, int y1)
+        {
+            int startY, endY;
+            if (y0 <= y1)
+            {
+                startY = y0;
+                endY = y1;
+            }
+            else
+            {
+                startY = y1;
+                endY = y0;
+            }
+            for (int y = startY; y <= endY; ++y)
+            {
+                if (IsGround(x, y))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

@@ -16,25 +16,25 @@ namespace GameA.Game
 {
     public class DragCommand : CommandBase, ICommand
     {
-        private bool _success;
+        protected bool _success;
 
-        private UnitDesc _dragUnitDesc;
-        private UnitExtra _dragUnitExtra;
-        private Table_Unit _dragTableUnit;
+        protected UnitDesc _dragUnitDesc;
+        protected UnitExtra _dragUnitExtra;
+        protected Table_Unit _dragTableUnit;
 
-        private Vector2 _actualMousePos;
+        protected Vector2 _actualMousePos;
 
-        private static Transform _dragHelperParent;
+        protected static Transform _dragHelperParent;
 
         // offset of mouse position between draggingOnject position when command begin 
-        private Vector3 _mouseObjectOffsetInWorld;
-        private UnitDesc _addedDesc;
+        protected Vector3 _mouseObjectOffsetInWorld;
+        protected UnitDesc _addedDesc;
 
-        private UnitBase _virUnit;
+        protected UnitBase _virUnit;
 
-        private bool _isAddChild;
-        private IntVec3 _parentGuid;
-        private UnitChild _lastUnitChild;
+        protected bool _isAddChild;
+        protected IntVec3 _parentGuid;
+        protected UnitChild _lastUnitChild;
 
         public DragCommand(UnitDesc dragedDesc, Vector2 mousePos)
         {
@@ -48,9 +48,9 @@ namespace GameA.Game
             _mouseObjectOffsetInWorld = objectWorldPos + GM2DTools.GetUnitDragingOffset(_dragUnitDesc.Id) - GM2DTools.ScreenToWorldPoint(mousePos);
         }
 
-        public bool Execute(Vector2 mousePos)
+        public virtual bool Execute(Vector2 mousePos)
         {
-            if (_success && InputManager.Instance.OnTouchDown)
+            if (_success && InputManager.Instance.IsTouchDown)
             {
                 TryCreateCurDraggingUnitBase();
                 if (_virUnit == null || _virUnit.Trans == null)
@@ -59,9 +59,11 @@ namespace GameA.Game
                 }
                 _actualMousePos = Vector2.Lerp(_actualMousePos, mousePos, 0.02f * Time.deltaTime);
                 Vector3 realMousePos = GM2DTools.ScreenToWorldPoint(_actualMousePos);
+                // 把物体放在摄像机裁剪范围内
 				realMousePos.z = -50;
                 _dragHelperParent.position = realMousePos + _mouseObjectOffsetInWorld + _virUnit.TableUnit.ModelOffset;
 
+                // 摇晃和缩放被拖拽物体
                 Vector2 delta = _actualMousePos - mousePos;
                 _dragHelperParent.eulerAngles = new Vector3(0, 0, Mathf.Clamp(delta.x * 0.5f, -45f, 45f));
                 if (delta.y > 0)
@@ -89,7 +91,7 @@ namespace GameA.Game
                 _dragHelperParent.localScale = new Vector3(Mathf.Clamp(1f + delta.y * 0.0025f, 0.8f, 1.2f), Mathf.Clamp(1f - delta.y * 0.005f, 0.8f, 1.2f), 1f);
                 _pushFlag = true;
                 return false;
-            }
+            } else
             {
                 if (_pushFlag)
                 {
@@ -117,23 +119,20 @@ namespace GameA.Game
                     if (_success)
                     {
                         //蓝石
-                        if (coverUnits.Count > 0 && _dragTableUnit.Id == ConstDefineGM2D.BlueStoneId)
+                        if (coverUnits.Count > 0 && CheckCanBindMagic(_dragTableUnit, coverUnits[0]))
                         {
-                            var unitExtra = DataScene2D.Instance.GetUnitExtra(coverUnits[0].Guid);
                             Table_Unit tableTarget = UnitManager.Instance.GetTableUnit(coverUnits[0].Id);
-                            if (tableTarget != null && tableTarget.OriginMagicDirection != 0)
-                            {
-                                //删掉
-                                _buffers.Add(new UnitEditData(coverUnits[0], DataScene2D.Instance.GetUnitExtra(coverUnits[0].Guid)));
-                                EditMode.Instance.DeleteUnit(coverUnits[0]);
-                                //绑定蓝石 如果方向允许就用蓝石方向，否则用默认初始方向。
-                                unitExtra.MoveDirection = CheckMask((byte)(_dragUnitExtra.MoveDirection - 1),tableTarget.MoveDirectionMask)
-                                    ? _dragUnitExtra.MoveDirection : (EMoveDirection) tableTarget.OriginMagicDirection;
-                                DataScene2D.Instance.ProcessUnitExtra(coverUnits[0].Guid, unitExtra);
-                                //从而变成了蓝石控制的物体
-                                _addedDesc = coverUnits[0];
-                                EditMode.Instance.AddUnit(_addedDesc);
-                            }
+                            //删掉
+                            _buffers.Add(new UnitEditData(coverUnits[0], DataScene2D.Instance.GetUnitExtra(coverUnits[0].Guid)));
+                            EditMode.Instance.DeleteUnit(coverUnits[0]);
+                            //绑定蓝石 如果方向允许就用蓝石方向，否则用默认初始方向。
+                            var unitExtra = DataScene2D.Instance.GetUnitExtra(coverUnits[0].Guid);
+                            unitExtra.MoveDirection = CheckMask((byte)(_dragUnitExtra.MoveDirection - 1),tableTarget.MoveDirectionMask)
+                                ? _dragUnitExtra.MoveDirection : (EMoveDirection) tableTarget.OriginMagicDirection;
+                            DataScene2D.Instance.ProcessUnitExtra(coverUnits[0].Guid, unitExtra);
+                            //从而变成了蓝石控制的物体
+                            _addedDesc = coverUnits[0];
+                            EditMode.Instance.AddUnit(_addedDesc);
                         }
                         else if (coverUnits.Count > 0 && CheckCanAddChild(_dragTableUnit, coverUnits[0]))
                         {
@@ -220,11 +219,15 @@ namespace GameA.Game
             return true;
         }
 
-        private void TryCreateCurDraggingUnitBase()
+        protected void TryCreateCurDraggingUnitBase()
         {
             if (_virUnit == null)
             {
-                _virUnit = UnitManager.Instance.GetUnit(_dragTableUnit, (ERotationType)_dragUnitDesc.Rotation);
+                _virUnit = UnitManager.Instance.GetUnit(_dragTableUnit, (EDirectionType)_dragUnitDesc.Rotation);
+                CollectionBase collectUnit = _virUnit as CollectionBase;
+                if (null != collectUnit) {
+                    collectUnit.StopTwenner ();
+                }
                 EditMode.Instance.DeleteUnit(_dragUnitDesc);
                 //if (_dragUnitExtra.Child.Id > 0)
                 //{
@@ -238,7 +241,8 @@ namespace GameA.Game
                     var helperParentObj = new GameObject("DragHelperParent");
                     _dragHelperParent = helperParentObj.transform;
                 }
-                _dragHelperParent.position = _virUnit.Trans.position - (Vector3)_virUnit.View.GetRotationPosOffset();
+                _dragHelperParent.position = _virUnit.Trans.position;
+                //_dragHelperParent.position = _virUnit.Trans.position - (Vector3)_virUnit.View.GetRotationPosOffset();
                 _dragHelperParent.position += GM2DTools.GetUnitDragingOffset(_dragUnitDesc.Id);
                 _virUnit.Trans.parent = _dragHelperParent;
             }

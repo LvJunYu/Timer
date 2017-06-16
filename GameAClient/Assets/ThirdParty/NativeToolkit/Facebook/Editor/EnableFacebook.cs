@@ -20,10 +20,12 @@ public class EnableFacebook {
 			}
 		}
 	}
-
+    #if GM2DPROJECT
+    #else
 	[MenuItem("Tools/Download Facebook SDK")]
 	static void DownloadFacebookSDK()
 	{
 		Application.OpenURL("https://developers.facebook.com/docs/unity/downloads");
 	}
+    #endif
 }

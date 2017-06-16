@@ -5,25 +5,39 @@ namespace GameA.Game
     [Serializable]
 	public partial class Table_Puzzle
 	{
-		// 序号
+		/// <summary>
+        /// 序号
+        /// </summary>
 		[ColumnMapping("Id")]
 		public int Id;
-		// 名称
+		/// <summary>
+        /// 名称
+        /// </summary>
 		[ColumnMapping("Name")]
 		public string Name;
-		// 描述
+		/// <summary>
+        /// 描述
+        /// </summary>
 		[ColumnMapping("Description")]
 		public string Description;
-		// 等级
+		/// <summary>
+        /// 等级
+        /// </summary>
 		[ColumnMapping("Level")]
 		public int Level;
-		// 属性加成类型
+		/// <summary>
+        /// 属性加成类型
+        /// </summary>
 		[ColumnMapping("AttriBonus")]
 		public int AttriBonus;
-		// 属性加成数值
+		/// <summary>
+        /// 属性加成数值
+        /// </summary>
 		[ColumnMapping("AttriValue")]
 		public int AttriValue;
-		// 合成所需金币
+		/// <summary>
+        /// 合成所需金币
+        /// </summary>
 		[ColumnMapping("MergeCost")]
 		public int MergeCost;
 	}

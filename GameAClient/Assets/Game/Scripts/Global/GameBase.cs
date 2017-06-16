@@ -20,7 +20,6 @@ namespace GameA
         protected EGameType _eGameType;
         protected Project _project;
         protected GameManager.EStartType _eGameInitType;
-        protected Record _record;
 	    protected float _gamePlaySpeed = 1;
 
 		#endregion
@@ -39,11 +38,6 @@ namespace GameA
             get { return _project; }
         }
 
-        public Record Record
-        {
-            get { return _record; }
-        }
-
         public GameManager.EStartType GameInitType
         {
             get { return _eGameInitType; }
@@ -57,20 +51,17 @@ namespace GameA
 		    }
 	    }
 
-		#endregion
+        #endregion
 
-		#region 方法
+        #region 方法
 
-		public abstract bool Play(Project project);
-        public abstract bool Create(Project project);
-        public abstract bool Edit(Project project);
-        public abstract bool PlayRecord(Project project, Record record);
-		public abstract bool ModifyEdit (Project project);
+        public abstract bool Play(Project project, object param, GameManager.EStartType startType);
         public abstract bool Pause();
 	    public abstract bool Continue();
 	    public abstract bool Restart();
-	    public abstract float GetLogicTimeFromGameStart();
-	    public abstract int GetLogicFrameCountFromGameStart();
+        public abstract void QuitGame (System.Action successCB, System.Action<int> failureCB, bool forceQuitWhenFailed = false);
+        public abstract float GetLogicTimeFromGameStart();
+        public abstract int GetLogicFrameCountFromGameStart();
 
 		public abstract bool Stop();
 

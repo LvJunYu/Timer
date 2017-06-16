@@ -14,9 +14,9 @@ namespace GameA.Game
 {
     public class DeleteCommand : CommandBase , ICommand
     {
-		public bool Execute(Vector2 mousePos)
+		public virtual bool Execute(Vector2 mousePos)
         {
-            if (InputManager.Instance.OnTouchDown)
+            if (InputManager.Instance.IsTouchDown)
             {
                 UnitDesc unitDesc;
 				if(GM2DTools.TryGetUnitObject(GM2DTools.ScreenToWorldPoint(mousePos),EditMode.Instance.CurEditorLayer,out unitDesc))
@@ -57,7 +57,7 @@ namespace GameA.Game
                         DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra);
                         _buffers.Add(new UnitEditData(unitDesc, unitExtra));
                         _pushFlag = true;
-                    }
+					}
                 }
                 return false;
             }

@@ -11,30 +11,25 @@ using System.Collections;
 namespace GameA.Game
 {
     [Unit(Id = 4015, Type = typeof(Cloud))]
-    public class Cloud : Earth
+    public class Cloud : BlockBase
     {
         protected bool _trigger;
         protected int _timer;
-
-        internal override bool InstantiateView()
-        {
-            if (!base.InstantiateView())
-            {
-                return false;
-            }
-            _animation = new AnimationSystem();
-            return _animation.Init(this);
-        }
 
         protected override void Clear()
         {
             base.Clear();
             _trigger = false;
             _timer = 0;
-            if (_animation != null)
+            if (_view != null)
             {
-                _animation.Reset();
+                if (_animation != null)
+                {
+                    _animation.Reset();
+                }
+                _view.SetRendererEnabled(true);
             }
+            PlayMode.Instance.UnFreeze(this);
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
@@ -104,10 +99,10 @@ namespace GameA.Game
                     if (_view != null)
                     {
                         _view.SetRendererEnabled(true);
-                    }
-                    if (_animation != null)
-                    {
-                        _animation.Reset();
+                        if (_animation != null)
+                        {
+                            _animation.Reset();
+                        }
                     }
                 }
             }

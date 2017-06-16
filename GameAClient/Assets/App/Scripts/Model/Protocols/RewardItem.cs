@@ -8,18 +8,28 @@ namespace GameA
 {
     public partial class RewardItem : SyncronisticData {
         #region 字段
-        // ERewardType奖励类型
+        /// <summary>
+        /// ERewardType奖励类型
+        /// </summary>
         private int _type;
-        // 奖励子类型
+        /// <summary>
+        /// 奖励子类型
+        /// </summary>
         private int _subType;
-        // 奖励Id
+        /// <summary>
+        /// 奖励Id
+        /// </summary>
         private long _id;
-        // 奖励数量
+        /// <summary>
+        /// 奖励数量
+        /// </summary>
         private long _count;
         #endregion
 
         #region 属性
-        // ERewardType奖励类型
+        /// <summary>
+        /// ERewardType奖励类型
+        /// </summary>
         public int Type { 
             get { return _type; }
             set { if (_type != value) {
@@ -27,7 +37,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 奖励子类型
+        /// <summary>
+        /// 奖励子类型
+        /// </summary>
         public int SubType { 
             get { return _subType; }
             set { if (_subType != value) {
@@ -35,7 +47,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 奖励Id
+        /// <summary>
+        /// 奖励Id
+        /// </summary>
         public long Id { 
             get { return _id; }
             set { if (_id != value) {
@@ -43,7 +57,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 奖励数量
+        /// <summary>
+        /// 奖励数量
+        /// </summary>
         public long Count { 
             get { return _count; }
             set { if (_count != value) {

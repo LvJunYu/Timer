@@ -95,7 +95,7 @@ namespace GameA.Game
 			if (_gamePauseTimer > 0) {
 				_gamePauseTimer--;
 				if (_gamePauseTimer == 0) {
-					PlayMode.Instance.Pause();
+                    GameRun.Instance.Pause();
 					if (_gamePauseCB != null) {
 						_gamePauseCB();
 					}
@@ -127,7 +127,7 @@ namespace GameA.Game
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.JumpButton);
 			// 	}
 			// 	if (_currentGuide == null) return;
-			// 	if (PlayMode.Instance.MainUnit.MainInput.ShootInput) {
+			// 	if (PlayMode.Instance.MainUnit.MainInput.Skill1Input) {
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.AttackButton);
 			// 	}
 			// }

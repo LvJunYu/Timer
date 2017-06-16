@@ -10,7 +10,6 @@ using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
-using SoyEngine;
 using Spine;
 using Spine.Unity;
 using UnityEngine;
@@ -71,25 +70,25 @@ namespace GameA.Game
             return 1;
         }
 
-        public static void GetBorderPoint(Grid2D grid, ERotationType rotation, ref IntVec2 pointA, ref IntVec2 pointB)
+        public static void GetBorderPoint(Grid2D grid, EDirectionType direction, ref IntVec2 pointA, ref IntVec2 pointB, int num = 0)
         {
-            switch (rotation)
+            switch (direction)
             {
-                case ERotationType.Up:
-                    pointA = new IntVec2(grid.XMin, grid.YMax + 1);
-                    pointB = new IntVec2(grid.XMax, grid.YMax + 1);
+                case EDirectionType.Up:
+                    pointA = new IntVec2(grid.XMin - num, grid.YMax + 1);
+                    pointB = new IntVec2(grid.XMax + num, grid.YMax + 1);
                     break;
-                case ERotationType.Down:
-                    pointA = new IntVec2(grid.XMin, grid.YMin - 1);
-                    pointB = new IntVec2(grid.XMax, grid.YMin - 1);
+                case EDirectionType.Down:
+                    pointA = new IntVec2(grid.XMin - num, grid.YMin - 1);
+                    pointB = new IntVec2(grid.XMax + num, grid.YMin - 1);
                     break;
-                case ERotationType.Left:
-                    pointA = new IntVec2(grid.XMin - 1, grid.YMin);
-                    pointB = new IntVec2(grid.XMin - 1, grid.YMax);
+                case EDirectionType.Left:
+                    pointA = new IntVec2(grid.XMin - 1, grid.YMin - num);
+                    pointB = new IntVec2(grid.XMin - 1, grid.YMax + num);
                     break;
-                case ERotationType.Right:
-                    pointA = new IntVec2(grid.XMax + 1, grid.YMin);
-                    pointB = new IntVec2(grid.XMax + 1, grid.YMax);
+                case EDirectionType.Right:
+                    pointA = new IntVec2(grid.XMax + 1, grid.YMin - num);
+                    pointB = new IntVec2(grid.XMax + 1, grid.YMax + num);
                     break;
             }
         }
@@ -122,15 +121,15 @@ namespace GameA.Game
             var tableUnit = UnitManager.Instance.GetTableUnit(id);
             var size = tableUnit.GetColliderSize(0, Vector2.one);
             var centerPos = new IntVec2(colliderGrid.XMax + colliderGrid.XMin + 1, colliderGrid.YMax + colliderGrid.YMin + 1)/2;
-            switch ((ERotationType)direction)
+            switch ((EDirectionType)direction)
             {
-                case ERotationType.Right:
+                case EDirectionType.Right:
                     return new Grid2D(colliderGrid.XMax + 1, centerPos.y - size.y / 2, colliderGrid.XMax + size.x, centerPos.y + size.y / 2 - 1);
-                case ERotationType.Left:
+                case EDirectionType.Left:
                     return new Grid2D(colliderGrid.XMin - size.x, centerPos.y - size.y / 2, colliderGrid.XMin - 1, centerPos.y + size.y / 2 - 1);
-                case ERotationType.Up:
+                case EDirectionType.Up:
                     return new Grid2D(centerPos.x - size.x / 2, colliderGrid.YMax + 1, centerPos.x + size.x / 2 - 1, colliderGrid.YMax + size.y);
-                case ERotationType.Down:
+                case EDirectionType.Down:
                     return new Grid2D(centerPos.x - size.x / 2, colliderGrid.YMin - size.y, centerPos.x + size.x / 2 - 1, colliderGrid.YMin - 1);
             }
             return Grid2D.zero;
@@ -295,7 +294,7 @@ namespace GameA.Game
 
 		public static Vector2 WorldToScreenPoint(Vector2 worldPosition)
         {
-            return CameraManager.Instance.MainCamera.WorldToScreenPoint(worldPosition);
+            return CameraManager.Instance.RendererCamera.WorldToScreenPoint(worldPosition);
         }
 
         public static Vector2 WorldToScreenSize(Vector2 worldSize)
@@ -334,6 +333,12 @@ namespace GameA.Game
         {
             Vector2 t = new Vector2(tile.x, tile.y) * ConstDefineGM2D.ClientTileScale;
             return new Vector3(t.x, t.y, 0);
+        }
+
+        public static Vector3 TileToWorld(IntVec2 tile, float z)
+        {
+            Vector2 t = new Vector2(tile.x, tile.y) * ConstDefineGM2D.ClientTileScale;
+            return new Vector3(t.x, t.y, z);
         }
 
         public static float TileToWorld(int tile)
@@ -397,7 +402,8 @@ namespace GameA.Game
             res.MoveDirection = (byte)data.MoveDirection;
             res.RollerDirection = (byte)data.RollerDirection;
             res.Msg = data.Msg;
-            res.UnitChild = ToProto(data.Child); 
+            res.UnitChild = ToProto(data.Child);
+            res.EnergyType = data.EnergyType;
             return res;
         }
 
@@ -701,11 +707,25 @@ namespace GameA.Game
                         break;
                     }
             }
-			if (tableUnit.EGeneratedType == EGeneratedType.Spine)
+			if (tableUnit.EGeneratedType == EGeneratedType.Spine && !UnitDefine.IsBullet(tableUnit.Id))
             {
                 offsetInWorld.y -= modelSizeInWorld.y * 0.5f;
             }
             return offsetInWorld;
+        }
+
+        public static bool TryGetSpineObject<T>(string path, out T so) where T : SpineObject, new()
+        {
+            so = PoolFactory<T>.Get();
+            if (so != null)
+            {
+                if (so.Init(path))
+                {
+                    return true;
+                }
+                PoolFactory<T>.Free(so);
+            }
+            return false;
         }
     }
 }

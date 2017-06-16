@@ -31,7 +31,7 @@ public class ReviveEffect {
         }
     }
 
-    public ReviveEffect (SoyEngine.UnityNativeParticleItem particle)
+    public ReviveEffect (UnityNativeParticleItem particle)
     {
         _particle = particle;
     }
@@ -91,7 +91,7 @@ public class ReviveEffect {
             _particle.Trans.localScale = Vector3.one;
             _particle.Play();
         }
-        _startPos = startPos;
+        _startPos = new Vector3(startPos.x, startPos.y, 0);
         _curPos = _startPos;
         _endPos = endPos;
         _callback = callback;
@@ -102,8 +102,9 @@ public class ReviveEffect {
         } else {
             _maxScale = 1f;
         }
-        _lifeTime = (int)(distance * speed);
+        _lifeTime = (int)(distance / (speed * 0.02f));
         _lifeTime = Mathf.Max(1, _lifeTime);
+        Debug.Log ("_lifeTime: " + _lifeTime + " speed: " + speed);
         //
         //controlPoint1 = startPos + (endPos - startPos) * Random.Range(-0.25f, 0.75f) + Vector3.up * distance * Random.Range(0.1f, 0.7f);
         //controlPoint2 = startPos + (endPos - startPos) * Random.Range (0.25f, 1.25f) + Vector3.down * distance * Random.Range (0.1f, 0.7f);

@@ -5,10 +5,14 @@ namespace GameA.Game
     [Serializable]
 	public partial class Table_AvatarSlotName
 	{
-		// 序号
+		/// <summary>
+        /// 序号
+        /// </summary>
 		[ColumnMapping("Id")]
 		public int Id;
-		// 名称
+		/// <summary>
+        /// 名称
+        /// </summary>
 		[ColumnMapping("Name")]
 		public string Name;
 	}

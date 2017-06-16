@@ -11,19 +11,13 @@ using Spine.Unity;
 namespace GameA.Game
 {
     [Unit(Id = 7001, Type = typeof (BillBoard))]
-    public class BillBoard : UnitBase
+    public class BillBoard : DecorationBase
     {
-        private SkeletonAnimation _animation;
         private bool _trigger;
         private UnitBase _unit;
         private int _time;
 
-        public IntVec3 GetGuid()
-        {
-            return _guid;
-        }
-
-        public void UpdateLogic(float deltaTime)
+        public override void UpdateLogic()
         {
             if (_trigger)
             {
@@ -35,38 +29,30 @@ namespace GameA.Game
                         _trigger = false;
                         _unit = null;
                         Messenger.Broadcast(EMessengerType.OnTriggerBulletinBoardExit);
-                        _animation.state.SetAnimation(0, "Run", true);
                     }
                 }
             }
         }
 
-        protected override bool OnInit()
+        internal override bool InstantiateView()
         {
-            if (!base.OnInit())
+            if (!base.InstantiateView())
             {
                 return false;
             }
-            _animation = _trans.GetComponent<SkeletonAnimation>();
+            _animation.Init("Run");
             return true;
         }
 
-        internal override void OnPlay()
+        protected override void Clear()
         {
-            _animation.state.SetAnimation(0, "Run", true);
+            base.Clear();
             _time = 0;
-            base.OnPlay();
-        }
-
-        internal override void Reset()
-        {
             _trigger = false;
             _unit = null;
-            _animation.Reset();
-            base.Reset();
         }
 
-        public override void OnHit(UnitBase other)
+        protected override void OnTrigger(UnitBase other)
         {
             if (!other.IsMain)
             {
@@ -76,9 +62,12 @@ namespace GameA.Game
             {
                 _trigger = true;
                 _unit = other;
-                _animation.state.SetAnimation(1, "Start", false);
-                Messenger<IntVec3>.Broadcast(EMessengerType.OnTriggerBulletinBoardEnter, _guid);
                 _time = 0;
+                if (_animation != null)
+                {
+                    _animation.PlayOnce("Start", 1, 1);
+                }
+                Messenger<IntVec3>.Broadcast(EMessengerType.OnTriggerBulletinBoardEnter, _guid);
             }
         }
     }

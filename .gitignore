@@ -13,3 +13,17 @@ GameAClient/GameAClient.v12.suo
 *.mdb.meta
 GameAClient/Assets/LocalTest
 GameAClient/Assets/LocalTest.meta
+GameAClient/GameAClient.CSharp.csproj.user
+GameAClient/GameAClient.csproj
+GameAClient/GameAClient.Editor.csproj
+Build
+JoyYou
+GameAClient/Assets/BuildingTmp
+BackupBundles
+BuildingTmp.meta
+GameAClient/bfd.StandaloneOSXIntel64
+GameAClient/bfd.StandaloneWindows
+StreamingAssets.meta
+GameAClient/Assets/StreamingAssets
+ABResources
+GameAClient/Assets/Test.meta

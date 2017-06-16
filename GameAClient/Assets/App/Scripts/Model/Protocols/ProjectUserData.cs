@@ -8,24 +8,44 @@ namespace GameA
 {
     public partial class ProjectUserData : SyncronisticData {
         #region 字段
-        // 
+        /// <summary>
+        /// 胜利条件枚举
+        /// </summary>
         private long _projectId;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private long _userId;
-        // 
-        private bool _likeFlag;
-        // 
-        private int _rate;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
+        private EProjectLikeState _likeState;
+        /// <summary>
+        /// 
+        /// </summary>
+        private long _lastLikeTime;
+        /// <summary>
+        /// 
+        /// </summary>
         private bool _favorite;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
+        private long _lastFavoriteTime;
+        /// <summary>
+        /// 
+        /// </summary>
         private int _completeCount;
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         private long _lastPlayTime;
         #endregion
 
         #region 属性
-        // 
+        /// <summary>
+        /// 胜利条件枚举
+        /// </summary>
         public long ProjectId { 
             get { return _projectId; }
             set { if (_projectId != value) {
@@ -33,7 +53,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public long UserId { 
             get { return _userId; }
             set { if (_userId != value) {
@@ -41,23 +63,29 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
-        public bool LikeFlag { 
-            get { return _likeFlag; }
-            set { if (_likeFlag != value) {
-                _likeFlag = value;
+        /// <summary>
+        /// 
+        /// </summary>
+        public EProjectLikeState LikeState { 
+            get { return _likeState; }
+            set { if (_likeState != value) {
+                _likeState = value;
                 SetDirty();
             }}
         }
-        // 
-        public int Rate { 
-            get { return _rate; }
-            set { if (_rate != value) {
-                _rate = value;
+        /// <summary>
+        /// 
+        /// </summary>
+        public long LastLikeTime { 
+            get { return _lastLikeTime; }
+            set { if (_lastLikeTime != value) {
+                _lastLikeTime = value;
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool Favorite { 
             get { return _favorite; }
             set { if (_favorite != value) {
@@ -65,7 +93,19 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
+        public long LastFavoriteTime { 
+            get { return _lastFavoriteTime; }
+            set { if (_lastFavoriteTime != value) {
+                _lastFavoriteTime = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         public int CompleteCount { 
             get { return _completeCount; }
             set { if (_completeCount != value) {
@@ -73,7 +113,9 @@ namespace GameA
                 SetDirty();
             }}
         }
-        // 
+        /// <summary>
+        /// 
+        /// </summary>
         public long LastPlayTime { 
             get { return _lastPlayTime; }
             set { if (_lastPlayTime != value) {
@@ -89,9 +131,10 @@ namespace GameA
             if (null == msg) return false;
             _projectId = msg.ProjectId;     
             _userId = msg.UserId;     
-            _likeFlag = msg.LikeFlag;     
-            _rate = msg.Rate;     
+            _likeState = msg.LikeState;     
+            _lastLikeTime = msg.LastLikeTime;     
             _favorite = msg.Favorite;     
+            _lastFavoriteTime = msg.LastFavoriteTime;     
             _completeCount = msg.CompleteCount;     
             _lastPlayTime = msg.LastPlayTime;     
             OnSyncPartial();
