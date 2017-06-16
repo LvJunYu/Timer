@@ -127,5 +127,66 @@ namespace GameA
             }
             return string.Empty;
         }
+
+        /// <summary>
+        /// 将奖励数据临时实现到本地数据
+        /// </summary>
+        public void AddToLocal ()
+        {
+            switch ((ERewardType)_type)
+            {
+            case ERewardType.RT_Gold:
+                GameATools.LocalAddGold((int)_count);
+                break;
+            case ERewardType.RT_Diamond:
+                GameATools.LocalAddDiamond((int)_count);
+                break;
+            case ERewardType.RT_PlayerExp:
+                GameATools.LocalAddPlayerExp((int)_count);
+                break;
+            case ERewardType.RT_CreatorExp:
+                GameATools.LocalAddCreatorExp((int)_count);
+                break;
+            case ERewardType.RT_FashionCoupon:
+                break;
+            case ERewardType.RT_RaffleTicket:
+                LocalUser.Instance.RaffleTicket.AddTicketsInRaffleDictionary((int)_id, (int) _count);
+                // todo 这里不要引用界面，应该发消息通知界面更新
+                LocalUser.Instance.RaffleTicket.Request(LocalUser.Instance.UserGuid, () => {
+                    SocialGUIManager.Instance.GetUI<UICtrlLottery>().RefreshRaffleCount();
+
+                }, code => {
+                    LogHelper.Error("Network error when get RaffleCount, {0}", code);
+                });
+                break;
+            case ERewardType.RT_BoostItem:
+                var allBoostItem = LocalUser.Instance.UserProp.ItemDataList;
+                bool found = false;
+                for (int i = 0; i < allBoostItem.Count; i++) {
+                    if (allBoostItem [i].Type == Id) {
+                        PropItem item = allBoostItem [i];
+                        item.Count += (int)_count;
+                        allBoostItem [i] = item;
+                        found = true;
+                        continue;
+                    }
+                }
+                if (!found) {
+                    PropItem newItem = new PropItem ();
+                    newItem.Type = (int)_id;
+                    newItem.Count = (int)_count;
+                    allBoostItem.Add (newItem);
+                }
+                LocalUser.Instance.UserProp.ItemDataList = allBoostItem;
+                LocalUser.Instance.LoadPropData(null, null);
+                break;
+            case ERewardType.RT_RandomReformUnit:
+                LocalUser.Instance.MatchUserData.Request (LocalUser.Instance.UserGuid, null, null);
+                break;
+            case ERewardType.RT_ReformUnit:
+                LocalUser.Instance.MatchUserData.Request (LocalUser.Instance.UserGuid, null, null);
+                break;
+            }
+        }
     }
 }
