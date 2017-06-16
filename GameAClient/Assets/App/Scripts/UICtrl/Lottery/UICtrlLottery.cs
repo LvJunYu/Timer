@@ -504,9 +504,6 @@ namespace GameA
             +TableManager.Instance.Table_RewardDic[TurntableUnit.Reward8].Value1;
             _cachedView.Reward8.sprite =
                 FindImage(JudgeRewardImageName(TableManager.Instance.Table_RewardDic[TurntableUnit.Reward8].Type1));
-
-
-
     }
 
 

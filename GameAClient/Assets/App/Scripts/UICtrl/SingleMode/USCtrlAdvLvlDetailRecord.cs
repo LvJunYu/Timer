@@ -64,11 +64,17 @@ namespace GameA
             }
 
             _cardList.Clear();
-            SetEachCard(LocalUser.Instance.AdventureUserLevelDataDetail.HighScoreRecord, HighScoreRecord);
-            SetEachCard(LocalUser.Instance.AdventureUserLevelDataDetail.Star3FlagRecord, Star3FlagRecord);
-            SetEachCard(LocalUser.Instance.AdventureUserLevelDataDetail.Star2FlagRecord, Star2FlagRecord);
-            SetEachCard(LocalUser.Instance.AdventureUserLevelDataDetail.Star1FlagRecord, Star1FlagRecord);
-            SetEachCard(LocalUser.Instance.AdventureUserLevelDataDetail.RecentRecordList);
+
+            if (LocalUser.Instance.AdventureUserLevelDataDetail.HighScoreRecord.CreateTime!=0)
+                SetEachCard(LocalUser.Instance.AdventureUserLevelDataDetail.HighScoreRecord, HighScoreRecord);
+            if (LocalUser.Instance.AdventureUserLevelDataDetail.Star3FlagRecord.CreateTime != 0)
+                SetEachCard(LocalUser.Instance.AdventureUserLevelDataDetail.Star3FlagRecord, Star3FlagRecord);
+            if (LocalUser.Instance.AdventureUserLevelDataDetail.Star2FlagRecord.CreateTime != 0)
+                SetEachCard(LocalUser.Instance.AdventureUserLevelDataDetail.Star2FlagRecord, Star2FlagRecord);
+            if (LocalUser.Instance.AdventureUserLevelDataDetail.Star1FlagRecord.CreateTime != 0)
+                SetEachCard(LocalUser.Instance.AdventureUserLevelDataDetail.Star1FlagRecord, Star1FlagRecord);
+            if (LocalUser.Instance.AdventureUserLevelDataDetail.RecentRecordList != null)
+                SetEachCard(LocalUser.Instance.AdventureUserLevelDataDetail.RecentRecordList);
             
             //RefreshPage();
         }

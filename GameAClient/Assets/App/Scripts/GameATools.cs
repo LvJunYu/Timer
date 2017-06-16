@@ -346,12 +346,12 @@ namespace GameA {
 
             if(hour>0)
             { 
-            return (hour + "小时" + minute + "分钟"
+            return (hour + "小时" + minute + "分"
                 + second + "秒");
             }
             else if (minute > 0)
             {
-                return (minute + "分钟"
+                return (minute + "分"
                         + second + "秒");
             }
             else
