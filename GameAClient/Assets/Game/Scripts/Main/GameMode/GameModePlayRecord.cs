@@ -22,9 +22,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            _record = param as Record;
             _gameRunMode = EGameRunMode.PlayRecord;
-            InitRecord();
             return true;
 		}
 

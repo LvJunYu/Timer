@@ -1,4 +1,5 @@
-﻿using SoyEngine;
+﻿using System;
+using SoyEngine;
 using UnityEngine;
 
 namespace GameA {
@@ -332,6 +333,13 @@ namespace GameA {
             int minute = 0;
             float second = time;
             //second = Convert.ToInt32(time);
+            //float second1 = (float) Math.Round(time*100);
+            //Debug.Log("____second1" + second1);
+            //second =
+            //Debug.Log("____second1" + second);
+
+
+
 
             if (second > 60)
             {
@@ -347,16 +355,16 @@ namespace GameA {
             if(hour>0)
             { 
             return (hour + "小时" + minute + "分"
-                + second + "秒");
+                + (float)(Math.Round(second * 100) / 100) + "秒");
             }
             else if (minute > 0)
             {
                 return (minute + "分"
-                        + second + "秒");
+                        + (float)(Math.Round(second * 100) / 100) + "秒");
             }
             else
             {
-                return (second + "秒");
+                return ((float)(Math.Round(second * 100) / 100) + "秒");
             }
         }
 
