@@ -105,13 +105,19 @@ namespace GameA
         private void OnItemClick(CardDataRendererWrapper<Record> item)
         {
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "请求播放录像");
-            item.Content.RequestPlay (() => {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                GameManager.Instance.RequestPlayRecord (_content, item.Content);
-                SocialGUIManager.Instance.ChangeToGameMode ();
-            }, (error) => {
+            _content.PrepareRes(()=>{
+                item.Content.RequestPlay (() => {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                    GameManager.Instance.RequestPlayRecord (_content, item.Content);
+                    SocialGUIManager.Instance.ChangeToGameMode ();
+                }, (error) => {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                    SocialGUIManager.ShowPopupDialog("进入录像失败");
+                });
+            }, ()=>{
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
                 SocialGUIManager.ShowPopupDialog("进入录像失败");
+                
             });
         }
 
