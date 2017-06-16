@@ -334,10 +334,13 @@ namespace GameA
                         if (null != successCallback) {
                             _lastRequiredLevelToken = 0;
                             LocalRefreshCommitedLevelData (success, usedTime, star1, star2, star3, score);
-                            _lastAdvReward = new Reward (ret.Reward);
-                            for (int i = 0; i < _lastAdvReward.ItemList.Count; i++)
+                            if (ret.Reward != null)
                             {
-                                _lastAdvReward.ItemList[i].AddToLocal();
+                                _lastAdvReward = new Reward (ret.Reward);
+                                for (int i = 0; i < _lastAdvReward.ItemList.Count; i++)
+                                {
+                                    _lastAdvReward.ItemList[i].AddToLocal();
+                                }
                             }
                             successCallback.Invoke ();
                         }
