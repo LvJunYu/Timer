@@ -284,14 +284,14 @@ namespace GameA
             return _defaultUIStack.OpenUI(ctrlType, value);
         }
 
-//		public void ReturnToHome () {
-//			_defaultUIStack.CloseAll();
-//            UICtrlTaskbar taskBar = SocialGUIManager.Instance.GetUI<UICtrlTaskbar>();
-//            if (taskBar != null && taskBar.IsViewCreated) {
-//                taskBar.Open (null);
-//            }
+		public void ReturnToHome () {
+			_defaultUIStack.CloseAll();
+            UICtrlTaskbar taskBar = SocialGUIManager.Instance.GetUI<UICtrlTaskbar>();
+            if (taskBar != null && taskBar.IsViewCreated) {
+                taskBar.Open (null);
+            }
 //			ClearUIStackStack();
-//		}
+		}
 
         private void OnGestureReturnBegin()
         {
@@ -365,7 +365,7 @@ namespace GameA
         /// 展示奖励，传入奖励数组x：type，y：id，z：cnt
         /// </summary>
         /// <param name="items">Items.</param>
-        public static void ShowReward (Reward reward, Action closeCB = null) {
+        public static void  ShowReward (Reward reward, Action closeCB = null) {
             Instance.OpenUI<UICtrlReward> (UICtrlReward.ERewardType.Reward);
             Instance.GetUI <UICtrlReward>().SetRewards (reward, closeCB);
         }
