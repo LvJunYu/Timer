@@ -47,6 +47,8 @@ namespace GameA.Game
         [SerializeField]
         protected bool _isAlive;
         protected bool _canLazerCross;
+        protected bool _canMagicCross;
+        protected bool _canBridgeCross;
         [SerializeField]
         protected bool _isStart;
         protected int _friction;
@@ -163,6 +165,16 @@ namespace GameA.Game
         public bool CanLazerCross
         {
             get { return _canLazerCross; }
+        }
+
+        public bool CanMagicCross
+        {
+            get { return _canMagicCross; }
+        }
+
+        public bool CanBridgeCross
+        {
+            get { return _canBridgeCross; }
         }
 
         public int Hp

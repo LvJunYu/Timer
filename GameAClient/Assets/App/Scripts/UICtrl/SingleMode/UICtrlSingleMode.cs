@@ -262,7 +262,7 @@ namespace GameA
 			
 
 		private void OnReturnBtnClick () {
-			SocialGUIManager.Instance.ReturnToHome ();
+            SocialGUIManager.Instance.CloseUI<UICtrlSingleMode>();
 		}
 
 		private void OnMatchBtnClick () {

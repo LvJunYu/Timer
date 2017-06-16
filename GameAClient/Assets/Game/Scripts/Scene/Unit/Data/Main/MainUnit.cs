@@ -1282,7 +1282,7 @@ namespace GameA.Game
             }
             _eUnitState = EUnitState.Reviving;
             _reviveEffect.Play(_trans.position + Vector3.up * 0.5f,
-                                GM2DTools.TileToWorld(_revivePos), 6, () =>
+                                GM2DTools.TileToWorld(_revivePos), 20, () =>
                                 {
                                     _eUnitState = EUnitState.Normal;
                                     _mainInput.Clear();
@@ -1331,7 +1331,7 @@ namespace GameA.Game
                 _portalEffect = new ReviveEffect(particle);
             }
             _portalEffect.Play(_trans.position + Vector3.up * 0.5f,
-                    GM2DTools.TileToWorld(targetPos), 3, () => PlayMode.Instance.RunNextLogic(() =>
+                GM2DTools.TileToWorld(targetPos), 30, () => PlayMode.Instance.RunNextLogic(() =>
                     {
                         _eUnitState = EUnitState.Normal;
                         PlayMode.Instance.UnFreeze(this);

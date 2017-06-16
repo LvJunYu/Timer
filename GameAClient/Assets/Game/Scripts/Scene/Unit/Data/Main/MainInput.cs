@@ -172,8 +172,7 @@ namespace GameA.Game
             {
                 if (value)
                 {
-                    _jumpLevel = 0;
-                    _jumpState = 0;
+                    ResetJumpState();
                 }
                 _step = value;
             }
@@ -221,6 +220,12 @@ namespace GameA.Game
             _index = 0;
         }
 
+        public void ResetJumpState()
+        {
+            _jumpLevel = 0;
+            _jumpState = 0;
+        }
+
         public void Clear()
         {
             ClearInput();
@@ -241,7 +246,9 @@ namespace GameA.Game
             _brakeTime = 0;
             _brakeType = 0;
             _jumpInput = false;
-            _jumpState = 1;
+            _jumpState = 0;
+            _jumpLevel = 0;
+            _jumpState = 0;
             _stopJump = false;
             _eClimbState = EClimbState.None;
             _climbJump = false;

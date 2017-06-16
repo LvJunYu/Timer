@@ -37,6 +37,8 @@ namespace GameA.Game
                     _effect.SetActive(_currentCtrlBySwitch);
                 }
                 _canLazerCross = _currentCtrlBySwitch;
+                _canMagicCross = _currentCtrlBySwitch;
+                _canBridgeCross = _currentCtrlBySwitch;
             }
         }
 
@@ -49,6 +51,8 @@ namespace GameA.Game
         {
             base.Clear();
             _canLazerCross = false;
+            _canMagicCross = false;
+            _canBridgeCross = false;
             _currentCtrlBySwitch = false;
             if (_view != null)
             {

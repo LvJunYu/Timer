@@ -196,7 +196,7 @@ namespace GameA
                 // 所有等待更新关卡更新成功了，或超时了
                 if (_wait2RequestUpdateProjects.Count == 0 || _waitReturnToAppTimer <= 0) {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    SocialGUIManager.Instance.ReturnToHome ();
+                    SocialGUIManager.Instance.CloseUI<UICtrlWorkShop>();
                 }
             }
 //            }

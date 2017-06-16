@@ -136,8 +136,10 @@ namespace GameA.Game
         {
             UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
             yield return new WaitUntil(()=>uictrlCountDown.ShowComplete);
-            SocialGUIManager.Instance.GetUI<UICtrlSceneState> ().ShowHelpPage3Seconds();
-            yield return new WaitForSeconds(3);
+
+            UICtrlSceneState uictrlSceneState = SocialGUIManager.Instance.GetUI<UICtrlSceneState>();
+            uictrlSceneState.ShowHelpPage3Seconds();
+            yield return new WaitUntil(()=>uictrlSceneState.ShowHelpPage3SecondsComplete);
             GameRun.Instance.Playing();
         }
     }

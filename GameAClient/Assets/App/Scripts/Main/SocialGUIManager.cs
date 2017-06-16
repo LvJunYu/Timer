@@ -284,14 +284,14 @@ namespace GameA
             return _defaultUIStack.OpenUI(ctrlType, value);
         }
 
-		public void ReturnToHome () {
-			_defaultUIStack.CloseAll();
-            UICtrlTaskbar taskBar = SocialGUIManager.Instance.GetUI<UICtrlTaskbar>();
-            if (taskBar != null && taskBar.IsViewCreated) {
-                taskBar.Open (null);
-            }
+//		public void ReturnToHome () {
+//			_defaultUIStack.CloseAll();
+//            UICtrlTaskbar taskBar = SocialGUIManager.Instance.GetUI<UICtrlTaskbar>();
+//            if (taskBar != null && taskBar.IsViewCreated) {
+//                taskBar.Open (null);
+//            }
 //			ClearUIStackStack();
-		}
+//		}
 
         private void OnGestureReturnBegin()
         {

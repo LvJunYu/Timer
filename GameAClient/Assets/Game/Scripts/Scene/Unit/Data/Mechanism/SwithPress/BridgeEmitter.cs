@@ -72,15 +72,15 @@ namespace GameA.Game
                         return;
                     }
                     bool blocked = false;
-                    List<SceneNode> nodes = ColliderScene2D.GridCastAll(_checkGrid, EnvManager.BridgeBlockLayer);
-                    for (int i = 0; i < nodes.Count; i++)
+                    var units = ColliderScene2D.GridCastAllReturnUnits(_checkGrid, EnvManager.BridgeBlockLayer);
+                    for (int i = 0; i < units.Count; i++)
                     {
-                        SceneNode node = nodes[i];
-                        if (node.Id == UnitDefine.SwitchTriggerId)
+                        var unit = units[i];
+                        if (!unit.CanBridgeCross)
                         {
-                            continue;
+                            blocked = true;
+                            break;
                         }
-                        blocked = true;
                     }
                     if (!blocked)
                     {
@@ -94,24 +94,20 @@ namespace GameA.Game
                             _curCreatingQueue.Enqueue(unit);
                             _checkGrid = GM2DTools.CalculateFireColliderGrid(BridgeUnitId, _checkGrid, _unitDesc.Rotation);
 
-                            for (int i = 0; i < nodes.Count; i++)
+                            for (int i = 0; i < units.Count; i++)
                             {
-                                SceneNode node = nodes[i];
+                                var node = units[i];
                                 if (node.Id == UnitDefine.SwitchTriggerId)
                                 {
-                                    UnitBase switchTrigger;
-                                    if (ColliderScene2D.Instance.TryGetUnit(node, out switchTrigger))
+                                    List<GridCheck> lists;
+                                    if (!_gridChecks.TryGetValue(unit.Guid, out lists))
                                     {
-                                        List<GridCheck> lists;
-                                        if (!_gridChecks.TryGetValue(unit.Guid, out lists))
-                                        {
-                                            lists = new List<GridCheck>();
-                                            _gridChecks.Add(unit.Guid, lists);
-                                        }
-                                        var gridCheck = new GridCheck(unit);
-                                        gridCheck.Do((SwitchTrigger)switchTrigger);
-                                        _gridChecks[unit.Guid].Add(gridCheck);
+                                        lists = new List<GridCheck>();
+                                        _gridChecks.Add(unit.Guid, lists);
                                     }
+                                    var gridCheck = new GridCheck(unit);
+                                    gridCheck.Do((SwitchTrigger)node);
+                                    _gridChecks[unit.Guid].Add(gridCheck);
                                 }
                             }
                         }

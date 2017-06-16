@@ -76,5 +76,14 @@ namespace GameA.Game
             OnDead();
             PlayMode.Instance.DestroyUnit(this);
         }
+
+        public void StopTwenner ()
+        {
+            if (_tweener != null)
+            {
+                DOTween.Kill(_trans);
+                _tweener = null;
+            }
+        }
     }
 }
