@@ -20,7 +20,7 @@ namespace J3Tech
 		public static extern uint Get_Version();
 #else
         [DllImport("CryptAndroid", CharSet = CharSet.Unicode)]
-        public static extern int StartCryptAndroid(StringBuilder projPath, StringBuilder apkPath, StringBuilder jdkbin, StringBuilder aaptPath, StringBuilder keystorePath, StringBuilder storePass, StringBuilder alias, StringBuilder keyPass,int signalg, int version, int arch);
+        public static extern int StartCryptAndroid(StringBuilder projPath, StringBuilder apkPath, StringBuilder jdkbin, StringBuilder aaptPath, StringBuilder keystorePath, StringBuilder storePass, StringBuilder alias, StringBuilder keyPass,int signalg, int version, int arch, StringBuilder cryptkey);
         [DllImport("CryptAndroid", CharSet = CharSet.Unicode)]
 		public static extern void AddAssembly(StringBuilder filename);
         [DllImport("CryptAndroid", CharSet = CharSet.Unicode)]
@@ -30,7 +30,7 @@ namespace J3Tech
 #endif
 #else
         [DllImport("CodeEncipher/CryptAndroid", CharSet = CharSet.Unicode)]
-        public static extern int StartCryptAndroid(StringBuilder projPath, StringBuilder apkPath, StringBuilder jdkbin, StringBuilder aaptPath, StringBuilder keystorePath, StringBuilder storePass, StringBuilder alias, StringBuilder keyPass, int signalg, int version, int arch);
+        public static extern int StartCryptAndroid(StringBuilder projPath, StringBuilder apkPath, StringBuilder jdkbin, StringBuilder aaptPath, StringBuilder keystorePath, StringBuilder storePass, StringBuilder alias, StringBuilder keyPass, int signalg, int version, int arch, StringBuilder cryptkey);
         [DllImport("CodeEncipher/CryptAndroid", CharSet = CharSet.Unicode)]
         public static extern void AddAssembly(StringBuilder filename);
         [DllImport("CodeEncipher/CryptAndroid", CharSet = CharSet.Unicode)]
@@ -60,6 +60,7 @@ namespace J3Tech
 	            Utility.CheckDir(Application.dataPath, @"Plugins/CodeEncipher");
 	            File.Copy(Application.dataPath + @"/CodeEncipher/Editor/Plugin/CryptAndroid.dll",
 	                Application.dataPath + @"/Plugins/CodeEncipher/CryptAndroid.dll");
+                AssetDatabase.ImportAsset("Assets/Plugins/CodeEncipher/CryptAndroid.dll");
 	        }
 #endif
 	    }
