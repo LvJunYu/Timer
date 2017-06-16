@@ -26,11 +26,6 @@ namespace GameA.Game
         protected bool _run = true;
         protected bool _enabled = true;
 
-        public override bool CanControlledBySwitch
-        {
-            get { return UseMagic(); }
-        }
-
         public override void UpdateExtraData()
         {
             base.UpdateExtraData();
@@ -80,11 +75,6 @@ namespace GameA.Game
         internal void SetEnabled(bool value)
         {
             _enabled = value;
-        }
-
-        public bool UseMagic()
-        {
-            return _curMoveDirection != EMoveDirection.None;
         }
 
         public override void UpdateLogic()

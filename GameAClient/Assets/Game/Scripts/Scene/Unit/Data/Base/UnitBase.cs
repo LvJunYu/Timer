@@ -159,7 +159,7 @@ namespace GameA.Game
         /// <value><c>true</c> if this instance can controlled by switch; otherwise, <c>false</c>.</value>
         public virtual bool CanControlledBySwitch
         {
-            get { return false; }
+            get { return UseMagic(); }
         }
 
         public bool CanLazerCross
@@ -480,6 +480,11 @@ namespace GameA.Game
         public string AssetPath
         {
             get { return _assetPath; }
+        }
+
+        public bool UseMagic()
+        {
+            return !IsHero && _curMoveDirection != EMoveDirection.None;
         }
 
         /// <summary>
