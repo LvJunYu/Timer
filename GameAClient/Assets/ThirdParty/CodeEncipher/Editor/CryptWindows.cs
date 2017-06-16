@@ -29,7 +29,7 @@ namespace J3Tech
         [DllImport("CryptWindows")]
 		public static extern void ClearAssembly();
         [DllImport("CryptWindows")]
-        public static extern int CryptAssembly(int version,int arch);
+        public static extern int CryptAssembly(int version,int arch, StringBuilder key);
         [DllImport("CryptWindows")]
 		public static extern uint Get_Version();
 #endif
@@ -41,7 +41,7 @@ namespace J3Tech
         [DllImport("CodeEncipher/CryptWindows")]
         public static extern void ClearAssembly();
         [DllImport("CodeEncipher/CryptWindows")]
-        public static extern int CryptAssembly(int version,int arch);
+        public static extern int CryptAssembly(int version,int arch,StringBuilder key);
         [DllImport("CodeEncipher/CryptWindows")]
         public static extern uint Get_Version();
 #endif

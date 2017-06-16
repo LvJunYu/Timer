@@ -57,6 +57,14 @@ namespace J3Tech
                     onNormal = {textColor = Color.green}
                 };
 		    }
+
+	        if (_logoTexture == null)
+	        {
+	            _logoTexture = AssetDatabase.LoadAssetAtPath("Assets/CodeEncipher/Textures/logo.png", typeof (Texture)) as Texture;
+	        }
+
+	        GUI.DrawTexture(new Rect(0,10,400,94),_logoTexture);
+			GUILayout.Space(114);
             GUILayout.BeginHorizontal();
             GUILayout.Space(10);
             GUILayout.Label("CodeEncipher for Windows");

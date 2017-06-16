@@ -95,9 +95,10 @@ namespace GameA
                     if (resultCode == ERaffleCode.RC_Success)
                     {
                         //SuccessfullyUseRaffleTicket(re.RewardId, (int)selectedTicketNum);
-                        foreach (var item in RewardList)
+                        for (int i = 0; i < RewardList.Count; i++)
                         {
-                            GiveReward(item);
+                            RewardItem item = new RewardItem(RewardList[i]);
+                            item.AddToLocal();
                         }
                         successCallback(ReturnRewardOnPanel(re.RewardId, (int)selectedTicketNum));
                         _reward.OnSync(re.Reward);
@@ -166,93 +167,6 @@ namespace GameA
         //    _reward = reward;
         //}
 
-        private void GiveReward(Msg_RewardItem rewardItem)
-        {
-            //var raffleUnit =TableManager.Instance.Table_RewardDic[(int)currentRewardId];
-            switch (rewardItem.Type)
-            {
-              
-        //public enum ERewardType
-        //{
-        //    RT_None = 0,
-        //    RT_Gold = 1,
-        //    RT_Diamond = 2,
-        //    RT_PlayerExp = 3,
-        //    RT_CreatorExp = 4,
-        //    RT_FashionCoupon = 5,
-        //    RT_RaffleTicket = 6,
-        //    RT_BoostItem = 7,
-        //    RT_RandomReformUnit = 8   ,
-        //    RT_ReformUnit = 9
-        //}
-                case 0:
-                    break;
-                case 1:
-                    GameATools.LocalAddGold((int)rewardItem.Count);
-                    break;
-                case 2:
-                    GameATools.LocalAddDiamond((int)rewardItem.Count);
-                    break;
-                case 3:
-                    GameATools.LocalAddPlayerExp((int)rewardItem.Count);
-                    break;
-                case 4:
-                    GameATools.LocalAddCreatorExp((int)rewardItem.Count);
-                    break;
-                case 5:
-                    break;
-                case 6:
-                    AddTicketsInRaffleDictionary((int)rewardItem.Id, (int) rewardItem.Count);
-                    LocalUser.Instance.RaffleTicket.Request(LocalUser.Instance.UserGuid, () => {
-                        SocialGUIManager.Instance.GetUI<UICtrlLottery>().RefreshRaffleCount();
-
-                    }, code => {
-                        LogHelper.Error("Network error when get RaffleCount, {0}", code);
-                    });
-                    break;
-                case 7:
-                    LocalUser.Instance.LoadPropData(null, code =>
-                    {
-                        LogHelper.Error(
-                            "Network error when get RaffleCount, {0}",
-                            code);
-                    });
-                    break;
-                case 8:
-                    MatchUnitData();
-                    break;
-                case 9:
-                    MatchUnitData();
-                    break;
-            }
-        }
-
-        private void MatchUnitData()
-        {
-            Msg_CS_DAT_MatchUserData msg = new Msg_CS_DAT_MatchUserData();
-             LocalUser.Instance.MatchUserData.Request(LocalUser.Instance.UserGuid, () => {
-             }, code => {
-                 LogHelper.Error("Network error when refresh MatchUnitData, {0}", code);
-             });
-
-        }
-
-        //private void RewardMoney(int moneyAmount)
-        //{
-        //    LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin += moneyAmount;
-        //}
-        //private void RewardDiamond(int diamondAmount)
-        //{
-        //    LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond += diamondAmount;
-        //}
-        //private void RewardPlayerExp(int playerExpAmount)
-        //{
-        //    LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerExp += playerExpAmount;
-        //}
-        //private void RewardCreatorExp(int creatorExpAmount)
-        //{
-        //    LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorExp += creatorExpAmount;
-        //}
         private void UnsuccessfullyUseRaffleTicket()
         {
 

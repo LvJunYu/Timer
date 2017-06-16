@@ -28,7 +28,7 @@ namespace GameA.Game
         {
             if (checkOnly)
             {
-                if (other is Magic)
+                if (other.UseMagic())
                 {
                     return true;
                 }
@@ -40,7 +40,7 @@ namespace GameA.Game
         {
             if (checkOnly)
             {
-                if (other is Magic)
+                if (other.UseMagic())
                 {
                     return true;
                 }
@@ -52,7 +52,7 @@ namespace GameA.Game
         {
             if (checkOnly)
             {
-                if (other is Magic)
+                if (other.UseMagic())
                 {
                     return true;
                 }
@@ -64,7 +64,7 @@ namespace GameA.Game
         {
             if (checkOnly)
             {
-                if (other is Magic)
+                if (other.UseMagic())
                 {
                     return true;
                 }

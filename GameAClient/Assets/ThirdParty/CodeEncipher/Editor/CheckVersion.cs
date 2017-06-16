@@ -10,14 +10,13 @@ namespace J3Tech
     [InitializeOnLoad]
     public class CheckVersion
     {
-        public const string Version = "3.0.1";
+        public const string Version = "3.0.2";
         public const int VersionValue = 300;
         private const string VersionUrl = "http://j3studio.xyz/UnityPlugins/CodeEncipher/version.xml";
         private const int CheckPeriod = 3;
         private const string DateTimeKey = "CodeEncipherCheckVersionTime";
         
-        [InitializeOnLoadMethod]
-        static void CheckVersionOnStart()
+        static  CheckVersion()
         {
             long ticks;
             string time = EditorPrefs.GetString(DateTimeKey, "0");
@@ -91,7 +90,7 @@ namespace J3Tech
             {
                 return;
             }
-            titleContent = new GUIContent(UpgradeWindowTitle);
+            title = UpgradeWindowTitle;
             int w = 400;
             int h = 400;
             position = new Rect(Screen.width - w *0.5f,Screen.height - h * 0.5f,400,400);

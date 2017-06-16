@@ -224,6 +224,10 @@ namespace GameA.Game
             if (_virUnit == null)
             {
                 _virUnit = UnitManager.Instance.GetUnit(_dragTableUnit, (EDirectionType)_dragUnitDesc.Rotation);
+                CollectionBase collectUnit = _virUnit as CollectionBase;
+                if (null != collectUnit) {
+                    collectUnit.StopTwenner ();
+                }
                 EditMode.Instance.DeleteUnit(_dragUnitDesc);
                 //if (_dragUnitExtra.Child.Id > 0)
                 //{
