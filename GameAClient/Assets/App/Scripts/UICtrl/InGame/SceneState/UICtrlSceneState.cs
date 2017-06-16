@@ -24,6 +24,10 @@ namespace GameA
 	    private int _lastShowSceonds = -100;
 
         private float _showHelpTimer;
+        public bool ShowHelpPage3SecondsComplete
+        {
+            get { return _showHelpTimer <= 0; }
+        }
 
         protected override void InitGroupId()
         {
@@ -75,11 +79,34 @@ namespace GameA
 		    }
 
             if (_showHelpTimer > 0)
+            {
                 _showHelpTimer-= UnityEngine.Time.deltaTime;
-            if (UnityEngine.Input.GetKey (UnityEngine.KeyCode.H) || _showHelpTimer > 0) {
-                _cachedView.HelpPage.SetActive (true);
-            } else {
-                _cachedView.HelpPage.SetActive (false);
+                if (UnityEngine.Input.anyKey)
+                {
+                    _showHelpTimer = 0;
+                }
+                if (_showHelpTimer <= 0)
+                {
+                    _cachedView.HelpPage.SetActive(false);
+                }
+            }
+            else
+            {
+                if (UnityEngine.Input.GetKey (UnityEngine.KeyCode.H))
+                {
+                    if (!_cachedView.HelpPage.activeSelf)
+                    {
+                        _cachedView.HelpPage.SetActive (true);
+                    }
+                }
+                else
+                {
+                    
+                    if (_cachedView.HelpPage.activeSelf)
+                    {
+                        _cachedView.HelpPage.SetActive(false);
+                    }
+                }
             }
 	    }
 
