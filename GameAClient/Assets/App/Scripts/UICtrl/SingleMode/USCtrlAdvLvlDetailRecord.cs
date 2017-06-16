@@ -59,7 +59,7 @@ namespace GameA
                 for (int i = 0; i < _cardList.Count; i++)
                 {
                     _cardList[i].Destroy();
-                    Debug.Log("_____销毁______"+ i);
+                    //Debug.Log("_____销毁______"+ i);
                 }
             }
 
@@ -94,11 +94,12 @@ namespace GameA
         {
             if (_cachedView != null)
             {
-                var UM = new UMCtrlRecord();
+                
                 if (record.Count > 0)
                 {
                     for (int i = 0; i < record.Count; i++)
                     {
+                        var UM = new UMCtrlRecord();
                         string m = String.Format("最近尝试{0}次录像",i+1);
                         //string name =
                         UM.Init(_cachedView.Dock as RectTransform);
