@@ -14,8 +14,6 @@ namespace GameA.Game
     [Unit(Id = 5012, Type = typeof(Key))]
     public class Key : CollectionBase
     {
-        protected Tweener _tweener;
-
         internal override bool InstantiateView()
         {
             if (!base.InstantiateView())
@@ -26,16 +24,6 @@ namespace GameA.Game
             _tweener.Play();
             _tweener.SetLoops(-1, LoopType.Yoyo);
             return true;
-        }
-
-        internal override void OnObjectDestroy()
-        {
-            if (_tweener != null)
-            {
-                DOTween.Kill(_trans);
-                _tweener = null;
-            }
-            base.OnObjectDestroy();
         }
 
         protected override void OnTrigger()
