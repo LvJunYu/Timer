@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections;
 using System;
 using SoyEngine.Proto;
-using UnityEngine;
 
 namespace GameA.Game
 {
@@ -15,6 +14,8 @@ namespace GameA.Game
                 return false;
             }
             _gameSituation = EGameSituation.World;
+            _record = param as Record;
+            InitRecord();
             return true;
         }
 
