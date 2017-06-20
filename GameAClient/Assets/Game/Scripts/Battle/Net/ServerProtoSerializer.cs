@@ -55,160 +55,126 @@ namespace SoyEngine
             mapping.Clear();
         }
 
-        //public override void Serialize(object msg, Stream stream)
-        //{
-        //    try
-        //    {
-        //        ProtoBuf.Serializer.NonGeneric.Serialize(stream, msg);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        LogHelper.Error("ProtoSerializer Error, Type: {0}, Exception: {1}", msg.GetType().FullName, e.ToString());
-        //    }
-        //}
-
-
-        //public override byte[] Serialize(object msg)
-        //{
-        //    using (PooledFixedByteBufHolder holder = PoolFactory<PooledFixedByteBufHolder>.Get())
-        //    {
-        //        Serialize(msg, holder.Content);
-        //        return holder.Content.ReadableBytesToArray();
-        //    }
-        //}
-
-        //public override object Deserialize(Stream stream, uint emt)
-        //{
-        //    Type t = null;
-        //    if (_msgType2PacketMapping.TryGetValue(emt, out t))
-        //    {
-        //        try
-        //        {
-        //            return ProtoBuf.Serializer.NonGeneric.Deserialize(t, stream);
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            LogHelper.Error("ProtoSerializer Error, Type: {0}, Exception: {1}", t.FullName, e.ToString());
-        //            return null;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        return null;
-        //    }
-        //}
-
-        //public override object Deserialize(Stream stream, Type type)
-        //{
-        //    try
-        //    {
-        //        return ProtoBuf.Serializer.NonGeneric.Deserialize(type, stream);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        LogHelper.Error("ProtoSerializer Error, Type: {0}, Exception: {1}", type.FullName, e.ToString());
-        //        return null;
-        //    }
-        //}
-
-        //public override object Deserialize(ByteBuf stream, uint emt, int len)
-        //{
-        //    Type t = null;
-        //    if (!_msgType2PacketMapping.TryGetValue(emt, out t))
-        //    {
-        //        LogHelper.Error("Deserialize Type Not Found, TypeInx: {0}", emt);
-        //        return null;
-        //    }
-        //    if (len > stream.ReadableBytes())
-        //    {
-        //        LogHelper.Error("Deserialize error, data Not enough, Type: {0}", t.FullName);
-        //        return null;
-        //    }
-        //    using (PooledEmptyByteBufHolder holder = PoolFactory<PooledEmptyByteBufHolder>.Get())
-        //    {
-        //        try
-        //        {
-        //            holder.Content.SetBufForRead(stream.Buf);
-        //            holder.Content.ReaderIndex = stream.ReaderIndex;
-        //            holder.Content.WriterIndex = stream.ReaderIndex + len;
-        //            stream.IgnoreReadBytes(len);
-        //            return ProtoBuf.Serializer.NonGeneric.Deserialize(t, holder.Content);
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            LogHelper.Error("ProtoSerializer Error, Type: {0}, Exception: {1}", t.FullName, e.ToString());
-        //            return null;
-        //        }
-        //    }
-        //}
-
-        //public override object Deserialize(byte[] bytes, Type type)
-        //{
-        //    using (PooledEmptyByteBufHolder holder = PoolFactory<PooledEmptyByteBufHolder>.Get())
-        //    {
-        //        holder.Content.SetBufForRead(bytes);
-        //        try
-        //        {
-        //            return ProtoBuf.Serializer.NonGeneric.Deserialize(type, holder.Content);
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            LogHelper.Error("ProtoSerializer Error, Type: {0}, Exception: {1}", type.FullName, e.ToString());
-        //        }
-        //        return null;
-        //    }
-        //}
-
-        //public override T Deserialize<T>(byte[] bytes)
-        //{
-        //    using (PooledEmptyByteBufHolder holder = PoolFactory<PooledEmptyByteBufHolder>.Get())
-        //    {
-        //        holder.Content.SetBufForRead(bytes);
-        //        T t = default(T);
-        //        try
-        //        {
-        //            t = ProtoBuf.Serializer.Deserialize<T>(holder.Content);
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            LogHelper.Error("ProtoSerializer Error, Type: {0}, Exception: {1}", t.GetType().FullName, e.ToString());
-        //        }
-        //        return t;
-        //    }
-        //}
         public override void Serialize(object msg, Stream stream)
         {
-            throw new NotImplementedException();
+            try
+            {
+                ProtoBuf.Serializer.NonGeneric.Serialize(stream, msg);
+            }
+            catch (Exception e)
+            {
+                LogHelper.Error("ProtoSerializer Error, Type: {0}, Exception: {1}", msg.GetType().FullName, e.ToString());
+            }
+        }
+
+
+        public override byte[] Serialize(object msg)
+        {
+            using (PooledFixedByteBufHolder holder = PoolFactory<PooledFixedByteBufHolder>.Get())
+            {
+                Serialize(msg, holder.Content);
+                return holder.Content.ReadableBytesToArray();
+            }
         }
 
         public override object Deserialize(Stream stream, uint emt)
         {
-            throw new NotImplementedException();
+            Type t = null;
+            if (_msgType2PacketMapping.TryGetValue(emt, out t))
+            {
+                try
+                {
+                    return ProtoBuf.Serializer.NonGeneric.Deserialize(t, stream);
+                }
+                catch (Exception e)
+                {
+                    LogHelper.Error("ProtoSerializer Error, Type: {0}, Exception: {1}", t.FullName, e.ToString());
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public override object Deserialize(Stream stream, Type type)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return ProtoBuf.Serializer.NonGeneric.Deserialize(type, stream);
+            }
+            catch (Exception e)
+            {
+                LogHelper.Error("ProtoSerializer Error, Type: {0}, Exception: {1}", type.FullName, e.ToString());
+                return null;
+            }
         }
 
-        public override object Deserialize(ByteBuf readBuffer, uint msgType, int size)
+        public override object Deserialize(ByteBuf stream, uint emt, int len)
         {
-            throw new NotImplementedException();
+            Type t = null;
+            if (!_msgType2PacketMapping.TryGetValue(emt, out t))
+            {
+                LogHelper.Error("Deserialize Type Not Found, TypeInx: {0}", emt);
+                return null;
+            }
+            if (len > stream.ReadableBytes())
+            {
+                LogHelper.Error("Deserialize error, data Not enough, Type: {0}", t.FullName);
+                return null;
+            }
+            using (PooledEmptyByteBufHolder holder = PoolFactory<PooledEmptyByteBufHolder>.Get())
+            {
+                try
+                {
+                    holder.Content.SetBufForRead(stream.Buf);
+                    holder.Content.ReaderIndex = stream.ReaderIndex;
+                    holder.Content.WriterIndex = stream.ReaderIndex + len;
+                    stream.IgnoreReadBytes(len);
+                    return ProtoBuf.Serializer.NonGeneric.Deserialize(t, holder.Content);
+                }
+                catch (Exception e)
+                {
+                    LogHelper.Error("ProtoSerializer Error, Type: {0}, Exception: {1}", t.FullName, e.ToString());
+                    return null;
+                }
+            }
         }
 
         public override object Deserialize(byte[] bytes, Type type)
         {
-            throw new NotImplementedException();
+            using (PooledEmptyByteBufHolder holder = PoolFactory<PooledEmptyByteBufHolder>.Get())
+            {
+                holder.Content.SetBufForRead(bytes);
+                try
+                {
+                    return ProtoBuf.Serializer.NonGeneric.Deserialize(type, holder.Content);
+                }
+                catch (Exception e)
+                {
+                    LogHelper.Error("ProtoSerializer Error, Type: {0}, Exception: {1}", type.FullName, e.ToString());
+                }
+                return null;
+            }
         }
 
         public override T Deserialize<T>(byte[] bytes)
         {
-            throw new NotImplementedException();
-        }
-
-        public override byte[] Serialize(object msg)
-        {
-            throw new NotImplementedException();
+            using (PooledEmptyByteBufHolder holder = PoolFactory<PooledEmptyByteBufHolder>.Get())
+            {
+                holder.Content.SetBufForRead(bytes);
+                T t = default(T);
+                try
+                {
+                    t = ProtoBuf.Serializer.Deserialize<T>(holder.Content);
+                }
+                catch (Exception e)
+                {
+                    LogHelper.Error("ProtoSerializer Error, Type: {0}, Exception: {1}", t.GetType().FullName, e.ToString());
+                }
+                return t;
+            }
         }
     }
 }
