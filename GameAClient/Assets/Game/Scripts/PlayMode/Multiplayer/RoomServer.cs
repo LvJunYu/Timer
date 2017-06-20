@@ -25,6 +25,19 @@ namespace GameA.Game
             _serializer = new ServerProtoSerializer(typeof(ECSMsgType), ProtoSerializer.ProtoNameSpace,
                 typeof(ServerProtoSerializer).Assembly);
         }
+
+        public bool Init()
+        {
+            _port = 8080;
+            _ip = "127.0.0.1";
+            if (!StartUp())
+            {
+                LogHelper.Error("RS StartUp port[{1}] for Client Failed",  _port);
+                return false;
+            }
+            LogHelper.Info("RS StartUp port[{1}] for Client Success.", _port);
+            return true;
+        }
     }
 
     public class RoomHandler : Handler<object, NetLink>
