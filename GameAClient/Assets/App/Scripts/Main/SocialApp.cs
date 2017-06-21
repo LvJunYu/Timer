@@ -126,6 +126,7 @@ namespace GameA
             MatrixProjectTools.InitAndCheckOnStart();
             LoginLogicUtil.Init();
             ShareUtil.Init();
+            RoomManager.Instance.Init();
         }
 
         public void InitAfterUpdateResComplete()
@@ -174,6 +175,7 @@ namespace GameA
         {
             base.Update();
             GameManager.Instance.Update();
+            RoomManager.Instance.Update();
             if(Input.GetKeyDown(KeyCode.Escape))
             {
                 Messenger.Broadcast(EMessengerType.OnEscapeClick);

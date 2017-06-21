@@ -131,5 +131,7 @@ namespace GameA.Game
         public const int AdvNormallevelPerChapter = 9;
         // 冒险模式每章奖励关卡数
         public const int AdvBonuslevelPerChapter = 3;
+
+        public const int MaxUserCount = 6;
     }
 }
