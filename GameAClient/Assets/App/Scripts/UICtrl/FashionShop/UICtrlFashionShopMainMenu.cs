@@ -9,6 +9,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -619,10 +620,11 @@ namespace GameA
 	    {
 	        var dict = new Dictionary<int, List<ShopItem>>(); //建立字典 键是分页 值为每个分页的itemlist
 	        List<ShopItem> list = null;
-
-	        foreach (var itemKV in TableManager.Instance.Table_FashionShopDic)
+	        //List<Table_FashionShop> ListFashionDic = new List<Table_FashionShop>(TableManager.Instance.Table_FashionShopDic.Keys);
+	        for (int i = 0; i < TableManager.Instance.Table_FashionShopDic.Count; i++)
 	        {
-	            var item = itemKV.Value;
+
+	            var item = TableManager.Instance.Table_FashionShopDic.ElementAt(i).Value;
 	            if (item.Sex != sex)
 	            {
 	                continue;

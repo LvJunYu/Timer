@@ -41,7 +41,14 @@ namespace GameA
 		#endregion
 
 		#region 方法
-		public void OnProjectCreated(Msg_SC_DAT_Project msg, Project p)
+
+	    public UserInfoDetail(UserInfoSimple userInfoSimple)
+	    {
+	        _userInfoSimple = userInfoSimple;
+	    }
+
+
+	    public void OnProjectCreated(Msg_SC_DAT_Project msg, Project p)
 		{
 			ProjectManager.Instance.OnCreateProject(msg, p);
 			ST_CacheList cachedList = GetSavedProjectCache();

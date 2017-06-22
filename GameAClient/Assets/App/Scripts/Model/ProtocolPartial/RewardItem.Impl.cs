@@ -154,7 +154,6 @@ namespace GameA
                 // todo 这里不要引用界面，应该发消息通知界面更新
                 LocalUser.Instance.RaffleTicket.Request(LocalUser.Instance.UserGuid, () => {
                     SocialGUIManager.Instance.GetUI<UICtrlLottery>().RefreshRaffleCount();
-
                 }, code => {
                     LogHelper.Error("Network error when get RaffleCount, {0}", code);
                 });
@@ -169,6 +168,7 @@ namespace GameA
                         allBoostItem [i] = item;
                         found = true;
                         continue;
+
                     }
                 }
                 if (!found) {
