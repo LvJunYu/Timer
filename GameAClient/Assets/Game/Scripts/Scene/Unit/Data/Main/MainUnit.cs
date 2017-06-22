@@ -15,7 +15,7 @@ namespace GameA.Game
 {
     [Serializable]
     [Unit(Id = 1001, Type = typeof(MainUnit))]
-    public class MainUnit : ActorBase
+    public class MainUnit : PlayerBase
     {
         protected const int FlashTime = 100;
 
