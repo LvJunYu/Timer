@@ -24,6 +24,7 @@ namespace GameA.Game
         World,
         Adventure,
         Match,
+        Battle,
     }
 
     /// <summary>
@@ -146,6 +147,12 @@ namespace GameA.Game
                     break;
                 case GameManager.EStartType.ChallengePlay:
                     _gameMode = new GameModeChallengePlay();
+                    break;
+                case GameManager.EStartType.MultiCooperationPlay:
+                    _gameMode = new GameModeMultiCooperationPlay();
+                    break;
+                case GameManager.EStartType.MultiBattlePlay:
+                    _gameMode = new GameModeMultiBattlePlay();
                     break;
                 default:
                     LogHelper.Error("GM2D Play startType error, startType: {0}", startType);

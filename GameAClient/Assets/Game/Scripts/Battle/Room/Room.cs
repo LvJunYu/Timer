@@ -25,8 +25,7 @@ namespace GameA.Game
         Close
     }
 
-    [Poolable(MinPoolSize = 100, PreferedPoolSize = 1000, MaxPoolSize = 10000)]
-    public class Room : IPoolableObject
+    public class Room
     {
         protected ERoomState _eRoomState;
         protected EBattleType _eBattleType;
@@ -54,11 +53,12 @@ namespace GameA.Game
             set { _eRoomState = value; }
         }
 
-        public void OnGet()
+        public List<RoomUser> Users
         {
+            get { return _users; }
         }
 
-        public void OnFree()
+        public void Clear()
         {
             _eRoomState = ERoomState.None;
             _eBattleType = EBattleType.EBT_None;
@@ -66,10 +66,6 @@ namespace GameA.Game
             _guid = 0;
             _hostUser = null;
             _users.Clear();
-        }
-
-        public void OnDestroyObject()
-        {
         }
 
         public bool OnCreate(RoomUser user,long roomGuid, long projectGuid, EBattleType eBattleType)
@@ -150,12 +146,6 @@ namespace GameA.Game
             }
         }
 
-        internal void Open()
-        {
-            //进入战场！
-            _eRoomState = ERoomState.Open;
-        }
-
         internal void WarnningHost()
         {
             if (_hostUser == null)
@@ -168,6 +158,33 @@ namespace GameA.Game
             }
             //警告自己
             LogHelper.Debug("WarnningHost");
+        }
+
+        internal void Open()
+        {
+            //进入战场！
+            _eRoomState = ERoomState.Open;
+
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Format("请求进入关卡"));
+            var project = new Project();
+            project.Request(_projectGuid,
+                () => project.RequestPlay(() =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    GameManager.Instance.RequestPlayMultiCooperation(project);
+                    SocialGUIManager.Instance.ChangeToGameMode();
+                    _eRoomState = ERoomState.Fight;
+                },
+                    error =>
+                    {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                        SocialGUIManager.ShowPopupDialog("进入关卡失败");
+                    }),
+                error =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.ShowPopupDialog("进入关卡失败");
+                });
         }
     }
 }

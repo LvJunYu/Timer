@@ -10,10 +10,5 @@ using System.Collections;
 
 namespace GameA.Game
 {
-    public enum EBattleResult
-    {
-        Fail,
-        Win,
-        Draw
-    }
+
 }

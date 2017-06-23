@@ -12,7 +12,6 @@ namespace GameA.Game
 {
     public class PlayerManager
     {
-
         public static PlayerManager _instance;
 
         public static PlayerManager Instance

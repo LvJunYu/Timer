@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using SoyEngine;
 using SoyEngine.Proto;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -24,6 +25,7 @@ namespace GameA.Game
         {
             LogHelper.Debug("RoomClient OnConnected");
             RoomManager.Instance.SendPlayerLoginRS();
+            new GameObject().AddComponent<TestRoom>();
         }
 
         protected override void OnClose()
@@ -46,7 +48,8 @@ namespace GameA.Game
             RegisterHandler<Msg_RC_JoinRoomRet>(Msg_RC_JoinRoomRet);
             RegisterHandler<Msg_RC_RoomInfo>(Msg_RC_RoomInfo);
             RegisterHandler<Msg_RC_RoomUserInfo>(Msg_RC_RoomUserInfo);
-            RegisterHandler<Msg_RC_UserExitRoom>(Msg_RC_UserExitRoom);
+            RegisterHandler<Msg_RC_UserExitRet>(Msg_RC_UserExitRet);
+            RegisterHandler<Msg_RC_UserExit>(Msg_RC_UserExit);
             RegisterHandler<Msg_RC_UserReadyInfo>(Msg_RC_UserReadyInfo);
             RegisterHandler<Msg_RC_WarnningHost>(Msg_RC_WarnningHost);
             RegisterHandler<Msg_RC_RoomOpen>(Msg_RC_RoomOpen);
@@ -67,9 +70,14 @@ namespace GameA.Game
             RoomManager.Instance.OnUserReadyInfo(msg);
         }
 
-        private void Msg_RC_UserExitRoom(Msg_RC_UserExitRoom msg, NetLink netLink)
+        private void Msg_RC_UserExit(Msg_RC_UserExit msg, NetLink netLink)
         {
             RoomManager.Instance.OnUserExit(msg);
+        }
+
+        private void Msg_RC_UserExitRet(Msg_RC_UserExitRet msg, NetLink netLink)
+        {
+            RoomManager.Instance.OnSelfExit(msg);
         }
 
         private void Msg_RC_RoomUserInfo(Msg_RC_RoomUserInfo msg, NetLink netLink)
@@ -84,13 +92,11 @@ namespace GameA.Game
 
         private void Msg_RC_JoinRoomRet(Msg_RC_JoinRoomRet msg, NetLink netLink)
         {
-            LogHelper.Debug("Msg_RC_JoinRoomRet : {0}", msg);
             RoomManager.Instance.OnJoinRoomRet(msg);
         }
 
         private void Msg_RC_CreateRoomRet(Msg_RC_CreateRoomRet msg, NetLink netLink)
         {
-            LogHelper.Debug("Msg_RC_CreateRoomRet : {0}", msg);
             RoomManager.Instance.OnCreateRoomRet(msg);
         }
 

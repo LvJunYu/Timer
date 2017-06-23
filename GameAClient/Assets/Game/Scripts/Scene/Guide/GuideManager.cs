@@ -111,23 +111,23 @@ namespace GameA.Game
 
 			// if (PlayMode.Instance.MainUnit != null) {
 			// 	if (_currentGuide == null) return;
-			// 	if (PlayMode.Instance.MainUnit.MainInput.RightInput == 1) {
+			// 	if (PlayMode.Instance.MainUnit.PlayerInput.RightInput == 1) {
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.RightButton);
-			// 	} else if (PlayMode.Instance.MainUnit.MainInput.RightInput == 2) {
+			// 	} else if (PlayMode.Instance.MainUnit.PlayerInput.RightInput == 2) {
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.RightButtonDouble);
 			// 	}
 			// 	if (_currentGuide == null) return;
-			// 	if (PlayMode.Instance.MainUnit.MainInput.LeftInput == 1) {
+			// 	if (PlayMode.Instance.MainUnit.PlayerInput.LeftInput == 1) {
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.LeftButton);
-			// 	} else if (PlayMode.Instance.MainUnit.MainInput.LeftInput == 2) {
+			// 	} else if (PlayMode.Instance.MainUnit.PlayerInput.LeftInput == 2) {
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.LeftButtonDouble);
 			// 	}
 			// 	if (_currentGuide == null) return;
-			// 	if (PlayMode.Instance.MainUnit.MainInput.JumpInput) {
+			// 	if (PlayMode.Instance.MainUnit.PlayerInput.JumpInput) {
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.JumpButton);
 			// 	}
 			// 	if (_currentGuide == null) return;
-			// 	if (PlayMode.Instance.MainUnit.MainInput.Skill1Input) {
+			// 	if (PlayMode.Instance.MainUnit.PlayerInput.Skill1Input) {
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.AttackButton);
 			// 	}
 			// }

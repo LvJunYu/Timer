@@ -212,7 +212,7 @@ namespace GameA.Game
                 _rollPos.x += num/5;
             }
             IntVec2 cameraViewSize = GetCameraViewSize();
-            if (mainUnit.Grounded || mainUnit.MainInput.ClimbJump || !mainUnit.IsAlive)
+            if (mainUnit.Grounded || mainUnit.PlayerInput.ClimbJump || !mainUnit.IsAlive)
             {
                 _yRollTarget = mainUnit.CameraFollowPos.y - cameraViewSize.y/2;
             }

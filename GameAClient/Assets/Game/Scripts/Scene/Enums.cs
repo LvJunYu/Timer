@@ -22,6 +22,7 @@ namespace GameA.Game
         None,
         Normal,
         Record,
+        Net,
     }
 
     public enum EUnitState
