@@ -175,6 +175,21 @@ namespace GameA.Game
 			}
         }
 
+        public override void OnGameStart()
+        {
+            base.OnGameStart();
+            if (_project.GetData() == null)
+            {
+                NeedSave = true;
+                MapDirty = true;
+            }
+            else
+            {
+                NeedSave = false;
+                MapDirty = false;
+            }
+        }
+
         public override bool Restart(Action successCb, Action failedCb)
         {
             ChangeMode(EMode.Edit);

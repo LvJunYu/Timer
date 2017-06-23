@@ -309,6 +309,7 @@ namespace GameA
             _star3FlagRecord = new Record();
             _highScoreFriendInfo = new UserInfoSimple();
             _recentRecordList = new List<Record>();
+            OnCreate();
         }
         #endregion
     }

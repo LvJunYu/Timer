@@ -269,6 +269,7 @@ namespace GameA
         public UserInfoDetail () { 
             _userInfoSimple = new UserInfoSimple();
             _relationStatistic = new UserRelationStatistic();
+            OnCreate();
         }
         #endregion
     }

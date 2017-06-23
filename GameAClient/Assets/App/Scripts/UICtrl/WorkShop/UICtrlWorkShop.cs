@@ -27,6 +27,7 @@ namespace GameA
 
         private CardDataRendererWrapper<Project> _curSelectedPrivateProject;
         private List<CardDataRendererWrapper<Project>> _privateContents = new List<CardDataRendererWrapper<Project>>();
+        private Dictionary<long, CardDataRendererWrapper<Project>> _privateDict = new Dictionary<long, CardDataRendererWrapper<Project>>();
         private bool _autoSelectFirstProject = false;
 
         private List<CardDataRendererWrapper<Project>> _publicContents = new List<CardDataRendererWrapper<Project>>();
@@ -50,18 +51,11 @@ namespace GameA
         protected override void OnOpen (object parameter)
         {
             base.OnOpen (parameter);
-            SetMode(EWorkShopState.Edit);
-            LocalUser.Instance.PersonalProjectList.Request (0, 
-                int.MaxValue,
-                EPersonalProjectOrderBy.PePOB_LastUpdateTime,
-                EOrderType.OT_Desc,
-                () => {
-                    RefreshView();
-                },
-                code => {
-                    // todo error handle
-                }
-            );
+            SetMode(EWorkShopState.PersonalProject);
+            if (!LocalUser.Instance.PersonalProjectList.IsInited)
+            {
+                LocalUser.Instance.PersonalProjectList.Request();
+            }
             LocalUser.Instance.UserPublishedWorldProjectList.Request(
                 LocalUser.Instance.UserGuid,
                 0, int.MaxValue,
@@ -89,7 +83,8 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            RegisterEvent(EMessengerType.OnChangeToAppMode, OnReturnToApp);
+            RegisterEvent(EMessengerType.OnWorkShopProjectListChanged, OnPersonalProjectListChanged);
+            RegisterEvent<Project>(EMessengerType.OnWorkShopProjectDataChanged, OnPersonalProjectDataChanged);
         }
 
         protected override void OnViewCreated()
@@ -113,7 +108,7 @@ namespace GameA
             _cachedView.PrivateProjectsGridScroller.SetCallback(OnPrivateItemRefresh, GetPrivateItemRenderer);
             _cachedView.PublicProjectsGridScroller.SetCallback (OnPublicItemRefresh, GetPublicItemRenderer);
         }
-
+ 
         public override void OnUpdate ()
         {
             base.OnUpdate ();
@@ -129,64 +124,42 @@ namespace GameA
                     _curSelectedPrivateProject.Content.IsDirty) {
                     WeakReference projectWR = new WeakReference (_curSelectedPrivateProject.Content);
 //                    Debug.Log ("_________Request update current select project");
-                    RemoteCommands.UpdateProject (
-                        _curSelectedPrivateProject.Content.ProjectId,
+                    _curSelectedPrivateProject.Content.Save(
                         _curSelectedPrivateProject.Content.Name,
                         _curSelectedPrivateProject.Content.Summary,
-                        _curSelectedPrivateProject.Content.ProgramVersion,
-                        _curSelectedPrivateProject.Content.ResourcesVersion,
+                        null,
+                        null,
+                        0,
                         _curSelectedPrivateProject.Content.PassFlag,
                         _curSelectedPrivateProject.Content.RecordUsedTime,
+                        null,
                         _curSelectedPrivateProject.Content.TimeLimit,
                         _curSelectedPrivateProject.Content.WinCondition,
-                        msg => {
-                            if (msg.ResultCode == (int)EProjectOperateResult.POR_Success) {
-                                if (null != projectWR.Target) {
-                                    Project project = projectWR.Target as Project;
-                                    project.OnSyncFromParent (msg.ProjectData);
-                                }
-                                if (null != _curSelectedPrivateProject &&
-                                    null != _curSelectedPrivateProject.Content &&
-                                    msg.ProjectData.ProjectId == _curSelectedPrivateProject.Content.ProjectId) {
-                                    RefreshProjectDetailInfoPanel ();
-                                }
-                            }
-                        },
-                        code => {
-                            // todo err handle
-                        }
+                        null,
+                        null
                     );
                 } else {
                     // 其次，更新等待更新的关卡
                     if (_wait2RequestUpdateProjects.Count > 0) {
                         WeakReference wr = _wait2RequestUpdateProjects [0];
                         _wait2RequestUpdateProjects.RemoveAt (0);
-                        if (null != wr.Target) {
-                            Project project = wr.Target as Project;
-                            if (null != project && project.IsDirty) {
+                        Project project = wr.Target as Project;
+                        if (null != project && project.IsDirty) {
 //                                Debug.Log ("_________Request update project");
-                                RemoteCommands.UpdateProject (
-                                    project.ProjectId,
-                                    project.Name,
-                                    project.Summary,
-                                    project.ProgramVersion,
-                                    project.ResourcesVersion,
-                                    project.PassFlag,
-                                    project.RecordUsedTime,
-                                    project.TimeLimit,
-                                    project.WinCondition,
-                                    msg => {
-                                        if (msg.ResultCode == (int)EProjectOperateResult.POR_Success) {
-                                            if (msg.ProjectData.ProjectId == project.ProjectId) {
-                                                project.OnSyncFromParent (msg.ProjectData);
-                                            }
-                                        }
-                                    },
-                                    code => {
-                                        // todo err handle
-                                    }
-                                );
-                            }
+                            project.Save(
+                                project.Name,
+                                project.Summary,
+                                null,
+                                null,
+                                0,
+                                project.PassFlag,
+                                project.RecordUsedTime,
+                                null,
+                                project.TimeLimit,
+                                project.WinCondition,
+                                null,
+                                null
+                            );
                         }
                     }
                 }
@@ -205,7 +178,7 @@ namespace GameA
         private void RefreshView()
         {
 //            RefreshView();
-            if (_state == EWorkShopState.Edit) {
+            if (_state == EWorkShopState.PersonalProject) {
                 RefreshWorkShopProjectList ();
                 RefreshProjectDetailInfoPanel ();
             } else if (_state == EWorkShopState.PublishList) {
@@ -218,45 +191,23 @@ namespace GameA
             _autoSelectFirstProject = true;
         }
 
-//        private void RefreshView()
-//        {
-//            if(LocalUser.Instance.Account.HasLogin)
-//            {
-//                _cachedView.SoyPersonalProjectList.gameObject.SetActive(true);
-//                _cachedView.UnloginDock.SetActive(false);
-//                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(2, _cachedView.SoyPersonalProjectList.Refresh));
-//            }
-//            else
-//            {
-//                _cachedView.UnloginDock.SetActive(true);
-//                _cachedView.SoyPersonalProjectList.gameObject.SetActive(false);
-//            }
-//        }
-
         private void RefreshWorkShopProjectList () {
             long preSelectPRojectId = 0;
             if (null != _curSelectedPrivateProject) {
                 preSelectPRojectId = _curSelectedPrivateProject.Content.ProjectId;
             }
-//            LocalUser.Instance.per
             if (LocalUser.Instance.PersonalProjectList.IsInited) {
                 List<Project> list = LocalUser.Instance.PersonalProjectList.ProjectList;
                 _privateContents.Clear();
-                _privateContents.Capacity = list.Capacity;
+                _privateContents.Capacity = Mathf.Max(_privateContents.Count, list.Capacity);
+                _privateDict.Clear();
                 for(int i=0; i < list.Count; i++)
                 {
                     var wrapper = new CardDataRendererWrapper<Project>(list[i], OnPrivateProjectCardClick);
-//                    if(_mode == EMode.Edit)
-//                    {
-//                        wrapper.CardMode = ECardMode.Selectable;
-//                        wrapper.IsSelected = false;
-//                    }
-//                    else
-                    {
-                        wrapper.IsSelected = list [i].ProjectId == preSelectPRojectId;
-                        _curSelectedPrivateProject = wrapper.IsSelected ? wrapper : _curSelectedPrivateProject;
-                    }
+                    wrapper.IsSelected = list [i].ProjectId == preSelectPRojectId;
+                    _curSelectedPrivateProject = wrapper.IsSelected ? wrapper : _curSelectedPrivateProject;
                     _privateContents.Add(wrapper);
+                    _privateDict.Add(wrapper.Content.ProjectId, wrapper);
                 }
                 _cachedView.PrivateProjectsGridScroller.SetItemCount(_privateContents.Count);
                 if (_autoSelectFirstProject && null == _curSelectedPrivateProject) {
@@ -266,7 +217,6 @@ namespace GameA
                         _curSelectedPrivateProject = _privateContents [0];
                     }
                 }
-//                _currentSelectedCount = 0;
                 for (int i = 0; i < _cachedView.ObjectsShowWhenEmpty.Length; i++) {
                     _cachedView.ObjectsShowWhenEmpty [i].SetActive (list.Count == 0);
                 }
@@ -320,7 +270,7 @@ namespace GameA
             if (LocalUser.Instance.UserPublishedWorldProjectList.IsInited) {
                 List<Project> list = LocalUser.Instance.UserPublishedWorldProjectList.ProjectList;
                 _publicContents.Clear();
-                _publicContents.Capacity = list.Capacity;
+                _publicContents.Capacity = Mathf.Max(_publicContents.Count, list.Capacity);
                 for(int i=0; i < list.Count; i++)
                 {
                     var wrapper = new CardDataRendererWrapper<Project>(list[i], OnPublicProjectCardClick);
@@ -375,13 +325,6 @@ namespace GameA
                 return;
             }
             item.Set(_privateContents[inx]);
-//            if(!_isEnd && _mode != EMode.Edit)
-//            {
-//                if(inx > _content.Count - 2)
-//                {
-//                    RequestData(true);
-//                }
-//            }
         }
 
         private IDataItemRenderer GetPrivateItemRenderer(RectTransform parent)
@@ -399,13 +342,6 @@ namespace GameA
                 return;
             }
             item.Set(_publicContents[inx]);
-            //            if(!_isEnd && _mode != EMode.Edit)
-            //            {
-            //                if(inx > _content.Count - 2)
-            //                {
-            //                    RequestData(true);
-            //                }
-            //            }
         }
 
         private IDataItemRenderer GetPublicItemRenderer(RectTransform parent)
@@ -413,16 +349,6 @@ namespace GameA
             var item = new UMCtrlPublishedProjectCard();
             item.Init(parent, Vector3.zero);
             return item;
-        }
-
-        private void OnCloseCatogeryMaskClick ()
-        {
-//            HideCreateCategoryMask ();
-        }
-        private void OnRunXiuXianBtnClick ()
-        {
-//            HideCreateCategoryMask ();
-//            OnRunBtnClick ();
         }
 
         private void OnPublishBtn () {
@@ -442,60 +368,8 @@ namespace GameA
         private void OnNewProjectBtn ()
         {
             SocialGUIManager.Instance.OpenUI<UICtrlSetProjectSize> ();
-//            ProcessCreate ();
         }
 
-//        private void OnRunBtnClick()
-//        {
-//            if(!AppLogicUtil.CheckAndRequiredLogin())
-//            {
-//                return;
-//            }
-//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
-//            MatrixProjectTools.PreparePersonalProjectData(()=>{
-//                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//                ProcessCreate();
-//            },()=>{
-//                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//                CommonTools.ShowPopupDialog("数据请求失败，请检查网络后重试");
-//            });
-//        }
-
-//        public void ProcessCreate()
-//        {
-////            var userMatrixData = AppData.Instance.UserMatrixData.GetData(_content.MatrixGuid);
-////            int localCount = LocalUser.Instance.User.GetSavedProjectCount();
-////            if(userMatrixData.PersonalProjectWorkshopSize <= localCount)
-////            {
-////                CommonTools.ShowPopupDialog("工坊已满，请升级匠人等级或者前去工坊整理");
-////                return;
-////            }
-//
-//            EMatrixProjectResState resState = EMatrixProjectResState.None;
-//            if(!MatrixProjectTools.CheckMatrixStateForRun(out resState))
-//            {
-//                MatrixProjectTools.ShowMatrixProjectResCheckTip(resState);
-//                return;
-//            }
-//            float needDownloadSize = LocalResourceManager.Instance.GetNeedDownloadSizeMB("GameMaker2D");
-//            if(Application.internetReachability != NetworkReachability.NotReachable
-//                && !Util.IsFloatEqual(needDownloadSize, 0))
-//            {
-//                CommonTools.ShowPopupDialog(string.Format("本次进入游戏需要更新 {0:N2}MB 资源，可能会产生费用，是否继续？", Mathf.Max(needDownloadSize, 0.01f)),
-//                    null,
-//                    new System.Collections.Generic.KeyValuePair<string, Action>("继续", ()=>{
-//                        InternalCreate();
-//                    }),
-//                    new System.Collections.Generic.KeyValuePair<string, Action>("取消", ()=>{
-//                        LogHelper.Debug("Cancel RunCreate");
-//                    })
-//                );
-//            }
-//            else
-//            {
-//                InternalCreate();
-//            }
-//        }
 
         private void ProcessDelete () {
             if (null == _curSelectedPrivateProject || null == _curSelectedPrivateProject.Content)
@@ -511,12 +385,8 @@ namespace GameA
                         _curSelectedPrivateProject = null;
                         AutoSelectFirstProject ();
                         RefreshView ();
-                        LocalUser.Instance.PersonalProjectList.Request (0,
-                            int.MaxValue,
-                            EPersonalProjectOrderBy.PePOB_LastUpdateTime,
-                            EOrderType.OT_Desc,
+                        LocalUser.Instance.PersonalProjectList.Request (
                             () => {
-                                RefreshView();
                             },
                             code => {
                                 // todo error handle
@@ -532,47 +402,13 @@ namespace GameA
             }));
         }
 
-//        public void ShowCreateCategoryMask ()
-//        {
-//            if (_cachedView.CategaryMask.activeInHierarchy == false) {
-//                _cachedView.CategaryMask.SetActive (true);
-//                ScrollToTop ();
-//                LockScroll ();
-//            }
-//        }
-
-//        private void HideCreateCategoryMask ()
-//        {
-//            if (_cachedView.CategaryMask.activeInHierarchy == true) {
-//                _cachedView.CategaryMask.SetActive (false);
-//                UnLockScroll ();
-//            }
-//        }
-
-//        private void InternalCreate()
-//        {
-//            Project project = Project.CreateWorkShopProject();
-//            MatrixProjectTools.SetProjectVersion(project);
-////            project.ProjectCategory = category;
-//            GameManager.Instance.RequestCreate (project);
-//            SocialGUIManager.Instance.ChangeToGameMode();
-//        }
-
-
-//        private void OnEvent()
-//        {
-//            if(_isViewCreated && _isOpen)
-//            {
-//                Refresh();
-//            }
-//        }
 
         private void SetMode(EWorkShopState mode)
         {
             if (mode == _state)
                 return;
             _state = mode;
-            if (_state == EWorkShopState.Edit) {
+            if (_state == EWorkShopState.PersonalProject) {
                 _cachedView.Private.SetActive (true);
                 _cachedView.Public.SetActive (false);
                 DictionaryTools.SetContentText(_cachedView.ChangeModeBtnText, "创作中的关卡");
@@ -596,18 +432,6 @@ namespace GameA
             RefreshView ();
         }
 
-
-//        public void SetPersonalProjectCount(int count)
-//        {
-//            _personalProjectCount = count;
-////            _uiStack.Titlebar.RefreshRightButton();
-//        }
-
-//        private void OnLoginBtnClick()
-//        {
-//            SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
-//        }
-//
         private void OnEditBtn ()
         {
             if (null != _curSelectedPrivateProject && null != _curSelectedPrivateProject.Content) {
@@ -631,25 +455,11 @@ namespace GameA
             _groupId = (int)EUIGroupType.PopUpUI;
         }
 
-
-        private void OnReturnToApp () {
-            LocalUser.Instance.PersonalProjectList.Request (0, int.MaxValue, 
-                EPersonalProjectOrderBy.PePOB_LastUpdateTime,
-                EOrderType.OT_Desc,
-                () => {
-                    RefreshView();
-                },
-                code => {
-                    // todo error handle
-                }
-            );
-        }
-
         private void OnChangeModeBtn () {
-            if (_state == EWorkShopState.Edit) {
+            if (_state == EWorkShopState.PersonalProject) {
                 SetMode (EWorkShopState.PublishList);
             } else if (_state == EWorkShopState.PublishList) {
-                SetMode (EWorkShopState.Edit);
+                SetMode (EWorkShopState.PersonalProject);
             }
         }
 
@@ -672,6 +482,7 @@ namespace GameA
                 _curSelectedPrivateProject.Content.Name = newTitle;
                 _cachedView.Title.text = newTitle;
                 AddWaitUpdateProject (_curSelectedPrivateProject.Content);
+                Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, _curSelectedPrivateProject.Content);
             }
             _cachedView.Title.gameObject.SetActive (true);
             _cachedView.TitleInput.gameObject.SetActive (false);
@@ -696,6 +507,7 @@ namespace GameA
                 _curSelectedPrivateProject.Content.Summary = newDesc;
                 _cachedView.Desc.text = newDesc;
                 AddWaitUpdateProject (_curSelectedPrivateProject.Content);
+                Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, _curSelectedPrivateProject.Content);
             }
             _cachedView.Desc.gameObject.SetActive (true);
             _cachedView.DescInput.gameObject.SetActive (false);
@@ -716,12 +528,39 @@ namespace GameA
         private void AddWaitUpdateProject (Project project) {
             _wait2RequestUpdateProjects.Add (new WeakReference(project));
         }
+
+        private void OnPersonalProjectListChanged()
+        {
+            if (!_isViewCreated)
+            {
+                return;
+            }
+            RefreshWorkShopProjectList ();
+            RefreshProjectDetailInfoPanel ();
+        }
+
+        private void OnPersonalProjectDataChanged(Project p)
+        {
+            if (!_isViewCreated)
+            {
+                return;
+            }
+            CardDataRendererWrapper<Project> personalProject;
+            if (_privateDict.TryGetValue(p.ProjectId, out personalProject))
+            {
+                personalProject.BroadcastDataChanged();
+            }
+            if (_curSelectedPrivateProject != null && _curSelectedPrivateProject.Content.ProjectId == p.ProjectId)
+            {
+                RefreshProjectDetailInfoPanel();
+            }
+        }
         #endregion
 
         private enum EWorkShopState
         {
             None,
-            Edit,
+            PersonalProject,
             PublishList,
         }
     }

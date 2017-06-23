@@ -28,6 +28,9 @@ namespace GameA
         public static readonly int OnUserFollowerChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnUserMatrixDataChanged = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnUserInfoChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnWorkShopProjectCreated = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnWorkShopProjectDataChanged = SoyEngine.EMessengerType.NextId++;
+        public static readonly int OnWorkShopProjectListChanged = SoyEngine.EMessengerType.NextId++;
 
         public static readonly int OnRequestStartGame = SoyEngine.EMessengerType.NextId++;
         public static readonly int OnGameStartComplete = SoyEngine.EMessengerType.NextId++;

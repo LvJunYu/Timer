@@ -182,6 +182,7 @@ namespace GameA
 
         public WorldProjectRecentRecordList () { 
             _recordList = new List<Record>();
+            OnCreate();
         }
         #endregion
     }

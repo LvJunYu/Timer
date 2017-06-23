@@ -182,6 +182,7 @@ namespace GameA
 
         public UserWorldProjectPlayHistoryList () { 
             _projectList = new List<Project>();
+            OnCreate();
         }
         #endregion
     }

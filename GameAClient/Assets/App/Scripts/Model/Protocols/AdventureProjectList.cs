@@ -163,6 +163,7 @@ namespace GameA
 
         public AdventureProjectList () { 
             _sectionList = new List<AdventureSection>();
+            OnCreate();
         }
         #endregion
     }

@@ -201,6 +201,7 @@ namespace GameA
 
         public PersonalProjectList () { 
             _projectList = new List<Project>();
+            OnCreate();
         }
         #endregion
     }

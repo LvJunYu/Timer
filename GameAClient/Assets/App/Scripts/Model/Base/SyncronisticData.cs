@@ -91,6 +91,8 @@ namespace GameA
 		}
 
 		protected virtual void OnSyncPartial () { }
+
+        protected virtual void OnCreate () { }
 		#endregion
 	}
 }

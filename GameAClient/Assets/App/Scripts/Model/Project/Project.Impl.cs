@@ -313,8 +313,14 @@ namespace GameA
             WinCondition = winCondition;
 
             WWWForm form = new WWWForm();
-            form.AddBinaryData("levelFile", dataBytes);
-            form.AddBinaryData("iconFile", iconBytes);
+            if (dataBytes != null)
+            {
+                form.AddBinaryData("levelFile", dataBytes);
+            }
+            if (iconBytes != null)
+            {
+                form.AddBinaryData("iconFile", iconBytes);
+            }
             if (recordBytes != null)
             {
                 form.AddBinaryData("recordFile", recordBytes);
@@ -334,7 +340,8 @@ namespace GameA
                         if (msg.ResultCode == (int)EProjectOperateResult.POR_Success) {
 //                            LocalCacheManager.Instance.Save(dataBytes, LocalCacheManager.EType.File, ResPath);
                             ImageResourceManager.Instance.SaveOrUpdateImageData(IconPath, iconBytes);
-                            LocalUser.Instance.User.GetSavedPrjectRequestTimer().Zero();
+                            OnSyncFromParent(msg.ProjectData);
+                            Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectCreated, this);
                             if (successCallback != null)
                             {
                                 successCallback.Invoke();
@@ -372,7 +379,7 @@ namespace GameA
                             ImageResourceManager.Instance.DeleteImageCache(oldIconPath);
                             ImageResourceManager.Instance.SaveOrUpdateImageData(msg.ProjectData.IconPath, iconBytes);
                         }
-                        LocalUser.Instance.User.GetSavedPrjectRequestTimer().Zero();
+                        Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, this);
                         if (successCallback != null)
                         {
                             successCallback.Invoke();

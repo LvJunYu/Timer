@@ -419,6 +419,7 @@ namespace GameA
         public Record () { 
             _userInfo = new UserInfoSimple();
             _projectData = new Project();
+            OnCreate();
         }
         #endregion
     }
