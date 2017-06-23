@@ -53,6 +53,29 @@ namespace GameA.Game
             RegisterHandler<Msg_RC_UserReadyInfo>(Msg_RC_UserReadyInfo);
             RegisterHandler<Msg_RC_WarnningHost>(Msg_RC_WarnningHost);
             RegisterHandler<Msg_RC_RoomOpen>(Msg_RC_RoomOpen);
+
+            RegisterHandler<Msg_RC_UserEnterBattle>(Msg_RC_UserEnterBattle);
+            RegisterHandler<Msg_RC_BattleStart>(Msg_RC_BattleStart);
+            RegisterHandler<Msg_RC_InputDatas>(Msg_RC_InputDatas);
+            RegisterHandler<Msg_RC_BattleClose>(Msg_RC_BattleClose);
+        }
+
+        private void Msg_RC_BattleClose(Msg_RC_BattleClose msg, NetLink netLink)
+        {
+
+        }
+
+        private void Msg_RC_InputDatas(Msg_RC_InputDatas msg, NetLink netLink)
+        {
+
+        }
+
+        private void Msg_RC_BattleStart(Msg_RC_BattleStart msg, NetLink netLink)
+        {
+        }
+
+        private void Msg_RC_UserEnterBattle(Msg_RC_UserEnterBattle msg, NetLink netLink)
+        {
         }
 
         private void Msg_RC_RoomOpen(Msg_RC_RoomOpen msg, NetLink netLink)

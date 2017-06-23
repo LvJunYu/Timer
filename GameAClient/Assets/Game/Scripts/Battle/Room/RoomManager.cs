@@ -109,7 +109,6 @@ namespace GameA.Game
         public void SendRoomReadyInfo(bool flag)
         {
             var msg = new Msg_CR_UserReadyInfo();
-            msg.RoomGuid = _room.Guid;
             msg.Flag = flag ? 1 : 0;
             SendToServer(msg);
         }
@@ -117,7 +116,7 @@ namespace GameA.Game
         public void SendRequestExitRoom(long roomGuid)
         {
             var msg = new Msg_CR_UserExit();
-            msg.RoomGuid = _room.Guid;
+            msg.Flag = 1;
             SendToServer(msg);
         }
 
