@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
 
@@ -25,7 +26,7 @@ namespace GameA.Game
             get { return _instance ?? (_instance = new RoomManager()); }
         }
 
-        private Room Room
+        public Room Room
         {
             get { return _room; }
         }
@@ -66,7 +67,7 @@ namespace GameA.Game
             }
         }
 
-        #region Send
+        #region Room Send
 
         /// <summary>
         /// 请求登陆服务器
@@ -122,7 +123,7 @@ namespace GameA.Game
 
         #endregion
 
-        #region Receive
+        #region Room Receive
 
         public void OnCreateRoomRet(Msg_RC_CreateRoomRet msg)
         {
@@ -171,19 +172,19 @@ namespace GameA.Game
             _room.Clear();
         }
 
+        internal void OnUserReadyInfo(Msg_RC_UserReadyInfo msg)
+        {
+            _room.UserReady(msg.UserGuid, msg.Flag == 1);
+        }
+
         internal void OnWarnningHost()
         {
             _room.WarnningHost();
         }
 
-        internal void OnRoomOpen()
+        internal void OnOpenBattle()
         {
-            _room.Open();
-        }
-
-        internal void OnUserReadyInfo(Msg_RC_UserReadyInfo msg)
-        {
-            _room.UserReady(msg.UserGuid, msg.Flag == 1);
+            _room.OpenBattle();
         }
 
         #endregion

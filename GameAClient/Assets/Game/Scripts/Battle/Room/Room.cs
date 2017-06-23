@@ -20,7 +20,15 @@ namespace GameA.Game
         RequestJoin,
         RequstFailed,
         Created,
+        OpenBattle,
+    }
+
+    public enum EBattleState
+    {
+        None,
         Open,
+        Wait,
+        Start,
         Fight,
         Close
     }
@@ -31,9 +39,7 @@ namespace GameA.Game
         protected EBattleType _eBattleType;
         protected long _guid;
         protected long _projectGuid;
-
         protected RoomUser _hostUser;
-
         protected List<RoomUser> _users = new List<RoomUser>();
 
         public long Guid
@@ -58,6 +64,11 @@ namespace GameA.Game
             get { return _users; }
         }
 
+        public EBattleType EBattleType
+        {
+            get { return _eBattleType; }
+        }
+
         public void Clear()
         {
             _eRoomState = ERoomState.None;
@@ -66,6 +77,21 @@ namespace GameA.Game
             _guid = 0;
             _hostUser = null;
             _users.Clear();
+        }
+
+        public bool TryGetUser(long userGuid, out RoomUser user)
+        {
+            for (int i = 0; i < _users.Count; i++)
+            {
+                var cur = _users[i];
+                if (cur != null && cur.Guid == userGuid)
+                {
+                    user = cur;
+                    return true;
+                }
+            }
+            user = null;
+            return false;
         }
 
         public bool OnCreate(RoomUser user,long roomGuid, long projectGuid, EBattleType eBattleType)
@@ -112,14 +138,12 @@ namespace GameA.Game
 
         internal void UserReady(long userGuid, bool flag)
         {
-             for (int i = _users.Count - 1; i >= 0; i--)
+            RoomUser user;
+            if (!TryGetUser(userGuid, out user))
             {
-                var user = _users[i];
-                if (user != null && user.Guid == userGuid)
-                {
-                    user.Ready = flag;
-                }
+                return;
             }
+            user.Ready = flag;
         }
 
         internal void UserExit(long exitGuid, long hostGuid)
@@ -160,31 +184,10 @@ namespace GameA.Game
             LogHelper.Debug("WarnningHost");
         }
 
-        internal void Open()
+        internal void OpenBattle()
         {
-            //进入战场！
-            _eRoomState = ERoomState.Open;
-
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Format("请求进入关卡"));
-            var project = new Project();
-            project.Request(_projectGuid,
-                () => project.RequestPlay(() =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    GameManager.Instance.RequestPlayMultiCooperation(project);
-                    SocialGUIManager.Instance.ChangeToGameMode();
-                    _eRoomState = ERoomState.Fight;
-                },
-                    error =>
-                    {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                        SocialGUIManager.ShowPopupDialog("进入关卡失败");
-                    }),
-                error =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    SocialGUIManager.ShowPopupDialog("进入关卡失败");
-                });
+            //开启战场！
+            _eRoomState = ERoomState.OpenBattle;
         }
     }
 }

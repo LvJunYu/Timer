@@ -41,6 +41,8 @@ namespace GameA.Game
 
     public class RoomClientHandler : Handler<object, NetLink>
     {
+        private GameModeNetPlay _modeNetPlay;
+
         protected override void InitHandler()
         {
             RegisterHandler<Msg_RC_LoginRet>(Msg_RC_LoginRet);
@@ -57,30 +59,67 @@ namespace GameA.Game
             RegisterHandler<Msg_RC_UserEnterBattle>(Msg_RC_UserEnterBattle);
             RegisterHandler<Msg_RC_BattleStart>(Msg_RC_BattleStart);
             RegisterHandler<Msg_RC_InputDatas>(Msg_RC_InputDatas);
+            RegisterHandler<Msg_RC_UserExitBattle>(Msg_RC_UserExitBattle);
             RegisterHandler<Msg_RC_BattleClose>(Msg_RC_BattleClose);
         }
 
         private void Msg_RC_BattleClose(Msg_RC_BattleClose msg, NetLink netLink)
         {
+            if (_modeNetPlay != null)
+            {
+                _modeNetPlay.OnBattleClose(msg);
+            }
+        }
 
+        private void Msg_RC_UserExitBattle(Msg_RC_UserExitBattle msg, NetLink netLink)
+        {
+            if (_modeNetPlay != null)
+            {_modeNetPlay.OnUserExitBattle(msg);}
         }
 
         private void Msg_RC_InputDatas(Msg_RC_InputDatas msg, NetLink netLink)
         {
-
+            if (_modeNetPlay != null)
+            {
+                _modeNetPlay.OnInputDatas(msg);
+            }
         }
 
         private void Msg_RC_BattleStart(Msg_RC_BattleStart msg, NetLink netLink)
         {
+            if (_modeNetPlay != null)
+            {
+                _modeNetPlay.OnBattleStart(msg);
+            }
         }
 
         private void Msg_RC_UserEnterBattle(Msg_RC_UserEnterBattle msg, NetLink netLink)
         {
+            if (_modeNetPlay != null)
+            {
+                _modeNetPlay.OnUserEnterBattle(msg);
+            }
         }
 
         private void Msg_RC_RoomOpen(Msg_RC_RoomOpen msg, NetLink netLink)
         {
-            RoomManager.Instance.OnRoomOpen();
+            RoomManager.Instance.OnOpenBattle();
+            //这里进行房间和战场的交接
+            EBattleType battleType = RoomManager.Instance.Room.EBattleType;
+            switch (battleType)
+            {
+                case EBattleType.EBT_PVE:
+                    _modeNetPlay = new GameModeMultiCooperationPlay();
+                    break;
+                case EBattleType.EBT_PVP:
+                    _modeNetPlay = new GameModeMultiBattlePlay();
+                    break;
+            }
+            if (_modeNetPlay != null)
+            {
+                _modeNetPlay.OnBattleOpen(RoomManager.Instance.Room);
+            }
+            LogHelper.Debug("BattleOpen : {0}", _modeNetPlay);
         }
 
         private void Msg_RC_WarnningHost(Msg_RC_WarnningHost msg, NetLink netLink)
