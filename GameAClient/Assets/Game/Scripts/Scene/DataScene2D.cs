@@ -28,7 +28,7 @@ namespace GameA.Game
         protected Dictionary<IntVec3, UnitExtra> _unitExtras = new Dictionary<IntVec3, UnitExtra>();
         protected Dictionary<IntVec3, List<IntVec3>> _switchedUnits = new Dictionary<IntVec3, List<IntVec3>>();
         private static List<UnitBase> _cachedUnits = new List<UnitBase>();
-
+        private List<UnitDesc> _spawnDatas = new List<UnitDesc>();
 		/// <summary>
 		/// 删除修改的物体堆栈
 		/// </summary>
@@ -49,6 +49,11 @@ namespace GameA.Game
         public static DataScene2D Instance
         {
             get { return _instance ?? (_instance = new DataScene2D()); }
+        }
+
+        public List<UnitDesc> SpawnDatas
+        {
+            get { return _spawnDatas; }
         }
 
         public Vector3 StartPos
@@ -189,6 +194,10 @@ namespace GameA.Game
             {
                 SetUnitExtra(unitDesc, tableUnit);
             }
+            if (tableUnit.EUnitType == EUnitType.Spawn)
+            {
+                _spawnDatas.Add(unitDesc);
+            }
             return true;
         }
 
@@ -222,6 +231,10 @@ namespace GameA.Game
                 return false;
             }
             DeleteUnitExtra(unitDesc.Guid);
+            if (tableUnit.EUnitType == EUnitType.Spawn)
+            {
+                _spawnDatas.Remove(unitDesc);
+            }
             return true;
         }
 

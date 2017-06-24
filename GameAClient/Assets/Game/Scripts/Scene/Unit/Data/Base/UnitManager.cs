@@ -50,7 +50,7 @@ namespace GameA.Game
             _unitParents = new Transform[(int)EUnitType.Max];
             for (int i = 0; i < (int)EUnitType.Max; i++)
             {
-                if (i == (int)EUnitType.MainPlayer)
+                if (i == (int)EUnitType.Player)
                 {
                     continue;
                 }
@@ -149,6 +149,8 @@ namespace GameA.Game
             {
                 case (int) ELayerType.MainPlayer:
                     return (int) ESceneLayer.MainPlayer;
+                case (int)ELayerType.RemotePlayer:
+                    return (int)ESceneLayer.RemotePlayer;
                 case (int) ELayerType.Monster:
                     return (int) ESceneLayer.Hero;
                 case (int) ELayerType.Item:

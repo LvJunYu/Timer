@@ -15,7 +15,7 @@ namespace GameA.Game
 	{
         public bool IsHero
         {
-            get { return EUnitType == EUnitType.MainPlayer || EUnitType == EUnitType.Monster; }
+            get { return EUnitType == EUnitType.Player || EUnitType == EUnitType.Monster; }
         }
 
         public bool IsMorphUnit

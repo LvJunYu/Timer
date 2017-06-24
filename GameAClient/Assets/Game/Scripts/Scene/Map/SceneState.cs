@@ -36,7 +36,7 @@ namespace GameA.Game
 
         public bool IsMainPlayerCreated
         {
-            get { return _mapStatistics.MainPlayerCount > 0; }
+            get { return _mapStatistics.SpawnCount > 0; }
         }
 
         public bool HasKey

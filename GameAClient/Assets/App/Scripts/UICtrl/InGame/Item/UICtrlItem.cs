@@ -173,7 +173,7 @@ namespace GameA
 
 	   //         {
 				//	///显示测试特效
-				//	if (_selecetedUnitType == EUnitType.MainPlayer)
+				//	if (_selecetedUnitType == EUnitType.Player)
 				//	{
 				//		List<Table_Unit> others = GameDataManager.Instance.GetSameTypeItems(EUnitType.Effect);
 				//		for (int i = 0; i < others.Count; i++)

@@ -20,7 +20,7 @@ namespace GameA.Game
         [SerializeField] private int _gemCount;
         [SerializeField] private int _finalCount;
         [SerializeField] private int _heroCageCount;
-        [SerializeField] private int _mainPlayerCount;
+        [SerializeField] private int _spawnCount;
         [SerializeField] private int _monsterCount;
         [SerializeField] private int _keyCount;
 
@@ -48,9 +48,9 @@ namespace GameA.Game
             get { return _finalCount; }
         }
 
-        public int MainPlayerCount
+        public int SpawnCount
         {
-            get { return _mainPlayerCount; }
+            get { return _spawnCount; }
         }
 
         public int GemCount
@@ -192,8 +192,8 @@ namespace GameA.Game
             }
             switch (tableUnit.EUnitType)
             {
-                case EUnitType.MainPlayer:
-                    _mainPlayerCount = value ? ++_mainPlayerCount : --_mainPlayerCount;
+                case EUnitType.Spawn:
+                    _spawnCount = value ? ++_spawnCount : --_spawnCount;
                     break;
                 case EUnitType.Monster:
                     _monsterCount = value ? ++_monsterCount : --_monsterCount;

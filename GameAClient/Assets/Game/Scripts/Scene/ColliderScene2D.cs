@@ -128,11 +128,7 @@ namespace GameA.Game
                 return false;
             }
             _units.Add(unitDesc.Guid, unit);
-            if (unit.IsMain)
-            {
-                PlayMode.Instance.MainPlayer = (MainPlayer)unit;
-            }
-            else if (UnitDefine.IsGround(unit.Id))
+            if (UnitDefine.IsGround(unit.Id))
             {
                 _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 0;
             }
@@ -387,7 +383,7 @@ namespace GameA.Game
 
         private bool CheckCanDelete(Table_Unit tableUnit)
         {
-            if (tableUnit.EUnitType == EUnitType.MainPlayer || tableUnit.Id == 65535 || UnitDefine.IsSwitch(tableUnit.Id))
+            if (tableUnit.EUnitType == EUnitType.Player || tableUnit.Id == 65535 || UnitDefine.IsSwitch(tableUnit.Id))
             {
                 return false;
             }

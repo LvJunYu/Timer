@@ -278,14 +278,14 @@ namespace GameA.Game
 		public void CreateDefaultScene()
 		{
 			//生成主角
-			{
-				var unitObject = new UnitDesc();
-				unitObject.Id = MapConfig.MainPlayerId;
-			    unitObject.Scale = Vector2.one;
-				unitObject.Guid = new IntVec3((2*ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x),
-					(ConstDefineGM2D.DefaultGeneratedTileHeight + ConstDefineGM2D.MapStartPos.y), (int) EUnitDepth.Dynamic);
-				EditMode.Instance.AddUnit(unitObject);
-			}
+            {
+                var unitObject = new UnitDesc();
+                unitObject.Id = MapConfig.SpawnId;
+                unitObject.Scale = Vector2.one;
+                unitObject.Guid = new IntVec3((2 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x),
+                    (ConstDefineGM2D.DefaultGeneratedTileHeight + ConstDefineGM2D.MapStartPos.y), (int)EUnitDepth.Dynamic);
+                EditMode.Instance.AddUnit(unitObject);
+            }
             //生成胜利之门
             {
                 var unitObject = new UnitDesc();

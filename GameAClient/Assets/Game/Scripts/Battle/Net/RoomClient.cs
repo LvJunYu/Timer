@@ -13,6 +13,9 @@ using UnityEngine;
 
 namespace GameA.Game
 {
+    /// <summary>
+    /// 服务器需要取得并且分配好三个角色的出生位置
+    /// </summary>
     public class RoomClient : NetClient
     {
         public RoomClient()

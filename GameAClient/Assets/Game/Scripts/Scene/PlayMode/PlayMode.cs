@@ -63,7 +63,7 @@ namespace GameA.Game
         public MainPlayer MainPlayer
         {
             get { return _mainPlayer; }
-            set { _mainPlayer = value; }
+            set { _mainPlayer = value;}
         }
 
         public int GameSuccessFrameCnt
@@ -436,15 +436,34 @@ namespace GameA.Game
 
         #region State
 
-        public bool CheckPlayerValid(bool play = true)
+        public bool CheckPlayerValid(bool run = true)
         {
-            if (_mainPlayer == null)
+            var spawnDatas = DataScene2D.Instance.SpawnDatas;
+            if (spawnDatas.Count == 0)
             {
-                if (play)
+                if (run)
                 {
                     Messenger<string>.Broadcast(EMessengerType.GameErrorLog, "游戏无法开启，请先放置主角");
                 }
                 return false;
+            }
+            if (run)
+            {
+                for (int i = 0; i < spawnDatas.Count; i++)
+                {
+                    var spawnData = spawnDatas[i];
+                    DeleteUnit(spawnData);
+                    if (i == 0)
+                    {
+                        spawnData.Id = 1001;
+                        _mainPlayer = CreateUnit(spawnData) as MainPlayer;
+                    }
+                    else
+                    {
+                        spawnData.Id = 1002;
+                        CreateUnit(spawnData);
+                    }
+                }
             }
             return true;
         }

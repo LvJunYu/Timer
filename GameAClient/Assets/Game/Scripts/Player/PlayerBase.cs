@@ -244,7 +244,7 @@ namespace GameA.Game
         internal override void OnPlay()
         {
             base.OnPlay();
-            Debug.Log("MainPlayer.OnPlay");
+            LogHelper.Debug("{0}, OnPlay", GetType().Name);
             if (_gun == null)
             {
                 _gun = PlayMode.Instance.CreateRuntimeUnit(10000, _curPos) as Gun;
@@ -1230,7 +1230,7 @@ namespace GameA.Game
             {
                 return;
             }
-            LogHelper.Debug("MainPlayer OnDead");
+            LogHelper.Debug("{0}, OnDead", GetType().Name);
             _invincibleTime = 0;
             _flashTime = 0;
             _big = 0;
@@ -1271,7 +1271,7 @@ namespace GameA.Game
 
         protected void OnRevive()
         {
-            LogHelper.Debug("MainPlayer OnRevive");
+            LogHelper.Debug("{0}, OnRevive", GetType().Name);
             if (_view != null && _reviveEffect == null)
             {
                 var particle = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null, ESortingOrder.LazerEffect);
