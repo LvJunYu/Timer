@@ -389,10 +389,9 @@ namespace GameA.Game
             SetMinMax();
             _rendererCamera.enabled = true;
 
-            if (DataScene2D.Instance.MainPlayer != null)
+            if (PlayMode.Instance.MainPlayer != null)
             {
-                var followPos = new IntVec2(DataScene2D.Instance.MainPlayer.Guid.x,
-                    DataScene2D.Instance.MainPlayer.Guid.y);
+                var followPos = new IntVec2(PlayMode.Instance.MainPlayer.Guid.x, PlayMode.Instance.MainPlayer.Guid.y);
                 LimitRollPos(followPos, GetCameraViewSize());
             }
             if (GM2DGame.Instance.GameMode.GameRunMode != EGameRunMode.Edit)

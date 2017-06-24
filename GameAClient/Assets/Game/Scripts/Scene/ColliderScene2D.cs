@@ -132,7 +132,7 @@ namespace GameA.Game
             {
                 PlayMode.Instance.MainPlayer = (MainPlayer)unit;
             }
-            else if(UnitDefine.IsGround(unit.Id))
+            else if (UnitDefine.IsGround(unit.Id))
             {
                 _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 0;
             }

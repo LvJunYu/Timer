@@ -436,12 +436,14 @@ namespace GameA.Game
 
         #region State
 
-        public bool CheckPlayerValid()
+        public bool CheckPlayerValid(bool play = true)
         {
-            SceneNode mainPlayer = DataScene2D.Instance.MainPlayer;
-            if (mainPlayer == null)
+            if (_mainPlayer == null)
             {
-                LogHelper.Error("No MainPlayer");
+                if (play)
+                {
+                    Messenger<string>.Broadcast(EMessengerType.GameErrorLog, "游戏无法开启，请先放置主角");
+                }
                 return false;
             }
             return true;
@@ -449,7 +451,7 @@ namespace GameA.Game
 
         public bool StartEdit()
         {
-            if (!CheckPlayerValid())
+            if (!CheckPlayerValid(false))
             {
                 return false;
             }
@@ -497,8 +499,7 @@ namespace GameA.Game
             _run = false;
             BeforePlay();
             _sceneState.StartPlay();
-            SceneNode mainPlayer = DataScene2D.Instance.MainPlayer;
-            var colliderPos = new IntVec2(mainPlayer.Grid.XMin, mainPlayer.Grid.YMin);
+            var colliderPos = new IntVec2(_mainPlayer.ColliderGrid.XMin, _mainPlayer.ColliderGrid.YMin);
             UpdateWorldRegion(colliderPos, true);
         }
 

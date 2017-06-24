@@ -13,16 +13,9 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    [Serializable]
-    [Unit(Id = 1001, Type = typeof(MainPlayer))]
     public class PlayerBase : ActorBase
     {
         protected long _playerGuid;
-
-        public long PlayerGuid
-        {
-            get { return _playerGuid; }
-        }
 
         protected const int FlashTime = 100;
 
@@ -71,6 +64,11 @@ namespace GameA.Game
         protected int _walkAudioInternal = 12;
 
         #endregion
+
+        public long PlayerGuid
+        {
+            get { return _playerGuid; }
+        }
 
         public override SkillManager SkillMgr1
         {

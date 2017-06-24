@@ -76,8 +76,8 @@ namespace GameA.Game
 
     public enum EUnitType
     {
-        None,
         MainPlayer,
+        RemotePlayer,
         Monster,
         Vehicle,
         Earth,

@@ -13,6 +13,8 @@ using UnityEngine;
 
 namespace GameA.Game
 {
+    [Serializable]
+    [Unit(Id = 1001, Type = typeof(MainPlayer))]
     public class MainPlayer : PlayerBase
     {
         public override bool IsMain

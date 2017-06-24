@@ -294,10 +294,6 @@ namespace GameA
         
         private void OnPlay()
         {
-			if (DataScene2D.Instance.MainPlayer == null)
-			{
-                Messenger<string>.Broadcast (EMessengerType.GameErrorLog, "游戏无法开启，请先放置主角");
-			}
             GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
             if (null != gameModeEdit)
             {

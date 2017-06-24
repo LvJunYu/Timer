@@ -31,6 +31,7 @@ namespace GameA.Game
 		/// 关卡中只能存在一个的物体的索引
 		/// </summary>
         private Dictionary<int, UnitDesc> _replaceUnits = new Dictionary<int, UnitDesc>();
+        private Dictionary<int, int> _unitIndexCount = new Dictionary<int, int>();
 
         [SerializeField]
         private GameObject _backgroundObject;
@@ -260,10 +261,11 @@ namespace GameA.Game
                     return false;
                 }
             }
-            //主角个数不能超过3个
-            if (DataScene2D.Instance.MainPlayers.Count >= 3)
+            //数量不能超过
+            int count;
+            if (_unitIndexCount.TryGetValue(unitDesc.Id, out count ) && count >= tableUnit.Count)
             {
-                Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("不可放置，主角最大数量为：3"));
+                Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("不可放置，{0}最多可放置{1}个~",tableUnit.Name, count));
                 return false;
             }
             return true;
@@ -366,6 +368,13 @@ namespace GameA.Game
             {
                 _replaceUnits.Remove(unitDesc.Id);
             }
+            if (tableUnit.Count > 1)
+            {
+                if (_unitIndexCount.ContainsKey(unitDesc.Id))
+                {
+                    _unitIndexCount[unitDesc.Id] -= 1;
+                }
+            }
             _mapStatistics.AddOrDeleteUnit(tableUnit, false);
         }
 
@@ -389,6 +398,14 @@ namespace GameA.Game
             if (tableUnit.Count == 1)
             {
                 _replaceUnits.Add(unitDesc.Id, unitDesc);
+            }
+            if (tableUnit.Count > 1)
+            {
+                if (!_unitIndexCount.ContainsKey(unitDesc.Id))
+                {
+                    _unitIndexCount.Add(unitDesc.Id, new int());
+                }
+                _unitIndexCount[unitDesc.Id] += 1;
             }
             _mapStatistics.AddOrDeleteUnit(tableUnit, true, isInit);
         }
