@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System;
 using SoyEngine.Proto;
@@ -120,7 +120,7 @@ namespace GameA.Game
 
         protected virtual void InitGame()
         {
-			MainUnit mainPlayer = PlayMode.Instance.MainUnit;
+			MainPlayer mainPlayer = PlayMode.Instance.MainPlayer;
 			if (mainPlayer == null)
 				return;
 			// todo set data

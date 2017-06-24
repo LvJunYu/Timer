@@ -10,7 +10,7 @@ using System.Collections;
 
 namespace GameA.Game
 {
-    public class RemotePlayer : MainUnit
+    public class RemotePlayer : PlayerBase
     {
 
     }

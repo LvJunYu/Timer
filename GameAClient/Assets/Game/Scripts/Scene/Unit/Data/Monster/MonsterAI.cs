@@ -123,7 +123,7 @@ namespace GameA.Game
             _stuckTimer = 0;
             _reSeekTimer = 0;
             //晕的时候就不找了
-            var mainUnit = PlayMode.Instance.MainUnit;
+            var mainUnit = PlayMode.Instance.MainPlayer;
             if (mainUnit.AttackedTimer > 0)
             {
                 _currentNodeId = -1;
@@ -163,7 +163,7 @@ namespace GameA.Game
 
         protected void OnThink()
         {
-            IntVec2 rel = CenterPos - PlayMode.Instance.MainUnit.CenterPos;
+            IntVec2 rel = CenterPos - PlayMode.Instance.MainPlayer.CenterPos;
             if (Mathf.Abs(rel.x) <= _seekRange.x && Mathf.Abs(rel.y) <= _seekRange.y)
             {
                 MoveTo();
@@ -178,7 +178,7 @@ namespace GameA.Game
             }
             else
             {
-                IntVec2 rel = CenterPos - PlayMode.Instance.MainUnit.CenterPos;
+                IntVec2 rel = CenterPos - PlayMode.Instance.MainPlayer.CenterPos;
                 if (Mathf.Abs(rel.x) > _attackRange.x || Mathf.Abs(rel.y) > _attackRange.y)
                 {
                     ChangeState(EMonsterState.Seek);
@@ -188,7 +188,7 @@ namespace GameA.Game
 
         protected virtual bool IsInAttackRange()
         {
-            IntVec2 rel = CenterPos - PlayMode.Instance.MainUnit.CenterPos;
+            IntVec2 rel = CenterPos - PlayMode.Instance.MainPlayer.CenterPos;
             if (Mathf.Abs(rel.x) <= _attackRange.x && Mathf.Abs(rel.y) <= _attackRange.y)
             {
                 return true;
@@ -204,7 +204,7 @@ namespace GameA.Game
                 return;
             }
             //如果此次寻路的终点举例目标点差距太远的话，就重新寻路。
-            IntVec2 distance = _path[_path.Count - 1] - PlayMode.Instance.MainUnit.CurPos / ConstDefineGM2D.ServerTileScale;
+            IntVec2 distance = _path[_path.Count - 1] - PlayMode.Instance.MainPlayer.CurPos / ConstDefineGM2D.ServerTileScale;
             if (Mathf.Abs(distance.x) > PathRange.x || Mathf.Abs(distance.y) > PathRange.y)
             {
                 ++_reSeekTimer;

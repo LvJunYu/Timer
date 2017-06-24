@@ -24,7 +24,7 @@ namespace GameA.Game
         private Rect _cameraViewRect = new Rect();
         private float _finalOrthoSize;
         private Vector3 _finalPos;
-        private MainUnit _followTarget;
+        private MainPlayer _followTarget;
         [SerializeField] private Transform _mainCamaraTrans;
         [SerializeField] private Camera _mainCamera;
         private float _cameraPlaySize = 5f;
@@ -188,16 +188,16 @@ namespace GameA.Game
 
         internal void UpdateLogic(float deltaTime)
         {
-            MainUnit mainUnit = PlayMode.Instance.MainUnit;
-            if (mainUnit == null)
+            MainPlayer mainPlayer = PlayMode.Instance.MainPlayer;
+            if (mainPlayer == null)
             {
                 return;
             }
             if (PlayMode.Instance.SceneState.Arrived) return;
-            int num = mainUnit.CameraFollowPos.x - _rollPos.x;
+            int num = mainPlayer.CameraFollowPos.x - _rollPos.x;
             if ((num < 2) && (num > -2))
             {
-                _rollPos.x = mainUnit.CameraFollowPos.x;
+                _rollPos.x = mainPlayer.CameraFollowPos.x;
             }
             else if ((num < 5) && (num > 0))
             {
@@ -212,14 +212,14 @@ namespace GameA.Game
                 _rollPos.x += num/5;
             }
             IntVec2 cameraViewSize = GetCameraViewSize();
-            if (mainUnit.Grounded || mainUnit.PlayerInput.ClimbJump || !mainUnit.IsAlive)
+            if (mainPlayer.Grounded || mainPlayer.PlayerInput.ClimbJump || !mainPlayer.IsAlive)
             {
-                _yRollTarget = mainUnit.CameraFollowPos.y - cameraViewSize.y/2;
+                _yRollTarget = mainPlayer.CameraFollowPos.y - cameraViewSize.y/2;
             }
-            num = (mainUnit.CameraFollowPos.y - cameraViewSize.y/2) - _rollPos.y;
+            num = (mainPlayer.CameraFollowPos.y - cameraViewSize.y/2) - _rollPos.y;
             if ((num < 0) && (num > -40))
             {
-                _rollPos.y = mainUnit.CameraFollowPos.y - cameraViewSize.y/2;
+                _rollPos.y = mainPlayer.CameraFollowPos.y - cameraViewSize.y/2;
             }
             else if ((num > -100) && (num < 0))
             {
@@ -232,7 +232,7 @@ namespace GameA.Game
             else
             {
                 num = _yRollTarget - _rollPos.y;
-                if (((num > 0) && (num < 40)) || mainUnit.EUnitState != EUnitState.Normal)
+                if (((num > 0) && (num < 40)) || mainPlayer.EUnitState != EUnitState.Normal)
                 {
                     _rollPos.y = _yRollTarget;
                 }
@@ -245,7 +245,7 @@ namespace GameA.Game
                     _rollPos.y += num/25;
                 }
             }
-            LimitRollPos(mainUnit.CameraFollowPos, cameraViewSize);
+            LimitRollPos(mainPlayer.CameraFollowPos, cameraViewSize);
             MainCameraPos = GM2DTools.TileToWorld(new IntVec2(_rollPos.x, _rollPos.y + cameraViewSize.y/2));
         }
 
@@ -360,7 +360,7 @@ namespace GameA.Game
             if (_rollPos.y < followPos.y - cameraViewSize.y + 2*ConstDefineGM2D.ServerTileScale)
             {
                 _rollPos.y = followPos.y - cameraViewSize.y + 2*ConstDefineGM2D.ServerTileScale;
-                //Debug.Log ("rollpos: " + _rollPos + " mainunitPos: " + _mainUnit.CameraFollowPos.y + " cameraHeight: " +cameraViewHeight);
+                //Debug.Log ("rollpos: " + _rollPos + " mainunitPos: " + _mainPlayer.CameraFollowPos.y + " cameraHeight: " +cameraViewHeight);
             }
             IntRect validMapRect = DataScene2D.Instance.ValidMapRect;
             // 地图显示边界

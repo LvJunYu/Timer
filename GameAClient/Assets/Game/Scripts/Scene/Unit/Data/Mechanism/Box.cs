@@ -111,7 +111,7 @@ namespace GameA.Game
                 if (_isHoldingByMain)
                 {
                     _deltaPos.x = 0;
-                    var mainUnit = PlayMode.Instance.MainUnit;
+                    var mainUnit = PlayMode.Instance.MainPlayer;
                     if (_deltaPos.y != 0)
                     {
                         mainUnit.OnBoxHoldingChanged();

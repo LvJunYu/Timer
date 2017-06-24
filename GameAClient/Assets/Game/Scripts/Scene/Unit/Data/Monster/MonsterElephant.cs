@@ -32,7 +32,7 @@ namespace GameA.Game
                 return false;
             }
             //必须比主角位置低
-            return _curPos.y <= PlayMode.Instance.MainUnit.CurPos.y;
+            return _curPos.y <= PlayMode.Instance.MainPlayer.CurPos.y;
         }
 
         protected override void UpdateMonsterView(float deltaTime)
@@ -58,7 +58,7 @@ namespace GameA.Game
                     }
                     if (IsInAttackRange())
                     {
-                        PlayMode.Instance.MainUnit.OnKnockBack(this);
+                        PlayMode.Instance.MainPlayer.OnKnockBack(this);
                     }
                 }
             }

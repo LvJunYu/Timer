@@ -13,6 +13,8 @@ using UnityEngine;
 
 namespace GameA.Game
 {
+    [Serializable]
+    [Unit(Id = 1001, Type = typeof(MainPlayer))]
     public class PlayerBase : ActorBase
     {
         protected long _playerGuid;
@@ -32,6 +34,7 @@ namespace GameA.Game
         protected int _totalMp = 2500;
         protected SkillManager _skillMgr1;
         protected SkillManager _skillMgr2;
+        protected Gun _gun;
 
         [SerializeField]
         protected int _big;
@@ -160,8 +163,6 @@ namespace GameA.Game
             }
         }
 
-        protected Gun _gun;
-
         internal override bool InstantiateView()
         {
             if (!base.InstantiateView())
@@ -245,7 +246,7 @@ namespace GameA.Game
         internal override void OnPlay()
         {
             base.OnPlay();
-            Debug.Log("MainUnit.OnPlay");
+            Debug.Log("MainPlayer.OnPlay");
             if (_gun == null)
             {
                 _gun = PlayMode.Instance.CreateRuntimeUnit(10000, _curPos) as Gun;
@@ -1418,7 +1419,7 @@ namespace GameA.Game
         protected void OnDeadAll()
         {
             GameRun.Instance.Pause();
-            //            Debug.Log ("MainUnit.OnDeadAll");
+            //            Debug.Log ("MainPlayer.OnDeadAll");
             _animation.PlayOnce(DeathAnimName());
             PlayMode.Instance.CurrentShadow.RecordAnimation(DeathAnimName(), false);
         }

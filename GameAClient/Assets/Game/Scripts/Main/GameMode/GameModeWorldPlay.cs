@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using SoyEngine.Proto;
 using SoyEngine;
 using UnityEngine;
@@ -38,7 +38,7 @@ namespace GameA.Game
                 PlayMode.Instance.SceneState.GemGain,
                 PlayMode.Instance.SceneState.MonsterKilled,
                 PlayMode.Instance.SceneState.SecondLeft,
-                PlayMode.Instance.MainUnit.Life,
+                PlayMode.Instance.MainPlayer.Life,
                 record,
                 DeadMarkManager.Instance.GetDeadPosition(),
                 ()=>{
@@ -75,7 +75,7 @@ namespace GameA.Game
                 PlayMode.Instance.SceneState.GemGain,
                 PlayMode.Instance.SceneState.MonsterKilled,
                 PlayMode.Instance.SceneState.SecondLeft,
-                PlayMode.Instance.MainUnit.Life,
+                PlayMode.Instance.MainPlayer.Life,
                 record,
                 DeadMarkManager.Instance.GetDeadPosition(),
                 ()=>{

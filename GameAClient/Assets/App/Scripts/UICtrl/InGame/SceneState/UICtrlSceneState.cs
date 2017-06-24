@@ -1,4 +1,4 @@
-/********************************************************************
+﻿/********************************************************************
 ** Filename : UICtrlSceneState  
 ** Author : ake
 ** Date : 4/28/2016 6:44:36 PM
@@ -278,13 +278,13 @@ namespace GameA
 
         private void UpdateLifeItemValue()
         {
-	        if (PlayMode.Instance.MainUnit == null)
+	        if (PlayMode.Instance.MainPlayer == null)
 	        {
 		        _cachedView.HpItem.Dex.text = "";
 				return;
 	        }
 			_cachedView.HpItem.SetActiveEx(true);
-			int lifeCount = PlayMode.Instance.MainUnit.Life;
+			int lifeCount = PlayMode.Instance.MainPlayer.Life;
 			_cachedView.HpItem.Dex.text = string.Format(GM2DUIConstDefine.WinDataLifeFormat, lifeCount);
 		}
 

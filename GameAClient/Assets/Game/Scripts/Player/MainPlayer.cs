@@ -1,8 +1,8 @@
 ﻿/********************************************************************
-** Filename : MainUnit
+** Filename : MainPlayer
 ** Author : Dong
 ** Date : 2017/3/3 星期五 下午 8:28:03
-** Summary : MainUnit
+** Summary : MainPlayer
 ***********************************************************************/
 
 using System;
@@ -13,9 +13,7 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    [Serializable]
-    [Unit(Id = 1001, Type = typeof(MainUnit))]
-    public class MainUnit : PlayerBase
+    public class MainPlayer : PlayerBase
     {
         public override bool IsMain
         {

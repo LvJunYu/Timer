@@ -130,7 +130,7 @@ namespace GameA.Game
             _units.Add(unitDesc.Guid, unit);
             if (unit.IsMain)
             {
-                PlayMode.Instance.MainUnit = (MainUnit)unit;
+                PlayMode.Instance.MainPlayer = (MainPlayer)unit;
             }
             else if(UnitDefine.IsGround(unit.Id))
             {

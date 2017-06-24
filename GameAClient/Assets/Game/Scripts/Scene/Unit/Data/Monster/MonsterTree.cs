@@ -42,7 +42,7 @@ namespace GameA.Game
                     }
                     if (IsInAttackRange())
                     {
-                        PlayMode.Instance.MainUnit.OnStun(this);
+                        PlayMode.Instance.MainPlayer.OnStun(this);
                     }
                 }
             }
