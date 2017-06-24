@@ -202,12 +202,6 @@ namespace GameA.Game
         {
             var max = GM2DTools.ScreenToTileByServerTile(new Vector2(GM2DGame.Instance.GameScreenWidth, GM2DGame.Instance.GameScreenHeight));
             _tileSizePerScreen = new IntVec2(max.x + ConstDefineGM2D.ServerTileScale - 1, max.y + ConstDefineGM2D.ServerTileScale - 1);
-
-            //IntVec2 changedRectMax =
-            //    GM2DTools.ScreenToTileByServerTile(new Vector2(GM2DGame.Instance.GameScreenWidth, GM2DGame.Instance.GameScreenHeight) /
-            //                                       ConstDefineGM2D.PercentOfScreenOperatorPixels);
-            //_changedTileSize = new IntVec2(changedRectMax.x + ConstDefineGM2D.ServerTileScale,
-            //    changedRectMax.y + ConstDefineGM2D.ServerTileScale);
             _changedTileSize = ConstDefineGM2D.DefaultChangedTileSize;
             InitLimitedMapRect();
             InitMask();
@@ -217,9 +211,9 @@ namespace GameA.Game
             //LogHelper.Debug(_middleUIWorldPos[0] + "|" + _middleUIWorldPos[1] + "|" + _middleUIWorldPos[2]);
         }
 
-        public bool CheckCanAdd(UnitDesc unitDesc)
+        public bool CheckCanAdd(UnitDesc unitDesc, out Table_Unit tableUnit)
         {
-            Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+            tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
             if (tableUnit == null)
             {
                 LogHelper.Error("CheckCanAdd failed,{0}", unitDesc.ToString());
@@ -237,8 +231,7 @@ namespace GameA.Game
                 IntVec2 size = new IntVec2(15, 10) * ConstDefineGM2D.ServerTileScale;
                 IntVec2 mapSize = ConstDefineGM2D.MapTileSize;
                 var min = new IntVec2(unitDesc.Guid.x / size.x * size.x, unitDesc.Guid.y / size.y * size.y);
-                var grid = new Grid2D(min.x, min.y,
-                    Mathf.Min(mapSize.x, min.x + size.x - 1), Mathf.Min(mapSize.y, min.y + size.y - 1));
+                var grid = new Grid2D(min.x, min.y, Mathf.Min(mapSize.x, min.x + size.x - 1), Mathf.Min(mapSize.y, min.y + size.y - 1));
                 var units = DataScene2D.GridCastAllReturnUnits(grid, EnvManager.HeroLayer);
                 if (units.Count >= ConstDefineGM2D.MaxPhysicsUnitCount)
                 {
@@ -252,8 +245,7 @@ namespace GameA.Game
                 PairUnit pairUnit;
                 if (!PairUnitManager.Instance.TryGetNotFullPairUnit(tableUnit.EPairType, out pairUnit))
                 {
-                    Messenger<string>.Broadcast(EMessengerType.GameLog,
-                        string.Format("超过{0}的最大数量，不可放置喔~", tableUnit.Name));
+                    Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("超过{0}的最大数量，不可放置喔~", tableUnit.Name));
                     return false;
                 }
             }
@@ -267,6 +259,12 @@ namespace GameA.Game
                     Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("{0}只可种植在泥土上~", tableUnit.Name));
                     return false;
                 }
+            }
+            //主角个数不能超过3个
+            if (DataScene2D.Instance.MainPlayers.Count >= 3)
+            {
+                Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("不可放置，主角最大数量为：3"));
+                return false;
             }
             return true;
         }
@@ -283,14 +281,9 @@ namespace GameA.Game
 
         public bool AddUnit(UnitDesc unitDesc)
         {
-            if (!CheckCanAdd(unitDesc))
+            Table_Unit tableUnit;
+            if (!CheckCanAdd(unitDesc, out tableUnit))
             {
-                return false;
-            }
-            Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-            if (tableUnit == null)
-            {
-                LogHelper.Error("AddUnit failed,{0}", unitDesc.ToString());
                 return false;
             }
             BeforeAddUnit(unitDesc, tableUnit);

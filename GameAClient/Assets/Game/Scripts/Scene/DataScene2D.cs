@@ -57,6 +57,11 @@ namespace GameA.Game
             get { return _mainPlayers[0]; }
         }
 
+        public List<SceneNode> MainPlayers
+        {
+            get { return _mainPlayers; }
+        }
+
         public Vector3 StartPos
         {
             get { return _startPos; }
