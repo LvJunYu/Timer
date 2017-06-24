@@ -19,7 +19,7 @@ namespace GameA.Game
         #region 常量与字段
 
         private static DataScene2D _instance;
-        private SceneNode _mainPlayer;
+        private List<SceneNode> _mainPlayers = new List<SceneNode>();
         [SerializeField]
         private static Vector3 _startPos;
         [SerializeField]
@@ -54,7 +54,7 @@ namespace GameA.Game
 
         public SceneNode MainPlayer
         {
-            get { return _mainPlayer; }
+            get { return _mainPlayers[0]; }
         }
 
         public Vector3 StartPos
@@ -197,7 +197,7 @@ namespace GameA.Game
             }
             if (tableUnit.EUnitType == EUnitType.MainPlayer)
             {
-                _mainPlayer = dataNode;
+                _mainPlayers.Add(dataNode);
             }
             return true;
         }
@@ -234,7 +234,7 @@ namespace GameA.Game
             DeleteUnitExtra(unitDesc.Guid);
             if (tableUnit.EUnitType == EUnitType.MainPlayer)
             {
-                _mainPlayer = null;
+                _mainPlayers.Remove(dataNode);
             }
             return true;
         }

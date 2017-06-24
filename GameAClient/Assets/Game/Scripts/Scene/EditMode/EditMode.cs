@@ -31,7 +31,6 @@ namespace GameA.Game
 		/// 关卡中只能存在一个的物体的索引
 		/// </summary>
         private Dictionary<int, UnitDesc> _replaceUnits = new Dictionary<int, UnitDesc>();
-        private UnitDesc _mainPlayer = UnitDesc.zero;
 
         [SerializeField]
         private GameObject _backgroundObject;
@@ -370,10 +369,6 @@ namespace GameA.Game
 
         protected virtual void AfterDeleteUnit(UnitDesc unitDesc, Table_Unit tableUnit)
         {
-            if (_mainPlayer == unitDesc)
-            {
-                _mainPlayer = UnitDesc.zero;
-            }
             if (_replaceUnits.ContainsKey(unitDesc.Id) && _replaceUnits[unitDesc.Id] == unitDesc)
             {
                 _replaceUnits.Remove(unitDesc.Id);
@@ -383,14 +378,7 @@ namespace GameA.Game
 
         private void BeforeAddUnit(UnitDesc unitDesc, Table_Unit tableUnit)
         {
-            if (tableUnit.EUnitType == EUnitType.MainPlayer)
-            {
-                if (_mainPlayer.Id != 0)
-                {
-                    DeleteUnit(_mainPlayer);
-                }
-            }
-            else if (tableUnit.Count == 1)
+            if (tableUnit.Count == 1)
             {
                 UnitDesc tmpDesc;
                 if (_replaceUnits.TryGetValue(unitDesc.Id, out tmpDesc))
@@ -405,11 +393,7 @@ namespace GameA.Game
 
         private void AfterAddUnit(UnitDesc unitDesc, Table_Unit tableUnit, bool isInit = false)
         {
-            if (tableUnit.EUnitType == EUnitType.MainPlayer)
-            {
-                _mainPlayer = unitDesc;
-            }
-            else if (tableUnit.Count == 1)
+            if (tableUnit.Count == 1)
             {
                 _replaceUnits.Add(unitDesc.Id, unitDesc);
             }
@@ -438,16 +422,9 @@ namespace GameA.Game
                 outUnitDesc = UnitDesc.zero;
                 return false;
             }
-            if (table.EUnitType == EUnitType.MainPlayer)
+            if (!_replaceUnits.TryGetValue(id, out outUnitDesc))
             {
-                outUnitDesc = _mainPlayer;
-            }
-            else
-            {
-                if (!_replaceUnits.TryGetValue(id, out outUnitDesc))
-                {
-                    return false;
-                }
+                return false;
             }
             return outUnitDesc.Id != 0;
         }
@@ -697,11 +674,7 @@ namespace GameA.Game
 							{
 								UnitDesc unit;
 								Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(_selectedItemId);
-								if (tableUnit.EUnitType == EUnitType.MainPlayer)
-								{
-									_currentCommand = new AddCommandOnce(_mainPlayer);
-								}
-                                else if (tableUnit.Count == 1 && _replaceUnits.TryGetValue(_selectedItemId, out unit))
+						        if (tableUnit.Count == 1 && _replaceUnits.TryGetValue(_selectedItemId, out unit))
 								{
 									_currentCommand = new AddCommandOnce(unit);
 								}

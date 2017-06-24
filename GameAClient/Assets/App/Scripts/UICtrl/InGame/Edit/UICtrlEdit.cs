@@ -294,9 +294,9 @@ namespace GameA
         
         private void OnPlay()
         {
-			if (DataScene2D.Instance.MainPlayer == null || !Game.PlayMode.Instance.CheckPlayerValid())
+			if (DataScene2D.Instance.MainPlayer == null)
 			{
-                Messenger<string>.Broadcast (EMessengerType.GameErrorLog, "没有主玩家");//LocaleManager.GameLocale("error_editor_test_no_main_player"));
+                Messenger<string>.Broadcast (EMessengerType.GameErrorLog, "游戏无法开启，请先摆放主角");
 			}
             GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
             if (null != gameModeEdit)

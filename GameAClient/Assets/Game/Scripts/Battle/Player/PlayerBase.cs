@@ -162,16 +162,6 @@ namespace GameA.Game
 
         protected Gun _gun;
 
-        protected override bool OnInit()
-        {
-            LogHelper.Debug("MainUnit OnInit");
-            if (!base.OnInit())
-            {
-                return false;
-            }
-            return true;
-        }
-
         internal override bool InstantiateView()
         {
             if (!base.InstantiateView())

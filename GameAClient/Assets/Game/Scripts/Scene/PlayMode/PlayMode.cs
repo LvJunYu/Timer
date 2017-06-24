@@ -106,7 +106,6 @@ namespace GameA.Game
 
         public void Dispose()
         {
-            //            Debug.Log ("PlayMode.Dispose");
             Messenger<EDieType>.RemoveListener(EMessengerType.OnMonsterDead, OnMonsterDead);
             if (_statistic != null)
             {
@@ -117,9 +116,7 @@ namespace GameA.Game
 
         public bool Init()
         {
-            //            Debug.Log ("PlayMode.Init");
             Messenger<EDieType>.AddListener(EMessengerType.OnMonsterDead, OnMonsterDead);
-
             _unitUpdateManager = new UnitUpdateManager();
             _statistic = new GameStatistic();
 
@@ -443,11 +440,6 @@ namespace GameA.Game
         {
             SceneNode mainPlayer = DataScene2D.Instance.MainPlayer;
             if (mainPlayer == null)
-            {
-                LogHelper.Error("No MainPlayer");
-                return false;
-            }
-            if (!DataScene2D.Instance.ValidMapRect.Contains(new IntVec2(mainPlayer.Guid.x, mainPlayer.Guid.y)))
             {
                 LogHelper.Error("No MainPlayer");
                 return false;
