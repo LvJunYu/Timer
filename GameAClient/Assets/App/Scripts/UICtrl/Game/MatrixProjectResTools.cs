@@ -519,16 +519,16 @@ namespace GameA
                     holderInput.Content.SetBufForRead(data);
                     using (PooledFixedByteBufHolder holderOutput = PoolFactory<PooledFixedByteBufHolder>.Get())
                     {
-                        LzmaEncoder coder = new LzmaEncoder();
-                        // Write the encoder properties
-                        coder.WriteCoderProperties(holderOutput.Content);
-
-                        // Write the decompressed file size.
-                        holderOutput.Content.Write(BitConverter.GetBytes((long)data.Length), 0, 8);
-
-                        // Encode the file.
-                        coder.Code(holderInput.Content, holderOutput.Content, data.Length, -1, null);
-                        return holderOutput.Content.ReadableBytesToArray();
+//                        LzmaEncoder coder = new LzmaEncoder();
+//                        // Write the encoder properties
+//                        coder.WriteCoderProperties(holderOutput.Content);
+//
+//                        // Write the decompressed file size.
+//                        holderOutput.Content.Write(BitConverter.GetBytes((long)data.Length), 0, 8);
+//
+//                        // Encode the file.
+//                        coder.Code(holderInput.Content, holderOutput.Content, data.Length, -1, null);
+//                        return holderOutput.Content.ReadableBytesToArray();
                     }
                 }
             }
@@ -548,20 +548,20 @@ namespace GameA
                     holderInput.Content.SetBufForRead(data);
                     using (PooledFixedByteBufHolder holderOutput = PoolFactory<PooledFixedByteBufHolder>.Get())
                     {
-                        LzmaDecoder coder = new LzmaDecoder();
-                        //// Read the decoder properties
-                        byte[] properties = new byte[5];
-                        holderInput.Content.Read(properties, 0, 5);
-
-                        //// Read in the decompress file size.
-                        byte[] fileLengthBytes = new byte[8];
-                        holderInput.Content.Read(fileLengthBytes, 0, 8);
-                        long fileLength = BitConverter.ToInt64(fileLengthBytes, 0);
-
-                        //// Decompress the file.
-                        coder.SetDecoderProperties(properties);
-                        coder.Code(holderInput.Content, holderOutput.Content, data.Length, fileLength, null);
-                        return holderOutput.Content.ReadableBytesToArray();
+//                        LzmaDecoder coder = new LzmaDecoder();
+//                        //// Read the decoder properties
+//                        byte[] properties = new byte[5];
+//                        holderInput.Content.Read(properties, 0, 5);
+//
+//                        //// Read in the decompress file size.
+//                        byte[] fileLengthBytes = new byte[8];
+//                        holderInput.Content.Read(fileLengthBytes, 0, 8);
+//                        long fileLength = BitConverter.ToInt64(fileLengthBytes, 0);
+//
+//                        //// Decompress the file.
+//                        coder.SetDecoderProperties(properties);
+//                        coder.Code(holderInput.Content, holderOutput.Content, data.Length, fileLength, null);
+//                        return holderOutput.Content.ReadableBytesToArray();
                     }
                 }
             }

@@ -455,7 +455,7 @@ namespace SoyEngine
 			FileTools.MakeSureFileCanCreate(filePath, false);
 			FileStream writeStream = new FileStream(filePath, FileMode.CreateNew);
 			float startTime = Time.realtimeSinceStartup;
-			SevenZipTool.DecompressFileLZMAFromStream(_curLoadingItem.ContentBytes, writeStream, null);
+//			SevenZipTool.DecompressFileLZMAFromStream(_curLoadingItem.ContentBytes, writeStream, null);
 			_depressTotalTime += (Time.realtimeSinceStartup - startTime);
 			_curLoadingItem.Result = EGameResourceLoadingResult.Success;
 			//LogHelper.Info("Update resource {0} success {1}! url is {2}", fileName, filePath, _curLoadingItem.Content.url);

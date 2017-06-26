@@ -268,7 +268,7 @@ namespace SoyEngine
 
 						FileTools.MakeSureFileCanCreate(filePath, false);
 						FileStream writeStream = new FileStream(filePath, FileMode.CreateNew);
-						SevenZipTool.DecompressFileLZMAFromStream(cur.ContentBytes, writeStream, null);
+//						SevenZipTool.DecompressFileLZMAFromStream(cur.ContentBytes, writeStream, null);
 						_hasDepressSize += cur.HasDownloadSize;
                         Interlocked.Increment(ref _hasDepressCount);
 					}
