@@ -26,12 +26,13 @@ namespace GameA.Game
 
         protected override bool OnInit()
         {
-            SkeletonDataAsset data;
-            if (!GameResourceManager.Instance.TryGetSpineDataByName(_unit.AssetPath, out data))
-            {
-                LogHelper.Error("TryGetSpineDataByName Failed! {0}", _unit.AssetPath);
-                return false;
-            }
+            SkeletonDataAsset data = null;
+            // todo update api
+//            if (!GameResourceManager.Instance.TryGetSpineDataByName(_unit.AssetPath, out data))
+//            {
+//                LogHelper.Error("TryGetSpineDataByName Failed! {0}", _unit.AssetPath);
+//                return false;
+//            }
             _skeletonAnimation.skeletonDataAsset = data;
             _skeletonAnimation.Initialize(true);
             _skeletonAnimation.enabled = true;

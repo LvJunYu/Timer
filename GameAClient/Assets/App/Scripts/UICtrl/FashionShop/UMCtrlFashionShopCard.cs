@@ -56,7 +56,8 @@ namespace GameA
             Sprite fashion = null;
             //Debug.Log("____________预览图" + listItem.PreviewTexture);
 
-            if (GameResourceManager.Instance.TryGetSpriteByName(listItem.PreviewTexture, out fashion))
+            // todo update api
+//            if (GameResourceManager.Instance.TryGetSpriteByName(listItem.PreviewTexture, out fashion))
             {
                 //Debug.Log("____________时装" + fashion.name);
 
@@ -122,22 +123,23 @@ namespace GameA
             Sprite Bg=null;
             if (listItem.Sex == 2)
             {
-                if (GameResourceManager.Instance.TryGetSpriteByName("card_pink", out Bg))
-                {
-                    _cachedView.SexBg.sprite = Bg;
-                }
-                if (GameResourceManager.Instance.TryGetSpriteByName("img_pink", out Bg))
-                {
-                    _cachedView.Sexbottom.sprite = Bg;
-                }
-                if (GameResourceManager.Instance.TryGetSpriteByName("light_pink", out Bg))
-                {
-                    _cachedView.SexLight.sprite = Bg;
-                }
-                if (GameResourceManager.Instance.TryGetSpriteByName("name_bg_pink", out Bg))
-                {
-                    _cachedView.SexTitle.sprite = Bg;
-                }
+                // todo update api
+//                if (GameResourceManager.Instance.TryGetSpriteByName("card_pink", out Bg))
+//                {
+//                    _cachedView.SexBg.sprite = Bg;
+//                }
+//                if (GameResourceManager.Instance.TryGetSpriteByName("img_pink", out Bg))
+//                {
+//                    _cachedView.Sexbottom.sprite = Bg;
+//                }
+//                if (GameResourceManager.Instance.TryGetSpriteByName("light_pink", out Bg))
+//                {
+//                    _cachedView.SexLight.sprite = Bg;
+//                }
+//                if (GameResourceManager.Instance.TryGetSpriteByName("name_bg_pink", out Bg))
+//                {
+//                    _cachedView.SexTitle.sprite = Bg;
+//                }
             }
         }
 

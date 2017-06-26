@@ -11,7 +11,7 @@ namespace NewResourceSolution.EditorTool
 	{
 		private static int errorCnt;
 
-		[MenuItem("CHTools/TestMakeServerVersionConfig")]
+        [MenuItem("JoyTools/BuildTools/TestMakeServerVersionConfig")]
 		private static void TestMakeServerVersionConfig ()
 		{
 			ServerVersionConfig config = new ServerVersionConfig();
@@ -25,22 +25,23 @@ namespace NewResourceSolution.EditorTool
 			FileTools.WriteStringToFile(str, path);
 		}
 			
-		[MenuItem("CHTools/AssetBundleTools/BuildAllAB_Windows64")]
+        [MenuItem("JoyTools/BuildTools/BuildAllAB_Windows64")]
         private static void BuildAllAB_Windows ()
         {
             BuildAllAB (BuildTarget.StandaloneWindows64);
         }
-        [MenuItem("CHTools/AssetBundleTools/BuildAllAB_OSX64")]
+
+        [MenuItem("JoyTools/BuildTools/BuildAllAB_OSX64")]
         private static void BuildAllAB_OSX64 ()
         {
             BuildAllAB (BuildTarget.StandaloneOSXIntel64);
         }
-        [MenuItem("CHTools/AssetBundleTools/BuildAllAB_Android")]
+        [MenuItem("JoyTools/BuildTools/BuildAllAB_Android")]
         private static void BuildAllAB_Android ()
         {
             BuildAllAB (BuildTarget.Android);
         }
-        [MenuItem("CHTools/AssetBundleTools/BuildAllAB_iOS")]
+        [MenuItem("JoyTools/BuildTools/BuildAllAB_iOS")]
         private static void BuildAllAB_iOS ()
         {
             BuildAllAB (BuildTarget.iOS);

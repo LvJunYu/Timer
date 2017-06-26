@@ -119,24 +119,25 @@ namespace GameA
                 MatrixProjectTools.ShowMatrixProjectResCheckTip(resState);
                 return;
             }
-            float needDownloadSize = LocalResourceManager.Instance.GetNeedDownloadSizeMB("GameMaker2D");
-            if(Application.internetReachability != NetworkReachability.NotReachable
-                && !Util.IsFloatEqual(needDownloadSize, 0))
-            {
-                CommonTools.ShowPopupDialog(string.Format("本次进入游戏需要更新 {0:N2}MB 资源，可能会产生费用，是否继续？", Mathf.Max(needDownloadSize, 0.01f)),
-                    null,
-                    new System.Collections.Generic.KeyValuePair<string, Action>("继续", ()=>{
-                        InternalCreate();
-                    }),
-                    new System.Collections.Generic.KeyValuePair<string, Action>("取消", ()=>{
-                        LogHelper.Debug("Cancel RunCreate");
-                    })
-                );
-            }
-            else
-            {
-                InternalCreate();
-            }
+            // todo update api
+//            float needDownloadSize = LocalResourceManager.Instance.GetNeedDownloadSizeMB("GameMaker2D");
+//            if(Application.internetReachability != NetworkReachability.NotReachable
+//                && !Util.IsFloatEqual(needDownloadSize, 0))
+//            {
+//                CommonTools.ShowPopupDialog(string.Format("本次进入游戏需要更新 {0:N2}MB 资源，可能会产生费用，是否继续？", Mathf.Max(needDownloadSize, 0.01f)),
+//                    null,
+//                    new System.Collections.Generic.KeyValuePair<string, Action>("继续", ()=>{
+//                        InternalCreate();
+//                    }),
+//                    new System.Collections.Generic.KeyValuePair<string, Action>("取消", ()=>{
+//                        LogHelper.Debug("Cancel RunCreate");
+//                    })
+//                );
+//            }
+//            else
+//            {
+//                InternalCreate();
+//            }
         }
         private void InternalCreate()
         {

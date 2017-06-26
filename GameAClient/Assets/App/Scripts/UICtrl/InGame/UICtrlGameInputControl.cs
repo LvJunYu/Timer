@@ -64,7 +64,6 @@ namespace GameA
 
         private void OnGameRestart ()
         {
-            SetM1YoyoFireBtnState (true);
         }
 
         private void OnMainPlayerRevive ()
@@ -72,22 +71,6 @@ namespace GameA
 
         }
 
-        public void SetM1YoyoFireBtnState (bool eat)
-        {
-            if (eat) {
-                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2NumberSprites [0], out _cachedView._fire1Btns [0].normalSprite);
-                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2NumberSprites [0], out _cachedView._fire1Btns [0].pressedSprite);
-                Sprite sprite = null;
-                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2NumberSprites [0], out sprite);
-                _cachedView._fire1Btns [0].GetComponent<UnityEngine.UI.Image> ().sprite = sprite;
-            } else {
-                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2NumberSprites [1], out _cachedView._fire1Btns [0].normalSprite);
-                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2NumberSprites [1], out _cachedView._fire1Btns [0].pressedSprite);
-                Sprite sprite = null;
-                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2NumberSprites [1], out sprite);
-                _cachedView._fire1Btns [0].GetComponent<UnityEngine.UI.Image> ().sprite = sprite;
-            }
-        }
 
         /// <summary>
         /// M2中设置Fire2的技能图标
@@ -97,30 +80,30 @@ namespace GameA
         /// <param name="number">左下角数字.</param>
         public void SetM2Fire2BtnSpriteSet (int idx, int number)
         {
-            if (idx >= _cachedView.M2FireBtn2NormalSprites.Length ||
-                idx >= _cachedView.M2FireBtn2PressedSprites.Length ||
-                idx >= _cachedView.M2FireBtn2DisableSprites.Length) {
-                return;
-            }
-            if (number < 0 || number >= _cachedView.M2FireBtn2NumberSprites.Length) {
-                return;
-            }
-            if (number > 0) {
-                GameResourceManager.Instance.TryGetSpriteByName( _cachedView.M2FireBtn2NormalSprites [idx], out _cachedView._fire2Btns [1].normalSprite);
-                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2PressedSprites [idx], out _cachedView._fire2Btns [1].pressedSprite);
-                Sprite sprite1 = null;
-                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2NormalSprites [idx], out sprite1);
-                _cachedView._fire2Btns [1].GetComponent<UnityEngine.UI.Image> ().sprite = sprite1;
-            } else {
-                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2DisableSprites [idx], out _cachedView._fire2Btns [1].normalSprite);
-                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2DisableSprites [idx], out _cachedView._fire2Btns [1].pressedSprite);
-                Sprite sprite2 = null;
-                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2DisableSprites [idx], out sprite2);
-                _cachedView._fire2Btns [1].GetComponent<UnityEngine.UI.Image> ().sprite = sprite2;
-            }
-            Sprite sprite = null;
-            GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2NumberSprites [number], out sprite);
-            _cachedView.M2Fire2BtnNumber.sprite = sprite;
+//            if (idx >= _cachedView.M2FireBtn2NormalSprites.Length ||
+//                idx >= _cachedView.M2FireBtn2PressedSprites.Length ||
+//                idx >= _cachedView.M2FireBtn2DisableSprites.Length) {
+//                return;
+//            }
+//            if (number < 0 || number >= _cachedView.M2FireBtn2NumberSprites.Length) {
+//                return;
+//            }
+//            if (number > 0) {
+//                GameResourceManager.Instance.TryGetSpriteByName( _cachedView.M2FireBtn2NormalSprites [idx], out _cachedView._fire2Btns [1].normalSprite);
+//                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2PressedSprites [idx], out _cachedView._fire2Btns [1].pressedSprite);
+//                Sprite sprite1 = null;
+//                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2NormalSprites [idx], out sprite1);
+//                _cachedView._fire2Btns [1].GetComponent<UnityEngine.UI.Image> ().sprite = sprite1;
+//            } else {
+//                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2DisableSprites [idx], out _cachedView._fire2Btns [1].normalSprite);
+//                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2DisableSprites [idx], out _cachedView._fire2Btns [1].pressedSprite);
+//                Sprite sprite2 = null;
+//                GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2DisableSprites [idx], out sprite2);
+//                _cachedView._fire2Btns [1].GetComponent<UnityEngine.UI.Image> ().sprite = sprite2;
+//            }
+//            Sprite sprite = null;
+//            GameResourceManager.Instance.TryGetSpriteByName (_cachedView.M2FireBtn2NumberSprites [number], out sprite);
+//            _cachedView.M2Fire2BtnNumber.sprite = sprite;
         }
 
         protected override void OnViewCreated()

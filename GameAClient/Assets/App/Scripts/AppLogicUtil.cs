@@ -45,7 +45,9 @@ namespace GameA
                 MatrixProjectTools.ShowMatrixProjectResCheckTip(resState);
                 return;
             }
-            float needDownloadSize = LocalResourceManager.Instance.GetNeedDownloadSizeMB("GameMaker2D");
+            // todo update api
+//            float needDownloadSize = LocalResourceManager.Instance.GetNeedDownloadSizeMB("GameMaker2D");
+            float needDownloadSize = 0;
             if(Application.internetReachability != NetworkReachability.NotReachable
                 && !Util.IsFloatEqual(needDownloadSize, 0))
             {

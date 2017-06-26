@@ -65,7 +65,6 @@ namespace GameA.Game
 		[UnityEngine.SerializeField] private Table_ProgressUnlock[] _tableProgressUnlocks;
 		[UnityEngine.SerializeField] private Table_BoostItem[] _tableBoostItems;
 
-		private TableResLoader _loader;
 		#endregion
 		#region 属性
 		public static TableManager Instance

@@ -77,15 +77,16 @@ namespace GameA
             _cachedView.SpriteIcon.SetActiveEx(true);
 //            _cachedView.TextureIcon.SetActiveEx(false);
             Sprite texture;
-            if (GameResourceManager.Instance.TryGetSpriteByName(tableUnit.Icon, out texture))
-            {
-                _cachedView.SpriteIcon.sprite = texture;
-            }
-            else
-            {
-                LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", tableUnit.Id,
-                    tableUnit.Icon, tableUnit.EGeneratedType);
-            }
+            // todo update api
+//            if (GameResourceManager.Instance.TryGetSpriteByName(tableUnit.Icon, out texture))
+//            {
+//                _cachedView.SpriteIcon.sprite = texture;
+//            }
+//            else
+//            {
+//                LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", tableUnit.Id,
+//                    tableUnit.Icon, tableUnit.EGeneratedType);
+//            }
             if (_selected) {
                 _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up * 15;
 //                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one * 1.1f;

@@ -120,12 +120,13 @@ namespace GameA.Game
             _unitUpdateManager = new UnitUpdateManager();
             _statistic = new GameStatistic();
 
-            Texture t;
-            if (!GameResourceManager.Instance.TryGetTextureByName("Mask", out t))
-            {
-                LogHelper.Error("GetMask Failed");
-                return false;
-            }
+            Texture t = null;
+            // todo update api
+//            if (!GameResourceManager.Instance.TryGetTextureByName("Mask", out t))
+//            {
+//                LogHelper.Error("GetMask Failed");
+//                return false;
+//            }
             _maskBaseTexture = t as Texture2D;
             return true;
         }

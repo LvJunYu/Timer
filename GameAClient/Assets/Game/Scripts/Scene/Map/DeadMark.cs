@@ -76,7 +76,8 @@ namespace GameA.Game
             SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
             sr.sortingOrder = (int)ESortingOrder.DeadMark;
             Sprite s = null;
-            GameResourceManager.Instance.TryGetSpriteByName("death", out s);
+            // todo update api
+//            GameResourceManager.Instance.TryGetSpriteByName("death", out s);
             sr.sprite = s;
             return dm;
         }

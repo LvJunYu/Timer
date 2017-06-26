@@ -23,12 +23,13 @@ namespace GameA.Game
 
         protected override bool OnInit()
         {
-            Sprite sprite;
-            if (!GameResourceManager.Instance.TryGetSpriteByName(_unit.AssetPath, out sprite))
-            {
-                LogHelper.Error("TryGetSpriteByName failed,{0}", _unit.AssetPath);
-                return false;
-            }
+            Sprite sprite = null;
+            // todo update api
+//            if (!GameResourceManager.Instance.TryGetSpriteByName(_unit.AssetPath, out sprite))
+//            {
+//                LogHelper.Error("TryGetSpriteByName failed,{0}", _unit.AssetPath);
+//                return false;
+//            }
             _spriteRenderer.sprite = sprite;
             _spriteRenderer.sortingOrder = UnitManager.Instance.GetSortingOrder(_unit.TableUnit);
             return true;
@@ -58,12 +59,12 @@ namespace GameA.Game
 
         public override void ChangeView(string assetPath)
         {
-            Sprite sprite;
-            if (!GameResourceManager.Instance.TryGetSpriteByName(assetPath, out sprite))
-            {
-                LogHelper.Error("TryGetSpriteByName failed,{0}", assetPath);
-                return;
-            }
+            Sprite sprite = null;
+//            if (!GameResourceManager.Instance.TryGetSpriteByName(assetPath, out sprite))
+//            {
+//                LogHelper.Error("TryGetSpriteByName failed,{0}", assetPath);
+//                return;
+//            }
             _spriteRenderer.sprite = sprite;
         }
 

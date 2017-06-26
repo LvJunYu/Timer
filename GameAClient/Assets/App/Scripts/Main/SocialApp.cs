@@ -107,10 +107,11 @@ namespace GameA
             Application.targetFrameRate = 60;
             QualitySettings.vSyncCount = 1;
             gameObject.AddComponent<SocialGUIManager>();
-            GameResourceManager rm = gameObject.AddComponent<GameResourceManager> ();
-            if (!rm.Init ("GameMaker2D")) {
-                LogHelper.Error ("GameResourceManager initFailed");
-            }
+            // todo update api
+//            GameResourceManager rm = gameObject.AddComponent<GameResourceManager> ();
+//            if (!rm.Init ("GameMaker2D")) {
+//                LogHelper.Error ("GameResourceManager initFailed");
+//            }
         }
 
         public void Init()
@@ -119,10 +120,12 @@ namespace GameA
             GlobalVar.Instance.AppVersion = this.AppVersion;
             var addressConfig = GetAppServerAddress();
             NetworkManager.AppHttpClient.BaseUrl = addressConfig.AppServerApiRoot;
-            GameResourcePathManager.Instance.WebServerRoot = addressConfig.GameResoureRoot;
+            // todo update api
+//            GameResourcePathManager.Instance.WebServerRoot = addressConfig.GameResoureRoot;
             LocalUser.Instance.Init();
             AppData.Instance.Init();
-            LocalResourceManager.Instance.transform.parent = transform;
+            // todo update api
+//            LocalResourceManager.Instance.transform.parent = transform;
             MatrixProjectTools.InitAndCheckOnStart();
             LoginLogicUtil.Init();
             ShareUtil.Init();

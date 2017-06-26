@@ -94,26 +94,29 @@ namespace GameA
             if (rank == 1)
             {
                 Sprite fashion = null;
-                if (GameResourceManager.Instance.TryGetSpriteByName(First, out fashion))
-                {
-                    _cachedView.RankBg.sprite = fashion;
-                }
+                // todo update api
+//                if (GameResourceManager.Instance.TryGetSpriteByName(First, out fashion))
+//                {
+//                    _cachedView.RankBg.sprite = fashion;
+//                }
             }
             else if (rank == 2)
             {
                 Sprite fashion = null;
-                if (GameResourceManager.Instance.TryGetSpriteByName(Second, out fashion))
-                {
-                    _cachedView.RankBg.sprite = fashion;
-                }
+                // todo update api
+//                if (GameResourceManager.Instance.TryGetSpriteByName(Second, out fashion))
+//                {
+//                    _cachedView.RankBg.sprite = fashion;
+//                }
             }
             else if (rank == 3)
             {
                 Sprite fashion = null;
-                if (GameResourceManager.Instance.TryGetSpriteByName(Third, out fashion))
-                {
-                    _cachedView.RankBg.sprite = fashion;
-                }
+                // todo update api
+//                if (GameResourceManager.Instance.TryGetSpriteByName(Third, out fashion))
+//                {
+//                    _cachedView.RankBg.sprite = fashion;
+//                }
             }
             else
             {

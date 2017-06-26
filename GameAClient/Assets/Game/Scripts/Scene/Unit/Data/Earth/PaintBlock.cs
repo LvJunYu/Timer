@@ -256,17 +256,18 @@ namespace GameA.Game
             {
                 CreatePaintObject();
             }
-            Texture maskingTexture;
+            Texture maskingTexture = null;
             string maskName = string.Format("Mask_{0}_{1}", (int) edge.Direction, maskRandom);
             if (edge.ESkillType == ESkillType.Water)
             {
                 maskName = string.Format("MaskWater_{0}", (int)edge.Direction);
             }
-            if (!GameResourceManager.Instance.TryGetTextureByName(maskName, out maskingTexture))
-            {
-                LogHelper.Error("TryGetSpriteByName Failed", maskName);
-                return;
-            }
+            // todo update api
+//            if (!GameResourceManager.Instance.TryGetTextureByName(maskName, out maskingTexture))
+//            {
+//                LogHelper.Error("TryGetSpriteByName Failed", maskName);
+//                return;
+//            }
             int xmin = 0, ymin = 0, xmax = 0, ymax = 0, offsetX = 0, offsetY = 0;
             switch (edge.Direction)
             {

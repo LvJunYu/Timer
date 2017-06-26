@@ -70,12 +70,12 @@ namespace GameA.Game
 
         public bool Init(string path)
         {
-            SkeletonDataAsset data;
-            if (!GameResourceManager.Instance.TryGetSpineDataByName(path, out data))
-            {
-                LogHelper.Error("Init failed spineAssetName is invalid! {0}", path);
-                return false;
-            }
+            SkeletonDataAsset data = null;
+//            if (!GameResourceManager.Instance.TryGetSpineDataByName(path, out data))
+//            {
+//                LogHelper.Error("Init failed spineAssetName is invalid! {0}", path);
+//                return false;
+//            }
             if (_skeletonAnimation == null)
             {
                 LogHelper.Error("Init failed _skeletonAnimation is null! {0}|{1}", path, _trans.GetInstanceID());

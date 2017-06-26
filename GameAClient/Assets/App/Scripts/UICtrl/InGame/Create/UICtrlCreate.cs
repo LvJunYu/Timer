@@ -109,15 +109,16 @@ namespace GameA
                 _cachedView.ShowCurSelectIcon.SetActiveEx(true);
                 _cachedView.TextureImage.SetActiveEx(false);
                 Sprite texture;
-                if (GameResourceManager.Instance.TryGetSpriteByName(table.Icon, out texture))
-                {
-                    _cachedView.SpriteImage.sprite = texture;
-                }
-                else
-                {
-                    LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", table.Id,
-                        table.Icon, table.EGeneratedType);
-                }
+                // todo update api
+//                if (GameResourceManager.Instance.TryGetSpriteByName(table.Icon, out texture))
+//                {
+//                    _cachedView.SpriteImage.sprite = texture;
+//                }
+//                else
+//                {
+//                    LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", table.Id,
+//                        table.Icon, table.EGeneratedType);
+//                }
             }
         }
 

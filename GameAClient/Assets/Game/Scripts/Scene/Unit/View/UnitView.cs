@@ -212,10 +212,11 @@ namespace GameA.Game
             var tweener = _dirTrans.DOScale(0.7f, 0.5f);
             tweener.SetLoops(-1, LoopType.Yoyo);
             Sprite arrowTexture;
-            if (GameResourceManager.Instance.TryGetSpriteByName(attName, out arrowTexture))
-            {
-                meshRenderer.sprite = arrowTexture;
-            }
+            // todo update api
+//            if (GameResourceManager.Instance.TryGetSpriteByName(attName, out arrowTexture))
+//            {
+//                meshRenderer.sprite = arrowTexture;
+//            }
         }
 
         public void UpdateSign()
@@ -303,10 +304,11 @@ namespace GameA.Game
                 return;
             }
             Sprite arrowTexture;
-            if (GameResourceManager.Instance.TryGetSpriteByName("Letter_" + pairUnit.Num, out arrowTexture))
-            {
-                spriteRenderer.sprite = arrowTexture;
-            }
+            // todo update api
+//            if (GameResourceManager.Instance.TryGetSpriteByName("Letter_" + pairUnit.Num, out arrowTexture))
+//            {
+//                spriteRenderer.sprite = arrowTexture;
+//            }
         }
 
         public Vector2 GetRotationPosOffset()

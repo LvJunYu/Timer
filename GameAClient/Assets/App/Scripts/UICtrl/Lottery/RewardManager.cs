@@ -36,45 +36,46 @@ namespace GameA
 
         public UnityEngine.Sprite GetSprite(int LotteryTicketType, int rewardNum)
         {
-            if (GameResourceManager.Instance == null) return null;
-            switch ((ERewardType)GetTableRewardFromDic(JudgeRewardKey(LotteryTicketType, rewardNum)).Type1)
-            {
-                case ERewardType.RT_Gold:
-                    {
-                        return GameResourceManager.Instance.GetSpriteByName(_goldSprite);
-                    }
-                case ERewardType.RT_Diamond:
-                    {
-                        return GameResourceManager.Instance.GetSpriteByName(_diamondSprite);
-                    }
-                case ERewardType.RT_PlayerExp:
-                    {
-                        return GameResourceManager.Instance.GetSpriteByName(_playerExpSprite);
-                    }
-                case ERewardType.RT_CreatorExp:
-                    {
-                        return GameResourceManager.Instance.GetSpriteByName(_creatorExpSprite);
-                    }
-                case ERewardType.RT_FashionCoupon:
-                    {
-                        return GameResourceManager.Instance.GetSpriteByName(_fashionCouponSprite);
-                    }
-                case ERewardType.RT_RaffleTicket:
-                    {
-                        switch (GetTableRewardFromDic(JudgeRewardKey(LotteryTicketType, rewardNum)).SubType1)
-                        {
-                            case 1:
-                                return GameResourceManager.Instance.GetSpriteByName(_raffleTicketSprite1);
-                            case 2:
-                                return GameResourceManager.Instance.GetSpriteByName(_raffleTicketSprite2);
-                            case 3:
-                                return GameResourceManager.Instance.GetSpriteByName(_raffleTicketSprite3);
-                            case 4:
-                                return GameResourceManager.Instance.GetSpriteByName(_raffleTicketSprite4);
-                        }
-                        return GameResourceManager.Instance.GetSpriteByName(_raffleTicketSprite1);
-                    }
-            }
+            // todo update api
+//            if (GameResourceManager.Instance == null) return null;
+//            switch ((ERewardType)GetTableRewardFromDic(JudgeRewardKey(LotteryTicketType, rewardNum)).Type1)
+//            {
+//                case ERewardType.RT_Gold:
+//                    {
+//                        return GameResourceManager.Instance.GetSpriteByName(_goldSprite);
+//                    }
+//                case ERewardType.RT_Diamond:
+//                    {
+//                        return GameResourceManager.Instance.GetSpriteByName(_diamondSprite);
+//                    }
+//                case ERewardType.RT_PlayerExp:
+//                    {
+//                        return GameResourceManager.Instance.GetSpriteByName(_playerExpSprite);
+//                    }
+//                case ERewardType.RT_CreatorExp:
+//                    {
+//                        return GameResourceManager.Instance.GetSpriteByName(_creatorExpSprite);
+//                    }
+//                case ERewardType.RT_FashionCoupon:
+//                    {
+//                        return GameResourceManager.Instance.GetSpriteByName(_fashionCouponSprite);
+//                    }
+//                case ERewardType.RT_RaffleTicket:
+//                    {
+//                        switch (GetTableRewardFromDic(JudgeRewardKey(LotteryTicketType, rewardNum)).SubType1)
+//                        {
+//                            case 1:
+//                                return GameResourceManager.Instance.GetSpriteByName(_raffleTicketSprite1);
+//                            case 2:
+//                                return GameResourceManager.Instance.GetSpriteByName(_raffleTicketSprite2);
+//                            case 3:
+//                                return GameResourceManager.Instance.GetSpriteByName(_raffleTicketSprite3);
+//                            case 4:
+//                                return GameResourceManager.Instance.GetSpriteByName(_raffleTicketSprite4);
+//                        }
+//                        return GameResourceManager.Instance.GetSpriteByName(_raffleTicketSprite1);
+//                    }
+//            }
             return null;
         }
         private Table_Reward GetTableRewardFromDic(int TurntableUnitReward) //根据key找到对应的奖励

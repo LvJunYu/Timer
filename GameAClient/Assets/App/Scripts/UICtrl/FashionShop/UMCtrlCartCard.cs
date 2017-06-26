@@ -52,7 +52,8 @@ namespace GameA
             //    _cachedView.FashionPreview.sprite = fashion;
             //}
             Sprite fashion=null;
-            if (GameResourceManager.Instance.TryGetSpriteByName(listItem.PreviewTexture, out fashion))
+            // todo update api
+//            if (GameResourceManager.Instance.TryGetSpriteByName(listItem.PreviewTexture, out fashion))
             {
                 Debug.Log("____________时装" + fashion.name);
                 _cachedView.FashionPreview.sprite = fashion;

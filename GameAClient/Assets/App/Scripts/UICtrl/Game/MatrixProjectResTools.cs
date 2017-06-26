@@ -20,11 +20,13 @@ namespace GameA
         {
             if(!GlobalVar.Instance.IsDebug)
             {
-                GameResourcePathManager.Instance.WebServerRoot = AppData.Instance.GameResRoot;
+                // todo update api
+//                GameResourcePathManager.Instance.WebServerRoot = AppData.Instance.GameResRoot;
             }
 //            if(MatrixManager.Instance.AllMatrixList != null)
 //            {
-                LocalResourceManager.Instance.CheckAppVersion(AppData.Instance.AppResVersion);
+            // todo update api
+//                LocalResourceManager.Instance.CheckAppVersion(AppData.Instance.AppResVersion);
 //            }
             Messenger.AddListener(GameA.EMessengerType.OnAppDataChanged, OnAppDataChanged);
             Messenger.AddListener(GameA.EMessengerType.CheckAppVersionComplete, OnCheckComplete);
@@ -37,11 +39,12 @@ namespace GameA
         private static void OnAppDataChanged()
         {
             LogHelper.Info("OnAppDataChanged");
-            if(!GlobalVar.Instance.IsDebug)
-            {
-                GameResourcePathManager.Instance.WebServerRoot = AppData.Instance.GameResRoot;
-            }
-            LocalResourceManager.Instance.CheckAppVersion(AppData.Instance.AppResVersion);
+            // todo update api
+//            if(!GlobalVar.Instance.IsDebug)
+//            {
+//                GameResourcePathManager.Instance.WebServerRoot = AppData.Instance.GameResRoot;
+//            }
+//            LocalResourceManager.Instance.CheckAppVersion(AppData.Instance.AppResVersion);
         }
         #endregion CheckResource
 

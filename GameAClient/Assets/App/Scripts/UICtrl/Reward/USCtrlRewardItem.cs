@@ -41,7 +41,8 @@ namespace GameA
             _cachedView.Name.text = string.Format ("{0} X {1}", item.GetName (), item.Count);
         }
         public void SetItem (string title, string icon) {
-            _cachedView.Icon.sprite = GameResourceManager.Instance.GetSpriteByName (icon);
+            // todo update api
+//            _cachedView.Icon.sprite = GameResourceManager.Instance.GetSpriteByName (icon);
             _cachedView.Name.text = title;
         }
         #endregion

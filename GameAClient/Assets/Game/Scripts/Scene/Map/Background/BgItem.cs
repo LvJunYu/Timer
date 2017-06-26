@@ -80,12 +80,13 @@ namespace GameA.Game
         private bool TryCreateObject(out GameObject go)
         {
             go = null;
-            Sprite sprite;
-            if (!GameResourceManager.Instance.TryGetSpriteByName(_tableBg.Model, out sprite))
-            {
-                LogHelper.Error("TryGetSpriteByName failed,{0}", _tableBg.Model);
-                return false;
-            }
+            Sprite sprite = null;
+            // todo update api
+//            if (!GameResourceManager.Instance.TryGetSpriteByName(_tableBg.Model, out sprite))
+//            {
+//                LogHelper.Error("TryGetSpriteByName failed,{0}", _tableBg.Model);
+//                return false;
+//            }
             go = new GameObject();
             _spriteRenderer = go.AddComponent<SpriteRenderer>();
             _spriteRenderer.sprite = sprite;

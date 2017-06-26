@@ -115,16 +115,18 @@ namespace SoyEngine
                 return com1;
             }
             #endif
-            var itemPrefab = GameResourceManager.Instance.LoadMainAssetObject(_poolName);
-			if (itemPrefab == null)
-			{
-				LogHelper.Error("GameResourceManager.Instance.LoadMainAssetObject({0}) is null!", _poolName);
-				return null;
-			}
-			GameObject resGo = Object.Instantiate(itemPrefab) as GameObject;
-			UnityNativeParticleItem com = new UnityNativeParticleItem();
-			com.InitGo(resGo,_poolName);
-			return com;
+            // todo update api
+//            var itemPrefab = GameResourceManager.Instance.LoadMainAssetObject(_poolName);
+//			if (itemPrefab == null)
+//			{
+//				LogHelper.Error("GameResourceManager.Instance.LoadMainAssetObject({0}) is null!", _poolName);
+//				return null;
+//			}
+//			GameObject resGo = Object.Instantiate(itemPrefab) as GameObject;
+//			UnityNativeParticleItem com = new UnityNativeParticleItem();
+//			com.InitGo(resGo,_poolName);
+//			return com;
+            return null;
 		}
 
 		#endregion

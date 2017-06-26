@@ -31,12 +31,13 @@ namespace GameA.Game
 		protected override bool OnInit()
 		{
 			var tableUnit = _unit.TableUnit;
-			SkeletonDataAsset data;
-			if (!GameResourceManager.Instance.TryGetSpineDataByName(tableUnit.Model, out data))
-			{
-				LogHelper.Error("TryGetSpineDataByName Failed! {0}", tableUnit.Model);
-				return false;
-			}
+			SkeletonDataAsset data = null;
+            // todo update api
+//			if (!GameResourceManager.Instance.TryGetSpineDataByName(tableUnit.Model, out data))
+//			{
+//				LogHelper.Error("TryGetSpineDataByName Failed! {0}", tableUnit.Model);
+//				return false;
+//			}
 
 
 			_skeletonAnimation.skeletonDataAsset = data;
@@ -77,22 +78,23 @@ namespace GameA.Game
 		}
 
 		protected void LinkBaseSkinTextures () {
-			var baseHead = TableManager.Instance.GetHeadParts (1);
-			if (baseHead != null && !string.IsNullOrEmpty(baseHead.SmallTexture)) {
-				GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, baseHead.SmallTexture);
-			}
-			var baseUpper = TableManager.Instance.GetUpperBodyParts (1);
-			if (baseUpper != null && !string.IsNullOrEmpty(baseUpper.SmallTexture)) {
-				GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, baseUpper.SmallTexture);
-			}
-			var baseLower = TableManager.Instance.GetLowerBodyParts (1);
-			if (baseLower != null && !string.IsNullOrEmpty(baseLower.SmallTexture)) {
-				GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, baseLower.SmallTexture);
-			}
-			var baseAppendage = TableManager.Instance.GetAppendageParts (1);
-			if (baseAppendage != null && !string.IsNullOrEmpty(baseAppendage.SmallTexture)) {
-				GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, baseAppendage.SmallTexture);
-			}
+            // todo update api
+//			var baseHead = TableManager.Instance.GetHeadParts (1);
+//			if (baseHead != null && !string.IsNullOrEmpty(baseHead.SmallTexture)) {
+//				GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, baseHead.SmallTexture);
+//			}
+//			var baseUpper = TableManager.Instance.GetUpperBodyParts (1);
+//			if (baseUpper != null && !string.IsNullOrEmpty(baseUpper.SmallTexture)) {
+//				GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, baseUpper.SmallTexture);
+//			}
+//			var baseLower = TableManager.Instance.GetLowerBodyParts (1);
+//			if (baseLower != null && !string.IsNullOrEmpty(baseLower.SmallTexture)) {
+//				GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, baseLower.SmallTexture);
+//			}
+//			var baseAppendage = TableManager.Instance.GetAppendageParts (1);
+//			if (baseAppendage != null && !string.IsNullOrEmpty(baseAppendage.SmallTexture)) {
+//				GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, baseAppendage.SmallTexture);
+//			}
 		}
 
 		public bool HomePlayerAvatarViewInit(SkeletonAnimation animationComp) {
@@ -237,10 +239,10 @@ namespace GameA.Game
                     continue;
                 } else
                 {
-                    
-                    if (GameResourceManager.Instance != null && !GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, textureName)) {
-                        LogHelper.Error ("Link texture: {0} when apply parts:{1},id{2} in {3} failed.", textureName, partsType, partsId, _unit.TableUnit.Name);
-                    }
+                        // todo update api
+//                    if (GameResourceManager.Instance != null && !GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, textureName)) {
+//                        LogHelper.Error ("Link texture: {0} when apply parts:{1},id{2} in {3} failed.", textureName, partsType, partsId, _unit.TableUnit.Name);
+//                    }
                     
                     _dynamicSkin.AddAttachment(slotIdx, attachmentName, attachment);
                     

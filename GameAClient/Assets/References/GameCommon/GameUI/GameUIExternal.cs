@@ -19,11 +19,12 @@ namespace SoyEngine
             {
                 return;
             }
-            Sprite sprite;
-            if (GameResourceManager.Instance.TryGetSpriteByName(spriteName, out sprite))
-            {
-                image.sprite = sprite;
-            }
+            Sprite sprite = null;
+            // todo update api
+//            if (GameResourceManager.Instance.TryGetSpriteByName(spriteName, out sprite))
+//            {
+//                image.sprite = sprite;
+//            }
         }
     }
 }

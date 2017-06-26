@@ -297,12 +297,13 @@ namespace GameA.Game
         public LazerEffect(UnitBase lazerUnit, string path)
         {
             CreateMesh();
-            Texture texture;
-            if (!GameResourceManager.Instance.TryGetTextureByName(path, out texture))
-            {
-                LogHelper.Error("TryGetTextureByName Failed {0}", path);
-                return;
-            }
+            Texture texture = null;
+            // todo update api
+//            if (!GameResourceManager.Instance.TryGetTextureByName(path, out texture))
+//            {
+//                LogHelper.Error("TryGetTextureByName Failed {0}", path);
+//                return;
+//            }
             var go = new GameObject("LazerEffect");
             _trans = go.transform;
             IntVec2 pointA = IntVec2.zero, pointB = IntVec2.zero;

@@ -87,7 +87,6 @@ namespace GameA.Game
             {
                 GameInputControl.Show();
                 GameInputControl.ShowAttack1Btn();
-                GameInputControl.SetM1YoyoFireBtnState(true);
             }
         }
 

@@ -356,13 +356,15 @@ namespace GameA
         private Sprite FindImage(string ImageName)
         {
             Sprite fashion;
-            if (GameResourceManager.Instance.TryGetSpriteByName(ImageName, out fashion))
-            {
-                //Debug.Log("____________时装" + fashion.name);
-                //_cachedView.FashionPreview.sprite = fashion;
-                return fashion;
-            }
-            else return null;
+            // todo update api
+//            if (GameResourceManager.Instance.TryGetSpriteByName(ImageName, out fashion))
+//            {
+//                //Debug.Log("____________时装" + fashion.name);
+//                //_cachedView.FashionPreview.sprite = fashion;
+//                return fashion;
+//            }
+//            else 
+                return null;
 
         }
 

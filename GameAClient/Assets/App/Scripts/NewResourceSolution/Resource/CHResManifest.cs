@@ -90,19 +90,20 @@ namespace NewResourceSolution
             {
                 bundle.LocaleName = bundle.AssetBundleName.Substring(1).Split(ResDefine.ReplaceSplashCharInAssetBundleName)[0].ToUpper();
             }
-
             for (int i = 0; i < bundle.AssetNames.Length; i++)
             {
                 string registAssetName = bundle.IsLocaleRes ?
                     StringUtil.Format (StringFormat.TwoLevelPath, bundle.LocaleName, bundle.AssetNames [i]) :
                     bundle.AssetNames [i];
-                
+
                 if (_allAssetNameList.Contains(registAssetName))
                 {
-                    LogHelper.Error("Asset <{0}> name dumplicated", registAssetName);
-                    return false;
+                    UnityEngine.Debug.LogErrorFormat("Asset <{0}> name dumplicated", registAssetName);
                 }
-                _allAssetNameList.Add (registAssetName);
+                else
+                {
+                    _allAssetNameList.Add(registAssetName);
+                }
             }
             _bundles.Add(bundle);
             return true;
