@@ -9,7 +9,9 @@ using System;
 using GameA.Game;
 using SoyEngine;
 using UnityEngine;
+using NewResourceSolution;
 using EMessengerType = SoyEngine.EMessengerType;
+using FileTools = SoyEngine.FileTools;
 
 namespace GameA
 {
@@ -101,12 +103,19 @@ namespace GameA
             }
 //	        InitLocalResource();
 			RegisterGameTypeVersion();
-            VersionManager.Instance.Init();
             JoyNativeTool.Instance.Init();
             JoySceneManager.Instance.Init();
             Application.targetFrameRate = 60;
             QualitySettings.vSyncCount = 1;
+
             gameObject.AddComponent<SocialGUIManager>();
+
+            CoroutineManager.Instance.Init(this);
+            ResourcesManager.Instance.Init ();
+            LocalizationManager.Instance.Init();
+            TableManager.Instance.Init();
+
+            ResourcesManager.Instance.CheckApplicationAndResourcesVersion();
             // todo update api
 //            GameResourceManager rm = gameObject.AddComponent<GameResourceManager> ();
 //            if (!rm.Init ("GameMaker2D")) {

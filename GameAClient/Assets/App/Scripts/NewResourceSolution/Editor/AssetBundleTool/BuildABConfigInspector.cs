@@ -11,7 +11,7 @@ namespace NewResourceSolution.EditorTool
 		/// <summary>
 		/// 是否在添加asset模式
 		/// </summary>
-		private bool _addAssetWhenSelect;
+        private int _addAssetMode;
 
 		/// <summary>
 		/// 上一次添加操作所添加的asset
@@ -21,7 +21,7 @@ namespace NewResourceSolution.EditorTool
         public void OnEnable()
         {
             _data = (BuildABConfig)target;
-			_addAssetWhenSelect = false;
+			_addAssetMode = 0;
 			_lastTryAddObj = null;
         }
         public override void OnInspectorGUI()
@@ -64,61 +64,117 @@ namespace NewResourceSolution.EditorTool
 
             if (!_data.FullResPackage)
             {
-                // add button
-                if (false == _addAssetWhenSelect) {
+                if (2 != _addAssetMode)
+                {
+                    // add button
+                    if (0 == _addAssetMode)
+                    {
+                        ToolUtility.SetGUIColorLightGreen ();
+                        if (GUILayout.Button ("Add buildin asset"))
+                        {
+                            _addAssetMode = 1;
+                            _lastTryAddObj = null;
+                            ActiveEditorTracker.sharedTracker.isLocked = true;
+                        }
+                        ToolUtility.SetGUIColorDefault ();
+                    }
+                    else
+                    {
+                        ToolUtility.SetGUIColorLightRed ();
+                        if (GUILayout.Button ("End"))
+                        {
+                            _addAssetMode = 0;
+                            Selection.activeObject = target;
+                            ActiveEditorTracker.sharedTracker.isLocked = false;
+                        }
+                        else
+                        {
+                            // add selected asset
+                            if (_lastTryAddObj != Selection.activeObject)
+                            {
+                                AddAsset (AssetDatabase.GetAssetPath (Selection.activeObject), ref dirty);
+                                _lastTryAddObj = Selection.activeObject;
+                            }
+                        }
+                        ToolUtility.SetGUIColorDefault ();
+                    }
+
+                    EditorGUILayout.BeginHorizontal ();
+                    var allResList = _data.AllResLists;
+                    if (GUILayout.Button ("Expand all"))
+                    {
+                        for (int i = 0; i < allResList.Count; i++)
+                        {
+                            allResList [i].FoldoutInEditorUI = true;
+                        }
+                        dirty = true;
+                    }
+                    ToolUtility.SetGUIColorLightRed ();
+                    if (GUILayout.Button ("Remove all"))
+                    {
+                        if (EditorUtility.DisplayDialog (
+                            "Warning",
+                            "Do you want to remove all assets from in package assets list?",
+                            "OK",
+                            "Cancel"
+                        ))
+                        {
+                            Selection.activeObject = null;
+                            _data.Clear ();
+                        }
+                    }
+                    ToolUtility.SetGUIColorDefault ();
+                    EditorGUILayout.EndHorizontal ();
+
+                    for (int i = 0; i < allResList.Count; i++)
+                    {
+                        EditorGUILayout.Separator ();
+                        DisplayResList (ref allResList [i].FoldoutInEditorUI, allResList [i].ResType.ToString (), allResList [i].InPackageGuidList, true, ref dirty);
+                    }
+                }
+            }
+                
+            // adam res part
+            if (1 != _addAssetMode)
+            {
+                if (0 == _addAssetMode)
+                {
                     ToolUtility.SetGUIColorLightGreen ();
-                    if (GUILayout.Button ("Add Asset")) {
-                        _addAssetWhenSelect = true;
+                    if (GUILayout.Button ("Add adam asset"))
+                    {
+                        _addAssetMode = 2;
                         _lastTryAddObj = null;
                         ActiveEditorTracker.sharedTracker.isLocked = true;
                     }
                     ToolUtility.SetGUIColorDefault ();
-                } else {
+                } 
+                else
+                {
                     ToolUtility.SetGUIColorLightRed ();
-                    if (GUILayout.Button ("End")) {
-                        _addAssetWhenSelect = false;
+                    if (GUILayout.Button ("End"))
+                    {
+                        _addAssetMode = 0;
                         Selection.activeObject = target;
                         ActiveEditorTracker.sharedTracker.isLocked = false;
-                    } else {
+                    }
+                    else
+                    {
                         // add selected asset
-                        if (_lastTryAddObj != Selection.activeObject) {
-                            AddAsset (AssetDatabase.GetAssetPath (Selection.activeObject), ref dirty);
+                        if (_lastTryAddObj != Selection.activeObject)
+                        {
+                            AddAdamAsset (AssetDatabase.GetAssetPath (Selection.activeObject), ref dirty);
                             _lastTryAddObj = Selection.activeObject;
                         }
                     }
                     ToolUtility.SetGUIColorDefault ();
                 }
 
-                EditorGUILayout.BeginHorizontal ();
-                var allResList = _data.AllResLists;
-                if (GUILayout.Button ("Expand all")) {
-                    for (int i = 0; i < allResList.Count; i++)
-                    {
-                        allResList [i].FoldoutInEditorUI = true;
-                    }
-                    dirty = true;
-                }
-                ToolUtility.SetGUIColorLightRed ();
-                if (GUILayout.Button ("Remove all")) {
-                    if (EditorUtility.DisplayDialog (
-                        "Warning",
-                        "Do you want to remove all assets from in package assets list?",
-                        "OK",
-                        "Cancel"
-                    )) {
-                        Selection.activeObject = null;
-                        _data.Clear ();
-                    }
-                }
-                ToolUtility.SetGUIColorDefault ();
-                EditorGUILayout.EndHorizontal ();
-
-                for (int i = 0; i < allResList.Count; i++)
-                {
-                    EditorGUILayout.Separator ();
-                    DisplayResList (ref allResList[i].FoldoutInEditorUI, allResList[i].ResType.ToString(), allResList[i].InPackageGuidList, true, ref dirty);
-                }
+                bool alwaysFoldout = true;
+                DisplayResList (ref alwaysFoldout, "Single adam res", _data.SingleAdamResList, false, ref dirty);
+                EditorGUILayout.Separator ();
+                DisplayResList (ref alwaysFoldout, "Folder adam res", _data.FolderAdamResList, true, ref dirty);
             }
+
 			if (dirty)
 			{
             	EditorUtility.SetDirty(_data);
@@ -153,6 +209,33 @@ namespace NewResourceSolution.EditorTool
             }
             return false;
 		}
+
+        private bool AddAdamAsset (string path, ref bool dirty)
+        {
+            if (string.IsNullOrEmpty(path)) return false;
+            EResType resType = ABUtility.GetRawResType(path);
+            if (EResType.None != resType)
+            {
+                var allResList = _data.AllResLists;
+                for (int i = 0; i < allResList.Count; i++)
+                {
+                    if (allResList [i].ResType == resType)
+                    {
+                        if (allResList [i].IsFolderRes)
+                        {
+                            path = System.IO.Directory.GetParent (path).ToString ();
+                            _data.AddFolderAdamRes (path);
+                        }
+                        else
+                        {
+                            _data.AddSingleAdamRes (path);
+                        }
+                        dirty = true;
+                    }
+                }
+            }
+            return false;
+        }
 
         /// <summary>
         /// 显示单一打包资源列表

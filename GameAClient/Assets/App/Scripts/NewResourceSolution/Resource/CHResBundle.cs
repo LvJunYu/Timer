@@ -46,6 +46,11 @@ namespace NewResourceSolution
 		public string LocaleName;
 		#endregion
 
+        #region used when build bundle
+        [Newtonsoft.Json.JsonIgnore]
+        public bool IsAdamRes;
+        #endregion
+
 		/// <summary>
 		/// 获得文件应该在的位置
 		/// </summary>

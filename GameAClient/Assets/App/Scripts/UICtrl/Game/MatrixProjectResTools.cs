@@ -167,17 +167,17 @@ namespace GameA
             }
             if(tip != null)
             {
-                if(state == EMatrixProjectResState.ProjectProgramVersionAhead && VersionManager.Instance.HasNewDownload())
-                {
-                    CommonTools.ShowPopupDialog("当前作品基于新版本的匠游发布，请更新后进入", "提示",
-                        new System.Collections.Generic.KeyValuePair<string, Action>("更新", ()=>{
-                            VersionManager.Instance.GoToUpdate();
-                        }), 
-                        new System.Collections.Generic.KeyValuePair<string, Action>("取消", ()=>{
-
-                        }));
-                }
-                else
+//                if(state == EMatrixProjectResState.ProjectProgramVersionAhead && VersionManager.Instance.HasNewDownload())
+//                {
+//                    CommonTools.ShowPopupDialog("当前作品基于新版本的匠游发布，请更新后进入", "提示",
+//                        new System.Collections.Generic.KeyValuePair<string, Action>("更新", ()=>{
+//                            VersionManager.Instance.GoToUpdate();
+//                        }), 
+//                        new System.Collections.Generic.KeyValuePair<string, Action>("取消", ()=>{
+//
+//                        }));
+//                }
+//                else
                 {
                     CommonTools.ShowPopupDialog(tip, null);
                 }

@@ -101,6 +101,7 @@ GameObject:
   - component: {fileID: 574366971}
   - component: {fileID: 574366972}
   - component: {fileID: 574366974}
+  - component: {fileID: 574366973}
   m_Layer: 0
   m_Name: Main
   m_TagString: Untagged
@@ -167,6 +168,25 @@ MonoBehaviour:
   AppVersion: 1
   PackageAppResourceVersion: 0
   UseLocalDebugRes: 0
+--- !u!114 &574366973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 574366970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c88802095eed046aebe0f7d68b8489c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _resourceServerAddress: 
+  _version: 
+  _defaultLocale: 0
+  _useAssetBundleRes: 0
+  _screenWidth: 0
+  _screenHeight: 0
+  _splashShowTime: 0
+  _logicFrameRate: 0
 --- !u!114 &574366974
 MonoBehaviour:
   m_ObjectHideFlags: 0

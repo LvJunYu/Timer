@@ -89,3 +89,8 @@ MonoBehaviour:
     SearchFilter: t:Prefab
     FoldoutInEditorUI: 1
   _version: 0.1.0
+  _singleAdamResList:
+  - 1104ddba33cb549e88f802e4eca6edb3
+  - 0a9ec92e89e0e4693aab9fa96a822ab2
+  _folderAdamResList:
+  - 73e2a82b8e6d94665bcb3f7190e7f371

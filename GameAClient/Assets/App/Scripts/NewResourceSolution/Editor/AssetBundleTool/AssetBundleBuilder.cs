@@ -246,6 +246,7 @@ namespace NewResourceSolution.EditorTool
                 {
                     bundle.GroupId = ResDefine.ResGroupNecessary;
                 }
+                bundle.IsAdamRes = buildABConfig.SingleAdamResList.Contains (assetGuid);
                 if (!manifest.AddBundle (bundle))
                 {
                     errorCnt++;
@@ -271,9 +272,9 @@ namespace NewResourceSolution.EditorTool
             ABUtility.PathToAssetBundleName (rootPath, childFolderPath, out bundleName);
             CHResBundle bundle = new CHResBundle ();
             bundle.AssetBundleName = bundleName;
-
+            string folderGuid = AssetDatabase.AssetPathToGUID (childFolderPath);
             // todo 这里只区分是否随包发布的资源
-            if (buildABConfig.FullResPackage || buildABConfig.IsGuidInPackageAsset (AssetDatabase.AssetPathToGUID(childFolderPath)))
+            if (buildABConfig.FullResPackage || buildABConfig.IsGuidInPackageAsset (folderGuid))
             {
                 bundle.GroupId = ResDefine.ResGroupInPackage;
             }
@@ -304,6 +305,7 @@ namespace NewResourceSolution.EditorTool
                 }
             }
             bundle.AssetNames = assetNameList.ToArray ();
+            bundle.IsAdamRes = buildABConfig.FolderAdamResList.Contains (folderGuid);
             if (!manifest.AddBundle (bundle))
             {
                 errorCnt++;
@@ -420,6 +422,7 @@ namespace NewResourceSolution.EditorTool
 			}
 			AssetDatabase.CreateFolder(ResPath.Assets, ResPath.StreamingAssets);
 			string outputPathCompressed = ABUtility.GetOutputPath(buildABConfig, buildTarget);
+            string outputPathUncompressed = ABUtility.GetUnCompressedOutputPath (buildABConfig, buildTarget);
 			var allBundles = manifest.Bundles;
 			for (int i = 0; i < allBundles.Count; i++)
 			{
@@ -427,6 +430,11 @@ namespace NewResourceSolution.EditorTool
 				{
 					string abPath = string.Format(StringFormat.TwoLevelPathWithExtention, outputPathCompressed, allBundles[i].AssetBundleName, allBundles[i].CompressedMd5);
 					string destPath = string.Format(StringFormat.TwoLevelPathWithExtention, ResPath.StreamingAssetsPath, allBundles[i].AssetBundleName, allBundles[i].CompressedMd5);
+                    if (allBundles [i].IsAdamRes)
+                    {
+                        abPath = string.Format(StringFormat.TwoLevelPath, outputPathUncompressed, allBundles[i].AssetBundleName);
+                    }
+
 					FileTools.CopyFileSync(abPath, destPath);
 					allBundles[i].FileLocation = EFileLocation.StreamingAsset;
 				}

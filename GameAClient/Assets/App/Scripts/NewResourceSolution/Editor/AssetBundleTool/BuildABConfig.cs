@@ -35,6 +35,17 @@ namespace NewResourceSolution.EditorTool
 		/// 资源版本
 		/// </summary>
 		[SerializeField] private string _version;
+
+        /// <summary>
+        /// 单包亚当资源列表（以非压缩的方式拷贝到streamingAssets）
+        /// </summary>
+        [SerializeField] private List<string> _singleAdamResList = new List<string>();
+        /// <summary>
+        /// 文件夹包亚当资源列表（以非压缩的方式拷贝到streamingAssets）
+        /// </summary>
+        [SerializeField] private List<string> _folderAdamResList = new List<string>();
+        private ResList.AssetSortHelper _singleAdamResListSortHelper = new ResList.AssetSortHelper();
+        private ResList.AssetSortHelper _folderAdamResListSortHelper = new ResList.AssetSortHelper();
 		#endregion
 
 		#region properties
@@ -107,12 +118,27 @@ namespace NewResourceSolution.EditorTool
                 _fullResPackage = value;
             }
         }
-
+        /// <summary>
+        /// 所有打包资源种类
+        /// </summary>
         public List<ResList> AllResLists
         {
             get { return _allResLists; }
         }
-
+        /// <summary>
+        /// 单包亚当资源列表（以非压缩的方式拷贝到streamingAssets）
+        /// </summary>
+        public List<string> SingleAdamResList
+        {
+            get { return _singleAdamResList; }
+        }
+        /// <summary>
+        /// 文件夹包亚当资源列表（以非压缩的方式拷贝到streamingAssets）
+        /// </summary>
+        public List<string> FolderAdamResList
+        {
+            get { return _folderAdamResList; }
+        }
 		#endregion
 
 		#region methods
@@ -205,7 +231,7 @@ namespace NewResourceSolution.EditorTool
 			string guid = AssetDatabase.AssetPathToGUID(path);
 			if (string.IsNullOrEmpty(guid))
 			{
-				LogHelper.Error("Asset \"{0}\" does not exist.", path);
+				LogHelper.Error("Asset <{0}> does not exist.", path);
 				return null;
 			}
             for (int i = 0; i < _allResLists.Count; i++)
@@ -214,13 +240,13 @@ namespace NewResourceSolution.EditorTool
                 {
                     if (!_allResLists [i].AddInPackageAsset (guid))
                     {
-                        LogHelper.Warning("Asset \"{0}\" already in list");
+                        LogHelper.Warning("Asset <{0}> already in list");
                         return null;
                     }
                     return guid;
                 }
             }
-            LogHelper.Error("Res type \"{0}\" not supported", type);
+            LogHelper.Error("Res type <{0}> not supported", type);
             return null;
 		}
 
@@ -235,8 +261,42 @@ namespace NewResourceSolution.EditorTool
             }
             return null;
 		}
-		#endregion
 
+        public string AddSingleAdamRes (string path)
+        {
+            string guid = AssetDatabase.AssetPathToGUID(path);
+            if (string.IsNullOrEmpty(guid))
+            {
+                LogHelper.Error("Asset <{0}> does not exist.", path);
+                return null;
+            }
+            if (_singleAdamResList.Contains (guid))
+            {
+                LogHelper.Warning("Asset <{0}> already in list");
+                return null;
+            }
+            _singleAdamResList.Add (guid);
+            _singleAdamResListSortHelper.Sort (_singleAdamResList);
+            return guid;
+        }
+        public string AddFolderAdamRes (string path)
+        {
+            string guid = AssetDatabase.AssetPathToGUID(path);
+            if (string.IsNullOrEmpty(guid))
+            {
+                LogHelper.Error("Asset <{0}> does not exist.", path);
+                return null;
+            }
+            if (_folderAdamResList.Contains (guid))
+            {
+                LogHelper.Warning("Asset <{0}> already in list");
+                return null;
+            }
+            _folderAdamResList.Add (guid);
+            _folderAdamResListSortHelper.Sort (_folderAdamResList);
+            return guid;
+        }
+		#endregion
     }
 
     [System.Serializable]
@@ -297,7 +357,7 @@ namespace NewResourceSolution.EditorTool
         /// <summary>
         /// 辅助guid列表排序的类，按照guid对应的asset文件路径排序
         /// </summary>
-        private class AssetSortHelper
+        public class AssetSortHelper
         {
             private Dictionary<string, string> _pathToGuid = new Dictionary<string, string>();
             private List<string> _pathList = new List<string>();
