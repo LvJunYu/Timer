@@ -226,7 +226,7 @@ namespace GameA
         private void RefreshProjectDetailInfoPanel () {
             _cachedView.Title.gameObject.SetActive (true);
             _cachedView.TitleInput.gameObject.SetActive (false);
-            _cachedView.EditBtn.gameObject.SetActive (true);
+            _cachedView.EditTitleBtn.gameObject.SetActive (true);
             _cachedView.ConfirmTitleBtn.gameObject.SetActive (false);
             _cachedView.Desc.gameObject.SetActive (true);
             _cachedView.DescInput.gameObject.SetActive (false);

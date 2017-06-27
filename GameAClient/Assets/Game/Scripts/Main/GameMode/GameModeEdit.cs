@@ -212,9 +212,12 @@ namespace GameA.Game
             if (mode == EMode.EditTest)
             {
                 EditMode.Instance.HandlePlay();
-                GameRun.Instance.ChangeState(ESceneState.Play);
+                if (!GameRun.Instance.ChangeState(ESceneState.Play))
+                {
+                    ChangeMode(EMode.Edit);
+                    return;
+                }
                 GameRun.Instance.Playing();
-
                 SocialGUIManager.Instance.CloseUI<UICtrlItem>();
 //                SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
                 SocialGUIManager.Instance.OpenUI<UICtrlEdit>();
