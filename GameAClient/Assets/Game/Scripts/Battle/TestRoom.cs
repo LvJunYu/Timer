@@ -15,6 +15,10 @@ namespace GameA.Game
 {
     public class TestRoom : MonoBehaviour
     {
+        public long JoinRoomGuid;
+
+        private bool _ready;
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.U))
@@ -30,7 +34,18 @@ namespace GameA.Game
 
             if (Input.GetKeyDown(KeyCode.I))
             {
-                //RoomManager.Instance.SendRequestJoinRoom(EBattleType.EBT_PVE, 0);s
+                RoomManager.Instance.SendRequestJoinRoom(JoinRoomGuid);
+            }
+
+            if (Input.GetKeyDown(KeyCode.O))
+            {
+                RoomManager.Instance.SendRequestExitRoom(JoinRoomGuid);
+            }
+
+            if (Input.GetKeyDown(KeyCode.J))
+            {
+                _ready = !_ready;
+                RoomManager.Instance.SendRoomReadyInfo(_ready);
             }
         }
     }

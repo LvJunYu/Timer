@@ -504,6 +504,7 @@ namespace GameA
             _mediumChallengeProjectData = new Project();
             _difficultChallengeProjectData = new Project();
             _randomChallengeProjectData = new Project();
+            OnCreate();
         }
         #endregion
     }

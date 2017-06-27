@@ -105,7 +105,7 @@ namespace GameA.Game
                         other.SpeedY = 0;
                         if (other.IsMain)
                         {
-                            PlayMode.Instance.MainUnit.Step(80);
+                            PlayMode.Instance.MainPlayer.Step(80);
                             other.ExtraSpeed.y = ExtraSpeedY;
                             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
                         }

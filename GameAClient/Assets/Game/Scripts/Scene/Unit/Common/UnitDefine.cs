@@ -66,6 +66,20 @@ namespace GameA.Game
             return id == 7002 || id == 7003 || id == 7004;
         }
 
+        public static int GetRandomPlantId(int id)
+        {
+            switch (id)
+            {
+                case 0:
+                    return 7002;
+                case 1:
+                    return 7003;
+                case 2:
+                    return 7004;
+            }
+            return 7002;
+        }
+
         public static bool IsBoard(int id)
         {
             return id == 7001 || id == 7101 || id == 7102 || id == 7103 || id == 7104;

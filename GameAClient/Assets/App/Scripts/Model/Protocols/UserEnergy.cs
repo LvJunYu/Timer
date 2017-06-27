@@ -148,6 +148,7 @@ namespace GameA
         }
 
         public UserEnergy () { 
+            OnCreate();
         }
         #endregion
     }

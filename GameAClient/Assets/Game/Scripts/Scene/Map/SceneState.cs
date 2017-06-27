@@ -36,7 +36,7 @@ namespace GameA.Game
 
         public bool IsMainPlayerCreated
         {
-            get { return _mapStatistics.MainPlayerCount > 0; }
+            get { return _mapStatistics.SpawnCount > 0; }
         }
 
         public bool HasKey
@@ -175,7 +175,7 @@ namespace GameA.Game
                 if (_runState == ESceneState.Win)
                 {
                     total += ((int)(RunTimeTimeLimit - _gameTimer)) * 10;
-                    total += PlayMode.Instance.MainUnit.Life * 200;
+                    total += PlayMode.Instance.MainPlayer.Life * 200;
                 }
                 total += _gemGain * 100;
                 total += _monsterKilled * 200;
@@ -336,7 +336,7 @@ namespace GameA.Game
                 }
                 return false;
             }
-            if (PlayMode.Instance.MainUnit == null)
+            if (PlayMode.Instance.MainPlayer == null)
             {
                 return false;
             }

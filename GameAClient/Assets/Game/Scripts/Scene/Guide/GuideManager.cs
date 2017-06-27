@@ -109,25 +109,25 @@ namespace GameA.Game
 				_currentGuide.OnScreenClick();
 			}
 
-			// if (PlayMode.Instance.MainUnit != null) {
+			// if (PlayMode.Instance.MainPlayer != null) {
 			// 	if (_currentGuide == null) return;
-			// 	if (PlayMode.Instance.MainUnit.MainInput.RightInput == 1) {
+			// 	if (PlayMode.Instance.MainPlayer.PlayerInput.RightInput == 1) {
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.RightButton);
-			// 	} else if (PlayMode.Instance.MainUnit.MainInput.RightInput == 2) {
+			// 	} else if (PlayMode.Instance.MainPlayer.PlayerInput.RightInput == 2) {
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.RightButtonDouble);
 			// 	}
 			// 	if (_currentGuide == null) return;
-			// 	if (PlayMode.Instance.MainUnit.MainInput.LeftInput == 1) {
+			// 	if (PlayMode.Instance.MainPlayer.PlayerInput.LeftInput == 1) {
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.LeftButton);
-			// 	} else if (PlayMode.Instance.MainUnit.MainInput.LeftInput == 2) {
+			// 	} else if (PlayMode.Instance.MainPlayer.PlayerInput.LeftInput == 2) {
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.LeftButtonDouble);
 			// 	}
 			// 	if (_currentGuide == null) return;
-			// 	if (PlayMode.Instance.MainUnit.MainInput.JumpInput) {
+			// 	if (PlayMode.Instance.MainPlayer.PlayerInput.JumpInput) {
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.JumpButton);
 			// 	}
 			// 	if (_currentGuide == null) return;
-			// 	if (PlayMode.Instance.MainUnit.MainInput.Skill1Input) {
+			// 	if (PlayMode.Instance.MainPlayer.PlayerInput.Skill1Input) {
 			// 		_currentGuide.OnInput(Guide.EGuideInputKey.AttackButton);
 			// 	}
 			// }
@@ -264,9 +264,9 @@ namespace GameA.Game
 		}
 
 		protected void MoveMainPlayer (IntVec2 pos) {
-			if (PlayMode.Instance.MainUnit != null) {
-				PlayMode.Instance.MainUnit.CenterPos = pos;
-				PlayMode.Instance.MainUnit.SetFacingDir(EMoveDirection.Right);
+			if (PlayMode.Instance.MainPlayer != null) {
+				PlayMode.Instance.MainPlayer.CenterPos = pos;
+				PlayMode.Instance.MainPlayer.SetFacingDir(EMoveDirection.Right);
 			}
 		}
 

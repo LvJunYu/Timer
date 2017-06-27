@@ -13,7 +13,7 @@ namespace GameA.Game
     public class MapConfig
     {
         public static int FinalItemId;
-        public static int MainPlayerId;
+        public static int SpawnId;
         public static int TerrainItemId;
         public static IntVec2 PermitMapSize;
         public static bool UseAOI ;
@@ -30,14 +30,14 @@ namespace GameA.Game
 //                    {
 //                        case EProjectCategory.PC_Relaxation:
 //                        case EProjectCategory.PC_Puzzle:
-                            MainPlayerId = 1001;
+                            SpawnId = 1000;
                             TerrainItemId = 4001;
                             FinalItemId = 5001;
                             PermitMapSize = new IntVec2(60, 30) *ConstDefineGM2D.ServerTileScale;
                             //UseAOI = false;
 //                            break;
 //                        case EProjectCategory.PC_Challenge:
-//                            MainPlayerId = 1001;
+//                            SpawnId = 1001;
 //                            TerrainItemId = 4001;
 //                            FinalItemId = 5001;
 //                            PermitMapSize = new IntVec2(200, 200) * ConstDefineGM2D.ServerTileScale;
@@ -45,7 +45,7 @@ namespace GameA.Game
 //                    }
 //                    break;
 //                case EMatrixType.MT_Sandbox:
-//                    MainPlayerId = 31001;
+//                    SpawnId = 31001;
 //                    TerrainItemId = 34001;
 //                    FinalItemId = 35001;
 //                    break;

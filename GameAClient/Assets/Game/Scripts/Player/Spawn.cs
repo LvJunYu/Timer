@@ -1,8 +1,8 @@
 ﻿/********************************************************************
-** Filename : RemotePlayer
+** Filename : Spawn
 ** Author : Dong
-** Date : 2017/6/20 星期二 下午 3:57:08
-** Summary : RemotePlayer
+** Date : 2017/6/24 星期六 下午 6:54:08
+** Summary : Spawn
 ***********************************************************************/
 
 using System;
@@ -10,7 +10,8 @@ using System.Collections;
 
 namespace GameA.Game
 {
-    public class RemotePlayer : PlayerBase
+    [Unit(Id = 1000, Type = typeof(Spawn))]
+    public class Spawn : BlockBase
     {
     }
 }

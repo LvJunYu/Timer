@@ -239,6 +239,7 @@ namespace GameA
 
         public RelationUserList () { 
             _dataList = new List<UserInfoSimple>();
+            OnCreate();
         }
         #endregion
     }

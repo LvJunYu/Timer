@@ -547,6 +547,7 @@ namespace GameA
             _userInfo = new UserInfoSimple();
             _extendData = new ProjectExtend();
             _projectUserData = new ProjectUserData();
+            OnCreate();
         }
         #endregion
     }

@@ -225,8 +225,7 @@ namespace SoyEngine
                     _readBuffer.Clear();
                     break;
                 }
-                LogHelper.Debug("{0} Client event:host={1},eventType={2},error={3}", GetType(), _clientId, eventType,
-                    (NetworkError)error);
+                //LogHelper.Debug("{0} Client event:host={1},eventType={2},error={3}", GetType(), _clientId, eventType, (NetworkError)error);
                 switch (eventType)
                 {
                     case NetworkEventType.ConnectEvent:
@@ -289,6 +288,7 @@ namespace SoyEngine
                 //    continue;
                 //}
                 object msg = _serializer.Deserialize(_readBuffer, msgType, size);
+                LogHelper.Debug("HandlePacket -> {0}: {1}", msg.GetType().Name, Newtonsoft.Json.JsonConvert.SerializeObject(msg));
                 if (msg != null)
                 {
                     AppContext.CurrentContext.CurrentNetLink = _netLink;
@@ -304,7 +304,8 @@ namespace SoyEngine
 
         public virtual bool Send(object msg)
         {
-            return SendByChannel(msg, (int)0);
+            LogHelper.Debug("Send -> {0}: {1}", msg.GetType().Name, Newtonsoft.Json.JsonConvert.SerializeObject(msg));
+            return SendByChannel(msg, 0);
         }
 
         protected virtual bool SendByChannel(object msg, int channelId)

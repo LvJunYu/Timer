@@ -220,6 +220,7 @@ namespace GameA
 
         public UserPublishedWorldProjectList () { 
             _projectList = new List<Project>();
+            OnCreate();
         }
         #endregion
     }

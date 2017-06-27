@@ -189,6 +189,7 @@ namespace GameA
         public AdventureUserSection () { 
             _normalLevelUserDataList = new List<AdventureUserLevelDataDetail>();
             _bonusLevelUserDataList = new List<AdventureUserLevelDataDetail>();
+            OnCreate();
         }
         #endregion
     }

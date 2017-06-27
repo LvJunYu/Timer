@@ -24,7 +24,7 @@ namespace GameA.Game
                 {
                     return _instance.Trans.position;
                 }
-                return PlayMode.Instance.MainUnit.Trans.position;
+                return PlayMode.Instance.MainPlayer.Trans.position;
             }
         }
 

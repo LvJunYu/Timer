@@ -19,7 +19,6 @@ namespace GameA.Game
         #region 常量与字段
 
         private static DataScene2D _instance;
-        private SceneNode _mainPlayer;
         [SerializeField]
         private static Vector3 _startPos;
         [SerializeField]
@@ -29,7 +28,7 @@ namespace GameA.Game
         protected Dictionary<IntVec3, UnitExtra> _unitExtras = new Dictionary<IntVec3, UnitExtra>();
         protected Dictionary<IntVec3, List<IntVec3>> _switchedUnits = new Dictionary<IntVec3, List<IntVec3>>();
         private static List<UnitBase> _cachedUnits = new List<UnitBase>();
-
+        private List<UnitDesc> _spawnDatas = new List<UnitDesc>();
 		/// <summary>
 		/// 删除修改的物体堆栈
 		/// </summary>
@@ -52,9 +51,9 @@ namespace GameA.Game
             get { return _instance ?? (_instance = new DataScene2D()); }
         }
 
-        public SceneNode MainPlayer
+        public List<UnitDesc> SpawnDatas
         {
-            get { return _mainPlayer; }
+            get { return _spawnDatas; }
         }
 
         public Vector3 StartPos
@@ -195,9 +194,9 @@ namespace GameA.Game
             {
                 SetUnitExtra(unitDesc, tableUnit);
             }
-            if (tableUnit.EUnitType == EUnitType.MainPlayer)
+            if (tableUnit.EUnitType == EUnitType.Spawn)
             {
-                _mainPlayer = dataNode;
+                _spawnDatas.Add(unitDesc);
             }
             return true;
         }
@@ -232,9 +231,9 @@ namespace GameA.Game
                 return false;
             }
             DeleteUnitExtra(unitDesc.Guid);
-            if (tableUnit.EUnitType == EUnitType.MainPlayer)
+            if (tableUnit.EUnitType == EUnitType.Spawn)
             {
-                _mainPlayer = null;
+                _spawnDatas.Remove(unitDesc);
             }
             return true;
         }
@@ -415,6 +414,12 @@ namespace GameA.Game
         {
             _cachedUnitObjects.Clear();
             var nodes = GridCastAll(grid2D, layerMask, minDepth, maxDepth, excludeNode);
+            return GetUnits(grid2D, nodes);
+        }
+
+        public static List<UnitDesc> GetUnits(Grid2D grid2D, List<SceneNode> nodes)
+        {
+            _cachedUnitObjects.Clear();
             for (int i = 0; i < nodes.Count; i++)
             {
                 var node = nodes[i];

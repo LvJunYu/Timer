@@ -103,6 +103,7 @@ namespace GameA.Game
         Default,
         UI = 1,
         MainPlayer,
+        RemotePlayer,
         Hero,
         Item,
         AttackPlayer,

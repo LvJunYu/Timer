@@ -28,7 +28,7 @@ namespace GameA.Game
 
         protected override void OnTrigger()
         {
-            PlayMode.Instance.MainUnit.Life ++;
+            PlayMode.Instance.MainPlayer.Life ++;
             base.OnTrigger();
         }
     }

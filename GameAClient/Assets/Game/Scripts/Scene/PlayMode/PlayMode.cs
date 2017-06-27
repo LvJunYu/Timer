@@ -37,7 +37,7 @@ namespace GameA.Game
         private int _gameFailedTime;
         private int _gameSucceedTime;
         private List<int> _inputDatas = new List<int>();
-        [SerializeField] private MainUnit _mainUnit;
+        [SerializeField] private MainPlayer _mainPlayer;
 
         private Texture2D _maskBaseTexture;
         private bool _pausing;
@@ -60,10 +60,10 @@ namespace GameA.Game
             get { return _focusPos; }
         }
 
-        public MainUnit MainUnit
+        public MainPlayer MainPlayer
         {
-            get { return _mainUnit; }
-            set { _mainUnit = value; }
+            get { return _mainPlayer; }
+            set { _mainPlayer = value;}
         }
 
         public int GameSuccessFrameCnt
@@ -106,7 +106,6 @@ namespace GameA.Game
 
         public void Dispose()
         {
-            //            Debug.Log ("PlayMode.Dispose");
             Messenger<EDieType>.RemoveListener(EMessengerType.OnMonsterDead, OnMonsterDead);
             if (_statistic != null)
             {
@@ -117,9 +116,7 @@ namespace GameA.Game
 
         public bool Init()
         {
-            //            Debug.Log ("PlayMode.Init");
             Messenger<EDieType>.AddListener(EMessengerType.OnMonsterDead, OnMonsterDead);
-
             _unitUpdateManager = new UnitUpdateManager();
             _statistic = new GameStatistic();
 
@@ -187,13 +184,13 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_pausing && _mainUnit.Life <= 0)
+            if (_pausing && _mainPlayer.Life <= 0)
             {
-                _mainUnit.UpdateView(ConstDefineGM2D.FixedDeltaTime);
+                _mainPlayer.UpdateView(ConstDefineGM2D.FixedDeltaTime);
                 return;
             }
             ColliderScene2D.Instance.UpdateLogic(_focusPos);
-            if (_mainUnit != null && _unitUpdateManager != null)
+            if (_mainPlayer != null && _unitUpdateManager != null)
             {
                 _unitUpdateManager.UpdateLogic(deltaTime);
             }
@@ -201,9 +198,9 @@ namespace GameA.Game
             {
                 _sceneState.UpdateLogic(deltaTime);
             }
-            if (_mainUnit != null)
+            if (_mainPlayer != null)
             {
-                _focusPos = GetFocusPos(_mainUnit.CameraFollowPos);
+                _focusPos = GetFocusPos(_mainPlayer.CameraFollowPos);
             }
         }
 
@@ -388,7 +385,7 @@ namespace GameA.Game
             _gameSucceedTime = GameRun.Instance.LogicFrameCnt;
             GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.GameAudioBgm01);
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
-            _mainUnit.OnSucceed();
+            _mainPlayer.OnSucceed();
             GuideManager.Instance.OnGameSuccess();
             if (null != _statistic)
             {
@@ -439,25 +436,41 @@ namespace GameA.Game
 
         #region State
 
-        public bool CheckPlayerValid()
+        public bool CheckPlayerValid(bool run = true)
         {
-            SceneNode mainPlayer = DataScene2D.Instance.MainPlayer;
-            if (mainPlayer == null)
+            var spawnDatas = DataScene2D.Instance.SpawnDatas;
+            if (spawnDatas.Count == 0)
             {
-                LogHelper.Error("No MainPlayer");
+                if (run)
+                {
+                    Messenger<string>.Broadcast(EMessengerType.GameErrorLog, "游戏无法开启，请先放置主角");
+                }
                 return false;
             }
-            if (!DataScene2D.Instance.ValidMapRect.Contains(new IntVec2(mainPlayer.Guid.x, mainPlayer.Guid.y)))
+            if (run)
             {
-                LogHelper.Error("No MainPlayer");
-                return false;
+                for (int i = 0; i < spawnDatas.Count; i++)
+                {
+                    var spawnData = spawnDatas[i];
+                    DeleteUnit(spawnData);
+                    if (i == 0)
+                    {
+                        spawnData.Id = 1001;
+                        _mainPlayer = CreateUnit(spawnData) as MainPlayer;
+                    }
+                    else
+                    {
+                        spawnData.Id = 1002;
+                        CreateUnit(spawnData);
+                    }
+                }
             }
             return true;
         }
 
         public bool StartEdit()
         {
-            if (!CheckPlayerValid())
+            if (!CheckPlayerValid(false))
             {
                 return false;
             }
@@ -505,8 +518,7 @@ namespace GameA.Game
             _run = false;
             BeforePlay();
             _sceneState.StartPlay();
-            SceneNode mainPlayer = DataScene2D.Instance.MainPlayer;
-            var colliderPos = new IntVec2(mainPlayer.Grid.XMin, mainPlayer.Grid.YMin);
+            var colliderPos = new IntVec2(_mainPlayer.ColliderGrid.XMin, _mainPlayer.ColliderGrid.YMin);
             UpdateWorldRegion(colliderPos, true);
         }
 

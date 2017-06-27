@@ -278,14 +278,14 @@ namespace GameA.Game
 		public void CreateDefaultScene()
 		{
 			//生成主角
-			{
-				var unitObject = new UnitDesc();
-				unitObject.Id = MapConfig.MainPlayerId;
-			    unitObject.Scale = Vector2.one;
-				unitObject.Guid = new IntVec3((2*ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x),
-					(ConstDefineGM2D.DefaultGeneratedTileHeight + ConstDefineGM2D.MapStartPos.y), (int) EUnitDepth.Dynamic);
-				EditMode.Instance.AddUnit(unitObject);
-			}
+            {
+                var unitObject = new UnitDesc();
+                unitObject.Id = MapConfig.SpawnId;
+                unitObject.Scale = Vector2.one;
+                unitObject.Guid = new IntVec3((2 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x),
+                    (ConstDefineGM2D.DefaultGeneratedTileHeight + ConstDefineGM2D.MapStartPos.y), (int)EUnitDepth.Dynamic);
+                EditMode.Instance.AddUnit(unitObject);
+            }
             //生成胜利之门
             {
                 var unitObject = new UnitDesc();
@@ -298,10 +298,10 @@ namespace GameA.Game
 		    var validMapRect = DataScene2D.Instance.ValidMapRect;
             for (int i = validMapRect.Min.x; i < validMapRect.Max.x; i += ConstDefineGM2D.ServerTileScale)
 			{
-                for (int j = validMapRect.Min.y; j < ConstDefineGM2D.DefaultGeneratedTileHeight + validMapRect.Min.y;j += ConstDefineGM2D.ServerTileScale)
-				{
+                for (int j = validMapRect.Min.y + 2 * ConstDefineGM2D.ServerTileScale; j < ConstDefineGM2D.DefaultGeneratedTileHeight + validMapRect.Min.y; j += ConstDefineGM2D.ServerTileScale)
+                {
                     EditMode.Instance.AddUnit(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one));
-				}
+                }
 			}
 		}
 

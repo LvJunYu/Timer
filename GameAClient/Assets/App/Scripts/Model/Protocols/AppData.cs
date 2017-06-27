@@ -178,6 +178,7 @@ namespace GameA
         }
 
         public AppData () { 
+            OnCreate();
         }
         #endregion
     }

@@ -31,6 +31,26 @@ namespace GameA.Game
             Scale = scale;
         }
 
+        public IntVec3 GetUpPos(int z)
+        {
+            return new IntVec3(Guid.x, Guid.y + ConstDefineGM2D.ServerTileScale, z);
+        }
+
+        public IntVec3 GetDownPos(int z)
+        {
+            return new IntVec3(Guid.x, Guid.y - ConstDefineGM2D.ServerTileScale, z);
+        }
+
+        public IntVec3 GetLeftPos(int z)
+        {
+            return new IntVec3(Guid.x - ConstDefineGM2D.ServerTileScale, Guid.y, z);
+        }
+
+        public IntVec3 GetRightPos(int z)
+        {
+            return new IntVec3(Guid.x + ConstDefineGM2D.ServerTileScale, Guid.y , z);
+        }
+
         public static bool operator ==(UnitDesc a, UnitDesc other)
         {
             return (a.Id == other.Id) && (a.Guid == other.Guid) && (a.Rotation == other.Rotation);

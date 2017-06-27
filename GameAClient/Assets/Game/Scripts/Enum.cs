@@ -76,8 +76,8 @@ namespace GameA.Game
 
     public enum EUnitType
     {
-        None,
-        MainPlayer,
+        Spawn,
+        Player,
         Monster,
         Vehicle,
         Earth,
@@ -93,8 +93,8 @@ namespace GameA.Game
 	//关联配表 不能从中间加入
     public enum ELayerType
     {
-        None,
-        MainPlayer = 1,
+        MainPlayer = 0,
+        RemotePlayer = 1,
         Monster = 2,
         Item = 3,
         AttackPlayer = 4,

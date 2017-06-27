@@ -20,21 +20,26 @@ namespace GameA.Game
         RequestJoin,
         RequstFailed,
         Created,
+        OpenBattle,
+    }
+
+    public enum EBattleState
+    {
+        None,
         Open,
+        Wait,
+        Start,
         Fight,
         Close
     }
 
-    [Poolable(MinPoolSize = 100, PreferedPoolSize = 1000, MaxPoolSize = 10000)]
-    public class Room : IPoolableObject
+    public class Room
     {
         protected ERoomState _eRoomState;
         protected EBattleType _eBattleType;
         protected long _guid;
         protected long _projectGuid;
-
         protected RoomUser _hostUser;
-
         protected List<RoomUser> _users = new List<RoomUser>();
 
         public long Guid
@@ -54,11 +59,17 @@ namespace GameA.Game
             set { _eRoomState = value; }
         }
 
-        public void OnGet()
+        public List<RoomUser> Users
         {
+            get { return _users; }
         }
 
-        public void OnFree()
+        public EBattleType EBattleType
+        {
+            get { return _eBattleType; }
+        }
+
+        public void Clear()
         {
             _eRoomState = ERoomState.None;
             _eBattleType = EBattleType.EBT_None;
@@ -68,8 +79,19 @@ namespace GameA.Game
             _users.Clear();
         }
 
-        public void OnDestroyObject()
+        public bool TryGetUser(long userGuid, out RoomUser user)
         {
+            for (int i = 0; i < _users.Count; i++)
+            {
+                var cur = _users[i];
+                if (cur != null && cur.Guid == userGuid)
+                {
+                    user = cur;
+                    return true;
+                }
+            }
+            user = null;
+            return false;
         }
 
         public bool OnCreate(RoomUser user,long roomGuid, long projectGuid, EBattleType eBattleType)
@@ -116,14 +138,12 @@ namespace GameA.Game
 
         internal void UserReady(long userGuid, bool flag)
         {
-             for (int i = _users.Count - 1; i >= 0; i--)
+            RoomUser user;
+            if (!TryGetUser(userGuid, out user))
             {
-                var user = _users[i];
-                if (user != null && user.Guid == userGuid)
-                {
-                    user.Ready = flag;
-                }
+                return;
             }
+            user.Ready = flag;
         }
 
         internal void UserExit(long exitGuid, long hostGuid)
@@ -150,12 +170,6 @@ namespace GameA.Game
             }
         }
 
-        internal void Open()
-        {
-            //进入战场！
-            _eRoomState = ERoomState.Open;
-        }
-
         internal void WarnningHost()
         {
             if (_hostUser == null)
@@ -168,6 +182,12 @@ namespace GameA.Game
             }
             //警告自己
             LogHelper.Debug("WarnningHost");
+        }
+
+        internal void OpenBattle()
+        {
+            //开启战场！
+            _eRoomState = ERoomState.OpenBattle;
         }
     }
 }

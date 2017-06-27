@@ -21,7 +21,7 @@ namespace GameA.Game
         /// </summary>
         protected IntVec2 _shooterEffectOffset = new IntVec2(240, 320);
         protected UnityNativeParticleItem _shooterEffect;
-        protected MainUnit _mainUnit;
+        protected MainPlayer _mainPlayer;
 
         protected override bool OnInit()
         {
@@ -29,10 +29,10 @@ namespace GameA.Game
             {
                 return false;
             }
-            _mainUnit = PlayMode.Instance.MainUnit;
-            _curPos = _mainUnit.CurMoveDirection == EMoveDirection.Right
-                ? _mainUnit.CenterPos + new IntVec2(-_shooterEffectOffset.x, _shooterEffectOffset.y)
-                : _mainUnit.CenterPos + new IntVec2(_shooterEffectOffset.x - GetColliderSize().x, _shooterEffectOffset.y);
+            _mainPlayer = PlayMode.Instance.MainPlayer;
+            _curPos = _mainPlayer.CurMoveDirection == EMoveDirection.Right
+                ? _mainPlayer.CenterPos + new IntVec2(-_shooterEffectOffset.x, _shooterEffectOffset.y)
+                : _mainPlayer.CenterPos + new IntVec2(_shooterEffectOffset.x - GetColliderSize().x, _shooterEffectOffset.y);
             return true;
         }
 
@@ -46,9 +46,9 @@ namespace GameA.Game
 
         public void Play()
         {
-            _curPos = _mainUnit.CurMoveDirection == EMoveDirection.Right
-                ? _mainUnit.CenterPos + new IntVec2(-_shooterEffectOffset.x, _shooterEffectOffset.y)
-                : _mainUnit.CenterPos +
+            _curPos = _mainPlayer.CurMoveDirection == EMoveDirection.Right
+                ? _mainPlayer.CenterPos + new IntVec2(-_shooterEffectOffset.x, _shooterEffectOffset.y)
+                : _mainPlayer.CenterPos +
                   new IntVec2(_shooterEffectOffset.x - GetColliderSize().x, _shooterEffectOffset.y);
             SetPos(_curPos);
             if (_shooterEffect != null)
@@ -78,11 +78,11 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            if (_isStart && _isAlive && _mainUnit != null && _mainUnit.IsAlive)
+            if (_isStart && _isAlive && _mainPlayer != null && _mainPlayer.IsAlive)
             {
-                var destPos = _mainUnit.CurMoveDirection == EMoveDirection.Right
-                    ? _mainUnit.CenterPos + new IntVec2(-_shooterEffectOffset.x, _shooterEffectOffset.y)
-                    : _mainUnit.CenterPos + new IntVec2(_shooterEffectOffset.x - GetColliderSize().x, _shooterEffectOffset.y);
+                var destPos = _mainPlayer.CurMoveDirection == EMoveDirection.Right
+                    ? _mainPlayer.CenterPos + new IntVec2(-_shooterEffectOffset.x, _shooterEffectOffset.y)
+                    : _mainPlayer.CenterPos + new IntVec2(_shooterEffectOffset.x - GetColliderSize().x, _shooterEffectOffset.y);
                 _speed = (destPos - _curPos) / 6;
                 if (_speed.x == 0)
                 {

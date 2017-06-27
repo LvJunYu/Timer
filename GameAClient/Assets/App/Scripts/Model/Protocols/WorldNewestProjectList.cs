@@ -163,6 +163,7 @@ namespace GameA
 
         public WorldNewestProjectList () { 
             _projectList = new List<Project>();
+            OnCreate();
         }
         #endregion
     }

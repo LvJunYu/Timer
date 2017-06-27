@@ -7,12 +7,13 @@
 
 using System;
 using System.Collections;
+using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
     public class PlayerManager
     {
-
         public static PlayerManager _instance;
 
         public static PlayerManager Instance

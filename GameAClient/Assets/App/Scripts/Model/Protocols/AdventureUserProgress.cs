@@ -178,6 +178,7 @@ namespace GameA
         }
 
         public AdventureUserProgress () { 
+            OnCreate();
         }
         #endregion
     }

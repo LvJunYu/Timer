@@ -129,6 +129,7 @@ namespace GameA
 
         public UserRaffleTicket () { 
             _itemDataList = new List<RaffleTicketItem>();
+            OnCreate();
         }
         #endregion
     }

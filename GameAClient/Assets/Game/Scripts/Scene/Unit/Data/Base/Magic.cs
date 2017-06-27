@@ -108,7 +108,7 @@ namespace GameA.Game
                                 _magicRotate = units[i];
                                 break;
                             }
-                            //if (GM2DTools.OnDirectionHit(units[i], PlayMode.Instance.MainUnit, _curMoveDirection))
+                            //if (GM2DTools.OnDirectionHit(units[i], PlayMode.Instance.MainPlayer, _curMoveDirection))
                             if (_magicRotate == null)
                             {
                                 _timerMagic = 0;

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System;
 using SoyEngine.Proto;
@@ -120,7 +120,7 @@ namespace GameA.Game
 
         protected virtual void InitGame()
         {
-			MainUnit mainPlayer = PlayMode.Instance.MainUnit;
+			MainPlayer mainPlayer = PlayMode.Instance.MainPlayer;
 			if (mainPlayer == null)
 				return;
 			// todo set data
@@ -175,6 +175,21 @@ namespace GameA.Game
 			}
         }
 
+        public override void OnGameStart()
+        {
+            base.OnGameStart();
+            if (_project.GetData() == null)
+            {
+                NeedSave = true;
+                MapDirty = true;
+            }
+            else
+            {
+                NeedSave = false;
+                MapDirty = false;
+            }
+        }
+
         public override bool Restart(Action successCb, Action failedCb)
         {
             ChangeMode(EMode.Edit);
@@ -197,9 +212,12 @@ namespace GameA.Game
             if (mode == EMode.EditTest)
             {
                 EditMode.Instance.HandlePlay();
-                GameRun.Instance.ChangeState(ESceneState.Play);
+                if (!GameRun.Instance.ChangeState(ESceneState.Play))
+                {
+                    ChangeMode(EMode.Edit);
+                    return;
+                }
                 GameRun.Instance.Playing();
-
                 SocialGUIManager.Instance.CloseUI<UICtrlItem>();
 //                SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
                 SocialGUIManager.Instance.OpenUI<UICtrlEdit>();

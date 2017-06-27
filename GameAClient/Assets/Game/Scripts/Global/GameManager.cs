@@ -148,6 +148,23 @@ namespace GameA
             return PlayNext();
         }
 
+
+        public bool RequestPlayMultiCooperation(Project project)
+        {
+            _projectList.Clear();
+            _projectList.Add(project);
+            _curProjectInx = 0;
+            return RequestStartGame(project, EStartType.MultiCooperationPlay, null);
+        }
+
+        public bool RequestPlayMultiBattle(Project project)
+        {
+            _projectList.Clear();
+            _projectList.Add(project);
+            _curProjectInx = 0;
+            return RequestStartGame(project, EStartType.MultiBattlePlay, null);
+        }
+        
         public bool PlayNext()
         {
             if (!HasNext())
@@ -208,6 +225,8 @@ namespace GameA
             AdventureNormalPlay,
             AdventureNormalPlayRecord,
             AdventureBonusPlay,
+            MultiCooperationPlay,
+            MultiBattlePlay,
         }
 
         private bool RequestStartGame(Project project, EStartType eStartType, object param = null)
