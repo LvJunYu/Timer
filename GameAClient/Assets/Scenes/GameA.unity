@@ -141,7 +141,7 @@ MonoBehaviour:
     _trans: {fileID: 0}
   _run: 0
   Language: 0
-  _env: 4
+  _env: 0
   _clearCache: 0
   _appServerAddress:
   - Enable: 0
@@ -162,7 +162,7 @@ MonoBehaviour:
   - Enable: 0
     AppServerApiRoot: http://dev.joy-you.com/gameaapi
     GameResoureRoot: http://127.0.0.1:7888
-  - Enable: 0
+  - Enable: 1
     AppServerApiRoot: http://192.168.3.158:8080/GameAServer/gameaapi
     GameResoureRoot: http://127.0.0.1:7888/Joyyou
 --- !u!114 &574366973

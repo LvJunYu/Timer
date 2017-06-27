@@ -112,7 +112,7 @@ namespace GameA
             LocalizationManager.Instance.Init();
 //            TableManager.Instance.Init();
 
-//            ResourcesManager.Instance.CheckApplicationAndResourcesVersion();
+            ResourcesManager.Instance.CheckApplicationAndResourcesVersion();
             // todo update api
 //            GameResourceManager rm = gameObject.AddComponent<GameResourceManager> ();
 //            if (!rm.Init ("GameMaker2D")) {
