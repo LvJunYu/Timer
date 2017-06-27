@@ -25,9 +25,6 @@ namespace GameA
         [SerializeField] private EEnvironment _env;
 		[SerializeField] private bool _clearCache;
         [SerializeField] private AddressConfig[] _appServerAddress;
-        public string AppVersion = "1.0";
-	    public int PackageAppResourceVersion = 1;
-	    public bool UseLocalDebugRes = false;
 
 		internal static SocialApp Instance;
 
@@ -113,9 +110,9 @@ namespace GameA
             CoroutineManager.Instance.Init(this);
             ResourcesManager.Instance.Init ();
             LocalizationManager.Instance.Init();
-            TableManager.Instance.Init();
+//            TableManager.Instance.Init();
 
-            ResourcesManager.Instance.CheckApplicationAndResourcesVersion();
+//            ResourcesManager.Instance.CheckApplicationAndResourcesVersion();
             // todo update api
 //            GameResourceManager rm = gameObject.AddComponent<GameResourceManager> ();
 //            if (!rm.Init ("GameMaker2D")) {
@@ -126,7 +123,7 @@ namespace GameA
         public void Init()
         {
             GlobalVar.Instance.Env = this._env;
-            GlobalVar.Instance.AppVersion = this.AppVersion;
+            GlobalVar.Instance.AppVersion = RuntimeConfig.Instance.Version.ToString();
             var addressConfig = GetAppServerAddress();
             NetworkManager.AppHttpClient.BaseUrl = addressConfig.AppServerApiRoot;
             // todo update api

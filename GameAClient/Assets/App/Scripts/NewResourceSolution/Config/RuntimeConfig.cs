@@ -5,12 +5,7 @@ namespace NewResourceSolution
 {
     public class RuntimeConfig : MonoBehaviour
 	{
-		#region fields
-        /// <summary>
-        /// 资源服务器地址
-        /// </summary>
-        [SerializeField]
-        private string _resourceServerAddress;
+        #region fields
         /// <summary>
         /// 程序版本
         /// </summary>
@@ -26,26 +21,6 @@ namespace NewResourceSolution
 		/// </summary>
 		[SerializeField]
 		private bool _useAssetBundleRes;
-		/// <summary>
-		/// 屏幕宽
-		/// </summary>
-        [SerializeField]
-        private int _screenWidth;
-		/// <summary>
-		/// 屏幕高
-		/// </summary>
-        [SerializeField]
-        private int _screenHeight;
-		/// <summary>
-		/// splash显示时长
-		/// </summary>
-        [SerializeField]
-        private int _splashShowTime;
-		/// <summary>
-		/// 逻辑帧率
-		/// </summary>
-        [SerializeField]
-        private int _logicFrameRate;
 
         private static RuntimeConfig _instance;
 		#endregion
@@ -60,13 +35,6 @@ namespace NewResourceSolution
         public string Version
         {
             get { return _version; }
-        }
-        /// <summary>
-        /// 资源服务器地址
-        /// </summary>
-        public string ResourceServerAddress
-        {
-            get { return _resourceServerAddress; }
         }
         /// <summary>
         /// 默认地区
@@ -90,36 +58,9 @@ namespace NewResourceSolution
 				#endif
 			}
 		}
-		/// <summary>
-		/// 屏幕宽
-		/// </summary>
-        public int ScreenWidth {
-            get {
-                return this._screenWidth;
-            }
-        }
-		/// <summary>
-		/// 屏幕高
-		/// </summary>
-        public int ScreenHeight {
-            get {
-                return this._screenHeight;
-            }
-        }
-		/// <summary>
-		/// splash显示时长
-		/// </summary>
-        public int SplashShowTime
-        {
-            get { return _splashShowTime; }
-        }
-		/// <summary>
-		/// 逻辑帧率
-		/// </summary>
-        public int LogicFrameRate
-        {
-            get { return _logicFrameRate; }
-        }
+        #endregion
+
+        #region methods
         void Awake ()
         {
             _instance = this;

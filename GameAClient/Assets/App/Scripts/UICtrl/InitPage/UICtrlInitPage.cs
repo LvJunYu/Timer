@@ -7,7 +7,7 @@ using SoyEngine.Proto;
 using System.IO;
 
 namespace GameA {
-    [UIAutoSetup(EUIAutoSetupType.Show)]
+//    [UIAutoSetup(EUIAutoSetupType.Show)]
     public class UICtrlInitPage : UICtrlGenericBase<UIViewInitPage>
     {
 		private enum EAppStartStep
@@ -378,11 +378,11 @@ namespace GameA {
                         {
                             continue;
                         }
-                        if(ss[1].Trim() == SocialApp.Instance.AppVersion)
-                        {
-                            SocialApp.Instance.Env = EEnvironment.Development;
-                            break;
-                        }
+//                        if(ss[1].Trim() == SocialApp.Instance.AppVersion)
+//                        {
+//                            SocialApp.Instance.Env = EEnvironment.Development;
+//                            break;
+//                        }
                     }
                 }
             }

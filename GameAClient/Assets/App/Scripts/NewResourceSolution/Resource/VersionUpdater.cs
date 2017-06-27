@@ -21,7 +21,7 @@ namespace NewResourceSolution
             // todo 按程序版本拼地址
 			string serverVersionConfigPath = StringUtil.Format (
 				StringFormat.TwoLevelPath,
-                RuntimeConfig.Instance.ResourceServerAddress, ResDefine.ServerVersionConfigFileName
+                GameA.SocialApp.GetAppServerAddress().GameResoureRoot, ResDefine.ServerVersionConfigFileName
             );
             ServerVersionConfig serverVersionConfig = null;
             yield return UnityTools.GetObjectFromServer<ServerVersionConfig> (

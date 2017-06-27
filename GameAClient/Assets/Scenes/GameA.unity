@@ -164,10 +164,7 @@ MonoBehaviour:
     GameResoureRoot: http://127.0.0.1:7888
   - Enable: 0
     AppServerApiRoot: http://192.168.3.158:8080/GameAServer/gameaapi
-    GameResoureRoot: http://127.0.0.1:7888
-  AppVersion: 1
-  PackageAppResourceVersion: 0
-  UseLocalDebugRes: 0
+    GameResoureRoot: http://127.0.0.1:7888/Joyyou
 --- !u!114 &574366973
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,14 +176,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c88802095eed046aebe0f7d68b8489c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _resourceServerAddress: 
-  _version: 
-  _defaultLocale: 0
-  _useAssetBundleRes: 0
-  _screenWidth: 0
-  _screenHeight: 0
-  _splashShowTime: 0
-  _logicFrameRate: 0
+  _version: 0.1.0
+  _defaultLocale: 6
+  _useAssetBundleRes: 1
 --- !u!114 &574366974
 MonoBehaviour:
   m_ObjectHideFlags: 0

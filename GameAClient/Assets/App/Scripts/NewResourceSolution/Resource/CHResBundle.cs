@@ -86,7 +86,7 @@ namespace NewResourceSolution
             {
 				if (null == _filePathServer)
 				{
-					_filePathServer = StringUtil.Format (StringFormat.ThreeLevelPathWithExtention, RuntimeConfig.Instance.ResourceServerAddress, resVersion, AssetBundleName, CompressedMd5);
+                    _filePathServer = StringUtil.Format (StringFormat.ThreeLevelPathWithExtention, GameA.SocialApp.GetAppServerAddress().GameResoureRoot, resVersion, AssetBundleName, CompressedMd5);
 				}
 				return _filePathServer;
             }
