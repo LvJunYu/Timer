@@ -6,6 +6,7 @@
 ***********************************************************************/
 
 using System;
+using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 
@@ -13,7 +14,9 @@ namespace GameA.Game
 {
     public class AddCommand : CommandBase, ICommand
     {
-		public virtual bool Execute(Vector2 mousePos)
+        protected List<UnitEditData> _deleteBuffers = new List<UnitEditData>();
+
+        public virtual bool Execute(Vector2 mousePos)
         {
             if (InputManager.Instance.IsTouchDown)
             {
@@ -22,15 +25,27 @@ namespace GameA.Game
                 {
                     var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
                     var grid = tableUnit.GetBaseDataGrid(unitDesc.Guid.x, unitDesc.Guid.y);
-                    int layerMask = tableUnit.UnitType == (int) EUnitType.Effect
-                        ? EnvManager.EffectLayer
-                        : EnvManager.UnitLayerWithoutEffect;
-	                SceneNode outHit;
-                    if (DataScene2D.GridCast(grid, out outHit, layerMask))
+                    int layerMask = tableUnit.UnitType == (int) EUnitType.Effect ? EnvManager.EffectLayer : EnvManager.UnitLayerWithoutEffect;
+                    var nodes = DataScene2D.GridCastAll(grid, layerMask);
+                    for (int i = 0; i < nodes.Count; i++)
                     {
-                        return false;
-                    }
-					if (EditMode.Instance.AddUnit(unitDesc))
+                        var node = nodes[i];
+                        //植被可以被直接覆盖
+                        if (UnitDefine.IsPlant(node.Id))
+                        {
+                            var coverUnits = DataScene2D.GetUnits(grid, nodes);
+                            for (int j = 0; j < coverUnits.Count; j++)
+                            {
+                                _deleteBuffers.Add(new UnitEditData(coverUnits[j], DataScene2D.Instance.GetUnitExtra(coverUnits[j].Guid)));
+                                EditMode.Instance.DeleteUnit(coverUnits[j]);
+                            }
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    } 
+                    if (EditMode.Instance.AddUnit(unitDesc))
 					{
                         _buffers.Add(new UnitEditData(unitDesc, UnitExtra.zero));
                         _pushFlag = true;
@@ -65,9 +80,15 @@ namespace GameA.Game
                 {
                     EditMode.Instance.DeleteUnit(_buffers[i].UnitDesc);
                 }
-                return true;
             }
-            return false;
+            if (_deleteBuffers.Count > 0)
+            {
+                for (int i = 0; i < _deleteBuffers.Count; i++)
+                {
+                    EditMode.Instance.AddUnit(_deleteBuffers[i].UnitDesc);
+                }
+            }
+            return true;
         }
 
 	    public void Exit()

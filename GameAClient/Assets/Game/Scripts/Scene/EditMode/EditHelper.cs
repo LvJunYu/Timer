@@ -121,7 +121,7 @@ namespace GameA.Game
             //地块上的树草自动生成
             if (UnitDefine.IsEarth(tableUnit.Id))
             {
-                int random = Random.Range(0, 5);
+                int random = Random.Range(0, 6);
                 if (random == 0)
                 {
                     IntVec3 up = unitDesc.GetUpPos((int) EUnitDepth.Earth);

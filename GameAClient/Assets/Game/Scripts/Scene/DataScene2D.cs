@@ -414,6 +414,12 @@ namespace GameA.Game
         {
             _cachedUnitObjects.Clear();
             var nodes = GridCastAll(grid2D, layerMask, minDepth, maxDepth, excludeNode);
+            return GetUnits(grid2D, nodes);
+        }
+
+        public static List<UnitDesc> GetUnits(Grid2D grid2D, List<SceneNode> nodes)
+        {
+            _cachedUnitObjects.Clear();
             for (int i = 0; i < nodes.Count; i++)
             {
                 var node = nodes[i];
