@@ -27,7 +27,7 @@ namespace GameA.Game
 		{
 		    _success = true;
 			_virUnit = unitBase;
-            if (EditMode.Instance.TryGetReplaceUnit(_virUnit.Id, out _deletedReplaceDesc))
+            if (EditHelper.TryGetReplaceUnit(_virUnit.Id, out _deletedReplaceDesc))
 			{
                 EditMode.Instance.DeleteUnit(_deletedReplaceDesc);
 			}
@@ -36,31 +36,15 @@ namespace GameA.Game
 		public bool Execute(Vector2 mousePos)
 		{
             _pushFlag = true;
-
-			Vector2 mouseWorldPos = GM2DTools.ScreenToWorldPoint(mousePos);
-		    var virtaTableUnit = _virUnit.TableUnit;
-			var tile = DataScene2D.Instance.GetTileIndex(mouseWorldPos, virtaTableUnit.Id);
-            var target = new UnitDesc(_virUnit.Id, tile, 0, _virUnit.UnitDesc.Scale);
-
-			int layerMask = virtaTableUnit.UnitType == (int) EUnitType.Effect ? EnvManager.EffectLayer : EnvManager.UnitLayerWithoutEffect;
-			var coverUnits = DataScene2D.GridCastAllReturnUnits(target, layerMask);
-            //for (int i = 0; i < coverUnits.Count; i++)
-            //{
-            //    var tableUnit = UnitManager.Instance.GetTableUnit(coverUnits[i].Id);
-            //    if (tableUnit.EPairType > 0 && !CheckCanAddChild(virtaTableUnit, coverUnits[i]))
-            //    {
-            //        Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("不可覆盖{0}", tableUnit.Name));
-            //        _success = false;
-            //        _pushFlag = false;
-            //        if (_deletedReplaceDesc.Id != 0)
-            //        {
-            //            EditMode.Instance.AddUnit(_deletedReplaceDesc);
-            //        }
-            //        break;
-            //    }
-            //}
             if (_success)
 		    {
+                Vector2 mouseWorldPos = GM2DTools.ScreenToWorldPoint(mousePos);
+                var virtaTableUnit = _virUnit.TableUnit;
+                var tile = DataScene2D.Instance.GetTileIndex(mouseWorldPos, virtaTableUnit.Id);
+                var target = new UnitDesc(_virUnit.Id, tile, 0, _virUnit.UnitDesc.Scale);
+
+                int layerMask = virtaTableUnit.UnitType == (int)EUnitType.Effect ? EnvManager.EffectLayer : EnvManager.UnitLayerWithoutEffect;
+                var coverUnits = DataScene2D.GridCastAllReturnUnits(target, layerMask);
                 if (coverUnits.Count > 0 && CheckCanAddChild(virtaTableUnit, coverUnits[0]))
                 {
                     _isAddChild = true;

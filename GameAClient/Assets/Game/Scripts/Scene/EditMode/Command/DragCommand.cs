@@ -103,21 +103,9 @@ namespace GameA.Game
                     int layerMask = EditMode.Instance.CurEditorLayer == EEditorLayer.Effect
                         ? EnvManager.EffectLayer
                         : EnvManager.UnitLayerWithoutEffect;
-                    var coverUnits = DataScene2D.GridCastAllReturnUnits(target, layerMask);
-                    //for (int i = 0; i < coverUnits.Count; i++)
-                    //{
-                    //    var tableUnit = UnitManager.Instance.GetTableUnit(coverUnits[i].Id);
-                    //    if (tableUnit.EPairType > 0 && !CheckCanAddChild(_dragTableUnit, coverUnits[i]))
-                    //    {
-                    //        Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("不可覆盖{0}", tableUnit.Name));
-                    //        _success = false;
-                    //        _pushFlag = false;
-                    //        EditMode.Instance.AddUnit(_dragUnitDesc);
-                    //        break;
-                    //    }
-                    //}
                     if (_success)
                     {
+                        var coverUnits = DataScene2D.GridCastAllReturnUnits(target, layerMask);
                         //蓝石
                         if (coverUnits.Count > 0 && CheckCanBindMagic(_dragTableUnit, coverUnits[0]))
                         {
@@ -229,11 +217,6 @@ namespace GameA.Game
                     collectUnit.StopTwenner ();
                 }
                 EditMode.Instance.DeleteUnit(_dragUnitDesc);
-                //if (_dragUnitExtra.Child.Id > 0)
-                //{
-                //    Table_Unit childTable = UnitManager.Instance.GetTableUnit(_dragUnitExtra.Child.Id);
-                //    _virUnit.SetChild(childTable, _dragUnitExtra.Child.Rotation, _dragUnitExtra.Child.MoveDirection);
-                //}
                 EditMode.Instance.SetDraggingState(true);
 
                 if (_dragHelperParent == null)
@@ -242,7 +225,6 @@ namespace GameA.Game
                     _dragHelperParent = helperParentObj.transform;
                 }
                 _dragHelperParent.position = _virUnit.Trans.position;
-                //_dragHelperParent.position = _virUnit.Trans.position - (Vector3)_virUnit.View.GetRotationPosOffset();
                 _dragHelperParent.position += GM2DTools.GetUnitDragingOffset(_dragUnitDesc.Id);
                 _virUnit.Trans.parent = _dragHelperParent;
             }

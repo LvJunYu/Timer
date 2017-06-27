@@ -12,6 +12,7 @@ using System.Reflection.Emit;
 using System.Security.Policy;
 using SoyEngine;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
@@ -27,12 +28,7 @@ namespace GameA.Game
 		/// 命令管理
 		/// </summary>
 		private CommandManager _commandManager;
-		/// <summary>
-		/// 关卡中只能存在一个的物体的索引
-		/// </summary>
-        private Dictionary<int, UnitDesc> _replaceUnits = new Dictionary<int, UnitDesc>();
-        private Dictionary<int, int> _unitIndexCount = new Dictionary<int, int>();
-
+	
         [SerializeField]
         private GameObject _backgroundObject;
         [SerializeField]
@@ -62,45 +58,38 @@ namespace GameA.Game
 
         private ECommandType _cmdTypeBeforeMove;
 
-		/// <summary>
-		/// 命令管理
-		/// </summary>
-		public CommandManager CommandManager {
-    		get {
-    			return this._commandManager;
-    		}
-    	}
-	    public CompositeEditorModule CompositeModule
-	    {
-		    get { return _compositeEditor; }
-	    }
+        /// <summary>
+        ///     命令管理
+        /// </summary>
+        public CommandManager CommandManager
+        {
+            get { return _commandManager; }
+        }
+
+        public CompositeEditorModule CompositeModule
+        {
+            get { return _compositeEditor; }
+        }
 
         public ECommandType CurCommandType
         {
             get { return _commandType; }
         }
 
-	    public EEditorLayer CurEditorLayer
-	    {
-		    get
-		    {
-			    return _curEditorLayer;
-		    }
-	    }
+        public EEditorLayer CurEditorLayer
+        {
+            get { return _curEditorLayer; }
+        }
 
         public MapStatistics MapStatistics
         {
             get { return _mapStatistics; }
         }
 
-		public int SelectedItemId
-		{
-			get
-			{
-                return _selectedItemId;
-			}
-		}
-
+        public int SelectedItemId
+        {
+            get { return _selectedItemId; }
+        }
 
 		private void Awake()
         {
@@ -187,16 +176,17 @@ namespace GameA.Game
             _connectLineEffectCache.Clear ();
             if (_backgroundObject != null)
             {
-                UnityEngine.Object.Destroy(_backgroundObject);
+                Destroy(_backgroundObject);
             }
             if (_mapRectMask != null)
             {
-                UnityEngine.Object.Destroy(_mapRectMask.gameObject);
+                Destroy(_mapRectMask.gameObject);
             }
             if (_cameraMask != null)
             {
-                UnityEngine.Object.Destroy(_cameraMask.gameObject);
+                Destroy(_cameraMask.gameObject);
             }
+            EditHelper.Clear();
         }
 
 		public virtual void Init()
@@ -212,65 +202,6 @@ namespace GameA.Game
             //LogHelper.Debug(_middleUIWorldPos[0] + "|" + _middleUIWorldPos[1] + "|" + _middleUIWorldPos[2]);
         }
 
-        public bool CheckCanAdd(UnitDesc unitDesc, out Table_Unit tableUnit)
-        {
-            tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-            if (tableUnit == null)
-            {
-                LogHelper.Error("CheckCanAdd failed,{0}", unitDesc.ToString());
-                return false;
-            }
-            var dataGrid = tableUnit.GetDataGrid(unitDesc.Guid.x, unitDesc.Guid.y, unitDesc.Rotation, unitDesc.Scale);
-            var validMapRect = DataScene2D.Instance.ValidMapRect;
-            var mapGrid = new Grid2D(validMapRect.Min.x, validMapRect.Min.y, validMapRect.Max.x, validMapRect.Max.y);
-            if (!dataGrid.Intersects(mapGrid))
-            {
-                return false;
-            }
-            if (tableUnit.EUnitType == EUnitType.Monster)
-            {
-                IntVec2 size = new IntVec2(15, 10) * ConstDefineGM2D.ServerTileScale;
-                IntVec2 mapSize = ConstDefineGM2D.MapTileSize;
-                var min = new IntVec2(unitDesc.Guid.x / size.x * size.x, unitDesc.Guid.y / size.y * size.y);
-                var grid = new Grid2D(min.x, min.y, Mathf.Min(mapSize.x, min.x + size.x - 1), Mathf.Min(mapSize.y, min.y + size.y - 1));
-                var units = DataScene2D.GridCastAllReturnUnits(grid, EnvManager.HeroLayer);
-                if (units.Count >= ConstDefineGM2D.MaxPhysicsUnitCount)
-                {
-                    Messenger<string>.Broadcast(EMessengerType.GameLog, "同屏不能放置太多的怪物喔~");
-                    return false;
-                }
-            }
-            //pair个数不能超过
-            if (tableUnit.EPairType > 0)
-            {
-                PairUnit pairUnit;
-                if (!PairUnitManager.Instance.TryGetNotFullPairUnit(tableUnit.EPairType, out pairUnit))
-                {
-                    Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("超过{0}的最大数量，不可放置喔~", tableUnit.Name));
-                    return false;
-                }
-            }
-            //花草树只能放在泥土上。
-            if (UnitDefine.IsPlant(tableUnit.Id))
-            {
-                var downGuid = new IntVec3(unitDesc.Guid.x, unitDesc.Guid.y - ConstDefineGM2D.ServerTileScale, (int) EUnitDepth.Earth);
-                UnitBase downUnit;
-                if (!ColliderScene2D.Instance.TryGetUnit(downGuid, out downUnit) || !UnitDefine.IsEarth(downUnit.Id))
-                {
-                    Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("{0}只可种植在泥土上~", tableUnit.Name));
-                    return false;
-                }
-            }
-            //数量不能超过
-            int count;
-            if (_unitIndexCount.TryGetValue(unitDesc.Id, out count ) && count >= tableUnit.Count)
-            {
-                Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("不可放置，{0}最多可放置{1}个~",tableUnit.Name, count));
-                return false;
-            }
-            return true;
-        }
-
 		/// <summary>
 		/// 从地图文件反序列化时的处理方法
 		/// </summary>
@@ -278,17 +209,35 @@ namespace GameA.Game
 		/// <param name="tableUnit">Table unit.</param>
         public void OnReadMapFile(UnitDesc unitDesc, Table_Unit tableUnit)
         {
-            AfterAddUnit(unitDesc, tableUnit, true);
+            EditHelper.AfterAddUnit(unitDesc, tableUnit, true);
         }
 
         public bool AddUnit(UnitDesc unitDesc)
         {
             Table_Unit tableUnit;
-            if (!CheckCanAdd(unitDesc, out tableUnit))
+            if (!EditHelper.CheckCanAdd(unitDesc, out tableUnit))
             {
                 return false;
             }
-            BeforeAddUnit(unitDesc, tableUnit);
+            var unitDescs = EditHelper.BeforeAddUnit(unitDesc, tableUnit);
+            for (int i = 0; i < unitDescs.Count; i++)
+            {
+                if (!InternalAddUnit(unitDescs[i]))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private bool InternalAddUnit(UnitDesc unitDesc)
+        {
+            var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+            if (tableUnit == null)
+            {
+                LogHelper.Error("InternalAddUnit failed,{0}", unitDesc.ToString());
+                return false;
+            }
             if (!DataScene2D.Instance.AddData(unitDesc, tableUnit))
             {
                 return false;
@@ -306,12 +255,11 @@ namespace GameA.Game
             {
                 return false;
             }
-            AfterAddUnit(unitDesc, tableUnit);
-//			Messenger.Broadcast(EMessengerType.OnModifyUnitChanged);
+            EditHelper.AfterAddUnit(unitDesc, tableUnit);
             return true;
         }
 
-        public virtual bool DeleteUnit(UnitDesc unitDesc)
+        public bool DeleteUnit(UnitDesc unitDesc)
         {
             Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
             if (tableUnit == null)
@@ -340,7 +288,7 @@ namespace GameA.Game
                 PairUnitManager.Instance.DeletePairUnit(unitDesc, tableUnit);
                 UpdateSelectItem();
             }
-            AfterDeleteUnit(unitDesc, tableUnit);
+            EditHelper.AfterDeleteUnit(unitDesc, tableUnit);
             return true;
         }
 
@@ -361,83 +309,6 @@ namespace GameA.Game
 			UpdateMapRectMask();
 			Messenger.Broadcast(EMessengerType.OnEditorLayerChanged);
 	    }
-
-        protected virtual void AfterDeleteUnit(UnitDesc unitDesc, Table_Unit tableUnit)
-        {
-            if (_replaceUnits.ContainsKey(unitDesc.Id) && _replaceUnits[unitDesc.Id] == unitDesc)
-            {
-                _replaceUnits.Remove(unitDesc.Id);
-            }
-            if (tableUnit.Count > 1)
-            {
-                if (_unitIndexCount.ContainsKey(unitDesc.Id))
-                {
-                    _unitIndexCount[unitDesc.Id] -= 1;
-                }
-            }
-            _mapStatistics.AddOrDeleteUnit(tableUnit, false);
-        }
-
-        private void BeforeAddUnit(UnitDesc unitDesc, Table_Unit tableUnit)
-        {
-            if (tableUnit.Count == 1)
-            {
-                UnitDesc tmpDesc;
-                if (_replaceUnits.TryGetValue(unitDesc.Id, out tmpDesc))
-                {
-                    if (tmpDesc.Id != 0)
-                    {
-                        DeleteUnit(tmpDesc);
-                    }
-                }
-            }
-        }
-
-        private void AfterAddUnit(UnitDesc unitDesc, Table_Unit tableUnit, bool isInit = false)
-        {
-            if (tableUnit.Count == 1)
-            {
-                _replaceUnits.Add(unitDesc.Id, unitDesc);
-            }
-            if (tableUnit.Count > 1)
-            {
-                if (!_unitIndexCount.ContainsKey(unitDesc.Id))
-                {
-                    _unitIndexCount.Add(unitDesc.Id, new int());
-                }
-                _unitIndexCount[unitDesc.Id] += 1;
-            }
-            _mapStatistics.AddOrDeleteUnit(tableUnit, true, isInit);
-        }
-
-//        public bool CheckCanPublic(bool showPrompt)
-//        {
-//            if (_mapStatistics.LevelFinishCount < 1)
-//            {
-//                if (showPrompt)
-//                {
-//                    Messenger<string>.Broadcast(EMessengerType.GameErrorLog,
-//                        LocaleManager.GameLocale("ui_publish_failed_finish_first"));
-//                }
-//                return false;
-//            }
-//            return true;
-//        }
-
-        public bool TryGetReplaceUnit(int id, out UnitDesc outUnitDesc)
-        {
-            Table_Unit table = UnitManager.Instance.GetTableUnit(id);
-            if (table == null)
-            {
-                outUnitDesc = UnitDesc.zero;
-                return false;
-            }
-            if (!_replaceUnits.TryGetValue(id, out outUnitDesc))
-            {
-                return false;
-            }
-            return outUnitDesc.Id != 0;
-        }
 
         private void OnSuccess()
         {
@@ -684,7 +555,7 @@ namespace GameA.Game
 							{
 								UnitDesc unit;
 								Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(_selectedItemId);
-						        if (tableUnit.Count == 1 && _replaceUnits.TryGetValue(_selectedItemId, out unit))
+                                if (tableUnit.Count == 1 && EditHelper.TryGetReplaceUnit(_selectedItemId, out unit))
 								{
 									_currentCommand = new AddCommandOnce(unit);
 								}

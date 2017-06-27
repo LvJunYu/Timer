@@ -21,36 +21,6 @@ namespace GameA.Game
                 UnitDesc unitDesc;
 				if(GM2DTools.TryGetUnitObject(GM2DTools.ScreenToWorldPoint(mousePos),EditMode.Instance.CurEditorLayer,out unitDesc))
 				{
-                    //pair unit
-                    //var tableUnit = UnitManager.Instance.GetTableUnit(UnitDesc.Id);
-                    //if (tableUnit.EPairType > 0)
-                    //{
-                    //    PairUnit pairUnit;
-                    //    if (PairUnitManager.Instance.TryGetPairUnit(tableUnit.EPairType, UnitDesc, out pairUnit))
-                    //    {
-                    //        UnitDesc pairUnitObject = UnitDesc.zero;
-                    //        if (pairUnit.UnitA == UnitDesc)
-                    //        {
-                    //            pairUnitObject = pairUnit.UnitB;
-                    //        }
-                    //        if (pairUnit.UnitB == UnitDesc)
-                    //        {
-                    //            pairUnitObject = pairUnit.UnitA;
-                    //        }
-                    //        if (pairUnitObject != UnitDesc.zero)
-                    //        {
-                    //            UnitAttr tmpAttrPair = UnitAttr.Copy(DataScene2D.Instance.AttrData.GetUnitAttr(pairUnitObject.Guid));
-                    //            if (EditMode.Instance.DeleteUnit(pairUnitObject))
-                    //            {
-                    //                _unitRemoveds.Add(new UnitRemoved()
-                    //                {
-                    //                    UnitDesc = pairUnitObject,
-                    //                    Attr = tmpAttrPair,
-                    //                });
-                    //            }
-                    //        }
-                    //    }
-                    //}
                     if (EditMode.Instance.DeleteUnit(unitDesc))
                     {
                         UnitExtra unitExtra;
