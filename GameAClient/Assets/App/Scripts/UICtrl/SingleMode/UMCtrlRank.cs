@@ -16,7 +16,8 @@ namespace GameA
         private string First= "icon_first";
         private string Second= "icon_second";
         private string Third= "icon_third";
-
+        private bool _currentfollowstate =false;
+        private UserInfoDetail _userInfoDetail;
 
         public int Index
         {
@@ -45,6 +46,13 @@ namespace GameA
             base.OnViewCreated();
            
             _cachedView.PlayBtn.onClick.AddListener(OnPlayBtn);
+            _cachedView.Follow.onClick.AddListener(Follow);
+
+            //_userInfoDetail = new UserInfoDetail(_record.UserInfo);
+            //JudgeRelationshipWithMe(_userInfoDetail);
+            //Debug.Log("______UserInfo__________"+_record.UserInfo);
+            //UserInfoDetail userInfoDetail = new UserInfoDetail(_record.UserInfo);
+            //sJudgeRelationshipWithMe(_userInfoDetail);
         }
 
         protected override void OnDestroy()
@@ -87,6 +95,8 @@ namespace GameA
             _cachedView.Playerlvl.text = _record.UserInfo.LevelData.PlayerLevel.ToString();
             RefreshView();
             JudgeRankImage(rank);
+            _userInfoDetail = new UserInfoDetail(_record.UserInfo);
+            JudgeRelationshipWithMe(_userInfoDetail);
         }
 
         public void JudgeRankImage(int rank)
@@ -159,6 +169,43 @@ namespace GameA
             //                _cachedView.SeletedMark.enabled = false;
             //                _cachedView.UnsetectMark.enabled = false;
             //            }
+        }
+
+        public void Follow()
+        {
+            //Debug.Log("______UserInfo__________" + _record.UserInfo);
+
+            //UserInfoDetail userInfoDetail = new UserInfoDetail(_record.UserInfo);
+            //JudgeRelationshipWithMe(userInfoDetail);
+            _userInfoDetail.UpdateFollowState(!_currentfollowstate, () =>
+            {
+
+                ChangeFollowState();
+                //JudgeRelationshipWithMe(_userInfoDetail);
+                //SocialGUIManager.Instance.GetUI<UICtrlAdvLvlDetail>().RefreshAdventureUserLevelDataDetail();
+            });
+        
+        }
+
+        private void ChangeFollowState()
+        {
+            _currentfollowstate = !_currentfollowstate;
+            if (_currentfollowstate)
+                _cachedView.ShowFollow.text = "取消关注";
+            else
+                _cachedView.ShowFollow.text = "关注";
+            
+        }
+
+        private void JudgeRelationshipWithMe(UserInfoDetail userInfoDetail)
+        {
+            _currentfollowstate = userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
+            Debug.Log("__________关注状态___" + userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe);
+            if (_currentfollowstate)
+                _cachedView.ShowFollow.text = "取消关注";
+            else
+                _cachedView.ShowFollow.text = "关注";
+
         }
     }
 }

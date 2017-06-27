@@ -28,7 +28,7 @@ namespace GameA
 	    private bool _fashionShopAvailable = true;
 	    private bool _puzzleAvailable = false;
 	    private bool _mailBoxAvailable = false;
-	    private bool _friendsAvailable = false;
+	    private bool _friendsAvailable = true;
         
 
 		//private ChangePartsSpineView _avatarView;
@@ -91,6 +91,7 @@ namespace GameA
 			_cachedView.SingleModeButton.onClick.AddListener (OnSingleGameBtn);
             _cachedView.LotteryBtn.onClick.AddListener(OnLotteryBtn);
             _cachedView.UnlockAll.onClick.AddListener (OnUnlockAll);
+            _cachedView.FriendsBtn.onClick.AddListener (OnFriendBtn);
             SetLock(UIFunction.UI_FashionShop, _fashionShopAvailable);
             SetLock(UIFunction.UI_Friends, _friendsAvailable);
             SetLock(UIFunction.UI_Lottery, _lotteryAvailable);
@@ -270,6 +271,15 @@ namespace GameA
             //Debug.Log("_________________________OnLotteryBtn");
             if (GameProcessManager.Instance.IsGameSystemAvailable (EGameSystem.Lottery)) {
                 SocialGUIManager.Instance.OpenUI<UICtrlLottery> ();
+            }
+        }
+
+        private void OnFriendBtn()
+        {
+            //Debug.Log("_________________________OnLotteryBtn");
+            if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.SocialReLationShip))
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlSocialRelationship>();
             }
         }
 

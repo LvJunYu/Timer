@@ -389,5 +389,6 @@ namespace GameA.Game
         WorkShop,
         ModifyMatch,
         World,
+        SocialReLationShip,
     }
 }

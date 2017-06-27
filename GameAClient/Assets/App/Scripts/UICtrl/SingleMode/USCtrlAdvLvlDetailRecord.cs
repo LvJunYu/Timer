@@ -51,6 +51,12 @@ namespace GameA
             _cachedView.gameObject.SetActive (false);
         }
         #endregion
+        public void OnCloseBtnClick()
+        {
+            //CardList.Clear();
+            //_cardList.Clear();
+            //_avatarmsg.Clear();
+        }
 
         public void Set()
         {

@@ -19,6 +19,7 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_Reward> Table_RewardDic = new Dictionary<int, Table_Reward>();
 		public readonly Dictionary<int,Table_FashionShop> Table_FashionShopDic = new Dictionary<int, Table_FashionShop>();
 		public readonly Dictionary<int,Table_UpperBodyParts> Table_UpperBodyPartsDic = new Dictionary<int, Table_UpperBodyParts>();
+		public readonly Dictionary<int,Table_FashionUnit> Table_FashionUnitDic = new Dictionary<int, Table_FashionUnit>();
 		public readonly Dictionary<int,Table_HeadParts> Table_HeadPartsDic = new Dictionary<int, Table_HeadParts>();
 		public readonly Dictionary<int,Table_LowerBodyParts> Table_LowerBodyPartsDic = new Dictionary<int, Table_LowerBodyParts>();
 		public readonly Dictionary<int,Table_AppendageParts> Table_AppendagePartsDic = new Dictionary<int, Table_AppendageParts>();
@@ -45,6 +46,7 @@ namespace GameA.Game
 		[UnityEngine.SerializeField] private Table_Reward[] _tableRewards;
 		[UnityEngine.SerializeField] private Table_FashionShop[] _tableFashionShops;
 		[UnityEngine.SerializeField] private Table_UpperBodyParts[] _tableUpperBodyPartss;
+		[UnityEngine.SerializeField] private Table_FashionUnit[] _tableFashionUnits;
 		[UnityEngine.SerializeField] private Table_HeadParts[] _tableHeadPartss;
 		[UnityEngine.SerializeField] private Table_LowerBodyParts[] _tableLowerBodyPartss;
 		[UnityEngine.SerializeField] private Table_AppendageParts[] _tableAppendagePartss;
@@ -95,6 +97,8 @@ namespace GameA.Game
 			_tableFashionShops = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionShop[]>(FashionShopTextAsset.text);
 			var UpperBodyPartsTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "UpperBodyParts"));
 			_tableUpperBodyPartss = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_UpperBodyParts[]>(UpperBodyPartsTextAsset.text);
+			var FashionUnitTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "FashionUnit"));
+			_tableFashionUnits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionUnit[]>(FashionUnitTextAsset.text);
 			var HeadPartsTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "HeadParts"));
 			_tableHeadPartss = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_HeadParts[]>(HeadPartsTextAsset.text);
 			var LowerBodyPartsTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "LowerBodyParts"));
@@ -192,6 +196,14 @@ namespace GameA.Game
 			// 	return;
 			// }
 			// _tableUpperBodyPartss = UpperBodyPartsAsset.DataArray;
+			// 
+			// var FashionUnitAsset = _loader.GetConfigAssetData<TableFashionUnitAsset>("FashionUnit");
+			// if (FashionUnitAsset == null)
+			// {
+			// 	LogHelper.Error("FashionUnitAsset is null");
+			// 	return;
+			// }
+			// _tableFashionUnits = FashionUnitAsset.DataArray;
 			// 
 			// var HeadPartsAsset = _loader.GetConfigAssetData<TableHeadPartsAsset>("HeadParts");
 			// if (HeadPartsAsset == null)
@@ -421,6 +433,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableUpperBodyPartss table.Id {0} is duplicated!", _tableUpperBodyPartss[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableFashionUnits.Length; i++)
+			{
+				if (!Table_FashionUnitDic.ContainsKey(_tableFashionUnits[i].Id))
+				{
+					Table_FashionUnitDic.Add(_tableFashionUnits[i].Id,_tableFashionUnits[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableFashionUnits table.Id {0} is duplicated!", _tableFashionUnits[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableHeadPartss.Length; i++)
@@ -694,6 +717,15 @@ namespace GameA.Game
 		{
 			Table_UpperBodyParts tmp;
 			if (Table_UpperBodyPartsDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_FashionUnit GetFashionUnit(int key)
+		{
+			Table_FashionUnit tmp;
+			if (Table_FashionUnitDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

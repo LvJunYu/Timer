@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -98,13 +99,11 @@ namespace GameA
 	                break;
                 case EShoppingPage.FashionPage5:
                     break;
-                    //case EShoppingPage.FashionPage5:
-                    // break;
             }
 	    }
         private List<UMCtrlFashionShopCard> _cardList = new List<UMCtrlFashionShopCard>();
 
-        public void Set(List<ShopItem> pageList)
+        public void Set(List<Table_FashionUnit> pageList)
         {
             if (_cardList.Count > 0)
             {

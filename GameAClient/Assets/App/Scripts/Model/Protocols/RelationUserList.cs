@@ -10,7 +10,7 @@ namespace GameA
         #region 字段
         // sc fields----------------------------------
         /// <summary>
-        /// ECachedDataState
+        /// ECachedDataState 
         /// </summary>
         private int _resultCode;
         /// <summary>

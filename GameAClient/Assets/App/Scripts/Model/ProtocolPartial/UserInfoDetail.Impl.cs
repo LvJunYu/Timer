@@ -47,8 +47,63 @@ namespace GameA
 	        _userInfoSimple = userInfoSimple;
 	    }
 
+	    public void UpdateFollowState(bool follow, Action successCallback = null, Action<ENetResultCode> failedCallback = null)
+        {
+	        RemoteCommands.UpdateFollowState(_userInfoSimple.UserId, follow, ret => {
+                if (ret.ResultCode != (int)EUpdateFollowStateCode.UFSS_Success)
+                {
+                    if (failedCallback != null)
+                    {
+                        failedCallback.Invoke(ENetResultCode.NR_None);
+                    }
+                    return;
+                }
+                //if (_projectUserData != null)
+                //{
+                //    _projectUserData.Favorite = true;
+                //}
+                if (successCallback != null)
+                {
+                    successCallback.Invoke();
+                }
+            }, code =>
+            {
+                if (failedCallback != null)
+                {
+                    failedCallback.Invoke(code);
+                }
+            });
+        }
+        public void UpdateBlockState(bool block, Action successCallback = null, Action<ENetResultCode> failedCallback = null)
+        {
+            RemoteCommands.UpdateBlockState(_userInfoSimple.UserId, block, ret => {
+                if (ret.ResultCode != (int)EUpdateFollowStateCode.UFSS_Success)
+                {
+                    if (failedCallback != null)
+                    {
+                        failedCallback.Invoke(ENetResultCode.NR_None);
+                    }
+                    return;
+                }
+                //if (_projectUserData != null)
+                //{
+                //    _projectUserData.Favorite = true;
+                //}
+                if (successCallback != null)
+                {
+                    successCallback.Invoke();
+                }
+            }, code =>
+            {
+                if (failedCallback != null)
+                {
+                    failedCallback.Invoke(code);
+                }
+            });
+        }
 
-	    public void OnProjectCreated(Msg_SC_DAT_Project msg, Project p)
+
+        public void OnProjectCreated(Msg_SC_DAT_Project msg, Project p)
 		{
 			ProjectManager.Instance.OnCreateProject(msg, p);
 			ST_CacheList cachedList = GetSavedProjectCache();

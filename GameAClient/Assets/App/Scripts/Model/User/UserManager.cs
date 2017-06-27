@@ -53,7 +53,7 @@ namespace GameA
 
 //		public User OnSyncUserData(Msg_SC_DAT_UserInfoSimple msg)
 //        {
-//            ReactiveLocalUser ();
+//            ReactiveLocalUser ();                                                                     
 //            User user;
 //            if (!_caches.TryGetItem(msg.UserId, out user))
 //            {

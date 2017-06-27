@@ -19,9 +19,9 @@ namespace GameA
 
         private readonly Account _account = Account.Instance;
         private UserInfoDetail _user;
-
         private UsingAvatarPart _usingAvatarData = new UsingAvatarPart ();
         private ValidAvatarPart _validAvatarData = new ValidAvatarPart ();
+        private RelationUserList _relationUserList = new RelationUserList ();
         // 抽奖相关数据
         private UserRaffleTicket _userRaffleTicket = new UserRaffleTicket ();
         // 匹配挑战相关数据
@@ -57,12 +57,19 @@ namespace GameA
         public UserInfoDetail User {
             get { return _user; }
         }
+
+        public RelationUserList RelationUserList
+        {
+            get
+            {
+                return this._relationUserList;
+            }
+        }
         public UsingAvatarPart UsingAvatarData {
             get {
                 return this._usingAvatarData;
             }
         }
-
         public ValidAvatarPart ValidAvatarData {
             get {
                 return this._validAvatarData;

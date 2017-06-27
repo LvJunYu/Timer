@@ -15,6 +15,10 @@ namespace GameA
         public Image RankBg;
 
         public Button PlayBtn;
+        public Button Follow;
+        public Text ShowFollow;
+       
+       
     }
 }
 

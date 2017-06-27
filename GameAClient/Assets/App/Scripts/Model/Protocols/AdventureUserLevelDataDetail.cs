@@ -310,6 +310,17 @@ namespace GameA
             _highScoreFriendInfo = new UserInfoSimple();
             _recentRecordList = new List<Record>();
         }
+
+        public void ClearData()
+        {
+            _highScoreRecord = null;
+            _star1FlagRecord = null;
+            _star2FlagRecord = null;
+            _star3FlagRecord = null;
+            _highScoreFriendInfo = null;
+            _recentRecordList = null;
+        }
+
         #endregion
     }
 }

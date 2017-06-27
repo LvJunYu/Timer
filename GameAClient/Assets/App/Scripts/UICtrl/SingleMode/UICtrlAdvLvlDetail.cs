@@ -84,6 +84,7 @@ namespace GameA
         protected override void OnClose() {
             
             base.OnClose ();
+            LocalUser.Instance.AdventureUserLevelDataDetail.ClearData();
         }
         
         protected override void InitEventListener() {
@@ -108,7 +109,7 @@ namespace GameA
             
         }
 
-        private void RefreshAdventureUserLevelDataDetail()
+        public void RefreshAdventureUserLevelDataDetail()
         {
             LocalUser.Instance.AdventureUserLevelDataDetail.Request(
                 LocalUser.Instance.UserGuid,

@@ -38,7 +38,6 @@ namespace GameA.Game
 				return false;
 			}
 
-
 			_skeletonAnimation.skeletonDataAsset = data;
 			LinkBaseSkinTextures ();
 			_skeletonAnimation.Initialize(true);
@@ -129,9 +128,7 @@ namespace GameA.Game
 		}
 
 		private void InitSlotName2IndexDic () {
-//			Debug.Log("Begin+++++++++++++++++++++++++++++++++++++++++++++");
 			_slotName2Index.Clear();
-
 			ExposedList<Slot> slots = _skeleton.slots;
 			for (int i = 0, n = slots.Count; i < n; i++) {
 				Slot slot = slots.Items[i];
@@ -145,7 +142,6 @@ namespace GameA.Game
 					_slotName2Index[id] = i;
 				}
 			}
-//			Debug.Log("End+++++++++++++++++++++++++++++++++++++++++++++");
 		}
 
 		public bool SetParts (int partsId, SpinePartsHelper.ESpineParts partsType, bool homeAvatar = false) {
@@ -155,14 +151,12 @@ namespace GameA.Game
             //    return false;
             //}
 
-
-
 			if (_partsIds[(int)partsType] == partsId) return false;
 			string textureName = "";
 			int[] slotsNameIdxList = null;
 			int skinId = 0;
 			if (partsType == SpinePartsHelper.ESpineParts.Head) {
-				var partData = TableManager.Instance.GetHeadParts (partsId);
+				var partData = TableManager.Instance.GetFashionUnit(partsId);
 				if (partData == null) {
 					LogHelper.Error ("Try to apply undefined part:{0} with id:{1}", partsType, partsId);
 					return false;
@@ -171,7 +165,7 @@ namespace GameA.Game
 				skinId = partData.SkinId;
 				slotsNameIdxList = TableManager.Instance.GetAvatarStruct (_avatarId).HeadSlots;
 			} else if (partsType == SpinePartsHelper.ESpineParts.Upper) {
-				var partData = TableManager.Instance.GetUpperBodyParts (partsId);
+				var partData = TableManager.Instance.GetFashionUnit(partsId);
 				if (partData == null) {
 					LogHelper.Error ("Try to apply undefined part:{0} with id:{1}", partsType, partsId);
 					return false;
@@ -180,7 +174,7 @@ namespace GameA.Game
 				skinId = partData.SkinId;
 				slotsNameIdxList = TableManager.Instance.GetAvatarStruct (_avatarId).UpperSlots;
 			} else if (partsType == SpinePartsHelper.ESpineParts.Lower) {
-				var partData = TableManager.Instance.GetLowerBodyParts (partsId);
+				var partData = TableManager.Instance.GetFashionUnit(partsId);
 				if (partData == null) {
 					LogHelper.Error ("Try to apply undefined part:{0} with id:{1}", partsType, partsId);
 					return false;
@@ -189,7 +183,7 @@ namespace GameA.Game
 				skinId = partData.SkinId;
 				slotsNameIdxList = TableManager.Instance.GetAvatarStruct (_avatarId).LowerSlots;
 			} else if (partsType == SpinePartsHelper.ESpineParts.Appendage) {
-				var partData = TableManager.Instance.GetAppendageParts (partsId);
+				var partData = TableManager.Instance.GetFashionUnit(partsId);
 				if (partData == null) {
 					LogHelper.Error ("Try to apply undefined part:{0} with id:{1}", partsType, partsId);
 					return false;
