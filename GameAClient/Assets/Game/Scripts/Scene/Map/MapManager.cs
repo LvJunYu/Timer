@@ -298,7 +298,7 @@ namespace GameA.Game
 		    var validMapRect = DataScene2D.Instance.ValidMapRect;
             for (int i = validMapRect.Min.x; i < validMapRect.Max.x; i += ConstDefineGM2D.ServerTileScale)
 			{
-                for (int j = validMapRect.Min.y; j < ConstDefineGM2D.DefaultGeneratedTileHeight + validMapRect.Min.y; j += ConstDefineGM2D.ServerTileScale)
+                for (int j = validMapRect.Min.y + 2 * ConstDefineGM2D.ServerTileScale; j < ConstDefineGM2D.DefaultGeneratedTileHeight + validMapRect.Min.y; j += ConstDefineGM2D.ServerTileScale)
                 {
                     EditMode.Instance.AddUnit(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one));
                 }

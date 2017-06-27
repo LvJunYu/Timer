@@ -261,6 +261,19 @@ namespace GameA.Game
 
         public bool DeleteUnit(UnitDesc unitDesc)
         {
+            var unitDescs = EditHelper.BeforeDeleteUnit(unitDesc);
+            for (int i = 0; i < unitDescs.Count; i++)
+            {
+                if (!InternalDeleteUnit(unitDescs[i]))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private bool InternalDeleteUnit(UnitDesc unitDesc)
+        {
             Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
             if (tableUnit == null)
             {

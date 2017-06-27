@@ -127,8 +127,7 @@ namespace GameA.Game
                     IntVec3 up = unitDesc.GetUpPos((int) EUnitDepth.Earth);
                     if (IsEmpty(up))
                     {
-                        var newDesc = new UnitDesc(UnitDefine.GetRandomPlantId(Random.Range(0,3)),up,0,Vector2.one);
-                        _cacheUnitDescs.Add(newDesc);
+                        _cacheUnitDescs.Add(new UnitDesc(UnitDefine.GetRandomPlantId(Random.Range(0, 3)), up, 0, Vector2.one));
                     }
                 }
             }
@@ -150,6 +149,23 @@ namespace GameA.Game
                 _unitIndexCount[unitDesc.Id] += 1;
             }
             EditMode.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, true, isInit);
+        }
+
+        public static List<UnitDesc> BeforeDeleteUnit(UnitDesc unitDesc)
+        {
+            _cacheUnitDescs.Clear();
+            _cacheUnitDescs.Add(unitDesc);
+            //地块上的植被自动删除
+            if (UnitDefine.IsEarth(unitDesc.Id))
+            {
+                var up = unitDesc.GetUpPos((int) EUnitDepth.Earth);
+                UnitBase unit;
+                if (TryGetUnit(up, out unit) && UnitDefine.IsPlant(unit.Id))
+                {
+                    _cacheUnitDescs.Add(new UnitDesc(unit.Id, up, 0, Vector3.one));
+                }
+            }
+            return _cacheUnitDescs;
         }
 
         public static void AfterDeleteUnit(UnitDesc unitDesc, Table_Unit tableUnit)

@@ -14,8 +14,6 @@ namespace GameA.Game
 {
     public class AddCommand : CommandBase, ICommand
     {
-        protected List<UnitEditData> _deleteBuffers = new List<UnitEditData>();
-
         public virtual bool Execute(Vector2 mousePos)
         {
             if (InputManager.Instance.IsTouchDown)
@@ -36,7 +34,6 @@ namespace GameA.Game
                             var coverUnits = DataScene2D.GetUnits(grid, nodes);
                             for (int j = 0; j < coverUnits.Count; j++)
                             {
-                                _deleteBuffers.Add(new UnitEditData(coverUnits[j], DataScene2D.Instance.GetUnitExtra(coverUnits[j].Guid)));
                                 EditMode.Instance.DeleteUnit(coverUnits[j]);
                             }
                         }
@@ -79,13 +76,6 @@ namespace GameA.Game
                 for (int i = 0; i < _buffers.Count; i++)
                 {
                     EditMode.Instance.DeleteUnit(_buffers[i].UnitDesc);
-                }
-            }
-            if (_deleteBuffers.Count > 0)
-            {
-                for (int i = 0; i < _deleteBuffers.Count; i++)
-                {
-                    EditMode.Instance.AddUnit(_deleteBuffers[i].UnitDesc);
                 }
             }
             return true;
