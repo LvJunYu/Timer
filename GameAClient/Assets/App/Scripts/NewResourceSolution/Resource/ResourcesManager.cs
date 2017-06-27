@@ -35,21 +35,16 @@ namespace NewResourceSolution
 
 
 		#endregion
-		
-        #region properties
-		#endregion
-		
-        #region public methods
 
-		public UnityEngine.Object GetPrefab (EResType resType, string name, int scenary = 0)
+		#region properties
+		#endregion
+
+		#region public methods
+
+		public UnityEngine.Object GetPrefab(EResType resType, string name, int scenary = 0)
 		{
-            if (RuntimeConfig.Instance.UseAssetBundleRes)
-			{
-				// todo ab
-				return _manifest.GetAsset(name, 0);
-			}
 			#if UNITY_EDITOR
-			else
+			if (!RuntimeConfig.Instance.UseAssetBundleRes)
 			{
 				if (resType == EResType.Model)
 					return _manifest.GetAsset(name, 0, true, ELocale.WW);
@@ -60,9 +55,21 @@ namespace NewResourceSolution
 				}
 				return obj;
 			}
-			#else
-			return null;
+			else
 			#endif
+			{
+				return _manifest.GetAsset(name, scenary, true, LocalizationManager.Instance.CurrentLocale);
+			}
+		}
+
+		public UnityEngine.Texture GetTexture (string name, int scenary = 0)
+		{
+			return null;
+		}
+
+		public UnityEngine.Texture GetSprite (string name, int scenary = 0)
+		{
+			return null;
 		}
 
         public string GetJson (EResType resType, string name)

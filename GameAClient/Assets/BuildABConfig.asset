@@ -29,7 +29,10 @@ MonoBehaviour:
     SearchFilter: t:AudioClip
     FoldoutInEditorUI: 1
   - ResType: 6
-    InPackageGuidList: []
+    InPackageGuidList:
+    - 1527e17ad3b0c4ebf9c5ff8994db18ff
+    - 14ac7e8e8515a4d55bb450b437af4fea
+    - 3a23f0c71fde8df4f9c0fe455dc928cb
     IsFolderRes: 0
     IsLocaleRes: 0
     SearchFilter: t:Font
@@ -59,7 +62,9 @@ MonoBehaviour:
     SearchFilter: 
     FoldoutInEditorUI: 1
   - ResType: 5
-    InPackageGuidList: []
+    InPackageGuidList:
+    - f96453f6ec9904fd0a45c972fc0d793f
+    - 73e2a82b8e6d94665bcb3f7190e7f371
     IsFolderRes: 1
     IsLocaleRes: 0
     SearchFilter: 
@@ -116,7 +121,10 @@ MonoBehaviour:
   - 3de4eb3c673b14f729b47cf9c40d966e
   - 4be54ce44952d452799b0a730fa0a71a
   - 92adb434514344546b1c1dd3e682291a
-  - 0a9ec92e89e0e4693aab9fa96a822ab2
+  - 67979d915f7944ef0a171d534c13d1ec
+  - 7021c4e00defc0a45bf964f888bf32d0
+  - a46f6d2e562fa294caa663dfefab170d
   - 3a23f0c71fde8df4f9c0fe455dc928cb
   _folderAdamResList:
+  - f96453f6ec9904fd0a45c972fc0d793f
   - 73e2a82b8e6d94665bcb3f7190e7f371

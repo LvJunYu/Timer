@@ -9,6 +9,8 @@
 using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
+using NewResourceSolution;
+using ResourceManager = NewResourceSolution.ResourcesManager;
 
 namespace GameA
 {
@@ -26,6 +28,28 @@ namespace GameA
                 return _uiGroups [0].Trans.transform;
             }
             return null;
+        }
+
+        protected override UIViewBase InstanceView(string path)
+        {
+            Object obj = ResourceManager.Instance.GetPrefab (EResType.UIPrefab, path, 0);
+            if (obj == null)
+            {
+                LogHelper.Error(path);
+                return null;
+//                return base.InstanceView(path);
+            }
+            GameObject go = Instantiate(obj) as GameObject;
+            if (go == null)
+            {
+                LogHelper.Error(path);
+                return base.InstanceView(path);
+            }
+            var view = go.GetComponent<UIViewBase>();
+            view.Init();
+            view.Trans.SetParent(_trans, false);
+            go.SetActive(false);
+            return view;
         }
 
 		private void InitGameUIRenderCamera(Canvas c)

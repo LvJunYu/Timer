@@ -103,6 +103,7 @@ namespace GameA
 
         public static int OnResourcesCheckFinish = SoyEngine.EMessengerType.NextId++;
         public static int OnResourcesCheckStart = SoyEngine.EMessengerType.NextId++;
+        public static int OnResourceUpdateProgressChange = SoyEngine.EMessengerType.NextId++;
     }
 }
 

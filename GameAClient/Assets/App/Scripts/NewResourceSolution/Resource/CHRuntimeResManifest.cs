@@ -39,6 +39,10 @@ namespace NewResourceSolution
 		/// </summary>
 		private List<CHResBundle> _bundleToLoad = new List<CHResBundle>();
 		/// <summary>
+		/// 加载bundle过程中需要修改scenaryMask的所有bundle缓存
+		/// </summary>
+		private List<CHResBundle> _bundleToAddScenary = new List<CHResBundle>();
+		/// <summary>
 		/// ResourcesManager的manifest缓存
 		/// </summary>
 		private CHRuntimeResManifest _manifest;
@@ -135,7 +139,7 @@ namespace NewResourceSolution
 			string assetName, int scenary,
 			bool isLocaleRes = false, ELocale locale = ELocale.WW)
 		{
-			string bundleName = GetBundleNameByAssetName(assetName);
+			string bundleName = GetBundleNameByAssetName(assetName, isLocaleRes, locale);
 			if (string.IsNullOrEmpty(bundleName))
 			{
 				LogHelper.Error("No bundle contains asset: {0}", assetName);
@@ -258,17 +262,23 @@ namespace NewResourceSolution
 				return null;
 			}
 			_bundleToLoad.Clear();
+			_bundleToAddScenary.Clear();
 			_bundleToLoad.Add(bundle);
 			string[] dependencies = _unityManifest.GetAllDependencies(bundle.AssetBundleName);
 //			LogHelper.Info("Dependencies cnt: {0}", dependencies.Length);
 			for (int i = 0; i < dependencies.Length; i++)
 			{
-//				LogHelper.Info("Dependence {0}: {1}", i, dependencies[i]);
-				if (_cachedBundleDic.ContainsKey(dependencies[i]))
+				//				LogHelper.Info("Dependence {0}: {1}", i, dependencies[i]);
+				CHResBundle dependenceBundle = null;
+				if (_cachedBundleDic.TryGetValue(dependencies[i], out dependenceBundle))
 				{
+					if ((dependenceBundle.ScenaryMask & scenary) == 0)
+					{
+						_bundleToAddScenary.Add(dependenceBundle);
+					}
 					continue;
 				}
-				CHResBundle dependenceBundle = GetBundleByBundleName(dependencies[i]);
+				dependenceBundle = GetBundleByBundleName(dependencies[i]);
 				if (null == dependenceBundle)
 				{
 					LogHelper.Error("Load bundle <{0}> failed", dependencies[0]);
@@ -310,6 +320,7 @@ namespace NewResourceSolution
 						_bundleToLoad[i].AssetNames[j];
 					_bundleToLoad[i].AssetDic.Add(registAssetName, asset);
 				}
+				_bundleToAddScenary.Add(_bundleToLoad[i]);
 				_cachedBundleDic.Add(_bundleToLoad[i].AssetBundleName, _bundleToLoad[i]);
 				assetBundle.Unload(false);
 			}
@@ -327,6 +338,10 @@ namespace NewResourceSolution
 				}
 				return null;
 			}
+			for (int i = 0; i<_bundleToAddScenary.Count; i++)
+			{
+				_bundleToAddScenary[i].ScenaryMask &= scenary;
+			}
 			return bundle;
 		}
 
@@ -334,19 +349,22 @@ namespace NewResourceSolution
 
 		#region get bundle methods
 
-		public string GetBundleNameByAssetName (string assetName)
+		private string GetBundleNameByAssetName (string assetName, bool isLocaleRes = false, ELocale locale = ELocale.WW)
 		{
 			if (null == _assetName2BundleName || _assetName2BundleName.Count == 0)
 			{
 				LogHelper.Error("Manifest not mapped when call GetBundleNameByAssetName({0})", assetName);
 				return null;
 			}
+			string registedAssetName = isLocaleRes ?
+				StringUtil.Format(StringFormat.TwoLevelPath, LocaleDefine.LocaleNames[(int)locale], assetName) :
+					assetName;
 			string bundleName = string.Empty;
-			_assetName2BundleName.TryGetValue(assetName, out bundleName);
+			_assetName2BundleName.TryGetValue(registedAssetName, out bundleName);
 			return bundleName;
 		}
 
-		public CHResBundle GetBundleByAssetName (string assetName)
+		private CHResBundle GetBundleByAssetName (string assetName, bool isLocaleRes = false, ELocale locale = ELocale.WW)
 		{
 			if (null == _assetName2BundleName || _assetName2BundleName.Count == 0 ||
 				null == _bundleName2Bundle || _bundleName2Bundle.Count == 0)
@@ -354,12 +372,13 @@ namespace NewResourceSolution
 				LogHelper.Error("Manifest not mapped when call GetBundleByAssetName({0})", assetName);
 				return null;
 			}
-			string bundleName;
-			CHResBundle bundle = null;
-			if (_assetName2BundleName.TryGetValue(assetName, out bundleName))
+			string bundleName = GetBundleNameByAssetName(assetName, isLocaleRes, locale);
+			if (string.IsNullOrEmpty(bundleName))
 			{
-				_bundleName2Bundle.TryGetValue(bundleName, out bundle);
+				return null;
 			}
+			CHResBundle bundle = null;
+			_bundleName2Bundle.TryGetValue(bundleName, out bundle);
 			return bundle;
 		}
 
