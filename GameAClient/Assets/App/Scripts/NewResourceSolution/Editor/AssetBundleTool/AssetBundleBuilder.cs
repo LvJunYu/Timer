@@ -11,7 +11,7 @@ namespace NewResourceSolution.EditorTool
 	{
 		private static int errorCnt;
 
-        [MenuItem("JoyTools/BuildTools/TestMakeServerVersionConfig")]
+		[MenuItem("CHTools/TestMakeServerVersionConfig")]
 		private static void TestMakeServerVersionConfig ()
 		{
 			ServerVersionConfig config = new ServerVersionConfig();
@@ -25,23 +25,22 @@ namespace NewResourceSolution.EditorTool
 			FileTools.WriteStringToFile(str, path);
 		}
 			
-        [MenuItem("JoyTools/BuildTools/BuildAllAB_Windows64")]
+		[MenuItem("CHTools/AssetBundleTools/BuildAllAB_Windows64")]
         private static void BuildAllAB_Windows ()
         {
             BuildAllAB (BuildTarget.StandaloneWindows64);
         }
-
-        [MenuItem("JoyTools/BuildTools/BuildAllAB_OSX64")]
+        [MenuItem("CHTools/AssetBundleTools/BuildAllAB_OSX64")]
         private static void BuildAllAB_OSX64 ()
         {
             BuildAllAB (BuildTarget.StandaloneOSXIntel64);
         }
-        [MenuItem("JoyTools/BuildTools/BuildAllAB_Android")]
+        [MenuItem("CHTools/AssetBundleTools/BuildAllAB_Android")]
         private static void BuildAllAB_Android ()
         {
             BuildAllAB (BuildTarget.Android);
         }
-        [MenuItem("JoyTools/BuildTools/BuildAllAB_iOS")]
+        [MenuItem("CHTools/AssetBundleTools/BuildAllAB_iOS")]
         private static void BuildAllAB_iOS ()
         {
             BuildAllAB (BuildTarget.iOS);
@@ -246,7 +245,10 @@ namespace NewResourceSolution.EditorTool
                 {
                     bundle.GroupId = ResDefine.ResGroupNecessary;
                 }
-                bundle.IsAdamRes = buildABConfig.SingleAdamResList.Contains (assetGuid);
+                if (buildABConfig.SingleAdamResList.Contains (assetGuid))
+                {
+                    manifest.AdamBundleNameList.Add (bundleName);
+                }
                 if (!manifest.AddBundle (bundle))
                 {
                     errorCnt++;
@@ -272,7 +274,7 @@ namespace NewResourceSolution.EditorTool
             ABUtility.PathToAssetBundleName (rootPath, childFolderPath, out bundleName);
             CHResBundle bundle = new CHResBundle ();
             bundle.AssetBundleName = bundleName;
-            string folderGuid = AssetDatabase.AssetPathToGUID (childFolderPath);
+			string folderGuid = AssetDatabase.AssetPathToGUID(childFolderPath);
             // todo 这里只区分是否随包发布的资源
             if (buildABConfig.FullResPackage || buildABConfig.IsGuidInPackageAsset (folderGuid))
             {
@@ -305,7 +307,10 @@ namespace NewResourceSolution.EditorTool
                 }
             }
             bundle.AssetNames = assetNameList.ToArray ();
-            bundle.IsAdamRes = buildABConfig.FolderAdamResList.Contains (folderGuid);
+            if (buildABConfig.FolderAdamResList.Contains (folderGuid))
+            {
+                manifest.AdamBundleNameList.Add (bundleName);
+            }
             if (!manifest.AddBundle (bundle))
             {
                 errorCnt++;
@@ -422,15 +427,16 @@ namespace NewResourceSolution.EditorTool
 			}
 			AssetDatabase.CreateFolder(ResPath.Assets, ResPath.StreamingAssets);
 			string outputPathCompressed = ABUtility.GetOutputPath(buildABConfig, buildTarget);
-            string outputPathUncompressed = ABUtility.GetUnCompressedOutputPath (buildABConfig, buildTarget);
+			string outputPathUncompressed = ABUtility.GetUnCompressedOutputPath(buildABConfig, buildTarget);
 			var allBundles = manifest.Bundles;
 			for (int i = 0; i < allBundles.Count; i++)
 			{
-				if (allBundles[i].GroupId == ResDefine.ResGroupInPackage)
+                bool isAdamBundle = manifest.AdamBundleNameList.Contains (allBundles [i].AssetBundleName);
+                if (allBundles[i].GroupId == ResDefine.ResGroupInPackage || isAdamBundle)
 				{
 					string abPath = string.Format(StringFormat.TwoLevelPathWithExtention, outputPathCompressed, allBundles[i].AssetBundleName, allBundles[i].CompressedMd5);
 					string destPath = string.Format(StringFormat.TwoLevelPathWithExtention, ResPath.StreamingAssetsPath, allBundles[i].AssetBundleName, allBundles[i].CompressedMd5);
-                    if (allBundles [i].IsAdamRes)
+                    if (isAdamBundle)
                     {
                         abPath = string.Format(StringFormat.TwoLevelPath, outputPathUncompressed, allBundles[i].AssetBundleName);
                     }

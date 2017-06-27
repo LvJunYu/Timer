@@ -46,10 +46,10 @@ namespace NewResourceSolution
 		public string LocaleName;
 		#endregion
 
-        #region used when build bundle
-        [Newtonsoft.Json.JsonIgnore]
-        public bool IsAdamRes;
-        #endregion
+//		#region used when build bundle
+//		[Newtonsoft.Json.JsonIgnore]
+//		public bool IsAdamRes;
+//		#endregion
 
 		/// <summary>
 		/// 获得文件应该在的位置
@@ -94,10 +94,10 @@ namespace NewResourceSolution
         }
 
         /// <summary>
-        /// 检查文件完整性
+        /// 检查文件完整性，如果检测的是StreamingAsset中的文件，需要根据是否是亚当资源的判断来做特殊处理
         /// </summary>
         /// <returns><c>true</c> if this instance is persistant file ready; otherwise, <c>false</c>.</returns>
-        public EFileIntegrity CheckFileIntegrity (EFileLocation location)
+        public EFileIntegrity CheckFileIntegrity (EFileLocation location, bool isAdamBundle)
         {
             if (EFileLocation.Server == location)
                 return EFileIntegrity.NotExist;
@@ -108,8 +108,9 @@ namespace NewResourceSolution
                 {
                     string md5;
                     FileTools.GetFileMd5 (fi.FullName, out md5);
+                    string compareMd5 = isAdamBundle || (EAssetBundleCompressType.NoCompress == CompressType) ? RawMd5 : CompressedMd5;
                     if (string.Compare (
-                        EAssetBundleCompressType.NoCompress == CompressType ? RawMd5 : CompressedMd5,
+                        compareMd5,
                         md5) == 0)
                     {
                         return EFileIntegrity.Integral;
@@ -156,7 +157,7 @@ namespace NewResourceSolution
 		/// 解压或拷贝（非压缩状态）到永久存储
 		/// </summary>
 		/// <returns>The or copy to persistant.</returns>
-        public IEnumerator DecompressOrCopyToPersistant ()
+        public IEnumerator DecompressOrCopyToPersistant (bool isAdamBundle)
         {
             if (EFileLocation.Server == FileLocation ||
                 EFileLocation.Persistent == FileLocation)
@@ -167,8 +168,11 @@ namespace NewResourceSolution
             string destFilePath = GetFilePath (EFileLocation.Persistent);
             if (String.IsNullOrEmpty (sourceFilePath) || string.IsNullOrEmpty(destFilePath))
                 yield break;
+            // 以下几种情况使用拷贝，否则使用解压：是临时文件夹内的文件、是非压缩的文件、是streamingAssets中的文件并且是亚当资源
             if (EFileLocation.TemporaryCache == FileLocation ||
-                EAssetBundleCompressType.NoCompress == CompressType)
+                EAssetBundleCompressType.NoCompress == CompressType ||
+                (EFileLocation.StreamingAsset == FileLocation && isAdamBundle)
+               )
             {
                 ThreadAction copyFile = new ThreadAction (
                     () => {
@@ -331,7 +335,7 @@ namespace NewResourceSolution
                 {
 					Error = StringUtil.Format ("{0}, bundle name: {1}", SerializeAction.Error, Bundle.AssetBundleName);
                 }
-                else if (EFileIntegrity.Integral != Bundle.CheckFileIntegrity(EFileLocation.TemporaryCache))
+                else if (EFileIntegrity.Integral != Bundle.CheckFileIntegrity(EFileLocation.TemporaryCache, false))
                 {
 					Error = StringUtil.Format(s_temporaryFileMd5CheckFailedErrorInfo, Bundle.AssetBundleName);
                 }

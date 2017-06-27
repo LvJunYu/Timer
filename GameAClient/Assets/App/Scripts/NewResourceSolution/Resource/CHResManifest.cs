@@ -13,6 +13,9 @@ namespace NewResourceSolution
 		[Newtonsoft.Json.JsonProperty]
 		protected List<CHResBundle> _bundles;
 
+        [Newtonsoft.Json.JsonProperty]
+        protected List<string> _adamBundleNameList;
+
 		protected EFileLocation _fileLocation;
 
 		#endregion
@@ -34,6 +37,14 @@ namespace NewResourceSolution
 				return _bundles;
 			}
 		}
+        [Newtonsoft.Json.JsonIgnore]
+        public List<string> AdamBundleNameList
+        {
+            get
+            {
+                return _adamBundleNameList;
+            }
+        }
 		[Newtonsoft.Json.JsonIgnore]
 		public EFileLocation FileLocation
 		{
@@ -54,6 +65,7 @@ namespace NewResourceSolution
 		{
 			_version = version;
 			_bundles = new List<CHResBundle>();
+            _adamBundleNameList = new List<string> ();
             var manifestBundle = new CHResBundle();
 			manifestBundle.GroupId = ResDefine.ResGroupInPackage;
 			manifestBundle.CompressType = EAssetBundleCompressType.NoCompress;
@@ -90,15 +102,15 @@ namespace NewResourceSolution
             {
                 bundle.LocaleName = bundle.AssetBundleName.Substring(1).Split(ResDefine.ReplaceSplashCharInAssetBundleName)[0].ToUpper();
             }
-            for (int i = 0; i < bundle.AssetNames.Length; i++)
+			for (int i = 0; i<bundle.AssetNames.Length; i++)
             {
                 string registAssetName = bundle.IsLocaleRes ?
-                    StringUtil.Format (StringFormat.TwoLevelPath, bundle.LocaleName, bundle.AssetNames [i]) :
-                    bundle.AssetNames [i];
+					StringUtil.Format(StringFormat.TwoLevelPath, bundle.LocaleName, bundle.AssetNames[i]) :
+					bundle.AssetNames[i];
 
                 if (_allAssetNameList.Contains(registAssetName))
                 {
-                    UnityEngine.Debug.LogErrorFormat("Asset <{0}> name dumplicated", registAssetName);
+					LogHelper.Error("Asset <{0}> name dumplicated", registAssetName);
                 }
                 else
                 {
@@ -128,6 +140,7 @@ namespace NewResourceSolution
             {
                 _bundles [i].FileLocation = EFileLocation.Server;
             }
+            _adamBundleNameList.Clear ();
 //            if (null != _manifestBundle)
 //            {
 //                _manifestBundle.FileLocation = EFileLocation.Server;

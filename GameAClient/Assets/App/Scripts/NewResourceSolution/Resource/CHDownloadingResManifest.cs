@@ -103,10 +103,15 @@ namespace NewResourceSolution
                     if (null != bundleInExistingManifest &&
                         string.Compare(_bundles[i].CompressedMd5, bundleInExistingManifest.CompressedMd5) == 0)
                     {
-                        EFileIntegrity integrity = bundleInExistingManifest.CheckFileIntegrity (bundleInExistingManifest.FileLocation);
+                        bool isAdamBundle = existingManifest.AdamBundleNameList.Contains (bundleInExistingManifest.AssetBundleName);
+                        EFileIntegrity integrity = bundleInExistingManifest.CheckFileIntegrity (bundleInExistingManifest.FileLocation, isAdamBundle);
                         if (EFileIntegrity.Integral == integrity)
                         {
                             _bundles[i].FileLocation = bundleInExistingManifest.FileLocation;
+                            if (isAdamBundle)
+                            {
+                                _adamBundleNameList.Add (_bundles[i].AssetBundleName);
+                            }
 							LogHelper.Info("Bundle <{0}> found in existing manifest, fileLocation is {1}.", _bundles[i].AssetBundleName, _bundles[i].FileLocation);
                         }
                         else
@@ -141,7 +146,7 @@ namespace NewResourceSolution
                     // 之前已经和其他manifest合并并确认有此文件了
                     continue;
                 }
-                EFileIntegrity integrity = _bundles [i].CheckFileIntegrity (EFileLocation.TemporaryCache);
+                EFileIntegrity integrity = _bundles [i].CheckFileIntegrity (EFileLocation.TemporaryCache, false);
                 if (EFileIntegrity.Integral == integrity)
                 {
                     _bundles [i].FileLocation = EFileLocation.TemporaryCache;
@@ -164,7 +169,8 @@ namespace NewResourceSolution
             {
                 if (EFileLocation.Server != _bundles[i].FileLocation)
                 {
-                    EFileIntegrity integrity = _bundles [i].CheckFileIntegrity (EFileLocation.StreamingAsset);
+                    bool isadamBundle = _adamBundleNameList.Contains (_bundles [i].AssetBundleName);
+                    EFileIntegrity integrity = _bundles [i].CheckFileIntegrity (EFileLocation.StreamingAsset, isadamBundle);
                     if (EFileIntegrity.Integral == integrity)
                     {
                         _bundles [i].FileLocation = EFileLocation.Server;
@@ -321,7 +327,7 @@ namespace NewResourceSolution
 
             for (int i = 0; i < _bundles.Count; i++)
             {
-                yield return _bundles [i].DecompressOrCopyToPersistant ();
+                yield return _bundles [i].DecompressOrCopyToPersistant (_adamBundleNameList.Contains(_bundles[i].AssetBundleName));
             }
             // 写入manifest文件
 			UnityTools.TrySaveObjectToLocal<CHResManifest> (this, ResDefine.CHResManifestFileName);
