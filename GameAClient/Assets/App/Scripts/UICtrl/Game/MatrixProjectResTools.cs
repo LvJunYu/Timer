@@ -15,38 +15,38 @@ namespace GameA
     public static class MatrixProjectTools
     {
         private static int _playCount;
-        #region CheckResource
-        public static void InitAndCheckOnStart()
-        {
-            if(!GlobalVar.Instance.IsDebug)
-            {
-                // todo update api
-//                GameResourcePathManager.Instance.WebServerRoot = AppData.Instance.GameResRoot;
-            }
-//            if(MatrixManager.Instance.AllMatrixList != null)
-//            {
-            // todo update api
-//                LocalResourceManager.Instance.CheckAppVersion(AppData.Instance.AppResVersion);
-//            }
-            Messenger.AddListener(GameA.EMessengerType.OnAppDataChanged, OnAppDataChanged);
-            Messenger.AddListener(GameA.EMessengerType.CheckAppVersionComplete, OnCheckComplete);
-        }
-        private static void OnCheckComplete()
-        {
-            LogHelper.Info("OnCheckComplete");
-        }
-
-        private static void OnAppDataChanged()
-        {
-            LogHelper.Info("OnAppDataChanged");
-            // todo update api
+//        #region CheckResource
+//        public static void InitAndCheckOnStart()
+//        {
 //            if(!GlobalVar.Instance.IsDebug)
 //            {
-//                GameResourcePathManager.Instance.WebServerRoot = AppData.Instance.GameResRoot;
+//                // todo update api
+////                GameResourcePathManager.Instance.WebServerRoot = AppData.Instance.GameResRoot;
 //            }
-//            LocalResourceManager.Instance.CheckAppVersion(AppData.Instance.AppResVersion);
-        }
-        #endregion CheckResource
+////            if(MatrixManager.Instance.AllMatrixList != null)
+////            {
+//            // todo update api
+////                LocalResourceManager.Instance.CheckAppVersion(AppData.Instance.AppResVersion);
+////            }
+//            Messenger.AddListener(GameA.EMessengerType.OnAppDataChanged, OnAppDataChanged);
+//            Messenger.AddListener(GameA.EMessengerType.CheckAppVersionComplete, OnCheckComplete);
+//        }
+//        private static void OnCheckComplete()
+//        {
+//            LogHelper.Info("OnCheckComplete");
+//        }
+//
+//        private static void OnAppDataChanged()
+//        {
+//            LogHelper.Info("OnAppDataChanged");
+//            // todo update api
+////            if(!GlobalVar.Instance.IsDebug)
+////            {
+////                GameResourcePathManager.Instance.WebServerRoot = AppData.Instance.GameResRoot;
+////            }
+////            LocalResourceManager.Instance.CheckAppVersion(AppData.Instance.AppResVersion);
+//        }
+//        #endregion CheckResource
 
         #region Tools
         public static bool CheckMatrixStateForRun(out EMatrixProjectResState state)

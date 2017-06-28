@@ -187,6 +187,7 @@ namespace NewResourceSolution
                 ResourcesManager.Instance.Init ();
             }
             Messenger.Broadcast(EMessengerType.OnResourcesCheckFinish);
+            SocialApp.Instance.LoginAfterUpdateResComplete ();
         }
     }
 }

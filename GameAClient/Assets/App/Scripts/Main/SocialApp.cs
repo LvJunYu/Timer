@@ -8,6 +8,7 @@
 using System;
 using GameA.Game;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 using NewResourceSolution;
 using EMessengerType = SoyEngine.EMessengerType;
@@ -98,12 +99,16 @@ namespace GameA
             {
                 ClearCache();
             }
-//	        InitLocalResource();
 			RegisterGameTypeVersion();
             JoyNativeTool.Instance.Init();
             JoySceneManager.Instance.Init();
             Application.targetFrameRate = 60;
             QualitySettings.vSyncCount = 1;
+
+            GlobalVar.Instance.Env = this._env;
+            GlobalVar.Instance.AppVersion = RuntimeConfig.Instance.Version.ToString();
+            var addressConfig = GetAppServerAddress();
+            NetworkManager.AppHttpClient.BaseUrl = addressConfig.AppServerApiRoot;
 
             gameObject.AddComponent<SocialGUIManager>();
 
@@ -120,32 +125,41 @@ namespace GameA
 //            }
         }
 
-        public void Init()
-        {
-            GlobalVar.Instance.Env = this._env;
-            GlobalVar.Instance.AppVersion = RuntimeConfig.Instance.Version.ToString();
-            var addressConfig = GetAppServerAddress();
-            NetworkManager.AppHttpClient.BaseUrl = addressConfig.AppServerApiRoot;
-            // todo update api
-//            GameResourcePathManager.Instance.WebServerRoot = addressConfig.GameResoureRoot;
-            LocalUser.Instance.Init();
-            AppData.Instance.Init();
-            // todo update api
-//            LocalResourceManager.Instance.transform.parent = transform;
-            MatrixProjectTools.InitAndCheckOnStart();
-            LoginLogicUtil.Init();
-            ShareUtil.Init();
-            RoomManager.Instance.Init();
-        }
-
-        public void InitAfterUpdateResComplete()
+        public void LoginAfterUpdateResComplete()
         {
             gameObject.AddComponent<TableManager>();
             TableManager.Instance.Init();
-            SocialGUIManager.Instance.ShowAppView();
-
-            GameProcessManager.Instance.Init ();
+            SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
 		}
+
+        public void LoginSucceed ()
+        {
+            LocalUser.Instance.Init();
+            AppData.Instance.Init();
+
+            //            LoginLogicUtil.Init();
+            ShareUtil.Init();
+            RoomManager.Instance.Init();
+
+            GetUserData ();
+        }
+
+        private void GetUserData ()
+        {
+            ParallelTaskHelper<ENetResultCode> helper = new ParallelTaskHelper<ENetResultCode>(()=>{
+                GameProcessManager.Instance.Init ();
+                SocialGUIManager.Instance.ShowAppView ();
+            }, code=>{
+                SocialGUIManager.ShowPopupDialog("服务器连接失败，请检查网络后重试，错误代码："+code.ToString(), null,
+                    new System.Collections.Generic.KeyValuePair<string, System.Action>("重试", ()=>{
+                        CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(()=>GetUserData()));
+                    }));
+            });
+            helper.AddTask(AppData.Instance.LoadAppData);
+            helper.AddTask(LocalUser.Instance.LoadUserData);
+            helper.AddTask(AppData.Instance.AdventureData.PrepareAllData);
+            helper.AddTask (LocalUser.Instance.LoadPropData);
+        }
 
 //	    private void InitLocalResource()
 //	    {

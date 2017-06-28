@@ -261,7 +261,7 @@ namespace GameA {
 
 	    private void EnterAppStartCompleteState()
 	    {
-			SocialApp.Instance.InitAfterUpdateResComplete();
+			SocialApp.Instance.LoginAfterUpdateResComplete();
             SocialGUIManager.Instance.CloseUI<UICtrlInitPage>();
 //			CoroutineProxy.Instance.StartCoroutine(FinishStartApp());
 		}
@@ -392,7 +392,7 @@ namespace GameA {
 
 	    private void InitApp()
 	    {
-			SocialApp.Instance.Init();
+//			SocialApp.Instance.Init();
 		}
 
 //	    private IEnumerator FinishStartApp()
