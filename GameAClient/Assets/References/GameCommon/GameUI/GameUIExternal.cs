@@ -8,6 +8,7 @@
 
 using UnityEngine;
 using UnityEngine.UI;
+using NewResourceSolution;
 
 namespace SoyEngine
 {
@@ -20,11 +21,10 @@ namespace SoyEngine
                 return;
             }
             Sprite sprite = null;
-            // todo update api
-//            if (GameResourceManager.Instance.TryGetSpriteByName(spriteName, out sprite))
-//            {
-//                image.sprite = sprite;
-//            }
+            if (ResourcesManager.Instance.TryGetSprite (spriteName, out sprite))
+            {
+                image.sprite = sprite;
+            }
         }
     }
 }

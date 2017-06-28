@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
+using NewResourceSolution;
 using Object = UnityEngine.Object;
 
 namespace GameA.Game
@@ -262,12 +263,11 @@ namespace GameA.Game
             {
                 maskName = string.Format("MaskWater_{0}", (int)edge.Direction);
             }
-            // todo update api
-//            if (!GameResourceManager.Instance.TryGetTextureByName(maskName, out maskingTexture))
-//            {
-//                LogHelper.Error("TryGetSpriteByName Failed", maskName);
-//                return;
-//            }
+            if (ResourcesManager.Instance.TryGetTexture (maskName, out maskingTexture))
+            {
+                LogHelper.Error("TryGetSpriteByName Failed", maskName);
+                return;
+            }
             int xmin = 0, ymin = 0, xmax = 0, ymax = 0, offsetX = 0, offsetY = 0;
             switch (edge.Direction)
             {

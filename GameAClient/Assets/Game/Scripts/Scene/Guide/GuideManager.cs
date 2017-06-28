@@ -357,7 +357,6 @@ namespace GameA.Game
 //#if UNITY_EDITOR
 //            UnityEngine.Object obj = Resources.Load("GuideUI");
 //            if (obj == null) {
-//                // todo update api
 ////                obj = GameResourceManager.Instance.LoadMainAssetObject ("GuideUI");
 //            }
 //            var gameObj = CommonTools.InstantiateObject (obj);

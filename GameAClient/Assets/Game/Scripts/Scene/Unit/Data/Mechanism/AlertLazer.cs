@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
+using NewResourceSolution;
 
 namespace GameA.Game
 {
@@ -298,12 +299,11 @@ namespace GameA.Game
         {
             CreateMesh();
             Texture texture = null;
-            // todo update api
-//            if (!GameResourceManager.Instance.TryGetTextureByName(path, out texture))
-//            {
-//                LogHelper.Error("TryGetTextureByName Failed {0}", path);
-//                return;
-//            }
+            if (!ResourcesManager.Instance.TryGetTexture(path, out texture))
+            {
+                LogHelper.Error("TryGetTextureByName Failed {0}", path);
+                return;
+            }
             var go = new GameObject("LazerEffect");
             _trans = go.transform;
             IntVec2 pointA = IntVec2.zero, pointB = IntVec2.zero;

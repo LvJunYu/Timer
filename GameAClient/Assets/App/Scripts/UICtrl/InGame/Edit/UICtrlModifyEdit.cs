@@ -12,6 +12,7 @@ using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
 using GameA.Game;
+using NewResourceSolution;
 
 namespace GameA
 {
@@ -235,18 +236,17 @@ namespace GameA
                     return;
 				} else {
 					Sprite texture;
-                    // todo update api
-//					if (GameResourceManager.Instance.TryGetSpriteByName(tableUnit.Icon, out texture))
-//					{
-//                        _cachedView.ModifyItems [i].gameObject.SetActive (true);
-//						_cachedView.ModifyItems [i].SetItem (texture);
-//					}
-//					else
-//					{
-//						LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", tableUnit.Id,
-//							tableUnit.Icon, tableUnit.EGeneratedType);
-//                        return;
-//					}
+                    if (ResourcesManager.Instance.TryGetSprite(tableUnit.Icon, out texture))
+					{
+                        _cachedView.ModifyItems [i].gameObject.SetActive (true);
+						_cachedView.ModifyItems [i].SetItem (texture);
+					}
+					else
+					{
+						LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", tableUnit.Id,
+							tableUnit.Icon, tableUnit.EGeneratedType);
+                        return;
+					}
 				}
 			}
             for (; i < _cachedView.ModifyItems.Length && i < slotNumLimit; i++) {
@@ -276,16 +276,15 @@ namespace GameA
                     _cachedView.SelectItems [i].gameObject.SetActive (false);
                     continue;
                 }
-                Sprite texture;
-                // todo update api
-//                if (GameResourceManager.Instance.TryGetSpriteByName (tableUnit.Icon, out texture)) {
-//                    _cachedView.SelectItems [i].SetItem (texture,
-//                        LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitCount - editMode.UsedModifyAddUnitCnt(tableUnit.Id));
-//                } else {
-//                    LogHelper.Error ("Can't find icon of unit id: {0}", tableUnit.Id);
-//                    _cachedView.SelectItems [i].SetItem (null,
-//                        LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitCount - editMode.UsedModifyAddUnitCnt(tableUnit.Id));
-//                }
+                Sprite sprite;
+                if (ResourcesManager.Instance.TryGetSprite (tableUnit.Icon, out sprite)) {
+                    _cachedView.SelectItems [i].SetItem (sprite,
+                        LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitCount - editMode.UsedModifyAddUnitCnt(tableUnit.Id));
+                } else {
+                    LogHelper.Error ("Can't find icon of unit id: {0}", tableUnit.Id);
+                    _cachedView.SelectItems [i].SetItem (null,
+                        LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitCount - editMode.UsedModifyAddUnitCnt(tableUnit.Id));
+                }
             }
             for (; i < _cachedView.SelectItems.Length; i++) {
                 _cachedView.SelectItems [i].gameObject.SetActive (false);

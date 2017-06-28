@@ -10,6 +10,7 @@ using SoyEngine;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using GameA.Game;
+using NewResourceSolution;
 
 namespace GameA
 {
@@ -108,17 +109,16 @@ namespace GameA
                 }
                 _cachedView.ShowCurSelectIcon.SetActiveEx(true);
                 _cachedView.TextureImage.SetActiveEx(false);
-                Sprite texture;
-                // todo update api
-//                if (GameResourceManager.Instance.TryGetSpriteByName(table.Icon, out texture))
-//                {
-//                    _cachedView.SpriteImage.sprite = texture;
-//                }
-//                else
-//                {
-//                    LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", table.Id,
-//                        table.Icon, table.EGeneratedType);
-//                }
+                Sprite sprite;
+                if (ResourcesManager.Instance.TryGetSprite(table.Icon, out sprite))
+                {
+                    _cachedView.SpriteImage.sprite = sprite;
+                }
+                else
+                {
+                    LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", table.Id,
+                        table.Icon, table.EGeneratedType);
+                }
             }
         }
 

@@ -28,24 +28,6 @@ namespace SoyEngine
 
         protected override UIViewBase InstanceView(string path)
         {
-            // todo update api
-//            Object obj = GameResourceManager.Instance.LoadMainAssetObject(path);
-//            if (obj == null)
-//            {
-//                LogHelper.Error(path);
-//                return base.InstanceView(path);
-//            }
-//            GameObject go = Instantiate(obj) as GameObject;
-//            if (go == null)
-//            {
-//                LogHelper.Error(path);
-//                return base.InstanceView(path);
-//            }
-//            var view = go.GetComponent<UIViewBase>();
-//            view.Init();
-//            view.Trans.SetParent(_trans, false);
-//            go.SetActive(false);
-//            return view;
             return null;
         }
 
@@ -102,20 +84,6 @@ namespace SoyEngine
 
 		public override UMViewBase InstanceItemView(string path)
 	    {
-            // todo update api
-//			Object obj = GameResourceManager.Instance.LoadMainAssetObject(path);
-//			if (obj == null)
-//			{
-//				LogHelper.Error(path);
-//				return base.InstanceItemView(path);
-//			}
-//			GameObject go = Instantiate(obj) as GameObject;
-//			if (go == null)
-//			{
-//				LogHelper.Error("prefab is null");
-//				return base.InstanceItemView(path);
-//			}
-//			return go.GetComponent<UMViewBase>();
             return null;
 	    }
 

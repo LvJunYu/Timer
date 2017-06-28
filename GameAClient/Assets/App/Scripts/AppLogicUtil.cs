@@ -45,26 +45,7 @@ namespace GameA
                 MatrixProjectTools.ShowMatrixProjectResCheckTip(resState);
                 return;
             }
-            // todo update api
-//            float needDownloadSize = LocalResourceManager.Instance.GetNeedDownloadSizeMB("GameMaker2D");
-            float needDownloadSize = 0;
-            if(Application.internetReachability != NetworkReachability.NotReachable
-                && !Util.IsFloatEqual(needDownloadSize, 0))
-            {
-                CommonTools.ShowPopupDialog(string.Format("本次进入游戏需要更新 {0:N2}MB 资源，可能会产生费用，是否继续？", Mathf.Max(needDownloadSize, 0.01f)),
-                    null,
-                    new System.Collections.Generic.KeyValuePair<string, Action>("继续", ()=>{
-                        InternalEditPersonalProject(project);
-                    }),
-                    new System.Collections.Generic.KeyValuePair<string, Action>("取消", ()=>{
-                        LogHelper.Debug("Cancel BeginEdit");
-                    })
-                );
-            }
-            else
-            {
-                InternalEditPersonalProject(project);
-            }
+            InternalEditPersonalProject(project);
         }
 
         private static void InternalEditPersonalProject(Project project)

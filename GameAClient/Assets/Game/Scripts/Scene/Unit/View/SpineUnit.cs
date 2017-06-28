@@ -8,6 +8,7 @@
 using SoyEngine;
 using Spine.Unity;
 using UnityEngine;
+using NewResourceSolution;
 
 namespace GameA.Game
 {
@@ -26,13 +27,17 @@ namespace GameA.Game
 
         protected override bool OnInit()
         {
-            SkeletonDataAsset data = null;
-            // todo update api
-//            if (!GameResourceManager.Instance.TryGetSpineDataByName(_unit.AssetPath, out data))
-//            {
-//                LogHelper.Error("TryGetSpineDataByName Failed! {0}", _unit.AssetPath);
-//                return false;
-//            }
+            string skeletonDataAssetName = string.Format ("{0}_SkeletonData", _unit.AssetPath);
+            SkeletonDataAsset data = ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(
+                EResType.SpineData,
+                skeletonDataAssetName,
+                0
+            );
+            if (null == data)
+            {
+                LogHelper.Error("TryGetSpineDataByName Failed! {0}", _unit.AssetPath);
+                return false;
+            }
             _skeletonAnimation.skeletonDataAsset = data;
             _skeletonAnimation.Initialize(true);
             _skeletonAnimation.enabled = true;

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using GameA.Game;
 using UnityEngine;
+using NewResourceSolution;
 using Object = UnityEngine.Object;
 
 namespace SoyEngine
@@ -144,13 +145,12 @@ namespace SoyEngine
             AudioItem audioItem;
             if (!_playingAudioEffect.TryGetValue(audioName, out audioItem))
             {
-                AudioClip clip = null;
-                // todo update api
-//                if (!GameResourceManager.Instance.TryGetAudioClipByName(audioName, out clip))
-//                {
-//                    LogHelper.Error("Audio {0} load failed!", audioName);
-//                    return;
-//                }
+                AudioClip clip = ResourcesManager.Instance.GetAudio(audioName);
+                if (null == clip)
+                {
+                    LogHelper.Error("Audio {0} load failed!", audioName);
+                    return;
+                }
                 audioItem = GetAudioItem();
                 audioItem.AudioSource.clip = clip;
                 _playingAudioEffect.Add(audioName, audioItem);

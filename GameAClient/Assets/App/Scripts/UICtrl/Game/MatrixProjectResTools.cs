@@ -15,71 +15,8 @@ namespace GameA
     public static class MatrixProjectTools
     {
         private static int _playCount;
-//        #region CheckResource
-//        public static void InitAndCheckOnStart()
-//        {
-//            if(!GlobalVar.Instance.IsDebug)
-//            {
-//                // todo update api
-////                GameResourcePathManager.Instance.WebServerRoot = AppData.Instance.GameResRoot;
-//            }
-////            if(MatrixManager.Instance.AllMatrixList != null)
-////            {
-//            // todo update api
-////                LocalResourceManager.Instance.CheckAppVersion(AppData.Instance.AppResVersion);
-////            }
-//            Messenger.AddListener(GameA.EMessengerType.OnAppDataChanged, OnAppDataChanged);
-//            Messenger.AddListener(GameA.EMessengerType.CheckAppVersionComplete, OnCheckComplete);
-//        }
-//        private static void OnCheckComplete()
-//        {
-//            LogHelper.Info("OnCheckComplete");
-//        }
-//
-//        private static void OnAppDataChanged()
-//        {
-//            LogHelper.Info("OnAppDataChanged");
-//            // todo update api
-////            if(!GlobalVar.Instance.IsDebug)
-////            {
-////                GameResourcePathManager.Instance.WebServerRoot = AppData.Instance.GameResRoot;
-////            }
-////            LocalResourceManager.Instance.CheckAppVersion(AppData.Instance.AppResVersion);
-//        }
-//        #endregion CheckResource
 
         #region Tools
-        public static bool CheckMatrixStateForRun(out EMatrixProjectResState state)
-        {
-            state = EMatrixProjectResState.None;
-//            if(LocalResourceManager.Instance.AppResVersionCheckState != LocalResourceManager.EAppResVersionCheckState.Checked)
-//            {
-//                state = EMatrixProjectResState.AppResVersionNotReady;
-//                return false;
-//            }
-//            if(AppData.Instance.AppResVersion > LocalResourceManager.Instance.CurAppVersion.VersionId)
-//            {
-//                state = EMatrixProjectResState.AppResVersionExpired;
-//                return false;
-//            }
-//            EGameUpdateCheckResult gameResCheckResult = LocalResourceManager.Instance.CheckGameLocalFile("GameMaker2D");
-//            if(gameResCheckResult == EGameUpdateCheckResult.Error)
-//            {
-//                state = EMatrixProjectResState.MatrixResExpired;
-//                return false;
-//            }
-//            if((gameResCheckResult == EGameUpdateCheckResult.NeedUpdate
-//                || gameResCheckResult == EGameUpdateCheckResult.NeedUpdate)
-//                && Application.internetReachability == NetworkReachability.NotReachable)
-//            {
-//                state = EMatrixProjectResState.MatrixResExpired;
-//                return false;
-//            }
-//
-            state = EMatrixProjectResState.Ready;
-            return true;
-        }
-
 
         public static bool CheckProjectStateForRun(Project project, out EMatrixProjectResState state)
         {

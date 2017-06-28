@@ -11,6 +11,7 @@ using System.Security.Cryptography.X509Certificates;
 using DG.Tweening;
 using SoyEngine;
 using UnityEngine;
+using NewResourceSolution;
 using Object = UnityEngine.Object;
 
 namespace GameA.Game
@@ -211,12 +212,11 @@ namespace GameA.Game
             meshRenderer.sortingOrder = (int)ESortingOrder.AttTexture;
             var tweener = _dirTrans.DOScale(0.7f, 0.5f);
             tweener.SetLoops(-1, LoopType.Yoyo);
-            Sprite arrowTexture;
-            // todo update api
-//            if (GameResourceManager.Instance.TryGetSpriteByName(attName, out arrowTexture))
-//            {
-//                meshRenderer.sprite = arrowTexture;
-//            }
+            Sprite arrowSprite;
+            if (ResourcesManager.Instance.TryGetSprite(attName, out arrowSprite))
+            {
+                meshRenderer.sprite = arrowSprite;
+            }
         }
 
         public void UpdateSign()
@@ -303,12 +303,11 @@ namespace GameA.Game
                 LogHelper.Debug("TryGetPairUnit Faield,{0}", _unit.UnitDesc);
                 return;
             }
-            Sprite arrowTexture;
-            // todo update api
-//            if (GameResourceManager.Instance.TryGetSpriteByName("Letter_" + pairUnit.Num, out arrowTexture))
-//            {
-//                spriteRenderer.sprite = arrowTexture;
-//            }
+            Sprite arrowSprite;
+            if (ResourcesManager.Instance.TryGetSprite("Letter_" + pairUnit.Num, out arrowSprite))
+            {
+                spriteRenderer.sprite = arrowSprite;
+            }
         }
 
         public Vector2 GetRotationPosOffset()

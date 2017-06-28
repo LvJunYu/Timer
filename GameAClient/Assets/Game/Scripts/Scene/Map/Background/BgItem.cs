@@ -10,6 +10,7 @@ using System.Collections;
 using DG.Tweening;
 using SoyEngine;
 using UnityEngine;
+using NewResourceSolution;
 
 namespace GameA.Game
 {
@@ -81,12 +82,11 @@ namespace GameA.Game
         {
             go = null;
             Sprite sprite = null;
-            // todo update api
-//            if (!GameResourceManager.Instance.TryGetSpriteByName(_tableBg.Model, out sprite))
-//            {
-//                LogHelper.Error("TryGetSpriteByName failed,{0}", _tableBg.Model);
-//                return false;
-//            }
+            if (!ResourcesManager.Instance.TryGetSprite(_tableBg.Model, out sprite))
+            {
+                LogHelper.Error("TryGetSpriteByName failed,{0}", _tableBg.Model);
+                return false;
+            }
             go = new GameObject();
             _spriteRenderer = go.AddComponent<SpriteRenderer>();
             _spriteRenderer.sprite = sprite;

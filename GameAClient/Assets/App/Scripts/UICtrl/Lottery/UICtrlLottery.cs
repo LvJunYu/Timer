@@ -17,6 +17,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using GameA.Game;
+using NewResourceSolution;
 using Spine;
 using Spine.Unity;
 
@@ -356,14 +357,13 @@ namespace GameA
         private Sprite FindImage(string ImageName)
         {
             Sprite fashion;
-            // todo update api
-//            if (GameResourceManager.Instance.TryGetSpriteByName(ImageName, out fashion))
-//            {
-//                //Debug.Log("____________时装" + fashion.name);
-//                //_cachedView.FashionPreview.sprite = fashion;
-//                return fashion;
-//            }
-//            else 
+            if (ResourcesManager.Instance.TryGetSprite (ImageName, out fashion))
+            {
+                //Debug.Log("____________时装" + fashion.name);
+                //_cachedView.FashionPreview.sprite = fashion;
+                return fashion;
+            }
+            else 
                 return null;
 
         }

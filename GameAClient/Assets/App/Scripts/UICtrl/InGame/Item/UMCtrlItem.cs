@@ -9,6 +9,7 @@
 using SoyEngine;
 using UnityEngine;
 using GameA.Game;
+using NewResourceSolution;
 
 namespace GameA
 {
@@ -77,16 +78,15 @@ namespace GameA
             _cachedView.SpriteIcon.SetActiveEx(true);
 //            _cachedView.TextureIcon.SetActiveEx(false);
             Sprite texture;
-            // todo update api
-//            if (GameResourceManager.Instance.TryGetSpriteByName(tableUnit.Icon, out texture))
-//            {
-//                _cachedView.SpriteIcon.sprite = texture;
-//            }
-//            else
-//            {
-//                LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", tableUnit.Id,
-//                    tableUnit.Icon, tableUnit.EGeneratedType);
-//            }
+            if (ResourcesManager.Instance.TryGetSprite(tableUnit.Icon, out texture))
+            {
+                _cachedView.SpriteIcon.sprite = texture;
+            }
+            else
+            {
+                LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", tableUnit.Id,
+                    tableUnit.Icon, tableUnit.EGeneratedType);
+            }
             if (_selected) {
                 _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up * 15;
 //                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one * 1.1f;

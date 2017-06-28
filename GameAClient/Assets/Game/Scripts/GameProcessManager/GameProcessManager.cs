@@ -109,7 +109,7 @@ namespace GameA.Game
         public void RefreshHomeUIUnlock() 
         {
             var uiTaskBar = SocialGUIManager.Instance.GetUI<UICtrlTaskbar> ();
-            if (null != uiTaskBar) {
+            if (null != uiTaskBar && uiTaskBar.IsOpen) {
                 uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_Lottery, true);
                 uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_FashionShop, true);
                 uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_Workshop, true);

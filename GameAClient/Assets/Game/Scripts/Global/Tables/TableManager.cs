@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
-using SoyEngine;
 using UnityEngine;
+using SoyEngine;
+using NewResourceSolution;
+using ResourceManager = NewResourceSolution.ResourcesManager;
+
 namespace GameA.Game
 {
 	[Serializable]
 	public class TableManager : MonoBehaviour
 	{
 		#region 常量与字段
-		// #if UNITY_EDITOR
-		private const string editorJsonDataPath = "JsonTableData/";
-		// #endif
 		private static TableManager _instance;
 		public readonly Dictionary<int,Table_Unit> Table_UnitDic = new Dictionary<int, Table_Unit>();
 		public readonly Dictionary<int,Table_StandaloneLevel> Table_StandaloneLevelDic = new Dictionary<int, Table_StandaloneLevel>();
@@ -19,6 +19,7 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_Reward> Table_RewardDic = new Dictionary<int, Table_Reward>();
 		public readonly Dictionary<int,Table_FashionShop> Table_FashionShopDic = new Dictionary<int, Table_FashionShop>();
 		public readonly Dictionary<int,Table_UpperBodyParts> Table_UpperBodyPartsDic = new Dictionary<int, Table_UpperBodyParts>();
+		public readonly Dictionary<int,Table_FashionUnit> Table_FashionUnitDic = new Dictionary<int, Table_FashionUnit>();
 		public readonly Dictionary<int,Table_HeadParts> Table_HeadPartsDic = new Dictionary<int, Table_HeadParts>();
 		public readonly Dictionary<int,Table_LowerBodyParts> Table_LowerBodyPartsDic = new Dictionary<int, Table_LowerBodyParts>();
 		public readonly Dictionary<int,Table_AppendageParts> Table_AppendagePartsDic = new Dictionary<int, Table_AppendageParts>();
@@ -45,6 +46,7 @@ namespace GameA.Game
 		[UnityEngine.SerializeField] private Table_Reward[] _tableRewards;
 		[UnityEngine.SerializeField] private Table_FashionShop[] _tableFashionShops;
 		[UnityEngine.SerializeField] private Table_UpperBodyParts[] _tableUpperBodyPartss;
+		[UnityEngine.SerializeField] private Table_FashionUnit[] _tableFashionUnits;
 		[UnityEngine.SerializeField] private Table_HeadParts[] _tableHeadPartss;
 		[UnityEngine.SerializeField] private Table_LowerBodyParts[] _tableLowerBodyPartss;
 		[UnityEngine.SerializeField] private Table_AppendageParts[] _tableAppendagePartss;
@@ -79,272 +81,61 @@ namespace GameA.Game
 		}
 		public void Init()
 		{
-			// #if UNITY_EDITOR
-			var UnitTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "Unit"));
-			_tableUnits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Unit[]>(UnitTextAsset.text);
-			var StandaloneLevelTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "StandaloneLevel"));
-			_tableStandaloneLevels = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneLevel[]>(StandaloneLevelTextAsset.text);
-			var StarRequireTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "StarRequire"));
-			_tableStarRequires = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StarRequire[]>(StarRequireTextAsset.text);
-			var StandaloneChapterTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "StandaloneChapter"));
-			_tableStandaloneChapters = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneChapter[]>(StandaloneChapterTextAsset.text);
-			var RewardTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "Reward"));
-			_tableRewards = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Reward[]>(RewardTextAsset.text);
-			var FashionShopTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "FashionShop"));
-			_tableFashionShops = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionShop[]>(FashionShopTextAsset.text);
-			var UpperBodyPartsTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "UpperBodyParts"));
-			_tableUpperBodyPartss = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_UpperBodyParts[]>(UpperBodyPartsTextAsset.text);
-			var HeadPartsTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "HeadParts"));
-			_tableHeadPartss = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_HeadParts[]>(HeadPartsTextAsset.text);
-			var LowerBodyPartsTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "LowerBodyParts"));
-			_tableLowerBodyPartss = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_LowerBodyParts[]>(LowerBodyPartsTextAsset.text);
-			var AppendagePartsTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "AppendageParts"));
-			_tableAppendagePartss = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AppendageParts[]>(AppendagePartsTextAsset.text);
-			var TreasureMapTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "TreasureMap"));
-			_tableTreasureMaps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_TreasureMap[]>(TreasureMapTextAsset.text);
-			var TurntableTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "Turntable"));
-			_tableTurntables = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Turntable[]>(TurntableTextAsset.text);
-			var FashionCouponTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "FashionCoupon"));
-			_tableFashionCoupons = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionCoupon[]>(FashionCouponTextAsset.text);
-			var BackgroundTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "Background"));
-			_tableBackgrounds = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Background[]>(BackgroundTextAsset.text);
-			var DecorateTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "Decorate"));
-			_tableDecorates = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Decorate[]>(DecorateTextAsset.text);
-			var MatrixTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "Matrix"));
-			_tableMatrixs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Matrix[]>(MatrixTextAsset.text);
-			var MorphTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "Morph"));
-			_tableMorphs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Morph[]>(MorphTextAsset.text);
-			var PuzzleSummonTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "PuzzleSummon"));
-			_tablePuzzleSummons = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleSummon[]>(PuzzleSummonTextAsset.text);
-			var PuzzleTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "Puzzle"));
-			_tablePuzzles = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Puzzle[]>(PuzzleTextAsset.text);
-			var AvatarStructTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "AvatarStruct"));
-			_tableAvatarStructs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarStruct[]>(AvatarStructTextAsset.text);
-			var AvatarSlotNameTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "AvatarSlotName"));
-			_tableAvatarSlotNames = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarSlotName[]>(AvatarSlotNameTextAsset.text);
-			var PlayerLvToExpTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "PlayerLvToExp"));
-			_tablePlayerLvToExps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PlayerLvToExp[]>(PlayerLvToExpTextAsset.text);
-			var PlayerLvToModifyLimitTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "PlayerLvToModifyLimit"));
-			_tablePlayerLvToModifyLimits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PlayerLvToModifyLimit[]>(PlayerLvToModifyLimitTextAsset.text);
-			var ModifyRewardTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "ModifyReward"));
-			_tableModifyRewards = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_ModifyReward[]>(ModifyRewardTextAsset.text);
-			var ProgressUnlockTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "ProgressUnlock"));
-			_tableProgressUnlocks = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_ProgressUnlock[]>(ProgressUnlockTextAsset.text);
-			var BoostItemTextAsset = Resources.Load<TextAsset>(string.Format("{0}{1}", editorJsonDataPath, "BoostItem"));
-			_tableBoostItems = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_BoostItem[]>(BoostItemTextAsset.text);
-			// #else
-			// _loader = new TableResLoader("GameMaker2D");
-
-            // 
-			// var UnitAsset = _loader.GetConfigAssetData<TableUnitAsset>("Unit");
-			// if (UnitAsset == null)
-			// {
-			// 	LogHelper.Error("UnitAsset is null");
-			// 	return;
-			// }
-			// _tableUnits = UnitAsset.DataArray;
-			// 
-			// var StandaloneLevelAsset = _loader.GetConfigAssetData<TableStandaloneLevelAsset>("StandaloneLevel");
-			// if (StandaloneLevelAsset == null)
-			// {
-			// 	LogHelper.Error("StandaloneLevelAsset is null");
-			// 	return;
-			// }
-			// _tableStandaloneLevels = StandaloneLevelAsset.DataArray;
-			// 
-			// var StarRequireAsset = _loader.GetConfigAssetData<TableStarRequireAsset>("StarRequire");
-			// if (StarRequireAsset == null)
-			// {
-			// 	LogHelper.Error("StarRequireAsset is null");
-			// 	return;
-			// }
-			// _tableStarRequires = StarRequireAsset.DataArray;
-			// 
-			// var StandaloneChapterAsset = _loader.GetConfigAssetData<TableStandaloneChapterAsset>("StandaloneChapter");
-			// if (StandaloneChapterAsset == null)
-			// {
-			// 	LogHelper.Error("StandaloneChapterAsset is null");
-			// 	return;
-			// }
-			// _tableStandaloneChapters = StandaloneChapterAsset.DataArray;
-			// 
-			// var RewardAsset = _loader.GetConfigAssetData<TableRewardAsset>("Reward");
-			// if (RewardAsset == null)
-			// {
-			// 	LogHelper.Error("RewardAsset is null");
-			// 	return;
-			// }
-			// _tableRewards = RewardAsset.DataArray;
-			// 
-			// var FashionShopAsset = _loader.GetConfigAssetData<TableFashionShopAsset>("FashionShop");
-			// if (FashionShopAsset == null)
-			// {
-			// 	LogHelper.Error("FashionShopAsset is null");
-			// 	return;
-			// }
-			// _tableFashionShops = FashionShopAsset.DataArray;
-			// 
-			// var UpperBodyPartsAsset = _loader.GetConfigAssetData<TableUpperBodyPartsAsset>("UpperBodyParts");
-			// if (UpperBodyPartsAsset == null)
-			// {
-			// 	LogHelper.Error("UpperBodyPartsAsset is null");
-			// 	return;
-			// }
-			// _tableUpperBodyPartss = UpperBodyPartsAsset.DataArray;
-			// 
-			// var HeadPartsAsset = _loader.GetConfigAssetData<TableHeadPartsAsset>("HeadParts");
-			// if (HeadPartsAsset == null)
-			// {
-			// 	LogHelper.Error("HeadPartsAsset is null");
-			// 	return;
-			// }
-			// _tableHeadPartss = HeadPartsAsset.DataArray;
-			// 
-			// var LowerBodyPartsAsset = _loader.GetConfigAssetData<TableLowerBodyPartsAsset>("LowerBodyParts");
-			// if (LowerBodyPartsAsset == null)
-			// {
-			// 	LogHelper.Error("LowerBodyPartsAsset is null");
-			// 	return;
-			// }
-			// _tableLowerBodyPartss = LowerBodyPartsAsset.DataArray;
-			// 
-			// var AppendagePartsAsset = _loader.GetConfigAssetData<TableAppendagePartsAsset>("AppendageParts");
-			// if (AppendagePartsAsset == null)
-			// {
-			// 	LogHelper.Error("AppendagePartsAsset is null");
-			// 	return;
-			// }
-			// _tableAppendagePartss = AppendagePartsAsset.DataArray;
-			// 
-			// var TreasureMapAsset = _loader.GetConfigAssetData<TableTreasureMapAsset>("TreasureMap");
-			// if (TreasureMapAsset == null)
-			// {
-			// 	LogHelper.Error("TreasureMapAsset is null");
-			// 	return;
-			// }
-			// _tableTreasureMaps = TreasureMapAsset.DataArray;
-			// 
-			// var TurntableAsset = _loader.GetConfigAssetData<TableTurntableAsset>("Turntable");
-			// if (TurntableAsset == null)
-			// {
-			// 	LogHelper.Error("TurntableAsset is null");
-			// 	return;
-			// }
-			// _tableTurntables = TurntableAsset.DataArray;
-			// 
-			// var FashionCouponAsset = _loader.GetConfigAssetData<TableFashionCouponAsset>("FashionCoupon");
-			// if (FashionCouponAsset == null)
-			// {
-			// 	LogHelper.Error("FashionCouponAsset is null");
-			// 	return;
-			// }
-			// _tableFashionCoupons = FashionCouponAsset.DataArray;
-			// 
-			// var BackgroundAsset = _loader.GetConfigAssetData<TableBackgroundAsset>("Background");
-			// if (BackgroundAsset == null)
-			// {
-			// 	LogHelper.Error("BackgroundAsset is null");
-			// 	return;
-			// }
-			// _tableBackgrounds = BackgroundAsset.DataArray;
-			// 
-			// var DecorateAsset = _loader.GetConfigAssetData<TableDecorateAsset>("Decorate");
-			// if (DecorateAsset == null)
-			// {
-			// 	LogHelper.Error("DecorateAsset is null");
-			// 	return;
-			// }
-			// _tableDecorates = DecorateAsset.DataArray;
-			// 
-			// var MatrixAsset = _loader.GetConfigAssetData<TableMatrixAsset>("Matrix");
-			// if (MatrixAsset == null)
-			// {
-			// 	LogHelper.Error("MatrixAsset is null");
-			// 	return;
-			// }
-			// _tableMatrixs = MatrixAsset.DataArray;
-			// 
-			// var MorphAsset = _loader.GetConfigAssetData<TableMorphAsset>("Morph");
-			// if (MorphAsset == null)
-			// {
-			// 	LogHelper.Error("MorphAsset is null");
-			// 	return;
-			// }
-			// _tableMorphs = MorphAsset.DataArray;
-			// 
-			// var PuzzleSummonAsset = _loader.GetConfigAssetData<TablePuzzleSummonAsset>("PuzzleSummon");
-			// if (PuzzleSummonAsset == null)
-			// {
-			// 	LogHelper.Error("PuzzleSummonAsset is null");
-			// 	return;
-			// }
-			// _tablePuzzleSummons = PuzzleSummonAsset.DataArray;
-			// 
-			// var PuzzleAsset = _loader.GetConfigAssetData<TablePuzzleAsset>("Puzzle");
-			// if (PuzzleAsset == null)
-			// {
-			// 	LogHelper.Error("PuzzleAsset is null");
-			// 	return;
-			// }
-			// _tablePuzzles = PuzzleAsset.DataArray;
-			// 
-			// var AvatarStructAsset = _loader.GetConfigAssetData<TableAvatarStructAsset>("AvatarStruct");
-			// if (AvatarStructAsset == null)
-			// {
-			// 	LogHelper.Error("AvatarStructAsset is null");
-			// 	return;
-			// }
-			// _tableAvatarStructs = AvatarStructAsset.DataArray;
-			// 
-			// var AvatarSlotNameAsset = _loader.GetConfigAssetData<TableAvatarSlotNameAsset>("AvatarSlotName");
-			// if (AvatarSlotNameAsset == null)
-			// {
-			// 	LogHelper.Error("AvatarSlotNameAsset is null");
-			// 	return;
-			// }
-			// _tableAvatarSlotNames = AvatarSlotNameAsset.DataArray;
-			// 
-			// var PlayerLvToExpAsset = _loader.GetConfigAssetData<TablePlayerLvToExpAsset>("PlayerLvToExp");
-			// if (PlayerLvToExpAsset == null)
-			// {
-			// 	LogHelper.Error("PlayerLvToExpAsset is null");
-			// 	return;
-			// }
-			// _tablePlayerLvToExps = PlayerLvToExpAsset.DataArray;
-			// 
-			// var PlayerLvToModifyLimitAsset = _loader.GetConfigAssetData<TablePlayerLvToModifyLimitAsset>("PlayerLvToModifyLimit");
-			// if (PlayerLvToModifyLimitAsset == null)
-			// {
-			// 	LogHelper.Error("PlayerLvToModifyLimitAsset is null");
-			// 	return;
-			// }
-			// _tablePlayerLvToModifyLimits = PlayerLvToModifyLimitAsset.DataArray;
-			// 
-			// var ModifyRewardAsset = _loader.GetConfigAssetData<TableModifyRewardAsset>("ModifyReward");
-			// if (ModifyRewardAsset == null)
-			// {
-			// 	LogHelper.Error("ModifyRewardAsset is null");
-			// 	return;
-			// }
-			// _tableModifyRewards = ModifyRewardAsset.DataArray;
-			// 
-			// var ProgressUnlockAsset = _loader.GetConfigAssetData<TableProgressUnlockAsset>("ProgressUnlock");
-			// if (ProgressUnlockAsset == null)
-			// {
-			// 	LogHelper.Error("ProgressUnlockAsset is null");
-			// 	return;
-			// }
-			// _tableProgressUnlocks = ProgressUnlockAsset.DataArray;
-			// 
-			// var BoostItemAsset = _loader.GetConfigAssetData<TableBoostItemAsset>("BoostItem");
-			// if (BoostItemAsset == null)
-			// {
-			// 	LogHelper.Error("BoostItemAsset is null");
-			// 	return;
-			// }
-			// _tableBoostItems = BoostItemAsset.DataArray;
-			// 
-			// #endif
+			string UnitJsonStr = ResourceManager.Instance.GetJson ("Unit");
+            _tableUnits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Unit[]>(UnitJsonStr);
+			string StandaloneLevelJsonStr = ResourceManager.Instance.GetJson ("StandaloneLevel");
+            _tableStandaloneLevels = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneLevel[]>(StandaloneLevelJsonStr);
+			string StarRequireJsonStr = ResourceManager.Instance.GetJson ("StarRequire");
+            _tableStarRequires = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StarRequire[]>(StarRequireJsonStr);
+			string StandaloneChapterJsonStr = ResourceManager.Instance.GetJson ("StandaloneChapter");
+            _tableStandaloneChapters = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneChapter[]>(StandaloneChapterJsonStr);
+			string RewardJsonStr = ResourceManager.Instance.GetJson ("Reward");
+            _tableRewards = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Reward[]>(RewardJsonStr);
+			string FashionShopJsonStr = ResourceManager.Instance.GetJson ("FashionShop");
+            _tableFashionShops = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionShop[]>(FashionShopJsonStr);
+			string UpperBodyPartsJsonStr = ResourceManager.Instance.GetJson ("UpperBodyParts");
+            _tableUpperBodyPartss = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_UpperBodyParts[]>(UpperBodyPartsJsonStr);
+			string FashionUnitJsonStr = ResourceManager.Instance.GetJson ("FashionUnit");
+            _tableFashionUnits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionUnit[]>(FashionUnitJsonStr);
+			string HeadPartsJsonStr = ResourceManager.Instance.GetJson ("HeadParts");
+            _tableHeadPartss = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_HeadParts[]>(HeadPartsJsonStr);
+			string LowerBodyPartsJsonStr = ResourceManager.Instance.GetJson ("LowerBodyParts");
+            _tableLowerBodyPartss = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_LowerBodyParts[]>(LowerBodyPartsJsonStr);
+			string AppendagePartsJsonStr = ResourceManager.Instance.GetJson ("AppendageParts");
+            _tableAppendagePartss = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AppendageParts[]>(AppendagePartsJsonStr);
+			string TreasureMapJsonStr = ResourceManager.Instance.GetJson ("TreasureMap");
+            _tableTreasureMaps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_TreasureMap[]>(TreasureMapJsonStr);
+			string TurntableJsonStr = ResourceManager.Instance.GetJson ("Turntable");
+            _tableTurntables = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Turntable[]>(TurntableJsonStr);
+			string FashionCouponJsonStr = ResourceManager.Instance.GetJson ("FashionCoupon");
+            _tableFashionCoupons = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionCoupon[]>(FashionCouponJsonStr);
+			string BackgroundJsonStr = ResourceManager.Instance.GetJson ("Background");
+            _tableBackgrounds = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Background[]>(BackgroundJsonStr);
+			string DecorateJsonStr = ResourceManager.Instance.GetJson ("Decorate");
+            _tableDecorates = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Decorate[]>(DecorateJsonStr);
+			string MatrixJsonStr = ResourceManager.Instance.GetJson ("Matrix");
+            _tableMatrixs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Matrix[]>(MatrixJsonStr);
+			string MorphJsonStr = ResourceManager.Instance.GetJson ("Morph");
+            _tableMorphs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Morph[]>(MorphJsonStr);
+			string PuzzleSummonJsonStr = ResourceManager.Instance.GetJson ("PuzzleSummon");
+            _tablePuzzleSummons = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleSummon[]>(PuzzleSummonJsonStr);
+			string PuzzleJsonStr = ResourceManager.Instance.GetJson ("Puzzle");
+            _tablePuzzles = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Puzzle[]>(PuzzleJsonStr);
+			string AvatarStructJsonStr = ResourceManager.Instance.GetJson ("AvatarStruct");
+            _tableAvatarStructs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarStruct[]>(AvatarStructJsonStr);
+			string AvatarSlotNameJsonStr = ResourceManager.Instance.GetJson ("AvatarSlotName");
+            _tableAvatarSlotNames = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarSlotName[]>(AvatarSlotNameJsonStr);
+			string PlayerLvToExpJsonStr = ResourceManager.Instance.GetJson ("PlayerLvToExp");
+            _tablePlayerLvToExps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PlayerLvToExp[]>(PlayerLvToExpJsonStr);
+			string PlayerLvToModifyLimitJsonStr = ResourceManager.Instance.GetJson ("PlayerLvToModifyLimit");
+            _tablePlayerLvToModifyLimits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PlayerLvToModifyLimit[]>(PlayerLvToModifyLimitJsonStr);
+			string ModifyRewardJsonStr = ResourceManager.Instance.GetJson ("ModifyReward");
+            _tableModifyRewards = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_ModifyReward[]>(ModifyRewardJsonStr);
+			string ProgressUnlockJsonStr = ResourceManager.Instance.GetJson ("ProgressUnlock");
+            _tableProgressUnlocks = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_ProgressUnlock[]>(ProgressUnlockJsonStr);
+			string BoostItemJsonStr = ResourceManager.Instance.GetJson ("BoostItem");
+            _tableBoostItems = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_BoostItem[]>(BoostItemJsonStr);
+			
 			for (int i = 0; i < _tableUnits.Length; i++)
 			{
 				if (!Table_UnitDic.ContainsKey(_tableUnits[i].Id))
@@ -420,6 +211,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableUpperBodyPartss table.Id {0} is duplicated!", _tableUpperBodyPartss[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableFashionUnits.Length; i++)
+			{
+				if (!Table_FashionUnitDic.ContainsKey(_tableFashionUnits[i].Id))
+				{
+					Table_FashionUnitDic.Add(_tableFashionUnits[i].Id,_tableFashionUnits[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableFashionUnits table.Id {0} is duplicated!", _tableFashionUnits[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableHeadPartss.Length; i++)
@@ -693,6 +495,15 @@ namespace GameA.Game
 		{
 			Table_UpperBodyParts tmp;
 			if (Table_UpperBodyPartsDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_FashionUnit GetFashionUnit(int key)
+		{
+			Table_FashionUnit tmp;
+			if (Table_FashionUnitDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

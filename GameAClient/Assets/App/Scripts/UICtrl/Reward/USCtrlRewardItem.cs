@@ -11,6 +11,7 @@ using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
 using GameA.Game;
+using NewResourceSolution;
 
 namespace GameA
 {
@@ -41,8 +42,7 @@ namespace GameA
             _cachedView.Name.text = string.Format ("{0} X {1}", item.GetName (), item.Count);
         }
         public void SetItem (string title, string icon) {
-            // todo update api
-//            _cachedView.Icon.sprite = GameResourceManager.Instance.GetSpriteByName (icon);
+            _cachedView.Icon.sprite = ResourcesManager.Instance.GetSprite (icon);
             _cachedView.Name.text = title;
         }
         #endregion

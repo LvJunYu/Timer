@@ -10,6 +10,7 @@ using UnityEngine;
 using SoyEngine;
 using Spine;
 using Spine.Unity;
+using NewResourceSolution;
 
 namespace GameA.Game
 {
@@ -31,13 +32,17 @@ namespace GameA.Game
 		protected override bool OnInit()
 		{
 			var tableUnit = _unit.TableUnit;
-			SkeletonDataAsset data = null;
-            // todo update api
-//			if (!GameResourceManager.Instance.TryGetSpineDataByName(tableUnit.Model, out data))
-//			{
-//				LogHelper.Error("TryGetSpineDataByName Failed! {0}", tableUnit.Model);
-//				return false;
-//			}
+            string skeletonDataAssetName = string.Format ("{0}_SkeletonData", tableUnit.Model);
+            SkeletonDataAsset data = ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(
+                EResType.SpineData,
+                skeletonDataAssetName,
+                0
+            );
+            if (null == data)
+			{
+				LogHelper.Error("TryGetSpineDataByName Failed! {0}", tableUnit.Model);
+				return false;
+			}
 
 
 			_skeletonAnimation.skeletonDataAsset = data;
@@ -78,7 +83,7 @@ namespace GameA.Game
 		}
 
 		protected void LinkBaseSkinTextures () {
-            // todo update api
+            // todo update api spine
 //			var baseHead = TableManager.Instance.GetHeadParts (1);
 //			if (baseHead != null && !string.IsNullOrEmpty(baseHead.SmallTexture)) {
 //				GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, baseHead.SmallTexture);
@@ -239,7 +244,7 @@ namespace GameA.Game
                     continue;
                 } else
                 {
-                        // todo update api
+                        // todo update api spine
 //                    if (GameResourceManager.Instance != null && !GameResourceManager.Instance.LinkAvatarSpineTexture (_skeletonAnimation.skeletonDataAsset, textureName)) {
 //                        LogHelper.Error ("Link texture: {0} when apply parts:{1},id{2} in {3} failed.", textureName, partsType, partsId, _unit.TableUnit.Name);
 //                    }

@@ -5,6 +5,7 @@ using SoyEngine.Proto;
 using UnityEngine;
 using SoyEngine;
 using System;
+using NewResourceSolution;
 
 namespace GameA
 {
@@ -52,8 +53,7 @@ namespace GameA
             //    _cachedView.FashionPreview.sprite = fashion;
             //}
             Sprite fashion=null;
-            // todo update api
-//            if (GameResourceManager.Instance.TryGetSpriteByName(listItem.PreviewTexture, out fashion))
+            if (ResourcesManager.Instance.TryGetSprite(listItem.PreviewTexture, out fashion))
             {
                 Debug.Log("____________时装" + fashion.name);
                 _cachedView.FashionPreview.sprite = fashion;

@@ -118,11 +118,6 @@ namespace GameA
 //            TableManager.Instance.Init();
 
             ResourcesManager.Instance.CheckApplicationAndResourcesVersion();
-            // todo update api
-//            GameResourceManager rm = gameObject.AddComponent<GameResourceManager> ();
-//            if (!rm.Init ("GameMaker2D")) {
-//                LogHelper.Error ("GameResourceManager initFailed");
-//            }
         }
 
         public void LoginAfterUpdateResComplete()

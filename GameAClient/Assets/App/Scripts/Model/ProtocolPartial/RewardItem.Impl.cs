@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
 using SoyEngine;
+using NewResourceSolution;
 
 namespace GameA
 {
@@ -29,56 +30,54 @@ namespace GameA
 
 
         public UnityEngine.Sprite GetSprite () {
-            // update api
-//            if (GameResourceManager.Instance == null) return null;
-//            switch ((ERewardType)_type) {
-//            case ERewardType.RT_Gold: {
-//                    return GameResourceManager.Instance.GetSpriteByName (_goldSprite);
-//                }
-//            case ERewardType.RT_Diamond: {
-//                    return GameResourceManager.Instance.GetSpriteByName (_diamondSprite);
-//                }
-//            case ERewardType.RT_PlayerExp: {
-//                    return GameResourceManager.Instance.GetSpriteByName (_playerExpSprite);
-//                }
-//            case ERewardType.RT_CreatorExp: {
-//                    return GameResourceManager.Instance.GetSpriteByName (_creatorExpSprite);
-//                }
-//            case ERewardType.RT_FashionCoupon: {
-//                    return GameResourceManager.Instance.GetSpriteByName (_fashionCouponSprite);
-//                }
-//            case ERewardType.RT_RaffleTicket: {
-//                    switch (Id) {
-//                        case 1:
-//                            return GameResourceManager.Instance.GetSpriteByName (_raffleTicketSprite1);
-//                        case 2:
-//                            return GameResourceManager.Instance.GetSpriteByName (_raffleTicketSprite2);
-//                        case 3:
-//                            return GameResourceManager.Instance.GetSpriteByName (_raffleTicketSprite3);
-//                        case 4:
-//                            return GameResourceManager.Instance.GetSpriteByName (_raffleTicketSprite4);
-//                    }
-//                    return GameResourceManager.Instance.GetSpriteByName (_raffleTicketSprite1);
-//                }
-//            case ERewardType.RT_BoostItem:
-//                {
-//                    var table = Game.TableManager.Instance.GetBoostItem ((int)_id);
-//                    if (null == table)
-//                        return null;
-//                    return GameResourceManager.Instance.GetSpriteByName (table.Icon);
-//                }
-//            case ERewardType.RT_ReformUnit:
-//                {
-//                    var table = Game.TableManager.Instance.GetUnit ((int)_id);
-//                    if (null == table)
-//                        return null;
-//                    return GameResourceManager.Instance.GetSpriteByName (table.Icon);
-//                }
-//            case ERewardType.RT_RandomReformUnit:
-//                {
-//                    return GameResourceManager.Instance.GetSpriteByName (_randomUnitSprite);
-//                }
-//            }
+            switch ((ERewardType)_type) {
+            case ERewardType.RT_Gold: {
+                    return ResourcesManager.Instance.GetSprite (_goldSprite);
+                }
+            case ERewardType.RT_Diamond: {
+                    return ResourcesManager.Instance.GetSprite (_diamondSprite);
+                }
+            case ERewardType.RT_PlayerExp: {
+                    return ResourcesManager.Instance.GetSprite (_playerExpSprite);
+                }
+            case ERewardType.RT_CreatorExp: {
+                    return ResourcesManager.Instance.GetSprite (_creatorExpSprite);
+                }
+            case ERewardType.RT_FashionCoupon: {
+                    return ResourcesManager.Instance.GetSprite (_fashionCouponSprite);
+                }
+            case ERewardType.RT_RaffleTicket: {
+                    switch (Id) {
+                        case 1:
+                        return ResourcesManager.Instance.GetSprite (_raffleTicketSprite1);
+                        case 2:
+                        return ResourcesManager.Instance.GetSprite (_raffleTicketSprite2);
+                        case 3:
+                        return ResourcesManager.Instance.GetSprite (_raffleTicketSprite3);
+                        case 4:
+                        return ResourcesManager.Instance.GetSprite (_raffleTicketSprite4);
+                    }
+                    return ResourcesManager.Instance.GetSprite (_raffleTicketSprite1);
+                }
+            case ERewardType.RT_BoostItem:
+                {
+                    var table = Game.TableManager.Instance.GetBoostItem ((int)_id);
+                    if (null == table)
+                        return null;
+                    return ResourcesManager.Instance.GetSprite (table.Icon);
+                }
+            case ERewardType.RT_ReformUnit:
+                {
+                    var table = Game.TableManager.Instance.GetUnit ((int)_id);
+                    if (null == table)
+                        return null;
+                    return ResourcesManager.Instance.GetSprite (table.Icon);
+                }
+            case ERewardType.RT_RandomReformUnit:
+                {
+                    return ResourcesManager.Instance.GetSprite (_randomUnitSprite);
+                }
+            }
             return null;
         }
 

@@ -99,7 +99,7 @@ namespace NewResourceSolution
                     continue;
                 }
 				CHResBundle bundleInExistingManifest = existingManifest.GetBundleByBundleName(_bundles[i].AssetBundleName);
-                if (EFileLocation.Server != bundleInExistingManifest.FileLocation)
+                if (null != bundleInExistingManifest && EFileLocation.Server != bundleInExistingManifest.FileLocation)
                 {
                     if (null != bundleInExistingManifest &&
                         string.Compare(_bundles[i].CompressedMd5, bundleInExistingManifest.CompressedMd5) == 0)

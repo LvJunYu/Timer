@@ -136,8 +136,11 @@ namespace NewResourceSolution
         }
 
         public UnityEngine.Object GetAsset (
-            string assetName, int scenary,
-            bool isLocaleRes = false, ELocale locale = ELocale.WW)
+            string assetName,
+            int scenary,
+            bool logWhenError,
+            bool isLocaleRes = false,
+            ELocale locale = ELocale.WW)
         {
             string assetNameWithLocaleName = isLocaleRes ?
                 StringUtil.Format(StringFormat.TwoLevelPath, LocaleDefine.LocaleNames[(int)locale], assetName) :
@@ -145,7 +148,10 @@ namespace NewResourceSolution
             string bundleName = GetBundleNameByAssetName(assetNameWithLocaleName, isLocaleRes, locale);
             if (string.IsNullOrEmpty(bundleName))
             {
-                LogHelper.Error("No bundle contains asset: {0}", assetName);
+                if (logWhenError)
+                {
+                    LogHelper.Error("No bundle contains asset: {0}", assetName);
+                }
                 return null;
             }
             CHResBundle bundle;
@@ -159,7 +165,7 @@ namespace NewResourceSolution
                 }
             }
             // try load
-            bundle = CacheBundleAndDependencies(bundleName, scenary);
+            bundle = CacheBundleAndDependencies(bundleName, scenary, logWhenError);
             if (null != bundle)
             {
                 if (bundle.AssetDic.TryGetValue(assetName, out asset))
@@ -223,7 +229,9 @@ namespace NewResourceSolution
             for (int i = 0; i < _assetToUnload.Count; i++)
             {
                 _cachedBundleDic.Remove (_assetToUnload [i]);
+                LogHelper.Info ("___________________Unload bundle {0}", _assetToUnload[i]);
             }
+            LogHelper.Info ("___________________Unloaded {0} bundles", _assetToUnload.Count);
             UnityEngine.Resources.UnloadUnusedAssets ();
             if (_cachedAssetsTotalSize > s_WarningAssetMemorySize)
             {
@@ -237,22 +245,25 @@ namespace NewResourceSolution
         /// </summary>
         /// <param name="bundle">Bundle.</param>
         /// <param name="scenary">Scenary.</param>
-        private CHResBundle CacheBundleAndDependencies (string bundleName, int scenary)
+        private CHResBundle CacheBundleAndDependencies (string bundleName, int scenary, bool logWhenError)
         {
             CHResBundle bundle = GetBundleByBundleName(bundleName);
             if (null == bundle)
             {
-                LogHelper.Error("Load bundle <{0}> failed", bundleName);
+                if (logWhenError)
+                {
+                    LogHelper.Error("Load bundle <{0}> failed", bundleName);
+                }
                 return null;
             }
-            return CacheBundleAndDependencies(bundle, scenary);
+            return CacheBundleAndDependencies(bundle, scenary, logWhenError);
         }
         /// <summary>
         /// 缓存bundle和他的依赖
         /// </summary>
         /// <param name="bundle">Bundle.</param>
         /// <param name="scenary">Scenary.</param>
-        private CHResBundle CacheBundleAndDependencies (CHResBundle bundle, int scenary)
+        private CHResBundle CacheBundleAndDependencies (CHResBundle bundle, int scenary, bool logWhenError)
         {
             LogHelper.Info("CacheBundleAndDependencies, bundleName: {0}", bundle.AssetBundleName);
             // 如果资源不在本地，也不是非压缩且在streamingAsset中， 也不是adam资源且在streamingAsset中
@@ -262,7 +273,10 @@ namespace NewResourceSolution
                         EAssetBundleCompressType.NoCompress == bundle.CompressType))
             )
             {
-                LogHelper.Error("Bundle <{0}> not downloaded", bundle.AssetBundleName);
+                if (logWhenError)
+                {
+                    LogHelper.Error("Bundle <{0}> not downloaded", bundle.AssetBundleName);
+                }
                 return null;
             }
             _bundleToLoad.Clear();
@@ -280,12 +294,20 @@ namespace NewResourceSolution
                     {
                         _bundleToAddScenary.Add(dependenceBundle);
                     }
+                    LogHelper.Info ("Bundle {0} already cached, asset cnt {1}", dependenceBundle.AssetBundleName, dependenceBundle.AssetDic.Count);
+                    var itor = dependenceBundle.AssetDic.GetEnumerator ();
+                    while (itor.MoveNext ()) {
+                        LogHelper.Info ("asset in cached bundle: name {0}, {1}", itor.Current.Key, itor.Current.Value);
+                    }
                     continue;
                 }
                 dependenceBundle = GetBundleByBundleName(dependencies[i]);
                 if (null == dependenceBundle)
                 {
-                    LogHelper.Error("Load bundle <{0}> failed", dependencies[0]);
+                    if (logWhenError)
+                    {
+                        LogHelper.Error("Load bundle <{0}> failed", dependencies[0]);
+                    }
                     return null;
                 }
                 if (EFileLocation.Persistent != dependenceBundle.FileLocation &&
@@ -294,10 +316,14 @@ namespace NewResourceSolution
                             EAssetBundleCompressType.NoCompress == dependenceBundle.CompressType))
                 )
                 {
-                    LogHelper.Error("Bundle <{0}> not downloaded", dependenceBundle.AssetBundleName);
+                    if (logWhenError)
+                    {
+                        LogHelper.Error("Bundle <{0}> not downloaded", dependenceBundle.AssetBundleName);
+                    }
                     return null;
                 }
                 _bundleToLoad.Add(dependenceBundle);
+                LogHelper.Info("load dependence bundle: {0}", dependenceBundle.AssetBundleName);
             }
             bool anyError = false;
             for (int i = 0; i < _bundleToLoad.Count; i++)
@@ -306,7 +332,10 @@ namespace NewResourceSolution
                 AssetBundle assetBundle = AssetBundle.LoadFromFile(_bundleToLoad[i].GetFilePath(_bundleToLoad[i].FileLocation));
                 if (null == assetBundle)
                 {
-                    LogHelper.Error("Load assetbundle {0} failed.", _bundleToLoad[i].AssetBundleName);
+                    if (logWhenError)
+                    {
+                        LogHelper.Error("Load assetbundle {0} failed.", _bundleToLoad[i].AssetBundleName);
+                    }
                     anyError = true;
                     break;
                 }
@@ -316,13 +345,13 @@ namespace NewResourceSolution
                     UnityEngine.Object asset = assetBundle.LoadAsset(_bundleToLoad[i].AssetNames[j]);
                     if (null == asset)
                     {
-                        LogHelper.Error("Load asset {0} from asset bundle {1} failed.", _bundleToLoad[i].AssetNames[j], _bundleToLoad[i].AssetBundleName);
+                        if (logWhenError)
+                        {
+                            LogHelper.Error("Load asset {0} from asset bundle {1} failed.", _bundleToLoad[i].AssetNames[j], _bundleToLoad[i].AssetBundleName);
+                        }
                         anyError = true;
                         break;
                     }
-                    //string registAssetName = _bundleToLoad[i].IsLocaleRes ?
-                    //StringUtil.Format(StringFormat.TwoLevelPath, _bundleToLoad[i].LocaleName, _bundleToLoad[i].AssetNames[j]) :
-                    //_bundleToLoad[i].AssetNames[j];
                     _bundleToLoad[i].AssetDic.Add(_bundleToLoad[i].AssetNames[j], asset);
                 }
                 _bundleToAddScenary.Add(_bundleToLoad[i]);
@@ -347,6 +376,7 @@ namespace NewResourceSolution
             {
                 _bundleToAddScenary[i].ScenaryMask &= scenary;
             }
+            LogHelper.Info("CacheBundleAndDependencies done, current cache cnt: {0}", _cachedBundleDic.Count);
             return bundle;
         }
 

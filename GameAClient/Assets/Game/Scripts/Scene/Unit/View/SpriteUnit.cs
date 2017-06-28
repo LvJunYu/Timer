@@ -8,6 +8,7 @@
 using DG.Tweening;
 using SoyEngine;
 using UnityEngine;
+using NewResourceSolution;
 
 namespace GameA.Game
 {
@@ -24,12 +25,11 @@ namespace GameA.Game
         protected override bool OnInit()
         {
             Sprite sprite = null;
-            // todo update api
-//            if (!GameResourceManager.Instance.TryGetSpriteByName(_unit.AssetPath, out sprite))
-//            {
-//                LogHelper.Error("TryGetSpriteByName failed,{0}", _unit.AssetPath);
-//                return false;
-//            }
+            if (!ResourcesManager.Instance.TryGetSprite(_unit.AssetPath, out sprite))
+            {
+                LogHelper.Error("TryGetSpriteByName failed,{0}", _unit.AssetPath);
+                return false;
+            }
             _spriteRenderer.sprite = sprite;
             _spriteRenderer.sortingOrder = UnitManager.Instance.GetSortingOrder(_unit.TableUnit);
             return true;
