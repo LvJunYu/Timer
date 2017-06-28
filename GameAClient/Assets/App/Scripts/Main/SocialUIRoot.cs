@@ -35,7 +35,7 @@ namespace GameA
             Object obj = ResourceManager.Instance.GetPrefab (EResType.UIPrefab, path, 0);
             if (obj == null)
             {
-                LogHelper.Error(path);
+                LogHelper.Error("Instantiate ui failed {0}", path);
                 return null;
 //                return base.InstanceView(path);
             }

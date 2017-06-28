@@ -93,7 +93,7 @@ namespace NewResourceSolution.EditorTool
     						// add selected asset
     						if (_lastTryAddObj != Selection.activeObject)
     						{
-    							AddAsset(AssetDatabase.GetAssetPath(Selection.activeObject), ref dirty);
+                                dirty = AddAsset (AssetDatabase.GetAssetPath (Selection.activeObject)) || dirty;
     							_lastTryAddObj = Selection.activeObject;
     						}
     					}
@@ -130,7 +130,13 @@ namespace NewResourceSolution.EditorTool
     				for (int i = 0; i < allResList.Count; i++)
     				{
     					EditorGUILayout.Separator();
-    					DisplayResList(ref allResList[i].FoldoutInEditorUI, allResList[i].ResType.ToString(), allResList[i].InPackageGuidList, true, ref dirty);
+    					DisplayResList(
+                            ref allResList[i].FoldoutInEditorUI,
+                            allResList[i].ResType.ToString(),
+                            allResList[i].InPackageGuidList,
+                            true,
+                            AddAsset,
+                            ref dirty);
     				}
     			}
     		}
@@ -163,7 +169,7 @@ namespace NewResourceSolution.EditorTool
     					// add selected asset
     					if (_lastTryAddObj != Selection.activeObject)
     					{
-    						AddAdamAsset(AssetDatabase.GetAssetPath(Selection.activeObject), ref dirty);
+                            dirty = AddAdamAsset(AssetDatabase.GetAssetPath(Selection.activeObject)) || dirty;
     						_lastTryAddObj = Selection.activeObject;
     					}
     				}
@@ -171,9 +177,9 @@ namespace NewResourceSolution.EditorTool
     			}
 
     			bool alwaysFoldout = true;
-    			DisplayResList(ref alwaysFoldout, "Single adam res", _data.SingleAdamResList, false, ref dirty);
+                DisplayResList(ref alwaysFoldout, "Single adam res", _data.SingleAdamResList, false, AddAdamAsset, ref dirty);
     			EditorGUILayout.Separator();
-    			DisplayResList(ref alwaysFoldout, "Folder adam res", _data.FolderAdamResList, true, ref dirty);
+                DisplayResList(ref alwaysFoldout, "Folder adam res", _data.FolderAdamResList, true, AddAdamAsset, ref dirty);
     		}
 
     		if (dirty)
@@ -182,7 +188,7 @@ namespace NewResourceSolution.EditorTool
     		}
     	}
 
-    	private bool AddAsset(string path, ref bool dirty)
+    	private bool AddAsset(string path)
     	{
     		if (string.IsNullOrEmpty(path)) return false;
     		EResType resType = ABUtility.GetRawResType(path);
@@ -201,9 +207,7 @@ namespace NewResourceSolution.EditorTool
     					string guid = AssetDatabase.AssetPathToGUID(path);
     					if (!allResList[i].InPacakgeContains(guid))
     					{
-    						allResList[i].AddInPackageAsset(guid);
-    						dirty = true;
-    						return true;
+    						return allResList[i].AddInPackageAsset(guid);
     					}
     				}
     			}
@@ -211,7 +215,7 @@ namespace NewResourceSolution.EditorTool
     		return false;
     	}
 
-    	private bool AddAdamAsset(string path, ref bool dirty)
+    	private bool AddAdamAsset(string path)
     	{
     		if (string.IsNullOrEmpty(path)) return false;
     		EResType resType = ABUtility.GetRawResType(path);
@@ -225,13 +229,12 @@ namespace NewResourceSolution.EditorTool
     					if (allResList[i].IsFolderRes)
     					{
     						path = System.IO.Directory.GetParent(path).ToString();
-    						_data.AddFolderAdamRes(path);
+                            return !string.IsNullOrEmpty (_data.AddFolderAdamRes (path));
     					}
     					else
     					{
-    						_data.AddSingleAdamRes(path);
+                            return !string.IsNullOrEmpty (_data.AddSingleAdamRes(path));
     					}
-    					dirty = true;
     				}
     			}
     		}
@@ -245,7 +248,13 @@ namespace NewResourceSolution.EditorTool
     	/// <param name="title">Title.</param>
     	/// <param name="assetGuidList">Asset GUID list.</param>
     	/// <param name="dirty">Dirty.</param>
-    	private void DisplayResList(ref bool foldout, string title, List<string> assetGuidList, bool isfolderList, ref bool dirty)
+        private void DisplayResList(
+            ref bool foldout,
+            string title,
+            List<string> assetGuidList,
+            bool isfolderList,
+            AddAssetDelegate addDependencDelegate,
+            ref bool dirty)
     	{
     		bool newFoldout = EditorGUILayout.Foldout(foldout, title);
     		if (newFoldout != foldout)
@@ -291,10 +300,10 @@ namespace NewResourceSolution.EditorTool
     							for (int j = 0; j < dependencies.Length; j++)
     							{
     								// if not self, add to
-    								if (string.Compare(dependencies[j], assetPath) != 0)
-    								{
-    									AddAsset(dependencies[j], ref dirty);
-    								}
+                                    if (string.Compare (dependencies [j], assetPath) != 0)
+                                    {
+                                        dirty = addDependencDelegate (dependencies [j]) || dirty;
+                                    }
     							}
     						}
     					}
@@ -309,5 +318,7 @@ namespace NewResourceSolution.EditorTool
     			GUILayout.EndVertical();
     		}
     	}
+
+        private delegate bool AddAssetDelegate (string newAsset); 
     }
 }

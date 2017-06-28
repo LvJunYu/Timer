@@ -335,6 +335,7 @@ namespace NewResourceSolution.EditorTool
 			var allBundles = manifest.Bundles;
 			for (int i = 0; i < allBundles.Count; i++)
 			{
+                bool isUnityManifestBundle = string.Compare (allBundles [i].AssetBundleName, ResDefine.UnityManifestBundleName) == 0;
 				string unCompressedAssetBundlePath = string.Format(StringFormat.TwoLevelPath, outputPathUnCompressed, allBundles[i].AssetBundleName);
                 string rawMd5;
                 long rawSize = FileTools.GetFileMd5(unCompressedAssetBundlePath, out rawMd5);
@@ -360,7 +361,7 @@ namespace NewResourceSolution.EditorTool
                             {
                                 allBundles [i].Size = oldBundle.Size;
                                 allBundles [i].CompressedMd5 = oldBundle.CompressedMd5;
-                                allBundles [i].CompressType = EAssetBundleCompressType.LZMA;
+                                allBundles [i].CompressType = isUnityManifestBundle ? EAssetBundleCompressType.NoCompress : EAssetBundleCompressType.LZMA;
                                 remainingOldCompressedBundleList.Add (oldBundle);
                                 continue;
                             }
@@ -369,11 +370,11 @@ namespace NewResourceSolution.EditorTool
                 }
 
 				string compressedAssetBundlePath = string.Format(StringFormat.TwoLevelPath, outputPathCompressed, allBundles[i].AssetBundleName);
-                // 如果是unityManifestBundle
-                if (string.Compare(allBundles[i].AssetBundleName, ResDefine.UnityManifestBundleName) == 0)
+                if (isUnityManifestBundle)
 				{
                     allBundles[i].Size = rawSize;
                     allBundles[i].CompressedMd5 = rawMd5;
+                    allBundles [i].CompressType = EAssetBundleCompressType.NoCompress;
 					compressedAssetBundlePath = string.Format(StringFormat.TwoLevelPathWithExtention, outputPathCompressed, allBundles[i].AssetBundleName, rawMd5);
 					FileTools.CopyFileSync(unCompressedAssetBundlePath, compressedAssetBundlePath);
 					continue;
