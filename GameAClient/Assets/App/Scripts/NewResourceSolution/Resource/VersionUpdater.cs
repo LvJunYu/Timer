@@ -16,7 +16,7 @@ namespace NewResourceSolution
         public static IEnumerator CheckVerInternal (CHRuntimeResManifest manifest)
         {
             bool manifestUpdated = false;
-//            Messenger.Broadcast(EMessengerType.OnResourcesCheckStart);
+            Messenger.Broadcast(EMessengerType.OnResourcesCheckStart);
             // 读取远端版本
             // todo 按程序版本拼地址
 			string serverVersionConfigPath = StringUtil.Format (

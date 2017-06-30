@@ -165,7 +165,7 @@ namespace NewResourceSolution
                 }
             }
             // try load
-            bundle = CacheBundleAndDependencies(bundleName, scenary, logWhenError);
+            bundle = CacheBundleAndDependencies(bundle, scenary, logWhenError);
             if (null != bundle)
             {
                 if (bundle.AssetDic.TryGetValue(assetName, out asset))
@@ -199,6 +199,14 @@ namespace NewResourceSolution
         /// </summary>
         public void ClearAllAssetCache ()
         {
+            LogHelper.Info ("ClearAllAssetCache");
+            var itor = _cachedBundleDic.GetEnumerator ();
+            while (itor.MoveNext ())
+            {
+                CHResBundle bundle = itor.Current.Value;
+                bundle.ScenaryMask = 0;
+                bundle.AssetDic.Clear();
+            }
             _cachedBundleDic.Clear ();
             _cachedAssetsTotalSize = 0;
             UnityEngine.Resources.UnloadUnusedAssets ();
@@ -229,9 +237,9 @@ namespace NewResourceSolution
             for (int i = 0; i < _assetToUnload.Count; i++)
             {
                 _cachedBundleDic.Remove (_assetToUnload [i]);
-                LogHelper.Info ("___________________Unload bundle {0}", _assetToUnload[i]);
+//                LogHelper.Info ("___________________Unload bundle {0}", _assetToUnload[i]);
             }
-            LogHelper.Info ("___________________Unloaded {0} bundles", _assetToUnload.Count);
+//            LogHelper.Info ("___________________Unloaded {0} bundles", _assetToUnload.Count);
             UnityEngine.Resources.UnloadUnusedAssets ();
             if (_cachedAssetsTotalSize > s_WarningAssetMemorySize)
             {
@@ -294,11 +302,11 @@ namespace NewResourceSolution
                     {
                         _bundleToAddScenary.Add(dependenceBundle);
                     }
-                    LogHelper.Info ("Bundle {0} already cached, asset cnt {1}", dependenceBundle.AssetBundleName, dependenceBundle.AssetDic.Count);
-                    var itor = dependenceBundle.AssetDic.GetEnumerator ();
-                    while (itor.MoveNext ()) {
-                        LogHelper.Info ("asset in cached bundle: name {0}, {1}", itor.Current.Key, itor.Current.Value);
-                    }
+//                    LogHelper.Info ("Bundle {0} already cached, asset cnt {1}", dependenceBundle.AssetBundleName, dependenceBundle.AssetDic.Count);
+//                    var itor = dependenceBundle.AssetDic.GetEnumerator ();
+//                    while (itor.MoveNext ()) {
+//                        LogHelper.Info ("asset in cached bundle: name {0}, {1}", itor.Current.Key, itor.Current.Value);
+//                    }
                     continue;
                 }
                 dependenceBundle = GetBundleByBundleName(dependencies[i]);

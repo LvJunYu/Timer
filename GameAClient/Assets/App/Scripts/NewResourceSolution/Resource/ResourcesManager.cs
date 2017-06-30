@@ -128,8 +128,14 @@ namespace NewResourceSolution
 
         public void Init ()
         {
+            LogHelper.Info ("ResourcesManager.Init");
             _inUseScenaryMask = 0;
             _lastUnloadActionTime = 0;
+
+            if (null != _manifest)
+            {
+                _manifest.ClearAllAssetCache ();
+            }
 
             // 读取本地版本
             if (UnityTools.TryGetObjectFromLocal<CHRuntimeResManifest> (ResDefine.CHResManifestFileName, out _manifest))
@@ -195,7 +201,7 @@ namespace NewResourceSolution
         {
             int maskToUnload = 1 << scenary;
             _inUseScenaryMask &= ~maskToUnload;
-            _manifest.UnloadUnusedAssets (maskToUnload);
+            _manifest.ForceUnloadUnusedAssets (maskToUnload);
         }
 
         public void ForceUnloadScenary (int scenary)

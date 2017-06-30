@@ -95,35 +95,53 @@ namespace GameA
         protected override void OnStart()
         {
             Instance = this;
-            if (_clearCache)
-            {
-                ClearCache();
-            }
-			RegisterGameTypeVersion();
-            JoyNativeTool.Instance.Init();
-            JoySceneManager.Instance.Init();
-            Application.targetFrameRate = 60;
-            QualitySettings.vSyncCount = 1;
-
-            GlobalVar.Instance.Env = this._env;
-            GlobalVar.Instance.AppVersion = RuntimeConfig.Instance.Version.ToString();
-            var addressConfig = GetAppServerAddress();
-            NetworkManager.AppHttpClient.BaseUrl = addressConfig.AppServerApiRoot;
+//            if (_clearCache)
+//            {
+//                ClearCache();
+//            }
+//			RegisterGameTypeVersion();
+//            JoyNativeTool.Instance.Init();
+//            JoySceneManager.Instance.Init();
+//            Application.targetFrameRate = 60;
+//            QualitySettings.vSyncCount = 1;
+//
+//            GlobalVar.Instance.Env = this._env;
+//            GlobalVar.Instance.AppVersion = RuntimeConfig.Instance.Version.ToString();
+//            var addressConfig = GetAppServerAddress();
+//            NetworkManager.AppHttpClient.BaseUrl = addressConfig.AppServerApiRoot;
 
             gameObject.AddComponent<SocialGUIManager>();
 
             CoroutineManager.Instance.Init(this);
             ResourcesManager.Instance.Init ();
             LocalizationManager.Instance.Init();
+            SocialGUIManager.Instance.OpenUI<UICtrlLogin> ();
+            SocialGUIManager.Instance.OpenUI<UICtrlUpdateResource> ();
 //            TableManager.Instance.Init();
 
-            ResourcesManager.Instance.CheckApplicationAndResourcesVersion();
+//            ResourcesManager.Instance.CheckApplicationAndResourcesVersion();
         }
 
         public void LoginAfterUpdateResComplete()
         {
             gameObject.AddComponent<TableManager>();
             TableManager.Instance.Init();
+            Account.Instance.ApiPath = SoyHttpApiPath.LoginByToken;
+            LocalUser.Instance.Account.LoginByToken(()=>{
+                SocialApp.Instance.LoginSucceed();
+            }, code=>{
+                if(code == ELoginByTokenCode.LBTC_None)
+                {
+                    //                    CommonTools.ShowPopupDialog("服务器连接失败，检查网络后重试", null,
+                    //                        new System.Collections.Generic.KeyValuePair<string, System.Action>("重试", ()=>{
+                    //                            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(()=>LoginByToken()));
+                    //                        }));
+                }
+                else
+                {
+                    LogHelper.Error("登录失败, Code: " + code);
+                }
+            });
             SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
 		}
 
@@ -143,6 +161,7 @@ namespace GameA
         {
             ParallelTaskHelper<ENetResultCode> helper = new ParallelTaskHelper<ENetResultCode>(()=>{
                 GameProcessManager.Instance.Init ();
+                SocialGUIManager.Instance.CloseUI<UICtrlLogin>();
                 SocialGUIManager.Instance.ShowAppView ();
             }, code=>{
                 SocialGUIManager.ShowPopupDialog("服务器连接失败，请检查网络后重试，错误代码："+code.ToString(), null,
