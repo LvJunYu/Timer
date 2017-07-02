@@ -269,7 +269,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _version: 0.1.0
   _defaultLocale: 6
-  _useAssetBundleRes: 1
+  _useAssetBundleRes: 0
 --- !u!114 &574366974
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -166,7 +166,7 @@ namespace NewResourceSolution
 			{
 				extension = ResPath.JsonExtension;
 			}
-			else if (EResType.Table == resType)
+            else if (EResType.Table == resType)
 			{
 				extension = ResPath.JsonExtension;
 			}

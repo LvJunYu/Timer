@@ -89,7 +89,7 @@ namespace NewResourceSolution
 
         public string GetJson (string name, int scenary = 0)
         {
-            var textAsset = GetAsset<UnityEngine.TextAsset>(EResType.Json, name, scenary, true, false);
+            var textAsset = GetAsset<UnityEngine.TextAsset>(EResType.Table, name, scenary, true, false);
             if (null != textAsset)
             {
                 return textAsset.text;
@@ -109,27 +109,24 @@ namespace NewResourceSolution
             #if UNITY_EDITOR
             if (!RuntimeConfig.Instance.UseAssetBundleRes)
             {
-                //var textAsset = UnityEditor.AssetDatabase.LoadMainAssetAtPath(ResPathUtility.GetEditorDebugResPath(EResType.Table, name)) as UnityEngine.TextAsset;
-                //return textAsset.text;
-
-                //var obj = UnityEditor.AssetDatabase.LoadMainAssetAtPath(ResPathUtility.GetEditorDebugResPath(resType, name));
-                //if (null == obj)
-                //{
-                //    obj = UnityEditor.AssetDatabase.LoadMainAssetAtPath(ResPathUtility.GetEditorDebugResPath(resType, name, true, ELocale.WW));
-                //}
-                return null;
+                var obj = UnityEditor.AssetDatabase.LoadMainAssetAtPath(ResPathUtility.GetEditorDebugResPath(resType, name));
+                if (null == obj && isLocaleRes)
+                {
+                    obj = UnityEditor.AssetDatabase.LoadMainAssetAtPath(ResPathUtility.GetEditorDebugResPath(resType, name, true, ELocale.WW));
+                }
+                return obj as T;
             }
-            else
             #endif
-            {
-                return _manifest.GetAsset(name, scenary, logWhenError, isLocaleRes, locale) as T;
-            }
+            return _manifest.GetAsset(name, scenary, logWhenError, isLocaleRes, locale) as T;
         }
 
 		public void Init ()
 		{
 			_inUseScenaryMask = 0;
 //			_lastUnloadActionTime = 0;
+            #if UNITY_EDITOR
+            if (!RuntimeConfig.Instance.UseAssetBundleRes) return;
+            #endif
 
             if (null != _manifest)
             {
@@ -168,15 +165,6 @@ namespace NewResourceSolution
 				// todo 通知玩家，退出程序
 				return;
 			}
-
-//            if (null == _assetCache)
-//            {
-//				_assetCache = new AssetCache ();
-//            }
-//            if (null)
-
-
-//			_assetCache.Init (_manifest);
 		}
 
         public void Update ()
@@ -198,6 +186,10 @@ namespace NewResourceSolution
         /// <param name="scenary">Scenary.</param>
         public void UnloadScenary (int scenary)
         {
+            #if UNITY_EDITOR
+            if (!RuntimeConfig.Instance.UseAssetBundleRes) return;
+            #endif
+
 			int maskToUnload = 1 << scenary;
 			_inUseScenaryMask &= ~maskToUnload;
             _manifest.UnloadUnusedAssets (maskToUnload);
@@ -218,7 +210,14 @@ namespace NewResourceSolution
         #region update&download
 		public void CheckApplicationAndResourcesVersion ()
 		{
-            CoroutineManager.StartCoroutine(VersionUpdater.CheckVerInternal(_manifest));
+            #if UNITY_EDITOR
+            if (!RuntimeConfig.Instance.UseAssetBundleRes)
+            {
+                GameA.SocialApp.Instance.LoginAfterUpdateResComplete();
+                return;
+            }
+            #endif
+            CoroutineManager.StartCoroutine (VersionUpdater.CheckVerInternal (_manifest));
 		}
 		#endregion
 	}
