@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
+using NewResourceSolution;
 using Object = UnityEngine.Object;
 
 namespace GameA.Game
@@ -256,13 +257,13 @@ namespace GameA.Game
             {
                 CreatePaintObject();
             }
-            Texture maskingTexture;
+            Texture maskingTexture = null;
             string maskName = string.Format("Mask_{0}_{1}", (int) edge.Direction, maskRandom);
             if (edge.ESkillType == ESkillType.Water)
             {
                 maskName = string.Format("MaskWater_{0}", (int)edge.Direction);
             }
-            if (!GameResourceManager.Instance.TryGetTextureByName(maskName, out maskingTexture))
+            if (ResourcesManager.Instance.TryGetTexture (maskName, out maskingTexture))
             {
                 LogHelper.Error("TryGetSpriteByName Failed", maskName);
                 return;

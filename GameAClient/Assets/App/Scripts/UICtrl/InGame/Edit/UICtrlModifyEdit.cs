@@ -12,6 +12,7 @@ using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
 using GameA.Game;
+using NewResourceSolution;
 
 namespace GameA
 {
@@ -235,7 +236,7 @@ namespace GameA
                     return;
 				} else {
 					Sprite texture;
-					if (GameResourceManager.Instance.TryGetSpriteByName(tableUnit.Icon, out texture))
+                    if (ResourcesManager.Instance.TryGetSprite(tableUnit.Icon, out texture))
 					{
                         _cachedView.ModifyItems [i].gameObject.SetActive (true);
 						_cachedView.ModifyItems [i].SetItem (texture);
@@ -275,9 +276,9 @@ namespace GameA
                     _cachedView.SelectItems [i].gameObject.SetActive (false);
                     continue;
                 }
-                Sprite texture;
-                if (GameResourceManager.Instance.TryGetSpriteByName (tableUnit.Icon, out texture)) {
-                    _cachedView.SelectItems [i].SetItem (texture,
+                Sprite sprite;
+                if (ResourcesManager.Instance.TryGetSprite (tableUnit.Icon, out sprite)) {
+                    _cachedView.SelectItems [i].SetItem (sprite,
                         LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitCount - editMode.UsedModifyAddUnitCnt(tableUnit.Id));
                 } else {
                     LogHelper.Error ("Can't find icon of unit id: {0}", tableUnit.Id);

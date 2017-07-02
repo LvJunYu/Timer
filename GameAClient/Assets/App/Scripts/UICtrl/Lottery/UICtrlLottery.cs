@@ -17,6 +17,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using GameA.Game;
+using NewResourceSolution;
 using Spine;
 using Spine.Unity;
 

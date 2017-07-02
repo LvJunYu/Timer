@@ -220,12 +220,12 @@ namespace GameA.Game
         private IEnumerator InitByStep()
         {
             yield return new WaitForSeconds(0.5f);
-            _resDone = false;
-            LocalResourceManager.Instance.DoUpdateGame("GameMaker2D", OnUpdateSuccess, OnProcess, OnUpdateFailed);
-            while (!_resDone)
-            {
-                yield return new WaitForSeconds(0.1f);
-            }
+//            _resDone = false;
+//            LocalResourceManager.Instance.DoUpdateGame("GameMaker2D", OnUpdateSuccess, OnProcess, OnUpdateFailed);
+//            while (!_resDone)
+//            {
+//                yield return new WaitForSeconds(0.1f);
+//            }
 //            LocaleManager.Instance.EnterGame();
             yield return GameRun.Instance.Init(_eGameInitType, _project);
             _gameMode.InitByStep();

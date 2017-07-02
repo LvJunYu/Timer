@@ -6,6 +6,7 @@ using UnityEngine;
 using SoyEngine;
 using System;
 using GameA.Game;
+using NewResourceSolution;
 
 namespace GameA
 {
@@ -45,7 +46,7 @@ namespace GameA
             _cachedView.TimeElect.onValueChanged.AddListener(Timeselect);
             _cachedView.PitchOn.onValueChanged.AddListener(Checked);
             Sprite fashion=null;
-            if (GameResourceManager.Instance.TryGetSpriteByName(listItem.PreviewTexture, out fashion))
+            if (ResourcesManager.Instance.TryGetSprite(listItem.PreviewTexture, out fashion))
             {
                 _cachedView.FashionPreview.sprite = fashion;
             }

@@ -354,17 +354,17 @@ namespace GameA.Game
 
 		private void LoadGuideUI () {
 			if (_guideUI != null) return;
-#if UNITY_EDITOR
-            UnityEngine.Object obj = Resources.Load("GuideUI");
-            if (obj == null) {
-                obj = GameResourceManager.Instance.LoadMainAssetObject ("GuideUI");
-            }
-            var gameObj = CommonTools.InstantiateObject (obj);
-#else
-            var obj = GameResourceManager.Instance.LoadMainAssetObject("GuideUI");
-            var gameObj = CommonTools.InstantiateObject(obj) as GameObject;
-#endif
-			_guideUI = gameObj.GetComponent<GuideUI>();
+//#if UNITY_EDITOR
+//            UnityEngine.Object obj = Resources.Load("GuideUI");
+//            if (obj == null) {
+////                obj = GameResourceManager.Instance.LoadMainAssetObject ("GuideUI");
+//            }
+//            var gameObj = CommonTools.InstantiateObject (obj);
+//#else
+//            var obj = GameResourceManager.Instance.LoadMainAssetObject("GuideUI");
+//            var gameObj = CommonTools.InstantiateObject(obj) as GameObject;
+//#endif
+//			_guideUI = gameObj.GetComponent<GuideUI>();
 		}
 	}
 }

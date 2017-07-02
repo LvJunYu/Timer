@@ -13,6 +13,7 @@ using UnityEngine;
 using System.Collections;
 using System;
 using DG.Tweening;
+using NewResourceSolution;
 
 namespace GameA.Game
 {
@@ -76,7 +77,7 @@ namespace GameA.Game
             SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
             sr.sortingOrder = (int)ESortingOrder.DeadMark;
             Sprite s = null;
-            GameResourceManager.Instance.TryGetSpriteByName("death", out s);
+            ResourcesManager.Instance.TryGetSprite("death", out s);
             sr.sprite = s;
             return dm;
         }

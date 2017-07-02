@@ -6,6 +6,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using GameA;
 using SoyEngine.Proto;
+using NewResourceSolution;
 
 namespace GameA
 {
@@ -104,7 +105,7 @@ namespace GameA
             if (rank == 1)
             {
                 Sprite fashion = null;
-                if (GameResourceManager.Instance.TryGetSpriteByName(First, out fashion))
+                if (ResourcesManager.Instance.TryGetSprite(First, out fashion))
                 {
                     _cachedView.RankBg.sprite = fashion;
                 }
@@ -112,7 +113,7 @@ namespace GameA
             else if (rank == 2)
             {
                 Sprite fashion = null;
-                if (GameResourceManager.Instance.TryGetSpriteByName(Second, out fashion))
+                if (ResourcesManager.Instance.TryGetSprite(Second, out fashion))
                 {
                     _cachedView.RankBg.sprite = fashion;
                 }
@@ -120,7 +121,7 @@ namespace GameA
             else if (rank == 3)
             {
                 Sprite fashion = null;
-                if (GameResourceManager.Instance.TryGetSpriteByName(Third, out fashion))
+                if (ResourcesManager.Instance.TryGetSprite(Third, out fashion))
                 {
                     _cachedView.RankBg.sprite = fashion;
                 }

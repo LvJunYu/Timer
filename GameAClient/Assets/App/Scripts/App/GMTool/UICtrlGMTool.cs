@@ -17,7 +17,7 @@ using SoyEngine.Proto;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Create)]
+    [UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlGMTool : UICtrlGenericBase<UIViewGMTool>
     {
         #region 常量与字段

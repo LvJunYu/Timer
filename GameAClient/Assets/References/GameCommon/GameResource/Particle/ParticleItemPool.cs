@@ -106,16 +106,7 @@ namespace SoyEngine
 
 		private UnityNativeParticleItem CreateItem()
 		{
-            #if UNITY_EDITOR
-            var itemPrefab1 = Resources.Load (_poolName);
-            if (itemPrefab1 != null) {
-                GameObject resGo1 = Object.Instantiate (itemPrefab1) as GameObject;
-                UnityNativeParticleItem com1 = new UnityNativeParticleItem ();
-                com1.InitGo (resGo1, _poolName);
-                return com1;
-            }
-            #endif
-            var itemPrefab = GameResourceManager.Instance.LoadMainAssetObject(_poolName);
+            var itemPrefab = NewResourceSolution.ResourcesManager.Instance.GetPrefab(NewResourceSolution.EResType.ParticlePrefab,  _poolName, 0);
 			if (itemPrefab == null)
 			{
 				LogHelper.Error("GameResourceManager.Instance.LoadMainAssetObject({0}) is null!", _poolName);

@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Show)]
+//    [UIAutoSetup(EUIAutoSetupType.Show)]
     public class UICtrlGameLog: UICtrlInGameBase<UIViewGameLog>
     {
         public const float FadeOutTime = 1;
