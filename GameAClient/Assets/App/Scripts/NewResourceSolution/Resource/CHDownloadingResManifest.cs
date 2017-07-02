@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
-
+using EMessengerType = GameA.EMessengerType;
 namespace NewResourceSolution
 {
     public class CHDownloadingResManifest : CHResManifest
@@ -19,8 +19,8 @@ namespace NewResourceSolution
         private long _needsDownloadTotalByte;
         private int _needsDownloadTotalCnt;
 
-        private long _downloadFinishByte;
-        private int _downloadFinishCnt;
+        private long _downloadDoneByte;
+        private int _downloadDoneCnt;
 
         /// <summary>
         /// 总共花费的时间
@@ -214,8 +214,8 @@ namespace NewResourceSolution
             _serializeFailed = false;
             _totalErrorCnt = 0;
             _downloadTotalTime = 0;
-            _downloadFinishByte = 0;
-            _downloadFinishCnt = 0;
+			_downloadDoneByte = 0;
+			_downloadDoneCnt = 0;
 			FileTools.CheckAndCreateFolder(StringUtil.Format(StringFormat.TwoLevelPath, ResPath.PersistentDataPath, ResPath.TempCache));
 
             _waitQueue.Clear ();
@@ -242,7 +242,7 @@ namespace NewResourceSolution
                     var downloader = _waitQueue.Dequeue ();
                     downloader.BeginDownload ();
                     _downloadingList.Add (downloader);
-                    LogHelper.Info ("Begin download bundle: {0}", downloader.Bundle.AssetBundleName);
+                    LogHelper.Info ("Begin download bundle: {0}", downloader.WebRequest.url);
                 }
 
                 for (int i = _downloadingList.Count - 1; i >= 0; i--)
@@ -288,8 +288,9 @@ namespace NewResourceSolution
                         }
                         else
                         {
-                            _downloadFinishCnt++;
-                            _downloadFinishByte += currentSerializeDownloader.Bundle.Size;
+                            _downloadDoneCnt++;
+                            _downloadDoneByte += currentSerializeDownloader.Bundle.Size;
+                            Messenger<long, long>.Broadcast(EMessengerType.OnResourcesUpdateProgressUpdate, _downloadDoneByte, _needsDownloadTotalByte);
                             LogHelper.Info ("Serialize {0} done.", currentSerializeDownloader.Bundle.AssetBundleName);
                         }
                     }
@@ -314,6 +315,7 @@ namespace NewResourceSolution
                         _bundles [i].FileLocation = EFileLocation.TemporaryCache;
                     }
                 }
+                Messenger<long, long>.Broadcast(EMessengerType.OnResourcesUpdateProgressUpdate, _needsDownloadTotalByte, _needsDownloadTotalByte);
             }
             _totalTime = DateTimeUtil.GetNowTicks() / 10000 - beginTime;
         }
@@ -326,9 +328,29 @@ namespace NewResourceSolution
         {
 			FileTools.CheckAndCreateFolder(StringUtil.Format(StringFormat.TwoLevelPath, ResPath.PersistentDataPath, ResPath.PersistentBundleRoot));
 
+			// get total size of files to decompress
+			long totalSizeToDecompress = 0;
+			for (int i = 0; i < _bundles.Count; i++)
+			{
+				if (EFileLocation.Server == _bundles[i].FileLocation ||
+					EFileLocation.Persistent == _bundles[i].FileLocation)
+				{
+					continue;
+				}
+				totalSizeToDecompress += _bundles[i].Size;
+			}
+			long sizeDone = 0;
             for (int i = 0; i < _bundles.Count; i++)
             {
+				if (EFileLocation.Server == _bundles[i].FileLocation ||
+					EFileLocation.Persistent == _bundles[i].FileLocation)
+				{
+					continue;
+				}
+                long compressedSize = _bundles [i].Size;
                 yield return _bundles [i].DecompressOrCopyToPersistant (_adamBundleNameList.Contains(_bundles[i].AssetBundleName));
+                sizeDone += compressedSize;
+                Messenger<long, long>.Broadcast(EMessengerType.OnResourcesUpdateProgressUpdate, sizeDone, totalSizeToDecompress);
             }
             // 写入manifest文件
 			UnityTools.TrySaveObjectToLocal<CHResManifest> (this, ResDefine.CHResManifestFileName);

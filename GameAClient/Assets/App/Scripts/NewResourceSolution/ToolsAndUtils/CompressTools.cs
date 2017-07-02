@@ -22,14 +22,14 @@ namespace NewResourceSolution
 			}
 		}
 
-        public static void DecompressFileLZMA(string inFile, string outFile, bool overwrite = true)
+        public static long DecompressFileLZMA(string inFile, string outFile, bool overwrite = true)
 		{
 //            LogHelper.Info ("DecompressFile, {0} to {1}", inFile, outFile);
             FileInfo infi = new FileInfo(inFile);
             if (!infi.Exists)
             {
                 LogHelper.Error("File {0} doesn't exist.", inFile);
-                return;
+                return 0;
             }
             FileInfo outfi = new FileInfo(outFile);
             if (outfi.Exists)
@@ -41,7 +41,7 @@ namespace NewResourceSolution
                 else
                 {
                     LogHelper.Error("File {0} already exist, decompress file failed.", outFile);
-                    return;
+                    return 0;
                 }
             }
             using (FileStream input = new FileStream (inFile, FileMode.Open))
@@ -61,12 +61,12 @@ namespace NewResourceSolution
                 coder.SetDecoderProperties (properties);
                 coder.Code (input, output, input.Length, fileLength, null);
 
-                input.Dispose ();
-                output.Dispose ();
+                long outputFileSize = output.Length;
+                return outputFileSize;
             }
 		}
 
-        public static void DecompressBytesLZMA (byte[] bytes, string outFile, bool overwrite = true)
+        public static long DecompressBytesLZMA (byte[] bytes, string outFile, bool overwrite = true)
         {
             FileInfo outfi = new FileInfo(outFile);
             if (outfi.Exists)
@@ -78,7 +78,7 @@ namespace NewResourceSolution
                 else
                 {
                     LogHelper.Error("File {0} already exist, decompress file failed.", outFile);
-                    return;
+                    return 0;
                 }
             }
             using(MemoryStream input = new MemoryStream(bytes))
@@ -98,8 +98,8 @@ namespace NewResourceSolution
                 coder.SetDecoderProperties (properties);
                 coder.Code (input, output, input.Length, fileLength, null);
 
-                input.Dispose ();
-                output.Dispose ();
+                long outputFileSize = output.Length;
+                return outputFileSize;
             }
         }
 	}

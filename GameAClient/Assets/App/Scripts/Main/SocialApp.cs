@@ -115,11 +115,9 @@ namespace GameA
             CoroutineManager.Instance.Init(this);
             ResourcesManager.Instance.Init ();
             LocalizationManager.Instance.Init();
-            SocialGUIManager.Instance.OpenUI<UICtrlLogin> ();
-            SocialGUIManager.Instance.OpenUI<UICtrlUpdateResource> ();
 //            TableManager.Instance.Init();
 
-//            ResourcesManager.Instance.CheckApplicationAndResourcesVersion();
+            ResourcesManager.Instance.CheckApplicationAndResourcesVersion();
         }
 
         public void LoginAfterUpdateResComplete()

@@ -17,6 +17,8 @@ namespace NewResourceSolution
 		public static int ResGroupNecessary = 1;
 
         public static long KiloByte = 1024;
+
+        public static int UnloadImmediatelyScenary = 31;
 	}
 
 	public static class ResPath

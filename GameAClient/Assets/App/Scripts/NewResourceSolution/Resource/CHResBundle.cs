@@ -18,6 +18,13 @@ namespace NewResourceSolution
         public string RawMd5;
 		[Newtonsoft.Json.JsonProperty(PropertyName = "C5")]
         public string CompressedMd5;
+        /// <summary>
+        /// 对于CompressType是LZMA的bundle，除了persistentData中的manifest文件，
+        /// 其余manifest文件中的bundle的size表示的是压缩后的大小，persistentData中
+        /// 的manifest中的bundle的size表示的解压后的文件大小，也是bundle缓存在内存中的
+        /// 预估所占空间
+        /// 对于CompressType是NoCompress的bundle，该值的意义始终是未压缩的大小
+        /// </summary>
 		[Newtonsoft.Json.JsonProperty(PropertyName = "SZ")]
         public long Size;
         /// <summary>
@@ -34,12 +41,12 @@ namespace NewResourceSolution
 		private string _filePathServer;
 
 		#region used by runtime manifest
+        [Newtonsoft.Json.JsonIgnore]
+        public UnityEngine.AssetBundle CachedBundle;
 		[Newtonsoft.Json.JsonIgnore]
 		public Dictionary<string, UnityEngine.Object> AssetDic = new Dictionary<string, UnityEngine.Object>();
 		[Newtonsoft.Json.JsonIgnore]
         public int ScenaryMask;
-		[Newtonsoft.Json.JsonIgnore]
-		public long AssetsTotalSize;
 		[Newtonsoft.Json.JsonIgnore]
 		public bool IsLocaleRes;
 		[Newtonsoft.Json.JsonIgnore]
@@ -192,9 +199,10 @@ namespace NewResourceSolution
             }
             else if (EFileLocation.StreamingAsset == FileLocation)
             {
+                long uncompressFileSize = 0;
                 ThreadAction decompressFile = new ThreadAction (
                     () => {
-                        CompressTools.DecompressFileLZMA (
+                        uncompressFileSize = CompressTools.DecompressFileLZMA (
                             sourceFilePath,
                             destFilePath
                         );
@@ -206,9 +214,72 @@ namespace NewResourceSolution
                 {
                     LogHelper.Error ("Decompress file error: {0}", decompressFile.Error);
                 }
+                else if (0 != uncompressFileSize)
+                {
+                    Size = uncompressFileSize;
+                }
 //                LogHelper.Info ("Decompress file done");
             }
             FileLocation = EFileLocation.Persistent;
+        }
+
+        public bool Cache (int scenary, bool logWhenError)
+        {
+            if (null == CachedBundle)
+            {
+                LogHelper.Info ("CAche {0}", AssetBundleName);
+                CachedBundle = UnityEngine.AssetBundle.LoadFromFile (GetFilePath (FileLocation));
+                if (null == CachedBundle)
+                {
+                    if (logWhenError)
+                    {
+                        LogHelper.Error ("Load assetbundle {0} failed.", AssetBundleName);
+                    }
+                    return false;
+                }
+                AssetDic.Clear ();
+                for (int j = 0; j < AssetNames.Length; j++)
+                {
+                    UnityEngine.Object asset = CachedBundle.LoadAsset (AssetNames [j]);
+                    if (null == asset)
+                    {
+                        if (logWhenError)
+                        {
+                            LogHelper.Error ("Load asset {0} from asset bundle {1} failed.",
+                                           AssetNames [j],
+                                           AssetBundleName);
+                        }
+                        return false;
+                    }
+                    AssetDic.Add (AssetNames [j], asset);
+                }
+            }
+            ScenaryMask &= scenary;
+            return true;
+        }
+
+        public bool Uncache (int scenary)
+        {
+            if ((ScenaryMask & scenary) == 0)
+                return false;
+            ScenaryMask &= ~scenary;
+            if (0 == ScenaryMask)
+            {
+                UncacheAll ();
+            }
+            return true;
+        }
+
+        public void UncacheAll ()
+        {
+            ScenaryMask = 0;
+            AssetDic.Clear ();
+            if (null != CachedBundle)
+            {
+                CachedBundle.Unload (true);
+                CachedBundle = null;
+            }
+            LogHelper.Info ("UncacheAll {0}", AssetBundleName);
         }
 
 

@@ -93,7 +93,7 @@ MonoBehaviour:
     IsLocaleRes: 1
     SearchFilter: t:Prefab
     FoldoutInEditorUI: 1
-  _version: 0.1.1
+  _version: 0.1.0
   _singleAdamResList:
   - 67979d915f7944ef0a171d534c13d1ec
   - 7021c4e00defc0a45bf964f888bf32d0
