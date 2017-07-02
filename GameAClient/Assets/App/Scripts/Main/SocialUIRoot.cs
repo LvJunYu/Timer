@@ -10,7 +10,7 @@ using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
 using NewResourceSolution;
-using ResourceManager = NewResourceSolution.ResourcesManager;
+using ResourcesManager = NewResourceSolution.ResourcesManager;
 
 namespace GameA
 {
@@ -32,7 +32,7 @@ namespace GameA
 
         protected override UIViewBase InstanceView(string path)
         {
-            Object obj = ResourceManager.Instance.GetPrefab (EResType.UIPrefab, path, 0);
+            Object obj = ResourcesManager.Instance.GetPrefab (EResType.UIPrefab, path, 0);
             if (obj == null)
             {
                 LogHelper.Error("Instantiate ui failed {0}", path);
@@ -53,7 +53,7 @@ namespace GameA
 
         public override UMViewBase InstanceItemView(string path)
         {
-            Object obj = ResourceManager.Instance.GetPrefab (EResType.UIPrefab, path, 0);
+            Object obj = ResourcesManager.Instance.GetPrefab (EResType.UIPrefab, path, 0);
             if (obj == null)
             {
                 LogHelper.Error(path);

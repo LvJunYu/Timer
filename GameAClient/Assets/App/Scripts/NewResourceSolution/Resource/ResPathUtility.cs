@@ -155,43 +155,43 @@ namespace NewResourceSolution
 		/// <param name="name">Name.</param>
 		/// <param name="localeOverride">If set to <c>true</c> locale override.</param>
 		/// <param name="locale">Locale.</param>
-		public static string GetEditorDebugResPath (
-			EResType resType,
-			string name,
-			bool localeOverride = false,
-			ELocale locale = ELocale.WW)
-		{
-			string extension = string.Empty;
-			if (EResType.Txt == resType)
-			{
-				extension = ResPath.JsonExtension;
-			}
-            else if (EResType.Table == resType)
-			{
-				extension = ResPath.JsonExtension;
-			}
-			else if (EResType.UIPrefab == resType)
-			{
-				extension = ResPath.PrefabExtension;
-			}
-			else if (EResType.Model == resType)
-			{
-				extension = ResPath.PrefabExtension;
-			}
-			string folder = GetEditorDebugResFolderPath(resType, localeOverride, locale);
-			if (string.IsNullOrEmpty(folder))
-			{
-				return null;
-			}
-			else
-			{
-				return string.Format(
-					"{0}/{1}{2}",
-					folder,
-					name,
-					extension);
-			}
-		}
+//		public static string GetEditorDebugResPath (
+//			EResType resType,
+//			string name,
+//			bool localeOverride = false,
+//			ELocale locale = ELocale.WW)
+//		{
+//			string extension = string.Empty;
+//			if (EResType.Txt == resType)
+//			{
+//				extension = ResPath.JsonExtension;
+//			}
+//            else if (EResType.Table == resType)
+//			{
+//				extension = ResPath.JsonExtension;
+//			}
+//			else if (EResType.UIPrefab == resType)
+//			{
+//				extension = ResPath.PrefabExtension;
+//			}
+//			else if (EResType.Model == resType)
+//			{
+//				extension = ResPath.PrefabExtension;
+//			}
+//			string folder = GetEditorDebugResFolderPath(resType, localeOverride, locale);
+//			if (string.IsNullOrEmpty(folder))
+//			{
+//				return null;
+//			}
+//			else
+//			{
+//				return string.Format(
+//					"{0}/{1}{2}",
+//					folder,
+//					name,
+//					extension);
+//			}
+//		}
 
 		public static string GetStreamingAssetsPath ()
 		{

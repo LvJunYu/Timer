@@ -466,7 +466,10 @@ namespace GameA.Game
                 LogHelper.Error("InitMask called but _cameraMask != null");
                 return;
             }
-            var go = Instantiate(Resources.Load(ConstDefineGM2D.CameraMaskPrefabName)) as GameObject;
+            var go = Instantiate (NewResourceSolution.ResourcesManager.Instance.GetPrefab(
+                NewResourceSolution.EResType.UIPrefab, 
+                ConstDefineGM2D.CameraMaskPrefabName)
+            ) as GameObject;
             if (go == null)
             {
                 LogHelper.Error("Prefab {0} is invalid!", ConstDefineGM2D.CameraMaskPrefabName);
@@ -475,7 +478,10 @@ namespace GameA.Game
             _cameraMask = go.GetComponent<SlicedCameraMask>();
             _cameraMask.SetSortOrdering((int) ESortingOrder.Mask);
 
-			var go1 = Instantiate(Resources.Load(ConstDefineGM2D.MapRectMaskPrefabName)) as GameObject;
+            var go1 = Instantiate (NewResourceSolution.ResourcesManager.Instance.GetPrefab(
+                NewResourceSolution.EResType.UIPrefab, 
+                ConstDefineGM2D.MapRectMaskPrefabName)
+            ) as GameObject;
 			if (go1 == null)
 			{
 				LogHelper.Error("Prefab {0} is invalid!", ConstDefineGM2D.MapRectMaskPrefabName);

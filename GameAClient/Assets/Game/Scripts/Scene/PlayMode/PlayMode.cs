@@ -122,7 +122,7 @@ namespace GameA.Game
             _statistic = new GameStatistic();
 
             Texture t = null;
-            if (ResourcesManager.Instance.TryGetTexture ("Mask", out t))
+            if (!ResourcesManager.Instance.TryGetTexture ("Mask", out t))
             {
                 LogHelper.Error("GetMask Failed");
                 return false;

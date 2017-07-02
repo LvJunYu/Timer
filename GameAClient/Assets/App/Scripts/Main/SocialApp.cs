@@ -95,20 +95,20 @@ namespace GameA
         protected override void OnStart()
         {
             Instance = this;
-//            if (_clearCache)
-//            {
-//                ClearCache();
-//            }
-//			RegisterGameTypeVersion();
-//            JoyNativeTool.Instance.Init();
-//            JoySceneManager.Instance.Init();
-//            Application.targetFrameRate = 60;
-//            QualitySettings.vSyncCount = 1;
-//
-//            GlobalVar.Instance.Env = this._env;
-//            GlobalVar.Instance.AppVersion = RuntimeConfig.Instance.Version.ToString();
-//            var addressConfig = GetAppServerAddress();
-//            NetworkManager.AppHttpClient.BaseUrl = addressConfig.AppServerApiRoot;
+            if (_clearCache)
+            {
+                ClearCache();
+            }
+			RegisterGameTypeVersion();
+            JoyNativeTool.Instance.Init();
+            JoySceneManager.Instance.Init();
+            Application.targetFrameRate = 60;
+            QualitySettings.vSyncCount = 1;
+
+            GlobalVar.Instance.Env = this._env;
+            GlobalVar.Instance.AppVersion = RuntimeConfig.Instance.Version.ToString();
+            var addressConfig = GetAppServerAddress();
+            NetworkManager.AppHttpClient.BaseUrl = addressConfig.AppServerApiRoot;
 
             gameObject.AddComponent<SocialGUIManager>();
 
