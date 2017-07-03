@@ -13,7 +13,7 @@ using System;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Create)]
+    [UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlPopupDialog : UICtrlGenericBase<UIViewPopupDialog>
     {
         #region 常量与字段

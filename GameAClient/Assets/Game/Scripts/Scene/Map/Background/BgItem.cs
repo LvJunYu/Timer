@@ -10,6 +10,7 @@ using System.Collections;
 using DG.Tweening;
 using SoyEngine;
 using UnityEngine;
+using NewResourceSolution;
 
 namespace GameA.Game
 {
@@ -80,8 +81,8 @@ namespace GameA.Game
         private bool TryCreateObject(out GameObject go)
         {
             go = null;
-            Sprite sprite;
-            if (!GameResourceManager.Instance.TryGetSpriteByName(_tableBg.Model, out sprite))
+            Sprite sprite = null;
+            if (!ResourcesManager.Instance.TryGetSprite(_tableBg.Model, out sprite))
             {
                 LogHelper.Error("TryGetSpriteByName failed,{0}", _tableBg.Model);
                 return false;

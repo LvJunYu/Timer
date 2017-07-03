@@ -10,6 +10,7 @@ using SoyEngine;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using GameA.Game;
+using NewResourceSolution;
 
 namespace GameA
 {
@@ -108,10 +109,10 @@ namespace GameA
                 }
                 _cachedView.ShowCurSelectIcon.SetActiveEx(true);
                 _cachedView.TextureImage.SetActiveEx(false);
-                Sprite texture;
-                if (GameResourceManager.Instance.TryGetSpriteByName(table.Icon, out texture))
+                Sprite sprite;
+                if (ResourcesManager.Instance.TryGetSprite(table.Icon, out sprite))
                 {
-                    _cachedView.SpriteImage.sprite = texture;
+                    _cachedView.SpriteImage.sprite = sprite;
                 }
                 else
                 {

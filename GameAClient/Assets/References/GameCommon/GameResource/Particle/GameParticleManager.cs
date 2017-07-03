@@ -65,16 +65,6 @@ namespace SoyEngine
             ESortingOrder sortingOrder = ESortingOrder.Item)
         {
             if (string.IsNullOrEmpty(itemName)) return null;
-            //#if UNITY_EDITOR
-            //itemPrefab = Resources.Load (itemName);
-            //if (itemPrefab != null) {
-            //    GameObject resGo1 = GameObject.Instantiate (itemPrefab) as GameObject;
-            //    UnityNativeParticleItem com1 = new UnityNativeParticleItem ();
-            //    com1.Init (resGo1);
-            //    com1.SetParent (parent, Vector3.zero);
-            //    return com1;
-            //}
-            //#endif
 
             Transform realParent = parent == null ? _rootParticleParent : parent;
             UnityNativeParticleItem com = GetParticleItem(itemName);
@@ -153,18 +143,6 @@ namespace SoyEngine
             {
                 return null;
             }
-//#if UNITY_EDITOR
-//            itemPrefab = Resources.Load (itemName);
-//            if (itemPrefab != null) {
-//                GameObject resGo1 = Instantiate (itemPrefab) as GameObject;
-//                UnityNativeParticleItem com1 = new UnityNativeParticleItem ();
-//                com1.Init (resGo1, true, lifeTime);
-//                com1.SetParent (parent, Vector3.zero);
-//                com1.Play (lifeTime);
-//                _sceneParticleItems.Add (com1);
-//                return true;
-//            }
-//#endif
 
             UnityNativeParticleItem com = GetParticleItem(itemName);
             if (com == null || com.Trans == null)

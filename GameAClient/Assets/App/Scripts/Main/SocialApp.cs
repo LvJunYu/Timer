@@ -8,8 +8,11 @@
 using System;
 using GameA.Game;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
+using NewResourceSolution;
 using EMessengerType = SoyEngine.EMessengerType;
+using FileTools = SoyEngine.FileTools;
 
 namespace GameA
 {
@@ -23,9 +26,6 @@ namespace GameA
         [SerializeField] private EEnvironment _env;
 		[SerializeField] private bool _clearCache;
         [SerializeField] private AddressConfig[] _appServerAddress;
-        public string AppVersion = "1.0";
-	    public int PackageAppResourceVersion = 1;
-	    public bool UseLocalDebugRes = false;
 
 		internal static SocialApp Instance;
 
@@ -99,44 +99,79 @@ namespace GameA
             {
                 ClearCache();
             }
-//	        InitLocalResource();
 			RegisterGameTypeVersion();
-            VersionManager.Instance.Init();
             JoyNativeTool.Instance.Init();
             JoySceneManager.Instance.Init();
             Application.targetFrameRate = 60;
             QualitySettings.vSyncCount = 1;
-            gameObject.AddComponent<SocialGUIManager>();
-            GameResourceManager rm = gameObject.AddComponent<GameResourceManager> ();
-            if (!rm.Init ("GameMaker2D")) {
-                LogHelper.Error ("GameResourceManager initFailed");
-            }
-        }
 
-        public void Init()
-        {
             GlobalVar.Instance.Env = this._env;
-            GlobalVar.Instance.AppVersion = this.AppVersion;
+            GlobalVar.Instance.AppVersion = RuntimeConfig.Instance.Version.ToString();
             var addressConfig = GetAppServerAddress();
             NetworkManager.AppHttpClient.BaseUrl = addressConfig.AppServerApiRoot;
-            GameResourcePathManager.Instance.WebServerRoot = addressConfig.GameResoureRoot;
-            LocalUser.Instance.Init();
-            AppData.Instance.Init();
-            LocalResourceManager.Instance.transform.parent = transform;
-            MatrixProjectTools.InitAndCheckOnStart();
-            LoginLogicUtil.Init();
-            ShareUtil.Init();
-            RoomManager.Instance.Init();
+
+            gameObject.AddComponent<SocialGUIManager>();
+
+            CoroutineManager.Instance.Init(this);
+            ResourcesManager.Instance.Init ();
+            LocalizationManager.Instance.Init();
+//            TableManager.Instance.Init();
+
+            ResourcesManager.Instance.CheckApplicationAndResourcesVersion();
         }
 
-        public void InitAfterUpdateResComplete()
+        public void LoginAfterUpdateResComplete()
         {
             gameObject.AddComponent<TableManager>();
             TableManager.Instance.Init();
-            SocialGUIManager.Instance.ShowAppView();
-
-            GameProcessManager.Instance.Init ();
+            Account.Instance.ApiPath = SoyHttpApiPath.LoginByToken;
+            LocalUser.Instance.Account.LoginByToken(()=>{
+                SocialApp.Instance.LoginSucceed();
+            }, code=>{
+                if(code == ELoginByTokenCode.LBTC_None)
+                {
+                    //                    CommonTools.ShowPopupDialog("服务器连接失败，检查网络后重试", null,
+                    //                        new System.Collections.Generic.KeyValuePair<string, System.Action>("重试", ()=>{
+                    //                            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(()=>LoginByToken()));
+                    //                        }));
+                }
+                else
+                {
+                    LogHelper.Error("登录失败, Code: " + code);
+                }
+            });
+            SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
 		}
+
+        public void LoginSucceed ()
+        {
+            LocalUser.Instance.Init();
+            AppData.Instance.Init();
+
+            //            LoginLogicUtil.Init();
+            ShareUtil.Init();
+            RoomManager.Instance.Init();
+
+            GetUserData ();
+        }
+
+        private void GetUserData ()
+        {
+            ParallelTaskHelper<ENetResultCode> helper = new ParallelTaskHelper<ENetResultCode>(()=>{
+                GameProcessManager.Instance.Init ();
+                SocialGUIManager.Instance.CloseUI<UICtrlLogin>();
+                SocialGUIManager.Instance.ShowAppView ();
+            }, code=>{
+                SocialGUIManager.ShowPopupDialog("服务器连接失败，请检查网络后重试，错误代码："+code.ToString(), null,
+                    new System.Collections.Generic.KeyValuePair<string, System.Action>("重试", ()=>{
+                        CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(()=>GetUserData()));
+                    }));
+            });
+            helper.AddTask(AppData.Instance.LoadAppData);
+            helper.AddTask(LocalUser.Instance.LoadUserData);
+            helper.AddTask(AppData.Instance.AdventureData.PrepareAllData);
+            helper.AddTask (LocalUser.Instance.LoadPropData);
+        }
 
 //	    private void InitLocalResource()
 //	    {

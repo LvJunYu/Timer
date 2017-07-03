@@ -4,6 +4,7 @@ using GameA;
 using SoyEngine.Proto;
 using UnityEngine;
 using SoyEngine;
+using NewResourceSolution;
 using System;
 using DG.Tweening;
 using GameA.Game;
@@ -52,7 +53,7 @@ namespace GameA
                 FashionOnClick(listItem);
             });
             Sprite fashion = null;
-            if (GameResourceManager.Instance.TryGetSpriteByName(listItem.PreviewTexture, out fashion))
+            if (ResourcesManager.Instance.TryGetSprite(listItem.PreviewTexture, out fashion))
             {
                 _cachedView.FashionPreview.sprite = fashion;
             }
@@ -77,19 +78,19 @@ namespace GameA
             Sprite Bg = null;
             if (listItem.Sex == 2)
             {
-                if (GameResourceManager.Instance.TryGetSpriteByName("card_pink", out Bg))
+                if (ResourcesManager.Instance.TryGetSprite("card_pink", out Bg))
                 {
                     _cachedView.SexBg.sprite = Bg;
                 }
-                if (GameResourceManager.Instance.TryGetSpriteByName("img_pink", out Bg))
+                if (ResourcesManager.Instance.TryGetSprite("img_pink", out Bg))
                 {
                     _cachedView.Sexbottom.sprite = Bg;
                 }
-                if (GameResourceManager.Instance.TryGetSpriteByName("light_pink", out Bg))
+                if (ResourcesManager.Instance.TryGetSprite("light_pink", out Bg))
                 {
                     _cachedView.SexLight.sprite = Bg;
                 }
-                if (GameResourceManager.Instance.TryGetSpriteByName("name_bg_pink", out Bg))
+                if (ResourcesManager.Instance.TryGetSprite("name_bg_pink", out Bg))
                 {
                     _cachedView.SexTitle.sprite = Bg;
                 }

@@ -7,7 +7,7 @@ using SoyEngine.Proto;
 using System.IO;
 
 namespace GameA {
-    [UIAutoSetup(EUIAutoSetupType.Show)]
+//    [UIAutoSetup(EUIAutoSetupType.Show)]
     public class UICtrlInitPage : UICtrlGenericBase<UIViewInitPage>
     {
 		private enum EAppStartStep
@@ -191,10 +191,10 @@ namespace GameA {
                     break;
                 case EAppStartStep.CheckAppVersion:
                     {
-                        if (LocalResourceManager.Instance.CheckAppVersionComplete)
-                        {
-                            ExitCheckAppVersionState();
-                        }
+//                        if (LocalResourceManager.Instance.CheckAppVersionComplete)
+//                        {
+//                            ExitCheckAppVersionState();
+//                        }
                     }
                     break;
                 case EAppStartStep.WaitToAllowUpdateRes:
@@ -224,24 +224,24 @@ namespace GameA {
 
 	    private void ExitCheckAppVersionState()
 	    {
-		    var state = LocalResourceManager.Instance.CheckGameLocalFile(GameTypeName);
-		    float size = LocalResourceManager.Instance.GetNeedDownloadSizeMB(GameTypeName);
-		    if (state!=EGameUpdateCheckResult.CanPlay)
-		    {
-
-				size = Mathf.Max(0.01f, size);
-				string msg = string.Format("检查到需要更新{0:f2}m资源,是否更新?", size);
-			    CommonTools.ShowPopupDialog(msg,"更新提示",new KeyValuePair<string, Action>[2]
-			    {
-				    new KeyValuePair<string, Action>("更新",OnClickUpdateResButton),
-					new KeyValuePair<string, Action>("退出游戏",OnClickCancalUpdateResButton)
-			    });
-                SetCurState(EAppStartStep.WaitToAllowUpdateRes);
-		    }
-		    else
-		    {
-                SetCurState(EAppStartStep.LoginByToken);
-		    }
+//		    var state = LocalResourceManager.Instance.CheckGameLocalFile(GameTypeName);
+//		    float size = LocalResourceManager.Instance.GetNeedDownloadSizeMB(GameTypeName);
+//		    if (state!=EGameUpdateCheckResult.CanPlay)
+//		    {
+//
+//				size = Mathf.Max(0.01f, size);
+//				string msg = string.Format("检查到需要更新{0:f2}m资源,是否更新?", size);
+//			    CommonTools.ShowPopupDialog(msg,"更新提示",new KeyValuePair<string, Action>[2]
+//			    {
+//				    new KeyValuePair<string, Action>("更新",OnClickUpdateResButton),
+//					new KeyValuePair<string, Action>("退出游戏",OnClickCancalUpdateResButton)
+//			    });
+//                SetCurState(EAppStartStep.WaitToAllowUpdateRes);
+//		    }
+//		    else
+//		    {
+//                SetCurState(EAppStartStep.LoginByToken);
+//		    }
 	    }
 
 	    private void OnClickUpdateResButton()
@@ -261,7 +261,7 @@ namespace GameA {
 
 	    private void EnterAppStartCompleteState()
 	    {
-			SocialApp.Instance.InitAfterUpdateResComplete();
+			SocialApp.Instance.LoginAfterUpdateResComplete();
             SocialGUIManager.Instance.CloseUI<UICtrlInitPage>();
 //			CoroutineProxy.Instance.StartCoroutine(FinishStartApp());
 		}
@@ -269,7 +269,7 @@ namespace GameA {
 	    private void EnterUpdateResState()
 	    {
 			_cachedView.UpdateResProcessRoot.SetActiveEx(true);
-			LocalResourceManager.Instance.DoUpdateGame(GameTypeName, OnUpdateGameResComplete, OnUpdateGameResProcess, OnUpdateGameResFailed);
+//			LocalResourceManager.Instance.DoUpdateGame(GameTypeName, OnUpdateGameResComplete, OnUpdateGameResProcess, OnUpdateGameResFailed);
 		}
 
         private void LoginByToken()
@@ -378,11 +378,11 @@ namespace GameA {
                         {
                             continue;
                         }
-                        if(ss[1].Trim() == SocialApp.Instance.AppVersion)
-                        {
-                            SocialApp.Instance.Env = EEnvironment.Development;
-                            break;
-                        }
+//                        if(ss[1].Trim() == SocialApp.Instance.AppVersion)
+//                        {
+//                            SocialApp.Instance.Env = EEnvironment.Development;
+//                            break;
+//                        }
                     }
                 }
             }
@@ -392,7 +392,7 @@ namespace GameA {
 
 	    private void InitApp()
 	    {
-			SocialApp.Instance.Init();
+//			SocialApp.Instance.Init();
 		}
 
 //	    private IEnumerator FinishStartApp()

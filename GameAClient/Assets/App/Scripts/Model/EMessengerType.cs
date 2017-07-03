@@ -99,6 +99,12 @@ namespace GameA
         public static int OnGoldChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnDiamondChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnEnergyChanged = SoyEngine.EMessengerType.NextId++;
+
+
+        public static int OnResourcesCheckFinish = SoyEngine.EMessengerType.NextId++;
+        public static int OnResourcesCheckStart = SoyEngine.EMessengerType.NextId++;
+        public static int OnResourcesUpdateProgressUpdate = SoyEngine.EMessengerType.NextId++;
+        public static int OnVersionUpdateStateChange = SoyEngine.EMessengerType.NextId++;
     }
 }
 

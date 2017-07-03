@@ -12,6 +12,7 @@ using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
 using UnitySampleAssets.CrossPlatformInput;
+using NewResourceSolution;
 
 namespace GameA.Game
 {
@@ -120,8 +121,8 @@ namespace GameA.Game
             _unitUpdateManager = new UnitUpdateManager();
             _statistic = new GameStatistic();
 
-            Texture t;
-            if (!GameResourceManager.Instance.TryGetTextureByName("Mask", out t))
+            Texture t = null;
+            if (!ResourcesManager.Instance.TryGetTexture ("Mask", out t))
             {
                 LogHelper.Error("GetMask Failed");
                 return false;

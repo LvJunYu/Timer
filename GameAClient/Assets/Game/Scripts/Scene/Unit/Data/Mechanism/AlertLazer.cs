@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
+using NewResourceSolution;
 
 namespace GameA.Game
 {
@@ -297,8 +298,8 @@ namespace GameA.Game
         public LazerEffect(UnitBase lazerUnit, string path)
         {
             CreateMesh();
-            Texture texture;
-            if (!GameResourceManager.Instance.TryGetTextureByName(path, out texture))
+            Texture texture = null;
+            if (!ResourcesManager.Instance.TryGetTexture(path, out texture))
             {
                 LogHelper.Error("TryGetTextureByName Failed {0}", path);
                 return;

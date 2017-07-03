@@ -9,6 +9,7 @@
 using SoyEngine;
 using UnityEngine;
 using GameA.Game;
+using NewResourceSolution;
 
 namespace GameA
 {
@@ -77,7 +78,7 @@ namespace GameA
             _cachedView.SpriteIcon.SetActiveEx(true);
 //            _cachedView.TextureIcon.SetActiveEx(false);
             Sprite texture;
-            if (GameResourceManager.Instance.TryGetSpriteByName(tableUnit.Icon, out texture))
+            if (ResourcesManager.Instance.TryGetSprite(tableUnit.Icon, out texture))
             {
                 _cachedView.SpriteIcon.sprite = texture;
             }
