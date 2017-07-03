@@ -88,7 +88,7 @@ namespace GameA
         {
             LoadMyRelationStatistic();
             LoadMyFollowUserList();
-            LoadMyBlockUserList();
+            //LoadMyBlockUserList();
 
         }
 

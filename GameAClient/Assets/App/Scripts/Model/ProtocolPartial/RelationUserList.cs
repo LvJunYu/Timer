@@ -30,7 +30,6 @@ namespace GameA
                 orderType,
                     () =>
                     {
-                        
                         for (int i = 0; i < _dataList.Count(); i++)
                         {
                             UserInfoDetail _relationitem = new UserInfoDetail(_dataList[i]);
@@ -95,8 +94,6 @@ namespace GameA
                 }
             }
         }
-
-
         protected override void OnSyncPartial()
         {
             
