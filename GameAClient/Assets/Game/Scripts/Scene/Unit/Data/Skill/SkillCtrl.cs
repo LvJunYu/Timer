@@ -1,8 +1,8 @@
 ﻿/********************************************************************
-** Filename : SkillManager
+** Filename : SkillCtrl
 ** Author : Dong
 ** Date : 2017/3/22 星期三 上午 10:36:44
-** Summary : SkillManager
+** Summary : SkillCtrl
 ***********************************************************************/
 
 using System;
@@ -12,13 +12,13 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    public class SkillManager
+    public class SkillCtrl
     {
         [SerializeField] protected SkillBase _currentSkill;
         protected UnitBase _owner;
         protected Dictionary<string, SkillBase> _skills = new Dictionary<string, SkillBase>();
 
-        public SkillManager(UnitBase owner)
+        public SkillCtrl(UnitBase owner)
         {
             _owner = owner;
             Type curType = GetType();

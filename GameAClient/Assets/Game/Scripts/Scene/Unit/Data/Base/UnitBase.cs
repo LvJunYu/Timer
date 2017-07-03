@@ -207,12 +207,12 @@ namespace GameA.Game
             set { _canAttack = value; }
         }
 
-        public virtual SkillManager SkillMgr1
+        public virtual SkillCtrl SkillCtrl1
         {
             get { return null; }
         }
 
-        public virtual SkillManager SkillMgr2
+        public virtual SkillCtrl SkillCtrl2
         {
             get { return null; }
         }

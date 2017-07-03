@@ -13,7 +13,7 @@ namespace GameA.Game
 {
     public class JetBase : Magic
     {
-        protected SkillManager _skillManager;
+        protected SkillCtrl _skillCtrl;
         protected int _timeScale;
         protected const int AnimationLength = 15;
         protected UnityNativeParticleItem _effect;
@@ -30,8 +30,8 @@ namespace GameA.Game
                 return false;
             }
             _shootAngle = (_unitDesc.Rotation) * 90;
-            _skillManager = new SkillManager(this);
-            _skillManager.ChangeSkill<SkillFire>();
+            _skillCtrl = new SkillCtrl(this);
+            _skillCtrl.ChangeSkill<SkillFire>();
             _timeScale = 1;
             return true;
         }
@@ -64,10 +64,10 @@ namespace GameA.Game
             base.UpdateLogic();
             if (!_ctrlBySwitch)
             {
-                if (_skillManager != null)
+                if (_skillCtrl != null)
                 {
-                    _skillManager.UpdateLogic();
-                    if (_skillManager.Fire())
+                    _skillCtrl.UpdateLogic();
+                    if (_skillCtrl.Fire())
                     {
                         if (_animation != null)
                         {

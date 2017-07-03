@@ -104,7 +104,7 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.SkillMgr2 != null)
+            if (other.SkillCtrl2 != null)
             {
                 OnTrigger(other);
                 //如果技能不一样

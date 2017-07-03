@@ -25,8 +25,8 @@ namespace GameA.Game
         protected int _currentMp;
         protected int _mpSpeed = 1;
         protected int _totalMp = 2500;
-        protected SkillManager _skillMgr1;
-        protected SkillManager _skillMgr2;
+        protected SkillCtrl _skillCtrl1;
+        protected SkillCtrl _skillCtrl2;
         protected Gun _gun;
 
         [SerializeField]
@@ -70,14 +70,14 @@ namespace GameA.Game
             get { return _playerGuid; }
         }
 
-        public override SkillManager SkillMgr1
+        public override SkillCtrl SkillCtrl1
         {
-            get { return _skillMgr1; }
+            get { return _skillCtrl1; }
         }
 
-        public override SkillManager SkillMgr2
+        public override SkillCtrl SkillCtrl2
         {
-            get { return _skillMgr2; }
+            get { return _skillCtrl2; }
         }
 
         public bool OnClay
@@ -181,12 +181,12 @@ namespace GameA.Game
             _playerInput = _playerInput ?? new PlayerInput(this);
             _playerInput.Reset();
 
-            _skillMgr1 = _skillMgr1 ?? new SkillManager(this);
-            _skillMgr1.Clear();
-            _skillMgr1.ChangeSkill<SkillWater>();
+            _skillCtrl1 = _skillCtrl1 ?? new SkillCtrl(this);
+            _skillCtrl1.Clear();
+            _skillCtrl1.ChangeSkill<SkillWater>();
 
-            _skillMgr2 = _skillMgr2 ?? new SkillManager(this);
-            _skillMgr2.Clear();
+            _skillCtrl2 = _skillCtrl2 ?? new SkillCtrl(this);
+            _skillCtrl2.Clear();
 
             UpdateMp(0);
             _big = 0;
@@ -281,8 +281,8 @@ namespace GameA.Game
                 if (_attackedTimer <= 0)
                 {
                     _playerInput.UpdateLogic();
-                    _skillMgr1.UpdateLogic();
-                    if (_skillMgr2.UpdateLogic())
+                    _skillCtrl1.UpdateLogic();
+                    if (_skillCtrl2.UpdateLogic())
                     {
                         UpdateMp(Util.ConstantLerp(_currentMp, _totalMp, _mpSpeed));
                     }
@@ -1646,9 +1646,9 @@ namespace GameA.Game
 
         public override void ChangeSkill<T>()
         {
-            if (_skillMgr2 != null)
+            if (_skillCtrl2 != null)
             {
-                if (_skillMgr2.ChangeSkill<T>())
+                if (_skillCtrl2.ChangeSkill<T>())
                 {
                     UpdateMp(0);
                 }
@@ -1674,29 +1674,29 @@ namespace GameA.Game
 
         internal bool Skill()
         {
-            if (_skillMgr2 == null)
+            if (_skillCtrl2 == null)
             {
                 return false;
             }
-            if (_currentMp < _skillMgr2.UseMp)
+            if (_currentMp < _skillCtrl2.UseMp)
             {
                 //TODO UI提示
                 LogHelper.Warning("MP is not enough!");
                 return false;
             }
-            if (!_skillMgr2.Fire())
+            if (!_skillCtrl2.Fire())
             {
                 return false;
             }
-            UpdateMp(_currentMp - _skillMgr2.UseMp);
+            UpdateMp(_currentMp - _skillCtrl2.UseMp);
             return true;
         }
 
         internal void SkillWater()
         {
-            if (_skillMgr1 != null)
+            if (_skillCtrl1 != null)
             {
-                _skillMgr1.Fire();
+                _skillCtrl1.Fire();
             }
         }
 
