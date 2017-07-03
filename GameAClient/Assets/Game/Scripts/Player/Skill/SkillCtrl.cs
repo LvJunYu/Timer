@@ -16,40 +16,10 @@ namespace GameA.Game
     {
         [SerializeField] protected SkillBase _currentSkill;
         protected UnitBase _owner;
-        protected Dictionary<string, SkillBase> _skills = new Dictionary<string, SkillBase>();
 
         public SkillCtrl(UnitBase owner)
         {
             _owner = owner;
-            Type curType = GetType();
-            Type[] types = curType.Assembly.GetTypes();
-            Type attrType = typeof (SkillAttribute);
-            foreach (Type type in types)
-            {
-                if (Attribute.IsDefined(type, attrType) && type.Namespace == curType.Namespace)
-                {
-                    Attribute[] atts = Attribute.GetCustomAttributes(type, attrType);
-                    if (atts.Length > 0)
-                    {
-                        for (int i = 0; i < atts.Length; i++)
-                        {
-                            var att = (SkillAttribute) atts[i];
-                            if (type != att.Type)
-                            {
-                                continue;
-                            }
-                            if (_skills.ContainsKey(att.Name))
-                            {
-                                LogHelper.Error("_skills.ContainsKey {0}，class type is {1}", att.Name, type.ToString());
-                                break;
-                            }
-                            var skill = (SkillBase) Activator.CreateInstance(att.Type);
-                            _skills.Add(att.Name, skill);
-                            break;
-                        }
-                    }
-                }
-            }
         }
 
         public SkillBase CurrentSkill
@@ -73,13 +43,12 @@ namespace GameA.Game
                 _currentSkill.Exit();
                 _currentSkill = null;
             }
-            SkillBase skill;
-            if (!_skills.TryGetValue(typeof (T).Name, out skill))
+            _currentSkill = (SkillBase)Activator.CreateInstance(typeof(T));
+            if (_currentSkill == null)
             {
-                LogHelper.Error("ChangeSkill Failed, {0}", typeof (T).Name);
+                LogHelper.Error("CreateInstance Failed, {0}", typeof(T).Name);
                 return false;
             }
-            _currentSkill = skill;
             _currentSkill.Enter(_owner);
             return true;
         }
