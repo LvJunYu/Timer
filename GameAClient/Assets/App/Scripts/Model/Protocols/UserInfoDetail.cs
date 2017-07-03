@@ -254,11 +254,7 @@ namespace GameA
             return true;
         }
 
-        public void OnSyncFromParent (Msg_SC_DAT_UserInfoDetail msg) {
-            if (OnSync(msg)) {
-                OnSyncSucceed();
-            }
-        }
+
 
         public UserInfoDetail (Msg_SC_DAT_UserInfoDetail msg) {
             if (OnSync(msg)) {

@@ -818,8 +818,6 @@ MonoBehaviour:
   PreviewTexture: {fileID: 114759602636462086}
   PriceGoldDay: {fileID: 114538153310411108}
   PriceDiamondDay: {fileID: 114732679349104394}
-  IsOccupied: {fileID: 114929457469263576}
-  IsOwned: {fileID: 114040453795862924}
   Message: {fileID: 114862021089503522}
   BuyFashion: {fileID: 114006963792665966}
   PreviewBtn: {fileID: 114395847850779202}

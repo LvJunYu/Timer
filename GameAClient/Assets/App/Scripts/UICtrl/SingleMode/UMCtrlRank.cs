@@ -96,7 +96,7 @@ namespace GameA
             RefreshView();
             JudgeRankImage(rank);
             _userInfoDetail = new UserInfoDetail(_record.UserInfo);
-            JudgeRelationshipWithMe(_userInfoDetail);
+            //JudgeRelationshipWithMe(_userInfoDetail);
         }
 
         public void JudgeRankImage(int rank)

@@ -21,6 +21,9 @@ namespace GameA
         #region 常量与字段
         private Project _content;
         private bool _isRequestFavorite = false;
+        private bool _currentfollowstate = false;
+        private bool _currentBlockstate = false;
+        private UserInfoDetail _userInfoDetail;
         #endregion
 
         #region 属性
@@ -64,6 +67,18 @@ namespace GameA
         {
             Project p = _content;
             UserInfoSimple u = _content.UserInfo;
+            _userInfoDetail = new UserInfoDetail(u);
+            //LoadUserData(Action successCallback, Action < ENetResultCode > failedCallback)
+            JudgeFollowRelationshipWithMe(_userInfoDetail);
+            _userInfoDetail.Request(_userInfoDetail.UserInfoSimple.UserId,() => {
+                JudgeFollowRelationshipWithMe(_userInfoDetail);
+           }, null
+           );
+            JudgeBlockRelationshipWithMe(_userInfoDetail);
+            _userInfoDetail.Request(_userInfoDetail.UserInfoSimple.UserId, () => {
+                JudgeBlockRelationshipWithMe(_userInfoDetail);
+            }, null
+           );
             DictionaryTools.SetContentText(_cachedView.TitleText, p.Name);
             DictionaryTools.SetContentText(_cachedView.SubTitleText, "");
             DictionaryTools.SetContentText(_cachedView.UserNickNameText, u.NickName);
@@ -75,6 +90,7 @@ namespace GameA
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, u.HeadImgUrl, _cachedView.DefaultCoverTexture);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath, _cachedView.DefaultCoverTexture);
             RefreshFavoriteBtnView();
+            
         }
 
         private void RefreshFavoriteBtnView()
@@ -82,6 +98,26 @@ namespace GameA
             bool favorite = _content.ProjectUserData != null && _content.ProjectUserData.Favorite;
             _cachedView.FavoriteBtn.gameObject.SetActive(!favorite);
             _cachedView.UnfavoriteBtn.gameObject.SetActive(favorite);
+        }
+
+        private void JudgeFollowRelationshipWithMe(UserInfoDetail userInfoDetail)
+        {
+            _currentfollowstate = userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
+            //Debug.Log("__________关注状态___" + userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe);
+            if (_currentfollowstate)
+                _cachedView.FollowText.text = "取消关注";
+            else
+                _cachedView.FollowText.text = "关注";
+        }
+
+        private void JudgeBlockRelationshipWithMe(UserInfoDetail userInfoDetail)
+        {
+            _currentBlockstate = userInfoDetail.UserInfoSimple.RelationWithMe.BlockedByMe;
+            //Debug.Log("__________关注状态___" + userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe);
+            if (_currentBlockstate)
+                _cachedView.BlockText.text = "取消屏蔽";
+            else
+                _cachedView.BlockText.text = "屏蔽";
         }
 
         public void OnChangeToApp()
@@ -96,12 +132,13 @@ namespace GameA
                 return;
             }
             Project requestP = _content;
-            requestP.Request(requestP.ProjectId, () => {
-                if (_content != null && _content.ProjectId == requestP.ProjectId) {
-                    RefreshView();
-                }
-            }, code=>{
-
+            requestP.Request(requestP.ProjectId, 
+                //() => {
+                //if (_content != null && _content.ProjectId == requestP.ProjectId) {
+                //   RefreshView();
+                //}
+            null
+            , code=>{
             });
         }
 
@@ -147,6 +184,60 @@ namespace GameA
                 SocialGUIManager.ShowPopupDialog("进入关卡失败");
             });
         }
+
+
+        private void RefreshFollowState(bool ifChecked)
+        {
+            if (!ifChecked)
+            {
+                _userInfoDetail.UpdateFollowState(ifChecked, () =>
+                {
+
+                    _cachedView.FollowText.text = "关注";
+                    //JudgeRelationshipWithMe(_userInfoDetail);
+                    //SocialGUIManager.Instance.GetUI<UICtrlAdvLvlDetail>().RefreshAdventureUserLevelDataDetail();
+                });
+            }
+            else
+            {
+                _userInfoDetail.UpdateFollowState(ifChecked, () =>
+                {
+
+                    _cachedView.FollowText.text = "取消关注";
+                    //JudgeRelationshipWithMe(_userInfoDetail);
+                    //SocialGUIManager.Instance.GetUI<UICtrlAdvLvlDetail>().RefreshAdventureUserLevelDataDetail();
+                });
+            }
+            //_ifChecked = ifChecked;
+        }
+
+        private void RefreshBlockState(bool ifChecked)
+        {
+            if (!ifChecked)
+            {
+                _userInfoDetail.UpdateBlockState(ifChecked, () =>
+                {
+
+                    _cachedView.BlockText.text = "屏蔽";
+                    //JudgeRelationshipWithMe(_userInfoDetail);
+                    //SocialGUIManager.Instance.GetUI<UICtrlAdvLvlDetail>().RefreshAdventureUserLevelDataDetail();
+                });
+            }
+            else
+            {
+                _userInfoDetail.UpdateBlockState(ifChecked, () =>
+                {
+
+                    _cachedView.BlockText.text = "取消屏蔽";
+                    //JudgeRelationshipWithMe(_userInfoDetail);
+                    //SocialGUIManager.Instance.GetUI<UICtrlAdvLvlDetail>().RefreshAdventureUserLevelDataDetail();
+                });
+            }
+            //_ifChecked = ifChecked;
+        }
+
+
+
         #region 接口
         protected override void OnViewCreated()
         {
@@ -154,6 +245,8 @@ namespace GameA
             _cachedView.FavoriteBtn.onClick.AddListener(OnFavoriteBtnClick);
             _cachedView.UnfavoriteBtn.onClick.AddListener(OnUnFavoriteBtnClick);
             _cachedView.PlayBtn.onClick.AddListener(OnPlayBtnClick);
+            _cachedView.FollowToggle.onValueChanged.AddListener(RefreshFollowState);
+            _cachedView.BlockToggle.onValueChanged.AddListener(RefreshBlockState);
         }
 
         private void OnFavoriteBtnClick()
@@ -179,7 +272,7 @@ namespace GameA
         {
             if (_content != null && _content.ProjectId == val)
             {
-                RefreshView();
+              RefreshView();
             }
         }
         #endregion 接口
