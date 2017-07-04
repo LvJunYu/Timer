@@ -21,13 +21,13 @@ MonoBehaviour:
     IsFolderRes: 1
     IsLocaleRes: 0
     SearchFilter: 
-    FoldoutInEditorUI: 1
+    FoldoutInEditorUI: 0
   - ResType: 10
     InPackageGuidList: []
     IsFolderRes: 0
     IsLocaleRes: 0
     SearchFilter: t:AudioClip
-    FoldoutInEditorUI: 1
+    FoldoutInEditorUI: 0
   - ResType: 6
     InPackageGuidList: []
     IsFolderRes: 0

@@ -139,14 +139,6 @@ namespace GameA
         public bool Init()
         {
             _account.ReadCache();
-            if (_account.HasLogin)
-            {
-                if (!UserManager.Instance.TryGetData(_account.UserGuid, out _user))
-                {
-                    LogHelper.Error("UserInfo missing");
-                    _account.Logout();
-                }
-            }
             return true;
         }
 

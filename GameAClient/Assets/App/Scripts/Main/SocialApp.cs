@@ -124,6 +124,7 @@ namespace GameA
         {
             gameObject.AddComponent<TableManager>();
             TableManager.Instance.Init();
+            LocalUser.Instance.Init();
             Account.Instance.ApiPath = SoyHttpApiPath.LoginByToken;
             LocalUser.Instance.Account.LoginByToken(()=>{
                 SocialApp.Instance.LoginSucceed();
@@ -145,7 +146,6 @@ namespace GameA
 
         public void LoginSucceed ()
         {
-            LocalUser.Instance.Init();
             AppData.Instance.Init();
 
             //            LoginLogicUtil.Init();
