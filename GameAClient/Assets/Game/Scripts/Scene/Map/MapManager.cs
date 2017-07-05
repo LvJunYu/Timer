@@ -70,7 +70,6 @@ namespace GameA.Game
 
 	    public bool Init(GameManager.EStartType eGameInitType, Project project)
 		{
-			LogHelper.Debug("{0} | {1}", ConstDefineGM2D.RegionTileSize, ConstDefineGM2D.MapTileSize);
             if (!MapConfig.Init())
             {
                 LogHelper.Error("MapConfig Init Failed");
