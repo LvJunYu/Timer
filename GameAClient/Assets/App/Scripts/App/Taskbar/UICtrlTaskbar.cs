@@ -301,28 +301,10 @@ namespace GameA
 				_cachedView.MaleIcon.gameObject.SetActive (true);
 				_cachedView.FemaleIcon.gameObject.SetActive (false);
 			}
-            SetExp();
 
         }
 
-        private void SetExp()
-        {
 
-            long currentPlayerExp = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerExp;
-            //Debug.Log("______currentPlayerExp_______"+ currentPlayerExp);
-            int MaxPlayerExp =
-                TableManager.Instance.Table_PlayerLvToExpDic[
-                    LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel].AdvExp;
-            //Debug.Log("MaxPlayerExp" + MaxPlayerExp);
-
-            _cachedView.AdventureExperience.fillAmount = (float)currentPlayerExp / MaxPlayerExp;
-
-            long currentCreatorExp = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorExp;
-            int MaxCreatorExp =
-                TableManager.Instance.Table_PlayerLvToExpDic[
-                    LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorLevel].MakerExp;
-            _cachedView.CreatorExperience.fillAmount = (float)currentCreatorExp / MaxCreatorExp;
-        }
 
 
         private void OnUnlockAll ()

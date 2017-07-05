@@ -21,7 +21,8 @@ namespace GameA
         private UserInfoDetail _user;
         private UsingAvatarPart _usingAvatarData = new UsingAvatarPart ();
         private ValidAvatarPart _validAvatarData = new ValidAvatarPart ();
-        private RelationUserList _relationUserList = new RelationUserList ();
+        private RelationUserList _followRelationUserList = new RelationUserList ();
+        private RelationUserList _blockRelationUserList = new RelationUserList ();
         // 抽奖相关数据
         private UserRaffleTicket _userRaffleTicket = new UserRaffleTicket ();
         // 匹配挑战相关数据
@@ -58,13 +59,22 @@ namespace GameA
             get { return _user; }
         }
 
-        public RelationUserList RelationUserList
+        public RelationUserList FollowRelationUserList
         {
             get
             {
-                return this._relationUserList;
+                return this._followRelationUserList;
             }
         }
+
+        public RelationUserList BlockRelationUserList
+        {
+            get
+            {
+                return this._blockRelationUserList;
+            }
+        }
+
         public UsingAvatarPart UsingAvatarData {
             get {
                 return this._usingAvatarData;

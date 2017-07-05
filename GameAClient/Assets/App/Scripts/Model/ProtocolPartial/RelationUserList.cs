@@ -35,6 +35,7 @@ namespace GameA
                             UserInfoDetail _relationitem = new UserInfoDetail(_dataList[i]);
                             _followRelationList.Add(_relationitem);
                         }
+                        _dataList.Clear();
                         successCallback.Invoke();
 
                     }, failedCallback);
@@ -64,6 +65,7 @@ namespace GameA
                         UserInfoDetail _relationitem = new UserInfoDetail(_dataList[i]);
                         _blockRelationList.Add(_relationitem);
                     }
+                    _dataList.Clear();
                     successCallback.Invoke();
 
                 }, failedCallback);

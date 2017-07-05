@@ -42,7 +42,9 @@ namespace GameA
 
         private void LoadMyFollowUserList()
         {
-            LocalUser.Instance.RelationUserList.RequestFollowList(
+            LocalUser.Instance.FollowRelationUserList.CS_DataType = ERelationUserType.RUT_FollowedByMe;
+            Debug.Log("___UserGuid___" + LocalUser.Instance.UserGuid);
+            LocalUser.Instance.FollowRelationUserList.RequestFollowList(
                 LocalUser.Instance.UserGuid,
                 _startIndex,
                 _endIndex,
@@ -50,7 +52,8 @@ namespace GameA
                 EOrderType.OT_Asc,
                 () =>
                 {
-                    _usctrlPage1.Set(LocalUser.Instance.RelationUserList.FollowRelationList);
+                    _usctrlPage1.Set(LocalUser.Instance.FollowRelationUserList.FollowRelationList);
+                    
                 },
                 code => { LogHelper.Error("Network error when get ReFreshMyRelationUserList, {0}", code); }
                 );
@@ -58,7 +61,8 @@ namespace GameA
 
         private void LoadMyBlockUserList()
         {
-            LocalUser.Instance.RelationUserList.RequestBlockList(
+            LocalUser.Instance.BlockRelationUserList.CS_DataType = ERelationUserType.RUT_BlockByMe;
+            LocalUser.Instance.BlockRelationUserList.RequestBlockList(
                 LocalUser.Instance.UserGuid,
                 _startIndex,
                 _endIndex,
@@ -66,7 +70,7 @@ namespace GameA
                 EOrderType.OT_Asc,
                 () =>
                 {
-                    _usctrlPage2.Set(LocalUser.Instance.RelationUserList.BlockRelationList);
+                    _usctrlPage2.Set(LocalUser.Instance.BlockRelationUserList.BlockRelationList);
                 },
                 code => { LogHelper.Error("Network error when get ReFreshMyRelationUserList, {0}", code); }
                 );
@@ -87,18 +91,17 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             LoadMyRelationStatistic();
+            LoadMyBlockUserList();
             LoadMyFollowUserList();
-            //LoadMyBlockUserList();
-
         }
 
-        private void SetData()
-        {
-            _usctrlPage1.Set(LocalUser.Instance.RelationUserList.FollowRelationList);
-            _usctrlPage2.Set(LocalUser.Instance.RelationUserList.BlockRelationList);
+        //private void SetData()
+        //{
+        //    _usctrlPage1.Set(LocalUser.Instance.RelationUserList.FollowRelationList);
+        //    _usctrlPage2.Set(LocalUser.Instance.RelationUserList.BlockRelationList);
 
 
-        }
+        //}
         //public void Set(List<UserInfoDetail> fittingList)
         //{
         //    if (_cardList.Count > 0)

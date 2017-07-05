@@ -7,6 +7,7 @@
 
 
 using System;
+using DG.Tweening;
 using SoyEngine;
 using UnityEngine;
 using SoyEngine.Proto;
@@ -64,7 +65,8 @@ namespace GameA
             _showState = showState;
 //			_curMarkStarValue = GM2DGame.Instance.Project.UserRate;
 			UpdateView();
-			//UpdateLifeItem();
+            //UpdateLifeItem();
+		    JudgeExpAndLvl();
 		}
 
         public override void OnUpdate ()
@@ -187,9 +189,57 @@ namespace GameA
 			});
 		}
 
-		#endregion
+        #endregion
+        private float CountExpRatio(float exp,int level)
+        {
+            return exp/TableManager.Instance.Table_PlayerLvToExpDic[level].AdvExp;
+        }
 
-        private void UpdateView()
+        public void GainExperienceAnimation(float endValue,Callback callback=null)
+        {
+            if (_cachedView != null)
+                //   _cachedView.ExpBar.fillAmount.DOLocalMoveY(12, 0.4f, false);
+                _cachedView.ExpBar.DOFillAmount(endValue, 1.0f).OnComplete(() => { if(callback!=null) callback(); });
+
+        }
+        private void JudgeExpAndLvl()
+	    {
+	        int PlayerLevel = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel;
+            long currentPlayerExp = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerExp;
+	        long RewardExp=0;
+            for (int i = 0; i < AppData.Instance.AdventureData.LastAdvReward.ItemList.Count; i++)
+	        {
+	            if (AppData.Instance.AdventureData.LastAdvReward.ItemList[i].Type == 3)
+	            {
+	                RewardExp = AppData.Instance.AdventureData.LastAdvReward.ItemList[i].Count;
+	            }
+            }
+            _cachedView.PlusExp.text = String.Format("{+0}",RewardExp);
+            if (currentPlayerExp - RewardExp > 0)
+            {
+               long initialExp = currentPlayerExp - RewardExp;
+               _cachedView.ExpBar.fillAmount = CountExpRatio(initialExp, PlayerLevel);
+                GainExperienceAnimation(CountExpRatio(currentPlayerExp, PlayerLevel));
+            }
+	        else
+            {
+                long initialExp = TableManager.Instance.Table_PlayerLvToExpDic[PlayerLevel - 1].AdvExp - (currentPlayerExp - RewardExp);
+                _cachedView.ExpBar.fillAmount = CountExpRatio(initialExp, PlayerLevel-1);
+                 GainExperienceAnimation(1.0f, UpGrade);
+            }
+	    }
+
+	    private void UpGrade()
+        {
+            int PlayerLevel = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel;
+            long currentPlayerExp = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerExp;
+            GainExperienceAnimation(CountExpRatio(currentPlayerExp, PlayerLevel));
+	        _cachedView.PlusExp.SetActiveEx(false);
+            _cachedView.UpGrade.SetActiveEx(true);
+            _cachedView.level.text = PlayerLevel.ToString();
+        }
+
+	    private void UpdateView()
 		{
             switch (_showState) {
                 case EShowState.Win:

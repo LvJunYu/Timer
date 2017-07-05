@@ -105,9 +105,13 @@ namespace GameA
             _currentfollowstate = userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
             //Debug.Log("__________关注状态___" + userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe);
             if (_currentfollowstate)
+            {
                 _cachedView.FollowText.text = "取消关注";
+            }
             else
+            {
                 _cachedView.FollowText.text = "关注";
+            }
         }
 
         private void JudgeBlockRelationshipWithMe(UserInfoDetail userInfoDetail)
@@ -115,9 +119,13 @@ namespace GameA
             _currentBlockstate = userInfoDetail.UserInfoSimple.RelationWithMe.BlockedByMe;
             //Debug.Log("__________关注状态___" + userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe);
             if (_currentBlockstate)
+            {
                 _cachedView.BlockText.text = "取消屏蔽";
+            }
             else
+            {
                 _cachedView.BlockText.text = "屏蔽";
+            }
         }
 
         public void OnChangeToApp()
@@ -190,23 +198,33 @@ namespace GameA
         {
             if (!ifChecked)
             {
+                _cachedView.FollowText.text = "关注";
                 _userInfoDetail.UpdateFollowState(ifChecked, () =>
                 {
 
                     _cachedView.FollowText.text = "关注";
-                    //JudgeRelationshipWithMe(_userInfoDetail);
-                    //SocialGUIManager.Instance.GetUI<UICtrlAdvLvlDetail>().RefreshAdventureUserLevelDataDetail();
-                });
+
+                },
+                (ret) =>
+                {
+                    _cachedView.BlockText.text = "取消关注";
+                }
+                );
             }
             else
             {
+                _cachedView.FollowText.text = "取消关注";
                 _userInfoDetail.UpdateFollowState(ifChecked, () =>
                 {
 
                     _cachedView.FollowText.text = "取消关注";
-                    //JudgeRelationshipWithMe(_userInfoDetail);
-                    //SocialGUIManager.Instance.GetUI<UICtrlAdvLvlDetail>().RefreshAdventureUserLevelDataDetail();
-                });
+
+                },
+                (ret) =>
+                {
+                    _cachedView.BlockText.text = "关注";
+                }
+                );
             }
             //_ifChecked = ifChecked;
         }
@@ -215,23 +233,32 @@ namespace GameA
         {
             if (!ifChecked)
             {
+                _cachedView.BlockText.text = "屏蔽";
                 _userInfoDetail.UpdateBlockState(ifChecked, () =>
                 {
 
                     _cachedView.BlockText.text = "屏蔽";
-                    //JudgeRelationshipWithMe(_userInfoDetail);
-                    //SocialGUIManager.Instance.GetUI<UICtrlAdvLvlDetail>().RefreshAdventureUserLevelDataDetail();
-                });
+                },
+                (ret) =>
+                {
+                    _cachedView.BlockText.text = "取消屏蔽";
+                }
+                
+                );
             }
             else
             {
+                _cachedView.BlockText.text = "取消屏蔽";
                 _userInfoDetail.UpdateBlockState(ifChecked, () =>
                 {
 
                     _cachedView.BlockText.text = "取消屏蔽";
-                    //JudgeRelationshipWithMe(_userInfoDetail);
-                    //SocialGUIManager.Instance.GetUI<UICtrlAdvLvlDetail>().RefreshAdventureUserLevelDataDetail();
-                });
+                },
+                 (ret) =>
+                {
+                    _cachedView.BlockText.text = "屏蔽";
+                }
+                );
             }
             //_ifChecked = ifChecked;
         }

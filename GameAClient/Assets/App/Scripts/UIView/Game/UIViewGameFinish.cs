@@ -44,6 +44,10 @@ namespace GameA
         //public Button SkipBtn;
         public Text Score;
         public Text ScoreOutLine;
+        public Text PlusExp;
+        public Text level;
+        public Image UpGrade;
+        public Image ExpBar;
 
         public GameObject Win;
         public GameObject Lose;
