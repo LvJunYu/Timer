@@ -30,13 +30,15 @@ namespace GameA.Game
         protected Gun _gun;
 
         [SerializeField]
-        protected int _big;
-        [SerializeField]
         protected int _flashTime;
         [SerializeField]
         protected int _invincibleTime;
+
         [SerializeField]
         protected IntVec2 _revivePos;
+        /// <summary>
+        /// 复活点被吃了
+        /// </summary>
         protected Stack<IntVec2> _revivePosStack = new Stack<IntVec2>();
         protected Box _box;
         protected EBoxOperateType _eBoxOperateType;
@@ -189,7 +191,6 @@ namespace GameA.Game
             _skillCtrl2.Clear();
 
             UpdateMp(0);
-            _big = 0;
             _dieTime = 0;
             _flashTime = 0;
             _invincibleTime = 0;
@@ -1211,17 +1212,7 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_big == 1)
-            {
-                _big = 0;
-                _flashTime = FlashTime;
-                //play effect
-                //pause anim TODO
-            }
-            else
-            {
-                OnDead();
-            }
+            OnDead();
         }
 
         protected override void OnDead()
@@ -1233,7 +1224,6 @@ namespace GameA.Game
             LogHelper.Debug("{0}, OnDead", GetType().Name);
             _invincibleTime = 0;
             _flashTime = 0;
-            _big = 0;
             if (_brakeEfffect != null)
             {
                 _brakeEfffect.Stop();
