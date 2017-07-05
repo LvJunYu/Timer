@@ -46,6 +46,10 @@ namespace GameA
 
         private void MessengerShowDialogHandler(string msg, string title, KeyValuePair<string, Action>[] btnParam)
         {
+            if (!this.IsOpen)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlPopupDialog>();
+            }
             ShowDialog(msg, title, btnParam);
         }
         /// <summary>
