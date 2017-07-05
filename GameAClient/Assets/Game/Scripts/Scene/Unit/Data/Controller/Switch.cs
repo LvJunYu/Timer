@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 5101, Type = typeof(Switch))]
+    [Unit(Id = 8102, Type = typeof(Switch))]
     public class Switch : BlockBase
     {
         protected List<UnitBase> _units;

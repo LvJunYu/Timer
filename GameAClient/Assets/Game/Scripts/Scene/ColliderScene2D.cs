@@ -383,10 +383,10 @@ namespace GameA.Game
 
         private bool CheckCanDelete(Table_Unit tableUnit)
         {
-            if (tableUnit.EUnitType == EUnitType.Player || tableUnit.Id == 65535 || UnitDefine.IsSwitch(tableUnit.Id))
-            {
-                return false;
-            }
+            //if (tableUnit.EUnitType == EUnitType.Hero || tableUnit.Id == 65535 || UnitDefine.IsSwitch(tableUnit.Id))
+            //{
+            //    return false;
+            //}
             return true;
         }
 

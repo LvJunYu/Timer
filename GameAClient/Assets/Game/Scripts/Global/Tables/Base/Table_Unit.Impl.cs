@@ -13,16 +13,6 @@ namespace GameA.Game
 {
 	public partial class Table_Unit
 	{
-        public bool IsHero
-        {
-            get { return EUnitType == EUnitType.Player || EUnitType == EUnitType.Monster; }
-        }
-
-        public bool IsMorphUnit
-        {
-            get { return EGeneratedType == EGeneratedType.Morph; }
-        }
-
         public virtual EColliderType EColliderType
         {
             get { return (EColliderType)ColliderType; }

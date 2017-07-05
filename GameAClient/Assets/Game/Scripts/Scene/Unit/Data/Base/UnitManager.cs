@@ -50,10 +50,6 @@ namespace GameA.Game
             _unitParents = new Transform[(int)EUnitType.Max];
             for (int i = 0; i < (int)EUnitType.Max; i++)
             {
-                if (i == (int)EUnitType.Player)
-                {
-                    continue;
-                }
                 _unitParents[i] = new GameObject(((EUnitType)i).ToString()).transform;
                 _unitParents[i].parent = App.GamePoolTrans;
             }

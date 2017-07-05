@@ -76,16 +76,11 @@ namespace GameA.Game
 
     public enum EUnitType
     {
-        Spawn,
-        Player,
+        None = 0,
+        Hero,
         Monster,
-        Vehicle,
-        Earth,
-        Mechanism,
-        Collection,
-        Decoration,
+        Item,
         Bullet,
-        Missle,
 		Effect,
         Max
     }
@@ -101,7 +96,7 @@ namespace GameA.Game
         AttackPlayerItem = 5,
         Decoration = 6,
 		Effect = 7,
-        AttackMonsterItem = 8,  // 可以和Monster、Player、Earth碰撞
+        AttackMonsterItem = 8,  // 可以和Monster、Hero、Earth碰撞
         RigidbodyItem = 9,
         Bullet = 10,
         Gun = 11,

@@ -194,7 +194,7 @@ namespace GameA.Game
             {
                 SetUnitExtra(unitDesc, tableUnit);
             }
-            if (tableUnit.EUnitType == EUnitType.Spawn)
+            if (UnitDefine.IsSpawn(tableUnit.Id))
             {
                 _spawnDatas.Add(unitDesc);
             }
@@ -231,7 +231,7 @@ namespace GameA.Game
                 return false;
             }
             DeleteUnitExtra(unitDesc.Guid);
-            if (tableUnit.EUnitType == EUnitType.Spawn)
+            if (UnitDefine.IsSpawn(tableUnit.Id))
             {
                 _spawnDatas.Remove(unitDesc);
             }
