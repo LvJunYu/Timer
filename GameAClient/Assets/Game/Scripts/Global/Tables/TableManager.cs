@@ -13,7 +13,6 @@ namespace GameA.Game
 		#region 常量与字段
 		private static TableManager _instance;
 		public readonly Dictionary<int,Table_Unit> Table_UnitDic = new Dictionary<int, Table_Unit>();
-		public readonly Dictionary<int,Table_Actor> Table_ActorDic = new Dictionary<int, Table_Actor>();
 		public readonly Dictionary<int,Table_Skill> Table_SkillDic = new Dictionary<int, Table_Skill>();
 		public readonly Dictionary<int,Table_StandaloneLevel> Table_StandaloneLevelDic = new Dictionary<int, Table_StandaloneLevel>();
 		public readonly Dictionary<int,Table_StarRequire> Table_StarRequireDic = new Dictionary<int, Table_StarRequire>();
@@ -38,7 +37,6 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_ProgressUnlock> Table_ProgressUnlockDic = new Dictionary<int, Table_ProgressUnlock>();
 		public readonly Dictionary<int,Table_BoostItem> Table_BoostItemDic = new Dictionary<int, Table_BoostItem>();
 		[UnityEngine.SerializeField] private Table_Unit[] _tableUnits;
-		[UnityEngine.SerializeField] private Table_Actor[] _tableActors;
 		[UnityEngine.SerializeField] private Table_Skill[] _tableSkills;
 		[UnityEngine.SerializeField] private Table_StandaloneLevel[] _tableStandaloneLevels;
 		[UnityEngine.SerializeField] private Table_StarRequire[] _tableStarRequires;
@@ -79,8 +77,6 @@ namespace GameA.Game
 		{
 			string UnitJsonStr = ResourceManager.Instance.GetJson ("Unit", 31);
             _tableUnits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Unit[]>(UnitJsonStr);
-			string ActorJsonStr = ResourceManager.Instance.GetJson ("Actor", 31);
-            _tableActors = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Actor[]>(ActorJsonStr);
 			string SkillJsonStr = ResourceManager.Instance.GetJson ("Skill", 31);
             _tableSkills = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Skill[]>(SkillJsonStr);
 			string StandaloneLevelJsonStr = ResourceManager.Instance.GetJson ("StandaloneLevel", 31);
@@ -137,17 +133,6 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableUnits table.Id {0} is duplicated!", _tableUnits[i].Id);
-				}
-			}
-			for (int i = 0; i < _tableActors.Length; i++)
-			{
-				if (!Table_ActorDic.ContainsKey(_tableActors[i].Id))
-				{
-					Table_ActorDic.Add(_tableActors[i].Id,_tableActors[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableActors table.Id {0} is duplicated!", _tableActors[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableSkills.Length; i++)
@@ -411,15 +396,6 @@ namespace GameA.Game
 		{
 			Table_Unit tmp;
 			if (Table_UnitDic.TryGetValue(key,out tmp))
-			{
-				return tmp;
-			}
-			return null;
-		}
-		public Table_Actor GetActor(int key)
-		{
-			Table_Actor tmp;
-			if (Table_ActorDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

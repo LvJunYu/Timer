@@ -10,7 +10,7 @@ using System.Collections;
 
 namespace GameA.Game
 {
-    [Unit(Id = 5000, Type = typeof(Spawn))]
+    [Unit(Id = 1001, Type = typeof(Spawn))]
     public class Spawn : BlockBase
     {
     }

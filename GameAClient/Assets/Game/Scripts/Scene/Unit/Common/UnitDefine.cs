@@ -28,12 +28,12 @@ namespace GameA.Game
 
         public static bool IsSpawn(int id)
         {
-            return id == 5000;
+            return id == 1001;
         }
 
         public static bool IsMain(int id)
         {
-            return id < 2000;
+            return id < 2000 && id >1001;
         }
 
         public static bool IsHero(int id)
