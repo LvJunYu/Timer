@@ -97,8 +97,6 @@ namespace GameA.Game
         [SerializeField]
         protected SceneNode _dynamicCollider;
 
-        [SerializeField]
-        protected bool _isMoving;
         protected bool _isMonster = false;
 
         protected EUnitState _eUnitState;
@@ -536,10 +534,9 @@ namespace GameA.Game
             _tableUnit = tableUnit;
             _unitDesc = unitDesc;
             _curPos = new IntVec2(_guid.x, _guid.y);
-            _friction = 6;
+            _friction = 100;
             if (dynamicCollider != null)
             {
-                _friction = 12;
                 _dynamicCollider = dynamicCollider;
             }
             _viewZOffset = 0;
@@ -680,7 +677,6 @@ namespace GameA.Game
             _isCalculated = false;
             _extraDeltaPos = IntVec2.zero;
             _lastExtraDeltaPos = IntVec2.zero;
-            _isMoving = false;
         }
 
         public virtual void CheckStart()

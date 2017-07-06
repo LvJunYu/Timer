@@ -455,7 +455,7 @@ namespace GameA.Game
                     }
                 }
             }
-            else if (_isMoving)
+            else if (SpeedX != 0)
             {
                 bool brake = false;
                 if (_playerInput._brakeTime > 0)
@@ -654,7 +654,7 @@ namespace GameA.Game
             _curMaxQuickenSpeedX = MaxQuickenSpeedX;
             if (_onClay)
             {
-                friction = 30;
+                friction = 100;
                 _curMaxSpeedX = (int)(_curMaxSpeedX * SpeedClayRatio);
                 _curMaxQuickenSpeedX = (int)(_curMaxQuickenSpeedX * SpeedClayRatio);
             }
@@ -674,327 +674,45 @@ namespace GameA.Game
             {
                 _curMaxSpeedX = (int)(_curMaxSpeedX * SpeedHoldingBoxRatio);
             }
-            if (air)
+            if (air || _lastGrounded)
             {
                 _playerInput._brakeTime = 0;
                 if (_curBanInputTime <= 0)
                 {
                     if (_playerInput.LeftInput == 1)
                     {
-                        _isMoving = true;
+                        if (SpeedX > 0)
+                        {
+                            SpeedX = 0;
+                        }
                         if (_playerInput._quickenTime == 0)
                         {
-                            if (SpeedX <= -_curMaxSpeedX + 4)
-                            {
-                                SpeedX += 4;
-                            }
-                            else if (SpeedX <= -_curMaxSpeedX)
-                            {
-                                SpeedX = -_curMaxSpeedX;
-                            }
-                            else if (SpeedX <= 0)
-                            {
-                                SpeedX -= 2;
-                            }
-                            else
-                            {
-                                SpeedX -= 10;
-                            }
+                            SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, friction);
                         }
                         else
                         {
-                            if (SpeedX <= -_curMaxQuickenSpeedX + 4)
-                            {
-                                SpeedX += 4;
-                            }
-                            else if (SpeedX <= -_curMaxQuickenSpeedX)
-                            {
-                                SpeedX = -_curMaxQuickenSpeedX;
-                            }
-                            else if (SpeedX <= 0)
-                            {
-                                if (SpeedX <= -_curMaxSpeedX)
-                                {
-                                    SpeedX--;
-                                }
-                                else
-                                {
-                                    SpeedX -= 3;
-                                }
-                            }
-                            else
-                            {
-                                SpeedX -= 12;
-                            }
+                            SpeedX = Util.ConstantLerp(SpeedX, -_curMaxQuickenSpeedX, friction);
                         }
                     }
                     else if (_playerInput.RightInput == 1)
                     {
-                        _isMoving = true;
+                        if (SpeedX < 0)
+                        {
+                            SpeedX = 0;
+                        }
                         if (_playerInput._quickenTime == 0)
                         {
-                            if (SpeedX >= _curMaxSpeedX + 4)
-                            {
-                                SpeedX -= 4;
-                            }
-                            else if (SpeedX >= _curMaxSpeedX)
-                            {
-                                SpeedX = _curMaxSpeedX;
-                            }
-                            else if (SpeedX >= 0)
-                            {
-                                SpeedX += 2;
-                            }
-                            else
-                            {
-                                SpeedX += 10;
-                            }
+                            SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, friction);
                         }
                         else
                         {
-                            if (SpeedX >= _curMaxQuickenSpeedX + 4)
-                            {
-                                SpeedX -= 4;
-                            }
-                            else if (SpeedX >= _curMaxQuickenSpeedX)
-                            {
-                                SpeedX = _curMaxQuickenSpeedX;
-                            }
-                            else if (SpeedX >= 0)
-                            {
-                                if (SpeedX > _curMaxSpeedX)
-                                {
-                                    SpeedX++;
-                                }
-                                else
-                                {
-                                    SpeedX += 3;
-                                }
-                            }
-                            else
-                            {
-                                SpeedX += 12;
-                            }
+                            SpeedX = Util.ConstantLerp(SpeedX, _curMaxQuickenSpeedX, friction);
                         }
                     }
-                }
-            }
-            else if (_lastGrounded)
-            {
-                if (_curBanInputTime <= 0)
-                {
-                    if (_playerInput.LeftInput == 1)
+                    else if (_lastGrounded)
                     {
-                        _isMoving = true;
-                        if (_playerInput._quickenTime == 0)
-                        {
-                            if (_playerInput._brakeType == 0 && _playerInput._brakeTime > 0)
-                            {
-                                _playerInput._brakeTime--;
-                                if (SpeedX - friction * 3 / 2 < 0)
-                                {
-                                    SpeedX = 0;
-                                }
-                                else
-                                {
-                                    SpeedX -= friction * 3 / 2;
-                                    _playerInput._brakeTime = 10;
-                                }
-                            }
-                            else if (SpeedX < (-_curMaxSpeedX - friction / 2))
-                            {
-                                SpeedX += friction / 2;
-                            }
-                            else if (SpeedX <= -_curMaxSpeedX)
-                            {
-                                SpeedX = -_curMaxSpeedX;
-                            }
-                            else if (SpeedX <= 0)
-                            {
-                                SpeedX -= 3;
-                            }
-                            else if (SpeedX >= 100)
-                            {
-                                _playerInput._brakeType = 0;
-                                _playerInput._brakeTime = 5;
-                            }
-                            else if (SpeedX - friction * 2 < 0)
-                            {
-                                SpeedX = 0;
-                            }
-                            else
-                            {
-                                SpeedX -= friction * 2;
-                            }
-                        }
-                        else
-                        {
-                            if (_playerInput._brakeType == 0 && _playerInput._brakeTime > 0)
-                            {
-                                _playerInput._brakeTime--;
-                                if (SpeedX - friction * 3 / 2 < 0)
-                                {
-                                    SpeedX = 0;
-                                }
-                                else
-                                {
-                                    SpeedX -= friction * 3 / 2;
-                                    _playerInput._brakeTime = 10;
-                                }
-                            }
-                            else if (SpeedX < (-_curMaxQuickenSpeedX - friction / 2))
-                            {
-                                SpeedX += friction / 2;
-                            }
-                            else if (SpeedX <= -_curMaxQuickenSpeedX)
-                            {
-                                SpeedX = -_curMaxQuickenSpeedX;
-                            }
-                            else if (SpeedX <= 0)
-                            {
-                                if (SpeedX < -_curMaxSpeedX)
-                                {
-                                    SpeedX--;
-                                }
-                                else
-                                {
-                                    SpeedX -= 3;
-                                }
-                            }
-                            else if (SpeedX >= 100)
-                            {
-                                _playerInput._brakeType = 0;
-                                _playerInput._brakeTime = 5;
-                            }
-                            else if (SpeedX - friction * 3 < 0)
-                            {
-                                SpeedX = 0;
-                            }
-                            else
-                            {
-                                SpeedX -= friction * 3;
-                            }
-                        }
+                        SpeedX = Util.ConstantLerp(SpeedX, 0, friction);
                     }
-                    else if (_playerInput.RightInput == 1)
-                    {
-                        _isMoving = true;
-                        if (_playerInput._quickenTime == 0)
-                        {
-                            if (_playerInput._brakeType == 1 && _playerInput._brakeTime > 0)
-                            {
-                                _playerInput._brakeTime--;
-                                if (SpeedX + friction * 3 / 2 > 0)
-                                {
-                                    SpeedX = 0;
-                                }
-                                else
-                                {
-                                    SpeedX += friction * 3 / 2;
-                                    _playerInput._brakeTime = 10;
-                                }
-                            }
-                            else if (SpeedX > (_curMaxSpeedX + friction / 2))
-                            {
-                                SpeedX -= friction / 2;
-                            }
-                            else if (SpeedX >= _curMaxSpeedX)
-                            {
-                                SpeedX = _curMaxSpeedX;
-                            }
-                            else if (SpeedX >= 0)
-                            {
-                                SpeedX += 3;
-                            }
-                            else if (SpeedX <= -100)
-                            {
-                                _playerInput._brakeType = 1;
-                                _playerInput._brakeTime = 5;
-                            }
-                            else if (SpeedX + friction * 2 > 0)
-                            {
-                                SpeedX = 0;
-                            }
-                            else
-                            {
-                                SpeedX += friction * 2;
-                            }
-                        }
-                        else
-                        {
-                            if (_playerInput._brakeType == 1 && _playerInput._brakeTime > 0)
-                            {
-                                _playerInput._brakeTime--;
-                                if (SpeedX + friction * 3 / 2 > 0)
-                                {
-                                    SpeedX = 0;
-                                }
-                                else
-                                {
-                                    SpeedX += friction * 3 / 2;
-                                    _playerInput._brakeTime = 10;
-                                }
-                            }
-                            else if (SpeedX > (_curMaxQuickenSpeedX + friction / 2))
-                            {
-                                SpeedX -= friction / 2;
-                            }
-                            else if (SpeedX >= _curMaxQuickenSpeedX)
-                            {
-                                SpeedX = _curMaxQuickenSpeedX;
-                            }
-                            else if (SpeedX >= 0)
-                            {
-                                if (SpeedX > _curMaxSpeedX)
-                                {
-                                    SpeedX++;
-                                }
-                                else
-                                {
-                                    SpeedX += 3;
-                                }
-                            }
-                            else if (SpeedX <= -100)
-                            {
-                                _playerInput._brakeType = 1;
-                                _playerInput._brakeTime = 5;
-                            }
-                            else if (SpeedX + friction * 3 < 0)
-                            {
-                                SpeedX = 0;
-                            }
-                            else
-                            {
-                                SpeedX += friction * 3;
-                            }
-                        }
-                    }
-                    else if (SpeedX < 0)
-                    {
-                        if (SpeedX >= -15)
-                        {
-                            SpeedX++;
-                        }
-                        else
-                        {
-                            SpeedX += friction / 2;
-                        }
-                    }
-                    else if (SpeedX > 0)
-                    {
-                        if (SpeedX <= 15)
-                        {
-                            SpeedX--;
-                        }
-                        else
-                        {
-                            SpeedX -= friction / 2;
-                        }
-                    }
-                }
-                if (SpeedX == 0 && _playerInput._brakeTime == 0)
-                {
-                    _isMoving = false;
                 }
             }
             //落地瞬间

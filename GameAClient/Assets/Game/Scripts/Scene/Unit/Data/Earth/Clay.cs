@@ -18,16 +18,6 @@ namespace GameA.Game
             get { return true; }
         }
 
-        protected override bool OnInit()
-        {
-            if (!base.OnInit())
-            {
-                return false;
-            }
-            _friction = 30;
-            return true;
-        }
-
         internal override bool InstantiateView()
         {
             if (!base.InstantiateView())
