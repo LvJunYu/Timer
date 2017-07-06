@@ -626,6 +626,7 @@ namespace GameA.Game
                 }
                 _stopJump = false;
             }
+
             if (_player.ExtraSpeed.y < 0)
             {
                 _jumpState = 1;

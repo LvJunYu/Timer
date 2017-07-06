@@ -12,16 +12,6 @@ namespace GameA.Game
     [Unit(Id = 4009, Type = typeof (Ice))]
     public class Ice : UnitWithChild
     {
-        protected override bool OnInit()
-        {
-            if (!base.OnInit()) 
-            {
-                return false;
-            }
-            _friction = 1;
-            return true;
-        }
-
         internal override bool InstantiateView()
         {
             if (!base.InstantiateView())
