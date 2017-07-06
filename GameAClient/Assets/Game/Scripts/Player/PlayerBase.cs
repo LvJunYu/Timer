@@ -598,7 +598,7 @@ namespace GameA.Game
             {
                 _curMaxSpeedX = (int)(_curMaxSpeedX * SpeedHoldingBoxRatio);
             }
-            if (air || _lastGrounded)
+            if (air || _grounded)
             {
                 if (_curBanInputTime <= 0)
                 {
@@ -620,29 +620,9 @@ namespace GameA.Game
                         }
                         SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, Math.Min(friction, 10));
                     }
-                    else if (_lastGrounded)
+                    else if (_grounded)
                     {
                         SpeedX = Util.ConstantLerp(SpeedX, 0, friction);
-                    }
-                }
-            }
-            //落地瞬间
-            if (_grounded && !_lastGrounded)
-            {
-                if (_playerInput.RightInput == 0 && SpeedX < 0)
-                {
-                    if (_curMoveDirection != EMoveDirection.Left)
-                    {
-                        SetFacingDir(EMoveDirection.Left);
-                        PlayMode.Instance.CurrentShadow.RecordDirChange(EMoveDirection.Left);
-                    }
-                }
-                else if (_playerInput.LeftInput == 0 && SpeedX > 0)
-                {
-                    if (_curMoveDirection != EMoveDirection.Right)
-                    {
-                        SetFacingDir(EMoveDirection.Right);
-                        PlayMode.Instance.CurrentShadow.RecordDirChange(EMoveDirection.Right);
                     }
                 }
             }
@@ -690,11 +670,6 @@ namespace GameA.Game
                 else
                 {
                     SpeedY = Util.ConstantLerp(SpeedY, -120, 12);
-                    //SpeedY -= 12;
-                    //if (SpeedY < -120)
-                    //{
-                    //    SpeedY = -120;
-                    //}
                 }
             }
         }
