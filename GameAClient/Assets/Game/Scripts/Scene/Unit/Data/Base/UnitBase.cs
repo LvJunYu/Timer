@@ -1512,6 +1512,22 @@ namespace GameA.Game
             }
         }
 
+        protected void PlayEffect(UnityNativeParticleItem effect)
+        {
+            if (effect != null)
+            {
+                effect.Play();
+            }
+        }
+
+        protected void StopEffect(UnityNativeParticleItem effect)
+        {
+            if (effect != null)
+            {
+                effect.Stop();
+            }
+        }
+
         internal virtual int AddMp(int mp)
         {
             return 0;
