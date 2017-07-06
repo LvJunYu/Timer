@@ -36,6 +36,11 @@ namespace GameA.Game
             return new IntVec3(Guid.x, Guid.y + ConstDefineGM2D.ServerTileScale, z);
         }
 
+        public IntVec2 GetUpPos()
+        {
+            return new IntVec2(Guid.x, Guid.y + ConstDefineGM2D.ServerTileScale);
+        }
+
         public IntVec3 GetDownPos(int z)
         {
             return new IntVec3(Guid.x, Guid.y - ConstDefineGM2D.ServerTileScale, z);

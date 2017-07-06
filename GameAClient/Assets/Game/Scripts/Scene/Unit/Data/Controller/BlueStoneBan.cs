@@ -10,7 +10,7 @@ using System.Collections;
 
 namespace GameA.Game
 {
-    [Unit(Id = 4102, Type = typeof(BlueStoneBan))]
+    [Unit(Id = 8002, Type = typeof(BlueStoneBan))]
     public class BlueStoneBan : Magic
     {
         protected override bool OnInit()

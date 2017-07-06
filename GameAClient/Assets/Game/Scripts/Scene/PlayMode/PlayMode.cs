@@ -453,16 +453,14 @@ namespace GameA.Game
                 for (int i = 0; i < spawnDatas.Count; i++)
                 {
                     var spawnData = spawnDatas[i];
-                    DeleteUnit(spawnData);
+                    //DeleteUnit(spawnData);
                     if (i == 0)
                     {
-                        spawnData.Id = 1001;
-                        _mainPlayer = CreateUnit(spawnData) as MainPlayer;
+                        _mainPlayer = CreateRuntimeUnit(1002, spawnData.GetUpPos()) as MainPlayer;
                     }
                     else
                     {
-                        spawnData.Id = 1002;
-                        CreateUnit(spawnData);
+                        CreateRuntimeUnit(1002, spawnData.GetUpPos());
                     }
                 }
             }

@@ -16,19 +16,24 @@ namespace GameA.Game
         public const int PlayerTableId = 1001;
         public const int TransparentEarthId = 4004;
         public const int ClayId = 4011;
-        public const int BlueStoneId = 4101;
-        public const int BlueStoneBanId = 4102;
-        public const int BlueStoneRotateId = 4103;
+        public const int BlueStoneId = 8001;
+        public const int BlueStoneBanId = 8002;
+        public const int BlueStoneRotateId = 8003;
         public const int FinalDoorId = 5001;
         public const int BoxId = 5004;
         public const int RollerId = 5005;
         public const int LaserId = 5010;
-        public const int SwitchTriggerId = 5100;
+        public const int SwitchTriggerId = 8101;
         public const int BillboardId = 7001;
+
+        public static bool IsSpawn(int id)
+        {
+            return id == 1001;
+        }
 
         public static bool IsMain(int id)
         {
-            return id < 2000;
+            return id < 2000 && id >1001;
         }
 
         public static bool IsHero(int id)
@@ -48,7 +53,7 @@ namespace GameA.Game
 
         public static bool IsSwitch(int id)
         {
-            return id >= 5101 && id <= 5200;
+            return id >= 8101 && id <= 8200;
         }
 
         public static bool IsFakePart(int one, int other)

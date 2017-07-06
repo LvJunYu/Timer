@@ -12,7 +12,7 @@ using SoyEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 5100, Type = typeof(SwitchTrigger))]
+    [Unit(Id = 8101, Type = typeof(SwitchTrigger))]
     public class SwitchTrigger : UnitBase
     {
         protected SwitchPress _switchPress;

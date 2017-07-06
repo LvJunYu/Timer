@@ -49,7 +49,6 @@ namespace GameA.Game
             _viewInner = viewInner;
             _viewOuter = viewOuter;
             _scene2D = scene;
-            LogHelper.Debug("{0} | {1}", _viewInner, _viewOuter);
         }
 
         /// <summary>

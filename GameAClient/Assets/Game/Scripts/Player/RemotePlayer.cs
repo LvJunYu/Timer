@@ -10,10 +10,10 @@ using System.Collections;
 
 namespace GameA.Game
 {
-    [Serializable]
-    [Unit(Id = 1002, Type = typeof(RemotePlayer))]
-    public class RemotePlayer : PlayerBase
-    {
+    //[Serializable]
+    //[Unit(Id = 1002, Type = typeof(RemotePlayer))]
+    //public class RemotePlayer : PlayerBase
+    //{
 
-    }
+    //}
 }

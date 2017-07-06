@@ -110,8 +110,8 @@ namespace GameA.Game
         AttackPlayerItem,
         Decoration,
 		Effect,
-        AttackMonsterItem,  // 可以和Monster、Player、Earth碰撞
-        RigidbodyItem,  // 可以和Monster、Player、Earth碰撞
+        AttackMonsterItem,  // 可以和Monster、Hero、Earth碰撞
+        RigidbodyItem,  // 可以和Monster、Hero、Earth碰撞
         Bullet,
         Gun,
 		HomeAvatar = 30,

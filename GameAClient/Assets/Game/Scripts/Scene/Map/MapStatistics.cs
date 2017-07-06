@@ -190,34 +190,30 @@ namespace GameA.Game
             {
                 NeedSave = true;
             }
-            switch (tableUnit.EUnitType)
+            if (UnitDefine.IsSpawn(tableUnit.Id))
             {
-                case EUnitType.Spawn:
-                    _spawnCount = value ? ++_spawnCount : --_spawnCount;
-                    break;
-                case EUnitType.Monster:
-                    _monsterCount = value ? ++_monsterCount : --_monsterCount;
-                    break;
-                case EUnitType.Mechanism:
-                    if (tableUnit.Id == 5001)
-                    {
-                        _finalCount = value ? ++_finalCount : --_finalCount;
-                    }
-                    else if (tableUnit.Id == 5012)
-                    {
-                        _keyCount = value ? ++_keyCount : --_keyCount;
-                    }
-                    break;
-                case EUnitType.Collection:
-                    if (tableUnit.Id == 6001)
-                    {
-                        _gemCount = value ? ++_gemCount : --_gemCount;
-                    }
-                    break;
+                _spawnCount = value ? ++_spawnCount : --_spawnCount;
+            }
+            else if (UnitDefine.IsMonster(tableUnit.Id))
+            {
+                _monsterCount = value ? ++_monsterCount : --_monsterCount;
+            }
+            else if (tableUnit.Id == 5001)
+            {
+                _finalCount = value ? ++_finalCount : --_finalCount;
+            }
+            else if (tableUnit.Id == 5012)
+            {
+                _keyCount = value ? ++_keyCount : --_keyCount;
+            }
+            else if (tableUnit.Id == 6001)
+            {
+                _gemCount = value ? ++_gemCount : --_gemCount;
             }
         }
 
-        public void AddOrDeleteConnection () {
+        public void AddOrDeleteConnection () 
+        {
             NeedSave = true;
         }
     }
