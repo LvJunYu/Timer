@@ -242,7 +242,6 @@ namespace GameA.Game
             _jumpInput = false;
             _jumpState = 0;
             _jumpLevel = 0;
-            _jumpState = 0;
             _stopJump = false;
             _eClimbState = EClimbState.None;
             _climbJump = false;

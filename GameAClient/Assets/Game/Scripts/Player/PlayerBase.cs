@@ -325,10 +325,6 @@ namespace GameA.Game
             }
             CheckOutOfMap();
             CheckBox();
-            //if (SpeedY != 0 && _playerInput._jumpState == 0)
-            //{
-            //    _playerInput._jumpState = 1;
-            //}
             if (_invincibleTime > 0)
             {
                 _invincibleTime--;
@@ -385,41 +381,26 @@ namespace GameA.Game
                             GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallClimb, effectPos);
                         }
                     }
-                    else if (_playerInput._jumpLevel == 0)
+                    else if (_playerInput._jumpLevel >= 0)
                     {
-                        if (_playerInput.JumpState == 101)
+                        if (_playerInput.ClimbJump)
+                        {
+                            Vector3 effectPos = _trans.position;
+                            effectPos += _curMoveDirection == EMoveDirection.Left ? Vector3.right*0.25f + Vector3.forward*0.6f : Vector3.left*0.25f + Vector3.forward*0.6f;
+                            GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallJump, effectPos);
+                        }
+                        if (_playerInput.JumpState == 101 || _playerInput.JumpState == 201)
                         {
                             Messenger.Broadcast(EMessengerType.OnPlayerJump);
                             _animation.PlayOnce(JumpAnimName(_playerInput._jumpLevel));
-                            if (_playerInput.ClimbJump)
-                            {
-                                Vector3 effectPos = _trans.position;
-                                if (_curMoveDirection == EMoveDirection.Left)
-                                {
-                                    effectPos += Vector3.right*0.25f + Vector3.forward*0.6f;
-                                }
-                                else
-                                {
-                                    effectPos += Vector3.left*0.25f + Vector3.forward*0.6f;
-                                }
-                                GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallJump, effectPos);
-                            }
                             PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_playerInput._jumpLevel), false);
                         }
-                        else if (SpeedY != 0 || _playerInput.JumpState == 1)
+                        else if ((SpeedY != 0 || _playerInput.JumpState == 1) && !_animation.IsPlaying(JumpAnimName(_playerInput._jumpLevel)))
                         {
                             if (_animation.PlayLoop(FallAnimName()))
                             {
                                 PlayMode.Instance.CurrentShadow.RecordAnimation(FallAnimName(), true);
                             }
-                        }
-                    }
-                    else if (_playerInput._jumpLevel == 1)
-                    {
-                        Messenger.Broadcast(EMessengerType.OnPlayerJump);
-                        if (_animation.PlayLoop(JumpAnimName(_playerInput._jumpLevel)))
-                        {
-                            PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_playerInput._jumpLevel), true);
                         }
                     }
                 }
@@ -474,34 +455,26 @@ namespace GameA.Game
                 }
                 else if (!_lastGrounded)
                 {
-                    //临时如此 应该加动画 TODO
-                    _animation.PlayOnce(LandAnimName());
-                    PlayMode.Instance.CurrentShadow.RecordAnimation(LandAnimName(), false);
+                    //_animation.PlayOnce(LandAnimName());
+                    //PlayMode.Instance.CurrentShadow.RecordAnimation(LandAnimName(), false);
                     OnLand();
                 }
                 else if (!_animation.IsPlaying(LandAnimName()))
                 {
-                    //stand
                     if (_animation.PlayLoop(IdleAnimName()))
                     {
                         PlayMode.Instance.CurrentShadow.RecordAnimation(IdleAnimName(), true);
                     }
                 }
             }
-
             if (_reviveEffect != null)
             {
                 _reviveEffect.Update();
             }
-
             if (_portalEffect != null)
             {
                 _portalEffect.Update();
             }
-
-            //Vector3 euler = _trans.eulerAngles;
-            //euler.y = _curMoveDirection == EMoveDirection.Right ? 0 : 180;
-            //_trans.eulerAngles = euler;
             _lastGrounded = _grounded;
         }
 
@@ -942,16 +915,6 @@ namespace GameA.Game
             }
             _animation.PlayLoop(VictoryAnimName(), 1, 1);
             PlayMode.Instance.CurrentShadow.RecordAnimation(VictoryAnimName(), true);
-            //if (PlayMode.Instance.SceneState.Arrived)
-            //{
-            //    _animation.PlayLoop(EnterDoorAnimName());
-            //    PlayMode.Instance.CurrentShadow.RecordAnimation(EnterDoorAnimName(), true);
-            //}
-            //else
-            //{
-            //    _animation.PlayOnce(VictoryAnimName());
-            //    PlayMode.Instance.CurrentShadow.RecordAnimation(VictoryAnimName(), false);
-            //}
         }
 
         public override void OnRevivePos(IntVec2 pos)
