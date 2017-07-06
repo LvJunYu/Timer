@@ -1,16 +1,21 @@
-﻿using System;
+﻿using UnityEngine;
 using System.Collections;
 using SoyEngine;
 using UnityEngine.UI;
-using UnityEngine;
+
 
 namespace GameA
 {
-    public class UMViewMail : UMViewBase
+    public class UIViewMailDetail : UIViewBase
     {
+
+
         public Text MailSource;
         public Text Title;
-        public Button MainBody;
+        public Button Close ;
         public Text Date;
+        public Text MainBody;
+
+
     }
 }

@@ -20,6 +20,7 @@ namespace GameA
         private readonly Account _account = Account.Instance;
         private UserInfoDetail _user;
         private UsingAvatarPart _usingAvatarData = new UsingAvatarPart ();
+        private MailList _mailList = new MailList();
         private ValidAvatarPart _validAvatarData = new ValidAvatarPart ();
         private RelationUserList _followRelationUserList = new RelationUserList ();
         private RelationUserList _blockRelationUserList = new RelationUserList ();
@@ -57,6 +58,11 @@ namespace GameA
 
         public UserInfoDetail User {
             get { return _user; }
+        }
+
+        public MailList Mail
+        {
+            get { return _mailList; }
         }
 
         public RelationUserList FollowRelationUserList

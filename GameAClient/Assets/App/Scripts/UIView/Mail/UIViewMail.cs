@@ -10,7 +10,7 @@ namespace GameA
         public Button FriendMessage;
         public Button SystemMessage;
         public Button DeleteAll;
-
+        public RectTransform Dock;
 
 
     }
