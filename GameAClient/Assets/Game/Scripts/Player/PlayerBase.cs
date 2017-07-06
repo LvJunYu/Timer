@@ -689,11 +689,12 @@ namespace GameA.Game
                 }
                 else
                 {
-                    SpeedY -= 12;
-                    if (SpeedY < -120)
-                    {
-                        SpeedY = -120;
-                    }
+                    SpeedY = Util.ConstantLerp(SpeedY, -120, 12);
+                    //SpeedY -= 12;
+                    //if (SpeedY < -120)
+                    //{
+                    //    SpeedY = -120;
+                    //}
                 }
             }
         }
