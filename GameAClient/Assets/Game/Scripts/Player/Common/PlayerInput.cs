@@ -69,10 +69,6 @@ namespace GameA.Game
         protected int _downInput;
 
         [SerializeField]
-        public int _brakeTime;
-        public int _brakeType;
-
-        [SerializeField]
         protected bool _jumpInput;
         protected bool _lastJumpInput;
 
@@ -243,8 +239,6 @@ namespace GameA.Game
             _rightInput = 0;
             _upInput = 0;
             _downInput = 0;
-            _brakeTime = 0;
-            _brakeType = 0;
             _jumpInput = false;
             _jumpState = 0;
             _jumpLevel = 0;
@@ -367,7 +361,6 @@ namespace GameA.Game
                 if (apply)
                 {
                     _leftInput = 0;
-                    _brakeTime = 0;
                 }
             }
             if (_curInputs[1] && !_lastInputs[1])
@@ -386,7 +379,6 @@ namespace GameA.Game
                 if (apply)
                 {
                     _rightInput = 0;
-                    _brakeTime = 0;
                 }
             }
             if (_curInputs[2] && !_lastInputs[2])
@@ -511,7 +503,6 @@ namespace GameA.Game
                 if (_inputDatas[_index] == 1)
                 {
                     _leftInput = 0;
-                    _brakeTime = 0;
                 }
                 if (_inputDatas[_index] == 2)
                 {
@@ -520,7 +511,6 @@ namespace GameA.Game
                 if (_inputDatas[_index] == 3)
                 {
                     _rightInput = 0;
-                    _brakeTime = 0;
                 }
                 if (_inputDatas[_index] == 4)
                 {

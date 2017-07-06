@@ -44,18 +44,15 @@ namespace GameA.Game
         protected EBoxOperateType _eBoxOperateType;
 
         protected int _curMaxSpeedX;
-        protected int _curMaxQuickenSpeedX;
 
-        protected const int MaxSpeedX = 80;
-        protected const int MaxQuickenSpeedX = 160;
+        protected const int MaxSpeedX = 60;
+        protected const int MaxQuickenSpeedX = 120;
 
         #region view
 
         protected ReviveEffect _reviveEffect;
         protected ReviveEffect _portalEffect;
 
-        [SerializeField]
-        protected UnityNativeParticleItem _brakeEfffect;
         [SerializeField]
         protected UnityNativeParticleItem _invincibleEfffect;
         protected UnityNativeParticleItem _inFireEfffect;
@@ -174,7 +171,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            _brakeEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem(ParticleNameConstDefineGM2D.Brake, _trans);
             return true;
         }
 
@@ -211,10 +207,6 @@ namespace GameA.Game
             {
                 _portalEffect.Destroy();
                 _portalEffect = null;
-            }
-            if (_brakeEfffect != null)
-            {
-                _brakeEfffect.Stop();
             }
             if (_invincibleEfffect != null)
             {
@@ -321,7 +313,7 @@ namespace GameA.Game
                     }
                     if (_dieTime > 20)
                     {
-                        //                        UpdateRotation((_dieTime - 20)*0.3f);
+                        //UpdateRotation((_dieTime - 20)*0.3f);
                     }
                     if (_dieTime == 100)
                     {
@@ -369,193 +361,130 @@ namespace GameA.Game
                     _inFireEfffect.Trans.rotation = Quaternion.identity;
                 }
             }
-            //if (!_isAlive)
-            //{
-            //    _dieTime++;
-            //    if (_life <= 0)
-            //    {
-            //        if (_dieTime == 20)
-            //        {
-            //            Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
-            //            SpeedY = 150;
-            //        }
-            //        if (_dieTime > 20)
-            //        {
-            //            UpdateRotation((_dieTime - 20) * 0.3f);
-            //        }
-            //        if (_dieTime == 100)
-            //        {
-            //            PlayMode.Instance.SceneState.MainUnitSiTouLe();
-            //            // 因生命用完而失败
-            //            Messenger.Broadcast(EMessengerType.GameFinishFailed);
-            //        }
-            //    }
-            //}
-            if (!_isAlive)
+            if (_isAlive)
             {
-            }
-            else if (!_grounded)
-            {
-                _playerInput._brakeTime = 0;
-                if (_playerInput._eClimbState > 0)
+                if (!_grounded)
                 {
-                    if (_animation.PlayLoop(ClimbAnimName()))
+                    if (_playerInput._eClimbState > 0)
                     {
-                        PlayMode.Instance.CurrentShadow.RecordAnimation(ClimbAnimName(), true);
-                    }
-                    if (GameRun.Instance.LogicFrameCnt % 5 == 0)
-                    {
-                        Vector3 effectPos = _trans.position;
-                        if (_curMoveDirection == EMoveDirection.Left)
+                        if (_animation.PlayLoop(ClimbAnimName()))
                         {
-                            effectPos += Vector3.left * 0.25f + Vector3.forward * 0.6f;
+                            PlayMode.Instance.CurrentShadow.RecordAnimation(ClimbAnimName(), true);
                         }
-                        else
-                        {
-                            effectPos += Vector3.right * 0.25f + Vector3.forward * 0.6f;
-                        }
-                        GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallClimb, effectPos);
-                    }
-                }
-                else if (_playerInput._jumpLevel == 0)
-                {
-                    if (_playerInput.JumpState == 101)
-                    {
-                        Messenger.Broadcast(EMessengerType.OnPlayerJump);
-                        _animation.PlayOnce(JumpAnimName(_playerInput._jumpLevel));
-                        if (_playerInput.ClimbJump)
+                        if (GameRun.Instance.LogicFrameCnt%5 == 0)
                         {
                             Vector3 effectPos = _trans.position;
                             if (_curMoveDirection == EMoveDirection.Left)
                             {
-                                effectPos += Vector3.right * 0.25f + Vector3.forward * 0.6f;
+                                effectPos += Vector3.left*0.25f + Vector3.forward*0.6f;
                             }
                             else
                             {
-                                effectPos += Vector3.left * 0.25f + Vector3.forward * 0.6f;
+                                effectPos += Vector3.right*0.25f + Vector3.forward*0.6f;
                             }
-                            GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallJump, effectPos);
+                            GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallClimb, effectPos);
                         }
-                        PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_playerInput._jumpLevel), false);
                     }
-                    else if (SpeedY != 0 || _playerInput.JumpState == 1)
+                    else if (_playerInput._jumpLevel == 0)
                     {
-                        if (_animation.PlayLoop(FallAnimName()))
+                        if (_playerInput.JumpState == 101)
                         {
-                            PlayMode.Instance.CurrentShadow.RecordAnimation(FallAnimName(), true);
+                            Messenger.Broadcast(EMessengerType.OnPlayerJump);
+                            _animation.PlayOnce(JumpAnimName(_playerInput._jumpLevel));
+                            if (_playerInput.ClimbJump)
+                            {
+                                Vector3 effectPos = _trans.position;
+                                if (_curMoveDirection == EMoveDirection.Left)
+                                {
+                                    effectPos += Vector3.right*0.25f + Vector3.forward*0.6f;
+                                }
+                                else
+                                {
+                                    effectPos += Vector3.left*0.25f + Vector3.forward*0.6f;
+                                }
+                                GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallJump, effectPos);
+                            }
+                            PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_playerInput._jumpLevel), false);
+                        }
+                        else if (SpeedY != 0 || _playerInput.JumpState == 1)
+                        {
+                            if (_animation.PlayLoop(FallAnimName()))
+                            {
+                                PlayMode.Instance.CurrentShadow.RecordAnimation(FallAnimName(), true);
+                            }
+                        }
+                    }
+                    else if (_playerInput._jumpLevel == 1)
+                    {
+                        Messenger.Broadcast(EMessengerType.OnPlayerJump);
+                        if (_animation.PlayLoop(JumpAnimName(_playerInput._jumpLevel)))
+                        {
+                            PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_playerInput._jumpLevel), true);
                         }
                     }
                 }
-                else if (_playerInput._jumpLevel == 1)
+                else if (SpeedX != 0)
                 {
-                    Messenger.Broadcast(EMessengerType.OnPlayerJump);
-                    if (_animation.PlayLoop(JumpAnimName(_playerInput._jumpLevel)))
+                    if (_playerInput.LeftInput != 0 || _playerInput.RightInput !=0)
                     {
-                        PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_playerInput._jumpLevel), true);
-                    }
-                }
-            }
-            else if (SpeedX != 0)
-            {
-                bool brake = false;
-                if (_playerInput._brakeTime > 0)
-                {
-                    brake = true;
-                    if (_animation.PlayLoop(BrakeAnimName(), 1, 1))
-                    {
-                        PlayMode.Instance.CurrentShadow.RecordAnimation(BrakeAnimName(), false, 1, 1);
-                        GameAudioManager.Instance.PlaySoundsEffects("AudioDestroySwamp");
-                    }
-                }
-                if (!brake)
-                {
-                    int speed = (int)(SpeedX * 0.7f);
-                    speed = Math.Abs(speed);
-                    speed = Mathf.Clamp(speed, 30, 100);
-                    //临时如此 应该修改动画播放速度！TODO
-                    if (IsHoldingBox())
-                    {
-                        speed = 50;
-                    }
-                    if (speed <= 56)
-                    {
+                        var speed = Math.Abs(SpeedX);
+                        speed = Mathf.Clamp(speed, 30, 100);
+                        if (IsHoldingBox())
+                        {
+                            speed = 50;
+                        }
                         if (_animation.PlayLoop(RunAnimName(speed), speed * deltaTime))
                         {
                             PlayMode.Instance.CurrentShadow.RecordAnimation(RunAnimName(speed), true, speed * deltaTime);
                         }
-                        //run
-                    }
-                    else if (speed <= 94)
-                    {
-                        //run1
-                        if (_animation.PlayLoop(RunAnimName(speed), speed * deltaTime))
+                        if (speed <= MaxSpeedX)
                         {
-                            PlayMode.Instance.CurrentShadow.RecordAnimation(RunAnimName(speed), true, speed * deltaTime);
+                            _walkAudioInternal -= 7;
                         }
-                        _walkAudioInternal -= 5;
+                        else
+                        {
+                            _walkAudioInternal -= 5;
+                            //GuideManager.Instance.OnSpecialOperate(1);
+                        }
+                        if (_walkAudioInternal <= 0)
+                        {
+                            int randomValue = UnityEngine.Random.Range(0, 3);
+                            switch (randomValue)
+                            {
+                                case 0:
+                                    GameAudioManager.Instance.PlaySoundsEffects("AudioWalkWood01");
+                                    break;
+                                case 1:
+                                    GameAudioManager.Instance.PlaySoundsEffects("AudioWalkWood02");
+                                    break;
+                                case 2:
+                                    GameAudioManager.Instance.PlaySoundsEffects("AudioWalkWood03");
+                                    break;
+                            }
+                            _walkAudioInternal = 35;
+                        }
                     }
                     else
                     {
-                        //run2
-                        if (_animation.PlayLoop(RunAnimName(speed), speed * deltaTime))
+                        if (_animation.PlayLoop(IdleAnimName()))
                         {
-                            PlayMode.Instance.CurrentShadow.RecordAnimation(RunAnimName(speed), true, speed * deltaTime);
-                            GuideManager.Instance.OnSpecialOperate(1);
+                            PlayMode.Instance.CurrentShadow.RecordAnimation(IdleAnimName(), true);
                         }
-                        _walkAudioInternal -= 7;
-                    }
-                    if (_walkAudioInternal <= 0)
-                    {
-                        int randomValue = UnityEngine.Random.Range(0, 3);
-                        switch (randomValue)
-                        {
-                            case 0:
-                                GameAudioManager.Instance.PlaySoundsEffects("AudioWalkWood01");
-                                break;
-                            case 1:
-                                GameAudioManager.Instance.PlaySoundsEffects("AudioWalkWood02");
-                                break;
-                            case 2:
-                                GameAudioManager.Instance.PlaySoundsEffects("AudioWalkWood03");
-                                break;
-                        }
-                        _walkAudioInternal = 35;
                     }
                 }
-                // 新手引导需要知道主角落地了
-                if (!_lastGrounded)
+                else if (!_lastGrounded)
                 {
-                    GuideManager.Instance.OnSpecialOperate(2);
+                    //临时如此 应该加动画 TODO
+                    _animation.PlayOnce(LandAnimName());
+                    PlayMode.Instance.CurrentShadow.RecordAnimation(LandAnimName(), false);
+                    OnLand();
                 }
-            }
-            else if (!_lastGrounded)
-            {
-                //临时如此 应该加动画 TODO
-                _animation.PlayOnce(LandAnimName());
-                PlayMode.Instance.CurrentShadow.RecordAnimation(LandAnimName(), false);
-                OnLand();
-            }
-            else if (!_animation.IsPlaying(LandAnimName()))
-            {
-                //stand
-                if (_animation.PlayLoop(IdleAnimName()))
+                else if (!_animation.IsPlaying(LandAnimName()))
                 {
-                    PlayMode.Instance.CurrentShadow.RecordAnimation(IdleAnimName(), true);
-                }
-            }
-            if (_brakeEfffect != null)
-            {
-                if (_playerInput._brakeTime > 0)
-                {
-                    _brakeEfffect.Play();
-                }
-                else
-                {
-                    if (_brakeEfffect.IsPlaying)
+                    //stand
+                    if (_animation.PlayLoop(IdleAnimName()))
                     {
-                        _brakeEfffect.Pause();
-                        _animation.ClearTrack(1);
-                        PlayMode.Instance.CurrentShadow.RecordClearAnimTrack(1);
+                        PlayMode.Instance.CurrentShadow.RecordAnimation(IdleAnimName(), true);
                     }
                 }
             }
@@ -570,15 +499,9 @@ namespace GameA.Game
                 _portalEffect.Update();
             }
 
-            //UpdateShooterPoint ();
-
-            Vector3 euler = _trans.eulerAngles;
-            euler.y = _curMoveDirection == EMoveDirection.Right ? 0 : 180;
-            if (_playerInput._brakeTime > 0)
-            {
-                euler.y += 180;
-            }
-            _trans.eulerAngles = euler;
+            //Vector3 euler = _trans.eulerAngles;
+            //euler.y = _curMoveDirection == EMoveDirection.Right ? 0 : 180;
+            //_trans.eulerAngles = euler;
             _lastGrounded = _grounded;
         }
 
@@ -594,7 +517,11 @@ namespace GameA.Game
             {
                 air = true;
             }
-            if (!air)
+            if (air)
+            {
+                friction = MaxFriction;
+            }
+            else
             {
                 _onClay = false;
                 _onIce = false;
@@ -650,13 +577,10 @@ namespace GameA.Game
                     OnJump();
                 }
             }
-            _curMaxSpeedX = MaxSpeedX;
-            _curMaxQuickenSpeedX = MaxQuickenSpeedX;
+            _curMaxSpeedX = _playerInput._quickenTime == 0 ? MaxSpeedX : MaxQuickenSpeedX;
             if (_onClay)
             {
-                friction = 100;
                 _curMaxSpeedX = (int)(_curMaxSpeedX * SpeedClayRatio);
-                _curMaxQuickenSpeedX = (int)(_curMaxQuickenSpeedX * SpeedClayRatio);
             }
             else if (_onIce)
             {
@@ -676,38 +600,25 @@ namespace GameA.Game
             }
             if (air || _lastGrounded)
             {
-                _playerInput._brakeTime = 0;
                 if (_curBanInputTime <= 0)
                 {
                     if (_playerInput.LeftInput == 1)
                     {
-                        if (SpeedX > 0)
+                        //不在冰上的时候反向走速度直接设为0
+                        if (SpeedX > 0 && !_onIce)
                         {
                             SpeedX = 0;
                         }
-                        if (_playerInput._quickenTime == 0)
-                        {
-                            SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, friction);
-                        }
-                        else
-                        {
-                            SpeedX = Util.ConstantLerp(SpeedX, -_curMaxQuickenSpeedX, friction);
-                        }
+                        SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, Math.Min(friction, 10));
                     }
                     else if (_playerInput.RightInput == 1)
                     {
-                        if (SpeedX < 0)
+                        //不在冰上的时候反向走速度直接设为0
+                        if (SpeedX < 0 && !_onIce)
                         {
                             SpeedX = 0;
                         }
-                        if (_playerInput._quickenTime == 0)
-                        {
-                            SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, friction);
-                        }
-                        else
-                        {
-                            SpeedX = Util.ConstantLerp(SpeedX, _curMaxQuickenSpeedX, friction);
-                        }
+                        SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, Math.Min(friction, 10));
                     }
                     else if (_lastGrounded)
                     {
@@ -942,10 +853,6 @@ namespace GameA.Game
             LogHelper.Debug("{0}, OnDead", GetType().Name);
             _invincibleTime = 0;
             _flashTime = 0;
-            if (_brakeEfffect != null)
-            {
-                _brakeEfffect.Stop();
-            }
             if (_invincibleEfffect != null)
             {
                 _invincibleEfffect.Stop();
@@ -1019,10 +926,6 @@ namespace GameA.Game
             }
             _eUnitState = EUnitState.Portaling;
             PlayMode.Instance.Freeze(this);
-            if (_brakeEfffect != null)
-            {
-                _brakeEfffect.Stop();
-            }
             if (_invincibleEfffect != null)
             {
                 _invincibleEfffect.Stop();
@@ -1112,6 +1015,8 @@ namespace GameA.Game
 
         protected void OnLand()
         {
+            // 新手引导需要知道主角落地了
+            GuideManager.Instance.OnSpecialOperate(2);
             if (_downUnit == null || _view == null)
             {
                 return;
@@ -1210,18 +1115,11 @@ namespace GameA.Game
                 }
                 return "Pull";
             }
-            if (speed <= 56)
+            if (speed <= 60)
             {
                 return "Run";
             }
-            else if (speed <= 94)
-            {
-                return "Run2";
-            }
-            else
-            {
-                return "Run";
-            }
+            return "Run2";
         }
         protected virtual string JumpAnimName(int jumpLevel)
         {
