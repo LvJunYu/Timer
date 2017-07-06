@@ -19,6 +19,7 @@ namespace GameA.Game
     {
         protected const float BackZOffset = 0.4f;
         protected const float FrontZOffset = -0.4f;
+        protected const int MaxFriction = 100;
 
         #region base data
 
@@ -534,7 +535,7 @@ namespace GameA.Game
             _tableUnit = tableUnit;
             _unitDesc = unitDesc;
             _curPos = new IntVec2(_guid.x, _guid.y);
-            _friction = 100;
+            _friction = MaxFriction;
             if (dynamicCollider != null)
             {
                 _dynamicCollider = dynamicCollider;
@@ -1508,6 +1509,22 @@ namespace GameA.Game
             if (effect != null)
             {
                 GameParticleManager.FreeParticleItem(effect);
+            }
+        }
+
+        protected void PlayEffect(UnityNativeParticleItem effect)
+        {
+            if (effect != null)
+            {
+                effect.Play();
+            }
+        }
+
+        protected void StopEffect(UnityNativeParticleItem effect)
+        {
+            if (effect != null)
+            {
+                effect.Stop();
             }
         }
 

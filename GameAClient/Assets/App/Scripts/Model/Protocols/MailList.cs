@@ -25,6 +25,10 @@ namespace GameA
         /// 
         /// </summary>
         private int _totalCount;
+        /// <summary>
+        /// 
+        /// </summary>
+        private int _unreadCount;
 
         // cs fields----------------------------------
         /// <summary>
@@ -76,6 +80,16 @@ namespace GameA
             get { return _totalCount; }
             set { if (_totalCount != value) {
                 _totalCount = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int UnreadCount { 
+            get { return _unreadCount; }
+            set { if (_unreadCount != value) {
+                _unreadCount = value;
                 SetDirty();
             }}
         }
@@ -160,6 +174,7 @@ namespace GameA
                 _dataList.Add(new Mail(msg.DataList[i]));
             }
             _totalCount = msg.TotalCount;           
+            _unreadCount = msg.UnreadCount;           
             OnSyncPartial();
             return true;
         }

@@ -19,6 +19,10 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
+        private EMailType _type;
+        /// <summary>
+        /// 
+        /// </summary>
         private string _title;
         /// <summary>
         /// 
@@ -68,6 +72,16 @@ namespace GameA
             get { return _userInfo; }
             set { if (_userInfo != value) {
                 _userInfo = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public EMailType Type { 
+            get { return _type; }
+            set { if (_type != value) {
+                _type = value;
                 SetDirty();
             }}
         }
@@ -163,6 +177,7 @@ namespace GameA
             } else {
                 _userInfo.OnSyncFromParent(msg.UserInfo);
             }
+            _type = msg.Type;     
             _title = msg.Title;     
             _content = msg.Content;     
             if (null == _attachItemList) {

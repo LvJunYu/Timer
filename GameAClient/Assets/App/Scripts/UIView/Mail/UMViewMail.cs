@@ -12,5 +12,6 @@ namespace GameA
         public Text Title;
         public Button MainBody;
         public Text Date;
+        public Image ReadFlag;
     }
 }

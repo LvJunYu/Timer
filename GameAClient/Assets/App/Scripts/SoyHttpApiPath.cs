@@ -150,6 +150,8 @@ namespace SoyEngine
         public const string MatchSkipChallenge = "/match/skipChallenge";
         // 发送邮件
         public const string SendMail = "/mail/send";
+        // 查询未读邮件数量
+        public const string MailStatistic = "/mail/statistic";
         // 查询邮件
         public const string MailList = "/mail/list";
         // 标记已读

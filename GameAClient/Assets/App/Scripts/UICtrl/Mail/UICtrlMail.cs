@@ -33,6 +33,18 @@ namespace GameA
             //_cachedView.FollowerCount.text = LocalUser.Instance.User.RelationStatistic.FollowerCount.ToString();
             //InitTagGroup();
             LoadMyMailList();
+            _cachedView.DeleteAll.onClick.AddListener(Delete);
+        }
+
+        private void Delete()
+        {
+         List<long> idList = new List<long>();
+         RemoteCommands.DeleteMail(
+         EDeleteMailTargetType.EDMTT_All,
+         idList,
+         null, null
+         );
+
         }
 
         private void LoadMyMailList()
@@ -79,6 +91,8 @@ namespace GameA
         {
             _groupId = (int)EUIGroupType.MainUI;
         }
+
+       
 
     }
 }

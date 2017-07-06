@@ -33,6 +33,11 @@ namespace GameA.Game
         protected const float SpeedFireRatio = 1.5f;
         protected const float SpeedHoldingBoxRatio = 0.3f;
 
+        public bool OnClay
+        {
+            get { return _onClay; }
+        }
+
         protected override void Clear()
         {
             base.Clear();
