@@ -148,6 +148,16 @@ namespace SoyEngine
         public const string CommitMatchChallengeLevelResult = "/match/commitChallengeLevelResult";
         // 跳过本次挑战
         public const string MatchSkipChallenge = "/match/skipChallenge";
+        // 发送邮件
+        public const string SendMail = "/mail/send";
+        // 查询邮件
+        public const string MailList = "/mail/list";
+        // 标记已读
+        public const string MarkMailRead = "/mail/markRead";
+        // 领取附件
+        public const string ReceiptMailAttach = "/mail/receiptAttach";
+        // 领取附件
+        public const string DeleteMail = "/mail/delete";
         // 执行GM指令
         public const string ExecuteCommand = "/gm/executeCommand";
     }

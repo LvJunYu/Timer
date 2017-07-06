@@ -1507,6 +1507,169 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingSendMail {
+            get { return _isRequstingSendMail; }
+        }
+        private static bool _isRequstingSendMail = false;
+        /// <summary>
+		/// 发送邮件
+		/// </summary>
+		/// <param name="targetUserId">用户</param>
+		/// <param name="title"></param>
+		/// <param name="content"></param>
+        public static void SendMail (
+            long targetUserId,
+            string title,
+            string content,
+            Action<Msg_SC_CMD_SendMail> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingSendMail) {
+                return;
+            }
+            _isRequstingSendMail = true;
+            Msg_CS_CMD_SendMail msg = new Msg_CS_CMD_SendMail();
+            // 发送邮件
+            msg.TargetUserId = targetUserId;
+            msg.Title = title;
+            msg.Content = content;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_SendMail>(
+                SoyHttpApiPath.SendMail, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingSendMail = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "SendMail", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingSendMail = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingMarkMailRead {
+            get { return _isRequstingMarkMailRead; }
+        }
+        private static bool _isRequstingMarkMailRead = false;
+        /// <summary>
+		/// 标记已读
+		/// </summary>
+		/// <param name="targetType"></param>
+		/// <param name="idList"></param>
+        public static void MarkMailRead (
+            EMarkMailReadTargetType targetType,
+            List<long> idList,
+            Action<Msg_SC_CMD_MarkMailRead> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingMarkMailRead) {
+                return;
+            }
+            _isRequstingMarkMailRead = true;
+            Msg_CS_CMD_MarkMailRead msg = new Msg_CS_CMD_MarkMailRead();
+            // 标记已读
+            msg.TargetType = targetType;
+            msg.IdList.AddRange(idList);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_MarkMailRead>(
+                SoyHttpApiPath.MarkMailRead, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingMarkMailRead = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "MarkMailRead", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingMarkMailRead = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingReceiptMailAttach {
+            get { return _isRequstingReceiptMailAttach; }
+        }
+        private static bool _isRequstingReceiptMailAttach = false;
+        /// <summary>
+		/// 领取附件
+		/// </summary>
+		/// <param name="targetType"></param>
+		/// <param name="idList"></param>
+        public static void ReceiptMailAttach (
+            EReceiptMailAttachTargetType targetType,
+            List<long> idList,
+            Action<Msg_SC_CMD_ReceiptMailAttach> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingReceiptMailAttach) {
+                return;
+            }
+            _isRequstingReceiptMailAttach = true;
+            Msg_CS_CMD_ReceiptMailAttach msg = new Msg_CS_CMD_ReceiptMailAttach();
+            // 领取附件
+            msg.TargetType = targetType;
+            msg.IdList.AddRange(idList);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ReceiptMailAttach>(
+                SoyHttpApiPath.ReceiptMailAttach, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingReceiptMailAttach = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ReceiptMailAttach", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingReceiptMailAttach = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingDeleteMail {
+            get { return _isRequstingDeleteMail; }
+        }
+        private static bool _isRequstingDeleteMail = false;
+        /// <summary>
+		/// 领取附件
+		/// </summary>
+		/// <param name="targetType"></param>
+		/// <param name="idList"></param>
+        public static void DeleteMail (
+            EDeleteMailTargetType targetType,
+            List<long> idList,
+            Action<Msg_SC_CMD_DeleteMail> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingDeleteMail) {
+                return;
+            }
+            _isRequstingDeleteMail = true;
+            Msg_CS_CMD_DeleteMail msg = new Msg_CS_CMD_DeleteMail();
+            // 领取附件
+            msg.TargetType = targetType;
+            msg.IdList.AddRange(idList);
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DeleteMail>(
+                SoyHttpApiPath.DeleteMail, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingDeleteMail = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DeleteMail", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingDeleteMail = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingExecuteCommand {
             get { return _isRequstingExecuteCommand; }
         }

@@ -13,16 +13,13 @@ namespace GameA.Game
 		#region 常量与字段
 		private static TableManager _instance;
 		public readonly Dictionary<int,Table_Unit> Table_UnitDic = new Dictionary<int, Table_Unit>();
+		public readonly Dictionary<int,Table_Skill> Table_SkillDic = new Dictionary<int, Table_Skill>();
 		public readonly Dictionary<int,Table_StandaloneLevel> Table_StandaloneLevelDic = new Dictionary<int, Table_StandaloneLevel>();
 		public readonly Dictionary<int,Table_StarRequire> Table_StarRequireDic = new Dictionary<int, Table_StarRequire>();
 		public readonly Dictionary<int,Table_StandaloneChapter> Table_StandaloneChapterDic = new Dictionary<int, Table_StandaloneChapter>();
 		public readonly Dictionary<int,Table_Reward> Table_RewardDic = new Dictionary<int, Table_Reward>();
 		public readonly Dictionary<int,Table_FashionShop> Table_FashionShopDic = new Dictionary<int, Table_FashionShop>();
-		public readonly Dictionary<int,Table_UpperBodyParts> Table_UpperBodyPartsDic = new Dictionary<int, Table_UpperBodyParts>();
 		public readonly Dictionary<int,Table_FashionUnit> Table_FashionUnitDic = new Dictionary<int, Table_FashionUnit>();
-		public readonly Dictionary<int,Table_HeadParts> Table_HeadPartsDic = new Dictionary<int, Table_HeadParts>();
-		public readonly Dictionary<int,Table_LowerBodyParts> Table_LowerBodyPartsDic = new Dictionary<int, Table_LowerBodyParts>();
-		public readonly Dictionary<int,Table_AppendageParts> Table_AppendagePartsDic = new Dictionary<int, Table_AppendageParts>();
 		public readonly Dictionary<int,Table_TreasureMap> Table_TreasureMapDic = new Dictionary<int, Table_TreasureMap>();
 		public readonly Dictionary<int,Table_Turntable> Table_TurntableDic = new Dictionary<int, Table_Turntable>();
 		public readonly Dictionary<int,Table_FashionCoupon> Table_FashionCouponDic = new Dictionary<int, Table_FashionCoupon>();
@@ -40,16 +37,13 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_ProgressUnlock> Table_ProgressUnlockDic = new Dictionary<int, Table_ProgressUnlock>();
 		public readonly Dictionary<int,Table_BoostItem> Table_BoostItemDic = new Dictionary<int, Table_BoostItem>();
 		[UnityEngine.SerializeField] private Table_Unit[] _tableUnits;
+		[UnityEngine.SerializeField] private Table_Skill[] _tableSkills;
 		[UnityEngine.SerializeField] private Table_StandaloneLevel[] _tableStandaloneLevels;
 		[UnityEngine.SerializeField] private Table_StarRequire[] _tableStarRequires;
 		[UnityEngine.SerializeField] private Table_StandaloneChapter[] _tableStandaloneChapters;
 		[UnityEngine.SerializeField] private Table_Reward[] _tableRewards;
 		[UnityEngine.SerializeField] private Table_FashionShop[] _tableFashionShops;
-		[UnityEngine.SerializeField] private Table_UpperBodyParts[] _tableUpperBodyPartss;
 		[UnityEngine.SerializeField] private Table_FashionUnit[] _tableFashionUnits;
-		[UnityEngine.SerializeField] private Table_HeadParts[] _tableHeadPartss;
-		[UnityEngine.SerializeField] private Table_LowerBodyParts[] _tableLowerBodyPartss;
-		[UnityEngine.SerializeField] private Table_AppendageParts[] _tableAppendagePartss;
 		[UnityEngine.SerializeField] private Table_TreasureMap[] _tableTreasureMaps;
 		[UnityEngine.SerializeField] private Table_Turntable[] _tableTurntables;
 		[UnityEngine.SerializeField] private Table_FashionCoupon[] _tableFashionCoupons;
@@ -83,6 +77,8 @@ namespace GameA.Game
 		{
 			string UnitJsonStr = ResourceManager.Instance.GetJson ("Unit", 31);
             _tableUnits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Unit[]>(UnitJsonStr);
+			string SkillJsonStr = ResourceManager.Instance.GetJson ("Skill", 31);
+            _tableSkills = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Skill[]>(SkillJsonStr);
 			string StandaloneLevelJsonStr = ResourceManager.Instance.GetJson ("StandaloneLevel", 31);
             _tableStandaloneLevels = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneLevel[]>(StandaloneLevelJsonStr);
 			string StarRequireJsonStr = ResourceManager.Instance.GetJson ("StarRequire", 31);
@@ -93,16 +89,8 @@ namespace GameA.Game
             _tableRewards = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Reward[]>(RewardJsonStr);
 			string FashionShopJsonStr = ResourceManager.Instance.GetJson ("FashionShop", 31);
             _tableFashionShops = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionShop[]>(FashionShopJsonStr);
-			string UpperBodyPartsJsonStr = ResourceManager.Instance.GetJson ("UpperBodyParts", 31);
-            _tableUpperBodyPartss = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_UpperBodyParts[]>(UpperBodyPartsJsonStr);
 			string FashionUnitJsonStr = ResourceManager.Instance.GetJson ("FashionUnit", 31);
             _tableFashionUnits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionUnit[]>(FashionUnitJsonStr);
-			string HeadPartsJsonStr = ResourceManager.Instance.GetJson ("HeadParts", 31);
-            _tableHeadPartss = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_HeadParts[]>(HeadPartsJsonStr);
-			string LowerBodyPartsJsonStr = ResourceManager.Instance.GetJson ("LowerBodyParts", 31);
-            _tableLowerBodyPartss = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_LowerBodyParts[]>(LowerBodyPartsJsonStr);
-			string AppendagePartsJsonStr = ResourceManager.Instance.GetJson ("AppendageParts", 31);
-            _tableAppendagePartss = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AppendageParts[]>(AppendagePartsJsonStr);
 			string TreasureMapJsonStr = ResourceManager.Instance.GetJson ("TreasureMap", 31);
             _tableTreasureMaps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_TreasureMap[]>(TreasureMapJsonStr);
 			string TurntableJsonStr = ResourceManager.Instance.GetJson ("Turntable", 31);
@@ -145,6 +133,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableUnits table.Id {0} is duplicated!", _tableUnits[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableSkills.Length; i++)
+			{
+				if (!Table_SkillDic.ContainsKey(_tableSkills[i].Id))
+				{
+					Table_SkillDic.Add(_tableSkills[i].Id,_tableSkills[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableSkills table.Id {0} is duplicated!", _tableSkills[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableStandaloneLevels.Length; i++)
@@ -202,17 +201,6 @@ namespace GameA.Game
 					LogHelper.Warning("_tableFashionShops table.Id {0} is duplicated!", _tableFashionShops[i].Id);
 				}
 			}
-			for (int i = 0; i < _tableUpperBodyPartss.Length; i++)
-			{
-				if (!Table_UpperBodyPartsDic.ContainsKey(_tableUpperBodyPartss[i].Id))
-				{
-					Table_UpperBodyPartsDic.Add(_tableUpperBodyPartss[i].Id,_tableUpperBodyPartss[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableUpperBodyPartss table.Id {0} is duplicated!", _tableUpperBodyPartss[i].Id);
-				}
-			}
 			for (int i = 0; i < _tableFashionUnits.Length; i++)
 			{
 				if (!Table_FashionUnitDic.ContainsKey(_tableFashionUnits[i].Id))
@@ -222,39 +210,6 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableFashionUnits table.Id {0} is duplicated!", _tableFashionUnits[i].Id);
-				}
-			}
-			for (int i = 0; i < _tableHeadPartss.Length; i++)
-			{
-				if (!Table_HeadPartsDic.ContainsKey(_tableHeadPartss[i].Id))
-				{
-					Table_HeadPartsDic.Add(_tableHeadPartss[i].Id,_tableHeadPartss[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableHeadPartss table.Id {0} is duplicated!", _tableHeadPartss[i].Id);
-				}
-			}
-			for (int i = 0; i < _tableLowerBodyPartss.Length; i++)
-			{
-				if (!Table_LowerBodyPartsDic.ContainsKey(_tableLowerBodyPartss[i].Id))
-				{
-					Table_LowerBodyPartsDic.Add(_tableLowerBodyPartss[i].Id,_tableLowerBodyPartss[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableLowerBodyPartss table.Id {0} is duplicated!", _tableLowerBodyPartss[i].Id);
-				}
-			}
-			for (int i = 0; i < _tableAppendagePartss.Length; i++)
-			{
-				if (!Table_AppendagePartsDic.ContainsKey(_tableAppendagePartss[i].Id))
-				{
-					Table_AppendagePartsDic.Add(_tableAppendagePartss[i].Id,_tableAppendagePartss[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableAppendagePartss table.Id {0} is duplicated!", _tableAppendagePartss[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableTreasureMaps.Length; i++)
@@ -446,6 +401,15 @@ namespace GameA.Game
 			}
 			return null;
 		}
+		public Table_Skill GetSkill(int key)
+		{
+			Table_Skill tmp;
+			if (Table_SkillDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
 		public Table_StandaloneLevel GetStandaloneLevel(int key)
 		{
 			Table_StandaloneLevel tmp;
@@ -491,46 +455,10 @@ namespace GameA.Game
 			}
 			return null;
 		}
-		public Table_UpperBodyParts GetUpperBodyParts(int key)
-		{
-			Table_UpperBodyParts tmp;
-			if (Table_UpperBodyPartsDic.TryGetValue(key,out tmp))
-			{
-				return tmp;
-			}
-			return null;
-		}
 		public Table_FashionUnit GetFashionUnit(int key)
 		{
 			Table_FashionUnit tmp;
 			if (Table_FashionUnitDic.TryGetValue(key,out tmp))
-			{
-				return tmp;
-			}
-			return null;
-		}
-		public Table_HeadParts GetHeadParts(int key)
-		{
-			Table_HeadParts tmp;
-			if (Table_HeadPartsDic.TryGetValue(key,out tmp))
-			{
-				return tmp;
-			}
-			return null;
-		}
-		public Table_LowerBodyParts GetLowerBodyParts(int key)
-		{
-			Table_LowerBodyParts tmp;
-			if (Table_LowerBodyPartsDic.TryGetValue(key,out tmp))
-			{
-				return tmp;
-			}
-			return null;
-		}
-		public Table_AppendageParts GetAppendageParts(int key)
-		{
-			Table_AppendageParts tmp;
-			if (Table_AppendagePartsDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
