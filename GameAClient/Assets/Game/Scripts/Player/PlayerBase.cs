@@ -28,11 +28,7 @@ namespace GameA.Game
         [SerializeField]
         protected int _invincibleTime;
 
-        protected int _currentMp;
-        protected int _mpSpeed = 1;
-        protected int _totalMp = 2500;
-        protected SkillCtrl _skillCtrl1;
-        protected SkillCtrl _skillCtrl2;
+        protected SkillCtrl _skillCtrl;
         protected Gun _gun;
 
         [SerializeField]
@@ -53,14 +49,9 @@ namespace GameA.Game
             get { return _playerGuid; }
         }
 
-        public override SkillCtrl SkillCtrl1
+        public override SkillCtrl SkillCtrl
         {
-            get { return _skillCtrl1; }
-        }
-
-        public override SkillCtrl SkillCtrl2
-        {
-            get { return _skillCtrl2; }
+            get { return _skillCtrl; }
         }
 
         public Box Box
@@ -122,14 +113,11 @@ namespace GameA.Game
             _playerInput = _playerInput ?? new PlayerInput(this);
             _playerInput.Reset();
 
-            _skillCtrl1 = _skillCtrl1 ?? new SkillCtrl(this);
-            _skillCtrl1.Clear();
-            _skillCtrl1.ChangeSkill<SkillWater>();
+            _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 2);
+            _skillCtrl.Clear();
+            _skillCtrl.ChangeSkill<SkillWater>(0);
+            _skillCtrl.ChangeSkill<SkillFire>(1);
 
-            _skillCtrl2 = _skillCtrl2 ?? new SkillCtrl(this);
-            _skillCtrl2.Clear();
-
-            UpdateMp(0);
             _dieTime = 0;
             _flashTime = 0;
             _invincibleTime = 0;
@@ -177,11 +165,7 @@ namespace GameA.Game
                 if (_attackedTimer <= 0)
                 {
                     _playerInput.UpdateLogic();
-                    _skillCtrl1.UpdateLogic();
-                    if (_skillCtrl2.UpdateLogic())
-                    {
-                        UpdateMp(Util.ConstantLerp(_currentMp, _totalMp, _mpSpeed));
-                    }
+                    _skillCtrl.UpdateLogic();
                 }
                 CheckGround();
                 CheckClimb();
@@ -695,66 +679,6 @@ namespace GameA.Game
                 }
             }
         }
-
-        #region skill
-
-        public override void ChangeSkill<T>()
-        {
-            if (_skillCtrl2 != null)
-            {
-                if (_skillCtrl2.ChangeSkill<T>())
-                {
-                    UpdateMp(0);
-                }
-            }
-        }
-
-        private void UpdateMp(int mp)
-        {
-            if (_currentMp == mp)
-            {
-                return;
-            }
-            _currentMp = Math.Min(_totalMp, mp);
-            Messenger<int, int>.Broadcast(EMessengerType.OnMPChanged, _currentMp, _totalMp);
-        }
-
-        internal override int AddMp(int mp)
-        {
-            var oldMp = _currentMp;
-            UpdateMp(_currentMp + mp);
-            return _currentMp - oldMp;
-        }
-
-        internal bool Skill()
-        {
-            if (_skillCtrl2 == null)
-            {
-                return false;
-            }
-            if (_currentMp < _skillCtrl2.UseMp)
-            {
-                //TODO UI提示
-                LogHelper.Warning("MP is not enough!");
-                return false;
-            }
-            if (!_skillCtrl2.Fire())
-            {
-                return false;
-            }
-            UpdateMp(_currentMp - _skillCtrl2.UseMp);
-            return true;
-        }
-
-        internal void SkillWater()
-        {
-            if (_skillCtrl1 != null)
-            {
-                _skillCtrl1.Fire();
-            }
-        }
-
-        #endregion
 
         #endregion
 

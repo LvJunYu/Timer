@@ -14,70 +14,87 @@ namespace GameA.Game
 {
     public class SkillCtrl
     {
-        [SerializeField] protected SkillBase _currentSkill;
+        [SerializeField] protected SkillBase[] _currentSkills;
         protected UnitBase _owner;
 
-        public SkillCtrl(UnitBase owner)
+        public SkillCtrl(UnitBase owner, int count)
         {
             _owner = owner;
+            _currentSkills = new SkillBase[count];
         }
 
-        public SkillBase CurrentSkill
+        public SkillBase[] CurrentSkills
         {
-            get { return _currentSkill; }
+            get { return _currentSkills; }
         }
 
-        public int UseMp
+        public bool ChangeSkill<T>(int trackIndex) where T : class
         {
-            get { return _currentSkill != null ? _currentSkill.UseMp : 0; }
-        }
-
-        public bool ChangeSkill<T>() where T : class
-        {
-            if (_currentSkill != null)
+            if (!CheckValid(trackIndex))
             {
-                if (_currentSkill.GetType() == typeof (T))
+                return false;
+            }
+            if (_currentSkills[trackIndex] != null)
+            {
+                if (_currentSkills[trackIndex].GetType() == typeof(T))
                 {
                     return false;
                 }
-                _currentSkill.Exit();
-                _currentSkill = null;
+                _currentSkills[trackIndex].Exit();
+                _currentSkills[trackIndex] = null;
             }
-            _currentSkill = (SkillBase)Activator.CreateInstance(typeof(T));
-            if (_currentSkill == null)
+            _currentSkills[trackIndex] = (SkillBase)Activator.CreateInstance(typeof(T));
+            if (_currentSkills[trackIndex] == null)
             {
                 LogHelper.Error("CreateInstance Failed, {0}", typeof(T).Name);
                 return false;
             }
-            _currentSkill.Enter(_owner);
+            _currentSkills[trackIndex].Enter(_owner);
             return true;
         }
 
         public void Clear()
         {
-            _currentSkill = null;
+            for (int i = 0; i < _currentSkills.Length; i++)
+            {
+                _currentSkills[i] = null;
+            }
         }
 
-        public bool Fire()
+        public void UpdateLogic()
         {
-            if (_currentSkill == null)
+            for (int i = 0; i < _currentSkills.Length; i++)
+            {
+                if (_currentSkills[i] != null)
+                {
+                    _currentSkills[i].UpdateLogic();
+                }
+            }
+        }
+
+        public bool Fire(int trackIndex)
+        {
+            if (!CheckValid(trackIndex))
             {
                 return false;
             }
-            if (!_currentSkill.Fire())
+            if (_currentSkills[trackIndex] == null)
+            {
+                return false;
+            }
+            if (!_currentSkills[trackIndex].Fire())
             {
                 return false;
             }
             return true;
         }
 
-        public bool UpdateLogic()
+        private bool CheckValid(int trackIndex)
         {
-            if (_currentSkill == null)
+            if (trackIndex < 0 || trackIndex >= _currentSkills.Length)
             {
                 return false;
             }
-            _currentSkill.UpdateLogic();
             return true;
         }
     }

@@ -104,12 +104,12 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.SkillCtrl2 != null)
+            if (other.SkillCtrl != null)
             {
                 OnTrigger(other);
-                //如果技能不一样
-                var addedMp = other.AddMp(_currentMp);
-                _currentMp -= addedMp;
+                ////如果技能不一样
+                //var addedMp = other.AddMp(_currentMp);
+                //_currentMp -= addedMp;
             }
             return base.OnUpHit(other, ref y, checkOnly);
         }
@@ -119,16 +119,16 @@ namespace GameA.Game
             switch (_eSkillType)
             {
                 case ESkillType.Fire:
-                    other.ChangeSkill<SkillFire>();
+                    other.SkillCtrl.ChangeSkill<SkillFire>(0);
                     break;
                 case ESkillType.Ice:
-                    other.ChangeSkill<SkillIce>();
+                    other.SkillCtrl.ChangeSkill<SkillIce>(0);
                     break;
                 case ESkillType.Jelly:
-                    other.ChangeSkill<SkillJelly>();
+                    other.SkillCtrl.ChangeSkill<SkillJelly>(0);
                     break;
                 case ESkillType.Clay:
-                    other.ChangeSkill<SkillClay>();
+                    other.SkillCtrl.ChangeSkill<SkillClay>(0);
                     break;
             }
         }

@@ -17,36 +17,38 @@ namespace GameA.Game
     {
         [SerializeField]
         protected ESkillType _eSkillType;
-
-        protected int _useMp;
-
+        protected int _totalCount;
+        protected int _cdTime;
+        protected int _chargerTime;
+        protected int _duration;
+        protected int _cure;
+        protected int _damage;
         /// <summary>
-        /// 攻击举例
-        /// </summary>
-        [SerializeField] protected int _range;
-        [SerializeField]protected int _radius;
-        /// <summary>
-        /// CD时间
+        /// 攻击距离
         /// </summary>
         [SerializeField]
-        protected int _cdTime;
+        protected int _range;
+        [SerializeField]
+        protected int _radius;
+
+        protected int _currentCount;
 
         /// <summary>
         /// 定时器
         /// </summary>
         [SerializeField]
         protected int _timerCD;
+        protected int _timerCharger;
 
         protected int _timerAnimation;
         protected int _cdAnimation;
 
+        protected int _bulletId;
         [SerializeField]
         protected int _bulletSpeed;
 
         [SerializeField]
         protected UnitBase _owner;
-
-        protected int _bulletId;
 
         public int BulletSpeed
         {
@@ -56,11 +58,6 @@ namespace GameA.Game
         public UnitBase Owner
         {
             get { return _owner; }
-        }
-
-        public int UseMp
-        {
-            get { return _useMp; }
         }
 
         public int Radius
@@ -81,14 +78,16 @@ namespace GameA.Game
         internal virtual void Enter(UnitBase ower)
         {
             _owner = ower;
-            _radius = 320;
-            _range = 10*ConstDefineGM2D.ServerTileScale;
+            _totalCount = 20;
+            _currentCount = _totalCount;
             _timerCD = 0;
-            _cdTime = 8;
+            _cdTime = 7;
+            _chargerTime = 50;
+            _radius = 320;
+            _range = 6400;
             _bulletSpeed = 200;
             _timerAnimation = 0;
             _cdAnimation = 0;
-            _useMp = 400;
         }
 
         internal void SetValue(int cdTime, int range, int cdAnimation = 0)
@@ -112,6 +111,15 @@ namespace GameA.Game
             {
                 _timerCD--;
             }
+            if (_timerCharger > 0)
+            {
+                _timerCharger--;
+                if (_timerCharger == 0)
+                {
+                    _currentCount = _totalCount;
+                    //LogHelper.Debug("Charge End");
+                }
+            }
             if (_timerAnimation > 0)
             {
                 _timerAnimation--;
@@ -125,6 +133,11 @@ namespace GameA.Game
 
         public bool Fire()
         {
+            if (_currentCount == 0)
+            {
+                //LogHelper.Debug("Charging");
+                return false;
+            }
             if (_timerCD > 0)
             {
                 return false;
@@ -135,13 +148,18 @@ namespace GameA.Game
             {
                 //生成子弹
                 CreateBullet();
-                //LogHelper.Debug("Skill: {0} CreateBullet: {1}",this, bullet);
             }
             return true;
         }
 
         private void CreateBullet()
         {
+            _currentCount--;
+            if (_currentCount == 0)
+            {
+                _timerCharger = _chargerTime;
+                //LogHelper.Debug("Charge Start");
+            }
             if (_bulletId == 0)
             {
                 return;
@@ -151,6 +169,27 @@ namespace GameA.Game
             {
                 bullet.Run(this);
             }
+        }
+
+        private void UpdateBulletCount(int count)
+        {
+            if (_owner == null || !_owner.IsMain)
+            {
+                return;
+            }
+            if (_currentCount == count)
+            {
+                return;
+            }
+            _currentCount = Math.Min(_totalCount, count);
+            Messenger<int, int>.Broadcast(EMessengerType.OnMPChanged, _currentCount, _totalCount);
+        }
+
+        public int AddBullet(int count)
+        {
+            var oldMp = _currentCount;
+            UpdateBulletCount(_currentCount + count);
+            return _currentCount - oldMp;
         }
 
         private IntVec2 GetBulletPos(int bulletId)

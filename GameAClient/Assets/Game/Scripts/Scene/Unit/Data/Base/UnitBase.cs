@@ -206,12 +206,7 @@ namespace GameA.Game
             set { _canAttack = value; }
         }
 
-        public virtual SkillCtrl SkillCtrl1
-        {
-            get { return null; }
-        }
-
-        public virtual SkillCtrl SkillCtrl2
+        public virtual SkillCtrl SkillCtrl
         {
             get { return null; }
         }
@@ -1526,16 +1521,6 @@ namespace GameA.Game
             {
                 effect.Stop();
             }
-        }
-
-        internal virtual int AddMp(int mp)
-        {
-            return 0;
-        }
-
-        public virtual void ChangeSkill<T>() where T : class
-        {
-
         }
     }
 }

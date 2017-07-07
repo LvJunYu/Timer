@@ -20,7 +20,7 @@ namespace GameA.Game
                 return false;
             }
             _timeScale = 3;
-            _skillCtrl.CurrentSkill.SetValue(8, 60, AnimationLength / _timeScale);
+            _skillCtrl.CurrentSkills[0].SetValue(8, 60, AnimationLength / _timeScale);
             return true;
         }
     }
