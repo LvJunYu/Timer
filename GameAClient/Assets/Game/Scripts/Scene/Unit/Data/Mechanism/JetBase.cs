@@ -30,8 +30,8 @@ namespace GameA.Game
                 return false;
             }
             _shootAngle = (_unitDesc.Rotation) * 90;
-            _skillCtrl = new SkillCtrl(this);
-            _skillCtrl.ChangeSkill<SkillFire>();
+            _skillCtrl = new SkillCtrl(this, 1);
+            _skillCtrl.ChangeSkill<SkillFire>(0);
             _timeScale = 1;
             return true;
         }
@@ -67,7 +67,7 @@ namespace GameA.Game
                 if (_skillCtrl != null)
                 {
                     _skillCtrl.UpdateLogic();
-                    if (_skillCtrl.Fire())
+                    if (_skillCtrl.Fire(0))
                     {
                         if (_animation != null)
                         {

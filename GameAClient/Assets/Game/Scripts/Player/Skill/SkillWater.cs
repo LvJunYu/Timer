@@ -20,7 +20,6 @@ namespace GameA.Game
             base.Enter(ower);
             _eSkillType = ESkillType.Water;
             _bulletId = 10001;
-            _useMp = 0;
         }
     }
 }

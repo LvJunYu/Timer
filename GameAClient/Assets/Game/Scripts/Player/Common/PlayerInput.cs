@@ -735,11 +735,11 @@ namespace GameA.Game
 
             if (_skill1Input && IsCharacterAbilityAvailable(ECharacterAbility.Shoot))
             {
-                _player.SkillWater();
+                _player.SkillCtrl.Fire(0);
             }
             if (Skill2InputDown && IsCharacterAbilityAvailable(ECharacterAbility.Shoot))
             {
-                _player.Skill();
+                _player.SkillCtrl.Fire(1);
             }
         }
 
@@ -757,7 +757,6 @@ namespace GameA.Game
         {
             return GameProcessManager.Instance.IsCharacterAbilityAvailable(eCharacterAbility);
         }
-
 
         public void UpdateRenderer()
         {

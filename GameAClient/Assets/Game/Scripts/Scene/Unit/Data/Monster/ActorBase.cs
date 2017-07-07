@@ -32,6 +32,10 @@ namespace GameA.Game
         protected int _attackedTimer;
         protected int _fireTimer;
 
+        protected float _hp = 500;
+        protected float _hpRecover = 200 * ConstDefineGM2D.FixedDeltaTime;
+        protected int _hpRecoverTimer = 3 * ConstDefineGM2D.FixedFrameCount;
+
         public int AttackedTimer
         {
             get { return _attackedTimer; }
