@@ -14,51 +14,116 @@ namespace GameA
     public class UICtrlMailDetail : UICtrlGenericBase<UIViewMailDetail>
     {
         private Mail _mail;
-        List<long> idList = new List<long>();
+        private List<long> _idList = new List<long>();
+        private Reward _reward = new Reward();
+        private USCtrlGameFinishReward[] _rewardCtrl;
 
         public void Set(Mail mail)
         {
+            
             _mail = mail;
-            idList.Add(mail.Id);
+            _idList.Clear();
+            _idList.Add(mail.Id);
+            _reward = mail.AttachItemList;
             _cachedView.MailSource.text = JudgeSource(mail);
             _cachedView.Title.text = mail.Title;
             _cachedView.MainBody.text = mail.Content;
+            if (mail.ReceiptedFlag)
+            {
+                _cachedView.RewardObj.SetActiveEx(false);
+            }
+            else
+                _cachedView.RewardObj.SetActiveEx(true);
+
             _cachedView.Date.text = GameATools.GetYearMonthDayHourMinuteSecondByMilli(mail.CreateTime, 1);
             mail.ReadFlag = true;
             RemoteCommands.MarkMailRead(
                 EMarkMailReadTargetType.EMMRC_List,
-                idList,
+                _idList,
                 null, null
                 );
             _cachedView.Fetch.onClick.AddListener(Fentch);
             _cachedView.Delete.onClick.AddListener(Delete);
+            _cachedView.Close.onClick.AddListener(Close);
+
+            _rewardCtrl = new USCtrlGameFinishReward[_cachedView.Rewards.Length];
+            for (int i = 0; i < _cachedView.Rewards.Length; i++)
+            {
+                _rewardCtrl[i] = new USCtrlGameFinishReward();
+                _rewardCtrl[i].Init(_cachedView.Rewards[i]);
+            }
+
+            UpdateReward(_reward);
 
         }
+
+        private void UpdateReward(Reward reward)
+        {
+            if (null != reward && reward.IsInited)
+            {
+                int i = 0;
+                for (; i < _rewardCtrl.Length && i < reward.ItemList.Count; i++)
+                {
+                    _rewardCtrl[i].Set(reward.ItemList[i].GetSprite(), reward.ItemList[i].Count.ToString()
+                    );
+                }
+                for (; i < _rewardCtrl.Length; i++)
+                {
+                    _rewardCtrl[i].Hide();
+                }
+            }
+            else
+            {
+                for (int i = 0; i < _rewardCtrl.Length; i++)
+                {
+                    _rewardCtrl[i].Hide();
+                }
+            }
+        }
+
+
+        private void Close()
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlMail>().LoadMyMailList();
+            SocialGUIManager.Instance.CloseUI<UICtrlMailDetail>();
+           
+        }
+
+    
+
 
         private void Fentch()
         {
             RemoteCommands.ReceiptMailAttach(
                  EReceiptMailAttachTargetType.ERMATT_List,
-                 idList,
-                 null, null
+                 _idList,
+                 (ret)=>
+                 {
+                     _cachedView.RewardObj.SetActiveEx(false);
+
+                 }
+        , null
                  );
 
         }
 
         private void Delete()
         {
-            RemoteCommands.DeleteMail(
+           RemoteCommands.DeleteMail(
            EDeleteMailTargetType.EDMTT_List,
-           idList,
-           null, null
+           _idList,
+                (ret) =>
+                {
+                    Close();
+                    SocialGUIManager.Instance.GetUI<UICtrlMail>().LoadMyMailList();
+                }, null
            );
-
         }
 
         private String JudgeSource(Mail mail)
         {
             String source;
-            if (mail.ReadFlag)
+            if (mail.Type ==EMailType.EMailT_System)
             {
 
                 return source = "系统邮件";

@@ -33,8 +33,8 @@ namespace GameA.Game
 		/// <summary>
         /// 冷却
         /// </summary>
-		[ColumnMapping("Cooldown")]
-		public float Cooldown;
+		[ColumnMapping("ChargeTime")]
+		public float ChargeTime;
 		/// <summary>
         /// 治疗
         /// </summary>
@@ -48,13 +48,13 @@ namespace GameA.Game
 		/// <summary>
         /// 范围
         /// </summary>
-		[ColumnMapping("Range")]
-		public float Range;
+		[ColumnMapping("Radius")]
+		public float Radius;
 		/// <summary>
         /// 距离
         /// </summary>
-		[ColumnMapping("AttackDistance")]
-		public float AttackDistance;
+		[ColumnMapping("Range")]
+		public float Range;
 		/// <summary>
         /// 
         /// </summary>

@@ -17,7 +17,7 @@ namespace GameA
         public Button Delete ;
         public Text Date;
         public Text MainBody;
-
-
+        public USViewGameFinishReward[] Rewards;
+        public GameObject RewardObj;
     }
 }

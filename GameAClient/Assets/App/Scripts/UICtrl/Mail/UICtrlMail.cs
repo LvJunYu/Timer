@@ -32,8 +32,17 @@ namespace GameA
             //_cachedView.FollowCount.text = LocalUser.Instance.User.RelationStatistic.FollowCount.ToString();
             //_cachedView.FollowerCount.text = LocalUser.Instance.User.RelationStatistic.FollowerCount.ToString();
             //InitTagGroup();
-            LoadMyMailList();
+            
             _cachedView.DeleteAll.onClick.AddListener(Delete);
+            _cachedView.Close.onClick.AddListener(OnCloseBtnClick);
+        }
+
+
+        protected override void OnOpen(object parameter)
+        {
+            base.OnOpen(parameter);
+            LoadMyMailList();
+
         }
 
         private void Delete()
@@ -42,12 +51,16 @@ namespace GameA
          RemoteCommands.DeleteMail(
          EDeleteMailTargetType.EDMTT_All,
          idList,
-         null, null
+             (ret) =>
+             {
+                 SocialGUIManager.Instance.GetUI<UICtrlMail>().LoadMyMailList();
+             }
+             , null
          );
 
         }
 
-        private void LoadMyMailList()
+        public void LoadMyMailList()
         {
             LocalUser.Instance.Mail.Request(StartIndex, MaxCount,
             ()=>

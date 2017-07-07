@@ -33,7 +33,7 @@ namespace GameA
         private String JudgeSource(Mail mail)
         {
             String source;
-            if (mail.ReadFlag)
+            if (mail.Type == EMailType.EMailT_System)
             {
 
                 return source = "系统邮件";
