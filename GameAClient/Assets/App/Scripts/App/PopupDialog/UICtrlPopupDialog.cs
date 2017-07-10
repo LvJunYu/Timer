@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using SoyEngine;
-using UnityEngine;
 using System;
 
 namespace GameA
@@ -46,7 +45,7 @@ namespace GameA
 
         private void MessengerShowDialogHandler(string msg, string title, KeyValuePair<string, Action>[] btnParam)
         {
-            if (!this.IsOpen)
+            if (!IsOpen)
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlPopupDialog>();
             }
@@ -67,7 +66,7 @@ namespace GameA
             }
             if(!_isOpen)
             {
-                SocialGUIManager.Instance.OpenUI<UICtrlPopupDialog>(null);
+                SocialGUIManager.Instance.OpenUI<UICtrlPopupDialog>();
             }
             UMCtrlDialog ctrl = new UMCtrlDialog();
             ctrl.Init(_cachedView.ContentDock);
