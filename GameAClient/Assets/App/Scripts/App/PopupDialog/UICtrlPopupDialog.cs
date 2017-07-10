@@ -67,7 +67,7 @@ namespace GameA
             }
             if(!_isOpen)
             {
-                Open(null);
+                SocialGUIManager.Instance.OpenUI<UICtrlPopupDialog>(null);
             }
             UMCtrlDialog ctrl = new UMCtrlDialog();
             ctrl.Init(_cachedView.ContentDock);
