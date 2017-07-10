@@ -16,7 +16,7 @@ namespace GameA.Game
     {
         #region private
 
-        public static CameraManager _instance;
+        private static CameraManager _instance;
 
         private float _aspectRatio;
         private Rect _cameraMoveRect = new Rect();
