@@ -25,6 +25,7 @@ namespace GameA
 		public ELanguage Language = ELanguage.CN;
         [SerializeField] private EEnvironment _env;
 		[SerializeField] private bool _clearCache;
+        
         [SerializeField] private AddressConfig[] _appServerAddress;
 
 		internal static SocialApp Instance;
