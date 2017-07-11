@@ -118,13 +118,13 @@ namespace GameA.Game
         /// 显示帧 影响逻辑判断录像正确回放的代码禁止放这里
         /// </summary>
         /// <param name="deltaTime"></param>
-        public void Update(float deltaTime)
+        public void Update()
         {
             if (null == _curCameraCtrl)
             {
                 return;
             }
-            _curCameraCtrl.Update(deltaTime);
+            _curCameraCtrl.Update();
         }
 
         public void SetCameraState(ECameraState cameraState)

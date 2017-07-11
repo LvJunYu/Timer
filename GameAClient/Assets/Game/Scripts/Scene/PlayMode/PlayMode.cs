@@ -29,8 +29,6 @@ namespace GameA.Game
 
         private readonly List<UnitBase> _waitDestroyUnits = new List<UnitBase>();
         private List<int> _boostItems;
-        private Vector2 _cameraEditPosCache = Vector2.zero;
-        private float _cameraEditOrthoSizeCache = 0f;
         [SerializeField] private ERunMode _eRunMode = ERunMode.Normal;
 
         [SerializeField] private IntVec2 _focusPos;
@@ -475,12 +473,8 @@ namespace GameA.Game
             }
             _run = false;
             Reset();
-            if (_cameraEditPosCache != Vector2.zero)
-            {
-                CameraManager.Instance.SetEditorModeStartPos(_cameraEditPosCache);
-                CameraManager.Instance.SetFinalOrthoSize(_cameraEditOrthoSizeCache);
-            }
-            UpdateWorldRegion(GM2DTools.WorldToTile(CameraManager.Instance.FinalPos), true);
+            CameraManager.Instance.SetCameraState(ECameraState.Edit);
+            UpdateWorldRegion(GM2DTools.WorldToTile(CameraManager.Instance.MainCamaraPos), true);
             UnitBase[] units = ColliderScene2D.Instance.Units.Values.ToArray();
             for (int i = 0; i < units.Length; i++)
             {
@@ -495,8 +489,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            _cameraEditPosCache = CameraManager.Instance.FinalPos;
-            _cameraEditOrthoSizeCache = CameraManager.Instance.FinalOrthoSize;
             PreparePlay();
             return true;
         }
@@ -507,6 +499,7 @@ namespace GameA.Game
             {
                 return false;
             }
+            CameraManager.Instance.SetCameraState(ECameraState.None);
             Reset();
             PreparePlay();
             return true;
@@ -517,6 +510,7 @@ namespace GameA.Game
             _run = false;
             BeforePlay();
             _sceneState.StartPlay();
+            CameraManager.Instance.SetCameraState(ECameraState.Play);
             var colliderPos = new IntVec2(_mainPlayer.ColliderGrid.XMin, _mainPlayer.ColliderGrid.YMin);
             UpdateWorldRegion(colliderPos, true);
         }
@@ -570,7 +564,7 @@ namespace GameA.Game
         /// <param name="isInit"></param>
         public void UpdateWorldRegion(IntVec2 mainPlayerPos, bool isInit = false)
         {
-            CameraManager.Instance.SetRollByMainPlayerPos(mainPlayerPos);
+            CameraManager.Instance.CameraCtrlPlay.SetRollPosImmediately(mainPlayerPos);
             _focusPos = GetFocusPos(mainPlayerPos);
             if (isInit)
             {

@@ -33,6 +33,13 @@ namespace GameA.Game
             InitMapCameraParam();
         }
 
+        public override void Enter()
+        {
+            base.Enter();
+            InnerCameraManager.RendererCamera.orthographicSize = ConstDefineGM2D.CameraOrthoSizeOnPlay;
+            UpdatePosByPlayer();
+        }
+
         /// <summary>
         /// 直接设置摄像机位置
         /// </summary>
@@ -53,9 +60,9 @@ namespace GameA.Game
 
         private void InitMapCameraParam()
         {
-            Vector2 cameraViewWorldSize = new Vector2(
-                ConstDefineGM2D.CameraOrthoSizeOnPlay * 2,
-                ConstDefineGM2D.CameraOrthoSizeOnPlay * 2 * GM2DGame.Instance.GameScreenAspectRatio);
+            Vector2 cameraViewWorldSize =
+                new Vector2(ConstDefineGM2D.CameraOrthoSizeOnPlay * 2 * GM2DGame.Instance.GameScreenAspectRatio,
+                    ConstDefineGM2D.CameraOrthoSizeOnPlay * 2);
             _cameraViewTileSize = GM2DTools.WorldToTile(cameraViewWorldSize);
             _cameraViewHalfTileSize = _cameraViewTileSize / 2;
 
@@ -113,13 +120,13 @@ namespace GameA.Game
                 {
                     _rollPos.y = _targetRollPos.y;
                 }
-                else if (dx < 250)
+                else if (dy < 250)
                 {
                     _rollPos.y += 10;
                 }
                 else
                 {
-                    _rollPos.y += dx / 25;
+                    _rollPos.y += dy / 25;
                 }
             }
             LimitRollPos();

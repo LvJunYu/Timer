@@ -49,8 +49,6 @@ namespace GameA
 
 		public static int OnScreenOperatorSuccess = SoyEngine.EMessengerType.NextId++;
 
-		public static int OnEditorModeCameraMove = SoyEngine.EMessengerType.NextId++;
-
         public static int OnEdit = SoyEngine.EMessengerType.NextId++;
         public static int OnPlay = SoyEngine.EMessengerType.NextId++;
 

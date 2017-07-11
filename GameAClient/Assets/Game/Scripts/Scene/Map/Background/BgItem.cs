@@ -51,12 +51,12 @@ namespace GameA.Game
             {
                 return;
             }
-            UpdateMove();
             UpdateFollow(GM2DTools.TileToWorld(deltaPos));
+            UpdateMove();
             _trans.position = _curPos;
         }
 
-        protected virtual  bool UpdateMove()
+        protected virtual bool UpdateMove()
         {
             if (_tableBg.MoveSpeedX != 0)
             {

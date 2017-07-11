@@ -31,34 +31,20 @@ namespace GameA.Game
             InnerCameraManager = CameraManager.Instance;
         }
 
-        public virtual void Init()
-        {
-            
-        }
+        public virtual void Init() { }
 
-        public virtual void OnMapReady()
-        {
-            
-        }
+        public virtual void OnMapReady() { }
 
-        public abstract void UpdateLogic(float deltaTime);
+        public virtual void UpdateLogic(float deltaTime) { }
 
-        public virtual void Update(float deltaTime)
-        {
-        }
+        public virtual void Update() { }
 
-        public virtual void Enter()
-        {
-        }
+        public virtual void Enter() { }
 
-        public virtual void Exit()
-        {
-        }
+        public virtual void Exit() { }
 
-        public virtual void Destory()
-        {
-            
-        }
+        public virtual void Destory() { }
+        
         #endregion
     }
 }

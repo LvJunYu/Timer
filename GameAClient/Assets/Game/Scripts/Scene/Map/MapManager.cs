@@ -208,7 +208,6 @@ namespace GameA.Game
 	    public void Update()
 	    {
             var pos = GM2DTools.WorldToTile(CameraManager.Instance.MainCameraTrans.position);
-            BgScene2D.Instance.UpdateLogic(pos);
 	        if (EditMode.Instance != null)
 	        {
                 ColliderScene2D.Instance.UpdateLogic(pos);
@@ -235,7 +234,6 @@ namespace GameA.Game
 		{
             var mapWorldStartPos = GM2DTools.TileToWorld(ConstDefineGM2D.MapStartPos);
             DataScene2D.Instance.SetDefaultMapSize(_defaultMapSize * ConstDefineGM2D.ServerTileScale);
-            InitEditorCameraStartParam(new Rect(mapWorldStartPos.x, mapWorldStartPos.y, _defaultMapSize.x, _defaultMapSize.y));
 			var go = new GameObject("EditMode");
 			var editMode = go.AddComponent<EditMode>();
 			editMode.Init();
@@ -253,8 +251,6 @@ namespace GameA.Game
                 if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
                 {
 					EditMode.Instance.MapStatistics.InitWithMapData(mapData);
-                    Rect validMapRect = GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect);
-                    InitEditorCameraStartParam(validMapRect);
 				}
             }
 			GenerateMap(mapData.BgRandomSeed);
@@ -307,27 +303,8 @@ namespace GameA.Game
 		private void GenerateMap(int randomSeed)
 		{
 			GenerateBg(randomSeed);
+			CameraManager.Instance.OnMapReady();
 			_generateMapComplete = true;
-		}
-
-        private void InitEditorCameraStartParam(Rect validMapRect)
-		{
-            CameraManager.Instance.SetFinalOrthoSize((float)validMapRect.height / 2);
-            Rect cameraViewRect = CameraManager.Instance.CurCameraViewRect;
-            float cWHRatio = cameraViewRect.width / cameraViewRect.height;
-            float mWHRatio = validMapRect.width / validMapRect.height;
-
-            Vector3 pos = Vector3.zero;
-            if (cWHRatio > mWHRatio)
-            {
-                CameraManager.Instance.SetFinalOrthoSize(validMapRect.width / cWHRatio / 2);
-                pos = new Vector3(validMapRect.center.x, validMapRect.yMin + validMapRect.width / cWHRatio / 2);
-            }
-            else
-            {
-                pos = new Vector3(validMapRect.xMin + cameraViewRect.width/2, validMapRect.center.y);
-            }
-            CameraManager.Instance.SetEditorModeStartPos(pos);
 		}
 
 		public byte[] SaveMapData()

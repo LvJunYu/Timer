@@ -148,21 +148,15 @@ namespace GameA.Game
                 return;
             }
             var delPos = pos - _focusPos;
-            RefreshFollowRect(delPos);
             _focusPos = pos;
-            var iter = _items.GetEnumerator();
-            while (iter.MoveNext())
+            using (var iter = _items.GetEnumerator())
             {
-                var bgItem = iter.Current.Value;
-                bgItem.Update(delPos);
+                while (iter.MoveNext())
+                {
+                    var bgItem = iter.Current.Value;
+                    bgItem.Update(delPos);
+                }
             }
-        }
-
-        private void RefreshFollowRect(IntVec2 delPos)
-        {
-            var min = new IntVec2(_followRect.XMin, _followRect.YMin) + delPos;
-            _followRect = new Grid2D(min.x, min.y, min.x + RectSize.x - 1, min.y + RectSize.y - 1);
-            //_staticRect = new Grid2D(_followRect.XMin, _followRect.YMin + 11 * ConstDefineGM2D.ServerTileScale, _followRect.XMax, _followRect.YMax - 12 * ConstDefineGM2D.ServerTileScale);
         }
 
         public void GenerateBackground(int seed = 0)
