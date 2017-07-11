@@ -13,7 +13,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     // 编辑模式下的部分逻辑
-    public partial class CameraManager : IDisposable
+    public partial class CameraManager0
     {
         #region private
 

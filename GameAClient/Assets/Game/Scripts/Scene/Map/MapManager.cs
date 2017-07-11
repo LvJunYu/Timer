@@ -207,7 +207,7 @@ namespace GameA.Game
 
 	    public void Update()
 	    {
-            var pos = GM2DTools.WorldToTile(CameraManager.Instance.MainCamaraTrans.position);
+            var pos = GM2DTools.WorldToTile(CameraManager.Instance.MainCameraTrans.position);
             BgScene2D.Instance.UpdateLogic(pos);
 	        if (EditMode.Instance != null)
 	        {

@@ -14,9 +14,9 @@ namespace GameA.Game
 {
 	public class PositionSpringbackEffect : MonoBehaviour
 	{
-		public float InertiaFactor = 1;
+		public const float InertiaFactor = 1;
 
-		public float Resistance = 30;
+		public const float Resistance = 30;
 		public const float TimePreFrame = 1f/30;
 		public const float SpringbackCheckPrecision = 0.01f;
         public const float SmallDistance = 0.01f;
