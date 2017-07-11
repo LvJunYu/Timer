@@ -1,4 +1,4 @@
-// 获取社交用户列表 | 获取社交用户列表
+// 查询邮件 | 查询邮件
 using System;
 using System.Collections.Generic;
 using SoyEngine.Proto;
@@ -6,7 +6,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public partial class RelationUserList : SyncronisticData {
+    public partial class MailList : SyncronisticData {
         #region 字段
         // sc fields----------------------------------
         /// <summary>
@@ -16,21 +16,21 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private long _updataTime;
+        private long _updateTime;
         /// <summary>
         /// 
         /// </summary>
-        private List<UserInfoSimple> _dataList;
+        private List<Mail> _dataList;
+        /// <summary>
+        /// 
+        /// </summary>
+        private int _totalCount;
+        /// <summary>
+        /// 
+        /// </summary>
+        private int _unreadCount;
 
         // cs fields----------------------------------
-        /// <summary>
-        /// 用户id
-        /// </summary>
-        private long _cs_userId;
-        /// <summary>
-        /// 
-        /// </summary>
-        private ERelationUserType _cs_dataType;
         /// <summary>
         /// 
         /// </summary>
@@ -39,14 +39,6 @@ namespace GameA
         /// 
         /// </summary>
         private int _cs_maxCount;
-        /// <summary>
-        /// 
-        /// </summary>
-        private ERelationUserOrderBy _cs_orderBy;
-        /// <summary>
-        /// 升序降序
-        /// </summary>
-        private EOrderType _cs_orderType;
         #endregion
 
         #region 属性
@@ -64,39 +56,45 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public long UpdataTime { 
-            get { return _updataTime; }
-            set { if (_updataTime != value) {
-                _updataTime = value;
+        public long UpdateTime { 
+            get { return _updateTime; }
+            set { if (_updateTime != value) {
+                _updateTime = value;
                 SetDirty();
             }}
         }
         /// <summary>
         /// 
         /// </summary>
-        public List<UserInfoSimple> DataList { 
+        public List<Mail> DataList { 
             get { return _dataList; }
             set { if (_dataList != value) {
                 _dataList = value;
                 SetDirty();
             }}
         }
-        
-        // cs properties----------------------------------
         /// <summary>
-        /// 用户id
+        /// 
         /// </summary>
-        public long CS_UserId { 
-            get { return _cs_userId; }
-            set { _cs_userId = value; }
+        public int TotalCount { 
+            get { return _totalCount; }
+            set { if (_totalCount != value) {
+                _totalCount = value;
+                SetDirty();
+            }}
         }
         /// <summary>
         /// 
         /// </summary>
-        public ERelationUserType CS_DataType { 
-            get { return _cs_dataType; }
-            set { _cs_dataType = value; }
+        public int UnreadCount { 
+            get { return _unreadCount; }
+            set { if (_unreadCount != value) {
+                _unreadCount = value;
+                SetDirty();
+            }}
         }
+        
+        // cs properties----------------------------------
         /// <summary>
         /// 
         /// </summary>
@@ -110,20 +108,6 @@ namespace GameA
         public int CS_MaxCount { 
             get { return _cs_maxCount; }
             set { _cs_maxCount = value; }
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        public ERelationUserOrderBy CS_OrderBy { 
-            get { return _cs_orderBy; }
-            set { _cs_orderBy = value; }
-        }
-        /// <summary>
-        /// 升序降序
-        /// </summary>
-        public EOrderType CS_OrderType { 
-            get { return _cs_orderType; }
-            set { _cs_orderType = value; }
         }
 
         public override bool IsDirty {
@@ -142,32 +126,16 @@ namespace GameA
 
         #region 方法
         /// <summary>
-		/// 获取社交用户列表
+		/// 查询邮件
 		/// </summary>
-		/// <param name="userId">用户id.</param>
-		/// <param name="dataType">.</param>
 		/// <param name="startInx">.</param>
 		/// <param name="maxCount">.</param>
-		/// <param name="orderBy">.</param>
-		/// <param name="orderType">升序降序.</param>
         public void Request (
-            long userId,
-            ERelationUserType dataType,
             int startInx,
             int maxCount,
-            ERelationUserOrderBy orderBy,
-            EOrderType orderType,
             Action successCallback, Action<ENetResultCode> failedCallback)
         {
             if (_isRequesting) {
-                if (_cs_userId != userId) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
-                if (_cs_dataType != dataType) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
                 if (_cs_startInx != startInx) {
                     if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
                     return;
@@ -176,33 +144,17 @@ namespace GameA
                     if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
                     return;
                 }
-                if (_cs_orderBy != orderBy) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
-                if (_cs_orderType != orderType) {
-                    if (null != failedCallback) failedCallback.Invoke (ENetResultCode.NR_None);
-                    return;
-                }
                 OnRequest (successCallback, failedCallback);
             } else {
-                _cs_userId = userId;
-                _cs_dataType = dataType;
                 _cs_startInx = startInx;
                 _cs_maxCount = maxCount;
-                _cs_orderBy = orderBy;
-                _cs_orderType = orderType;
                 OnRequest (successCallback, failedCallback);
 
-                Msg_CS_DAT_RelationUserList msg = new Msg_CS_DAT_RelationUserList();
-                msg.UserId = userId;
-                msg.DataType = dataType;
+                Msg_CS_DAT_MailList msg = new Msg_CS_DAT_MailList();
                 msg.StartInx = startInx;
                 msg.MaxCount = maxCount;
-                msg.OrderBy = orderBy;
-                msg.OrderType = orderType;
-                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_RelationUserList>(
-                    SoyHttpApiPath.RelationUserList, msg, ret => {
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_MailList>(
+                    SoyHttpApiPath.MailList, msg, ret => {
                         if (OnSync(ret)) {
                             OnSyncSucceed(); 
                         }
@@ -212,33 +164,35 @@ namespace GameA
             }            
         }
 
-        public bool OnSync (Msg_SC_DAT_RelationUserList msg)
+        public bool OnSync (Msg_SC_DAT_MailList msg)
         {
             if (null == msg) return false;
             _resultCode = msg.ResultCode;           
-            _updataTime = msg.UpdataTime;           
-            _dataList = new List<UserInfoSimple>();
+            _updateTime = msg.UpdateTime;           
+            _dataList = new List<Mail>();
             for (int i = 0; i < msg.DataList.Count; i++) {
-                _dataList.Add(new UserInfoSimple(msg.DataList[i]));
+                _dataList.Add(new Mail(msg.DataList[i]));
             }
+            _totalCount = msg.TotalCount;           
+            _unreadCount = msg.UnreadCount;           
             OnSyncPartial();
             return true;
         }
 
-        public void OnSyncFromParent (Msg_SC_DAT_RelationUserList msg) {
+        public void OnSyncFromParent (Msg_SC_DAT_MailList msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public RelationUserList (Msg_SC_DAT_RelationUserList msg) {
+        public MailList (Msg_SC_DAT_MailList msg) {
             if (OnSync(msg)) {
                 OnSyncSucceed();
             }
         }
 
-        public RelationUserList () { 
-            _dataList = new List<UserInfoSimple>();
+        public MailList () { 
+            _dataList = new List<Mail>();
             OnCreate();
         }
         #endregion

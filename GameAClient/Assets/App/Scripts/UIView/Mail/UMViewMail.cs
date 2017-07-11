@@ -1,16 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using SoyEngine;
+using UnityEngine.UI;
 using UnityEngine;
 
-public class UMViewMail : MonoBehaviour {
-
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+namespace GameA
+{
+    public class UMViewMail : UMViewBase
+    {
+        public Text MailSource;
+        public Text Title;
+        public Button MainBody;
+        public Text Date;
+        public Image ReadFlag;
+    }
 }

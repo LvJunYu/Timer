@@ -311,17 +311,6 @@ namespace GameA
             _recentRecordList = new List<Record>();
             OnCreate();
         }
-
-        public void ClearData()
-        {
-            _highScoreRecord = null;
-            _star1FlagRecord = null;
-            _star2FlagRecord = null;
-            _star3FlagRecord = null;
-            _highScoreFriendInfo = null;
-            _recentRecordList = null;
-        }
-
         #endregion
     }
 }

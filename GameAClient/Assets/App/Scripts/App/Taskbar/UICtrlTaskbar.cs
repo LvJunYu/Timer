@@ -27,7 +27,7 @@ namespace GameA
 	    private bool _lotteryAvailable = true;
 	    private bool _fashionShopAvailable = true;
 	    private bool _puzzleAvailable = false;
-	    private bool _mailBoxAvailable = false;
+	    private bool _mailBoxAvailable = true;
 	    private bool _friendsAvailable = true;
         
 
@@ -92,6 +92,7 @@ namespace GameA
             _cachedView.LotteryBtn.onClick.AddListener(OnLotteryBtn);
             _cachedView.UnlockAll.onClick.AddListener (OnUnlockAll);
             _cachedView.FriendsBtn.onClick.AddListener (OnFriendBtn);
+            _cachedView.MailBoxBtn.onClick.AddListener (OnMailBtn);
             SetLock(UIFunction.UI_FashionShop, _fashionShopAvailable);
             SetLock(UIFunction.UI_Friends, _friendsAvailable);
             SetLock(UIFunction.UI_Lottery, _lotteryAvailable);
@@ -247,7 +248,16 @@ namespace GameA
             }
         }
 
-		private void OnSingleGameBtn () {
+        public void OnMailBtn()
+        {
+            if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.Mail))
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlMail>();
+            }
+
+        }
+
+        private void OnSingleGameBtn () {
             SocialGUIManager.Instance.OpenUI<UICtrlSingleMode>();
 		}
 

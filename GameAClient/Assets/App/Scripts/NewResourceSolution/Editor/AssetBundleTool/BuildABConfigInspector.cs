@@ -134,7 +134,7 @@ namespace NewResourceSolution.EditorTool
                             ref allResList[i].FoldoutInEditorUI,
                             allResList[i].ResType.ToString(),
                             allResList[i].InPackageGuidList,
-                            true,
+                            allResList[i].IsFolderRes,
                             AddAsset,
                             ref dirty);
     				}

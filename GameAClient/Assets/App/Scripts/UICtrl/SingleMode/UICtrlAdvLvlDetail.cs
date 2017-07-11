@@ -84,7 +84,7 @@ namespace GameA
         protected override void OnClose() {
             
             base.OnClose ();
-            LocalUser.Instance.AdventureUserLevelDataDetail.ClearData();
+            //LocalUser.Instance.AdventureUserLevelDataDetail.ClearData();
         }
         
         protected override void InitEventListener() {

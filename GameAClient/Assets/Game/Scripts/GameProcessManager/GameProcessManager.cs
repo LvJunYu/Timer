@@ -390,5 +390,6 @@ namespace GameA.Game
         ModifyMatch,
         World,
         SocialReLationShip,
+        Mail,
     }
 }
