@@ -6,12 +6,10 @@
 *从App任何点进去游戏、关卡的时候，都是直接显示详情界面。
 ***********************************************************************/
 
-using System.Collections.Generic;
-using SoyEngine;
-using SoyEngine.Proto;
-using UnityEngine;
-using System.Collections;
 using System;
+using System.Collections;
+using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -52,16 +50,8 @@ namespace GameA.Game
         public const string GameName = "GameMaker2D";
         private GameModeBase _gameMode;
         private GameObject _inputControl;
-        private bool _resDone;
 
         private GameSettingData _settings;
-
-        private bool _runInApp = false;
-
-        public bool RunInApp
-        {
-            set { _runInApp = value; }
-        }
 
         public GameSettingData Settings
         {
@@ -100,6 +90,11 @@ namespace GameA.Game
             }
         }
 
+        public float GameScreenAspectRatio
+        {
+            get { return 1f * GameScreenWidth / GameScreenHeight; }
+        }
+
         #region 方法
 
         private void Awake()
@@ -108,7 +103,7 @@ namespace GameA.Game
         }
 
 
-        public GM2DGame() : base()
+        public GM2DGame()
         {
             Messenger.AddListener(EMessengerType.OnGameLoadError, OnGameLoadError);
             Messenger.AddListener(EMessengerType.GameFinishSuccess, OnGameFinishSuccess);
@@ -220,13 +215,6 @@ namespace GameA.Game
         private IEnumerator InitByStep()
         {
             yield return new WaitForSeconds(0.5f);
-//            _resDone = false;
-//            LocalResourceManager.Instance.DoUpdateGame("GameMaker2D", OnUpdateSuccess, OnProcess, OnUpdateFailed);
-//            while (!_resDone)
-//            {
-//                yield return new WaitForSeconds(0.1f);
-//            }
-//            LocaleManager.Instance.EnterGame();
             yield return GameRun.Instance.Init(_eGameInitType, _project);
             _gameMode.InitByStep();
             CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(()=>{
@@ -241,60 +229,6 @@ namespace GameA.Game
             Messenger.RemoveListener(EMessengerType.GameFinishSuccess, OnGameFinishSuccess);
             Messenger.RemoveListener(EMessengerType.GameFinishFailed, OnGameFinishFailed);
             Instance = null;
-        }
-
-        private void LoadGameInputController()
-        {
-            //#if UNITY_EDITOR
-            //UnityEngine.Object obj = Resources.Load("EasyTouchControlsCanvas");
-            //            if (obj == null) {
-            //                obj = GameResourceManager.Instance.LoadMainAssetObject ("EasyTouchControlsCanvas");
-            //            }
-            //            _inputControl = CommonTools.InstantiateObject (obj);
-            //#else
-            //            var obj = GameResourceManager.Instance.LoadMainAssetObject("EasyTouchControlsCanvas");
-            //            _inputControl = CommonTools.InstantiateObject(obj);
-            //#endif
-            //         var parent = SocialGUIManager.Instance.GetFirstGroupParent()as RectTransform;
-            //      var tmp1 = _inputControl.GetComponent<CanvasScaler>();
-            //DestroyImmediate(tmp1);
-            //var tmp3 = _inputControl.GetComponent<GraphicRaycaster>();
-            //DestroyImmediate(tmp3);
-            //var tmp2 = _inputControl.GetComponent<Canvas>();
-            //DestroyImmediate(tmp2);
-
-            //      var rectTrans = _inputControl.transform as RectTransform;
-            //CommonTools.SetParent(rectTrans, parent);
-            //      rectTrans.anchorMax = parent.anchorMax;
-            //rectTrans.anchorMin = parent.anchorMin;
-            //rectTrans.anchoredPosition = parent.anchoredPosition;
-            //rectTrans.anchoredPosition3D = parent.anchoredPosition3D;
-            //rectTrans.offsetMax = parent.offsetMax;
-            //rectTrans.offsetMin = parent.offsetMin;
-            //rectTrans.pivot = parent.pivot;
-            //rectTrans.sizeDelta = parent.sizeDelta;
-
-            //CommonTools.SetAllLayerIncludeHideObj(rectTrans, (int)ELayer.UI);
-
-            //InputManager.Instance.GameInputControl = _inputControl.GetComponent<GameInputControl>();
-            InputManager.Instance.GameInputControl = SocialGUIManager.Instance.GetUI<UICtrlGameInputControl>();
-        }
-
-
-
-        private void OnUpdateSuccess()
-        {
-            _resDone = true;
-        }
-
-        private void OnProcess(float value)
-        {
-            Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, value * 0.8f);
-        }
-
-        private void OnUpdateFailed()
-        {
-            OnGameLoadError();
         }
 
         /// <summary>

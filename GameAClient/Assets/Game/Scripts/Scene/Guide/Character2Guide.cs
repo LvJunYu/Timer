@@ -259,8 +259,9 @@ namespace GameA.Game
 			if (PlayMode.Instance.MainPlayer.CenterPos.x > 166666) {
 				PlayMode.Instance.MainPlayer.CenterPos = new IntVec2(PlayMode.Instance.MainPlayer.CenterPos.x - 64000,
 				PlayMode.Instance.MainPlayer.CenterPos.y);
-				CameraManager.Instance.CurRollPos = new IntVec2(CameraManager.Instance.CurRollPos.x - 64000,
-				CameraManager.Instance.CurRollPos.y);
+				CameraManager.Instance.CameraCtrlPlay.CurRollPos = new IntVec2(
+					CameraManager.Instance.CameraCtrlPlay.CurRollPos.x - 64000,
+					CameraManager.Instance.CameraCtrlPlay.CurRollPos.y);
 			}
 		}
 	}

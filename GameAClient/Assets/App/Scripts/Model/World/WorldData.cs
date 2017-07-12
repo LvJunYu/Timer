@@ -11,9 +11,9 @@ namespace GameA
 {
     public class WorldData
     {
-        private WorldNewestProjectList _newestProjectList = new WorldNewestProjectList();
-        private UserFavoriteWorldProjectList _userFavoriteProjectList = new UserFavoriteWorldProjectList();
-        private UserWorldProjectPlayHistoryList _userPlayHistoryList = new UserWorldProjectPlayHistoryList();
+        private readonly WorldNewestProjectList _newestProjectList = new WorldNewestProjectList();
+        private readonly UserFavoriteWorldProjectList _userFavoriteProjectList = new UserFavoriteWorldProjectList();
+        private readonly UserWorldProjectPlayHistoryList _userPlayHistoryList = new UserWorldProjectPlayHistoryList();
 
         public WorldNewestProjectList NewestProjectList
         {

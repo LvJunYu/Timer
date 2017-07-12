@@ -173,7 +173,7 @@ namespace GameA
                 unitPos = ((ModifyEditMode)EditMode.Instance).ModifiedUnits [idx].ModifiedUnit.UnitDesc.Guid;
             }
 
-            Game.CameraManager.Instance.LerpPosInEditor(GM2DTools.TileToWorld(unitPos));
+            Game.CameraManager.Instance.CameraCtrlEdit.SetPos(GM2DTools.TileToWorld(unitPos));
             ((ModifyEditMode)EditMode.Instance).ShowUnitPosEffect (unitPos);
         }
 

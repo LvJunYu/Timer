@@ -6,17 +6,16 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
 using Spine;
 using Spine.Unity;
 using UnityEngine;
+using Animation = Spine.Animation;
 
 namespace GameA.Game
 {
-    public class GM2DTools
+    public static class GM2DTools
     {
         private static int _runtimeCreatedUnitDepth = (int)EUnitDepth.Max;
 
@@ -196,7 +195,7 @@ namespace GameA.Game
             return true;
         }
 
-        public static Spine.Animation GetAnimation(SkeletonAnimation skeleton, string aniName)
+        public static Animation GetAnimation(SkeletonAnimation skeleton, string aniName)
         {
             if (skeleton == null)
             {
@@ -726,6 +725,16 @@ namespace GameA.Game
                 PoolFactory<T>.Free(so);
             }
             return false;
+        }
+
+        public static IntRect ToIntRect(Grid2D grid2D)
+        {
+            return new IntRect(grid2D.XMin, grid2D.YMin, grid2D.XMax, grid2D.YMax);
+        }
+
+        public static Grid2D ToGrid2D(IntRect rect)
+        {
+            return new Grid2D(rect.Min.x, rect.Min.y, rect.Max.x, rect.Max.y);
         }
     }
 }

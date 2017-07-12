@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Security.Cryptography.X509Certificates;
 using SoyEngine;
 using Spine;
 using UnityEngine;
@@ -21,6 +22,7 @@ namespace GameA.Game
         public const float FixedDeltaTime = 0.02f;
 	    public const int FixedFrameCount = 50;
         public const int FixedDeltaTile = (int)(FixedDeltaTime * ServerTileScale);
+	    public const float CameraOrthoSizeOnPlay = 5f;
 
         /// <summary>
         /// 8+16 = 24
