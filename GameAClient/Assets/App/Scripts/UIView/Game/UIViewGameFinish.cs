@@ -52,6 +52,8 @@ namespace GameA
         public GameObject Win;
         public GameObject Lose;
         public GameObject RewardObj;
+	    public GameObject ExpBarObj;
+
         public Transform ShineRotateRoot;
 
         public Button ReturnBtn;

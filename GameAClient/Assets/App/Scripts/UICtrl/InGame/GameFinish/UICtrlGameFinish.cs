@@ -66,7 +66,7 @@ namespace GameA
 //			_curMarkStarValue = GM2DGame.Instance.Project.UserRate;
 			UpdateView();
             //UpdateLifeItem();
-		    JudgeExpAndLvl();
+		   // JudgeExpAndLvl();
 		}
 
         public override void OnUpdate ()
@@ -207,6 +207,7 @@ namespace GameA
 	        int PlayerLevel = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel;
             long currentPlayerExp = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerExp;
 	        long RewardExp=0;
+            if(AppData.Instance.AdventureData.LastAdvReward!=null&& AppData.Instance.AdventureData.LastAdvReward.ItemList.Count!=0)
             for (int i = 0; i < AppData.Instance.AdventureData.LastAdvReward.ItemList.Count; i++)
 	        {
 	            if (AppData.Instance.AdventureData.LastAdvReward.ItemList[i].Type == 3)
@@ -255,7 +256,8 @@ namespace GameA
                     _cachedView.ScoreOutLine.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
                     // 奖励
                     _cachedView.RewardObj.SetActive (false);
-//                    UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
+                    _cachedView.ExpBarObj.SetActive(false);
+                    //                    UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
 
                     _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishWin3Star");
                     break;
@@ -269,6 +271,7 @@ namespace GameA
                     _cachedView.Score.gameObject.SetActive (false);
                     _cachedView.ScoreOutLine.gameObject.SetActive (false);
                     _cachedView.RewardObj.SetActive (false);
+                    _cachedView.ExpBarObj.SetActive(false);
                     _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishLose");
                     break;
             case EShowState.AdvBonusWin:
@@ -284,6 +287,8 @@ namespace GameA
                 _cachedView.ScoreOutLine.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
                 // 奖励
                 _cachedView.RewardObj.SetActive (true);
+                _cachedView.ExpBarObj.SetActive (true);
+                JudgeExpAndLvl();
                 UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
 
                 _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishWin3Star");
@@ -309,7 +314,10 @@ namespace GameA
                 _cachedView.ScoreOutLine.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
                 // 奖励
                 _cachedView.RewardObj.SetActive (true);
-                UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
+                _cachedView.ExpBarObj.SetActive(true);
+                JudgeExpAndLvl();
+
+                    UpdateReward(AppData.Instance.AdventureData.LastAdvReward);
 
                 int starCnt = AppData.Instance.AdventureData.LastAdvStarCnt;
                 if (starCnt == 3) {
@@ -333,7 +341,10 @@ namespace GameA
                 _cachedView.Score.gameObject.SetActive (false);
                 _cachedView.ScoreOutLine.gameObject.SetActive (false);
                 _cachedView.RewardObj.SetActive (true);
-                UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
+                _cachedView.ExpBarObj.SetActive(true);
+                JudgeExpAndLvl();
+
+                UpdateReward(AppData.Instance.AdventureData.LastAdvReward);
 
                 _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishLose");
                 break;
@@ -347,6 +358,8 @@ namespace GameA
                 _cachedView.Score.gameObject.SetActive (false);
                 _cachedView.ScoreOutLine.gameObject.SetActive (false);
                 _cachedView.RewardObj.SetActive (true);
+                _cachedView.ExpBarObj.SetActive (true);
+                JudgeExpAndLvl();
                 UpdateReward (AppData.Instance.AdventureData.LastAdvReward);
 
                 _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishLose");
@@ -366,6 +379,8 @@ namespace GameA
                 _cachedView.ScoreOutLine.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
                 // 奖励
                 _cachedView.RewardObj.SetActive (true);
+                _cachedView.ExpBarObj.SetActive (true);
+                JudgeExpAndLvl();
                 UpdateReward (LocalUser.Instance.MatchUserData.LastChallengeReward);
 
                 _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishWin3Star");
@@ -380,7 +395,10 @@ namespace GameA
                 _cachedView.Score.gameObject.SetActive (false);
                 _cachedView.ScoreOutLine.gameObject.SetActive (false);
                 _cachedView.RewardObj.SetActive (true);
-                UpdateReward (LocalUser.Instance.MatchUserData.LastChallengeReward);
+                _cachedView.ExpBarObj.SetActive(true);
+                JudgeExpAndLvl();
+
+                    UpdateReward(LocalUser.Instance.MatchUserData.LastChallengeReward);
 
                 _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishLose");
                 break;
@@ -394,8 +412,10 @@ namespace GameA
                 _cachedView.Score.gameObject.SetActive (false);
                 _cachedView.ScoreOutLine.gameObject.SetActive (false);
                 _cachedView.RewardObj.SetActive (false);
+                _cachedView.ExpBarObj.SetActive(false);
 
-                _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishLose");
+
+                    _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishLose");
                 break;
             case EShowState.EditorWin:
                 _cachedView.Win.SetActive (true);
@@ -409,8 +429,10 @@ namespace GameA
                 _cachedView.Score.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
                 _cachedView.ScoreOutLine.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
                 _cachedView.RewardObj.SetActive (false);
+                _cachedView.ExpBarObj.SetActive(false);
 
-                _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishWin3Star");
+
+                    _cachedView.GetComponent<Animation> ().Play ("UICtrlGameFinishWin3Star");
                 break;
             }
             return;
