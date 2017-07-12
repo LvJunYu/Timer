@@ -156,7 +156,6 @@ namespace GameA
             Messenger.RemoveListener(EMessengerType.OnEscapeClick, OnEscapeClick);
             Application.targetFrameRate = 60;
             ScreenOrientation so = GameManager.Instance.CurrentGame.ScreenOrientation;
-
             _currentMode = EMode.Game;
             for (int i = 0; i < (int)EUIGroupType.Max; i++)
             {

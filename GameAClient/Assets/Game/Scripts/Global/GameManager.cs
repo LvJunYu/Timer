@@ -17,13 +17,14 @@ namespace GameA
     {
         #region 常量与字段
 
-        public static GameManager _instance;
+        private static GameManager _instance;
 
         private GameBase _currentGame;
         private Type _gameType;
 
         private List<Project> _projectList = new List<Project>();
         private int _curProjectInx = 0;
+
         #endregion
 
         #region 属性
@@ -240,8 +241,6 @@ namespace GameA
                 game = go.AddComponent(_gameType) as GameBase;
             }
             //做成Component 为了切换Game时候的内存释放
-
-
             if (game == null)
             {
                 return false;

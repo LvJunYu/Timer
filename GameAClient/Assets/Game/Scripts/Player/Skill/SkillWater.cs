@@ -12,7 +12,6 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    [Skill(Name = "SkillWater", Type = typeof(SkillWater))]
     public class SkillWater : SkillBase
     {
         internal override void Enter(UnitBase ower)

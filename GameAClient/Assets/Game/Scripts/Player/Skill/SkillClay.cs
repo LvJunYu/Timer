@@ -11,7 +11,6 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    [Skill(Name = "SkillClay", Type = typeof(SkillClay))]
     public class SkillClay : SkillBase
     {
         internal override void Enter(UnitBase ower)
