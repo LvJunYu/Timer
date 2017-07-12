@@ -474,6 +474,7 @@ namespace GameA.Game
             _run = false;
             Reset();
             CameraManager.Instance.SetCameraState(ECameraState.Edit);
+            BgScene2D.Instance.Reset();
             UpdateWorldRegion(GM2DTools.WorldToTile(CameraManager.Instance.MainCamaraPos), true);
             UnitBase[] units = ColliderScene2D.Instance.Units.Values.ToArray();
             for (int i = 0; i < units.Length; i++)
@@ -511,6 +512,7 @@ namespace GameA.Game
             BeforePlay();
             _sceneState.StartPlay();
             CameraManager.Instance.SetCameraState(ECameraState.Play);
+            BgScene2D.Instance.Reset();
             var colliderPos = new IntVec2(_mainPlayer.ColliderGrid.XMin, _mainPlayer.ColliderGrid.YMin);
             UpdateWorldRegion(colliderPos, true);
         }
@@ -527,6 +529,7 @@ namespace GameA.Game
                 UnitBase unit = units[i];
                 unit.OnPlay();
             }
+            BgScene2D.Instance.OnPlay();
             return true;
         }
 

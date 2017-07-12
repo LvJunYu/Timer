@@ -156,7 +156,7 @@ namespace GameA.Game
         {
             PlayMode.Instance.UpdateLogic(deltaTime);
             CameraManager.Instance.UpdateLogic(deltaTime);
-            var pos = GM2DTools.WorldToTile(CameraManager.Instance.MainCameraTrans.position);
+            var pos = CameraManager.Instance.MainCameraTrans.position;
             BgScene2D.Instance.UpdateLogic(pos);
             
             for (int i = 0; i < _allSkeletonAnimationComp.Count; i++)
@@ -237,7 +237,6 @@ namespace GameA.Game
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioStartGame);
             GameAudioManager.Instance.PlayMusic(AudioNameConstDefineGM2D.GameAudioBgm01);
             Messenger.Broadcast(EMessengerType.OnPlay);
-            BgScene2D.Instance.OnPlay();
             return true;
         }
 

@@ -5,13 +5,9 @@
 ** Summary : BgScene2D
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using SoyEngine;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace GameA.Game
 {
@@ -31,29 +27,24 @@ namespace GameA.Game
 
     public class BgScene2D : Scene2D
     {
-        public static BgScene2D _instance;
+        private static BgScene2D _instance;
         private bool _run;
         private int _curSeed;
-        private IntVec2 _focusPos;
-        private Dictionary<IntVec3, BgItem> _items = new Dictionary<IntVec3, BgItem>();
-        private Grid2D _followRect;
-        private Grid2D _cloudRect;
+        private Vector3 _basePos;
+        private readonly Dictionary<IntVec3, BgItem> _items = new Dictionary<IntVec3, BgItem>();
+        private Grid2D _followTileRect;
+        private Rect _followRect;
+        private Grid2D _cloudTileRect;
+        private Rect _cloudRect;
         private Transform[] _parents;
         private Transform _parent;
-        private Dictionary<int, List<Table_Background>> _tableBgs = new Dictionary<int, List<Table_Background>>();
-        private static readonly int[] MaxDepthCount = new int[9] { 50, 50, 50, 50, 50, 50, 50, 50, 1 };
-        private static readonly float[] MoveRatio = new float[9] { 0.8f, 0.7f, 0.6f, 0.5f, 0.4f, 0.3f, 0.2f, 0.1f, 0f };
-
-        private static IntVec2 RectSize = new IntVec2(60, 30) * ConstDefineGM2D.ServerTileScale;
+        private readonly Dictionary<int, List<Table_Background>> _tableBgs = new Dictionary<int, List<Table_Background>>();
+        private static readonly int[] MaxDepthCount = { 50, 50, 50, 50, 50, 50, 50, 50, 1 };
+        private static readonly float[] MoveRatio = { 0.8f, 0.7f, 0.6f, 0.5f, 0.4f, 0.3f, 0.2f, 0.1f, 0f };
 
         public static BgScene2D Instance
         {
             get { return _instance ?? (_instance = new BgScene2D()); }
-        }
-
-        public Grid2D FollowRect
-        {
-            get { return _followRect; }
         }
 
         public int CurSeed
@@ -68,13 +59,13 @@ namespace GameA.Game
             {
                 if (bgItem != null && bgItem.Trans != null)
                 {
-                    UnityEngine.Object.Destroy(bgItem.Trans.gameObject);
+                    Object.Destroy(bgItem.Trans.gameObject);
                 }
             }
             _items.Clear();
             if (_parent != null)
             {
-                UnityEngine.Object.Destroy(_parent.gameObject);
+                Object.Destroy(_parent.gameObject);
             }
             _tableBgs.Clear();
             _instance = null;
@@ -90,7 +81,7 @@ namespace GameA.Game
             return MaxDepthCount[depth - 1];
         }
 
-        public Grid2D GetRect(int depth)
+        public Rect GetRect(int depth)
         {
             switch (depth)
             {
@@ -105,9 +96,13 @@ namespace GameA.Game
         protected override void OnInit()
         {
             base.OnInit();
-            var validMapRect = DataScene2D.Instance.ValidMapRect;
-            _followRect = new Grid2D(validMapRect.Min.x, validMapRect.Min.y, validMapRect.Min.x + RectSize.x -1 , validMapRect.Min.y + RectSize.y -1);
-            _cloudRect = new Grid2D(validMapRect.Min.x - 15 * ConstDefineGM2D.ServerTileScale, validMapRect.Min.y, validMapRect.Max.x + 15 * ConstDefineGM2D.ServerTileScale, validMapRect.Max.y);
+            var validMapTileRect = DataScene2D.Instance.ValidMapRect;
+            var validMapRect = GM2DTools.TileRectToWorldRect(validMapTileRect);
+            _basePos = validMapRect.center;
+            _followTileRect = GM2DTools.ToGrid2D(validMapTileRect);
+            _followRect = GM2DTools.TileRectToWorldRect(GM2DTools.ToIntRect(_followTileRect));
+            _cloudTileRect = new Grid2D(validMapTileRect.Min.x - 15 * ConstDefineGM2D.ServerTileScale, validMapTileRect.Min.y, validMapTileRect.Max.x + 15 * ConstDefineGM2D.ServerTileScale, validMapTileRect.Max.y);
+            _cloudRect = GM2DTools.TileRectToWorldRect(GM2DTools.ToIntRect(_cloudTileRect));
             _parent = new GameObject("Background").transform;
             _parents = new Transform[(int)EBgDepth.Max];
             for (int i = 0; i < (int)EBgDepth.Max; i++)
@@ -115,7 +110,6 @@ namespace GameA.Game
                 _parents[i] = new GameObject(((EBgDepth)i).ToString()).transform;
                 _parents[i].parent = _parent;
             }
-            _focusPos = GM2DTools.WorldToTile(CameraManager.Instance.MainCameraTrans.position);
 
             var bgs = TableManager.Instance.Table_BackgroundDic;
             foreach (Table_Background bg in bgs.Values)
@@ -132,8 +126,19 @@ namespace GameA.Game
 
         public void OnPlay()
         {
-            _focusPos = GM2DTools.WorldToTile(CameraManager.Instance.MainCameraTrans.position);
             _run = true;
+        }
+
+        public void Reset()
+        {
+            using (var iter = _items.GetEnumerator())
+            {
+                while (iter.MoveNext())
+                {
+                    var bgItem = iter.Current.Value;
+                    bgItem.ResetPos();
+                }
+            }
         }
 
         public Transform GetParent(int eBgDepth)
@@ -141,20 +146,18 @@ namespace GameA.Game
             return _parents[eBgDepth];
         }
 
-        public void UpdateLogic(IntVec2 pos)
+        public void UpdateLogic(Vector3 pos)
         {
             if (!_run)
             {
                 return;
             }
-            var delPos = pos - _focusPos;
-            _focusPos = pos;
             using (var iter = _items.GetEnumerator())
             {
                 while (iter.MoveNext())
                 {
                     var bgItem = iter.Current.Value;
-                    bgItem.Update(delPos);
+                    bgItem.Update(pos);
                 }
             }
         }
@@ -168,6 +171,7 @@ namespace GameA.Game
             {
                 GenerateItems(pair.Value, GetMaxDepthCount(pair.Key));
             }
+            SetChirldFollowBasePos();
         }
 
         private void GenerateItems(List<Table_Background> tableBgs, int count)
@@ -232,16 +236,16 @@ namespace GameA.Game
                 case EBgDepth.Depth4:
                 case EBgDepth.Depth7:
                 case EBgDepth.Depth8:
-                    min = new IntVec2(Random.Range(_followRect.XMin, _followRect.XMax - size.x), _followRect.YMin);
+                    min = new IntVec2(Random.Range(_followTileRect.XMin, _followTileRect.XMax + size.x), _followTileRect.YMin);
                     break;
                 case EBgDepth.Depth3:
                 case EBgDepth.Depth5:
                 case EBgDepth.Depth6:
-                    min = new IntVec2(Random.Range(_cloudRect.XMin, _cloudRect.XMax - size.x),
-                        Random.Range(_cloudRect.YMin, _cloudRect.YMax - size.y));
+                    min = new IntVec2(Random.Range(_cloudTileRect.XMin, _cloudTileRect.XMax + size.x),
+                        Random.Range(_cloudTileRect.YMin, _cloudTileRect.YMax + size.y));
                     break;
                 case EBgDepth.Depth9:
-                    min = new IntVec2(_followRect.XMin, _followRect.YMin);
+                    min = new IntVec2(_followTileRect.XMin, _followTileRect.YMin);
                     break;
             }
             grid = new Grid2D(min.x, min.y, min.x + size.x - 1, min.y + size.y - 1);
@@ -259,6 +263,18 @@ namespace GameA.Game
             scale.x = x;
             scale.y = y;
             return new IntVec2((int) (tableBg.Width * 5 * scale.x), (int) (tableBg.Height * 5 * scale.y));
+        }
+
+        private void SetChirldFollowBasePos()
+        {
+            using (var iter = _items.GetEnumerator())
+            {
+                while (iter.MoveNext())
+                {
+                    var bgItem = iter.Current.Value;
+                    bgItem.SetBaseFollowPos(_basePos);
+                }
+            }
         }
 
         private bool AddView(SceneNode node, Table_Background tableBg)
