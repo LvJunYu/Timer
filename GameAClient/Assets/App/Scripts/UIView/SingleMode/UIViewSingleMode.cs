@@ -16,8 +16,12 @@ namespace GameA
         public Button NextBtn;
         public Button PrevBtn;
 
-		
-		public Text ChapterTitle;
+	    public Image NextSection;
+	    public Image PREVSection;
+
+
+
+        public Text ChapterTitle;
 		public Text StarNumber;
 
 		public UICtrlChapter[] Chapters;
