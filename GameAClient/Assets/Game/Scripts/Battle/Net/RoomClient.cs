@@ -167,7 +167,7 @@ namespace GameA.Game
 
         private void Msg_RC_LoginRet(Msg_RC_LoginRet msg, NetLink netLink)
         {
-            if (msg.ResultCode == ELoginCode.ELC_Success)
+            if (msg.ResultCode == ERLoginCode.ELC_Success)
             {
                 LogHelper.Debug("Login RS Success");
             }

@@ -7,6 +7,7 @@
 
 using System;
 using SoyEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace GameA
@@ -19,5 +20,9 @@ namespace GameA
 //	    public RawImage TextureIcon;
 //        public Text Name;
 //        public Text Summary;
+
+        public GameObject Unlimited;
+        public Text Number;
+        public GameObject Arrow;
     }
 }

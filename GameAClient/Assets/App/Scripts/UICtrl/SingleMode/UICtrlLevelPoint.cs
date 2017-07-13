@@ -28,6 +28,8 @@ namespace GameA
         public GameObject StarDark1;
         public GameObject StarDark2;
         public GameObject StarDark3;
+
+
 		public Text LevelTitle;
 
         public Text StartText;
@@ -67,6 +69,7 @@ namespace GameA
 
 					var levelData = AppData.Instance.AdventureData.UserData.SectionList [chapterId - 1].NormalLevelUserDataList [levelIdx - 1];
                     int starCnt = levelData.SimpleData.GotStarCnt;
+
                     StarLight1.SetActive (starCnt > 0);
                     StarLight2.SetActive (starCnt > 1);
                     StarLight3.SetActive (starCnt > 2);

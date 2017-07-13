@@ -148,6 +148,7 @@ namespace NewResourceSolution
             if (!RuntimeConfig.Instance.UseAssetBundleRes)
             {
                 InitEditorRes ();
+                return;
             }
             #endif
 

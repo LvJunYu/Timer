@@ -400,8 +400,8 @@ namespace GameA
         private void OnExitDragMode ()
         {
             if (EditMode.Instance.CurCommandType == ECommandType.Move) {
-                Game.CameraManager.Instance.OnPinchEnd ();
-                Game.CameraManager.Instance.OnDragEnd (Vector2.zero);
+                Game.CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSizeEnd(0f);
+                Game.CameraManager.Instance.CameraCtrlEdit.MovePosEnd(Vector2.zero);
                 Broadcast (ECommandType.Create);
                 SetMoveBtnPos (_moveBtnOrigPos);
             }

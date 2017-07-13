@@ -336,6 +336,7 @@ namespace GameA
                     recordUsedTime,
                     timeLimit,
                     winCondition,
+                    null,
                     msg => {
                         if (msg.ResultCode == (int)EProjectOperateResult.POR_Success) {
 //                            LocalCacheManager.Instance.Save(dataBytes, LocalCacheManager.EType.File, ResPath);
@@ -373,6 +374,7 @@ namespace GameA
                     recordUsedTime,
                     timeLimit,
                     winCondition,
+                    null,
                     msg => {
                         OnSyncFromParent(msg.ProjectData);
                         if (null != iconBytes && msg.ProjectData.IconPath != oldIconPath) {
@@ -422,6 +424,7 @@ namespace GameA
                 _recordUsedTime,
                 _timeLimit,
                 _winCondition,
+                null,
                 ret =>
                 {
                     if (ret.ResultCode == (int)EProjectOperateResult.POR_Success)

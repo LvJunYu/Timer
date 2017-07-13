@@ -15,17 +15,21 @@ namespace GameA
         /// <summary>
 		/// 登录
 		/// </summary>
-		/// <param name="account">账号</param>
-		/// <param name="password">密码</param>
 		/// <param name="loginType">登录类型</param>
+		/// <param name="userName">用户名</param>
+		/// <param name="phoneNum">手机号码</param>
+		/// <param name="email">邮箱</param>
+		/// <param name="password">密码</param>
 		/// <param name="snsUserInfo"></param>
-		/// <param name="devicePlatform">设备类型</param>
+		/// <param name="phoneType">手机类型</param>
         public static void Login (
-            string account,
-            string password,
             ELoginType loginType,
+            string userName,
+            string phoneNum,
+            string email,
+            string password,
             Msg_SNSUserInfo snsUserInfo,
-            EPhoneType devicePlatform,
+            EPhoneType phoneType,
             Action<Msg_SC_CMD_Login> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -35,11 +39,13 @@ namespace GameA
             _isRequstingLogin = true;
             Msg_CS_CMD_Login msg = new Msg_CS_CMD_Login();
             // 登录
-            msg.Account = account;
-            msg.Password = password;
             msg.LoginType = loginType;
+            msg.UserName = userName;
+            msg.PhoneNum = phoneNum;
+            msg.Email = email;
+            msg.Password = password;
             msg.SnsUserInfo = snsUserInfo;
-            msg.DevicePlatform = devicePlatform;
+            msg.PhoneType = phoneType;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_Login>(
                 SoyHttpApiPath.Login, msg, ret => {
                     if (successCallback != null) {
@@ -52,43 +58,6 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingLogin = false;
-                },
-                form
-            );
-        }
-
-        public static bool IsRequstingLoginAsGuest {
-            get { return _isRequstingLoginAsGuest; }
-        }
-        private static bool _isRequstingLoginAsGuest = false;
-        /// <summary>
-		/// 游客登录
-		/// </summary>
-		/// <param name="devicePlatform">设备类型</param>
-        public static void LoginAsGuest (
-            EPhoneType devicePlatform,
-            Action<Msg_SC_CMD_LoginAsGuest> successCallback, Action<ENetResultCode> failedCallback,
-            UnityEngine.WWWForm form = null) {
-
-            if (_isRequstingLoginAsGuest) {
-                return;
-            }
-            _isRequstingLoginAsGuest = true;
-            Msg_CS_CMD_LoginAsGuest msg = new Msg_CS_CMD_LoginAsGuest();
-            // 游客登录
-            msg.DevicePlatform = devicePlatform;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_LoginAsGuest>(
-                SoyHttpApiPath.LoginAsGuest, msg, ret => {
-                    if (successCallback != null) {
-                        successCallback.Invoke(ret);
-                    }
-                    _isRequstingLoginAsGuest = false;
-                }, (failedCode, failedMsg) => {
-                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "LoginAsGuest", failedCode, failedMsg);
-                    if (failedCallback != null) {
-                        failedCallback.Invoke(failedCode);
-                    }
-                    _isRequstingLoginAsGuest = false;
                 },
                 form
             );
@@ -132,104 +101,6 @@ namespace GameA
                         failedCallback.Invoke(failedCode);
                     }
                     _isRequstingLoginByToken = false;
-                },
-                form
-            );
-        }
-
-        public static bool IsRequstingForgetPassword {
-            get { return _isRequstingForgetPassword; }
-        }
-        private static bool _isRequstingForgetPassword = false;
-        /// <summary>
-		/// 注册
-		/// </summary>
-		/// <param name="account">账号</param>
-		/// <param name="password">密码</param>
-		/// <param name="registerType">注册类型</param>
-		/// <param name="verificationCode">验证码</param>
-		/// <param name="devicePlatform">设备类型</param>
-        public static void ForgetPassword (
-            string account,
-            string password,
-            ERegisterType registerType,
-            string verificationCode,
-            EPhoneType devicePlatform,
-            Action<Msg_SC_CMD_ForgetPassword> successCallback, Action<ENetResultCode> failedCallback,
-            UnityEngine.WWWForm form = null) {
-
-            if (_isRequstingForgetPassword) {
-                return;
-            }
-            _isRequstingForgetPassword = true;
-            Msg_CS_CMD_ForgetPassword msg = new Msg_CS_CMD_ForgetPassword();
-            // 注册
-            msg.Account = account;
-            msg.Password = password;
-            msg.RegisterType = registerType;
-            msg.VerificationCode = verificationCode;
-            msg.DevicePlatform = devicePlatform;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ForgetPassword>(
-                SoyHttpApiPath.ForgetPassword, msg, ret => {
-                    if (successCallback != null) {
-                        successCallback.Invoke(ret);
-                    }
-                    _isRequstingForgetPassword = false;
-                }, (failedCode, failedMsg) => {
-                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ForgetPassword", failedCode, failedMsg);
-                    if (failedCallback != null) {
-                        failedCallback.Invoke(failedCode);
-                    }
-                    _isRequstingForgetPassword = false;
-                },
-                form
-            );
-        }
-
-        public static bool IsRequstingRegister {
-            get { return _isRequstingRegister; }
-        }
-        private static bool _isRequstingRegister = false;
-        /// <summary>
-		/// 注册
-		/// </summary>
-		/// <param name="account">账号</param>
-		/// <param name="password">密码</param>
-		/// <param name="registerType">注册类型</param>
-		/// <param name="verificationCode">验证码</param>
-		/// <param name="devicePlatform">设备类型</param>
-        public static void Register (
-            string account,
-            string password,
-            ERegisterType registerType,
-            string verificationCode,
-            EPhoneType devicePlatform,
-            Action<Msg_SC_CMD_Register> successCallback, Action<ENetResultCode> failedCallback,
-            UnityEngine.WWWForm form = null) {
-
-            if (_isRequstingRegister) {
-                return;
-            }
-            _isRequstingRegister = true;
-            Msg_CS_CMD_Register msg = new Msg_CS_CMD_Register();
-            // 注册
-            msg.Account = account;
-            msg.Password = password;
-            msg.RegisterType = registerType;
-            msg.VerificationCode = verificationCode;
-            msg.DevicePlatform = devicePlatform;
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_Register>(
-                SoyHttpApiPath.Register, msg, ret => {
-                    if (successCallback != null) {
-                        successCallback.Invoke(ret);
-                    }
-                    _isRequstingRegister = false;
-                }, (failedCode, failedMsg) => {
-                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "Register", failedCode, failedMsg);
-                    if (failedCallback != null) {
-                        failedCallback.Invoke(failedCode);
-                    }
-                    _isRequstingRegister = false;
                 },
                 form
             );

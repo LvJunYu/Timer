@@ -437,7 +437,7 @@ namespace GameA.Game
                     }
                     if (tableUnit.CanRotate)
                     {
-                        unitDesc.Rotation = 1;
+                        unitDesc.Rotation = 3;
                     }
                     unitDesc.Scale = Vector2.one;
                 }
@@ -727,7 +727,7 @@ namespace GameA.Game
             if (CheckReceiveTwoFingerEvent())
             {
                 Vector2 deltaWorldPos = GM2DTools.ScreenToWorldSize(gesture.deltaPosition);
-                CameraManager.Instance.MovePosInEditor(deltaWorldPos);
+                CameraManager.Instance.CameraCtrlEdit.MovePos(deltaWorldPos);
             }
         }
 
@@ -742,7 +742,7 @@ namespace GameA.Game
                 return;
             }
             Vector2 deltaWorldPos = GM2DTools.ScreenToWorldSize(gesture.deltaPosition);
-            CameraManager.Instance.OnDragEnd(deltaWorldPos);
+            CameraManager.Instance.CameraCtrlEdit.MovePosEnd(deltaWorldPos);
         }
 
         private void OnDrag_MouseBtn2(Vector2 delta)
@@ -750,7 +750,7 @@ namespace GameA.Game
             if (!_isPlaying)
             {
                 Vector2 deltaWorldPos = GM2DTools.ScreenToWorldSize(delta);
-                CameraManager.Instance.MovePosInEditor(deltaWorldPos);
+                CameraManager.Instance.CameraCtrlEdit.MovePos(deltaWorldPos);
             }
         }
 
@@ -758,7 +758,7 @@ namespace GameA.Game
         {
             if (!_isPlaying)
             {
-                CameraManager.Instance.UpdateFadeCameraOrthoSizeOffset(value);
+                CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSize(value);
             }
             //LogHelper.Error("OnPinchMouseButton {0} ",value);
         }
@@ -772,8 +772,8 @@ namespace GameA.Game
         {
             if (!_isPlaying)
             {
-                CameraManager.Instance.OnPinchEnd();
-                CameraManager.Instance.OnDragEnd(Vector2.zero);
+                CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSizeEnd(0f);
+                CameraManager.Instance.CameraCtrlEdit.MovePosEnd(Vector2.zero);
             }
         }
 
@@ -784,15 +784,15 @@ namespace GameA.Game
                 return;
             }
             //var deltaWorldPos = MapTools.ScreenToWorldSize(gesture.deltaPosition);
-            CameraManager.Instance.OnPinchEnd();
-            CameraManager.Instance.OnDragEnd(Vector2.zero);
+            CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSizeEnd(0f);
+            CameraManager.Instance.CameraCtrlEdit.MovePosEnd(Vector2.zero);
         }
 
         private void OnDragEnd(Vector2 vec)
         {
             if (!_isPlaying)
             {
-                CameraManager.Instance.OnDragEnd(vec);
+                CameraManager.Instance.CameraCtrlEdit.MovePosEnd(vec);
             }
         }
 
@@ -825,8 +825,8 @@ namespace GameA.Game
         private void DoCommondExecute(Gesture gesture)
         {
             
-            float heightPixel = CameraManager.Instance.FinalOrthoSize*2;
-            float withPixel = heightPixel*CameraManager.Instance.AspectRatio;
+            float heightPixel = CameraManager.Instance.CameraCtrlEdit.TargetOrthoSize * 2;
+            float withPixel = heightPixel*GM2DGame.Instance.GameScreenAspectRatio;
             float tempY = GM2DGame.Instance.GameScreenHeight / heightPixel;
             float tempX = GM2DGame.Instance.GameScreenWidth / withPixel;
             int xCount = (int) (Mathf.Abs(gesture.deltaPosition.x)/tempX) + 1;

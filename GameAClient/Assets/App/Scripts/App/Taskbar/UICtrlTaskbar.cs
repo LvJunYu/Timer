@@ -55,7 +55,7 @@ namespace GameA
 			//if (_cachedView.PlayerAvatarAnimation != null) {
 			//	_cachedView.PlayerAvatarAnimation.Update (Time.deltaTime);
 			//}
-            _cachedView.SingleModeParent.localPosition = Vector3.up * Mathf.Sin(Time.time * 0.75f) * 10;
+            //_cachedView.SingleModeParent.localPosition = Vector3.up * Mathf.Sin(Time.time * 0.75f) * 10;
 
 		}
 
@@ -140,10 +140,10 @@ namespace GameA
             base.OnOpen (parameter);
             SocialGUIManager.ShowGoldEnergyBar (false);
 			RefreshUserInfo ();
-		    if (_lotteryAvailable)
-		    {
-		        _cachedView.SpineCat.AnimationState.SetAnimation(0, "Run", true);
-		    }
+		    //if (_lotteryAvailable)
+		    //{
+		    //    _cachedView.SpineCat.AnimationState.SetAnimation(0, "Run", true);
+		    //}
 		    //RefreshAvatar ();
             GameProcessManager.Instance.RefreshHomeUIUnlock();
         }

@@ -131,10 +131,11 @@ namespace GameA.Game
                 return;
             }
             CrossPlatformInputManager.Update();
-            MapManager.Instance.Update();
             GameParticleManager.Instance.Update();
             GameAudioManager.Instance.Update();
             DeadMarkManager.Instance.Update();
+            CameraManager.Instance.Update();
+            MapManager.Instance.Update();
             _unityTimeSinceGameStarted += Time.deltaTime*GM2DGame.Instance.GamePlaySpeed;
             while (_logicFrameCnt*ConstDefineGM2D.FixedDeltaTime < _unityTimeSinceGameStarted)
             {
@@ -155,10 +156,10 @@ namespace GameA.Game
         private void UpdateLogic(float deltaTime)
         {
             PlayMode.Instance.UpdateLogic(deltaTime);
-            if (_eSceneState == ESceneState.Play)
-            {
-                CameraManager.Instance.UpdateLogic(deltaTime);
-            }
+            CameraManager.Instance.UpdateLogic(deltaTime);
+            var pos = CameraManager.Instance.MainCameraTrans.position;
+            BgScene2D.Instance.UpdateLogic(pos);
+            
             for (int i = 0; i < _allSkeletonAnimationComp.Count; i++)
             {
                 _allSkeletonAnimationComp[i].Update(ConstDefineGM2D.FixedDeltaTime);
@@ -237,7 +238,6 @@ namespace GameA.Game
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioStartGame);
             GameAudioManager.Instance.PlayMusic(AudioNameConstDefineGM2D.GameAudioBgm01);
             Messenger.Broadcast(EMessengerType.OnPlay);
-            BgScene2D.Instance.OnPlay();
             return true;
         }
 

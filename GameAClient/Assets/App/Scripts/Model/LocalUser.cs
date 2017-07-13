@@ -41,6 +41,8 @@ namespace GameA
 
         private UserPublishedWorldProjectList _userPublishedWorldProjectList = new UserPublishedWorldProjectList ();
 
+//        private 
+        
         #endregion
         #region 属性
 
