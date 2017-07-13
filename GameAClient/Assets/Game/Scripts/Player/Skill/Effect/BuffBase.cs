@@ -67,7 +67,7 @@ namespace GameA.Game
             if (_time == 0)
             {
                 //移除buff
-                _target.RemoveBuff(this);
+                _target.RemoveBuff(_eBuffType);
                 return;
             }
             for (int i = 0; i < _effects.Length; i++)
