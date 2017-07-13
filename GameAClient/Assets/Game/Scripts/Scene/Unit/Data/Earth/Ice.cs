@@ -29,7 +29,7 @@ namespace GameA.Game
 
         public override void OnShootHit(UnitBase other)
         {
-            if (other is BulletFire)
+            if (other is ProjectileFire)
             {
                 PlayMode.Instance.DestroyUnit(this);
                 PushChild();

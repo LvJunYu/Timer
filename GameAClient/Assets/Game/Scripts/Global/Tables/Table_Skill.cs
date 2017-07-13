@@ -18,8 +18,8 @@ namespace GameA.Game
 		/// <summary>
         /// 子弹
         /// </summary>
-		[ColumnMapping("Bullet")]
-		public int Bullet;
+		[ColumnMapping("ProjectileCount")]
+		public int ProjectileCount;
 		/// <summary>
         /// CD时间
         /// </summary>
@@ -53,13 +53,18 @@ namespace GameA.Game
 		/// <summary>
         /// 攻击距离
         /// </summary>
-		[ColumnMapping("AttackDistance")]
-		public int AttackDistance;
+		[ColumnMapping("CastRange")]
+		public int CastRange;
 		/// <summary>
-        /// 飞行速度
+        /// 投射物Id
         /// </summary>
-		[ColumnMapping("BulletSpeed")]
-		public int BulletSpeed;
+		[ColumnMapping("ProjectileId")]
+		public string ProjectileId;
+		/// <summary>
+        /// 投射物速度
+        /// </summary>
+		[ColumnMapping("ProjectileSpeed")]
+		public int ProjectileSpeed;
 		/// <summary>
         /// 击退距离
         /// </summary>
@@ -73,8 +78,8 @@ namespace GameA.Game
 		/// <summary>
         /// 陷阱Id
         /// </summary>
-		[ColumnMapping("Trap")]
-		public int Trap;
+		[ColumnMapping("TrapId")]
+		public int TrapId;
 		/// <summary>
         /// 效果类型
         /// </summary>
@@ -86,7 +91,7 @@ namespace GameA.Game
 		[ColumnMapping("BehaviorValue")]
 		public int BehaviorValue;
 		/// <summary>
-        /// 
+        /// 说明
         /// </summary>
 		[ColumnMapping("Summary")]
 		public string Summary;

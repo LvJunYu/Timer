@@ -1,8 +1,8 @@
 ﻿/********************************************************************
-** Filename : BulletBase
+** Filename : ProjectileBase
 ** Author : Dong
 ** Date : 2017/3/23 星期四 下午 3:11:11
-** Summary : BulletBase
+** Summary : ProjectileBase
 ***********************************************************************/
 
 using System;
@@ -16,7 +16,7 @@ namespace GameA.Game
     /// 子弹需要做成池
     /// </summary>
     [Poolable(MinPoolSize = 10, PreferedPoolSize = 100, MaxPoolSize = ConstDefineGM2D.MaxTileCount)]
-    public class BulletBase : RigidbodyUnit, IPoolableObject
+    public class ProjectileBase : RigidbodyUnit, IPoolableObject
     {
         protected bool _run;
         protected SkillBase _skill;
@@ -95,7 +95,7 @@ namespace GameA.Game
             _maskRandom = UnityEngine.Random.Range(0, 2);
             _originPos = CenterPos;
             var rad = _angle * Mathf.Deg2Rad;
-            _speed = new IntVec2((int)(_skill.BulletSpeed * Math.Sin(rad)), (int)(_skill.BulletSpeed * Math.Cos(rad)));
+            _speed = new IntVec2((int)(_skill.TableSkill.ProjectileSpeed * Math.Sin(rad)), (int)(_skill.TableSkill.ProjectileSpeed * Math.Cos(rad)));
             _trans.eulerAngles = new Vector3(0, 0, -_angle);
             if (_animation != null)
             {
@@ -107,7 +107,7 @@ namespace GameA.Game
         {
             _angle = angle;
             var rad = _angle * Mathf.Deg2Rad;
-            _speed = new IntVec2((int)(_skill.BulletSpeed * Math.Sin(rad)), (int)(_skill.BulletSpeed * Math.Cos(rad)));
+            _speed = new IntVec2((int)(_skill.TableSkill.ProjectileSpeed * Math.Sin(rad)), (int)(_skill.TableSkill.ProjectileSpeed * Math.Cos(rad)));
             _trans.eulerAngles = new Vector3(0, 0, -_angle);
         }
 
@@ -134,10 +134,10 @@ namespace GameA.Game
                 _deltaPos = _speed + _extraDeltaPos;
                 _curPos += _deltaPos;
                 //超出最大射击距离
-                if ((CenterPos - _originPos).SqrMagnitude() >= _skill.Range * _skill.Range)
+                if ((CenterPos - _originPos).SqrMagnitude() >= _skill.CastRange * _skill.CastRange)
                 {
                     var rad = _angle*Mathf.Deg2Rad;
-                    CenterPos = _originPos + new IntVec2((int)(_skill.Range * Math.Sin(rad)), (int)(_skill.Range * Math.Cos(rad)));
+                    CenterPos = _originPos + new IntVec2((int)(_skill.CastRange * Math.Sin(rad)), (int)(_skill.CastRange * Math.Cos(rad)));
                     _destroy = 1;
                 }
                 UpdateCollider(GetColliderPos(_curPos));
@@ -157,7 +157,7 @@ namespace GameA.Game
 
         protected virtual void OnDestroy()
         {
-            _skill.OnBulletHit(this);
+            _skill.OnProjectileHit(this);
             _isAlive = false;
             --Life;
             if (_view != null)

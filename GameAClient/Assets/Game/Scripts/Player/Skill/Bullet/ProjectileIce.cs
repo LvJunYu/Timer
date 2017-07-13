@@ -1,8 +1,8 @@
 ﻿/********************************************************************
-** Filename : BulletIce
+** Filename : ProjectileIce
 ** Author : Dong
 ** Date : 2017/3/23 星期四 下午 3:12:00
-** Summary : BulletIce
+** Summary : ProjectileIce
 ***********************************************************************/
 
 using System;
@@ -11,8 +11,8 @@ using SoyEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 10003, Type = typeof(BulletIce))]
-    public class BulletIce : BulletBase
+    [Unit(Id = 10003, Type = typeof(ProjectileIce))]
+    public class ProjectileIce : ProjectileBase
     {
         protected int _lifeTime = 100;
         

@@ -4,11 +4,11 @@ namespace GameA.Game
 {
     public class PaintSkill : SkillBase
     {
-        public override void OnBulletHit(BulletBase bullet)
+        public override void OnProjectileHit(ProjectileBase projectile)
         {
             //检查地块范围
-            var checkGrid = bullet.ColliderGrid.Enlarge(_radius);
-            var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, JoyPhysics2D.GetColliderLayerMask(bullet.DynamicCollider.Layer));
+            var checkGrid = projectile.ColliderGrid.Enlarge(_radius);
+            var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, JoyPhysics2D.GetColliderLayerMask(projectile.DynamicCollider.Layer));
             for (int i = 0; i < units.Count; i++)
             {
                 var unit = units[i];
@@ -16,57 +16,57 @@ namespace GameA.Game
                 {
                     if (unit.CanPainted)
                     {
-                        OnPaintHit(bullet, unit);
+                        OnPaintHit(projectile, unit);
                     }
                     else if(unit.IsHero)
                     {
-                        OnHeroHit(bullet, unit);
+                        OnHeroHit(projectile, unit);
                     }
                 }
             }
         }
 
-        protected void OnPaintHit(BulletBase bullet, UnitBase target)
+        protected void OnPaintHit(ProjectileBase projectile, UnitBase target)
         {
             int length = ConstDefineGM2D.ServerTileScale;
             var guid = target.Guid;
             UnitBase neighborUnit;
-            var curPos = bullet.CurPos;
+            var curPos = projectile.CurPos;
             if (curPos.y < target.ColliderGrid.YMin)
             {
                 if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y - length, guid.z), out neighborUnit))
                 {
-                    DoPaint(bullet, target, EDirectionType.Down);
+                    DoPaint(projectile, target, EDirectionType.Down);
                 }
             }
             else if (curPos.y > target.ColliderGrid.YMax)
             {
                 if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y + length, guid.z), out neighborUnit))
                 {
-                    DoPaint(bullet, target, EDirectionType.Up);
+                    DoPaint(projectile, target, EDirectionType.Up);
                 }
             }
             if (curPos.x < target.ColliderGrid.XMin)
             {
                 if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x - length, guid.y, guid.z), out neighborUnit))
                 {
-                    DoPaint(bullet, target, EDirectionType.Left);
+                    DoPaint(projectile, target, EDirectionType.Left);
                 }
             }
             else if (curPos.x > target.ColliderGrid.XMax)
             {
                 if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x + length, guid.y, guid.z), out neighborUnit))
                 {
-                    DoPaint(bullet, target, EDirectionType.Right);
+                    DoPaint(projectile, target, EDirectionType.Right);
                 }
             }
         }
 
-        protected virtual void DoPaint(BulletBase bullet, UnitBase target, EDirectionType eDirectionType)
+        protected virtual void DoPaint(ProjectileBase projectile, UnitBase target, EDirectionType eDirectionType)
         {
             var paintDepth = PaintBlock.TileOffsetHeight;
-            var colliderGrid = bullet.ColliderGrid;
-            var maskRandom = bullet.MaskRandom;
+            var colliderGrid = projectile.ColliderGrid;
+            var maskRandom = projectile.MaskRandom;
             switch (eDirectionType)
             {
                 case EDirectionType.Down:
@@ -153,7 +153,11 @@ namespace GameA.Game
             }
         }
 
-        protected virtual void OnHeroHit(BulletBase bullet, UnitBase target)
+        protected virtual void OnHeroHit(ProjectileBase projectile, UnitBase target)
+        {
+        }
+
+        public PaintSkill(int id, UnitBase ower) : base(id, ower)
         {
         }
     }

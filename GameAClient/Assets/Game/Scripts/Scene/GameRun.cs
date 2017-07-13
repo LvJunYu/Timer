@@ -59,7 +59,7 @@ namespace GameA.Game
             PoolFactory<MorphUnit>.Clear();
             PoolFactory<EmptyUnit>.Clear();
             PoolFactory<BgItem>.Clear();
-            PoolFactory<BulletWater>.Clear();
+            PoolFactory<ProjectileWater>.Clear();
             PoolFactory<SpineObject>.Clear();
 
             CameraManager.Instance.Dispose();

@@ -116,21 +116,21 @@ namespace GameA.Game
 
         protected void OnTrigger(UnitBase other)
         {
-            switch (_eSkillType)
-            {
-                case ESkillType.Fire:
-                    other.SkillCtrl.ChangeSkill<SkillFire>(0);
-                    break;
-                case ESkillType.Ice:
-                    other.SkillCtrl.ChangeSkill<SkillIce>(0);
-                    break;
-                case ESkillType.Jelly:
-                    other.SkillCtrl.ChangeSkill<SkillJelly>(0);
-                    break;
-                case ESkillType.Clay:
-                    other.SkillCtrl.ChangeSkill<SkillClay>(0);
-                    break;
-            }
+//            switch (_eSkillType)
+//            {
+//                case ESkillType.Fire:
+//                    other.SkillCtrl.ChangeSkill<SkillFire>(0);
+//                    break;
+//                case ESkillType.Ice:
+//                    other.SkillCtrl.ChangeSkill<SkillIce>(0);
+//                    break;
+//                case ESkillType.Jelly:
+//                    other.SkillCtrl.ChangeSkill<SkillJelly>(0);
+//                    break;
+//                case ESkillType.Clay:
+//                    other.SkillCtrl.ChangeSkill<SkillClay>(0);
+//                    break;
+//            }
         }
 
         public override void UpdateLogic()
