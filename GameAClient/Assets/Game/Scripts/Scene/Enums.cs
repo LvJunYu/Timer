@@ -31,11 +31,4 @@ namespace GameA.Game
         Portaling,
         Reviving,
     }
-
-    public enum ESwitchType
-    {
-        None,
-        Switch,
-        Switched
-    }
 }

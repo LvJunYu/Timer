@@ -115,7 +115,7 @@ namespace GameA.Game
 
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 2);
             _skillCtrl.Clear();
-            _skillCtrl.ChangeSkill<SkillWater>(0);
+            _skillCtrl.ChangeSkill<SkillIce>(0);
             _skillCtrl.ChangeSkill<SkillFire>(1);
 
             _dieTime = 0;

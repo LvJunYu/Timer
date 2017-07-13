@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    public class SkillJelly : SkillBase
+    public class SkillJelly : PaintSkill
     {
         internal override void Enter(UnitBase ower)
         {

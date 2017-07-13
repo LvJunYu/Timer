@@ -7,33 +7,35 @@
 
 using System;
 using System.Collections;
+using SoyEngine;
 
 namespace GameA.Game
 {
+    /// <summary>
+    /// Effects do not have to be directly linked to the ability,they can also be triggerd by other effects.
+    /// </summary>
     public class EffectBase
     {
-        protected UnitBase _owner;
-        protected ESkillType _eSkillType;
-
-        public ESkillType ESkillType
+        public virtual bool IsGain
         {
-            get { return _eSkillType; }
+            get { return false; }
         }
 
-        public virtual void Init(UnitBase target)
-        {
-            _owner = target;
-        }
-
-        public virtual void OnAttachedAgain(BulletBase bullet)
+        public virtual void Init(params object[] values)
         {
         }
 
-        public virtual void OnAttached(BulletBase bullet)
+        public virtual bool OnAttached(ActorBase target)
         {
+            return true;
+        }
+        
+        public virtual bool OnRemoved(ActorBase target)
+        {
+            return true;
         }
 
-        public virtual void OnRemoved()
+        public virtual void Update()
         {
         }
     }

@@ -36,6 +36,11 @@ namespace GameA.Game
 		[ColumnMapping("Model1")]
 		public string Model1;
 		/// <summary>
+        /// 生命值
+        /// </summary>
+		[ColumnMapping("Hp")]
+		public int Hp;
+		/// <summary>
         /// 类别
         /// </summary>
 		[ColumnMapping("UnitType")]

@@ -265,7 +265,7 @@ namespace GameA.Game
             }
             if (ResourcesManager.Instance.TryGetTexture (maskName, out maskingTexture))
             {
-                LogHelper.Error("TryGetSpriteByName Failed", maskName);
+                LogHelper.Error("TryGetSpriteByName Failed : {0} ", maskName);
                 return;
             }
             int xmin = 0, ymin = 0, xmax = 0, ymax = 0, offsetX = 0, offsetY = 0;

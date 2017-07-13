@@ -48,6 +48,8 @@ namespace GameA.Game
             _cacheCheckedDownUnits.Clear();
             _cacheHitUnits.Clear();
             _cacheIntersectUnits.Clear();
+            _onClay = false;
+            _onIce = false;
         }
 
         protected override void UpdateCollider(IntVec2 min)

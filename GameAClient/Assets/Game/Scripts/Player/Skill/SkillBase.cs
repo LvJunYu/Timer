@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 
@@ -105,7 +106,7 @@ namespace GameA.Game
         {
         }
 
-        public void UpdateLogic()
+        public virtual void UpdateLogic()
         {
             if (_timerCD > 0)
             {
@@ -125,12 +126,11 @@ namespace GameA.Game
                 _timerAnimation--;
                 if (_timerAnimation == 0)
                 {
-                    //生成子弹
-                    CreateBullet();
+                    OnSkillCast();
                 }
             }
         }
-
+        
         public bool Fire()
         {
             if (_currentCount == 0)
@@ -146,28 +146,30 @@ namespace GameA.Game
             _timerAnimation = _cdAnimation;
             if (_timerAnimation == 0)
             {
-                //生成子弹
-                CreateBullet();
+                OnSkillCast();
             }
             return true;
         }
 
-        private void CreateBullet()
+        protected virtual void OnSkillCast()
+        {
+        }
+
+        public virtual void OnBulletHit(BulletBase bullet)
+        {
+        }
+
+        protected void CreateBullet(int bulletId, IntVec2 pos, int angle, int delayRunTime = 0)
         {
             _currentCount--;
             if (_currentCount == 0)
             {
                 _timerCharger = _chargerTime;
-                //LogHelper.Debug("Charge Start");
             }
-            if (_bulletId == 0)
-            {
-                return;
-            }
-            var bullet =  PlayMode.Instance.CreateRuntimeUnit(_bulletId, GetBulletPos(_bulletId)) as BulletBase;
+            var bullet =  PlayMode.Instance.CreateRuntimeUnit(bulletId, pos) as BulletBase;
             if (bullet != null)
             {
-                bullet.Run(this);
+                bullet.Run(this, angle, delayRunTime);
             }
         }
 
@@ -192,7 +194,7 @@ namespace GameA.Game
             return _currentCount - oldMp;
         }
 
-        private IntVec2 GetBulletPos(int bulletId)
+        protected IntVec2 GetBulletPos(int bulletId)
         {
             var tableUnit = UnitManager.Instance.GetTableUnit(bulletId);
             if (tableUnit == null)
