@@ -28,6 +28,7 @@ namespace GameA.Game
         protected int _singTime;
 
         protected int _projectileCount;
+        protected int _projectileSpeed;
         protected int _currentCount;
 
         /// <summary>
@@ -35,6 +36,8 @@ namespace GameA.Game
         /// </summary>
         [SerializeField]
         protected int _castRange;
+
+        protected int _knockback;
         [SerializeField]
         protected int _radius;
 
@@ -49,11 +52,6 @@ namespace GameA.Game
         public int Id
         {
             get { return _tableSkill.Id; }
-        }
-
-        public Table_Skill TableSkill
-        {
-            get { return _tableSkill; }
         }
 
         public UnitBase Owner
@@ -76,26 +74,33 @@ namespace GameA.Game
             get { return _eSkillType; }
         }
 
+        public int ProjectileSpeed
+        {
+            get { return _projectileSpeed; }
+        }
+
         public SkillBase(int id, UnitBase ower)
         {
-            _tableSkill = TableManager.Instance.GetSkill(id);
             _owner = ower;
-            _cdTime = _tableSkill.CDTime;
-            _chargeTime = _tableSkill.ChargeTime;
-            _singTime = _tableSkill.SingTime;
-            _castRange = _tableSkill.CastRange * ConstDefineGM2D.ServerTileScale;
+            _tableSkill = TableManager.Instance.GetSkill(id);
             _projectileCount = _tableSkill.ProjectileCount;
             _currentCount = _projectileCount;
-            
+            _cdTime = TableConvert.GetTime(_tableSkill.CDTime);
+            _chargeTime = TableConvert.GetTime(_tableSkill.ChargeTime);
+            _singTime = TableConvert.GetTime(_tableSkill.SingTime);
+            _castRange = TableConvert.GetRange(_tableSkill.CastRange);
+            _projectileSpeed = TableConvert.GetSpeed(_tableSkill.ProjectileSpeed);
+            _knockback = TableConvert.GetRange(_tableSkill.Knockback);
             _timerSing = 0;
             _timerCD = 0;
+            _timerCharge = 0;
         }
 
         internal void SetValue(int cdTime, int castRange, int singTime = 0)
         {
-            _cdTime = cdTime;
-            _castRange = castRange * ConstDefineGM2D.ServerTileScale;
-            _singTime = singTime;
+            _cdTime = TableConvert.GetTime(cdTime);
+            _castRange = TableConvert.GetRange(castRange);
+            _singTime = TableConvert.GetTime(singTime);
             if (_singTime > _cdTime)
             {
                 LogHelper.Error("Error: _singTime{0} > _cdTime{1}", _singTime, _cdTime);
@@ -153,7 +158,7 @@ namespace GameA.Game
         
         protected virtual void OnSkillCast()
         {
-            
+            CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.ShootAngle);
         }
 
         public virtual void OnProjectileHit(ProjectileBase projectile)
@@ -188,7 +193,7 @@ namespace GameA.Game
             Messenger<int, int>.Broadcast(EMessengerType.OnMPChanged, _currentCount, _projectileCount);
         }
 
-        protected IntVec2 GetBulletPos(int bulletId)
+        protected IntVec2 GetProjectilePos(int bulletId)
         {
             var tableUnit = UnitManager.Instance.GetTableUnit(bulletId);
             if (tableUnit == null)

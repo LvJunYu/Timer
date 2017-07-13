@@ -23,8 +23,8 @@
 //
 //        protected override void OnSkillCast()
 //        {
-//            CreateProjectile(_bulletId, GetBulletPos(_bulletId), _owner.ShootAngle);
-//            CreateProjectile(_bulletId, GetBulletPos(_bulletId), _owner.ShootAngle, 10);
+//            CreateProjectile(_bulletId, GetProjectilePos(_bulletId), _owner.ShootAngle);
+//            CreateProjectile(_bulletId, GetProjectilePos(_bulletId), _owner.ShootAngle, 10);
 //        }
 //
 //        protected override void OnHeroHit(ProjectileBase projectile, UnitBase target)
@@ -58,7 +58,7 @@
 //
 //        protected override void OnSkillCast()
 //        {
-//            CreateProjectile(_bulletId, GetBulletPos(_bulletId), _owner.ShootAngle);
+//            CreateProjectile(_bulletId, GetProjectilePos(_bulletId), _owner.ShootAngle);
 //        }
 //
 //        protected override void OnHeroHit(ProjectileBase projectile, UnitBase target)

@@ -38,7 +38,7 @@
 //        
 //        protected override void OnSkillCast()
 //        {
-//            CreateProjectile(_bulletId, GetBulletPos(_bulletId), _owner.ShootAngle);
+//            CreateProjectile(_bulletId, GetProjectilePos(_bulletId), _owner.ShootAngle);
 //        }
 //
 //        public override void OnProjectileHit(ProjectileBase projectile)

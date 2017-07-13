@@ -95,7 +95,7 @@ namespace GameA.Game
             _maskRandom = UnityEngine.Random.Range(0, 2);
             _originPos = CenterPos;
             var rad = _angle * Mathf.Deg2Rad;
-            _speed = new IntVec2((int)(_skill.TableSkill.ProjectileSpeed * Math.Sin(rad)), (int)(_skill.TableSkill.ProjectileSpeed * Math.Cos(rad)));
+            _speed = new IntVec2((int)(_skill.ProjectileSpeed * Math.Sin(rad)), (int)(_skill.ProjectileSpeed * Math.Cos(rad)));
             _trans.eulerAngles = new Vector3(0, 0, -_angle);
             if (_animation != null)
             {
@@ -107,7 +107,7 @@ namespace GameA.Game
         {
             _angle = angle;
             var rad = _angle * Mathf.Deg2Rad;
-            _speed = new IntVec2((int)(_skill.TableSkill.ProjectileSpeed * Math.Sin(rad)), (int)(_skill.TableSkill.ProjectileSpeed * Math.Cos(rad)));
+            _speed = new IntVec2((int)(_skill.ProjectileSpeed * Math.Sin(rad)), (int)(_skill.ProjectileSpeed * Math.Cos(rad)));
             _trans.eulerAngles = new Vector3(0, 0, -_angle);
         }
 

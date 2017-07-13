@@ -59,7 +59,7 @@ namespace GameA.Game
         /// 投射物Id
         /// </summary>
 		[ColumnMapping("ProjectileId")]
-		public string ProjectileId;
+		public int ProjectileId;
 		/// <summary>
         /// 投射物速度
         /// </summary>
