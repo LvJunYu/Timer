@@ -21,40 +21,70 @@ namespace GameA.Game
 		[ColumnMapping("Bullet")]
 		public int Bullet;
 		/// <summary>
-        /// 攻速
+        /// CD时间
         /// </summary>
-		[ColumnMapping("RPS")]
-		public int RPS;
+		[ColumnMapping("CDTime")]
+		public int CDTime;
 		/// <summary>
-        /// 持续
-        /// </summary>
-		[ColumnMapping("Duration")]
-		public float Duration;
-		/// <summary>
-        /// 冷却
+        /// 冷却时间
         /// </summary>
 		[ColumnMapping("ChargeTime")]
-		public float ChargeTime;
+		public int ChargeTime;
 		/// <summary>
-        /// 治疗
+        /// 吟唱时间
         /// </summary>
-		[ColumnMapping("Cure")]
-		public float Cure;
+		[ColumnMapping("SingTime")]
+		public int SingTime;
 		/// <summary>
-        /// 伤害
+        /// 目标类型
         /// </summary>
-		[ColumnMapping("Damage")]
-		public float Damage;
+		[ColumnMapping("TargetType")]
+		public int TargetType;
 		/// <summary>
-        /// 范围
+        /// 作用方式
         /// </summary>
-		[ColumnMapping("Radius")]
-		public float Radius;
+		[ColumnMapping("EffectMode")]
+		public int EffectMode;
 		/// <summary>
-        /// 距离
+        /// 作用值
         /// </summary>
-		[ColumnMapping("Range")]
-		public float Range;
+		[ColumnMapping("EffectValues")]
+		public int[] EffectValues;
+		/// <summary>
+        /// 攻击距离
+        /// </summary>
+		[ColumnMapping("AttackDistance")]
+		public int AttackDistance;
+		/// <summary>
+        /// 飞行速度
+        /// </summary>
+		[ColumnMapping("BulletSpeed")]
+		public int BulletSpeed;
+		/// <summary>
+        /// 击退距离
+        /// </summary>
+		[ColumnMapping("Knockback")]
+		public int Knockback;
+		/// <summary>
+        /// 击中目标触发状态
+        /// </summary>
+		[ColumnMapping("TriggerStates")]
+		public int[] TriggerStates;
+		/// <summary>
+        /// 陷阱Id
+        /// </summary>
+		[ColumnMapping("Trap")]
+		public int Trap;
+		/// <summary>
+        /// 效果类型
+        /// </summary>
+		[ColumnMapping("BehaviorType")]
+		public int BehaviorType;
+		/// <summary>
+        /// 效果值
+        /// </summary>
+		[ColumnMapping("BehaviorValue")]
+		public int BehaviorValue;
 		/// <summary>
         /// 
         /// </summary>

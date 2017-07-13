@@ -16,6 +16,8 @@ namespace SoyEngine
         public const string DataExample = "test/testAPI";
         // 获取应用全局信息
         public const string AppData = "/appInfo/appData";
+        // 登录
+        public const string Login = "/account/login";
         // 设备登录包
         public const string LoginByToken = "/account/loginByToken";
         // 退出登录
@@ -82,28 +84,6 @@ namespace SoyEngine
         public const string WorldNewestProjectList = "/world/getNewestProjectList";
         // 录像
         public const string Record = "/record/get";
-        // 冒险模式关卡列表
-        public const string AdventureProjectList = "/adventure/getProjectList";
-        // 冒险模式进度
-        public const string AdventureUserProgress = "/adventure/getUserProgress";
-        // 获取冒险关卡用户数据
-        public const string AdventureUserLevelDataDetail = "/adventure/getUserLevelDataDetail";
-        // 请求单人模式关卡排行
-        public const string AdventureLevelRankList = "/adventure/getLevelRankList";
-        // 获取冒险章节用户数据
-        public const string AdventureUserSection = "/adventure/getUserSectionData";
-        // 获取体力数据
-        public const string UserEnergy = "/adventure/getUserEnergyData";
-        // 购买体力
-        public const string BuyEnergy = "/adventure/buyEnergy";
-        // 冒险模式用户数据
-        public const string AdventureUserData = "/adventure/getUserData";
-        // 进入冒险关卡
-        public const string PlayAdventureLevel = "/adventure/playLevel";
-        // 解锁章节
-        public const string UnlockAdventureSection = "/adventure/unlockSection";
-        // 提交冒险模式数据
-        public const string CommitAdventureLevelResult = "/adventure/commitLevelResult";
         // 用户道具数据
         public const string UserProp = "/home/getUserPropData";
         // 使用道具
@@ -126,6 +106,30 @@ namespace SoyEngine
         public const string BuyAvatarPart = "/home/buyAvatarPart";
         // 转盘抽奖
         public const string Raffle = "/home/raffle";
+        // Msg_CS_DAT_UserWorkshopUnitData
+        public const string UserWorkshopUnitData = "/home/getUserWorkshopUnitData";
+        // 冒险模式关卡列表
+        public const string AdventureProjectList = "/adventure/getProjectList";
+        // 冒险模式进度
+        public const string AdventureUserProgress = "/adventure/getUserProgress";
+        // 获取冒险关卡用户数据
+        public const string AdventureUserLevelDataDetail = "/adventure/getUserLevelDataDetail";
+        // 请求单人模式关卡排行
+        public const string AdventureLevelRankList = "/adventure/getLevelRankList";
+        // 获取冒险章节用户数据
+        public const string AdventureUserSection = "/adventure/getUserSectionData";
+        // 获取体力数据
+        public const string UserEnergy = "/adventure/getUserEnergyData";
+        // 购买体力
+        public const string BuyEnergy = "/adventure/buyEnergy";
+        // 冒险模式用户数据
+        public const string AdventureUserData = "/adventure/getUserData";
+        // 进入冒险关卡
+        public const string PlayAdventureLevel = "/adventure/playLevel";
+        // 解锁章节
+        public const string UnlockAdventureSection = "/adventure/unlockSection";
+        // 提交冒险模式数据
+        public const string CommitAdventureLevelResult = "/adventure/commitLevelResult";
         // 用户匹配改造数据
         public const string MatchUserData = "/match/getUserData";
         // 改造

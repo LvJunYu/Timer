@@ -42,6 +42,8 @@ namespace GameA.Game
 		/// </summary>
 		private List<ModifyData> _addedUnits = new List<ModifyData>();
 
+        private Dictionary<int, int> _unitCntDic = new Dictionary<int, int>();
+        
         #endregion
 
         #region 属性
@@ -190,6 +192,13 @@ namespace GameA.Game
             {
                 return false;
             }
+            // 统计数量
+            int cnt;
+            if (!_unitCntDic.TryGetValue(tableUnit.Id, out cnt))
+            {
+                cnt = 0;
+            }
+            _unitCntDic[tableUnit.Id] = ++cnt;
             if (!isInitAdd)
             {
                 SetUnitExtra(unitDesc, tableUnit);
@@ -236,6 +245,21 @@ namespace GameA.Game
                 _spawnDatas.Remove(unitDesc);
             }
             return true;
+        }
+
+        /// <summary>
+        /// 查询某种地块在地图中的总数
+        /// </summary>
+        /// <param name="unitId"></param>
+        /// <returns></returns>
+        public int GetUnitCnt (int unitId)
+        {
+            int cnt;
+            if (_unitCntDic.TryGetValue(unitId, out cnt))
+            {
+                return cnt;
+            }
+            return 0;
         }
 
         #region ExtraData

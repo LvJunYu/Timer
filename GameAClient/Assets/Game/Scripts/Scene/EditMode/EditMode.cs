@@ -437,7 +437,7 @@ namespace GameA.Game
                     }
                     if (tableUnit.CanRotate)
                     {
-                        unitDesc.Rotation = 1;
+                        unitDesc.Rotation = 3;
                     }
                     unitDesc.Scale = Vector2.one;
                 }
