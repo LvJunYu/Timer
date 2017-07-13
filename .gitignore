@@ -35,3 +35,4 @@ Assembly-CSharp-Editor-firstpass.csproj
 GameAClient/Assets/Plugins/Editor
 GameAClient/Assets/Plugins/Editor.meta
 GameAClient/GameAClient.CSharp.Editor.Plugins.csproj
+*.csproj
