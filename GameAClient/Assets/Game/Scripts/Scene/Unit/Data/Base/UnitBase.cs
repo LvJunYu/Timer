@@ -14,16 +14,14 @@ using Object = System.Object;
 
 namespace GameA.Game
 {
-    [System.Serializable]
-    public class UnitBase : IEquatable<UnitBase>
+    [Serializable]
+    public class UnitBase : ColliderBase, IEquatable<UnitBase>
     {
         protected const float BackZOffset = 0.4f;
         protected const float FrontZOffset = -0.4f;
         protected const int MaxFriction = 100;
 
         #region base data
-
-        protected int _hp;
 
         protected bool _isFreezed;
 
@@ -35,15 +33,9 @@ namespace GameA.Game
         protected UnitDesc _unitDesc;
 
         protected EMoveDirection _moveDirection;
-        protected ESwitchType _switchType;
 
         [SerializeField]
         protected IntVec2 _curPos;
-        [SerializeField]
-        protected IntVec2 _colliderPos;
-        protected Grid2D _colliderGrid;
-        protected Grid2D _colliderGridInner;
-        protected Grid2D _lastColliderGrid;
 
         [SerializeField]
         protected bool _isAlive;
@@ -63,6 +55,9 @@ namespace GameA.Game
 
         protected List<UnitBase> _switchPressUnits = new List<UnitBase>();
         protected bool _ctrlBySwitch;
+        
+        protected int _maxHp = 500;
+        protected int _hp = 500;
 
         #endregion
 
@@ -131,6 +126,15 @@ namespace GameA.Game
         {
             get { return _view == null ? null : _view.Trans; }
         }
+        
+        public int Hp
+        {
+            get { return _hp; }
+            set
+            {
+                _hp = Mathf.Clamp(value, 0, _maxHp);
+            }
+        }
 
         public virtual EDieType EDieType
         {
@@ -176,11 +180,6 @@ namespace GameA.Game
             get { return _canBridgeCross; }
         }
 
-        public int Hp
-        {
-            get { return _hp; }
-        }
-
         /// <summary>
         /// 是否可以被喷涂
         /// </summary>
@@ -207,11 +206,6 @@ namespace GameA.Game
         }
 
         public virtual SkillCtrl SkillCtrl
-        {
-            get { return null; }
-        }
-
-        public virtual EffectManager EffectMgr
         {
             get { return null; }
         }
@@ -1522,5 +1516,32 @@ namespace GameA.Game
                 effect.Stop();
             }
         }
+
+        #region  skill
+
+               public virtual BuffBase AddBuff(EBuffType eBuffType, int time, params EffectBase[] effects)
+               {
+                   return null;
+               }
+                
+                public virtual void RemoveBuff(EBuffType eBuffType)
+                {
+                }
+
+                public virtual void RemoveAllDebuffs()
+                {
+                }
+
+                public virtual bool ExcuteEffect(EffectBase effect)
+                {
+                    return true;
+                }
+
+                public virtual bool HasBuff(EBuffType eBuffType)
+                {
+                    return false;
+                }
+
+        #endregion
     }
 }

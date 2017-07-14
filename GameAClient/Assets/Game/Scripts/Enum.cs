@@ -343,4 +343,13 @@ namespace GameA.Game
         Jelly,
         Max
     }
+
+    public enum EBuffType
+    {
+        None,
+        Ice,
+        IcePlus,
+        Fire,
+        FirePlus,
+    }
 }

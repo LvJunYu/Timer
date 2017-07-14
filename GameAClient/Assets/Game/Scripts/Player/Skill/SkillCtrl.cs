@@ -28,7 +28,7 @@ namespace GameA.Game
             get { return _currentSkills; }
         }
 
-        public bool ChangeSkill<T>(int trackIndex) where T : class
+        public bool ChangeSkill(int skillId, int trackIndex)
         {
             if (!CheckValid(trackIndex))
             {
@@ -36,20 +36,14 @@ namespace GameA.Game
             }
             if (_currentSkills[trackIndex] != null)
             {
-                if (_currentSkills[trackIndex].GetType() == typeof(T))
+                if (_currentSkills[trackIndex].Id== skillId)
                 {
                     return false;
                 }
                 _currentSkills[trackIndex].Exit();
                 _currentSkills[trackIndex] = null;
             }
-            _currentSkills[trackIndex] = (SkillBase)Activator.CreateInstance(typeof(T));
-            if (_currentSkills[trackIndex] == null)
-            {
-                LogHelper.Error("CreateInstance Failed, {0}", typeof(T).Name);
-                return false;
-            }
-            _currentSkills[trackIndex].Enter(_owner);
+            _currentSkills[trackIndex] = new SkillBase(skillId, _owner);
             return true;
         }
 

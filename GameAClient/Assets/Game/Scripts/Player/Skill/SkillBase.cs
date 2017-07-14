@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 
@@ -17,42 +18,40 @@ namespace GameA.Game
     {
         [SerializeField]
         protected ESkillType _eSkillType;
-        protected int _totalCount;
+        
+        [SerializeField]
+        protected UnitBase _owner;
+        protected Table_Skill _tableSkill;
+        
         protected int _cdTime;
-        protected int _chargerTime;
-        protected int _duration;
-        protected int _cure;
-        protected int _damage;
+        protected int _chargeTime;
+        protected int _singTime;
+
+        protected int _projectileCount;
+        protected int _projectileSpeed;
+        protected int _currentCount;
+
         /// <summary>
         /// 攻击距离
         /// </summary>
         [SerializeField]
-        protected int _range;
+        protected int _castRange;
+
+        protected int _knockback;
         [SerializeField]
         protected int _radius;
-
-        protected int _currentCount;
 
         /// <summary>
         /// 定时器
         /// </summary>
         [SerializeField]
         protected int _timerCD;
-        protected int _timerCharger;
+        protected int _timerCharge;
+        protected int _timerSing;
 
-        protected int _timerAnimation;
-        protected int _cdAnimation;
-
-        protected int _bulletId;
-        [SerializeField]
-        protected int _bulletSpeed;
-
-        [SerializeField]
-        protected UnitBase _owner;
-
-        public int BulletSpeed
+        public int Id
         {
-            get { return _bulletSpeed; }
+            get { return _tableSkill.Id; }
         }
 
         public UnitBase Owner
@@ -65,9 +64,9 @@ namespace GameA.Game
             get { return _radius; }
         }
 
-        public int Range
+        public int CastRange
         {
-            get { return _range; }
+            get { return _castRange; }
         }
 
         public ESkillType ESkillType
@@ -75,29 +74,36 @@ namespace GameA.Game
             get { return _eSkillType; }
         }
 
-        internal virtual void Enter(UnitBase ower)
+        public int ProjectileSpeed
         {
-            _owner = ower;
-            _totalCount = 20;
-            _currentCount = _totalCount;
-            _timerCD = 0;
-            _cdTime = 7;
-            _chargerTime = 50;
-            _radius = 320;
-            _range = 6400;
-            _bulletSpeed = 200;
-            _timerAnimation = 0;
-            _cdAnimation = 0;
+            get { return _projectileSpeed; }
         }
 
-        internal void SetValue(int cdTime, int range, int cdAnimation = 0)
+        public SkillBase(int id, UnitBase ower)
         {
-            _cdTime = cdTime;
-            _range = range * ConstDefineGM2D.ServerTileScale;
-            _cdAnimation = cdAnimation;
-            if (_cdAnimation > _cdTime)
+            _owner = ower;
+            _tableSkill = TableManager.Instance.GetSkill(id);
+            _projectileCount = _tableSkill.ProjectileCount;
+            _currentCount = _projectileCount;
+            _cdTime = TableConvert.GetTime(_tableSkill.CDTime);
+            _chargeTime = TableConvert.GetTime(_tableSkill.ChargeTime);
+            _singTime = TableConvert.GetTime(_tableSkill.SingTime);
+            _castRange = TableConvert.GetRange(_tableSkill.CastRange);
+            _projectileSpeed = TableConvert.GetSpeed(_tableSkill.ProjectileSpeed);
+            _knockback = TableConvert.GetRange(_tableSkill.Knockback);
+            _timerSing = 0;
+            _timerCD = 0;
+            _timerCharge = 0;
+        }
+
+        internal void SetValue(int cdTime, int castRange, int singTime = 0)
+        {
+            _cdTime = TableConvert.GetTime(cdTime);
+            _castRange = TableConvert.GetRange(castRange);
+            _singTime = TableConvert.GetTime(singTime);
+            if (_singTime > _cdTime)
             {
-                LogHelper.Error("Error: _cdAnimation{0} > _cdTime{1}", _cdAnimation, _cdTime);
+                LogHelper.Error("Error: _singTime{0} > _cdTime{1}", _singTime, _cdTime);
             }
         }
 
@@ -105,32 +111,31 @@ namespace GameA.Game
         {
         }
 
-        public void UpdateLogic()
+        public virtual void UpdateLogic()
         {
             if (_timerCD > 0)
             {
                 _timerCD--;
             }
-            if (_timerCharger > 0)
+            if (_timerCharge > 0)
             {
-                _timerCharger--;
-                if (_timerCharger == 0)
+                _timerCharge--;
+                if (_timerCharge == 0)
                 {
-                    _currentCount = _totalCount;
+                    UpdateCurrentProjectileCount(_projectileCount);
                     //LogHelper.Debug("Charge End");
                 }
             }
-            if (_timerAnimation > 0)
+            if (_timerSing > 0)
             {
-                _timerAnimation--;
-                if (_timerAnimation == 0)
+                _timerSing--;
+                if (_timerSing == 0)
                 {
-                    //生成子弹
-                    CreateBullet();
+                    OnSkillCast();
                 }
             }
         }
-
+        
         public bool Fire()
         {
             if (_currentCount == 0)
@@ -143,35 +148,38 @@ namespace GameA.Game
                 return false;
             }
             _timerCD = _cdTime;
-            _timerAnimation = _cdAnimation;
-            if (_timerAnimation == 0)
+            _timerSing = _singTime;
+            if (_timerSing == 0)
             {
-                //生成子弹
-                CreateBullet();
+                OnSkillCast();
             }
             return true;
         }
-
-        private void CreateBullet()
+        
+        protected virtual void OnSkillCast()
         {
-            _currentCount--;
+            CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.ShootAngle);
+        }
+
+        public virtual void OnProjectileHit(ProjectileBase projectile)
+        {
+        }
+
+        protected void CreateProjectile(int projectileId, IntVec2 pos, int angle, int delayRunTime = 0)
+        {
+            UpdateCurrentProjectileCount(--_currentCount);
             if (_currentCount == 0)
             {
-                _timerCharger = _chargerTime;
-                //LogHelper.Debug("Charge Start");
+                _timerCharge = _chargeTime;
             }
-            if (_bulletId == 0)
-            {
-                return;
-            }
-            var bullet =  PlayMode.Instance.CreateRuntimeUnit(_bulletId, GetBulletPos(_bulletId)) as BulletBase;
+            var bullet =  PlayMode.Instance.CreateRuntimeUnit(projectileId, pos) as ProjectileBase;
             if (bullet != null)
             {
-                bullet.Run(this);
+                bullet.Run(this, angle, delayRunTime);
             }
         }
 
-        private void UpdateBulletCount(int count)
+        private void UpdateCurrentProjectileCount(int count)
         {
             if (_owner == null || !_owner.IsMain)
             {
@@ -181,18 +189,11 @@ namespace GameA.Game
             {
                 return;
             }
-            _currentCount = Math.Min(_totalCount, count);
-            Messenger<int, int>.Broadcast(EMessengerType.OnMPChanged, _currentCount, _totalCount);
+            _currentCount = Math.Min(_projectileCount, count);
+            Messenger<int, int>.Broadcast(EMessengerType.OnMPChanged, _currentCount, _projectileCount);
         }
 
-        public int AddBullet(int count)
-        {
-            var oldMp = _currentCount;
-            UpdateBulletCount(_currentCount + count);
-            return _currentCount - oldMp;
-        }
-
-        private IntVec2 GetBulletPos(int bulletId)
+        protected IntVec2 GetProjectilePos(int bulletId)
         {
             var tableUnit = UnitManager.Instance.GetTableUnit(bulletId);
             if (tableUnit == null)
@@ -201,11 +202,6 @@ namespace GameA.Game
             }
             var dataSize = tableUnit.GetDataSize(0, Vector2.one);
             return _owner.FirePos - dataSize * 0.5f;
-        }
-
-        public override string ToString()
-        {
-            return string.Format("ESkillType: {0}, Range: {1}, Radius: {2}, BulletId: {3}", _eSkillType, _range, _radius, _bulletId);
         }
     }
 }

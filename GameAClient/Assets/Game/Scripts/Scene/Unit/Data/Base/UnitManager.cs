@@ -221,7 +221,7 @@ namespace GameA.Game
                 switch (id)
                 {
                     case 10001:
-                        return PoolFactory<BulletWater>.Get();
+                        return PoolFactory<ProjectileWater>.Get();
                 }
             }
             return (UnitBase) Activator.CreateInstance(type);
@@ -235,7 +235,7 @@ namespace GameA.Game
                 switch (id)
                 {
                     case 10001:
-                        PoolFactory<BulletWater>.Free((BulletWater) unit);
+                        PoolFactory<ProjectileWater>.Free((ProjectileWater) unit);
                         break;
                 }
             }

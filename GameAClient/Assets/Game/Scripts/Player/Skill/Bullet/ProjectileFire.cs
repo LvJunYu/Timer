@@ -1,8 +1,8 @@
 ﻿/********************************************************************
-** Filename : BulletClay
+** Filename : BulletFire
 ** Author : Dong
 ** Date : 2017/3/23 星期四 下午 3:12:00
-** Summary : BulletClay
+** Summary : BulletFire
 ***********************************************************************/
 
 using System;
@@ -11,8 +11,8 @@ using SoyEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 10005, Type = typeof(BulletClay))]
-    public class BulletClay : BulletBase
+    [Unit(Id = 10002, Type = typeof(ProjectileFire))]
+    public class ProjectileFire : ProjectileBase
     {
         
     }
