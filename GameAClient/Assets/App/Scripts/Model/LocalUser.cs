@@ -41,7 +41,8 @@ namespace GameA
 
         private UserPublishedWorldProjectList _userPublishedWorldProjectList = new UserPublishedWorldProjectList ();
 
-//        private 
+        // 工坊地块数量上限数据
+        private UserWorkshopUnitData _userWorkshopUnitData = new UserWorkshopUnitData();
         
         #endregion
         #region 属性
@@ -146,6 +147,12 @@ namespace GameA
                 return _userProp;
             }
         }
+
+        // 工坊地块数量上限数据
+        public UserWorkshopUnitData UserWorkshopUnitData
+        {
+            get { return _userWorkshopUnitData; }
+        }
         #endregion
 
         #region 方法
@@ -197,6 +204,15 @@ namespace GameA
             );
         }
 
+        public void LoadWorkshopUnitData (Action successCallback, Action<ENetResultCode> failedCallback)
+        {
+            _userWorkshopUnitData.Request (
+                UserGuid,
+                successCallback,
+                failedCallback
+            );
+        }
+        
         private void OnLogout()
         {
             if (_user != null)

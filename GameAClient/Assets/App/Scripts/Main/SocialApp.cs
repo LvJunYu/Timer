@@ -172,6 +172,7 @@ namespace GameA
             helper.AddTask(LocalUser.Instance.LoadUserData);
             helper.AddTask(AppData.Instance.AdventureData.PrepareAllData);
             helper.AddTask (LocalUser.Instance.LoadPropData);
+            helper.AddTask (LocalUser.Instance.LoadWorkshopUnitData);
         }
 
 //	    private void InitLocalResource()

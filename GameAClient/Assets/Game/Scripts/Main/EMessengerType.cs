@@ -26,6 +26,9 @@ namespace GameA
 		public static int OnModifyEditAdded = SoyEngine.EMessengerType.NextId++;
 		public static int OnModifyModified = SoyEngine.EMessengerType.NextId++;
 		public static int OnModifyUnitChanged = SoyEngine.EMessengerType.NextId++;
+	    
+	    public static int OnUnitAddedInEditMode = SoyEngine.EMessengerType.NextId++;
+	    public static int OnUnitDeletedInEditMode = SoyEngine.EMessengerType.NextId++;
 
         public static int OnScreenOperator = SoyEngine.EMessengerType.NextId++;
         public static int OnValidMapRectChanged = SoyEngine.EMessengerType.NextId++;

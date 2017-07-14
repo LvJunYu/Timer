@@ -22,6 +22,8 @@ namespace GameA
         public void OnGet()
         {
             Messenger<ushort>.AddListener (EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
+            Messenger<int>.AddListener (EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
+            Messenger<int>.AddListener (EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
         }
 
         public void OnFree()
@@ -29,6 +31,8 @@ namespace GameA
             _cachedView.Trans.SetParent(SocialGUIManager.Instance.UIRoot.Trans, false);
             _cachedView.Trans.localPosition = Vector3.one * 65535;
             Messenger<ushort>.RemoveListener (EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
+            Messenger<int>.RemoveListener (EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
+            Messenger<int>.RemoveListener (EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
         }
 
         protected override void OnViewCreated()
@@ -94,7 +98,9 @@ namespace GameA
                 _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.zero;
 //                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one;
             }
-		}
+
+            OnUnitAddedInEditMode(_id);
+        }
 
         private void OnSelectedItemChanged (ushort id)
         {
@@ -108,6 +114,28 @@ namespace GameA
                 _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.zero;
 //                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one;
                 _cachedView.ShadowTrans.localScale = Vector3.one;
+            }
+        }
+
+        private void OnUnitAddedInEditMode(int id)
+        {
+            if (id == _id)
+            {
+                int currentCnt = EditHelper.GetUnitCnt(_id);
+                int limit = LocalUser.Instance.UserWorkshopUnitData.GetUnitLimt(_id);
+                int number = limit - currentCnt;
+                if (number < 0) number = 0;
+                if (number > 1000)
+                {
+                    _cachedView.Number.gameObject.SetActive(false);
+                    _cachedView.Unlimited.SetActive(true);
+                }
+                else
+                {
+                    _cachedView.Number.gameObject.SetActive(true);
+                    _cachedView.Unlimited.SetActive(false);
+                    _cachedView.Number.text = number.ToString();
+                }
             }
         }
     }

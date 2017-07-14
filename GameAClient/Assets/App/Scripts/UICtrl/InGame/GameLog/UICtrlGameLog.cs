@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace GameA
 {
-//    [UIAutoSetup(EUIAutoSetupType.Show)]
+    [UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlGameLog: UICtrlInGameBase<UIViewGameLog>
     {
         public const float FadeOutTime = 1;
@@ -25,13 +25,15 @@ namespace GameA
             _groupId = (int)EUIGroupType.InGameTip;
         }
 
-        public void ShowLog(string value)
+        private void ShowLog(string value)
         {
+	        SocialGUIManager.Instance.OpenUI<UICtrlGameLog>();
             SetData(value, _cachedView.LogColor);
         }
 
-        public void ShowErrorLog(string value)
+        private void ShowErrorLog(string value)
         {
+	        SocialGUIManager.Instance.OpenUI<UICtrlGameLog>();
             SetData(value, _cachedView.ErrorColor);
         }
 
@@ -41,17 +43,23 @@ namespace GameA
             UpdateShowContent();
         }
 
-	    protected override void OnViewCreated()
+	    protected override void InitEventListener()
 	    {
-		    base.OnViewCreated();
+		    base.InitEventListener();
 		    MessengerOperator(true);
 	    }
 
-	    protected override void OnDestroy()
-	    {
-		    base.OnDestroy();
-			MessengerOperator(false);
-		}
+//	    protected override void OnViewCreated()
+//	    {
+//		    base.OnViewCreated();
+//		    MessengerOperator(true);
+//	    }
+
+//	    protected override void OnDestroy()
+//	    {
+//		    base.OnDestroy();
+//			MessengerOperator(false);
+//		}
 
 	    private void UpdateShowContent()
         {

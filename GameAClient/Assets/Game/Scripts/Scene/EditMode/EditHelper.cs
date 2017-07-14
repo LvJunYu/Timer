@@ -24,6 +24,16 @@ namespace GameA.Game
         private static Dictionary<int, int> _unitIndexCount = new Dictionary<int, int>();
         private static List<UnitDesc> _cacheUnitDescs = new List<UnitDesc>();
 
+
+        public static int GetUnitCnt(int unitId)
+        {
+            int cnt;
+            if (_unitIndexCount.TryGetValue(unitId, out cnt))
+            {
+                return cnt;
+            }
+            return 0;
+        }
         public static void Clear()
         {
             _replaceUnits.Clear();
@@ -39,6 +49,7 @@ namespace GameA.Game
                 LogHelper.Error("CheckCanAdd failed,{0}", unitDesc.ToString());
                 return false;
             }
+                
             //不可超出地图范围
             {
                 var dataGrid = tableUnit.GetDataGrid(unitDesc.Guid.x, unitDesc.Guid.y, unitDesc.Rotation, unitDesc.Scale);
@@ -92,10 +103,16 @@ namespace GameA.Game
             }
             //数量不能超过限额
             {
-                int count;
-                if (_unitIndexCount.TryGetValue(unitDesc.Id, out count) && count >= tableUnit.Count)
+                int count = 0;
+                _unitIndexCount.TryGetValue(unitDesc.Id, out count);
+                if (tableUnit.Count > 0 && count >= tableUnit.Count)
                 {
                     Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("不可放置，{0}最多可放置{1}个~", tableUnit.Name, count));
+                    return false;
+                }
+                if (count >= LocalUser.Instance.UserWorkshopUnitData.GetUnitLimt(unitDesc.Id))
+                {
+                    Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("不可放置，目前上限{0}个", count));
                     return false;
                 }
             }
@@ -140,13 +157,14 @@ namespace GameA.Game
             {
                 _replaceUnits.Add(unitDesc.Id, unitDesc);
             }
-            if (tableUnit.Count > 1)
+//            if (tableUnit.Count > 1)
             {
                 if (!_unitIndexCount.ContainsKey(unitDesc.Id))
                 {
                     _unitIndexCount.Add(unitDesc.Id, new int());
                 }
                 _unitIndexCount[unitDesc.Id] += 1;
+                Messenger<int>.Broadcast(EMessengerType.OnUnitAddedInEditMode, unitDesc.Id);
             }
             EditMode.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, true, isInit);
         }
@@ -174,12 +192,13 @@ namespace GameA.Game
             {
                 _replaceUnits.Remove(unitDesc.Id);
             }
-            if (tableUnit.Count > 1)
+//            if (tableUnit.Count > 1)
             {
                 if (_unitIndexCount.ContainsKey(unitDesc.Id))
                 {
                     _unitIndexCount[unitDesc.Id] -= 1;
                 }
+                Messenger<int>.Broadcast(EMessengerType.OnUnitAddedInEditMode, unitDesc.Id);
             }
             EditMode.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, false);
         }
