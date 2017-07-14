@@ -16,6 +16,11 @@ namespace GameA.Game
 		[ColumnMapping("Name")]
 		public string Name;
 		/// <summary>
+        /// 是否增益
+        /// </summary>
+		[ColumnMapping("IsBuff")]
+		public int IsBuff;
+		/// <summary>
         /// 状态优先级
         /// </summary>
 		[ColumnMapping("StatePriority")]

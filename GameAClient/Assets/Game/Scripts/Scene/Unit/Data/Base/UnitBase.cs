@@ -1519,35 +1519,16 @@ namespace GameA.Game
 
         #region  skill
 
-               public virtual BuffBase AddBuff(EBuffType eBuffType, int time, params EffectBase[] effects)
-               {
-                   return null;
-               }
-                
-                public virtual void RemoveBuff(EBuffType eBuffType)
-                {
-                }
-
-                public virtual void AddState()
+                public virtual void AddState(int id)
                 {
                 }
         
-                public virtual void RemoveState()
+                public virtual void RemoveState(State state)
                 {
                 }
         
                 public virtual void RemoveAllDebuffs()
                 {
-                }
-
-                public virtual bool ExcuteEffect(EffectBase effect)
-                {
-                    return true;
-                }
-
-                public virtual bool HasBuff(EBuffType eBuffType)
-                {
-                    return false;
                 }
 
         #endregion

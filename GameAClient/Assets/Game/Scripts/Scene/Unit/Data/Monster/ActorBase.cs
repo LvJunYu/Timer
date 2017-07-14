@@ -28,8 +28,9 @@ namespace GameA.Game
 
     public class ActorBase : RigidbodyUnit
     {
-        protected List<BuffBase> _currentBuffs = new List<BuffBase>();
-        
+        protected List<State > _currentStates = new List<State>();
+        private Comparison<State> _comparisonState = SortState;
+
         protected EDieType _eDieType;
         protected int _attackedTimer;
         protected int _fireTimer;
@@ -53,87 +54,120 @@ namespace GameA.Game
             _eDieType = EDieType.None;
             _attackedTimer = 0;
             _fireTimer = 0;
-            RemoveAllBuffs();
+            RemoveAllStates();
         }
-
-        public override BuffBase AddBuff(EBuffType eBuffType, int time, params EffectBase[] effects)
+        
+        public override void AddState(int id)
         {
-            //已经有了的就移除掉重新加上。相斥的比较优先级，优先级小的移除掉
-            if (HasBuff(eBuffType))
+            var tableState = TableManager.Instance.GetState(id);
+            if (tableState == null)
             {
-                RemoveBuff(eBuffType);
+                return;
             }
-            var buff = EffectMgr.GetBuff(eBuffType, time, effects);
-             if (!buff.OnAttached(this))
-             {
-                 EffectMgr.FreeBuff(buff);
-             }
-            _currentBuffs.Add(buff);
-            return buff;
-        }
-         
-         public override void RemoveBuff(EBuffType eBuffType)
-         {
-             var buff = GetBuff(eBuffType);
-             if (buff == null)
-             {
-                 return;
-             }
-             if (buff.OnRemoved(this))
-             {
-                 _currentBuffs.Remove(buff);
-                 EffectMgr.FreeBuff(buff);
-             }
-         }
-
-        private BuffBase GetBuff(EBuffType eBuffType)
-        {
-            for (int i = 0; i < _currentBuffs.Count; i++)
+            //如果已存在，判断叠加属性
+            State state;
+            if (TryGetState(id, out state))
             {
-                if (_currentBuffs[i].EBuffType == eBuffType)
+                switch ((EOverlapType)tableState.OverlapType)
                 {
-                    return _currentBuffs[i];
+                    case EOverlapType.None:
+                        return;
+                    case EOverlapType.Time:
+                        state.OverlapTime();
+                        break;
+                    case EOverlapType.Effect:
+                        state.OverlapEffect();
+                        break;
+                    case EOverlapType.All:
+                        state.OverlapEffect();
+                        state.OverlapTime();
+                        break;
+                }
+                return;
+            }
+            //如果不存在，判断是否同类替换
+            if (tableState.IsReplace == 1)
+            {
+                RemoveStateByType(tableState.StateType);
+            }
+            state = PoolFactory<State>.Get();
+            if (state.OnAttached(id, this))
+            {
+                _currentStates.Add(state);
+                _currentStates.Sort(_comparisonState);
+                return;
+            }
+            PoolFactory<State>.Free(state);
+        }
+
+        public override void RemoveState(State state)
+        {
+            if (_currentStates.Contains(state))
+            {
+                if (state.OnRemoved(this))
+                {
+                    _currentStates.Remove(state);
+                    PoolFactory<State>.Free(state);
                 }
             }
-            return null;
         }
 
-        public override bool HasBuff(EBuffType eBuffType)
+        public bool TryGetState(int id, out State state)
         {
-            for (int i = 0; i < _currentBuffs.Count; i++)
+            for (int i = 0; i < _currentStates.Count; i++)
             {
-                if (_currentBuffs[i].EBuffType == eBuffType)
+                if (_currentStates[i].TableState.Id == id)
                 {
+                    state = _currentStates[i];
                     return true;
                 }
             }
+            state = null;
             return false;
         }
-
-        public override bool ExcuteEffect(EffectBase effect)
+    
+        public void RemoveStateByType(int stateType)
         {
-            return effect.OnAttached(this);
-        }
-
-        public void RemoveAllBuffs()
-        {
-            for (int i = 0; i < _currentBuffs.Count; i++)
+            for (int i = _currentStates.Count - 1; i >= 0; i--)
             {
-                _currentBuffs[i].OnRemoved(this);
-            }
-            _currentBuffs.Clear();
-        }
-
-        public override void RemoveAllDebuffs()
-        {
-            for (int i = _currentBuffs.Count - 1; i >= 0; i--)
-            {
-                if (!_currentBuffs[i].IsGain)
+                if (_currentStates[i].TableState.StateType == stateType)
                 {
-                    _currentBuffs[i].OnRemoved(this);
-                    _currentBuffs.RemoveAt(i);
+                    RemoveState(_currentStates[i]);
+                    _currentStates.RemoveAt(i);
                 }
             }
+        }
+        
+        public void RemoveAllStates()
+        {
+            for (int i = 0; i < _currentStates.Count; i++)
+            {
+                _currentStates[i].OnRemoved(this);
+                PoolFactory<State>.Free(_currentStates[i]);
+            }
+            _currentStates.Clear();
+        }
+        
+        public override void RemoveAllDebuffs()
+        {
+            for (int i = _currentStates.Count - 1; i >= 0; i--)
+            {
+                if (_currentStates[i].TableState.IsBuff == 0)
+                {
+                    _currentStates[i].OnRemoved(this);
+                    _currentStates.RemoveAt(i);
+                }
+            }
+        }
+        
+        private static int SortState(State one, State other)
+        {
+            int v = one.TableState.StatePriority.CompareTo(other.TableState.StatePriority);
+            if (v == 0)
+            {
+                v = one.TableState.StateTypePriority.CompareTo(other.TableState.StateTypePriority);
+            }
+            return v;
         }
 
         internal override void InLazer()

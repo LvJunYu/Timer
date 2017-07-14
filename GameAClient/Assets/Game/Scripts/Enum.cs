@@ -381,4 +381,12 @@ namespace GameA.Game
         Teleport,
         HitDivide,
     }
+    
+    public enum EOverlapType
+    {
+        None,
+        Time,
+        Effect,
+        All
+    }
 }

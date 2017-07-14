@@ -28,6 +28,12 @@ namespace GameA.Game
         protected UnitBase _target;
         protected int _timer;
         protected bool _run;
+        protected int _effectOverlapCount;
+
+        public Table_State TableState
+        {
+            get { return _tableState; }
+        }
 
         public virtual bool OnAttached(int id, ActorBase target)
         {
@@ -57,7 +63,7 @@ namespace GameA.Game
                 switch ((EEffectId) _tableState.EffectIds[i])
                 {
                     case EEffectId.Hp:
-                        _target.Hp += value;
+                        _target.Hp += value * _effectOverlapCount;
                         break;
                     case EEffectId.Speed:
                         break;
@@ -87,8 +93,8 @@ namespace GameA.Game
             }
             if (_timer == _duration)
             {
-                //移除buff
-                _target.RemoveState();
+                //移除
+                _target.RemoveState(this);
                 Excute(EEffectType.End);
             }
         }
@@ -103,6 +109,16 @@ namespace GameA.Game
 
         public void OnDestroyObject()
         {
+        }
+
+        public void OverlapTime()
+        {
+            _duration += _duration;
+        }
+
+        public void OverlapEffect()
+        {
+            _effectOverlapCount++;
         }
     }
 }
