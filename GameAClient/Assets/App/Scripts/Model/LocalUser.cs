@@ -204,6 +204,15 @@ namespace GameA
             );
         }
 
+        public void LoadWorkshopUnitData (Action successCallback, Action<ENetResultCode> failedCallback)
+        {
+            _userWorkshopUnitData.Request (
+                UserGuid,
+                successCallback,
+                failedCallback
+            );
+        }
+        
         private void OnLogout()
         {
             if (_user != null)
