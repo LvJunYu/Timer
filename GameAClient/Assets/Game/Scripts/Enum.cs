@@ -352,4 +352,33 @@ namespace GameA.Game
         Fire,
         FirePlus,
     }
+
+    /// <summary>
+    /// 1：单个目标
+//    2：以目标为中心的圆形
+//    3：以目标为中心的矩形
+//    4：以目标为终点的直线S
+//    5：以自身为起点的扇形
+//    6：以自身为中心的圆形
+    /// </summary>
+    public enum EEffcetMode
+    {
+        None,
+        Single,
+        TargetCircle,
+        TargetGrid,
+        TargetLine,
+        SelfSector,
+        SelfCircle,
+    }
+
+    public enum EBehaviorType
+    {
+        Common,
+        ContinueShoot,
+        SectorShoot,
+        Summon,
+        Teleport,
+        HitDivide,
+    }
 }

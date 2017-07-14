@@ -49,6 +49,10 @@ namespace GameA.Game
         protected int _timerCharge;
         protected int _timerSing;
 
+        protected int _damage;
+        protected int _cure;
+        protected int _shield;
+
         public int Id
         {
             get { return _tableSkill.Id; }
@@ -156,15 +160,6 @@ namespace GameA.Game
             return true;
         }
         
-        protected virtual void OnSkillCast()
-        {
-            CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.ShootAngle);
-        }
-
-        public virtual void OnProjectileHit(ProjectileBase projectile)
-        {
-        }
-
         protected void CreateProjectile(int projectileId, IntVec2 pos, int angle, int delayRunTime = 0)
         {
             UpdateCurrentProjectileCount(--_currentCount);
@@ -202,6 +197,71 @@ namespace GameA.Game
             }
             var dataSize = tableUnit.GetDataSize(0, Vector2.one);
             return _owner.FirePos - dataSize * 0.5f;
+        }
+        
+        protected virtual void OnSkillCast()
+        {
+            switch ((EBehaviorType)_tableSkill.BehaviorType)
+            {
+                case EBehaviorType.ContinueShoot:
+                    var count = _tableSkill.BehaviorValues[0];
+                    var delay = TableConvert.GetTime(_tableSkill.BehaviorValues[1]);
+                    for (int i = 0; i < count; i++)
+                    {
+                            CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.ShootAngle, delay * i);
+                    }
+                    break;
+                case EBehaviorType.Common:
+                case EBehaviorType.SectorShoot:
+                case EBehaviorType.Summon:
+                case EBehaviorType.Teleport:
+                case EBehaviorType.HitDivide:
+                    CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.ShootAngle);
+                    break;
+            }
+        }
+
+        public virtual void OnProjectileHit(ProjectileBase projectile)
+        {
+            List<UnitBase> units = null;
+            switch ((EEffcetMode)_tableSkill.EffectMode)
+            {
+                case EEffcetMode.Single:
+                    break;
+                case EEffcetMode.TargetCircle:
+                    {
+                        var radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                        units = ColliderScene2D.CircleCastAllReturnUnits(projectile.CenterPos, radius, JoyPhysics2D.GetColliderLayerMask(projectile.DynamicCollider.Layer));
+                    }
+                    break;
+                case EEffcetMode.TargetGrid:
+                    break;
+                case EEffcetMode.TargetLine:
+                    break;
+                case EEffcetMode.SelfSector:
+                    break;
+                case EEffcetMode.SelfCircle:
+                {
+                    var radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                    units = ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, radius, JoyPhysics2D.GetColliderLayerMask(projectile.DynamicCollider.Layer));
+                }
+                    break;
+            }
+            if (units != null && units.Count > 0)
+            {
+                for (int i = 0; i < units.Count; i++)
+                {
+                    var unit = units[i];
+                    if (unit.IsAlive)
+                    {
+                        if (unit.IsMonster)
+                        {
+                            unit.Hp += _damage;
+//                            unit.AddBuff()
+                        }
+                    }
+                }
+            }
         }
     }
 }

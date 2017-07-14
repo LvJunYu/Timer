@@ -116,7 +116,7 @@ namespace GameA.Game
             if (_delayRunTime > 0)
             {
                 _delayRunTime--;
-                if (_delayRunTime == 0)
+                if (_delayRunTime == 0 && _skill.Owner.IsAlive)
                 {
                     _run = true;
                 }

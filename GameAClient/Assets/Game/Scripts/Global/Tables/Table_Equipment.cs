@@ -21,25 +21,25 @@ namespace GameA.Game
 		[ColumnMapping("Hp")]
 		public int Hp;
 		/// <summary>
-        /// 小技能伤害
+        /// 技能Id
         /// </summary>
-		[ColumnMapping("DamageLittle")]
-		public int DamageLittle;
+		[ColumnMapping("SkillIds")]
+		public int[] SkillIds;
 		/// <summary>
-        /// 大技能伤害
+        /// 伤害
         /// </summary>
-		[ColumnMapping("DamageBig")]
-		public int DamageBig;
+		[ColumnMapping("Damages")]
+		public int[] Damages;
 		/// <summary>
-        /// 小技能Id
+        /// 治疗
         /// </summary>
-		[ColumnMapping("SkillLittleId")]
-		public int SkillLittleId;
+		[ColumnMapping("Cures")]
+		public int[] Cures;
 		/// <summary>
-        /// 大技能Id
+        /// 护盾
         /// </summary>
-		[ColumnMapping("SkillBigId")]
-		public int SkillBigId;
+		[ColumnMapping("Shields")]
+		public int[] Shields;
 		/// <summary>
         /// 图标
         /// </summary>

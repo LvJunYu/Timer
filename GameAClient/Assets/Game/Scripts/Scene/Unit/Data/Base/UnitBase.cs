@@ -1528,6 +1528,14 @@ namespace GameA.Game
                 {
                 }
 
+                public virtual void AddState()
+                {
+                }
+        
+                public virtual void RemoveState()
+                {
+                }
+        
                 public virtual void RemoveAllDebuffs()
                 {
                 }

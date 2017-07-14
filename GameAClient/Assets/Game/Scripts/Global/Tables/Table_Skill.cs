@@ -41,15 +41,15 @@ namespace GameA.Game
 		[ColumnMapping("TargetType")]
 		public int TargetType;
 		/// <summary>
-        /// 作用方式
+        /// 行为类型
         /// </summary>
-		[ColumnMapping("EffectMode")]
-		public int EffectMode;
+		[ColumnMapping("BehaviorType")]
+		public int BehaviorType;
 		/// <summary>
-        /// 作用值
+        /// 行为值
         /// </summary>
-		[ColumnMapping("EffectValues")]
-		public int[] EffectValues;
+		[ColumnMapping("BehaviorValues")]
+		public int[] BehaviorValues;
 		/// <summary>
         /// 攻击距离
         /// </summary>
@@ -71,6 +71,16 @@ namespace GameA.Game
 		[ColumnMapping("Knockback")]
 		public int Knockback;
 		/// <summary>
+        /// 作用方式
+        /// </summary>
+		[ColumnMapping("EffectMode")]
+		public int EffectMode;
+		/// <summary>
+        /// 作用值
+        /// </summary>
+		[ColumnMapping("EffectValues")]
+		public int[] EffectValues;
+		/// <summary>
         /// 击中目标触发状态
         /// </summary>
 		[ColumnMapping("TriggerStates")]
@@ -80,16 +90,6 @@ namespace GameA.Game
         /// </summary>
 		[ColumnMapping("TrapId")]
 		public int TrapId;
-		/// <summary>
-        /// 效果类型
-        /// </summary>
-		[ColumnMapping("BehaviorType")]
-		public int BehaviorType;
-		/// <summary>
-        /// 效果值
-        /// </summary>
-		[ColumnMapping("BehaviorValue")]
-		public int BehaviorValue;
 		/// <summary>
         /// 说明
         /// </summary>
