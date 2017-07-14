@@ -68,7 +68,7 @@ namespace GameA.Game
 
         protected void OnUnitExit(UnitBase unit)
         {
-            unit.RemoveState();
+//            unit.RemoveState();
             _trapingUnits.Remove(unit);
         }
 

@@ -60,6 +60,16 @@ namespace GameA.Game
         {
             return string.Format("Id: {0}, Guid: {1}, Rotation: {2}, Scale: {3}", Id, Guid, Rotation, Scale);
         }
+        
+        public static bool operator ==(UnitDesc a, UnitDesc other)
+        {
+            return a.Equals(other);
+        }
+
+        public static bool operator !=(UnitDesc a, UnitDesc other)
+        {
+            return !(a == other);
+        }
 
         public bool Equals(UnitDesc other)
         {
