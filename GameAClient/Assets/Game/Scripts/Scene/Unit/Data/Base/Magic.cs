@@ -43,7 +43,7 @@ namespace GameA.Game
 
         protected void InitSpeed()
         {
-            if (!IsHero && _curMoveDirection != EMoveDirection.None)
+            if (!IsActor && _curMoveDirection != EMoveDirection.None)
             {
                 Speed = IntVec2.zero;
                 _timerMagic = 0;

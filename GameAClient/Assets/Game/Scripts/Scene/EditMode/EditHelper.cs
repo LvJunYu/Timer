@@ -68,7 +68,7 @@ namespace GameA.Game
                     IntVec2 mapSize = ConstDefineGM2D.MapTileSize;
                     var min = new IntVec2(unitDesc.Guid.x / size.x * size.x, unitDesc.Guid.y / size.y * size.y);
                     var grid = new Grid2D(min.x, min.y, Mathf.Min(mapSize.x, min.x + size.x - 1), Mathf.Min(mapSize.y, min.y + size.y - 1));
-                    var units = DataScene2D.GridCastAllReturnUnits(grid, EnvManager.HeroLayer);
+                    var units = DataScene2D.GridCastAllReturnUnits(grid, EnvManager.MonsterLayer);
                     if (units.Count >= ConstDefineGM2D.MaxPhysicsUnitCount)
                     {
                         Messenger<string>.Broadcast(EMessengerType.GameLog, "同屏不能放置太多的怪物喔~");

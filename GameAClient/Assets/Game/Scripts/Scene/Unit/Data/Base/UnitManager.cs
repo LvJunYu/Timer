@@ -148,7 +148,7 @@ namespace GameA.Game
                 case (int)ELayerType.RemotePlayer:
                     return (int)ESceneLayer.RemotePlayer;
                 case (int) ELayerType.Monster:
-                    return (int) ESceneLayer.Hero;
+                    return (int) ESceneLayer.Monster;
                 case (int) ELayerType.Item:
                     return (int) ESceneLayer.Item;
                 case (int) ELayerType.AttackPlayer:
@@ -185,7 +185,7 @@ namespace GameA.Game
             //    case EUnitType.MainPlayer:
             //        return (int) ESortingOrder.MainPlayer;
             //    case EUnitType.Monster:
-            //        return (int)ESortingOrder.Hero;
+            //        return (int)ESortingOrder.Monster;
             //    case EUnitType.Bullet:
             //        return (int)ESortingOrder.Bullet;
             //    case EUnitType.Missle:

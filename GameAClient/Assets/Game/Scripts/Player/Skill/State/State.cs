@@ -35,15 +35,9 @@ namespace GameA.Game
             get { return _tableState; }
         }
 
-        public virtual bool OnAttached(int id, ActorBase target)
+        public virtual bool OnAttached(Table_State tableState, ActorBase target)
         {
-            _target = target;
-            _tableState = TableManager.Instance.GetState(id);
-            if (_tableState == null)
-            {
-                LogHelper.Error("GetState Failed : {0}", id);
-                return false;
-            }
+            _tableState = tableState;
             _duration = TableConvert.GetTime(_tableState.Duration);
             _intervalTime = TableConvert.GetTime(_tableState.IntervalTime);
             Excute(EEffectType.Always);

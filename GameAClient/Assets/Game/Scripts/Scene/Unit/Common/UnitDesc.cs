@@ -55,30 +55,70 @@ namespace GameA.Game
         {
             return new IntVec3(Guid.x + ConstDefineGM2D.ServerTileScale, Guid.y , z);
         }
-
-        public static bool operator ==(UnitDesc a, UnitDesc other)
+      
+        public override string ToString()
         {
-            return (a.Id == other.Id) && (a.Guid == other.Guid) && (a.Rotation == other.Rotation);
-        }
-
-        public static bool operator !=(UnitDesc a, UnitDesc other)
-        {
-            return !(a == other);
+            return string.Format("Id: {0}, Guid: {1}, Rotation: {2}, Scale: {3}", Id, Guid, Rotation, Scale);
         }
 
         public bool Equals(UnitDesc other)
         {
-            return (Id == other.Id) && (Guid == other.Guid) && (Rotation == other.Rotation);
+            return Id == other.Id && Guid.Equals(other.Guid) && Rotation == other.Rotation && Scale.Equals(other.Scale);
         }
 
         public override bool Equals(object obj)
         {
-            return Equals((UnitDesc)obj);
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is UnitDesc && Equals((UnitDesc) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Id;
+                hashCode = (hashCode * 397) ^ Guid.GetHashCode();
+                hashCode = (hashCode * 397) ^ Rotation.GetHashCode();
+                hashCode = (hashCode * 397) ^ Scale.GetHashCode();
+                return hashCode;
+            }
+        }
+    }
+    
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ColliderDesc : IEquatable<ColliderDesc>
+    {
+        public Grid2D Grid;
+        public byte Depth;
+        public byte Layer;
+        public bool IsDynamic;
+
+        public bool Equals(ColliderDesc other)
+        {
+            return Grid.Equals(other.Grid) && Depth == other.Depth && Layer == other.Layer && IsDynamic == other.IsDynamic;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is ColliderDesc && Equals((ColliderDesc) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Grid.GetHashCode();
+                hashCode = (hashCode * 397) ^ Depth.GetHashCode();
+                hashCode = (hashCode * 397) ^ Layer.GetHashCode();
+                hashCode = (hashCode * 397) ^ IsDynamic.GetHashCode();
+                return hashCode;
+            }
         }
 
         public override string ToString()
         {
-            return string.Format("Id: {0}, Guid: {1}, Rotation: {2}, Scale: {3}", Id, Guid, Rotation, Scale);
+            return string.Format("Grid: {0}, Depth: {1}, Layer: {2}, IsDynamic: {3}", Grid, Depth, Layer, IsDynamic);
         }
     }
 }

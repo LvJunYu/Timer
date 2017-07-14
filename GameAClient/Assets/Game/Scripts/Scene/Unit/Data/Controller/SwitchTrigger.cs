@@ -56,7 +56,7 @@ namespace GameA.Game
 
         public override void OnIntersect(UnitBase other)
         {
-            if (other.IsHero || other is Box)
+            if (other.IsActor || other is Box)
             {
                 OnTrigger(other);
             }

@@ -57,5 +57,10 @@ namespace GameA.Game
         {
             return SoyEngine.NodeFactory.GetColliderNode(true, id, grid, depth,0, scale, 0);
         }
+        
+        public static SceneNode GetColliderNode(ColliderDesc colliderDesc)
+        {
+            return SoyEngine.NodeFactory.GetColliderNode(colliderDesc.IsDynamic, 0, colliderDesc.Grid, colliderDesc.Depth,0, Vector2.one, colliderDesc.Layer);
+        }
     }
 }

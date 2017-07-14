@@ -217,7 +217,7 @@ namespace GameA.Game
                                     UnitBase unit;
                                     if (ColliderScene2D.Instance.TryGetUnit(hit.node, out unit))
                                     {
-                                        if (unit != null && unit.IsAlive && unit.IsHero)
+                                        if (unit != null && unit.IsAlive && unit.IsActor)
                                         {
                                             unit.InLazer();
                                         }

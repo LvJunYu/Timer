@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
+using UnityEngine.VR.WSA.WebCam;
 
 namespace GameA.Game
 {
@@ -254,13 +255,31 @@ namespace GameA.Game
                     var unit = units[i];
                     if (unit.IsAlive)
                     {
-                        if (unit.IsMonster)
+                        if (unit.IsActor)
                         {
-                            unit.Hp += _damage;
-//                            unit.AddBuff()
+                            OnActorHit(unit);
                         }
                     }
                 }
+            }
+        }
+
+        private void OnActorHit(UnitBase unit)
+        {
+            unit.Hp += _damage;
+            //触发状态
+            for (int i = 0; i < _tableSkill.TriggerStates.Length; i++)
+            {
+                if (_tableSkill.TriggerStates[i] > 0)
+                {
+                    unit.AddStates(_tableSkill.TriggerStates[i]);
+                }
+            }
+            //生成陷阱
+            if (_tableSkill.TrapId > 0)
+            {
+                
+                var tableTrap = TableManager.Instance.GetTrap(_tableSkill.TrapId);
             }
         }
     }

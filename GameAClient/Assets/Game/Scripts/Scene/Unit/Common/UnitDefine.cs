@@ -120,7 +120,7 @@ namespace GameA.Game
 
         public static bool IsLaserDamage(int layer)
         {
-            return ((1 << layer) & (EnvManager.HeroLayer | EnvManager.MainPlayerLayer)) != 0;
+            return ((1 << layer) & (EnvManager.MonsterLayer | EnvManager.MainPlayerLayer)) != 0;
         }
 
         internal static bool IsGround(int id)

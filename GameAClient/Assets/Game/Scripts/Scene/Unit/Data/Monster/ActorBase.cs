@@ -47,7 +47,12 @@ namespace GameA.Game
         {
             get { return _eDieType; }
         }
-        
+
+        public override bool IsActor
+        {
+            get { return true; }
+        }
+
         protected override void Clear()
         {
             base.Clear();
@@ -57,47 +62,51 @@ namespace GameA.Game
             RemoveAllStates();
         }
         
-        public override void AddState(int id)
+        public override void AddStates(params int[] ids)
         {
-            var tableState = TableManager.Instance.GetState(id);
-            if (tableState == null)
+            for (int i = 0; i < ids.Length; i++)
             {
-                return;
-            }
-            //如果已存在，判断叠加属性
-            State state;
-            if (TryGetState(id, out state))
-            {
-                switch ((EOverlapType)tableState.OverlapType)
+                var id = ids[i];
+                var tableState = TableManager.Instance.GetState(id);
+                if (tableState == null)
                 {
-                    case EOverlapType.None:
-                        return;
-                    case EOverlapType.Time:
-                        state.OverlapTime();
-                        break;
-                    case EOverlapType.Effect:
-                        state.OverlapEffect();
-                        break;
-                    case EOverlapType.All:
-                        state.OverlapEffect();
-                        state.OverlapTime();
-                        break;
+                    continue;
                 }
-                return;
+                //如果已存在，判断叠加属性
+                State state;
+                if (TryGetState(id, out state))
+                {
+                    switch ((EOverlapType)tableState.OverlapType)
+                    {
+                        case EOverlapType.None:
+                            return;
+                        case EOverlapType.Time:
+                            state.OverlapTime();
+                            break;
+                        case EOverlapType.Effect:
+                            state.OverlapEffect();
+                            break;
+                        case EOverlapType.All:
+                            state.OverlapEffect();
+                            state.OverlapTime();
+                            break;
+                    }
+                    continue;
+                }
+                //如果不存在，判断是否同类替换
+                if (tableState.IsReplace == 1)
+                {
+                    RemoveStateByType(tableState.StateType);
+                }
+                state = PoolFactory<State>.Get();
+                if (state.OnAttached(tableState, this))
+                {
+                    _currentStates.Add(state);
+                    _currentStates.Sort(_comparisonState);
+                    continue;
+                }
+                PoolFactory<State>.Free(state);
             }
-            //如果不存在，判断是否同类替换
-            if (tableState.IsReplace == 1)
-            {
-                RemoveStateByType(tableState.StateType);
-            }
-            state = PoolFactory<State>.Get();
-            if (state.OnAttached(id, this))
-            {
-                _currentStates.Add(state);
-                _currentStates.Sort(_comparisonState);
-                return;
-            }
-            PoolFactory<State>.Free(state);
         }
 
         public override void RemoveState(State state)

@@ -39,7 +39,7 @@ namespace GameA.Game
         /// 触发状态
         /// </summary>
 		[ColumnMapping("TriggerStates")]
-		public int TriggerStates;
+		public int[] TriggerStates;
 		/// <summary>
         /// 特效名
         /// </summary>

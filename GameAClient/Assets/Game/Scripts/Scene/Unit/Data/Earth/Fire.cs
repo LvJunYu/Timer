@@ -25,7 +25,7 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (!checkOnly && other.IsHero)
+            if (!checkOnly && other.IsActor)
             {
                 OnEffect(other);
             }
@@ -34,7 +34,7 @@ namespace GameA.Game
 
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (!checkOnly && other.IsHero)
+            if (!checkOnly && other.IsActor)
             {
                 OnEffect(other);
             }
@@ -43,7 +43,7 @@ namespace GameA.Game
 
         public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (!checkOnly && other.IsHero)
+            if (!checkOnly && other.IsActor)
             {
                 OnEffect(other);
             }
@@ -52,7 +52,7 @@ namespace GameA.Game
 
         public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (!checkOnly && other.IsHero)
+            if (!checkOnly && other.IsActor)
             {
                 OnEffect(other);
             }

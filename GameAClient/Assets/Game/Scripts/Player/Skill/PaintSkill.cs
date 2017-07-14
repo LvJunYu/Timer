@@ -18,7 +18,7 @@ namespace GameA.Game
                     {
                         OnPaintHit(projectile, unit);
                     }
-                    else if(unit.IsHero)
+                    else if(unit.IsActor)
                     {
                         OnHeroHit(projectile, unit);
                     }

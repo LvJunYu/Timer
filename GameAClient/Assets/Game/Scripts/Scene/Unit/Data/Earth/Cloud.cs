@@ -61,7 +61,7 @@ namespace GameA.Game
             }
             if (!checkOnly)
             {
-                if (other.IsHero || other is Box)
+                if (other.IsActor || other is Box)
                 {
                     _trigger = true;
                     if (_animation != null)

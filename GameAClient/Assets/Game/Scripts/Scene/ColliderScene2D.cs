@@ -21,6 +21,7 @@ namespace GameA.Game
         private static ColliderScene2D _instance;
         private readonly Dictionary<IntVec3, UnitBase> _units = new Dictionary<IntVec3, UnitBase>();
         [SerializeField] private readonly List<UnitBase> _allUnits = new List<UnitBase>();
+        [SerializeField] private readonly List<ColliderDesc> _allColliderDescs = new List<ColliderDesc>();
         private Comparison<UnitBase> _comparisonMoving = SortRectIndex;
         private InterestArea _interestArea;
         private byte[,] _pathGrid;
@@ -102,6 +103,39 @@ namespace GameA.Game
             {
                 _interestArea.InitCreate(pos);
             }
+        }
+
+        public bool AddCollider(ColliderDesc colliderDesc)
+        {
+            if (_allColliderDescs.Contains(colliderDesc))
+            {
+                LogHelper.Warning("AddCollider Failed, {0}", colliderDesc);
+                return false;
+            }
+            var colliderNode = NodeFactory.GetColliderNode(colliderDesc);
+            if (!AddNode(colliderNode))
+            {
+                LogHelper.Error("AddCollider Failed,{0}", colliderDesc);
+                return false;
+            }
+            _allColliderDescs.Add(colliderDesc);
+            return true;
+        }
+
+        public bool DeleteCollider(ColliderDesc colliderDesc)
+        {
+            if (!_allColliderDescs.Contains(colliderDesc))
+            {
+                return false;
+            }
+            var colliderNode = NodeFactory.GetColliderNode(colliderDesc);
+            if (!DeleteNode(colliderNode))
+            {
+                LogHelper.Error("DeleteCollider Failed,{0}", colliderDesc);
+                return false;
+            }
+            _allColliderDescs.Remove(colliderDesc);
+            return true;
         }
 
         public bool AddUnit(UnitDesc unitDesc, Table_Unit tableUnit)
@@ -242,6 +276,11 @@ namespace GameA.Game
             {
                 _allUnits[i].Reset();
             }
+            for (int i = 0; i < _allColliderDescs.Count; i++)
+            {
+                DeleteCollider(_allColliderDescs[i]);
+            }
+            _allColliderDescs.Clear();
         }
 
         #region Comparison SortData
@@ -383,7 +422,7 @@ namespace GameA.Game
 
         private bool CheckCanDelete(Table_Unit tableUnit)
         {
-            //if (tableUnit.EUnitType == EUnitType.Hero || tableUnit.Id == 65535 || UnitDefine.IsSwitch(tableUnit.Id))
+            //if (tableUnit.EUnitType == EUnitType.Monster || tableUnit.Id == 65535 || UnitDefine.IsSwitch(tableUnit.Id))
             //{
             //    return false;
             //}

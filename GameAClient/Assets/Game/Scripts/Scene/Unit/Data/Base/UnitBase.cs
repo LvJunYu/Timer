@@ -392,9 +392,9 @@ namespace GameA.Game
             get { return _tableUnit.Id; }
         }
 
-        public virtual bool IsHero
+        public virtual bool IsActor
         {
-            get { return _isMonster || IsMain; }
+            get { return false; }
         }
 
         public IntVec3 Guid
@@ -472,7 +472,7 @@ namespace GameA.Game
 
         public bool UseMagic()
         {
-            return !IsHero && _curMoveDirection != EMoveDirection.None;
+            return !IsActor && _curMoveDirection != EMoveDirection.None;
         }
 
         /// <summary>
@@ -829,7 +829,7 @@ namespace GameA.Game
             _curMoveDirection = _moveDirection = DataScene2D.Instance.GetUnitExtra(_guid).MoveDirection;
             if (_view != null)
             {
-                if (IsHero)
+                if (IsActor)
                 {
                     SetFacingDir(_curMoveDirection, true);
                 }
@@ -1366,7 +1366,7 @@ namespace GameA.Game
                 return;
             }
             _curMoveDirection = eMoveDirection;
-            if (_trans != null && _curMoveDirection != EMoveDirection.None && IsHero)
+            if (_trans != null && _curMoveDirection != EMoveDirection.None && IsActor)
             {
                 Vector3 euler = _trans.eulerAngles;
                 _trans.eulerAngles = _curMoveDirection != EMoveDirection.Right ? new Vector3(euler.x, 180, euler.z) : new Vector3(euler.x, 0, euler.z);
@@ -1519,7 +1519,7 @@ namespace GameA.Game
 
         #region  skill
 
-                public virtual void AddState(int id)
+                public virtual void AddStates(params int[] ids)
                 {
                 }
         

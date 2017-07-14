@@ -99,7 +99,7 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.IsHero && !checkOnly)
+            if (other.IsActor && !checkOnly)
             {
                 CheckEdgeHit(other, EDirectionType.Up);
             }
@@ -108,7 +108,7 @@ namespace GameA.Game
 
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.IsHero && !checkOnly)
+            if (other.IsActor && !checkOnly)
             {
                 CheckEdgeHit(other, EDirectionType.Down);
             }
@@ -117,7 +117,7 @@ namespace GameA.Game
 
         public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (other.IsHero && !checkOnly)
+            if (other.IsActor && !checkOnly)
             {
                 CheckEdgeHit(other, EDirectionType.Left);
             }
@@ -126,7 +126,7 @@ namespace GameA.Game
 
         public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (other.IsHero && !checkOnly)
+            if (other.IsActor && !checkOnly)
             {
                 CheckEdgeHit(other, EDirectionType.Right);
             }
