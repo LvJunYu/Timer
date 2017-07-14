@@ -25,7 +25,7 @@ namespace GameA
 
         public Text Version;
 
-        private void Start ()
+        protected override void Start ()
         {
             Version.text = SocialApp.Instance.Env.ToString ().Substring (0, 3);
         }

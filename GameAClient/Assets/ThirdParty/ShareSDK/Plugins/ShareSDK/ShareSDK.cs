@@ -25,13 +25,13 @@ namespace cn.sharesdk.unity3d
         public string appKey = "1098f8598d040";
 #endif
         public DevInfoSet devInfo;
-		public ShareSDKImpl shareSDKUtils;
+		public ShareSDKImpl shareSDKUtils { get; set; }
 
-		public EventHandler authHandler;
-		public EventHandler shareHandler;
-		public EventHandler showUserHandler;
-		public EventHandler getFriendsHandler;
-		public EventHandler followFriendHandler;
+		public EventHandler authHandler { get; set; }
+		public EventHandler shareHandler { get; set; }
+		public EventHandler showUserHandler { get; set; }
+		public EventHandler getFriendsHandler { get; set; }
+		public EventHandler followFriendHandler { get; set; }
 
 		void Awake()
 		{

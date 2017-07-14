@@ -82,7 +82,7 @@ namespace GameA
         }
 
 
-        private void Close()
+        public override void Close()
         {
             SocialGUIManager.Instance.GetUI<UICtrlMail>().LoadMyMailList();
             SocialGUIManager.Instance.CloseUI<UICtrlMailDetail>();
@@ -122,11 +122,10 @@ namespace GameA
 
         private String JudgeSource(Mail mail)
         {
-            String source;
             if (mail.Type ==EMailType.EMailT_System)
             {
 
-                return source = "系统邮件";
+                return "系统邮件";
             }
             else
                 return mail.UserInfo.NickName;
@@ -137,9 +136,5 @@ namespace GameA
             _groupId = (int)EUIGroupType.MainUI;
         }
 
-        protected override void OnOpen(object parameter)
-        {
-            base.OnOpen(parameter);
-        }
     }
 }
