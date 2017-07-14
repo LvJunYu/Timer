@@ -41,7 +41,8 @@ namespace GameA
 
         private UserPublishedWorldProjectList _userPublishedWorldProjectList = new UserPublishedWorldProjectList ();
 
-//        private 
+        // 工坊地块数量上限数据
+        private UserWorkshopUnitData _userWorkshopUnitData = new UserWorkshopUnitData();
         
         #endregion
         #region 属性
@@ -145,6 +146,12 @@ namespace GameA
             {
                 return _userProp;
             }
+        }
+
+        // 工坊地块数量上限数据
+        public UserWorkshopUnitData UserWorkshopUnitData
+        {
+            get { return _userWorkshopUnitData; }
         }
         #endregion
 

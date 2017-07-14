@@ -39,6 +39,7 @@ namespace GameA.Game
                 LogHelper.Error("CheckCanAdd failed,{0}", unitDesc.ToString());
                 return false;
             }
+                
             //不可超出地图范围
             {
                 var dataGrid = tableUnit.GetDataGrid(unitDesc.Guid.x, unitDesc.Guid.y, unitDesc.Rotation, unitDesc.Scale);
@@ -96,6 +97,11 @@ namespace GameA.Game
                 if (_unitIndexCount.TryGetValue(unitDesc.Id, out count) && count >= tableUnit.Count)
                 {
                     Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("不可放置，{0}最多可放置{1}个~", tableUnit.Name, count));
+                    return false;
+                }
+                if (count >= LocalUser.Instance.UserWorkshopUnitData.GetUnitLimt(unitDesc.Id))
+                {
+                    Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("不可放置，目前上限{0}个", count));
                     return false;
                 }
             }
