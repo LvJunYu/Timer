@@ -21,7 +21,6 @@ namespace GameA.Game
 
         [SerializeField] private readonly List<SkeletonAnimation> _allSkeletonAnimationComp =
             new List<SkeletonAnimation>();
-        private List<Trap> _traps = new List<Trap>();
 
         private int _logicFrameCnt;
         private float _unityTimeSinceGameStarted;
@@ -165,11 +164,6 @@ namespace GameA.Game
             {
                 _allSkeletonAnimationComp[i].Update(ConstDefineGM2D.FixedDeltaTime);
             }
-
-            for (int i = 0; i < _traps.Count; i++)
-            {
-                _traps[i].UpdateLogic();
-            }
         }
 
         #region GameState
@@ -252,33 +246,6 @@ namespace GameA.Game
         public void OnDrawGizmos()
         {
             MapManager.Instance.OnDrawGizmos();
-        }
-
-        public bool AddTrap(int trapId)
-        {
-            var trap = PoolFactory<Trap>.Get();
-            if (trap.Init(trapId))
-            {
-                _traps.Add(trap);
-                return true;
-            }
-            PoolFactory<Trap>.Free(trap);
-            return false;
-        }
-        
-        public bool DeleteTrap(int guid)
-        {
-            for (int i = _traps.Count - 1; i >= 0; i--)
-            {
-                var trap = _traps[i];
-                if (trap.Guid == guid)
-                {
-                    _traps.Remove(trap);
-                    PoolFactory<Trap>.Free(trap);
-                    break;
-                }
-            }
-            return true;
         }
     }
 }

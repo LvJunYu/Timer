@@ -13,12 +13,24 @@ namespace GameA.Game
         protected int _timer;
         protected IntVec2 _centerPos;
         protected List<UnitBase> _trapingUnits = new List<UnitBase>();
-        public static int TrapNum;
         protected int _guid;
+        public static int TrapNum;
 
         public int Guid
         {
             get { return _guid; }
+        }
+        
+        public void OnFree()
+        {
+            _tableTrap = null;
+            _duration = 0;
+            _triggerRange = 0;
+            _effectRange = 0;
+            _timer = 0;
+            _centerPos = IntVec2.zero;
+            _trapingUnits.Clear();
+            _guid = 0;
         }
 
         public bool Init(int id)
@@ -67,7 +79,7 @@ namespace GameA.Game
                 {
                     OnUnitExit(_trapingUnits[i]);
                 }
-                GameRun.Instance.DeleteTrap(_guid);
+                PlayMode.Instance.DeleteTrap(_guid);
             }
         }
 
@@ -85,10 +97,6 @@ namespace GameA.Game
         }
 
         public void OnGet()
-        {
-        }
-
-        public void OnFree()
         {
         }
 

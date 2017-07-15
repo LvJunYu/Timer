@@ -231,7 +231,7 @@ namespace GameA.Game
                     break;
                 case EEffcetMode.TargetCircle:
                     {
-                        var radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                        var radius = TableConvert.GetRange(_tableSkill.EffectValues[0]) + 1;
                         units = ColliderScene2D.CircleCastAllReturnUnits(projectile.CenterPos, radius, JoyPhysics2D.GetColliderLayerMask(projectile.DynamicCollider.Layer));
                     }
                     break;
@@ -243,7 +243,7 @@ namespace GameA.Game
                     break;
                 case EEffcetMode.SelfCircle:
                 {
-                    var radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                    var radius = TableConvert.GetRange(_tableSkill.EffectValues[0]) + 1;
                     units = ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, radius, JoyPhysics2D.GetColliderLayerMask(projectile.DynamicCollider.Layer));
                 }
                     break;
@@ -278,8 +278,9 @@ namespace GameA.Game
             //生成陷阱
             if (_tableSkill.TrapId > 0)
             {
-                GameRun.Instance.AddTrap(_tableSkill.TrapId);
+                PlayMode.Instance.AddTrap(_tableSkill.TrapId);
             }
+            LogHelper.Debug("OnActorHit, {0}", unit);
         }
     }
 }

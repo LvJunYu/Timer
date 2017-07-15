@@ -27,13 +27,25 @@ namespace GameA.Game
         protected int _intervalTime;
         protected UnitBase _target;
         protected int _timer;
-        protected bool _run;
         protected int _effectOverlapCount;
         protected int _curDuration;
+        protected bool _run;
 
         public Table_State TableState
         {
             get { return _tableState; }
+        }
+        
+        public void OnFree()
+        {
+            _tableState = null;
+            _duration = 0;
+            _intervalTime = 0;
+            _target = null;
+            _timer = 0;
+            _effectOverlapCount = 0;
+            _curDuration = 0;
+            _run = false;
         }
 
         public virtual bool OnAttached(Table_State tableState, ActorBase target)
@@ -99,10 +111,6 @@ namespace GameA.Game
         {
         }
 
-        public void OnFree()
-        {
-        }
-
         public void OnDestroyObject()
         {
         }
@@ -150,6 +158,11 @@ namespace GameA.Game
                 return null;
             }
             return state;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Duration: {0}, IntervalTime: {1}, Target: {2}, Timer: {3}, EffectOverlapCount: {4}, CurDuration: {5}", _duration, _intervalTime, _target, _timer, _effectOverlapCount, _curDuration);
         }
     }
 }

@@ -99,6 +99,7 @@ namespace GameA.Game
                 if (state.OnAttached(tableState, this))
                 {
                     _currentStates.Add(state);
+                    LogHelper.Debug("AddState:{0}", state);
                     _currentStates.Sort(_comparisonState);
                     continue;
                 }

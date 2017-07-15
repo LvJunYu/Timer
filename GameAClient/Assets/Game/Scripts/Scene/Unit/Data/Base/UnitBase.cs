@@ -826,7 +826,7 @@ namespace GameA.Game
 
         public override string ToString()
         {
-            return string.Format("UnitDesc: {0}, MoveDirection: {1}", _unitDesc, _moveDirection);
+            return string.Format("Hp: {0}, UnitDesc: {1}, MoveDirection: {2}", _hp, _unitDesc, _moveDirection);
         }
 
         public static bool operator ==(UnitBase a, UnitBase b)
