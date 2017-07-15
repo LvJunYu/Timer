@@ -13,6 +13,13 @@ namespace GameA.Game
         protected int _timer;
         protected IntVec2 _centerPos;
         protected List<UnitBase> _trapingUnits = new List<UnitBase>();
+        public static int TrapNum;
+        protected int _guid;
+
+        public int Guid
+        {
+            get { return _guid; }
+        }
 
         public bool Init(int id)
         {
@@ -25,6 +32,7 @@ namespace GameA.Game
             _duration = TableConvert.GetTime(_tableTrap.Duration);
             _triggerRange = TableConvert.GetRange(_tableTrap.TriggerRange);
             _effectRange = TableConvert.GetRange(_tableTrap.EffectRange);
+            _guid = TrapNum++;
             return true;
         }
 
@@ -55,6 +63,11 @@ namespace GameA.Game
             if (_timer == _duration)
             {
                 //消失
+                for (int i = 0; i < _trapingUnits.Count; i++)
+                {
+                    OnUnitExit(_trapingUnits[i]);
+                }
+                GameRun.Instance.DeleteTrap(_guid);
             }
         }
 
@@ -65,11 +78,10 @@ namespace GameA.Game
                 unit.AddStates(_tableTrap.TriggerStates);
             }
         }
-
+        
         protected void OnUnitExit(UnitBase unit)
         {
-//            unit.RemoveState();
-            _trapingUnits.Remove(unit);
+            unit.RemoveStates(_tableTrap.TriggerStates);
         }
 
         public void OnGet()

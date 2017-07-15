@@ -278,8 +278,7 @@ namespace GameA.Game
             //生成陷阱
             if (_tableSkill.TrapId > 0)
             {
-                
-                var tableTrap = TableManager.Instance.GetTrap(_tableSkill.TrapId);
+                GameRun.Instance.AddTrap(_tableSkill.TrapId);
             }
         }
     }

@@ -61,39 +61,36 @@ namespace GameA.Game
             _fireTimer = 0;
             RemoveAllStates();
         }
-        
+
+        public override void UpdateLogic()
+        {
+            if (_isAlive && _isStart && !_isFreezed)
+            {
+                for (int i = 0; i < _currentStates.Count; i++)
+                {
+                    _currentStates[i].UpdateLogic();
+                }         
+            }
+        }
+
         public override void AddStates(params int[] ids)
         {
             for (int i = 0; i < ids.Length; i++)
             {
                 var id = ids[i];
+                //如果已存在，判断叠加属性
+                State state;
+                if (TryGetState(id, out state))
+                {
+                    ++state;
+                    continue;
+                }
+                //如果不存在，判断是否同类替换
                 var tableState = TableManager.Instance.GetState(id);
                 if (tableState == null)
                 {
                     continue;
                 }
-                //如果已存在，判断叠加属性
-                State state;
-                if (TryGetState(id, out state))
-                {
-                    switch ((EOverlapType)tableState.OverlapType)
-                    {
-                        case EOverlapType.None:
-                            return;
-                        case EOverlapType.Time:
-                            state.OverlapTime();
-                            break;
-                        case EOverlapType.Effect:
-                            state.OverlapEffect();
-                            break;
-                        case EOverlapType.All:
-                            state.OverlapEffect();
-                            state.OverlapTime();
-                            break;
-                    }
-                    continue;
-                }
-                //如果不存在，判断是否同类替换
                 if (tableState.IsReplace == 1)
                 {
                     RemoveStateByType(tableState.StateType);
@@ -106,6 +103,18 @@ namespace GameA.Game
                     continue;
                 }
                 PoolFactory<State>.Free(state);
+            }
+        }
+        
+        public override void RemoveStates(params int[] ids)
+        {
+            for (int i = 0; i < ids.Length; i++)
+            {
+                State state;
+                if (TryGetState(ids[i], out state))
+                {
+                    --state;
+                }
             }
         }
 

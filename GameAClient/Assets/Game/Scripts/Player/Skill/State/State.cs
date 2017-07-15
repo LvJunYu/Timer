@@ -29,6 +29,7 @@ namespace GameA.Game
         protected int _timer;
         protected bool _run;
         protected int _effectOverlapCount;
+        protected int _curDuration;
 
         public Table_State TableState
         {
@@ -39,6 +40,7 @@ namespace GameA.Game
         {
             _tableState = tableState;
             _duration = TableConvert.GetTime(_tableState.Duration);
+            _curDuration = _duration;
             _intervalTime = TableConvert.GetTime(_tableState.IntervalTime);
             Excute(EEffectType.Always);
             _run = true;
@@ -57,7 +59,7 @@ namespace GameA.Game
                 switch ((EEffectId) _tableState.EffectIds[i])
                 {
                     case EEffectId.Hp:
-                        _target.Hp += value * _effectOverlapCount;
+                        _target.Hp += value * (_effectOverlapCount + 1);
                         break;
                     case EEffectId.Speed:
                         break;
@@ -71,6 +73,7 @@ namespace GameA.Game
 
         public virtual bool OnRemoved(ActorBase target)
         {
+            Excute(EEffectType.End);
             return true;
         }
         
@@ -85,11 +88,10 @@ namespace GameA.Game
             {
                 Excute(EEffectType.Interval);
             }
-            if (_timer == _duration)
+            if (_timer == _curDuration)
             {
                 //移除
-                _target.RemoveState(this);
-                Excute(EEffectType.End);
+                _target.RemoveStates(_tableState.Id);
             }
         }
 
@@ -105,14 +107,49 @@ namespace GameA.Game
         {
         }
 
-        public void OverlapTime()
+        public static State operator ++(State state)
         {
-            _duration += _duration;
+            switch ((EOverlapType)state.TableState.OverlapType)
+            {
+                case EOverlapType.None:
+                    break;
+                case EOverlapType.Time:
+                    state._curDuration += state._duration;
+                    break;
+                case EOverlapType.Effect:
+                    state._effectOverlapCount++;
+                    break;
+                case EOverlapType.All:
+                    state._curDuration += state._duration;
+                    state._effectOverlapCount++;
+                    break;
+            }
+            return state;
         }
 
-        public void OverlapEffect()
+        public static State operator --(State state)
         {
-            _effectOverlapCount++;
+            switch ((EOverlapType)state.TableState.OverlapType)
+            {
+                case EOverlapType.None:
+                    break;
+                case EOverlapType.Time:
+                    state._curDuration -= state._duration;
+                    break;
+                case EOverlapType.Effect:
+                    state._effectOverlapCount--;
+                    break;
+                case EOverlapType.All:
+                    state._curDuration -= state._duration;
+                    state._effectOverlapCount--;
+                    break;
+            }
+            if (state._curDuration <= 0 || state._effectOverlapCount< 0)
+            {
+                state._target.RemoveState(state);
+                return null;
+            }
+            return state;
         }
     }
 }
