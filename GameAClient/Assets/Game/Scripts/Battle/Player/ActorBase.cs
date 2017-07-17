@@ -16,6 +16,7 @@ namespace GameA.Game
     public enum EDieType
     {
         None,
+
         /// <summary>
         /// 被机关之类的弄死
         /// </summary>
@@ -28,12 +29,11 @@ namespace GameA.Game
 
     public class ActorBase : RigidbodyUnit
     {
-        protected List<State > _currentStates = new List<State>();
+        protected List<State> _currentStates = new List<State>();
         private Comparison<State> _comparisonState = SortState;
 
         protected EDieType _eDieType;
         protected int _attackedTimer;
-        protected int _fireTimer;
 
         protected float _hpRecover = 200 * ConstDefineGM2D.FixedDeltaTime;
         protected int _hpRecoverTimer = 3 * ConstDefineGM2D.FixedFrameCount;
@@ -60,7 +60,6 @@ namespace GameA.Game
             base.Clear();
             _eDieType = EDieType.None;
             _attackedTimer = 0;
-            _fireTimer = 0;
             GameParticleManager.FreeSpineObject(_effectIce);
             _effectIce = null;
             RemoveAllStates();
@@ -73,15 +72,29 @@ namespace GameA.Game
                 for (int i = 0; i < _currentStates.Count; i++)
                 {
                     _currentStates[i].UpdateLogic();
-                }         
+                }
             }
         }
 
         public override void AddStates(params int[] ids)
         {
+            if (!_isAlive)
+            {
+                return;
+            }
             for (int i = 0; i < ids.Length; i++)
             {
                 var id = ids[i];
+                var tableState = TableManager.Instance.GetState(id);
+                if (tableState == null)
+                {
+                    continue;
+                }
+                //如果是减益buff 当前无敌时跳过。
+                if (tableState.IsBuff == 0 && IsInvincible)
+                {
+                    continue;
+                }
                 //如果已存在，判断叠加属性
                 State state;
                 if (TryGetState(id, out state))
@@ -90,11 +103,6 @@ namespace GameA.Game
                     continue;
                 }
                 //如果不存在，判断是否同类替换
-                var tableState = TableManager.Instance.GetState(id);
-                if (tableState == null)
-                {
-                    continue;
-                }
                 if (tableState.IsReplace == 1)
                 {
                     RemoveStateByType(tableState.StateType);
@@ -110,7 +118,7 @@ namespace GameA.Game
                 PoolFactory<State>.Free(state);
             }
         }
-        
+
         public override void RemoveStates(params int[] ids)
         {
             for (int i = 0; i < ids.Length; i++)
@@ -148,7 +156,7 @@ namespace GameA.Game
             state = null;
             return false;
         }
-    
+
         public void RemoveStateByType(int stateType)
         {
             for (int i = _currentStates.Count - 1; i >= 0; i--)
@@ -160,7 +168,7 @@ namespace GameA.Game
                 }
             }
         }
-        
+
         public void RemoveAllStates()
         {
             for (int i = 0; i < _currentStates.Count; i++)
@@ -170,7 +178,7 @@ namespace GameA.Game
             }
             _currentStates.Clear();
         }
-        
+
         public override void RemoveAllDebuffs()
         {
             for (int i = _currentStates.Count - 1; i >= 0; i--)
@@ -182,7 +190,7 @@ namespace GameA.Game
                 }
             }
         }
-        
+
         private static int SortState(State one, State other)
         {
             int v = one.TableState.StatePriority.CompareTo(other.TableState.StatePriority);
@@ -193,10 +201,21 @@ namespace GameA.Game
             return v;
         }
 
-        public override void SetIceState(State state, bool within)
+        public override void SeBuffState(State state, bool within)
         {
-            _canMotor = !within;
-            _canAttack = !within;
+            switch ((EStateType) state.TableState.StateType)
+            {
+                case EStateType.Ice:
+                    SetStateIce(state, within);
+                    break;
+                case EStateType.Fire:
+                    SetStateFire(state, within);
+                    break;
+            }
+        }
+
+        private void SetStateIce(State state, bool within)
+        {
             if (_effectIce == null)
             {
                 _effectIce = GameParticleManager.Instance.EmitLoop(state.TableState.Particle, _trans);
@@ -213,30 +232,12 @@ namespace GameA.Game
                 }
             }
         }
-        
-//        internal override void OutFire()
-//        {
-//            if (_eDieType == EDieType.Fire)
-//            {
-//                _fireTimer = 0;
-//                _animation.Reset();
-//                _eDieType = EDieType.None;
-//            }
-//        }
 
-        public override void SetFireState(State state, bool within)
+        private void SetStateFire(State state, bool within)
         {
-//            if (!_isAlive || IsInvincible)
-//            {
-//                return;
-//            }
-//            if (_eDieType == EDieType.Fire)
-//            {
-//                return;
-//            }
-//            _eDieType = EDieType.Fire;
             if (within)
             {
+                _eDieType = EDieType.Fire;
                 if (_animation != null)
                 {
                     _animation.PlayLoop("OnFire", 1, 1);
@@ -244,8 +245,8 @@ namespace GameA.Game
             }
             else
             {
-                _fireTimer = 0;
                 _animation.Reset();
+                _eDieType = EDieType.None;
             }
         }
 

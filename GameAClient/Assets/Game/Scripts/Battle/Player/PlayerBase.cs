@@ -261,14 +261,6 @@ namespace GameA.Game
             {
                 friction = 1;
             }
-            if (_eDieType == EDieType.Fire)
-            {
-                OnFire();
-            }
-            else
-            {
-                _fireTimer = 0;
-            }
             if (!_lastOnClay && _onClay)
             {
                 _speedRatio += SpeedClayRatio;
@@ -306,21 +298,6 @@ namespace GameA.Game
                     {
                         SpeedX = Util.ConstantLerp(SpeedX, 0, friction);
                     }
-                }
-            }
-        }
-
-        private void OnFire()
-        {
-            _fireTimer++;
-            //3秒后还是这个状态挂掉
-            if (_fireTimer == 150)
-            {
-                OnDead();
-                if (_animation != null)
-                {
-                    _animation.Reset();
-                    _animation.PlayOnce("Death");
                 }
             }
         }

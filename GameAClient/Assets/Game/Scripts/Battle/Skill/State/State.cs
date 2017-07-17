@@ -11,7 +11,7 @@ namespace GameA.Game
             None,
             Hp,
             Speed,
-            Ice,
+            BanAttack,
             HpMax,
         }
         
@@ -83,12 +83,13 @@ namespace GameA.Game
                     case EEffectId.Speed:
                         _target.SpeedRatio += (value * 0.01f) * (_effectOverlapCount + 1);
                         break;
-                    case EEffectId.Ice:
-                        _target.SetIceState(this, true);
+                    case EEffectId.BanAttack:
+                        _target.CanAttack = false;
                         break;
                     case EEffectId.HpMax:
                         break;
                 }
+                _target.SeBuffState(this, true);
             }
         }
 
@@ -105,12 +106,13 @@ namespace GameA.Game
                     case EEffectId.Speed:
                         _target.SpeedRatio -= (value * 0.01f) * (_effectOverlapCount + 1);
                         break;
-                    case EEffectId.Ice:
-                        _target.SetIceState(this, false);
+                    case EEffectId.BanAttack:
+                        _target.CanAttack = true;
                         break;
                     case EEffectId.HpMax:
                         break;
                 }
+                _target.SeBuffState(this, true);
             }
             Excute(EEffectType.End);
             return true;
