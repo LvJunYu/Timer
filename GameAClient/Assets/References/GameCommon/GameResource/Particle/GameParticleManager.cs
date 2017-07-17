@@ -236,7 +236,14 @@ namespace SoyEngine
             if (GM2DTools.TryGetSpineObject(path, out so))
             {
                 so.Trans.SetParent(parent, false);
-                so.SkeletonAnimation.state.SetAnimation(0, "Run", true);
+                if (so.SkeletonAnimation == null || so.SkeletonAnimation.state == null)
+                {
+                    LogHelper.Error("EmitLoop Failed, {0}", path);
+                }
+                else
+                {
+                    so.SkeletonAnimation.state.SetAnimation(0, "Run", true);
+                }
             }
             return so;
         }

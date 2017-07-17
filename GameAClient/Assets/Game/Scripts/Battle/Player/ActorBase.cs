@@ -111,7 +111,7 @@ namespace GameA.Game
                 if (state.OnAttached(tableState, this))
                 {
                     _currentStates.Add(state);
-                    LogHelper.Debug("AddState:{0}", state);
+                    LogHelper.Debug("{0} AddState: {1}",this, state.TableState.Id);
                     _currentStates.Sort(_comparisonState);
                     continue;
                 }
@@ -138,6 +138,7 @@ namespace GameA.Game
                 if (state.OnRemoved())
                 {
                     _currentStates.Remove(state);
+                    LogHelper.Debug("{0} RemoveState: {1}",this, state.TableState.Id);
                     PoolFactory<State>.Free(state);
                 }
             }
@@ -201,8 +202,9 @@ namespace GameA.Game
             return v;
         }
 
-        public override void SeBuffState(State state, bool within)
+        public override void SetStateEffect(State state, bool within)
         {
+            LogHelper.Debug("SetStateEffect : {0} | {1}", state.TableState.Id, within);
             switch ((EStateType) state.TableState.StateType)
             {
                 case EStateType.Ice:

@@ -1542,7 +1542,7 @@ namespace GameA.Game
 
         #endregion
 
-        public virtual void SeBuffState(State state, bool within)
+        public virtual void SetStateEffect(State state, bool within)
         {
             
         }

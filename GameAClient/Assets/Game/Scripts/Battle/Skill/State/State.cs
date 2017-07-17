@@ -62,6 +62,7 @@ namespace GameA.Game
             _curDuration = _duration;
             _intervalTime = TableConvert.GetTime(_tableState.IntervalTime);
             Excute(EEffectType.Always);
+            _target.SetStateEffect(this, true);
             _run = true;
             return true;
         }
@@ -89,7 +90,6 @@ namespace GameA.Game
                     case EEffectId.HpMax:
                         break;
                 }
-                _target.SeBuffState(this, true);
             }
         }
 
@@ -112,8 +112,8 @@ namespace GameA.Game
                     case EEffectId.HpMax:
                         break;
                 }
-                _target.SeBuffState(this, true);
             }
+            _target.SetStateEffect(this, false);
             Excute(EEffectType.End);
             return true;
         }
@@ -124,11 +124,11 @@ namespace GameA.Game
             {
                 return;
             }
-            _timer++;
             if (_intervalTime > 0 && _timer % _intervalTime == 0)
             {
                 Excute(EEffectType.Interval);
             }
+            _timer++;
             if (_timer == _curDuration)
             {
                 //移除
@@ -151,13 +151,13 @@ namespace GameA.Game
                 case EOverlapType.None:
                     break;
                 case EOverlapType.Time:
-                    state._curDuration += state._duration;
+                    state._curDuration = state._duration;
                     break;
                 case EOverlapType.Effect:
                     state._effectOverlapCount++;
                     break;
                 case EOverlapType.All:
-                    state._curDuration += state._duration;
+                    state._curDuration = state._duration;
                     state._effectOverlapCount++;
                     break;
             }

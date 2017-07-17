@@ -280,7 +280,7 @@ namespace GameA.Game
             {
                 PlayMode.Instance.AddTrap(_tableSkill.TrapId);
             }
-            LogHelper.Debug("OnActorHit, {0}", unit);
+//            LogHelper.Debug("OnActorHit, {0}", unit);
         }
     }
 }
