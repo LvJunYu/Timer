@@ -110,7 +110,7 @@ namespace GameA
             GlobalVar.Instance.AppVersion = RuntimeConfig.Instance.Version.ToString();
             var addressConfig = GetAppServerAddress();
             NetworkManager.AppHttpClient.BaseUrl = addressConfig.AppServerApiRoot;
-
+            NetworkManager.AppHttpClient.SendInspector = Account.AppHttpClientAccountInspector;
             gameObject.AddComponent<SocialGUIManager>();
 
             CoroutineManager.Instance.Init(this);

@@ -18,8 +18,20 @@ namespace SoyEngine
         public const string AppData = "/appInfo/appData";
         // 登录
         public const string Login = "/account/login";
+        // 游客登录
+        public const string LoginAsGuest = "/account/loginAsGuest";
         // 设备登录包
         public const string LoginByToken = "/account/loginByToken";
+        // 忘记密码
+        public const string ForgetPassword = "/account/forgetPassword";
+        // 修改密码
+        public const string ChangePassword = "/account/changePassword";
+        // 注册
+        public const string Register = "/account/register";
+        // 绑定账号
+        public const string AccountBind = "/account/bind";
+        // 请求验证码
+        public const string GetVerificationCode = "/account/getVerificationCode";
         // 退出登录
         public const string Logout = "/account/logout";
         // 用户简要信息
