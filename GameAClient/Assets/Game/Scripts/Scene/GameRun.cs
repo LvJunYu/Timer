@@ -69,7 +69,6 @@ namespace GameA.Game
 
         public IEnumerator Init(GameManager.EStartType eGameInitType, Project project)
         {
-            var effectMgr = new EffectMgr();
             UnitManager.Instance.Init();
             CameraManager.Instance.Init();
             EnvManager.Instance.Init();
