@@ -82,7 +82,8 @@ namespace GameA
         {
             base.OnViewCreated();
 
-//            #if UNITY_EDITOR
+            //            #if UNITY_EDITOR
+            _cachedView.SignUpBtn.onClick.AddListener(OnSignUpBtn);
             SocialGUIManager.Instance.OpenUI<UICtrlGMTool>();
 //            #endif
 
@@ -102,9 +103,7 @@ namespace GameA
             SetLock(UIFunction.UI_Workshop, _workshopAvailable);
             SetLock(UIFunction.UI_World, _worldAvailable);
             //_cachedView.DebugClearUserDataBtn.onClick.AddListener (OnDebugClearUserData);
-
             // Debug.Log("______UICtrlTaskbar_______" + _cachedView.PlayerAvatarAnimation + "_______UICtrlTaskbar______" + _cachedView.PlayerAvatarAnimation.skeleton);
-
             // todo player avatar at home
             //         AvatarRenderTexture = new RenderTexture (256, 512, 0);
             //_cachedView.AvatarRenderCamera.targetTexture = AvatarRenderTexture;
@@ -239,6 +238,13 @@ namespace GameA
             if (GameProcessManager.Instance.IsGameSystemAvailable (EGameSystem.WorkShop)) {
                 SocialGUIManager.Instance.OpenUI<UICtrlWorkShop> ();
             }
+        }
+
+        public void OnSignUpBtn()
+        {
+       
+                SocialGUIManager.Instance.OpenUI<UICtrlSignup>();
+            
         }
 
         public void OnWorldBtn()
