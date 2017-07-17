@@ -38,6 +38,8 @@ namespace GameA.Game
         protected float _hpRecover = 200 * ConstDefineGM2D.FixedDeltaTime;
         protected int _hpRecoverTimer = 3 * ConstDefineGM2D.FixedFrameCount;
 
+        protected SpineObject _effectIce;
+
         public int AttackedTimer
         {
             get { return _attackedTimer; }
@@ -59,6 +61,8 @@ namespace GameA.Game
             _eDieType = EDieType.None;
             _attackedTimer = 0;
             _fireTimer = 0;
+            GameParticleManager.FreeSpineObject(_effectIce);
+            _effectIce = null;
             RemoveAllStates();
         }
 
@@ -123,7 +127,7 @@ namespace GameA.Game
         {
             if (_currentStates.Contains(state))
             {
-                if (state.OnRemoved(this))
+                if (state.OnRemoved())
                 {
                     _currentStates.Remove(state);
                     PoolFactory<State>.Free(state);
@@ -161,7 +165,7 @@ namespace GameA.Game
         {
             for (int i = 0; i < _currentStates.Count; i++)
             {
-                _currentStates[i].OnRemoved(this);
+                _currentStates[i].OnRemoved();
                 PoolFactory<State>.Free(_currentStates[i]);
             }
             _currentStates.Clear();
@@ -173,7 +177,7 @@ namespace GameA.Game
             {
                 if (_currentStates[i].TableState.IsBuff == 0)
                 {
-                    _currentStates[i].OnRemoved(this);
+                    _currentStates[i].OnRemoved();
                     _currentStates.RemoveAt(i);
                 }
             }
@@ -187,6 +191,62 @@ namespace GameA.Game
                 v = one.TableState.StateTypePriority.CompareTo(other.TableState.StateTypePriority);
             }
             return v;
+        }
+
+        public override void SetIceState(State state, bool within)
+        {
+            _canMotor = !within;
+            _canAttack = !within;
+            if (_effectIce == null)
+            {
+                _effectIce = GameParticleManager.Instance.EmitLoop(state.TableState.Particle, _trans);
+            }
+            _effectIce.Trans.localPosition = new Vector3(0, -0.1f, _curMoveDirection == EMoveDirection.Left ? 0.01f : -0.01f);
+            _effectIce.Trans.rotation = Quaternion.identity;
+            _effectIce.SetActive(within);
+            if (within)
+            {
+                if (_animation != null)
+                {
+                    _animation.Reset();
+                    _animation.PlayOnce("OnIce");
+                }
+            }
+        }
+        
+//        internal override void OutFire()
+//        {
+//            if (_eDieType == EDieType.Fire)
+//            {
+//                _fireTimer = 0;
+//                _animation.Reset();
+//                _eDieType = EDieType.None;
+//            }
+//        }
+
+        public override void SetFireState(State state, bool within)
+        {
+//            if (!_isAlive || IsInvincible)
+//            {
+//                return;
+//            }
+//            if (_eDieType == EDieType.Fire)
+//            {
+//                return;
+//            }
+//            _eDieType = EDieType.Fire;
+            if (within)
+            {
+                if (_animation != null)
+                {
+                    _animation.PlayLoop("OnFire", 1, 1);
+                }
+            }
+            else
+            {
+                _fireTimer = 0;
+                _animation.Reset();
+            }
         }
 
         internal override void InLazer()
@@ -209,7 +269,7 @@ namespace GameA.Game
             {
                 //跳出水里
                 ExtraSpeed.y = 240;
-                OutFire();
+//                OutFire();
                 return;
             }
             if (!_isAlive || IsInvincible)
@@ -221,33 +281,6 @@ namespace GameA.Game
             if (_animation != null)
             {
                 _animation.PlayOnce("DeathWater");
-            }
-        }
-
-        internal override void OutFire()
-        {
-            if (_eDieType == EDieType.Fire)
-            {
-                _fireTimer = 0;
-                _animation.Reset();
-                _eDieType = EDieType.None;
-            }
-        }
-
-        internal override void InFire()
-        {
-            if (!_isAlive || IsInvincible)
-            {
-                return;
-            }
-            if (_eDieType == EDieType.Fire)
-            {
-                return;
-            }
-            _eDieType = EDieType.Fire;
-            if (_animation != null)
-            {
-                _animation.PlayLoop("OnFire", 1, 1);
             }
         }
 
@@ -267,7 +300,7 @@ namespace GameA.Game
             {
                 if (unit.IsAlive)
                 {
-                    unit.InFire();
+//                    unit.InFire();
                 }
             }
         }
