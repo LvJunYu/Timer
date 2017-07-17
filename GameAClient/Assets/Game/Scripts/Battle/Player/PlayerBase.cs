@@ -83,7 +83,7 @@ namespace GameA.Game
                 {
                     PlayEffect(_invincibleEfffect);
                     _invincibleTime = value;
-                    OutFire();
+//                    OutFire();
                 }
             }
         }
@@ -657,50 +657,50 @@ namespace GameA.Game
             _playerInput.ClearInput();
         }
 
-        internal override void InFire()
-        {
-            if (!_isAlive)
-            {
-                return;
-            }
-            if (IsInvincible)
-            {
-                return;
-            }
-            if (_eDieType == EDieType.Fire)
-            {
-                return;
-            }
-            _eDieType = EDieType.Fire;
-            if (_inFireEfffect == null)
-            {
-                _inFireEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectDeathFire", _trans);
-            }
-            if (_inFireEfffect != null)
-            {
-                _inFireEfffect.Play();
-            }
-            if (_view != null)
-            {
-                _view.SetRendererColor(new Color(0.2f, 0.2f, 0.2f, 1f));
-            }
-        }
-
-        internal override void OutFire()
-        {
-            base.OutFire();
-            if (_eDieType == EDieType.Fire)
-            {
-                if (_inFireEfffect != null)
-                {
-                    _inFireEfffect.Stop();
-                }
-                if (_view != null)
-                {
-                    _view.SetRendererColor(Color.white);
-                }
-            }
-        }
+//        internal override void InFire()
+//        {
+//            if (!_isAlive)
+//            {
+//                return;
+//            }
+//            if (IsInvincible)
+//            {
+//                return;
+//            }
+//            if (_eDieType == EDieType.Fire)
+//            {
+//                return;
+//            }
+//            _eDieType = EDieType.Fire;
+//            if (_inFireEfffect == null)
+//            {
+//                _inFireEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectDeathFire", _trans);
+//            }
+//            if (_inFireEfffect != null)
+//            {
+//                _inFireEfffect.Play();
+//            }
+//            if (_view != null)
+//            {
+//                _view.SetRendererColor(new Color(0.2f, 0.2f, 0.2f, 1f));
+//            }
+//        }
+//
+//        internal override void OutFire()
+//        {
+//            base.OutFire();
+//            if (_eDieType == EDieType.Fire)
+//            {
+//                if (_inFireEfffect != null)
+//                {
+//                    _inFireEfffect.Stop();
+//                }
+//                if (_view != null)
+//                {
+//                    _view.SetRendererColor(Color.white);
+//                }
+//            }
+//        }
 
         #endregion
 

@@ -775,14 +775,6 @@ namespace GameA.Game
         {
         }
 
-        internal virtual void InFire()
-        {
-        }
-
-        internal virtual void OutFire()
-        {
-        }
-
         /// <summary>
         /// 怪物触碰打击
         /// </summary>
@@ -1549,5 +1541,15 @@ namespace GameA.Game
         }
 
         #endregion
+
+        public virtual void SetIceState(State state, bool within)
+        {
+            
+        }
+        
+        public virtual void SetFireState(State state, bool within)
+        {
+            
+        }
     }
 }
