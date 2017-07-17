@@ -89,6 +89,11 @@ namespace GameA.Game
         protected IntVec2 _minPos;
         protected IntVec2 _maxPos;
 
+        /// <summary>
+        /// 加速减速参数
+        /// </summary>
+        protected float _speedRatio;
+
         #endregion
 
         #region view
@@ -292,6 +297,12 @@ namespace GameA.Game
         {
             get { return _speed; }
             set { _speed = value; }
+        }
+
+        public float SpeedRatio
+        {
+            get { return _speedRatio; }
+            set { _speedRatio = value; }
         }
 
         public bool Grounded
@@ -614,6 +625,7 @@ namespace GameA.Game
             ClearRunTime();
             _canAttack = true;
             _canMotor = true;
+            _speedRatio = 1;
             _isAlive = true;
             _dieTime = 0;
             _deltaPos = IntVec2.zero;

@@ -107,7 +107,8 @@ namespace GameA.Game
                 return _curPos;
             }
         }
-
+        
+        
         protected override void Clear()
         {
             _playerInput = _playerInput ?? new PlayerInput(this);
@@ -115,9 +116,8 @@ namespace GameA.Game
 
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 2);
             _skillCtrl.Clear();
-            _skillCtrl.ChangeSkill(1, 0);
-            _skillCtrl.ChangeSkill(2, 1);
-
+            ChangeWeapon(3);
+            
             _dieTime = 0;
             _flashTime = 0;
             _invincibleTime = 0;
@@ -125,6 +125,17 @@ namespace GameA.Game
             _eBoxOperateType = EBoxOperateType.None;
             ClearView();
             base.Clear();
+        }
+
+        public bool ChangeWeapon(int id)
+        {
+            var tableEquipment = TableManager.Instance.GetEquipment(id);
+            if (tableEquipment == null)
+            {
+                LogHelper.Error("GetEquipment Failed : {0}", id);
+                return false;
+            }
+            return _skillCtrl.ChangeSkill(tableEquipment.SkillIds);
         }
 
         internal override void OnPlay()
@@ -246,12 +257,7 @@ namespace GameA.Game
                     OnJump();
                 }
             }
-            _curMaxSpeedX = _playerInput._quickenTime == 0 ? ActorDefine.MaxSpeedX : ActorDefine.MaxQuickenSpeedX;
-            if (_onClay)
-            {
-                _curMaxSpeedX = (int)(_curMaxSpeedX * SpeedClayRatio);
-            }
-            else if (_onIce)
+             if (_onIce)
             {
                 friction = 1;
             }
@@ -263,10 +269,17 @@ namespace GameA.Game
             {
                 _fireTimer = 0;
             }
-            if (IsHoldingBox())
+            if (!_lastOnClay && _onClay)
             {
-                _curMaxSpeedX = (int)(_curMaxSpeedX * SpeedHoldingBoxRatio);
+                _speedRatio += SpeedClayRatio;
             }
+            else if (_lastOnClay && !_onClay)
+            {
+                _speedRatio -= SpeedClayRatio;
+            }
+            _curMaxSpeedX = _playerInput._quickenTime == 0 ? ActorDefine.MaxSpeedX : ActorDefine.MaxQuickenSpeedX;
+            _curMaxSpeedX = (int)(_curMaxSpeedX * _speedRatio);
+
             if (air || _grounded)
             {
                 if (_curBanInputTime <= 0)
@@ -407,6 +420,14 @@ namespace GameA.Game
                 return;
             }
             _box.IsHoldingByMain = !_box.IsHoldingByMain;
+            if (_box.IsHoldingByMain)
+            {
+                _speedRatio += SpeedHoldingBoxRatio;
+            }
+            else
+            {
+                _speedRatio -= SpeedHoldingBoxRatio;
+            }
             LogHelper.Debug("OnBoxHoldingChanged: " + _box.IsHoldingByMain);
         }
 
@@ -919,6 +940,7 @@ namespace GameA.Game
                 _portalEffect.Update();
             }
             _lastGrounded = _grounded;
+            _lastOnClay = _onClay;
         }
 
         protected void OnJump()

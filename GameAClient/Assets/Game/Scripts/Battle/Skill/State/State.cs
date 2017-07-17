@@ -51,6 +51,11 @@ namespace GameA.Game
         public virtual bool OnAttached(Table_State tableState, ActorBase target)
         {
             _tableState = tableState;
+            if (_tableState.EffectTypes.Length != _tableState.EffectValues.Length || _tableState.EffectTypes.Length != _tableState.EffectIds.Length)
+            {
+                LogHelper.Error("Wrong TableState. Types : {0}, Values: {1}, Ids: {2}", _tableState.EffectTypes.Length, _tableState.EffectValues.Length, _tableState.EffectIds.Length);
+                return false;
+            }
             _duration = TableConvert.GetTime(_tableState.Duration);
             _curDuration = _duration;
             _intervalTime = TableConvert.GetTime(_tableState.IntervalTime);
@@ -74,6 +79,7 @@ namespace GameA.Game
                         _target.Hp += value * (_effectOverlapCount + 1);
                         break;
                     case EEffectId.Speed:
+                        _target.SpeedRatio += (value * 0.01f) * (_effectOverlapCount + 1);
                         break;
                     case EEffectId.Ice:
                         break;
@@ -85,6 +91,23 @@ namespace GameA.Game
 
         public virtual bool OnRemoved(ActorBase target)
         {
+            for (int i = 0; i < _tableState.EffectTypes.Length; i++)
+            {
+                var value = _tableState.EffectValues[i];
+                switch ((EEffectId) _tableState.EffectIds[i])
+                {
+                    case EEffectId.Hp:
+                        _target.Hp -= value * (_effectOverlapCount + 1);
+                        break;
+                    case EEffectId.Speed:
+                        _target.SpeedRatio -= (value * 0.01f) * (_effectOverlapCount + 1);
+                        break;
+                    case EEffectId.Ice:
+                        break;
+                    case EEffectId.HpMax:
+                        break;
+                }
+            }
             Excute(EEffectType.End);
             return true;
         }

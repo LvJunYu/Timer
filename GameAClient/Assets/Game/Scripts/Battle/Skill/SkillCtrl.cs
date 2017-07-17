@@ -28,22 +28,26 @@ namespace GameA.Game
             get { return _currentSkills; }
         }
 
-        public bool ChangeSkill(int skillId, int trackIndex)
+        public bool ChangeSkill(params int[] skillIds)
         {
-            if (!CheckValid(trackIndex))
+            for (int i = 0; i < skillIds.Length; i++)
             {
-                return false;
-            }
-            if (_currentSkills[trackIndex] != null)
-            {
-                if (_currentSkills[trackIndex].Id== skillId)
+                var skillId = skillIds[i];
+                if (!CheckValid(i))
                 {
                     return false;
                 }
-                _currentSkills[trackIndex].Exit();
-                _currentSkills[trackIndex] = null;
+                if (_currentSkills[i] != null)
+                {
+                    if (_currentSkills[i].Id== skillId)
+                    {
+                        return false;
+                    }
+                    _currentSkills[i].Exit();
+                    _currentSkills[i] = null;
+                }
+                _currentSkills[i] = new SkillBase(skillId, _owner);
             }
-            _currentSkills[trackIndex] = new SkillBase(skillId, _owner);
             return true;
         }
 
