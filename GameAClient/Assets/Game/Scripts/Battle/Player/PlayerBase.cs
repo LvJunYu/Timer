@@ -116,7 +116,7 @@ namespace GameA.Game
 
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 2);
             _skillCtrl.Clear();
-            ChangeWeapon(5);
+            ChangeWeapon(6);
             
             _dieTime = 0;
             _flashTime = 0;
