@@ -132,32 +132,23 @@ namespace GameA
             {
                 LocalUser.Instance.Account.LoginByToken(() =>
                 {
-                    // SocialApp.Instance.LoginSucceed();
+                    SocialApp.Instance.LoginSucceed();
 
                 }, code =>
                 {
-                    if (code == ELoginByTokenCode.LBTC_None)
-                    {
-                        //SocialApp.Instance.LoginSucceed();
+                    //if (code == ELoginByTokenCode.LBTC_Success)
+                    //{
+                    //    SocialApp.Instance.LoginSucceed();
+                    //}
+                    //else if (code == ELoginByTokenCode.LBTC_SuccessNewToken)
+                    //{
+                    //    SocialApp.Instance.LoginSucceed();
+                    //}
+                    //else
+                    //{
                         SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
-                        //                    CommonTools.ShowPopupDialog("服务器连接失败，检查网络后重试", null,
-                        //                        new System.Collections.Generic.KeyValuePair<string, System.Action>("重试", ()=>{
-                        //                            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(()=>LoginByToken()));
-                        //                        }));
-                    }
-                    if (code == ELoginByTokenCode.LBTC_Success)
-                    {
-                        SocialApp.Instance.LoginSucceed();
-                    }
-                    if (code == ELoginByTokenCode.LBTC_SuccessNewToken)
-                    {
-                        SocialApp.Instance.LoginSucceed();
-                    }
-                    else
-                    {
-                        SocialApp.Instance.LoginSucceed();
                         LogHelper.Error("登录失败, Code: " + code);
-                    }
+                    //}
                 });
             }
             //SocialGUIManager.Instance.OpenUI<UICtrlLogin>();

@@ -26,7 +26,6 @@ namespace GameA
 
         private void LoginOut()
         {
-            
             //SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
             RemoteCommands.Logout(1,
                 (ret) =>

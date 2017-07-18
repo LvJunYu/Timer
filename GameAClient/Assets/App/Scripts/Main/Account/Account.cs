@@ -94,17 +94,20 @@ namespace SoyEngine
         {
             
             string Res = AppData.Instance.AppResVersion.ToString();
-
             RemoteCommands.LoginByToken(GlobalVar.Instance.AppVersion, Res, _devicePlatform, ret =>
             {
                 if (ret.ResultCode == (int)ELoginByTokenCode.LBTC_Success)
                 {
-                    _userGuid = ret.UserId;
-                   // Debug.Log("____pre_______"+)
-                    if (ret.ResultCode == (int) ELoginByTokenCode.LBTC_SuccessNewToken)
+                    _userGuid = ret.UserId; 
+                    if (null != successCallback)
                     {
-                        OnTokenChange(ret.NewToken.ToString());
+                        successCallback.Invoke();
                     }
+                }
+                else if (ret.ResultCode == (int)ELoginByTokenCode.LBTC_SuccessNewToken)
+                {
+                    _userGuid = ret.UserId;
+                    OnTokenChange(ret.NewToken.ToString());
                     if (null != successCallback)
                     {
                         successCallback.Invoke();
