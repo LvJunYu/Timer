@@ -22,7 +22,7 @@ namespace GameA
 //        public UITaskButton Daily;
 //        public UITaskButton Me;
 //        public RectTransform ScaleRoot;
-        public Button SignUpBtn;
+        //public Button SignUpBtn;
         public Button Account;
         /// <summary>
         /// 选择游戏按钮

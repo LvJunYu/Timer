@@ -83,7 +83,7 @@ namespace GameA
             base.OnViewCreated();
 
             //            #if UNITY_EDITOR
-            _cachedView.SignUpBtn.onClick.AddListener(OnSignUpBtn);
+            //_cachedView.SignUpBtn.onClick.AddListener(OnSignUpBtn);
             _cachedView.Account.onClick.AddListener(Account);
             SocialGUIManager.Instance.OpenUI<UICtrlGMTool>();
 //            #endif
