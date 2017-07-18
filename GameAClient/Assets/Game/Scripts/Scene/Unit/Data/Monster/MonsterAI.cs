@@ -131,7 +131,7 @@ namespace GameA.Game
                 return;
             }
             //如果怪物就在人的脚下，直接改为攻击。
-            if (mainUnit.DownUnits.Contains(this))
+            if (mainUnit.DownUnits.Contains(this) && _canAttack)
             {
                 ChangeState(EMonsterState.Attack);
                 return;
@@ -188,6 +188,10 @@ namespace GameA.Game
 
         protected virtual bool IsInAttackRange()
         {
+            if (!_canAttack)
+            {
+                return false;
+            }
             IntVec2 rel = CenterPos - PlayMode.Instance.MainPlayer.CenterPos;
             if (Mathf.Abs(rel.x) <= _attackRange.x && Mathf.Abs(rel.y) <= _attackRange.y)
             {

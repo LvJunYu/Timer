@@ -110,7 +110,7 @@ namespace GameA.Game
                 }
                 else
                 {
-                    _fireTimer = 0;
+//                    _fireTimer = 0;
                     UpdateMonsterAI();
                 }
                 if (!air)
@@ -141,33 +141,33 @@ namespace GameA.Game
 
         protected virtual void OnFire()
         {
-            _curMaxSpeedX = (int)(_curMaxSpeedX * SpeedFireRatio);
-            if (_curMoveDirection == EMoveDirection.Right)
-            {
-                SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, _curFriction);
-            }
-            else
-            {
-                SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, _curFriction);
-            }
-            _fireTimer++;
-            //碰到墙壁转头
-            CheckWay();
-            //每隔转头
-            if (_fireTimer == 50)
-            {
-                ChangeWay(_curMoveDirection == EMoveDirection.Right ? EMoveDirection.Left : EMoveDirection.Right);
-            }
-            //4秒后还是这个状态挂掉
-            else if (_fireTimer == 100)
-            {
-                OnDead();
-                if (_animation != null)
-                {
-                    _animation.Reset();
-                    _animation.PlayOnce("DeathFire");
-                }
-            }
+//            _curMaxSpeedX = (int)(_curMaxSpeedX * SpeedFireRatio);
+//            if (_curMoveDirection == EMoveDirection.Right)
+//            {
+//                SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, _curFriction);
+//            }
+//            else
+//            {
+//                SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, _curFriction);
+//            }
+//            _fireTimer++;
+//            //碰到墙壁转头
+//            CheckWay();
+//            //每隔转头
+//            if (_fireTimer == 50)
+//            {
+//                ChangeWay(_curMoveDirection == EMoveDirection.Right ? EMoveDirection.Left : EMoveDirection.Right);
+//            }
+//            //4秒后还是这个状态挂掉
+//            else if (_fireTimer == 100)
+//            {
+//                OnDead();
+//                if (_animation != null)
+//                {
+//                    _animation.Reset();
+//                    _animation.PlayOnce("DeathFire");
+//                }
+//            }
         }
 
         protected virtual void UpdateMonsterAI()

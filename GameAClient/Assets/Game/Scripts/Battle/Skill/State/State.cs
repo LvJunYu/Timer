@@ -11,7 +11,7 @@ namespace GameA.Game
             None,
             Hp,
             Speed,
-            Ice,
+            BanAttack,
             HpMax,
         }
         
@@ -62,6 +62,7 @@ namespace GameA.Game
             _curDuration = _duration;
             _intervalTime = TableConvert.GetTime(_tableState.IntervalTime);
             Excute(EEffectType.Always);
+            _target.SetStateEffect(this, true);
             _run = true;
             return true;
         }
@@ -83,8 +84,8 @@ namespace GameA.Game
                     case EEffectId.Speed:
                         _target.SpeedRatio += (value * 0.01f) * (_effectOverlapCount + 1);
                         break;
-                    case EEffectId.Ice:
-                        _target.SetIceState(this, true);
+                    case EEffectId.BanAttack:
+                        _target.CanAttack = false;
                         break;
                     case EEffectId.HpMax:
                         break;
@@ -105,13 +106,14 @@ namespace GameA.Game
                     case EEffectId.Speed:
                         _target.SpeedRatio -= (value * 0.01f) * (_effectOverlapCount + 1);
                         break;
-                    case EEffectId.Ice:
-                        _target.SetIceState(this, false);
+                    case EEffectId.BanAttack:
+                        _target.CanAttack = true;
                         break;
                     case EEffectId.HpMax:
                         break;
                 }
             }
+            _target.SetStateEffect(this, false);
             Excute(EEffectType.End);
             return true;
         }
@@ -122,11 +124,11 @@ namespace GameA.Game
             {
                 return;
             }
-            _timer++;
             if (_intervalTime > 0 && _timer % _intervalTime == 0)
             {
                 Excute(EEffectType.Interval);
             }
+            _timer++;
             if (_timer == _curDuration)
             {
                 //移除
@@ -149,13 +151,13 @@ namespace GameA.Game
                 case EOverlapType.None:
                     break;
                 case EOverlapType.Time:
-                    state._curDuration += state._duration;
+                    state._curDuration = state._duration;
                     break;
                 case EOverlapType.Effect:
                     state._effectOverlapCount++;
                     break;
                 case EOverlapType.All:
-                    state._curDuration += state._duration;
+                    state._curDuration = state._duration;
                     state._effectOverlapCount++;
                     break;
             }

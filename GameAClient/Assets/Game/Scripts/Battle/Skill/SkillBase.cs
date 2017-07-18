@@ -38,7 +38,6 @@ namespace GameA.Game
         [SerializeField]
         protected int _castRange;
 
-        protected int _knockback;
         [SerializeField]
         protected int _radius;
 
@@ -95,7 +94,6 @@ namespace GameA.Game
             _singTime = TableConvert.GetTime(_tableSkill.SingTime);
             _castRange = TableConvert.GetRange(_tableSkill.CastRange);
             _projectileSpeed = TableConvert.GetSpeed(_tableSkill.ProjectileSpeed);
-            _knockback = TableConvert.GetRange(_tableSkill.Knockback);
             _timerSing = 0;
             _timerCD = 0;
             _timerCharge = 0;
@@ -257,14 +255,14 @@ namespace GameA.Game
                     {
                         if (unit.IsActor)
                         {
-                            OnActorHit(unit);
+                            OnActorHit(unit, projectile);
                         }
                     }
                 }
             }
         }
 
-        private void OnActorHit(UnitBase unit)
+        private void OnActorHit(UnitBase unit, ProjectileBase projectile)
         {
             unit.Hp += _damage;
             //触发状态
@@ -280,7 +278,16 @@ namespace GameA.Game
             {
                 PlayMode.Instance.AddTrap(_tableSkill.TrapId);
             }
-            LogHelper.Debug("OnActorHit, {0}", unit);
+            var forces = _tableSkill.KnockbackForces;
+            if (forces.Length == 2)
+            {
+                var direction = unit.CenterPos - projectile.CenterPos;
+                unit.ExtraSpeed.x = direction.x >= 0 ? forces[0] : -forces[0];
+                unit.ExtraSpeed.y = direction.y >= -320 ? forces[1] : -forces[1];
+                unit.Speed = IntVec2.zero;
+                unit.CurBanInputTime = 20;
+            }
+//            LogHelper.Debug("OnActorHit, {0}", unit);
         }
     }
 }

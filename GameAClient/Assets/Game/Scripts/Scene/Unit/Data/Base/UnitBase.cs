@@ -1542,12 +1542,7 @@ namespace GameA.Game
 
         #endregion
 
-        public virtual void SetIceState(State state, bool within)
-        {
-            
-        }
-        
-        public virtual void SetFireState(State state, bool within)
+        public virtual void SetStateEffect(State state, bool within)
         {
             
         }
