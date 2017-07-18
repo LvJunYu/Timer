@@ -39,6 +39,7 @@ namespace GameA.Game
         protected bool _canLazerCross;
         protected bool _canMagicCross;
         protected bool _canBridgeCross;
+        protected bool _canFanCross;
         [SerializeField] protected bool _isStart;
         protected int _friction;
 
@@ -166,6 +167,11 @@ namespace GameA.Game
         public bool CanBridgeCross
         {
             get { return _canBridgeCross; }
+        }
+
+        public bool CanFanCross
+        {
+            get { return _canFanCross; }
         }
 
         /// <summary>
@@ -768,6 +774,10 @@ namespace GameA.Game
         /// 被电
         /// </summary>
         internal virtual void InLazer()
+        {
+        }
+        
+        internal virtual void InFan(IntVec2 force)
         {
         }
 

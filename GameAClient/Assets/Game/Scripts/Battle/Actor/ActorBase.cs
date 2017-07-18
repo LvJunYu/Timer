@@ -58,6 +58,7 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
+            _canFanCross = true;
             _eDieType = EDieType.None;
             _attackedTimer = 0;
             GameParticleManager.FreeSpineObject(_effectIce);
@@ -264,6 +265,14 @@ namespace GameA.Game
             {
                 _animation.PlayOnce("DeathLazer");
             }
+        }
+
+        protected bool _inFan;
+
+        internal override void InFan(IntVec2 force)
+        {
+            ExtraSpeed = force;
+            _inFan = true;
         }
 
         internal override void InWater()

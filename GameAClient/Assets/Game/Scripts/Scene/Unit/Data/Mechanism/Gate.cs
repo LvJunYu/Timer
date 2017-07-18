@@ -11,7 +11,7 @@ using Spine.Unity;
 namespace GameA.Game
 {
     [Unit(Id = 5013, Type = typeof (Gate))]
-    public class Gate : BlockBase
+    public class Gate : SwitchPress
     {
         private bool _opened;
 
@@ -21,6 +21,7 @@ namespace GameA.Game
             _canLazerCross = false;
             _canMagicCross = false;
             _canBridgeCross = false;
+            _canFanCross = false;
             //if (_opened)
             {
                 if (_view != null)
@@ -86,6 +87,7 @@ namespace GameA.Game
                             _canLazerCross = true;
                             _canMagicCross = true;
                             _canBridgeCross = true;
+                            _canFanCross = true;
                             _view.ChangeView(_tableUnit.Model + "_1");
                             SetSortingOrderBack();
                             UpdateTransPos();

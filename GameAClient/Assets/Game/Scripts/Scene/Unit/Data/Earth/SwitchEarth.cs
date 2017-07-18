@@ -39,6 +39,7 @@ namespace GameA.Game
                 _canLazerCross = _currentCtrlBySwitch;
                 _canMagicCross = _currentCtrlBySwitch;
                 _canBridgeCross = _currentCtrlBySwitch;
+                _canFanCross = _currentCtrlBySwitch;
             }
         }
 
@@ -53,6 +54,7 @@ namespace GameA.Game
             _canLazerCross = false;
             _canMagicCross = false;
             _canBridgeCross = false;
+            _canFanCross = false;
             _currentCtrlBySwitch = false;
             if (_view != null)
             {

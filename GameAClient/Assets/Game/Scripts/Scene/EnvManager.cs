@@ -34,6 +34,7 @@ namespace GameA.Game
 
         public const int LazerShootLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
         public const int LazerBlockLayer = ItemLayer;
+        public const int FanBlockLayer = ItemLayer;
 
         public const int BridgeBlockLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
 
