@@ -13,6 +13,8 @@ namespace GameA.Game
 {
     public class UnitDefine
     {
+        public const int FanRange = 40;
+        
         public const int PlayerTableId = 1001;
         public const int TransparentEarthId = 4004;
         public const int ClayId = 4011;
@@ -117,10 +119,22 @@ namespace GameA.Game
             return id != TransparentEarthId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
                    !IsBoard(id) && !IsCollection(id) && (((1 << node.Layer) & EnvManager.LazerBlockLayer) != 0);
         }
-
+        
         public static bool IsLaserDamage(int layer)
         {
-            return ((1 << layer) & (EnvManager.MonsterLayer | EnvManager.MainPlayerLayer)) != 0;
+            return ((1 << layer) & (EnvManager.MonsterLayer | EnvManager.MainPlayerLayer| EnvManager.RemotePlayer)) != 0;
+        }
+        
+        public static bool IsFanBlock(SceneNode node)
+        {
+            ushort id = node.Id;
+            return id != TransparentEarthId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
+                   !IsBoard(id) && !IsCollection(id);
+        }
+        
+        public static bool IsFanEffect(int layer)
+        {
+            return ((1 << layer) & (EnvManager.MonsterLayer | EnvManager.MainPlayerLayer| EnvManager.RemotePlayer)) != 0;
         }
 
         internal static bool IsGround(int id)

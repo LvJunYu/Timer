@@ -20,6 +20,7 @@ namespace GameA.Game
             }
             _canLazerCross = true;
             _canMagicCross = true;
+            _canFanCross = true;
             SetSortingOrderFront();
             return true;
         }

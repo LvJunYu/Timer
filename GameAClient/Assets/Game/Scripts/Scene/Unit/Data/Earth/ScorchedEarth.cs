@@ -41,6 +41,7 @@ namespace GameA.Game
             _canLazerCross = false;
             _canMagicCross = false;
             _canBridgeCross = false;
+            _canFanCross = false;
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
@@ -119,6 +120,7 @@ namespace GameA.Game
                     _canLazerCross = true;
                     _canMagicCross = true;
                     _canBridgeCross = true;
+                    _canFanCross = true;
                     if (_view != null)
                     {
                         _view.SetRendererEnabled(false);
@@ -147,6 +149,7 @@ namespace GameA.Game
                     _canLazerCross = false;
                     _canMagicCross = false;
                     _canBridgeCross = false;
+                    _canFanCross = false;
                     if (UseMagic())
                     {
                         _run = true;
