@@ -13,6 +13,7 @@ using UnityEngine.UI;
 using cn.sharesdk.unity3d;
 using SoyEngine.Proto;
 using System.Text;
+using NewResourceSolution;
 
 namespace GameA
 {
@@ -37,6 +38,7 @@ namespace GameA
         {
             base.OnViewCreated();
 //            LoginLogicUtil.Init();
+            _cachedView.Guest.onClick.AddListener(GuestLoginIn);
         }
 
         protected override void OnOpen(object parameter)
@@ -124,6 +126,13 @@ namespace GameA
 //            }
 //            _uiStack.OpenUI<UICtrlSignup>();
 //		}
+
+        private void GuestLoginIn()
+        {
+            LocalUser.Instance.Account.GuestLoginIn(SocialApp.Instance.LoginSucceed,null);
+
+        }
+
 //
 //        private void OnQQ()
 //        {
@@ -148,6 +157,6 @@ namespace GameA
 //            LoginLogicUtil.ShowSnsLoginCancel();
 //        }
 
-		#endregion
+        #endregion
     }
 }

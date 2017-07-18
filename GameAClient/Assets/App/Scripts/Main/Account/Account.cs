@@ -8,6 +8,8 @@
 using System;
 using UnityEngine;
 using SoyEngine.Proto;
+using GameA;
+using NewResourceSolution;
 
 namespace SoyEngine
 {
@@ -16,9 +18,9 @@ namespace SoyEngine
         private static string AccountTokenKey = "AccountToken";
         private static string AccountGuidKey = "AccountGuid";
         private long _userGuid;
-        private string _apiPath;
         private static string _token;
         private static string _deviceId;
+        private static EPhoneType _devicePlatform;
         private static readonly Account _instance = new Account();
         public static Account Instance
         {
@@ -28,6 +30,11 @@ namespace SoyEngine
         public long UserGuid
         {
             get { return _userGuid; }
+        }
+
+        public EPhoneType DevicePlatform
+        {
+            get { return _devicePlatform; }
         }
 
         public string Token
@@ -40,20 +47,25 @@ namespace SoyEngine
             get { return _userGuid != 0; }
         }
 
-        public string ApiPath
-        {
-            get
-            {
-                return _apiPath;
-            }
 
-            set
+        private Account()
+        {
+            if (Application.platform == RuntimePlatform.IPhonePlayer)
             {
-                _apiPath = value;
+                _devicePlatform = EPhoneType.PhT_iPhone;
+
+            }
+            else if (Application.platform == RuntimePlatform.Android)
+            {
+                _devicePlatform = EPhoneType.PhT_Android;
+
+            }
+            else
+            {
+                _devicePlatform = EPhoneType.PhT_None;
+
             }
         }
-
-        private Account() {}
 
         public void ReadCache()
         {
@@ -80,26 +92,19 @@ namespace SoyEngine
 
         public void LoginByToken(Action successCallback, Action<ELoginByTokenCode> failedCallback)
         {
-            Msg_CS_CMD_LoginByToken msg = new Msg_CS_CMD_LoginByToken();
-            msg.AppVersion = GlobalVar.Instance.AppVersion;
-            if (Application.platform == RuntimePlatform.IPhonePlayer)
-            {
-                msg.DevicePlatform = EPhoneType.PhT_iPhone;
-            }
-            else if (Application.platform == RuntimePlatform.Android)
-            {
-                msg.DevicePlatform = EPhoneType.PhT_Android;
-            }
-            else
-            {
-                msg.DevicePlatform = EPhoneType.PhT_None;
-            }
+            
+            string Res = AppData.Instance.AppResVersion.ToString();
 
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_LoginByToken>(_apiPath, msg, ret =>
+            RemoteCommands.LoginByToken(GlobalVar.Instance.AppVersion, Res, _devicePlatform, ret =>
             {
                 if (ret.ResultCode == (int)ELoginByTokenCode.LBTC_Success)
                 {
                     _userGuid = ret.UserId;
+                   // Debug.Log("____pre_______"+)
+                    if (ret.ResultCode == (int) ELoginByTokenCode.LBTC_SuccessNewToken)
+                    {
+                        OnTokenChange(ret.NewToken.ToString());
+                    }
                     if (null != successCallback)
                     {
                         successCallback.Invoke();
@@ -109,12 +114,45 @@ namespace SoyEngine
                 {
                     failedCallback.Invoke((ELoginByTokenCode)ret.ResultCode);
                 }
-            }, (errorCode, errorMsg) => {
+            }, (errorCode) => {
                 if (null != failedCallback)
                 {
                     failedCallback.Invoke(ELoginByTokenCode.LBTC_None);
                 }
             });
+        }
+
+        public void GuestLoginIn(Action successCallback, Action<ELoginByTokenCode> failedCallback)
+        {
+            string Res = AppData.Instance.AppResVersion.ToString();
+            RemoteCommands.LoginAsGuest(RuntimeConfig.Instance.Version, Res, LocalUser.Instance.Account.DevicePlatform, ret =>
+            {
+                if (ret.ResultCode == (int)ELoginByTokenCode.LBTC_Success)
+                {
+                    _userGuid = ret.UserId;
+                    // Debug.Log("____pre_______"+)
+                    if (ret.ResultCode == (int)ELoginAsGuestCode.LAGC_Success)
+                    {
+                        OnTokenChange(ret.Token.ToString());
+                    }
+                    if (null != successCallback)
+                    {
+                        successCallback.Invoke();
+                    }
+                }
+                else
+                {
+                    failedCallback.Invoke((ELoginByTokenCode)ret.ResultCode);
+                }
+            }, (errorCode) => {
+                if (null != failedCallback)
+                {
+                    failedCallback.Invoke(ELoginByTokenCode.LBTC_None);
+                }
+            });
+            //(ret) => { SocialApp.Instance.LoginSucceed(); },
+            // (ret) => { }
+            //);
         }
 
 
