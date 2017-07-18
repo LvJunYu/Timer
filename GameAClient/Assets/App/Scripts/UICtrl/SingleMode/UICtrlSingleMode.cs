@@ -165,7 +165,8 @@ namespace GameA
 		{
             if (_cachedView.NextSection.gameObject!=null)
             _cachedView.NextSection.rectTransform.sizeDelta = new Vector2(8, 8) * Mathf.Sin(Time.time * 1.2f) + new Vector2(72, 68);
-            _cachedView.PREVSection.rectTransform.sizeDelta = new Vector2(8, 8) * Mathf.Sin(Time.time * 1.2f) + new Vector2(72, 68);
+            if (_cachedView.PREVSection.gameObject != null)
+                _cachedView.PREVSection.rectTransform.sizeDelta = new Vector2(8, 8) * Mathf.Sin(Time.time * 1.2f) + new Vector2(72, 68);
             base.OnUpdate ();
 			if (_currentChapter < 1) {
 				CurrentChapter = 1;

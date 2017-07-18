@@ -22,6 +22,7 @@ namespace GameA
 		public Button Login;
 		public Button Signup;
 
+		public Button Guest;
 		public Button QQ;
 		public Button Weibo;
 		public Button WeChat;

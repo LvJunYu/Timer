@@ -34,6 +34,7 @@ namespace GameA.Game
 
         public const int LazerShootLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
         public const int LazerBlockLayer = ItemLayer;
+        public const int FanBlockLayer = ItemLayer;
 
         public const int BridgeBlockLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
 
@@ -55,11 +56,13 @@ namespace GameA.Game
             JoyPhysics2D.SetLayerCollision((int)ESceneLayer.MainPlayer, (int)ESceneLayer.RigidbodyItem);
             JoyPhysics2D.SetLayerCollision((int)ESceneLayer.MainPlayer, (int)ESceneLayer.Monster);
 			JoyPhysics2D.SetLayerCollision((int)ESceneLayer.MainPlayer,(int)ESceneLayer.Effect);
+			JoyPhysics2D.SetLayerCollision((int)ESceneLayer.MainPlayer,(int)ESceneLayer.RemotePlayer);
 
             JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Monster, (int)ESceneLayer.Item);
             JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Monster, (int)ESceneLayer.RigidbodyItem);
             JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Monster, (int)ESceneLayer.MainPlayer);
             JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Monster, (int)ESceneLayer.Monster);
+	        JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Monster,(int)ESceneLayer.RemotePlayer);
 
             JoyPhysics2D.SetLayerCollision((int)ESceneLayer.AttackPlayer, (int)ESceneLayer.MainPlayer);
 
@@ -80,7 +83,7 @@ namespace GameA.Game
             JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Bullet, (int)ESceneLayer.Item);
             JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Bullet, (int)ESceneLayer.RigidbodyItem);
             JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Bullet, (int)ESceneLayer.Monster);
-
+	        
             JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Gun, (int)ESceneLayer.Item);
             JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Gun, (int)ESceneLayer.RigidbodyItem);
             JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Gun, (int)ESceneLayer.Monster);

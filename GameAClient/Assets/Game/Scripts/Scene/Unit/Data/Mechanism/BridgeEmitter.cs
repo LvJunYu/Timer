@@ -55,84 +55,85 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            if (GameRun.Instance.LogicFrameCnt % 5 == 0)
+            if (GameRun.Instance.LogicFrameCnt % 5 != 0)
             {
-                if (!_trigger)
+                return;
+            }
+            if (!_trigger)
+            {
+                if (_curCreatingQueue != null)
                 {
-                    if (_curCreatingQueue != null)
+                    _waitingDestroyQueues.Add(_curCreatingQueue);
+                    _curCreatingQueue = null;
+                }
+            }
+            else
+            {
+                if (!DataScene2D.Instance.IsInTileMap(_checkGrid))
+                {
+                    return;
+                }
+                bool blocked = false;
+                var units = ColliderScene2D.GridCastAllReturnUnits(_checkGrid, EnvManager.BridgeBlockLayer);
+                for (int i = 0; i < units.Count; i++)
+                {
+                    var unit = units[i];
+                    if (!unit.CanBridgeCross)
                     {
-                        _waitingDestroyQueues.Add(_curCreatingQueue);
-                        _curCreatingQueue = null;
+                        blocked = true;
+                        break;
                     }
                 }
-                else
+                if (!blocked)
                 {
-                    if (!DataScene2D.Instance.IsInTileMap(_checkGrid))
+                    var unit = PlayMode.Instance.CreateRuntimeUnit(BridgeUnitId, new IntVec2(_checkGrid.XMin, _checkGrid.YMin));
+                    if (unit != null)
                     {
-                        return;
-                    }
-                    bool blocked = false;
-                    var units = ColliderScene2D.GridCastAllReturnUnits(_checkGrid, EnvManager.BridgeBlockLayer);
-                    for (int i = 0; i < units.Count; i++)
-                    {
-                        var unit = units[i];
-                        if (!unit.CanBridgeCross)
+                        if (_curCreatingQueue == null)
                         {
-                            blocked = true;
-                            break;
+                            _curCreatingQueue = AllocQueue();
                         }
-                    }
-                    if (!blocked)
-                    {
-                        var unit = PlayMode.Instance.CreateRuntimeUnit(BridgeUnitId, new IntVec2(_checkGrid.XMin, _checkGrid.YMin));
-                        if (unit != null)
-                        {
-                            if (_curCreatingQueue == null)
-                            {
-                                _curCreatingQueue = AllocQueue();
-                            }
-                            _curCreatingQueue.Enqueue(unit);
-                            _checkGrid = GM2DTools.CalculateFireColliderGrid(BridgeUnitId, _checkGrid, _unitDesc.Rotation);
+                        _curCreatingQueue.Enqueue(unit);
+                        _checkGrid = GM2DTools.CalculateFireColliderGrid(BridgeUnitId, _checkGrid, _unitDesc.Rotation);
 
-                            for (int i = 0; i < units.Count; i++)
+                        for (int i = 0; i < units.Count; i++)
+                        {
+                            var node = units[i];
+                            if (node.Id == UnitDefine.SwitchTriggerId)
                             {
-                                var node = units[i];
-                                if (node.Id == UnitDefine.SwitchTriggerId)
+                                List<GridCheck> lists;
+                                if (!_gridChecks.TryGetValue(unit.Guid, out lists))
                                 {
-                                    List<GridCheck> lists;
-                                    if (!_gridChecks.TryGetValue(unit.Guid, out lists))
-                                    {
-                                        lists = new List<GridCheck>();
-                                        _gridChecks.Add(unit.Guid, lists);
-                                    }
-                                    var gridCheck = new GridCheck(unit);
-                                    gridCheck.Do((SwitchTrigger)node);
-                                    _gridChecks[unit.Guid].Add(gridCheck);
+                                    lists = new List<GridCheck>();
+                                    _gridChecks.Add(unit.Guid, lists);
                                 }
+                                var gridCheck = new GridCheck(unit);
+                                gridCheck.Do((SwitchTrigger)node);
+                                _gridChecks[unit.Guid].Add(gridCheck);
                             }
                         }
                     }
                 }
-                if (_waitingDestroyQueues.Count > 0)
+            }
+            if (_waitingDestroyQueues.Count > 0)
+            {
+                for (int i = _waitingDestroyQueues.Count - 1; i >= 0; i--)
                 {
-                    for (int i = _waitingDestroyQueues.Count - 1; i >= 0; i--)
+                    var curQueue = _waitingDestroyQueues[i];
+                    var unitDestroy = curQueue.Dequeue();
+                    PlayMode.Instance.DestroyUnit(unitDestroy);
+                    List<GridCheck> gridChecks;
+                    if (_gridChecks.TryGetValue(unitDestroy.Guid, out gridChecks))
                     {
-                        var curQueue = _waitingDestroyQueues[i];
-                        var unitDestroy = curQueue.Dequeue();
-                        PlayMode.Instance.DestroyUnit(unitDestroy);
-                        List<GridCheck> gridChecks;
-                        if (_gridChecks.TryGetValue(unitDestroy.Guid, out gridChecks))
+                        for (int j = 0; j < gridChecks.Count; j++)
                         {
-                            for (int j = 0; j < gridChecks.Count; j++)
-                            {
-                                gridChecks[j].OnDestroySelf(unitDestroy);
-                            }
+                            gridChecks[j].OnDestroySelf(unitDestroy);
                         }
-                        if (curQueue.Count == 0)
-                        {
-                            FreeQueue(curQueue);
-                            _waitingDestroyQueues.Remove(curQueue);
-                        }
+                    }
+                    if (curQueue.Count == 0)
+                    {
+                        FreeQueue(curQueue);
+                        _waitingDestroyQueues.Remove(curQueue);
                     }
                 }
             }

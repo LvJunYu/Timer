@@ -36,6 +36,7 @@ namespace GameA.Game
             _canLazerCross = true;
             _canMagicCross = true;
             _canBridgeCross = true;
+            _canFanCross = true;
             SetSortingOrderBack();
             return false;
         }

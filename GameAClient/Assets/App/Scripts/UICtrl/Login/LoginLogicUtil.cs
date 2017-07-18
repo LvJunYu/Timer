@@ -143,117 +143,117 @@ namespace GameA
             }
         }
 
-//        public static void RequestLogin(Msg_CA_Login msg)
-//        {
-//            NetworkManager.AppHttpClient.SendWithCb<Msg_AC_LoginRet>(SoyHttpApiPath.Login ,msg, ret =>
-//                {
-//                    if (ret.ResultCode == EAccountLoginResult.ALR_Success)
-//                    {
-////                        LocalUser.Instance.OnLoginSuccess(ret.UserInfo, ret.Token);
-//                        if (ret.Reward != null)
-//                        {
-//                            Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
-//                        }
-//                        OnSuccess.Invoke();
-//                    }
-//                    else
-//                    {
-//                        if (ret.ResultCode == EAccountLoginResult.ALR_ErrorTooMany)
-//                        {
-//                            CommonTools.ShowPopupDialog("登录失败次数过多，请稍后重试", null);
-//                        }
-//                        else if(ret.ResultCode == EAccountLoginResult.ALR_PasswordError)
-//                        {
-//                            CommonTools.ShowPopupDialog("密码错误", null);
-//                        }
-//                        else if (ret.ResultCode == EAccountLoginResult.ALR_UserNotExsit)
-//                        {
-//                            CommonTools.ShowPopupDialog("用户不存在", null);
-//                        }
-//                        else
-//                        {
-//                            CommonTools.ShowPopupDialog("登录失败", null);
-//                        }
-//                        if(OnFailed != null)
-//                        {
-//                            OnFailed.Invoke();
-//                        }
-//                    }
-//                }, (i, s) =>
-//                {
-//                    ENetResultCode code = (ENetResultCode) i;
-//                    LogHelper.Warning("Login error, msg: {0}", s);
-//                    if (code == ENetResultCode.NR_NetworkNotReachable)
-//                    {
-//                        CommonTools.ShowPopupDialog("网络错误", null);
-//                    }
-//                    else
-//                    {
-//                        CommonTools.ShowPopupDialog("登录超时", null);
-//                    }
-//                    if(OnFailed != null)
-//                    {
-//                        OnFailed.Invoke();
-//                    }
-//                });
-//        }
+        //        public static void RequestLogin(Msg_CA_Login msg)
+        //        {
+        //            NetworkManager.AppHttpClient.SendWithCb<Msg_AC_LoginRet>(SoyHttpApiPath.Login ,msg, ret =>
+        //                {
+        //                    if (ret.ResultCode == EAccountLoginResult.ALR_Success)
+        //                    {
+        ////                        LocalUser.Instance.OnLoginSuccess(ret.UserInfo, ret.Token);
+        //                        if (ret.Reward != null)
+        //                        {
+        //                            Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
+        //                        }
+        //                        OnSuccess.Invoke();
+        //                    }
+        //                    else
+        //                    {
+        //                        if (ret.ResultCode == EAccountLoginResult.ALR_ErrorTooMany)
+        //                        {
+        //                            CommonTools.ShowPopupDialog("登录失败次数过多，请稍后重试", null);
+        //                        }
+        //                        else if(ret.ResultCode == EAccountLoginResult.ALR_PasswordError)
+        //                        {
+        //                            CommonTools.ShowPopupDialog("密码错误", null);
+        //                        }
+        //                        else if (ret.ResultCode == EAccountLoginResult.ALR_UserNotExsit)
+        //                        {
+        //                            CommonTools.ShowPopupDialog("用户不存在", null);
+        //                        }
+        //                        else
+        //                        {
+        //                            CommonTools.ShowPopupDialog("登录失败", null);
+        //                        }
+        //                        if(OnFailed != null)
+        //                        {
+        //                            OnFailed.Invoke();
+        //                        }
+        //                    }
+        //                }, (i, s) =>
+        //                {
+        //                    ENetResultCode code = (ENetResultCode) i;
+        //                    LogHelper.Warning("Login error, msg: {0}", s);
+        //                    if (code == ENetResultCode.NR_NetworkNotReachable)
+        //                    {
+        //                        CommonTools.ShowPopupDialog("网络错误", null);
+        //                    }
+        //                    else
+        //                    {
+        //                        CommonTools.ShowPopupDialog("登录超时", null);
+        //                    }
+        //                    if(OnFailed != null)
+        //                    {
+        //                        OnFailed.Invoke();
+        //                    }
+        //                });
+        //        }
 
-//        public static void RequestSmsLogin(string phoneNum, string verificationCode, string newPassword, EVerifyCodeType vcType)
-//        {
-//            Msg_CA_Register msg = new Msg_CA_Register();
-//            msg.Account = phoneNum;
-//            msg.Password = newPassword;
-//            msg.RegisterType = Msg_CA_Register.ERegisterType.PhoneNum;
-//            msg.VerificationCode = verificationCode;
-//            msg.VerifyCodeType = vcType;
-//            NetworkManager.AppHttpClient.SendWithCb<Msg_AC_RegisterRet>(SoyHttpApiPath.Register, msg, ret =>
-//                {
-//                    if (ret.ResultCode == EAccountRegisterResult.ARR_Success)
-//                    {
-////                        LocalUser.Instance.OnLoginSuccess(ret.UserInfo, ret.Token);
-//                        if (ret.Reward != null)
-//                        {
-//                            Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
-//                        }
-//                        OnSuccess.Invoke();
-//                    }
-//                    else
-//                    {
-//                        if (ret.ResultCode == EAccountRegisterResult.ARR_VerificationCodeError)
-//                        {
-//                            CommonTools.ShowPopupDialog("验证码错误", null);
-//                        }
-//                        else
-//                        {
-//                            {
-//                                CommonTools.ShowPopupDialog("失败", null);
-//                            }
-//                        }
-//                        if(OnFailed != null)
-//                        {
-//                            OnFailed.Invoke();
-//                        }
-//                    }
-//                }, (i, s) =>
-//                {
-//                    ENetResultCode code = (ENetResultCode) i;
-//                    LogHelper.Warning("Login error, msg: {0}", s);
-//                    if (code == ENetResultCode.NR_NetworkNotReachable)
-//                    {
-//                        CommonTools.ShowPopupDialog("网络错误", null);
-//                    }
-//                    else
-//                    {
-//                        {
-//                            CommonTools.ShowPopupDialog("超时", null);
-//                        }
-//                    }
-//                    if(OnFailed != null)
-//                    {
-//                        OnFailed.Invoke();
-//                    }
-//                });
-//        }
+        public static void RequestSmsLogin(string phoneNum, string verificationCode, string newPassword, EVerifyCodeType vcType)
+        {
+            //Msg_CA_Register msg = new Msg_CA_Register();
+            //msg.Account = phoneNum;
+            //msg.Password = newPassword;
+            //msg.RegisterType = Msg_CA_Register.ERegisterType.PhoneNum;
+            //msg.VerificationCode = verificationCode;
+            //msg.VerifyCodeType = vcType;
+            //NetworkManager.AppHttpClient.SendWithCb<Msg_AC_RegisterRet>(SoyHttpApiPath.Register, msg, ret =>
+            //    {
+            //        if (ret.ResultCode == EAccountRegisterResult.ARR_Success)
+            //        {
+            //            //                        LocalUser.Instance.OnLoginSuccess(ret.UserInfo, ret.Token);
+            //            if (ret.Reward != null)
+            //            {
+            //                Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
+            //            }
+            //            OnSuccess.Invoke();
+            //        }
+            //        else
+            //        {
+            //            if (ret.ResultCode == EAccountRegisterResult.ARR_VerificationCodeError)
+            //            {
+            //                CommonTools.ShowPopupDialog("验证码错误", null);
+            //            }
+            //            else
+            //            {
+            //                {
+            //                    CommonTools.ShowPopupDialog("失败", null);
+            //                }
+            //            }
+            //            if (OnFailed != null)
+            //            {
+            //                OnFailed.Invoke();
+            //            }
+            //        }
+            //    }, (i, s) =>
+            //    {
+            //        ENetResultCode code = (ENetResultCode)i;
+            //        LogHelper.Warning("Login error, msg: {0}", s);
+            //        if (code == ENetResultCode.NR_NetworkNotReachable)
+            //        {
+            //            CommonTools.ShowPopupDialog("网络错误", null);
+            //        }
+            //        else
+            //        {
+            //            {
+            //                CommonTools.ShowPopupDialog("超时", null);
+            //            }
+            //        }
+            //        if (OnFailed != null)
+            //        {
+            //            OnFailed.Invoke();
+            //        }
+            //    });
+        }
 
         private static void LogHashTable(Hashtable table, string title = null)
         {

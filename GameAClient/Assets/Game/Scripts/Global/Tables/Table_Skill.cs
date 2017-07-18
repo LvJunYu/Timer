@@ -66,10 +66,10 @@ namespace GameA.Game
 		[ColumnMapping("ProjectileSpeed")]
 		public int ProjectileSpeed;
 		/// <summary>
-        /// 击退距离
+        /// 击退力
         /// </summary>
-		[ColumnMapping("Knockback")]
-		public int Knockback;
+		[ColumnMapping("KnockbackForces")]
+		public int[] KnockbackForces;
 		/// <summary>
         /// 作用方式
         /// </summary>

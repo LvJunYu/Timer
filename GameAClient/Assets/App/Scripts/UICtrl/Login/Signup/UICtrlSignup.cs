@@ -67,6 +67,9 @@ namespace GameA
             _cachedView.GetSMSCode.enabled = true;
         }
 
+        /// <summary>
+        /// 注册功能待完成
+        /// </summary>
         private void OnSignup()
         {
             var phone = _cachedView.Phone.text;
@@ -78,7 +81,7 @@ namespace GameA
             {
                 return;
             }
-            bool verificationCheckResult = CheckTools.CheckVerificationCode(verificationCode);
+            bool verificationCheckResult = CheckTools.CheckVerificationCode (verificationCode);
             LoginLogicUtil.ShowVerificationCodeCheckTip(verificationCheckResult);
             if(!verificationCheckResult)
             {
@@ -98,28 +101,42 @@ namespace GameA
         #endregion
 
         #region  private 
-
+        /// <summary>
+        /// 验证码功能待完成
+        /// </summary>
         private void OnSmsCode()
         {
-//            string phoneNum = _cachedView.Phone.text;
-//            bool phoneCheckResult = CheckTools.CheckPhoneNum(phoneNum);
-//            LoginLogicUtil.ShowPhoneNumCheckTip(phoneCheckResult);
-//            if (!phoneCheckResult)
-//            {
-//                return;
-//            }
-//            Msg_CA_RequestSMSCode req = new Msg_CA_RequestSMSCode();
-//            req.PhoneNum = phoneNum;
-//            req.VerifyCodeType = EVerifyCodeType.VCT_Register;
-//
-//            NetworkManager.AppHttpClient.SendWithCb<Msg_AC_CommonResult>(SoyHttpApiPath.GetSmsCode, req, ret => {
-//                ECommonResultCode c = (ECommonResultCode)ret.Code;
-//                LogHelper.Info("Send VerificationCode Success, Code: {0}, Msg: {1}", c, ret.Msg);
-//            }, (code, msg) => {
-//                ENetResultCode c = (ENetResultCode)code;
-//                LogHelper.Info("Send VerificationCode Error, Code: {0}, Msg: {1}", c, msg);
-//            });
-//            CoroutineProxy.Instance.StartCoroutine(ProcessSmsCodeCountDown());
+            string phoneNum = _cachedView.Phone.text;
+            bool phoneCheckResult = CheckTools.CheckPhoneNum(phoneNum);
+            LoginLogicUtil.ShowPhoneNumCheckTip(phoneCheckResult);
+            if (!phoneCheckResult)
+            {
+                return;
+            }
+            RemoteCommands.GetVerificationCode(phoneNum,EAccountIdentifyType.AIT_Phone,EVerifyCodeType.VCT_Register,
+                (ret) => { },null
+
+                );
+            CoroutineProxy.Instance.StartCoroutine(ProcessSmsCodeCountDown());
+            //            string phoneNum = _cachedView.Phone.text;
+            //            bool phoneCheckResult = CheckTools.CheckPhoneNum(phoneNum);
+            //            LoginLogicUtil.ShowPhoneNumCheckTip(phoneCheckResult);
+            //            if (!phoneCheckResult)
+            //            {
+            //                return;
+            //            }
+            //            Msg_CA_RequestSMSCode req = new Msg_CA_RequestSMSCode();
+            //            req.PhoneNum = phoneNum;
+            //            req.VerifyCodeType = EVerifyCodeType.VCT_Register;
+            //
+            //            NetworkManager.AppHttpClient.SendWithCb<Msg_AC_CommonResult>(SoyHttpApiPath.GetSmsCode, req, ret => {
+            //                ECommonResultCode c = (ECommonResultCode)ret.Code;
+            //                LogHelper.Info("Send VerificationCode Success, Code: {0}, Msg: {1}", c, ret.Msg);
+            //            }, (code, msg) => {
+            //                ENetResultCode c = (ENetResultCode)code;
+            //                LogHelper.Info("Send VerificationCode Error, Code: {0}, Msg: {1}", c, msg);
+            //            });
+            //            CoroutineProxy.Instance.StartCoroutine(ProcessSmsCodeCountDown());
         }
 
         private void InitUIEvent()

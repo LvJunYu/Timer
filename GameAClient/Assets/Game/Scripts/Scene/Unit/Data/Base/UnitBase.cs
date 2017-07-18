@@ -39,6 +39,7 @@ namespace GameA.Game
         protected bool _canLazerCross;
         protected bool _canMagicCross;
         protected bool _canBridgeCross;
+        protected bool _canFanCross;
         [SerializeField] protected bool _isStart;
         protected int _friction;
 
@@ -88,6 +89,11 @@ namespace GameA.Game
 
         protected IntVec2 _minPos;
         protected IntVec2 _maxPos;
+
+        /// <summary>
+        /// 加速减速参数
+        /// </summary>
+        protected float _speedRatio;
 
         #endregion
 
@@ -161,6 +167,11 @@ namespace GameA.Game
         public bool CanBridgeCross
         {
             get { return _canBridgeCross; }
+        }
+
+        public bool CanFanCross
+        {
+            get { return _canFanCross; }
         }
 
         /// <summary>
@@ -292,6 +303,12 @@ namespace GameA.Game
         {
             get { return _speed; }
             set { _speed = value; }
+        }
+
+        public float SpeedRatio
+        {
+            get { return _speedRatio; }
+            set { _speedRatio = value; }
         }
 
         public bool Grounded
@@ -614,6 +631,7 @@ namespace GameA.Game
             ClearRunTime();
             _canAttack = true;
             _canMotor = true;
+            _speedRatio = 1;
             _isAlive = true;
             _dieTime = 0;
             _deltaPos = IntVec2.zero;
@@ -758,16 +776,12 @@ namespace GameA.Game
         internal virtual void InLazer()
         {
         }
+        
+        internal virtual void InFan(IntVec2 force)
+        {
+        }
 
         internal virtual void InWater()
-        {
-        }
-
-        internal virtual void InFire()
-        {
-        }
-
-        internal virtual void OutFire()
         {
         }
 
@@ -1537,5 +1551,10 @@ namespace GameA.Game
         }
 
         #endregion
+
+        public virtual void SetStateEffect(State state, bool within)
+        {
+            
+        }
     }
 }
