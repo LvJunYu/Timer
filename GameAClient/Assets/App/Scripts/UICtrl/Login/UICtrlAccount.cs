@@ -40,7 +40,7 @@ namespace GameA
 
         public void OnCloseBtnClick()
         {
-            SocialGUIManager.Instance.CloseUI<UICtrlShopingCart>();
+            SocialGUIManager.Instance.CloseUI<UICtrlAccount>();
         }
     }
 }
