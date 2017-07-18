@@ -213,11 +213,11 @@ namespace GameA
 		/// </summary>
 		/// <param name="oldPassword">账号</param>
 		/// <param name="newPassword">密码</param>
-		/// <param name="verificationCodeError">验证码</param>
+		/// <param name="verificationCode">验证码</param>
         public static void ChangePassword (
             string oldPassword,
             string newPassword,
-            string verificationCodeError,
+            string verificationCode,
             Action<Msg_SC_CMD_ChangePassword> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -229,7 +229,7 @@ namespace GameA
             // 修改密码
             msg.OldPassword = oldPassword;
             msg.NewPassword = newPassword;
-            msg.VerificationCodeError = verificationCodeError;
+            msg.VerificationCode = verificationCode;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ChangePassword>(
                 SoyHttpApiPath.ChangePassword, msg, ret => {
                     if (successCallback != null) {

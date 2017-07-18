@@ -84,6 +84,7 @@ namespace GameA
 
             //            #if UNITY_EDITOR
             _cachedView.SignUpBtn.onClick.AddListener(OnSignUpBtn);
+            _cachedView.Account.onClick.AddListener(Account);
             SocialGUIManager.Instance.OpenUI<UICtrlGMTool>();
 //            #endif
 
@@ -242,9 +243,12 @@ namespace GameA
 
         public void OnSignUpBtn()
         {
-       
                 SocialGUIManager.Instance.OpenUI<UICtrlSignup>();
-            
+        }
+
+        public void Account()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlAccount>();
         }
 
         public void OnWorldBtn()

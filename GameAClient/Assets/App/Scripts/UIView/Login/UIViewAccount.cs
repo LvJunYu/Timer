@@ -14,5 +14,6 @@ namespace GameA
         //public Text GetSMSCodeBtnLabel;
         //public Button WeChatLoginIn;
         public Button LoginOut;
+        public Button CloseBtn;
     }
 }

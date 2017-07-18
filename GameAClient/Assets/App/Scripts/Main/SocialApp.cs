@@ -105,19 +105,16 @@ namespace GameA
             JoySceneManager.Instance.Init();
             Application.targetFrameRate = 60;
             QualitySettings.vSyncCount = 1;
-
             GlobalVar.Instance.Env = this._env;
             GlobalVar.Instance.AppVersion = RuntimeConfig.Instance.Version.ToString();
             var addressConfig = GetAppServerAddress();
             NetworkManager.AppHttpClient.BaseUrl = addressConfig.AppServerApiRoot;
             NetworkManager.AppHttpClient.SendInspector = Account.AppHttpClientAccountInspector;
             gameObject.AddComponent<SocialGUIManager>();
-
             CoroutineManager.Instance.Init(this);
             ResourcesManager.Instance.Init ();
             LocalizationManager.Instance.Init();
 //            TableManager.Instance.Init();
-
             ResourcesManager.Instance.CheckApplicationAndResourcesVersion();
         }
 
@@ -126,29 +123,49 @@ namespace GameA
             gameObject.AddComponent<TableManager>();
             TableManager.Instance.Init();
             LocalUser.Instance.Init();
-            Account.Instance.ApiPath = SoyHttpApiPath.LoginByToken;
-            LocalUser.Instance.Account.LoginByToken(()=>{
-                SocialApp.Instance.LoginSucceed();
-            }, code=>{
-                if(code == ELoginByTokenCode.LBTC_None)
+            //Debug.Log("________"+ LocalUser.Instance.Account.Token);
+            if (string.IsNullOrEmpty(LocalUser.Instance.Account.Token))
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
+            }
+            else
+            {
+                LocalUser.Instance.Account.LoginByToken(() =>
                 {
-                    //                    CommonTools.ShowPopupDialog("服务器连接失败，检查网络后重试", null,
-                    //                        new System.Collections.Generic.KeyValuePair<string, System.Action>("重试", ()=>{
-                    //                            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(()=>LoginByToken()));
-                    //                        }));
-                }
-                else
+                    // SocialApp.Instance.LoginSucceed();
+
+                }, code =>
                 {
-                    LogHelper.Error("登录失败, Code: " + code);
-                }
-            });
-            SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
+                    if (code == ELoginByTokenCode.LBTC_None)
+                    {
+                        //SocialApp.Instance.LoginSucceed();
+                        SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
+                        //                    CommonTools.ShowPopupDialog("服务器连接失败，检查网络后重试", null,
+                        //                        new System.Collections.Generic.KeyValuePair<string, System.Action>("重试", ()=>{
+                        //                            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(()=>LoginByToken()));
+                        //                        }));
+                    }
+                    if (code == ELoginByTokenCode.LBTC_Success)
+                    {
+                        SocialApp.Instance.LoginSucceed();
+                    }
+                    if (code == ELoginByTokenCode.LBTC_SuccessNewToken)
+                    {
+                        SocialApp.Instance.LoginSucceed();
+                    }
+                    else
+                    {
+                        SocialApp.Instance.LoginSucceed();
+                        LogHelper.Error("登录失败, Code: " + code);
+                    }
+                });
+            }
+            //SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
 		}
 
         public void LoginSucceed ()
         {
             AppData.Instance.Init();
-
             //            LoginLogicUtil.Init();
             ShareUtil.Init();
             RoomManager.Instance.Init();

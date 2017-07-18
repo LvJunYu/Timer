@@ -14,8 +14,6 @@ namespace SoyEngine
     {
         // CS协议包例子
         public const string DataExample = "test/testAPI";
-        // 获取应用全局信息
-        public const string AppData = "/appInfo/appData";
         // 登录
         public const string Login = "/account/login";
         // 游客登录
@@ -42,6 +40,8 @@ namespace SoyEngine
         public const string UserLevel = "/user/getLevelData";
         // 用户详细信息
         public const string UpdateUserInfo = "/user/updateInfo";
+        // 获取应用全局信息
+        public const string AppData = "/appInfo/appData";
         // 社交关系统计
         public const string UserRelationStatistic = "/relation/getUserRelationStatistic";
         // 用户与我的关系

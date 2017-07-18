@@ -21,18 +21,26 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.LoginOut.onClick.AddListener(LoginOut);
+            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtnClick);
         }
 
         private void LoginOut()
         {
             
-            SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
+            //SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
             RemoteCommands.Logout(1,
                 (ret) =>
                 {
                     LocalUser.Instance.Account.Logout();
+                    // SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
+                    SocialApp.Instance.LoginAfterUpdateResComplete();
                 }, null
                 );
+        }
+
+        public void OnCloseBtnClick()
+        {
+            SocialGUIManager.Instance.CloseUI<UICtrlShopingCart>();
         }
     }
 }
