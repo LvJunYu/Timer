@@ -13,7 +13,7 @@ namespace GameA.Game
 {
     public class UnitDefine
     {
-        public const int FanRange = 40;
+        public const int FanRange = 50;
         
         public const int PlayerTableId = 1001;
         public const int TransparentEarthId = 4004;

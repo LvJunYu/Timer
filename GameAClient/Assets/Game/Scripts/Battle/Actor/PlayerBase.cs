@@ -261,6 +261,10 @@ namespace GameA.Game
             {
                 friction = 1;
             }
+            if (_inFan)
+            {
+                friction = 5;
+            }
             if (!_lastOnClay && _onClay)
             {
                 _speedRatio += SpeedClayRatio;
@@ -328,7 +332,14 @@ namespace GameA.Game
                 }
                 else
                 {
-                    SpeedY = Util.ConstantLerp(SpeedY, -120, 12);
+                    if (_inFan)
+                    {
+                        SpeedY = Util.ConstantLerp(SpeedY, -120, 6);
+                    }
+                    else
+                    {
+                        SpeedY = Util.ConstantLerp(SpeedY, -120, 12);
+                    }
                 }
             }
         }

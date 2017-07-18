@@ -50,10 +50,6 @@ namespace GameA.Game
             {
                 return;
             }
-//            if (GameRun.Instance.LogicFrameCnt % 5 != 0)
-//            {
-//                return;
-//            }
             if (_dynamicCollider != null)
             {
                 Calculate();
@@ -89,7 +85,7 @@ namespace GameA.Game
                             if (unit != null && unit.IsAlive && unit.IsActor)
                             {
                                 var range = TableConvert.GetRange(UnitDefine.FanRange);
-                                int force = (int) ((float) (range - hit.distance) / range * 16);
+                                int force = (int) ((float) (range - hit.distance) / range * 18);
                                 switch ((EDirectionType) Rotation)
                                 {
                                     case EDirectionType.Up:

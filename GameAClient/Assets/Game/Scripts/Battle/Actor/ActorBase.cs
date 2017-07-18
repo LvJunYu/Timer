@@ -267,9 +267,12 @@ namespace GameA.Game
             }
         }
 
+        protected bool _inFan;
+
         internal override void InFan(IntVec2 force)
         {
             ExtraSpeed = force;
+            _inFan = true;
         }
 
         internal override void InWater()
