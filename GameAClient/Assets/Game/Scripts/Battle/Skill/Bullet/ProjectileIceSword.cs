@@ -9,6 +9,10 @@
         {
             base.Clear();
             _timer = 0;
+            if (_dynamicCollider != null)
+            {
+                _dynamicCollider.Layer = (int)ESceneLayer.Bullet;
+            }
         }
 
         public override void UpdateView(float deltaTime)
@@ -29,15 +33,15 @@
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
-            //修改下layer
-            _dynamicCollider.Layer = (int)ESceneLayer.Item;
-            if (unit.IsActor)
+            if (UnitDefine.IsEarth(unit.Id))
             {
-                _destroy = 1;
+                _timer = TableConvert.GetTime(BattleDefine.IceSwordLifeTime);
+                //修改下layer
+                _dynamicCollider.Layer = (int)ESceneLayer.Item;
             }
             else
             {
-                _timer = TableConvert.GetTime(5000);
+                _destroy = 1;
             }
         }
     }

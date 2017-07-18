@@ -14,8 +14,18 @@ namespace GameA.Game
     [Unit(Id = 10003, Type = typeof(ProjectileIce))]
     public class ProjectileIce : ProjectileBase
     {
-        protected int _lifeTime = 100;
-        
+        protected int _lifeTime;
+
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            _lifeTime = TableConvert.GetTime(BattleDefine.IceLifeTime);
+            return true;
+        }
+
         public override void UpdateView(float deltaTime)
         {
             if (!_run)

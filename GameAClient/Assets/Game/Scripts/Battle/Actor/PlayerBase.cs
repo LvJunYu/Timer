@@ -146,7 +146,7 @@ namespace GameA.Game
             {
                 _gun = PlayMode.Instance.CreateRuntimeUnit(10000, _curPos) as Gun;
             }
-            _flashTime = ActorDefine.FlashTime;
+            _flashTime = TableConvert.GetTime(BattleDefine.FlashTime) ;
             _revivePos = _curPos;
             _revivePosStack.Clear();
             if (PlayMode.Instance.IsUsingBoostItem(SoyEngine.Proto.EBoostItemType.BIT_AddLifeCount1))
@@ -269,7 +269,7 @@ namespace GameA.Game
             {
                 _speedRatio -= SpeedClayRatio;
             }
-            _curMaxSpeedX = _playerInput._quickenTime == 0 ? ActorDefine.MaxSpeedX : ActorDefine.MaxQuickenSpeedX;
+            _curMaxSpeedX = _playerInput._quickenTime == 0 ? BattleDefine.MaxSpeedX : BattleDefine.MaxQuickenSpeedX;
             _curMaxSpeedX = (int)(_curMaxSpeedX * _speedRatio);
 
             if (air || _grounded)
@@ -618,7 +618,7 @@ namespace GameA.Game
         internal void OnStun(ActorBase actor)
         {
             //晕2秒
-            _attackedTimer = ActorDefine.StunTime;
+            _attackedTimer = TableConvert.GetTime(BattleDefine.StunTime);
             Speed = IntVec2.zero;
             ExtraSpeed.y = 120;
             ExtraSpeed.x = actor.CenterPos.x > CenterPos.x ? -100 : 100;
@@ -627,7 +627,7 @@ namespace GameA.Game
 
         internal void OnKnockBack(ActorBase actor)
         {
-            _attackedTimer = ActorDefine.StunTime;
+            _attackedTimer = TableConvert.GetTime(BattleDefine.StunTime);
             Speed = IntVec2.zero;
             ExtraSpeed.y = 280;
             ExtraSpeed.x = actor.CenterPos.x > CenterPos.x ? -80 : 80;
@@ -859,7 +859,7 @@ namespace GameA.Game
                         {
                             PlayMode.Instance.CurrentShadow.RecordAnimation(RunAnimName(speed), true, speed * deltaTime);
                         }
-                        if (speed <= ActorDefine.MaxSpeedX)
+                        if (speed <= BattleDefine.MaxSpeedX)
                         {
                             _walkAudioInternal -= 7;
                         }
