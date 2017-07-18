@@ -266,6 +266,10 @@ namespace GameA.Game
                 _speedRatio -= SpeedClayRatio;
             }
             _curMaxSpeedX = _playerInput._quickenTime == 0 ? BattleDefine.MaxSpeedX : BattleDefine.MaxQuickenSpeedX;
+            if (_inFan)
+            {
+                _curMaxSpeedX = BattleDefine.MaxFanSpeedX;
+            }
             _curMaxSpeedX = (int)(_curMaxSpeedX * _speedRatio);
 
             if (air || _grounded)
@@ -284,10 +288,18 @@ namespace GameA.Game
                     if (_playerInput.LeftInput == 1)
                     {
                         SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, speedAcc);
+                        if (_inFan)
+                        {
+                            SpeedX = Mathf.Min(0, SpeedX);
+                        }
                     }
                     else if (_playerInput.RightInput == 1)
                     {
                         SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, speedAcc);
+                        if (_inFan)
+                        {
+                            SpeedX = Mathf.Max(0, SpeedX);
+                        }
                     }
                     else if (_grounded || _inFan)
                     {
@@ -295,9 +307,9 @@ namespace GameA.Game
                         {
                             friction = 1;
                         }
-                        if (_inFan)
+                        else if (_inFan)
                         {
-                            friction = 5;
+                            friction = 9;
                         }
                         SpeedX = Util.ConstantLerp(SpeedX, 0, friction);
                     }

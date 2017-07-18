@@ -102,8 +102,8 @@ namespace GameA.Game
                                     _units.Add(unit);
                                 }
                                 var range = TableConvert.GetRange(UnitDefine.FanRange);
-                                int force = (int) ((float) (range - hit.distance) / range * 18);
-                                force = Mathf.Max(8, force);
+                                int force = (int) ((float) (range - hit.distance) / range * 22);
+                                force = Mathf.Max(10, force);
                                 switch ((EDirectionType) Rotation)
                                 {
                                     case EDirectionType.Up:
