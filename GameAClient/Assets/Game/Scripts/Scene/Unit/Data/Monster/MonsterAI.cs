@@ -77,7 +77,7 @@ namespace GameA.Game
             {
                 SpeedX = 0;
                 ChangeState(EMonsterState.None);
-                return;
+                return; 
             }
             if (_eState == EMonsterState.None)
             {
