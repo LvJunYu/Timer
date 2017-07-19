@@ -326,6 +326,7 @@ namespace GameA
                 form.AddBinaryData("recordFile", recordBytes);
             }
             String oldIconPath = _iconPath;
+            RefreshProjectUploadParam();
             if (LocalDataState == ELocalDataState.LDS_UnCreated) {
                 RemoteCommands.CreateProject (
                     Name,
@@ -336,7 +337,7 @@ namespace GameA
                     recordUsedTime,
                     timeLimit,
                     winCondition,
-                    null,
+                    GetMsgProjectUploadParam(),
                     msg => {
                         if (msg.ResultCode == (int)EProjectOperateResult.POR_Success) {
 //                            LocalCacheManager.Instance.Save(dataBytes, LocalCacheManager.EType.File, ResPath);
@@ -374,7 +375,7 @@ namespace GameA
                     recordUsedTime,
                     timeLimit,
                     winCondition,
-                    null,
+                    GetMsgProjectUploadParam(),
                     msg => {
                         OnSyncFromParent(msg.ProjectData);
                         if (null != iconBytes && msg.ProjectData.IconPath != oldIconPath) {

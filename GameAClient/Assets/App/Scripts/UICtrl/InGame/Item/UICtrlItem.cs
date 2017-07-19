@@ -139,10 +139,10 @@ namespace GameA
 		    {
                 eUnitType = EUIType.Controller;
             }
-            if (_selectedUnitType == eUnitType)
-            {
-                return;
-            }
+//            if (_selectedUnitType == eUnitType)
+//            {
+//                return;
+//            }
 			_lastSelectUnitType = _selectedUnitType;
 			_selectedUnitType = eUnitType;
             if (!_isViewCreated)

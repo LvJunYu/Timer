@@ -54,7 +54,7 @@ namespace GameA.Game
             return false;
         }
 
-        protected bool CheckMask(byte rotation,int mask)
+        protected static bool CheckMask(byte rotation,int mask)
         {
             return (mask & (byte)(1 << rotation)) != 0;
         }

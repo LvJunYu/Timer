@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine.Proto;
 using UnityEngine;
 using SoyEngine;
@@ -30,21 +31,43 @@ namespace GameA
         /// </summary>
         public void RefreshProjectUploadParam () {
             _projectUploadParam.UsedUnitDataList.Clear ();
-            List<Game.ModifyData> addedUnits = Game.DataScene2D.Instance.AddedUnits;
-            Dictionary<int, int> addedDic = new Dictionary<int, int> ();
-            for (int i = 0; i < addedUnits.Count; i++) {
-                if (addedDic.ContainsKey (addedUnits [i].ModifiedUnit.UnitDesc.Id)) {
-                    addedDic [addedUnits [i].ModifiedUnit.UnitDesc.Id] = addedDic [addedUnits [i].ModifiedUnit.UnitDesc.Id] + 1; 
-                } else {
-                    addedDic [addedUnits [i].ModifiedUnit.UnitDesc.Id] = 1;
+
+            if (_projectStatus == EProjectStatus.PS_Reform)
+            {
+                List<Game.ModifyData> addedUnits = Game.DataScene2D.Instance.AddedUnits;
+                Dictionary<int, int> addedDic = new Dictionary<int, int>();
+                for (int i = 0; i < addedUnits.Count; i++)
+                {
+                    if (addedDic.ContainsKey(addedUnits[i].ModifiedUnit.UnitDesc.Id))
+                    {
+                        addedDic[addedUnits[i].ModifiedUnit.UnitDesc.Id] =
+                            addedDic[addedUnits[i].ModifiedUnit.UnitDesc.Id] + 1;
+                    }
+                    else
+                    {
+                        addedDic[addedUnits[i].ModifiedUnit.UnitDesc.Id] = 1;
+                    }
+                }
+                var itor = addedDic.GetEnumerator();
+                while (itor.MoveNext())
+                {
+                    UnitDataItem item = new UnitDataItem();
+                    item.UnitId = itor.Current.Key;
+                    item.UnitCount = itor.Current.Value;
+                    _projectUploadParam.UsedUnitDataList.Add(item);
                 }
             }
-            var itor = addedDic.GetEnumerator ();
-            while (itor.MoveNext ()) {
-                UnitDataItem item = new UnitDataItem ();
-                item.UnitId = itor.Current.Key;
-                item.UnitCount = itor.Current.Value;
-                _projectUploadParam.UsedUnitDataList.Add (item);
+            else
+            {
+                var unitCountDic = EditHelper.UnitIndexCount;
+                var itor = unitCountDic.GetEnumerator();
+                while (itor.MoveNext())
+                {
+                    UnitDataItem item = new UnitDataItem();
+                    item.UnitId = itor.Current.Key;
+                    item.UnitCount = itor.Current.Value;
+                    _projectUploadParam.UsedUnitDataList.Add(item);
+                }
             }
 
             _projectUploadParam.MapWidth = Game.DataScene2D.Instance.Width;
