@@ -18,7 +18,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlSignup : UISocialContentCtrlBase<UIViewSignup>, IUIWithTitle
+    public class UICtrlSignup : UICtrlGenericBase<UIViewSignup>
     {
         #region 常量与字段
         #endregion
@@ -28,6 +28,10 @@ namespace GameA
         #endregion
 
         #region 方法
+        protected override void InitGroupId()
+        {
+            _groupId = (int)EUIGroupType.MainFrame;
+        }
 
         protected override void OnViewCreated()
         {
@@ -111,7 +115,7 @@ namespace GameA
 
         #endregion
 
-        #region  private 
+        #region  
         /// <summary>
         /// 验证码功能待完成
         /// </summary>
@@ -154,19 +158,23 @@ namespace GameA
         {
             _cachedView.GetSMSCode.onClick.AddListener(OnGetSMSCodeButtonClick);
             _cachedView.DoSignup.onClick.AddListener(OnDoSignupButtonClick);
-            _cachedView.QQ.onClick.AddListener(OnQQ);
-            _cachedView.Weibo.onClick.AddListener(OnWeibo);
-            _cachedView.WeChat.onClick.AddListener(OnWeChat);
+            _cachedView.ReturnLogin.onClick.AddListener(ReturnLogin);
+            //_cachedView.QQ.onClick.AddListener(OnQQ);
+            //_cachedView.Weibo.onClick.AddListener(OnWeibo);
+            //_cachedView.WeChat.onClick.AddListener(OnWeChat);
+        }
+
+        private void ReturnLogin()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
+            Close();
         }
 
         private void OnLoginSuccess()
         {
-            if(_uiStack != null)
-            {
-                _uiStack.Close();
-            }
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             CommonTools.ShowPopupDialog("注册成功");
+            Close();
         }
 
         private void OnLoginFailed()
