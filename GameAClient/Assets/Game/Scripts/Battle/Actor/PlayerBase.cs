@@ -286,7 +286,7 @@ namespace GameA.Game
                     {
                         SpeedX = Util.ConstantLerp(SpeedX, speedAcc > 0 ? _curMaxSpeedX : -_curMaxSpeedX, Mathf.Abs(speedAcc));
                     }
-                    else if (_grounded)
+                    else if (_grounded || _fanForce.y != 0)
                     {
                         if (_fanForce.x == 0)
                         {
@@ -319,6 +319,8 @@ namespace GameA.Game
 
         protected virtual void UpdateSpeedY()
         {
+            SpeedY += _fanForce.y;
+            _fanForce.y = 0;
             if (!_grounded)
             {
                 if (_playerInput._eClimbState > EClimbState.None)
@@ -844,12 +846,12 @@ namespace GameA.Game
                         }
                     }
                 }
-                else if (SpeedX != 0)
+                else
                 {
                     if (_playerInput.LeftInput != 0 || _playerInput.RightInput != 0)
                     {
                         var speed = Math.Abs(SpeedX);
-                        speed = Mathf.Clamp(speed, 30, 100);
+                        speed = Mathf.Clamp(speed, 20, 100);
                         if (IsHoldingBox())
                         {
                             speed = 50;
@@ -891,19 +893,6 @@ namespace GameA.Game
                         {
                             PlayMode.Instance.CurrentShadow.RecordAnimation(IdleAnimName(), true);
                         }
-                    }
-                }
-                else if (!_lastGrounded)
-                {
-                    //_animation.PlayOnce(LandAnimName());
-                    //PlayMode.Instance.CurrentShadow.RecordAnimation(LandAnimName(), false);
-                    OnLand();
-                }
-                else if (!_animation.IsPlaying(LandAnimName()))
-                {
-                    if (_animation.PlayLoop(IdleAnimName()))
-                    {
-                        PlayMode.Instance.CurrentShadow.RecordAnimation(IdleAnimName(), true);
                     }
                 }
             }
