@@ -23,7 +23,17 @@ namespace GameA.Game
         private static Dictionary<int, UnitDesc> _replaceUnits = new Dictionary<int, UnitDesc>();
         private static Dictionary<int, int> _unitIndexCount = new Dictionary<int, int>();
         private static List<UnitDesc> _cacheUnitDescs = new List<UnitDesc>();
+        
+        /// <summary>
+        /// 每个物体的初始旋转/移动方向，编辑状态下点击物品栏里的物体可以改变初始旋转/移动方向
+        /// </summary>
+        private static Dictionary<int, int> _unitOrigDirOrRot = new Dictionary<int, int>();
 
+        public static Dictionary<int, int> UnitIndexCount
+        {
+            get { return _unitIndexCount; }
+        }
+        
 
         public static int GetUnitCnt(int unitId)
         {
@@ -34,6 +44,77 @@ namespace GameA.Game
             }
             return 0;
         }
+
+        public static EMoveDirection GetUnitOrigDirOrRot(Table_Unit table)
+        {
+            int origDirOrRot;
+            if (_unitOrigDirOrRot.TryGetValue(table.Id, out origDirOrRot))
+            {
+                return (EMoveDirection)(origDirOrRot + 1);
+            }
+            if (table.CanMove)
+            {
+                return (EMoveDirection)table.OriginMoveDirection;
+            }
+            if (table.Id == UnitDefine.RollerId)
+            {
+                UnitExtra unitExtra;
+                return EMoveDirection.Right;
+            }
+            return EMoveDirection.Up;
+        }
+
+        public static EMoveDirection ChangeUnitOrigDirOrRot(Table_Unit table)
+        {
+            int current;
+            if (!_unitOrigDirOrRot.TryGetValue(table.Id, out current))
+            {
+                if (table.CanMove)
+                {
+                    _unitOrigDirOrRot[table.Id] = table.OriginMoveDirection - 1;
+                }
+                else if (table.CanRotate)
+                {
+                    _unitOrigDirOrRot[table.Id] = (int)EMoveDirection.Up - 1;
+                }
+                else if (table.Id == UnitDefine.RollerId)
+                {
+                    _unitOrigDirOrRot[table.Id] = (int)EMoveDirection.Right - 1;
+                }
+                else
+                {
+                    return EMoveDirection.Up;
+                }
+                current = _unitOrigDirOrRot[table.Id];
+            }
+            byte newDir;
+            if (table.CanMove)
+            {
+                if (ClickItemCommand.CalculateNextDir((byte) (current), table.MoveDirectionMask, out newDir))
+                {
+                    _unitOrigDirOrRot[table.Id] = newDir;
+                }
+                return (EMoveDirection)(newDir + 1);
+            }
+            else if (table.CanRotate)
+            {
+                if (ClickItemCommand.CalculateNextDir((byte) (current), table.RotationMask, out newDir))
+                {
+                    _unitOrigDirOrRot[table.Id] = newDir;
+                }
+                return (EMoveDirection)(newDir + 1);
+            }
+            else if (table.Id == UnitDefine.RollerId)
+            {
+                if (ClickItemCommand.CalculateNextDir((byte) (current), 10, out newDir))
+                {
+                    _unitOrigDirOrRot[table.Id] = newDir;
+                }
+                return (EMoveDirection)(newDir + 1);
+            }
+            return EMoveDirection.Up;
+        }
+        
         public static void Clear()
         {
             _replaceUnits.Clear();

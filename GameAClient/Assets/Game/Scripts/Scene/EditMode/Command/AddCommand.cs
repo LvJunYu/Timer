@@ -41,12 +41,28 @@ namespace GameA.Game
                         {
                             return false;
                         }
-                    } 
+                    }
+                    if (tableUnit.CanRotate)
+                    {
+                        unitDesc.Rotation = (byte)EditHelper.GetUnitOrigDirOrRot(tableUnit);
+                    }
                     if (EditMode.Instance.AddUnit(unitDesc))
 					{
                         _buffers.Add(new UnitEditData(unitDesc, UnitExtra.zero));
                         _pushFlag = true;
                         GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioEditorLayItem);
+					    
+					    UnitExtra extra = new UnitExtra();
+					    if (tableUnit.CanMove)
+					    {
+					        extra.MoveDirection = EditHelper.GetUnitOrigDirOrRot(tableUnit);
+					        DataScene2D.Instance.ProcessUnitExtra(unitDesc.Guid, extra);
+					    }
+					    else if (tableUnit.Id == UnitDefine.RollerId)
+					    {
+					        extra.RollerDirection = EditHelper.GetUnitOrigDirOrRot(tableUnit);
+					        DataScene2D.Instance.ProcessUnitExtra(unitDesc.Guid, extra);
+					    }
                     }
                 }
                 return false;

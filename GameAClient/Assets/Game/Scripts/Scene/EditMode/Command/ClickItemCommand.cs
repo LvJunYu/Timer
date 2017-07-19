@@ -16,7 +16,7 @@ namespace GameA.Game
     public class ClickItemCommand : CommandBase, ICommand
     {
 		/// <summary>
-		/// µã»÷ÃüÁîÏÂÖ¸Õë/ÊÖÖ¸Ò»¶¯³¬¹ı¸ÃÖµÔò±ä³ÉÍÏ×§ÃüÁî
+		/// ????????????/????????????????????????
 		/// </summary>
         public const float DragCommandTakeEffectOffsetValue = 0.2f;
 		protected UnitDesc _clickedDesc;
@@ -34,15 +34,15 @@ namespace GameA.Game
 
 //		protected UnitDesc _origDesc;
 		/// <summary>
-		/// Ô­Ê¼ÎïÌåµÄ¶îÍâĞÅÏ¢
+		/// ?????????????
 		/// </summary>
 		protected UnitExtra _clickedExtra;
 		/// <summary>
-		/// ĞŞ¸ÄºóÎïÌåµÄĞÅÏ¢
+		/// ????????????
 		/// </summary>
 		protected UnitDesc _modifiedDesc;
 		/// <summary>
-		/// ĞŞ¸ÄºóÎïÌåµÄ¶îÍâĞÅÏ¢
+		/// ???????????????
 		/// </summary>
 		protected UnitExtra _modifiedExtra;
 
@@ -95,10 +95,10 @@ namespace GameA.Game
 
 		protected bool DoClickOperator()
         {
-            //À¶Ê¯ÓÅÏÈÅĞ¶Ï¡£
+            //???????????
             if (_clickedTableUnit.CanMove || _clickedTableUnit.OriginMagicDirection != 0)
             {
-                //ËµÃ÷ÊÇ¾²Ö¹µÄ ¿Ï¶¨Ã»ÓĞÀ¶Ê¯
+                //????????? ???û?????
                 if (_clickedExtra.MoveDirection != 0)
                 {
                     return DoMove();
@@ -190,7 +190,7 @@ namespace GameA.Game
             DataScene2D.Instance.ProcessUnitExtra(_modifiedDesc.Guid, _modifiedExtra);
         }
 
-        protected bool CalculateNextDir(byte curValue, int mask, out byte dir)
+        public static bool CalculateNextDir(byte curValue, int mask, out byte dir)
         {
             if (!CheckDirectionValid(curValue))
             {
@@ -228,7 +228,7 @@ namespace GameA.Game
             return res;
         }
 
-		protected bool CheckDirectionValid(byte value)
+		protected static bool CheckDirectionValid(byte value)
         {
             return value == (byte)EDirectionType.Up ||
                    value == (byte)EDirectionType.Right ||
@@ -236,7 +236,7 @@ namespace GameA.Game
                    value == (byte)EDirectionType.Left;
         }
 
-		protected byte GetRepeatDirByIndex(int index)
+		protected static byte GetRepeatDirByIndex(int index)
         {
             int realIndex = index % 4;
             return DirectionList[realIndex];
