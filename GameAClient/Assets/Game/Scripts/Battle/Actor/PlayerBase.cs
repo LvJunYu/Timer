@@ -284,6 +284,18 @@ namespace GameA.Game
                     speedAcc = motorAcc + _fanForce.x;
                     if (speedAcc != 0)
                     {
+                        //在空中和冰上 同方向的时候
+                        if (_onIce || air)
+                        {
+                            if ((speedAcc > 0 && _fanForce.x > 0) || (speedAcc < 0 && _fanForce.x < 0))
+                            {
+                                speedAcc = 1;
+                            }
+                        }
+                        else
+                        {
+                            SpeedX -= _fanForce.x;
+                        }
                         SpeedX = Util.ConstantLerp(SpeedX, speedAcc > 0 ? _curMaxSpeedX : -_curMaxSpeedX, Mathf.Abs(speedAcc));
                     }
                     else if (_grounded || _fanForce.y != 0)
