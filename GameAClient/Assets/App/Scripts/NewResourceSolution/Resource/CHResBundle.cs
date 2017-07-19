@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using SoyEngine;
 
 namespace NewResourceSolution
@@ -238,6 +239,16 @@ namespace NewResourceSolution
                     return false;
                 }
                 AssetDic.Clear ();
+                
+//                UnityEngine.Object[] allAssets = CachedBundle.LoadAllAssets();
+//                for (int j = 0; j < allAssets.Length; j++)
+//                {
+//                    if (AssetNames.Contains(allAssets[j].name))
+//                    {
+//                        AssetDic [allAssets[j].name] =  allAssets[j];
+//                    }
+//                }
+                
                 for (int j = 0; j < AssetNames.Length; j++)
                 {
                     UnityEngine.Object asset = CachedBundle.LoadAsset (AssetNames [j]);

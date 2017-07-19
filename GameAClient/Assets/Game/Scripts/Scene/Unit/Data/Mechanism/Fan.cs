@@ -1,4 +1,6 @@
-﻿using SoyEngine;
+﻿using System.Collections.Generic;
+using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -8,6 +10,7 @@ namespace GameA.Game
         protected Grid2D _checkGrid;
         protected IntVec2 _pointA;
         protected IntVec2 _pointB;
+        protected List<UnitBase> _units = new List<UnitBase>();
         
         public override bool CanControlledBySwitch
         {
@@ -33,17 +36,27 @@ namespace GameA.Game
         {
             base.Clear();
             _ctrlBySwitch = true;
+            _units.Clear();
         }
 
         private void Calculate()
         {
             GM2DTools.GetBorderPoint(_colliderGrid, (EDirectionType)Rotation, ref _pointA, ref _pointB);
-            var distance = TableConvert.GetRange(80);
+            var distance = TableConvert.GetRange(UnitDefine.FanRange);
             _checkGrid = SceneQuery2D.GetGrid(_pointA, _pointB, Rotation, distance);
         }
         
         public override void UpdateLogic()
         {
+            for (int i = _units.Count - 1; i >= 0; i--)
+            {
+                var unit = _units[i];
+                if (!_checkGrid.Intersects(unit.ColliderGrid))
+                {
+                    unit.OutFan();
+                    _units.Remove(unit);
+                }
+            }
             base.UpdateLogic();
             //停止
             if (!_ctrlBySwitch)
@@ -84,8 +97,13 @@ namespace GameA.Game
                         {
                             if (unit != null && unit.IsAlive && unit.IsActor)
                             {
+                                if (!_units.Contains(unit))
+                                {
+                                    _units.Add(unit);
+                                }
                                 var range = TableConvert.GetRange(UnitDefine.FanRange);
-                                int force = (int) ((float) (range - hit.distance) / range * 18);
+                                int force = (int) ((float) (range - hit.distance) / range * 22);
+                                force = Mathf.Max(10, force);
                                 switch ((EDirectionType) Rotation)
                                 {
                                     case EDirectionType.Up:

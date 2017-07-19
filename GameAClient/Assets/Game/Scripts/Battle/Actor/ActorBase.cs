@@ -275,6 +275,11 @@ namespace GameA.Game
             _inFan = true;
         }
 
+        internal override void OutFan()
+        {
+            _inFan = false;
+        }
+
         internal override void InWater()
         {
             if (_eDieType == EDieType.Fire)

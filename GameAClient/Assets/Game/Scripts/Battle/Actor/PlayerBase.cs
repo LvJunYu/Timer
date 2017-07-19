@@ -257,14 +257,6 @@ namespace GameA.Game
                     OnJump();
                 }
             }
-             if (_onIce)
-            {
-                friction = 1;
-            }
-            if (_inFan)
-            {
-                friction = 5;
-            }
             if (!_lastOnClay && _onClay)
             {
                 _speedRatio += SpeedClayRatio;
@@ -274,32 +266,51 @@ namespace GameA.Game
                 _speedRatio -= SpeedClayRatio;
             }
             _curMaxSpeedX = _playerInput._quickenTime == 0 ? BattleDefine.MaxSpeedX : BattleDefine.MaxQuickenSpeedX;
+            if (_inFan)
+            {
+                _curMaxSpeedX = BattleDefine.MaxFanSpeedX;
+            }
             _curMaxSpeedX = (int)(_curMaxSpeedX * _speedRatio);
 
             if (air || _grounded)
             {
                 if (_curBanInputTime <= 0)
                 {
+                    int speedAcc = 0;
+                    if (_playerInput.LeftInput == 1 || _playerInput.RightInput == 1)
+                    {
+                        speedAcc = 10;
+                        if (_onIce)
+                        {
+                            speedAcc = 1;
+                        }
+                    }
                     if (_playerInput.LeftInput == 1)
                     {
-                        //不在冰上的时候反向走速度直接设为0
-                        if (SpeedX > 0 && !_onIce)
+                        SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, speedAcc);
+                        if (_inFan)
                         {
-                            SpeedX = 0;
+                            SpeedX = Mathf.Min(0, SpeedX);
                         }
-                        SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, Math.Min(friction, 10));
                     }
                     else if (_playerInput.RightInput == 1)
                     {
-                        //不在冰上的时候反向走速度直接设为0
-                        if (SpeedX < 0 && !_onIce)
+                        SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, speedAcc);
+                        if (_inFan)
                         {
-                            SpeedX = 0;
+                            SpeedX = Mathf.Max(0, SpeedX);
                         }
-                        SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, Math.Min(friction, 10));
                     }
-                    else if (_grounded)
+                    else if (_grounded || _inFan)
                     {
+                        if (_onIce)
+                        {
+                            friction = 1;
+                        }
+                        else if (_inFan)
+                        {
+                            friction = 9;
+                        }
                         SpeedX = Util.ConstantLerp(SpeedX, 0, friction);
                     }
                 }
@@ -332,14 +343,7 @@ namespace GameA.Game
                 }
                 else
                 {
-                    if (_inFan)
-                    {
-                        SpeedY = Util.ConstantLerp(SpeedY, -120, 6);
-                    }
-                    else
-                    {
-                        SpeedY = Util.ConstantLerp(SpeedY, -120, 12);
-                    }
+                    SpeedY = Util.ConstantLerp(SpeedY, -120, 12);
                 }
             }
         }
