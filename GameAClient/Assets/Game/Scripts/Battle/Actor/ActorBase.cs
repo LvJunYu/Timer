@@ -267,9 +267,6 @@ namespace GameA.Game
             }
         }
 
-        protected bool _inFan;
-        protected Dictionary<IntVec3, IntVec2> _fanForces = new Dictionary<IntVec3, IntVec2>();
-
         internal override void InFan(UnitBase fanUnit, IntVec2 force)
         {
             if (_fanForces.ContainsKey(fanUnit.Guid))
@@ -286,18 +283,13 @@ namespace GameA.Game
             {
                 _fanForce += iter.Current.Value;
             }
-            _inFan = true;
         }
 
         internal override void OutFan(UnitBase fanUnit)
         {
             _fanForces.Remove(fanUnit.Guid);
             _fanForce = IntVec2.zero;
-            if (_fanForces.Count == 0)
-            {
-                _inFan = false;
-            }
-            else
+            if (_fanForces.Count > 0)
             {
                 var iter = _fanForces.GetEnumerator();
                 while (iter.MoveNext())

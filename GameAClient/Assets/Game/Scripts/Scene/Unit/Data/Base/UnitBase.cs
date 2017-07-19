@@ -777,11 +777,11 @@ namespace GameA.Game
         {
         }
         
-        internal virtual void InFan(IntVec2 force)
+        internal virtual void InFan(UnitBase fanUnit, IntVec2 force)
         {
         }
         
-        internal virtual void OutFan()
+        internal virtual void OutFan(UnitBase fanUnit)
         {
         }
 

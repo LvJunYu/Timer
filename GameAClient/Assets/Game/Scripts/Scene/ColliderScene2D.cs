@@ -569,7 +569,7 @@ namespace GameA.Game
                 excludeNode);
         }
 
-        internal static List<GridHit2D> GridCastAll(Grid2D grid, byte direction, int distance = ConstDefineGM2D.MaxMapDistance, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue,
+        internal static List<GridHit2D> GridCastAll(Grid2D grid, byte direction, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue,
             float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
             return SceneQuery2D.GridCastAll(ref grid, direction, layerMask, Instance, minDepth, maxDepth,excludeNode);

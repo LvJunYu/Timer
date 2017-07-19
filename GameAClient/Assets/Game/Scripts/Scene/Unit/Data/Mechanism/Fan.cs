@@ -67,7 +67,7 @@ namespace GameA.Game
             {
                 Calculate();
             }
-            var hits = ColliderScene2D.GridCastAll(_checkGrid, Rotation, EnvManager.FanBlockLayer);
+            var hits = ColliderScene2D.GridCastAll(_checkGrid, Rotation, EnvManager.FanCheckLayer);
             if (hits.Count > 0)
             {
                 for (int i = 0; i < hits.Count; i++)
@@ -102,8 +102,7 @@ namespace GameA.Game
                                     _units.Add(unit);
                                 }
                                 var range = TableConvert.GetRange(UnitDefine.FanRange);
-                                int force = (int) ((float) (range - hit.distance) / range * 20);
-//                                force = Mathf.Max(10, force);
+                                int force = (int) ((float) (range - hit.distance) / range * UnitDefine.FanForce);
                                 switch ((EDirectionType) Rotation)
                                 {
                                     case EDirectionType.Up:
