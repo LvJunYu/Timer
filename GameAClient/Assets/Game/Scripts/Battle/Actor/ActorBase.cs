@@ -268,16 +268,43 @@ namespace GameA.Game
         }
 
         protected bool _inFan;
+        protected Dictionary<IntVec3, IntVec2> _fanForces = new Dictionary<IntVec3, IntVec2>();
 
-        internal override void InFan(IntVec2 force)
+        internal override void InFan(UnitBase fanUnit, IntVec2 force)
         {
-            ExtraSpeed = force;
+            if (_fanForces.ContainsKey(fanUnit.Guid))
+            {
+                _fanForces[fanUnit.Guid] = force;
+            }
+            else
+            {
+                _fanForces.Add(fanUnit.Guid, force);
+            }
+            _fanForce= IntVec2.zero;
+            var iter = _fanForces.GetEnumerator();
+            while (iter.MoveNext())
+            {
+                _fanForce += iter.Current.Value;
+            }
             _inFan = true;
         }
 
-        internal override void OutFan()
+        internal override void OutFan(UnitBase fanUnit)
         {
-            _inFan = false;
+            _fanForces.Remove(fanUnit.Guid);
+            _fanForce = IntVec2.zero;
+            if (_fanForces.Count == 0)
+            {
+                _inFan = false;
+            }
+            else
+            {
+                var iter = _fanForces.GetEnumerator();
+                while (iter.MoveNext())
+                {
+                    _fanForce += iter.Current.Value;
+                }
+            }
         }
 
         internal override void InWater()

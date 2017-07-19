@@ -266,50 +266,34 @@ namespace GameA.Game
                 _speedRatio -= SpeedClayRatio;
             }
             _curMaxSpeedX = _playerInput._quickenTime == 0 ? BattleDefine.MaxSpeedX : BattleDefine.MaxQuickenSpeedX;
-            if (_inFan)
-            {
-                _curMaxSpeedX = BattleDefine.MaxFanSpeedX;
-            }
             _curMaxSpeedX = (int)(_curMaxSpeedX * _speedRatio);
-
             if (air || _grounded)
             {
                 if (_curBanInputTime <= 0)
                 {
+                    int motorAcc = 0;
                     int speedAcc = 0;
-                    if (_playerInput.LeftInput == 1 || _playerInput.RightInput == 1)
+                    if (_playerInput.RightInput == 1)
                     {
-                        speedAcc = 10;
-                        if (_onIce)
-                        {
-                            speedAcc = 1;
-                        }
+                        motorAcc = _onIce ? 1 : 10;
                     }
                     if (_playerInput.LeftInput == 1)
                     {
-                        SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, speedAcc);
-                        if (_inFan)
-                        {
-                            SpeedX = Mathf.Min(0, SpeedX);
-                        }
+                        motorAcc = _onIce ? -1 : -10;
                     }
-                    else if (_playerInput.RightInput == 1)
+                    speedAcc = motorAcc + _fanForce.x;
+                    if (speedAcc != 0)
                     {
-                        SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, speedAcc);
-                        if (_inFan)
-                        {
-                            SpeedX = Mathf.Max(0, SpeedX);
-                        }
+                        SpeedX = Util.ConstantLerp(SpeedX, speedAcc > 0 ? _curMaxSpeedX : -_curMaxSpeedX, Mathf.Abs(speedAcc));
                     }
-                    else if (_grounded || _inFan)
+                    else if (_grounded)
                     {
-                        if (_onIce)
+                        if (_fanForce.x == 0)
                         {
-                            friction = 1;
-                        }
-                        else if (_inFan)
-                        {
-                            friction = 9;
+                            if (_onIce)
+                            {
+                                friction = 1;
+                            }
                         }
                         SpeedX = Util.ConstantLerp(SpeedX, 0, friction);
                     }

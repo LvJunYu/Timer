@@ -53,7 +53,7 @@ namespace GameA.Game
                 var unit = _units[i];
                 if (!_checkGrid.Intersects(unit.ColliderGrid))
                 {
-                    unit.OutFan();
+                    unit.OutFan(this);
                     _units.Remove(unit);
                 }
             }
@@ -102,21 +102,21 @@ namespace GameA.Game
                                     _units.Add(unit);
                                 }
                                 var range = TableConvert.GetRange(UnitDefine.FanRange);
-                                int force = (int) ((float) (range - hit.distance) / range * 22);
-                                force = Mathf.Max(10, force);
+                                int force = (int) ((float) (range - hit.distance) / range * 20);
+//                                force = Mathf.Max(10, force);
                                 switch ((EDirectionType) Rotation)
                                 {
                                     case EDirectionType.Up:
-                                        unit.InFan(new IntVec2(0, force));
+                                        unit.InFan(this, new IntVec2(0, force));
                                         break;
                                     case EDirectionType.Down:
-                                        unit.InFan(new IntVec2(0, -force));
+                                        unit.InFan(this, new IntVec2(0, -force));
                                         break;
                                     case EDirectionType.Left:
-                                        unit.InFan(new IntVec2(-force, 0));
+                                        unit.InFan(this, new IntVec2(-force, 0));
                                         break;
                                     case EDirectionType.Right:
-                                        unit.InFan(new IntVec2(force, 0));
+                                        unit.InFan(this, new IntVec2(force, 0));
                                         break;
                                 }
                             }
