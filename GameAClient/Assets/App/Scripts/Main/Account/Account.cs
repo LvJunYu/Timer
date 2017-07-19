@@ -89,10 +89,50 @@ namespace SoyEngine
             MessengerAsync.Broadcast(EMessengerType.OnAccountLogout);
         }
 
+        public void SignUp(string account,
+            string password,
+            EAccountIdentifyType accountType,
+            string verificationCode,
+            Action<Msg_SC_CMD_Register> successCallback, Action<ERegisterCode> failedCallback)
+        {
+            string Res = AppData.Instance.AppResVersion.ToString();
+            RemoteCommands.Register(account, password, accountType, verificationCode, GlobalVar.Instance.AppVersion,
+                Res, _devicePlatform, ret =>
+                {
+                    if (ret.ResultCode == (int)ERegisterCode.RegisterC_Success)
+                    {
+                        _userGuid = ret.UserId;
+                        OnTokenChange(ret.Token.ToString());
+                        if (null != successCallback)
+                        {
+                            successCallback.Invoke(ret);
+                        }
+                    }
+                    //else if (ret.ResultCode == (int)ERegisterCode.)
+                    //{
+                    //    _userGuid = ret.UserId;
+                    //    OnTokenChange(ret.Token.ToString());
+                    //    if (null != successCallback)
+                    //    {
+                    //        successCallback.Invoke();
+                    //    }
+                    //}
+                    else
+                    {
+                        failedCallback.Invoke((ERegisterCode)ret.ResultCode);
+                    }
+                }, (errorCode) => {
+                    if (null != failedCallback)
+                    {
+                        failedCallback.Invoke(ERegisterCode.RegisterC_None);
+                    }
+                });
+        }
+
 
         public void LoginByToken(Action successCallback, Action<ELoginByTokenCode> failedCallback)
         {
-            
+          
             string Res = AppData.Instance.AppResVersion.ToString();
             RemoteCommands.LoginByToken(GlobalVar.Instance.AppVersion, Res, _devicePlatform, ret =>
             {
@@ -159,13 +199,41 @@ namespace SoyEngine
         }
 
 
-        public void OnLogin(long userGuid, string token)
+        public void OnLogin(
+            string account,
+            string password,
+            EAccountIdentifyType accountType,
+            Msg_SNSUserInfo snsUserInfo,
+            Action<Msg_SC_CMD_Login> successCallback, Action<ELoginCode> failedCallback,
+            UnityEngine.WWWForm form = null)
         {
-            _userGuid = userGuid;
-            _token = token;
-            Save();
             MessengerAsync.Broadcast(EMessengerType.OnAccountLogin);
             MessengerAsync.Broadcast(EMessengerType.OnAccountLoginStateChanged);
+            //Msg_SNSUserInfo msg_SNSUserInfo = new Msg_SNSUserInfo();
+
+            string Res = AppData.Instance.AppResVersion.ToString();
+            RemoteCommands.Login(account, password, accountType, snsUserInfo, GlobalVar.Instance.AppVersion,
+                Res, _devicePlatform, ret =>
+                {
+                    if (ret.ResultCode == (int)ELoginCode.LoginC_Success)
+                    {
+                        _userGuid = ret.UserId;
+                        OnTokenChange(ret.Token.ToString());
+                        if (null != successCallback)
+                        {
+                            successCallback.Invoke(ret);
+                        }
+                    }
+                    else
+                    {
+                        failedCallback.Invoke((ELoginCode)ret.ResultCode);
+                    }
+                }, (errorCode) => {
+                    if (null != failedCallback)
+                    {
+                        failedCallback.Invoke(ELoginCode.LoginC_None);
+                    }
+                });
         }
 
         public void OnTokenChange(string token)

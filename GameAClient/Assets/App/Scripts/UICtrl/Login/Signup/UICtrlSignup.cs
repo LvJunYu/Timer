@@ -83,10 +83,10 @@ namespace GameA
             }
             bool verificationCheckResult = CheckTools.CheckVerificationCode (verificationCode);
             LoginLogicUtil.ShowVerificationCodeCheckTip(verificationCheckResult);
-            if(!verificationCheckResult)
-            {
-                return;
-            }
+            //if(!verificationCheckResult)
+            //{
+            //    return;
+            //}
             CheckTools.ECheckPasswordResult pwdCheckResult = CheckTools.CheckPassword(pwd);
             LoginLogicUtil.ShowPasswordCheckTip(pwdCheckResult);
             if (pwdCheckResult != CheckTools.ECheckPasswordResult.Success)
@@ -94,6 +94,17 @@ namespace GameA
                 return;
             }
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "努力注册中");
+            LocalUser.Instance.Account.SignUp(phone, pwd, EAccountIdentifyType.AIT_Phone, verificationCode,
+                (ret)=> {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.Instance.GetUI<UICtrlSignup>().Close();
+                    SocialApp.Instance.LoginSucceed();
+                },
+                (ret) =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    LogHelper.Error("登录失败, Code: " + ret);
+                });
 //            LoginLogicUtil.RequestSmsLogin(phone, verificationCode, pwd, EVerifyCodeType.VCT_Register);
             LoginLogicUtil.PhoneNum = _cachedView.Phone.text;
         }
