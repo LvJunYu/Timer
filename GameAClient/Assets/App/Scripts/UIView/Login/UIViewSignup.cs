@@ -20,6 +20,7 @@ namespace GameA
         public Button GetSMSCode;
         public Text GetSMSCodeBtnLabel;
         public Button DoSignup;
+        public Button ReturnLogin;
         public Text DoSignupText;
         public Text RegistrationAgreement;
 

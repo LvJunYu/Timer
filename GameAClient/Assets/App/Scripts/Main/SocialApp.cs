@@ -135,7 +135,7 @@ namespace GameA
                     SocialApp.Instance.LoginSucceed();
 
                 }, code =>
-                {
+                {                   
                     //if (code == ELoginByTokenCode.LBTC_Success)
                     //{
                     //    SocialApp.Instance.LoginSucceed();
@@ -146,7 +146,7 @@ namespace GameA
                     //}
                     //else
                     //{
-                        SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
+                    SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
                         LogHelper.Error("登录失败, Code: " + code);
                     //}
                 });

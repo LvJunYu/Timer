@@ -33,6 +33,7 @@ namespace GameA
                     LocalUser.Instance.Account.Logout();
                     // SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
                     SocialApp.Instance.LoginAfterUpdateResComplete();
+                    Close();
                 }, null
                 );
         }

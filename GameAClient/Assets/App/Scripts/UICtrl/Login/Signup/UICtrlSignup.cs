@@ -18,7 +18,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlSignup : UISocialContentCtrlBase<UIViewSignup>, IUIWithTitle
+    public class UICtrlSignup : UICtrlGenericBase<UIViewSignup>
     {
         #region 常量与字段
         #endregion
@@ -28,6 +28,10 @@ namespace GameA
         #endregion
 
         #region 方法
+        protected override void InitGroupId()
+        {
+            _groupId = (int)EUIGroupType.MainFrame;
+        }
 
         protected override void OnViewCreated()
         {
@@ -83,10 +87,10 @@ namespace GameA
             }
             bool verificationCheckResult = CheckTools.CheckVerificationCode (verificationCode);
             LoginLogicUtil.ShowVerificationCodeCheckTip(verificationCheckResult);
-            if(!verificationCheckResult)
-            {
-                return;
-            }
+            //if(!verificationCheckResult)
+            //{
+            //    return;
+            //}
             CheckTools.ECheckPasswordResult pwdCheckResult = CheckTools.CheckPassword(pwd);
             LoginLogicUtil.ShowPasswordCheckTip(pwdCheckResult);
             if (pwdCheckResult != CheckTools.ECheckPasswordResult.Success)
@@ -94,13 +98,24 @@ namespace GameA
                 return;
             }
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "努力注册中");
+            LocalUser.Instance.Account.SignUp(phone, pwd, EAccountIdentifyType.AIT_Phone, verificationCode,
+                (ret)=> {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.Instance.GetUI<UICtrlSignup>().Close();
+                    SocialApp.Instance.LoginSucceed();
+                },
+                (ret) =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    LogHelper.Error("登录失败, Code: " + ret);
+                });
 //            LoginLogicUtil.RequestSmsLogin(phone, verificationCode, pwd, EVerifyCodeType.VCT_Register);
             LoginLogicUtil.PhoneNum = _cachedView.Phone.text;
         }
 
         #endregion
 
-        #region  private 
+        #region  
         /// <summary>
         /// 验证码功能待完成
         /// </summary>
@@ -143,19 +158,23 @@ namespace GameA
         {
             _cachedView.GetSMSCode.onClick.AddListener(OnGetSMSCodeButtonClick);
             _cachedView.DoSignup.onClick.AddListener(OnDoSignupButtonClick);
-            _cachedView.QQ.onClick.AddListener(OnQQ);
-            _cachedView.Weibo.onClick.AddListener(OnWeibo);
-            _cachedView.WeChat.onClick.AddListener(OnWeChat);
+            _cachedView.ReturnLogin.onClick.AddListener(ReturnLogin);
+            //_cachedView.QQ.onClick.AddListener(OnQQ);
+            //_cachedView.Weibo.onClick.AddListener(OnWeibo);
+            //_cachedView.WeChat.onClick.AddListener(OnWeChat);
+        }
+
+        private void ReturnLogin()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
+            Close();
         }
 
         private void OnLoginSuccess()
         {
-            if(_uiStack != null)
-            {
-                _uiStack.Close();
-            }
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
             CommonTools.ShowPopupDialog("注册成功");
+            Close();
         }
 
         private void OnLoginFailed()
