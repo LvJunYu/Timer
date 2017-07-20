@@ -19,7 +19,7 @@ namespace GameA.Game
 
         protected override void OnTrigger(UnitBase other)
         {
-            other.Hp += 200;
+            other.OnHpChanged(200);
             base.OnTrigger(other);
         }
     }

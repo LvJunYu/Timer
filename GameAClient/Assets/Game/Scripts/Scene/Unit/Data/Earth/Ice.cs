@@ -27,14 +27,14 @@ namespace GameA.Game
             return true;
         }
 
-        public override void OnShootHit(UnitBase other)
-        {
-            if (other is ProjectileFire)
-            {
-                PlayMode.Instance.DestroyUnit(this);
-                PushChild();
-                OnDead();
-            }
-        }
+//        public override void OnShootHit(UnitBase other)
+//        {
+//            if (other is ProjectileFire)
+//            {
+//                PlayMode.Instance.DestroyUnit(this);
+//                PushChild();
+//                OnDead();
+//            }
+//        }
     }
 }

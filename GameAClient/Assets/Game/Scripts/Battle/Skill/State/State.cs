@@ -87,7 +87,7 @@ namespace GameA.Game
                 switch ((EEffectId) _tableState.EffectIds[i])
                 {
                     case EEffectId.Hp:
-                        _target.Hp += value * (_effectOverlapCount + 1);
+                        _target.OnHpChanged(value * (_effectOverlapCount + 1));
                         break;
                     case EEffectId.Speed:
                         _target.SpeedRatio += (value * 0.01f) * (_effectOverlapCount + 1);

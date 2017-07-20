@@ -264,7 +264,11 @@ namespace GameA.Game
 
         private void OnActorHit(UnitBase unit, ProjectileBase projectile)
         {
-            unit.Hp += _damage;
+            unit.OnHpChanged(_damage);
+            if (!unit.IsAlive)
+            {
+                return;
+            }
             //触发状态
             for (int i = 0; i < _tableSkill.TriggerStates.Length; i++)
             {

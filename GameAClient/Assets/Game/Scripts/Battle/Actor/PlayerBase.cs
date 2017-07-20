@@ -438,39 +438,12 @@ namespace GameA.Game
 
         #region event
 
-        public override void OnShootHit(UnitBase other)
-        {
-            OnDamage();
-        }
-
-        public override void OnHeroTouch(UnitBase other)
-        {
-            OnDamage();
-        }
-
         public override void OnCrushHit(UnitBase other)
         {
             if (_grounded)
             {
                 OnDead();
             }
-        }
-
-        public override void OnDamage()
-        {
-            if (!_isAlive)
-            {
-                return;
-            }
-            if (!PlayMode.Instance.SceneState.GameRunning)
-            {
-                return;
-            }
-            if (IsInvincible)
-            {
-                return;
-            }
-            OnDead();
         }
 
         protected override void OnDead()
