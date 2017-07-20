@@ -198,7 +198,7 @@ namespace SoyEngine
         {
             if (item == null || item.Trans == null)
             {
-                LogHelper.Warning("FreeParticleItem called but item is invalid!");
+//                LogHelper.Warning("FreeParticleItem called but item is invalid!");
                 return;
             }
             if (Instance == null)

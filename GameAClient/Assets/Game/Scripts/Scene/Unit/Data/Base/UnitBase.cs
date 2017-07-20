@@ -797,13 +797,6 @@ namespace GameA.Game
         }
 
         /// <summary>
-        /// 无敌打击
-        /// </summary>
-        public virtual void OnInvincibleHit(UnitBase other)
-        {
-        }
-
-        /// <summary>
         /// 射击打击
         /// </summary>
         public virtual void OnShootHit(UnitBase other)

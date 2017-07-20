@@ -26,6 +26,9 @@ namespace GameA.Game
         Slow,
         Fire,
         Ice,
+        Clay,
+        SpeedUp,
+        Invincible
     }
 
     /// <summary>

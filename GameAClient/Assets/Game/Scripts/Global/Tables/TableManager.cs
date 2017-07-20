@@ -34,8 +34,8 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_Puzzle> Table_PuzzleDic = new Dictionary<int, Table_Puzzle>();
 		public readonly Dictionary<int,Table_AvatarStruct> Table_AvatarStructDic = new Dictionary<int, Table_AvatarStruct>();
 		public readonly Dictionary<int,Table_AvatarSlotName> Table_AvatarSlotNameDic = new Dictionary<int, Table_AvatarSlotName>();
-		public readonly Dictionary<int,Table_PlayerLvToExp> Table_PlayerLvToExpDic = new Dictionary<int, Table_PlayerLvToExp>();
 		public readonly Dictionary<int,Table_PlayerLvToModifyLimit> Table_PlayerLvToModifyLimitDic = new Dictionary<int, Table_PlayerLvToModifyLimit>();
+		public readonly Dictionary<int,Table_PlayerLvToExp> Table_PlayerLvToExpDic = new Dictionary<int, Table_PlayerLvToExp>();
 		public readonly Dictionary<int,Table_ModifyReward> Table_ModifyRewardDic = new Dictionary<int, Table_ModifyReward>();
 		public readonly Dictionary<int,Table_ProgressUnlock> Table_ProgressUnlockDic = new Dictionary<int, Table_ProgressUnlock>();
 		public readonly Dictionary<int,Table_BoostItem> Table_BoostItemDic = new Dictionary<int, Table_BoostItem>();
@@ -61,8 +61,8 @@ namespace GameA.Game
 		[UnityEngine.SerializeField] private Table_Puzzle[] _tablePuzzles;
 		[UnityEngine.SerializeField] private Table_AvatarStruct[] _tableAvatarStructs;
 		[UnityEngine.SerializeField] private Table_AvatarSlotName[] _tableAvatarSlotNames;
-		[UnityEngine.SerializeField] private Table_PlayerLvToExp[] _tablePlayerLvToExps;
 		[UnityEngine.SerializeField] private Table_PlayerLvToModifyLimit[] _tablePlayerLvToModifyLimits;
+		[UnityEngine.SerializeField] private Table_PlayerLvToExp[] _tablePlayerLvToExps;
 		[UnityEngine.SerializeField] private Table_ModifyReward[] _tableModifyRewards;
 		[UnityEngine.SerializeField] private Table_ProgressUnlock[] _tableProgressUnlocks;
 		[UnityEngine.SerializeField] private Table_BoostItem[] _tableBoostItems;
@@ -125,10 +125,10 @@ namespace GameA.Game
             _tableAvatarStructs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarStruct[]>(AvatarStructJsonStr);
 			string AvatarSlotNameJsonStr = ResourceManager.Instance.GetJson ("AvatarSlotName", 31);
             _tableAvatarSlotNames = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarSlotName[]>(AvatarSlotNameJsonStr);
-			string PlayerLvToExpJsonStr = ResourceManager.Instance.GetJson ("PlayerLvToExp", 31);
-            _tablePlayerLvToExps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PlayerLvToExp[]>(PlayerLvToExpJsonStr);
 			string PlayerLvToModifyLimitJsonStr = ResourceManager.Instance.GetJson ("PlayerLvToModifyLimit", 31);
             _tablePlayerLvToModifyLimits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PlayerLvToModifyLimit[]>(PlayerLvToModifyLimitJsonStr);
+			string PlayerLvToExpJsonStr = ResourceManager.Instance.GetJson ("PlayerLvToExp", 31);
+            _tablePlayerLvToExps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PlayerLvToExp[]>(PlayerLvToExpJsonStr);
 			string ModifyRewardJsonStr = ResourceManager.Instance.GetJson ("ModifyReward", 31);
             _tableModifyRewards = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_ModifyReward[]>(ModifyRewardJsonStr);
 			string ProgressUnlockJsonStr = ResourceManager.Instance.GetJson ("ProgressUnlock", 31);
@@ -378,17 +378,6 @@ namespace GameA.Game
 					LogHelper.Warning("_tableAvatarSlotNames table.Id {0} is duplicated!", _tableAvatarSlotNames[i].Id);
 				}
 			}
-			for (int i = 0; i < _tablePlayerLvToExps.Length; i++)
-			{
-				if (!Table_PlayerLvToExpDic.ContainsKey(_tablePlayerLvToExps[i].Id))
-				{
-					Table_PlayerLvToExpDic.Add(_tablePlayerLvToExps[i].Id,_tablePlayerLvToExps[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tablePlayerLvToExps table.Id {0} is duplicated!", _tablePlayerLvToExps[i].Id);
-				}
-			}
 			for (int i = 0; i < _tablePlayerLvToModifyLimits.Length; i++)
 			{
 				if (!Table_PlayerLvToModifyLimitDic.ContainsKey(_tablePlayerLvToModifyLimits[i].Id))
@@ -398,6 +387,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tablePlayerLvToModifyLimits table.Id {0} is duplicated!", _tablePlayerLvToModifyLimits[i].Id);
+				}
+			}
+			for (int i = 0; i < _tablePlayerLvToExps.Length; i++)
+			{
+				if (!Table_PlayerLvToExpDic.ContainsKey(_tablePlayerLvToExps[i].Id))
+				{
+					Table_PlayerLvToExpDic.Add(_tablePlayerLvToExps[i].Id,_tablePlayerLvToExps[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tablePlayerLvToExps table.Id {0} is duplicated!", _tablePlayerLvToExps[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableModifyRewards.Length; i++)
@@ -635,19 +635,19 @@ namespace GameA.Game
 			}
 			return null;
 		}
-		public Table_PlayerLvToExp GetPlayerLvToExp(int key)
+		public Table_PlayerLvToModifyLimit GetPlayerLvToModifyLimit(int key)
 		{
-			Table_PlayerLvToExp tmp;
-			if (Table_PlayerLvToExpDic.TryGetValue(key,out tmp))
+			Table_PlayerLvToModifyLimit tmp;
+			if (Table_PlayerLvToModifyLimitDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
 			return null;
 		}
-		public Table_PlayerLvToModifyLimit GetPlayerLvToModifyLimit(int key)
+		public Table_PlayerLvToExp GetPlayerLvToExp(int key)
 		{
-			Table_PlayerLvToModifyLimit tmp;
-			if (Table_PlayerLvToModifyLimitDic.TryGetValue(key,out tmp))
+			Table_PlayerLvToExp tmp;
+			if (Table_PlayerLvToExpDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

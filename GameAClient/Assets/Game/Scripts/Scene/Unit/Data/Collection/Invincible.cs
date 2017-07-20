@@ -28,7 +28,7 @@ namespace GameA.Game
 
         protected override void OnTrigger(UnitBase other)
         {
-            PlayMode.Instance.MainPlayer.InvincibleTime = 5*ConstDefineGM2D.FixedFrameCount;
+            other.AddStates(62);
             base.OnTrigger(other);
         }
     }

@@ -170,6 +170,18 @@ namespace GameA.Game
                 }
             }
         }
+        
+        public bool InStateType(EStateType stateType)
+        {
+            for (int i = _currentStates.Count - 1; i >= 0; i--)
+            {
+                if (_currentStates[i].TableState.StateType == (int)stateType)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         public void RemoveAllStates()
         {
@@ -241,10 +253,10 @@ namespace GameA.Game
             if (within)
             {
                 _eDieType = EDieType.Fire;
-                if (_animation != null)
-                {
-                    _animation.PlayLoop("OnFire", 1, 1);
-                }
+//                if (_animation != null)
+//                {
+//                    _animation.PlayLoop("OnFire", 1, 1);
+//                }
             }
             else
             {

@@ -31,6 +31,7 @@ namespace GameA.Game
         protected int _effectOverlapCount;
         protected int _curDuration;
         protected bool _run;
+        protected UnityNativeParticleItem _effect;
 
         public Table_State TableState
         {
@@ -47,6 +48,8 @@ namespace GameA.Game
             _effectOverlapCount = 0;
             _curDuration = 0;
             _run = false;
+            GameParticleManager.FreeParticleItem(_effect);
+            _effect = null;
         }
 
         public virtual bool OnAttached(Table_State tableState, ActorBase target)
@@ -61,6 +64,11 @@ namespace GameA.Game
             _duration = TableConvert.GetTime(_tableState.Duration);
             _curDuration = _duration;
             _intervalTime = TableConvert.GetTime(_tableState.IntervalTime);
+            if (!string.IsNullOrEmpty(_tableState.Particle))
+            {
+                _effect = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableState.Particle, _target.Trans);
+                _effect.Play();
+            }
             Excute(EEffectType.Always);
             _target.SetStateEffect(this, true);
             _run = true;
@@ -101,7 +109,6 @@ namespace GameA.Game
                 switch ((EEffectId) _tableState.EffectIds[i])
                 {
                     case EEffectId.Hp:
-                        _target.Hp -= value * (_effectOverlapCount + 1);
                         break;
                     case EEffectId.Speed:
                         _target.SpeedRatio -= (value * 0.01f) * (_effectOverlapCount + 1);
@@ -114,6 +121,7 @@ namespace GameA.Game
                 }
             }
             _target.SetStateEffect(this, false);
+            OnRemovedView();
             Excute(EEffectType.End);
             return true;
         }
@@ -124,11 +132,12 @@ namespace GameA.Game
             {
                 return;
             }
+            _timer++;
             if (_intervalTime > 0 && _timer % _intervalTime == 0)
             {
                 Excute(EEffectType.Interval);
             }
-            _timer++;
+            UpdateStateView();
             if (_timer == _curDuration)
             {
                 //移除
@@ -193,5 +202,78 @@ namespace GameA.Game
         {
             return string.Format("Duration: {0}, IntervalTime: {1}, Target: {2}, Timer: {3}, EffectOverlapCount: {4}, CurDuration: {5}", _duration, _intervalTime, _target, _timer, _effectOverlapCount, _curDuration);
         }
+        
+        #region view renderer
+
+        private void OnRemovedView()
+        {
+            var view = _target.View;
+            if (view == null)
+            {
+                return;
+            }
+            if (_tableState.StateType == (int)EStateType.Invincible)
+            {
+                view.SetRendererColor(Color.white);
+            }
+        }
+
+        private void UpdateStateView()
+        {
+            //利用相对位置设置Effect的层级
+            if (_effect != null)
+            {
+                _effect.Trans.localPosition = Vector3.forward * (_target.CurMoveDirection == EMoveDirection.Left ? 0.01f : -0.01f);
+                _effect.Trans.rotation = Quaternion.identity;
+            }
+            if (_tableState.Id == 61)
+            {
+                FlashRenderer();
+            }
+            else if (_tableState.Id == 62)
+            {
+                Chameleon();
+            }
+        }
+        
+        protected void FlashRenderer()
+        {
+            var view = _target.View;
+            if (view == null)
+            {
+                return;
+            }
+            int t = _timer % 20;
+            var a = t > 9 ? Mathf.Clamp01((t - 10) * 0.1f + 0.3f) : Mathf.Clamp01(1f - t * 0.1f + 0.3f);
+            view.SetRendererColor(new Color(1f, 1f, 1f, a));
+        }
+
+        protected void Chameleon()
+        {
+            var view = _target.View;
+            if (view == null)
+            {
+                return;
+            }
+            var a = new Color(1f, 0.8235f, 0.804f, 0.804f);
+            var b = new Color(0.9f, 0.41f, 0.804f, 0.804f);
+            var c = new Color(1f, 0.745f, 0.63f, 0.804f);
+            const int interval = 5;
+            int t = GameRun.Instance.LogicFrameCnt % (3 * interval);
+            if (t < interval)
+            {
+                view.SetRendererColor(Color.Lerp(a, b, t * (1f / interval)));
+            }
+            else if (t < 2 * interval)
+            {
+                view.SetRendererColor(Color.Lerp(c, b, (2f * interval - t) * (1f / interval)));
+            }
+            else
+            {
+                view.SetRendererColor(Color.Lerp(a, c, (3f * interval - t) * (1f / interval)));
+            }
+        }
+        
+        #endregion
     }
 }
