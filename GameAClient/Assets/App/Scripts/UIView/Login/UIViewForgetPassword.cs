@@ -19,5 +19,6 @@ namespace GameA
         public Button GetSMSCode;
         public Text GetSMSCodeBtnLabel;
         public Button DoResetPassword;
+        public Button CloseBtn;
     }
 }

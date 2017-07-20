@@ -89,7 +89,71 @@ namespace SoyEngine
             MessengerAsync.Broadcast(EMessengerType.OnAccountLogout);
         }
 
-        public void SignUp(string account,
+        public void ChangePassword(
+            string oldPassword,
+            string newPassword,
+            string verificationCode,
+            Action<Msg_SC_CMD_ChangePassword> successCallback, Action<EChangePasswordCode> failedCallback
+            )
+        {
+            string Res = AppData.Instance.AppResVersion.ToString();
+            RemoteCommands.ChangePassword(oldPassword, newPassword,verificationCode, ret =>
+                {
+                    if (ret.ResultCode == (int)EChangePasswordCode.CPC_Success)
+                    {
+                        OnTokenChange(ret.Token);
+                        if (null != successCallback)
+                        {
+                            successCallback.Invoke(ret);
+                        }
+                    }
+                    else
+                    {
+                        failedCallback.Invoke((EChangePasswordCode)ret.ResultCode);
+                    }
+                }, (errorCode) => {
+                    if (null != failedCallback)
+                    {
+                        failedCallback.Invoke(EChangePasswordCode.CPC_None);
+                    }
+                });
+
+        }
+
+        public  void ResetPassword(
+            string account,
+            string password,
+            EAccountIdentifyType accountType,
+            string verificationCode,
+            Action<Msg_SC_CMD_ForgetPassword> successCallback, Action<EForgetPasswordCode> failedCallback)
+        {
+
+            string Res = AppData.Instance.AppResVersion.ToString();
+            RemoteCommands.ForgetPassword(account, password, accountType, verificationCode, GlobalVar.Instance.AppVersion,
+                Res, _devicePlatform, ret =>
+                {
+                    if (ret.ResultCode == (int)EForgetPasswordCode.FPC_Success)
+                    {
+                        OnTokenChange(ret.Token);
+                        if (null != successCallback)
+                        {
+                            successCallback.Invoke(ret);
+                        }
+                    }
+                    else
+                    {
+                        failedCallback.Invoke((EForgetPasswordCode)ret.ResultCode);
+                    }
+                }, (errorCode) => {
+                    if (null != failedCallback)
+                    {
+                        failedCallback.Invoke(EForgetPasswordCode.FPC_None);
+                    }
+                });
+        }
+
+        public void SignUp(
+            string account,
             string password,
             EAccountIdentifyType accountType,
             string verificationCode,
@@ -102,7 +166,7 @@ namespace SoyEngine
                     if (ret.ResultCode == (int)ERegisterCode.RegisterC_Success)
                     {
                         _userGuid = ret.UserId;
-                        OnTokenChange(ret.Token.ToString());
+                        OnTokenChange(ret.Token);
                         if (null != successCallback)
                         {
                             successCallback.Invoke(ret);

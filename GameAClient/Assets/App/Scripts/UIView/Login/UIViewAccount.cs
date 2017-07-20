@@ -15,5 +15,6 @@ namespace GameA
         //public Button WeChatLoginIn;
         public Button LoginOut;
         public Button CloseBtn;
+        public Button ChangePwd;
     }
 }
