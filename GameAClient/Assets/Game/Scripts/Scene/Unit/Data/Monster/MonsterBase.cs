@@ -16,7 +16,6 @@ namespace GameA.Game
     {
         protected IntVec2 _lastPos;
         protected int _monsterSpeed;
-        protected int _curMaxSpeedX;
         protected int _curFriction;
 
         protected override bool OnInit()

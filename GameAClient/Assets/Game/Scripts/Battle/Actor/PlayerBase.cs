@@ -22,8 +22,6 @@ namespace GameA.Game
         [SerializeField]
         protected PlayerInput _playerInput;
 
-        protected int _curMaxSpeedX;
-
         protected SkillCtrl _skillCtrl;
         protected Gun _gun;
 

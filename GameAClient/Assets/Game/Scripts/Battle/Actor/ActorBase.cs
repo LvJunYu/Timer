@@ -42,6 +42,8 @@ namespace GameA.Game
         /// 每一帧只检查一个水块
         /// </summary>
         protected bool _hasWaterCheckedInFrame;
+        
+        protected int _curMaxSpeedX;
 
         public int AttackedTimer
         {
@@ -56,6 +58,11 @@ namespace GameA.Game
         public override bool IsActor
         {
             get { return true; }
+        }
+
+        public int CurMaxSpeedX
+        {
+            get { return _curMaxSpeedX; }
         }
 
         protected override void Clear()

@@ -1135,7 +1135,7 @@ namespace GameA.Game
                 int extraDeltaY = int.MinValue;
                 for (int i = 0; i < _downUnits.Count; i++)
                 {
-                    var deltaPos = _downUnits[i].GetDeltaImpactPos();
+                    var deltaPos = _downUnits[i].GetDeltaImpactPos(this);
                     if (deltaPos.x > 0 && deltaPos.x > right)
                     {
                         right = deltaPos.x;
@@ -1366,7 +1366,7 @@ namespace GameA.Game
             return _tableUnit.RendererToCollider(_curPos, Rotation);
         }
 
-        public virtual IntVec2 GetDeltaImpactPos()
+        public virtual IntVec2 GetDeltaImpactPos(UnitBase unit)
         {
             return _deltaImpactPos;
         }
