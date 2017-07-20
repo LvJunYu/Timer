@@ -17,6 +17,7 @@ namespace GameA
     public class UIViewLogin : UIViewBase
     {
 	    public Button ForgetPasswordBtnRes;
+	    public Button ChangePasswordBtnRes;
 		public InputField Phone;
 		public InputField Pwd;
 		public Button Login;

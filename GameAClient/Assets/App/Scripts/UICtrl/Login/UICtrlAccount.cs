@@ -22,6 +22,7 @@ namespace GameA
             base.OnViewCreated();
             _cachedView.LoginOut.onClick.AddListener(LoginOut);
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtnClick);
+            _cachedView.ChangePwd.onClick.AddListener(OnChangePWDBtnClick);
         }
 
         private void LoginOut()
@@ -41,6 +42,11 @@ namespace GameA
         public void OnCloseBtnClick()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlAccount>();
+        }
+
+        public void OnChangePWDBtnClick()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlChangePassword>();
         }
     }
 }

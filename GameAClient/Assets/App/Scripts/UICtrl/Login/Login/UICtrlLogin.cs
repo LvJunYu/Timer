@@ -32,7 +32,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.MainFrame;
+            _groupId = (int) EUIGroupType.FrontUI;
         }
 
         protected override void OnViewCreated()
@@ -42,6 +42,8 @@ namespace GameA
             _cachedView.Guest.onClick.AddListener(GuestLoginIn);
             _cachedView.Signup.onClick.AddListener(SignUp);
             _cachedView.Login.onClick.AddListener(OnLogin);
+            _cachedView.ForgetPasswordBtnRes.onClick.AddListener(ForgetPWD);
+            _cachedView.ChangePasswordBtnRes.onClick.AddListener(ChangePWD);
         }
 
         protected override void OnOpen(object parameter)
@@ -147,6 +149,17 @@ namespace GameA
         {
             LocalUser.Instance.Account.GuestLoginIn(SocialApp.Instance.LoginSucceed, null);
         }
+
+        private void ForgetPWD()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlForgetPassword>();
+        }
+
+        private void ChangePWD()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlChangePassword>();
+        }
+
 
         private void SignUp()
         {

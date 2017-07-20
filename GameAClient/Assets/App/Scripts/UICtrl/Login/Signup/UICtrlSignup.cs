@@ -30,7 +30,7 @@ namespace GameA
         #region 方法
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.MainFrame;
+            _groupId = (int)EUIGroupType.FrontUI;
         }
 
         protected override void OnViewCreated()
