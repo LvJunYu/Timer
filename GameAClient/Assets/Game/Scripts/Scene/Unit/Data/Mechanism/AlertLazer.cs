@@ -59,6 +59,7 @@ namespace GameA.Game
             GM2DTools.GetBorderPoint(_colliderGrid, (EDirectionType)Rotation, ref _pointA, ref _pointB);
             _distance = GM2DTools.GetDistanceToBorder(_pointA, Rotation);
             _checkGrid = SceneQuery2D.GetGrid(_pointA, _pointB, Rotation, _distance);
+            _checkGrid.ShrinkSelf(160);
             _borderCenterPoint = (_pointA + _pointB) / 2;
         }
 
