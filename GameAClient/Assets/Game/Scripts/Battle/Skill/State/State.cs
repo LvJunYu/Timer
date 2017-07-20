@@ -75,7 +75,7 @@ namespace GameA.Game
             return true;
         }
 
-        private void Excute(EEffectType eEffectType)
+        private bool Excute(EEffectType eEffectType)
         {
             for (int i = 0; i < _tableState.EffectTypes.Length; i++)
             {
@@ -98,7 +98,12 @@ namespace GameA.Game
                     case EEffectId.HpMax:
                         break;
                 }
+                if (!_run)
+                {
+                    return false;
+                }
             }
+            return true;
         }
 
         public virtual bool OnRemoved()
@@ -132,17 +137,20 @@ namespace GameA.Game
             {
                 return;
             }
-            _timer++;
             if (_intervalTime > 0 && _timer % _intervalTime == 0)
             {
-                Excute(EEffectType.Interval);
+                if (!Excute(EEffectType.Interval))
+                {
+                    return;
+                }
             }
             UpdateStateView();
-            if (_timer == _curDuration)
+            if (_timer >= _curDuration)
             {
                 //移除
                 _target.RemoveStates(_tableState.Id);
             }
+            _timer++;
         }
 
         public void OnGet()
@@ -159,14 +167,17 @@ namespace GameA.Game
             {
                 case EOverlapType.None:
                     break;
+                case EOverlapType.TimeMax:
+                    state._curDuration += state._duration - state._timer;
+                    break;
                 case EOverlapType.Time:
-                    state._curDuration = state._duration;
+                    state._curDuration += state._duration;
                     break;
                 case EOverlapType.Effect:
                     state._effectOverlapCount++;
                     break;
                 case EOverlapType.All:
-                    state._curDuration = state._duration;
+                    state._curDuration += state._duration;
                     state._effectOverlapCount++;
                     break;
             }
@@ -178,6 +189,9 @@ namespace GameA.Game
             switch ((EOverlapType)state.TableState.OverlapType)
             {
                 case EOverlapType.None:
+                    break;
+                case EOverlapType.TimeMax:
+                    state._curDuration = 0;
                     break;
                 case EOverlapType.Time:
                     state._curDuration -= state._duration;

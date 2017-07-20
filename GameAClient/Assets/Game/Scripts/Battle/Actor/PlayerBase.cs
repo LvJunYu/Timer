@@ -488,6 +488,7 @@ namespace GameA.Game
                                     _playerInput.Clear();
                                     ClearRunTime();
                                     _isAlive = true;
+                                    OnHpChanged(_maxHp);
                                     AddStates(61);
                                     _dieTime = 0;
                                     _box = null;

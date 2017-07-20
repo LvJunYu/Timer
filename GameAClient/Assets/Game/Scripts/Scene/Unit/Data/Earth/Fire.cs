@@ -61,8 +61,11 @@ namespace GameA.Game
 
         public static void OnEffect(UnitBase other)
         {
-            other.AddStates(21);
-//            other.InFire();
+            State state;
+            if (!other.TryGetState(EStateType.Fire, out state))
+            {
+                other.AddStates(21);
+            }
         }
     }
 }

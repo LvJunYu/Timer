@@ -39,6 +39,10 @@ namespace GameA.Game
         protected int _hpRecoverTimer = 3 * ConstDefineGM2D.FixedFrameCount;
 
         protected SpineObject _effectIce;
+        /// <summary>
+        /// 每一帧只检查一个水块
+        /// </summary>
+        protected bool _hasWaterCheckedInFrame;
 
         public int AttackedTimer
         {
@@ -66,6 +70,12 @@ namespace GameA.Game
             RemoveAllStates();
         }
 
+        public override void CheckStart()
+        {
+            base.CheckStart();
+            _hasWaterCheckedInFrame = false;
+        }
+
         public override void UpdateLogic()
         {
             if (_isAlive && _isStart && !_isFreezed)
@@ -76,7 +86,7 @@ namespace GameA.Game
                 }
             }
         }
-
+        
         public override void AddStates(params int[] ids)
         {
             if (!_isAlive)
@@ -166,12 +176,11 @@ namespace GameA.Game
                 if (_currentStates[i].TableState.StateType == (int)stateType)
                 {
                     RemoveState(_currentStates[i]);
-                    _currentStates.RemoveAt(i);
                 }
             }
         }
         
-        public bool TryGetState(EStateType stateType, out State state)
+        public override bool TryGetState(EStateType stateType, out State state)
         {
             for (int i = _currentStates.Count - 1; i >= 0; i--)
             {
@@ -316,11 +325,19 @@ namespace GameA.Game
 
         internal override void InWater()
         {
+            //每一帧只检测一个水。
+            if (_hasWaterCheckedInFrame)
+            {
+                return;
+            }
+            _hasWaterCheckedInFrame = true;
             if (_eDieType == EDieType.Fire)
             {
                 //跳出水里
+                Speed = IntVec2.zero;
                 ExtraSpeed.y = 240;
                 RemoveStateByType(EStateType.Fire);
+                _eDieType = EDieType.None;
                 return;
             }
             if (!_isAlive || IsInvincible)

@@ -1549,6 +1549,12 @@ namespace GameA.Game
         public virtual void RemoveAllDebuffs()
         {
         }
+        
+        public virtual bool TryGetState(EStateType stateType, out State state)
+        {
+            state = null;
+            return false;
+        }
 
         #endregion
 

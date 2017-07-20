@@ -63,6 +63,7 @@ namespace GameA.Game
     public enum EOverlapType
     {
         None,
+        TimeMax,
         Time,
         Effect,
         All
