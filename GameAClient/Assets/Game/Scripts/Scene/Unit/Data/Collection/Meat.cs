@@ -1,18 +1,9 @@
-﻿/********************************************************************
-** Filename : Life
-** Author : Dong
-** Date : 2017/5/2 星期二 下午 4:57:12
-** Summary : Life
-***********************************************************************/
-
-using System;
-using System.Collections;
-using DG.Tweening;
+﻿using DG.Tweening;
 
 namespace GameA.Game
 {
-    [Unit(Id = 6002, Type = typeof(Life))]
-    public class Life : CollectionBase
+    [Unit(Id = 6004, Type = typeof(Meat))]
+    public class Meat : CollectionBase
     {
         internal override bool InstantiateView()
         {
@@ -28,7 +19,7 @@ namespace GameA.Game
 
         protected override void OnTrigger(UnitBase other)
         {
-            other.Life ++;
+            other.Hp += 200;
             base.OnTrigger(other);
         }
     }

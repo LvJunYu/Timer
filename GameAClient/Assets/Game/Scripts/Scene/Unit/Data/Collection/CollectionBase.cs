@@ -39,7 +39,7 @@ namespace GameA.Game
         {
             if (other.IsMain)
             {
-                OnTrigger();
+                OnTrigger(other);
             }
             return base.OnRightHit(other, ref x, checkOnly);
         }
@@ -48,7 +48,7 @@ namespace GameA.Game
         {
             if (other.IsMain)
             {
-                OnTrigger();
+                OnTrigger(other);
             } 
             return base.OnLeftHit(other, ref x, checkOnly);
         }
@@ -57,7 +57,7 @@ namespace GameA.Game
         {
             if (other.IsMain)
             {
-                OnTrigger();
+                OnTrigger(other);
             }
             return base.OnUpHit(other, ref y, checkOnly);
         }
@@ -66,12 +66,12 @@ namespace GameA.Game
         {
             if (other.IsMain)
             {
-                OnTrigger();
+                OnTrigger(other);
             }
             return base.OnDownHit(other, ref y, checkOnly);
         }
 
-        protected virtual void OnTrigger()
+        protected virtual void OnTrigger(UnitBase other)
         {
             OnDead();
             PlayMode.Instance.DestroyUnit(this);

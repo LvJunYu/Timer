@@ -283,6 +283,7 @@ namespace GameA.Game
             {
                 _fanForce += iter.Current.Value;
             }
+            ExtraSpeed.x = _fanForce.x;
         }
 
         internal override void OutFan(UnitBase fanUnit)
