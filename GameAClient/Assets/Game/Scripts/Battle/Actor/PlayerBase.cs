@@ -23,10 +23,6 @@ namespace GameA.Game
         protected PlayerInput _playerInput;
 
         protected int _curMaxSpeedX;
-        [SerializeField]
-        protected int _flashTime;
-        [SerializeField]
-        protected int _invincibleTime;
 
         protected SkillCtrl _skillCtrl;
         protected Gun _gun;
@@ -66,26 +62,15 @@ namespace GameA.Game
 
         public override bool IsInvincible
         {
-            get { return _invincibleTime > 0 || _flashTime > 0; }
+            get
+            {
+                return HasStateType(EStateType.Invincible);
+            }
         }
 
         public PlayerInput PlayerInput
         {
             get { return _playerInput; }
-        }
-
-        public int InvincibleTime
-        {
-            get { return _invincibleTime; }
-            set
-            {
-                if (value > 0 && value > _invincibleTime)
-                {
-                    PlayEffect(_invincibleEfffect);
-                    _invincibleTime = value;
-//                    OutFire();
-                }
-            }
         }
 
         public override IntVec2 FirePos
@@ -116,11 +101,9 @@ namespace GameA.Game
 
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 2);
             _skillCtrl.Clear();
-            ChangeWeapon(6);
+            ChangeWeapon(2);
             
             _dieTime = 0;
-            _flashTime = 0;
-            _invincibleTime = 0;
             _box = null;
             _eBoxOperateType = EBoxOperateType.None;
             ClearView();
@@ -146,7 +129,7 @@ namespace GameA.Game
             {
                 _gun = PlayMode.Instance.CreateRuntimeUnit(10000, _curPos) as Gun;
             }
-            _flashTime = TableConvert.GetTime(BattleDefine.FlashTime) ;
+            AddStates(61);
             _revivePos = _curPos;
             _revivePosStack.Clear();
             if (PlayMode.Instance.IsUsingBoostItem(SoyEngine.Proto.EBoostItemType.BIT_AddLifeCount1))
@@ -454,48 +437,12 @@ namespace GameA.Game
 
         #region event
 
-        public override void OnShootHit(UnitBase other)
-        {
-            OnDamage();
-        }
-
-        public override void OnHeroTouch(UnitBase other)
-        {
-            if (_invincibleTime > 0)
-            {
-                other.OnInvincibleHit(this);
-                return;
-            }
-            OnDamage();
-        }
-
         public override void OnCrushHit(UnitBase other)
         {
             if (_grounded)
             {
                 OnDead();
             }
-        }
-
-        public override void OnDamage()
-        {
-            if (!_isAlive)
-            {
-                return;
-            }
-            if (!PlayMode.Instance.SceneState.GameRunning)
-            {
-                return;
-            }
-            if (_invincibleTime > 0)
-            {
-                return;
-            }
-            if (_flashTime > 0)
-            {
-                return;
-            }
-            OnDead();
         }
 
         protected override void OnDead()
@@ -505,10 +452,6 @@ namespace GameA.Game
                 return;
             }
             LogHelper.Debug("{0}, OnDead", GetType().Name);
-            _invincibleTime = 0;
-            _flashTime = 0;
-            StopEffect(_invincibleEfffect);
-            StopEffect(_inFireEfffect);
             if (_gun != null)
             {
                 _gun.Stop();
@@ -544,7 +487,8 @@ namespace GameA.Game
                                     _playerInput.Clear();
                                     ClearRunTime();
                                     _isAlive = true;
-                                    _flashTime = 100;
+                                    OnHpChanged(_maxHp);
+                                    AddStates(61);
                                     _dieTime = 0;
                                     _box = null;
                                     _trans.eulerAngles = new Vector3(0, 0, 0);
@@ -570,7 +514,6 @@ namespace GameA.Game
             }
             _eUnitState = EUnitState.Portaling;
             PlayMode.Instance.Freeze(this);
-            StopEffect(_invincibleEfffect);
             _playerInput.Clear();
             ClearRunTime();
             _trans.eulerAngles = new Vector3(90, 0, 0);
@@ -696,10 +639,6 @@ namespace GameA.Game
 
         #region View
 
-        [SerializeField]
-        protected UnityNativeParticleItem _invincibleEfffect;
-        protected UnityNativeParticleItem _inFireEfffect;
-
         /// <summary>
         /// 跑步声音间隔
         /// </summary>
@@ -716,8 +655,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            _invincibleEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectOrbitBuff", _trans);
-            _inFireEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectDeathFire", _trans);
             _reviveEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null, ESortingOrder.LazerEffect));
             _portalEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null, ESortingOrder.LazerEffect));
             return true;
@@ -732,8 +669,6 @@ namespace GameA.Game
             }
             _reviveEffect.Stop();
             _portalEffect.Stop();
-            StopEffect(_invincibleEfffect);
-            StopEffect(_inFireEfffect);
         }
 
         internal override void OnObjectDestroy()
@@ -741,10 +676,6 @@ namespace GameA.Game
             base.OnObjectDestroy();
             _reviveEffect.Free();
             _portalEffect.Free();
-            FreeEffect(_invincibleEfffect);
-            FreeEffect(_inFireEfffect);
-            _invincibleEfffect = null;
-            _inFireEfffect = null;
         }
 
         public override void UpdateView(float deltaTime)
@@ -782,35 +713,6 @@ namespace GameA.Game
             }
             CheckOutOfMap();
             CheckBox();
-            if (_invincibleTime > 0)
-            {
-                _invincibleTime--;
-                if (_invincibleTime == 0)
-                {
-                    if (_view != null)
-                    {
-                        _view.SetRendererColor(Color.white);
-                    }
-                    StopEffect(_invincibleEfffect);
-                }
-                else
-                {
-                    Chameleon();
-                }
-            }
-            if (_flashTime > 0)
-            {
-                _flashTime--;
-                FlashRenderer(_flashTime);
-            }
-            if (_eDieType == EDieType.Fire)
-            {
-                if (_inFireEfffect != null)
-                {
-                    _inFireEfffect.Trans.localPosition = Vector3.forward * (_curMoveDirection == EMoveDirection.Left ? 0.01f : -0.01f);
-                    _inFireEfffect.Trans.rotation = Quaternion.identity;
-                }
-            }
             if (_isAlive)
             {
                 if (!_grounded)
@@ -969,42 +871,6 @@ namespace GameA.Game
             if (_downUnit.Id == UnitDefine.ClayId)
             {
                 GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.RunOnMud, _trans.position + Vector3.up * 0.2f, scale, 1);
-            }
-        }
-
-        protected void FlashRenderer(int time)
-        {
-            if (_view == null)
-            {
-                return;
-            }
-            int t = time % 20;
-            var a = t > 9 ? Mathf.Clamp01((t - 10) * 0.1f + 0.3f) : Mathf.Clamp01(1f - t * 0.1f + 0.3f);
-            _view.SetRendererColor(new Color(1f, 1f, 1f, a));
-        }
-
-        protected void Chameleon()
-        {
-            if (_view == null)
-            {
-                return;
-            }
-            var a = new Color(1f, 0.8235f, 0.804f, 0.804f);
-            var b = new Color(0.9f, 0.41f, 0.804f, 0.804f);
-            var c = new Color(1f, 0.745f, 0.63f, 0.804f);
-            const int interval = 5;
-            int t = GameRun.Instance.LogicFrameCnt % (3 * interval);
-            if (t < interval)
-            {
-                _view.SetRendererColor(Color.Lerp(a, b, t * (1f / interval)));
-            }
-            else if (t < 2 * interval)
-            {
-                _view.SetRendererColor(Color.Lerp(c, b, (2f * interval - t) * (1f / interval)));
-            }
-            else
-            {
-                _view.SetRendererColor(Color.Lerp(a, c, (3f * interval - t) * (1f / interval)));
             }
         }
 

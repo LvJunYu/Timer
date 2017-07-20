@@ -26,6 +26,9 @@ namespace GameA.Game
         Slow,
         Fire,
         Ice,
+        Clay,
+        SpeedUp,
+        Invincible
     }
 
     /// <summary>
@@ -60,6 +63,7 @@ namespace GameA.Game
     public enum EOverlapType
     {
         None,
+        TimeMax,
         Time,
         Effect,
         All

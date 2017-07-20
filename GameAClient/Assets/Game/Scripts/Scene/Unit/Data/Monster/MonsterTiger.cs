@@ -13,21 +13,14 @@
             return true;
         }
 
+        internal override bool InstantiateView()
+        {
+            return base.InstantiateView();
+        }
+
         protected override void UpdateMonsterAI()
         {
             
-        }
-
-        protected override void OnRightStampedEmpty()
-        {
-            SpeedX = 0;
-            ChangeWay(EMoveDirection.Left);
-        }
-
-        protected override void OnLeftStampedEmpty()
-        {
-            SpeedX = 0;
-            ChangeWay(EMoveDirection.Right);
         }
     }
 }

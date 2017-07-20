@@ -123,7 +123,6 @@ namespace GameA.Game
         public int Hp
         {
             get { return _hp; }
-            set { _hp = Mathf.Clamp(value, 0, _maxHp); }
         }
 
         public virtual EDieType EDieType
@@ -790,35 +789,32 @@ namespace GameA.Game
         }
 
         /// <summary>
-        /// 怪物触碰打击
-        /// </summary>
-        public virtual void OnHeroTouch(UnitBase other)
-        {
-        }
-
-        /// <summary>
-        /// 无敌打击
-        /// </summary>
-        public virtual void OnInvincibleHit(UnitBase other)
-        {
-        }
-
-        /// <summary>
-        /// 射击打击
-        /// </summary>
-        public virtual void OnShootHit(UnitBase other)
-        {
-        }
-
-        /// <summary>
         /// 压死
         /// </summary>
         public virtual void OnCrushHit(UnitBase other)
         {
         }
 
-        public virtual void OnDamage()
+        public virtual void OnHpChanged(int hpChanged)
         {
+            if (!_isAlive || !PlayMode.Instance.SceneState.GameRunning)
+            {
+                return;
+            }
+            if (hpChanged < 0)
+            {
+                //无敌时候不管用
+                if (IsInvincible)
+                {
+                    return;
+                }
+            }
+            _hp += hpChanged;
+            _hp = Mathf.Clamp(_hp, 0, _maxHp);
+            if (_hp == 0)
+            {
+                OnDead();
+            }
         }
 
         /// <summary>
@@ -1553,12 +1549,13 @@ namespace GameA.Game
         public virtual void RemoveAllDebuffs()
         {
         }
+        
+        public virtual bool TryGetState(EStateType stateType, out State state)
+        {
+            state = null;
+            return false;
+        }
 
         #endregion
-
-        public virtual void SetStateEffect(State state, bool within)
-        {
-            
-        }
     }
 }

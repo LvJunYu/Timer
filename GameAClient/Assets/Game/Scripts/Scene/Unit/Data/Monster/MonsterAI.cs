@@ -161,7 +161,7 @@ namespace GameA.Game
             }
         }
 
-        protected void OnThink()
+        protected virtual void OnThink()
         {
             IntVec2 rel = CenterPos - PlayMode.Instance.MainPlayer.CenterPos;
             if (Mathf.Abs(rel.x) <= _seekRange.x && Mathf.Abs(rel.y) <= _seekRange.y)
@@ -170,7 +170,7 @@ namespace GameA.Game
             }
         }
 
-        protected void OnAttack()
+        protected virtual void OnAttack()
         {
             if (_path.Count == 0)
             {

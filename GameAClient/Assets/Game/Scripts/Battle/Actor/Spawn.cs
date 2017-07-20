@@ -13,5 +13,6 @@ namespace GameA.Game
     [Unit(Id = 1001, Type = typeof(Spawn))]
     public class Spawn : BlockBase
     {
+        
     }
 }

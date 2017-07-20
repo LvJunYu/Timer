@@ -52,7 +52,7 @@ namespace GameA.Game
 
         private void OnEffect(UnitBase other, EDirectionType eDirectionType)
         {
-            other.Hp -= 99999;
+            other.OnHpChanged(-99999);
         }
     }
 }

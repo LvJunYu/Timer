@@ -15,7 +15,7 @@ namespace GameA.Game
 {
     public class UnitManager : IDisposable
     {
-        public static UnitManager _instance;
+        private static UnitManager _instance;
         private readonly Dictionary<EUIType, List<Table_Unit>> _typeUnits = new Dictionary<EUIType, List<Table_Unit>>();
         private readonly Dictionary<int, Type> _unitTypes = new Dictionary<int, Type>();
         public readonly Dictionary<int, Table_Unit> _units = new Dictionary<int, Table_Unit>();
