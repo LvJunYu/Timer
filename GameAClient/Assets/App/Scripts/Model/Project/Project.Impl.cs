@@ -326,7 +326,11 @@ namespace GameA
                 form.AddBinaryData("recordFile", recordBytes);
             }
             String oldIconPath = _iconPath;
-            RefreshProjectUploadParam();
+            // 如果是在工坊界面修改关卡的信息，就不用更新附加参数
+            if (null != dataBytes)
+            {
+                RefreshProjectUploadParam();
+            }
             if (LocalDataState == ELocalDataState.LDS_UnCreated) {
                 RemoteCommands.CreateProject (
                     Name,
@@ -375,7 +379,8 @@ namespace GameA
                     recordUsedTime,
                     timeLimit,
                     winCondition,
-                    GetMsgProjectUploadParam(),
+                    // 如果是在工坊界面修改关卡的信息，就不必传附加参数
+                    null == dataBytes ? null : GetMsgProjectUploadParam(),
                     msg => {
                         OnSyncFromParent(msg.ProjectData);
                         if (null != iconBytes && msg.ProjectData.IconPath != oldIconPath) {
