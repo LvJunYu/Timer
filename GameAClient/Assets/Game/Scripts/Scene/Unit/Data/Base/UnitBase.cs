@@ -93,7 +93,7 @@ namespace GameA.Game
         /// <summary>
         /// 加速减速参数
         /// </summary>
-        protected float _speedRatio;
+        protected float _speedStateRatio;
 
         #endregion
 
@@ -304,10 +304,10 @@ namespace GameA.Game
             set { _speed = value; }
         }
 
-        public float SpeedRatio
+        public float SpeedStateRatio
         {
-            get { return _speedRatio; }
-            set { _speedRatio = value; }
+            get { return _speedStateRatio; }
+            set { _speedStateRatio = value; }
         }
 
         public bool Grounded
@@ -630,7 +630,7 @@ namespace GameA.Game
             ClearRunTime();
             _canAttack = true;
             _canMotor = true;
-            _speedRatio = 1;
+            _speedStateRatio = 1;
             _isAlive = true;
             _dieTime = 0;
             _deltaPos = IntVec2.zero;

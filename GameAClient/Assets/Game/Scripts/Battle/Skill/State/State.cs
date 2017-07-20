@@ -90,7 +90,7 @@ namespace GameA.Game
                         _target.OnHpChanged(value * (_effectOverlapCount + 1));
                         break;
                     case EEffectId.Speed:
-                        _target.SpeedRatio += (value * 0.01f) * (_effectOverlapCount + 1);
+                        _target.SpeedStateRatio += (value * 0.01f) * (_effectOverlapCount + 1);
                         break;
                     case EEffectId.BanAttack:
                         _target.CanAttack = false;
@@ -116,7 +116,7 @@ namespace GameA.Game
                     case EEffectId.Hp:
                         break;
                     case EEffectId.Speed:
-                        _target.SpeedRatio -= (value * 0.01f) * (_effectOverlapCount + 1);
+                        _target.SpeedStateRatio -= (value * 0.01f) * (_effectOverlapCount + 1);
                         break;
                     case EEffectId.BanAttack:
                         _target.CanAttack = true;
@@ -223,7 +223,7 @@ namespace GameA.Game
             if (_target.Animation != null && !string.IsNullOrEmpty(_tableState.Animation) && _target.Animation.HasAnimation(_tableState.Animation))
             {
                 _target.Animation.Reset();
-                _target.Animation.PlayLoop(_tableState.Animation);
+                _target.Animation.PlayLoop(_tableState.Animation, 1, 1);
             }
         }
 

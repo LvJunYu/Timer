@@ -28,13 +28,12 @@ namespace GameA.Game
         /// </summary>
         private static HashSet<IntVec3> _cacheIntersectUnits = new HashSet<IntVec3>();
         protected bool _onClay;
-        protected bool _lastOnClay;
         protected bool _onIce;
         [SerializeField] protected IntVec2 _fanForce;
         protected Dictionary<IntVec3, IntVec2> _fanForces = new Dictionary<IntVec3, IntVec2>();
-        protected const float SpeedClayRatio = -0.8f;
-        protected const float SpeedFireRatio = 0.5f;
-        protected const float SpeedHoldingBoxRatio = -0.7f;
+        protected const float SpeedClayRatio = 0.2f;
+        protected const float SpeedFireRatio = 1.5f;
+        protected const float SpeedHoldingBoxRatio = 0.3f;
 
         public bool OnClay
         {

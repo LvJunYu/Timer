@@ -240,16 +240,17 @@ namespace GameA.Game
                     OnJump();
                 }
             }
-            if (!_lastOnClay && _onClay)
-            {
-                _speedRatio += SpeedClayRatio;
-            }
-            else if (_lastOnClay && !_onClay)
-            {
-                _speedRatio -= SpeedClayRatio;
-            }
             _curMaxSpeedX = _playerInput._quickenTime == 0 ? BattleDefine.MaxSpeedX : BattleDefine.MaxQuickenSpeedX;
-            _curMaxSpeedX = (int)(_curMaxSpeedX * _speedRatio);
+            float ratio = 1;
+            if (IsHoldingBox())
+            {
+                ratio *= SpeedHoldingBoxRatio;
+            }
+            if (_onClay)
+            {
+                ratio *= SpeedClayRatio;
+            }
+            _curMaxSpeedX = (int)(_curMaxSpeedX * ratio);
             if (air || _grounded)
             {
                 if (_curBanInputTime <= 0)
@@ -393,14 +394,6 @@ namespace GameA.Game
                 return;
             }
             _box.IsHoldingByMain = !_box.IsHoldingByMain;
-            if (_box.IsHoldingByMain)
-            {
-                _speedRatio += SpeedHoldingBoxRatio;
-            }
-            else
-            {
-                _speedRatio -= SpeedHoldingBoxRatio;
-            }
             LogHelper.Debug("OnBoxHoldingChanged: " + _box.IsHoldingByMain);
         }
 
@@ -819,7 +812,6 @@ namespace GameA.Game
                 _portalEffect.Update();
             }
             _lastGrounded = _grounded;
-            _lastOnClay = _onClay;
         }
 
         protected void OnJump()
