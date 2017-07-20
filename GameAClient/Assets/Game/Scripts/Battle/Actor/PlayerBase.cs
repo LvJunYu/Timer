@@ -33,7 +33,6 @@ namespace GameA.Game
         protected Stack<IntVec2> _revivePosStack = new Stack<IntVec2>();
 
         protected Box _box;
-        protected EBoxOperateType _eBoxOperateType;
 
         protected ReviveEffect _reviveEffect = new ReviveEffect();
         protected ReviveEffect _portalEffect = new ReviveEffect();
@@ -103,7 +102,6 @@ namespace GameA.Game
             
             _dieTime = 0;
             _box = null;
-            _eBoxOperateType = EBoxOperateType.None;
             ClearView();
             base.Clear();
         }
@@ -392,6 +390,10 @@ namespace GameA.Game
                 return;
             }
             _box.IsHoldingByMain = !_box.IsHoldingByMain;
+            if (_box.IsHoldingByMain)
+            {
+                SetFacingDir((EMoveDirection)(_box.DirectionRelativeMain + 1));
+            }
             LogHelper.Debug("OnBoxHoldingChanged: " + _box.IsHoldingByMain);
         }
 

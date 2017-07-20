@@ -21,5 +21,14 @@ namespace GameA.Game
         {
             get { return true; }
         }
+        
+        public override void SetFacingDir(EMoveDirection eMoveDirection, bool initView = false)
+        {
+            if (_curMoveDirection != eMoveDirection)
+            {
+                base.SetFacingDir(eMoveDirection);
+                PlayMode.Instance.CurrentShadow.RecordDirChange(eMoveDirection);
+            }
+        }
     }
 }

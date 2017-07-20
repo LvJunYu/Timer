@@ -580,20 +580,12 @@ namespace GameA.Game
                     if (_eClimbState == EClimbState.Left)
                     {
                         _player.SpeedX = 120;
-                        if (_player.CurMoveDirection != EMoveDirection.Right)
-                        {
-                            _player.SetFacingDir(EMoveDirection.Right);
-                            PlayMode.Instance.CurrentShadow.RecordDirChange(EMoveDirection.Right);
-                        }
+                        _player.SetFacingDir(EMoveDirection.Right);
                     }
                     else if (_eClimbState == EClimbState.Right)
                     {
                         _player.SpeedX = -120;
-                        if (_player.CurMoveDirection != EMoveDirection.Left)
-                        {
-                            _player.SetFacingDir(EMoveDirection.Left);
-                            PlayMode.Instance.CurrentShadow.RecordDirChange(EMoveDirection.Left);
-                        }
+                        _player.SetFacingDir(EMoveDirection.Left);
                     }
                 }
                 else if ((_step || _jumpState == 0))
