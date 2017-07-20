@@ -19,5 +19,8 @@ namespace GameA.Game
         
         public const int IceLifeTime = 2000;
         public const int IceSwordLifeTime = 5000;
+        
+        public const int WallJumpBanInputTime = 20;
+        public const int QuickenTime = 3 * ConstDefineGM2D.FixedFrameCount;
     }
 }

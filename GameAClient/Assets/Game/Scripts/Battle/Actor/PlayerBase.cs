@@ -317,7 +317,7 @@ namespace GameA.Game
             _fanForce.y = 0;
             if (!_grounded)
             {
-                if (_playerInput._eClimbState > EClimbState.None)
+                if (_wingCount > 0 || _playerInput._eClimbState > EClimbState.None)
                 {
                     SpeedY = Util.ConstantLerp(SpeedY, -50, 6);
                 }

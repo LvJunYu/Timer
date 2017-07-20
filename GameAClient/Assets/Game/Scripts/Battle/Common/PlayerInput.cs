@@ -107,9 +107,6 @@ namespace GameA.Game
 
         #region Input
 
-        protected const int WallJumpBanInputTime = 20;
-        protected const int QuickenTime = 3*ConstDefineGM2D.FixedFrameCount;
-
         [SerializeField]
         protected List<int> _inputDatas = new List<int>();
 
@@ -555,7 +552,7 @@ namespace GameA.Game
                 if (_eClimbState > EClimbState.None)
                 {
                     _climbJump = true;
-                    _player.CurBanInputTime = 20;
+                    _player.CurBanInputTime = BattleDefine.WallJumpBanInputTime;
                     _player.ExtraSpeed.y = 0;
                     _jumpLevel = 0;
                     _jumpState = EJumpState.Jump1;
@@ -570,15 +567,16 @@ namespace GameA.Game
                         _player.SetFacingDir(EMoveDirection.Left);
                     }
                 }
-                else if (_jumpState == EJumpState.Land)
+                else if (_jumpState == EJumpState.Land || (_player.WingCount > 0 && !_lastJumpInput))
                 {
+                    _player.WingCount--;
                     if (_stepY > 0)
                     {
                         _player.ExtraSpeed.y = _stepY;
                         _stepY = 0;
                     }
                     _jumpLevel = 0;
-                    _player.SpeedY = _player.OnClay ? 50 : 150;
+                    _player.SpeedY = _player.OnClay ? 100 : 150;
                     _jumpState = EJumpState.Jump1;
                     _jumpTimer = 5;
                 }

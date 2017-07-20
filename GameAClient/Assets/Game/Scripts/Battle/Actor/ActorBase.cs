@@ -45,6 +45,14 @@ namespace GameA.Game
         
         protected int _curMaxSpeedX;
 
+        protected  int _wingCount = 10;
+
+        public int WingCount
+        {
+            get { return _wingCount; }
+            set { _wingCount = Mathf.Clamp(value, 0, 10); }
+        }
+
         public int AttackedTimer
         {
             get { return _attackedTimer; }
