@@ -35,8 +35,6 @@ namespace GameA.Game
 
         [SerializeField]
         protected ERunMode _runMode;
-        private const int JumpFirstMaxTime = 105;
-        private const int JumpSecondMaxTime = 205;
         private const int QuickenMaxTime = 3*ConstDefineGM2D.FixedFrameCount;
         private const int QuickenCDTime = 20*ConstDefineGM2D.FixedFrameCount;
 
@@ -92,19 +90,18 @@ namespace GameA.Game
         [SerializeField]
         public int _jumpLevel = 0;
         // 跳跃状态
-        [SerializeField]
-        public int _jumpState = 0;
-        // 停止跳跃标志
-        [SerializeField]
-        protected bool _stopJump = false;
+        [SerializeField] public EJumpState _jumpState;
 
         [SerializeField]
         public EClimbState _eClimbState;
         // 攀墙跳
         [SerializeField]
         protected bool _climbJump = false;
-        protected bool _step;
         protected int _stepY;
+        /// <summary>
+        /// 起跳的动画时间
+        /// </summary>
+        protected int _jumpTimer;
 
         #endregion
 
@@ -161,19 +158,6 @@ namespace GameA.Game
             get { return _climbJump; }
         }
 
-        public bool Step
-        {
-            get { return _step; }
-            set
-            {
-                if (value)
-                {
-                    ResetJumpState();
-                }
-                _step = value;
-            }
-        }
-
         public int StepY
         {
             get { return _stepY; }
@@ -185,7 +169,7 @@ namespace GameA.Game
             get { return _inputDatas; }
         }
 
-        public int JumpState
+        public EJumpState JumpState
         {
             get { return _jumpState; }
         }
@@ -216,10 +200,11 @@ namespace GameA.Game
             _index = 0;
         }
 
-        public void ResetJumpState()
+        public void OnLand()
         {
             _jumpLevel = 0;
-            _jumpState = 0;
+            _jumpState = EJumpState.Land;
+            _jumpTimer = 0;
         }
 
         public void Clear()
@@ -230,6 +215,7 @@ namespace GameA.Game
 
         public void ClearInput()
         {
+            _jumpTimer = 0;
             _lastJumpInput = false;
             _lastHorizontal = 0;
             _curHorizontal = 0;
@@ -240,12 +226,10 @@ namespace GameA.Game
             _upInput = 0;
             _downInput = 0;
             _jumpInput = false;
-            _jumpState = 0;
+            _jumpState = EJumpState.Land;
             _jumpLevel = 0;
-            _stopJump = false;
             _eClimbState = EClimbState.None;
             _climbJump = false;
-            _step = false;
             _stepY = 0;
             _quickenInput = false;
             _lastQuickenInput = false;
@@ -309,7 +293,6 @@ namespace GameA.Game
             CheckJump();
             CheckQuicken();
             CheckSkill();
-            _step = false;
         }
 
         protected void CheckInput()
@@ -571,12 +554,11 @@ namespace GameA.Game
                 //攀墙跳
                 if (_eClimbState > EClimbState.None)
                 {
-                    _player.CurBanInputTime = 20;
                     _climbJump = true;
-                    _player.SpeedY = 0;
+                    _player.CurBanInputTime = 20;
                     _player.ExtraSpeed.y = 0;
-                    _jumpState = 100;
                     _jumpLevel = 0;
+                    _jumpState = EJumpState.Jump1;
                     if (_eClimbState == EClimbState.Left)
                     {
                         _player.SpeedX = 120;
@@ -588,74 +570,47 @@ namespace GameA.Game
                         _player.SetFacingDir(EMoveDirection.Left);
                     }
                 }
-                else if ((_step || _jumpState == 0))
+                else if (_jumpState == EJumpState.Land)
                 {
-                    if (_step)
+                    if (_stepY > 0)
                     {
                         _player.ExtraSpeed.y = _stepY;
+                        _stepY = 0;
                     }
-                    _player.SpeedY = 0;
                     _jumpLevel = 0;
-                    _jumpState = 100;
+                    _player.SpeedY = _player.OnClay ? 50 : 150;
+                    _jumpState = EJumpState.Jump1;
+                    _jumpTimer = 5;
                 }
-                else if ((_jumpState > 0 && _jumpState < 200) && !_lastJumpInput && _jumpLevel == 0 && IsCharacterAbilityAvailable(ECharacterAbility.DoubleJump))
+                else if (!_lastJumpInput && _jumpLevel == 0 && IsCharacterAbilityAvailable(ECharacterAbility.DoubleJump))
                 {
-                    _player.SpeedY = 0;
-                    _player.ExtraSpeed.y = 0;
-                    _jumpState = 200;
                     _jumpLevel = 1;
+                    _player.ExtraSpeed.y = 0;
+                    _player.SpeedY = 150;
+                    _jumpState = EJumpState.Jump2;
+                    _jumpTimer = 5;
                 }
-                _stopJump = false;
             }
-
-            if (_player.ExtraSpeed.y < 0)
+            if (_player.SpeedY < 0)
             {
-                _jumpState = 1;
-                if (_jumpState > 200)
+                _jumpState = EJumpState.Fall;
+            }
+            else
+            {
+                if (_jumpTimer > 0)
                 {
-                    _jumpInput = false;
+                    _jumpTimer--;
+                    if (_jumpTimer == 0)
+                    {
+                        if (_jumpState == EJumpState.Jump1 || _jumpState == EJumpState.Jump2)
+                        {
+                            _jumpState = EJumpState.Fall;
+                        }
+                    }
                 }
-            }
-            if (_jumpState > 200 && _player.SpeedY <= 0)
-            {
-                _jumpInput = false;
-                _stopJump = true;
-            }
-            if (_jumpState >= 200 && !_jumpInput)
-            {
-                _stopJump = true;
-            }
-            if (_jumpState >= 202)
-            {
-                _jumpState++;
-                _player.SpeedY += 10;
-            }
-            else if (_jumpState >= 200)
-            {
-                _jumpState++;
-                _player.SpeedY += 70;
-            }
-            else if (_jumpState >= 102)
-            {
-                _jumpState++;
-                _player.SpeedY += 10;
-            }
-            else if (_jumpState >= 100)
-            {
-                _jumpState++;
-                _player.SpeedY += _player.OnClay ? 50 : 70;
-            }
-            if ((_jumpState > JumpFirstMaxTime && _jumpState < 200) || _jumpState > JumpSecondMaxTime)
-            {
-                _jumpState = 1;
-                _jumpInput = false;
-            }
-            if ((_jumpState >= 102 || _jumpState >= 202) && _stopJump)
-            {
-                _jumpState = 1;
             }
         }
-
+        
         protected void CheckQuicken()
         {
             switch (_littleSkillState)

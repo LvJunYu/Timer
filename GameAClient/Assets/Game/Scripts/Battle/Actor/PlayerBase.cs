@@ -168,11 +168,11 @@ namespace GameA.Game
         {
             bool air = false;
             int friction = 0;
-            if (_playerInput._jumpState >= 100)
-            {
-                air = true;
-            }
-            if (!air && SpeedY != 0)
+//            if (_playerInput._jumpState == EJumpState.Fall)
+//            {
+//                air = true;
+//            }
+            if (SpeedY != 0)
             {
                 air = true;
             }
@@ -198,8 +198,6 @@ namespace GameA.Game
                         _grounded = true;
                         _attackedTimer = 0;
                         _downUnits.Add(unit);
-                        _playerInput._jumpState = 0;
-                        _playerInput._jumpLevel = 0;
                         if (unit.Friction > friction)
                         {
                             friction = unit.Friction;
@@ -235,6 +233,10 @@ namespace GameA.Game
                 {
                     OnJump();
                 }
+            }
+            if (!_lastGrounded && _grounded)
+            {
+                OnLand();
             }
             _curMaxSpeedX = _playerInput._quickenTime == 0 ? BattleDefine.MaxSpeedX : BattleDefine.MaxQuickenSpeedX;
             float ratio = 1;
@@ -557,9 +559,8 @@ namespace GameA.Game
 
         public void Step(int stepY = 0)
         {
-            _playerInput.Step = true;
             _playerInput.StepY = stepY;
-            _grounded = true;
+            OnLand();
         }
 
         #endregion
@@ -582,51 +583,6 @@ namespace GameA.Game
             ExtraSpeed.x = actor.CenterPos.x > CenterPos.x ? -80 : 80;
             _playerInput.ClearInput();
         }
-
-//        internal override void InFire()
-//        {
-//            if (!_isAlive)
-//            {
-//                return;
-//            }
-//            if (IsInvincible)
-//            {
-//                return;
-//            }
-//            if (_eDieType == EDieType.Fire)
-//            {
-//                return;
-//            }
-//            _eDieType = EDieType.Fire;
-//            if (_inFireEfffect == null)
-//            {
-//                _inFireEfffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectDeathFire", _trans);
-//            }
-//            if (_inFireEfffect != null)
-//            {
-//                _inFireEfffect.Play();
-//            }
-//            if (_view != null)
-//            {
-//                _view.SetRendererColor(new Color(0.2f, 0.2f, 0.2f, 1f));
-//            }
-//        }
-//
-//        internal override void OutFire()
-//        {
-//            base.OutFire();
-//            if (_eDieType == EDieType.Fire)
-//            {
-//                if (_inFireEfffect != null)
-//                {
-//                    _inFireEfffect.Stop();
-//                }
-//                if (_view != null)
-//                {
-//                    _view.SetRendererColor(Color.white);
-//                }
-//            }
-//        }
 
         #endregion
 
@@ -738,13 +694,13 @@ namespace GameA.Game
                             effectPos += _curMoveDirection == EMoveDirection.Left ? Vector3.right * 0.25f + Vector3.forward * 0.6f : Vector3.left * 0.25f + Vector3.forward * 0.6f;
                             GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallJump, effectPos);
                         }
-                        if (_playerInput.JumpState == 101 || _playerInput.JumpState == 201)
+                        if (_playerInput.JumpState == EJumpState.Jump1 || _playerInput.JumpState == EJumpState.Jump2)
                         {
                             Messenger.Broadcast(EMessengerType.OnPlayerJump);
                             _animation.PlayOnce(JumpAnimName(_playerInput._jumpLevel));
                             PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_playerInput._jumpLevel), false);
                         }
-                        else if ((SpeedY != 0 || _playerInput.JumpState == 1) && !_animation.IsPlaying(JumpAnimName(_playerInput._jumpLevel)))
+                        else if (_playerInput.JumpState == EJumpState.Fall)
                         {
                             if (_animation.PlayLoop(FallAnimName()))
                             {
@@ -832,16 +788,18 @@ namespace GameA.Game
 
         protected void OnLand()
         {
-            // 新手引导需要知道主角落地了
-            GuideManager.Instance.OnSpecialOperate(2);
-            if (_downUnit == null || _view == null)
-            {
-                return;
-            }
-            if (_downUnit.Id == UnitDefine.ClayId)
-            {
-                GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Land, _trans.position);
-            }
+            _grounded = true;
+            _playerInput.OnLand();
+//            // 新手引导需要知道主角落地了
+//            GuideManager.Instance.OnSpecialOperate(2);
+//            if (_downUnit == null || _view == null)
+//            {
+//                return;
+//            }
+//            if (_downUnit.Id == UnitDefine.ClayId)
+//            {
+//                GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Land, _trans.position);
+//            }
         }
 
         protected void OnDeadAll()

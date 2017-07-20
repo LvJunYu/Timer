@@ -216,15 +216,6 @@ namespace GameA.Game
 		Max,
 	}
 
-
-    public enum EJumpState
-    {
-        None,
-        Jump,
-        Fall,
-        Land,
-    }
-
     public enum EUnitEffectType
     {
         None,
@@ -292,6 +283,14 @@ namespace GameA.Game
         Push,
         Pull,
     }
+	
+	public enum EJumpState
+	{
+		Land,
+		Jump1,
+		Jump2,
+		Fall
+	}
 
     // 怪物类型
     public enum EAIType

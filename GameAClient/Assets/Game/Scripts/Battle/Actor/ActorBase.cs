@@ -126,7 +126,7 @@ namespace GameA.Game
                 if (state.OnAttached(tableState, this))
                 {
                     _currentStates.Add(state);
-                    LogHelper.Debug("{0} AddState: {1}",this, state.TableState.Id);
+//                    LogHelper.Debug("{0} AddState: {1}",this, state.TableState.Id);
                     _currentStates.Sort(_comparisonState);
                     continue;
                 }
@@ -153,7 +153,7 @@ namespace GameA.Game
                 if (state.OnRemoved())
                 {
                     _currentStates.Remove(state);
-                    LogHelper.Debug("{0} RemoveState: {1}",this, state.TableState.Id);
+//                    LogHelper.Debug("{0} RemoveState: {1}",this, state.TableState.Id);
                     PoolFactory<State>.Free(state);
                 }
             }
