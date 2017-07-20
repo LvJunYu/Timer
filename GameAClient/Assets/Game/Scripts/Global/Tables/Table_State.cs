@@ -96,6 +96,11 @@ namespace GameA.Game
 		[ColumnMapping("Particle")]
 		public string Particle;
 		/// <summary>
+        /// 动画
+        /// </summary>
+		[ColumnMapping("Animation")]
+		public string Animation;
+		/// <summary>
         /// 描述
         /// </summary>
 		[ColumnMapping("Summary")]

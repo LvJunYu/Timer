@@ -64,8 +64,7 @@ namespace GameA.Game
         {
             get
             {
-                State state;
-                return TryGetState(EStateType.Invincible, out state);
+                return HasStateType(EStateType.Invincible);
             }
         }
 

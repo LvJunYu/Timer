@@ -70,7 +70,7 @@ namespace GameA.Game
                 _effect.Play();
             }
             Excute(EEffectType.Always);
-            _target.SetStateEffect(this, true);
+            OnAddView();
             _run = true;
             return true;
         }
@@ -125,7 +125,6 @@ namespace GameA.Game
                         break;
                 }
             }
-            _target.SetStateEffect(this, false);
             OnRemovedView();
             Excute(EEffectType.End);
             return true;
@@ -219,6 +218,15 @@ namespace GameA.Game
         
         #region view renderer
 
+        private void OnAddView()
+        {
+            if (_target.Animation != null && !string.IsNullOrEmpty(_tableState.Animation) && _target.Animation.HasAnimation(_tableState.Animation))
+            {
+                _target.Animation.Reset();
+                _target.Animation.PlayLoop(_tableState.Animation);
+            }
+        }
+
         private void OnRemovedView()
         {
             var view = _target.View;
@@ -229,6 +237,10 @@ namespace GameA.Game
             if (_tableState.StateType == (int)EStateType.Invincible)
             {
                 view.SetRendererColor(Color.white);
+            }
+            if (_target.Animation != null && !string.IsNullOrEmpty(_tableState.Animation) && _target.Animation.HasAnimation(_tableState.Animation))
+            {
+                _target.Animation.Reset();
             }
         }
 

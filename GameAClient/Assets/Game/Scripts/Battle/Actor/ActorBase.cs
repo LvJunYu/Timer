@@ -38,7 +38,6 @@ namespace GameA.Game
         protected float _hpRecover = 200 * ConstDefineGM2D.FixedDeltaTime;
         protected int _hpRecoverTimer = 3 * ConstDefineGM2D.FixedFrameCount;
 
-        protected SpineObject _effectIce;
         /// <summary>
         /// 每一帧只检查一个水块
         /// </summary>
@@ -65,8 +64,6 @@ namespace GameA.Game
             _canFanCross = true;
             _eDieType = EDieType.None;
             _attackedTimer = 0;
-            GameParticleManager.FreeSpineObject(_effectIce);
-            _effectIce = null;
             RemoveAllStates();
         }
 
@@ -194,6 +191,12 @@ namespace GameA.Game
             return false;
         }
 
+        public bool HasStateType(EStateType stateType)
+        {
+            State state;
+            return TryGetState(stateType, out state);
+        }
+
         public void RemoveAllStates()
         {
             for (int i = 0; i < _currentStates.Count; i++)
@@ -211,6 +214,7 @@ namespace GameA.Game
                 if (_currentStates[i].TableState.IsBuff == 0)
                 {
                     _currentStates[i].OnRemoved();
+                    PoolFactory<State>.Free(_currentStates[i]);
                     _currentStates.RemoveAt(i);
                 }
             }
@@ -224,56 +228,6 @@ namespace GameA.Game
                 v = one.TableState.StateTypePriority.CompareTo(other.TableState.StateTypePriority);
             }
             return v;
-        }
-
-        public override void SetStateEffect(State state, bool within)
-        {
-            LogHelper.Debug("SetStateEffect : {0} | {1}", state.TableState.Id, within);
-            switch ((EStateType) state.TableState.StateType)
-            {
-                case EStateType.Ice:
-                    SetStateIce(state, within);
-                    break;
-                case EStateType.Fire:
-                    SetStateFire(state, within);
-                    break;
-            }
-        }
-
-        private void SetStateIce(State state, bool within)
-        {
-            if (_effectIce == null)
-            {
-                _effectIce = GameParticleManager.Instance.EmitLoop(state.TableState.Particle, _trans);
-            }
-            _effectIce.Trans.localPosition = new Vector3(0, -0.1f, _curMoveDirection == EMoveDirection.Left ? 0.01f : -0.01f);
-            _effectIce.Trans.rotation = Quaternion.identity;
-            _effectIce.SetActive(within);
-            if (within)
-            {
-                if (_animation != null)
-                {
-                    _animation.Reset();
-                    _animation.PlayOnce("OnIce");
-                }
-            }
-        }
-
-        private void SetStateFire(State state, bool within)
-        {
-            if (within)
-            {
-                _eDieType = EDieType.Fire;
-//                if (_animation != null)
-//                {
-//                    _animation.PlayLoop("OnFire", 1, 1);
-//                }
-            }
-            else
-            {
-                _animation.Reset();
-                _eDieType = EDieType.None;
-            }
         }
 
         internal override void InLazer()
@@ -331,13 +285,12 @@ namespace GameA.Game
                 return;
             }
             _hasWaterCheckedInFrame = true;
-            if (_eDieType == EDieType.Fire)
+            if (HasStateType(EStateType.Fire))
             {
                 //跳出水里
                 Speed = IntVec2.zero;
                 ExtraSpeed.y = 240;
                 RemoveStateByType(EStateType.Fire);
-                _eDieType = EDieType.None;
                 return;
             }
             if (!_isAlive || IsInvincible)

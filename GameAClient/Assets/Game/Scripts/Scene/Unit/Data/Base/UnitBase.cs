@@ -1557,10 +1557,5 @@ namespace GameA.Game
         }
 
         #endregion
-
-        public virtual void SetStateEffect(State state, bool within)
-        {
-            
-        }
     }
 }
