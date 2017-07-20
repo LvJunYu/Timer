@@ -58,7 +58,7 @@ namespace GameA.Game
         {
             //播放水中动画 漂浮一会 然后死掉
             //GameParticleManager.Instance.Emit("M1EffectDeathWater", GetHitEffectPos(other, EDirectionType.Up));
-            if (other.IsActor)
+            if (other.IsActor && other.IsAlive)
             {
                 other.InWater();
             }

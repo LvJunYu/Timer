@@ -106,7 +106,7 @@ namespace GameA.Game
                 //如果不存在，判断是否同类替换
                 if (tableState.IsReplace == 1)
                 {
-                    RemoveStateByType(tableState.StateType);
+                    RemoveStateByType((EStateType)tableState.StateType);
                 }
                 state = PoolFactory<State>.Get();
                 if (state.OnAttached(tableState, this))
@@ -159,11 +159,11 @@ namespace GameA.Game
             return false;
         }
 
-        public void RemoveStateByType(int stateType)
+        public void RemoveStateByType(EStateType stateType)
         {
             for (int i = _currentStates.Count - 1; i >= 0; i--)
             {
-                if (_currentStates[i].TableState.StateType == stateType)
+                if (_currentStates[i].TableState.StateType == (int)stateType)
                 {
                     RemoveState(_currentStates[i]);
                     _currentStates.RemoveAt(i);
@@ -171,15 +171,17 @@ namespace GameA.Game
             }
         }
         
-        public bool InStateType(EStateType stateType)
+        public bool TryGetState(EStateType stateType, out State state)
         {
             for (int i = _currentStates.Count - 1; i >= 0; i--)
             {
                 if (_currentStates[i].TableState.StateType == (int)stateType)
                 {
+                    state = _currentStates[i];
                     return true;
                 }
             }
+            state = null;
             return false;
         }
 
@@ -318,7 +320,7 @@ namespace GameA.Game
             {
                 //跳出水里
                 ExtraSpeed.y = 240;
-//                OutFire();
+                RemoveStateByType(EStateType.Fire);
                 return;
             }
             if (!_isAlive || IsInvincible)
@@ -345,11 +347,12 @@ namespace GameA.Game
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
-            if (_isAlive && _eDieType == EDieType.Fire)
+            if (_isAlive && unit.IsAlive)
             {
-                if (unit.IsAlive)
+                State state;
+                if (TryGetState(EStateType.Fire, out state))
                 {
-//                    unit.InFire();
+                    unit.AddStates(state.TableState.Id);
                 }
             }
         }

@@ -62,7 +62,11 @@ namespace GameA.Game
 
         public override bool IsInvincible
         {
-            get { return InStateType(EStateType.Invincible); }
+            get
+            {
+                State state;
+                return TryGetState(EStateType.Invincible, out state);
+            }
         }
 
         public PlayerInput PlayerInput
