@@ -569,7 +569,10 @@ namespace GameA.Game
                 }
                 else if (_jumpState == EJumpState.Land || (_player.WingCount > 0 && !_lastJumpInput))
                 {
-                    _player.WingCount--;
+                    if (_player.WingCount > 0)
+                    {
+                        _player.WingCount--;
+                    }
                     if (_stepY > 0)
                     {
                         _player.ExtraSpeed.y = _stepY;

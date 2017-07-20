@@ -60,6 +60,8 @@ namespace GameA.Game
 
         #region motor
 
+        protected  int _wingCount;
+
         protected bool _canMotor;
         protected bool _canAttack;
 
@@ -118,6 +120,12 @@ namespace GameA.Game
         protected Transform _trans
         {
             get { return _view == null ? null : _view.Trans; }
+        }
+        
+        public int WingCount
+        {
+            get { return _wingCount; }
+            set { _wingCount = value; }
         }
 
         public int Hp
@@ -628,6 +636,7 @@ namespace GameA.Game
         protected virtual void Clear()
         {
             ClearRunTime();
+            _wingCount = 0;
             _canAttack = true;
             _canMotor = true;
             _speedStateRatio = 1;
