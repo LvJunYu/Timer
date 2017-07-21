@@ -92,14 +92,11 @@ namespace GameA.Game
         RemotePlayer = 1,
         Monster = 2,
         Item = 3,
-        AttackPlayer = 4,
-        AttackPlayerItem = 5,
-        Decoration = 6,
-		Effect = 7,
-        AttackMonsterItem = 8,  // 可以和Monster、Item、Earth碰撞
-        RigidbodyItem = 9,
-        Gun = 10,
-	    Bullet = 11,
+		Effect = 4,
+        RigidbodyItem = 5,
+        Gun = 6,
+	    Bullet = 7,
+	    Decoration = 8,
         Max
     }
 

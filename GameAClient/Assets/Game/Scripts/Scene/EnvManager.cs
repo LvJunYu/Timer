@@ -17,7 +17,7 @@ namespace GameA.Game
     {
         private static EnvManager _instance;
 
-        public const int ItemLayer = 1 << (int)ESceneLayer.Item | 1 << (int)ESceneLayer.RigidbodyItem | 1 << (int)ESceneLayer.AttackPlayerItem;
+        public const int ItemLayer = 1 << (int)ESceneLayer.Item | 1 << (int)ESceneLayer.RigidbodyItem;
         public const int MainPlayerLayer = 1 << (int)ESceneLayer.MainPlayer;
         public const int MonsterLayer = 1 << (int)ESceneLayer.Monster;
         public const int RemotePlayer = 1 << (int)ESceneLayer.RemotePlayer;
@@ -50,43 +50,32 @@ namespace GameA.Game
 
 		public void Init()
         {
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.MainPlayer, (int)ESceneLayer.Item);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.MainPlayer, (int)ESceneLayer.AttackPlayerItem);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.MainPlayer, (int)ESceneLayer.AttackPlayer);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.MainPlayer, (int)ESceneLayer.RigidbodyItem);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.MainPlayer, (int)ESceneLayer.Monster);
-			JoyPhysics2D.SetLayerCollision((int)ESceneLayer.MainPlayer,(int)ESceneLayer.Effect);
-			JoyPhysics2D.SetLayerCollision((int)ESceneLayer.MainPlayer,(int)ESceneLayer.RemotePlayer);
+	        //动态物体之间必须可以相互之间互相检测
 
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Monster, (int)ESceneLayer.Item);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Monster, (int)ESceneLayer.RigidbodyItem);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Monster, (int)ESceneLayer.MainPlayer);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Monster, (int)ESceneLayer.Monster);
-	        JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Monster,(int)ESceneLayer.RemotePlayer);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Item);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.RigidbodyItem);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Monster);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Effect);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.MainPlayer, (int) ESceneLayer.Decoration);
 
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.AttackPlayer, (int)ESceneLayer.MainPlayer);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Monster, (int) ESceneLayer.Item);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Monster, (int) ESceneLayer.RigidbodyItem);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Monster, (int) ESceneLayer.MainPlayer);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Monster, (int) ESceneLayer.Monster);
 
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.AttackPlayerItem, (int)ESceneLayer.Item);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.AttackPlayerItem, (int)ESceneLayer.RigidbodyItem);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.AttackPlayerItem, (int)ESceneLayer.MainPlayer);
-
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.AttackMonsterItem, (int)ESceneLayer.Item);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.AttackMonsterItem, (int)ESceneLayer.RigidbodyItem);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.AttackMonsterItem, (int)ESceneLayer.Monster);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.AttackMonsterItem, (int)ESceneLayer.MainPlayer);
-
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.RigidbodyItem, (int)ESceneLayer.Item);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.RigidbodyItem, (int)ESceneLayer.RigidbodyItem);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.RigidbodyItem, (int)ESceneLayer.MainPlayer);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.RigidbodyItem, (int)ESceneLayer.Monster);
-
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Bullet, (int)ESceneLayer.Item);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Bullet, (int)ESceneLayer.RigidbodyItem);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Bullet, (int)ESceneLayer.Monster);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RigidbodyItem, (int) ESceneLayer.Item);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RigidbodyItem, (int) ESceneLayer.RigidbodyItem);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RigidbodyItem, (int) ESceneLayer.MainPlayer);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.RigidbodyItem, (int) ESceneLayer.Monster);
 	        
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Gun, (int)ESceneLayer.Item);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Gun, (int)ESceneLayer.RigidbodyItem);
-            JoyPhysics2D.SetLayerCollision((int)ESceneLayer.Gun, (int)ESceneLayer.Monster);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.Item);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.RigidbodyItem);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.Monster);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.Bullet);
+
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Gun, (int) ESceneLayer.Item);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Gun, (int) ESceneLayer.RigidbodyItem);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Gun, (int) ESceneLayer.Monster);
 		}
 
         public void Dispose()
@@ -111,14 +100,11 @@ namespace GameA.Game
         RemotePlayer,
         Monster,
         Item,
-        AttackPlayer,
-        AttackPlayerItem,
-        Decoration,
 		Effect,
-        AttackMonsterItem,  // 可以和Monster、Monster、Earth碰撞
-        RigidbodyItem,  // 可以和Monster、Monster、Earth碰撞
+        RigidbodyItem,
         Bullet,
         Gun,
+	    Decoration,
 		HomeAvatar = 30,
         Max = 31
     }

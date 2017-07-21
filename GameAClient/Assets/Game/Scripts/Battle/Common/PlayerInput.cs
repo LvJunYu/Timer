@@ -581,7 +581,7 @@ namespace GameA.Game
                     _jumpLevel = 0;
                     _player.SpeedY = _player.OnClay ? 100 : 150;
                     _jumpState = EJumpState.Jump1;
-                    _jumpTimer = 5;
+                    _jumpTimer = 10;
                 }
                 else if (!_lastJumpInput && _jumpLevel == 0 && IsCharacterAbilityAvailable(ECharacterAbility.DoubleJump))
                 {
@@ -589,7 +589,7 @@ namespace GameA.Game
                     _player.ExtraSpeed.y = 0;
                     _player.SpeedY = 150;
                     _jumpState = EJumpState.Jump2;
-                    _jumpTimer = 5;
+                    _jumpTimer = 25;
                 }
             }
             if (_player.SpeedY < 0)

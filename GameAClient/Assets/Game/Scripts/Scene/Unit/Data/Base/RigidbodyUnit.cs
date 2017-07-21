@@ -110,11 +110,11 @@ namespace GameA.Game
 
         private bool Intersect(UnitBase unit)
         {
-            //俩移动物体不相交
-            if (unit.DynamicCollider != null)
-            {
-                return false;
-            }
+//            //俩移动物体不相交
+//            if (unit.DynamicCollider != null)
+//            {
+//                return false;
+//            }
             return _colliderGrid.Intersects(unit.ColliderGrid);
         }
 
@@ -135,9 +135,13 @@ namespace GameA.Game
                     {
                         CheckIntersect(unit);
                         int ymin = 0;
-                        if (!Intersect(unit) && unit.OnDownHit(this, ref ymin))
+                        if (unit.OnDownHit(this, ref ymin))
                         {
                             CheckHit(unit, EDirectionType.Up);
+                            if (Intersect(unit))
+                            {
+                                continue;
+                            }
                             flag = true;
                             if (ymin < y)
                             {
@@ -176,9 +180,13 @@ namespace GameA.Game
                     {
                         CheckIntersect(unit);
                         int ymin = 0;
-                        if (!Intersect(unit) && unit.OnUpHit(this, ref ymin))
+                        if (unit.OnUpHit(this, ref ymin))
                         {
                             CheckHit(unit, EDirectionType.Down);
+                            if (Intersect(unit))
+                            {
+                                continue;
+                            }
                             flag = true;
                             if (ymin > y)
                             {
@@ -224,7 +232,6 @@ namespace GameA.Game
                 UnitBase hit = null;
                 var min = new IntVec2(_colliderGrid.XMin + _deltaPos.x, _colliderGrid.YMin);
                 var grid = new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
-                //var grid = _deltaPos.y >= 0 ? new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin + _deltaPos.y) : new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin + _deltaPos.y, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
                 var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue, _dynamicCollider);
                 for (int i = 0; i < units.Count; i++)
                 {
@@ -233,9 +240,13 @@ namespace GameA.Game
                     {
                         CheckIntersect(unit);
                         int xmin = 0;
-                        if (!Intersect(unit) && unit.OnRightHit(this, ref xmin))
+                        if (unit.OnRightHit(this, ref xmin))
                         {
                             CheckHit(unit, EDirectionType.Left);
+                            if (Intersect(unit))
+                            {
+                                continue;
+                            }
                             flag = true;
                             if (xmin > x)
                             {
@@ -262,7 +273,6 @@ namespace GameA.Game
                 UnitBase hit = null;
                 var min = new IntVec2(_colliderGrid.XMin + _deltaPos.x, _colliderGrid.YMin);
                 var grid = new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
-                //var grid = _deltaPos.y >= 0 ? new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin + _deltaPos.y) : new Grid2D(min.x, min.y + _deltaPos.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin);
                 var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue, _dynamicCollider);
                 for (int i = 0; i < units.Count; i++)
                 {
@@ -271,9 +281,13 @@ namespace GameA.Game
                     {
                         CheckIntersect(unit);
                         int xmin = 0;
-                        if (!Intersect(unit) && unit.OnLeftHit(this, ref xmin))
+                        if (unit.OnLeftHit(this, ref xmin))
                         {
                             CheckHit(unit, EDirectionType.Right);
+                            if (Intersect(unit))
+                            {
+                                continue;
+                            }
                             flag = true;
                             if (xmin < x)
                             {
