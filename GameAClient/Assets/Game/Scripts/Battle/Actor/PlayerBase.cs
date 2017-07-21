@@ -686,7 +686,7 @@ namespace GameA.Game
                             GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallClimb, effectPos);
                         }
                     }
-                    else if (_playerInput._jumpLevel >= 0)
+                    else
                     {
                         if (_playerInput.ClimbJump)
                         {

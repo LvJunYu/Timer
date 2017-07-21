@@ -23,6 +23,6 @@ namespace GameA.Game
         public const int WallJumpBanInputTime = 20;
         public const int QuickenTime = 3 * ConstDefineGM2D.FixedFrameCount;
 
-        public const int MaxWingCount = 10;
+        public const int MaxWingCount = 30;
     }
 }

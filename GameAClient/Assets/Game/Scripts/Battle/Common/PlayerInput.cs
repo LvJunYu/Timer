@@ -199,9 +199,10 @@ namespace GameA.Game
 
         public void OnLand()
         {
-            _jumpLevel = 0;
-            _jumpState = EJumpState.Land;
+            _jumpLevel = -1;
             _jumpTimer = 0;
+            _jumpInput = false;
+            _jumpState = EJumpState.Land;
         }
 
         public void Clear()
@@ -224,7 +225,7 @@ namespace GameA.Game
             _downInput = 0;
             _jumpInput = false;
             _jumpState = EJumpState.Land;
-            _jumpLevel = 0;
+            _jumpLevel = -1;
             _eClimbState = EClimbState.None;
             _climbJump = false;
             _stepY = 0;
@@ -567,12 +568,8 @@ namespace GameA.Game
                         _player.SetFacingDir(EMoveDirection.Left);
                     }
                 }
-                else if (_jumpState == EJumpState.Land || (_player.WingCount > 0 && !_lastJumpInput))
+                else if (_jumpLevel == -1)
                 {
-                    if (_player.WingCount > 0)
-                    {
-                        _player.WingCount--;
-                    }
                     if (_stepY > 0)
                     {
                         _player.ExtraSpeed.y = _stepY;
@@ -589,25 +586,27 @@ namespace GameA.Game
                     _player.ExtraSpeed.y = 0;
                     _player.SpeedY = 150;
                     _jumpState = EJumpState.Jump2;
-                    _jumpTimer = 25;
+                    _jumpTimer = 15;
+                    _jumpInput = false;
+//                    if (_player.WingCount > 0)
+//                    {
+//                        _player.WingCount--;
+//                    }
                 }
             }
             if (_player.SpeedY < 0)
             {
                 _jumpState = EJumpState.Fall;
             }
-            else
+            else  if (_player.SpeedY > 0)
             {
                 if (_jumpTimer > 0)
                 {
                     _jumpTimer--;
-                    if (_jumpTimer == 0)
-                    {
-                        if (_jumpState == EJumpState.Jump1 || _jumpState == EJumpState.Jump2)
-                        {
-                            _jumpState = EJumpState.Fall;
-                        }
-                    }
+                }
+                if (_jumpTimer == 0)
+                {
+                    _jumpState = EJumpState.Fall;
                 }
             }
         }
