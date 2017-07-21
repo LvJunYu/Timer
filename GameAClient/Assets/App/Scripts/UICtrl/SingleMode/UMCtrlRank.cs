@@ -47,7 +47,7 @@ namespace GameA
             base.OnViewCreated();
            
             _cachedView.PlayBtn.onClick.AddListener(OnPlayBtn);
-            _cachedView.Follow.onClick.AddListener(Follow);
+            //_cachedView.Follow.onClick.AddListener(Follow);
 
             //_userInfoDetail = new UserInfoDetail(_record.UserInfo);
             //JudgeRelationshipWithMe(_userInfoDetail);
@@ -172,41 +172,41 @@ namespace GameA
             //            }
         }
 
-        public void Follow()
-        {
-            //Debug.Log("______UserInfo__________" + _record.UserInfo);
+        //public void Follow()
+        //{
+        //    //Debug.Log("______UserInfo__________" + _record.UserInfo);
 
-            //UserInfoDetail userInfoDetail = new UserInfoDetail(_record.UserInfo);
-            //JudgeRelationshipWithMe(userInfoDetail);
-            _userInfoDetail.UpdateFollowState(!_currentfollowstate, () =>
-            {
+        //    //UserInfoDetail userInfoDetail = new UserInfoDetail(_record.UserInfo);
+        //    //JudgeRelationshipWithMe(userInfoDetail);
+        //    _userInfoDetail.UpdateFollowState(!_currentfollowstate, () =>
+        //    {
 
-                ChangeFollowState();
-                //JudgeRelationshipWithMe(_userInfoDetail);
-                //SocialGUIManager.Instance.GetUI<UICtrlAdvLvlDetail>().RefreshAdventureUserLevelDataDetail();
-            });
+        //        ChangeFollowState();
+        //        //JudgeRelationshipWithMe(_userInfoDetail);
+        //        //SocialGUIManager.Instance.GetUI<UICtrlAdvLvlDetail>().RefreshAdventureUserLevelDataDetail();
+        //    });
         
-        }
+        //}
 
-        private void ChangeFollowState()
-        {
-            _currentfollowstate = !_currentfollowstate;
-            if (_currentfollowstate)
-                _cachedView.ShowFollow.text = "取消关注";
-            else
-                _cachedView.ShowFollow.text = "关注";
+        //private void ChangeFollowState()
+        //{
+        //    _currentfollowstate = !_currentfollowstate;
+        //    if (_currentfollowstate)
+        //        _cachedView.ShowFollow.text = "取消关注";
+        //    else
+        //        _cachedView.ShowFollow.text = "关注";
             
-        }
+        //}
 
-        private void JudgeRelationshipWithMe(UserInfoDetail userInfoDetail)
-        {
-            _currentfollowstate = userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
-            Debug.Log("__________关注状态___" + userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe);
-            if (_currentfollowstate)
-                _cachedView.ShowFollow.text = "取消关注";
-            else
-                _cachedView.ShowFollow.text = "关注";
+        //private void JudgeRelationshipWithMe(UserInfoDetail userInfoDetail)
+        //{
+        //    _currentfollowstate = userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
+        //    Debug.Log("__________关注状态___" + userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe);
+        //    if (_currentfollowstate)
+        //        _cachedView.ShowFollow.text = "取消关注";
+        //    else
+        //        _cachedView.ShowFollow.text = "关注";
 
-        }
+        //}
     }
 }

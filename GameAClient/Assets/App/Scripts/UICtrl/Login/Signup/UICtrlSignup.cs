@@ -43,6 +43,7 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             //可能是Text的bug
+            //Debug.Log("______cachedView.Phone.characterLimit__________" + _cachedView.Phone.characterLimit);
             int charLimit = _cachedView.Phone.characterLimit;
             _cachedView.Phone.characterLimit = charLimit + 1;
             _cachedView.Phone.text = LoginLogicUtil.PhoneNum;
@@ -99,7 +100,7 @@ namespace GameA
             }
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "努力注册中");
             LocalUser.Instance.Account.SignUp(phone, pwd, EAccountIdentifyType.AIT_Phone, verificationCode,
-                (ret)=> {
+                ret=> {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     SocialGUIManager.Instance.GetUI<UICtrlSignup>().Close();
                     SocialApp.Instance.LoginSucceed();

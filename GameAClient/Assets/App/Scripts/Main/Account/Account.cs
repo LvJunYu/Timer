@@ -101,6 +101,7 @@ namespace SoyEngine
                 {
                     if (ret.ResultCode == (int)EChangePasswordCode.CPC_Success)
                     {
+                        _userGuid = ret.UserId;
                         OnTokenChange(ret.Token);
                         if (null != successCallback)
                         {
@@ -134,6 +135,7 @@ namespace SoyEngine
                 {
                     if (ret.ResultCode == (int)EForgetPasswordCode.FPC_Success)
                     {
+                        _userGuid = ret.UserId;
                         OnTokenChange(ret.Token);
                         if (null != successCallback)
                         {
