@@ -135,13 +135,12 @@ namespace GameA.Game
                     {
                         CheckIntersect(unit);
                         int ymin = 0;
-                        if (unit.OnDownHit(this, ref ymin))
+                        if (unit.OnDownHit(this, ref ymin, true))
                         {
                             CheckHit(unit, EDirectionType.Up);
-                            if (Intersect(unit))
-                            {
-                                continue;
-                            }
+                        }
+                        if (!Intersect(unit) && unit.OnDownHit(this, ref ymin))
+                        {
                             flag = true;
                             if (ymin < y)
                             {
@@ -180,13 +179,12 @@ namespace GameA.Game
                     {
                         CheckIntersect(unit);
                         int ymin = 0;
-                        if (unit.OnUpHit(this, ref ymin))
+                        if (unit.OnUpHit(this, ref ymin, true))
                         {
                             CheckHit(unit, EDirectionType.Down);
-                            if (Intersect(unit))
-                            {
-                                continue;
-                            }
+                        }
+                        if (!Intersect(unit) && unit.OnUpHit(this, ref ymin))
+                        {
                             flag = true;
                             if (ymin > y)
                             {
@@ -240,13 +238,12 @@ namespace GameA.Game
                     {
                         CheckIntersect(unit);
                         int xmin = 0;
-                        if (unit.OnRightHit(this, ref xmin))
+                        if (unit.OnRightHit(this, ref xmin, true))
                         {
                             CheckHit(unit, EDirectionType.Left);
-                            if (Intersect(unit))
-                            {
-                                continue;
-                            }
+                        }
+                        if (!Intersect(unit) && unit.OnRightHit(this, ref xmin))
+                        {
                             flag = true;
                             if (xmin > x)
                             {
@@ -281,13 +278,12 @@ namespace GameA.Game
                     {
                         CheckIntersect(unit);
                         int xmin = 0;
-                        if (unit.OnLeftHit(this, ref xmin))
+                        if (unit.OnLeftHit(this, ref xmin, true))
                         {
                             CheckHit(unit, EDirectionType.Right);
-                            if (Intersect(unit))
-                            {
-                                continue;
-                            }
+                        }
+                        if (!Intersect(unit) && unit.OnLeftHit(this, ref xmin))
+                        {
                             flag = true;
                             if (xmin < x)
                             {

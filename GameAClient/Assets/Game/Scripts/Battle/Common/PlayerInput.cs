@@ -594,20 +594,13 @@ namespace GameA.Game
 //                    }
                 }
             }
-            if (_player.SpeedY < 0)
+            if (_jumpTimer > 0)
+            {
+                _jumpTimer--;
+            }
+            if ((_jumpTimer == 0 && _player.SpeedY > 0) || _player.SpeedY < 0)
             {
                 _jumpState = EJumpState.Fall;
-            }
-            else  if (_player.SpeedY > 0)
-            {
-                if (_jumpTimer > 0)
-                {
-                    _jumpTimer--;
-                }
-                if (_jumpTimer == 0)
-                {
-                    _jumpState = EJumpState.Fall;
-                }
             }
         }
         
