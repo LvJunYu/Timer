@@ -329,7 +329,7 @@ namespace GameA.Game
                     }
                     else
                     {
-                        SpeedY = Util.ConstantLerp(SpeedY, -120, 10);
+                        SpeedY = Util.ConstantLerp(SpeedY, -120, 8);
                     }
                 }
             }
