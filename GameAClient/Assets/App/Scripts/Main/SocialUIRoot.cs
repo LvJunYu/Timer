@@ -20,6 +20,7 @@ namespace GameA
 		{
 			base.InitUICanvas(sortOrder);
 			InitGameUIRenderCamera(_canvas);
+			
 		}
 
         public Transform GetFirstGroupTrans ()
