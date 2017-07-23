@@ -13,7 +13,6 @@ namespace GameA.Game
     public class BattleDefine
     {
         public const int MaxSpeedX = 60;
-        public const int MaxQuickenSpeedX = 120;
         
         public const int StunTime = 2000;
         

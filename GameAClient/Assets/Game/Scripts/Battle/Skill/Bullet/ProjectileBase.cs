@@ -94,6 +94,10 @@ namespace GameA.Game
                 return false;
             }
             _effectBullet = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.Model, _trans);
+            if (_effectBullet == null)
+            {
+                return false;
+            }
             _effectBullet.Play();
             return true;
         }

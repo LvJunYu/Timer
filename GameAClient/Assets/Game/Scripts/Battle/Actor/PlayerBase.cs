@@ -96,7 +96,7 @@ namespace GameA.Game
             _playerInput = _playerInput ?? new PlayerInput(this);
             _playerInput.Reset();
 
-            _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 2);
+            _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
             _skillCtrl.Clear();
             ChangeWeapon(2);
             
@@ -114,7 +114,14 @@ namespace GameA.Game
                 LogHelper.Error("GetEquipment Failed : {0}", id);
                 return false;
             }
-            return _skillCtrl.ChangeSkill(tableEquipment.SkillIds);
+            int[] skillIds = new int[3];
+            skillIds[0] = 1;
+            for (int i = 0; i < tableEquipment.SkillIds.Length; i++)
+            {
+                skillIds[i + 1] = tableEquipment.SkillIds[i];
+            }
+           
+            return _skillCtrl.ChangeSkill(skillIds);
         }
 
         internal override void OnPlay()
@@ -238,7 +245,7 @@ namespace GameA.Game
             {
                 OnLand();
             }
-            _curMaxSpeedX = _playerInput._quickenTime == 0 ? BattleDefine.MaxSpeedX : BattleDefine.MaxQuickenSpeedX;
+            _curMaxSpeedX = BattleDefine.MaxSpeedX;
             float ratio = 1;
             if (IsHoldingBox())
             {
