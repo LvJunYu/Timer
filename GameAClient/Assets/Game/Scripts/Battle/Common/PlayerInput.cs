@@ -668,6 +668,7 @@ namespace GameA.Game
                 }
                 if (SkillInputDown(2))
                 {
+                    LogHelper.Debug("Skill3");
                     _player.SkillCtrl.Fire(2);
                 }
             }
@@ -780,6 +781,14 @@ namespace GameA.Game
                 if (KeyUp(EInputType.Skill2))
                 {
                     _curInputs[(int)EInputType.Skill2] = false;
+                }
+                if (KeyDown(EInputType.Skill3))
+                {
+                    _curInputs[(int)EInputType.Skill3] = true;
+                }
+                if (KeyUp(EInputType.Skill3))
+                {
+                    _curInputs[(int)EInputType.Skill3] = false;
                 }
             }
         }

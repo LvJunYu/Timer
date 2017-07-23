@@ -35,9 +35,6 @@ namespace GameA.Game
         protected EDieType _eDieType;
         protected int _attackedTimer;
 
-        protected float _hpRecover = 200 * ConstDefineGM2D.FixedDeltaTime;
-        protected int _hpRecoverTimer = 3 * ConstDefineGM2D.FixedFrameCount;
-
         /// <summary>
         /// 每一帧只检查一个水块
         /// </summary>

@@ -98,7 +98,7 @@ namespace GameA.Game
 
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
             _skillCtrl.Clear();
-            ChangeWeapon(2);
+            ChangeWeapon(1);
             
             _dieTime = 0;
             _box = null;
@@ -114,13 +114,16 @@ namespace GameA.Game
                 LogHelper.Error("GetEquipment Failed : {0}", id);
                 return false;
             }
+            LogHelper.Debug(tableEquipment.MpRecover+"~~~~~~");
+            int aa = TableConvert.GetPoint(tableEquipment.MpRecover);
+            _skillCtrl.SetPoint(tableEquipment.Mp,TableConvert.GetPoint(tableEquipment.MpRecover)
+            ,tableEquipment.Rp,TableConvert.GetPoint(tableEquipment.RpRecover));
             int[] skillIds = new int[3];
             skillIds[0] = 1;
             for (int i = 0; i < tableEquipment.SkillIds.Length; i++)
             {
                 skillIds[i + 1] = tableEquipment.SkillIds[i];
             }
-           
             return _skillCtrl.ChangeSkill(skillIds);
         }
 

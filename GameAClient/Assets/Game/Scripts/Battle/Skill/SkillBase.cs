@@ -28,9 +28,7 @@ namespace GameA.Game
         protected int _chargeTime;
         protected int _singTime;
 
-        protected int _projectileCount;
         protected int _projectileSpeed;
-        protected int _currentCount;
 
         /// <summary>
         /// 攻击距离
@@ -56,6 +54,16 @@ namespace GameA.Game
         public int Id
         {
             get { return _tableSkill.Id; }
+        }
+        
+        public int MpCost
+        {
+            get { return _tableSkill.MpCost; }
+        }
+        
+        public int RpCost
+        {
+            get { return _tableSkill.RpCost; }
         }
 
         public UnitBase Owner
@@ -87,10 +95,7 @@ namespace GameA.Game
         {
             _owner = ower;
             _tableSkill = TableManager.Instance.GetSkill(id);
-            _projectileCount = _tableSkill.ProjectileCount;
-            _currentCount = _projectileCount;
             _cdTime = TableConvert.GetTime(_tableSkill.CDTime);
-            _chargeTime = TableConvert.GetTime(_tableSkill.ChargeTime);
             _singTime = TableConvert.GetTime(_tableSkill.SingTime);
             _castRange = TableConvert.GetRange(_tableSkill.CastRange);
             _projectileSpeed = TableConvert.GetSpeed(_tableSkill.ProjectileSpeed);
@@ -120,15 +125,7 @@ namespace GameA.Game
             {
                 _timerCD--;
             }
-            if (_timerCharge > 0)
-            {
-                _timerCharge--;
-                if (_timerCharge == 0)
-                {
-                    UpdateCurrentProjectileCount(_projectileCount);
-                    //LogHelper.Debug("Charge End");
-                }
-            }
+    
             if (_timerSing > 0)
             {
                 _timerSing--;
@@ -141,11 +138,6 @@ namespace GameA.Game
         
         public bool Fire()
         {
-            if (_currentCount == 0)
-            {
-                //LogHelper.Debug("Charging");
-                return false;
-            }
             if (_timerCD > 0)
             {
                 return false;
@@ -161,30 +153,11 @@ namespace GameA.Game
         
         protected void CreateProjectile(int projectileId, IntVec2 pos, int angle, int delayRunTime = 0)
         {
-            UpdateCurrentProjectileCount(--_currentCount);
-            if (_currentCount == 0)
-            {
-                _timerCharge = _chargeTime;
-            }
             var bullet =  PlayMode.Instance.CreateRuntimeUnit(projectileId, pos) as ProjectileBase;
             if (bullet != null)
             {
                 bullet.Run(this, angle, delayRunTime);
             }
-        }
-
-        private void UpdateCurrentProjectileCount(int count)
-        {
-            if (_owner == null || !_owner.IsMain)
-            {
-                return;
-            }
-            if (_currentCount == count)
-            {
-                return;
-            }
-            _currentCount = Math.Min(_projectileCount, count);
-            Messenger<int, int>.Broadcast(EMessengerType.OnMPChanged, _currentCount, _projectileCount);
         }
 
         protected IntVec2 GetProjectilePos(int bulletId)

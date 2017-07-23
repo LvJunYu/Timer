@@ -21,6 +21,26 @@ namespace GameA.Game
 		[ColumnMapping("Hp")]
 		public int Hp;
 		/// <summary>
+        /// 魔法值
+        /// </summary>
+		[ColumnMapping("Mp")]
+		public int Mp;
+		/// <summary>
+        /// 魔法回复值
+        /// </summary>
+		[ColumnMapping("MpRecover")]
+		public int MpRecover;
+		/// <summary>
+        /// 怒气值
+        /// </summary>
+		[ColumnMapping("Rp")]
+		public int Rp;
+		/// <summary>
+        /// 怒气回复值
+        /// </summary>
+		[ColumnMapping("RpRecover")]
+		public int RpRecover;
+		/// <summary>
         /// 技能Id
         /// </summary>
 		[ColumnMapping("SkillIds")]
