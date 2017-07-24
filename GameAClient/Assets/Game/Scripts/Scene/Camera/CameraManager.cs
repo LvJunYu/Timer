@@ -167,7 +167,7 @@ namespace GameA.Game
             c.orthographic = true;
             c.transparencySortMode = TransparencySortMode.Orthographic;
             c.orthographicSize = ConstDefineGM2D.CameraOrthoSizeOnPlay;
-            c.nearClipPlane = -100;
+            c.nearClipPlane = -200;
             c.farClipPlane = 20;
             c.enabled = false;
             return c;

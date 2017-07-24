@@ -931,7 +931,7 @@ namespace GameA.Game
                 }
             }
             var halfSize = GetDataSize() / 2;
-            float z = -(_curPos.x + halfSize.x + _curPos.y + halfSize.y) * 0.00078125f + _viewZOffset;
+            float z = -(_curPos.x + halfSize.x + _curPos.y + halfSize.y) * 0.00078125f+ _viewZOffset;
             if (UnitDefine.IsDownY(_tableUnit))
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, -0.1f, z);
@@ -1423,6 +1423,11 @@ namespace GameA.Game
         protected void SetSortingOrderBackground()
         {
             _viewZOffset = 20;
+        }
+        
+        protected void SetSortingOrderFrontest()
+        {
+            _viewZOffset = -100;
         }
 
         protected void SetSortingOrderBack()

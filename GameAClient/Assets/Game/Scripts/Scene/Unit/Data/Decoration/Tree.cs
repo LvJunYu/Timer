@@ -21,7 +21,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            SetSortingOrderBackground();
+            SetSortingOrderBack();
             return true;
         }
     }
