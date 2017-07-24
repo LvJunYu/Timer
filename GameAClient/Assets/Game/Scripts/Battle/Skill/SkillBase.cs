@@ -148,6 +148,7 @@ namespace GameA.Game
         
         protected void CreateProjectile(int projectileId, IntVec2 pos, int angle, int delayRunTime = 0)
         {
+            LogHelper.Debug(projectileId+"~~~~~~~~CreateProjectile~~~~");
             var bullet =  PlayMode.Instance.CreateRuntimeUnit(projectileId, pos) as ProjectileBase;
             if (bullet != null)
             {
