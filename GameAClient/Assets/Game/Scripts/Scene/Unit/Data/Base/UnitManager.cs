@@ -278,7 +278,7 @@ namespace GameA.Game
             unit.OnObjectDestroy();
         }
 
-        public bool TryGetUnitView(UnitBase unit, out UnitView unitView)
+        public bool TryGetUnitView(UnitBase unit, bool isPart, out UnitView unitView)
         {
             unitView = null;
             switch (unit.TableUnit.EGeneratedType)
@@ -305,7 +305,7 @@ namespace GameA.Game
             }
             if (unitView != null)
             {
-                return unitView.Init(unit);
+                return unitView.Init(unit, isPart);
             }
             return false;
         }

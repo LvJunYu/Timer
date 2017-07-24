@@ -529,7 +529,7 @@ namespace GameA.Game
             _curPos = new IntVec2(_guid.x, _guid.y);
             InitAssetPath();
             UpdateExtraData();
-            if (!UnitManager.Instance.TryGetUnitView(this, out _view))
+            if (!UnitManager.Instance.TryGetUnitView(this, false, out _view))
             {
                 LogHelper.Error("TryGetUnitView Failed, {0}", tableUnit.Id);
                 return true;
@@ -584,7 +584,7 @@ namespace GameA.Game
 
         internal virtual bool InstantiateView()
         {
-            if (!UnitManager.Instance.TryGetUnitView(this, out _view))
+            if (!UnitManager.Instance.TryGetUnitView(this,false, out _view))
             {
                 LogHelper.Error("TryGetUnitView Failed, {0}", _tableUnit.Id);
                 return false;
@@ -592,7 +592,7 @@ namespace GameA.Game
             if (!string.IsNullOrEmpty(_tableUnit.Model1))
             {
                 _assetPath = _tableUnit.Model1;
-                if (!UnitManager.Instance.TryGetUnitView(this, out _view1))
+                if (!UnitManager.Instance.TryGetUnitView(this,true, out _view1))
                 {
                     LogHelper.Error("TryGetUnitView Failed, {0}", _tableUnit.Id);
                     return false;
