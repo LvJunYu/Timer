@@ -6,23 +6,6 @@ namespace GameA.Game
     [Poolable(MinPoolSize = 1, PreferedPoolSize = 30, MaxPoolSize = int.MaxValue)]
     public class State : IPoolableObject
     {
-        public enum EEffectId
-        {
-            None,
-            Hp,
-            Speed,
-            BanAttack,
-            HpMax,
-        }
-        
-        public enum EEffectType
-        {
-            None,
-            Always,
-            Interval,
-            End,
-        }
-        
         protected Table_State _tableState;
         protected int _duration;
         protected int _intervalTime;
@@ -97,6 +80,11 @@ namespace GameA.Game
                         break;
                     case EEffectId.HpMax:
                         break;
+                    case EEffectId.Invincible:
+                        break;
+                    case EEffectId.BanMove:
+                        _target.CanMove = false;
+                        break;
                 }
                 if (!_run)
                 {
@@ -122,6 +110,11 @@ namespace GameA.Game
                         _target.CanAttack = true;
                         break;
                     case EEffectId.HpMax:
+                        break;
+                    case EEffectId.Invincible:
+                        break;
+                    case EEffectId.BanMove:
+                        _target.CanMove = true;
                         break;
                 }
             }

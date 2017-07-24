@@ -68,4 +68,23 @@ namespace GameA.Game
         Effect,
         All
     }
+    
+    public enum EEffectId
+    {
+        None,
+        Hp,
+        Speed,
+        BanAttack,
+        HpMax,
+        Invincible,
+        BanMove,
+    }
+        
+    public enum EEffectType
+    {
+        None,
+        Always,
+        Interval,
+        End,
+    }
 }

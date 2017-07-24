@@ -73,7 +73,7 @@ namespace GameA.Game
 
         protected override void UpdateMonsterAI()
         {
-            if (!_canMotor)
+            if (!_canMove)
             {
                 SpeedX = 0;
                 ChangeState(EMonsterState.None);

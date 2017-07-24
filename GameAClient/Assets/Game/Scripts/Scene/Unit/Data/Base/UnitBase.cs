@@ -62,7 +62,7 @@ namespace GameA.Game
 
         protected  int _wingCount;
 
-        protected bool _canMotor;
+        protected bool _canMove;
         protected bool _canAttack;
 
         [SerializeField] protected IntVec2 _deltaPos;
@@ -194,10 +194,10 @@ namespace GameA.Game
             get { return _tableUnit; }
         }
 
-        public bool CanMotor
+        public bool CanMove
         {
-            get { return _canMotor; }
-            set { _canMotor = value; }
+            get { return _canMove; }
+            set { _canMove = value; }
         }
 
         public bool CanAttack
@@ -638,7 +638,7 @@ namespace GameA.Game
             ClearRunTime();
             _wingCount = 0;
             _canAttack = true;
-            _canMotor = true;
+            _canMove = true;
             _speedStateRatio = 1;
             _isAlive = true;
             _dieTime = 0;
