@@ -218,7 +218,7 @@ namespace GameA.Game
                         {
                             _onIce = true;
                         }
-                        var delta = Mathf.Abs(CenterPos.x - unit.CenterPos.x);
+                        var delta = Mathf.Abs(CenterDownPos.x - unit.CenterDownPos.x);
                         if (deltaX > delta)
                         {
                             deltaX = delta;
@@ -585,7 +585,7 @@ namespace GameA.Game
             _attackedTimer = TableConvert.GetTime(BattleDefine.StunTime);
             Speed = IntVec2.zero;
             ExtraSpeed.y = 120;
-            ExtraSpeed.x = actor.CenterPos.x > CenterPos.x ? -100 : 100;
+            ExtraSpeed.x = actor.CenterDownPos.x > CenterDownPos.x ? -100 : 100;
             _playerInput.ClearInput();
         }
 
@@ -594,7 +594,7 @@ namespace GameA.Game
             _attackedTimer = TableConvert.GetTime(BattleDefine.StunTime);
             Speed = IntVec2.zero;
             ExtraSpeed.y = 280;
-            ExtraSpeed.x = actor.CenterPos.x > CenterPos.x ? -80 : 80;
+            ExtraSpeed.x = actor.CenterDownPos.x > CenterDownPos.x ? -80 : 80;
             _playerInput.ClearInput();
         }
 

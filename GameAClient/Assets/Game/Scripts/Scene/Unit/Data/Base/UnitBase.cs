@@ -412,7 +412,7 @@ namespace GameA.Game
         /// <summary>
         /// 下面的Center
         /// </summary>
-        public IntVec2 CenterPos
+        public IntVec2 CenterDownPos
         {
             get
             {
@@ -423,6 +423,20 @@ namespace GameA.Game
             {
                 IntVec2 dataSize = GetDataSize();
                 _curPos = new IntVec2(value.x - dataSize.x / 2, value.y);
+            }
+        }
+        
+        public IntVec2 CenterPos
+        {
+            get
+            {
+                IntVec2 dataSize = GetDataSize();
+                return new IntVec2(_curPos.x + dataSize.x / 2, _curPos.y+ dataSize.y / 2);
+            }
+            set
+            {
+                IntVec2 dataSize = GetDataSize();
+                _curPos = new IntVec2(value.x - dataSize.x / 2, value.y - dataSize.y / 2);
             }
         }
 

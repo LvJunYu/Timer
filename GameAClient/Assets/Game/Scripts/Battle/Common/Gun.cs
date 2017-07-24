@@ -31,8 +31,8 @@ namespace GameA.Game
             }
             _mainPlayer = PlayMode.Instance.MainPlayer;
             _curPos = _mainPlayer.CurMoveDirection == EMoveDirection.Right
-                ? _mainPlayer.CenterPos + new IntVec2(-_shooterEffectOffset.x, _shooterEffectOffset.y)
-                : _mainPlayer.CenterPos + new IntVec2(_shooterEffectOffset.x - GetColliderSize().x, _shooterEffectOffset.y);
+                ? _mainPlayer.CenterDownPos + new IntVec2(-_shooterEffectOffset.x, _shooterEffectOffset.y)
+                : _mainPlayer.CenterDownPos + new IntVec2(_shooterEffectOffset.x - GetColliderSize().x, _shooterEffectOffset.y);
             return true;
         }
 
@@ -47,8 +47,8 @@ namespace GameA.Game
         public void Play()
         {
             _curPos = _mainPlayer.CurMoveDirection == EMoveDirection.Right
-                ? _mainPlayer.CenterPos + new IntVec2(-_shooterEffectOffset.x, _shooterEffectOffset.y)
-                : _mainPlayer.CenterPos +
+                ? _mainPlayer.CenterDownPos + new IntVec2(-_shooterEffectOffset.x, _shooterEffectOffset.y)
+                : _mainPlayer.CenterDownPos +
                   new IntVec2(_shooterEffectOffset.x - GetColliderSize().x, _shooterEffectOffset.y);
             SetPos(_curPos);
             if (_shooterEffect != null)
@@ -81,8 +81,8 @@ namespace GameA.Game
             if (_isStart && _isAlive && _mainPlayer != null && _mainPlayer.IsAlive)
             {
                 var destPos = _mainPlayer.CurMoveDirection == EMoveDirection.Right
-                    ? _mainPlayer.CenterPos + new IntVec2(-_shooterEffectOffset.x, _shooterEffectOffset.y)
-                    : _mainPlayer.CenterPos + new IntVec2(_shooterEffectOffset.x - GetColliderSize().x, _shooterEffectOffset.y);
+                    ? _mainPlayer.CenterDownPos + new IntVec2(-_shooterEffectOffset.x, _shooterEffectOffset.y)
+                    : _mainPlayer.CenterDownPos + new IntVec2(_shooterEffectOffset.x - GetColliderSize().x, _shooterEffectOffset.y);
                 _speed = (destPos - _curPos) / 6;
                 if (_speed.x == 0)
                 {

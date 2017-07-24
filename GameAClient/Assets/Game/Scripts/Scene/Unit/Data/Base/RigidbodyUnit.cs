@@ -189,7 +189,7 @@ namespace GameA.Game
                             if (ymin > y)
                             {
                                 y = ymin;
-                                var delta = Mathf.Abs(CenterPos.x - unit.CenterPos.x);
+                                var delta = Mathf.Abs(CenterDownPos.x - unit.CenterDownPos.x);
                                 if (deltaX > delta)
                                 {
                                     deltaX = delta;
