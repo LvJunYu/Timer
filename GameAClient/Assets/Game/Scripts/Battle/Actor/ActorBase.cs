@@ -35,13 +35,12 @@ namespace GameA.Game
         protected EDieType _eDieType;
         protected int _attackedTimer;
 
-        protected float _hpRecover = 200 * ConstDefineGM2D.FixedDeltaTime;
-        protected int _hpRecoverTimer = 3 * ConstDefineGM2D.FixedFrameCount;
-
         /// <summary>
         /// 每一帧只检查一个水块
         /// </summary>
         protected bool _hasWaterCheckedInFrame;
+        
+        protected int _curMaxSpeedX;
 
         public int AttackedTimer
         {
@@ -56,6 +55,11 @@ namespace GameA.Game
         public override bool IsActor
         {
             get { return true; }
+        }
+
+        public int CurMaxSpeedX
+        {
+            get { return _curMaxSpeedX; }
         }
 
         protected override void Clear()
@@ -119,7 +123,7 @@ namespace GameA.Game
                 if (state.OnAttached(tableState, this))
                 {
                     _currentStates.Add(state);
-                    LogHelper.Debug("{0} AddState: {1}",this, state.TableState.Id);
+//                    LogHelper.Debug("{0} AddState: {1}",this, state.TableState.Id);
                     _currentStates.Sort(_comparisonState);
                     continue;
                 }
@@ -146,7 +150,7 @@ namespace GameA.Game
                 if (state.OnRemoved())
                 {
                     _currentStates.Remove(state);
-                    LogHelper.Debug("{0} RemoveState: {1}",this, state.TableState.Id);
+//                    LogHelper.Debug("{0} RemoveState: {1}",this, state.TableState.Id);
                     PoolFactory<State>.Free(state);
                 }
             }

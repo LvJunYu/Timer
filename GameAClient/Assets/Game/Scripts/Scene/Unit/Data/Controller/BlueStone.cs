@@ -12,8 +12,15 @@ using SoyEngine;
 namespace GameA.Game
 {
     [Unit(Id = 8001, Type = typeof(BlueStone))]
-    public class BlueStone : BlockBase
+    public class BlueStone : CollectionBase
     {
-
+        protected override void OnTrigger(UnitBase other)
+        {
+            if (other.IsActor)
+            {
+                other.WingCount += BattleDefine.MaxWingCount;
+            }
+            base.OnTrigger(other);
+        }
     }
 }

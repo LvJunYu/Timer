@@ -40,6 +40,8 @@ namespace GameA.Game
         protected int _delayRunTime;
 
         protected int _maskRandom;
+        
+        protected UnityNativeParticleItem _effectBullet;
 
         public int Angle
         {
@@ -80,7 +82,24 @@ namespace GameA.Game
             _destroy = 0;
             _angle = 0;
             _originPos = IntVec2.zero;
+            FreeEffect(_effectBullet);
+            _effectBullet = null;
             base.Clear();
+        }
+
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            _effectBullet = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.Model, _trans);
+            if (_effectBullet == null)
+            {
+                return false;
+            }
+            _effectBullet.Play();
+            return true;
         }
 
         public virtual void Run(SkillBase skill, int angle, int delayRunTime)

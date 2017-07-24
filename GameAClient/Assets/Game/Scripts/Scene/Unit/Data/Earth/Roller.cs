@@ -39,6 +39,31 @@ namespace GameA.Game
             base.UpdateExtraData();
         }
 
+        public override IntVec2 GetDeltaImpactPos(UnitBase unit)
+        {
+            var player = unit as PlayerBase;
+            //推箱子的时候额外处理
+            if (player != null && player.IsHoldingBox())
+            {
+                IntVec2 deltaImpactPos = IntVec2.zero;
+                switch (_rollerDirection)
+                {
+                    case EMoveDirection.Right:
+                        deltaImpactPos.x = (int) (player.CurMaxSpeedX * 0.8f);
+                        break;
+                    case EMoveDirection.Left:
+                        deltaImpactPos.x = (int) (-player.CurMaxSpeedX * 0.8f);
+                        break;
+                }
+                if (!_run || !UseMagic())
+                {
+                    return deltaImpactPos;
+                }
+                return deltaImpactPos + Speed;
+            }
+            return base.GetDeltaImpactPos(unit);
+        }
+
         internal override bool InstantiateView()
         {
             if (!base.InstantiateView())

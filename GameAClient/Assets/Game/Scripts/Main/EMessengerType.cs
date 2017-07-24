@@ -101,6 +101,10 @@ namespace GameA
         public static int OnMPChanged = SoyEngine.EMessengerType.NextId++;
         // 主角hp发生变化
         public static int OnHPChanged = SoyEngine.EMessengerType.NextId++;
+	    /// <summary>
+	    /// Rp发生变化
+	    /// </summary>
+        public static int OnRPChanged = SoyEngine.EMessengerType.NextId++;
         // 主角加速跑技能cd发生变化
         public static int OnSpeedUpCDChanged = SoyEngine.EMessengerType.NextId++;
 

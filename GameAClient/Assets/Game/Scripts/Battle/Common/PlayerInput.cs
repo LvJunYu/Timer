@@ -22,9 +22,10 @@ namespace GameA.Game
         Up,
         Down,
         Jump,
-        Quicken,
+        Assist,
         Skill1,
         Skill2,
+        Skill3,
         Max
     }
 
@@ -35,10 +36,6 @@ namespace GameA.Game
 
         [SerializeField]
         protected ERunMode _runMode;
-        private const int JumpFirstMaxTime = 105;
-        private const int JumpSecondMaxTime = 205;
-        private const int QuickenMaxTime = 3*ConstDefineGM2D.FixedFrameCount;
-        private const int QuickenCDTime = 20*ConstDefineGM2D.FixedFrameCount;
 
         #region state
 
@@ -73,45 +70,35 @@ namespace GameA.Game
         protected bool _lastJumpInput;
 
         [SerializeField]
-        protected bool _quickenInput;
+        protected bool _assistInput;
         [SerializeField]
-        protected bool _lastQuickenInput;
-        public int _quickenTime;
-        public int _quickenCDTime;
+        protected bool _lastAssistInput;
 
         [SerializeField]
-        protected bool _skill1Input;
+        protected bool[] _skillInputs = new bool[3];
         [SerializeField]
-        protected bool _lastSkill1Input;
-        [SerializeField]
-        protected bool _skill2Input;
-        [SerializeField]
-        protected bool _lastSkill2Input;
+        protected bool[] _lastSkillInputs = new bool[3];
 
         // 跳跃等级
         [SerializeField]
         public int _jumpLevel = 0;
         // 跳跃状态
-        [SerializeField]
-        public int _jumpState = 0;
-        // 停止跳跃标志
-        [SerializeField]
-        protected bool _stopJump = false;
+        [SerializeField] public EJumpState _jumpState;
 
         [SerializeField]
         public EClimbState _eClimbState;
         // 攀墙跳
         [SerializeField]
         protected bool _climbJump = false;
-        protected bool _step;
         protected int _stepY;
+        /// <summary>
+        /// 起跳的动画时间
+        /// </summary>
+        protected int _jumpTimer;
 
         #endregion
 
         #region Input
-
-        protected const int WallJumpBanInputTime = 20;
-        protected const int QuickenTime = 3*ConstDefineGM2D.FixedFrameCount;
 
         [SerializeField]
         protected List<int> _inputDatas = new List<int>();
@@ -141,37 +128,14 @@ namespace GameA.Game
             get { return _jumpInput; }
         }
 
-        public bool Skill1Input
-        {
-            get { return _skill1Input; }
-        }
-
-        public bool Skill2InputDown
-        {
-            get { return _skill2Input && !_lastSkill2Input; }
-        }
-
         public bool QuickenInputUp
         {
-            get { return !_quickenInput && _lastQuickenInput; }
+            get { return !_assistInput && _lastAssistInput; }
         }
 
         public bool ClimbJump
         {
             get { return _climbJump; }
-        }
-
-        public bool Step
-        {
-            get { return _step; }
-            set
-            {
-                if (value)
-                {
-                    ResetJumpState();
-                }
-                _step = value;
-            }
         }
 
         public int StepY
@@ -185,7 +149,7 @@ namespace GameA.Game
             get { return _inputDatas; }
         }
 
-        public int JumpState
+        public EJumpState JumpState
         {
             get { return _jumpState; }
         }
@@ -215,21 +179,28 @@ namespace GameA.Game
             _totalTime = 0;
             _index = 0;
         }
-
-        public void ResetJumpState()
+        
+        public bool SkillInputDown(int i)
         {
-            _jumpLevel = 0;
-            _jumpState = 0;
+            return _skillInputs[i] && !_lastSkillInputs[i];
+        }
+
+        public void OnLand()
+        {
+            _jumpLevel = -1;
+            _jumpTimer = 0;
+            _jumpInput = false;
+            _jumpState = EJumpState.Land;
         }
 
         public void Clear()
         {
             ClearInput();
-            UpdateQuickenCDTime(0);
         }
 
         public void ClearInput()
         {
+            _jumpTimer = 0;
             _lastJumpInput = false;
             _lastHorizontal = 0;
             _curHorizontal = 0;
@@ -240,34 +211,23 @@ namespace GameA.Game
             _upInput = 0;
             _downInput = 0;
             _jumpInput = false;
-            _jumpState = 0;
-            _jumpLevel = 0;
-            _stopJump = false;
+            _jumpState = EJumpState.Land;
+            _jumpLevel = -1;
             _eClimbState = EClimbState.None;
             _climbJump = false;
-            _step = false;
             _stepY = 0;
-            _quickenInput = false;
-            _lastQuickenInput = false;
-            _skill1Input = false;
-            _lastSkill1Input = false;
-            _skill2Input = false;
-            _lastSkill2Input = false;
+            _assistInput = false;
+            _lastAssistInput = false;
+            for (int i = 0; i < _skillInputs.Length; i++)
+            {
+                _skillInputs[i] = false;
+                _lastSkillInputs[i] = false;
+            }
             for (int i = 0; i < _curInputs.Length; i++)
             {
                 _curInputs[i] = false;
                 _lastInputs[i] = false;
             }
-        }
-
-        private void UpdateQuickenCDTime(int value)
-        {
-            if (_quickenCDTime == value)
-            {
-                return;
-            }
-            _quickenCDTime = value;
-            Messenger<int, int>.Broadcast(EMessengerType.OnSpeedUpCDChanged, _quickenCDTime, QuickenCDTime);
         }
 
         public void UpdateLogic()
@@ -278,14 +238,6 @@ namespace GameA.Game
             }
             _curTime++;
             _totalTime = _curTime;
-            if (_quickenCDTime > 0)
-            {
-                UpdateQuickenCDTime(_quickenCDTime - 1);
-            }
-            if (_quickenTime > 0)
-            {
-                _quickenTime--;
-            }
             CheckInput();
             if (_player.IsAlive && _player.CurBanInputTime == 0 && !_player.IsHoldingBox())
             {
@@ -307,9 +259,8 @@ namespace GameA.Game
                 }
             }
             CheckJump();
-            CheckQuicken();
+            CheckAssist();
             CheckSkill();
-            _step = false;
         }
 
         protected void CheckInput()
@@ -440,7 +391,7 @@ namespace GameA.Game
                 _inputDatas.Add(10);
                 if (apply)
                 {
-                    _quickenInput = true;
+                    _assistInput = true;
                 }
             }
             if (!_curInputs[5] && _lastInputs[5])
@@ -449,7 +400,7 @@ namespace GameA.Game
                 _inputDatas.Add(11);
                 if (apply)
                 {
-                    _quickenInput = false;
+                    _assistInput = false;
                 }
             }
             if (_curInputs[6] && !_lastInputs[6])
@@ -458,7 +409,7 @@ namespace GameA.Game
                 _inputDatas.Add(12);
                 if (apply)
                 {
-                    _skill1Input = true;
+                    _skillInputs[0] = true;
                 }
             }
             if (!_curInputs[6] && _lastInputs[6])
@@ -467,7 +418,7 @@ namespace GameA.Game
                 _inputDatas.Add(13);
                 if (apply)
                 {
-                    _skill1Input = false;
+                    _skillInputs[0] = false;
                 }
             }
             if (_curInputs[7] && !_lastInputs[7])
@@ -476,7 +427,7 @@ namespace GameA.Game
                 _inputDatas.Add(14);
                 if (apply)
                 {
-                    _skill2Input = true;
+                    _skillInputs[1] = true;
                 }
             }
             if (!_curInputs[7] && _lastInputs[7])
@@ -485,7 +436,25 @@ namespace GameA.Game
                 _inputDatas.Add(15);
                 if (apply)
                 {
-                    _skill2Input = false;
+                    _skillInputs[1] = false;
+                }
+            }
+            if (_curInputs[8] && !_lastInputs[8])
+            {
+                _inputDatas.Add(_curTime);
+                _inputDatas.Add(16);
+                if (apply)
+                {
+                    _skillInputs[2] = true;
+                }
+            }
+            if (!_curInputs[8] && _lastInputs[8])
+            {
+                _inputDatas.Add(_curTime);
+                _inputDatas.Add(17);
+                if (apply)
+                {
+                    _skillInputs[2] = false;
                 }
             }
         }
@@ -537,27 +506,35 @@ namespace GameA.Game
                 }
                 if (_inputDatas[_index] == 10)
                 {
-                    _quickenInput = true;
+                    _assistInput = true;
                 }
                 if (_inputDatas[_index] == 11)
                 {
-                    _quickenInput = false;
+                    _assistInput = false;
                 }
                 if (_inputDatas[_index] == 12)
                 {
-                    _skill1Input = true;
+                    _skillInputs[0] = true;
                 }
                 if (_inputDatas[_index] == 13)
                 {
-                    _skill1Input = false;
+                    _skillInputs[0] = false;
                 }
                 if (_inputDatas[_index] == 14)
                 {
-                    _skill2Input = true;
+                    _skillInputs[1] = true;
                 }
                 if (_inputDatas[_index] == 15)
                 {
-                    _skill2Input = false;
+                    _skillInputs[1] = false;
+                }
+                if (_inputDatas[_index] == 16)
+                {
+                    _skillInputs[2] = true;
+                }
+                if (_inputDatas[_index] == 17)
+                {
+                    _skillInputs[2] = false;
                 }
                 _index++;
             }
@@ -571,100 +548,59 @@ namespace GameA.Game
                 //攀墙跳
                 if (_eClimbState > EClimbState.None)
                 {
-                    _player.CurBanInputTime = 20;
                     _climbJump = true;
-                    _player.SpeedY = 0;
+                    _player.CurBanInputTime = BattleDefine.WallJumpBanInputTime;
                     _player.ExtraSpeed.y = 0;
-                    _jumpState = 100;
                     _jumpLevel = 0;
+                    _jumpState = EJumpState.Jump1;
                     if (_eClimbState == EClimbState.Left)
                     {
                         _player.SpeedX = 120;
-                        if (_player.CurMoveDirection != EMoveDirection.Right)
-                        {
-                            _player.SetFacingDir(EMoveDirection.Right);
-                            PlayMode.Instance.CurrentShadow.RecordDirChange(EMoveDirection.Right);
-                        }
+                        _player.SetFacingDir(EMoveDirection.Right);
                     }
                     else if (_eClimbState == EClimbState.Right)
                     {
                         _player.SpeedX = -120;
-                        if (_player.CurMoveDirection != EMoveDirection.Left)
-                        {
-                            _player.SetFacingDir(EMoveDirection.Left);
-                            PlayMode.Instance.CurrentShadow.RecordDirChange(EMoveDirection.Left);
-                        }
+                        _player.SetFacingDir(EMoveDirection.Left);
                     }
                 }
-                else if ((_step || _jumpState == 0))
+                else if (_jumpLevel == -1)
                 {
-                    if (_step)
+                    if (_stepY > 0)
                     {
                         _player.ExtraSpeed.y = _stepY;
+                        _stepY = 0;
                     }
-                    _player.SpeedY = 0;
                     _jumpLevel = 0;
-                    _jumpState = 100;
+                    _player.SpeedY = _player.OnClay ? 100 : 150;
+                    _jumpState = EJumpState.Jump1;
+                    _jumpTimer = 10;
                 }
-                else if ((_jumpState > 0 && _jumpState < 200) && !_lastJumpInput && _jumpLevel == 0 && IsCharacterAbilityAvailable(ECharacterAbility.DoubleJump))
+                else if (!_lastJumpInput && _jumpLevel == 0 && IsCharacterAbilityAvailable(ECharacterAbility.DoubleJump))
                 {
-                    _player.SpeedY = 0;
-                    _player.ExtraSpeed.y = 0;
-                    _jumpState = 200;
                     _jumpLevel = 1;
-                }
-                _stopJump = false;
-            }
-
-            if (_player.ExtraSpeed.y < 0)
-            {
-                _jumpState = 1;
-                if (_jumpState > 200)
-                {
+                    _player.ExtraSpeed.y = 0;
+                    _player.SpeedY = 150;
+                    _jumpState = EJumpState.Jump2;
+                    _jumpTimer = 15;
                     _jumpInput = false;
+//                    if (_player.WingCount > 0)
+//                    {
+//                        _player.WingCount--;
+//                    }
                 }
             }
-            if (_jumpState > 200 && _player.SpeedY <= 0)
+            if (_jumpTimer > 0)
             {
-                _jumpInput = false;
-                _stopJump = true;
+                _jumpTimer--;
             }
-            if (_jumpState >= 200 && !_jumpInput)
+            if ((_jumpTimer == 0 && _player.SpeedY > 0) || _player.SpeedY < 0)
             {
-                _stopJump = true;
-            }
-            if (_jumpState >= 202)
-            {
-                _jumpState++;
-                _player.SpeedY += 10;
-            }
-            else if (_jumpState >= 200)
-            {
-                _jumpState++;
-                _player.SpeedY += 70;
-            }
-            else if (_jumpState >= 102)
-            {
-                _jumpState++;
-                _player.SpeedY += 10;
-            }
-            else if (_jumpState >= 100)
-            {
-                _jumpState++;
-                _player.SpeedY += _player.OnClay ? 50 : 70;
-            }
-            if ((_jumpState > JumpFirstMaxTime && _jumpState < 200) || _jumpState > JumpSecondMaxTime)
-            {
-                _jumpState = 1;
-                _jumpInput = false;
-            }
-            if ((_jumpState >= 102 || _jumpState >= 202) && _stopJump)
-            {
-                _jumpState = 1;
+                _jumpState = EJumpState.Fall;
             }
         }
-
-        protected void CheckQuicken()
+        
+        protected void CheckAssist()
         {
             switch (_littleSkillState)
             {
@@ -678,19 +614,7 @@ namespace GameA.Game
                     break;
                 case ELittleSkillState.Quicken:
                     {
-                        if (_quickenCDTime > 0)
-                        {
-                            return;
-                        }
-                        if (_quickenTime > 0)
-                        {
-                            return;
-                        }
-                        if (QuickenInputUp && IsCharacterAbilityAvailable(ECharacterAbility.SpeedUp))
-                        {
-                            _quickenTime = QuickenMaxTime;
-                            UpdateQuickenCDTime(QuickenCDTime);
-                        }
+        
                     }
                     break;
             }
@@ -732,15 +656,23 @@ namespace GameA.Game
                 eShootDir = EShootDirectionType.Up;
             }
             _player.ShootAngle = (int)eShootDir;
-
-            if (_skill1Input && IsCharacterAbilityAvailable(ECharacterAbility.Shoot))
+            if (IsCharacterAbilityAvailable(ECharacterAbility.Shoot))
             {
-                _player.SkillCtrl.Fire(0);
+                if (_skillInputs[0])
+                {
+                    _player.SkillCtrl.Fire(0);
+                }
+                if (SkillInputDown(1))
+                {
+                    _player.SkillCtrl.Fire(1);
+                }
+                if (SkillInputDown(2))
+                {
+                    LogHelper.Debug("Skill3");
+                    _player.SkillCtrl.Fire(2);
+                }
             }
-            if (Skill2InputDown && IsCharacterAbilityAvailable(ECharacterAbility.Shoot))
-            {
-                _player.SkillCtrl.Fire(1);
-            }
+        
         }
 
         public void ChangeLittleSkillState(ELittleSkillState eLittleSkillState)
@@ -764,9 +696,11 @@ namespace GameA.Game
             _lastVertical = _curVertical;
 
             _lastJumpInput = _jumpInput;
-            _lastQuickenInput = _quickenInput;
-            _lastSkill1Input = _skill1Input;
-            _lastSkill2Input = _skill2Input;
+            _lastAssistInput = _assistInput;
+            for (int i = 0; i < _skillInputs.Length; i++)
+            {
+                _lastSkillInputs[i] = _skillInputs[i];
+            }
 
             if (_player.IsMain)
             {
@@ -824,13 +758,13 @@ namespace GameA.Game
                 {
                     _curInputs[(int)EInputType.Jump] = false;
                 }
-                if (KeyDown(EInputType.Quicken))
+                if (KeyDown(EInputType.Assist))
                 {
-                    _curInputs[(int)EInputType.Quicken] = true;
+                    _curInputs[(int)EInputType.Assist] = true;
                 }
-                if (KeyUp(EInputType.Quicken))
+                if (KeyUp(EInputType.Assist))
                 {
-                    _curInputs[(int)EInputType.Quicken] = false;
+                    _curInputs[(int)EInputType.Assist] = false;
                 }
                 if (KeyDown(EInputType.Skill1))
                 {
@@ -847,6 +781,14 @@ namespace GameA.Game
                 if (KeyUp(EInputType.Skill2))
                 {
                     _curInputs[(int)EInputType.Skill2] = false;
+                }
+                if (KeyDown(EInputType.Skill3))
+                {
+                    _curInputs[(int)EInputType.Skill3] = true;
+                }
+                if (KeyUp(EInputType.Skill3))
+                {
+                    _curInputs[(int)EInputType.Skill3] = false;
                 }
             }
         }
@@ -865,12 +807,14 @@ namespace GameA.Game
                     return _lastVertical < 0.1f && _curVertical > 0.1f;
                 case EInputType.Jump:
                     return CrossPlatformInputManager.GetButtonDown("Jump");
-                case EInputType.Quicken:
-                    return CrossPlatformInputManager.GetButtonDown("Fire3");
+                case EInputType.Assist:
+                    return CrossPlatformInputManager.GetButtonDown("Assist");
                 case EInputType.Skill1:
                     return CrossPlatformInputManager.GetButtonDown("Fire1");
                 case EInputType.Skill2:
                     return CrossPlatformInputManager.GetButtonDown("Fire2");
+                case EInputType.Skill3:
+                    return CrossPlatformInputManager.GetButtonDown("Fire3");
             }
             return false;
         }
@@ -897,12 +841,14 @@ namespace GameA.Game
                         return true;
                     }
                     return CrossPlatformInputManager.GetButtonUp("Jump");
-                case EInputType.Quicken:
-                    return CrossPlatformInputManager.GetButtonUp("Fire3");
+                case EInputType.Assist:
+                    return CrossPlatformInputManager.GetButtonUp("Assist");
                 case EInputType.Skill1:
                     return CrossPlatformInputManager.GetButtonUp("Fire1");
                 case EInputType.Skill2:
                     return CrossPlatformInputManager.GetButtonUp("Fire2");
+                case EInputType.Skill3:
+                    return CrossPlatformInputManager.GetButtonUp("Fire3");
             }
             return false;
         }

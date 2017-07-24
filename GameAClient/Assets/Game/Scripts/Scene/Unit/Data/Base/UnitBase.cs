@@ -60,6 +60,8 @@ namespace GameA.Game
 
         #region motor
 
+        protected  int _wingCount;
+
         protected bool _canMotor;
         protected bool _canAttack;
 
@@ -93,7 +95,7 @@ namespace GameA.Game
         /// <summary>
         /// 加速减速参数
         /// </summary>
-        protected float _speedRatio;
+        protected float _speedStateRatio;
 
         #endregion
 
@@ -118,6 +120,12 @@ namespace GameA.Game
         protected Transform _trans
         {
             get { return _view == null ? null : _view.Trans; }
+        }
+        
+        public int WingCount
+        {
+            get { return _wingCount; }
+            set { _wingCount = value; }
         }
 
         public int Hp
@@ -304,10 +312,10 @@ namespace GameA.Game
             set { _speed = value; }
         }
 
-        public float SpeedRatio
+        public float SpeedStateRatio
         {
-            get { return _speedRatio; }
-            set { _speedRatio = value; }
+            get { return _speedStateRatio; }
+            set { _speedStateRatio = value; }
         }
 
         public bool Grounded
@@ -628,9 +636,10 @@ namespace GameA.Game
         protected virtual void Clear()
         {
             ClearRunTime();
+            _wingCount = 0;
             _canAttack = true;
             _canMotor = true;
-            _speedRatio = 1;
+            _speedStateRatio = 1;
             _isAlive = true;
             _dieTime = 0;
             _deltaPos = IntVec2.zero;
@@ -1135,7 +1144,7 @@ namespace GameA.Game
                 int extraDeltaY = int.MinValue;
                 for (int i = 0; i < _downUnits.Count; i++)
                 {
-                    var deltaPos = _downUnits[i].GetDeltaImpactPos();
+                    var deltaPos = _downUnits[i].GetDeltaImpactPos(this);
                     if (deltaPos.x > 0 && deltaPos.x > right)
                     {
                         right = deltaPos.x;
@@ -1366,7 +1375,7 @@ namespace GameA.Game
             return _tableUnit.RendererToCollider(_curPos, Rotation);
         }
 
-        public virtual IntVec2 GetDeltaImpactPos()
+        public virtual IntVec2 GetDeltaImpactPos(UnitBase unit)
         {
             return _deltaImpactPos;
         }

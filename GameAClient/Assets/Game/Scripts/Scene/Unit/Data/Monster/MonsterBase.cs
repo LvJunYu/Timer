@@ -16,7 +16,6 @@ namespace GameA.Game
     {
         protected IntVec2 _lastPos;
         protected int _monsterSpeed;
-        protected int _curMaxSpeedX;
         protected int _curFriction;
 
         protected override bool OnInit()
@@ -94,22 +93,26 @@ namespace GameA.Game
                     Speed += _lastExtraDeltaPos;
                     _grounded = false;
                 }
-                _curMaxSpeedX = _monsterSpeed;
-                if (_onClay)
-                {
-                    _curFriction = 30;
-                    _curMaxSpeedX = (int)(_curMaxSpeedX * SpeedClayRatio);
-                }
-                else if (_onIce)
+                if (_onIce)
                 {
                     _curFriction = 1;
                 }
+                _curMaxSpeedX = _monsterSpeed;
+                float ratio = 1;
+                if (_onClay)
+                {
+                    _curFriction = 30;
+                    ratio *= SpeedClayRatio;
+                }
                 if (HasStateType(EStateType.Fire))
                 {
+                    ratio *= SpeedFireRatio;
+                    _curMaxSpeedX = (int)(_curMaxSpeedX * ratio);
                     OnFire();
                 }
                 else
                 {
+                    _curMaxSpeedX = (int)(_curMaxSpeedX * ratio);
                     UpdateMonsterAI();
                 }
                 if (!air)
@@ -140,7 +143,6 @@ namespace GameA.Game
 
         protected virtual void OnFire()
         {
-            _curMaxSpeedX = (int)(_curMaxSpeedX * SpeedFireRatio);
             if (_curMoveDirection == EMoveDirection.Right)
             {
                 SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, _curFriction);

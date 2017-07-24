@@ -151,16 +151,10 @@ namespace GameA.Game
                     return (int) ESceneLayer.Monster;
                 case (int) ELayerType.Item:
                     return (int) ESceneLayer.Item;
-                case (int) ELayerType.AttackPlayer:
-                    return (int) ESceneLayer.AttackPlayer;
-                case (int) ELayerType.AttackPlayerItem:
-                    return (int) ESceneLayer.AttackPlayerItem;
                 case (int) ELayerType.Decoration:
                     return (int) ESceneLayer.Decoration;
                 case (int) ELayerType.Effect:
                     return (int) ESceneLayer.Effect;
-                case (int) ELayerType.AttackMonsterItem:
-                    return (int) ESceneLayer.AttackMonsterItem;
                 case (int) ELayerType.RigidbodyItem:
                     return (int) ESceneLayer.RigidbodyItem;
                 case (int) ELayerType.Bullet:

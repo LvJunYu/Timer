@@ -16,7 +16,7 @@ namespace GameA.Game
         {
             if (!checkOnly)
             {
-                if (other.IsMain || other.ELayerType == ELayerType.AttackPlayerItem)
+                if (other.IsMain)
                 {
                     DestroyBrick();
                 }
@@ -46,10 +46,7 @@ namespace GameA.Game
         {
             if (!checkOnly)
             {
-                if (other.ELayerType == ELayerType.AttackPlayerItem)
-                {
-                    DestroyBrick();
-                }
+                DestroyBrick();
             }
         }
 

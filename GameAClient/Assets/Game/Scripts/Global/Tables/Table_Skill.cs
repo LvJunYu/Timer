@@ -16,20 +16,20 @@ namespace GameA.Game
 		[ColumnMapping("Name")]
 		public string Name;
 		/// <summary>
-        /// 子弹
+        /// 魔法消耗
         /// </summary>
-		[ColumnMapping("ProjectileCount")]
-		public int ProjectileCount;
+		[ColumnMapping("MpCost")]
+		public int MpCost;
+		/// <summary>
+        /// 怒气消耗
+        /// </summary>
+		[ColumnMapping("RpCost")]
+		public int RpCost;
 		/// <summary>
         /// CD时间
         /// </summary>
 		[ColumnMapping("CDTime")]
 		public int CDTime;
-		/// <summary>
-        /// 冷却时间
-        /// </summary>
-		[ColumnMapping("ChargeTime")]
-		public int ChargeTime;
 		/// <summary>
         /// 吟唱时间
         /// </summary>

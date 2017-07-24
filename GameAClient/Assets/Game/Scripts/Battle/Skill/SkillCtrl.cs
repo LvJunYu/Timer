@@ -16,16 +16,38 @@ namespace GameA.Game
     {
         [SerializeField] protected SkillBase[] _currentSkills;
         protected UnitBase _owner;
+        
+        protected int _mpTotal;
+        protected int _mpRecover;
+        
+        protected int _rpTotal;
+        protected int _rpRecover;
+        
+        protected int _currentMp;
+        protected int _currentRp;
 
         public SkillCtrl(UnitBase owner, int count)
         {
             _owner = owner;
             _currentSkills = new SkillBase[count];
         }
-
+        
         public SkillBase[] CurrentSkills
         {
             get { return _currentSkills; }
+        }
+
+        public void SetPoint(int mp,int mpRecover,int rp,int rpRecover)
+        {
+            _mpTotal = mp;
+            _mpRecover = mpRecover;
+            _rpTotal = rp;
+            _rpRecover = rpRecover;
+
+            _currentMp = _mpTotal;
+            _currentRp = _rpTotal;
+            
+            LogHelper.Debug("{0} | {1}", _mpRecover, _rpRecover);
         }
 
         public bool ChangeSkill(params int[] skillIds)
@@ -68,6 +90,8 @@ namespace GameA.Game
                     _currentSkills[i].UpdateLogic();
                 }
             }
+            UpdateMp(_mpRecover);
+            UpdateRp(_rpRecover);
         }
 
         public bool Fire(int trackIndex)
@@ -76,15 +100,58 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (_currentSkills[trackIndex] == null)
+            var skill = _currentSkills[trackIndex];
+            if (skill == null)
             {
                 return false;
             }
-            if (!_currentSkills[trackIndex].Fire())
+            if (skill.MpCost > 0 && _currentMp < skill.MpCost)
+            {
+                LogHelper.Debug("Mp is not enough! {0} | {1}", _currentMp, skill.MpCost);
+                return false;
+            }
+            if (skill.RpCost > 0 && _currentRp < skill.RpCost)
+            {
+                LogHelper.Debug("Rp is not enough! {0} | {1}", _currentRp, skill.RpCost);
+                return false;
+            }
+            if (!skill.Fire())
             {
                 return false;
             }
+            UpdateMp(-skill.MpCost);
+            UpdateRp(-skill.RpCost);
             return true;
+        }
+
+        private void UpdateMp(int changedMp)
+        {
+            if (changedMp == 0)
+            {
+                return;
+            }
+            var mp = Mathf.Clamp(_currentMp + changedMp, 0, _mpTotal);
+            if (_currentMp != mp)
+            {
+                _currentMp = mp;
+                LogHelper.Debug(_currentMp+"~_currentMp"+changedMp);
+                Messenger<int,int>.Broadcast(EMessengerType.OnMPChanged,_currentMp,_mpTotal);
+            }
+        }
+        
+        private void UpdateRp(int changedRp)
+        {
+            if (changedRp == 0)
+            {
+                return;
+            }
+            var rp = Mathf.Clamp(_currentRp + changedRp, 0, _rpTotal);
+            if (_currentRp != rp)
+            {
+                _currentRp = rp;
+                LogHelper.Debug(_currentRp+"~_currentRp"+changedRp);
+                Messenger<int,int>.Broadcast(EMessengerType.OnRPChanged,_currentRp,_rpTotal);
+            }
         }
 
         private bool CheckValid(int trackIndex)
