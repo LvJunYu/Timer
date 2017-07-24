@@ -104,7 +104,6 @@ namespace GameA.Game
 
         public bool Fire(int trackIndex)
         {
-            _owner.Gun.Fire();
             if (!CheckValid(trackIndex))
             {
                 return false;
