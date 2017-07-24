@@ -71,11 +71,6 @@ namespace GameA.Game
             get { return _owner; }
         }
 
-        public int Radius
-        {
-            get { return _radius; }
-        }
-
         public int CastRange
         {
             get { return _castRange; }
@@ -95,6 +90,7 @@ namespace GameA.Game
         {
             _owner = ower;
             _tableSkill = TableManager.Instance.GetSkill(id);
+            _eSkillType = (ESkillType) _tableSkill.SkillType;
             _cdTime = TableConvert.GetTime(_tableSkill.CDTime);
             _singTime = TableConvert.GetTime(_tableSkill.SingTime);
             _castRange = TableConvert.GetRange(_tableSkill.CastRange);
@@ -202,8 +198,8 @@ namespace GameA.Game
                     break;
                 case EEffcetMode.TargetCircle:
                     {
-                        var radius = TableConvert.GetRange(_tableSkill.EffectValues[0]) + 1;
-                        units = ColliderScene2D.CircleCastAllReturnUnits(projectile.CenterPos, radius, JoyPhysics2D.GetColliderLayerMask(projectile.DynamicCollider.Layer));
+                        _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]) + 1;
+                        units = ColliderScene2D.CircleCastAllReturnUnits(projectile.CenterPos, _radius, JoyPhysics2D.GetColliderLayerMask(projectile.DynamicCollider.Layer));
                     }
                     break;
                 case EEffcetMode.TargetGrid:
@@ -214,8 +210,8 @@ namespace GameA.Game
                     break;
                 case EEffcetMode.SelfCircle:
                 {
-                    var radius = TableConvert.GetRange(_tableSkill.EffectValues[0]) + 1;
-                    units = ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, radius, JoyPhysics2D.GetColliderLayerMask(projectile.DynamicCollider.Layer));
+                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]) + 1;
+                    units = ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, JoyPhysics2D.GetColliderLayerMask(projectile.DynamicCollider.Layer));
                 }
                     break;
             }
@@ -262,7 +258,7 @@ namespace GameA.Game
             var forces = _tableSkill.KnockbackForces;
             if (forces.Length == 2)
             {
-                var direction = unit.CenterPos - projectile.CenterPos;
+                var direction = unit.CenterDownPos - projectile.CenterDownPos;
                 unit.ExtraSpeed.x = direction.x >= 0 ? forces[0] : -forces[0];
                 unit.ExtraSpeed.y = direction.y >= -320 ? forces[1] : -forces[1];
                 unit.Speed = IntVec2.zero;
@@ -276,7 +272,7 @@ namespace GameA.Game
             int length = ConstDefineGM2D.ServerTileScale;
             var guid = target.Guid;
             UnitBase neighborUnit;
-            var curPos = projectile.CurPos;
+            var curPos = projectile.CenterPos;
             if (curPos.y < target.ColliderGrid.YMin)
             {
                 if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y - length, guid.z), out neighborUnit))
@@ -310,15 +306,14 @@ namespace GameA.Game
         protected virtual void DoPaint(ProjectileBase projectile, UnitBase target, EDirectionType eDirectionType)
         {
             var paintDepth = PaintBlock.TileOffsetHeight;
-            var colliderGrid = projectile.ColliderGrid;
+            var centerPos = projectile.CenterPos;
             var maskRandom = projectile.MaskRandom;
             switch (eDirectionType)
             {
                 case EDirectionType.Down:
                     {
-                        int centerPoint = (colliderGrid.XMax + 1 + colliderGrid.XMin) / 2;
-                        var start = centerPoint - _radius;
-                        var end = centerPoint + _radius;
+                        var start = centerPos.x - _radius;
+                        var end = centerPos.x + _radius;
                         target.DoPaint(start, end, EDirectionType.Down, _eSkillType, maskRandom);
 
                         if (start <= target.ColliderGrid.XMin)
@@ -337,9 +332,8 @@ namespace GameA.Game
                     break;
                 case EDirectionType.Up:
                     {
-                        int centerPoint = (colliderGrid.XMax + 1 + colliderGrid.XMin) / 2;
-                        var start = centerPoint - _radius;
-                        var end = centerPoint + _radius;
+                        var start = centerPos.x - _radius;
+                        var end = centerPos.x + _radius;
                         target.DoPaint(start, end, EDirectionType.Up, _eSkillType, maskRandom);
                         if (start <= target.ColliderGrid.XMin)
                         {
@@ -357,9 +351,8 @@ namespace GameA.Game
                     break;
                 case EDirectionType.Right:
                     {
-                        int centerPoint = (colliderGrid.YMax + 1 + colliderGrid.YMin) / 2;
-                        var start = centerPoint - _radius;
-                        var end = centerPoint + _radius;
+                        var start = centerPos.y - _radius;
+                        var end = centerPos.y + _radius;
                         target.DoPaint(start, end, EDirectionType.Right, _eSkillType, maskRandom);
                         if (start <= target.ColliderGrid.YMin)
                         {
@@ -377,9 +370,8 @@ namespace GameA.Game
                     break;
                 case EDirectionType.Left:
                     {
-                        int centerPoint = (colliderGrid.YMax + 1 + colliderGrid.YMin) / 2;
-                        var start = centerPoint - _radius;
-                        var end = centerPoint + _radius;
+                        var start = centerPos.y - _radius;
+                        var end = centerPos.y + _radius;
                         target.DoPaint(start, end, EDirectionType.Left, _eSkillType, maskRandom);
                         if (start <= target.ColliderGrid.YMin)
                         {

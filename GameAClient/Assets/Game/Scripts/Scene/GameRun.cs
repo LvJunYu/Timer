@@ -40,6 +40,11 @@ namespace GameA.Game
         {
             get { return _eSceneState == ESceneState.Edit; }
         }
+        
+        public bool IsPlay
+        {
+            get { return _eSceneState == ESceneState.Play; }
+        }
 
         public void Dispose()
         {

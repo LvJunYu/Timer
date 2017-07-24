@@ -263,7 +263,7 @@ namespace GameA.Game
             {
                 maskName = string.Format("MaskWater_{0}", (int)edge.Direction);
             }
-            if (ResourcesManager.Instance.TryGetTexture (maskName, out maskingTexture))
+            if (!ResourcesManager.Instance.TryGetTexture (maskName, out maskingTexture))
             {
                 LogHelper.Error("TryGetTexture Failed : {0} ", maskName);
                 return;

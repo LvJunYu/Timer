@@ -8,7 +8,7 @@ namespace GameA.Game
 		UnitBase _sight;
 		UnityNativeParticleItem _sightParticle;
 		public override void OnStart () {
-			MoveMainPlayer(PlayMode.Instance.MainPlayer.CenterPos + new IntVec2(160, 0));
+			MoveMainPlayer(PlayMode.Instance.MainPlayer.CenterDownPos + new IntVec2(160, 0));
 			ShowText("Hi，我又来了，这次要介绍的是我们可爱又头绿的游酱～");
 			BlockTouchInput();
 		}
@@ -256,9 +256,9 @@ namespace GameA.Game
 		}
 
 		public override void OnUpdate () {
-			if (PlayMode.Instance.MainPlayer.CenterPos.x > 166666) {
-				PlayMode.Instance.MainPlayer.CenterPos = new IntVec2(PlayMode.Instance.MainPlayer.CenterPos.x - 64000,
-				PlayMode.Instance.MainPlayer.CenterPos.y);
+			if (PlayMode.Instance.MainPlayer.CenterDownPos.x > 166666) {
+				PlayMode.Instance.MainPlayer.CenterDownPos = new IntVec2(PlayMode.Instance.MainPlayer.CenterDownPos.x - 64000,
+				PlayMode.Instance.MainPlayer.CenterDownPos.y);
 				CameraManager.Instance.CameraCtrlPlay.CurRollPos = new IntVec2(
 					CameraManager.Instance.CameraCtrlPlay.CurRollPos.x - 64000,
 					CameraManager.Instance.CameraCtrlPlay.CurRollPos.y);

@@ -105,6 +105,8 @@ namespace GameA.Game
             _trans.localScale = Vector3.one;
             _trans.localRotation = Quaternion.identity;
             _trans.parent = UnitManager.Instance.GetOriginParent();
+            SetRendererEnabled(true);
+            SetRendererColor(Color.white);
 			if (_dirTrans != null)
 			{
 				Object.Destroy(_dirTrans.gameObject);

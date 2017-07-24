@@ -12,7 +12,7 @@ namespace GameA.Game
 {
     public enum ESkillType
     {
-        Water = -1,
+        Water = 1,
         Fire,
         Ice,
         Clay,

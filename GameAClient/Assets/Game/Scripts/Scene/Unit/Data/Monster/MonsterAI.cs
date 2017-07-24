@@ -163,7 +163,7 @@ namespace GameA.Game
 
         protected virtual void OnThink()
         {
-            IntVec2 rel = CenterPos - PlayMode.Instance.MainPlayer.CenterPos;
+            IntVec2 rel = CenterDownPos - PlayMode.Instance.MainPlayer.CenterDownPos;
             if (Mathf.Abs(rel.x) <= _seekRange.x && Mathf.Abs(rel.y) <= _seekRange.y)
             {
                 MoveTo();
@@ -178,7 +178,7 @@ namespace GameA.Game
             }
             else
             {
-                IntVec2 rel = CenterPos - PlayMode.Instance.MainPlayer.CenterPos;
+                IntVec2 rel = CenterDownPos - PlayMode.Instance.MainPlayer.CenterDownPos;
                 if (Mathf.Abs(rel.x) > _attackRange.x || Mathf.Abs(rel.y) > _attackRange.y)
                 {
                     ChangeState(EMonsterState.Seek);
@@ -192,7 +192,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            IntVec2 rel = CenterPos - PlayMode.Instance.MainPlayer.CenterPos;
+            IntVec2 rel = CenterDownPos - PlayMode.Instance.MainPlayer.CenterDownPos;
             if (Mathf.Abs(rel.x) <= _attackRange.x && Mathf.Abs(rel.y) <= _attackRange.y)
             {
                 return true;
