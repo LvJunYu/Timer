@@ -981,7 +981,12 @@ namespace GameA.Game
                     break;
             }
             float z = -(pos.x + halfSize.x + pos.y + halfSize.y) * 0.00078125f + viewZOffset;
-            trans.position = GM2DTools.TileToWorld(pos + offset) + new Vector3(0, 0, z);
+            float y = 0f;
+            if (UnitDefine.IsDownY(_tableUnit))
+            {
+                y = -0.1f;
+            }
+            trans.position = GM2DTools.TileToWorld(pos + offset) + new Vector3(0, y, z);
             trans.eulerAngles = Vector3.back * 90 * (int) eDirectionType;
         }
 

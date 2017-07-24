@@ -668,7 +668,6 @@ namespace GameA.Game
                 }
                 if (SkillInputDown(2))
                 {
-                    LogHelper.Debug("Skill3");
                     _player.SkillCtrl.Fire(2);
                 }
             }

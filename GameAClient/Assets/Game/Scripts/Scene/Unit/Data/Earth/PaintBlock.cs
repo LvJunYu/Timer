@@ -376,19 +376,19 @@ namespace GameA.Game
                     }
                     if (maskBaseColor[i].r == 1f)
                     {
-                        paintedColor[i] = PaintUpColor[(int)edge.ESkillType];
+                        paintedColor[i] = PaintUpColor[(int) edge.ESkillType - 2];
                     }
                     else if (maskBaseColor[i].g == 1f)
                     {
-                        paintedColor[i] = PaintRightColor[(int)edge.ESkillType];
+                        paintedColor[i] = PaintRightColor[(int) edge.ESkillType - 2];
                     }
                     else if (maskBaseColor[i].b == 1f)
                     {
-                        paintedColor[i] = PaintFrontColor[(int)edge.ESkillType];
+                        paintedColor[i] = PaintFrontColor[(int) edge.ESkillType - 2];
                     }
                     else
                     {
-                        paintedColor[i] = PaintEdgeColor[(int)edge.ESkillType];
+                        paintedColor[i] = PaintEdgeColor[(int) edge.ESkillType - 2];
                     }
                 }
             }
