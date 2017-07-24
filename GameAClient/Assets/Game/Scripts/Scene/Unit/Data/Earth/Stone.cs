@@ -30,8 +30,8 @@ namespace GameA.Game
         public void OnChanged()
         {
             PlayMode.Instance.CreateRuntimeUnit(4013, _curPos);
+            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(20, SendMsgToAround));
             PlayMode.Instance.DestroyUnit(this);
-            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(10, SendMsgToAround));
         }
 
         private void SendMsgToAround()
@@ -40,21 +40,28 @@ namespace GameA.Game
             {
                 return;
             }
-            Check(_unitDesc.GetUpPos( _guid.z));
-            Check(_unitDesc.GetDownPos( _guid.z));
-            Check(_unitDesc.GetLeftPos( _guid.z));
-            Check(_unitDesc.GetRightPos( _guid.z));
+            CheckGrid(GetYGrid(30));
+            CheckGrid(GetYGrid(-30));
+            CheckGrid(GetXGrid(-30));
+            CheckGrid(GetXGrid(30));
         }
         
-        private void Check(IntVec3 guid)
+        private void CheckGrid(Grid2D grid)
         {
-            UnitBase unit;
-            if (ColliderScene2D.Instance.TryGetUnit(guid, out unit))
+            var units = ColliderScene2D.GridCastAllReturnUnits(grid);
+            if (units.Count > 0)
             {
-                var stone = unit as Stone;
-                if (stone != null && stone.IsAlive)
+                for (int i = 0; i < units.Count; i++)
                 {
-                    stone.OnChanged();
+                    var unit = units[i];
+                    if (unit != null && unit.IsAlive && unit != this)
+                    {
+                        var stone = unit as Stone;
+                        if (stone != null)
+                        {
+                            stone.OnChanged();
+                        }
+                    }
                 }
             }
         }

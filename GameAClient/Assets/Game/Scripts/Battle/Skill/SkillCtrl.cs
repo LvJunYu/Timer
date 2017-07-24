@@ -138,7 +138,6 @@ namespace GameA.Game
             if (_currentMp != mp)
             {
                 _currentMp = mp;
-                LogHelper.Debug(_currentMp+"~_currentMp"+changedMp);
                 Messenger<int,int>.Broadcast(EMessengerType.OnMPChanged,_currentMp,_mpTotal);
             }
         }
@@ -149,7 +148,6 @@ namespace GameA.Game
             if (_currentRp != rp)
             {
                 _currentRp = rp;
-                LogHelper.Debug(_currentRp+"~_currentRp"+changedRp);
                 Messenger<int,int>.Broadcast(EMessengerType.OnRPChanged,_currentRp,_rpTotal);
             }
         }

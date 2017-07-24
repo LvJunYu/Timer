@@ -16,6 +16,11 @@ namespace GameA.Game
 		[ColumnMapping("Name")]
 		public string Name;
 		/// <summary>
+        /// 技能类别
+        /// </summary>
+		[ColumnMapping("SkillType")]
+		public int SkillType;
+		/// <summary>
         /// 魔法消耗
         /// </summary>
 		[ColumnMapping("MpCost")]

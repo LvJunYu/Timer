@@ -165,29 +165,11 @@ namespace GameA.Game
 
         private void SendMsgToAround()
         {
-            //var scale = ConstDefineGM2D.ServerTileScale;
-            //Check(new IntVec3(_curPos.x, _curPos.y + scale, _guid.z));
-            //Check(new IntVec3(_curPos.x, _curPos.y - scale, _guid.z));
-            //Check(new IntVec3(_curPos.x - scale, _curPos.y, _guid.z));
-            //Check(new IntVec3(_curPos.x + scale, _curPos.y, _guid.z));
             CheckGrid(GetYGrid(30));
             CheckGrid(GetYGrid(-30));
             CheckGrid(GetXGrid(-30));
             CheckGrid(GetXGrid(30));
         }
-
-        //private void Check(IntVec3 guid)
-        //{
-        //    UnitBase unit;
-        //    if (ColliderScene2D.Instance.TryGetUnit(guid, out unit))
-        //    {
-        //        var scorchedEarth = unit as ScorchedEarth;
-        //        if (scorchedEarth != null && scorchedEarth.CurPos == new IntVec2(guid.x, guid.y))
-        //        {
-        //            scorchedEarth.OnExplode();
-        //        }
-        //    }
-        //}
 
         private void CheckGrid(Grid2D grid)
         {
