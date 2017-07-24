@@ -378,7 +378,16 @@ namespace NewResourceSolution
                 return;
             }
             #endif
-            CoroutineManager.StartCoroutine (VersionUpdater.CheckVerInternal (_manifest));
+		    if (EFileLocation.StreamingAsset == _manifest.FileLocation)
+		    {
+		        CoroutineManager.StartCoroutine(VersionUpdater.CheckVerInternal(null, _manifest));
+		    }
+		    else
+		    {
+		        CHRuntimeResManifest buildInManifest;
+		        UnityTools.TryGetObjectFromStreamingAssets<CHRuntimeResManifest> (ResDefine.CHResManifestFileName, out buildInManifest);
+		        CoroutineManager.StartCoroutine(VersionUpdater.CheckVerInternal(_manifest, buildInManifest));
+		    }
 		}
 		#endregion
 
