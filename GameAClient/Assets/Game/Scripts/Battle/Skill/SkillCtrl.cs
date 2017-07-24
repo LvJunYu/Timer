@@ -26,6 +26,8 @@ namespace GameA.Game
         protected int _currentMp;
         protected int _currentRp;
 
+        protected int _timer;
+
         public SkillCtrl(UnitBase owner, int count)
         {
             _owner = owner;
@@ -79,6 +81,7 @@ namespace GameA.Game
             {
                 _currentSkills[i] = null;
             }
+            _timer = 0;
         }
 
         public void UpdateLogic()
@@ -90,12 +93,18 @@ namespace GameA.Game
                     _currentSkills[i].UpdateLogic();
                 }
             }
-            UpdateMp(_mpRecover);
-            UpdateRp(_rpRecover);
+            _timer++;
+            if (_timer == ConstDefineGM2D.FixedFrameCount)
+            {
+                UpdateMp(_mpRecover);
+                UpdateRp(_rpRecover);
+                _timer = 0;
+            }
         }
 
         public bool Fire(int trackIndex)
         {
+            _owner.Gun.Fire();
             if (!CheckValid(trackIndex))
             {
                 return false;
