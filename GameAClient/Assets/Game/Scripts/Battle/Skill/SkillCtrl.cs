@@ -126,10 +126,6 @@ namespace GameA.Game
 
         private void UpdateMp(int changedMp)
         {
-            if (changedMp == 0)
-            {
-                return;
-            }
             var mp = Mathf.Clamp(_currentMp + changedMp, 0, _mpTotal);
             if (_currentMp != mp)
             {
@@ -141,10 +137,6 @@ namespace GameA.Game
         
         private void UpdateRp(int changedRp)
         {
-            if (changedRp == 0)
-            {
-                return;
-            }
             var rp = Mathf.Clamp(_currentRp + changedRp, 0, _rpTotal);
             if (_currentRp != rp)
             {

@@ -114,8 +114,6 @@ namespace GameA.Game
                 LogHelper.Error("GetEquipment Failed : {0}", id);
                 return false;
             }
-            LogHelper.Debug(tableEquipment.MpRecover+"~~~~~~");
-            int aa = TableConvert.GetPoint(tableEquipment.MpRecover);
             _skillCtrl.SetPoint(tableEquipment.Mp,TableConvert.GetPoint(tableEquipment.MpRecover)
             ,tableEquipment.Rp,TableConvert.GetPoint(tableEquipment.RpRecover));
             int[] skillIds = new int[3];

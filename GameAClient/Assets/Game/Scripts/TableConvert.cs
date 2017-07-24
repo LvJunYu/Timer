@@ -1,4 +1,7 @@
-﻿namespace GameA.Game
+﻿using SoyEngine;
+using UnityEngine;
+
+namespace GameA.Game
 {
     public class TableConvert
     {
@@ -9,7 +12,7 @@
         /// <returns></returns>
         public static int GetSpeed(int speed)
         {
-            return (int) (speed * ConstDefineGM2D.ServerTileScale * ConstDefineGM2D.FixedDeltaTime);
+            return Mathf.RoundToInt(speed * ConstDefineGM2D.ServerTileScale * ConstDefineGM2D.FixedDeltaTime);
         }
 
         /// <summary>
@@ -19,7 +22,7 @@
         /// <returns></returns>
         public static int GetTime(int time)
         {
-            return (int) (time * ConstDefineGM2D.FixedFrameCount * 0.001f);
+            return Mathf.RoundToInt(time * ConstDefineGM2D.FixedFrameCount * 0.001f);
         }
 
         /// <summary>
@@ -29,9 +32,9 @@
         /// <returns></returns>
         public static int GetRange(int range)
         {
-            return (int) (range * ConstDefineGM2D.ServerTileScale * 0.1f);
+            return Mathf.RoundToInt(range * ConstDefineGM2D.ServerTileScale * 0.1f);
         }
-        
+
         /// <summary>
         /// 每帧消耗
         /// </summary>
@@ -39,7 +42,7 @@
         /// <returns></returns>
         public static int GetPoint(int point)
         {
-            return (int) (point * ConstDefineGM2D.FixedDeltaTime);
+            return Mathf.RoundToInt(point * ConstDefineGM2D.FixedDeltaTime);
         }
     }
 }
