@@ -76,7 +76,10 @@ namespace GameA
                 return;
             }
 
+
+
             OpenInfoPanel ();
+            InitPanel();
             //RefreshRankData();
             //RefreshAdventureUserLevelDataDetail();
         }
@@ -107,6 +110,8 @@ namespace GameA
             _cachedView.RecordBtn1.onClick.AddListener (OnRecordBtn1);
             _cachedView.RankBtn1.onClick.AddListener (OnRankBtn1);
             
+
+
         }
 
         public void RefreshAdventureUserLevelDataDetail()
@@ -156,6 +161,48 @@ namespace GameA
             else if (_isBonus == false)
                 return EAdventureProjectType.APT_Normal;
             else return EAdventureProjectType.APT_None;
+        }
+
+        private void InitPanel()
+        {
+            Project project;
+            if (AppData.Instance.AdventureData.ProjectList.SectionList.Count < _chapterIdx)
+            {
+                LogHelper.Error("No project data of chapter {0}", _chapterIdx);
+                SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
+                return;
+            }
+            else
+            {
+                List<Project> projectList = _isBonus
+                    ? AppData.Instance.AdventureData.ProjectList.SectionList[_chapterIdx - 1].BonusProjectList
+                    : AppData.Instance.AdventureData.ProjectList.SectionList[_chapterIdx - 1].NormalProjectList;
+                if (projectList.Count <= _levelIdx - 1)
+                {
+                    LogHelper.Error("No project data of level in idx {0} in chapter {1}", _levelIdx, _chapterIdx);
+                    SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
+                    return;
+                }
+                else
+                {
+                    project = projectList[_levelIdx - 1];
+                }
+
+                if (null == project) return;
+                ImageResourceManager.Instance.SetDynamicImage(
+                    _cachedView.Cover1,
+                    project.IconPath,
+                    _cachedView.DefaultCover);
+                ImageResourceManager.Instance.SetDynamicImage(
+                    _cachedView.Cover2,
+                    project.IconPath,
+                    _cachedView.DefaultCover);
+                ImageResourceManager.Instance.SetDynamicImage(
+                    _cachedView.Cover3,
+                    project.IconPath,
+                    _cachedView.DefaultCover);
+
+            }
         }
 
         private void OpenInfoPanel () {

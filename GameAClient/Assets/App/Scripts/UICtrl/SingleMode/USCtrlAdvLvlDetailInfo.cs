@@ -39,18 +39,18 @@ namespace GameA
         public void Open (Project project, Table_StandaloneLevel table) {
             _cachedView.gameObject.SetActive (true);
             if (null == project) return;
-            ImageResourceManager.Instance.SetDynamicImage (
-                _cachedView.Cover1,
-                project.IconPath,
-                _cachedView.DefaultCover);
-            ImageResourceManager.Instance.SetDynamicImage (
-                _cachedView.Cover2,
-                project.IconPath,
-                _cachedView.DefaultCover);
-            ImageResourceManager.Instance.SetDynamicImage (
-                _cachedView.Cover3,
-                project.IconPath,
-                _cachedView.DefaultCover);
+            //ImageResourceManager.Instance.SetDynamicImage (
+            //    _cachedView.Cover1,
+            //    project.IconPath,
+            //    _cachedView.DefaultCover);
+            //ImageResourceManager.Instance.SetDynamicImage (
+            //    _cachedView.Cover2,
+            //    project.IconPath,
+            //    _cachedView.DefaultCover);
+            //ImageResourceManager.Instance.SetDynamicImage (
+            //    _cachedView.Cover3,
+            //    project.IconPath,
+            //    _cachedView.DefaultCover);
 
             if (table.StarConditions.Length < 3) {
                 LogHelper.Error ("standalonelevel table error, starCond cnt < 3, id: {0}", table.Id);
