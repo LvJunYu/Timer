@@ -31,10 +31,10 @@ namespace GameA.Game
 		[ColumnMapping("Model")]
 		public string Model;
 		/// <summary>
-        /// 模型1
+        /// 模型额外
         /// </summary>
-		[ColumnMapping("Model1")]
-		public string Model1;
+		[ColumnMapping("ModelExtras")]
+		public string[] ModelExtras;
 		/// <summary>
         /// 生命值
         /// </summary>

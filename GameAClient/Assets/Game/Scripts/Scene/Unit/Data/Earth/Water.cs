@@ -27,7 +27,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            SetSortingOrderBack();
+            SetSortingOrderBackground();
             return true;
         }
 
@@ -37,10 +37,10 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (_view1 != null)
-            {
-                _view1.Animation.Init("Run");
-            }
+//            if (_view1 != null)
+//            {
+//                _view1.Animation.Init("Run");
+//            }
             _animation.Init("Run");
             return true;
         }

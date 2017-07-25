@@ -17,8 +17,6 @@ namespace GameA.Game
     [Serializable]
     public class UnitBase : ColliderBase, IEquatable<UnitBase>
     {
-        protected const float BackZOffset = 0.4f;
-        protected const float FrontZOffset = -0.4f;
         protected const int MaxFriction = 100;
 
         #region base data
@@ -102,14 +100,13 @@ namespace GameA.Game
         #region view
 
         protected float _viewZOffset;
-        protected float _view1ZOffset;
 
         /// <summary>
         /// 可能会为NULL
         /// </summary>
         protected UnitView _view;
 
-        protected UnitView _view1;
+        protected UnitView[] _viewExtras;
 
         protected string _assetPath;
 
@@ -369,9 +366,9 @@ namespace GameA.Game
             get { return _view; }
         }
 
-        public UnitView View1
+        public UnitView[] ViewExtras
         {
-            get { return _view1; }
+            get { return _viewExtras; }
         }
 
         public Transform Trans
@@ -551,7 +548,6 @@ namespace GameA.Game
                 _dynamicCollider = dynamicCollider;
             }
             _viewZOffset = 0;
-            _view1ZOffset = FrontZOffset;
             InitAssetPath();
             UpdateExtraData();
             OnInit();
@@ -589,15 +585,24 @@ namespace GameA.Game
                 LogHelper.Error("TryGetUnitView Failed, {0}", _tableUnit.Id);
                 return false;
             }
-            if (!string.IsNullOrEmpty(_tableUnit.Model1))
+            if (_tableUnit.ModelExtras != null && _tableUnit.ModelExtras.Length > 0)
             {
-                _assetPath = _tableUnit.Model1;
-                if (!UnitManager.Instance.TryGetUnitView(this,true, out _view1))
+                _viewExtras = new UnitView[_tableUnit.ModelExtras.Length];
+                for (int i = 0; i < _viewExtras.Length; i++)
                 {
-                    LogHelper.Error("TryGetUnitView Failed, {0}", _tableUnit.Id);
-                    return false;
+                    if (string.IsNullOrEmpty(_tableUnit.ModelExtras[i]))
+                    {
+                        continue;
+                    }
+                    _assetPath = _tableUnit.ModelExtras[i];
+                    if (!UnitManager.Instance.TryGetUnitView(this, true, out _viewExtras[i]))
+                    {
+                        LogHelper.Error("TryGetUnitView Failed, {0}", _tableUnit.Id);
+                        return false;
+                    }
+                    CommonTools.SetParent(_viewExtras[i].Trans, _trans);
+                    _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsets[i] - _viewZOffset);
                 }
-                CommonTools.SetParent(_view1.Trans, _trans);
             }
             UpdateTransPos();
             SetFacingDir(_curMoveDirection, true);
@@ -897,10 +902,6 @@ namespace GameA.Game
             if (_view != null)
             {
                 _trans.position = GetTransPos();
-                if (_view1 != null)
-                {
-                    _view1.Trans.position = _trans.position + new Vector3(0, 0, _view1ZOffset - _viewZOffset);
-                }
             }
         }
 
@@ -1437,12 +1438,12 @@ namespace GameA.Game
 
         protected void SetSortingOrderBack()
         {
-            _viewZOffset = BackZOffset;
+            _viewZOffset = UnitDefine.ZOffsetBack;
         }
 
         protected void SetSortingOrderFront()
         {
-            _viewZOffset = FrontZOffset;
+            _viewZOffset = UnitDefine.ZOffsetFront;
         }
 
         protected void SetFront()
@@ -1482,7 +1483,7 @@ namespace GameA.Game
         internal virtual void OnObjectDestroy()
         {
             _view = null;
-            _view1 = null;
+            _viewExtras = null;
         }
 
         internal virtual void OnDispose()
