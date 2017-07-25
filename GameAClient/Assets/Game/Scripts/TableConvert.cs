@@ -34,15 +34,5 @@ namespace GameA.Game
         {
             return Mathf.RoundToInt(range * ConstDefineGM2D.ServerTileScale * 0.1f);
         }
-
-        /// <summary>
-        /// 每帧消耗
-        /// </summary>
-        /// <param name="point"></param>
-        /// <returns></returns>
-        public static int GetPoint(int point)
-        {
-            return Mathf.RoundToInt(point * ConstDefineGM2D.FixedDeltaTime);
-        }
     }
 }

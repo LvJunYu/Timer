@@ -265,7 +265,7 @@ namespace GameA.Game
 
 		protected void MoveMainPlayer (IntVec2 pos) {
 			if (PlayMode.Instance.MainPlayer != null) {
-				PlayMode.Instance.MainPlayer.CenterPos = pos;
+				PlayMode.Instance.MainPlayer.CenterDownPos = pos;
 				PlayMode.Instance.MainPlayer.SetFacingDir(EMoveDirection.Right);
 			}
 		}

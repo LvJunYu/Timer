@@ -12,7 +12,7 @@ namespace GameA.Game
 {
     public enum ESkillType
     {
-        Water = -1,
+        Water = 1,
         Fire,
         Ice,
         Clay,
@@ -67,5 +67,24 @@ namespace GameA.Game
         Time,
         Effect,
         All
+    }
+    
+    public enum EEffectId
+    {
+        None,
+        Hp,
+        Speed,
+        BanAttack,
+        HpMax,
+        Invincible,
+        BanMove,
+    }
+        
+    public enum EEffectType
+    {
+        None,
+        Always,
+        Interval,
+        End,
     }
 }

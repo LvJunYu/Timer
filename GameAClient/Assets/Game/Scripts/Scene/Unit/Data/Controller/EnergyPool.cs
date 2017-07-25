@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 6101, Type = typeof(EnergyPool))]
+    [Unit(Id = 8001, Type = typeof(EnergyPool))]
     public class EnergyPool : BlockBase
     {
         protected int _totalMp;

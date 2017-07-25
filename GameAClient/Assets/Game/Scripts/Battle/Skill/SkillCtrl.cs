@@ -26,6 +26,8 @@ namespace GameA.Game
         protected int _currentMp;
         protected int _currentRp;
 
+        protected int _timer;
+
         public SkillCtrl(UnitBase owner, int count)
         {
             _owner = owner;
@@ -79,6 +81,7 @@ namespace GameA.Game
             {
                 _currentSkills[i] = null;
             }
+            _timer = 0;
         }
 
         public void UpdateLogic()
@@ -90,8 +93,13 @@ namespace GameA.Game
                     _currentSkills[i].UpdateLogic();
                 }
             }
-            UpdateMp(_mpRecover);
-            UpdateRp(_rpRecover);
+            _timer++;
+            if (_timer == ConstDefineGM2D.FixedFrameCount)
+            {
+                UpdateMp(_mpRecover);
+                UpdateRp(_rpRecover);
+                _timer = 0;
+            }
         }
 
         public bool Fire(int trackIndex)
@@ -130,7 +138,6 @@ namespace GameA.Game
             if (_currentMp != mp)
             {
                 _currentMp = mp;
-                LogHelper.Debug(_currentMp+"~_currentMp"+changedMp);
                 Messenger<int,int>.Broadcast(EMessengerType.OnMPChanged,_currentMp,_mpTotal);
             }
         }
@@ -141,7 +148,6 @@ namespace GameA.Game
             if (_currentRp != rp)
             {
                 _currentRp = rp;
-                LogHelper.Debug(_currentRp+"~_currentRp"+changedRp);
                 Messenger<int,int>.Broadcast(EMessengerType.OnRPChanged,_currentRp,_rpTotal);
             }
         }

@@ -6,11 +6,9 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
-using UnityEngine.VR.WSA.WebCam;
 
 namespace GameA.Game
 {
@@ -71,11 +69,6 @@ namespace GameA.Game
             get { return _owner; }
         }
 
-        public int Radius
-        {
-            get { return _radius; }
-        }
-
         public int CastRange
         {
             get { return _castRange; }
@@ -95,6 +88,7 @@ namespace GameA.Game
         {
             _owner = ower;
             _tableSkill = TableManager.Instance.GetSkill(id);
+            _eSkillType = (ESkillType) _tableSkill.SkillType;
             _cdTime = TableConvert.GetTime(_tableSkill.CDTime);
             _singTime = TableConvert.GetTime(_tableSkill.SingTime);
             _castRange = TableConvert.GetRange(_tableSkill.CastRange);
@@ -202,8 +196,8 @@ namespace GameA.Game
                     break;
                 case EEffcetMode.TargetCircle:
                     {
-                        var radius = TableConvert.GetRange(_tableSkill.EffectValues[0]) + 1;
-                        units = ColliderScene2D.CircleCastAllReturnUnits(projectile.CenterPos, radius, JoyPhysics2D.GetColliderLayerMask(projectile.DynamicCollider.Layer));
+                        _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]) + 1;
+                        units = ColliderScene2D.CircleCastAllReturnUnits(projectile.CenterPos, _radius, JoyPhysics2D.GetColliderLayerMask(projectile.DynamicCollider.Layer));
                     }
                     break;
                 case EEffcetMode.TargetGrid:
@@ -214,8 +208,8 @@ namespace GameA.Game
                     break;
                 case EEffcetMode.SelfCircle:
                 {
-                    var radius = TableConvert.GetRange(_tableSkill.EffectValues[0]) + 1;
-                    units = ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, radius, JoyPhysics2D.GetColliderLayerMask(projectile.DynamicCollider.Layer));
+                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]) + 1;
+                    units = ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, JoyPhysics2D.GetColliderLayerMask(projectile.DynamicCollider.Layer));
                 }
                     break;
             }
@@ -229,6 +223,10 @@ namespace GameA.Game
                         if (unit.IsActor)
                         {
                             OnActorHit(unit, projectile);
+                        }
+                        else if(unit.CanPainted)
+                        {
+                            OnPaintHit(unit, projectile);
                         }
                     }
                 }
@@ -258,13 +256,136 @@ namespace GameA.Game
             var forces = _tableSkill.KnockbackForces;
             if (forces.Length == 2)
             {
-                var direction = unit.CenterPos - projectile.CenterPos;
+                var direction = unit.CenterDownPos - projectile.CenterDownPos;
                 unit.ExtraSpeed.x = direction.x >= 0 ? forces[0] : -forces[0];
                 unit.ExtraSpeed.y = direction.y >= -320 ? forces[1] : -forces[1];
                 unit.Speed = IntVec2.zero;
                 unit.CurBanInputTime = 20;
             }
 //            LogHelper.Debug("OnActorHit, {0}", unit);
+        }
+        
+        protected void OnPaintHit(UnitBase target,ProjectileBase projectile)
+        {
+            int length = ConstDefineGM2D.ServerTileScale;
+            var guid = target.Guid;
+            UnitBase neighborUnit;
+            var curPos = projectile.CenterPos;
+            if (curPos.y < target.ColliderGrid.YMin)
+            {
+                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y - length, guid.z), out neighborUnit))
+                {
+                    DoPaint(projectile, target, EDirectionType.Down);
+                }
+            }
+            else if (curPos.y > target.ColliderGrid.YMax)
+            {
+                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y + length, guid.z), out neighborUnit))
+                {
+                    DoPaint(projectile, target, EDirectionType.Up);
+                }
+            }
+            if (curPos.x < target.ColliderGrid.XMin)
+            {
+                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x - length, guid.y, guid.z), out neighborUnit))
+                {
+                    DoPaint(projectile, target, EDirectionType.Left);
+                }
+            }
+            else if (curPos.x > target.ColliderGrid.XMax)
+            {
+                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x + length, guid.y, guid.z), out neighborUnit))
+                {
+                    DoPaint(projectile, target, EDirectionType.Right);
+                }
+            }
+        }
+
+        protected virtual void DoPaint(ProjectileBase projectile, UnitBase target, EDirectionType eDirectionType)
+        {
+            var paintDepth = PaintBlock.TileOffsetHeight;
+            var centerPos = projectile.CenterPos;
+            var maskRandom = projectile.MaskRandom;
+            switch (eDirectionType)
+            {
+                case EDirectionType.Down:
+                    {
+                        var start = centerPos.x - _radius;
+                        var end = centerPos.x + _radius;
+                        target.DoPaint(start, end, EDirectionType.Down, _eSkillType, maskRandom);
+
+                        if (start <= target.ColliderGrid.XMin)
+                        {
+                            start = target.ColliderGrid.YMin;
+                            end = target.ColliderGrid.YMin + paintDepth;
+                            target.DoPaint(start, end, EDirectionType.Left, _eSkillType, maskRandom, false);
+                        }
+                        if (end >= target.ColliderGrid.XMax)
+                        {
+                            start = target.ColliderGrid.YMin;
+                            end = target.ColliderGrid.YMin + paintDepth;
+                            target.DoPaint(start, end, EDirectionType.Right, _eSkillType, maskRandom, false);
+                        }
+                    }
+                    break;
+                case EDirectionType.Up:
+                    {
+                        var start = centerPos.x - _radius;
+                        var end = centerPos.x + _radius;
+                        target.DoPaint(start, end, EDirectionType.Up, _eSkillType, maskRandom);
+                        if (start <= target.ColliderGrid.XMin)
+                        {
+                            start = target.ColliderGrid.YMax - paintDepth;
+                            end = target.ColliderGrid.YMax;
+                            target.DoPaint(start, end, EDirectionType.Left, _eSkillType, maskRandom, false);
+                        }
+                        if (end >= target.ColliderGrid.XMax)
+                        {
+                            start = target.ColliderGrid.YMax - paintDepth;
+                            end = target.ColliderGrid.YMax;
+                            target.DoPaint(start, end, EDirectionType.Right, _eSkillType, maskRandom, false);
+                        }
+                    }
+                    break;
+                case EDirectionType.Right:
+                    {
+                        var start = centerPos.y - _radius;
+                        var end = centerPos.y + _radius;
+                        target.DoPaint(start, end, EDirectionType.Right, _eSkillType, maskRandom);
+                        if (start <= target.ColliderGrid.YMin)
+                        {
+                            start = target.ColliderGrid.XMax - paintDepth;
+                            end = target.ColliderGrid.XMax;
+                            target.DoPaint(start, end, EDirectionType.Down, _eSkillType, maskRandom, false);
+                        }
+                        if (end >= target.ColliderGrid.YMax)
+                        {
+                            start = target.ColliderGrid.XMax - paintDepth;
+                            end = target.ColliderGrid.XMax;
+                            target.DoPaint(start, end, EDirectionType.Up, _eSkillType, maskRandom, false);
+                        }
+                    }
+                    break;
+                case EDirectionType.Left:
+                    {
+                        var start = centerPos.y - _radius;
+                        var end = centerPos.y + _radius;
+                        target.DoPaint(start, end, EDirectionType.Left, _eSkillType, maskRandom);
+                        if (start <= target.ColliderGrid.YMin)
+                        {
+                            start = target.ColliderGrid.XMin;
+                            end = target.ColliderGrid.XMin + paintDepth;
+                            target.DoPaint(start, end, EDirectionType.Down, _eSkillType, maskRandom, false);
+                        }
+                        if (end >= target.ColliderGrid.YMax)
+                        {
+                            start = target.ColliderGrid.XMin;
+                            end = target.ColliderGrid.XMin + paintDepth;
+                            target.DoPaint(start, end, EDirectionType.Up, _eSkillType, maskRandom, false);
+                        }
+                    }
+                    break;
+            }
         }
     }
 }

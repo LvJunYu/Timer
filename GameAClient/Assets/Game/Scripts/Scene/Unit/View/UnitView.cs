@@ -29,6 +29,8 @@ namespace GameA.Game
 
         protected AnimationSystem _animation;
 
+        protected bool _isPart;
+
 		public Transform Trans
         {
             get { return _trans; }
@@ -57,12 +59,13 @@ namespace GameA.Game
         {
         }
 
-        public bool Init(UnitBase unit)
+        public bool Init(UnitBase unit, bool isPart)
         {
 #if UNITY_EDITOR
             _trans.name = string.Format("{0}_{1}", unit.Id, unit.TableUnit.Name);
 #endif
             _unit = unit;
+            _isPart = isPart;
             if (!OnInit())
             {
                 return false;
@@ -100,11 +103,14 @@ namespace GameA.Game
             _trans.name = GetType().Name;
 #endif
             _unit = null;
+            _isPart = false;
             _trans.SetActiveEx(true);
             _trans.position = _hidePos;
             _trans.localScale = Vector3.one;
             _trans.localRotation = Quaternion.identity;
             _trans.parent = UnitManager.Instance.GetOriginParent();
+            SetRendererEnabled(true);
+            SetRendererColor(Color.white);
 			if (_dirTrans != null)
 			{
 				Object.Destroy(_dirTrans.gameObject);
@@ -221,6 +227,10 @@ namespace GameA.Game
 
         public void UpdateSign()
         {
+            if (_isPart)
+            {
+                return;
+            }
             var tableUnit = _unit.TableUnit;
             if (tableUnit.EUnitType != EUnitType.Bullet)
             {

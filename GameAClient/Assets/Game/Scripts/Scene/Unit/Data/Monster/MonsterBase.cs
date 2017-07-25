@@ -75,7 +75,7 @@ namespace GameA.Game
                             {
                                 _onIce = true;
                             }
-                            var delta = Math.Abs(CenterPos.x - unit.CenterPos.x);
+                            var delta = Math.Abs(CenterDownPos.x - unit.CenterDownPos.x);
                             if (deltaX > delta)
                             {
                                 deltaX = delta;
@@ -190,7 +190,7 @@ namespace GameA.Game
             {
                 if (_speed.x == 0)
                 {
-                    if (_canMotor)
+                    if (_canMove)
                     {
                         _animation.PlayLoop("Idle");
                     }

@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 8003, Type = typeof(BlueStoneRotate))]
+    [Unit(Id = 8004, Type = typeof(BlueStoneRotate))]
     public class BlueStoneRotate : Magic
     {
         protected override bool OnInit()

@@ -5,8 +5,6 @@
 ** Summary : TestRoom
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -21,6 +19,18 @@ namespace GameA.Game
 
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.B))
+            {
+                if (SocialGUIManager.Instance.GetUI<UICtrlMultiCooperationLobby>().IsOpen
+                || SocialGUIManager.Instance.GetUI<UICtrlMultiCooperationRoom>().IsOpen
+                    || SocialGUIManager.Instance.CurrentMode == SocialGUIManager.EMode.Game)
+                {
+                    return;
+                }
+                SocialGUIManager.Instance.OpenUI<UICtrlMultiCooperationLobby>();
+            }
+            return;
+            
             if (Input.GetKeyDown(KeyCode.U))
             {
                 var project = AppData.Instance.AdventureData.GetAdvLevelProject(1, 1, EAdventureProjectType.APT_Normal);

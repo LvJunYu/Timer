@@ -333,7 +333,7 @@ namespace GameA.Game
 
         public ProcessActionShowRewardWindow (bool isSystem, string title, string icon)
         {
-            _isSystem = _isSystem;
+            _isSystem = isSystem;
             _title = title;
             _icon = icon;
         }

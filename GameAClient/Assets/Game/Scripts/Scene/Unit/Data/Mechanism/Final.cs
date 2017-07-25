@@ -47,7 +47,7 @@ namespace GameA.Game
             _efffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectFinal", _trans);
             if (_efffect != null)
             {
-                SetRelativeEffectPos(_efffect.Trans, EDirectionType.Up, BackZOffset);
+                SetRelativeEffectPos(_efffect.Trans, EDirectionType.Up, UnitDefine.ZOffsetBack);
                 _efffect.Play();
             }
             return true;

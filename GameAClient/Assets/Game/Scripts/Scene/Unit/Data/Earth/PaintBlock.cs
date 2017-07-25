@@ -263,9 +263,9 @@ namespace GameA.Game
             {
                 maskName = string.Format("MaskWater_{0}", (int)edge.Direction);
             }
-            if (ResourcesManager.Instance.TryGetTexture (maskName, out maskingTexture))
+            if (!ResourcesManager.Instance.TryGetTexture (maskName, out maskingTexture))
             {
-                LogHelper.Error("TryGetSpriteByName Failed : {0} ", maskName);
+                LogHelper.Error("TryGetTexture Failed : {0} ", maskName);
                 return;
             }
             int xmin = 0, ymin = 0, xmax = 0, ymax = 0, offsetX = 0, offsetY = 0;
@@ -376,19 +376,19 @@ namespace GameA.Game
                     }
                     if (maskBaseColor[i].r == 1f)
                     {
-                        paintedColor[i] = PaintUpColor[(int)edge.ESkillType];
+                        paintedColor[i] = PaintUpColor[(int) edge.ESkillType - 2];
                     }
                     else if (maskBaseColor[i].g == 1f)
                     {
-                        paintedColor[i] = PaintRightColor[(int)edge.ESkillType];
+                        paintedColor[i] = PaintRightColor[(int) edge.ESkillType - 2];
                     }
                     else if (maskBaseColor[i].b == 1f)
                     {
-                        paintedColor[i] = PaintFrontColor[(int)edge.ESkillType];
+                        paintedColor[i] = PaintFrontColor[(int) edge.ESkillType - 2];
                     }
                     else
                     {
-                        paintedColor[i] = PaintEdgeColor[(int)edge.ESkillType];
+                        paintedColor[i] = PaintEdgeColor[(int) edge.ESkillType - 2];
                     }
                 }
             }

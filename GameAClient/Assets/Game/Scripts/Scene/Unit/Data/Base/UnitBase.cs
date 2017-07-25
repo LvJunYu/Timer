@@ -17,8 +17,6 @@ namespace GameA.Game
     [Serializable]
     public class UnitBase : ColliderBase, IEquatable<UnitBase>
     {
-        protected const float BackZOffset = 0.4f;
-        protected const float FrontZOffset = -0.4f;
         protected const int MaxFriction = 100;
 
         #region base data
@@ -62,7 +60,7 @@ namespace GameA.Game
 
         protected  int _wingCount;
 
-        protected bool _canMotor;
+        protected bool _canMove;
         protected bool _canAttack;
 
         [SerializeField] protected IntVec2 _deltaPos;
@@ -102,14 +100,13 @@ namespace GameA.Game
         #region view
 
         protected float _viewZOffset;
-        protected float _view1ZOffset;
 
         /// <summary>
         /// 可能会为NULL
         /// </summary>
         protected UnitView _view;
 
-        protected UnitView _view1;
+        protected UnitView[] _viewExtras;
 
         protected string _assetPath;
 
@@ -194,10 +191,10 @@ namespace GameA.Game
             get { return _tableUnit; }
         }
 
-        public bool CanMotor
+        public bool CanMove
         {
-            get { return _canMotor; }
-            set { _canMotor = value; }
+            get { return _canMove; }
+            set { _canMove = value; }
         }
 
         public bool CanAttack
@@ -369,9 +366,9 @@ namespace GameA.Game
             get { return _view; }
         }
 
-        public UnitView View1
+        public UnitView[] ViewExtras
         {
-            get { return _view1; }
+            get { return _viewExtras; }
         }
 
         public Transform Trans
@@ -412,7 +409,7 @@ namespace GameA.Game
         /// <summary>
         /// 下面的Center
         /// </summary>
-        public IntVec2 CenterPos
+        public IntVec2 CenterDownPos
         {
             get
             {
@@ -423,6 +420,20 @@ namespace GameA.Game
             {
                 IntVec2 dataSize = GetDataSize();
                 _curPos = new IntVec2(value.x - dataSize.x / 2, value.y);
+            }
+        }
+        
+        public IntVec2 CenterPos
+        {
+            get
+            {
+                IntVec2 dataSize = GetDataSize();
+                return new IntVec2(_curPos.x + dataSize.x / 2, _curPos.y+ dataSize.y / 2);
+            }
+            set
+            {
+                IntVec2 dataSize = GetDataSize();
+                _curPos = new IntVec2(value.x - dataSize.x / 2, value.y - dataSize.y / 2);
             }
         }
 
@@ -515,7 +526,7 @@ namespace GameA.Game
             _curPos = new IntVec2(_guid.x, _guid.y);
             InitAssetPath();
             UpdateExtraData();
-            if (!UnitManager.Instance.TryGetUnitView(this, out _view))
+            if (!UnitManager.Instance.TryGetUnitView(this, false, out _view))
             {
                 LogHelper.Error("TryGetUnitView Failed, {0}", tableUnit.Id);
                 return true;
@@ -537,7 +548,6 @@ namespace GameA.Game
                 _dynamicCollider = dynamicCollider;
             }
             _viewZOffset = 0;
-            _view1ZOffset = FrontZOffset;
             InitAssetPath();
             UpdateExtraData();
             OnInit();
@@ -570,20 +580,29 @@ namespace GameA.Game
 
         internal virtual bool InstantiateView()
         {
-            if (!UnitManager.Instance.TryGetUnitView(this, out _view))
+            if (!UnitManager.Instance.TryGetUnitView(this,false, out _view))
             {
                 LogHelper.Error("TryGetUnitView Failed, {0}", _tableUnit.Id);
                 return false;
             }
-            if (!string.IsNullOrEmpty(_tableUnit.Model1))
+            if (_tableUnit.ModelExtras != null && _tableUnit.ModelExtras.Length > 0)
             {
-                _assetPath = _tableUnit.Model1;
-                if (!UnitManager.Instance.TryGetUnitView(this, out _view1))
+                _viewExtras = new UnitView[_tableUnit.ModelExtras.Length];
+                for (int i = 0; i < _viewExtras.Length; i++)
                 {
-                    LogHelper.Error("TryGetUnitView Failed, {0}", _tableUnit.Id);
-                    return false;
+                    if (string.IsNullOrEmpty(_tableUnit.ModelExtras[i]))
+                    {
+                        continue;
+                    }
+                    _assetPath = _tableUnit.ModelExtras[i];
+                    if (!UnitManager.Instance.TryGetUnitView(this, true, out _viewExtras[i]))
+                    {
+                        LogHelper.Error("TryGetUnitView Failed, {0}", _tableUnit.Id);
+                        return false;
+                    }
+                    CommonTools.SetParent(_viewExtras[i].Trans, _trans);
+                    _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsets[i] - _viewZOffset);
                 }
-                CommonTools.SetParent(_view1.Trans, _trans);
             }
             UpdateTransPos();
             SetFacingDir(_curMoveDirection, true);
@@ -638,7 +657,7 @@ namespace GameA.Game
             ClearRunTime();
             _wingCount = 0;
             _canAttack = true;
-            _canMotor = true;
+            _canMove = true;
             _speedStateRatio = 1;
             _isAlive = true;
             _dieTime = 0;
@@ -883,10 +902,6 @@ namespace GameA.Game
             if (_view != null)
             {
                 _trans.position = GetTransPos();
-                if (_view1 != null)
-                {
-                    _view1.Trans.position = _trans.position + new Vector3(0, 0, _view1ZOffset - _viewZOffset);
-                }
             }
         }
 
@@ -917,7 +932,7 @@ namespace GameA.Game
                 }
             }
             var halfSize = GetDataSize() / 2;
-            float z = -(_curPos.x + halfSize.x + _curPos.y + halfSize.y) * 0.00078125f + _viewZOffset;
+            float z = -(_curPos.x + halfSize.x + _curPos.y + halfSize.y) * 0.00078125f+ _viewZOffset;
             if (UnitDefine.IsDownY(_tableUnit))
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, -0.1f, z);
@@ -967,7 +982,12 @@ namespace GameA.Game
                     break;
             }
             float z = -(pos.x + halfSize.x + pos.y + halfSize.y) * 0.00078125f + viewZOffset;
-            trans.position = GM2DTools.TileToWorld(pos + offset) + new Vector3(0, 0, z);
+            float y = 0f;
+            if (UnitDefine.IsDownY(_tableUnit))
+            {
+                y = -0.1f;
+            }
+            trans.position = GM2DTools.TileToWorld(pos + offset) + new Vector3(0, y, z);
             trans.eulerAngles = Vector3.back * 90 * (int) eDirectionType;
         }
 
@@ -1410,15 +1430,20 @@ namespace GameA.Game
         {
             _viewZOffset = 20;
         }
+        
+        protected void SetSortingOrderFrontest()
+        {
+            _viewZOffset = -100;
+        }
 
         protected void SetSortingOrderBack()
         {
-            _viewZOffset = BackZOffset;
+            _viewZOffset = UnitDefine.ZOffsetBack;
         }
 
         protected void SetSortingOrderFront()
         {
-            _viewZOffset = FrontZOffset;
+            _viewZOffset = UnitDefine.ZOffsetFront;
         }
 
         protected void SetFront()
@@ -1458,7 +1483,7 @@ namespace GameA.Game
         internal virtual void OnObjectDestroy()
         {
             _view = null;
-            _view1 = null;
+            _viewExtras = null;
         }
 
         internal virtual void OnDispose()

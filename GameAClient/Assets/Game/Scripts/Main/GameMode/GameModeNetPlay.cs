@@ -99,7 +99,7 @@ namespace GameA.Game
         {
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Format("请求进入关卡"));
             var project = new Project();
-            project.Request(room.ProjectGuid,
+            project.Request(room.ProjectId,
                 () => project.RequestPlay(() =>
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);

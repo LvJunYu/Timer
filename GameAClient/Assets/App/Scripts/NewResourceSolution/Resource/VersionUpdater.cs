@@ -13,7 +13,7 @@ namespace NewResourceSolution
         /// 版本检测与更新主协程，逻辑见流程图“动态资源解决方案流程图”
         /// </summary>
         /// <returns>The ver internal.</returns>
-        public static IEnumerator CheckVerInternal (CHRuntimeResManifest manifest)
+        public static IEnumerator CheckVerInternal (CHRuntimeResManifest persistentManifest, CHRuntimeResManifest buildInManifest)
         {
             bool manifestUpdated = false;
             Messenger.Broadcast(EMessengerType.OnResourcesCheckStart);
@@ -88,12 +88,12 @@ namespace NewResourceSolution
 						while (waitForUserInput) yield return null;
 	                }
 	                // 如果还没有解压资源
-	                if (EFileLocation.StreamingAsset == manifest.FileLocation)
+	                if (null == persistentManifest)
 	                {
 	                    CHDownloadingResManifest downloadingResManifest = null;
-	                    if (manifest.Ver == serverVersionConfig.LatestResVersion)
+	                    if (buildInManifest.Ver == serverVersionConfig.LatestResVersion)
 	                    {
-	                        downloadingResManifest = new CHDownloadingResManifest (manifest);
+	                        downloadingResManifest = new CHDownloadingResManifest (buildInManifest);
 	                    }
 	                    else
 	                    {
@@ -108,7 +108,7 @@ namespace NewResourceSolution
 	                        if (null == latestResManifest)
 	                        {
 	                            LogHelper.Error ("Download latest resManifest failed, path: {0}", serverVersionConfig.LatestResManifestPath);
-	                            downloadingResManifest = new CHDownloadingResManifest (manifest);
+	                            downloadingResManifest = new CHDownloadingResManifest (buildInManifest);
 	                        }
 	                        else
 	                        {
@@ -120,7 +120,7 @@ namespace NewResourceSolution
 	                    // 如果这个dowload用的manifest是以服务器manifest为基础的话
 	                    if (EFileLocation.Server == downloadingResManifest.FileLocation)
 	                    {
-	                        yield return downloadingResManifest.MergeExistingManifest (manifest);
+	                        yield return downloadingResManifest.MergeExistingManifest (buildInManifest);
 	                    }
 	                    downloadingResManifest.CalculateFilesNeedsDownload();
 	                    if (downloadingResManifest.NeedsDownloadTotalCnt == 0)
@@ -148,7 +148,7 @@ namespace NewResourceSolution
 //									// ok btn
 //									() =>
 //									{
-//										waitForRetry = false;
+//										waitForRetry = false; 
 //									},
 //									null,
 //									null,
@@ -195,7 +195,7 @@ namespace NewResourceSolution
 	                }
 	                else
 	                {
-	                    if (manifest.Ver < serverVersionConfig.LatestResVersion)
+	                    if (persistentManifest.Ver < serverVersionConfig.LatestResVersion)
 	                    {
 	                        CHDownloadingResManifest latestResManifest = null;
 	                        yield return UnityTools.GetObjectFromServer<CHDownloadingResManifest> (
@@ -209,12 +209,32 @@ namespace NewResourceSolution
 	                        {
 	                            LogHelper.Error ("Download latest resManifest failed, path: {0}",
 	                                           serverVersionConfig.LatestResManifestPath);
-								updateFinish = true;
+		                        if (persistentManifest.Ver < buildInManifest.Ver)
+		                        {
+			                        latestResManifest = new CHDownloadingResManifest(buildInManifest);
+			                        yield return latestResManifest.MergeExistingManifest(persistentManifest);
+			                        latestResManifest.CalculateFilesNeedsDownload ();
+			                        if (latestResManifest.NeedsDownloadTotalCnt != 0)
+			                        {
+				                        // 提示用户需要下载必须的资源，请检查网络再重试
+				                        updateFinish = true;
+			                        }
+			                        else
+			                        {
+				                        yield return latestResManifest.DecompressOrCopyToPersistant ();
+				                        updateFinish = true;
+			                        }
+		                        }
+		                        else
+		                        {
+									updateFinish = true;
+		                        }
 	                        }
 	                        else
 	                        {
 	                            yield return latestResManifest.MergeTemporaryCacheFiles ();
-	                            yield return latestResManifest.MergeExistingManifest (manifest);
+	                            yield return latestResManifest.MergeExistingManifest (persistentManifest);
+		                        yield return latestResManifest.MergeExistingManifest (buildInManifest);
 	                            latestResManifest.CalculateFilesNeedsDownload ();
 	                            if (latestResManifest.NeedsDownloadTotalCnt != 0)
 	                            {
@@ -267,8 +287,15 @@ namespace NewResourceSolution
 	                                        yield return latestResManifest.DecompressOrCopyToPersistant ();
 											FileTools.DeleteFolder(StringUtil.Format(StringFormat.TwoLevelPath, ResPath.PersistentDataPath, ResPath.TempCache));
 	                                        manifestUpdated = true;
+		                                    updateFinish = true;
 	                                    }
 	                                }
+	                            }
+	                            else
+	                            {
+		                            yield return latestResManifest.DecompressOrCopyToPersistant ();
+		                            manifestUpdated = true;
+		                            updateFinish = true;
 	                            }
 	                        }
 	                    }
@@ -285,13 +312,14 @@ namespace NewResourceSolution
 	            {
 	                LogHelper.Info("Connect server failed.");
 					// 如果还没有解压资源
-					if (EFileLocation.StreamingAsset == manifest.FileLocation)
+					if (null == persistentManifest)
 					{
-						var downloadingResManifest = new CHDownloadingResManifest (manifest);
+						var downloadingResManifest = new CHDownloadingResManifest (buildInManifest);
 						downloadingResManifest.CalculateFilesNeedsDownload();
 						if (downloadingResManifest.NeedsDownloadTotalCnt == 0)
 						{
-							yield return downloadingResManifest.DecompressOrCopyToPersistant();	
+							yield return downloadingResManifest.DecompressOrCopyToPersistant();
+							manifestUpdated = true;
 							updateFinish = true;
 						}
 						else
