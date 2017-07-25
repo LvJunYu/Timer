@@ -91,7 +91,8 @@ namespace GameA
         {
             base.OnViewCreated();
 
-            _cachedView.ChangeModeBtn.onClick.AddListener(OnChangeModeBtn);
+            _cachedView.PublishedBtn.onClick.AddListener(OnChangeModeBtn);
+            _cachedView.WorkingOnBtn.onClick.AddListener(OnChangeModeBtn);
             _cachedView.NewProjectBtn.onClick.AddListener(OnNewProjectBtn);
             _cachedView.PublishBtn.onClick.AddListener (OnPublishBtn);
             _cachedView.DeleteBtn.onClick.AddListener (OnDeleteBtn);
