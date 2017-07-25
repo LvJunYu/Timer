@@ -52,7 +52,7 @@ namespace GameA.Game
             RegisterHandler<Msg_RC_CreateRoomRet>(Msg_RC_CreateRoomRet);
             RegisterHandler<Msg_RC_JoinRoomRet>(Msg_RC_JoinRoomRet);
             RegisterHandler<Msg_RC_RoomInfo>(Msg_RC_RoomInfo);
-            RegisterHandler<Msg_RC_RoomUserInfo>(Msg_RC_RoomUserInfo);
+            RegisterHandler<Msg_RC_RoomUserEnter>(Msg_RC_RoomUserEnter);
             RegisterHandler<Msg_RC_UserExitRet>(Msg_RC_UserExitRet);
             RegisterHandler<Msg_RC_UserExit>(Msg_RC_UserExit);
             RegisterHandler<Msg_RC_UserReadyInfo>(Msg_RC_UserReadyInfo);
@@ -145,7 +145,7 @@ namespace GameA.Game
             RoomManager.Instance.OnSelfExit(msg);
         }
 
-        private void Msg_RC_RoomUserInfo(Msg_RC_RoomUserInfo msg, NetLink netLink)
+        private void Msg_RC_RoomUserEnter(Msg_RC_RoomUserEnter msg, NetLink netLink)
         {
             RoomManager.Instance.OnNewUserJoinRoom(msg);
         }

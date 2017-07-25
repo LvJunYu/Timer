@@ -36,3 +36,4 @@ GameAClient/Assets/Plugins/Editor/
 GameAClient/Assets/Plugins/Editor.meta
 GameAClient/GameAClient.CSharp.Editor.Plugins.csproj
 *.csproj
+*.user

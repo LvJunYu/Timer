@@ -6,7 +6,6 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
@@ -18,7 +17,6 @@ namespace GameA.Game
         None,
         RequestCreate,
         RequestJoin,
-        RequstFailed,
         Created,
         OpenBattle,
     }
@@ -37,26 +35,26 @@ namespace GameA.Game
     {
         protected ERoomState _eRoomState;
         protected EBattleType _eBattleType;
-        protected long _guid;
-        protected long _projectGuid;
+        protected long _id;
+        protected long _projectId;
         protected RoomUser _hostUser;
         protected List<RoomUser> _users = new List<RoomUser>();
+        private Action _successCallback;
+        private Action _failCallback;
 
-        public long Guid
+        public long Id
         {
-            get { return _guid; }
-            set { _guid = value; }
+            get { return _id; }
         }
 
-        public long ProjectGuid
+        public long ProjectId
         {
-            get { return _projectGuid; }
+            get { return _projectId; }
         }
 
         public ERoomState ERoomState
         {
             get { return _eRoomState; }
-            set { _eRoomState = value; }
         }
 
         public List<RoomUser> Users
@@ -69,14 +67,21 @@ namespace GameA.Game
             get { return _eBattleType; }
         }
 
+        public RoomUser HostUser
+        {
+            get { return _hostUser; }
+        }
+
         public void Clear()
         {
             _eRoomState = ERoomState.None;
             _eBattleType = EBattleType.EBT_None;
-            _projectGuid = 0;
-            _guid = 0;
+            _projectId = 0;
+            _id = 0;
             _hostUser = null;
             _users.Clear();
+            _failCallback = null;
+            _successCallback = null;
         }
 
         public bool TryGetUser(long userGuid, out RoomUser user)
@@ -94,17 +99,129 @@ namespace GameA.Game
             return false;
         }
 
-        public bool OnCreate(RoomUser user,long roomGuid, long projectGuid, EBattleType eBattleType)
+        public RoomUser GetLocalUser()
         {
+            RoomUser roomUser;
+            if (TryGetUser(LocalUser.Instance.UserGuid, out roomUser))
+            {
+                return roomUser;
+            }
+            return null;
+        }
+
+        public void Create(EBattleType eBattleType, long projectId,  Action successCallback, Action failCallback)
+        {
+            if (_eRoomState != ERoomState.None)
+            {
+                LogHelper.Warning("Room.Create RoomState: {0}", _eRoomState);
+                return;
+            }
+            _successCallback = successCallback;
+            _failCallback = failCallback;
+            _eRoomState = ERoomState.RequestCreate;
+            RoomManager.Instance.SendRequestCreateRoom(eBattleType, projectId);
+        }
+
+        public bool OnCreateSuccess(RoomUser user,long roomGuid, long projectGuid, EBattleType eBattleType)
+        {
+            if (_eRoomState != ERoomState.RequestCreate)
+            {
+                LogHelper.Warning("Room.OnCreateSuccess RoomState: {0}", _eRoomState);
+                return false;
+            }
             _hostUser = user;
-            _guid = roomGuid;
-            _projectGuid = projectGuid;
+            _id = roomGuid;
+            _projectId = projectGuid;
             _eBattleType = eBattleType;
             _eRoomState = ERoomState.Created;
+            if (_successCallback != null)
+            {
+                _successCallback.Invoke();
+            }
+            _successCallback = null;
+            _failCallback = null;
             return true;
         }
 
-        internal void OnRoomInfo(long hostUserGuid, long roomGuid, long projectGuid, EBattleType eBattleType)
+        public bool OnCreateFailed()
+        {
+            if (_eRoomState != ERoomState.RequestCreate)
+            {
+                LogHelper.Warning("Room.OnCreateFailed RoomState: {0}", _eRoomState);
+                return false;
+            }
+            _eRoomState = ERoomState.None;
+            if (_failCallback != null)
+            {
+                _failCallback.Invoke();
+            }
+            _successCallback = null;
+            _failCallback = null;
+            return true;
+        }
+
+        public void Join(long roomId, Action successCallback, Action failCallback)
+        {
+            
+            if (_eRoomState != ERoomState.None)
+            {
+                LogHelper.Warning("Room.Join RoomState: {0}", _eRoomState);
+                return;
+            }
+            _successCallback = successCallback;
+            _failCallback = failCallback;
+            _eRoomState = ERoomState.RequestJoin;
+            RoomManager.Instance.SendRequestJoinRoom(roomId);
+        }
+        
+        public bool OnJoinSuccess()
+        {
+            if (_eRoomState != ERoomState.RequestJoin)
+            {
+                LogHelper.Warning("Room.OnJoinSuccess RoomState: {0}", _eRoomState);
+                return false;
+            }
+            _eRoomState = ERoomState.Created;
+            if (_successCallback != null)
+            {
+                _successCallback.Invoke();
+            }
+            _successCallback = null;
+            _failCallback = null;
+            return true;
+        }
+
+        public bool OnJoinFailed()
+        {
+            if (_eRoomState != ERoomState.RequestJoin)
+            {
+                LogHelper.Warning("Room.OnJoinFailed RoomState: {0}", _eRoomState);
+                return false;
+            }
+            _eRoomState = ERoomState.None;
+            if (_failCallback != null)
+            {
+                _failCallback.Invoke();
+            }
+            _successCallback = null;
+            _failCallback = null;
+            return true;
+        }
+
+        public void OnRoomInfo(Msg_RC_RoomInfo ret)
+        {
+            _users.Clear();
+            ret.Users.ForEach(msgUser =>
+            {
+                var user = new RoomUser();
+                user.Init(msgUser.UserGuid, msgUser.UserName, msgUser.Ready == 1);
+                _users.Add(new RoomUser());
+            });
+            SetRoomInfo(ret.HostUserGuid, ret.RoomGuid, ret.ProjectGuid, ret.EBattleType);
+            Messenger.Broadcast(EMessengerType.OnRoomInfoChanged);
+        }
+
+        public void SetRoomInfo(long hostUserGuid, long roomGuid, long projectId, EBattleType eBattleType)
         {
             for (int i = 0; i < _users.Count; i++)
             {
@@ -114,13 +231,13 @@ namespace GameA.Game
                     break;
                 }
             }
-            _guid = roomGuid;
-            _projectGuid = projectGuid;
+            _id = roomGuid;
+            _projectId = projectId;
             _eBattleType = eBattleType;
             _eRoomState = ERoomState.Created;
         }
 
-        internal bool AddUser(RoomUser user)
+        public bool AddUser(RoomUser user)
         {
             if (_users.Count >= ConstDefineGM2D.MaxUserCount)
             {
@@ -133,10 +250,21 @@ namespace GameA.Game
                 return false;
             }
             _users.Add(user);
+            Messenger<long>.Broadcast(EMessengerType.OnRoomPlayerEnter, user.Guid);
             return true;
         }
 
-        internal void UserReady(long userGuid, bool flag)
+        public void SetUserReady(bool flag)
+        {
+            RoomUser roomUser;
+            if (TryGetUser(LocalUser.Instance.UserGuid, out roomUser))
+            {
+                roomUser.Ready = flag;
+                RoomManager.Instance.SendRoomReadyInfo(flag);
+            }
+        }
+
+        public void OnUserReady(long userGuid, bool flag)
         {
             RoomUser user;
             if (!TryGetUser(userGuid, out user))
@@ -144,9 +272,51 @@ namespace GameA.Game
                 return;
             }
             user.Ready = flag;
+            Messenger.Broadcast(EMessengerType.OnRoomPlayerReadyChanged);
         }
 
-        internal void UserExit(long exitGuid, long hostGuid)
+        public bool SelfExit(Action successCallback, Action failedCallback)
+        {
+            if (_eRoomState != ERoomState.Created)
+            {
+                LogHelper.Warning("Room.SelfExit RoomState: {0}", _eRoomState);
+                return false;
+            }
+            _successCallback = successCallback;
+            _failCallback = failedCallback;
+            RoomManager.Instance.SendRequestExitRoom(_id);
+            return true;
+        }
+        
+        public bool OnSelfExit(bool success)
+        {
+            if (_eRoomState != ERoomState.Created)
+            {
+                LogHelper.Warning("Room.OnSelfExit RoomState: {0}", _eRoomState);
+                return false;
+            }
+            if (success)
+            {
+                if (_successCallback != null)
+                {
+                    _successCallback.Invoke();
+                }
+            }
+            else
+            {
+                if (_failCallback != null)
+                {
+                    _failCallback.Invoke();
+                }
+            }
+            Clear();
+            _successCallback = null;
+            _failCallback = null;
+            return true;
+        }
+        
+
+        public void OnUserExit(long exitGuid, long hostGuid)
         {
             for (int i = _users.Count - 1; i >= 0; i--)
             {
@@ -168,9 +338,10 @@ namespace GameA.Game
                     }
                 }
             }
+            Messenger<long>.Broadcast(EMessengerType.OnRoomPlayerExit, exitGuid);
         }
 
-        internal void WarnningHost()
+        public void OnWarnningHost()
         {
             if (_hostUser == null)
             {
@@ -182,12 +353,26 @@ namespace GameA.Game
             }
             //警告自己
             LogHelper.Debug("WarnningHost");
+            Messenger.Broadcast(EMessengerType.OnRoomWarnningHost);
         }
 
-        internal void OpenBattle()
+        public void OnOpenBattle()
         {
             //开启战场！
             _eRoomState = ERoomState.OpenBattle;
+            Messenger.Broadcast(EMessengerType.OnOpenBattle);
+        }
+
+        public bool CanStart()
+        {
+            foreach (var roomUser in _users)
+            {
+                if (!roomUser.Ready && roomUser.Guid != LocalUser.Instance.UserGuid)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
