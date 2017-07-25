@@ -523,7 +523,7 @@ namespace GameA.Game
             BeforePlay();
             _sceneState.StartPlay();
             CameraManager.Instance.SetCameraState(ECameraState.Play);
-            BgScene2D.Instance.Reset();
+            BgScene2D.Instance.ResetByFollowPos(CameraManager.Instance.MainCamaraPos);
             var colliderPos = new IntVec2(_mainPlayer.ColliderGrid.XMin, _mainPlayer.ColliderGrid.YMin);
             UpdateWorldRegion(colliderPos, true);
         }

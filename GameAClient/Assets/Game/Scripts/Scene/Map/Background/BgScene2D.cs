@@ -140,6 +140,19 @@ namespace GameA.Game
                 }
             }
         }
+        
+        public void ResetByFollowPos(Vector3 pos)
+        {
+            using (var iter = _items.GetEnumerator())
+            {
+                while (iter.MoveNext())
+                {
+                    var bgItem = iter.Current.Value;
+                    bgItem.ResetPos();
+                    bgItem.Update(pos);
+                }
+            }
+        }
 
         public Transform GetParent(int eBgDepth)
         {

@@ -73,7 +73,7 @@ namespace GameA.Game
         {
             var login = new Msg_CR_Login();
             login.ClientVersion = GlobalVar.Instance.AppVersion;
-            login.UserId = DateTimeUtil.GetNowTicks();
+            login.UserId = LocalUser.Instance.UserGuid;
             SendToServer(login);
         }
 

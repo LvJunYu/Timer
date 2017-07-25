@@ -40,6 +40,7 @@ namespace GameA.Game
         public override void OnGameStart()
         {
             base.OnGameStart();
+            SendEnterBattle();
             _coroutineProxy.StopAllCoroutines();
             _coroutineProxy.StartCoroutine(GameFlow());
         }
@@ -94,31 +95,6 @@ namespace GameA.Game
         #endregion
 
         #region Receive
-
-        internal void OnBattleOpen(Room room)
-        {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Format("请求进入关卡"));
-            var project = new Project();
-            project.Request(room.ProjectId,
-                () => project.RequestPlay(() =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    GameManager.Instance.RequestPlayMultiCooperation(project);
-                    SocialGUIManager.Instance.ChangeToGameMode();
-                    //成功进入战场
-                    SendEnterBattle();
-                },
-                    error =>
-                    {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                        SocialGUIManager.ShowPopupDialog("进入关卡失败");
-                    }),
-                error =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    SocialGUIManager.ShowPopupDialog("进入关卡失败");
-                });
-        }
 
         internal void OnUserEnterBattle(Msg_RC_UserEnterBattle msg)
         {
