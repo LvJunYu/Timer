@@ -11,17 +11,13 @@ namespace GameA.Game
         protected IntVec2 _pointA;
         protected IntVec2 _pointB;
         protected List<UnitBase> _units = new List<UnitBase>();
+        protected UnityNativeParticleItem _effect;
         
         public override bool CanControlledBySwitch
         {
             get { return true; }
         }
-        
-//        protected override void InitAssetPath()
-//        {
-//            InitAssetRotation();
-//        }
-        
+
         protected override bool OnInit()
         {
             if (!base.OnInit())
@@ -30,6 +26,29 @@ namespace GameA.Game
             }
             Calculate();
             return true;
+        }
+        
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            InitAssetRotation(true);
+            _effect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectFan", _trans);
+            if (_effect != null)
+            {
+                _effect.Play();
+                SetRelativeEffectPos(_effect.Trans, (EDirectionType)Rotation);
+            }
+            return true;
+        }
+        
+        internal override void OnObjectDestroy()
+        {
+            base.OnObjectDestroy();
+            FreeEffect(_effect);
+            _effect = null;
         }
 
         protected override void Clear()

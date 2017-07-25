@@ -16,20 +16,18 @@ namespace GameA.Game
         protected bool _trigger;
         protected int _timer;
 
+        protected override bool OnInit()
+        {
+            SetSortingOrderBackground();
+            return base.OnInit();
+        }
+
         protected override void Clear()
         {
             base.Clear();
+            ResetCloud();
             _trigger = false;
             _timer = 0;
-            if (_view != null)
-            {
-                if (_animation != null)
-                {
-                    _animation.Reset();
-                }
-                _view.SetRendererEnabled(true);
-            }
-            PlayMode.Instance.UnFreeze(this);
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
@@ -66,6 +64,10 @@ namespace GameA.Game
                     _trigger = true;
                     if (_animation != null)
                     {
+                        for (int i = 0; i < _viewExtras.Length; i++)
+                        {
+                            _viewExtras[i].Animation.PlayOnce("Start");
+                        }
                         _animation.PlayOnce("Start").Complete +=
                             (state, index, count) =>
                             {
@@ -93,16 +95,25 @@ namespace GameA.Game
                 else if (_timer == 200)
                 {
                     //复原
-                    _trigger = false;
-                    _timer = 0;
-                    PlayMode.Instance.UnFreeze(this);
-                    if (_view != null)
+                    ResetCloud();
+                }
+            }
+        }
+
+        private void ResetCloud()
+        {
+            _trigger = false;
+            _timer = 0;
+            PlayMode.Instance.UnFreeze(this);
+            if (_view != null)
+            {
+                _view.SetRendererEnabled(true);
+                if (_animation != null)
+                {
+                    _animation.Reset();
+                    for (int i = 0; i < _viewExtras.Length; i++)
                     {
-                        _view.SetRendererEnabled(true);
-                        if (_animation != null)
-                        {
-                            _animation.Reset();
-                        }
+                        _viewExtras[i].Animation.Reset();
                     }
                 }
             }

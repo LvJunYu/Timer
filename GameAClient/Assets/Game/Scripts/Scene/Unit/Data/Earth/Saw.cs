@@ -14,6 +14,25 @@ namespace GameA.Game
     [Unit(Id = 4005, Type = typeof(Saw))]
     public class Saw : BlockBase
     {
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            InitAssetRotation();
+            return true;
+        }
+
+        protected override void Clear()
+        {
+            base.Clear();
+            if (_animation != null)
+            {
+                InitAssetRotation();
+            }
+        }
+
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
             if (!checkOnly && other.IsActor && Rotation == (int) EDirectionType.Up)
@@ -53,6 +72,10 @@ namespace GameA.Game
         private void OnEffect(UnitBase other, EDirectionType eDirectionType)
         {
             other.OnHpChanged(-99999);
+            if (_animation != null)
+            {
+                _animation.PlayOnce((EDirectionType) Rotation + "Start");
+            }
         }
     }
 }

@@ -64,7 +64,6 @@ namespace GameA
                 }
             }
             
-            
             //这儿需要进行Item数量的判断。
             //if (!MapManager.Instance.MapEditor.CanLay(_id))
             //{
@@ -184,7 +183,7 @@ namespace GameA
 
         private void RefreshArrowRotation()
         {
-            EMoveDirection current = EditHelper.GetUnitOrigDirOrRot(_table);
+            var current = EditHelper.GetUnitOrigDirOrRot(_table);
             if (_table.CanMove || _table.Id == UnitDefine.RollerId)
             {
                 _cachedView.Arrow.transform.localEulerAngles = new Vector3(0, 0, -90 * (byte)(current - 1));

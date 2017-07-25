@@ -55,12 +55,12 @@ namespace GameA.Game
 					    UnitExtra extra = new UnitExtra();
 					    if (tableUnit.CanMove)
 					    {
-					        extra.MoveDirection = EditHelper.GetUnitOrigDirOrRot(tableUnit);
+					        extra.MoveDirection = (EMoveDirection)EditHelper.GetUnitOrigDirOrRot(tableUnit);
 					        DataScene2D.Instance.ProcessUnitExtra(unitDesc.Guid, extra);
 					    }
 					    else if (tableUnit.Id == UnitDefine.RollerId)
 					    {
-					        extra.RollerDirection = EditHelper.GetUnitOrigDirOrRot(tableUnit);
+					        extra.RollerDirection = (EMoveDirection)EditHelper.GetUnitOrigDirOrRot(tableUnit);
 					        DataScene2D.Instance.ProcessUnitExtra(unitDesc.Guid, extra);
 					    }
                     }
