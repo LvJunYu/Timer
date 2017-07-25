@@ -5,9 +5,6 @@
 ** Summary : RoomManager
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
 
@@ -15,7 +12,7 @@ namespace GameA.Game
 {
     public class RoomManager
     {
-        public static RoomManager _instance;
+        private static RoomManager _instance;
         private bool _run;
         private RoomClient _roomClient = new RoomClient();
         private Room _room = new Room();
@@ -82,29 +79,16 @@ namespace GameA.Game
 
         public void SendRequestCreateRoom(EBattleType eBattleType, long projectGuid)
         {
-            if (_room.ERoomState == ERoomState.RequestCreate)
-            {
-                LogHelper.Warning("SendRequestCreateRoom Repeated");
-                return;
-            }
             _msgCreateRoom.EBattleType = eBattleType;
             _msgCreateRoom.ProjectGuid = projectGuid;
             SendToServer(_msgCreateRoom);
-            _room.ERoomState = ERoomState.RequestCreate;
         }
 
-        public void SendRequestJoinRoom(long roomGuid)
+        public void SendRequestJoinRoom(long roomId)
         {
-            if (_room.ERoomState == ERoomState.RequestJoin)
-            {
-                LogHelper.Warning("SendRequestJoinRoom Repeated");
-                return;
-            }
-            _room.Guid = roomGuid;
             var msg = new Msg_CR_JoinRoom();
-            msg.RoomGuid = roomGuid;
+            msg.RoomGuid = roomId;
             SendToServer(msg);
-            _room.ERoomState = ERoomState.RequestJoin;
         }
 
         public void SendRoomReadyInfo(bool flag)
@@ -129,12 +113,12 @@ namespace GameA.Game
         {
             if (msg.ResultCode != ERoomCode.ERC_Success)
             {
-                _room.ERoomState = ERoomState.RequstFailed;
+                _room.OnCreateFailed();
                 return;
             }
-            var user = PoolFactory<RoomUser>.Get();
+            var user = new RoomUser();
             user.Init(LocalUser.Instance.UserGuid, LocalUser.Instance.User.UserName, false);
-            _room.OnCreate(user, msg.RoomGuid, _msgCreateRoom.ProjectGuid, _msgCreateRoom.EBattleType);
+            _room.OnCreateSuccess(user, msg.RoomGuid, _msgCreateRoom.ProjectGuid, _msgCreateRoom.EBattleType);
             LogHelper.Debug("CreateRoom Success {0}", msg.RoomGuid);
         }
 
@@ -142,49 +126,48 @@ namespace GameA.Game
         {
             if (msg.ResultCode != ERoomCode.ERC_Success)
             {
-                _room.ERoomState = ERoomState.RequstFailed;
+                _room.OnJoinFailed();
+                return;
             }
+            _room.OnJoinSuccess();
         }
 
         internal void OnRoomInfo(Msg_RC_RoomInfo msg)
         {
-            for (int i = 0; i < msg.Users.Count; i++)
-            {
-                OnNewUserJoinRoom(msg.Users[i]);
-            }
-            _room.OnRoomInfo(msg.HostUserGuid, msg.RoomGuid, msg.ProjectGuid, msg.EBattleType);
+            _room.OnRoomInfo(msg);
         }
 
-        internal void OnNewUserJoinRoom(Msg_RC_RoomUserInfo msg)
+        internal void OnNewUserJoinRoom(Msg_RC_RoomUserEnter msg)
         {
-            var user = PoolFactory<RoomUser>.Get();
-            user.Init(msg.UserGuid, msg.UserName, msg.Ready == 1);
+            Msg_RC_RoomUserInfo msgUser = msg.UserInfo;
+            var user = new RoomUser();
+            user.Init(msgUser.UserGuid, msgUser.UserName, msgUser.Ready == 1);
             _room.AddUser(user);
         }
 
         internal void OnUserExit(Msg_RC_UserExit msg)
         {
-            _room.UserExit(msg.UserGuid, msg.HostUserGuid);
+            _room.OnUserExit(msg.UserGuid, msg.HostUserGuid);
         }
 
         internal void OnSelfExit(Msg_RC_UserExitRet msg)
         {
-            _room.Clear();
+            _room.OnSelfExit(msg.Flag == 1);
         }
 
         internal void OnUserReadyInfo(Msg_RC_UserReadyInfo msg)
         {
-            _room.UserReady(msg.UserGuid, msg.Flag == 1);
+            _room.OnUserReady(msg.UserGuid, msg.Flag == 1);
         }
 
         internal void OnWarnningHost()
         {
-            _room.WarnningHost();
+            _room.OnWarnningHost();
         }
 
         internal void OnOpenBattle()
         {
-            _room.OpenBattle();
+            _room.OnOpenBattle();
         }
 
         #endregion

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-using SoyEngine;
+﻿using SoyEngine;
 using UnityEngine.UI;
 /*主UI*/
 namespace GameA

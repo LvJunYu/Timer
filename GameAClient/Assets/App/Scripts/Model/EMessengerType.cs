@@ -105,6 +105,15 @@ namespace GameA
         public static int OnResourcesCheckStart = SoyEngine.EMessengerType.NextId++;
         public static int OnResourcesUpdateProgressUpdate = SoyEngine.EMessengerType.NextId++;
         public static int OnVersionUpdateStateChange = SoyEngine.EMessengerType.NextId++;
+        
+        
+        //PVP
+        public static int OnRoomInfoChanged = SoyEngine.EMessengerType.NextId++;
+        public static int OnRoomPlayerReadyChanged = SoyEngine.EMessengerType.NextId++;
+        public static int OnRoomPlayerEnter = SoyEngine.EMessengerType.NextId++;
+        public static int OnRoomPlayerExit = SoyEngine.EMessengerType.NextId++;
+        public static int OnRoomWarnningHost = SoyEngine.EMessengerType.NextId++;
+        public static int OnOpenBattle = SoyEngine.EMessengerType.NextId++;
     }
 }
 

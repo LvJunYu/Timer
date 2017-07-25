@@ -5,6 +5,7 @@
 ** Summary : GM2DGUIManager
 ***********************************************************************/
 
+/*
 using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
@@ -87,3 +88,4 @@ namespace GameA.Game
     }
 
 }
+*/

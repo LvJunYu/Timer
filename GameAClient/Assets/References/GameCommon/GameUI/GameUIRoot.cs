@@ -5,7 +5,7 @@
 ** Date : 2016/3/18 16:39:18
 ** Summary : GameUIRoot
 ***********************************************************************/
-
+/*
 using GameA.Game;
 using GameA;
 using UnityEngine;
@@ -96,3 +96,4 @@ namespace SoyEngine
     }
 
 }
+*/
