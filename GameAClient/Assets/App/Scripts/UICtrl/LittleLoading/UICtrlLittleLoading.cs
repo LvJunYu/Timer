@@ -14,7 +14,6 @@ namespace GameA
             _groupId = (int)EUIGroupType.LittleLoading;
         }
 
-
         public void OpenLoading(object key, string info)
         {
             if(!_isOpen)
@@ -33,6 +32,22 @@ namespace GameA
             _dict.Add(key, ll);
         }
 
+        public bool TryCloseLoading(object key)
+        {
+            UMCtrlLittleLoading ll = null;
+            if(!_dict.TryGetValue(key, out ll))
+            {
+                return false;
+            }
+            _dict.Remove(key);
+            ll.Destroy();
+            if(_dict.Count == 0)
+            {
+                SocialGUIManager.Instance.CloseUI<UICtrlLittleLoading>();
+            }
+            return true;
+        }
+        
         public void CloseLoading(object key)
         {
             UMCtrlLittleLoading ll = null;

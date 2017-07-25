@@ -138,12 +138,12 @@ namespace GameA
 
         private void OnOpenBattle()
         {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().TryCloseLoading(this);
         }
 
         private void OnRoomWarnningHost()
         {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().TryCloseLoading(this);
         }
 
         private void OnRoomInfoChanged()
