@@ -6,11 +6,9 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
-using UnityEngine.VR.WSA.WebCam;
 
 namespace GameA.Game
 {
