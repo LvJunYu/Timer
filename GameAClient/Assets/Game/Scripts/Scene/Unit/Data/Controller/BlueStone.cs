@@ -11,7 +11,7 @@ using SoyEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 8001, Type = typeof(BlueStone))]
+    [Unit(Id = 8002, Type = typeof(BlueStone))]
     public class BlueStone : CollectionBase
     {
         protected override void OnTrigger(UnitBase other)
