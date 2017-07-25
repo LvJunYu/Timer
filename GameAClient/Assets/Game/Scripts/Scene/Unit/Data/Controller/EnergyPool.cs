@@ -22,7 +22,7 @@ namespace GameA.Game
         protected EnergyPoolCtrl _energyPoolCtrl;
         protected UnityNativeParticleItem _efffect;
 
-        protected ESkillType _eSkillType;
+        protected EEnergyType _eSkillType;
 
         protected override bool OnInit()
         {
@@ -64,7 +64,7 @@ namespace GameA.Game
 
         public override void UpdateExtraData()
         {
-            _eSkillType = (ESkillType)DataScene2D.Instance.GetUnitExtra(_guid).EnergyType;
+            _eSkillType = (EEnergyType)DataScene2D.Instance.GetUnitExtra(_guid).UnitValue;
             UpdateEnergyEffect();
             base.UpdateExtraData();
         }
@@ -77,16 +77,16 @@ namespace GameA.Game
             string effectName = null;
             switch (_eSkillType)
             {
-                case ESkillType.Fire:
+                case EEnergyType.Fire:
                     effectName = "M1EffectEnergyFire";
                     break;
-                case ESkillType.Ice:
+                case EEnergyType.Ice:
                     effectName = "M1EffectEnergyIce";
                     break;
-                case ESkillType.Jelly:
+                case EEnergyType.Jelly:
                     effectName = "M1EffectEnergyJelly";
                     break;
-                case ESkillType.Clay:
+                case EEnergyType.Clay:
                     effectName = "M1EffectEnergyClay";
                     break;
             }

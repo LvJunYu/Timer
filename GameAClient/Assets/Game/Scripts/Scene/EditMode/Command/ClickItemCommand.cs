@@ -31,7 +31,6 @@ namespace GameA.Game
 			(byte)EDirectionType.Left,
 		};
 
-
 //		protected UnitDesc _origDesc;
 		/// <summary>
 		/// ?????????????
@@ -95,10 +94,8 @@ namespace GameA.Game
 
 		protected bool DoClickOperator()
         {
-            //???????????
             if (_clickedTableUnit.CanMove || _clickedTableUnit.OriginMagicDirection != 0)
             {
-                //????????? ????????
                 if (_clickedExtra.MoveDirection != 0)
                 {
                     return DoMove();
@@ -120,17 +117,21 @@ namespace GameA.Game
             {
                 return DoRoller();
             }
+            if (UnitDefine.IsEarth(_clickedDesc.Id))
+            {
+                return DoEarth();
+            }
             return false;
         }
 
         protected bool DoEnergy()
         {
-            _clickedExtra.EnergyType++;
-            if (_clickedExtra.EnergyType >= (int)ESkillType.Max)
+            _clickedExtra.UnitValue++;
+            if (_clickedExtra.UnitValue >= (int)EEnergyType.Max)
             {
-                _clickedExtra.EnergyType = 0;
+                _clickedExtra.UnitValue = 0;
             }
-            _modifiedExtra.EnergyType = _clickedExtra.EnergyType;
+            _modifiedExtra.UnitValue = _clickedExtra.UnitValue;
             SaveUnitExtra();
             return true;
         }
@@ -183,6 +184,18 @@ namespace GameA.Game
             _modifiedExtra.MoveDirection = (EMoveDirection) (dir + 1);
 		    SaveUnitExtra();
 		    return true;
+        }
+        
+        protected bool DoEarth()
+        {
+            _clickedExtra.UnitValue++;
+            if (_clickedExtra.UnitValue > 2)
+            {
+                _clickedExtra.UnitValue = 1;
+            }
+            _modifiedExtra.UnitValue = _clickedExtra.UnitValue;
+            SaveUnitExtra();
+            return true;
         }
 
         protected void SaveUnitExtra()

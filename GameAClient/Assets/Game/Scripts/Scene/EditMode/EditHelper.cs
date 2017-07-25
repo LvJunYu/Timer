@@ -305,5 +305,36 @@ namespace GameA.Game
             UnitBase unit;
             return !ColliderScene2D.Instance.TryGetUnit(pos, out unit);
         }
+
+        public static void InitUnitExtraEdit(UnitDesc unitDesc, Table_Unit tableUnit)
+        {
+//            if (tableUnit.CanMove)
+//            {
+//                UnitExtra unitExtra;
+//                if (!TryGetUnitExtra(unitDesc.Guid, out unitExtra))
+//                {
+//                    unitExtra.MoveDirection = (EMoveDirection)tableUnit.OriginMoveDirection;
+//                    ProcessUnitExtra(unitDesc.Guid, unitExtra);
+//                }
+//            }
+//            if (tableUnit.Id == UnitDefine.RollerId)
+//            {
+//                UnitExtra unitExtra;
+//                if (!TryGetUnitExtra(unitDesc.Guid, out unitExtra))
+//                {
+//                    unitExtra.RollerDirection = EMoveDirection.Right;
+//                    ProcessUnitExtra(unitDesc.Guid, unitExtra);
+//                }
+//            }
+            if (UnitDefine.IsEarth(tableUnit.Id))
+            {
+                UnitExtra unitExtra;
+                if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
+                {
+                    unitExtra.UnitValue = (byte) Random.Range(1, 3);
+                    DataScene2D.Instance.ProcessUnitExtra(unitDesc.Guid, unitExtra);
+                }
+            }
+        }
     }
 }

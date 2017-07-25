@@ -17,9 +17,14 @@ namespace GameA.Game
     [Unit(Id = 4001, Type = typeof(Earth))]
     public class Earth : PaintBlock
     {
-        protected override void InitAssetPath()
+        public override void UpdateExtraData()
         {
-            _assetPath = string.Format("{0}_{1}", _tableUnit.Model, Random.Range(1, 3));
+            _assetPath = string.Format("{0}_{1}", _tableUnit.Model, DataScene2D.Instance.GetUnitExtra(_guid).UnitValue);
+            if (_view != null)
+            {
+                _view.ChangeView(_assetPath);
+            }
+            base.UpdateExtraData();
         }
 
         public override Edge GetUpEdge(UnitBase other)

@@ -20,7 +20,7 @@ namespace GameA.Game
         public EMoveDirection MoveDirection;
         public EMoveDirection RollerDirection;
         public string Msg;
-        public byte EnergyType;
+        public byte UnitValue;
         public UnitChild Child;
 
         public bool IsDynamic()
@@ -30,7 +30,7 @@ namespace GameA.Game
 
         public bool Equals(UnitExtra other)
         {
-            return MoveDirection == other.MoveDirection && Msg == other.Msg && RollerDirection == other.RollerDirection && EnergyType == other.EnergyType && 
+            return MoveDirection == other.MoveDirection && Msg == other.Msg && RollerDirection == other.RollerDirection && UnitValue == other.UnitValue && 
                    Child.Equals(other.Child);
         }
 

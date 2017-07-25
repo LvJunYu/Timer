@@ -190,38 +190,15 @@ namespace GameA.Game
             {
                 return false;
             }
-            
             if (!isInitAdd)
             {
-                SetUnitExtra(unitDesc, tableUnit);
+                EditHelper.InitUnitExtraEdit(unitDesc, tableUnit);
             }
             if (UnitDefine.IsSpawn(tableUnit.Id))
             {
                 _spawnDatas.Add(unitDesc);
             }
             return true;
-        }
-
-        private void SetUnitExtra(UnitDesc unitDesc, Table_Unit tableUnit)
-        {
-            if (tableUnit.CanMove)
-            {
-                UnitExtra unitExtra;
-                if (!TryGetUnitExtra(unitDesc.Guid, out unitExtra))
-                {
-                    unitExtra.MoveDirection = (EMoveDirection)tableUnit.OriginMoveDirection;
-                    ProcessUnitExtra(unitDesc.Guid, unitExtra);
-                }
-            }
-            if (tableUnit.Id == UnitDefine.RollerId)
-            {
-                UnitExtra unitExtra;
-                if (!TryGetUnitExtra(unitDesc.Guid, out unitExtra))
-                {
-                    unitExtra.RollerDirection = EMoveDirection.Right;
-                    ProcessUnitExtra(unitDesc.Guid, unitExtra);
-                }
-            }
         }
 
         public bool DeleteData(UnitDesc unitDesc, Table_Unit tableUnit)

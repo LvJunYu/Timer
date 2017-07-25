@@ -19,6 +19,15 @@ namespace GameA.Game
         Jelly,
         Max
     }
+    
+    public enum EEnergyType
+    {
+        Fire,
+        Ice,
+        Clay,
+        Jelly,
+        Max
+    }
 
     public enum EStateType
     {
