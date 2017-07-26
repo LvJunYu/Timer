@@ -13,11 +13,14 @@ namespace GameA.Game
 {
     public class UnitDefine
     {
-        public const float ZOffsetBack = 0.4f;
-        public const int ZOffsetBackground = 20;
-        public const float ZOffsetFront = -0.4f;
+        public const int ZOffsetBackground = 100;
         public const int ZOffsetFrontest = -100;
-        public static float[] ZOffsets = new float[3]{ZOffsetFrontest, ZOffsetBack, ZOffsetFront};
+
+        public const float ZOffsetBack = 0.4f;
+        public const float ZOffsetFront = -0.4f;
+        
+        public static float[] ZOffsets = new float[2]{ZOffsetFrontest, ZOffsetFront};
+        public static float[] ZOffsetsPlant = new float[2]{ZOffsetFrontest, ZOffsetFront};
 
         public const int FanRange = 30;
         public const int FanForce = 20;

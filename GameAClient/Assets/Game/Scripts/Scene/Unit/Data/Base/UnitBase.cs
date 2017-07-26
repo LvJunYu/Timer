@@ -599,7 +599,15 @@ namespace GameA.Game
                         return false;
                     }
                     CommonTools.SetParent(_viewExtras[i].Trans, _trans);
-                    _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsets[i] - _viewZOffset);
+                    _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsetFrontest - _viewZOffset);
+//                    if (UnitDefine.IsPlant(Id))
+//                    {
+//                        _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsetsPlant[i] - _viewZOffset);
+//                    }
+//                    else
+//                    {
+//                        _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsets[i] - _viewZOffset);
+//                    }
                 }
             }
             UpdateTransPos();
@@ -1426,12 +1434,12 @@ namespace GameA.Game
 
         protected void SetSortingOrderBackground()
         {
-            _viewZOffset = 20;
+            _viewZOffset = UnitDefine.ZOffsetBackground;
         }
         
         protected void SetSortingOrderFrontest()
         {
-            _viewZOffset = -100;
+            _viewZOffset = UnitDefine.ZOffsetFrontest;
         }
 
         protected void SetSortingOrderBack()
