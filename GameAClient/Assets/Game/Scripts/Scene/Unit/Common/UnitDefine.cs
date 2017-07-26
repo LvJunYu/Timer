@@ -57,7 +57,7 @@ namespace GameA.Game
 
         public static bool IsEnergy(int id)
         {
-            return id >= 8001;
+            return id == 8001;
         }
 
         public static bool IsSwitch(int id)

@@ -191,7 +191,7 @@ namespace GameA.Game
             _clickedExtra.UnitValue++;
             if (_clickedExtra.UnitValue > 2)
             {
-                _clickedExtra.UnitValue = 1;
+                _clickedExtra.UnitValue = 0;
             }
             _modifiedExtra.UnitValue = _clickedExtra.UnitValue;
             SaveUnitExtra();

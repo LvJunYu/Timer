@@ -232,7 +232,8 @@ namespace GameA.Game
 
         public void ProcessUnitExtra(IntVec3 guid, UnitExtra unitExtra)
         {
-            if (null != EditMode.Instance) {
+            if (null != EditMode.Instance) 
+            {
                 EditMode.Instance.MapStatistics.NeedSave = true;
             }
             if (unitExtra.Equals(UnitExtra.zero))

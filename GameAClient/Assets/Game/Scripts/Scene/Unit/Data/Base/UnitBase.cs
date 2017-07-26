@@ -496,12 +496,10 @@ namespace GameA.Game
         /// <summary>
         /// 
         /// </summary>
-        internal void Init(Table_Unit tableUnit, byte dir)
+        internal void Init(UnitDesc unitDesc, Table_Unit tableUnit)
         {
+            _unitDesc = unitDesc;
             _tableUnit = tableUnit;
-            _unitDesc.Id = _tableUnit.Id;
-            _unitDesc.Rotation = dir;
-            _unitDesc.Scale = Vector3.one;
             InitAssetPath();
             UpdateExtraData();
             if (!InstantiateView())

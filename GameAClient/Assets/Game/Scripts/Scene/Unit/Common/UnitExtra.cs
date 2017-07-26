@@ -20,6 +20,9 @@ namespace GameA.Game
         public EMoveDirection MoveDirection;
         public EMoveDirection RollerDirection;
         public string Msg;
+        /// <summary>
+        /// 0代表zero，所以赋值时候不能为0
+        /// </summary>
         public byte UnitValue;
         public UnitChild Child;
 
