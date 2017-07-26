@@ -16,11 +16,11 @@ namespace GameA.Game
         public const int ZOffsetBackground = 100;
         public const int ZOffsetFrontest = -100;
 
-        public const float ZOffsetBack = 0.4f;
-        public const float ZOffsetFront = -0.4f;
+        public const float ZOffsetBack = 0.25f;
+        public const float ZOffsetFront = -0.25f;
         
         public static float[] ZOffsets = new float[2]{ZOffsetFrontest, ZOffsetFront};
-        public static float[] ZOffsetsPlant = new float[2]{ZOffsetFrontest, ZOffsetFront};
+        public static float[] ZOffsetsPlant = new float[2]{ZOffsetFrontest, ZOffsetBack};
 
         public const int FanRange = 30;
         public const int FanForce = 20;

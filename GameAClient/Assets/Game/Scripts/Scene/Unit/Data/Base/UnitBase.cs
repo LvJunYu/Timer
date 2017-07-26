@@ -599,15 +599,14 @@ namespace GameA.Game
                         return false;
                     }
                     CommonTools.SetParent(_viewExtras[i].Trans, _trans);
-                    _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsetFrontest - _viewZOffset);
-//                    if (UnitDefine.IsPlant(Id))
-//                    {
-//                        _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsetsPlant[i] - _viewZOffset);
-//                    }
-//                    else
-//                    {
-//                        _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsets[i] - _viewZOffset);
-//                    }
+                    if (UnitDefine.IsPlant(Id))
+                    {
+                        _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsetsPlant[i] - _viewZOffset);
+                    }
+                    else
+                    {
+                        _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsets[i] - _viewZOffset);
+                    }
                 }
             }
             UpdateTransPos();
@@ -1441,15 +1440,6 @@ namespace GameA.Game
         protected void SetSortingOrderBack()
         {
             _viewZOffset = UnitDefine.ZOffsetBack;
-        }
-
-        protected void SetSortingOrderFront()
-        {
-            _viewZOffset = UnitDefine.ZOffsetFront;
-        }
-
-        protected void SetFront()
-        {
         }
 
         public int GetRotation(byte rotation)

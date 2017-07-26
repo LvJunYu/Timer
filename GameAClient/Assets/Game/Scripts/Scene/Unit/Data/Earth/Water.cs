@@ -21,26 +21,16 @@ namespace GameA.Game
     [Unit(Id = 4008, Type = typeof(Water))]
     public class Water : BlockBase
     {
-        protected override bool OnInit()
-        {
-            if (!base.OnInit())
-            {
-                return false;
-            }
-            SetSortingOrderBackground();
-            return true;
-        }
-
         internal override bool InstantiateView()
         {
             if (!base.InstantiateView())
             {
                 return false;
             }
-//            if (_view1 != null)
-//            {
-//                _view1.Animation.Init("Run");
-//            }
+            for (int i = 0; i < _viewExtras.Length; i++)
+            {
+                _viewExtras[i].Animation.Init("Run");
+            }
             _animation.Init("Run");
             return true;
         }
