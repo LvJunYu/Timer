@@ -6,12 +6,11 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
-using UnitySampleAssets.CrossPlatformInput;
 using UnityEngine.EventSystems;
+using UnitySampleAssets.CrossPlatformInput;
 
 namespace GameA.Game
 {
