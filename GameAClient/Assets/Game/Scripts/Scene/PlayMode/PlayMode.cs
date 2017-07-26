@@ -238,15 +238,7 @@ namespace GameA.Game
         {
             _nextActions.Add(action);
         }
-
-        public void UpdateRenderer(float deltaTime)
-        {
-            if (_unitUpdateManager != null)
-            {
-                _unitUpdateManager.UpdateRenderer(deltaTime);
-            }
-        }
-
+        
         public UnitBase CreateUnitView(UnitDesc unitDesc)
         {
             UnitBase unit = UnitManager.Instance.GetUnit(unitDesc.Id);
@@ -465,11 +457,24 @@ namespace GameA.Game
                     //DeleteUnit(spawnData);
                     if (i == 0)
                     {
-                        _mainPlayer = CreateRuntimeUnit(1002, spawnData.GetUpPos()) as MainPlayer;
+                        
+                        //TODO 临时 测试多人
+                        if (PlayerManager.Instance.UserDataList == null)
+                        {
+                            PlayerManager.Instance.Add(CreateRuntimeUnit(1002, spawnData.GetUpPos()) as PlayerBase);
+                        }
+                        else
+                        {
+                            for (int j = 0; j < PlayerManager.Instance.UserDataList.Count; j++)
+                            {
+                                PlayerManager.Instance.Add(CreateRuntimeUnit(1002, spawnData.GetUpPos()) as PlayerBase);
+                            }
+                        }
+                        _mainPlayer = PlayerManager.Instance.MainPlayer;
                     }
                     else
                     {
-                        CreateRuntimeUnit(1002, spawnData.GetUpPos());
+//                        CreateRuntimeUnit(1002, spawnData.GetUpPos());
                     }
                 }
             }

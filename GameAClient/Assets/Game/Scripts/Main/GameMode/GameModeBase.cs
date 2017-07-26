@@ -40,6 +40,20 @@ namespace GameA.Game
         public virtual void Update()
         {
             GameRun.Instance.Update();
+            if (PlayerManager.Instance.MainPlayer == null)
+            {
+                return;
+            }
+            if (GameRun.Instance.LogicTimeSinceGameStarted < GameRun.Instance.GameTimeSinceGameStarted)
+            {
+                LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.PlayerInput as LocalPlayerInput;
+                if (localPlayerInput != null)
+                {
+                    localPlayerInput.ProcessCheckInput();
+                    localPlayerInput.ApplyInputData(localPlayerInput.CurCheckInputChangeList);
+                }
+                GameRun.Instance.UpdateLogic(ConstDefineGM2D.FixedDeltaTime);
+            }
         }
 
         public virtual bool Pause()
@@ -78,6 +92,16 @@ namespace GameA.Game
                 successCB.Invoke();
             }
             SocialApp.Instance.ReturnToApp();
+        }
+
+        public PlayerInputBase GetMainPlayerInput(PlayerBase playerBase)
+        {
+            return new LocalPlayerInput(playerBase);
+        }
+
+        public PlayerInputBase GetOtherPlayerInput(PlayerBase playerBase)
+        {
+            return new RemotePlayerInput(playerBase);
         }
 
         public void OnDrawGizmos()

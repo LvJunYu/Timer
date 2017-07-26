@@ -746,10 +746,6 @@ namespace GameA.Game
                 min.y + _colliderGrid.YMax - _colliderGrid.YMin);
         }
 
-        public virtual void UpdateRenderer(float deltaTime)
-        {
-        }
-
         public virtual void OnSelectStateChanged(bool value)
         {
             if (value)

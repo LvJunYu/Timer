@@ -5,7 +5,6 @@
 ** Summary : GameModeNetPlay
 ***********************************************************************/
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using SoyEngine.Proto;
@@ -17,7 +16,9 @@ namespace GameA.Game
     {
         protected Dictionary<long, PlayerBase> _players = new Dictionary<long, PlayerBase>();
         protected bool _startBattleMsg;
-
+        protected Queue<Msg_RC_FrameInputData> _serverInputFrameQueue = new Queue<Msg_RC_FrameInputData>(128);
+        protected float _frameLeftTime;
+        
         public override bool Stop()
         {
             if (!base.Stop())
@@ -53,6 +54,56 @@ namespace GameA.Game
             GameRun.Instance.Playing();
         }
 
+        public override void Update()
+        {
+            GameRun.Instance.Update();
+            _frameLeftTime += Time.deltaTime;
+            while (_serverInputFrameQueue.Count > 0)
+            {
+                var needFrameTime = 10f / (_serverInputFrameQueue.Count + 7) * ConstDefineGM2D.FixedDeltaTime;
+                if (_frameLeftTime > needFrameTime)
+                {
+                    _frameLeftTime -= needFrameTime;
+                }
+                else
+                {
+                    break;
+                }
+                LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.PlayerInput as LocalPlayerInput;
+                if (localPlayerInput != null)
+                {
+                    localPlayerInput.ProcessCheckInput();
+                    List<int> curInput = localPlayerInput.CurCheckInputChangeList;
+                    if (curInput.Count > 0)
+                    {
+                        SendInputDatas(GameRun.Instance.LogicFrameCnt, curInput);
+                    }
+                }
+                
+                Msg_RC_FrameInputData frameInputData = _serverInputFrameQueue.Dequeue();
+                PlayerManager pm = PlayerManager.Instance;
+                for (int i = 0; i < pm.PlayerList.Count; i++)
+                {
+                    PlayerBase playerBase = pm.PlayerList[i];
+                    Msg_RC_UserInputData userInputData =
+                        frameInputData.UserInputDatas.Find(m => m.UserRoomInx == i);
+                    if (userInputData == null)
+                    {
+                        playerBase.PlayerInput.ApplyInputData(null);
+                    }
+                    else
+                    {
+                        playerBase.PlayerInput.ApplyInputData(userInputData.InputDatas);
+                    }
+                }
+                GameRun.Instance.UpdateLogic(ConstDefineGM2D.FixedDeltaTime);
+            }
+            if (_serverInputFrameQueue.Count == 0)
+            {
+                _frameLeftTime = 0;
+            }
+        }
+
         #region Send
 
         private void SendToServer(object msg)
@@ -71,10 +122,13 @@ namespace GameA.Game
             SendToServer(msg);
         }
 
-        public void SendInputDatas(List<int> datas)
+        public void SendInputDatas(int frameInx, List<int> datas)
         {
             var msg = new Msg_CR_InputDatas();
-            msg.InputDatas.AddRange(datas);
+            Msg_CR_FrameInputData msgFrame = new Msg_CR_FrameInputData();
+            msgFrame.FrameInx = frameInx;
+            msgFrame.InputDatas.AddRange(datas);
+            msg.InputFrames.Add(msgFrame);
             SendToServer(msg);
         }
 
@@ -108,6 +162,7 @@ namespace GameA.Game
 
         internal void OnInputDatas(Msg_RC_InputDatas msg)
         {
+            _serverInputFrameQueue.Enqueue(msg.InputFrames[0]);
         }
 
         internal void OnUserExitBattle(Msg_RC_UserExitBattle msg)

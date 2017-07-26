@@ -359,6 +359,7 @@ namespace GameA.Game
         {
             //开启战场！
             _eRoomState = ERoomState.OpenBattle;
+            PlayerManager.Instance.SetUserData(_users);
             Messenger.Broadcast(EMessengerType.OnOpenBattle);
         }
 

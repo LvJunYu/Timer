@@ -23,7 +23,7 @@ namespace GameA.Game
             new List<SkeletonAnimation>();
 
         private int _logicFrameCnt;
-        private float _unityTimeSinceGameStarted;
+        private float _gameTimeSinceGameStarted;
         private ESceneState _eSceneState;
 
         public static GameRun Instance
@@ -34,6 +34,16 @@ namespace GameA.Game
         public int LogicFrameCnt
         {
             get { return _logicFrameCnt; }
+        }
+
+        public float GameTimeSinceGameStarted
+        {
+            get { return _gameTimeSinceGameStarted; }
+        }
+
+        public float LogicTimeSinceGameStarted
+        {
+            get { return ConstDefineGM2D.FixedDeltaTime * _logicFrameCnt; }
         }
 
         public bool IsEdit
@@ -57,6 +67,7 @@ namespace GameA.Game
             InputManager.Instance.Dispose();
             PlayMode.Instance.Dispose();
             MapManager.Instance.Dispose();
+            PlayerManager.Instance.Dispose();
 
             PoolFactory<SpineUnit>.Clear();
             PoolFactory<ChangePartsSpineView>.Clear();
@@ -140,34 +151,20 @@ namespace GameA.Game
             DeadMarkManager.Instance.Update();
             CameraManager.Instance.Update();
             MapManager.Instance.Update();
-            _unityTimeSinceGameStarted += Time.deltaTime*GM2DGame.Instance.GamePlaySpeed;
-            while (_logicFrameCnt*ConstDefineGM2D.FixedDeltaTime < _unityTimeSinceGameStarted)
-            {
-                UpdateRenderer(Mathf.Min(Time.deltaTime, ConstDefineGM2D.FixedDeltaTime));
-                if (_logicFrameCnt*ConstDefineGM2D.FixedDeltaTime < _unityTimeSinceGameStarted)
-                {
-                    UpdateLogic(ConstDefineGM2D.FixedDeltaTime);
-                    _logicFrameCnt++;
-                }
-            }
+            _gameTimeSinceGameStarted += Time.deltaTime*GM2DGame.Instance.GamePlaySpeed;
         }
 
-        private void UpdateRenderer(float deltaTime)
-        {
-            PlayMode.Instance.UpdateRenderer(deltaTime);
-        }
-
-        private void UpdateLogic(float deltaTime)
+        public void UpdateLogic(float deltaTime)
         {
             PlayMode.Instance.UpdateLogic(deltaTime);
             CameraManager.Instance.UpdateLogic(deltaTime);
             var pos = CameraManager.Instance.MainCameraTrans.position;
             BgScene2D.Instance.UpdateLogic(pos);
-            
             for (int i = 0; i < _allSkeletonAnimationComp.Count; i++)
             {
                 _allSkeletonAnimationComp[i].Update(ConstDefineGM2D.FixedDeltaTime);
             }
+            _logicFrameCnt++;
         }
 
         #region GameState
@@ -197,7 +194,7 @@ namespace GameA.Game
                 LogHelper.Debug("StartEdit failed");
                 return false;
             }
-            _unityTimeSinceGameStarted = 0;
+            _gameTimeSinceGameStarted = 0;
             _logicFrameCnt = 0;
             Messenger.Broadcast(EMessengerType.OnEdit);
             return true;
@@ -237,7 +234,7 @@ namespace GameA.Game
                 LogHelper.Debug("Playing failed");
                 return false;
             }
-            _unityTimeSinceGameStarted = 0;
+            _gameTimeSinceGameStarted = 0;
             _logicFrameCnt = 0;
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioStartGame);
             GameAudioManager.Instance.PlayMusic(AudioNameConstDefineGM2D.GameAudioBgm01);
