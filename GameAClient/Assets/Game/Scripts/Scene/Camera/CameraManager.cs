@@ -179,6 +179,8 @@ namespace GameA.Game
 
         public void Dispose()
         {
+            UnityEngine.Object.Destroy(_mainCamera.gameObject);
+            _instance = null;
         }
 
         #endregion
