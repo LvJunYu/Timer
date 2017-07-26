@@ -14,20 +14,6 @@ using UnitySampleAssets.CrossPlatformInput;
 
 namespace GameA.Game
 {
-    public enum EInputType
-    {
-        Left,
-        Right,
-        Up,
-        Down,
-        Jump,
-        Assist,
-        Skill1,
-        Skill2,
-        Skill3,
-        Max
-    }
-
     [Serializable]
     public class PlayerInput
     {
