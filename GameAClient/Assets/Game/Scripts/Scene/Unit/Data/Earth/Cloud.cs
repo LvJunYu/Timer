@@ -16,12 +16,6 @@ namespace GameA.Game
         protected bool _trigger;
         protected int _timer;
 
-        protected override bool OnInit()
-        {
-            SetSortingOrderBackground();
-            return base.OnInit();
-        }
-
         protected override void Clear()
         {
             base.Clear();

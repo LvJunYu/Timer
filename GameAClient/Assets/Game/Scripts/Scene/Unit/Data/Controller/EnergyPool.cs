@@ -15,19 +15,14 @@ namespace GameA.Game
     [Unit(Id = 8001, Type = typeof(EnergyPool))]
     public class EnergyPool : BlockBase
     {
-        protected int _totalMp;
-        protected int _currentMp;
-        protected int _mpSpeed;
+        protected int _timer;
 
         protected EnergyPoolCtrl _energyPoolCtrl;
         protected UnityNativeParticleItem _efffect;
-
-        protected EEnergyType _eSkillType;
+        protected int _weaponId;
 
         protected override bool OnInit()
         {
-            _totalMp = 4000;
-            _mpSpeed = 2;
             if (!base.OnInit())
             {
                 return false;
@@ -47,7 +42,6 @@ namespace GameA.Game
 
         protected override void Clear()
         {
-            _currentMp = _totalMp;
             if (_energyPoolCtrl != null)
             {
                 _energyPoolCtrl.LiquidVolume = 1;
@@ -64,7 +58,7 @@ namespace GameA.Game
 
         public override void UpdateExtraData()
         {
-            _eSkillType = (EEnergyType)DataScene2D.Instance.GetUnitExtra(_guid).UnitValue;
+            _weaponId = DataScene2D.Instance.GetUnitExtra(_guid).UnitValue;
             UpdateEnergyEffect();
             base.UpdateExtraData();
         }
@@ -74,22 +68,22 @@ namespace GameA.Game
             FreeEffect(_efffect);
             _efffect = null;
             _energyPoolCtrl = null;
-            string effectName = null;
-            switch (_eSkillType)
-            {
-                case EEnergyType.Fire:
-                    effectName = "M1EffectEnergyFire";
-                    break;
-                case EEnergyType.Ice:
-                    effectName = "M1EffectEnergyIce";
-                    break;
-                case EEnergyType.Jelly:
-                    effectName = "M1EffectEnergyJelly";
-                    break;
-                case EEnergyType.Clay:
-                    effectName = "M1EffectEnergyClay";
-                    break;
-            }
+            string effectName = "M1EffectEnergyFire";
+//            switch (_eSkillType)
+//            {
+//                case EEnergyType.Fire:
+//                    effectName = "M1EffectEnergyFire";
+//                    break;
+//                case EEnergyType.Ice:
+//                    effectName = "M1EffectEnergyIce";
+//                    break;
+//                case EEnergyType.Jelly:
+//                    effectName = "M1EffectEnergyJelly";
+//                    break;
+//                case EEnergyType.Clay:
+//                    effectName = "M1EffectEnergyClay";
+//                    break;
+//            }
             if (!string.IsNullOrEmpty(effectName))
             {
                 _efffect = GameParticleManager.Instance.GetUnityNativeParticleItem(effectName, _trans);
@@ -97,7 +91,7 @@ namespace GameA.Game
                 {
                     _efffect.Play();
                     _energyPoolCtrl = _efffect.Trans.GetComponent<EnergyPoolCtrl>();
-                    _energyPoolCtrl.LiquidVolume = GetProcess();
+//                    _energyPoolCtrl.LiquidVolume = GetProcess();
                 }
             }
         }
@@ -106,16 +100,14 @@ namespace GameA.Game
         {
             if (other.SkillCtrl != null)
             {
-                OnTrigger(other);
-                ////如果技能不一样
-                //var addedMp = other.AddMp(_currentMp);
-                //_currentMp -= addedMp;
+//                OnTrigger(other);
             }
             return base.OnUpHit(other, ref y, checkOnly);
         }
 
-        protected void OnTrigger(UnitBase other)
-        {
+//        protected void OnTrigger(UnitBase other)
+//        {
+            
 //            switch (_eSkillType)
 //            {
 //                case ESkillType.Fire:
@@ -131,25 +123,26 @@ namespace GameA.Game
 //                    other.SkillCtrl.ChangeSkill<SkillClay>(0);
 //                    break;
 //            }
-        }
+//        }
 
-        public override void UpdateLogic()
-        {
-            base.UpdateLogic();
-            _currentMp = Util.ConstantLerp(_currentMp, _totalMp, _mpSpeed);
-            if (_energyPoolCtrl != null)
-            {
-                _energyPoolCtrl.LiquidVolume = GetProcess();
-            }
-        }
-
-        private float GetProcess()
-        {
-            if (_totalMp <= 0)
-            {
-                return 0;
-            }
-            return (float)_currentMp / _totalMp;
-        }
+//        public override void UpdateLogic()
+//        {
+//            base.UpdateLogic();
+//            
+//            _currentMp = Util.ConstantLerp(_currentMp, _totalMp, _mpSpeed);
+//            if (_energyPoolCtrl != null)
+//            {
+//                _energyPoolCtrl.LiquidVolume = GetProcess();
+//            }
+//        }
+//
+//        private float GetProcess()
+//        {
+//            if (_totalMp <= 0)
+//            {
+//                return 0;
+//            }
+//            return (float)_currentMp / _totalMp;
+//        }
     }
 }
