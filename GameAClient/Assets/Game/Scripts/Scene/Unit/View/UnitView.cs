@@ -18,13 +18,17 @@ namespace GameA.Game
 {
     public class UnitView : IPoolableObject
     {
+        public static Color SelectedColor = Color.red;
+        public static Color NormalColor = Color.white;
+        
         protected Transform _trans;
 
 		protected Transform _dirTrans;
         protected Transform _dirTrans2;
 
         protected UnitBase _unit;
-
+        protected WingView _wingLeft;
+        protected WingView _wingRight;
         protected AnimationSystem _animation;
 
         protected bool _isPart;
@@ -119,12 +123,48 @@ namespace GameA.Game
                 Object.Destroy(_dirTrans2.gameObject);
                 _dirTrans2 = null;
             }
+            if (_wingLeft != null)
+            {
+                PoolFactory<WingView>.Free(_wingLeft);
+                _wingLeft = null;
+            }
+            if (_wingRight != null)
+            {
+                PoolFactory<WingView>.Free(_wingRight);
+                _wingRight = null;
+            }
+        }
+        
+        private void GenerateWing()
+        {
+            if (_unit.CurMoveDirection != EMoveDirection.None)
+            {
+                if (_wingLeft == null)
+                {
+                    _wingLeft = PoolFactory<WingView>.Get();
+                    _wingLeft.Init("M1WingLeft");
+                    SetWingTrans(_wingLeft, 0.01f);
+                }
+                if (_wingRight == null)
+                {
+                    _wingRight = PoolFactory<WingView>.Get();
+                    _wingRight.Init("M1WingRight");
+                    SetWingTrans(_wingRight, -0.01f);
+                }
+            }
         }
 
-	    public static Color SelectedColor = Color.red;
-	    public static Color NormalColor = Color.white;
+        private void SetWingTrans(WingView wing, float z)
+        {
+            wing.Trans.parent = _trans;
+            wing.Trans.localPosition = Vector3.forward * z;
+            if (_unit.TableUnit.EGeneratedType == EGeneratedType.Spine)
+            {
+                wing.Trans.localPosition += Vector3.up * GM2DTools.TileToWorld(_unit.GetColliderSize().y / 2);
+            }
+        }
 
-	    public virtual void OnSelect()
+        public virtual void OnSelect()
 	    {
 		    
 	    }
@@ -162,6 +202,14 @@ namespace GameA.Game
             {
                 _dirTrans2.SetActiveEx(true);
             }
+            if (_wingLeft != null)
+            {
+                _wingLeft.Trans.SetActiveEx(true);
+            }
+            if (_wingRight != null)
+            {
+                _wingRight.Trans.SetActiveEx(true);
+            }
             UpdateSign();
         }
 
@@ -174,6 +222,14 @@ namespace GameA.Game
             if (_dirTrans2 != null)
             {
                 _dirTrans2.SetActiveEx(false);
+            }
+            if (_wingLeft != null)
+            {
+                _wingLeft.Trans.SetActiveEx(false);
+            }
+            if (_wingRight != null)
+            {
+                _wingRight.Trans.SetActiveEx(false);
             }
         }
 
@@ -236,6 +292,7 @@ namespace GameA.Game
                 {
                     if (_unit.MoveDirection != EMoveDirection.None)
                     {
+                        GenerateWing();
                         CreateDirTrans("M1Move");
                     }
                     else if (tableUnit.Id == UnitDefine.BlueStoneRotateId)
