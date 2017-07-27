@@ -205,8 +205,7 @@ namespace GameA.Game
 
         private bool IsCharacterAbilityAvailable(ECharacterAbility eCharacterAbility)
         {
-//            return GameProcessManager.Instance.IsCharacterAbilityAvailable(eCharacterAbility);
-            return true;
+            return GM2DGame.Instance.GameMode.IsPlayerCharacterAbilityAvailable(_player, eCharacterAbility);
         }
     }
 

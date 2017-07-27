@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -10,6 +12,7 @@ namespace GameA.Game
         protected Project _project;
         protected GameManager.EStartType _startType;
         protected MonoBehaviour _coroutineProxy;
+        protected List<int> _inputDatas = new List<int>(1024);
 
         public EGameSituation GameSituation
         {
@@ -19,6 +22,11 @@ namespace GameA.Game
         public EGameRunMode GameRunMode
         {
             get { return _gameRunMode; }
+        }
+
+        public List<int> InputDatas
+        {
+            get { return _inputDatas; }
         }
 
         public virtual bool Init(Project project, object param, GameManager.EStartType startType, MonoBehaviour coroutineProxy)
@@ -50,7 +58,13 @@ namespace GameA.Game
                 if (localPlayerInput != null)
                 {
                     localPlayerInput.ProcessCheckInput();
-                    localPlayerInput.ApplyInputData(localPlayerInput.CurCheckInputChangeList);
+                    List<int> inputChangeList = localPlayerInput.CurCheckInputChangeList;
+                    for (int i = 0; i < inputChangeList.Count; i++)
+                    {
+                        _inputDatas.Add(GameRun.Instance.LogicFrameCnt);
+                        _inputDatas.Add(inputChangeList[i]);
+                    }
+                    localPlayerInput.ApplyInputData(inputChangeList);
                 }
                 GameRun.Instance.UpdateLogic(ConstDefineGM2D.FixedDeltaTime);
             }
@@ -70,7 +84,7 @@ namespace GameA.Game
 
         public virtual bool Stop()
         {
-            GameRun.Instance.Stop();
+            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(GameRun.Instance.Stop));
             return true;
         }
 
@@ -94,12 +108,27 @@ namespace GameA.Game
             SocialApp.Instance.ReturnToApp();
         }
 
-        public PlayerInputBase GetMainPlayerInput(PlayerBase playerBase)
+        public virtual bool IsPlayerCharacterAbilityAvailable(PlayerBase player, ECharacterAbility eCharacterAbility)
+        {
+            return GameProcessManager.Instance.IsCharacterAbilityAvailable(eCharacterAbility);
+        }
+
+        /// <summary>
+        /// 获取主玩家输入的工厂方法
+        /// </summary>
+        /// <param name="playerBase"></param>
+        /// <returns></returns>
+        public virtual PlayerInputBase GetMainPlayerInput(PlayerBase playerBase)
         {
             return new LocalPlayerInput(playerBase);
         }
 
-        public PlayerInputBase GetOtherPlayerInput(PlayerBase playerBase)
+        /// <summary>
+        /// 获取非主玩家输入的工厂方法
+        /// </summary>
+        /// <param name="playerBase"></param>
+        /// <returns></returns>
+        public virtual PlayerInputBase GetOtherPlayerInput(PlayerBase playerBase)
         {
             return new RemotePlayerInput(playerBase);
         }

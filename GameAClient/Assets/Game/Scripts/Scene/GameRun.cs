@@ -85,6 +85,8 @@ namespace GameA.Game
 
         public IEnumerator Init(GameManager.EStartType eGameInitType, Project project)
         {
+            _gameTimeSinceGameStarted = 0;
+            _logicFrameCnt = 0;
             UnitManager.Instance.Init();
             CameraManager.Instance.Init();
             EnvManager.Instance.Init();

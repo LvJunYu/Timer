@@ -104,6 +104,12 @@ namespace GameA.Game
             }
         }
 
+        public override bool IsPlayerCharacterAbilityAvailable(PlayerBase player, ECharacterAbility eCharacterAbility)
+        {
+            //TODO 临时 应该使用Player的数据判断
+            return true;
+        }
+
         #region Send
 
         private void SendToServer(object msg)
