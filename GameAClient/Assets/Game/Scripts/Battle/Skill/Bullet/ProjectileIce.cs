@@ -54,7 +54,7 @@ namespace GameA.Game
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
-            if (unit.IsActor)
+            if (unit.IsActor || unit.CanPainted)
             {
                 _destroy = 1;
             }

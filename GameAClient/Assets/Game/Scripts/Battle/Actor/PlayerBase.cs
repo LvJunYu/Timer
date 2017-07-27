@@ -496,6 +496,7 @@ namespace GameA.Game
         {
             LogHelper.Debug("{0}, OnRevive", GetType().Name);
             _eUnitState = EUnitState.Reviving;
+            _trans.eulerAngles = new Vector3(90, 0, 0);
             _reviveEffect.Play(_trans.position + Vector3.up * 0.5f,
                                 GM2DTools.TileToWorld(_revivePos), 20, () =>
                                 {

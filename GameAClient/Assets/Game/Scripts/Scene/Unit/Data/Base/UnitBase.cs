@@ -806,6 +806,10 @@ namespace GameA.Game
         {
         }
         
+        internal virtual void InSaw()
+        {
+        }
+        
         internal virtual void InFan(UnitBase fanUnit, IntVec2 force)
         {
         }
