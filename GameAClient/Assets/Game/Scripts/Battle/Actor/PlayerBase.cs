@@ -317,16 +317,16 @@ namespace GameA.Game
 
         protected virtual void CheckClimb()
         {
-            _playerInput._eClimbState = EClimbState.None;
+            _playerInput.EClimbState = EClimbState.None;
             if (!_grounded && SpeedY < 0)
             {
                 if (_playerInput.LeftInput && CheckLeftFloor())
                 {
-                    _playerInput._eClimbState = EClimbState.Left;
+                    _playerInput.EClimbState = EClimbState.Left;
                 }
                 else if (_playerInput.RightInput && CheckRightFloor())
                 {
-                    _playerInput._eClimbState = EClimbState.Right;
+                    _playerInput.EClimbState = EClimbState.Right;
                 }
             }
         }
@@ -337,7 +337,11 @@ namespace GameA.Game
             _fanForce.y = 0;
             if (!_grounded)
             {
-                if (_wingCount > 0 || _playerInput._eClimbState > EClimbState.None)
+                if (_playerInput.JumpLevel == 2)
+                {
+                    SpeedY = Util.ConstantLerp(SpeedY, -60, 6);
+                }
+                else if (_playerInput.EClimbState > EClimbState.None)
                 {
                     SpeedY = Util.ConstantLerp(SpeedY, -50, 6);
                 }
@@ -685,7 +689,7 @@ namespace GameA.Game
             {
                 if (!_grounded)
                 {
-                    if (_playerInput._eClimbState > 0)
+                    if (_playerInput.EClimbState > 0)
                     {
                         if (_animation.PlayLoop(ClimbAnimName()))
                         {
@@ -716,8 +720,8 @@ namespace GameA.Game
                         if (_playerInput.JumpState == EJumpState.Jump1 || _playerInput.JumpState == EJumpState.Jump2)
                         {
                             Messenger.Broadcast(EMessengerType.OnPlayerJump);
-                            _animation.PlayOnce(JumpAnimName(_playerInput._jumpLevel));
-                            PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_playerInput._jumpLevel), false);
+                            _animation.PlayOnce(JumpAnimName(_playerInput.JumpLevel));
+                            PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_playerInput.JumpLevel), false);
                         }
                         else if (_playerInput.JumpState == EJumpState.Fall)
                         {
@@ -910,6 +914,10 @@ namespace GameA.Game
             if (_attackedTimer > 0)
             {
                 return "StunRun";
+            }
+            if (_playerInput.JumpLevel == 2)
+            {
+                return "Fly";
             }
             return "Fall";
         }
