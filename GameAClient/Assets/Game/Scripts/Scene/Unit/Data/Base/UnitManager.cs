@@ -315,6 +315,7 @@ namespace GameA.Game
                     if (unit.Id == 1001 || unit.Id == 1002)
                     {
                         unitView = PoolFactory<ChangePartsSpineView>.Get();
+                        unitView.InitialStatusBar();
                     }
                     else
                     {

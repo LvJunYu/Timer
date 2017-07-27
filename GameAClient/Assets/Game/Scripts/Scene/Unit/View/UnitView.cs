@@ -349,5 +349,10 @@ namespace GameA.Game
         {
             return -90 * rotation;
         }
-	}
+
+        public void InitialStatusBar()
+        {
+            GameParticleManager.Instance.GetUnityNativeParticleItem("StatusBar", _trans).Play();
+        }
+    }
 }
