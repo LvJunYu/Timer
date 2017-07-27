@@ -60,7 +60,7 @@ namespace GameA.Game
             _frameLeftTime += Time.deltaTime;
             while (_serverInputFrameQueue.Count > 0)
             {
-                var needFrameTime = 10f / (_serverInputFrameQueue.Count + 7) * ConstDefineGM2D.FixedDeltaTime;
+                var needFrameTime = 50f / (_serverInputFrameQueue.Count + 46) * ConstDefineGM2D.FixedDeltaTime;
                 if (_frameLeftTime > needFrameTime)
                 {
                     _frameLeftTime -= needFrameTime;
