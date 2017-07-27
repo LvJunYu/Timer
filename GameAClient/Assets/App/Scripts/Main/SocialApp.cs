@@ -24,7 +24,9 @@ namespace GameA
     {
 		public ELanguage Language = ELanguage.CN;
         [SerializeField] private EEnvironment _env;
-		[SerializeField] private bool _clearCache;
+        [SerializeField] private bool _clearCache;
+        [SerializeField] private string _roomServerAddress;
+        
         
         [SerializeField] private AddressConfig[] _appServerAddress;
 
@@ -34,6 +36,11 @@ namespace GameA
         {
             get { return _env; }
             set { _env = value; }
+        }
+
+        public string RoomServerAddress
+        {
+            get { return _roomServerAddress; }
         }
 
         public static AddressConfig GetAppServerAddress()

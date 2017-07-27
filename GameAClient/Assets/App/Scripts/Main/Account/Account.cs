@@ -15,8 +15,8 @@ namespace SoyEngine
 {
     public class Account
     {
-        private static string AccountTokenKey = "AccountToken";
-        private static string AccountGuidKey = "AccountGuid";
+        private static string AccountTokenKey = "AccountToken" + Application.platform;
+        private static string AccountGuidKey = "AccountGuid" + Application.platform;
         private long _userGuid;
         private static string _token;
         private static string _deviceId;

@@ -37,7 +37,7 @@ namespace GameA.Game
             _tableBg = table;
             _node = node;
             var size = new IntVec2(_node.Grid.XMax - _node.Grid.XMin + 1, _node.Grid.YMax - _node.Grid.YMin + 1);
-            _curPos = _basePos = GM2DTools.TileToWorld(new IntVec2(_node.Guid.x, _node.Guid.y) + size / 2, table.Depth + 10);
+            _curPos = _basePos = GM2DTools.TileToWorld(new IntVec2(_node.Guid.x, _node.Guid.y) + size / 2, table.Depth + UnitDefine.ZOffsetBackground);
             GameObject go;
             if (!TryCreateObject(out go))
             {

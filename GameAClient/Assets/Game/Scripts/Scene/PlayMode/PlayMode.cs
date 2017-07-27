@@ -8,11 +8,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NewResourceSolution;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
 using UnitySampleAssets.CrossPlatformInput;
-using NewResourceSolution;
 
 namespace GameA.Game
 {
@@ -29,13 +29,10 @@ namespace GameA.Game
 
         private readonly List<UnitBase> _waitDestroyUnits = new List<UnitBase>();
         private List<int> _boostItems;
-        [SerializeField] private ERunMode _eRunMode = ERunMode.Normal;
-
         [SerializeField] private IntVec2 _focusPos;
 
         private int _gameFailedTime;
         private int _gameSucceedTime;
-        private List<int> _inputDatas = new List<int>();
         [SerializeField] private MainPlayer _mainPlayer;
 
         private Texture2D _maskBaseTexture;
@@ -81,18 +78,6 @@ namespace GameA.Game
             get { return _sceneState; }
         }
 
-        public ERunMode ERunMode
-        {
-            get { return _eRunMode; }
-            set { _eRunMode = value; }
-        }
-
-        public List<int> InputDatas
-        {
-            get { return _inputDatas; }
-            set { _inputDatas = value; }
-        }
-
         public ShadowData CurrentShadow
         {
             get { return _currentShadowData; }
@@ -120,7 +105,7 @@ namespace GameA.Game
             _unitUpdateManager = new UnitUpdateManager();
             _statistic = new GameStatistic();
 
-            Texture t = null;
+            Texture t;
             if (!ResourcesManager.Instance.TryGetTexture ("Mask", out t))
             {
                 LogHelper.Error("GetMask Failed");
@@ -238,15 +223,7 @@ namespace GameA.Game
         {
             _nextActions.Add(action);
         }
-
-        public void UpdateRenderer(float deltaTime)
-        {
-            if (_unitUpdateManager != null)
-            {
-                _unitUpdateManager.UpdateRenderer(deltaTime);
-            }
-        }
-
+        
         public UnitBase CreateUnitView(UnitDesc unitDesc)
         {
             UnitBase unit = UnitManager.Instance.GetUnit(unitDesc.Id);
@@ -465,11 +442,24 @@ namespace GameA.Game
                     //DeleteUnit(spawnData);
                     if (i == 0)
                     {
-                        _mainPlayer = CreateRuntimeUnit(1002, spawnData.GetUpPos()) as MainPlayer;
+                        
+                        //TODO 临时 测试多人
+                        if (PlayerManager.Instance.UserDataList == null)
+                        {
+                            PlayerManager.Instance.Add(CreateRuntimeUnit(1002, spawnData.GetUpPos()) as PlayerBase);
+                        }
+                        else
+                        {
+                            for (int j = 0; j < PlayerManager.Instance.UserDataList.Count; j++)
+                            {
+                                PlayerManager.Instance.Add(CreateRuntimeUnit(1002, spawnData.GetUpPos()) as PlayerBase);
+                            }
+                        }
+                        _mainPlayer = PlayerManager.Instance.MainPlayer;
                     }
                     else
                     {
-                        CreateRuntimeUnit(1002, spawnData.GetUpPos());
+//                        CreateRuntimeUnit(1002, spawnData.GetUpPos());
                     }
                 }
             }
@@ -523,7 +513,7 @@ namespace GameA.Game
             BeforePlay();
             _sceneState.StartPlay();
             CameraManager.Instance.SetCameraState(ECameraState.Play);
-            BgScene2D.Instance.Reset();
+            BgScene2D.Instance.ResetByFollowPos(CameraManager.Instance.MainCamaraPos);
             var colliderPos = new IntVec2(_mainPlayer.ColliderGrid.XMin, _mainPlayer.ColliderGrid.YMin);
             UpdateWorldRegion(colliderPos, true);
         }
@@ -547,20 +537,22 @@ namespace GameA.Game
         private void BeforePlay()
         {
             bool flag = false;
-            Dictionary<EPairType, PairUnit[]>.Enumerator iter = PairUnitManager.Instance.PairUnits.GetEnumerator();
-            while (iter.MoveNext())
+            using (var iter = PairUnitManager.Instance.PairUnits.GetEnumerator())
             {
-                if (iter.Current.Value != null)
+                while (iter.MoveNext())
                 {
-                    for (int i = 0; i < iter.Current.Value.Length; i++)
+                    if (iter.Current.Value != null)
                     {
-                        PairUnit pairUnit = iter.Current.Value[i];
-                        //删掉不成双的
-                        if (!pairUnit.IsEmpty && !pairUnit.IsFull)
+                        for (int i = 0; i < iter.Current.Value.Length; i++)
                         {
-                            flag = true;
-                            UnitDesc unitObject = pairUnit.UnitA == UnitDesc.zero ? pairUnit.UnitB : pairUnit.UnitA;
-                            DeleteUnit(unitObject);
+                            PairUnit pairUnit = iter.Current.Value[i];
+                            //删掉不成双的
+                            if (!pairUnit.IsEmpty && !pairUnit.IsFull)
+                            {
+                                flag = true;
+                                UnitDesc unitObject = pairUnit.UnitA == UnitDesc.zero ? pairUnit.UnitB : pairUnit.UnitA;
+                                DeleteUnit(unitObject);
+                            }
                         }
                     }
                 }

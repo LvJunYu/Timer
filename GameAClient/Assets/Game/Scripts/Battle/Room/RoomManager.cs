@@ -36,7 +36,12 @@ namespace GameA.Game
         public bool Init()
         {
             _run = false;
-            ConnectRS("localhost", 6000);
+            string address = SocialApp.Instance.RoomServerAddress;
+            if (string.IsNullOrEmpty(address))
+            {
+                address = "localhost";
+            }
+            ConnectRS(address, 6000);
             _run = true;
             return true;
         }
@@ -73,7 +78,7 @@ namespace GameA.Game
         {
             var login = new Msg_CR_Login();
             login.ClientVersion = GlobalVar.Instance.AppVersion;
-            login.UserId = DateTimeUtil.GetNowTicks();
+            login.UserId = LocalUser.Instance.UserGuid;
             SendToServer(login);
         }
 

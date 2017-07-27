@@ -17,14 +17,6 @@ namespace GameA.Game
         Right
     }
 
-    public enum ERunMode
-    {
-        None,
-        Normal,
-        Record,
-        Net,
-    }
-
     public enum EUnitState
     {
         Normal,

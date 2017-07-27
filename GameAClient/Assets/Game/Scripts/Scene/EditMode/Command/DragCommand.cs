@@ -211,7 +211,7 @@ namespace GameA.Game
         {
             if (_virUnit == null)
             {
-                _virUnit = UnitManager.Instance.GetUnit(_dragTableUnit, (EDirectionType)_dragUnitDesc.Rotation);
+                _virUnit = UnitManager.Instance.GetUnit(_dragUnitDesc, _dragTableUnit);
                 CollectionBase collectUnit = _virUnit as CollectionBase;
                 if (null != collectUnit) {
                     collectUnit.StopTwenner ();

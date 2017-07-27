@@ -60,11 +60,11 @@ namespace GameA.Game
         public override void ChangeView(string assetPath)
         {
             Sprite sprite = null;
-//            if (!GameResourceManager.Instance.TryGetSpriteByName(assetPath, out sprite))
-//            {
-//                LogHelper.Error("TryGetSpriteByName failed,{0}", assetPath);
-//                return;
-//            }
+            if (!ResourcesManager.Instance.TryGetSprite(_unit.AssetPath, out sprite))
+            {
+                LogHelper.Error("TryGetSpriteByName failed,{0}", _unit.AssetPath);
+                return;
+            }
             _spriteRenderer.sprite = sprite;
         }
 

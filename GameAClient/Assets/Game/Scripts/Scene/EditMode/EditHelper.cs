@@ -45,74 +45,76 @@ namespace GameA.Game
             return 0;
         }
 
-        public static EMoveDirection GetUnitOrigDirOrRot(Table_Unit table)
+        public static int GetUnitOrigDirOrRot(Table_Unit table)
         {
             int origDirOrRot;
             if (_unitOrigDirOrRot.TryGetValue(table.Id, out origDirOrRot))
             {
-                return (EMoveDirection)(origDirOrRot + 1);
-            }
-            if (table.CanMove)
-            {
-                return (EMoveDirection)table.OriginMoveDirection;
+                return origDirOrRot;
             }
             if (table.Id == UnitDefine.RollerId)
             {
-                UnitExtra unitExtra;
-                return EMoveDirection.Right;
+                return (int)EMoveDirection.Right;
             }
-            return EMoveDirection.Up;
+            if (table.CanMove)
+            {
+                return table.OriginMoveDirection;
+            }
+            if (table.CanRotate)
+            {
+                return (int)EDirectionType.Right;
+            }
+            return 0;
         }
 
-        public static EMoveDirection ChangeUnitOrigDirOrRot(Table_Unit table)
+        public static void ChangeUnitOrigDirOrRot(Table_Unit table)
         {
             int current;
             if (!_unitOrigDirOrRot.TryGetValue(table.Id, out current))
             {
                 if (table.CanMove)
                 {
-                    _unitOrigDirOrRot[table.Id] = table.OriginMoveDirection - 1;
+                    _unitOrigDirOrRot[table.Id] = table.OriginMoveDirection;
                 }
                 else if (table.CanRotate)
                 {
-                    _unitOrigDirOrRot[table.Id] = (int)EMoveDirection.Up - 1;
+                    _unitOrigDirOrRot[table.Id] = (int)EDirectionType.Right;
                 }
                 else if (table.Id == UnitDefine.RollerId)
                 {
-                    _unitOrigDirOrRot[table.Id] = (int)EMoveDirection.Right - 1;
+                    _unitOrigDirOrRot[table.Id] = (int)EMoveDirection.Right;
                 }
                 else
                 {
-                    return EMoveDirection.Up;
+                    return;
                 }
                 current = _unitOrigDirOrRot[table.Id];
             }
             byte newDir;
             if (table.CanMove)
             {
-                if (ClickItemCommand.CalculateNextDir((byte) (current), table.MoveDirectionMask, out newDir))
+                if (ClickItemCommand.CalculateNextDir((byte) (current - 1), table.MoveDirectionMask, out newDir))
                 {
-                    _unitOrigDirOrRot[table.Id] = newDir;
+                    _unitOrigDirOrRot[table.Id] = newDir + 1;
                 }
-                return (EMoveDirection)(newDir + 1);
+                return;
             }
-            else if (table.CanRotate)
+            if (table.CanRotate)
             {
                 if (ClickItemCommand.CalculateNextDir((byte) (current), table.RotationMask, out newDir))
                 {
                     _unitOrigDirOrRot[table.Id] = newDir;
                 }
-                return (EMoveDirection)(newDir + 1);
+                return;
             }
-            else if (table.Id == UnitDefine.RollerId)
+            if (table.Id == UnitDefine.RollerId)
             {
-                if (ClickItemCommand.CalculateNextDir((byte) (current), 10, out newDir))
+                if (ClickItemCommand.CalculateNextDir((byte) (current - 1), 10, out newDir))
                 {
-                    _unitOrigDirOrRot[table.Id] = newDir;
+                    _unitOrigDirOrRot[table.Id] = newDir + 1;
                 }
-                return (EMoveDirection)(newDir + 1);
+                return;
             }
-            return EMoveDirection.Up;
         }
         
         public static void Clear()
@@ -302,6 +304,37 @@ namespace GameA.Game
         {
             UnitBase unit;
             return !ColliderScene2D.Instance.TryGetUnit(pos, out unit);
+        }
+
+        public static void InitUnitExtraEdit(UnitDesc unitDesc, Table_Unit tableUnit)
+        {
+//            if (tableUnit.CanMove)
+//            {
+//                UnitExtra unitExtra;
+//                if (!TryGetUnitExtra(unitDesc.Guid, out unitExtra))
+//                {
+//                    unitExtra.MoveDirection = (EMoveDirection)tableUnit.OriginMoveDirection;
+//                    ProcessUnitExtra(unitDesc.Guid, unitExtra);
+//                }
+//            }
+//            if (tableUnit.Id == UnitDefine.RollerId)
+//            {
+//                UnitExtra unitExtra;
+//                if (!TryGetUnitExtra(unitDesc.Guid, out unitExtra))
+//                {
+//                    unitExtra.RollerDirection = EMoveDirection.Right;
+//                    ProcessUnitExtra(unitDesc.Guid, unitExtra);
+//                }
+//            }
+            if (UnitDefine.IsEarth(tableUnit.Id))
+            {
+                UnitExtra unitExtra;
+                if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
+                {
+                    unitExtra.UnitValue = (byte) Random.Range(1, 3);
+                    DataScene2D.Instance.ProcessUnitExtra(unitDesc.Guid, unitExtra);
+                }
+            }
         }
     }
 }

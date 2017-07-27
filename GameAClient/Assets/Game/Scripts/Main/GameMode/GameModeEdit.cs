@@ -218,6 +218,7 @@ namespace GameA.Game
                     return;
                 }
                 GameRun.Instance.Playing();
+	            _inputDatas.Clear();
                 SocialGUIManager.Instance.CloseUI<UICtrlItem>();
 //                SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
                 SocialGUIManager.Instance.OpenUI<UICtrlEdit>();

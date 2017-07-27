@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -496,12 +497,10 @@ namespace GameA.Game
         /// <summary>
         /// 
         /// </summary>
-        internal void Init(Table_Unit tableUnit, byte dir)
+        internal void Init(UnitDesc unitDesc, Table_Unit tableUnit)
         {
+            _unitDesc = unitDesc;
             _tableUnit = tableUnit;
-            _unitDesc.Id = _tableUnit.Id;
-            _unitDesc.Rotation = dir;
-            _unitDesc.Scale = Vector3.one;
             InitAssetPath();
             UpdateExtraData();
             if (!InstantiateView())
@@ -601,7 +600,14 @@ namespace GameA.Game
                         return false;
                     }
                     CommonTools.SetParent(_viewExtras[i].Trans, _trans);
-                    _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsets[i] - _viewZOffset);
+                    if (UnitDefine.IsPlant(Id))
+                    {
+                        _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsetsPlant[i] - _viewZOffset);
+                    }
+                    else
+                    {
+                        _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsets[i] - _viewZOffset);
+                    }
                 }
             }
             UpdateTransPos();
@@ -740,10 +746,6 @@ namespace GameA.Game
                 min.y + _colliderGrid.YMax - _colliderGrid.YMin);
         }
 
-        public virtual void UpdateRenderer(float deltaTime)
-        {
-        }
-
         public virtual void OnSelectStateChanged(bool value)
         {
             if (value)
@@ -863,7 +865,7 @@ namespace GameA.Game
 
         public bool Equals(UnitBase other)
         {
-            return other.Guid == _guid;
+            return other == this;
         }
 
         public override string ToString()
@@ -1428,26 +1430,17 @@ namespace GameA.Game
 
         protected void SetSortingOrderBackground()
         {
-            _viewZOffset = 20;
+            _viewZOffset = UnitDefine.ZOffsetBackground;
         }
         
         protected void SetSortingOrderFrontest()
         {
-            _viewZOffset = -100;
+            _viewZOffset = UnitDefine.ZOffsetFrontest;
         }
 
         protected void SetSortingOrderBack()
         {
             _viewZOffset = UnitDefine.ZOffsetBack;
-        }
-
-        protected void SetSortingOrderFront()
-        {
-            _viewZOffset = UnitDefine.ZOffsetFront;
-        }
-
-        protected void SetFront()
-        {
         }
 
         public int GetRotation(byte rotation)

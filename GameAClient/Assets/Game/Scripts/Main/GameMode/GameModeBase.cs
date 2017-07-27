@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -10,6 +12,7 @@ namespace GameA.Game
         protected Project _project;
         protected GameManager.EStartType _startType;
         protected MonoBehaviour _coroutineProxy;
+        protected List<int> _inputDatas = new List<int>(1024);
 
         public EGameSituation GameSituation
         {
@@ -19,6 +22,11 @@ namespace GameA.Game
         public EGameRunMode GameRunMode
         {
             get { return _gameRunMode; }
+        }
+
+        public List<int> InputDatas
+        {
+            get { return _inputDatas; }
         }
 
         public virtual bool Init(Project project, object param, GameManager.EStartType startType, MonoBehaviour coroutineProxy)
@@ -40,6 +48,26 @@ namespace GameA.Game
         public virtual void Update()
         {
             GameRun.Instance.Update();
+            if (PlayerManager.Instance.MainPlayer == null)
+            {
+                return;
+            }
+            if (GameRun.Instance.LogicTimeSinceGameStarted < GameRun.Instance.GameTimeSinceGameStarted)
+            {
+                LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.PlayerInput as LocalPlayerInput;
+                if (localPlayerInput != null)
+                {
+                    localPlayerInput.ProcessCheckInput();
+                    List<int> inputChangeList = localPlayerInput.CurCheckInputChangeList;
+                    for (int i = 0; i < inputChangeList.Count; i++)
+                    {
+                        _inputDatas.Add(GameRun.Instance.LogicFrameCnt);
+                        _inputDatas.Add(inputChangeList[i]);
+                    }
+                    localPlayerInput.ApplyInputData(inputChangeList);
+                }
+                GameRun.Instance.UpdateLogic(ConstDefineGM2D.FixedDeltaTime);
+            }
         }
 
         public virtual bool Pause()
@@ -56,7 +84,7 @@ namespace GameA.Game
 
         public virtual bool Stop()
         {
-            GameRun.Instance.Stop();
+            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(GameRun.Instance.Stop));
             return true;
         }
 
@@ -78,6 +106,31 @@ namespace GameA.Game
                 successCB.Invoke();
             }
             SocialApp.Instance.ReturnToApp();
+        }
+
+        public virtual bool IsPlayerCharacterAbilityAvailable(PlayerBase player, ECharacterAbility eCharacterAbility)
+        {
+            return GameProcessManager.Instance.IsCharacterAbilityAvailable(eCharacterAbility);
+        }
+
+        /// <summary>
+        /// 获取主玩家输入的工厂方法
+        /// </summary>
+        /// <param name="playerBase"></param>
+        /// <returns></returns>
+        public virtual PlayerInputBase GetMainPlayerInput(PlayerBase playerBase)
+        {
+            return new LocalPlayerInput(playerBase);
+        }
+
+        /// <summary>
+        /// 获取非主玩家输入的工厂方法
+        /// </summary>
+        /// <param name="playerBase"></param>
+        /// <returns></returns>
+        public virtual PlayerInputBase GetOtherPlayerInput(PlayerBase playerBase)
+        {
+            return new RemotePlayerInput(playerBase);
         }
 
         public void OnDrawGizmos()

@@ -279,7 +279,7 @@ namespace GameA.Game
             unitExtra.MoveDirection = (EMoveDirection)unitExtraInfo.MoveDirection;
             unitExtra.RollerDirection = (EMoveDirection) unitExtraInfo.RollerDirection;
             unitExtra.Msg = unitExtraInfo.Msg;
-            unitExtra.EnergyType = (byte) unitExtraInfo.EnergyType;
+            unitExtra.UnitValue = (byte) unitExtraInfo.EnergyType;
             if (unitExtraInfo.UnitChild != null)
             {
                 unitExtra.Child = new UnitChild((ushort)unitExtraInfo.UnitChild.Id, (byte)unitExtraInfo.UnitChild.Rotation, (EMoveDirection)unitExtraInfo.UnitChild.MoveDirection);

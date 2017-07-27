@@ -21,7 +21,8 @@ namespace GameA.Game
         public RoomClient()
         {
             _handler = new RoomClientHandler();
-            _serializer = new ClientProtoSerializer(typeof(ECRMsgType), ProtoSerializer.ProtoNameSpace, new GeneratedClientSerializer());
+            _serializer = new ClientProtoSerializer(typeof(ECRMsgType), ProtoSerializer.ProtoNameSpace,
+                new GeneratedClientSerializer());
         }
 
         protected override void OnConnected()
@@ -77,7 +78,9 @@ namespace GameA.Game
         private void Msg_RC_UserExitBattle(Msg_RC_UserExitBattle msg, NetLink netLink)
         {
             if (_modeNetPlay != null)
-            {_modeNetPlay.OnUserExitBattle(msg);}
+            {
+                _modeNetPlay.OnUserExitBattle(msg);
+            }
         }
 
         private void Msg_RC_InputDatas(Msg_RC_InputDatas msg, NetLink netLink)
@@ -109,20 +112,35 @@ namespace GameA.Game
             RoomManager.Instance.OnOpenBattle();
             //这里进行房间和战场的交接
             EBattleType battleType = RoomManager.Instance.Room.EBattleType;
-            switch (battleType)
-            {
-                case EBattleType.EBT_PVE:
-                    _modeNetPlay = new GameModeMultiCooperationPlay();
-                    break;
-                case EBattleType.EBT_PVP:
-                    _modeNetPlay = new GameModeMultiBattlePlay();
-                    break;
-            }
-            if (_modeNetPlay != null)
-            {
-                _modeNetPlay.OnBattleOpen(RoomManager.Instance.Room);
-            }
-            LogHelper.Debug("BattleOpen : {0}", _modeNetPlay);
+
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Format("请求进入关卡"));
+            var project = new Project();
+            project.Request(RoomManager.Instance.Room.ProjectId,
+                () => project.RequestPlay(() =>
+                    {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                        switch (battleType)
+                        {
+                            case EBattleType.EBT_PVE:
+                                GameManager.Instance.RequestPlayMultiCooperation(project);
+                                break;
+                            case EBattleType.EBT_PVP:
+                                GameManager.Instance.RequestPlayMultiBattle(project);
+                                break;
+                        }
+                        SocialGUIManager.Instance.ChangeToGameMode();
+                        _modeNetPlay = GM2DGame.Instance.GameMode as GameModeNetPlay;
+                    },
+                    error =>
+                    {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                        SocialGUIManager.ShowPopupDialog("进入关卡失败");
+                    }),
+                error =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.ShowPopupDialog("进入关卡失败");
+                });
         }
 
         private void Msg_RC_WarnningHost(Msg_RC_WarnningHost msg, NetLink netLink)

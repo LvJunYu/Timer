@@ -6,10 +6,11 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace GameA.Game
 {
@@ -17,10 +18,10 @@ namespace GameA.Game
     {
         #region Data
 
-        protected long _playerGuid;
+        protected long _playerId;
 
         [SerializeField]
-        protected PlayerInput _playerInput;
+        protected PlayerInputBase _playerInput;
 
         protected SkillCtrl _skillCtrl;
         protected Gun _gun;
@@ -37,9 +38,9 @@ namespace GameA.Game
         protected ReviveEffect _reviveEffect = new ReviveEffect();
         protected ReviveEffect _portalEffect = new ReviveEffect();
 
-        public long PlayerGuid
+        public long PlayerId
         {
-            get { return _playerGuid; }
+            get { return _playerId; }
         }
 
         public override SkillCtrl SkillCtrl
@@ -65,7 +66,7 @@ namespace GameA.Game
             }
         }
 
-        public PlayerInput PlayerInput
+        public PlayerInputBase PlayerInput
         {
             get { return _playerInput; }
         }
@@ -89,12 +90,24 @@ namespace GameA.Game
                 return _curPos;
             }
         }
+
+        public void Set(RoomUser roomUser)
+        {
+            _playerId = roomUser.Guid;
+        }
+
+        public void Setup(PlayerInputBase inputBase)
+        {
+            _playerInput = inputBase;
+        }
         
         
         protected override void Clear()
         {
-            _playerInput = _playerInput ?? new PlayerInput(this);
-            _playerInput.Reset();
+            if (_playerInput != null)
+            {
+                _playerInput.Reset();
+            }
 
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
             _skillCtrl.Clear();
@@ -135,7 +148,7 @@ namespace GameA.Game
             AddStates(61);
             _revivePos = _curPos;
             _revivePosStack.Clear();
-            if (PlayMode.Instance.IsUsingBoostItem(SoyEngine.Proto.EBoostItemType.BIT_AddLifeCount1))
+            if (PlayMode.Instance.IsUsingBoostItem(EBoostItemType.BIT_AddLifeCount1))
             {
                 Life = PlayMode.Instance.SceneState.Life + 1;
             }
@@ -261,12 +274,12 @@ namespace GameA.Game
                 if (_curBanInputTime <= 0)
                 {
                     int motorAcc = 0;
-                    int speedAcc = 0;
-                    if (_playerInput.RightInput == 1)
+                    int speedAcc;
+                    if (_playerInput.RightInput)
                     {
                         motorAcc = _onIce ? 1 : 10;
                     }
-                    if (_playerInput.LeftInput == 1)
+                    if (_playerInput.LeftInput)
                     {
                         motorAcc = _onIce ? -1 : -10;
                     }
@@ -304,16 +317,16 @@ namespace GameA.Game
 
         protected virtual void CheckClimb()
         {
-            _playerInput._eClimbState = EClimbState.None;
+            _playerInput.EClimbState = EClimbState.None;
             if (!_grounded && SpeedY < 0)
             {
-                if (_playerInput.LeftInput > 0 && CheckLeftFloor())
+                if (_playerInput.LeftInput && CheckLeftFloor())
                 {
-                    _playerInput._eClimbState = EClimbState.Left;
+                    _playerInput.EClimbState = EClimbState.Left;
                 }
-                else if (_playerInput.RightInput > 0 && CheckRightFloor())
+                else if (_playerInput.RightInput && CheckRightFloor())
                 {
-                    _playerInput._eClimbState = EClimbState.Right;
+                    _playerInput.EClimbState = EClimbState.Right;
                 }
             }
         }
@@ -324,7 +337,11 @@ namespace GameA.Game
             _fanForce.y = 0;
             if (!_grounded)
             {
-                if (_wingCount > 0 || _playerInput._eClimbState > EClimbState.None)
+                if (_playerInput.JumpLevel == 2)
+                {
+                    SpeedY = Util.ConstantLerp(SpeedY, -60, 6);
+                }
+                else if (_playerInput.EClimbState > EClimbState.None)
                 {
                     SpeedY = Util.ConstantLerp(SpeedY, -50, 6);
                 }
@@ -339,14 +356,6 @@ namespace GameA.Game
                         SpeedY = Util.ConstantLerp(SpeedY, -120, 8);
                     }
                 }
-            }
-        }
-
-        public override void UpdateRenderer(float deltaTime)
-        {
-            if (_isAlive)
-            {
-                _playerInput.UpdateRenderer();
             }
         }
 
@@ -680,7 +689,7 @@ namespace GameA.Game
             {
                 if (!_grounded)
                 {
-                    if (_playerInput._eClimbState > 0)
+                    if (_playerInput.EClimbState > 0)
                     {
                         if (_animation.PlayLoop(ClimbAnimName()))
                         {
@@ -711,8 +720,8 @@ namespace GameA.Game
                         if (_playerInput.JumpState == EJumpState.Jump1 || _playerInput.JumpState == EJumpState.Jump2)
                         {
                             Messenger.Broadcast(EMessengerType.OnPlayerJump);
-                            _animation.PlayOnce(JumpAnimName(_playerInput._jumpLevel));
-                            PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_playerInput._jumpLevel), false);
+                            _animation.PlayOnce(JumpAnimName(_playerInput.JumpLevel));
+                            PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_playerInput.JumpLevel), false);
                         }
                         else if (_playerInput.JumpState == EJumpState.Fall)
                         {
@@ -725,7 +734,7 @@ namespace GameA.Game
                 }
                 else
                 {
-                    if (_playerInput.LeftInput != 0 || _playerInput.RightInput != 0)
+                    if (_playerInput.LeftInput || _playerInput.RightInput)
                     {
                         var speed = Math.Abs(SpeedX);
                         speed = Mathf.Clamp(speed, 20, 100);
@@ -748,7 +757,7 @@ namespace GameA.Game
                         }
                         if (_walkAudioInternal <= 0)
                         {
-                            int randomValue = UnityEngine.Random.Range(0, 3);
+                            int randomValue = Random.Range(0, 3);
                             switch (randomValue)
                             {
                                 case 0:
@@ -844,12 +853,12 @@ namespace GameA.Game
             {
                 if (_speed.x == 0)
                 {
-                    if (_playerInput.RightInput == 0 && _playerInput.LeftInput == 0)
+                    if (!_playerInput.RightInput && !_playerInput.LeftInput)
                     {
                         return "Prepare";
                     }
-                    if (_playerInput.RightInput > 0 && _box.DirectionRelativeMain == EDirectionType.Right
-                        || (_playerInput.LeftInput > 0 && _box.DirectionRelativeMain == EDirectionType.Left))
+                    if (_playerInput.RightInput && _box.DirectionRelativeMain == EDirectionType.Right
+                        || (_playerInput.LeftInput && _box.DirectionRelativeMain == EDirectionType.Left))
                     {
                         return "Push";
                     }
@@ -905,6 +914,10 @@ namespace GameA.Game
             if (_attackedTimer > 0)
             {
                 return "StunRun";
+            }
+            if (_playerInput.JumpLevel == 2)
+            {
+                return "Fly";
             }
             return "Fall";
         }

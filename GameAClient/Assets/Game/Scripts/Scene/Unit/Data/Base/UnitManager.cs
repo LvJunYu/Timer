@@ -199,7 +199,23 @@ namespace GameA.Game
                 LogHelper.Error("GetUnit Failed,{0}", tableUnit.Id);
                 return null;
             }
-            unit.Init(tableUnit, (byte) dir);
+            var unitDesc = new UnitDesc();
+            unitDesc.Id = tableUnit.Id;
+            unitDesc.Rotation = (byte)dir;
+            unitDesc.Scale = Vector2.one;
+            unit.Init(unitDesc, tableUnit);
+            return unit;
+        }
+        
+        public UnitBase GetUnit(UnitDesc unitDesc, Table_Unit tableUnit)
+        {
+            UnitBase unit = GetUnit(unitDesc.Id);
+            if (unit == null)
+            {
+                LogHelper.Error("GetUnit Failed,{0}", unitDesc.Id);
+                return null;
+            }
+            unit.Init(unitDesc, tableUnit);
             return unit;
         }
 

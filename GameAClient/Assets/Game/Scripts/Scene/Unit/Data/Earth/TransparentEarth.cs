@@ -17,7 +17,6 @@ namespace GameA.Game
                 return false;
             }
             _canLazerCross = true;
-            SetSortingOrderBackground();
             return true;
         }
 

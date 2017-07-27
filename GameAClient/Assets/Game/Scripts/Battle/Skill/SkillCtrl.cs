@@ -5,8 +5,6 @@
 ** Summary : SkillCtrl
 ***********************************************************************/
 
-using System;
-using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 

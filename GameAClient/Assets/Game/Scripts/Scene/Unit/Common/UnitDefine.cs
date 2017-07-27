@@ -8,16 +8,22 @@
 using System;
 using System.Collections;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
     public class UnitDefine
     {
-        public const float ZOffsetBack = 0.4f;
-        public const int ZOffsetBackground = 20;
-        public const float ZOffsetFront = -0.4f;
+        public static Vector2 HidePos = Vector3.one * -5;
+
+        public const int ZOffsetBackground = 100;
         public const int ZOffsetFrontest = -100;
-        public static float[] ZOffsets = new float[3]{ZOffsetFrontest, ZOffsetBack, ZOffsetFront};
+
+        public const float ZOffsetBack = 0.25f;
+        public const float ZOffsetFront = -0.25f;
+        
+        public static float[] ZOffsets = new float[2]{ZOffsetFrontest, ZOffsetFront};
+        public static float[] ZOffsetsPlant = new float[2]{ZOffsetFrontest, ZOffsetBack};
 
         public const int FanRange = 30;
         public const int FanForce = 20;
@@ -25,9 +31,9 @@ namespace GameA.Game
         public const int PlayerTableId = 1001;
         public const int TransparentEarthId = 4004;
         public const int ClayId = 4011;
-        public const int BlueStoneId = 8001;
-        public const int BlueStoneBanId = 8002;
-        public const int BlueStoneRotateId = 8003;
+        public const int BlueStoneId = 8002;
+        public const int BlueStoneBanId = 8003;
+        public const int BlueStoneRotateId = 8004;
         public const int FinalDoorId = 5001;
         public const int BoxId = 5004;
         public const int RollerId = 5005;
@@ -57,7 +63,7 @@ namespace GameA.Game
 
         public static bool IsEnergy(int id)
         {
-            return id >= 6101 && id <= 6105;
+            return id == 8001;
         }
 
         public static bool IsSwitch(int id)
@@ -67,7 +73,7 @@ namespace GameA.Game
 
         public static bool IsFakePart(int one, int other)
         {
-            return (one == 4001 && other == 4013) || (one == 4013 && other == 4001);
+            return (one == 4001 && other == 4002) || (one == 4002 && other == 4001);
         }
 
         public static bool IsEarth(int id)
@@ -96,7 +102,7 @@ namespace GameA.Game
 
         public static bool IsBoard(int id)
         {
-            return id == 7001 || id == 7101 || id == 7102 || id == 7103 || id == 7104;
+            return id == BillboardId || id == 7101 || id == 7102 || id == 7103 || id == 7104;
         }
 
         public static bool IsBullet(int id)
@@ -111,7 +117,7 @@ namespace GameA.Game
 
         public static bool IsEditClick(int id)
         {
-            return id == 7001 || IsEnergy(id);
+            return id == BillboardId || IsEnergy(id);
         }
 
         public static bool IsSameDirectionSwitchTrigger(SceneNode node, byte rotation)
