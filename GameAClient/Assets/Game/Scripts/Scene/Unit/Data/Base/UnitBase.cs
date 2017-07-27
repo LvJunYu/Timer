@@ -890,15 +890,6 @@ namespace GameA.Game
             }
         }
 
-        private void GenerateWing(string path)
-        {
-            Sprite sprite = null;
-            if (!ResourcesManager.Instance.TryGetSprite("M1WingLeft", out sprite))
-            {
-                LogHelper.Error("TryGetSprite failed,M1WingLeft");
-            }
-        }
-
         public bool Equals(UnitBase other)
         {
             return other != null && other.Guid == _guid;
