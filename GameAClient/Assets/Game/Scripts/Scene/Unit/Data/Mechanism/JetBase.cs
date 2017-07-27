@@ -17,6 +17,8 @@ namespace GameA.Game
         protected int _timeScale;
         protected const int AnimationLength = 15;
         protected UnityNativeParticleItem _effect;
+        
+        protected int _weaponId;
 
         public override bool CanControlledBySwitch
         {
@@ -30,8 +32,6 @@ namespace GameA.Game
                 return false;
             }
             _shootAngle = (_unitDesc.Rotation) * 90;
-            _skillCtrl = new SkillCtrl(this, 1);
-            _skillCtrl.ChangeSkill(1, 0);
             _timeScale = 1;
             return true;
         }
@@ -43,7 +43,6 @@ namespace GameA.Game
                 return false;
             }
             InitAssetRotation();
-
             _effect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectJetFireRun", _trans);
             if (_effect != null)
             {
@@ -52,6 +51,25 @@ namespace GameA.Game
             return true;
         }
 
+        public override void UpdateExtraData()
+        {
+            _weaponId = DataScene2D.Instance.GetUnitExtra(_guid).UnitValue;
+            ChangeWeapon(_weaponId);
+            base.UpdateExtraData();
+        }
+        
+        public override bool ChangeWeapon(int id)
+        {
+            var tableEquipment = TableManager.Instance.GetEquipment(id);
+            if (tableEquipment == null)
+            {
+                LogHelper.Error("GetEquipment Failed : {0}", id);
+                return false;
+            }
+            _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 1);
+            return _skillCtrl.ChangeSkill(tableEquipment.SkillIds[0]);
+        }
+        
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();
@@ -67,7 +85,7 @@ namespace GameA.Game
                 if (_skillCtrl != null)
                 {
                     _skillCtrl.UpdateLogic();
-                    if (_skillCtrl.Fire(0))
+                    if (_skillCtrl.FireForever(0))
                     {
                         if (_animation != null)
                         {

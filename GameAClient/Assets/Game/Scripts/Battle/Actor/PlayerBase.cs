@@ -23,7 +23,6 @@ namespace GameA.Game
         [SerializeField]
         protected PlayerInputBase _playerInput;
 
-        protected SkillCtrl _skillCtrl;
         protected Gun _gun;
 
         [SerializeField]
@@ -112,14 +111,13 @@ namespace GameA.Game
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
             _skillCtrl.Clear();
             ChangeWeapon(1);
-            
             _dieTime = 0;
             _box = null;
             ClearView();
             base.Clear();
         }
 
-        public bool ChangeWeapon(int id)
+        public override bool ChangeWeapon(int id)
         {
             var tableEquipment = TableManager.Instance.GetEquipment(id);
             if (tableEquipment == null)

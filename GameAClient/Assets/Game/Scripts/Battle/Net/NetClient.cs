@@ -288,7 +288,7 @@ namespace SoyEngine
                 //    continue;
                 //}
                 object msg = _serializer.Deserialize(_readBuffer, msgType, size);
-                LogHelper.Debug("HandlePacket -> {0}: {1}", msg.GetType().Name, Newtonsoft.Json.JsonConvert.SerializeObject(msg));
+//                LogHelper.Debug("HandlePacket -> {0}: {1}", msg.GetType().Name, Newtonsoft.Json.JsonConvert.SerializeObject(msg));
                 if (msg != null)
                 {
                     AppContext.CurrentContext.CurrentNetLink = _netLink;
@@ -304,7 +304,7 @@ namespace SoyEngine
 
         public virtual bool Send(object msg)
         {
-            LogHelper.Debug("Send -> {0}: {1}", msg.GetType().Name, Newtonsoft.Json.JsonConvert.SerializeObject(msg));
+//            LogHelper.Debug("Send -> {0}: {1}", msg.GetType().Name, Newtonsoft.Json.JsonConvert.SerializeObject(msg));
             return SendByChannel(msg, 0);
         }
 

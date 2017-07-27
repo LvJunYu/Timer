@@ -61,9 +61,9 @@ namespace GameA.Game
             return id < 3000 && id > 2000;
         }
 
-        public static bool IsEnergy(int id)
+        public static bool IsBindWeapon(int id)
         {
-            return id == 8001;
+            return id == 8001 || id == 5015 || id == 5016;
         }
 
         public static bool IsSwitch(int id)
@@ -117,7 +117,7 @@ namespace GameA.Game
 
         public static bool IsEditClick(int id)
         {
-            return id == BillboardId || IsEnergy(id);
+            return id == BillboardId || IsBindWeapon(id);
         }
 
         public static bool IsSameDirectionSwitchTrigger(SceneNode node, byte rotation)
@@ -162,7 +162,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            return (tableUnit.EGeneratedType == EGeneratedType.Spine && !IsHero(tableUnit.Id) && !IsBullet(tableUnit.Id)) || IsEnergy(tableUnit.Id) || tableUnit.Id == FinalDoorId;
+            return (tableUnit.EGeneratedType == EGeneratedType.Spine && !IsHero(tableUnit.Id) && !IsBullet(tableUnit.Id)) || IsBindWeapon(tableUnit.Id) || tableUnit.Id == FinalDoorId;
         }
     }
 }

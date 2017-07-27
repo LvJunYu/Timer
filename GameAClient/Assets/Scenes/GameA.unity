@@ -533,6 +533,7 @@ MonoBehaviour:
   Language: 0
   _env: 1
   _clearCache: 0
+  _roomServerAddress: 192.168.1.91
   _appServerAddress:
   - Enable: 0
     AppServerApiRoot: http://dev.joy-you.com/gameaapi

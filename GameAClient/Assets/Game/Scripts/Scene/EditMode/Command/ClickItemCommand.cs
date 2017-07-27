@@ -101,9 +101,9 @@ namespace GameA.Game
                     return DoMove();
                 }
             }
-            if (UnitDefine.IsEnergy(_clickedTableUnit.Id))
+            if (UnitDefine.IsBindWeapon(_clickedTableUnit.Id))
 		    {
-		        return DoEnergy();
+		        return DoWeapon();
 		    }
 		    if (_clickedTableUnit.CanRotate)
             {
@@ -124,12 +124,12 @@ namespace GameA.Game
             return false;
         }
 
-        protected bool DoEnergy()
+        protected bool DoWeapon()
         {
             _clickedExtra.UnitValue++;
-            if (_clickedExtra.UnitValue >= (int)EEnergyType.Max)
+            if (_clickedExtra.UnitValue >= (int)EWeaponType.Max)
             {
-                _clickedExtra.UnitValue = 0;
+                _clickedExtra.UnitValue = 1;
             }
             _modifiedExtra.UnitValue = _clickedExtra.UnitValue;
             SaveUnitExtra();

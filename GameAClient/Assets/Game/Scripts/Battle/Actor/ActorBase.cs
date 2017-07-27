@@ -41,6 +41,8 @@ namespace GameA.Game
         protected bool _hasWaterCheckedInFrame;
         
         protected int _curMaxSpeedX;
+        
+        protected SkillCtrl _skillCtrl;
 
         public int AttackedTimer
         {

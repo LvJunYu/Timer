@@ -1583,6 +1583,11 @@ namespace GameA.Game
             return false;
         }
 
+        public virtual bool ChangeWeapon(int id)
+        {
+            return true;
+        }
+
         #endregion
     }
 }
