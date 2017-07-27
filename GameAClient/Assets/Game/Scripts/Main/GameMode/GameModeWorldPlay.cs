@@ -29,12 +29,11 @@ namespace GameA.Game
         public override void OnGameFailed()
 		{
 			byte[] record = GetRecord();
-			float usedTime = PlayMode.Instance.GameFailFrameCnt * ConstDefineGM2D.FixedDeltaTime;
 
 			SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
             _project.CommitPlayResult(
                 false,
-                usedTime,
+                PlayMode.Instance.GameFailFrameCnt,
                 PlayMode.Instance.SceneState.CurScore,
                 PlayMode.Instance.SceneState.GemGain,
                 PlayMode.Instance.SceneState.MonsterKilled,
@@ -66,12 +65,11 @@ namespace GameA.Game
         public override void OnGameSuccess()
 		{
 			byte[] record = GetRecord();
-			var usedTime = PlayMode.Instance.GameSuccessFrameCnt * ConstDefineGM2D.FixedDeltaTime;
 
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
             _project.CommitPlayResult(
                 true,
-                usedTime,
+                PlayMode.Instance.GameSuccessFrameCnt,
                 PlayMode.Instance.SceneState.CurScore,
                 PlayMode.Instance.SceneState.GemGain,
                 PlayMode.Instance.SceneState.MonsterKilled,

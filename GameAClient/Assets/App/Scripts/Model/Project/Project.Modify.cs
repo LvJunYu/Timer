@@ -14,7 +14,8 @@ using SoyEngine;
 
 namespace GameA
 {
-	public partial class Project : SyncronisticData {
+	public partial class Project
+	{
         #region 变量
         // 地图数据（压缩过的），内存中的缓存，第一次保存改造关卡，resPath仍然是空，读这个数据
         private byte[] _bytesData;
@@ -34,7 +35,7 @@ namespace GameA
 
             if (_projectStatus == EProjectStatus.PS_Reform)
             {
-                List<Game.ModifyData> addedUnits = Game.DataScene2D.Instance.AddedUnits;
+                List<ModifyData> addedUnits = DataScene2D.Instance.AddedUnits;
                 Dictionary<int, int> addedDic = new Dictionary<int, int>();
                 for (int i = 0; i < addedUnits.Count; i++)
                 {
@@ -48,47 +49,51 @@ namespace GameA
                         addedDic[addedUnits[i].ModifiedUnit.UnitDesc.Id] = 1;
                     }
                 }
-                var itor = addedDic.GetEnumerator();
-                while (itor.MoveNext())
+                using (var itor = addedDic.GetEnumerator())
                 {
-                    UnitDataItem item = new UnitDataItem();
-                    item.UnitId = itor.Current.Key;
-                    item.UnitCount = itor.Current.Value;
-                    _projectUploadParam.UsedUnitDataList.Add(item);
+                    while (itor.MoveNext())
+                    {
+                        UnitDataItem item = new UnitDataItem();
+                        item.UnitId = itor.Current.Key;
+                        item.UnitCount = itor.Current.Value;
+                        _projectUploadParam.UsedUnitDataList.Add(item);
+                    }
                 }
             }
             else
             {
                 var unitCountDic = EditHelper.UnitIndexCount;
-                var itor = unitCountDic.GetEnumerator();
-                while (itor.MoveNext())
+                using (var itor = unitCountDic.GetEnumerator())
                 {
-                    UnitDataItem item = new UnitDataItem();
-                    item.UnitId = itor.Current.Key;
-                    item.UnitCount = itor.Current.Value;
-                    _projectUploadParam.UsedUnitDataList.Add(item);
+                    while (itor.MoveNext())
+                    {
+                        UnitDataItem item = new UnitDataItem();
+                        item.UnitId = itor.Current.Key;
+                        item.UnitCount = itor.Current.Value;
+                        _projectUploadParam.UsedUnitDataList.Add(item);
+                    }
                 }
             }
 
-            _projectUploadParam.MapWidth = Game.DataScene2D.Instance.Width;
-            _projectUploadParam.MapHeight = Game.DataScene2D.Instance.Height;
-            _projectUploadParam.TotalUnitCount = Game.ColliderScene2D.Instance.AllUnits.Count;
-            _projectUploadParam.AddCount = Game.DataScene2D.Instance.AddedUnits.Count;
-            _projectUploadParam.DeleteCount = Game.DataScene2D.Instance.RemovedUnits.Count;
-            _projectUploadParam.ModifyCount = Game.DataScene2D.Instance.ModifiedUnits.Count;
-            _projectUploadParam.ReformRate = (
-                Game.DataScene2D.Instance.AddedUnits.Count + 
-                Game.DataScene2D.Instance.RemovedUnits.Count + 
-                Game.DataScene2D.Instance.ModifiedUnits.Count) /
-                Game.ColliderScene2D.Instance.AllUnits.Count;
+            _projectUploadParam.MapWidth = DataScene2D.Instance.Width;
+            _projectUploadParam.MapHeight = DataScene2D.Instance.Height;
+            _projectUploadParam.TotalUnitCount = ColliderScene2D.Instance.AllUnits.Count;
+            _projectUploadParam.AddCount = DataScene2D.Instance.AddedUnits.Count;
+            _projectUploadParam.DeleteCount = DataScene2D.Instance.RemovedUnits.Count;
+            _projectUploadParam.ModifyCount = DataScene2D.Instance.ModifiedUnits.Count;
+            _projectUploadParam.ReformRate = 1f *
+                                             (DataScene2D.Instance.AddedUnits.Count +
+                                              DataScene2D.Instance.RemovedUnits.Count +
+                                              DataScene2D.Instance.ModifiedUnits.Count) /
+                                             ColliderScene2D.Instance.AllUnits.Count;
             _projectUploadParam.RecordRestartCount = 0;
             _projectUploadParam.RecordUsedLifeCount = 0;
             _projectUploadParam.OperateCount = 0;
             _projectUploadParam.TotalOperateTime = 0;
         }
 
-        public void SaveModifyProject (Byte[] data, Action successCallback = null, Action<EProjectOperateResult> failedCallback = null) {
-            if (data == null) {
+        public void SaveModifyProject (byte[] levelData, Action successCallback = null, Action<EProjectOperateResult> failedCallback = null) {
+            if (levelData == null) {
                 if (failedCallback != null) {
                     failedCallback.Invoke (EProjectOperateResult.POR_Error);
                     return;
@@ -96,7 +101,7 @@ namespace GameA
             }
 
             WWWForm form = new WWWForm();
-            form.AddBinaryData("levelFile", data);
+            form.AddBinaryData("levelFile", levelData);
             RefreshProjectUploadParam ();
 
             RemoteCommands.SaveReformProject (
@@ -104,7 +109,7 @@ namespace GameA
                 _programVersion,
                 _resourcesVersion,
                 _passFlag,
-                100f,
+                null,
                 GetMsgProjectUploadParam(),
                 msg => {
                     if ((int)EProjectOperateResult.POR_Success == msg.ResultCode) {
@@ -129,7 +134,7 @@ namespace GameA
             );
             // 如果
 //            if (string.IsNullOrEmpty (ResPath)) {
-                _bytesData = data;
+                _bytesData = levelData;
 //            }
         }
 
@@ -140,7 +145,7 @@ namespace GameA
                 ProjectId,
                 ProgramVersion,
                 ResourcesVersion,
-                RecordUsedTime,
+                null,
                 GetMsgProjectUploadParam (),
                 msg => {
                     
