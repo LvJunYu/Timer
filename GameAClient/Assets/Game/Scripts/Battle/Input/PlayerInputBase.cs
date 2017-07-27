@@ -18,7 +18,7 @@ namespace GameA.Game
     {
         protected PlayerBase _player;
 
-        public PlayerInputBase(PlayerBase player) : base(player)
+        public PlayerInputBase(PlayerBase player) 
         {
             _player = player;
         }
@@ -27,7 +27,6 @@ namespace GameA.Game
         {
             Clear();
         }
-        
 
         public void UpdateLogic()
         {
@@ -95,18 +94,26 @@ namespace GameA.Game
                     _jumpState = EJumpState.Jump1;
                     _jumpTimer = 10;
                 }
-                else if (!GetKeyLastApplied(EInputType.Jump) && _jumpLevel == 0 && IsCharacterAbilityAvailable(ECharacterAbility.DoubleJump))
+                else if (!GetKeyLastApplied(EInputType.Jump) && IsCharacterAbilityAvailable(ECharacterAbility.DoubleJump))
                 {
-                    _jumpLevel = 1;
-                    _player.ExtraSpeed.y = 0;
-                    _player.SpeedY = 150;
-                    _jumpState = EJumpState.Jump2;
-                    _jumpTimer = 15;
-                    _curAppliedInputKeyAry[(int) EInputType.Jump] = false;
-//                    if (_player.WingCount > 0)
-//                    {
-//                        _player.WingCount--;
-//                    }
+                    if (_jumpLevel == 0 || _jumpLevel == 2)
+                    {
+                        if (_player.WingCount > 0)
+                        {
+                            _player.WingCount--;
+                            _jumpLevel = 2;
+                            _player.SpeedY = 120;
+                        }
+                        else
+                        {
+                            _jumpLevel = 1;
+                            _player.SpeedY = 150;
+                            _jumpState = EJumpState.Jump2;
+                        }
+                        _player.ExtraSpeed.y = 0;
+                        _jumpTimer = 15;
+                        _curAppliedInputKeyAry[(int) EInputType.Jump] = false;
+                    }
                 }
             }
             if (_jumpTimer > 0)

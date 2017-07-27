@@ -21,20 +21,17 @@ namespace GameA.Game
     
     public class ActorInputBase
     {
-        protected ActorBase _actor;
-        
-        
         [SerializeField]
         protected ELittleSkillState _littleSkillState;
 
         // 跳跃等级
         [SerializeField]
-        public int _jumpLevel = 0;
+        protected int _jumpLevel = 0;
         // 跳跃状态
-        [SerializeField] public EJumpState _jumpState;
+        [SerializeField] protected EJumpState _jumpState;
 
         [SerializeField]
-        public EClimbState _eClimbState;
+        protected EClimbState _eClimbState;
         // 攀墙跳
         [SerializeField]
         protected bool _climbJump = false;
@@ -84,9 +81,15 @@ namespace GameA.Game
             get { return _jumpState; }
         }
 
-        public ActorInputBase(ActorBase actor)
+        public int JumpLevel
         {
-            _actor = actor;
+            get { return _jumpLevel; }
+        }
+
+        public EClimbState EClimbState
+        {
+            get { return _eClimbState; }
+            set { _eClimbState = value; }
         }
 
         public void OnLand()
@@ -191,6 +194,5 @@ namespace GameA.Game
         {
             return GetKeyDownApplied((EInputType) ((int)EInputType.Skill1 + i));
         }
-
     }
 }
