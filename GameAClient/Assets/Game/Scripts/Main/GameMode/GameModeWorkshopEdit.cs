@@ -180,7 +180,7 @@ namespace GameA.Game
             GM2DRecordData recordData = new GM2DRecordData();
             recordData.Version = GM2DGame.Version;
             recordData.FrameCount = ConstDefineGM2D.FixedFrameCount;
-            recordData.Data.AddRange(PlayMode.Instance.InputDatas);
+            recordData.Data.AddRange(_inputDatas);
             byte[] recordByte = GameMapDataSerializer.Instance.Serialize(recordData);
             byte[] record = null;
             if(recordByte == null)

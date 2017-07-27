@@ -159,7 +159,7 @@ namespace GameA.Game
             GM2DRecordData recordData = new GM2DRecordData ();
             recordData.Version = GM2DGame.Version;
             recordData.FrameCount = ConstDefineGM2D.FixedFrameCount;
-            recordData.Data.AddRange(PlayMode.Instance.InputDatas);
+            recordData.Data.AddRange(_inputDatas);
             recordData.BoostItem = new BoostItemData ();
             recordData.BoostItem.ExtraLife = PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_AddLifeCount1) ? 1 : 0;
             recordData.BoostItem.InvinsibleOnDead = PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_DeadInvincibleCount1) ? 1 : 0;
