@@ -18,8 +18,6 @@ namespace GameA.Game
 {
     public class UnitView : IPoolableObject
     {
-        protected static Vector2 _hidePos = Vector3.one * -5;
-
         protected Transform _trans;
 
 		protected Transform _dirTrans;
@@ -105,7 +103,7 @@ namespace GameA.Game
             _unit = null;
             _isPart = false;
             _trans.SetActiveEx(true);
-            _trans.position = _hidePos;
+            _trans.position = UnitDefine.HidePos;
             _trans.localScale = Vector3.one;
             _trans.localRotation = Quaternion.identity;
             _trans.parent = UnitManager.Instance.GetOriginParent();

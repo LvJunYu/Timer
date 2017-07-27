@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -107,6 +108,9 @@ namespace GameA.Game
         protected UnitView _view;
 
         protected UnitView[] _viewExtras;
+        
+        protected WingView _wingLeft;
+        protected WingView _wingRight;
 
         protected string _assetPath;
 
@@ -610,8 +614,31 @@ namespace GameA.Game
                 }
             }
             UpdateTransPos();
+            GenerateWing();
             SetFacingDir(_curMoveDirection, true);
             return true;
+        }
+
+        private void GenerateWing()
+        {
+            return;
+            if (_curMoveDirection != EMoveDirection.None)
+            {
+                if (_wingLeft == null)
+                {
+                    _wingLeft = PoolFactory<WingView>.Get();
+                    _wingLeft.Init("M1WingLeft");
+                    _wingLeft.Trans.parent = _trans;
+                    _wingLeft.Trans.localPosition = Vector3.forward * 0.01f;
+                }
+                if (_wingRight == null)
+                {
+                    _wingRight = PoolFactory<WingView>.Get();
+                    _wingRight.Init("M1WingRight");
+                    _wingRight.Trans.parent = _trans;
+                    _wingRight.Trans.localPosition = Vector3.forward * -0.01f;
+                }
+            }
         }
 
         internal virtual void OnEdit()
@@ -854,6 +881,7 @@ namespace GameA.Game
             _curMoveDirection = _moveDirection = DataScene2D.Instance.GetUnitExtra(_guid).MoveDirection;
             if (_view != null)
             {
+                GenerateWing();
                 if (IsActor)
                 {
                     SetFacingDir(_curMoveDirection, true);
@@ -862,9 +890,18 @@ namespace GameA.Game
             }
         }
 
+        private void GenerateWing(string path)
+        {
+            Sprite sprite = null;
+            if (!ResourcesManager.Instance.TryGetSprite("M1WingLeft", out sprite))
+            {
+                LogHelper.Error("TryGetSprite failed,M1WingLeft");
+            }
+        }
+
         public bool Equals(UnitBase other)
         {
-            return other.Guid == _guid;
+            return other != null && other.Guid == _guid;
         }
 
         public override string ToString()
@@ -1476,6 +1513,16 @@ namespace GameA.Game
         {
             _view = null;
             _viewExtras = null;
+            if (_wingLeft != null)
+            {
+                PoolFactory<WingView>.Free(_wingLeft);
+                _wingLeft = null;
+            }
+            if (_wingRight != null)
+            {
+                PoolFactory<WingView>.Free(_wingRight);
+                _wingRight = null;
+            }
         }
 
         internal virtual void OnDispose()

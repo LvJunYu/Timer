@@ -77,6 +77,7 @@ namespace GameA.Game
             PoolFactory<BgItem>.Clear();
             PoolFactory<ProjectileWater>.Clear();
             PoolFactory<SpineObject>.Clear();
+            PoolFactory<WingView>.Clear();
 
             CameraManager.Instance.Dispose();
             UnitManager.Instance.Dispose();

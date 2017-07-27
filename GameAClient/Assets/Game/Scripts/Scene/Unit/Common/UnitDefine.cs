@@ -8,11 +8,14 @@
 using System;
 using System.Collections;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
     public class UnitDefine
     {
+        public static Vector2 HidePos = Vector3.one * -5;
+
         public const int ZOffsetBackground = 100;
         public const int ZOffsetFrontest = -100;
 
