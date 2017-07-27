@@ -16,6 +16,11 @@ namespace GameA.Game
 		[ColumnMapping("Name")]
 		public string Name;
 		/// <summary>
+        /// 模型
+        /// </summary>
+		[ColumnMapping("Model")]
+		public string Model;
+		/// <summary>
         /// 生命值
         /// </summary>
 		[ColumnMapping("Hp")]
@@ -65,11 +70,6 @@ namespace GameA.Game
         /// </summary>
 		[ColumnMapping("Icon")]
 		public string Icon;
-		/// <summary>
-        /// 模型
-        /// </summary>
-		[ColumnMapping("Model")]
-		public string Model;
 	}
 
     public class TableEquipmentAsset:BaseTableAsset

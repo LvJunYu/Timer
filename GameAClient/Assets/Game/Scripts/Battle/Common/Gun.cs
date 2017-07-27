@@ -12,28 +12,45 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 10000, Type = typeof(Gun))]
-    public class Gun : RigidbodyUnit
+    public class Gun
     {
         [SerializeField]
-        /// <summary>
-        /// 射击光点和主角脚下中心点的偏移
-        /// </summary>
-        protected IntVec2 _shooterEffectOffset = new IntVec2(240, 320);
+        protected static IntVec2 _shooterEffectOffset = new IntVec2(320, 700);
         protected UnityNativeParticleItem _shooterEffect;
-        protected MainPlayer _mainPlayer;
+        protected PlayerBase _player;
+        protected IntVec2 _curPos;
 
-        protected override bool OnInit()
+        public Gun(PlayerBase player)
         {
-            if (!base.OnInit())
-            {
-                return false;
-            }
-            _mainPlayer = PlayMode.Instance.MainPlayer;
-            _curPos = _mainPlayer.CurMoveDirection == EMoveDirection.Right
-                ? _mainPlayer.CenterDownPos + new IntVec2(-_shooterEffectOffset.x, _shooterEffectOffset.y)
-                : _mainPlayer.CenterDownPos + new IntVec2(_shooterEffectOffset.x - GetColliderSize().x, _shooterEffectOffset.y);
+            _player = player;
+        }
+        
+        internal bool InstantiateView()
+        {
+            //初始化ShooterEffect
+            _shooterEffect = GameParticleManager.Instance.GetUnityNativeParticleItem(ParticleNameConstDefineGM2D.Shooter,_player.Trans,ESortingOrder.Bullet);
+            _shooterEffect.Play();
             return true;
+        }
+
+        public void ChangeView(string model)
+        {
+            if (_shooterEffect != null)
+            {
+                GameParticleManager.FreeParticleItem(_shooterEffect);
+            }
+            _shooterEffect = GameParticleManager.Instance.GetUnityNativeParticleItem(model,_player.Trans,ESortingOrder.Bullet);
+            Play();
+        }
+
+        public void Play()
+        {
+            _curPos = GetDestPos();
+            if (_shooterEffect != null)
+            {
+                _shooterEffect.Play();
+                _shooterEffect.Trans.position = GM2DTools.TileToWorld(_curPos);
+            }
         }
 
         public void Stop()
@@ -44,67 +61,39 @@ namespace GameA.Game
             }
         }
 
-        public void Play()
+        internal void OnObjectDestroy()
         {
-            _curPos = _mainPlayer.CurMoveDirection == EMoveDirection.Right
-                ? _mainPlayer.CenterDownPos + new IntVec2(-_shooterEffectOffset.x, _shooterEffectOffset.y)
-                : _mainPlayer.CenterDownPos +
-                  new IntVec2(_shooterEffectOffset.x - GetColliderSize().x, _shooterEffectOffset.y);
-            SetPos(_curPos);
             if (_shooterEffect != null)
             {
-                _shooterEffect.Play();
+                GameParticleManager.FreeParticleItem(_shooterEffect);
             }
-        }
-
-        internal override bool InstantiateView()
-        {
-            if (!base.InstantiateView())
-            {
-                return false;
-            }
-            //初始化ShooterEffect
-            _shooterEffect = GameParticleManager.Instance.GetUnityNativeParticleItem(ParticleNameConstDefineGM2D.Shooter, _trans);
-            _shooterEffect.Play();
-            return true;
-        }
-
-        internal override void OnObjectDestroy()
-        {
-            base.OnObjectDestroy();
-            FreeEffect(_shooterEffect);
             _shooterEffect = null;
         }
 
-        public override void UpdateLogic()
+        public void UpdateView()
         {
-            if (_isStart && _isAlive && _mainPlayer != null && _mainPlayer.IsAlive)
+            var destPos = GetDestPos();
+            var deltaPos = (destPos - _curPos) / 6;
+            if (deltaPos.x == 0)
             {
-                var destPos = _mainPlayer.CurMoveDirection == EMoveDirection.Right
-                    ? _mainPlayer.CenterDownPos + new IntVec2(-_shooterEffectOffset.x, _shooterEffectOffset.y)
-                    : _mainPlayer.CenterDownPos + new IntVec2(_shooterEffectOffset.x - GetColliderSize().x, _shooterEffectOffset.y);
-                _speed = (destPos - _curPos) / 6;
-                if (_speed.x == 0)
-                {
-                    _speed.x = destPos.x - _curPos.x;
-                }
-                if (_speed.y == 0)
-                {
-                    _speed.y = destPos.y - _curPos.y;
-                }
+                deltaPos.x = destPos.x - _curPos.x;
+            }
+            if (deltaPos.y == 0)
+            {
+                deltaPos.y = destPos.y - _curPos.y;
+            }
+            _curPos += deltaPos;
+            if (_shooterEffect != null)
+            {
+                _shooterEffect.Trans.position = GM2DTools.TileToWorld(_curPos);
             }
         }
-
-        public override void UpdateView(float deltaTime)
+        
+        private IntVec2 GetDestPos()
         {
-            if (_isStart && _isAlive)
-            {
-                _deltaPos = _speed;
-                _curPos += _deltaPos;
-                UpdateCollider(GetColliderPos(_curPos));
-                _curPos = GetPos(_colliderPos);
-                UpdateTransPos();
-            }
+            return _player.CurMoveDirection == EMoveDirection.Right
+                ? _player.CenterDownPos + new IntVec2(-_shooterEffectOffset.x, _shooterEffectOffset.y)
+                : _player.CenterDownPos + new IntVec2(_shooterEffectOffset.x, _shooterEffectOffset.y);
         }
     }
 }

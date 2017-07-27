@@ -72,7 +72,7 @@ namespace GameA.Game
 
         public override IntVec2 FirePos
         {
-            get { return _gun.CurPos; }
+            get { return CenterPos; }
         }
 
         public IntVec2 CameraFollowPos
@@ -107,10 +107,12 @@ namespace GameA.Game
             {
                 _playerInput.Reset();
             }
+            _gun = _gun ?? new Gun(this);
 
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
             _skillCtrl.Clear();
             ChangeWeapon(1);
+            
             _dieTime = 0;
             _box = null;
             ClearView();
@@ -125,6 +127,7 @@ namespace GameA.Game
                 LogHelper.Error("GetEquipment Failed : {0}", id);
                 return false;
             }
+            _gun.ChangeView(tableEquipment.Model);
             _skillCtrl.SetPoint(tableEquipment.Mp,tableEquipment.MpRecover,tableEquipment.Rp,tableEquipment.RpRecover);
             int[] skillIds = new int[3];
             skillIds[0] = 1;
@@ -139,10 +142,7 @@ namespace GameA.Game
         {
             base.OnPlay();
             LogHelper.Debug("{0}, OnPlay", GetType().Name);
-            if (_gun == null)
-            {
-                _gun = PlayMode.Instance.CreateRuntimeUnit(10000, _curPos) as Gun;
-            }
+            _gun.Play();
             AddStates(61);
             _revivePos = _curPos;
             _revivePosStack.Clear();
@@ -632,6 +632,7 @@ namespace GameA.Game
             }
             _reviveEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null, ESortingOrder.LazerEffect));
             _portalEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null, ESortingOrder.LazerEffect));
+            _gun.InstantiateView();
             return true;
         }
 
@@ -644,6 +645,7 @@ namespace GameA.Game
             }
             _reviveEffect.Stop();
             _portalEffect.Stop();
+            _gun.Stop();
         }
 
         internal override void OnObjectDestroy()
@@ -651,6 +653,7 @@ namespace GameA.Game
             base.OnObjectDestroy();
             _reviveEffect.Free();
             _portalEffect.Free();
+            _gun.OnObjectDestroy();
         }
 
         public override void UpdateView(float deltaTime)
@@ -667,6 +670,7 @@ namespace GameA.Game
                 UpdateCollider(GetColliderPos(_curPos));
                 _curPos = GetPos(_colliderPos);
                 UpdateTransPos();
+                _gun.UpdateView();
             }
             if (!_isAlive)
             {
