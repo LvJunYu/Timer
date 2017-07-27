@@ -17,42 +17,42 @@ namespace GameA.Game
         public Transform Hpfront;
         public Transform Mpfront;
 
-        private float hpValue=1;
-        private float mpValue=1;
+        private float _hpValue=1;
+        private float _mpValue=1;
 
         public float HpValue
         {
-            get { return hpValue; }
+            get { return _hpValue; }
             set
             {
-                hpValue = value;
+                _hpValue = value;
 
-                Hpfront.localScale = new Vector3(hpValue, 1);
+                Hpfront.localScale = new Vector3(_hpValue, 1);
 
-                Hpfront.localPosition = new Vector3((1 - hpValue) * -0.8f, 0);
+                Hpfront.localPosition = new Vector3((1 - _hpValue) * -0.8f, 0);
             }
         }
 
         public float MpValue
         {
-            get { return mpValue; }
+            get { return _mpValue; }
             set
             {
-                mpValue = value;
+                _mpValue = value;
 
-                Mpfront.localScale = new Vector3(mpValue, 1);
+                Mpfront.localScale = new Vector3(_mpValue, 1);
 
-                Mpfront.localPosition = new Vector3((1 - mpValue) * -0.8f, 0);
+                Mpfront.localPosition = new Vector3((1 - _mpValue) * -0.8f, 0);
             }
         }
         private void OnHPChanged(int currentValue, int maxValue)
         {
-            HpValue = currentValue/ maxValue;  
+            HpValue = currentValue/maxValue;  
         }
 
         private void OnMPChanged(int currentValue, int maxValue)
         {
-            MpValue = currentValue / maxValue;
+            MpValue = currentValue/maxValue;
         }
 
         void Start()
