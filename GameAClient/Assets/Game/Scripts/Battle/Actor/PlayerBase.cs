@@ -154,6 +154,10 @@ namespace GameA.Game
             {
                 Life = PlayMode.Instance.SceneState.Life;
             }
+            if (_trans != null)
+            {
+                GameParticleManager.Instance.Emit("M1EffectSpawn", _trans.position);
+            }
         }
 
         public override void CheckStart()
