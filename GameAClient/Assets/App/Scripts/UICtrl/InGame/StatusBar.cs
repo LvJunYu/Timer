@@ -10,36 +10,39 @@ namespace GameA.Game
 
     public class StatusBar: MonoBehaviour
     {
-
+        /// <summary>
+        ///获取目标物体的高度 
+        /// </summary>
+        
         public Transform Hpfront;
         public Transform Mpfront;
 
-        private float Hp_value=1;
-        private float Mp_value=1;
+        private float hpValue=1;
+        private float mpValue=1;
 
         public float HpValue
         {
-            get { return Hp_value; }
+            get { return hpValue; }
             set
             {
-                Hp_value = value;
+                hpValue = value;
 
-                Hpfront.localScale = new Vector3(Hp_value, 1);
+                Hpfront.localScale = new Vector3(hpValue, 1);
 
-                Hpfront.localPosition = new Vector3((1 - Hp_value) * -0.8f, 0);
+                Hpfront.localPosition = new Vector3((1 - hpValue) * -0.8f, 0);
             }
         }
 
         public float MpValue
         {
-            get { return Mp_value; }
+            get { return mpValue; }
             set
             {
-                Mp_value = value;
+                mpValue = value;
 
-                Mpfront.localScale = new Vector3(Mp_value, 1);
+                Mpfront.localScale = new Vector3(mpValue, 1);
 
-                Mpfront.localPosition = new Vector3((1 - Mp_value) * -0.8f, 0);
+                Mpfront.localPosition = new Vector3((1 - mpValue) * -0.8f, 0);
             }
         }
         private void OnHPChanged(int currentValue, int maxValue)
@@ -54,6 +57,7 @@ namespace GameA.Game
 
         void Start()
         {
+            //Debug.Log("_______Hp_Mp__");
             Messenger<int, int>.AddListener(EMessengerType.OnHPChanged, OnHPChanged);
             Messenger<int, int>.AddListener(EMessengerType.OnMPChanged, OnMPChanged);
         }
