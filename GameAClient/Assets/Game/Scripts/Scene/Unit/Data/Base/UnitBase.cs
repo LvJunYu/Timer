@@ -892,7 +892,7 @@ namespace GameA.Game
 
         public bool Equals(UnitBase other)
         {
-            return other != null && other.Guid == _guid;
+            return other == this;
         }
 
         public override string ToString()
