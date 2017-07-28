@@ -14,7 +14,7 @@ namespace GameA.Game
 {
 
     [Serializable]
-    public class PlayerInputBase : ActorInputBase
+    public class PlayerInputBase : InputBase
     {
         protected PlayerBase _player;
 

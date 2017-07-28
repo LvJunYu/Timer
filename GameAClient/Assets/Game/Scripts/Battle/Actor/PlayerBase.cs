@@ -20,9 +20,6 @@ namespace GameA.Game
 
         protected long _playerId;
 
-        [SerializeField]
-        protected PlayerInputBase _playerInput;
-
         protected Gun _gun;
 
         [SerializeField]
@@ -116,6 +113,11 @@ namespace GameA.Game
             _dieTime = 0;
             _box = null;
             ClearView();
+
+            _checkClimb = true;
+            _checkGround = true;
+            _updateSpeedY = true;
+            _maxSpeedX = BattleDefine.MaxSpeedX;
             base.Clear();
         }
 
@@ -168,7 +170,6 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            base.UpdateLogic();
             if (_isAlive && _isStart && !_isFreezed)
             {
                 if (_attackedTimer > 0)
@@ -180,184 +181,29 @@ namespace GameA.Game
                     _playerInput.UpdateLogic();
                     _skillCtrl.UpdateLogic();
                 }
-                CheckGround();
-                CheckClimb();
-                UpdateSpeedY();
             }
+            base.UpdateLogic();
         }
 
-        protected virtual void CheckGround()
+        protected override void CalculateMotor()
         {
-            bool air = false;
-            int friction = 0;
-//            if (_playerInput._jumpState == EJumpState.Fall)
-//            {
-//                air = true;
-//            }
-            if (SpeedY != 0)
+            _motorAcc = 0;
+            if (_playerInput.RightInput)
             {
-                air = true;
+                _motorAcc = _onIce ? 1 : 10;
             }
-            if (air)
+            if (_playerInput.LeftInput)
             {
-                friction = MaxFriction;
+                _motorAcc = _onIce ? -1 : -10;
             }
-            else
-            {
-                _onClay = false;
-                _onIce = false;
-                bool downExist = false;
-                int deltaX = int.MaxValue;
-                List<UnitBase> units = EnvManager.RetriveDownUnits(this);
-                for (int i = 0; i < units.Count; i++)
-                {
-                    UnitBase unit = units[i];
-                    int ymin = 0;
-                    if (unit != null && unit.IsAlive && CheckOnFloor(unit) &&
-                        unit.OnUpHit(this, ref ymin, true))
-                    {
-                        downExist = true;
-                        _grounded = true;
-                        _attackedTimer = 0;
-                        _downUnits.Add(unit);
-                        if (unit.Friction > friction)
-                        {
-                            friction = unit.Friction;
-                        }
-                        var edge = unit.GetUpEdge(this);
-                        if (unit.StepOnClay() || edge.ESkillType == ESkillType.Clay)
-                        {
-                            _onClay = true;
-                        }
-                        else if (unit.StepOnIce() || edge.ESkillType == ESkillType.Ice)
-                        {
-                            _onIce = true;
-                        }
-                        var delta = Mathf.Abs(CenterDownPos.x - unit.CenterDownPos.x);
-                        if (deltaX > delta)
-                        {
-                            deltaX = delta;
-                            _downUnit = unit;
-                        }
-                    }
-                }
-                if (!downExist)
-                {
-                    air = true;
-                }
-            }
-            //起跳瞬间！
-            if (air && _grounded)
-            {
-                Speed += _lastExtraDeltaPos;
-                _grounded = false;
-                if (SpeedY > 0)
-                {
-                    OnJump();
-                }
-            }
-            if (!_lastGrounded && _grounded)
-            {
-                OnLand();
-            }
-            _curMaxSpeedX = BattleDefine.MaxSpeedX;
-            float ratio = 1;
+            _speedRatio = 1;
             if (IsHoldingBox())
             {
-                ratio *= SpeedHoldingBoxRatio;
+                _speedRatio *= SpeedHoldingBoxRatio;
             }
             if (_onClay)
             {
-                ratio *= SpeedClayRatio;
-            }
-            _curMaxSpeedX = (int)(_curMaxSpeedX * ratio);
-            if (air || _grounded)
-            {
-                if (_curBanInputTime <= 0)
-                {
-                    int motorAcc = 0;
-                    int speedAcc;
-                    if (_playerInput.RightInput)
-                    {
-                        motorAcc = _onIce ? 1 : 10;
-                    }
-                    if (_playerInput.LeftInput)
-                    {
-                        motorAcc = _onIce ? -1 : -10;
-                    }
-                    speedAcc = motorAcc + _fanForce.x;
-                    if (speedAcc != 0)
-                    {
-                        //在空中和冰上 同方向的时候
-                        if (_onIce || air)
-                        {
-                            if ((speedAcc > 0 && _fanForce.x > 0) || (speedAcc < 0 && _fanForce.x < 0))
-                            {
-                                speedAcc = 1;
-                            }
-                        }
-                        else
-                        {
-                            SpeedX -= _fanForce.x;
-                        }
-                        SpeedX = Util.ConstantLerp(SpeedX, speedAcc > 0 ? _curMaxSpeedX : -_curMaxSpeedX, Mathf.Abs(speedAcc));
-                    }
-                    else if (_grounded || _fanForce.y != 0)
-                    {
-                        if (_fanForce.x == 0)
-                        {
-                            if (_onIce)
-                            {
-                                friction = 1;
-                            }
-                        }
-                        SpeedX = Util.ConstantLerp(SpeedX, 0, friction);
-                    }
-                }
-            }
-        }
-
-        protected virtual void CheckClimb()
-        {
-            _playerInput.EClimbState = EClimbState.None;
-            if (!_grounded && SpeedY < 0)
-            {
-                if (_playerInput.LeftInput && CheckLeftFloor())
-                {
-                    _playerInput.EClimbState = EClimbState.Left;
-                }
-                else if (_playerInput.RightInput && CheckRightFloor())
-                {
-                    _playerInput.EClimbState = EClimbState.Right;
-                }
-            }
-        }
-
-        protected virtual void UpdateSpeedY()
-        {
-            SpeedY += _fanForce.y;
-            _fanForce.y = 0;
-            if (!_grounded)
-            {
-                if (_playerInput.JumpLevel == 2)
-                {
-                    SpeedY = Util.ConstantLerp(SpeedY, -60, 6);
-                }
-                else if (_playerInput.EClimbState > EClimbState.None)
-                {
-                    SpeedY = Util.ConstantLerp(SpeedY, -50, 6);
-                }
-                else
-                {
-                    if (SpeedY > 0)
-                    {
-                        SpeedY = Util.ConstantLerp(SpeedY, 0, 12);
-                    }
-                    else
-                    {
-                        SpeedY = Util.ConstantLerp(SpeedY, -120, 8);
-                    }
-                }
+                _speedRatio *= SpeedClayRatio;
             }
         }
 
@@ -800,7 +646,7 @@ namespace GameA.Game
             _lastGrounded = _grounded;
         }
 
-        protected void OnJump()
+        protected override void OnJump()
         {
             if (!GameAudioManager.Instance.IsPlaying(AudioNameConstDefineGM2D.GameAudioSpingEffect))
             {
@@ -816,7 +662,7 @@ namespace GameA.Game
             }
         }
 
-        protected void OnLand()
+        protected override void OnLand()
         {
             _grounded = true;
             _playerInput.OnLand();

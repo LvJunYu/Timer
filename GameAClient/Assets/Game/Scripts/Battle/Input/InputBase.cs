@@ -19,7 +19,7 @@ namespace GameA.Game
         Max
     }
     
-    public class ActorInputBase
+    public class InputBase
     {
         [SerializeField]
         protected ELittleSkillState _littleSkillState;

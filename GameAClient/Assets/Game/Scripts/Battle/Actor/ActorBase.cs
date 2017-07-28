@@ -23,7 +23,7 @@ namespace GameA.Game
         OutofMap,
     }
 
-    public class ActorBase : RigidbodyUnit
+    public class ActorBase : DynamicRigidbody
     {
         protected List<State> _currentStates = new List<State>();
         private Comparison<State> _comparisonState = SortState;
@@ -84,6 +84,7 @@ namespace GameA.Game
                     _currentStates[i].UpdateLogic();
                 }
             }
+            base.UpdateLogic();
         }
         
         public override void AddStates(params int[] ids)

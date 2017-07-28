@@ -8,7 +8,6 @@ namespace GameA.Game
 {
     public class LocalPlayerInput : PlayerInputBase
     {
-        
         #region 检查输入
         
         [SerializeField]
