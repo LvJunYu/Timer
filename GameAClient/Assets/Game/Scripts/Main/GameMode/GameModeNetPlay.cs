@@ -69,14 +69,17 @@ namespace GameA.Game
                 {
                     break;
                 }
-                LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.PlayerInput as LocalPlayerInput;
-                if (localPlayerInput != null)
+                if (null != PlayerManager.Instance.MainPlayer)
                 {
-                    localPlayerInput.ProcessCheckInput();
-                    List<int> curInput = localPlayerInput.CurCheckInputChangeList;
-                    if (curInput.Count > 0)
+                    LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.PlayerInput as LocalPlayerInput;
+                    if (localPlayerInput != null)
                     {
-                        SendInputDatas(GameRun.Instance.LogicFrameCnt, curInput);
+                        localPlayerInput.ProcessCheckInput();
+                        List<int> curInput = localPlayerInput.CurCheckInputChangeList;
+                        if (curInput.Count > 0)
+                        {
+                            SendInputDatas(GameRun.Instance.LogicFrameCnt, curInput);
+                        }
                     }
                 }
                 

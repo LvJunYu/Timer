@@ -48,23 +48,22 @@ namespace GameA.Game
         public virtual void Update()
         {
             GameRun.Instance.Update();
-            if (PlayerManager.Instance.MainPlayer == null)
-            {
-                return;
-            }
             if (GameRun.Instance.LogicTimeSinceGameStarted < GameRun.Instance.GameTimeSinceGameStarted)
             {
-                LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.PlayerInput as LocalPlayerInput;
-                if (localPlayerInput != null)
+                if (null != PlayerManager.Instance.MainPlayer)
                 {
-                    localPlayerInput.ProcessCheckInput();
-                    List<int> inputChangeList = localPlayerInput.CurCheckInputChangeList;
-                    for (int i = 0; i < inputChangeList.Count; i++)
+                    LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.PlayerInput as LocalPlayerInput;
+                    if (localPlayerInput != null)
                     {
-                        _inputDatas.Add(GameRun.Instance.LogicFrameCnt);
-                        _inputDatas.Add(inputChangeList[i]);
+                        localPlayerInput.ProcessCheckInput();
+                        List<int> inputChangeList = localPlayerInput.CurCheckInputChangeList;
+                        for (int i = 0; i < inputChangeList.Count; i++)
+                        {
+                            _inputDatas.Add(GameRun.Instance.LogicFrameCnt);
+                            _inputDatas.Add(inputChangeList[i]);
+                        }
+                        localPlayerInput.ApplyInputData(inputChangeList);
                     }
-                    localPlayerInput.ApplyInputData(inputChangeList);
                 }
                 GameRun.Instance.UpdateLogic(ConstDefineGM2D.FixedDeltaTime);
             }
