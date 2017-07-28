@@ -179,6 +179,38 @@ namespace GameA.Game
             SocialGUIManager.Instance.CloseUI<UICtrlEditSwitch> ();
         }
 
+        public void OnEnterDragMagicMode()
+        {
+            List<IntVec3> allEditableGUIDs = new List<IntVec3> ();
+            var itor = ColliderScene2D.Instance.Units.GetEnumerator();
+            while (itor.MoveNext()) {
+                if (null != itor.Current.Value && null != itor.Current.Value.View) {
+                    if (!itor.Current.Value.TableUnit.CanAddMagic)
+                    {
+                        itor.Current.Value.View.SetRendererColor(SwitchModeUnitMaskColor);
+                    }
+                    else
+                    {
+                        itor.Current.Value.View.SetRendererColor (Color.white);
+                    }
+                }
+            }
+        }
+
+        public void OnExitDragMagicMode()
+        {
+            List<IntVec3> allEditableGUIDs = new List<IntVec3> ();
+            var itor = ColliderScene2D.Instance.Units.GetEnumerator();
+            while (itor.MoveNext()) {
+                if (null != itor.Current.Value && null != itor.Current.Value.View) {
+                    if (null != itor.Current.Value && null != itor.Current.Value.View)
+                    {
+                        itor.Current.Value.View.SetRendererColor (Color.white);
+                    }
+                }
+            }
+        }
+        
 
         private UnityNativeParticleItem GetUnusedMaskEffect (int idx) { 
             if (_unitMaskEffectCache.Count <= idx) {
