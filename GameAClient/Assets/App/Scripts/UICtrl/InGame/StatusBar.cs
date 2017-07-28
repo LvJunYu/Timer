@@ -11,12 +11,16 @@ namespace GameA.Game
     public class StatusBar: MonoBehaviour
     {
         /// <summary>
-        ///获取目标物体的高度 
+        ///目标物体的高度 
         /// </summary>
-        
+        private float _targetHeight;
+        /// <summary>
+        ///蓝条能量数 
+        /// </summary>
+        private float _energyGrid;
         public Transform Hpfront;
         public Transform Mpfront;
-
+        public Transform SuspensionPoint;
         private float _hpValue=1;
         private float _mpValue=1;
 
@@ -60,6 +64,45 @@ namespace GameA.Game
             //Debug.Log("_______Hp_Mp__");
             Messenger<int, int>.AddListener(EMessengerType.OnHPChanged, OnHPChanged);
             Messenger<int, int>.AddListener(EMessengerType.OnMPChanged, OnMPChanged);
+        }
+
+        public void SetMp(bool mpVisible)
+        {
+            Mpfront.gameObject.SetActiveEx(mpVisible);
+        }
+
+        public void SetHp(bool hpVisible)
+        {
+            Mpfront.gameObject.SetActiveEx(hpVisible);
+        }
+
+        /// <summary>
+        ///能量条闪烁 
+        /// </summary>
+        public void EnergyFlash()
+        {
+            
+        }
+
+        /// <summary>
+        ///能量减少 
+        /// </summary>
+        public void UseEnergy(int consumptionBySkill)
+        {
+
+        }
+
+        /// <summary>
+        ///能量回复 
+        /// </summary>
+        public void EnergyRecover(float percentagePerFrame)
+        {
+
+        }
+
+        public void SetBarPosition(float Hight)
+        {
+            SuspensionPoint.localPosition= new Vector3(0, Hight, 0);
         }
 
 

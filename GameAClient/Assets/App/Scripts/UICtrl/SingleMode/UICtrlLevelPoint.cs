@@ -30,7 +30,7 @@ namespace GameA
         public GameObject StarDark3;
 
 
-		public Text LevelTitle;
+		//public Text LevelTitle;
 
         public Text StartText;
 
@@ -121,20 +121,20 @@ namespace GameA
 						Active.SetActive (false);
 						Disactive.SetActive (true);
 					}
-//				}
+//				}0     /9
                 if (AppData.Instance.AdventureData.UserData.SectionList.Count > (chapterId - 1)) {
-                    StartText.text = string.Format ("{0} / {1}",
+                    StartText.text = string.Format ("{0}      /{1}",
                         Mathf.Clamp (AppData.Instance.AdventureData.UserData.SectionList [chapterId - 1].GotStarCnt, 0, 9 * tableLevel.Type),
                         9 * tableLevel.Type
                     );
                 } else {
-                    StartText.text = string.Format ("0 / {0}",
+                    StartText.text = string.Format ("0      /{0}",
                         9 * tableLevel.Type
                     );
                 }
 			}
-			LevelTitle.text = tableLevel.Name;
-		}
+            //LevelTitle.text = tableLevel.Name;
+        }
 
         private bool IsCurrentLevel ()
         {
