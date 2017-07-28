@@ -806,6 +806,10 @@ namespace GameA.Game
         {
         }
         
+        internal virtual void InSaw()
+        {
+        }
+        
         internal virtual void InFan(UnitBase fanUnit, IntVec2 force)
         {
         }
@@ -1581,6 +1585,11 @@ namespace GameA.Game
         {
             state = null;
             return false;
+        }
+
+        public virtual bool ChangeWeapon(int id)
+        {
+            return true;
         }
 
         #endregion

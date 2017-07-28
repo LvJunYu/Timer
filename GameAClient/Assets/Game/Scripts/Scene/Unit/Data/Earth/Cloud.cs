@@ -22,6 +22,8 @@ namespace GameA.Game
             ResetCloud();
             _trigger = false;
             _timer = 0;
+            _canMagicCross = true;
+            _canFanCross = true;
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)

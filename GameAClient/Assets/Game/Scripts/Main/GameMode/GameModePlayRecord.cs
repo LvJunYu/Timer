@@ -38,22 +38,21 @@ namespace GameA.Game
         public override void Update()
         {
             GameRun.Instance.Update();
-            if (PlayerManager.Instance.MainPlayer == null)
-            {
-                return;
-            }
             while (GameRun.Instance.LogicTimeSinceGameStarted < GameRun.Instance.GameTimeSinceGameStarted)
             {
-                LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.PlayerInput as LocalPlayerInput;
-                if (localPlayerInput != null)
+                if (null != PlayerManager.Instance.MainPlayer)
                 {
-                    localPlayerInput.PrepareForApplyInput();
-                    while (_inputDataReadInx < _inputDatas.Count-1
-                           && _inputDatas[_inputDataReadInx] == GameRun.Instance.LogicFrameCnt)
+                    LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.PlayerInput as LocalPlayerInput;
+                    if (localPlayerInput != null)
                     {
-                        _inputDataReadInx++;
-                        localPlayerInput.ApplyKeyChangeCode(_inputDatas[_inputDataReadInx]);
-                        _inputDataReadInx++;
+                        localPlayerInput.PrepareForApplyInput();
+                        while (_inputDataReadInx < _inputDatas.Count-1
+                               && _inputDatas[_inputDataReadInx] == GameRun.Instance.LogicFrameCnt)
+                        {
+                            _inputDataReadInx++;
+                            localPlayerInput.ApplyKeyChangeCode(_inputDatas[_inputDataReadInx]);
+                            _inputDataReadInx++;
+                        }
                     }
                 }
                 GameRun.Instance.UpdateLogic(ConstDefineGM2D.FixedDeltaTime);

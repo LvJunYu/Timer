@@ -20,12 +20,14 @@ namespace GameA.Game
         Max
     }
     
-    public enum EEnergyType
+    public enum EWeaponType
     {
+        None,
         Fire,
         Ice,
-        Clay,
         Jelly,
+        Clay,
+        IceSword,
         Max
     }
 

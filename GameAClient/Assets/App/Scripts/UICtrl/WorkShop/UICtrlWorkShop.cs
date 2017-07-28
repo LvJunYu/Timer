@@ -71,15 +71,6 @@ namespace GameA
             RefreshView();
         }
 
-        protected override void OnClose()
-        {
-            base.OnClose();
-//            if(LocalUser.Instance.Account.HasLogin)
-//            {
-//                _cachedView.SoyPersonalProjectList.OnClose();
-//            }
-        }
-
         protected override void InitEventListener()
         {
             base.InitEventListener();
@@ -130,9 +121,14 @@ namespace GameA
                         _curSelectedPrivateProject.Content.Summary,
                         null,
                         null,
-                        0,
                         _curSelectedPrivateProject.Content.PassFlag,
-                        _curSelectedPrivateProject.Content.RecordUsedTime,
+                        _curSelectedPrivateProject.Content.PassFlag,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
                         null,
                         _curSelectedPrivateProject.Content.TimeLimit,
                         _curSelectedPrivateProject.Content.WinCondition,
@@ -152,9 +148,14 @@ namespace GameA
                                 project.Summary,
                                 null,
                                 null,
-                                0,
                                 project.PassFlag,
-                                project.RecordUsedTime,
+                                project.PassFlag,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
                                 null,
                                 project.TimeLimit,
                                 project.WinCondition,

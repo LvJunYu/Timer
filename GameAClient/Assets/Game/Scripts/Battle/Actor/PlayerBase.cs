@@ -23,7 +23,6 @@ namespace GameA.Game
         [SerializeField]
         protected PlayerInputBase _playerInput;
 
-        protected SkillCtrl _skillCtrl;
         protected Gun _gun;
 
         [SerializeField]
@@ -73,7 +72,7 @@ namespace GameA.Game
 
         public override IntVec2 FirePos
         {
-            get { return _gun.CurPos; }
+            get { return CenterPos; }
         }
 
         public IntVec2 CameraFollowPos
@@ -108,6 +107,7 @@ namespace GameA.Game
             {
                 _playerInput.Reset();
             }
+            _gun = _gun ?? new Gun(this);
 
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
             _skillCtrl.Clear();
@@ -119,7 +119,7 @@ namespace GameA.Game
             base.Clear();
         }
 
-        public bool ChangeWeapon(int id)
+        public override bool ChangeWeapon(int id)
         {
             var tableEquipment = TableManager.Instance.GetEquipment(id);
             if (tableEquipment == null)
@@ -127,6 +127,7 @@ namespace GameA.Game
                 LogHelper.Error("GetEquipment Failed : {0}", id);
                 return false;
             }
+            _gun.ChangeView(tableEquipment.Model);
             _skillCtrl.SetPoint(tableEquipment.Mp,tableEquipment.MpRecover,tableEquipment.Rp,tableEquipment.RpRecover);
             int[] skillIds = new int[3];
             skillIds[0] = 1;
@@ -141,10 +142,7 @@ namespace GameA.Game
         {
             base.OnPlay();
             LogHelper.Debug("{0}, OnPlay", GetType().Name);
-            if (_gun == null)
-            {
-                _gun = PlayMode.Instance.CreateRuntimeUnit(10000, _curPos) as Gun;
-            }
+            _gun.Play();
             AddStates(61);
             _revivePos = _curPos;
             _revivePosStack.Clear();
@@ -155,6 +153,10 @@ namespace GameA.Game
             else
             {
                 Life = PlayMode.Instance.SceneState.Life;
+            }
+            if (_trans != null)
+            {
+                GameParticleManager.Instance.Emit("M1EffectSpawn", _trans.position);
             }
         }
 
@@ -498,6 +500,7 @@ namespace GameA.Game
         {
             LogHelper.Debug("{0}, OnRevive", GetType().Name);
             _eUnitState = EUnitState.Reviving;
+            _trans.eulerAngles = new Vector3(90, 0, 0);
             _reviveEffect.Play(_trans.position + Vector3.up * 0.5f,
                                 GM2DTools.TileToWorld(_revivePos), 20, () =>
                                 {
@@ -629,6 +632,7 @@ namespace GameA.Game
             }
             _reviveEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null, ESortingOrder.LazerEffect));
             _portalEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null, ESortingOrder.LazerEffect));
+            _gun.InstantiateView();
             return true;
         }
 
@@ -641,6 +645,7 @@ namespace GameA.Game
             }
             _reviveEffect.Stop();
             _portalEffect.Stop();
+            _gun.Stop();
         }
 
         internal override void OnObjectDestroy()
@@ -648,6 +653,7 @@ namespace GameA.Game
             base.OnObjectDestroy();
             _reviveEffect.Free();
             _portalEffect.Free();
+            _gun.OnObjectDestroy();
         }
 
         public override void UpdateView(float deltaTime)
@@ -664,6 +670,7 @@ namespace GameA.Game
                 UpdateCollider(GetColliderPos(_curPos));
                 _curPos = GetPos(_colliderPos);
                 UpdateTransPos();
+                _gun.UpdateView();
             }
             if (!_isAlive)
             {

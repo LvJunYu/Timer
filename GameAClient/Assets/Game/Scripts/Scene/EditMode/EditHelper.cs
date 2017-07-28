@@ -335,6 +335,15 @@ namespace GameA.Game
                     DataScene2D.Instance.ProcessUnitExtra(unitDesc.Guid, unitExtra);
                 }
             }
+            if (UnitDefine.IsBindWeapon(tableUnit.Id))
+            {
+                UnitExtra unitExtra;
+                if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
+                {
+                    unitExtra.UnitValue = 1;
+                    DataScene2D.Instance.ProcessUnitExtra(unitDesc.Guid, unitExtra);
+                }
+            }
         }
     }
 }

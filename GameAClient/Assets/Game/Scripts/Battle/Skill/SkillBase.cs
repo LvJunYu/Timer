@@ -196,7 +196,7 @@ namespace GameA.Game
                     break;
                 case EEffcetMode.TargetCircle:
                     {
-                        _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]) + 1;
+                        _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
                         units = ColliderScene2D.CircleCastAllReturnUnits(projectile.CenterPos, _radius, JoyPhysics2D.GetColliderLayerMask(projectile.DynamicCollider.Layer));
                     }
                     break;
@@ -208,7 +208,7 @@ namespace GameA.Game
                     break;
                 case EEffcetMode.SelfCircle:
                 {
-                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]) + 1;
+                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
                     units = ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, JoyPhysics2D.GetColliderLayerMask(projectile.DynamicCollider.Layer));
                 }
                     break;

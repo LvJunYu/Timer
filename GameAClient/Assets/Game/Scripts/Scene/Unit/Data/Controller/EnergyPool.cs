@@ -21,15 +21,6 @@ namespace GameA.Game
         protected UnityNativeParticleItem _efffect;
         protected int _weaponId;
 
-        protected override bool OnInit()
-        {
-            if (!base.OnInit())
-            {
-                return false;
-            }
-            return true;
-        }
-
         internal override bool InstantiateView()
         {
             if (!base.InstantiateView())
@@ -42,6 +33,7 @@ namespace GameA.Game
 
         protected override void Clear()
         {
+            _timer = 0;
             if (_energyPoolCtrl != null)
             {
                 _energyPoolCtrl.LiquidVolume = 1;
@@ -69,21 +61,6 @@ namespace GameA.Game
             _efffect = null;
             _energyPoolCtrl = null;
             string effectName = "M1EffectEnergyFire";
-//            switch (_eSkillType)
-//            {
-//                case EEnergyType.Fire:
-//                    effectName = "M1EffectEnergyFire";
-//                    break;
-//                case EEnergyType.Ice:
-//                    effectName = "M1EffectEnergyIce";
-//                    break;
-//                case EEnergyType.Jelly:
-//                    effectName = "M1EffectEnergyJelly";
-//                    break;
-//                case EEnergyType.Clay:
-//                    effectName = "M1EffectEnergyClay";
-//                    break;
-//            }
             if (!string.IsNullOrEmpty(effectName))
             {
                 _efffect = GameParticleManager.Instance.GetUnityNativeParticleItem(effectName, _trans);
@@ -98,51 +75,29 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.SkillCtrl != null)
+            if (other.IsAlive)
             {
-//                OnTrigger(other);
+                if (_timer == 0)
+                {
+                    _timer = 200;
+                    LogHelper.Debug(_weaponId+"~~~~~~~~~~~~~~~");
+                    other.ChangeWeapon(_weaponId);
+                }
             }
             return base.OnUpHit(other, ref y, checkOnly);
         }
 
-//        protected void OnTrigger(UnitBase other)
-//        {
-            
-//            switch (_eSkillType)
-//            {
-//                case ESkillType.Fire:
-//                    other.SkillCtrl.ChangeSkill<SkillFire>(0);
-//                    break;
-//                case ESkillType.Ice:
-//                    other.SkillCtrl.ChangeSkill<SkillIce>(0);
-//                    break;
-//                case ESkillType.Jelly:
-//                    other.SkillCtrl.ChangeSkill<SkillJelly>(0);
-//                    break;
-//                case ESkillType.Clay:
-//                    other.SkillCtrl.ChangeSkill<SkillClay>(0);
-//                    break;
-//            }
-//        }
-
-//        public override void UpdateLogic()
-//        {
-//            base.UpdateLogic();
-//            
-//            _currentMp = Util.ConstantLerp(_currentMp, _totalMp, _mpSpeed);
-//            if (_energyPoolCtrl != null)
-//            {
-//                _energyPoolCtrl.LiquidVolume = GetProcess();
-//            }
-//        }
-//
-//        private float GetProcess()
-//        {
-//            if (_totalMp <= 0)
-//            {
-//                return 0;
-//            }
-//            return (float)_currentMp / _totalMp;
-//        }
+        public override void UpdateLogic()
+        {
+            base.UpdateLogic();
+            if (_timer > 0)
+            {
+                _timer--;
+            }
+            if (_energyPoolCtrl != null)
+            {
+                _energyPoolCtrl.LiquidVolume = (float)(200-_timer)/200;
+            }
+        }
     }
 }

@@ -16,14 +16,10 @@ namespace GameA.Game
     public enum EDieType
     {
         None,
-
-        /// <summary>
-        /// 被机关之类的弄死
-        /// </summary>
-        Normal,
         Lazer,
         Water,
         Fire,
+        Saw,
         OutofMap,
     }
 
@@ -41,6 +37,8 @@ namespace GameA.Game
         protected bool _hasWaterCheckedInFrame;
         
         protected int _curMaxSpeedX;
+        
+        protected SkillCtrl _skillCtrl;
 
         public int AttackedTimer
         {
@@ -247,7 +245,49 @@ namespace GameA.Game
                 _animation.PlayOnce("DeathLazer");
             }
         }
-
+        
+        internal override void InSaw()
+        {
+            if (!_isAlive || IsInvincible)
+            {
+                return;
+            }
+            _eDieType = EDieType.Saw;
+            OnDead();
+            if (_animation != null)
+            {
+                _animation.PlayOnce("OnSawStart");
+            }
+        }
+   
+        internal override void InWater()
+        {
+            //每一帧只检测一个水。
+            if (_hasWaterCheckedInFrame)
+            {
+                return;
+            }
+            _hasWaterCheckedInFrame = true;
+            if (HasStateType(EStateType.Fire))
+            {
+                //跳出水里
+                Speed = IntVec2.zero;
+                ExtraSpeed.y = 240;
+                RemoveStateByType(EStateType.Fire);
+                return;
+            }
+            if (!_isAlive || IsInvincible)
+            {
+                return;
+            }
+            _eDieType = EDieType.Water;
+            OnDead();
+            if (_animation != null)
+            {
+                _animation.PlayOnce("DeathWater");
+            }
+        }
+        
         internal override void InFan(UnitBase fanUnit, IntVec2 force)
         {
             if (_fanForces.ContainsKey(fanUnit.Guid))
@@ -281,33 +321,6 @@ namespace GameA.Game
             }
         }
 
-        internal override void InWater()
-        {
-            //每一帧只检测一个水。
-            if (_hasWaterCheckedInFrame)
-            {
-                return;
-            }
-            _hasWaterCheckedInFrame = true;
-            if (HasStateType(EStateType.Fire))
-            {
-                //跳出水里
-                Speed = IntVec2.zero;
-                ExtraSpeed.y = 240;
-                RemoveStateByType(EStateType.Fire);
-                return;
-            }
-            if (!_isAlive || IsInvincible)
-            {
-                return;
-            }
-            _eDieType = EDieType.Water;
-            OnDead();
-            if (_animation != null)
-            {
-                _animation.PlayOnce("DeathWater");
-            }
-        }
 
         protected override bool CheckOutOfMap()
         {

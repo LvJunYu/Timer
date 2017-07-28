@@ -4,17 +4,16 @@
 ** Date : 1/4/2017 7:30 PM
 ** Summary : ProjectPlayRecord.cs
 ***********************************************************************/
+
 using System;
-using SoyEngine.Proto;
 using SoyEngine;
-using System.Collections.Generic;
-using UnityEngine;
+using SoyEngine.Proto;
 
 namespace GameA
 {
 
-	public partial class Record : SyncronisticData
-    {
+	public partial class Record
+	{
         public byte[] RecordData
         {
             get

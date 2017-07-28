@@ -100,7 +100,7 @@ namespace GameA
 		/// 请求进入冒险模式关卡
 		/// </summary>
 		/// <param name="sectionId">章节id</param>
-		/// <param name="levelId">关卡id</param>
+		/// <param name="levelIdx">关卡id</param>
 		/// <param name="type">关卡类型</param>
 		/// <param name="successCallback">Success callback.</param>
 		/// <param name="failedCallback">Failed callback.</param>
@@ -142,8 +142,8 @@ namespace GameA
                     failedCallback.Invoke (ENetResultCode.NR_None);
                 }
                 return;
-            };
-            project.SectionId = sectionId;
+            }
+		    project.SectionId = sectionId;
             project.LevelId = levelIdx;
 			RemoteCommands.PlayAdventureLevel (sectionId, type, levelIdx, ret => {
 				if (ret.ResultCode == (int)EPlayAdventureLevelCode.PALC_Success) {
@@ -164,7 +164,6 @@ namespace GameA
                             if (projectList.Count < levelIdx) {
                                 LogHelper.Error ("No project data of level in idx {0} in chapter {1}", levelIdx, sectionId);
                                 return;
-
                             } else {
                                 projectList [levelIdx - 1].PrepareRes (() => {
                                     var param = new SituationAdventureParam();
@@ -259,19 +258,17 @@ namespace GameA
 		/// </summary>
 		/// <param name="success">是否过关</param>
 		/// <param name="usedTime">使用的时间</param>
-		/// <param name="star1Flag">星1标志</param>
-		/// <param name="star2Flag">星2标志</param>
-		/// <param name="star3Flag">星3标志</param>
 		/// <param name="score">最终得分</param>
 		/// <param name="scoreItemCount">奖分道具数</param>
 		/// <param name="killMonsterCount">击杀怪物数</param>
 		/// <param name="leftTime">剩余时间数</param>
 		/// <param name="leftLife">剩余生命</param>
+		/// <param name="recordBytes">关卡数据</param>
 		/// <param name="successCallback">Success callback.</param>
 		/// <param name="failedCallback">Failed callback.</param>
 		public void CommitLevelResult (
 			bool success,
-			float usedTime,
+			int usedTime,
 			int score,
 			int scoreItemCount,
 			int killMonsterCount,
@@ -316,20 +313,22 @@ namespace GameA
             UnityEngine.WWWForm form = new UnityEngine.WWWForm ();
             form.AddBinaryData ("recordFile", recordBytes);
 
+		    Msg_RecordUploadParam recordUploadParam = new Msg_RecordUploadParam()
+		    {
+		        Success = success,
+		        UsedTime = usedTime,
+		        Star1Flag = star1,
+		        Star2Flag = star2,
+		        Star3Flag = star3,
+		        Score = score,
+		        ScoreItemCount = scoreItemCount,
+		        KillMonsterCount = killMonsterCount,
+		        LeftTime = leftTime,
+		        LeftLife = leftLife,
+			    DeadPos = null
+		    };
 			RemoteCommands.CommitAdventureLevelResult (
-				_lastRequiredLevelToken,
-				success,
-				usedTime,
-                star1,
-                star2,
-                star3,
-				score,
-				scoreItemCount,
-				killMonsterCount,
-				leftTime,
-				leftLife,
-                null,
-				ret => {
+				_lastRequiredLevelToken, recordUploadParam, ret => {
                     if ((int)ECommitAdventureLevelResultCode.CALRC_Success == ret.ResultCode) {
                         if (null != successCallback) {
                             _lastRequiredLevelToken = 0;

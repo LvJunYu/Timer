@@ -111,12 +111,10 @@ namespace GameA.Game
 
 		private void CommitGameResult(Action successCB, Action<ENetResultCode> failureCB)
 		{
-			float usedTime = PlayMode.Instance.GameSuccessFrameCnt * ConstDefineGM2D.FixedDeltaTime;
-
 			//SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "提交成绩中...");
 			AppData.Instance.AdventureData.CommitLevelResult(
 				PlayMode.Instance.SceneState.GameSucceed,
-                usedTime,
+				PlayMode.Instance.GameSuccessFrameCnt,
                 PlayMode.Instance.SceneState.CurScore,
                 PlayMode.Instance.SceneState.GemGain,
                 PlayMode.Instance.SceneState.MonsterKilled,
