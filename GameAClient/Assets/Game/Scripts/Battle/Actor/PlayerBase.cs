@@ -62,9 +62,9 @@ namespace GameA.Game
             }
         }
 
-        public PlayerInputBase PlayerInput
+        public PlayerInputBase Input
         {
-            get { return _playerInput; }
+            get { return _input; }
         }
 
         public override IntVec2 FirePos
@@ -94,15 +94,15 @@ namespace GameA.Game
 
         public void Setup(PlayerInputBase inputBase)
         {
-            _playerInput = inputBase;
+            _input = inputBase;
         }
         
         
         protected override void Clear()
         {
-            if (_playerInput != null)
+            if (_input != null)
             {
-                _playerInput.Reset();
+                _input.Reset();
             }
             _gun = _gun ?? new Gun(this);
 
@@ -178,7 +178,7 @@ namespace GameA.Game
                 }
                 if (_attackedTimer <= 0)
                 {
-                    _playerInput.UpdateLogic();
+                    _input.UpdateLogic();
                     _skillCtrl.UpdateLogic();
                 }
             }
@@ -188,11 +188,11 @@ namespace GameA.Game
         protected override void CalculateMotor()
         {
             _motorAcc = 0;
-            if (_playerInput.RightInput)
+            if (_input.RightInput)
             {
                 _motorAcc = _onIce ? 1 : 10;
             }
-            if (_playerInput.LeftInput)
+            if (_input.LeftInput)
             {
                 _motorAcc = _onIce ? -1 : -10;
             }
@@ -237,7 +237,7 @@ namespace GameA.Game
                 {
                     _box.DirectionRelativeMain = EDirectionType.Right;
                 }
-                _playerInput.ChangeLittleSkillState(ELittleSkillState.HoldBox);
+                _input.ChangeLittleSkillState(ELittleSkillState.HoldBox);
             }
             else if (IsValidBox(_hitUnits[(int)EDirectionType.Left]))
             {
@@ -248,11 +248,11 @@ namespace GameA.Game
                 {
                     _box.DirectionRelativeMain = EDirectionType.Left;
                 }
-                _playerInput.ChangeLittleSkillState(ELittleSkillState.HoldBox);
+                _input.ChangeLittleSkillState(ELittleSkillState.HoldBox);
             }
             if (_box == null)
             {
-                _playerInput.ChangeLittleSkillState(ELittleSkillState.Quicken);
+                _input.ChangeLittleSkillState(ELittleSkillState.Quicken);
             }
         }
 
@@ -322,7 +322,7 @@ namespace GameA.Game
             {
                 _gun.Stop();
             }
-            _playerInput.Clear();
+            _input.Clear();
             Messenger.Broadcast(EMessengerType.OnMainPlayerDead);
             base.OnDead();
             if (_life <= 0)
@@ -351,7 +351,7 @@ namespace GameA.Game
                                 GM2DTools.TileToWorld(_revivePos), 20, () =>
                                 {
                                     _eUnitState = EUnitState.Normal;
-                                    _playerInput.Clear();
+                                    _input.Clear();
                                     ClearRunTime();
                                     _isAlive = true;
                                     OnHpChanged(_maxHp);
@@ -381,7 +381,7 @@ namespace GameA.Game
             }
             _eUnitState = EUnitState.Portaling;
             PlayMode.Instance.Freeze(this);
-            _playerInput.Clear();
+            _input.Clear();
             ClearRunTime();
             _trans.eulerAngles = new Vector3(90, 0, 0);
             _portalEffect.Play(_trans.position + Vector3.up * 0.5f,
@@ -431,7 +431,7 @@ namespace GameA.Game
 
         public void Step(int stepY = 0)
         {
-            _playerInput.StepY = stepY;
+            _input.StepY = stepY;
             OnLand();
         }
 
@@ -444,7 +444,7 @@ namespace GameA.Game
             Speed = IntVec2.zero;
             ExtraSpeed.y = 120;
             ExtraSpeed.x = actor.CenterDownPos.x > CenterDownPos.x ? -100 : 100;
-            _playerInput.ClearInput();
+            _input.ClearInput();
         }
 
         internal void OnKnockBack(ActorBase actor)
@@ -453,7 +453,7 @@ namespace GameA.Game
             Speed = IntVec2.zero;
             ExtraSpeed.y = 280;
             ExtraSpeed.x = actor.CenterDownPos.x > CenterDownPos.x ? -80 : 80;
-            _playerInput.ClearInput();
+            _input.ClearInput();
         }
 
         #endregion
@@ -542,7 +542,7 @@ namespace GameA.Game
             {
                 if (!_grounded)
                 {
-                    if (_playerInput.EClimbState > 0)
+                    if (_input.EClimbState > 0)
                     {
                         if (_animation.PlayLoop(ClimbAnimName()))
                         {
@@ -564,19 +564,19 @@ namespace GameA.Game
                     }
                     else
                     {
-                        if (_playerInput.ClimbJump)
+                        if (_input.ClimbJump)
                         {
                             Vector3 effectPos = _trans.position;
                             effectPos += _curMoveDirection == EMoveDirection.Left ? Vector3.right * 0.25f + Vector3.forward * 0.6f : Vector3.left * 0.25f + Vector3.forward * 0.6f;
                             GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallJump, effectPos);
                         }
-                        if (_playerInput.JumpState == EJumpState.Jump1 || _playerInput.JumpState == EJumpState.Jump2)
+                        if (_input.JumpState == EJumpState.Jump1 || _input.JumpState == EJumpState.Jump2)
                         {
                             Messenger.Broadcast(EMessengerType.OnPlayerJump);
-                            _animation.PlayOnce(JumpAnimName(_playerInput.JumpLevel));
-                            PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_playerInput.JumpLevel), false);
+                            _animation.PlayOnce(JumpAnimName(_input.JumpLevel));
+                            PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_input.JumpLevel), false);
                         }
-                        else if (_playerInput.JumpState == EJumpState.Fall)
+                        else if (_input.JumpState == EJumpState.Fall)
                         {
                             if (_animation.PlayLoop(FallAnimName()))
                             {
@@ -587,7 +587,7 @@ namespace GameA.Game
                 }
                 else
                 {
-                    if (_playerInput.LeftInput || _playerInput.RightInput)
+                    if (_input.LeftInput || _input.RightInput)
                     {
                         var speed = Math.Abs(SpeedX);
                         speed = Mathf.Clamp(speed, 20, 100);
@@ -665,7 +665,7 @@ namespace GameA.Game
         protected override void OnLand()
         {
             _grounded = true;
-            _playerInput.OnLand();
+            _input.OnLand();
 //            // 新手引导需要知道主角落地了
 //            GuideManager.Instance.OnSpecialOperate(2);
 //            if (_downUnit == null || _view == null)
@@ -706,12 +706,12 @@ namespace GameA.Game
             {
                 if (_speed.x == 0)
                 {
-                    if (!_playerInput.RightInput && !_playerInput.LeftInput)
+                    if (!_input.RightInput && !_input.LeftInput)
                     {
                         return "Prepare";
                     }
-                    if (_playerInput.RightInput && _box.DirectionRelativeMain == EDirectionType.Right
-                        || (_playerInput.LeftInput && _box.DirectionRelativeMain == EDirectionType.Left))
+                    if (_input.RightInput && _box.DirectionRelativeMain == EDirectionType.Right
+                        || (_input.LeftInput && _box.DirectionRelativeMain == EDirectionType.Left))
                     {
                         return "Push";
                     }
@@ -768,7 +768,7 @@ namespace GameA.Game
             {
                 return "StunRun";
             }
-            if (_playerInput.JumpLevel == 2)
+            if (_input.JumpLevel == 2)
             {
                 return "Fly";
             }

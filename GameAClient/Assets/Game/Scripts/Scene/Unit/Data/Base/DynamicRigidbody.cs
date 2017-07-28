@@ -16,7 +16,7 @@ namespace GameA.Game
         protected float _speedRatio;
         protected int _motorAcc;
         
-        protected PlayerInputBase _playerInput;
+        protected PlayerInputBase _input;
 
         public override void UpdateLogic()
         {
@@ -143,16 +143,16 @@ namespace GameA.Game
         
         protected virtual void CheckClimb()
         {
-            _playerInput.EClimbState = EClimbState.None;
+            _input.EClimbState = EClimbState.None;
             if (!_grounded && SpeedY < 0)
             {
-                if (_playerInput.LeftInput && CheckLeftFloor())
+                if (_input.LeftInput && CheckLeftFloor())
                 {
-                    _playerInput.EClimbState = EClimbState.Left;
+                    _input.EClimbState = EClimbState.Left;
                 }
-                else if (_playerInput.RightInput && CheckRightFloor())
+                else if (_input.RightInput && CheckRightFloor())
                 {
-                    _playerInput.EClimbState = EClimbState.Right;
+                    _input.EClimbState = EClimbState.Right;
                 }
             }
         }
@@ -163,11 +163,11 @@ namespace GameA.Game
             _fanForce.y = 0;
             if (!_grounded)
             {
-                if (_playerInput.JumpLevel == 2)
+                if (_input.JumpLevel == 2)
                 {
                     SpeedY = Util.ConstantLerp(SpeedY, -60, 6);
                 }
-                else if (_playerInput.EClimbState > EClimbState.None)
+                else if (_input.EClimbState > EClimbState.None)
                 {
                     SpeedY = Util.ConstantLerp(SpeedY, -50, 6);
                 }

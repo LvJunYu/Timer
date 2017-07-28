@@ -52,7 +52,7 @@ namespace GameA.Game
             {
                 if (null != PlayerManager.Instance.MainPlayer)
                 {
-                    LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.PlayerInput as LocalPlayerInput;
+                    LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.Input as LocalPlayerInput;
                     if (localPlayerInput != null)
                     {
                         localPlayerInput.ProcessCheckInput();
