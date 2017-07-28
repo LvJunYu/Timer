@@ -16,6 +16,10 @@ namespace GameA
         public RawImage Cover1;
         public RawImage Cover2;
         public RawImage Cover3;
+        public Text FirstName;
+        public Text FirstScore;
+
+
 
         public Texture DefaultCover;
 

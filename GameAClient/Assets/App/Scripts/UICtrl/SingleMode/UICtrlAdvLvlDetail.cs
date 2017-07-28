@@ -133,7 +133,7 @@ namespace GameA
         
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.PopUpUI;
+            _groupId = (int)EUIGroupType.UIAdvDetail;
         }
 
         private void RefreshRankData()
@@ -148,9 +148,12 @@ namespace GameA
                 {
                     //RefreshAdventureUserLevelDataDetail();
                     _rankPanel.Set(LocalUser.Instance.AdventureLevelRankList.RecordList);
+                    _cachedView.FirstName.text = LocalUser.Instance.AdventureLevelRankList.RecordList[0].UserInfo.NickName;
+                    _cachedView.FirstScore.text = LocalUser.Instance.AdventureLevelRankList.RecordList[0].Score.ToString();
                 }
             , null)
             ;
+
 
         }
 
@@ -165,6 +168,7 @@ namespace GameA
 
         private void InitPanel()
         {
+            
             Project project;
             if (AppData.Instance.AdventureData.ProjectList.SectionList.Count < _chapterIdx)
             {
@@ -201,6 +205,8 @@ namespace GameA
                     _cachedView.Cover3,
                     project.IconPath,
                     _cachedView.DefaultCover);
+                RefreshRankData();
+              
 
             }
         }

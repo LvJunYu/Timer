@@ -38,6 +38,10 @@ namespace GameA
         /// </summary>
         FrontUI,
         /// <summary>
+        /// 录像 排名 关卡详情
+        /// </summary>
+        UIAdvDetail,
+        /// <summary>
         /// 游戏内UI
         /// </summary>
         InGameStart,
