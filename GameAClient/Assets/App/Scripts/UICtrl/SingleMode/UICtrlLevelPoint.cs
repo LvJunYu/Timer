@@ -30,7 +30,7 @@ namespace GameA
         public GameObject StarDark3;
 
 
-		//public Text LevelTitle;
+		public Text LevelTitle;
 
         public Text StartText;
 
@@ -133,7 +133,7 @@ namespace GameA
                     );
                 }
 			}
-            //LevelTitle.text = tableLevel.Name;
+            LevelTitle.text = tableLevel.Name;
         }
 
         private bool IsCurrentLevel ()
