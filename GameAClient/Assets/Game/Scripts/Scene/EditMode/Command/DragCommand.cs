@@ -46,6 +46,11 @@ namespace GameA.Game
 
             Vector3 objectWorldPos = GM2DTools.TileToWorld(_dragUnitDesc.Guid);
             _mouseObjectOffsetInWorld = objectWorldPos + GM2DTools.GetUnitDragingOffset(_dragUnitDesc.Id) - GM2DTools.ScreenToWorldPoint(mousePos);
+            
+            if (_dragUnitDesc.Id == UnitDefine.BlueStoneId)
+            {
+                EditMode.Instance.OnEnterDragMagicMode();
+            }
         }
 
         public virtual bool Execute(Vector2 mousePos)
@@ -159,6 +164,10 @@ namespace GameA.Game
                     }
                     UnitManager.Instance.FreeUnitView(_virUnit);
                     EditMode.Instance.SetDraggingState(false);
+                    if (_dragUnitDesc.Id == UnitDefine.BlueStoneId)
+                    {
+                        EditMode.Instance.OnExitDragMagicMode();
+                    }
                 }
                 return _pushFlag;
             }
@@ -235,6 +244,10 @@ namespace GameA.Game
             if (_virUnit != null)
             {
                 UnitManager.Instance.FreeUnitView(_virUnit);
+            }
+            if (_dragUnitDesc.Id == UnitDefine.BlueStoneId)
+            {
+                EditMode.Instance.OnExitDragMagicMode();
             }
             EditMode.Instance.SetDraggingState(false);
             EditMode.Instance.AddUnit(_dragUnitDesc);

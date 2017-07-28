@@ -19,9 +19,9 @@ namespace GameA.Game
         public const int PlayerTableId = 1001;
         public const int TransparentEarthId = 4004;
         public const int ClayId = 4011;
-        public const int BlueStoneId = 8001;
-        public const int BlueStoneBanId = 8002;
-        public const int BlueStoneRotateId = 8003;
+        public const int BlueStoneId = 8002;
+        public const int BlueStoneBanId = 8003;
+        public const int BlueStoneRotateId = 8004;
         public const int FinalDoorId = 5001;
         public const int BoxId = 5004;
         public const int RollerId = 5005;

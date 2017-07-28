@@ -48,6 +48,14 @@ namespace GameA.Game
             get { return OriginMoveDirection != 0; }
         }
 
+	    /// <summary>
+	    /// 能否被蓝石控制
+	    /// </summary>
+	    public bool CanAddMagic
+	    {
+	        get { return OriginMagicDirection != 0; }
+	    }
+
 	    public EPairType EPairType
 	    {
 	        get { return (EPairType) PairType; }
