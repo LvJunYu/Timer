@@ -107,7 +107,7 @@ namespace GameA.Game
             SocialApp.Instance.ReturnToApp();
         }
 
-        public virtual bool IsPlayerCharacterAbilityAvailable(PlayerBase player, ECharacterAbility eCharacterAbility)
+        public virtual bool IsPlayerCharacterAbilityAvailable(DynamicRigidbody unit, ECharacterAbility eCharacterAbility)
         {
             return GameProcessManager.Instance.IsCharacterAbilityAvailable(eCharacterAbility);
         }

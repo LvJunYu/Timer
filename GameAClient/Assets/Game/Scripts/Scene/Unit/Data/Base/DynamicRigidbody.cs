@@ -8,6 +8,7 @@ namespace GameA.Game
     {
         protected int _maxSpeedX;
         protected int _curMaxSpeedX;
+        
         protected bool _checkGround;
         protected bool _checkClimb;
         protected bool _updateSpeedY;
@@ -193,6 +194,15 @@ namespace GameA.Game
         }
 
         protected virtual void CalculateMotor()
+        {
+        }
+
+        public virtual bool IsHoldingBox()
+        {
+            return false;
+        }
+
+        public virtual void OnBoxHoldingChanged()
         {
         }
     }
