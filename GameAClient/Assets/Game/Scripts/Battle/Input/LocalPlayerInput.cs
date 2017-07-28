@@ -33,7 +33,7 @@ namespace GameA.Game
             get { return _curCheckInputChangeList; }
         }
 
-        public LocalPlayerInput(PlayerBase rigidUnit) : base(rigidUnit)
+        public LocalPlayerInput(PlayerBase unit) : base(unit)
         {
         }
 

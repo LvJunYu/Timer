@@ -16,11 +16,11 @@ namespace GameA.Game
     [Serializable]
     public class PlayerInputBase : InputBase
     {
-        protected DynamicRigidbody _rigidUnit;
+        protected DynamicRigidbody _unit;
 
-        public PlayerInputBase(DynamicRigidbody rigidUnit) 
+        public PlayerInputBase(DynamicRigidbody unit) 
         {
-            _rigidUnit = rigidUnit;
+            _unit = unit;
         }
 
         public void Reset()
@@ -34,14 +34,14 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_rigidUnit.IsAlive && _rigidUnit.CurBanInputTime == 0 && !_rigidUnit.IsHoldingBox())
+            if (_unit.IsAlive && _unit.CurBanInputTime == 0 && !_unit.IsHoldingBox())
             {
                 if (LeftInput)
                 {
-                    if (_rigidUnit.CurMoveDirection != EMoveDirection.Left)
+                    if (_unit.CurMoveDirection != EMoveDirection.Left)
                     {
-                        _rigidUnit.SetFacingDir(EMoveDirection.Left);
-                        if (_rigidUnit.IsMain)
+                        _unit.SetFacingDir(EMoveDirection.Left);
+                        if (_unit.IsMain)
                         {
                             PlayMode.Instance.CurrentShadow.RecordDirChange(EMoveDirection.Left);
                         }
@@ -49,10 +49,10 @@ namespace GameA.Game
                 }
                 else if (RightInput)
                 {
-                    if (_rigidUnit.CurMoveDirection != EMoveDirection.Right)
+                    if (_unit.CurMoveDirection != EMoveDirection.Right)
                     {
-                        _rigidUnit.SetFacingDir(EMoveDirection.Right);
-                        if (_rigidUnit.IsMain)
+                        _unit.SetFacingDir(EMoveDirection.Right);
+                        if (_unit.IsMain)
                         {
                             PlayMode.Instance.CurrentShadow.RecordDirChange(EMoveDirection.Right);
                         }
@@ -73,30 +73,30 @@ namespace GameA.Game
                 if (_eClimbState > EClimbState.None)
                 {
                     _climbJump = true;
-                    _rigidUnit.CurBanInputTime = BattleDefine.WallJumpBanInputTime;
-                    _rigidUnit.ExtraSpeed.y = 0;
+                    _unit.CurBanInputTime = BattleDefine.WallJumpBanInputTime;
+                    _unit.ExtraSpeed.y = 0;
                     _jumpLevel = 0;
                     _jumpState = EJumpState.Jump1;
                     if (_eClimbState == EClimbState.Left)
                     {
-                        _rigidUnit.SpeedX = 120;
-                        _rigidUnit.SetFacingDir(EMoveDirection.Right);
+                        _unit.SpeedX = 120;
+                        _unit.SetFacingDir(EMoveDirection.Right);
                     }
                     else if (_eClimbState == EClimbState.Right)
                     {
-                        _rigidUnit.SpeedX = -120;
-                        _rigidUnit.SetFacingDir(EMoveDirection.Left);
+                        _unit.SpeedX = -120;
+                        _unit.SetFacingDir(EMoveDirection.Left);
                     }
                 }
                 else if (_jumpLevel == -1)
                 {
                     if (_stepY > 0)
                     {
-                        _rigidUnit.ExtraSpeed.y = _stepY;
+                        _unit.ExtraSpeed.y = _stepY;
                         _stepY = 0;
                     }
                     _jumpLevel = 0;
-                    _rigidUnit.SpeedY = _rigidUnit.OnClay ? 100 : 150;
+                    _unit.SpeedY = _unit.OnClay ? 100 : 150;
                     _jumpState = EJumpState.Jump1;
                     _jumpTimer = 10;
                 }
@@ -104,19 +104,19 @@ namespace GameA.Game
                 {
                     if (_jumpLevel == 0 || _jumpLevel == 2)
                     {
-                        if (_rigidUnit.WingCount > 0)
+                        if (_unit.WingCount > 0)
                         {
-                            _rigidUnit.WingCount--;
+                            _unit.WingCount--;
                             _jumpLevel = 2;
-                            _rigidUnit.SpeedY = 120;
+                            _unit.SpeedY = 120;
                         }
                         else
                         {
                             _jumpLevel = 1;
-                            _rigidUnit.SpeedY = 150;
+                            _unit.SpeedY = 150;
                             _jumpState = EJumpState.Jump2;
                         }
-                        _rigidUnit.ExtraSpeed.y = 0;
+                        _unit.ExtraSpeed.y = 0;
                         _jumpTimer = 15;
                         _curAppliedInputKeyAry[(int) EInputType.Jump] = false;
                     }
@@ -126,7 +126,7 @@ namespace GameA.Game
             {
                 _jumpTimer--;
             }
-            if ((_jumpTimer == 0 && _rigidUnit.SpeedY > 0) || _rigidUnit.SpeedY < 0)
+            if ((_jumpTimer == 0 && _unit.SpeedY > 0) || _unit.SpeedY < 0)
             {
                 _jumpState = EJumpState.Fall;
             }
@@ -140,7 +140,7 @@ namespace GameA.Game
                     {
                         if (QuickenInputUp)
                         {
-                            _rigidUnit.OnBoxHoldingChanged();
+                            _unit.OnBoxHoldingChanged();
                         }
                     }
                     break;
@@ -154,7 +154,7 @@ namespace GameA.Game
 
         protected void CheckSkill()
         {
-            var eShootDir = _rigidUnit.CurMoveDirection == EMoveDirection.Left ? EShootDirectionType.Left : EShootDirectionType.Right;
+            var eShootDir = _unit.CurMoveDirection == EMoveDirection.Left ? EShootDirectionType.Left : EShootDirectionType.Right;
             if (GetKeyApplied(EInputType.Left))
             {
                 eShootDir = EShootDirectionType.Left;
@@ -187,20 +187,20 @@ namespace GameA.Game
             {
                 eShootDir = EShootDirectionType.Up;
             }
-            _rigidUnit.ShootAngle = (int)eShootDir;
+            _unit.ShootAngle = (int)eShootDir;
             if (IsCharacterAbilityAvailable(ECharacterAbility.Shoot))
             {
                 if (GetKeyApplied(EInputType.Skill1))
                 {
-                    _rigidUnit.SkillCtrl.Fire(0);
+                    _unit.SkillCtrl.Fire(0);
                 }
                 if (GetKeyDownApplied(EInputType.Skill2))
                 {
-                    _rigidUnit.SkillCtrl.Fire(1);
+                    _unit.SkillCtrl.Fire(1);
                 }
                 if (GetKeyDownApplied(EInputType.Skill3))
                 {
-                    _rigidUnit.SkillCtrl.Fire(2);
+                    _unit.SkillCtrl.Fire(2);
                 }
             }
         
@@ -218,11 +218,11 @@ namespace GameA.Game
 
         private bool IsCharacterAbilityAvailable(ECharacterAbility eCharacterAbility)
         {
-            if (!_rigidUnit.IsMain)
+            if (!_unit.IsMain)
             {
                 return true;
             }
-            return GM2DGame.Instance.GameMode.IsPlayerCharacterAbilityAvailable(_rigidUnit, eCharacterAbility);
+            return GM2DGame.Instance.GameMode.IsPlayerCharacterAbilityAvailable(_unit, eCharacterAbility);
         }
     }
 

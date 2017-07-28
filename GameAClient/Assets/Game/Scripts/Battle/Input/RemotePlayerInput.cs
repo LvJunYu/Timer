@@ -2,7 +2,7 @@
 {
     public class RemotePlayerInput : PlayerInputBase
     {
-        public RemotePlayerInput(PlayerBase rigidUnit) : base(rigidUnit)
+        public RemotePlayerInput(PlayerBase unit) : base(unit)
         {
         }
     }
