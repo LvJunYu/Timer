@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    public class DynamicRigidbody : RigidbodyUnit
+    public abstract class DynamicRigidbody : RigidbodyUnit
     {
         protected int _maxSpeedX;
         protected int _curMaxSpeedX;
@@ -17,7 +17,7 @@ namespace GameA.Game
         protected int _motorAcc;
         
         protected PlayerInputBase _input;
-
+        
         public override void UpdateLogic()
         {
             base.UpdateLogic();
@@ -105,38 +105,36 @@ namespace GameA.Game
             }
             CalculateMotor();
             _curMaxSpeedX = (int)(_maxSpeedX * _speedRatio);
-            if (air || _grounded)
+            if (_curBanInputTime <= 0)
             {
-                if (_curBanInputTime <= 0)
+                int speedAcc = _motorAcc + _fanForce.x;
+                if (speedAcc != 0)
                 {
-                    int speedAcc = _motorAcc + _fanForce.x;
-                    if (speedAcc != 0)
+                    //在空中和冰上 同方向的时候
+                    if (_onIce || air)
                     {
-                        //在空中和冰上 同方向的时候
-                        if (_onIce || air)
+                        if ((speedAcc > 0 && _fanForce.x > 0) || (speedAcc < 0 && _fanForce.x < 0))
                         {
-                            if ((speedAcc > 0 && _fanForce.x > 0) || (speedAcc < 0 && _fanForce.x < 0))
-                            {
-                                speedAcc = 1;
-                            }
+                            speedAcc = 1;
                         }
-                        else
-                        {
-                            SpeedX -= _fanForce.x;
-                        }
-                        SpeedX = Util.ConstantLerp(SpeedX, speedAcc > 0 ? _curMaxSpeedX : -_curMaxSpeedX, Mathf.Abs(speedAcc));
                     }
-                    else if (_grounded || _fanForce.y != 0)
+                    else
                     {
-                        if (_fanForce.x == 0)
-                        {
-                            if (_onIce)
-                            {
-                                friction = 1;
-                            }
-                        }
-                        SpeedX = Util.ConstantLerp(SpeedX, 0, friction);
+                        SpeedX -= _fanForce.x;
                     }
+                    SpeedX = Util.ConstantLerp(SpeedX, speedAcc > 0 ? _curMaxSpeedX : -_curMaxSpeedX, Mathf.Abs(speedAcc));
+                }
+                else if (_grounded || _fanForce.y != 0)
+                {
+                    friction = MaxFriction;
+                    if (_fanForce.x == 0)
+                    {
+                        if (_onIce)
+                        {
+                            friction = 1;
+                        }
+                    }
+                    SpeedX = Util.ConstantLerp(SpeedX, 0, friction);
                 }
             }
         }
@@ -195,6 +193,24 @@ namespace GameA.Game
 
         protected virtual void CalculateMotor()
         {
+            _motorAcc = 0;
+            if (_input.RightInput)
+            {
+                _motorAcc = _onIce ? 1 : 10;
+            }
+            if (_input.LeftInput)
+            {
+                _motorAcc = _onIce ? -1 : -10;
+            }
+            _speedRatio = 1;
+            if (IsHoldingBox())
+            {
+                _speedRatio *= SpeedHoldingBoxRatio;
+            }
+            if (_onClay)
+            {
+                _speedRatio *= SpeedClayRatio;
+            }
         }
 
         public virtual bool IsHoldingBox()
@@ -203,6 +219,26 @@ namespace GameA.Game
         }
 
         public virtual void OnBoxHoldingChanged()
+        {
+        }
+        
+        public override void UpdateView(float deltaTime)
+        {
+            if (_isStart && _isAlive)
+            {
+                _deltaPos = _speed + _extraDeltaPos;
+                _curPos += _deltaPos;
+                LimitPos();
+                UpdateCollider(GetColliderPos(_curPos));
+                _curPos = GetPos(_colliderPos);
+                UpdateTransPos();
+                CheckOutOfMap();
+                UpdateDynamicView(deltaTime);
+            }
+            _lastGrounded = _grounded;
+        }
+
+        protected virtual void UpdateDynamicView(float deltaTime)
         {
         }
     }

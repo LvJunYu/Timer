@@ -67,6 +67,8 @@ namespace GameA.Game
             _eDieType = EDieType.None;
             _attackedTimer = 0;
             RemoveAllStates();
+            _checkGround = true;
+            _updateSpeedY = true;
         }
 
         public override void CheckStart()

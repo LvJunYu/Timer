@@ -17,17 +17,13 @@ namespace GameA.Game
     public class PlayerBase : ActorBase
     {
         #region Data
+        
+        protected Gun _gun;
 
         protected long _playerId;
 
-        protected Gun _gun;
-
         [SerializeField]
         protected IntVec2 _revivePos;
-        /// <summary>
-        /// 复活点被吃了
-        /// </summary>
-        protected Stack<IntVec2> _revivePosStack = new Stack<IntVec2>();
 
         protected Box _box;
 
@@ -97,7 +93,6 @@ namespace GameA.Game
             _input = inputBase;
         }
         
-        
         protected override void Clear()
         {
             if (_input != null)
@@ -115,8 +110,6 @@ namespace GameA.Game
             ClearView();
 
             _checkClimb = true;
-            _checkGround = true;
-            _updateSpeedY = true;
             _maxSpeedX = BattleDefine.MaxSpeedX;
             base.Clear();
         }
@@ -147,7 +140,6 @@ namespace GameA.Game
             _gun.Play();
             AddStates(61);
             _revivePos = _curPos;
-            _revivePosStack.Clear();
             if (PlayMode.Instance.IsUsingBoostItem(EBoostItemType.BIT_AddLifeCount1))
             {
                 Life = PlayMode.Instance.SceneState.Life + 1;
@@ -183,28 +175,6 @@ namespace GameA.Game
                 }
             }
             base.UpdateLogic();
-        }
-
-        protected override void CalculateMotor()
-        {
-            _motorAcc = 0;
-            if (_input.RightInput)
-            {
-                _motorAcc = _onIce ? 1 : 10;
-            }
-            if (_input.LeftInput)
-            {
-                _motorAcc = _onIce ? -1 : -10;
-            }
-            _speedRatio = 1;
-            if (IsHoldingBox())
-            {
-                _speedRatio *= SpeedHoldingBoxRatio;
-            }
-            if (_onClay)
-            {
-                _speedRatio *= SpeedClayRatio;
-            }
         }
 
         #region box
@@ -256,7 +226,7 @@ namespace GameA.Game
             }
         }
 
-        public void OnBoxHoldingChanged()
+        public override void OnBoxHoldingChanged()
         {
             if (_box == null)
             {
@@ -275,7 +245,7 @@ namespace GameA.Game
             return unit != null && unit.Id == UnitDefine.BoxId && unit.ColliderGrid.YMin == _colliderGrid.YMin;
         }
 
-        public bool IsHoldingBox()
+        public override bool IsHoldingBox()
         {
             return _box != null && _box.IsHoldingByMain;
         }
@@ -416,17 +386,7 @@ namespace GameA.Game
 
         public override void OnRevivePos(IntVec2 pos)
         {
-            if (_revivePos == pos)
-            {
-                return;
-            }
-            _revivePosStack.Push(_revivePos);
             _revivePos = pos;
-        }
-
-        protected void RollbackRevivePos()
-        {
-            _revivePos = _revivePosStack.Pop();
         }
 
         public void Step(int stepY = 0)
@@ -502,22 +462,14 @@ namespace GameA.Game
             _gun.OnObjectDestroy();
         }
 
-        public override void UpdateView(float deltaTime)
+        protected override void UpdateDynamicView(float deltaTime)
         {
             if (!PlayMode.Instance.SceneState.GameRunning && PlayMode.Instance.SceneState.Arrived)
             {
                 return;
             }
-            if (_isAlive && _isStart)
-            {
-                _deltaPos = _speed + _extraDeltaPos;
-                _curPos += _deltaPos;
-                LimitPos();
-                UpdateCollider(GetColliderPos(_curPos));
-                _curPos = GetPos(_colliderPos);
-                UpdateTransPos();
-                _gun.UpdateView();
-            }
+            base.UpdateDynamicView(deltaTime);
+            _gun.UpdateView();
             if (!_isAlive)
             {
                 _dieTime++;
@@ -536,7 +488,6 @@ namespace GameA.Game
                     }
                 }
             }
-            CheckOutOfMap();
             CheckBox();
             if (_isAlive)
             {
@@ -643,7 +594,6 @@ namespace GameA.Game
             {
                 _portalEffect.Update();
             }
-            _lastGrounded = _grounded;
         }
 
         protected override void OnJump()

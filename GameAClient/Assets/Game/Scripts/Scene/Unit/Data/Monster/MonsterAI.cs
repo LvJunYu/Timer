@@ -40,13 +40,15 @@ namespace GameA.Game
         protected int _reSeekTimer;
         protected int _attackTimer;
 
+        protected int _curFriction;
+
         protected override bool OnInit()
         {
             if (!base.OnInit())
             {
                 return false;
             }
-            _monsterSpeed = 40;
+            _maxSpeedX = 40;
             return true;
         }
 
