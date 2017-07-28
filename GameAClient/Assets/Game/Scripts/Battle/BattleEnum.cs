@@ -19,6 +19,17 @@ namespace GameA.Game
         Jelly,
         Max
     }
+    
+    public enum EWeaponType
+    {
+        None,
+        Fire,
+        Ice,
+        Jelly,
+        Clay,
+        IceSword,
+        Max
+    }
 
     public enum EStateType
     {

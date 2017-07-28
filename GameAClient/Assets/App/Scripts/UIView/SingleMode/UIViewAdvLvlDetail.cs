@@ -13,6 +13,11 @@ namespace GameA
         public Button RecordBtn2;
         public Button RankBtn1;
         public Button RankBtn2;
+        public RawImage Cover1;
+        public RawImage Cover2;
+        public RawImage Cover3;
+
+        public Texture DefaultCover;
 
         public Button PlayBtn;
 

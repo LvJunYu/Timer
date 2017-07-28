@@ -5,8 +5,6 @@
 ** Summary : TestRoom
 ***********************************************************************/
 
-using SoyEngine;
-using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA.Game
@@ -28,34 +26,6 @@ namespace GameA.Game
                     return;
                 }
                 SocialGUIManager.Instance.OpenUI<UICtrlMultiCooperationLobby>();
-            }
-            return;
-            
-            if (Input.GetKeyDown(KeyCode.U))
-            {
-                var project = AppData.Instance.AdventureData.GetAdvLevelProject(1, 1, EAdventureProjectType.APT_Normal);
-                if (project == null)
-                {
-                    LogHelper.Error("GetAdvLevelProject is Null");
-                    return;
-                }
-                RoomManager.Instance.SendRequestCreateRoom(EBattleType.EBT_PVE, project.ProjectId);
-            }
-
-            if (Input.GetKeyDown(KeyCode.I))
-            {
-                RoomManager.Instance.SendRequestJoinRoom(JoinRoomGuid);
-            }
-
-            if (Input.GetKeyDown(KeyCode.O))
-            {
-                RoomManager.Instance.SendRequestExitRoom(JoinRoomGuid);
-            }
-
-            if (Input.GetKeyDown(KeyCode.J))
-            {
-                _ready = !_ready;
-                RoomManager.Instance.SendRoomReadyInfo(_ready);
             }
         }
     }

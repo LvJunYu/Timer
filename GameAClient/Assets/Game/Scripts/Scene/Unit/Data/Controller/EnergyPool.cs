@@ -15,25 +15,12 @@ namespace GameA.Game
     [Unit(Id = 8001, Type = typeof(EnergyPool))]
     public class EnergyPool : BlockBase
     {
-        protected int _totalMp;
-        protected int _currentMp;
-        protected int _mpSpeed;
-
+        protected int _timer;
+        protected int _weaponId;
         protected EnergyPoolCtrl _energyPoolCtrl;
+        
         protected UnityNativeParticleItem _efffect;
-
-        protected ESkillType _eSkillType;
-
-        protected override bool OnInit()
-        {
-            _totalMp = 4000;
-            _mpSpeed = 2;
-            if (!base.OnInit())
-            {
-                return false;
-            }
-            return true;
-        }
+        protected UnityNativeParticleItem _efffectWeapon;
 
         internal override bool InstantiateView()
         {
@@ -41,16 +28,24 @@ namespace GameA.Game
             {
                 return false;
             }
+            _efffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectEnergy", _trans);
+            if (_efffect == null)
+            {
+                return false;
+            }
+            _efffect.Play();
+            _energyPoolCtrl = _efffect.Trans.GetComponent<EnergyPoolCtrl>();
+            _energyPoolCtrl.LiquidVolume = 0;
             UpdateEnergyEffect();
             return true;
         }
 
         protected override void Clear()
         {
-            _currentMp = _totalMp;
+            _timer = 0;
             if (_energyPoolCtrl != null)
             {
-                _energyPoolCtrl.LiquidVolume = 1;
+                _energyPoolCtrl.LiquidVolume = 0;
             }
             base.Clear();
         }
@@ -60,96 +55,61 @@ namespace GameA.Game
             base.OnObjectDestroy();
             FreeEffect(_efffect);
             _efffect = null;
+            FreeEffect(_efffectWeapon);
+            _efffectWeapon = null;
         }
 
         public override void UpdateExtraData()
         {
-            _eSkillType = (ESkillType)DataScene2D.Instance.GetUnitExtra(_guid).EnergyType;
+            _weaponId = DataScene2D.Instance.GetUnitExtra(_guid).UnitValue;
             UpdateEnergyEffect();
             base.UpdateExtraData();
         }
 
         private void UpdateEnergyEffect()
         {
-            FreeEffect(_efffect);
-            _efffect = null;
-            _energyPoolCtrl = null;
-            string effectName = null;
-            switch (_eSkillType)
+            var tableEquipment = TableManager.Instance.GetEquipment(_weaponId);
+            if (tableEquipment == null)
             {
-                case ESkillType.Fire:
-                    effectName = "M1EffectEnergyFire";
-                    break;
-                case ESkillType.Ice:
-                    effectName = "M1EffectEnergyIce";
-                    break;
-                case ESkillType.Jelly:
-                    effectName = "M1EffectEnergyJelly";
-                    break;
-                case ESkillType.Clay:
-                    effectName = "M1EffectEnergyClay";
-                    break;
+                LogHelper.Error("GetEquipment Failed : {0}", _weaponId);
+                return;
             }
-            if (!string.IsNullOrEmpty(effectName))
+            FreeEffect(_efffectWeapon);
+            _efffectWeapon = null;
+            if (!string.IsNullOrEmpty(tableEquipment.Model) && _energyPoolCtrl != null)
             {
-                _efffect = GameParticleManager.Instance.GetUnityNativeParticleItem(effectName, _trans);
-                if (_efffect != null)
+                _efffectWeapon = GameParticleManager.Instance.GetUnityNativeParticleItem(tableEquipment.Model, _energyPoolCtrl.Weapon);
+                if (_efffectWeapon != null)
                 {
-                    _efffect.Play();
-                    _energyPoolCtrl = _efffect.Trans.GetComponent<EnergyPoolCtrl>();
-                    _energyPoolCtrl.LiquidVolume = GetProcess();
+                    _efffectWeapon.Play();
                 }
             }
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.SkillCtrl != null)
+            if (other.IsAlive)
             {
-                OnTrigger(other);
-                ////如果技能不一样
-                //var addedMp = other.AddMp(_currentMp);
-                //_currentMp -= addedMp;
+                if (_timer == 0)
+                {
+                    _timer = UnitDefine.EnergyTimer;
+                    other.ChangeWeapon(_weaponId);
+                }
             }
             return base.OnUpHit(other, ref y, checkOnly);
-        }
-
-        protected void OnTrigger(UnitBase other)
-        {
-//            switch (_eSkillType)
-//            {
-//                case ESkillType.Fire:
-//                    other.SkillCtrl.ChangeSkill<SkillFire>(0);
-//                    break;
-//                case ESkillType.Ice:
-//                    other.SkillCtrl.ChangeSkill<SkillIce>(0);
-//                    break;
-//                case ESkillType.Jelly:
-//                    other.SkillCtrl.ChangeSkill<SkillJelly>(0);
-//                    break;
-//                case ESkillType.Clay:
-//                    other.SkillCtrl.ChangeSkill<SkillClay>(0);
-//                    break;
-//            }
         }
 
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            _currentMp = Util.ConstantLerp(_currentMp, _totalMp, _mpSpeed);
+            if (_timer > 0)
+            {
+                _timer--;
+            }
             if (_energyPoolCtrl != null)
             {
-                _energyPoolCtrl.LiquidVolume = GetProcess();
+                _energyPoolCtrl.LiquidVolume = (float) (_timer) / UnitDefine.EnergyTimer;
             }
-        }
-
-        private float GetProcess()
-        {
-            if (_totalMp <= 0)
-            {
-                return 0;
-            }
-            return (float)_currentMp / _totalMp;
         }
     }
 }

@@ -10,9 +10,15 @@ namespace GameA.Game
     {
 		protected EMode _mode = EMode.None;
         protected byte[] _recordBytes;
-		protected float _recordUsedTime;
 		protected bool _needSave;
         protected byte[] _iconBytes;
+	    protected bool _recordSuccess;
+	    protected int _recordUsedTime;
+	    protected int _recordScore;
+	    protected int _recordScoreItemCount;
+	    protected int _recordKillMonsterCount;
+	    protected int _recordLeftTime;
+	    protected int _recordLeftLife;
 
 		public byte[] RecordBytes
 		{
@@ -33,14 +39,14 @@ namespace GameA.Game
 				{
 					NeedSave = true;
 					MapDirty = false;
+					_recordUsedTime = PlayMode.Instance.GameSuccessFrameCnt;
+					_recordScore = PlayMode.Instance.SceneState.CurScore;
+					_recordScoreItemCount = PlayMode.Instance.SceneState.GemGain;
+					_recordKillMonsterCount = PlayMode.Instance.SceneState.MonsterKilled;
+					_recordLeftTime = PlayMode.Instance.SceneState.SecondLeft;
+					_recordLeftLife = PlayMode.Instance.MainPlayer.Life;
 				}
 			}
-		}
-
-		public float RecordUsedTime
-		{
-			get { return _recordUsedTime; }
-			set { _recordUsedTime = value; }
 		}
 
 		public bool NeedSave
@@ -88,7 +94,7 @@ namespace GameA.Game
 				{
 					_iconBytes = LocalCacheManager.Instance.Load(LocalCacheManager.EType.Image, _project.IconPath);
 				}
-				return this._iconBytes;
+				return _iconBytes;
 			}
 			set { _iconBytes = value; }
 		}
@@ -218,6 +224,7 @@ namespace GameA.Game
                     return;
                 }
                 GameRun.Instance.Playing();
+	            _inputDatas.Clear();
                 SocialGUIManager.Instance.CloseUI<UICtrlItem>();
 //                SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
                 SocialGUIManager.Instance.OpenUI<UICtrlEdit>();

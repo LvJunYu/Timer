@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -17,8 +18,6 @@ namespace GameA.Game
     [Serializable]
     public class UnitBase : ColliderBase, IEquatable<UnitBase>
     {
-        protected const float BackZOffset = 0.4f;
-        protected const float FrontZOffset = -0.4f;
         protected const int MaxFriction = 100;
 
         #region base data
@@ -102,14 +101,13 @@ namespace GameA.Game
         #region view
 
         protected float _viewZOffset;
-        protected float _view1ZOffset;
 
         /// <summary>
         /// 可能会为NULL
         /// </summary>
         protected UnitView _view;
 
-        protected UnitView _view1;
+        protected UnitView[] _viewExtras;
 
         protected string _assetPath;
 
@@ -369,9 +367,9 @@ namespace GameA.Game
             get { return _view; }
         }
 
-        public UnitView View1
+        public UnitView[] ViewExtras
         {
-            get { return _view1; }
+            get { return _viewExtras; }
         }
 
         public Transform Trans
@@ -499,12 +497,10 @@ namespace GameA.Game
         /// <summary>
         /// 
         /// </summary>
-        internal void Init(Table_Unit tableUnit, byte dir)
+        internal void Init(UnitDesc unitDesc, Table_Unit tableUnit)
         {
+            _unitDesc = unitDesc;
             _tableUnit = tableUnit;
-            _unitDesc.Id = _tableUnit.Id;
-            _unitDesc.Rotation = dir;
-            _unitDesc.Scale = Vector3.one;
             InitAssetPath();
             UpdateExtraData();
             if (!InstantiateView())
@@ -551,7 +547,6 @@ namespace GameA.Game
                 _dynamicCollider = dynamicCollider;
             }
             _viewZOffset = 0;
-            _view1ZOffset = FrontZOffset;
             InitAssetPath();
             UpdateExtraData();
             OnInit();
@@ -589,15 +584,31 @@ namespace GameA.Game
                 LogHelper.Error("TryGetUnitView Failed, {0}", _tableUnit.Id);
                 return false;
             }
-            if (!string.IsNullOrEmpty(_tableUnit.Model1))
+            if (_tableUnit.ModelExtras != null && _tableUnit.ModelExtras.Length > 0)
             {
-                _assetPath = _tableUnit.Model1;
-                if (!UnitManager.Instance.TryGetUnitView(this,true, out _view1))
+                _viewExtras = new UnitView[_tableUnit.ModelExtras.Length];
+                for (int i = 0; i < _viewExtras.Length; i++)
                 {
-                    LogHelper.Error("TryGetUnitView Failed, {0}", _tableUnit.Id);
-                    return false;
+                    if (string.IsNullOrEmpty(_tableUnit.ModelExtras[i]))
+                    {
+                        continue;
+                    }
+                    _assetPath = _tableUnit.ModelExtras[i];
+                    if (!UnitManager.Instance.TryGetUnitView(this, true, out _viewExtras[i]))
+                    {
+                        LogHelper.Error("TryGetUnitView Failed, {0}", _tableUnit.Id);
+                        return false;
+                    }
+                    CommonTools.SetParent(_viewExtras[i].Trans, _trans);
+                    if (UnitDefine.IsPlant(Id))
+                    {
+                        _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsetsPlant[i] - _viewZOffset);
+                    }
+                    else
+                    {
+                        _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsets[i] - _viewZOffset);
+                    }
                 }
-                CommonTools.SetParent(_view1.Trans, _trans);
             }
             UpdateTransPos();
             SetFacingDir(_curMoveDirection, true);
@@ -735,10 +746,6 @@ namespace GameA.Game
                 min.y + _colliderGrid.YMax - _colliderGrid.YMin);
         }
 
-        public virtual void UpdateRenderer(float deltaTime)
-        {
-        }
-
         public virtual void OnSelectStateChanged(bool value)
         {
             if (value)
@@ -796,6 +803,10 @@ namespace GameA.Game
         /// 被电
         /// </summary>
         internal virtual void InLazer()
+        {
+        }
+        
+        internal virtual void InSaw()
         {
         }
         
@@ -858,7 +869,7 @@ namespace GameA.Game
 
         public bool Equals(UnitBase other)
         {
-            return other.Guid == _guid;
+            return other == this;
         }
 
         public override string ToString()
@@ -897,10 +908,6 @@ namespace GameA.Game
             if (_view != null)
             {
                 _trans.position = GetTransPos();
-                if (_view1 != null)
-                {
-                    _view1.Trans.position = _trans.position + new Vector3(0, 0, _view1ZOffset - _viewZOffset);
-                }
             }
         }
 
@@ -1427,26 +1434,17 @@ namespace GameA.Game
 
         protected void SetSortingOrderBackground()
         {
-            _viewZOffset = 20;
+            _viewZOffset = UnitDefine.ZOffsetBackground;
         }
         
         protected void SetSortingOrderFrontest()
         {
-            _viewZOffset = -100;
+            _viewZOffset = UnitDefine.ZOffsetFrontest;
         }
 
         protected void SetSortingOrderBack()
         {
-            _viewZOffset = BackZOffset;
-        }
-
-        protected void SetSortingOrderFront()
-        {
-            _viewZOffset = FrontZOffset;
-        }
-
-        protected void SetFront()
-        {
+            _viewZOffset = UnitDefine.ZOffsetBack;
         }
 
         public int GetRotation(byte rotation)
@@ -1482,7 +1480,7 @@ namespace GameA.Game
         internal virtual void OnObjectDestroy()
         {
             _view = null;
-            _view1 = null;
+            _viewExtras = null;
         }
 
         internal virtual void OnDispose()
@@ -1587,6 +1585,11 @@ namespace GameA.Game
         {
             state = null;
             return false;
+        }
+
+        public virtual bool ChangeWeapon(int id)
+        {
+            return true;
         }
 
         #endregion

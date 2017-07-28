@@ -10,6 +10,7 @@ namespace GameA.Game
     {
         protected Record _record;
         protected GM2DRecordData _gm2drecordData;
+        protected int _inputDataReadInx = 0;
 
         public virtual Record Record
         {
@@ -31,6 +32,31 @@ namespace GameA.Game
             GameRun.Instance.ChangeState(ESceneState.Play);
             InitUI();
             InitGame();
+        }
+
+
+        public override void Update()
+        {
+            GameRun.Instance.Update();
+            while (GameRun.Instance.LogicTimeSinceGameStarted < GameRun.Instance.GameTimeSinceGameStarted)
+            {
+                if (null != PlayerManager.Instance.MainPlayer)
+                {
+                    LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.PlayerInput as LocalPlayerInput;
+                    if (localPlayerInput != null)
+                    {
+                        localPlayerInput.PrepareForApplyInput();
+                        while (_inputDataReadInx < _inputDatas.Count-1
+                               && _inputDatas[_inputDataReadInx] == GameRun.Instance.LogicFrameCnt)
+                        {
+                            _inputDataReadInx++;
+                            localPlayerInput.ApplyKeyChangeCode(_inputDatas[_inputDataReadInx]);
+                            _inputDataReadInx++;
+                        }
+                    }
+                }
+                GameRun.Instance.UpdateLogic(ConstDefineGM2D.FixedDeltaTime);
+            }
         }
 
         public override void OnGameFailed()
@@ -67,8 +93,7 @@ namespace GameA.Game
 				GM2DGame.Instance.OnGameLoadError("录像解析失败");
                 return;
 			}
-			PlayMode.Instance.ERunMode = ERunMode.Record;
-            PlayMode.Instance.InputDatas.AddRange(_gm2drecordData.Data);
+            _inputDatas.AddRange(_gm2drecordData.Data);
         }
 
         protected virtual void InitUI()

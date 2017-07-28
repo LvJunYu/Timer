@@ -71,15 +71,6 @@ namespace GameA
             RefreshView();
         }
 
-        protected override void OnClose()
-        {
-            base.OnClose();
-//            if(LocalUser.Instance.Account.HasLogin)
-//            {
-//                _cachedView.SoyPersonalProjectList.OnClose();
-//            }
-        }
-
         protected override void InitEventListener()
         {
             base.InitEventListener();
@@ -91,7 +82,8 @@ namespace GameA
         {
             base.OnViewCreated();
 
-            _cachedView.ChangeModeBtn.onClick.AddListener(OnChangeModeBtn);
+            _cachedView.PublishedBtn.onClick.AddListener(OnChangeModeBtn);
+            _cachedView.WorkingOnBtn.onClick.AddListener(OnChangeModeBtn);
             _cachedView.NewProjectBtn.onClick.AddListener(OnNewProjectBtn);
             _cachedView.PublishBtn.onClick.AddListener (OnPublishBtn);
             _cachedView.DeleteBtn.onClick.AddListener (OnDeleteBtn);
@@ -129,9 +121,14 @@ namespace GameA
                         _curSelectedPrivateProject.Content.Summary,
                         null,
                         null,
-                        0,
                         _curSelectedPrivateProject.Content.PassFlag,
-                        _curSelectedPrivateProject.Content.RecordUsedTime,
+                        _curSelectedPrivateProject.Content.PassFlag,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
                         null,
                         _curSelectedPrivateProject.Content.TimeLimit,
                         _curSelectedPrivateProject.Content.WinCondition,
@@ -151,9 +148,14 @@ namespace GameA
                                 project.Summary,
                                 null,
                                 null,
-                                0,
                                 project.PassFlag,
-                                project.RecordUsedTime,
+                                project.PassFlag,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
                                 null,
                                 project.TimeLimit,
                                 project.WinCondition,

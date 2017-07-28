@@ -39,7 +39,10 @@ namespace GameA
                 }
                 projectId = project.ProjectId;
             }
-            long.TryParse(projectIdStr, out projectId);
+            else
+            {
+                long.TryParse(projectIdStr, out projectId);
+            }
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "创建中");
             RoomManager.Instance.Room.Create(EBattleType.EBT_PVE, projectId, () =>
             {

@@ -557,7 +557,7 @@ namespace GameA
 		/// <param name="programVersion"></param>
 		/// <param name="resourceVersion"></param>
 		/// <param name="passFlag"></param>
-		/// <param name="recordUsedTime"></param>
+		/// <param name="recordUploadParam"></param>
 		/// <param name="timeLimit">时间限制</param>
 		/// <param name="winCondition">胜利条件</param>
 		/// <param name="uploadParam">上传参数</param>
@@ -567,7 +567,7 @@ namespace GameA
             int programVersion,
             int resourceVersion,
             bool passFlag,
-            float recordUsedTime,
+            Msg_RecordUploadParam recordUploadParam,
             int timeLimit,
             int winCondition,
             Msg_ProjectUploadParam uploadParam,
@@ -585,7 +585,7 @@ namespace GameA
             msg.ProgramVersion = programVersion;
             msg.ResourceVersion = resourceVersion;
             msg.PassFlag = passFlag;
-            msg.RecordUsedTime = recordUsedTime;
+            msg.RecordUploadParam = recordUploadParam;
             msg.TimeLimit = timeLimit;
             msg.WinCondition = winCondition;
             msg.UploadParam = uploadParam;
@@ -619,7 +619,7 @@ namespace GameA
 		/// <param name="programVersion"></param>
 		/// <param name="resourceVersion"></param>
 		/// <param name="passFlag"></param>
-		/// <param name="recordUsedTime"></param>
+		/// <param name="recordUploadParam"></param>
 		/// <param name="timeLimit">时间限制</param>
 		/// <param name="winCondition">胜利条件</param>
 		/// <param name="uploadParam">上传参数</param>
@@ -630,7 +630,7 @@ namespace GameA
             int programVersion,
             int resourceVersion,
             bool passFlag,
-            float recordUsedTime,
+            Msg_RecordUploadParam recordUploadParam,
             int timeLimit,
             int winCondition,
             Msg_ProjectUploadParam uploadParam,
@@ -649,7 +649,7 @@ namespace GameA
             msg.ProgramVersion = programVersion;
             msg.ResourceVersion = resourceVersion;
             msg.PassFlag = passFlag;
-            msg.RecordUsedTime = recordUsedTime;
+            msg.RecordUploadParam = recordUploadParam;
             msg.TimeLimit = timeLimit;
             msg.WinCondition = winCondition;
             msg.UploadParam = uploadParam;
@@ -719,7 +719,7 @@ namespace GameA
 		/// <param name="summary"></param>
 		/// <param name="programVersion"></param>
 		/// <param name="resourceVersion"></param>
-		/// <param name="recordUsedTime"></param>
+		/// <param name="recordUploadParam">录像上传参数</param>
 		/// <param name="timeLimit">时间限制</param>
 		/// <param name="winCondition">胜利条件</param>
 		/// <param name="uploadParam">上传参数</param>
@@ -729,7 +729,7 @@ namespace GameA
             string summary,
             int programVersion,
             int resourceVersion,
-            float recordUsedTime,
+            Msg_RecordUploadParam recordUploadParam,
             int timeLimit,
             int winCondition,
             Msg_ProjectUploadParam uploadParam,
@@ -747,7 +747,7 @@ namespace GameA
             msg.Summary = summary;
             msg.ProgramVersion = programVersion;
             msg.ResourceVersion = resourceVersion;
-            msg.RecordUsedTime = recordUsedTime;
+            msg.RecordUploadParam = recordUploadParam;
             msg.TimeLimit = timeLimit;
             msg.WinCondition = winCondition;
             msg.UploadParam = uploadParam;
@@ -850,24 +850,10 @@ namespace GameA
 		/// 提交过关世界关卡数据
 		/// </summary>
 		/// <param name="token">关卡Id</param>
-		/// <param name="success"></param>
-		/// <param name="deadPos"></param>
-		/// <param name="usedTime"></param>
-		/// <param name="score">最终得分</param>
-		/// <param name="scoreItemCount">奖分道具数</param>
-		/// <param name="killMonsterCount">击杀怪物数</param>
-		/// <param name="leftTime">剩余时间数</param>
-		/// <param name="leftLife">剩余生命</param>
+		/// <param name="recordUploadParam">录像上传参数</param>
         public static void CommitWorldProjectResult (
             long token,
-            bool success,
-            byte[] deadPos,
-            float usedTime,
-            int score,
-            int scoreItemCount,
-            int killMonsterCount,
-            int leftTime,
-            int leftLife,
+            Msg_RecordUploadParam recordUploadParam,
             Action<Msg_SC_CMD_CommitWorldProjectResult> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -878,14 +864,7 @@ namespace GameA
             Msg_CS_CMD_CommitWorldProjectResult msg = new Msg_CS_CMD_CommitWorldProjectResult();
             // 提交过关世界关卡数据
             msg.Token = token;
-            msg.Success = success;
-            msg.DeadPos = deadPos;
-            msg.UsedTime = usedTime;
-            msg.Score = score;
-            msg.ScoreItemCount = scoreItemCount;
-            msg.KillMonsterCount = killMonsterCount;
-            msg.LeftTime = leftTime;
-            msg.LeftLife = leftLife;
+            msg.RecordUploadParam = recordUploadParam;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CommitWorldProjectResult>(
                 SoyHttpApiPath.CommitWorldProjectResult, msg, ret => {
                     if (successCallback != null) {
@@ -1385,30 +1364,10 @@ namespace GameA
 		/// 提交冒险模式数据
 		/// </summary>
 		/// <param name="token">令牌</param>
-		/// <param name="success">是否过关</param>
-		/// <param name="usedTime">使用的时间</param>
-		/// <param name="star1Flag">星1标志</param>
-		/// <param name="star2Flag">星2标志</param>
-		/// <param name="star3Flag">星3标志</param>
-		/// <param name="score">最终得分</param>
-		/// <param name="scoreItemCount">奖分道具数</param>
-		/// <param name="killMonsterCount">击杀怪物数</param>
-		/// <param name="leftTime">剩余时间数</param>
-		/// <param name="leftLife">剩余生命</param>
-		/// <param name="deadPos">死亡位置</param>
+		/// <param name="recordUploadParam">录像上传参数</param>
         public static void CommitAdventureLevelResult (
             long token,
-            bool success,
-            float usedTime,
-            bool star1Flag,
-            bool star2Flag,
-            bool star3Flag,
-            int score,
-            int scoreItemCount,
-            int killMonsterCount,
-            int leftTime,
-            int leftLife,
-            byte[] deadPos,
+            Msg_RecordUploadParam recordUploadParam,
             Action<Msg_SC_CMD_CommitAdventureLevelResult> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -1419,17 +1378,7 @@ namespace GameA
             Msg_CS_CMD_CommitAdventureLevelResult msg = new Msg_CS_CMD_CommitAdventureLevelResult();
             // 提交冒险模式数据
             msg.Token = token;
-            msg.Success = success;
-            msg.UsedTime = usedTime;
-            msg.Star1Flag = star1Flag;
-            msg.Star2Flag = star2Flag;
-            msg.Star3Flag = star3Flag;
-            msg.Score = score;
-            msg.ScoreItemCount = scoreItemCount;
-            msg.KillMonsterCount = killMonsterCount;
-            msg.LeftTime = leftTime;
-            msg.LeftLife = leftLife;
-            msg.DeadPos = deadPos;
+            msg.RecordUploadParam = recordUploadParam;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CommitAdventureLevelResult>(
                 SoyHttpApiPath.CommitAdventureLevelResult, msg, ret => {
                     if (successCallback != null) {
@@ -1572,14 +1521,14 @@ namespace GameA
 		/// <param name="programVersion"></param>
 		/// <param name="resourceVersion"></param>
 		/// <param name="passFlag">是否已经通过</param>
-		/// <param name="recordUsedTime">过关使用时间</param>
+		/// <param name="recordUploadParam">录像上传参数</param>
 		/// <param name="uploadParam">上传参数</param>
         public static void SaveReformProject (
             long projectId,
             int programVersion,
             int resourceVersion,
             bool passFlag,
-            float recordUsedTime,
+            Msg_RecordUploadParam recordUploadParam,
             Msg_ProjectUploadParam uploadParam,
             Action<Msg_SC_CMD_SaveReformProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
@@ -1594,7 +1543,7 @@ namespace GameA
             msg.ProgramVersion = programVersion;
             msg.ResourceVersion = resourceVersion;
             msg.PassFlag = passFlag;
-            msg.RecordUsedTime = recordUsedTime;
+            msg.RecordUploadParam = recordUploadParam;
             msg.UploadParam = uploadParam;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_SaveReformProject>(
                 SoyHttpApiPath.SaveReformProject, msg, ret => {
@@ -1623,13 +1572,13 @@ namespace GameA
 		/// <param name="personalProjectId"></param>
 		/// <param name="programVersion"></param>
 		/// <param name="resourceVersion"></param>
-		/// <param name="recordUsedTime"></param>
+		/// <param name="recordUploadParam">录像上传参数</param>
 		/// <param name="uploadParam">上传参数</param>
         public static void PublishReformProject (
             long personalProjectId,
             int programVersion,
             int resourceVersion,
-            float recordUsedTime,
+            Msg_RecordUploadParam recordUploadParam,
             Msg_ProjectUploadParam uploadParam,
             Action<Msg_SC_CMD_PublishReformProject> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
@@ -1643,7 +1592,7 @@ namespace GameA
             msg.PersonalProjectId = personalProjectId;
             msg.ProgramVersion = programVersion;
             msg.ResourceVersion = resourceVersion;
-            msg.RecordUsedTime = recordUsedTime;
+            msg.RecordUploadParam = recordUploadParam;
             msg.UploadParam = uploadParam;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_PublishReformProject>(
                 SoyHttpApiPath.PublishReformProject, msg, ret => {
@@ -1784,12 +1733,10 @@ namespace GameA
 		/// 提交匹配挑战关卡数据
 		/// </summary>
 		/// <param name="token">令牌</param>
-		/// <param name="success">是否过关</param>
-		/// <param name="usedTime">使用的时间</param>
+		/// <param name="recordUploadParam">录像上传参数</param>
         public static void CommitMatchChallengeLevelResult (
             long token,
-            bool success,
-            float usedTime,
+            Msg_RecordUploadParam recordUploadParam,
             Action<Msg_SC_CMD_CommitMatchChallengeLevelResult> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
 
@@ -1800,8 +1747,7 @@ namespace GameA
             Msg_CS_CMD_CommitMatchChallengeLevelResult msg = new Msg_CS_CMD_CommitMatchChallengeLevelResult();
             // 提交匹配挑战关卡数据
             msg.Token = token;
-            msg.Success = success;
-            msg.UsedTime = usedTime;
+            msg.RecordUploadParam = recordUploadParam;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CommitMatchChallengeLevelResult>(
                 SoyHttpApiPath.CommitMatchChallengeLevelResult, msg, ret => {
                     if (successCallback != null) {

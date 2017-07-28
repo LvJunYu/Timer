@@ -10,11 +10,10 @@ namespace GameA
         public Texture DefaultCoverTexture;
         
         public Button ReturnBtn;
-        public Button ChangeModeBtn;
+        public Button PublishedBtn;
+        public Button WorkingOnBtn;
+
         public Text ChangeModeBtnText;
-
-
-
         public GameObject Private;
         // private project info detail
         public RawImage Cover;

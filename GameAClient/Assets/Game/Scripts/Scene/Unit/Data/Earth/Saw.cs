@@ -14,9 +14,28 @@ namespace GameA.Game
     [Unit(Id = 4005, Type = typeof(Saw))]
     public class Saw : BlockBase
     {
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            InitAssetRotation();
+            return true;
+        }
+        
+        protected override void Clear()
+        {
+            base.Clear();
+            if (_animation != null)
+            {
+                _animation.Reset();
+            }
+        }
+
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (!checkOnly && other.IsActor && Rotation == (int) EDirectionType.Up)
+            if (!checkOnly && Rotation == (int) EDirectionType.Up)
             {
                 OnEffect(other, EDirectionType.Up);
             }
@@ -25,7 +44,7 @@ namespace GameA.Game
 
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (!checkOnly && other.IsActor && Rotation == (int) EDirectionType.Down)
+            if (!checkOnly && Rotation == (int) EDirectionType.Down)
             {
                 OnEffect(other, EDirectionType.Down);
             }
@@ -34,7 +53,7 @@ namespace GameA.Game
 
         public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (!checkOnly && other.IsActor && Rotation == (int) EDirectionType.Left)
+            if (!checkOnly && Rotation == (int) EDirectionType.Left)
             {
                 OnEffect(other, EDirectionType.Left);
             }
@@ -43,7 +62,7 @@ namespace GameA.Game
 
         public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (!checkOnly && other.IsActor && Rotation == (int) EDirectionType.Right)
+            if (!checkOnly && Rotation == (int) EDirectionType.Right)
             {
                 OnEffect(other, EDirectionType.Right);
             }
@@ -52,7 +71,14 @@ namespace GameA.Game
 
         private void OnEffect(UnitBase other, EDirectionType eDirectionType)
         {
-            other.OnHpChanged(-99999);
+            if (other.IsActor)
+            {
+                other.InSaw();
+                if (_animation != null)
+                {
+                    _animation.PlayOnce((EDirectionType) Rotation + "Start");
+                }
+            }
         }
     }
 }

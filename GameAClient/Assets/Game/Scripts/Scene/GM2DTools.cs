@@ -402,7 +402,7 @@ namespace GameA.Game
             res.RollerDirection = (byte)data.RollerDirection;
             res.Msg = data.Msg;
             res.UnitChild = ToProto(data.Child);
-            res.EnergyType = data.EnergyType;
+            res.EnergyType = data.UnitValue;
             return res;
         }
 

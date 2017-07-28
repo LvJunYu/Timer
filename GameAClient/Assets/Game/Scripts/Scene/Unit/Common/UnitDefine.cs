@@ -8,11 +8,24 @@
 using System;
 using System.Collections;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
     public class UnitDefine
     {
+        public static Vector2 HidePos = Vector3.one * -5;
+        public static int EnergyTimer = 30 * ConstDefineGM2D.FixedFrameCount;
+
+        public const int ZOffsetBackground = 100;
+        public const int ZOffsetFrontest = -100;
+
+        public const float ZOffsetBack = 0.25f;
+        public const float ZOffsetFront = -0.25f;
+        
+        public static float[] ZOffsets = new float[2]{ZOffsetFrontest, ZOffsetFront};
+        public static float[] ZOffsetsPlant = new float[2]{ZOffsetFrontest, ZOffsetBack};
+
         public const int FanRange = 30;
         public const int FanForce = 20;
         
@@ -49,9 +62,9 @@ namespace GameA.Game
             return id < 3000 && id > 2000;
         }
 
-        public static bool IsEnergy(int id)
+        public static bool IsBindWeapon(int id)
         {
-            return id >= 6101 && id <= 6105;
+            return id == 8001 || id == 5015 || id == 5016;
         }
 
         public static bool IsSwitch(int id)
@@ -61,7 +74,7 @@ namespace GameA.Game
 
         public static bool IsFakePart(int one, int other)
         {
-            return (one == 4001 && other == 4013) || (one == 4013 && other == 4001);
+            return (one == 4001 && other == 4002) || (one == 4002 && other == 4001);
         }
 
         public static bool IsEarth(int id)
@@ -90,7 +103,7 @@ namespace GameA.Game
 
         public static bool IsBoard(int id)
         {
-            return id == 7001 || id == 7101 || id == 7102 || id == 7103 || id == 7104;
+            return id == BillboardId || id == 7101 || id == 7102 || id == 7103 || id == 7104;
         }
 
         public static bool IsBullet(int id)
@@ -105,7 +118,7 @@ namespace GameA.Game
 
         public static bool IsEditClick(int id)
         {
-            return id == 7001 || IsEnergy(id);
+            return id == BillboardId || IsBindWeapon(id);
         }
 
         public static bool IsSameDirectionSwitchTrigger(SceneNode node, byte rotation)
@@ -150,7 +163,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            return (tableUnit.EGeneratedType == EGeneratedType.Spine && !IsHero(tableUnit.Id) && !IsBullet(tableUnit.Id)) || IsEnergy(tableUnit.Id) || tableUnit.Id == FinalDoorId;
+            return (tableUnit.EGeneratedType == EGeneratedType.Spine && !IsHero(tableUnit.Id) && !IsBullet(tableUnit.Id)) || IsBindWeapon(tableUnit.Id) || tableUnit.Id == FinalDoorId;
         }
     }
 }

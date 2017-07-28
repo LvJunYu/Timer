@@ -57,14 +57,5 @@ namespace GameA.Game
                     break;
             }
         }
-
-        public void UpdateRenderer(float deltaTime)
-        {
-            var allUnits = ColliderScene2D.Instance.AllUnits;
-            for (int i = 0; i < allUnits.Count; i++)
-            {
-                allUnits[i].UpdateRenderer(deltaTime);
-            }
-        }
     }
 }

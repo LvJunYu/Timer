@@ -44,6 +44,10 @@ namespace GameA.Game
             _animation.Set();
             _renderer = _skeletonAnimation.GetComponent<Renderer>();
             _renderer.sortingOrder = UnitManager.Instance.GetSortingOrder(_unit.TableUnit);
+            //if (_unit.TableUnit.Id == UnitDefine.PlayerTableId)
+            //{
+                //InitialStatusBar();
+            //}
             return true;
         }
 

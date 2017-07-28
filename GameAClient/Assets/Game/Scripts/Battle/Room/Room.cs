@@ -215,7 +215,7 @@ namespace GameA.Game
             {
                 var user = new RoomUser();
                 user.Init(msgUser.UserGuid, msgUser.UserName, msgUser.Ready == 1);
-                _users.Add(new RoomUser());
+                _users.Add(user);
             });
             SetRoomInfo(ret.HostUserGuid, ret.RoomGuid, ret.ProjectGuid, ret.EBattleType);
             Messenger.Broadcast(EMessengerType.OnRoomInfoChanged);
@@ -234,7 +234,6 @@ namespace GameA.Game
             _id = roomGuid;
             _projectId = projectId;
             _eBattleType = eBattleType;
-            _eRoomState = ERoomState.Created;
         }
 
         public bool AddUser(RoomUser user)
@@ -326,7 +325,7 @@ namespace GameA.Game
                     if (user.Guid == exitGuid)
                     {
                         _users.Remove(user);
-                        PoolFactory<RoomUser>.Free(user);
+//                        PoolFactory<RoomUser>.Free(user);
                     }
                     else if (user.Guid == hostGuid)
                     {
@@ -360,11 +359,16 @@ namespace GameA.Game
         {
             //开启战场！
             _eRoomState = ERoomState.OpenBattle;
+            PlayerManager.Instance.SetUserData(_users);
             Messenger.Broadcast(EMessengerType.OnOpenBattle);
         }
 
         public bool CanStart()
         {
+            if (_users.Count != 2)
+            {
+                return false;
+            }
             foreach (var roomUser in _users)
             {
                 if (!roomUser.Ready && roomUser.Guid != LocalUser.Instance.UserGuid)

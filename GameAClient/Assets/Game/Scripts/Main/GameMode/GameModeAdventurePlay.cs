@@ -111,12 +111,10 @@ namespace GameA.Game
 
 		private void CommitGameResult(Action successCB, Action<ENetResultCode> failureCB)
 		{
-			float usedTime = PlayMode.Instance.GameSuccessFrameCnt * ConstDefineGM2D.FixedDeltaTime;
-
 			//SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "提交成绩中...");
 			AppData.Instance.AdventureData.CommitLevelResult(
 				PlayMode.Instance.SceneState.GameSucceed,
-                usedTime,
+				PlayMode.Instance.GameSuccessFrameCnt,
                 PlayMode.Instance.SceneState.CurScore,
                 PlayMode.Instance.SceneState.GemGain,
                 PlayMode.Instance.SceneState.MonsterKilled,
@@ -159,7 +157,7 @@ namespace GameA.Game
             GM2DRecordData recordData = new GM2DRecordData ();
             recordData.Version = GM2DGame.Version;
             recordData.FrameCount = ConstDefineGM2D.FixedFrameCount;
-            recordData.Data.AddRange(PlayMode.Instance.InputDatas);
+            recordData.Data.AddRange(_inputDatas);
             recordData.BoostItem = new BoostItemData ();
             recordData.BoostItem.ExtraLife = PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_AddLifeCount1) ? 1 : 0;
             recordData.BoostItem.InvinsibleOnDead = PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_DeadInvincibleCount1) ? 1 : 0;

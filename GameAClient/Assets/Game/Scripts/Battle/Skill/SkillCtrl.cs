@@ -5,8 +5,6 @@
 ** Summary : SkillCtrl
 ***********************************************************************/
 
-using System;
-using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 
@@ -48,7 +46,6 @@ namespace GameA.Game
 
             _currentMp = _mpTotal;
             _currentRp = _rpTotal;
-            
             LogHelper.Debug("{0} | {1}", _mpRecover, _rpRecover);
         }
 
@@ -59,13 +56,13 @@ namespace GameA.Game
                 var skillId = skillIds[i];
                 if (!CheckValid(i))
                 {
-                    return false;
+                    continue;
                 }
                 if (_currentSkills[i] != null)
                 {
                     if (_currentSkills[i].Id== skillId)
                     {
-                        return false;
+                        continue;
                     }
                     _currentSkills[i].Exit();
                     _currentSkills[i] = null;
@@ -129,6 +126,24 @@ namespace GameA.Game
             }
             UpdateMp(-skill.MpCost);
             UpdateRp(-skill.RpCost);
+            return true;
+        }
+        
+        public bool FireForever(int trackIndex)
+        {
+            if (!CheckValid(trackIndex))
+            {
+                return false;
+            }
+            var skill = _currentSkills[trackIndex];
+            if (skill == null)
+            {
+                return false;
+            }
+            if (!skill.Fire())
+            {
+                return false;
+            }
             return true;
         }
 

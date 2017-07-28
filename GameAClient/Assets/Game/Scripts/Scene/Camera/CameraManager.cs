@@ -168,7 +168,7 @@ namespace GameA.Game
             c.transparencySortMode = TransparencySortMode.Orthographic;
             c.orthographicSize = ConstDefineGM2D.CameraOrthoSizeOnPlay;
             c.nearClipPlane = -200;
-            c.farClipPlane = 20;
+            c.farClipPlane = 200;
             c.enabled = false;
             return c;
         }
@@ -179,6 +179,8 @@ namespace GameA.Game
 
         public void Dispose()
         {
+            UnityEngine.Object.Destroy(_mainCamera.gameObject);
+            _instance = null;
         }
 
         #endregion

@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using SoyEngine;
+using SoyEngine.Proto;
 
 namespace GameA.Game
 {
@@ -17,6 +18,7 @@ namespace GameA.Game
         protected long _guid;
         protected string _name;
         protected bool _ready;
+        protected int _inx;
 
         public string Name
         {
@@ -43,12 +45,21 @@ namespace GameA.Game
             _guid = 0;
             _name = null;
             _ready = false;
+            _inx = 0;
         }
 
         public void OnDestroyObject()
         {
         }
 
+        public void Set(Msg_RC_RoomUserInfo roomUserInfo)
+        {
+            _guid = roomUserInfo.UserGuid;
+            _name = roomUserInfo.UserName;
+            _ready = roomUserInfo.Ready == 1;
+            _inx = roomUserInfo.inx;
+        }
+        
         public void Init(long guid, string name, bool ready)
         {
             _guid = guid;
@@ -56,9 +67,5 @@ namespace GameA.Game
             _ready = ready;
         }
 
-        public override string ToString()
-        {
-            return string.Format("Guid: {0}, Name: {1}, Ready: {2}", _guid, _name, _ready);
-        }
     }
 }

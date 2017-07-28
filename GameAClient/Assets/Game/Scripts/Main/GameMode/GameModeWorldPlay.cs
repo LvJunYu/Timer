@@ -1,8 +1,9 @@
 ﻿using System;
-using SoyEngine.Proto;
-using SoyEngine;
-using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using SoyEngine;
+using SoyEngine.Proto;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -28,12 +29,11 @@ namespace GameA.Game
         public override void OnGameFailed()
 		{
 			byte[] record = GetRecord();
-			float usedTime = Game.PlayMode.Instance.GameFailFrameCnt * Game.ConstDefineGM2D.FixedDeltaTime;
 
 			SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
             _project.CommitPlayResult(
                 false,
-                usedTime,
+                PlayMode.Instance.GameFailFrameCnt,
                 PlayMode.Instance.SceneState.CurScore,
                 PlayMode.Instance.SceneState.GemGain,
                 PlayMode.Instance.SceneState.MonsterKilled,
@@ -52,10 +52,10 @@ namespace GameA.Game
 			    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
 			    if (!PlayMode.Instance.SceneState.GameFailed) return;
 			    CommonTools.ShowPopupDialog("游戏成绩提交失败", null,
-			        new System.Collections.Generic.KeyValuePair<string, Action>("重试", ()=>{
+			        new KeyValuePair<string, Action>("重试", ()=>{
                         CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnGameFailed));
 			        }), 
-			        new System.Collections.Generic.KeyValuePair<string, Action>("跳过", ()=>{
+			        new KeyValuePair<string, Action>("跳过", ()=>{
 			            //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
                         SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Lose);
 			        }));
@@ -65,12 +65,11 @@ namespace GameA.Game
         public override void OnGameSuccess()
 		{
 			byte[] record = GetRecord();
-			float usedTime = Game.PlayMode.Instance.GameSuccessFrameCnt * Game.ConstDefineGM2D.FixedDeltaTime;
 
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "");
             _project.CommitPlayResult(
                 true,
-                usedTime,
+                PlayMode.Instance.GameSuccessFrameCnt,
                 PlayMode.Instance.SceneState.CurScore,
                 PlayMode.Instance.SceneState.GemGain,
                 PlayMode.Instance.SceneState.MonsterKilled,
@@ -89,10 +88,10 @@ namespace GameA.Game
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 if (!PlayMode.Instance.SceneState.GameFailed) return;
                 CommonTools.ShowPopupDialog("游戏成绩提交失败", null,
-                    new System.Collections.Generic.KeyValuePair<string, Action>("重试", ()=>{
+                    new KeyValuePair<string, Action>("重试", ()=>{
                         CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(OnGameFailed));
                     }), 
-                    new System.Collections.Generic.KeyValuePair<string, Action>("跳过", ()=>{
+                    new KeyValuePair<string, Action>("跳过", ()=>{
                         //GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
                         SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Win);
                     }));
@@ -118,7 +117,7 @@ namespace GameA.Game
             GM2DRecordData recordData = new GM2DRecordData();
             recordData.Version = GM2DGame.Version;
             recordData.FrameCount = ConstDefineGM2D.FixedFrameCount;
-            recordData.Data.AddRange(PlayMode.Instance.InputDatas);
+            recordData.Data.AddRange(_inputDatas);
             byte[] recordByte = GameMapDataSerializer.Instance.Serialize(recordData);
             byte[] record = null;
             if(recordByte == null)

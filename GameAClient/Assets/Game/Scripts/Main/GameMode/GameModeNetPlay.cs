@@ -5,7 +5,6 @@
 ** Summary : GameModeNetPlay
 ***********************************************************************/
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using SoyEngine.Proto;
@@ -17,7 +16,9 @@ namespace GameA.Game
     {
         protected Dictionary<long, PlayerBase> _players = new Dictionary<long, PlayerBase>();
         protected bool _startBattleMsg;
-
+        protected Queue<Msg_RC_FrameInputData> _serverInputFrameQueue = new Queue<Msg_RC_FrameInputData>(128);
+        protected float _frameLeftTime;
+        
         public override bool Stop()
         {
             if (!base.Stop())
@@ -40,6 +41,7 @@ namespace GameA.Game
         public override void OnGameStart()
         {
             base.OnGameStart();
+            SendEnterBattle();
             _coroutineProxy.StopAllCoroutines();
             _coroutineProxy.StartCoroutine(GameFlow());
         }
@@ -50,6 +52,65 @@ namespace GameA.Game
             UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
             yield return new WaitUntil(() => uictrlCountDown.ShowComplete);
             GameRun.Instance.Playing();
+        }
+
+        public override void Update()
+        {
+            GameRun.Instance.Update();
+            _frameLeftTime += Time.deltaTime;
+            while (_serverInputFrameQueue.Count > 0)
+            {
+                var needFrameTime = 50f / (_serverInputFrameQueue.Count + 46) * ConstDefineGM2D.FixedDeltaTime;
+                if (_frameLeftTime > needFrameTime)
+                {
+                    _frameLeftTime -= needFrameTime;
+                }
+                else
+                {
+                    break;
+                }
+                if (null != PlayerManager.Instance.MainPlayer)
+                {
+                    LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.PlayerInput as LocalPlayerInput;
+                    if (localPlayerInput != null)
+                    {
+                        localPlayerInput.ProcessCheckInput();
+                        List<int> curInput = localPlayerInput.CurCheckInputChangeList;
+                        if (curInput.Count > 0)
+                        {
+                            SendInputDatas(GameRun.Instance.LogicFrameCnt, curInput);
+                        }
+                    }
+                }
+                
+                Msg_RC_FrameInputData frameInputData = _serverInputFrameQueue.Dequeue();
+                PlayerManager pm = PlayerManager.Instance;
+                for (int i = 0; i < pm.PlayerList.Count; i++)
+                {
+                    PlayerBase playerBase = pm.PlayerList[i];
+                    Msg_RC_UserInputData userInputData =
+                        frameInputData.UserInputDatas.Find(m => m.UserRoomInx == i);
+                    if (userInputData == null)
+                    {
+                        playerBase.PlayerInput.ApplyInputData(null);
+                    }
+                    else
+                    {
+                        playerBase.PlayerInput.ApplyInputData(userInputData.InputDatas);
+                    }
+                }
+                GameRun.Instance.UpdateLogic(ConstDefineGM2D.FixedDeltaTime);
+            }
+            if (_serverInputFrameQueue.Count == 0)
+            {
+                _frameLeftTime = 0;
+            }
+        }
+
+        public override bool IsPlayerCharacterAbilityAvailable(PlayerBase player, ECharacterAbility eCharacterAbility)
+        {
+            //TODO 临时 应该使用Player的数据判断
+            return true;
         }
 
         #region Send
@@ -70,10 +131,13 @@ namespace GameA.Game
             SendToServer(msg);
         }
 
-        public void SendInputDatas(List<int> datas)
+        public void SendInputDatas(int frameInx, List<int> datas)
         {
             var msg = new Msg_CR_InputDatas();
-            msg.InputDatas.AddRange(datas);
+            Msg_CR_FrameInputData msgFrame = new Msg_CR_FrameInputData();
+            msgFrame.FrameInx = frameInx;
+            msgFrame.InputDatas.AddRange(datas);
+            msg.InputFrames.Add(msgFrame);
             SendToServer(msg);
         }
 
@@ -95,31 +159,6 @@ namespace GameA.Game
 
         #region Receive
 
-        internal void OnBattleOpen(Room room)
-        {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, string.Format("请求进入关卡"));
-            var project = new Project();
-            project.Request(room.ProjectId,
-                () => project.RequestPlay(() =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    GameManager.Instance.RequestPlayMultiCooperation(project);
-                    SocialGUIManager.Instance.ChangeToGameMode();
-                    //成功进入战场
-                    SendEnterBattle();
-                },
-                    error =>
-                    {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                        SocialGUIManager.ShowPopupDialog("进入关卡失败");
-                    }),
-                error =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    SocialGUIManager.ShowPopupDialog("进入关卡失败");
-                });
-        }
-
         internal void OnUserEnterBattle(Msg_RC_UserEnterBattle msg)
         {
 
@@ -132,6 +171,7 @@ namespace GameA.Game
 
         internal void OnInputDatas(Msg_RC_InputDatas msg)
         {
+            _serverInputFrameQueue.Enqueue(msg.InputFrames[0]);
         }
 
         internal void OnUserExitBattle(Msg_RC_UserExitBattle msg)

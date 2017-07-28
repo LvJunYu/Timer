@@ -51,13 +51,6 @@ namespace GameA
 
         #region 属性
 
-
-        public int DownloadPrice
-        {
-            get { return _downloadPrice; }
-            set { _downloadPrice = value; }
-        }
-
         public int LikeCount
         {
             get
@@ -290,9 +283,14 @@ namespace GameA
             string summary,
             byte[] dataBytes,
             byte[] iconBytes,
-            int downloadPrice,
             bool passFlag,
-            float recordUsedTime, 
+            bool success,
+            int usedTime,
+            int score,
+            int scoreItemCount,
+            int killMonsterCount,
+            int leftTime,
+            int leftLife,
             byte[] recordBytes,
             int timeLimit,
             int winCondition,
@@ -306,7 +304,7 @@ namespace GameA
             }
             if (string.IsNullOrEmpty(name))
             {
-                name = string.Format("我的匠游大作");
+                name = "我的匠游大作";
             }
             Name = name;
             Summary = summary;
@@ -331,6 +329,17 @@ namespace GameA
             {
                 RefreshProjectUploadParam();
             }
+            Msg_RecordUploadParam recordUploadParam = new Msg_RecordUploadParam()
+            {
+                Success = success,
+                UsedTime = usedTime,
+                Score = score,
+                ScoreItemCount = scoreItemCount,
+                KillMonsterCount = killMonsterCount,
+                LeftTime = leftTime,
+                LeftLife = leftLife,
+                DeadPos = null
+            };
             if (LocalDataState == ELocalDataState.LDS_UnCreated) {
                 RemoteCommands.CreateProject (
                     Name,
@@ -338,7 +347,7 @@ namespace GameA
                     ProgramVersion,
                     ResourcesVersion,
                     passFlag,
-                    recordUsedTime,
+                    recordUploadParam,
                     timeLimit,
                     winCondition,
                     GetMsgProjectUploadParam(),
@@ -376,7 +385,7 @@ namespace GameA
                     ProgramVersion,
                     ResourcesVersion,
                     passFlag,
-                    recordUsedTime,
+                    recordUploadParam,
                     timeLimit,
                     winCondition,
                     // 如果是在工坊界面修改关卡的信息，就不必传附加参数
@@ -427,7 +436,7 @@ namespace GameA
                 _summary,
                 _programVersion,
                 _resourcesVersion,
-                _recordUsedTime,
+                null,
                 _timeLimit,
                 _winCondition,
                 null,
@@ -507,9 +516,15 @@ namespace GameA
                 }
                 return;
             }
-            _downloadResSucceedCB -= successCallback;
+            if (_downloadResSucceedCB != null)
+            {
+                _downloadResSucceedCB -= successCallback;
+            }
             _downloadResSucceedCB += successCallback;
-            _downloadResFailedCB -= failedCallback;
+            if (_downloadResFailedCB != null)
+            {
+                _downloadResFailedCB -= failedCallback;
+            }
             _downloadResFailedCB += failedCallback;
             if (_isdownloadingRes) {
                 return;
@@ -658,7 +673,7 @@ namespace GameA
 
         public void CommitPlayResult(
             bool success,
-            float usedTime,
+            int usedTime,
             int score,
             int scoreItemCount,
             int killMonsterCount,
@@ -678,17 +693,24 @@ namespace GameA
                     return;
                 }
                 WWWForm wwwForm = new WWWForm();
-                wwwForm.AddBinaryData("recordFile", recordBytes);
+                if (recordBytes != null)
+                {
+                    wwwForm.AddBinaryData("recordFile", recordBytes);
+                }
+                Msg_RecordUploadParam recordUploadParam = new Msg_RecordUploadParam()
+                {
+                    Success = success,
+                    UsedTime = usedTime,
+                    Score = score,
+                    ScoreItemCount = scoreItemCount,
+                    KillMonsterCount = killMonsterCount,
+                    LeftTime = leftTime,
+                    LeftLife = leftLife,
+                    DeadPos = deadPos
+                };
                 RemoteCommands.CommitWorldProjectResult(
                     _commitToken,
-                    success,
-                    deadPos,
-                    usedTime,
-                    score,
-                    scoreItemCount,
-                    killMonsterCount,
-                    leftTime,
-                    leftLife,
+                    recordUploadParam,
                     ret => {
                     if (ret.ResultCode == (int)ECommitWorldProjectResultCode.CWPRC_Success)
                     {
@@ -767,7 +789,6 @@ namespace GameA
             p.IconPath = "" + LocalCacheManager.Instance.GetLocalGuid() + ".jpg";
             p.ProjectStatus = EProjectStatus.PS_Private;
             p.CreateTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
-            p.DownloadPrice = 0;
             p._passFlag = false;
             return p;
         }
