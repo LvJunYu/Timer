@@ -15,6 +15,7 @@ namespace GameA.Game
     public class UnitDefine
     {
         public static Vector2 HidePos = Vector3.one * -5;
+        public static int EnergyTimer = 10 * ConstDefineGM2D.FixedFrameCount;
 
         public const int ZOffsetBackground = 100;
         public const int ZOffsetFrontest = -100;

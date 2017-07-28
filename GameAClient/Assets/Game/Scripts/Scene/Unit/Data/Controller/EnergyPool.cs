@@ -16,10 +16,11 @@ namespace GameA.Game
     public class EnergyPool : BlockBase
     {
         protected int _timer;
-
-        protected EnergyPoolCtrl _energyPoolCtrl;
-        protected UnityNativeParticleItem _efffect;
         protected int _weaponId;
+        protected EnergyPoolCtrl _energyPoolCtrl;
+        
+        protected UnityNativeParticleItem _efffect;
+        protected UnityNativeParticleItem _efffectWeapon;
 
         internal override bool InstantiateView()
         {
@@ -27,6 +28,14 @@ namespace GameA.Game
             {
                 return false;
             }
+            _efffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectEnergy", _trans);
+            if (_efffect == null)
+            {
+                return false;
+            }
+            _efffect.Play();
+            _energyPoolCtrl = _efffect.Trans.GetComponent<EnergyPoolCtrl>();
+            _energyPoolCtrl.LiquidVolume = 0;
             UpdateEnergyEffect();
             return true;
         }
@@ -36,7 +45,7 @@ namespace GameA.Game
             _timer = 0;
             if (_energyPoolCtrl != null)
             {
-                _energyPoolCtrl.LiquidVolume = 1;
+                _energyPoolCtrl.LiquidVolume = 0;
             }
             base.Clear();
         }
@@ -46,6 +55,8 @@ namespace GameA.Game
             base.OnObjectDestroy();
             FreeEffect(_efffect);
             _efffect = null;
+            FreeEffect(_efffectWeapon);
+            _efffectWeapon = null;
         }
 
         public override void UpdateExtraData()
@@ -57,18 +68,20 @@ namespace GameA.Game
 
         private void UpdateEnergyEffect()
         {
-            FreeEffect(_efffect);
-            _efffect = null;
-            _energyPoolCtrl = null;
-            string effectName = "M1EffectEnergyFire";
-            if (!string.IsNullOrEmpty(effectName))
+            var tableEquipment = TableManager.Instance.GetEquipment(_weaponId);
+            if (tableEquipment == null)
             {
-                _efffect = GameParticleManager.Instance.GetUnityNativeParticleItem(effectName, _trans);
-                if (_efffect != null)
+                LogHelper.Error("GetEquipment Failed : {0}", _weaponId);
+                return;
+            }
+            FreeEffect(_efffectWeapon);
+            _efffectWeapon = null;
+            if (!string.IsNullOrEmpty(tableEquipment.Model) && _energyPoolCtrl != null)
+            {
+                _efffectWeapon = GameParticleManager.Instance.GetUnityNativeParticleItem(tableEquipment.Model, _energyPoolCtrl.Weapon);
+                if (_efffectWeapon != null)
                 {
-                    _efffect.Play();
-                    _energyPoolCtrl = _efffect.Trans.GetComponent<EnergyPoolCtrl>();
-//                    _energyPoolCtrl.LiquidVolume = GetProcess();
+                    _efffectWeapon.Play();
                 }
             }
         }
@@ -79,8 +92,7 @@ namespace GameA.Game
             {
                 if (_timer == 0)
                 {
-                    _timer = 200;
-                    LogHelper.Debug(_weaponId+"~~~~~~~~~~~~~~~");
+                    _timer = UnitDefine.EnergyTimer;
                     other.ChangeWeapon(_weaponId);
                 }
             }
@@ -96,7 +108,7 @@ namespace GameA.Game
             }
             if (_energyPoolCtrl != null)
             {
-                _energyPoolCtrl.LiquidVolume = (float)(200-_timer)/200;
+                _energyPoolCtrl.LiquidVolume = (float) (_timer) / UnitDefine.EnergyTimer;
             }
         }
     }
