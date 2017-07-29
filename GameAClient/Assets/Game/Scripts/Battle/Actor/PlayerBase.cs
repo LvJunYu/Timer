@@ -17,20 +17,13 @@ namespace GameA.Game
     public class PlayerBase : ActorBase
     {
         #region Data
+        
+        protected Gun _gun;
 
         protected long _playerId;
 
         [SerializeField]
-        protected PlayerInputBase _playerInput;
-
-        protected Gun _gun;
-
-        [SerializeField]
         protected IntVec2 _revivePos;
-        /// <summary>
-        /// 复活点被吃了
-        /// </summary>
-        protected Stack<IntVec2> _revivePosStack = new Stack<IntVec2>();
 
         protected Box _box;
 
@@ -65,9 +58,9 @@ namespace GameA.Game
             }
         }
 
-        public PlayerInputBase PlayerInput
+        public PlayerInputBase Input
         {
-            get { return _playerInput; }
+            get { return _input; }
         }
 
         public override IntVec2 FirePos
@@ -97,15 +90,14 @@ namespace GameA.Game
 
         public void Setup(PlayerInputBase inputBase)
         {
-            _playerInput = inputBase;
+            _input = inputBase;
         }
-        
         
         protected override void Clear()
         {
-            if (_playerInput != null)
+            if (_input != null)
             {
-                _playerInput.Reset();
+                _input.Reset();
             }
             _gun = _gun ?? new Gun(this);
 
@@ -116,6 +108,9 @@ namespace GameA.Game
             _dieTime = 0;
             _box = null;
             ClearView();
+
+            _checkClimb = true;
+            _maxSpeedX = BattleDefine.MaxSpeedX;
             base.Clear();
         }
 
@@ -145,7 +140,6 @@ namespace GameA.Game
             _gun.Play();
             AddStates(61);
             _revivePos = _curPos;
-            _revivePosStack.Clear();
             if (PlayMode.Instance.IsUsingBoostItem(EBoostItemType.BIT_AddLifeCount1))
             {
                 Life = PlayMode.Instance.SceneState.Life + 1;
@@ -168,7 +162,6 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            base.UpdateLogic();
             if (_isAlive && _isStart && !_isFreezed)
             {
                 if (_attackedTimer > 0)
@@ -177,188 +170,11 @@ namespace GameA.Game
                 }
                 if (_attackedTimer <= 0)
                 {
-                    _playerInput.UpdateLogic();
+                    _input.UpdateLogic();
                     _skillCtrl.UpdateLogic();
                 }
-                CheckGround();
-                CheckClimb();
-                UpdateSpeedY();
             }
-        }
-
-        protected virtual void CheckGround()
-        {
-            bool air = false;
-            int friction = 0;
-//            if (_playerInput._jumpState == EJumpState.Fall)
-//            {
-//                air = true;
-//            }
-            if (SpeedY != 0)
-            {
-                air = true;
-            }
-            if (air)
-            {
-                friction = MaxFriction;
-            }
-            else
-            {
-                _onClay = false;
-                _onIce = false;
-                bool downExist = false;
-                int deltaX = int.MaxValue;
-                List<UnitBase> units = EnvManager.RetriveDownUnits(this);
-                for (int i = 0; i < units.Count; i++)
-                {
-                    UnitBase unit = units[i];
-                    int ymin = 0;
-                    if (unit != null && unit.IsAlive && CheckOnFloor(unit) &&
-                        unit.OnUpHit(this, ref ymin, true))
-                    {
-                        downExist = true;
-                        _grounded = true;
-                        _attackedTimer = 0;
-                        _downUnits.Add(unit);
-                        if (unit.Friction > friction)
-                        {
-                            friction = unit.Friction;
-                        }
-                        var edge = unit.GetUpEdge(this);
-                        if (unit.StepOnClay() || edge.ESkillType == ESkillType.Clay)
-                        {
-                            _onClay = true;
-                        }
-                        else if (unit.StepOnIce() || edge.ESkillType == ESkillType.Ice)
-                        {
-                            _onIce = true;
-                        }
-                        var delta = Mathf.Abs(CenterDownPos.x - unit.CenterDownPos.x);
-                        if (deltaX > delta)
-                        {
-                            deltaX = delta;
-                            _downUnit = unit;
-                        }
-                    }
-                }
-                if (!downExist)
-                {
-                    air = true;
-                }
-            }
-            //起跳瞬间！
-            if (air && _grounded)
-            {
-                Speed += _lastExtraDeltaPos;
-                _grounded = false;
-                if (SpeedY > 0)
-                {
-                    OnJump();
-                }
-            }
-            if (!_lastGrounded && _grounded)
-            {
-                OnLand();
-            }
-            _curMaxSpeedX = BattleDefine.MaxSpeedX;
-            float ratio = 1;
-            if (IsHoldingBox())
-            {
-                ratio *= SpeedHoldingBoxRatio;
-            }
-            if (_onClay)
-            {
-                ratio *= SpeedClayRatio;
-            }
-            _curMaxSpeedX = (int)(_curMaxSpeedX * ratio);
-            if (air || _grounded)
-            {
-                if (_curBanInputTime <= 0)
-                {
-                    int motorAcc = 0;
-                    int speedAcc;
-                    if (_playerInput.RightInput)
-                    {
-                        motorAcc = _onIce ? 1 : 10;
-                    }
-                    if (_playerInput.LeftInput)
-                    {
-                        motorAcc = _onIce ? -1 : -10;
-                    }
-                    speedAcc = motorAcc + _fanForce.x;
-                    if (speedAcc != 0)
-                    {
-                        //在空中和冰上 同方向的时候
-                        if (_onIce || air)
-                        {
-                            if ((speedAcc > 0 && _fanForce.x > 0) || (speedAcc < 0 && _fanForce.x < 0))
-                            {
-                                speedAcc = 1;
-                            }
-                        }
-                        else
-                        {
-                            SpeedX -= _fanForce.x;
-                        }
-                        SpeedX = Util.ConstantLerp(SpeedX, speedAcc > 0 ? _curMaxSpeedX : -_curMaxSpeedX, Mathf.Abs(speedAcc));
-                    }
-                    else if (_grounded || _fanForce.y != 0)
-                    {
-                        if (_fanForce.x == 0)
-                        {
-                            if (_onIce)
-                            {
-                                friction = 1;
-                            }
-                        }
-                        SpeedX = Util.ConstantLerp(SpeedX, 0, friction);
-                    }
-                }
-            }
-        }
-
-        protected virtual void CheckClimb()
-        {
-            _playerInput.EClimbState = EClimbState.None;
-            if (!_grounded && SpeedY < 0)
-            {
-                if (_playerInput.LeftInput && CheckLeftFloor())
-                {
-                    _playerInput.EClimbState = EClimbState.Left;
-                }
-                else if (_playerInput.RightInput && CheckRightFloor())
-                {
-                    _playerInput.EClimbState = EClimbState.Right;
-                }
-            }
-        }
-
-        protected virtual void UpdateSpeedY()
-        {
-            SpeedY += _fanForce.y;
-            _fanForce.y = 0;
-            if (!_grounded)
-            {
-                if (_playerInput.JumpLevel == 2)
-                {
-                    SpeedY = Util.ConstantLerp(SpeedY, -60, 6);
-                }
-                else if (_playerInput.EClimbState > EClimbState.None)
-                {
-                    SpeedY = Util.ConstantLerp(SpeedY, -50, 6);
-                }
-                else
-                {
-                    if (SpeedY > 0)
-                    {
-                        SpeedY = Util.ConstantLerp(SpeedY, 0, 12);
-                    }
-                    else
-                    {
-                        SpeedY = Util.ConstantLerp(SpeedY, -120, 8);
-                    }
-                }
-            }
+            base.UpdateLogic();
         }
 
         #region box
@@ -391,7 +207,7 @@ namespace GameA.Game
                 {
                     _box.DirectionRelativeMain = EDirectionType.Right;
                 }
-                _playerInput.ChangeLittleSkillState(ELittleSkillState.HoldBox);
+                _input.ChangeLittleSkillState(ELittleSkillState.HoldBox);
             }
             else if (IsValidBox(_hitUnits[(int)EDirectionType.Left]))
             {
@@ -402,15 +218,15 @@ namespace GameA.Game
                 {
                     _box.DirectionRelativeMain = EDirectionType.Left;
                 }
-                _playerInput.ChangeLittleSkillState(ELittleSkillState.HoldBox);
+                _input.ChangeLittleSkillState(ELittleSkillState.HoldBox);
             }
             if (_box == null)
             {
-                _playerInput.ChangeLittleSkillState(ELittleSkillState.Quicken);
+                _input.ChangeLittleSkillState(ELittleSkillState.Quicken);
             }
         }
 
-        public void OnBoxHoldingChanged()
+        public override void OnBoxHoldingChanged()
         {
             if (_box == null)
             {
@@ -429,7 +245,7 @@ namespace GameA.Game
             return unit != null && unit.Id == UnitDefine.BoxId && unit.ColliderGrid.YMin == _colliderGrid.YMin;
         }
 
-        public bool IsHoldingBox()
+        public override bool IsHoldingBox()
         {
             return _box != null && _box.IsHoldingByMain;
         }
@@ -476,7 +292,7 @@ namespace GameA.Game
             {
                 _gun.Stop();
             }
-            _playerInput.Clear();
+            _input.Clear();
             Messenger.Broadcast(EMessengerType.OnMainPlayerDead);
             base.OnDead();
             if (_life <= 0)
@@ -505,7 +321,7 @@ namespace GameA.Game
                                 GM2DTools.TileToWorld(_revivePos), 20, () =>
                                 {
                                     _eUnitState = EUnitState.Normal;
-                                    _playerInput.Clear();
+                                    _input.Clear();
                                     ClearRunTime();
                                     _isAlive = true;
                                     OnHpChanged(_maxHp);
@@ -535,7 +351,7 @@ namespace GameA.Game
             }
             _eUnitState = EUnitState.Portaling;
             PlayMode.Instance.Freeze(this);
-            _playerInput.Clear();
+            _input.Clear();
             ClearRunTime();
             _trans.eulerAngles = new Vector3(90, 0, 0);
             _portalEffect.Play(_trans.position + Vector3.up * 0.5f,
@@ -570,22 +386,12 @@ namespace GameA.Game
 
         public override void OnRevivePos(IntVec2 pos)
         {
-            if (_revivePos == pos)
-            {
-                return;
-            }
-            _revivePosStack.Push(_revivePos);
             _revivePos = pos;
-        }
-
-        protected void RollbackRevivePos()
-        {
-            _revivePos = _revivePosStack.Pop();
         }
 
         public void Step(int stepY = 0)
         {
-            _playerInput.StepY = stepY;
+            _input.StepY = stepY;
             OnLand();
         }
 
@@ -598,7 +404,7 @@ namespace GameA.Game
             Speed = IntVec2.zero;
             ExtraSpeed.y = 120;
             ExtraSpeed.x = actor.CenterDownPos.x > CenterDownPos.x ? -100 : 100;
-            _playerInput.ClearInput();
+            _input.ClearInput();
         }
 
         internal void OnKnockBack(ActorBase actor)
@@ -607,7 +413,7 @@ namespace GameA.Game
             Speed = IntVec2.zero;
             ExtraSpeed.y = 280;
             ExtraSpeed.x = actor.CenterDownPos.x > CenterDownPos.x ? -80 : 80;
-            _playerInput.ClearInput();
+            _input.ClearInput();
         }
 
         #endregion
@@ -656,22 +462,14 @@ namespace GameA.Game
             _gun.OnObjectDestroy();
         }
 
-        public override void UpdateView(float deltaTime)
+        protected override void UpdateDynamicView(float deltaTime)
         {
             if (!PlayMode.Instance.SceneState.GameRunning && PlayMode.Instance.SceneState.Arrived)
             {
                 return;
             }
-            if (_isAlive && _isStart)
-            {
-                _deltaPos = _speed + _extraDeltaPos;
-                _curPos += _deltaPos;
-                LimitPos();
-                UpdateCollider(GetColliderPos(_curPos));
-                _curPos = GetPos(_colliderPos);
-                UpdateTransPos();
-                _gun.UpdateView();
-            }
+            base.UpdateDynamicView(deltaTime);
+            _gun.UpdateView();
             if (!_isAlive)
             {
                 _dieTime++;
@@ -690,13 +488,12 @@ namespace GameA.Game
                     }
                 }
             }
-            CheckOutOfMap();
             CheckBox();
             if (_isAlive)
             {
                 if (!_grounded)
                 {
-                    if (_playerInput.EClimbState > 0)
+                    if (_input.EClimbState > 0)
                     {
                         if (_animation.PlayLoop(ClimbAnimName()))
                         {
@@ -718,19 +515,19 @@ namespace GameA.Game
                     }
                     else
                     {
-                        if (_playerInput.ClimbJump)
+                        if (_input.ClimbJump)
                         {
                             Vector3 effectPos = _trans.position;
                             effectPos += _curMoveDirection == EMoveDirection.Left ? Vector3.right * 0.25f + Vector3.forward * 0.6f : Vector3.left * 0.25f + Vector3.forward * 0.6f;
                             GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallJump, effectPos);
                         }
-                        if (_playerInput.JumpState == EJumpState.Jump1 || _playerInput.JumpState == EJumpState.Jump2)
+                        if (_input.JumpState == EJumpState.Jump1 || _input.JumpState == EJumpState.Jump2)
                         {
                             Messenger.Broadcast(EMessengerType.OnPlayerJump);
-                            _animation.PlayOnce(JumpAnimName(_playerInput.JumpLevel));
-                            PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_playerInput.JumpLevel), false);
+                            _animation.PlayOnce(JumpAnimName(_input.JumpLevel));
+                            PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_input.JumpLevel), false);
                         }
-                        else if (_playerInput.JumpState == EJumpState.Fall)
+                        else if (_input.JumpState == EJumpState.Fall)
                         {
                             if (_animation.PlayLoop(FallAnimName()))
                             {
@@ -741,7 +538,7 @@ namespace GameA.Game
                 }
                 else
                 {
-                    if (_playerInput.LeftInput || _playerInput.RightInput)
+                    if (_input.LeftInput || _input.RightInput)
                     {
                         var speed = Math.Abs(SpeedX);
                         speed = Mathf.Clamp(speed, 20, 100);
@@ -797,10 +594,9 @@ namespace GameA.Game
             {
                 _portalEffect.Update();
             }
-            _lastGrounded = _grounded;
         }
 
-        protected void OnJump()
+        protected override void OnJump()
         {
             if (!GameAudioManager.Instance.IsPlaying(AudioNameConstDefineGM2D.GameAudioSpingEffect))
             {
@@ -816,10 +612,10 @@ namespace GameA.Game
             }
         }
 
-        protected void OnLand()
+        protected override void OnLand()
         {
             _grounded = true;
-            _playerInput.OnLand();
+            _input.OnLand();
 //            // 新手引导需要知道主角落地了
 //            GuideManager.Instance.OnSpecialOperate(2);
 //            if (_downUnit == null || _view == null)
@@ -860,12 +656,12 @@ namespace GameA.Game
             {
                 if (_speed.x == 0)
                 {
-                    if (!_playerInput.RightInput && !_playerInput.LeftInput)
+                    if (!_input.RightInput && !_input.LeftInput)
                     {
                         return "Prepare";
                     }
-                    if (_playerInput.RightInput && _box.DirectionRelativeMain == EDirectionType.Right
-                        || (_playerInput.LeftInput && _box.DirectionRelativeMain == EDirectionType.Left))
+                    if (_input.RightInput && _box.DirectionRelativeMain == EDirectionType.Right
+                        || (_input.LeftInput && _box.DirectionRelativeMain == EDirectionType.Left))
                     {
                         return "Push";
                     }
@@ -922,7 +718,7 @@ namespace GameA.Game
             {
                 return "StunRun";
             }
-            if (_playerInput.JumpLevel == 2)
+            if (_input.JumpLevel == 2)
             {
                 return "Fly";
             }

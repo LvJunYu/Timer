@@ -15,8 +15,6 @@ namespace GameA.Game
     public class MonsterBase : ActorBase
     {
         protected IntVec2 _lastPos;
-        protected int _monsterSpeed;
-        protected int _curFriction;
 
         protected override bool OnInit()
         {
@@ -25,7 +23,7 @@ namespace GameA.Game
                 return false;
             }
             _isMonster = true;
-            _monsterSpeed = 30;
+            _maxSpeedX = 30;
             return true;
         }
 
@@ -33,109 +31,32 @@ namespace GameA.Game
         {
             base.Clear();
             _lastPos = _curPos;
-            _curMaxSpeedX = _monsterSpeed;
         }
 
-        public override void UpdateLogic()
+        protected override void CalculateMotor()
         {
-            base.UpdateLogic();
-            if (_isAlive && _isStart && !_isFreezed)
+            base.CalculateMotor();
+            if (HasStateType(EStateType.Fire))
             {
-                bool air = false;
-                _curFriction = _friction;
-                if (SpeedY != 0)
+                _speedRatio *= SpeedFireRatio;
+                OnFire();
+            }
+            else
+            {
+                UpdateMonsterAI();
+            }
+            if (_grounded)
+            {
+                // 判断左右踩空
+                if (_downUnits.Count == 1)
                 {
-                    air = true;
-                }
-                if (!air)
-                {
-                    _onClay = false;
-                    bool downExist = false;
-                    int deltaX = int.MaxValue;
-                    var units = EnvManager.RetriveDownUnits(this);
-                    for (int i = 0; i < units.Count; i++)
+                    if (SpeedX > 0 && _downUnits[0].ColliderGrid.XMax < _colliderGrid.XMax)
                     {
-                        var unit = units[i];
-                        int ymin = 0;
-                        if (unit != null && unit.IsAlive && CheckOnFloor(unit) && unit.OnUpHit(this, ref ymin, true))
-                        {
-                            downExist = true;
-                            _grounded = true;
-                            _downUnits.Add(unit);
-                            if (unit.Friction > _curFriction)
-                            {
-                                _curFriction = unit.Friction;
-                            }
-                            var edge = unit.GetUpEdge(this);
-                            if (unit.StepOnClay() || edge.ESkillType == ESkillType.Clay)
-                            {
-                                _onClay = true;
-                            }
-                            else if (unit.StepOnIce() || edge.ESkillType == ESkillType.Ice)
-                            {
-                                _onIce = true;
-                            }
-                            var delta = Math.Abs(CenterDownPos.x - unit.CenterDownPos.x);
-                            if (deltaX > delta)
-                            {
-                                deltaX = delta;
-                                _downUnit = unit;
-                            }
-                        }
+                        OnRightStampedEmpty();
                     }
-                    if (!downExist)
+                    else if (SpeedX < 0 && _downUnits[0].ColliderGrid.XMin > _colliderGrid.XMin)
                     {
-                        air = true;
-                    }
-                }
-                if (air && _grounded)
-                {
-                    Speed += _lastExtraDeltaPos;
-                    _grounded = false;
-                }
-                if (_onIce)
-                {
-                    _curFriction = 1;
-                }
-                _curMaxSpeedX = _monsterSpeed;
-                float ratio = 1;
-                if (_onClay)
-                {
-                    _curFriction = 30;
-                    ratio *= SpeedClayRatio;
-                }
-                if (HasStateType(EStateType.Fire))
-                {
-                    ratio *= SpeedFireRatio;
-                    _curMaxSpeedX = (int)(_curMaxSpeedX * ratio);
-                    OnFire();
-                }
-                else
-                {
-                    _curMaxSpeedX = (int)(_curMaxSpeedX * ratio);
-                    UpdateMonsterAI();
-                }
-                if (!air)
-                {
-                    // 判断左右踩空
-                    if (_downUnits.Count == 1)
-                    {
-                        if (SpeedX > 0 && _downUnits[0].ColliderGrid.XMax < _colliderGrid.XMax)
-                        {
-                            OnRightStampedEmpty();
-                        }
-                        else if (SpeedX < 0 && _downUnits[0].ColliderGrid.XMin > _colliderGrid.XMin)
-                        {
-                            OnLeftStampedEmpty();
-                        }
-                    }
-                }
-                if (!_grounded)
-                {
-                    SpeedY -= 12;
-                    if (SpeedY < -120)
-                    {
-                        SpeedY = -120;
+                        OnLeftStampedEmpty();
                     }
                 }
             }
@@ -143,14 +64,14 @@ namespace GameA.Game
 
         protected virtual void OnFire()
         {
-            if (_curMoveDirection == EMoveDirection.Right)
-            {
-                SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, _curFriction);
-            }
-            else
-            {
-                SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, _curFriction);
-            }
+//            if (_curMoveDirection == EMoveDirection.Right)
+//            {
+//                SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, _curFriction);
+//            }
+//            else
+//            {
+//                SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, _curFriction);
+//            }
             //碰到墙壁转头
             CheckWay();
         }
@@ -159,20 +80,12 @@ namespace GameA.Game
         {
         }
 
-        public override void UpdateView(float deltaTime)
+        protected override void UpdateDynamicView(float deltaTime)
         {
+            base.UpdateDynamicView(deltaTime);
             if (_isStart && _isAlive)
             {
-                _deltaPos = _speed + _extraDeltaPos;
-                _curPos += _deltaPos;
-                LimitPos();
-                UpdateCollider(GetColliderPos(_curPos));
-                _curPos = GetPos(_colliderPos);
-                UpdateTransPos();
-                CheckOutOfMap();
                 UpdateMonsterView(deltaTime);
-                _lastGrounded = _grounded;
-                _lastPos = _curPos;
             }
             if (!_isAlive)
             {
@@ -182,6 +95,7 @@ namespace GameA.Game
                     PlayMode.Instance.DestroyUnit(this);
                 }
             }
+            _lastPos = _curPos;
         }
 
         protected virtual void UpdateMonsterView(float deltaTime)

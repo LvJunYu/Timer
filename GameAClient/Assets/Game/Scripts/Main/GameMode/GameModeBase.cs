@@ -52,7 +52,7 @@ namespace GameA.Game
             {
                 if (null != PlayerManager.Instance.MainPlayer)
                 {
-                    LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.PlayerInput as LocalPlayerInput;
+                    LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.Input as LocalPlayerInput;
                     if (localPlayerInput != null)
                     {
                         localPlayerInput.ProcessCheckInput();
@@ -107,7 +107,7 @@ namespace GameA.Game
             SocialApp.Instance.ReturnToApp();
         }
 
-        public virtual bool IsPlayerCharacterAbilityAvailable(PlayerBase player, ECharacterAbility eCharacterAbility)
+        public virtual bool IsPlayerCharacterAbilityAvailable(DynamicRigidbody unit, ECharacterAbility eCharacterAbility)
         {
             return GameProcessManager.Instance.IsCharacterAbilityAvailable(eCharacterAbility);
         }

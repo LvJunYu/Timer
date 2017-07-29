@@ -14,6 +14,68 @@ namespace GameA.Game
     [Unit(Id = 10004, Type = typeof(ProjectileJelly))]
     public class ProjectileJelly : ProjectileBase
     {
-        
+        protected int _lifeTime;
+
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            _lifeTime = TableConvert.GetTime(BattleDefine.IceLifeTime);
+            return true;
+        }
+
+        public override void UpdateView(float deltaTime)
+        {
+            if (!_run)
+            {
+                return;
+            }
+            _lifeTime--;
+            if (_lifeTime == 0)
+            {
+                _destroy = 1;
+            }
+            if (_isAlive)
+            {
+                _deltaPos = _speed + _extraDeltaPos;
+                _curPos += _deltaPos;
+                //超出最大射击距离
+                UpdateCollider(GetColliderPos(_curPos));
+                _curPos = GetPos(_colliderPos);
+                UpdateTransPos();
+                if (_destroy > 0)
+                {
+                    OnDestroy();
+                }
+            }
+        }
+
+        protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
+        {
+            if (unit.IsActor || unit.CanPainted)
+            {
+                _destroy = 1;
+            }
+            switch (eDirectionType)
+            {
+                case EDirectionType.Down:
+                case EDirectionType.Up:
+                    if (_angle <=  180)
+                    {
+                        UpdateAngle(180 - _angle);
+                    }
+                    else
+                    {
+                        UpdateAngle(540 - _angle);
+                    }
+                    break;
+                case EDirectionType.Left:
+                case EDirectionType.Right:
+                    UpdateAngle(360 - _angle);
+                    break;
+            }
+        }
     }
 }

@@ -21,7 +21,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            _monsterSpeed = 50;
+            _maxSpeedX = 50;
             return true;
         }
 

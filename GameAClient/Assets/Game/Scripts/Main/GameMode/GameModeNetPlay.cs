@@ -71,7 +71,7 @@ namespace GameA.Game
                 }
                 if (null != PlayerManager.Instance.MainPlayer)
                 {
-                    LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.PlayerInput as LocalPlayerInput;
+                    LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.Input as LocalPlayerInput;
                     if (localPlayerInput != null)
                     {
                         localPlayerInput.ProcessCheckInput();
@@ -92,11 +92,11 @@ namespace GameA.Game
                         frameInputData.UserInputDatas.Find(m => m.UserRoomInx == i);
                     if (userInputData == null)
                     {
-                        playerBase.PlayerInput.ApplyInputData(null);
+                        playerBase.Input.ApplyInputData(null);
                     }
                     else
                     {
-                        playerBase.PlayerInput.ApplyInputData(userInputData.InputDatas);
+                        playerBase.Input.ApplyInputData(userInputData.InputDatas);
                     }
                 }
                 GameRun.Instance.UpdateLogic(ConstDefineGM2D.FixedDeltaTime);
@@ -107,7 +107,7 @@ namespace GameA.Game
             }
         }
 
-        public override bool IsPlayerCharacterAbilityAvailable(PlayerBase player, ECharacterAbility eCharacterAbility)
+        public override bool IsPlayerCharacterAbilityAvailable(DynamicRigidbody unit,  ECharacterAbility eCharacterAbility)
         {
             //TODO 临时 应该使用Player的数据判断
             return true;

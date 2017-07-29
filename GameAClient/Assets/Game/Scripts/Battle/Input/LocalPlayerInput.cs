@@ -8,7 +8,6 @@ namespace GameA.Game
 {
     public class LocalPlayerInput : PlayerInputBase
     {
-        
         #region 检查输入
         
         [SerializeField]
@@ -34,7 +33,7 @@ namespace GameA.Game
             get { return _curCheckInputChangeList; }
         }
 
-        public LocalPlayerInput(PlayerBase player) : base(player)
+        public LocalPlayerInput(PlayerBase unit) : base(unit)
         {
         }
 

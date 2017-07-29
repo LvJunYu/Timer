@@ -26,6 +26,16 @@ namespace GameA.Game
             return true;
         }
 
+        public override void UpdateLogic()
+        {
+            base.UpdateLogic();
+            if (!_run)
+            {
+                return;
+            }
+            
+        }
+
         public override void UpdateView(float deltaTime)
         {
             if (!_run)

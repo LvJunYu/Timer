@@ -23,7 +23,7 @@ namespace GameA.Game
         OutofMap,
     }
 
-    public class ActorBase : RigidbodyUnit
+    public class ActorBase : DynamicRigidbody
     {
         protected List<State> _currentStates = new List<State>();
         private Comparison<State> _comparisonState = SortState;
@@ -67,6 +67,8 @@ namespace GameA.Game
             _eDieType = EDieType.None;
             _attackedTimer = 0;
             RemoveAllStates();
+            _checkGround = true;
+            _updateSpeedY = true;
         }
 
         public override void CheckStart()
@@ -84,6 +86,7 @@ namespace GameA.Game
                     _currentStates[i].UpdateLogic();
                 }
             }
+            base.UpdateLogic();
         }
         
         public override void AddStates(params int[] ids)
@@ -121,7 +124,6 @@ namespace GameA.Game
                 if (state.OnAttached(tableState, this))
                 {
                     _currentStates.Add(state);
-//                    LogHelper.Debug("{0} AddState: {1}",this, state.TableState.Id);
                     _currentStates.Sort(_comparisonState);
                     continue;
                 }
@@ -148,7 +150,6 @@ namespace GameA.Game
                 if (state.OnRemoved())
                 {
                     _currentStates.Remove(state);
-//                    LogHelper.Debug("{0} RemoveState: {1}",this, state.TableState.Id);
                     PoolFactory<State>.Free(state);
                 }
             }
@@ -320,7 +321,6 @@ namespace GameA.Game
                 }
             }
         }
-
 
         protected override bool CheckOutOfMap()
         {
