@@ -58,7 +58,7 @@ namespace GameA
         
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.PopUpUI;
+            _groupId = (int) EUIGroupType.UIAdvDetail;
         }
 
         private void RefreshView () {
