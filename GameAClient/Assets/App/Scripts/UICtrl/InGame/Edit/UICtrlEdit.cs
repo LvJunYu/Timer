@@ -5,13 +5,13 @@
 ** Summary : UICtrlEdit
 ***********************************************************************/
 
+using GameA.Game;
 using SoyEngine;
 using UnityEngine;
-using GameA.Game;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlEdit : UICtrlInGameBase<UIViewEdit>
 	{
 		public enum EMode
@@ -69,7 +69,6 @@ namespace GameA
 
 
 			_cachedView.Play.onClick.AddListener(OnPlay);
-			_cachedView.Publish.onClick.AddListener(OnPublish);
 			_cachedView.Pause.onClick.AddListener(OnPause);
 
 
@@ -116,25 +115,6 @@ namespace GameA
 			base.OnDestroy ();
 			Messenger.RemoveListener(EMessengerType.AfterCommandChanged, AfterCommandChanged);
 		}
-
-        public override void OnUpdate ()
-        {
-            base.OnUpdate ();
-//            if (_cachedView.MoveBtn.IsPressed) {
-//                Vector2 pos = _cachedView.MoveBtn.RectTrans.localPosition;
-//                if (pos.y - _moveBtnOrigPos.y > _maxMoveY * 0.4f) {
-//                    Game.CameraManager.Instance.UpdateFadeCameraOrthoSizeOffset (0.12f);
-//                } else if (pos.y - _moveBtnOrigPos.y > _maxMoveY * 0.15f) {
-//                    Game.CameraManager.Instance.UpdateFadeCameraOrthoSizeOffset (0.05f);
-//                } else if (pos.y - _moveBtnOrigPos.y > -_maxMoveY * 0.15f) {
-//
-//                } else if (pos.y - _moveBtnOrigPos.y > -_maxMoveY * 0.4f) {
-//                    Game.CameraManager.Instance.UpdateFadeCameraOrthoSizeOffset (-0.05f);
-//                } else {
-//                    Game.CameraManager.Instance.UpdateFadeCameraOrthoSizeOffset (-0.12f);
-//                }
-//            }
-        }
 
         public void ChangeToEditTestMode()
         {
@@ -203,8 +183,6 @@ namespace GameA
                 _cachedView.Undo.gameObject.SetActive (true);
                 _cachedView.Publish.gameObject.SetActive (false);
                 _cachedView.ButtonFinishCondition.SetActiveEx (true);
-//				_cachedView.MoveBtn.SetActiveEx (true);
-                _cachedView.MoveBtnBg.SetActive (true);
 
                 _cachedView.EnterEffectMode.SetActiveEx (false);
                 _cachedView.ExitEffectMode.SetActiveEx (false);
@@ -222,9 +200,6 @@ namespace GameA
 				_cachedView.Undo.gameObject.SetActive(false);
 				_cachedView.Publish.gameObject.SetActive(false);
 				_cachedView.ButtonFinishCondition.SetActiveEx(false);
-
-//				_cachedView.MoveBtn.SetActiveEx (false);
-				_cachedView.MoveBtnBg.SetActive (false);
 
 				_cachedView.EnterEffectMode.SetActiveEx(false);
 				_cachedView.ExitEffectMode.SetActiveEx(false);
@@ -244,9 +219,6 @@ namespace GameA
 				_cachedView.Publish.gameObject.SetActive(false);
 				_cachedView.ButtonFinishCondition.SetActiveEx(false);
 
-//				_cachedView.MoveBtn.SetActiveEx (false);
-				_cachedView.MoveBtnBg.SetActive (false);
-
 				_cachedView.EnterEffectMode.SetActiveEx(false);
 				_cachedView.ExitEffectMode.SetActiveEx(false);
 
@@ -264,9 +236,6 @@ namespace GameA
 				_cachedView.Publish.gameObject.SetActive(false);
 				_cachedView.ButtonFinishCondition.SetActiveEx(false);
 
-//				_cachedView.MoveBtn.SetActiveEx (true);
-				_cachedView.MoveBtnBg.SetActive (true);
-
 				_cachedView.EnterEffectMode.SetActiveEx(false);
 				_cachedView.ExitEffectMode.SetActiveEx(false);
 
@@ -281,17 +250,6 @@ namespace GameA
             }
 		}
 
-        private void OnEdit()
-        {
-            Broadcast(ECommandType.Edit);
-        }
-
-        private void OnPublish()
-        {
-//            Broadcast(ECommandType.Publish);
-//            SocialGUIManager.Instance.OpenUI<UICtrlPublish>();
-        }
-        
         private void OnPlay()
         {
             GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
@@ -378,59 +336,22 @@ namespace GameA
 	        UpdateEraseButtonState();
         }
 
-	 //   private void OnDragMode()
-	 //   {
-		//    if (EditMode.Instance.CurCommandType == ECommandType.Move)
-		//    {
-		//	    Broadcast(ECommandType.Create);
-		//    }
-		//    else
-		//    {
-		//		Broadcast(ECommandType.Move);
-		//	}
-		//}
-
-        private void OnEnterDragMode ()
+        private void OnEnterCamCtrlMode ()
         {
             if (EditMode.Instance.CurCommandType != ECommandType.Move) {
                 Broadcast (ECommandType.Move);
             }
         }
 
-        private void OnExitDragMode ()
+        private void OnExitCamCtrlMode ()
         {
             if (EditMode.Instance.CurCommandType == ECommandType.Move) {
-                Game.CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSizeEnd(0f);
-                Game.CameraManager.Instance.CameraCtrlEdit.MovePosEnd(Vector2.zero);
+                CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSizeEnd(0f);
+                CameraManager.Instance.CameraCtrlEdit.MovePosEnd(Vector2.zero);
                 Broadcast (ECommandType.Create);
-                SetMoveBtnPos (_moveBtnOrigPos);
             }
         }
 
-        private void OnMoveBtnDragBegin (UnityEngine.EventSystems.PointerEventData eventData) {
-//            _moveBtnDragOffset = (Vector2)_cachedView.MoveBtn.RectTrans.localPosition - eventData.pressPosition;
-//            SetMoveBtnPos (eventData.position + _moveBtnDragOffset);
-        }
-
-        private void OnMoveBtnDragEnd (UnityEngine.EventSystems.PointerEventData eventData) {
-//            _cachedView.MoveBtn.RectTrans.localPosition = _moveBtnOrigPos;
-        }
-
-        private void OnMoveBtnMove (UnityEngine.EventSystems.PointerEventData eventData)
-        {
-            SetMoveBtnPos (eventData.position + _moveBtnDragOffset);
-        }
-
-        private void SetMoveBtnPos (Vector2 pos) {
-            if (pos.y > _moveBtnOrigPos.y + _maxMoveY * 0.5f) {
-                pos.y = _moveBtnOrigPos.y + _maxMoveY * 0.5f;
-            }
-            if (pos.y < _moveBtnOrigPos.y - _maxMoveY * 0.5f) {
-                pos.y = _moveBtnOrigPos.y - _maxMoveY * 0.5f;
-            }
-            pos.x = _moveBtnOrigPos.x;
-//            _cachedView.MoveBtn.RectTrans.localPosition = new Vector3(pos.x, pos.y, 0);
-        }
 
 	    private void UpdateEraseButtonState()
 	    {

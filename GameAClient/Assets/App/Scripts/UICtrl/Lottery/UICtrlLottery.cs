@@ -7,20 +7,10 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using SoyEngine;
-using SoyEngine.Proto;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using GameA.Game;
-using NewResourceSolution;
-using Spine;
-using Spine.Unity;
-
+using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
@@ -93,16 +83,6 @@ namespace GameA
                 return "0";
             }
             else return lotteryNum.ToString();
-        }
-
-        protected override void OnClose()
-        {
-            base.OnClose();
-        }
-
-        protected override void InitEventListener()
-        {
-            base.InitEventListener();
         }
 
         protected override void OnViewCreated()

@@ -154,6 +154,10 @@ namespace GameA.Game
             DeadMarkManager.Instance.Update();
             CameraManager.Instance.Update();
             MapManager.Instance.Update();
+            if (EditMode.Instance != null)
+            {
+                EditMode.Instance.Update();
+            }
             _gameTimeSinceGameStarted += Time.deltaTime*GM2DGame.Instance.GamePlaySpeed;
         }
 

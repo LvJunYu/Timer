@@ -20,8 +20,8 @@ namespace GameA
 
 
 		public Button Home;
-        public PushDragButton MoveBtn;
-		public UnityEngine.GameObject MoveBtnBg;
+        public Button EnterCamCtrlModeBtn;
+		public Button ExitCamCtrlModeBtn;
 
 		public Button Capture;
 
