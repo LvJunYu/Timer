@@ -7,13 +7,14 @@
 
 using System;
 using UnityEngine;
+using UnitySampleAssets.CrossPlatformInput;
 using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
     public class InputManager : IDisposable
     {
-        public static InputManager _instance;
+        private static InputManager _instance;
 
         public static readonly string TagJump = "Jump";
         public static readonly string[] TagSkill = {"Fire1", "Fire2"};
@@ -22,19 +23,116 @@ namespace GameA.Game
 
         public UICtrlGameInputControl GameInputControl;
         private GameObject _easyTouchObject;
-        private bool _keyJump;
-        private bool _touchDown;
+
+        private EPhase _mouseRightButtonDragPhase;
+
+        public event Action<Gesture> OnPinch;
+        public event Action<Gesture> OnPinchEnd;
+        public event Action<Gesture> OnDragStart;
+        public event Action<Gesture> OnDrag;
+        public event Action<Gesture> OnDragEnd;
+        /// <summary>
+        /// Pos, Delta
+        /// </summary>
+        public event Action<Vector3, Vector2> OnMouseWheelChange;
+        public event Action<Vector3> OnMouseRightButtonDragStart;
+        public event Action<Vector3, Vector2> OnMouseRightButtonDrag;
+        public event Action<Vector3, Vector2> OnMouseRightButtonDragEnd;
 
         public static InputManager Instance
         {
             get { return _instance ?? (_instance = new InputManager()); }
         }
 
-        public bool IsTouchDown
+        public bool IsTouchDown { get; private set; }
+
+        public bool IsMouseRightButton
         {
-            get { return _touchDown; }
+            get { return EPhase.None != _mouseRightButtonDragPhase; }
         }
 
+        public Vector3 MouseRightButtonDragLastPos { get; private set; }
+
+        public void Update()
+        {
+            CrossPlatformInputManager.Update();
+            if (OnMouseWheelChange != null)
+            {
+                if (Input.mouseScrollDelta.sqrMagnitude > 0.0001f)
+                {
+                    OnMouseWheelChange.Invoke(Input.mousePosition, Input.mouseScrollDelta);
+                }
+            }
+            if (null != OnMouseRightButtonDragStart
+                || null != OnMouseRightButtonDrag
+                || null != OnMouseRightButtonDragEnd)
+            {
+                switch (_mouseRightButtonDragPhase)
+                {
+                    case EPhase.None:
+                        if (Input.GetMouseButton(1))
+                        {
+                            _mouseRightButtonDragPhase = EPhase.Began;
+                            MouseRightButtonDragLastPos = Input.mousePosition;
+                        }
+                        break;
+                    case EPhase.Began:
+                        if (Input.GetMouseButton(1))
+                        {
+                            Vector3 delta = Input.mousePosition - MouseRightButtonDragLastPos;
+                            if (delta.sqrMagnitude > 1)
+                            {
+                                _mouseRightButtonDragPhase = EPhase.Moved;
+                                if (null != OnMouseRightButtonDragStart)
+                                {
+                                    OnMouseRightButtonDragStart.Invoke(MouseRightButtonDragLastPos);
+                                }
+                                if (null != OnMouseRightButtonDrag)
+                                {
+                                    OnMouseRightButtonDrag.Invoke(Input.mousePosition, delta);
+                                }
+                                MouseRightButtonDragLastPos = Input.mousePosition;
+                            }
+                        }
+                        else
+                        {
+                            _mouseRightButtonDragPhase = EPhase.None;
+                        }
+                        break;
+                    case EPhase.Moved:
+                        if (Input.GetMouseButton(1))
+                        {
+                            Vector3 delta = Input.mousePosition - MouseRightButtonDragLastPos;
+                            if (delta.sqrMagnitude > 1)
+                            {
+                                if (null != OnMouseRightButtonDrag)
+                                {
+                                    OnMouseRightButtonDrag.Invoke(Input.mousePosition, delta);
+                                }
+                                MouseRightButtonDragLastPos = Input.mousePosition;
+                            }
+                        }
+                        else
+                        {
+                            Vector3 delta = Input.mousePosition - MouseRightButtonDragLastPos;
+                            if (delta.sqrMagnitude > 1)
+                            {
+                                if (null != OnMouseRightButtonDrag)
+                                {
+                                    OnMouseRightButtonDrag.Invoke(Input.mousePosition, delta);
+                                }
+                            }
+                            if (null != OnMouseRightButtonDragEnd)
+                            {
+                                OnMouseRightButtonDragEnd.Invoke(Input.mousePosition, delta);
+                            }
+                            _mouseRightButtonDragPhase = EPhase.None;
+                        }
+                        break;
+                }
+            }
+        }
+        
         public void Dispose()
         {
             if (_easyTouchObject != null)
@@ -44,9 +142,11 @@ namespace GameA.Game
             }
             if (_instance != null)
             {
-                EasyTouch.On_TouchStart -= EasyTouchOnOnTouchStart;
                 EasyTouch.On_TouchDown -= EasyTouchOnOnTouchDown;
                 EasyTouch.On_TouchUp -= EasyTouchOnOnTouchUp;
+                EasyTouch.On_Pinch -= EasyTouchOnOnPinch;
+                EasyTouch.On_PinchEnd -= EasyTouchOnOnPinchEnd;
+                EasyTouch.On_DragStart -= EasyTouchOnOnDragStart;
                 _instance = null;
             }
         }
@@ -55,25 +155,65 @@ namespace GameA.Game
         {
             _easyTouchObject = new GameObject("EasyTouch");
             _easyTouchObject.AddComponent<EasyTouch>();
-            EasyTouch.On_TouchStart += EasyTouchOnOnTouchStart;
             EasyTouch.On_TouchDown += EasyTouchOnOnTouchDown;
             EasyTouch.On_TouchUp += EasyTouchOnOnTouchUp;
+            EasyTouch.On_Pinch += EasyTouchOnOnPinch;
+            EasyTouch.On_PinchEnd += EasyTouchOnOnPinchEnd;
+            EasyTouch.On_DragStart += EasyTouchOnOnDragStart;
+            EasyTouch.On_Drag += EasyTouchOnOnDrag;
+            EasyTouch.On_DragEnd += EasyTouchOnOnDragEnd;
             EasyTouch.SetEnable2DCollider(true);
             EasyTouch.AddCamera(CameraManager.Instance.RendererCamera);
         }
 
-        private void EasyTouchOnOnTouchStart(Gesture gesture)
+        private void EasyTouchOnOnDragEnd(Gesture gesture)
         {
+            if (null != OnDragEnd)
+            {
+                OnDragEnd.Invoke(gesture);
+            }
+        }
+
+        private void EasyTouchOnOnDrag(Gesture gesture)
+        {
+            if (null != OnDrag)
+            {
+                OnDrag.Invoke(gesture);
+            }
+        }
+
+        private void EasyTouchOnOnDragStart(Gesture gesture)
+        {
+            if (null != OnDragStart)
+            {
+                OnDragStart.Invoke(gesture);
+            }
+        }
+
+        private void EasyTouchOnOnPinchEnd(Gesture gesture)
+        {
+            if (OnPinchEnd != null)
+            {
+                OnPinchEnd.Invoke(gesture);
+            }
+        }
+
+        private void EasyTouchOnOnPinch(Gesture gesture)
+        {
+            if (OnPinch != null)
+            {
+                OnPinch.Invoke(gesture);
+            }
         }
 
         private void EasyTouchOnOnTouchDown(Gesture gesture)
         {
-            _touchDown = true;
+            IsTouchDown = true;
         }
 
         private void EasyTouchOnOnTouchUp(Gesture gesture)
         {
-            _touchDown = false;
+            IsTouchDown = false;
         }
 
         public void ShowGameInput()
@@ -96,6 +236,13 @@ namespace GameA.Game
             {
                 GameInputControl.Hide();
             }
+        }
+        
+        private enum EPhase
+        {
+            None,
+            Began,
+            Moved,
         }
     }
 }

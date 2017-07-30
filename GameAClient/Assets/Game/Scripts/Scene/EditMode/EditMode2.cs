@@ -6,21 +6,24 @@
 ***********************************************************************/
 
 using System;
-using NewResourceSolution;
+using System.Collections;
+using System.Collections.Generic;
+using System.Reflection.Emit;
+using System.Security.Policy;
 using SoyEngine;
 using UnityEngine;
 using Object = UnityEngine.Object;
-
+/*
 namespace GameA.Game
 {
-    public partial class EditMode : MonoBehaviour
+    public partial class EditMode2 : MonoBehaviour
     {
         public static EditMode Instance;
         private IntVec2 _tileSizePerScreen;
 		/// <summary>
 		/// 地图数据统计
 		/// </summary>
-        private readonly MapStatistics _mapStatistics = new MapStatistics();
+        private MapStatistics _mapStatistics = new MapStatistics();
 		/// <summary>
 		/// 命令管理
 		/// </summary>
@@ -29,7 +32,7 @@ namespace GameA.Game
         [SerializeField]
         private GameObject _backgroundObject;
         [SerializeField]
-		protected ECommandType _commandType = ECommandType.Create;
+		protected ECommandType _commandType = ECommandType.Add;
 		protected ICommand _currentCommand;
 
 		private EEditorLayer _curEditorLayer = EEditorLayer.None;
@@ -39,8 +42,6 @@ namespace GameA.Game
 		private IntVec3 _lastRectIndex;
         [SerializeField]
         private Vector2 _lastMousePosition;
-        [SerializeField]
-        private IntVec2 _changedTileSize;
 
         [SerializeField]
         protected int _selectedItemId;
@@ -89,23 +90,22 @@ namespace GameA.Game
         }
 
 		private void Awake()
-		{
-		    Instance = this;
+        {
+            Instance = this;
             Messenger<ECommandType>.AddListener(EMessengerType.OnCommandChanged, OnCommandChanged);
             Messenger<ushort>.AddListener(EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
-            Messenger<EScreenOperator>.AddListener(EMessengerType.OnScreenOperator, OnScreenOperator);
             Messenger.AddListener(EMessengerType.ForceUpdateCameraMaskSize, ForceUpdateCameraMaskSize);
 
-            InputManager.Instance.OnMouseRightButtonDrag += OnDrag_MouseBtn2;
-            InputManager.Instance.OnMouseRightButtonDragEnd += OnDragEnd_MouseBtn2;
-            InputManager.Instance.OnMouseWheelChange += OnPinchMouseButton;
+            Messenger<Vector2>.AddListener(EMessengerType.OnDrag_MouseBtn2, OnDrag_MouseBtn2);
+            Messenger<Vector2>.AddListener(EMessengerType.OnDrag_MouseBtn2End, OnDragEnd);
+            Messenger<float>.AddListener(EMessengerType.OnPinchMouseButton, OnPinchMouseButton);
+            Messenger.AddListener(EMessengerType.OnPinchMouseButtonStart, OnPinchMouseButtonStart);
+            Messenger.AddListener(EMessengerType.OnPinchMouseButtonEnd, OnPinchMouseButtonEnd);
             Messenger.AddListener(EMessengerType.GameFinishSuccess, OnSuccess);
 
             EasyTouch.On_TouchStart += On_TouchStart;
             EasyTouch.On_TouchDown += On_TouchDown;
             EasyTouch.On_TouchUp += On_TouchUp;
-            InputManager.Instance.OnPinch += OnPinch;
-            InputManager.Instance.OnPinchEnd += OnPinchEnd;
             EasyTouch.On_TouchUp2Fingers += OnTwoFingersTouchUp;
             EasyTouch.On_TouchDown2Fingers += OnTwoFingersTouchDown;
             EasyTouch.On_Drag += On_Drag;
@@ -133,21 +133,20 @@ namespace GameA.Game
             EasyTouch.On_TouchStart -= On_TouchStart;
             EasyTouch.On_TouchDown -= On_TouchDown;
             EasyTouch.On_TouchUp -= On_TouchUp;
-            InputManager.Instance.OnPinch -= OnPinch;
-            InputManager.Instance.OnPinchEnd -= OnPinchEnd;
             EasyTouch.On_TouchUp2Fingers -= OnTwoFingersTouchUp;
             EasyTouch.On_TouchDown2Fingers -= OnTwoFingersTouchDown;
             EasyTouch.On_Drag -= On_Drag;
             EasyTouch.On_DragEnd -= OnDragEnd;
             EasyTouch.On_Cancel2Fingers -= On_Cancel2Fingers;
 
-            InputManager.Instance.OnMouseRightButtonDrag -= OnDrag_MouseBtn2;
-            InputManager.Instance.OnMouseRightButtonDragEnd -= OnDragEnd_MouseBtn2;
-            InputManager.Instance.OnMouseWheelChange -= OnPinchMouseButton;
             Messenger<ECommandType>.RemoveListener(EMessengerType.OnCommandChanged, OnCommandChanged);
             Messenger<ushort>.RemoveListener(EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
-            Messenger<EScreenOperator>.RemoveListener(EMessengerType.OnScreenOperator, OnScreenOperator);
             Messenger.RemoveListener(EMessengerType.ForceUpdateCameraMaskSize, ForceUpdateCameraMaskSize);
+            Messenger<Vector2>.RemoveListener(EMessengerType.OnDrag_MouseBtn2, OnDrag_MouseBtn2);
+            Messenger<Vector2>.RemoveListener(EMessengerType.OnDrag_MouseBtn2End, OnDragEnd);
+            Messenger<float>.RemoveListener(EMessengerType.OnPinchMouseButton, OnPinchMouseButton);
+            Messenger.RemoveListener(EMessengerType.OnPinchMouseButtonStart, OnPinchMouseButtonStart);
+            Messenger.RemoveListener(EMessengerType.OnPinchMouseButtonEnd, OnPinchMouseButtonEnd);
             Messenger.RemoveListener(EMessengerType.GameFinishSuccess, OnSuccess);
 
             for (int i = 0; i < _unitMaskEffectCache.Count; i++) {
@@ -160,15 +159,15 @@ namespace GameA.Game
             _connectLineEffectCache.Clear ();
             if (_backgroundObject != null)
             {
-                Object.Destroy(_backgroundObject);
+                Destroy(_backgroundObject);
             }
             if (_mapRectMask != null)
             {
-                Object.Destroy(_mapRectMask.gameObject);
+                Destroy(_mapRectMask.gameObject);
             }
             if (_cameraMask != null)
             {
-                Object.Destroy(_cameraMask.gameObject);
+                Destroy(_cameraMask.gameObject);
             }
             EditHelper.Clear();
         }
@@ -177,11 +176,10 @@ namespace GameA.Game
         {
             var max = GM2DTools.ScreenToTileByServerTile(new Vector2(GM2DGame.Instance.GameScreenWidth, GM2DGame.Instance.GameScreenHeight));
             _tileSizePerScreen = new IntVec2(max.x + ConstDefineGM2D.ServerTileScale - 1, max.y + ConstDefineGM2D.ServerTileScale - 1);
-            _changedTileSize = ConstDefineGM2D.DefaultChangedTileSize;
             InitLimitedMapRect();
             InitMask();
             UpdateMaskValue();
-			_commandType = ECommandType.Create;
+			_commandType = ECommandType.Add;
             _currentSelectedUnitOnSwitchMode = UnitDesc.zero;
             //LogHelper.Debug(_middleUIWorldPos[0] + "|" + _middleUIWorldPos[1] + "|" + _middleUIWorldPos[2]);
         }
@@ -334,8 +332,8 @@ namespace GameA.Game
                 LogHelper.Error("InitMask called but _cameraMask != null");
                 return;
             }
-            var go = Object.Instantiate (ResourcesManager.Instance.GetPrefab(
-                EResType.UIPrefab, 
+            var go = Instantiate (NewResourceSolution.ResourcesManager.Instance.GetPrefab(
+                NewResourceSolution.EResType.UIPrefab, 
                 ConstDefineGM2D.CameraMaskPrefabName)
             ) as GameObject;
             if (go == null)
@@ -346,8 +344,8 @@ namespace GameA.Game
             _cameraMask = go.GetComponent<SlicedCameraMask>();
             _cameraMask.SetSortOrdering((int) ESortingOrder.Mask);
 
-            var go1 = Object.Instantiate (ResourcesManager.Instance.GetPrefab(
-                EResType.UIPrefab, 
+            var go1 = Instantiate (NewResourceSolution.ResourcesManager.Instance.GetPrefab(
+                NewResourceSolution.EResType.UIPrefab, 
                 ConstDefineGM2D.MapRectMaskPrefabName)
             ) as GameObject;
 			if (go1 == null)
@@ -381,7 +379,7 @@ namespace GameA.Game
             }
             switch (eCommandType)
             {
-                case ECommandType.Erase:
+                case ECommandType.Remove:
                 {
                     SceneNode hit;
                     if (!DataScene2D.PointCast(mouseTile, out hit))
@@ -400,7 +398,7 @@ namespace GameA.Game
                     unitDesc.Scale = hit.Scale;
                 }
                    break;
-                case ECommandType.Create:
+                case ECommandType.Add:
                 {
                     if (_selectedItemId == 0)
                     {
@@ -457,56 +455,6 @@ namespace GameA.Game
             UpdateMaskValue();
         }
 
-        protected virtual void OnScreenOperator(EScreenOperator eScreenOperator)
-        {
-            var changedTileSize = new IntRect(IntVec2.zero, IntVec2.zero);
-            var validMapRect = DataScene2D.Instance.ValidMapRect;
-            switch (eScreenOperator)
-            {
-                case EScreenOperator.UpAdd:
-                    changedTileSize.Max.y = _changedTileSize.y;
-                    break;
-                case EScreenOperator.UpDelete:
-                    changedTileSize.Max.y = -_changedTileSize.y;
-                    break;
-                case EScreenOperator.LeftAdd:
-                    changedTileSize.Min.x = -_changedTileSize.x;
-                    break;
-                case EScreenOperator.LeftDelete:
-                    changedTileSize.Min.x = _changedTileSize.x;
-                    break;
-                case EScreenOperator.RightAdd:
-                    if (validMapRect.Max.x == _limitedMapGrid.XMax)
-                    {
-                        Messenger<string>.Broadcast(EMessengerType.GameErrorLog, "扩图失败，已达地图边界。");
-                        return;
-                    }
-                    changedTileSize.Max.x = _changedTileSize.x;
-                    break;
-                case EScreenOperator.RightDelete:
-                    changedTileSize.Max.x = -_changedTileSize.x;
-                    break;
-            }
-            IntRect calRect = DataScene2D.Instance.ValidMapRect + changedTileSize;
-            calRect.Min.x = Mathf.Max(_limitedMapGrid.XMin, calRect.Min.x);
-            calRect.Min.y = Mathf.Max(_limitedMapGrid.YMin, calRect.Min.y);
-            calRect.Max.x = Mathf.Min(_limitedMapGrid.XMax, calRect.Max.x);
-            calRect.Max.y = Mathf.Min(_limitedMapGrid.YMax, calRect.Max.y);
-            changedTileSize = calRect - DataScene2D.Instance.ValidMapRect;
-            if (changedTileSize.Min != IntVec2.zero || changedTileSize.Max != IntVec2.zero)
-            {
-                if (calRect.Max.x - calRect.Min.x >= _tileSizePerScreen.x &&
-                    calRect.Max.y - calRect.Min.y >= _tileSizePerScreen.y)
-                {
-                    LogHelper.Debug("ValidMapRect:{0} || calRect:{1}", DataScene2D.Instance.ValidMapRect/ConstDefineGM2D.ServerTileScale, calRect/ConstDefineGM2D.ServerTileScale);
-                    MapStatistics.NeedSave = true;
-                    DataScene2D.Instance.ChangeMapRect(changedTileSize);
-                    Messenger<IntRect>.Broadcast(EMessengerType.OnValidMapRectChanged, changedTileSize);
-                    Messenger<EScreenOperator>.Broadcast(EMessengerType.OnScreenOperatorSuccess, eScreenOperator);
-                }
-            }
-        }
-
         private void CancelCurrentCommand ()
         {
             if (_currentCommand != null)
@@ -526,17 +474,17 @@ namespace GameA.Game
 		protected virtual void On_TouchStart(Gesture gesture)
         {
 			_currentCommand = null;
-			if (_commandType == ECommandType.Camera)
+			if (_commandType == ECommandType.Move)
 			{
 				return;
 			}
             
             switch (_commandType)
             {
-                case ECommandType.Erase:
+                case ECommandType.Remove:
                     _currentCommand = new DeleteCommand();
                     break;
-                case ECommandType.Create:
+                case ECommandType.Add:
                 {
                     UnitDesc outValue;
                     if (TryGetSelectedObject(Input.mousePosition, out outValue))
@@ -597,32 +545,7 @@ namespace GameA.Game
                 }
                 break;
             }
-
-
-//            SocialGUIManager.Instance.CloseUI<UICtrlItem>();
-//            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
-//            {
-                //GM2DGUIManager.Instance.OpenUI<UICtrlCreate>();
-//                SocialGUIManager.Instance.OpenUI<UICtrlScreenOperator>();
-//            }
             _lastTouchTime = Time.realtimeSinceStartup;
-        }
-
-		protected virtual void OnPinch(Gesture ge)
-        {
-            if (ge.pickedObject != _backgroundObject)
-            {
-                return;
-            }
-
-	        if (_commandType != ECommandType.Camera)
-	        {
-		        return;
-	        }
-            if (CanControlCamera())
-            {
-                CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSize(ge.deltaPinch/Screen.width*4);
-            }
         }
 
 		protected virtual void OnTwoFingersTouchUp(Gesture ge)
@@ -648,7 +571,7 @@ namespace GameA.Game
 
         protected virtual void On_TouchDown(Gesture gesture)
         {
-	        if (_commandType == ECommandType.Camera)
+	        if (_commandType == ECommandType.Move)
 	        {
 		        return;
 	        }
@@ -670,25 +593,17 @@ namespace GameA.Game
             }
         }
 
-		protected virtual void OnPinchEnd(Gesture ge)
-        {
-            if (CanControlCamera())
-            {
-                TryAdjustCameraOrthoSize(ge.deltaPinch/Screen.width*4);
-            }
-        }
-
 		protected virtual void On_TouchUp(Gesture gesture)
         {
             if (EasyTouch.GetTouchCount() == 1)
             {
                 _is2FingersPressed = false;
             }
-	        if (_commandType == ECommandType.Camera)
+	        if (_commandType == ECommandType.Move)
 	        {
 		        return;
 	        }
-            if (_currentCommand != null && _commandManager != null && !_isPlaying)
+            if (_currentCommand != null && !_isPlaying)
             {
                 _commandManager.Execute(_currentCommand, Input.mousePosition);
             }
@@ -696,7 +611,7 @@ namespace GameA.Game
 
 		protected virtual void On_Drag(Gesture gesture)
         {
-			if (_commandType != ECommandType.Camera)
+			if (_commandType != ECommandType.Move)
 			{
 				return;
 			}
@@ -704,7 +619,7 @@ namespace GameA.Game
             {
                 return;
             }
-            if (CanControlCamera())
+            if (CheckReceiveTwoFingerEvent())
             {
                 Vector2 deltaWorldPos = GM2DTools.ScreenToWorldSize(gesture.deltaPosition);
                 CameraManager.Instance.CameraCtrlEdit.MovePos(deltaWorldPos);
@@ -713,7 +628,7 @@ namespace GameA.Game
 
 		protected virtual void OnDragEnd(Gesture gesture)
         {
-			if (_commandType != ECommandType.Camera)
+			if (_commandType != ECommandType.Move)
 			{
 				return;
 			}
@@ -725,44 +640,32 @@ namespace GameA.Game
             CameraManager.Instance.CameraCtrlEdit.MovePosEnd(deltaWorldPos);
         }
 
-        private void OnDrag_MouseBtn2(Vector3 mousePos, Vector2 delta)
+        private void OnDrag_MouseBtn2(Vector2 delta)
         {
-            TryMoveCamera(delta);
-        }
-
-        private void TryMoveCamera(Vector2 delta)
-        {
-            if (CanControlCamera())
+            if (!_isPlaying)
             {
-                var deltaWorldPos = GM2DTools.ScreenToWorldSize(delta);
+                Vector2 deltaWorldPos = GM2DTools.ScreenToWorldSize(delta);
                 CameraManager.Instance.CameraCtrlEdit.MovePos(deltaWorldPos);
             }
         }
 
-        private void OnPinchMouseButton(Vector3 pos, Vector2 delta)
+        private void OnPinchMouseButton(float value)
         {
-            TryAdjustCameraOrthoSize(delta.y*0.2f);
-            TryAdjustCameraOrthoSizeEnd(0);
+            if (!_isPlaying)
+            {
+                CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSize(value);
+            }
+            //LogHelper.Error("OnPinchMouseButton {0} ",value);
         }
 
-        private void TryAdjustCameraOrthoSize(float delta)
+        private void OnPinchMouseButtonEnd()
         {
-            if (CanControlCamera())
+            if (!_isPlaying)
             {
-                CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSize(delta);
-            }
-        }
-        
-        private void TryAdjustCameraOrthoSizeEnd(float delta)
-        {
-            if (CanControlCamera())
-            {
-                CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSizeEnd(delta);
+                CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSizeEnd(0f);
                 CameraManager.Instance.CameraCtrlEdit.MovePosEnd(Vector2.zero);
             }
         }
-        
-        
 
 		protected virtual void On_Cancel2Fingers(Gesture gesture)
         {
@@ -775,16 +678,33 @@ namespace GameA.Game
             CameraManager.Instance.CameraCtrlEdit.MovePosEnd(Vector2.zero);
         }
 
-        private void OnDragEnd_MouseBtn2(Vector3 mousePos, Vector2 delta)
-        {
-            TryMoveCameraEnd(delta);
-        }
-
-        private void TryMoveCameraEnd(Vector2 delta)
+        private void OnDragEnd(Vector2 vec)
         {
             if (!_isPlaying)
             {
-                CameraManager.Instance.CameraCtrlEdit.MovePosEnd(delta);
+                CameraManager.Instance.CameraCtrlEdit.MovePosEnd(vec);
+            }
+        }
+
+        public void Update()
+        {
+            if (_isPlaying)
+            {
+                return;
+            }
+            if (Input.GetKey(KeyCode.Mouse1))
+            {
+                if (_commandType != ECommandType.Move)
+                {
+                    Messenger<ECommandType>.Broadcast(EMessengerType.OnCommandChanged, ECommandType.Move);
+                }
+            }
+            else
+            {
+                if (_commandType == ECommandType.Move)
+                {
+                    Messenger<ECommandType>.Broadcast(EMessengerType.OnCommandChanged, ECommandType.Add);
+                }
             }
         }
 
@@ -817,7 +737,7 @@ namespace GameA.Game
 
         private void OnSelectedItemChanged(ushort itemId)
         {
-            OnCommandChanged(ECommandType.Create);
+            OnCommandChanged(ECommandType.Add);
             _selectedItemId = itemId;
         }
 
@@ -827,26 +747,31 @@ namespace GameA.Game
             _lastRectIndex = IntVec3.zero;
             switch (eCommandType)
             {
-                case ECommandType.Erase:
+                case ECommandType.Edit:
+                    eCommandType = ECommandType.Add;
+                    break;
+                case ECommandType.Remove:
                     break;
                 case ECommandType.Redo:
-                    _commandManager.Redo();
+					_commandManager.Redo();
                     return;
                 case ECommandType.Undo:
-                    _commandManager.Undo();
+					_commandManager.Undo();
                     return;
-                case ECommandType.Create:
+                case ECommandType.Publish:
                     break;
-                case ECommandType.Camera:
-                    _cmdTypeBeforeMove = _commandType;
-                    CancelCurrentCommand();
-                    break;
-                case ECommandType.Switch:
-                    OnEnterSwitchMode();
-                    break;
+                case ECommandType.Add:
+                break;
+            case ECommandType.Move:
+                _cmdTypeBeforeMove = _commandType;
+                CancelCurrentCommand ();
+                break;
+            case ECommandType.Switch:
+                OnEnterSwitchMode ();
+                break;
             }
             // 从移动操作退出时，回到移动操作前的操作
-            if (_commandType == ECommandType.Camera) {
+            if (_commandType == ECommandType.Move) {
                 _commandType = _cmdTypeBeforeMove;
                 if (_cmdTypeBeforeMove == ECommandType.Switch) {
                     OnEnterSwitchMode ();
@@ -861,7 +786,7 @@ namespace GameA.Game
             //Debug.Log("OnCommandChanged:" + eCommandType);
             if (_commandType == ECommandType.Pause)
             {
-                _commandType = ECommandType.Create;
+                _commandType = ECommandType.Add;
             }
         }
 
@@ -886,16 +811,8 @@ namespace GameA.Game
             OnCommandChanged(ECommandType.Pause);
         }
 
-        private bool CanControlCamera()
+        private bool CheckReceiveTwoFingerEvent()
         {
-            if (_isPlaying)
-            {
-                return false;
-            }
-            if (Application.isMobilePlatform)
-            {
-                return _commandType == ECommandType.Camera;
-            }
             return !_isPlaying && !_isDraggingItem;
         }
 
@@ -933,3 +850,5 @@ namespace GameA.Game
         #endregion
     }
 }
+
+*/

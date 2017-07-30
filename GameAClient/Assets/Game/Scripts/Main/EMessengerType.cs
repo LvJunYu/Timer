@@ -5,9 +5,6 @@
 ** Summary : EMessengerType
 ***********************************************************************/
 
-using System;
-using System.Collections;
-
 namespace GameA
 {
     public static partial class EMessengerType
@@ -34,21 +31,6 @@ namespace GameA
         public static int OnValidMapRectChanged = SoyEngine.EMessengerType.NextId++;
 
         public static int OnActorFlip = SoyEngine.EMessengerType.NextId++;
-
-		/// <summary>
-		/// 鼠标右键按下拖拽
-		/// </summary>
-		public static int OnDrag_MouseBtn2 = SoyEngine.EMessengerType.NextId++;
-		/// <summary>
-		/// 鼠标右键按下拖拽结束
-		/// </summary>
-		public static int OnDrag_MouseBtn2End = SoyEngine.EMessengerType.NextId++;
-
-
-		public static int OnPinchMouseButton = SoyEngine.EMessengerType.NextId++;
-		public static int OnPinchMouseButtonStart = SoyEngine.EMessengerType.NextId++;
-		public static int OnPinchMouseButtonEnd = SoyEngine.EMessengerType.NextId++;
-
 
 		public static int OnScreenOperatorSuccess = SoyEngine.EMessengerType.NextId++;
 

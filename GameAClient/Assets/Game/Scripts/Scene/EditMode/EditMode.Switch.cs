@@ -5,17 +5,13 @@
 ** Summary : EditMode
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Reflection.Emit;
-using System.Security.Policy;
 using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
 {
-    public partial class EditMode : MonoBehaviour
+    public partial class EditMode
     {
         #region fields
         private static Color SwitchModeUnitMaskColor = new Color (0.3f, 0.3f, 0.3f, 1f);

@@ -1,5 +1,4 @@
 ﻿using System;
-using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game

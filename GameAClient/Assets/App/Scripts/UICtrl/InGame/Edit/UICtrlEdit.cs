@@ -79,19 +79,10 @@ namespace GameA
 
             _cachedView.EnterSwitchMode.onClick.AddListener (OnClickSwitchModeButton);
             _cachedView.ExitSwitchMode.onClick.AddListener (OnClickSwitchModeButton);
-            //_moveBtn = _cachedView.MoveBtnObj.AddComponent<Social.UIDraggableButton> ();
-            //_moveBtn.Button = _moveBtn.gameObject.GetComponent<Button> ();
-            //_moveBtn.RectTransform = _moveBtn.GetComponent<RectTransform> ();
-            //_moveBtn.Button.onClick.AddListener (OnMoveBtnClick);
-            //_moveBtn.OnBeginDragEvent.AddListener (OnMoveBtnDrag);
-            //_moveBtn.OnDragEvent.AddListener (OnMoveBtnDrag);
-            //_moveBtn.OnEndDragEvent.AddListener (OnMoveBtnEndDrag);
-            //_moveBtnOrigPos = _moveBtn.RectTransform.position;
-//            _cachedView.MoveBtn.OnPress += OnEnterDragMode;
-//            _cachedView.MoveBtn.OnRelease += OnExitDragMode;
-//            _cachedView.MoveBtn.OnDragBegin += OnMoveBtnDragBegin;
-//            _cachedView.MoveBtn.OnDragMove += OnMoveBtnMove;
-//            _cachedView.MoveBtn.OnDragEnd += OnMoveBtnDragEnd;
+	        _cachedView.EnterCamCtrlModeBtn.onClick.AddListener(OnEnterCamCtrlMode);
+	        _cachedView.ExitCamCtrlModeBtn.onClick.AddListener(OnExitCamCtrlMode);
+	        _cachedView.EnterCamCtrlModeBtn.gameObject.SetActive(true);
+	        _cachedView.ExitCamCtrlModeBtn.gameObject.SetActive(false);
         }
 
 	    protected override void InitEventListener()
@@ -105,7 +96,7 @@ namespace GameA
             base.OnOpen(parameter);
 	        UpdateEraseButtonState();
 //	        UpdateEffectModeButtonState();
-            UpdateSwitchModeButtonState ();
+            UpdateModeButtonState ();
 //            _moveBtnOrigPos = _cachedView.MoveBtn.RectTrans.localPosition;
             //_moveBtnOrigPos = new Vector2 (60, -50);
         }
@@ -298,7 +289,7 @@ namespace GameA
                 _cachedView.Erase.SetActiveEx (false);
                 _cachedView.EnterEffectMode.SetActiveEx (false);
             }
-            UpdateSwitchModeButtonState();
+            UpdateModeButtonState();
         }
 
         private void OnUndo()
@@ -338,14 +329,18 @@ namespace GameA
 
         private void OnEnterCamCtrlMode ()
         {
-            if (EditMode.Instance.CurCommandType != ECommandType.Move) {
-                Broadcast (ECommandType.Move);
+            if (EditMode.Instance.CurCommandType != ECommandType.Camera) {
+	            _cachedView.EnterCamCtrlModeBtn.gameObject.SetActive(false);
+	            _cachedView.ExitCamCtrlModeBtn.gameObject.SetActive(true);
+                Broadcast (ECommandType.Camera);
             }
         }
 
         private void OnExitCamCtrlMode ()
         {
-            if (EditMode.Instance.CurCommandType == ECommandType.Move) {
+            if (EditMode.Instance.CurCommandType == ECommandType.Camera) {
+	            _cachedView.EnterCamCtrlModeBtn.gameObject.SetActive(true);
+	            _cachedView.ExitCamCtrlModeBtn.gameObject.SetActive(false);
                 CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSizeEnd(0f);
                 CameraManager.Instance.CameraCtrlEdit.MovePosEnd(Vector2.zero);
                 Broadcast (ECommandType.Create);
@@ -366,15 +361,22 @@ namespace GameA
 			_cachedView.Erase.SetActiveEx(!isSelect);
 		}
 
-        private void UpdateSwitchModeButtonState () {
+        private void UpdateModeButtonState () {
             if (null == EditMode.Instance || EditMode.Instance.CurCommandType == ECommandType.Play) {
                 _cachedView.EnterSwitchMode.SetActiveEx (false);
                 _cachedView.ExitSwitchMode.SetActiveEx (false);
+	            
+	            _cachedView.EnterCamCtrlModeBtn.SetActiveEx(false);
+	            _cachedView.ExitCamCtrlModeBtn.SetActiveEx(false);
                 return;
             }
-            bool isSelect = EditMode.Instance.CurCommandType == ECommandType.Switch;
-            _cachedView.EnterSwitchMode.SetActiveEx (!isSelect);
-            _cachedView.ExitSwitchMode.SetActiveEx (isSelect);
+            bool isSwitchSelect = EditMode.Instance.CurCommandType == ECommandType.Switch;
+            _cachedView.EnterSwitchMode.SetActiveEx (!isSwitchSelect);
+            _cachedView.ExitSwitchMode.SetActiveEx (isSwitchSelect);
+	        
+	        bool isCameraSelect = EditMode.Instance.CurCommandType == ECommandType.Camera;
+	        _cachedView.EnterCamCtrlModeBtn.SetActiveEx(!isCameraSelect);
+	        _cachedView.ExitCamCtrlModeBtn.SetActiveEx(isCameraSelect);
         }
 
 	    private void UpdateEffectModeButtonState()
@@ -390,21 +392,6 @@ namespace GameA
 			_cachedView.ExitEffectMode.SetActiveEx(isSelect);
 		}
 
-	 //   private void UpdateMoveButtonState()
-	 //   {
-		//	bool isSelect = EditMode.Instance.CurCommandType == ECommandType.Move;
-
-		//	_cachedView.EnterDragMode.SetActiveEx(!isSelect);
-		//	_cachedView.ExitDragMode.SetActiveEx(isSelect);
-		//}
-        private void OnMoveBtnClick ()
-        {
-            //if (_moveBtnDragged) {
-            //    return;
-            //}
-            //ShowMenu (true);
-        }
-
 		private void Broadcast(ECommandType type)
         {
             //关掉UICtrlItem
@@ -419,7 +406,7 @@ namespace GameA
 		    //UpdateMoveButtonState();
 			if (_editMode == EMode.Edit) {
 				UpdateEraseButtonState ();
-                UpdateSwitchModeButtonState ();
+                UpdateModeButtonState ();
 			} else if (_editMode == EMode.ModifyEdit) {
 			}
 		}
