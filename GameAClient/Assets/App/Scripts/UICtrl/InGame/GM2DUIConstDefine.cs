@@ -24,7 +24,7 @@ namespace GameA
 	    public const string FinishConditionRescueHero = "解救伙伴";
 	    public const string FinishConditionTimeLimit = "限时完成";
 
-	    public const string HasBuild = "已建造 {0}";
+	    public const string HasBuild = "{0}";
 
 
 	    public const string WinDataNameLife = "生命";
