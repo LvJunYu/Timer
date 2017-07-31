@@ -81,6 +81,21 @@ namespace GameA.Game
         {
             if (_isAlive && _isStart && !_isFreezed)
             {
+                if (_attackedTimer > 0)
+                {
+                    _attackedTimer--;
+                }
+                if (_attackedTimer <= 0)
+                {
+                    if (_input != null)
+                    {
+                        _input.UpdateLogic();
+                    }
+                    if (_skillCtrl != null)
+                    {
+                        _skillCtrl.UpdateLogic();
+                    }
+                }
                 for (int i = 0; i < _currentStates.Count; i++)
                 {
                     _currentStates[i].UpdateLogic();

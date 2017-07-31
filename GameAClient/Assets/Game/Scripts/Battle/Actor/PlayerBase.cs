@@ -97,7 +97,7 @@ namespace GameA.Game
         {
             if (_input != null)
             {
-                _input.Reset();
+                _input.Clear();
             }
             _gun = _gun ?? new Gun(this);
 
@@ -152,29 +152,6 @@ namespace GameA.Game
             {
                 GameParticleManager.Instance.Emit("M1EffectSpawn", _trans.position);
             }
-        }
-
-        public override void CheckStart()
-        {
-            base.CheckStart();
-            _isStart = true;
-        }
-
-        public override void UpdateLogic()
-        {
-            if (_isAlive && _isStart && !_isFreezed)
-            {
-                if (_attackedTimer > 0)
-                {
-                    _attackedTimer--;
-                }
-                if (_attackedTimer <= 0)
-                {
-                    _input.UpdateLogic();
-                    _skillCtrl.UpdateLogic();
-                }
-            }
-            base.UpdateLogic();
         }
 
         #region box

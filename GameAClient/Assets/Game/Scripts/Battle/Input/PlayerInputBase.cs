@@ -23,11 +23,6 @@ namespace GameA.Game
             _unit = unit;
         }
 
-        public void Reset()
-        {
-            Clear();
-        }
-
         public void UpdateLogic()
         {
             if (!PlayMode.Instance.SceneState.GameRunning)
@@ -203,7 +198,6 @@ namespace GameA.Game
                     _unit.SkillCtrl.Fire(2);
                 }
             }
-        
         }
 
         public void ChangeLittleSkillState(ELittleSkillState eLittleSkillState)

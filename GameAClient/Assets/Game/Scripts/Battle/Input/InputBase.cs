@@ -70,6 +70,12 @@ namespace GameA.Game
             get { return _climbJump; }
         }
 
+        public bool[] CurAppliedInputKeyAry
+        {
+            get { return _curAppliedInputKeyAry; }
+            set { _curAppliedInputKeyAry = value; }
+        }
+
         public int StepY
         {
             get { return _stepY; }

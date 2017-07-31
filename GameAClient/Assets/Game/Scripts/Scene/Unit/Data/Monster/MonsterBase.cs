@@ -31,6 +31,8 @@ namespace GameA.Game
         {
             base.Clear();
             _lastPos = _curPos;
+            _input = _input ?? new PlayerInputBase(this);
+            _input.Clear();
         }
 
         protected override void CalculateMotor()
