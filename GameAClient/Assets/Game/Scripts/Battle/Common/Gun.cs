@@ -29,7 +29,7 @@ namespace GameA.Game
         {
             //初始化ShooterEffect
             _shooterEffect = GameParticleManager.Instance.GetUnityNativeParticleItem(ParticleNameConstDefineGM2D.Shooter,_player.Trans,ESortingOrder.Bullet);
-            _shooterEffect.Play();
+            Play();
             return true;
         }
 
