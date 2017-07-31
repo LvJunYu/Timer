@@ -75,8 +75,8 @@ namespace GameA.Game
 
         protected override void UpdateMonsterAI()
         {
-            _input.CurAppliedInputKeyAry[(int)EInputType.Right] = false;
-            _input.CurAppliedInputKeyAry[(int)EInputType.Left] = false;
+            SetInput(EInputType.Right, false);
+            SetInput(EInputType.Left, false);
             if (!_canMove)
             {
                 SpeedX = 0;
@@ -252,12 +252,12 @@ namespace GameA.Game
                     if (currentDest.x - pathPos.x > ConstDefineGM2D.AIMaxPositionError)
                     {
                         //向右
-                        _input.CurAppliedInputKeyAry[(int)EInputType.Right] = true;
+                        SetInput(EInputType.Right, true);
                     }
                     else if (pathPos.x - currentDest.x > ConstDefineGM2D.AIMaxPositionError)
                     {
                         //向左
-                        _input.CurAppliedInputKeyAry[(int)EInputType.Left] = true;
+                        SetInput(EInputType.Left, true);
                     }
                 }
                 else if (_path.Count > _currentNodeId + 1 && !destOnGround)
@@ -285,13 +285,12 @@ namespace GameA.Game
                         if (nextDest.x - pathPos.x > ConstDefineGM2D.AIMaxPositionError)
                         {
                             //向右
-                            _input.CurAppliedInputKeyAry[(int)EInputType.Right] = true;
-
+                            SetInput(EInputType.Right, true);
                         }
                         else if (pathPos.x - nextDest.x > ConstDefineGM2D.AIMaxPositionError)
                         {
                             //向左
-                            _input.CurAppliedInputKeyAry[(int)EInputType.Left] = true;
+                            SetInput(EInputType.Left, true);
                         }
 
                         if (ReachedNodeOnXAxis(pathPos, currentDest, nextDest) &&

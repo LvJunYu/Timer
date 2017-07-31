@@ -164,5 +164,10 @@ namespace GameA.Game
             base.OnDead ();
             Messenger<EDieType>.Broadcast (EMessengerType.OnMonsterDead, _eDieType);
         }
+
+        protected void SetInput(EInputType eInputType, bool value)
+        {
+            _input.CurAppliedInputKeyAry[(int)eInputType] = value;
+        }
     }
 }
