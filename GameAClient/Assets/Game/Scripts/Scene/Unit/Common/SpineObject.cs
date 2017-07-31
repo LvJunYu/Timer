@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using NewResourceSolution;
 using SoyEngine;
 using Spine.Unity;
 using UnityEngine;
@@ -70,15 +71,11 @@ namespace GameA.Game
 
         public bool Init(string path)
         {
-            SkeletonDataAsset data = null;
-//            if (!GameResourceManager.Instance.TryGetSpineDataByName(path, out data))
-//            {
-//                LogHelper.Error("Init failed spineAssetName is invalid! {0}", path);
-//                return false;
-//            }
-            if (_skeletonAnimation == null)
+            string skeletonDataAssetName = string.Format("{0}_SkeletonData", path);
+            SkeletonDataAsset data = ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData,skeletonDataAssetName,0);
+            if (data == null)
             {
-                LogHelper.Error("Init failed _skeletonAnimation is null! {0}|{1}", path, _trans.GetInstanceID());
+                LogHelper.Error("Init failed data is null! {0}|{1}", path, _trans.GetInstanceID());
                 return false;
             }
             _skeletonAnimation.skeletonDataAsset = data;
