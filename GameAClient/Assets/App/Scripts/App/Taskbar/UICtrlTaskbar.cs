@@ -248,7 +248,8 @@ namespace GameA
 
         public void Account()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlGameSetting>().ChangeToHomeUI();
+            Messenger.Broadcast(EMessengerType.OpenGameSetting);
+            SocialGUIManager.Instance.GetUI<UICtrlGameSetting>().ChangeToHomeUI();
         }
 
         public void OnWorldBtn()

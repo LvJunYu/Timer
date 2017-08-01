@@ -16,12 +16,14 @@ using GameA.Game;
 namespace GameA
 {
 	[UIAutoSetup(EUIAutoSetupType.Add)]
-	public class UICtrlGameSetting:UICtrlInGameBase<UIViewGameSetting>
+	public class UICtrlGameSetting:UICtrlGenericBase<UIViewGameSetting>
 	{
 
 		private GameSettingData _setting;
         private USCtrlGameSettingItem _showShadow;
         private USCtrlGameSettingItem _showRoute;
+        private USCtrlGameSettingItem _playBGMusic;
+        private USCtrlGameSettingItem _playSoundsEffects;
 		protected override void InitGroupId()
 		{
 			_groupId = (int)EUIGroupType.AppGameUI;
@@ -36,8 +38,11 @@ namespace GameA
 		protected override void OnViewCreated()
 		{
 			base.OnViewCreated();
-			_setting = GM2DGame.Instance.Settings;
-            _cachedView.LoginOut.onClick.AddListener(LoginOut);
+            if(GM2DGame.Instance!= null)
+		    {
+		        _setting = GM2DGame.Instance.Settings;
+		    }
+		    _cachedView.LoginOut.onClick.AddListener(LoginOut);
             _cachedView.ChangePwd.onClick.AddListener(OnChangePWDBtnClick);
             //			_cachedView.MusicItem.InitItem(OnClickMusicButton);
             //			_cachedView.SoundsEffects.InitItem(OnClickSoundsEffectsButton);
@@ -47,6 +52,12 @@ namespace GameA
             _showShadow.Init (_cachedView.ShowShadow);
             _showRoute = new USCtrlGameSettingItem ();
             _showRoute.Init(_cachedView.ShowRoute);
+
+
+            _playBGMusic = new USCtrlGameSettingItem();
+            _playBGMusic.Init(_cachedView.PlayBackGroundMusic);
+            _playSoundsEffects = new USCtrlGameSettingItem();
+            _playSoundsEffects.Init(_cachedView.PlaySoundsEffects);
 
             _cachedView.ExitBtn.onClick.AddListener(OnExitBtn);
             _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtn);
@@ -60,12 +71,17 @@ namespace GameA
 			base.OnOpen(parameter);
 //			UpdateSettingItem();
 			UpdateShowState();
-            _showShadow.SetData (_setting.ShowPlayModeShadow, OnClickShowRuntimeShadow);
-            _showRoute.SetData (_setting.ShowEidtModeShadow, OnClickShowEditShadow);
-            _cachedView.NickName.text = LocalUser.Instance.User.UserInfoSimple.NickName;
+		    if (_setting != null)
+		    {
+		        _playBGMusic.SetData(_setting.PlayMusic, OnClickMusicButton);
+                _playSoundsEffects.SetData(_setting.PlaySoundsEffects,OnClickSoundsEffectsButton);
+                _showShadow.SetData(_setting.ShowPlayModeShadow, OnClickShowRuntimeShadow);
+		        _showRoute.SetData(_setting.ShowEidtModeShadow, OnClickShowEditShadow);
+		    }
+		    _cachedView.NickName.text = LocalUser.Instance.User.UserInfoSimple.NickName;
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHeadAvatar,
-                LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,
-                _cachedView.DefaultUserHeadTexture);
+            LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,
+            _cachedView.DefaultUserHeadTexture);
             GameRun.Instance.Pause ();
 		}
 
@@ -100,12 +116,13 @@ namespace GameA
 
         public void OnCloseBtnClick()
         {
-            SocialGUIManager.Instance.CloseUI<UICtrlAccount>();
+            SocialGUIManager.Instance.CloseUI<UICtrlGameSetting>();
         }
 
         public void OnChangePWDBtnClick()
         {
             SocialGUIManager.Instance.OpenUI<UICtrlChangePassword>();
+            SocialGUIManager.Instance.CloseUI<UICtrlGameSetting>();
         }
 
         public void ChangeToHomeUI()
@@ -136,14 +153,17 @@ namespace GameA
 
         private void UpdateShowState()
 		{
-            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
-			{
-                _cachedView.RestartBtn.gameObject.SetActive (false);
-			}
-			else
-			{
-                _cachedView.RestartBtn.gameObject.SetActive (true);
-			}
+            if (GM2DGame.Instance!= null)
+            {
+                if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+                {
+                    _cachedView.RestartBtn.gameObject.SetActive(false);
+                }
+                else
+                {
+                    _cachedView.RestartBtn.gameObject.SetActive(true);
+                }
+            }
 		}
 
 //		private void UpdateSettingItem()
@@ -157,17 +177,17 @@ namespace GameA
 //			}
 //		}
 
-		private void OnClickMusicButton()
-		{
-			_setting.PlayMusic = !_setting.PlayMusic;
+		private void OnClickMusicButton(bool isOn)
+        {
+			_setting.PlayMusic = isOn;
 			GameAudioManager.Instance.OnSettingChanged();
 //			UpdateSettingItem();
 		}
 
 
-		private void OnClickSoundsEffectsButton()
-		{
-			_setting.PlaySoundsEffects = !_setting.PlaySoundsEffects;
+		private void OnClickSoundsEffectsButton(bool isOn)
+        {
+			_setting.PlaySoundsEffects = isOn;
 			GameAudioManager.Instance.OnSettingChanged();
 //			UpdateSettingItem();
 		}
