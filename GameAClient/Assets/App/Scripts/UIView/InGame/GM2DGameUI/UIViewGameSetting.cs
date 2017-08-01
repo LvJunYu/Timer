@@ -25,16 +25,28 @@ namespace GameA
 //		public Text ButtonExitText;
         public USViewGameSettingItem ShowShadow;
         public USViewGameSettingItem ShowRoute;
+	    public GameObject BtnGroup1;
+	    public GameObject BtnGroup2;
+        public Text NickName;
+        public Button ReturnBtn;
+        public RawImage UserHeadAvatar;
+        /// <summary>
+        /// Ä¬ÈÏÍ¼Æ¬
+        /// </summary>
+		public Texture DefaultUserHeadTexture;
+        //		public Text ButtonReturnToGameText;
 
-		public Button ReturnBtn;
-//		public Text ButtonReturnToGameText;
-
-		public Button RestartBtn;
+        public Button RestartBtn;
 //		public Text ButtonRestartText;
 
 //		public UIRectTransformStatus UIStateController;
 
 		public Button ExitBtn;
 
-	}
+        public Button LoginOut;
+        public Button ChangePwd;
+
+
+
+    }
 }

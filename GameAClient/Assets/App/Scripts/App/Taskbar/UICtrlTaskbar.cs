@@ -248,7 +248,7 @@ namespace GameA
 
         public void Account()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlAccount>();
+            SocialGUIManager.Instance.OpenUI<UICtrlGameSetting>().ChangeToHomeUI();
         }
 
         public void OnWorldBtn()
