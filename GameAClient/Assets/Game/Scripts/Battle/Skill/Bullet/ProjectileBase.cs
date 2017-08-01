@@ -186,10 +186,6 @@ namespace GameA.Game
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
                 string effectName = _tableUnit.DestroyEffectName;
-                if (_destroy == 1)
-                {
-                    effectName = "M1EffectBlisterStart";
-                }
                 GameParticleManager.Instance.Emit(effectName, _trans.position, new Vector3(0, 0, _angle), Vector3.one);
             }
             Clear();

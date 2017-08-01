@@ -226,28 +226,46 @@ namespace GameA.Game
             {
                 return new UnitBase();
             }
-            if (id >= 10001 && id < 11001)
+            switch (id)
             {
-                switch (id)
-                {
-                    case 10001:
-                        return PoolFactory<ProjectileWater>.Get();
-                }
+                case 10001:
+                    return PoolFactory<ProjectileWater>.Get();
+                case 10002:
+                    return PoolFactory<ProjectileFire>.Get();
+                case 10003:
+                    return PoolFactory<ProjectileIce>.Get();
+                case 10004:
+                    return PoolFactory<ProjectileJelly>.Get();
+                case 10005:
+                    return PoolFactory<ProjectileClay>.Get();
+                case 10006:
+                    return PoolFactory<ProjectileIceSword>.Get();
             }
             return (UnitBase) Activator.CreateInstance(type);
         }
 
         public void FreeUnitView(UnitBase unit)
         {
-            int id = unit.Id;
-            if (id >= 10001 && id < 11001)
+            switch (unit.Id)
             {
-                switch (id)
-                {
-                    case 10001:
-                        PoolFactory<ProjectileWater>.Free((ProjectileWater) unit);
-                        break;
-                }
+                case 10001:
+                    PoolFactory<ProjectileWater>.Free((ProjectileWater) unit);
+                    break;
+                case 10002:
+                    PoolFactory<ProjectileFire>.Free((ProjectileFire) unit);
+                    break;
+                case 10003:
+                    PoolFactory<ProjectileIce>.Free((ProjectileIce) unit);
+                    break;
+                case 10004:
+                    PoolFactory<ProjectileJelly>.Free((ProjectileJelly) unit);
+                    break;
+                case 10005:
+                    PoolFactory<ProjectileClay>.Free((ProjectileClay) unit);
+                    break;
+                case 10006:
+                    PoolFactory<ProjectileIceSword>.Free((ProjectileIceSword) unit);
+                    break;
             }
             if (unit.View == null)
             {
