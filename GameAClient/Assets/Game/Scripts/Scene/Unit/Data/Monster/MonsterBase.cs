@@ -31,6 +31,8 @@ namespace GameA.Game
         {
             base.Clear();
             _lastPos = _curPos;
+            _input = _input ?? new PlayerInputBase(this);
+            _input.Clear();
         }
 
         protected override void CalculateMotor()
@@ -161,6 +163,11 @@ namespace GameA.Game
         {
             base.OnDead ();
             Messenger<EDieType>.Broadcast (EMessengerType.OnMonsterDead, _eDieType);
+        }
+
+        protected void SetInput(EInputType eInputType, bool value)
+        {
+            _input.CurAppliedInputKeyAry[(int)eInputType] = value;
         }
     }
 }

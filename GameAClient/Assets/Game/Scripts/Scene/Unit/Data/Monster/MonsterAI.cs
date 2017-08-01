@@ -75,6 +75,8 @@ namespace GameA.Game
 
         protected override void UpdateMonsterAI()
         {
+            SetInput(EInputType.Right, false);
+            SetInput(EInputType.Left, false);
             if (!_canMove)
             {
                 SpeedX = 0;
@@ -96,7 +98,6 @@ namespace GameA.Game
             switch (_eState)
             {
                 case EMonsterState.Think:
-                    SpeedX = Util.ConstantLerp(SpeedX, 0, _curFriction);
                     if (_thinkTimer > 50)
                     {
                         OnThink();
@@ -107,7 +108,6 @@ namespace GameA.Game
                     OnSeek();
                     break;
                 case EMonsterState.Attack:
-                    SpeedX = Util.ConstantLerp(SpeedX, 0, _curFriction);
                     OnAttack();
                     break;
             }
@@ -252,14 +252,12 @@ namespace GameA.Game
                     if (currentDest.x - pathPos.x > ConstDefineGM2D.AIMaxPositionError)
                     {
                         //向右
-                        SetFacingDir(EMoveDirection.Right);
-                        SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, _curFriction);
+                        SetInput(EInputType.Right, true);
                     }
                     else if (pathPos.x - currentDest.x > ConstDefineGM2D.AIMaxPositionError)
                     {
                         //向左
-                        SetFacingDir(EMoveDirection.Left);
-                        SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, _curFriction);
+                        SetInput(EInputType.Left, true);
                     }
                 }
                 else if (_path.Count > _currentNodeId + 1 && !destOnGround)
@@ -287,14 +285,12 @@ namespace GameA.Game
                         if (nextDest.x - pathPos.x > ConstDefineGM2D.AIMaxPositionError)
                         {
                             //向右
-                            SetFacingDir(EMoveDirection.Right);
-                            SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, _curFriction);
+                            SetInput(EInputType.Right, true);
                         }
                         else if (pathPos.x - nextDest.x > ConstDefineGM2D.AIMaxPositionError)
                         {
                             //向左
-                            SetFacingDir(EMoveDirection.Left);
-                            SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, _curFriction);
+                            SetInput(EInputType.Left, true);
                         }
 
                         if (ReachedNodeOnXAxis(pathPos, currentDest, nextDest) &&

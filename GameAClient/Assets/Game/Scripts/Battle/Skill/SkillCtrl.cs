@@ -78,6 +78,8 @@ namespace GameA.Game
             {
                 _currentSkills[i] = null;
             }
+            _currentMp = _mpTotal;
+            _currentRp = _rpTotal;
             _timer = 0;
         }
 

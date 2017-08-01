@@ -137,7 +137,7 @@ namespace GameA.Game
         
         private void GenerateWing()
         {
-            if (_unit.CurMoveDirection != EMoveDirection.None)
+            if (_unit.CurMoveDirection != EMoveDirection.None && !_unit.IsActor)
             {
                 if (_wingLeft == null)
                 {

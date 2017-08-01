@@ -205,11 +205,7 @@ namespace GameA.Game
         public void Update()
         {
             var pos = GM2DTools.WorldToTile(CameraManager.Instance.MainCameraTrans.position);
-            if (EditMode.Instance != null)
-            {
-                ColliderScene2D.Instance.UpdateLogic(pos);
-                EditMode.Instance.Update();
-            }
+            ColliderScene2D.Instance.UpdateLogic(pos);
         }
 
         /// <summary>

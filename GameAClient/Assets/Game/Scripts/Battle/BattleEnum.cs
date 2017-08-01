@@ -23,11 +23,22 @@ namespace GameA.Game
     public enum EWeaponType
     {
         None,
-        Fire,
+        Fire = 2,
         Ice,
         Jelly,
         Clay,
         IceSword,
+        Max
+    }
+    
+    public enum EJetWeaponType
+    {
+        None,
+        Water,
+        Fire,
+        Ice,
+        Jelly,
+        Clay,
         Max
     }
 

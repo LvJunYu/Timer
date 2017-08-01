@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using SoyEngine;
 using Spine.Unity;
 using UnityEngine;
-using UnitySampleAssets.CrossPlatformInput;
 
 namespace GameA.Game
 {
@@ -148,7 +147,7 @@ namespace GameA.Game
             {
                 return;
             }
-            CrossPlatformInputManager.Update();
+            InputManager.Instance.Update();
             GameParticleManager.Instance.Update();
             GameAudioManager.Instance.Update();
             DeadMarkManager.Instance.Update();

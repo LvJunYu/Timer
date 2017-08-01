@@ -101,10 +101,14 @@ namespace GameA.Game
                     return DoMove();
                 }
             }
-            if (UnitDefine.IsBindWeapon(_clickedTableUnit.Id))
+            if (UnitDefine.IsWeaponPool(_clickedTableUnit.Id))
 		    {
 		        return DoWeapon();
 		    }
+            if (UnitDefine.IsJet(_clickedTableUnit.Id))
+            {
+                return DoJet();
+            }
 		    if (_clickedTableUnit.CanRotate)
             {
                 return DoRotate();
@@ -129,13 +133,25 @@ namespace GameA.Game
             _clickedExtra.UnitValue++;
             if (_clickedExtra.UnitValue >= (int)EWeaponType.Max)
             {
-                _clickedExtra.UnitValue = 1;
+                _clickedExtra.UnitValue = 2;
             }
             _modifiedExtra.UnitValue = _clickedExtra.UnitValue;
             SaveUnitExtra();
             return true;
         }
 
+        protected bool DoJet()
+        {
+            _clickedExtra.UnitValue++;
+            if (_clickedExtra.UnitValue >= (int)EJetWeaponType.Max)
+            {
+                _clickedExtra.UnitValue = 1;
+            }
+            _modifiedExtra.UnitValue = _clickedExtra.UnitValue;
+            SaveUnitExtra();
+            return true;
+        }
+        
         protected virtual bool DoAddMsg()
         {
             SocialGUIManager.Instance.OpenUI<UICtrlGameItemAddMessage>(_clickedDesc);

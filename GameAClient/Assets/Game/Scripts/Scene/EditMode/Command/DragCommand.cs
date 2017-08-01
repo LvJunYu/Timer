@@ -115,11 +115,11 @@ namespace GameA.Game
                         if (coverUnits.Count > 0 && CheckCanBindMagic(_dragTableUnit, coverUnits[0]))
                         {
                             Table_Unit tableTarget = UnitManager.Instance.GetTableUnit(coverUnits[0].Id);
+                            var unitExtra = DataScene2D.Instance.GetUnitExtra(coverUnits[0].Guid);
                             //删掉
-                            _buffers.Add(new UnitEditData(coverUnits[0], DataScene2D.Instance.GetUnitExtra(coverUnits[0].Guid)));
+                            _buffers.Add(new UnitEditData(coverUnits[0], unitExtra));
                             EditMode.Instance.DeleteUnit(coverUnits[0]);
                             //绑定蓝石 如果方向允许就用蓝石方向，否则用默认初始方向。
-                            var unitExtra = DataScene2D.Instance.GetUnitExtra(coverUnits[0].Guid);
                             unitExtra.MoveDirection = CheckMask((byte)(_dragUnitExtra.MoveDirection - 1),tableTarget.MoveDirectionMask)
                                 ? _dragUnitExtra.MoveDirection : (EMoveDirection) tableTarget.OriginMagicDirection;
                             DataScene2D.Instance.ProcessUnitExtra(coverUnits[0].Guid, unitExtra);

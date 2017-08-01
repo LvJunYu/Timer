@@ -97,13 +97,13 @@ namespace GameA.Game
         {
             if (_input != null)
             {
-                _input.Reset();
+                _input.Clear();
             }
             _gun = _gun ?? new Gun(this);
 
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
             _skillCtrl.Clear();
-            ChangeWeapon(1);
+            ChangeWeapon(2);
             
             _dieTime = 0;
             _box = null;
@@ -150,31 +150,8 @@ namespace GameA.Game
             }
             if (_trans != null)
             {
-                GameParticleManager.Instance.Emit("M1EffectSpawn", _trans.position);
+                GameParticleManager.Instance.Emit("M1EffectSpawn",new Vector3(_trans.position.x, _trans.position.y - 0.5f, -100));
             }
-        }
-
-        public override void CheckStart()
-        {
-            base.CheckStart();
-            _isStart = true;
-        }
-
-        public override void UpdateLogic()
-        {
-            if (_isAlive && _isStart && !_isFreezed)
-            {
-                if (_attackedTimer > 0)
-                {
-                    _attackedTimer--;
-                }
-                if (_attackedTimer <= 0)
-                {
-                    _input.UpdateLogic();
-                    _skillCtrl.UpdateLogic();
-                }
-            }
-            base.UpdateLogic();
         }
 
         #region box

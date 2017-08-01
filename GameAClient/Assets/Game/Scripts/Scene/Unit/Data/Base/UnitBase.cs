@@ -671,6 +671,10 @@ namespace GameA.Game
             _colliderPos = GetColliderPos(_curPos);
             _colliderGrid = _tableUnit.GetColliderGrid(ref _unitDesc);
             _curMoveDirection = _moveDirection;
+            if (IsMain)
+            {
+                _curMoveDirection = _moveDirection = EMoveDirection.Right;
+            }
             if (_dynamicCollider != null && !_lastColliderGrid.Equals(_colliderGrid))
             {
                 _dynamicCollider.Grid = _colliderGrid;

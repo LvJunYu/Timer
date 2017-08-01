@@ -23,11 +23,6 @@ namespace GameA.Game
             _unit = unit;
         }
 
-        public void Reset()
-        {
-            Clear();
-        }
-
         public void UpdateLogic()
         {
             if (!PlayMode.Instance.SceneState.GameRunning)
@@ -41,10 +36,6 @@ namespace GameA.Game
                     if (_unit.CurMoveDirection != EMoveDirection.Left)
                     {
                         _unit.SetFacingDir(EMoveDirection.Left);
-                        if (_unit.IsMain)
-                        {
-                            PlayMode.Instance.CurrentShadow.RecordDirChange(EMoveDirection.Left);
-                        }
                     }
                 }
                 else if (RightInput)
@@ -52,10 +43,6 @@ namespace GameA.Game
                     if (_unit.CurMoveDirection != EMoveDirection.Right)
                     {
                         _unit.SetFacingDir(EMoveDirection.Right);
-                        if (_unit.IsMain)
-                        {
-                            PlayMode.Instance.CurrentShadow.RecordDirChange(EMoveDirection.Right);
-                        }
                     }
                 }
             }
@@ -203,7 +190,6 @@ namespace GameA.Game
                     _unit.SkillCtrl.Fire(2);
                 }
             }
-        
         }
 
         public void ChangeLittleSkillState(ELittleSkillState eLittleSkillState)

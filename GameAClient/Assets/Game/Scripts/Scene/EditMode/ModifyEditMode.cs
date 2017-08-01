@@ -247,7 +247,7 @@ namespace GameA.Game
 		{
 //			base.On_TouchStart (gesture);
 			_currentCommand = null;
-			if (_commandType == ECommandType.Move)
+			if (_commandType == ECommandType.Camera)
 			{
 				return;
 			}

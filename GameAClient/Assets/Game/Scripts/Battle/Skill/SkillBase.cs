@@ -88,6 +88,11 @@ namespace GameA.Game
         {
             _owner = ower;
             _tableSkill = TableManager.Instance.GetSkill(id);
+            if (_tableSkill == null)
+            {
+                LogHelper.Error("GetSkill Failed, {0}", id);
+                return;
+            }
             _eSkillType = (ESkillType) _tableSkill.SkillType;
             _cdTime = TableConvert.GetTime(_tableSkill.CDTime);
             _singTime = TableConvert.GetTime(_tableSkill.SingTime);

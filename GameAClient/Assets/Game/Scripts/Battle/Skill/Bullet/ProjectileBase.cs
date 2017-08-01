@@ -93,12 +93,15 @@ namespace GameA.Game
             {
                 return false;
             }
-            _effectBullet = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.Model, _trans);
-            if (_effectBullet == null)
+            if (_tableUnit.EGeneratedType == EGeneratedType.Empty)
             {
-                return false;
+                _effectBullet = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.Model, _trans);
+                if (_effectBullet == null)
+                {
+                    return false;
+                }
+                _effectBullet.Play();
             }
-            _effectBullet.Play();
             return true;
         }
 
@@ -183,10 +186,6 @@ namespace GameA.Game
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
                 string effectName = _tableUnit.DestroyEffectName;
-                if (_destroy == 1)
-                {
-                    effectName = "M1EffectBlisterStart";
-                }
                 GameParticleManager.Instance.Emit(effectName, _trans.position, new Vector3(0, 0, _angle), Vector3.one);
             }
             Clear();

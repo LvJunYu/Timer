@@ -18,8 +18,6 @@ namespace GameA.Game
         public override void OnMapReady()
         {
             base.OnMapReady();
-            InnerCameraManager.MainCameraTrans.gameObject.AddComponent<MouseDragListener>();
-            InnerCameraManager.MainCameraTrans.gameObject.AddComponent<MousePinchListener>();
             _positionSpringbackEffect = new CameraPositionSpringbackEffect();
             _orthoSizeSpringbackEffect = new CameraOrthoSizeSpringbackEffect();
             _positionSpringbackEffect.Init(InnerCameraManager);

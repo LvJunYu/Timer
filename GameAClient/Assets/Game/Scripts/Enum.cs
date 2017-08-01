@@ -5,9 +5,6 @@
 ** Summary : Enum
 ***********************************************************************/
 
-using System;
-using System.Collections;
-
 namespace GameA.Game
 {
     public enum EDirectionType : byte
@@ -116,18 +113,16 @@ namespace GameA.Game
     public enum ECommandType
     {
         None,
-        Edit,
         Erase,
         Redo,
         Undo,
         Play,
-        Publish,
         Create,
         Pause,
 		Drag,
-		Move,
 		Modify,
         Switch,     // 编辑开关
+	    Camera,		// 调整摄像机视野
         Max,
     }
 	/// <summary>
