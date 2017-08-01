@@ -62,9 +62,14 @@ namespace GameA.Game
             return id < 3000 && id > 2000;
         }
 
-        public static bool IsBindWeapon(int id)
+        public static bool IsWeaponPool(int id)
         {
-            return id == 8001 || id == 5015 || id == 5016;
+            return id == 8001;
+        }
+        
+        public static bool IsJet(int id)
+        {
+            return id == 5015 || id == 5016;
         }
 
         public static bool IsSwitch(int id)
@@ -118,7 +123,7 @@ namespace GameA.Game
 
         public static bool IsEditClick(int id)
         {
-            return id == BillboardId || IsBindWeapon(id);
+            return id == BillboardId || IsWeaponPool(id);
         }
 
         public static bool IsSameDirectionSwitchTrigger(SceneNode node, byte rotation)
@@ -163,7 +168,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            return (tableUnit.EGeneratedType == EGeneratedType.Spine && !IsHero(tableUnit.Id) && !IsBullet(tableUnit.Id)) || IsBindWeapon(tableUnit.Id) || tableUnit.Id == FinalDoorId;
+            return (tableUnit.EGeneratedType == EGeneratedType.Spine && !IsHero(tableUnit.Id) && !IsBullet(tableUnit.Id)) || IsWeaponPool(tableUnit.Id) || tableUnit.Id == FinalDoorId;
         }
     }
 }

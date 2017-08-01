@@ -335,7 +335,16 @@ namespace GameA.Game
                     DataScene2D.Instance.ProcessUnitExtra(unitDesc.Guid, unitExtra);
                 }
             }
-            if (UnitDefine.IsBindWeapon(tableUnit.Id))
+            else if (UnitDefine.IsWeaponPool(tableUnit.Id))
+            {
+                UnitExtra unitExtra;
+                if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
+                {
+                    unitExtra.UnitValue = 2;
+                    DataScene2D.Instance.ProcessUnitExtra(unitDesc.Guid, unitExtra);
+                }
+            }
+            else if (UnitDefine.IsJet(tableUnit.Id))
             {
                 UnitExtra unitExtra;
                 if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
