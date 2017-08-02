@@ -46,7 +46,6 @@ namespace GameA.Game
 
             _currentMp = _mpTotal;
             _currentRp = _rpTotal;
-            LogHelper.Debug("{0} | {1}", _mpRecover, _rpRecover);
         }
 
         public bool ChangeSkill(params int[] skillIds)
