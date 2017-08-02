@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA.Game
@@ -93,12 +94,6 @@ namespace GameA.Game
 				return this._addedUnits;
 			}
 		}
-
-        public Dictionary<IntVec3, List<IntVec3>> SwitchedUnits {
-            get {
-                return this._switchedUnits;
-            }
-        }
         #endregion
 
         #region 方法
@@ -232,10 +227,7 @@ namespace GameA.Game
 
         public void ProcessUnitExtra(IntVec3 guid, UnitExtra unitExtra)
         {
-            if (null != EditMode.Instance) 
-            {
-                EditMode.Instance.MapStatistics.NeedSave = true;
-            }
+            EditMode2.Instance.MapStatistics.NeedSave = true;
             if (unitExtra.Equals(UnitExtra.zero))
             {
                 DeleteUnitExtra(guid);
@@ -342,6 +334,76 @@ namespace GameA.Game
                 _switchedUnits.Remove(switchGuid);
             }
             return true;
+        }
+
+        public void OnUnitDeleteUpdateSwitchData(UnitDesc unitDesc)
+        {
+            if (UnitDefine.IsSwitch(unitDesc.Id))
+            {
+                if (_switchedUnits.ContainsKey(unitDesc.Guid))
+                {
+                    _switchedUnits.Remove(unitDesc.Guid);
+                }
+            }
+            else
+            {
+                using (var itor = _switchedUnits.GetEnumerator())
+                {
+                    while (itor.MoveNext())
+                    {
+                        List<IntVec3> units = itor.Current.Value;
+                        units.Remove(unitDesc.Guid);
+                    }
+                }
+            }
+        }
+
+        public void OnUnitMoveUpdateSwitchData(UnitDesc oldUnitDesc, UnitDesc newUnitDesc)
+        {
+            if (UnitDefine.IsSwitch(newUnitDesc.Id))
+            {
+                List<IntVec3> list;
+                if (_switchedUnits.TryGetValue(oldUnitDesc.Guid, out list))
+                {
+                    _switchedUnits.Remove(oldUnitDesc.Guid);
+                    _switchedUnits.Add(newUnitDesc.Guid, list);
+                }
+            }
+            else
+            {
+                using (var itor = _switchedUnits.GetEnumerator())
+                {
+                    while (itor.MoveNext())
+                    {
+                        List<IntVec3> units = itor.Current.Value;
+                        for (int i = 0; i < units.Count; i++)
+                        {
+                            if (units[i] == oldUnitDesc.Guid)
+                            {
+                                units[i] = newUnitDesc.Guid;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public void SaveSwitchUnitData(List<SwitchUnitData> list)
+        {
+            using (var switchUnitItor = _switchedUnits.GetEnumerator())
+            {
+                while (switchUnitItor.MoveNext())
+                {
+                    SwitchUnitData newData = new SwitchUnitData();
+                    newData.SwitchGUID = GM2DTools.ToProto(switchUnitItor.Current.Key);
+                    for (int i = 0; i < switchUnitItor.Current.Value.Count; i++)
+                    {
+                        newData.ControlledGUIDs.Add(GM2DTools.ToProto(switchUnitItor.Current.Value[i]));
+                    }
+                    list.Add(newData);
+                }
+            }
         }
 
         #endregion

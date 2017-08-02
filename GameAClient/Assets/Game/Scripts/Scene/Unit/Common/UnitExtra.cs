@@ -6,9 +6,7 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Runtime.InteropServices;
-using SoyEngine;
 
 namespace GameA.Game
 {
@@ -16,7 +14,7 @@ namespace GameA.Game
     [StructLayout(LayoutKind.Sequential)]
     public struct UnitExtra : IEquatable<UnitExtra>
     {
-        public static UnitExtra zero = new UnitExtra();
+        public static UnitExtra zero;
         public EMoveDirection MoveDirection;
         public EMoveDirection RollerDirection;
         public string Msg;

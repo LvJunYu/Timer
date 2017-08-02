@@ -84,10 +84,11 @@ namespace GameA
 		    if (IsOpen)
 		    {
 //				UpdateTabbarState();
-                EUIType showType = EditMode.Instance.CurEditorLayer == EEditorLayer.Effect
-                    ? EUIType.Effect
-				    : _lastSelectUnitType;
-				RefreshView(showType);
+//                EUIType showType = EditMode.Instance.CurEditorLayer == EEditorLayer.Effect
+//                    ? EUIType.Effect
+//				    : _lastSelectUnitType;
+//				RefreshView(showType);
+				RefreshView(_lastSelectUnitType);
 			}
 	    }
 
@@ -162,7 +163,7 @@ namespace GameA
                 {
                     var umItem = PoolFactory<UMCtrlItem>.Get ();
                     umItem.Init(_cachedView.ScrollRect.content);
-                    umItem.Set(items[i], EditMode.Instance.SelectedItemId == items[i].Id);
+                    umItem.Set(items[i], EditMode2.Instance.BoardData.CurrentSelectedUnitId == items[i].Id);
                     _umItems.Add(umItem);
                 }
                 int itemCount = items.Count;

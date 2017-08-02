@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Collections.Generic;
 using SoyEngine.Proto;
 using SoyEngine;
 
@@ -69,20 +70,11 @@ namespace GameA.Game
 		{
 			get
 			{
-				if (EditMode.Instance == null
-					|| EditMode.Instance.MapStatistics == null)
-				{
-					return false;
-				}
-				return EditMode.Instance.MapStatistics.NeedSave;
+				return EditMode2.Instance.MapStatistics.NeedSave;
 			}
 			set
 			{
-				if (EditMode.Instance != null
-					&& EditMode.Instance.MapStatistics != null)
-				{
-					EditMode.Instance.MapStatistics.NeedSave = value;
-				}
+				EditMode2.Instance.MapStatistics.NeedSave = value;
 			}
 		}
 
@@ -106,10 +98,17 @@ namespace GameA.Game
                 return false;
             }
             _gameRunMode = EGameRunMode.Edit;
+	        EditMode2.Instance.Init();
             return true;
 		}
 
-        public override void InitByStep()
+	    public override bool Stop()
+	    {
+		    EditMode2.Instance.Dispose();
+		    return base.Stop();
+	    }
+
+	    public override void InitByStep()
 		{
             GameRun.Instance.ChangeState(ESceneState.Edit);
             InitUI();
@@ -207,7 +206,35 @@ namespace GameA.Game
             return true;
         }
 
-        public virtual void ChangeMode(EMode mode)
+	    public override void Update()
+	    {
+		    GameRun.Instance.Update();
+		    if (_mode == EMode.Edit)
+		    {
+			    EditMode2.Instance.Update();
+		    }
+		    if (GameRun.Instance.LogicTimeSinceGameStarted < GameRun.Instance.GameTimeSinceGameStarted)
+		    {
+			    if (_mode == EMode.EditTest && null != PlayerManager.Instance.MainPlayer)
+			    {
+				    LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.Input as LocalPlayerInput;
+				    if (localPlayerInput != null)
+				    {
+					    localPlayerInput.ProcessCheckInput();
+					    List<int> inputChangeList = localPlayerInput.CurCheckInputChangeList;
+					    for (int i = 0; i < inputChangeList.Count; i++)
+					    {
+						    _inputDatas.Add(GameRun.Instance.LogicFrameCnt);
+						    _inputDatas.Add(inputChangeList[i]);
+					    }
+					    localPlayerInput.ApplyInputData(inputChangeList);
+				    }
+			    }
+			    GameRun.Instance.UpdateLogic(ConstDefineGM2D.FixedDeltaTime);
+		    }
+	    }
+
+	    public virtual void ChangeMode(EMode mode)
         {
             if (mode == _mode)
             {
@@ -217,7 +244,7 @@ namespace GameA.Game
 
             if (mode == EMode.EditTest)
             {
-                EditMode.Instance.HandlePlay();
+                EditMode2.Instance.StopEdit();
                 if (!GameRun.Instance.ChangeState(ESceneState.Play))
                 {
                     ChangeMode(EMode.Edit);
@@ -236,7 +263,7 @@ namespace GameA.Game
             }
             else if (mode == EMode.Edit)
             {
-                EditMode.Instance.HandlePause();
+                EditMode2.Instance.StartEdit();
                 GameRun.Instance.ChangeState(ESceneState.Edit);
                 SocialGUIManager.Instance.OpenUI<UICtrlItem>();
 //                SocialGUIManager.Instance.OpenUI<UICtrlScreenOperator>();

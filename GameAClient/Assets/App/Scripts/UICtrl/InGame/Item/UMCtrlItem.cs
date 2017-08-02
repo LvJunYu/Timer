@@ -77,12 +77,27 @@ namespace GameA
             if (ECheckBehaviour.None == _checkBehaviour)
             {
                 var delta = pointerEventData.position - _startPos;
-                Debug.Log("Delta: " + delta);
+//                Debug.Log("Delta: " + delta);
                 if (delta.y > CheckDelta.y)
                 {
                     _checkBehaviour = ECheckBehaviour.Drag;
-                    //TODO 暂时屏蔽
-//                    EditMode2.Instance.StartDragUnit(GM2DTools.ScreenToWorldPoint(pointerEventData.position), _table.Id);
+                    var current = EditHelper.GetUnitOrigDirOrRot(_table);
+                    EDirectionType rotate = EDirectionType.Up;
+                    UnitExtra unitExtra = new UnitExtra();
+                    if (UnitDefine.IsRoller(_table.Id))
+                    {
+                        unitExtra.RollerDirection = (EMoveDirection) current;
+                    }
+                    if (_table.CanMove)
+                    {
+                        unitExtra.MoveDirection = (EMoveDirection) current;
+                    }
+                    else if (_table.CanRotate)
+                    {
+                        rotate = (EDirectionType) current;
+                    }
+                    EditMode2.Instance.StartDragUnit(GM2DTools.ScreenToWorldPoint(pointerEventData.position),
+                        _table.Id, rotate, ref unitExtra);
                 }
                 else if (Mathf.Abs(delta.x) > CheckDelta.x)
                 {
@@ -124,7 +139,7 @@ namespace GameA
 
         private void OnItem()
         {
-            if ((_table.CanRotate || _table.CanMove || _table.Id == UnitDefine.RollerId))
+            if (_table.CanRotate || _table.CanMove || _table.Id == UnitDefine.RollerId)
             {
                 if (_selected)
                 {
@@ -134,6 +149,7 @@ namespace GameA
             }
             
             Messenger<ushort>.Broadcast (EMessengerType.OnSelectedItemChanged, (ushort)PairUnitManager.Instance.GetCurrentId (_table.Id));
+            EditMode2.Instance.ChangeSelectUnit(PairUnitManager.Instance.GetCurrentId(_table.Id));
         }
 
         internal void Set(Table_Unit tableUnit, bool selected)

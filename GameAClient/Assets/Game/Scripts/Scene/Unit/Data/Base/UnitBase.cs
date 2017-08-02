@@ -7,11 +7,8 @@
 
 using System;
 using System.Collections.Generic;
-using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
-using UnityEngine.Rendering;
-using Object = System.Object;
 
 namespace GameA.Game
 {
@@ -390,6 +387,11 @@ namespace GameA.Game
         public byte Rotation
         {
             get { return _unitDesc.Rotation; }
+        }
+
+        public Vector2 Scale
+        {
+            get { return _unitDesc.Scale; }
         }
 
         public int Id
@@ -966,7 +968,7 @@ namespace GameA.Game
                 return;
             }
             //默认等同于此Unit
-            if (viewZOffset == 0)
+            if (Math.Abs(viewZOffset) < float.Epsilon)
             {
                 viewZOffset = _viewZOffset;
             }

@@ -176,7 +176,7 @@ namespace GameA.Game
             return _directionList[realIndex];
         }
         
-        public bool CheckCanAddChild(Table_Unit child, UnitDesc parent)
+        public static bool CheckCanAddChild(Table_Unit child, UnitDesc parent)
         {
             if (child == null || parent == UnitDesc.zero)
             {
@@ -195,7 +195,7 @@ namespace GameA.Game
             return true;
         }
 
-        public bool CheckCanBindMagic(Table_Unit child, UnitDesc parent)
+        public static bool CheckCanBindMagic(Table_Unit child, UnitDesc parent)
         {
             if (child == null || parent == UnitDesc.zero)
             {
@@ -315,7 +315,7 @@ namespace GameA.Game
                 {
                     if (desc.Id != 0)
                     {
-                        EditMode.Instance.DeleteUnit(desc);
+                        EditMode2.Instance.DeleteUnit(desc);
                     }
                 }
             }
@@ -350,7 +350,7 @@ namespace GameA.Game
                 _unitIndexCount[unitDesc.Id] += 1;
                 Messenger<int>.Broadcast(EMessengerType.OnUnitAddedInEditMode, unitDesc.Id);
             }
-            EditMode.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, true, isInit);
+            EditMode2.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, true, isInit);
         }
 
         public static List<UnitDesc> BeforeDeleteUnit(UnitDesc unitDesc)
@@ -384,7 +384,7 @@ namespace GameA.Game
                 }
                 Messenger<int>.Broadcast(EMessengerType.OnUnitAddedInEditMode, unitDesc.Id);
             }
-            EditMode.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, false);
+            EditMode2.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, false);
         }
 
         public static bool TryGetReplaceUnit(int id, out UnitDesc outUnitDesc)
@@ -406,7 +406,7 @@ namespace GameA.Game
             UnitBase unit;
             return !ColliderScene2D.Instance.TryGetUnit(pos, out unit);
         }
-
+        
         public static void InitUnitExtraEdit(UnitDesc unitDesc, Table_Unit tableUnit)
         {
 //            if (tableUnit.CanMove)
