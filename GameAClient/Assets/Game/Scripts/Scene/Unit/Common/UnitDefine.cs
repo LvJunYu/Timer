@@ -113,7 +113,7 @@ namespace GameA.Game
 
         public static bool IsBullet(int id)
         {
-            return id >= 10000 && id <=10010;
+            return id >= 10001 && id <=10010;
         }
 
         public static bool IsCollection(int id)
