@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Security.Cryptography.X509Certificates;
+using System.Xml.Serialization;
 using DG.Tweening;
 using SoyEngine;
 using UnityEngine;
@@ -31,6 +32,8 @@ namespace GameA.Game
         protected WingView _wingRight;
         protected AnimationSystem _animation;
 
+        protected StatusBar _statusBar;
+
         protected bool _isPart;
 
 		public Transform Trans
@@ -46,6 +49,18 @@ namespace GameA.Game
         public AnimationSystem Animation
         {
             get { return _animation; }
+        }
+
+        public StatusBar StatusBar
+        {
+            get
+            {
+                if (null == _statusBar)
+                {
+                    InitStatusBar();
+                }
+                return _statusBar;
+            }
         }
 
         public UnitView()
@@ -404,10 +419,17 @@ namespace GameA.Game
         {
             return -90 * rotation;
         }
-
-        public void InitialStatusBar()
+        
+        
+        private void InitStatusBar()
         {
-            GameParticleManager.Instance.GetUnityNativeParticleItem("StatusBar", _trans).Play();
+            if (null != _statusBar) return;
+            GameObject statusBarObj = GameObject.Instantiate(ResourcesManager.Instance.GetPrefab(EResType.ParticlePrefab, "StatusBar", 1)) as GameObject;
+            if (null != statusBarObj)
+            {
+                _statusBar = statusBarObj.GetComponent<StatusBar>();
+                CommonTools.SetParent(statusBarObj.transform, _trans);
+            }
         }
     }
 }
