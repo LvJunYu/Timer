@@ -25,6 +25,7 @@ namespace GameA.Game
         
         public static float[] ZOffsets = new float[2]{ZOffsetFrontest, ZOffsetFront};
         public static float[] ZOffsetsPlant = new float[2]{ZOffsetFrontest, ZOffsetBack};
+        public static float[] ZOffsetsRevive = new float[1]{ZOffsetBackground};
 
         public const int FanRange = 30;
         public const int FanForce = 20;
@@ -90,6 +91,11 @@ namespace GameA.Game
         public static bool IsPlant(int id)
         {
             return id == 7002 || id == 7003 || id == 7004;
+        }
+        
+        public static bool IsRevive(int id)
+        {
+            return id == 5002;
         }
 
         public static int GetRandomPlantId(int id)

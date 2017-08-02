@@ -32,6 +32,10 @@ namespace GameA.Game
                 return false;
             }
             _animation.Init("Run");
+            for (int i = 0; i < _viewExtras.Length; i++)
+            {
+                _viewExtras[i].Animation.Init("Run");
+            }
             return true;
         }
 
@@ -49,6 +53,11 @@ namespace GameA.Game
             {
                 _animation.Reset();
                 _animation.PlayLoop("Run");
+                for (int i = 0; i < _viewExtras.Length; i++)
+                {
+                    _viewExtras[i].Animation.Reset();
+                    _viewExtras[i].Animation.PlayLoop("Run");
+                }
             }
             _trigger = false;
         }
@@ -56,10 +65,6 @@ namespace GameA.Game
         internal override void Reset()
         {
             base.Reset();
-            if (_animation != null)
-            {
-                _animation.Reset();
-            }
             _trigger = false;
         }
 
@@ -74,6 +79,10 @@ namespace GameA.Game
                         _trigger = true;
                         other.OnRevivePos(new IntVec2(_curPos.x, _curPos.y + ConstDefineGM2D.ServerTileScale));
                         _animation.PlayLoop("Start");
+                        for (int i = 0; i < _viewExtras.Length; i++)
+                        {
+                            _viewExtras[i].Animation.PlayLoop("Start");
+                        }
                         Messenger<IntVec3>.Broadcast(EMessengerType.OnRespawnPointTrigger, _guid);
                     }
                 }
