@@ -158,7 +158,6 @@ namespace GameA.Game
         protected virtual void UpdateSpeedY()
         {
             SpeedY += _fanForce.y;
-            _fanForce.y = 0;
             if (!_grounded)
             {
                 if (_input.JumpLevel == 2)
@@ -171,7 +170,7 @@ namespace GameA.Game
                 }
                 else
                 {
-                    if (SpeedY > 0)
+                    if (SpeedY > 0 && _fanForce.y == 0)
                     {
                         SpeedY = Util.ConstantLerp(SpeedY, 0, 12);
                     }
@@ -181,6 +180,7 @@ namespace GameA.Game
                     }
                 }
             }
+            _fanForce.y = 0;
         }
         
         protected virtual void OnJump()
