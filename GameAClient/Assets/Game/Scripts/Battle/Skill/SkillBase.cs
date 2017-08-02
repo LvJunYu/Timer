@@ -200,6 +200,12 @@ namespace GameA.Game
 
         public virtual void OnProjectileHit(ProjectileBase projectile)
         {
+            //生成陷阱
+            if (_tableSkill.TrapId > 0)
+            {
+                LogHelper.Debug("AddTrap {0}",_tableSkill.TrapId);
+                PlayMode.Instance.AddTrap(_tableSkill.TrapId);
+            }
             List<UnitBase> units = null;
             switch ((EEffcetMode)_tableSkill.EffectMode)
             {
@@ -258,11 +264,6 @@ namespace GameA.Game
                 {
                     unit.AddStates(_tableSkill.TriggerStates[i]);
                 }
-            }
-            //生成陷阱
-            if (_tableSkill.TrapId > 0)
-            {
-                PlayMode.Instance.AddTrap(_tableSkill.TrapId);
             }
             var forces = _tableSkill.KnockbackForces;
             if (forces.Length == 2)

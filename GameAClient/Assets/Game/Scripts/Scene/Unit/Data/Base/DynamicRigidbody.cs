@@ -233,8 +233,8 @@ namespace GameA.Game
                 _curPos = GetPos(_colliderPos);
                 UpdateTransPos();
                 CheckOutOfMap();
-                UpdateDynamicView(deltaTime);
             }
+            UpdateDynamicView(deltaTime);
             _lastGrounded = _grounded;
         }
 
