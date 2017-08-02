@@ -28,11 +28,7 @@ namespace GameA.Game
         protected override bool OnInit()
         {
             string skeletonDataAssetName = string.Format ("{0}_SkeletonData", _unit.AssetPath);
-            SkeletonDataAsset data = ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(
-                EResType.SpineData,
-                skeletonDataAssetName,
-                0
-            );
+            SkeletonDataAsset data = ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData,skeletonDataAssetName,0);
             if (null == data)
             {
                 LogHelper.Error("TryGetSpineDataByName Failed! {0}", _unit.AssetPath);
@@ -44,10 +40,6 @@ namespace GameA.Game
             _animation.Set();
             _renderer = _skeletonAnimation.GetComponent<Renderer>();
             _renderer.sortingOrder = UnitManager.Instance.GetSortingOrder(_unit.TableUnit);
-            //if (_unit.TableUnit.Id == UnitDefine.PlayerTableId)
-            //{
-                //InitialStatusBar();
-            //}
             return true;
         }
 

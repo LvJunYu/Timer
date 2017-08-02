@@ -6,10 +6,11 @@
 ***********************************************************************/
 
 
-using SoyEngine;
-using UnityEngine;
 using GameA.Game;
 using NewResourceSolution;
+using SoyEngine;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace GameA
 {
@@ -18,6 +19,9 @@ namespace GameA
     {
         private Table_Unit _table;
         private bool _selected;
+        private static ECheckBehaviour _checkBehaviour;
+        private static Vector2 _startPos;
+        private static readonly Vector2 CheckDelta = new Vector2(5f, 20f);
 
         public void OnGet()
         {
@@ -35,27 +39,92 @@ namespace GameA
             Messenger<int>.RemoveListener (EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
         }
 
+        public void OnDestroyObject()
+        {
+        }
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.Item.onClick.AddListener(OnItem);
+            
+            _cachedView.EventTrigger.AddListener(EventTriggerType.PointerClick, OnClick);
+            _cachedView.EventTrigger.AddListener(EventTriggerType.BeginDrag, OnBeginDrag);
+            _cachedView.EventTrigger.AddListener(EventTriggerType.Drag, OnDrag);
+            _cachedView.EventTrigger.AddListener(EventTriggerType.EndDrag, OnEndDrag);
+            
         }
 
-        protected override void OnDestroy()
+        private void OnBeginDrag(BaseEventData eventData)
         {
-            _cachedView.Item.onClick.RemoveListener(OnItem);
+//            Debug.Log("OnBeginDrag");
+            PointerEventData pointerEventData = eventData as PointerEventData;
+            if (null == pointerEventData)
+            {
+                return;
+            }
+            _checkBehaviour = ECheckBehaviour.None;
+            _startPos = pointerEventData.position;
         }
 
-	    public void OnDestroyObject()
-	    {
-		    
-	    }
-
-
-		private void OnItem()
+        private void OnDrag(BaseEventData eventData)
         {
-            if ((_table.CanRotate || _table.CanMove || _table.Id == UnitDefine.RollerId))// &&
-//                !UnitDefine.IsHero(_table.Id))
+//            Debug.Log("OnDrag");
+            PointerEventData pointerEventData = eventData as PointerEventData;
+            if (null == pointerEventData)
+            {
+                return;
+            }
+            if (ECheckBehaviour.None == _checkBehaviour)
+            {
+                var delta = pointerEventData.position - _startPos;
+                Debug.Log("Delta: " + delta);
+                if (delta.y > CheckDelta.y)
+                {
+                    _checkBehaviour = ECheckBehaviour.Drag;
+                    //TODO 暂时屏蔽
+//                    EditMode2.Instance.StartDragUnit(GM2DTools.ScreenToWorldPoint(pointerEventData.position), _table.Id);
+                }
+                else if (Mathf.Abs(delta.x) > CheckDelta.x)
+                {
+                    _checkBehaviour = ECheckBehaviour.Scroll;
+                    _cachedView.SendMessageUpwards("OnBeginDrag", eventData, SendMessageOptions.DontRequireReceiver);
+                }
+            }
+            else if (ECheckBehaviour.Scroll == _checkBehaviour)
+            {
+                _cachedView.SendMessageUpwards("OnDrag", eventData, SendMessageOptions.DontRequireReceiver);
+            }
+        }
+
+        private void OnEndDrag(BaseEventData eventData)
+        {
+//            Debug.Log("OnEndDrag");
+            PointerEventData pointerEventData = eventData as PointerEventData;
+            if (null == pointerEventData)
+            {
+                return;
+            }
+            if (ECheckBehaviour.Scroll == _checkBehaviour)
+            {
+                _cachedView.SendMessageUpwards("OnEndDrag", eventData, SendMessageOptions.DontRequireReceiver);
+            }
+        }
+
+        private void OnClick(BaseEventData eventData)
+        {
+//            Debug.Log("OnClick");
+            PointerEventData pointerEventData = eventData as PointerEventData;
+            if (null == pointerEventData || pointerEventData.button != PointerEventData.InputButton.Left)
+            {
+                return;
+            }
+            OnItem();
+        }
+
+
+        private void OnItem()
+        {
+            if ((_table.CanRotate || _table.CanMove || _table.Id == UnitDefine.RollerId))
             {
                 if (_selected)
                 {
@@ -64,17 +133,7 @@ namespace GameA
                 }
             }
             
-            //这儿需要进行Item数量的判断。
-            //if (!MapManager.Instance.MapEditor.CanLay(_id))
-            //{
-            //    //TODO 提示不可摆放
-            //    LogHelper.Warning("Can Not Lay.{0}",_id);
-            //    return;
-            //}
-//            SocialGUIManager.Instance.CloseUI<UICtrlItem>();
-//            if (!_selected) {
-                Messenger<ushort>.Broadcast (EMessengerType.OnSelectedItemChanged, (ushort)PairUnitManager.Instance.GetCurrentId (_table.Id));
-//            }
+            Messenger<ushort>.Broadcast (EMessengerType.OnSelectedItemChanged, (ushort)PairUnitManager.Instance.GetCurrentId (_table.Id));
         }
 
         internal void Set(Table_Unit tableUnit, bool selected)
@@ -86,11 +145,7 @@ namespace GameA
                 return;
             }
             _cachedView.SpriteIcon.sprite = null;
-//            DictionaryTools.SetContentText(_cachedView.Name, tableUnit.Name);
-            //DictionaryTools.SetContentText(_cachedView.Summary, tableUnit.Summary);
-            //DictionaryTools.SetContentText(_cachedView.Count, "1 / 1");
             _cachedView.SpriteIcon.SetActiveEx(true);
-//            _cachedView.TextureIcon.SetActiveEx(false);
             Sprite texture;
             if (ResourcesManager.Instance.TryGetSprite(tableUnit.Icon, out texture))
             {
@@ -103,18 +158,15 @@ namespace GameA
             }
             if (_selected) {
                 _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up * 15;
-//                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one * 1.1f;
                 
                 // 除了主角，所有能旋转，能移动，还有传送带 都需要显示箭头
-                if ((_table.CanRotate || _table.CanMove || _table.Id == UnitDefine.RollerId))// &&
-//                    !UnitDefine.IsHero(_table.Id))
+                if (_table.CanRotate || _table.CanMove || _table.Id == UnitDefine.RollerId)
                 {
                     _cachedView.Arrow.SetActive(true);
                     RefreshArrowRotation();
                 }
             } else {
                 _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.zero;
-//                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one;
             }
 
             int currentCnt = EditHelper.GetUnitCnt(_table.Id);
@@ -139,12 +191,10 @@ namespace GameA
             if (id == _table.Id) {
                 _selected = true;
                 _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up * 15;
-//                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one * 1.1f;
                 _cachedView.ShadowTrans.localScale = Vector3.one * 0.7f;
 
                 // 除了主角，所有能旋转，能移动，还有传送带 都需要显示箭头
-                if ((_table.CanRotate || _table.CanMove || _table.Id == UnitDefine.RollerId))// &&
-//                    !UnitDefine.IsHero(_table.Id))
+                if (_table.CanRotate || _table.CanMove || _table.Id == UnitDefine.RollerId)
                 {
                     _cachedView.Arrow.SetActive(true);
                     RefreshArrowRotation();
@@ -152,7 +202,6 @@ namespace GameA
             } else {
                 _selected = false;
                 _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.zero;
-//                _cachedView.SpriteIcon.transform.transform.localScale = Vector3.one;
                 _cachedView.ShadowTrans.localScale = Vector3.one;
                 
                 _cachedView.Arrow.SetActive(false);
@@ -192,6 +241,13 @@ namespace GameA
             {
                 _cachedView.Arrow.transform.localEulerAngles = new Vector3(0, 0, -90 * (byte)(current));
             }
+        }
+
+        private enum ECheckBehaviour
+        {
+            None,
+            Scroll,
+            Drag,
         }
     }
 }

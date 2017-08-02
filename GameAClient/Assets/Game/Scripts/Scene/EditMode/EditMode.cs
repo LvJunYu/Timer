@@ -5,11 +5,9 @@
 ** Summary : EditMode
 ***********************************************************************/
 
-using System;
 using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
@@ -160,15 +158,15 @@ namespace GameA.Game
             _connectLineEffectCache.Clear ();
             if (_backgroundObject != null)
             {
-                Object.Destroy(_backgroundObject);
+                Destroy(_backgroundObject);
             }
             if (_mapRectMask != null)
             {
-                Object.Destroy(_mapRectMask.gameObject);
+                Destroy(_mapRectMask.gameObject);
             }
             if (_cameraMask != null)
             {
-                Object.Destroy(_cameraMask.gameObject);
+                Destroy(_cameraMask.gameObject);
             }
             EditHelper.Clear();
         }
@@ -292,11 +290,7 @@ namespace GameA.Game
         private void UpdateSelectItem()
         {
             var id = (ushort)PairUnitManager.Instance.GetCurrentId(_selectedItemId);
-            if (id != _selectedItemId)
-            {
-                _selectedItemId = id;
-                SocialGUIManager.Instance.GetUI<UICtrlItem>().OnSelectItemChanged((ushort)_selectedItemId);
-            }
+            _selectedItemId = id;
         }
 
         public void SetEditorModeEffect(bool value)
@@ -334,7 +328,7 @@ namespace GameA.Game
                 LogHelper.Error("InitMask called but _cameraMask != null");
                 return;
             }
-            var go = Object.Instantiate (ResourcesManager.Instance.GetPrefab(
+            var go = Instantiate (ResourcesManager.Instance.GetPrefab(
                 EResType.UIPrefab, 
                 ConstDefineGM2D.CameraMaskPrefabName)
             ) as GameObject;
@@ -346,7 +340,7 @@ namespace GameA.Game
             _cameraMask = go.GetComponent<SlicedCameraMask>();
             _cameraMask.SetSortOrdering((int) ESortingOrder.Mask);
 
-            var go1 = Object.Instantiate (ResourcesManager.Instance.GetPrefab(
+            var go1 = Instantiate (ResourcesManager.Instance.GetPrefab(
                 EResType.UIPrefab, 
                 ConstDefineGM2D.MapRectMaskPrefabName)
             ) as GameObject;

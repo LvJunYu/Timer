@@ -5,22 +5,18 @@
 ** Summary : UMViewItem
 ***********************************************************************/
 
-using System;
 using SoyEngine;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace GameA
 {
     public class UMViewItem : UMViewBase
     {
-        public Button Item;
+        public EventTriggerListener EventTrigger;
         public Image SpriteIcon;
-        public UnityEngine.Transform ShadowTrans;
-//	    public RawImage TextureIcon;
-//        public Text Name;
-//        public Text Summary;
-
+        public Transform ShadowTrans;
         public GameObject Unlimited;
         public Text Number;
         public GameObject Arrow;

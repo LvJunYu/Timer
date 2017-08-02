@@ -19,7 +19,7 @@ namespace GameA.Game
     {
         public override bool IsMain
         {
-            get { return _playerId == LocalUser.Instance.UserGuid; }
+            get { return true; }
         }
         
         public override void SetFacingDir(EMoveDirection eMoveDirection, bool initView = false)

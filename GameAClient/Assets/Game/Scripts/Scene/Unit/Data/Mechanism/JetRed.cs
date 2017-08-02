@@ -13,15 +13,10 @@ namespace GameA.Game
     [Unit(Id = 5016, Type = typeof(JetRed))]
     public class JetRed : JetBase
     {
-        protected override bool OnInit()
+        protected override void SetValue()
         {
-            if (!base.OnInit())
-            {
-                return false;
-            }
             _timeScale = 3;
-            _skillCtrl.CurrentSkills[0].SetValue(8, 60, AnimationLength / _timeScale);
-            return true;
+            _skillCtrl.CurrentSkills[0].SetValue(200, 600);
         }
     }
 }

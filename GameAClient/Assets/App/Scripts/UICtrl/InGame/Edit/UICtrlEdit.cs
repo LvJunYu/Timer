@@ -79,10 +79,10 @@ namespace GameA
 
             _cachedView.EnterSwitchMode.onClick.AddListener (OnClickSwitchModeButton);
             _cachedView.ExitSwitchMode.onClick.AddListener (OnClickSwitchModeButton);
-	        _cachedView.EnterCamCtrlModeBtn.onClick.AddListener(OnEnterCamCtrlMode);
-	        _cachedView.ExitCamCtrlModeBtn.onClick.AddListener(OnExitCamCtrlMode);
-	        _cachedView.EnterCamCtrlModeBtn.gameObject.SetActive(true);
-	        _cachedView.ExitCamCtrlModeBtn.gameObject.SetActive(false);
+	        //_cachedView.EnterCamCtrlModeBtn.onClick.AddListener(OnEnterCamCtrlMode);
+	        //_cachedView.ExitCamCtrlModeBtn.onClick.AddListener(OnExitCamCtrlMode);
+	        //_cachedView.EnterCamCtrlModeBtn.gameObject.SetActive(true);
+	        //_cachedView.ExitCamCtrlModeBtn.gameObject.SetActive(false);
         }
 
 	    protected override void InitEventListener()
@@ -300,7 +300,8 @@ namespace GameA
 	    private void OnClickHome()
 	    {
 			Messenger.Broadcast(EMessengerType.OpenGameSetting);
-		}
+            SocialGUIManager.Instance.GetUI<UICtrlGameSetting>().ChangeToWorkShop();
+        }
 
         private void OnClickCapture()
         {

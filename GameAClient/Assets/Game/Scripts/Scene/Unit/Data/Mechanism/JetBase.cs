@@ -15,9 +15,6 @@ namespace GameA.Game
     {
         protected SkillCtrl _skillCtrl;
         protected int _timeScale;
-        protected const int AnimationLength = 15;
-        protected UnityNativeParticleItem _effect;
-        
         protected int _weaponId;
 
         public override bool CanControlledBySwitch
@@ -43,11 +40,6 @@ namespace GameA.Game
                 return false;
             }
             InitAssetRotation();
-            _effect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectJetFireRun", _trans);
-            if (_effect != null)
-            {
-                _effect.Play();
-            }
             return true;
         }
 
@@ -67,14 +59,14 @@ namespace GameA.Game
                 return false;
             }
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 1);
-            return _skillCtrl.ChangeSkill(tableEquipment.SkillIds[0]);
+            _skillCtrl.Clear();
+            _skillCtrl.ChangeSkill(tableEquipment.SkillIds[0]);
+            SetValue();
+            return true;
         }
-        
-        internal override void OnObjectDestroy()
+
+        protected virtual void SetValue()
         {
-            base.OnObjectDestroy();
-            FreeEffect(_effect);
-            _effect = null;
         }
 
         public override void UpdateLogic()

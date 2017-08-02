@@ -103,7 +103,7 @@ namespace GameA.Game
 
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
             _skillCtrl.Clear();
-            ChangeWeapon(1);
+            ChangeWeapon(2);
             
             _dieTime = 0;
             _box = null;
@@ -150,7 +150,7 @@ namespace GameA.Game
             }
             if (_trans != null)
             {
-                GameParticleManager.Instance.Emit("M1EffectSpawn", _trans.position);
+                GameParticleManager.Instance.Emit("M1EffectSpawn",new Vector3(_trans.position.x, _trans.position.y - 0.5f, -100));
             }
         }
 
