@@ -6,6 +6,7 @@
 ***********************************************************************/
 
 using System;
+using NewResourceSolution;
 using SoyEngine;
 using SoyEngine.FSM;
 using UnityEngine;
@@ -32,6 +33,10 @@ namespace GameA.Game
             /// </summary>
             public int CurrentSelectedUnitId { get; set; }
             public UnitDesc CurrentTouchUnitDesc { get; set; }
+            /// <summary>
+            /// 当前模式是否有拖拽进行
+            /// </summary>
+            public bool DragInCurrentState { get; set; }
         }
 
         #region Field
@@ -40,6 +45,11 @@ namespace GameA.Game
         private bool _inited;
         private StateMachine<EditMode2, EditModeState.Base> _stateMachine;
         private BlackBoard _boardData;
+        private EditRecordManager _editRecordManager;
+        private readonly MapStatistics _mapStatistics = new MapStatistics();
+        [SerializeField]
+        private GameObject _backgroundObject;
+        private SlicedCameraMask _cameraMask;
 
         #endregion
 
@@ -54,7 +64,12 @@ namespace GameA.Game
         {
             get { return _boardData; }
         }
-        
+
+        public MapStatistics MapStatistics
+        {
+            get { return _mapStatistics; }
+        }
+
         #endregion
 
         #region DefaultMethod
@@ -73,10 +88,23 @@ namespace GameA.Game
                 InputManager.Instance.OnMouseRightButtonDragStart -= OnMouseRightButtonDragStart;
                 InputManager.Instance.OnMouseRightButtonDrag -= OnMouseRightButtonDrag;
                 InputManager.Instance.OnMouseRightButtonDragEnd -= OnMouseRightButtonDragEnd;
-            
+                if (_enable)
+                {
+                    StopEdit();
+                }
+                if (_backgroundObject != null)
+                {
+                    UnityEngine.Object.Destroy(_backgroundObject);
+                }
+                if (_cameraMask != null)
+                {
+                    UnityEngine.Object.Destroy(_cameraMask.gameObject);
+                }
                 _stateMachine = null;
                 _boardData.Clear();
                 _boardData = null;
+                _editRecordManager.Clear();
+                _editRecordManager = null;
                 _enable = false;
             }
             _instance = null;
@@ -90,6 +118,15 @@ namespace GameA.Game
             _stateMachine.ChangeState(EditModeState.None.Instance);
             _boardData = new BlackBoard();
             _boardData.Init();
+            _editRecordManager = new EditRecordManager();
+            _editRecordManager.Init();
+            
+            _backgroundObject = new GameObject("BackGround");
+            var box = _backgroundObject.AddComponent<BoxCollider2D>();
+            box.size = Vector2.one*1000;
+            box.transform.position = Vector3.forward;
+            
+            InitMask();
             
             InputManager.Instance.OnPinch += OnPinch;
             InputManager.Instance.OnPinchEnd += OnPinchEnd;
@@ -116,6 +153,26 @@ namespace GameA.Game
             _enable = false;
         }
 
+        public void StartRemove()
+        {
+            _stateMachine.ChangeState(EditModeState.Remove.Instance);
+        }
+
+        public void StopRemove()
+        {
+            _stateMachine.RevertToPreviousState();
+        }
+
+        public void StartCamera()
+        {
+            _stateMachine.ChangeState(EditModeState.Camera.Instance);
+        }
+
+        public void StopCamera()
+        {
+            _stateMachine.RevertToPreviousState();
+        }
+
         public void Update()
         {
             if (!_enable) return;
@@ -136,12 +193,16 @@ namespace GameA.Game
         /// 改变当前选中的地块Id
         /// </summary>
         /// <param name="unitId"></param>
+        /// <param name="changeState"></param>
         public void ChangeSelectUnit(int unitId, bool changeState = true)
         {
             _boardData.CurrentSelectedUnitId = unitId;
-            if (!IsInState(EditModeState.Add.Instance))
+            if (changeState)
             {
-                _stateMachine.ChangeState(EditModeState.Add.Instance);
+                if (!IsInState(EditModeState.Add.Instance))
+                {
+                    _stateMachine.ChangeState(EditModeState.Add.Instance);
+                }
             }
         }
 
@@ -150,22 +211,22 @@ namespace GameA.Game
         /// </summary>
         /// <param name="pos"></param>
         /// <param name="unitId"></param>
-        public void StartDragUnit(Vector3 pos, int unitId)
+        public void StartDragUnit(Vector3 pos, int unitId, EDirectionType rotate, ref UnitExtra unitExtra)
         {
-            Table_Unit tableUnit = TableManager.Instance.GetUnit(unitId);
-            UnitBase unitBase = UnitManager.Instance.GetUnit(tableUnit,
-                (EDirectionType) EditHelper.GetUnitOrigDirOrRot(tableUnit));
-            CollectionBase collectUnit = unitBase as CollectionBase;
-            if (null != collectUnit) {
-                collectUnit.StopTwenner ();
-            }
             if (IsInState(EditModeState.Move.Instance))
             {
                 _stateMachine.RevertToPreviousState();
             }
+            Table_Unit tableUnit = TableManager.Instance.GetUnit(unitId);
+            
+            UnitBase unitBase = UnitManager.Instance.GetUnit(tableUnit, rotate);
+            CollectionBase collectUnit = unitBase as CollectionBase;
+            if (null != collectUnit) {
+                collectUnit.StopTwenner();
+            }
             var data = _boardData.GetStateData<EditModeState.Move.Data>();
             data.CurrentMovingUnitBase = unitBase;
-            
+            data.DragUnitExtra = unitExtra;
             if (data.MovingRoot == null)
             {
                 var helperParentObj = new GameObject("DragHelperParent");
@@ -175,6 +236,8 @@ namespace GameA.Game
             data.MovingRoot.position = pos;
             data.MovingRoot.position += GM2DTools.GetUnitDragingOffset(unitId);
             unitBase.Trans.parent = data.MovingRoot;
+            unitBase.Trans.localPosition = Vector3.zero;
+            unitBase.Trans.localScale = Vector3.one;
             _stateMachine.ChangeState(EditModeState.Move.Instance);
         }
         
@@ -194,6 +257,22 @@ namespace GameA.Game
                 }
             }
             return true;
+        }
+        
+        
+        /// <summary>
+        /// 从地图文件反序列化时的处理方法
+        /// </summary>
+        /// <param name="unitDesc">Unit desc.</param>
+        /// <param name="tableUnit">Table unit.</param>
+        public void OnReadMapFile(UnitDesc unitDesc, Table_Unit tableUnit)
+        {
+            EditHelper.AfterAddUnit(unitDesc, tableUnit, true);
+        }
+
+        public void OnMapReady()
+        {
+            _cameraMask.SetValidMapWorldRect(GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect));
         }
 
         private bool InternalAddUnit(UnitDesc unitDesc)
@@ -282,9 +361,8 @@ namespace GameA.Game
 
         #region ToolMethod
 
-        public bool TryGetUnitDesc(Vector2 mousePos, out UnitDesc unitDesc)
+        public bool TryGetUnitDesc(Vector2 mouseWorldPos, out UnitDesc unitDesc)
         {
-            Vector2 mouseWorldPos = GM2DTools.ScreenToWorldPoint(mousePos);
             if (!GM2DTools.TryGetUnitObject(mouseWorldPos, EEditorLayer.None, out unitDesc))
             {
                 return false;
@@ -292,10 +370,9 @@ namespace GameA.Game
             return true;
         }
         
-        public bool TryGetCreateKey(Vector2 pos, int unitId, out UnitDesc unitDesc)
+        public bool TryGetCreateKey(Vector2 mouseWorldPos, int unitId, out UnitDesc unitDesc)
         {
             unitDesc = new UnitDesc();
-            Vector2 mouseWorldPos = GM2DTools.ScreenToWorldPoint(pos);
             IntVec2 mouseTile = GM2DTools.WorldToTile(mouseWorldPos);
             if (!DataScene2D.Instance.IsInTileMap(mouseTile))
             {
@@ -311,7 +388,7 @@ namespace GameA.Game
             }
             if (tableUnit.CanRotate)
             {
-                unitDesc.Rotation = 3;
+                unitDesc.Rotation = (byte)EditHelper.GetUnitOrigDirOrRot(tableUnit);
             }
             unitDesc.Scale = Vector2.one;
             return true;
@@ -479,6 +556,35 @@ namespace GameA.Game
                 _stateMachine.CurrentState.OnMouseRightButtonDragEnd(arg1, arg2);
             }
         }
+
+        #endregion
+
+        #region PrivateMethod
+
+        
+        /// <summary>
+        /// 初始化地图边框和特效蒙黑
+        /// </summary>
+        private void InitMask()
+        {
+            if (_cameraMask != null)
+            {
+                LogHelper.Error("InitMask called but _cameraMask != null");
+                return;
+            }
+            var go = UnityEngine.Object.Instantiate (ResourcesManager.Instance.GetPrefab(
+                EResType.UIPrefab, 
+                ConstDefineGM2D.CameraMaskPrefabName)
+            ) as GameObject;
+            if (go == null)
+            {
+                LogHelper.Error("Prefab {0} is invalid!", ConstDefineGM2D.CameraMaskPrefabName);
+                return;
+            }
+            _cameraMask = go.GetComponent<SlicedCameraMask>();
+            _cameraMask.SetSortOrdering((int) ESortingOrder.Mask);
+        }
+
 
         #endregion
     }

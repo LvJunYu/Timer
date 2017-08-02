@@ -62,6 +62,7 @@ namespace GameA.Game
 
     public struct UnitEditData : IEquatable<UnitEditData>
     {
+        
         public UnitDesc UnitDesc;
         public UnitExtra UnitExtra;
 

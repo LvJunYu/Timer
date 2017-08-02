@@ -148,6 +148,12 @@ namespace GameA.Game
 			UpdateShow();
 		}
 
+		public void SetValidMapWorldRect(Rect rect)
+		{
+			_trans.localPosition = new Vector3(rect.center.x, rect.center.y, -30);
+			SetLocalScale(rect.width, rect.height);
+		}
+
 
 
 		#region private

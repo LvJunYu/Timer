@@ -95,15 +95,15 @@ namespace GameA
             {
                 case Game.EWinCondition.Arrived:
                     {
-                        return Game.EditMode.Instance.MapStatistics.FinalCount;
+                        return Game.EditMode2.Instance.MapStatistics.FinalCount;
                     }
                 case Game.EWinCondition.CollectTreasure:
                     {
-                        return Game.EditMode.Instance.MapStatistics.GemCount;
+                        return Game.EditMode2.Instance.MapStatistics.GemCount;
                     }
                 case Game.EWinCondition.KillMonster:
                     {
-                        return Game.EditMode.Instance.MapStatistics.MonsterCount;
+                        return Game.EditMode2.Instance.MapStatistics.MonsterCount;
                     }
                 //case Game.EWinCondition.RescueHero:
                     //{

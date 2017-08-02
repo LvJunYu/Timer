@@ -233,16 +233,8 @@ namespace GameA.Game
 					}
 				}
 			}
-
-            var switchUnitItor = DataScene2D.Instance.SwitchedUnits.GetEnumerator ();
-            while (switchUnitItor.MoveNext ()) {
-                SwitchUnitData newData = new SwitchUnitData ();
-                newData.SwitchGUID = GM2DTools.ToProto (switchUnitItor.Current.Key);
-                for (int i = 0; i < switchUnitItor.Current.Value.Count; i++) {
-                    newData.ControlledGUIDs.Add(GM2DTools.ToProto(switchUnitItor.Current.Value[i]));
-                }
-                gm2DMapData.SwitchUnitDatas.Add (newData);
-            }
+            
+		    DataScene2D.Instance.SaveSwitchUnitData(gm2DMapData.SwitchUnitDatas);
 
             gm2DMapData.ModifyDatas.Clear ();
             for (int i = 0; i < DataScene2D.Instance.ModifiedUnits.Count; i++) {
@@ -264,7 +256,7 @@ namespace GameA.Game
 
             gm2DMapData.UserGUID = LocalUser.Instance.UserGuid;
             gm2DMapData.ValidMapRect = GM2DTools.ToProto(DataScene2D.Instance.ValidMapRect);
-            var mapEditor = EditMode.Instance;
+            var mapEditor = EditMode2.Instance;
             gm2DMapData.WinCondition = mapEditor.MapStatistics.WinCondition;
             gm2DMapData.TimeLimit = mapEditor.MapStatistics.TimeLimit;
             gm2DMapData.LifeCount = mapEditor.MapStatistics.LifeCount;

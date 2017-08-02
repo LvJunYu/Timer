@@ -111,8 +111,8 @@ namespace GameA.Game
 				_recordLeftTime,
 				_recordLeftLife,
 				RecordBytes,
-				EditMode.Instance.MapStatistics.TimeLimit,
-				EditMode.Instance.MapStatistics.MsgWinCondition,
+				EditMode2.Instance.MapStatistics.TimeLimit,
+				EditMode2.Instance.MapStatistics.MsgWinCondition,
 				() =>
 				{
 					NeedSave = false;
