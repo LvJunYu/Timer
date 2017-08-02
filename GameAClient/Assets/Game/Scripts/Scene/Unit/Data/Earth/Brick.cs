@@ -46,7 +46,7 @@ namespace GameA.Game
         {
             if (!checkOnly)
             {
-                if (UnitDefine.IsBullet(other.Id))
+                if (UnitDefine.IsDamageBullet(other.Id))
                 {
                     DestroyBrick();
                 }

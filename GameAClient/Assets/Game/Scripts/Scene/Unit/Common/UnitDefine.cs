@@ -115,6 +115,11 @@ namespace GameA.Game
         {
             return id >= 10001 && id <=10010;
         }
+        
+        public static bool IsDamageBullet(int id)
+        {
+            return id >= 10002 && id <=10010;
+        }
 
         public static bool IsCollection(int id)
         {
