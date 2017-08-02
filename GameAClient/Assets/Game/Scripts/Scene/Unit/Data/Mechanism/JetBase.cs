@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -16,6 +17,7 @@ namespace GameA.Game
         protected SkillCtrl _skillCtrl;
         protected int _timeScale;
         protected int _weaponId;
+        protected UnityNativeParticleItem _efffectWeapon;
 
         public override bool CanControlledBySwitch
         {
@@ -40,7 +42,15 @@ namespace GameA.Game
                 return false;
             }
             InitAssetRotation();
+            ChangeWeapon(_weaponId);
             return true;
+        }
+        
+        internal override void OnObjectDestroy()
+        {
+            base.OnObjectDestroy();
+            FreeEffect(_efffectWeapon);
+            _efffectWeapon = null;
         }
 
         public override void UpdateExtraData()
@@ -57,6 +67,31 @@ namespace GameA.Game
             {
                 LogHelper.Error("GetEquipment Failed : {0}", id);
                 return false;
+            }
+            FreeEffect(_efffectWeapon);
+            _efffectWeapon = null;
+            if (!string.IsNullOrEmpty(tableEquipment.Model))
+            {
+                _efffectWeapon = GameParticleManager.Instance.GetUnityNativeParticleItem(tableEquipment.Model, _trans);
+                if (_efffectWeapon != null)
+                {
+                    switch ((EDirectionType) Rotation)
+                    {
+                        case EDirectionType.Up:
+                            _efffectWeapon.Trans.localPosition = new Vector3(0f,0.4f,-10f);
+                            break;
+                        case EDirectionType.Down:
+                            _efffectWeapon.Trans.localPosition = new Vector3(0f,0.8f,-10f);
+                            break;
+                        case EDirectionType.Left:
+                            _efffectWeapon.Trans.localPosition = new Vector3(0.23f,0.6f,-10f);
+                            break;
+                        case EDirectionType.Right:
+                            _efffectWeapon.Trans.localPosition = new Vector3(-0.23f,0.6f,-10f);
+                            break;
+                    }
+                    _efffectWeapon.Play();
+                }
             }
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 1);
             _skillCtrl.Clear();
