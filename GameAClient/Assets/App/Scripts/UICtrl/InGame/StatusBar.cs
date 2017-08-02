@@ -2,6 +2,7 @@
 using System;
 using SoyEngine.Proto;
 using System.Collections.Generic;
+using System.Net;
 using SoyEngine;
 using UnityEngine;
 
@@ -10,102 +11,249 @@ namespace GameA.Game
 
     public class StatusBar: MonoBehaviour
     {
+//        public int TestCurrent = 100;
+//        public int TestMax = 100;
+//        public int TestMPGrids = 10;
+        void Update()
+        {
+//            if (Input.GetKeyDown(KeyCode.H))
+//            {
+//                TestCurrent -= UnityEngine.Random.Range(5, 10);
+//                SetHP(EHPModifyCase.Hit, TestCurrent, TestMax);
+//            }
+//            if (Input.GetKeyDown(KeyCode.J))
+//            {
+//                TestCurrent += UnityEngine.Random.Range(5, 10);
+//                SetHP(EHPModifyCase.Heal, TestCurrent, TestMax);
+//            }
+//            if (Input.GetKeyDown(KeyCode.G))
+//            {
+//                SetMPGrids(TestMPGrids);
+//            }
+//            if (Input.GetKeyDown(KeyCode.M))
+//            {
+//                SetMP(TestCurrent, TestMax);
+//            }
+            switch (_hpState)
+            {
+                case EHPShowState.Normal:
+                    break;
+                case EHPShowState.BeingHit:
+                    HPBeforeHitRenderer.color = new Color(1f, 1f, 1f, _stateTimer / s_hittingTime);
+                    _stateTimer -= Time.deltaTime;
+                    if (_stateTimer < 0)
+                    {
+                        _hpState = EHPShowState.Normal;
+                        HPBeforeHitTrans.gameObject.SetActive(false);
+                    }
+                    break;
+                case EHPShowState.beingHeal:
+                    HPAfterHealRenderer.color = new Color(0f, 1f, 0f, _stateTimer / s_healingTime);
+                    _stateTimer -= Time.deltaTime;
+                    if (_stateTimer < 0)
+                    {
+                        _hpState = EHPShowState.Normal;
+                        HPAfterHealTrans.gameObject.SetActive(false);
+                    }
+                    break;
+            }
+        }
+        #region fields
+
+        /// <summary>
+        /// 被攻击状态显示持续时间
+        /// </summary>
+        private static float s_hittingTime = 0.5f;
+        
+        /// <summary>
+        /// 被治疗状态显示持续时间
+        /// </summary>
+        private static float s_healingTime = 0.3f;
+
+        private static int s_maxMPGridNum = 10;
+        private static int s_minMPGridNum = 1;
+
+        public GameObject HPRoot;
+        public GameObject MPRoot;
+        
+        public Transform CurrentHPTrans;
+        public Transform CurrentMPTrans;
+        public Transform HPBeforeHitTrans;
+        public SpriteRenderer HPBeforeHitRenderer;
+        public Transform HPAfterHealTrans;
+        public SpriteRenderer HPAfterHealRenderer;
+
+        public Transform SeparatesRoot;
+        public GameObject[] SeparatesGameObjects;
+        
+        
         /// <summary>
         ///目标物体的高度 
         /// </summary>
         private float _targetHeight;
-        /// <summary>
-        ///蓝条能量数 
-        /// </summary>
-        private float _energyGrid;
-        public Transform Hpfront;
-        public Transform Mpfront;
-        public Transform SuspensionPoint;
-        private float _hpValue=1;
-        private float _mpValue=1;
+        
+        private float _hpPerccentage = 1;
+        private float _mpPercentage = 1;
 
-        public float HpValue
+        /// <summary>
+        /// 当前hp显示状态
+        /// </summary>
+        [SerializeField] private EHPShowState _hpState;
+
+        [SerializeField] private float _stateTimer;
+        
+        #endregion
+        
+        #region properties
+        
+        private float HpPerccentage
         {
-            get { return _hpValue; }
+//            get { return _hpPerccentage; }
             set
             {
-                _hpValue = value;
+                _hpPerccentage = value;
 
-                Hpfront.localScale = new Vector3(_hpValue, 1);
-
-                Hpfront.localPosition = new Vector3((1 - _hpValue) * -0.8f, 0);
+                CurrentHPTrans.localScale = new Vector3(_hpPerccentage, 1, 1);
             }
         }
 
-        public float MpValue
+        private float MpPercentage
         {
-            get { return _mpValue; }
+//            get { return _mpPercentage; }
             set
             {
-                _mpValue = value;
+                _mpPercentage = value;
 
-                Mpfront.localScale = new Vector3(_mpValue, 1);
-
-                Mpfront.localPosition = new Vector3((1 - _mpValue) * -0.8f, 0);
+                CurrentMPTrans.localScale = new Vector3(_mpPercentage, 1);
             }
         }
-        private void OnHPChanged(int currentValue, int maxValue)
+        #endregion
+        
+        #region methods
+
+        public void ShowHP()
         {
-            HpValue = currentValue/maxValue;  
+            HPRoot.SetActive(true);
+        }
+        
+        public void HideHP()
+        {
+            HPRoot.SetActive(false);
+        }
+        
+        public void ShowMP()
+        {
+            MPRoot.SetActive(true);
+        }
+        
+        public void HideMP()
+        {
+            MPRoot.SetActive(false);
         }
 
-        private void OnMPChanged(int currentValue, int maxValue)
+        public void SetHP (EHPModifyCase modifyCase, int current, int max)
         {
-            MpValue = currentValue/maxValue;
+            current = Mathf.Clamp(current, 0, max);
+            switch (modifyCase)
+            {
+                case EHPModifyCase.Set:
+                    _hpState = EHPShowState.Normal;
+                    break;
+                case EHPModifyCase.Hit:
+                    _stateTimer = s_hittingTime;
+                    if (EHPShowState.BeingHit != _hpState)
+                    {
+                        _hpState = EHPShowState.BeingHit;
+                        HPBeforeHitTrans.localScale = new Vector3(_hpPerccentage, 1, 1);
+                        HPBeforeHitTrans.gameObject.SetActive(true);
+                        HPAfterHealTrans.gameObject.SetActive(false);
+                        HPBeforeHitRenderer.color = Color.white;
+                    }
+                    break;
+                case EHPModifyCase.Heal:
+                    _stateTimer = s_healingTime;
+                    if (EHPShowState.beingHeal != _hpState)
+                    {
+                        _hpState = EHPShowState.beingHeal;
+                        HPAfterHealTrans.gameObject.SetActive(true);
+                        HPBeforeHitTrans.gameObject.SetActive(false);
+                        HPAfterHealRenderer.color = Color.green;
+                    }
+                    float healingPercentage = current / (float) max - _hpPerccentage;
+                    // 因为healing是放在current下的子物体，所以缩放要除以父物体的缩放
+                    HPAfterHealTrans.localScale = new Vector3(healingPercentage * max / (float)current, 1, 1);
+                    break;
+            }
+            HpPerccentage = current / (float)max;
         }
 
-        void Start()
+        public void SetMP(int current, int max)
         {
-            //Debug.Log("_______Hp_Mp__");
-            Messenger<int, int>.AddListener(EMessengerType.OnHPChanged, OnHPChanged);
-            Messenger<int, int>.AddListener(EMessengerType.OnMPChanged, OnMPChanged);
+            MpPercentage = current / (float)max;
         }
 
-        public void SetMp(bool mpVisible)
+        public void SetMPGrids(int GridNum)
         {
-            Mpfront.gameObject.SetActiveEx(mpVisible);
+            GridNum = Mathf.Clamp(GridNum, s_minMPGridNum, s_maxMPGridNum);
+            SeparatesRoot.localScale = new Vector3(10f / GridNum, 1f, 1f);
+            for (int i = 0; i < SeparatesGameObjects.Length; i++)
+            {
+                if (i < (GridNum - 1))
+                {
+                    SeparatesGameObjects[i].SetActive(true);
+                }
+                else
+                {
+                    SeparatesGameObjects[i].SetActive(false);
+                }
+            }
         }
 
-        public void SetHp(bool hpVisible)
-        {
-            Mpfront.gameObject.SetActiveEx(hpVisible);
-        }
+//        /// <summary>
+//        ///能量条闪烁 
+//        /// </summary>
+//        public void EnergyFlash()
+//        {
+//            
+//        }
 
-        /// <summary>
-        ///能量条闪烁 
-        /// </summary>
-        public void EnergyFlash()
-        {
-            
-        }
+//        /// <summary>
+//        ///能量减少 
+//        /// </summary>
+//        public void UseEnergy(int consumptionBySkill)
+//        {
+//
+//        }
+//
+//        /// <summary>
+//        ///能量回复 
+//        /// </summary>
+//        public void EnergyRecover(float percentagePerFrame)
+//        {
+//
+//        }
 
-        /// <summary>
-        ///能量减少 
-        /// </summary>
-        public void UseEnergy(int consumptionBySkill)
-        {
+        #endregion
+    }
 
-        }
+    /// <summary>
+    /// HP显示状态
+    /// </summary>
+    public enum EHPShowState
+    {
+        Normal,     // 正常
+        BeingHit,   // 被攻击中
+        beingHeal,  // 被治疗中
+    }
 
-        /// <summary>
-        ///能量回复 
-        /// </summary>
-        public void EnergyRecover(float percentagePerFrame)
-        {
-
-        }
-
-        public void SetBarPosition(float Hight)
-        {
-            SuspensionPoint.localPosition= new Vector3(0, Hight, 0);
-        }
-
-
+    /// <summary>
+    /// HP设置原因
+    /// </summary>
+    public enum EHPModifyCase
+    {
+        Set,    // 指定
+        Hit,    // 被攻击
+        Heal,   // 被治疗
     }
 
 }

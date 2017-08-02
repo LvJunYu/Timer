@@ -232,17 +232,18 @@ namespace GameA
                 int limit = LocalUser.Instance.UserWorkshopUnitData.GetUnitLimt(_table.Id);
                 int number = limit - currentCnt;
                 if (number < 0) number = 0;
-                if (number > 1000)
+                if (number > 999)
                 {
-                    _cachedView.Number.gameObject.SetActive(false);
-                    _cachedView.Unlimited.SetActive(true);
+//                    _cachedView.Number.gameObject.SetActive(false);
+//                    _cachedView.Unlimited.SetActive(true);
+                    _cachedView.Number.text = "999+";
                 }
                 else
                 {
-                    _cachedView.Number.gameObject.SetActive(true);
-                    _cachedView.Unlimited.SetActive(false);
+//                    _cachedView.Unlimited.SetActive(false);
                     _cachedView.Number.text = number.ToString();
                 }
+                _cachedView.Number.gameObject.SetActive(true);
             }
         }
 

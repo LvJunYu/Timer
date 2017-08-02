@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using SoyEngine;
+using Spine.Unity.MeshGeneration;
 using UnityEngine;
 
 namespace GameA.Game
@@ -82,6 +83,11 @@ namespace GameA.Game
         public int ProjectileSpeed
         {
             get { return _projectileSpeed; }
+        }
+
+        public bool IsBig
+        {
+            get { return RpCost > 0; }
         }
 
         public SkillBase(int id, UnitBase ower)
