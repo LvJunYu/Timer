@@ -39,7 +39,7 @@ namespace GameA.Game
             {
                 GameParticleManager.FreeParticleItem(_shooterEffect);
             }
-            _shooterEffect = GameParticleManager.Instance.GetUnityNativeParticleItem(model,_player.Trans,ESortingOrder.Bullet);
+            _shooterEffect = GameParticleManager.Instance.GetUnityNativeParticleItem(model, _player.Trans,ESortingOrder.Bullet);
             Play();
         }
 
