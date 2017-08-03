@@ -70,11 +70,11 @@ namespace GameA.Game
 		{
 			get
 			{
-				return EditMode2.Instance.MapStatistics.NeedSave;
+				return EditMode.Instance.MapStatistics.NeedSave;
 			}
 			set
 			{
-				EditMode2.Instance.MapStatistics.NeedSave = value;
+				EditMode.Instance.MapStatistics.NeedSave = value;
 			}
 		}
 
@@ -98,13 +98,13 @@ namespace GameA.Game
                 return false;
             }
             _gameRunMode = EGameRunMode.Edit;
-	        EditMode2.Instance.Init();
+	        EditMode.Instance.Init();
             return true;
 		}
 
 	    public override bool Stop()
 	    {
-		    EditMode2.Instance.Dispose();
+		    EditMode.Instance.Dispose();
 		    return base.Stop();
 	    }
 
@@ -211,7 +211,7 @@ namespace GameA.Game
 		    GameRun.Instance.Update();
 		    if (_mode == EMode.Edit)
 		    {
-			    EditMode2.Instance.Update();
+			    EditMode.Instance.Update();
 		    }
 		    if (GameRun.Instance.LogicTimeSinceGameStarted < GameRun.Instance.GameTimeSinceGameStarted)
 		    {
@@ -244,8 +244,8 @@ namespace GameA.Game
 
             if (mode == EMode.EditTest)
             {
-                EditMode2.Instance.StopEdit();
-	            PlayMode.Instance.SceneState.Init(EditMode2.Instance.MapStatistics);
+                EditMode.Instance.StopEdit();
+	            PlayMode.Instance.SceneState.Init(EditMode.Instance.MapStatistics);
                 if (!GameRun.Instance.ChangeState(ESceneState.Play))
                 {
                     ChangeMode(EMode.Edit);
@@ -264,7 +264,7 @@ namespace GameA.Game
             }
             else if (mode == EMode.Edit)
             {
-                EditMode2.Instance.StartEdit();
+                EditMode.Instance.StartEdit();
                 GameRun.Instance.ChangeState(ESceneState.Edit);
                 SocialGUIManager.Instance.OpenUI<UICtrlItem>();
 //                SocialGUIManager.Instance.OpenUI<UICtrlScreenOperator>();

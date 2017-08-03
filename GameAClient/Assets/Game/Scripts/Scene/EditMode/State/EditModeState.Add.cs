@@ -7,14 +7,14 @@ namespace GameA.Game
     {
         public class Add : GenericBase<Add>
         {
-            public override void Exit(EditMode2 owner)
+            public override void Exit(EditMode owner)
             {
                 OnDragEnd(null);
             }
 
             public override void OnDragStart(Gesture gesture)
             {
-                var boardData = EditMode2.Instance.BoardData;
+                var boardData = GetBlackBoard();
                 boardData.DragInCurrentState = false;
                 UnitDesc outValue;
                 Vector2 mousePos = Input.mousePosition;
@@ -26,7 +26,7 @@ namespace GameA.Game
                 {//当前点击位置有地块，转换为移动模式
                     boardData.CurrentTouchUnitDesc = outValue;
                     var unitExtra = DataScene2D.Instance.GetUnitExtra(outValue.Guid);
-                    EditMode2.Instance.StartDragUnit(GM2DTools.ScreenToWorldPoint(mousePos),
+                    EditMode.Instance.StartDragUnit(GM2DTools.ScreenToWorldPoint(mousePos),
                         outValue.Id, (EDirectionType) outValue.Rotation, ref unitExtra);
                 }
                 else
@@ -42,11 +42,11 @@ namespace GameA.Game
 
             public override void OnDrag(Gesture gesture)
             {
-                if (!EditMode2.Instance.IsInState(this))
+                if (!EditMode.Instance.IsInState(this))
                 {
                     return;
                 }
-                var boardData = EditMode2.Instance.BoardData;
+                var boardData = GetBlackBoard();
                 if (!boardData.DragInCurrentState)
                 {
                     return;
@@ -62,11 +62,11 @@ namespace GameA.Game
 
             public override void OnDragEnd(Gesture gesture)
             {
-                if (!EditMode2.Instance.IsInState(this))
+                if (!EditMode.Instance.IsInState(this))
                 {
                     return;
                 }
-                var boardData = EditMode2.Instance.BoardData;
+                var boardData = GetBlackBoard();
                 if (!boardData.DragInCurrentState)
                 {
                     return;
@@ -77,12 +77,12 @@ namespace GameA.Game
 
             public override void OnTap(Gesture gesture)
             {
-                var boardData = EditMode2.Instance.BoardData;
+                var boardData = GetBlackBoard();
                 UnitDesc touchedUnitDesc;
                 if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(Input.mousePosition), out touchedUnitDesc))
                 {
                     boardData.CurrentTouchUnitDesc = touchedUnitDesc;
-                    EditMode2.Instance.StateMachine.ChangeState(UnitClick.Instance);
+                    EditHelper.ProcessClickUnitOperation(touchedUnitDesc);
                 }
                 else
                 {
@@ -125,7 +125,7 @@ namespace GameA.Game
                         var coverUnits = DataScene2D.GetUnits(grid, nodes);
                         for (int j = 0; j < coverUnits.Count; j++)
                         {
-                            EditMode2.Instance.DeleteUnitWithCheck(coverUnits[j]);
+                            EditMode.Instance.DeleteUnitWithCheck(coverUnits[j]);
                         }
                     }
                     else
@@ -138,7 +138,7 @@ namespace GameA.Game
                 {
                     //TODO 记录删除的地块
                 }
-                if (EditMode2.Instance.AddUnitWithCheck(unitDesc))
+                if (EditMode.Instance.AddUnitWithCheck(unitDesc))
                 {
                     GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioEditorLayItem);
                     UnitExtra extra = new UnitExtra();

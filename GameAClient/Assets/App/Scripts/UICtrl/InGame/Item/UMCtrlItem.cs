@@ -96,7 +96,7 @@ namespace GameA
                     {
                         rotate = (EDirectionType) current;
                     }
-                    EditMode2.Instance.StartDragUnit(GM2DTools.ScreenToWorldPoint(pointerEventData.position),
+                    EditMode.Instance.StartDragUnit(GM2DTools.ScreenToWorldPoint(pointerEventData.position),
                         _table.Id, rotate, ref unitExtra);
                 }
                 else if (Mathf.Abs(delta.x) > CheckDelta.x)
@@ -149,7 +149,7 @@ namespace GameA
             }
             
             Messenger<ushort>.Broadcast (EMessengerType.OnSelectedItemChanged, (ushort)PairUnitManager.Instance.GetCurrentId (_table.Id));
-            EditMode2.Instance.ChangeSelectUnit(PairUnitManager.Instance.GetCurrentId(_table.Id));
+            EditMode.Instance.ChangeSelectUnit(PairUnitManager.Instance.GetCurrentId(_table.Id));
         }
 
         internal void Set(Table_Unit tableUnit, bool selected)

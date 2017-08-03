@@ -186,7 +186,7 @@ namespace GameA
 				_cachedView.Redo.gameObject.SetActive (false);
 				_cachedView.Undo.gameObject.SetActive (false);
 				_cachedView.Publish.gameObject.SetActive (false);
-				_cachedView.ButtonFinishCondition.SetActiveEx (true);
+				_cachedView.ButtonFinishCondition.SetActiveEx (false);
 
 				_cachedView.EnterEffectMode.SetActiveEx (false);
 				_cachedView.ExitEffectMode.SetActiveEx (false);
@@ -233,16 +233,16 @@ namespace GameA
         }
 
 		private void OnClickEnterSwitchModeBtn () {
-	        EditMode2.Instance.StartSwitch();
+	        EditMode.Instance.StartSwitch();
 		}
 
 		private void OnClickExitSwitchModeBtn () {
-	        EditMode2.Instance.StopSwitch();
+	        EditMode.Instance.StopSwitch();
 		}
 
         private void OnUndo()
         {
-	        EditMode2.Instance.Undo();
+	        EditMode.Instance.Undo();
         }
 
 	    private void OnClickHome()
@@ -253,36 +253,36 @@ namespace GameA
 
         private void OnEnterErase()
         {
-			EditMode2.Instance.StartRemove();
+			EditMode.Instance.StartRemove();
         }
 
 		private void OnExitErase()
 		{
-			EditMode2.Instance.StopRemove();
+			EditMode.Instance.StopRemove();
 		}
 
         private void OnEnterCamCtrlMode ()
         {
-	        EditMode2.Instance.StartCamera();
+	        EditMode.Instance.StartCamera();
         }
 
         private void OnExitCamCtrlMode ()
         {
-	        EditMode2.Instance.StopCamera();
+	        EditMode.Instance.StopCamera();
         }
 
 
 		private void UpdateEditModeBtnView()
 		{
-			bool inCamera = EditMode2.Instance.IsInState(EditModeState.Camera.Instance);
+			bool inCamera = EditMode.Instance.IsInState(EditModeState.Camera.Instance);
 			_cachedView.EnterCamCtrlModeBtn.gameObject.SetActive(!inCamera);
 			_cachedView.ExitCamCtrlModeBtn.gameObject.SetActive(inCamera);
 
-			bool inRemove = EditMode2.Instance.IsInState(EditModeState.Remove.Instance);
+			bool inRemove = EditMode.Instance.IsInState(EditModeState.Remove.Instance);
 			_cachedView.Erase.gameObject.SetActive(!inRemove);
 			_cachedView.EraseSelected.gameObject.SetActive(inRemove);
 
-			bool inSwitch = EditMode2.Instance.IsInState(EditModeState.Switch.Instance);
+			bool inSwitch = EditMode.Instance.IsInState(EditModeState.Switch.Instance);
 			_cachedView.EnterSwitchMode.gameObject.SetActive(!inSwitch);
 			_cachedView.ExitSwitchMode.gameObject.SetActive(inSwitch);
 		}

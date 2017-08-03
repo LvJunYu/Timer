@@ -6,7 +6,7 @@ namespace GameA.Game
     {
         public class Camera : GenericBase<Camera>
         {
-            public override void Exit(EditMode2 owner)
+            public override void Exit(EditMode owner)
             {
                 CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSizeEnd(0);
                 CameraManager.Instance.CameraCtrlEdit.MovePosEnd(Vector2.zero);

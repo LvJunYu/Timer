@@ -18,7 +18,6 @@ namespace GameA
     public class UICtrlCreate : UICtrlInGameBase<UIViewCreate>
     {
 	    private ushort _curSelectId = 0;
-	    private UIDragMapItemController _dragController;
 
         protected override void InitGroupId()
         {
@@ -37,7 +36,6 @@ namespace GameA
             base.OnViewCreated();
             _cachedView.Create.onClick.AddListener(OnCreate);
             _cachedView.CurSelectItemButton.onClick.AddListener(OnClickCurSelectItem);
-			_dragController = UIDragMapItemController.AddEventListenerTo(_cachedView.CurSelectItemButton.gameObject);
 				
 //			Messenger<ushort>.AddListener(EMessengerType.OnSelectedItemChanged, OnSelectItemChanged);
 		}
@@ -76,7 +74,6 @@ namespace GameA
 		public void OnSelectItemChanged(ushort id)
 		{
 			_curSelectId = id;
-			_dragController.SetCurSelectId(_curSelectId);
 			UpdateCurSelectItemShow();
 		}
 

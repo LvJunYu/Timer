@@ -6,14 +6,14 @@ namespace GameA.Game
     {
         public class Remove : GenericBase<Remove>
         {
-            public override void Exit(EditMode2 owner)
+            public override void Exit(EditMode owner)
             {
                 OnDragEnd(null);
             }
 
             public override void OnDragStart(Gesture gesture)
             {
-                var boardData = EditMode2.Instance.BoardData;
+                var boardData = GetBlackBoard();
                 boardData.DragInCurrentState = true;
                 Vector2 mousePos = Input.mousePosition;
                 if (gesture != null)
@@ -25,11 +25,11 @@ namespace GameA.Game
 
             public override void OnDrag(Gesture gesture)
             {
-                if (!EditMode2.Instance.IsInState(this))
+                if (!EditMode.Instance.IsInState(this))
                 {
                     return;
                 }
-                var boardData = EditMode2.Instance.BoardData;
+                var boardData = GetBlackBoard();
                 if (!boardData.DragInCurrentState)
                 {
                     return;
@@ -45,11 +45,11 @@ namespace GameA.Game
 
             public override void OnDragEnd(Gesture gesture)
             {
-                if (!EditMode2.Instance.IsInState(this))
+                if (!EditMode.Instance.IsInState(this))
                 {
                     return;
                 }
-                var boardData = EditMode2.Instance.BoardData;
+                var boardData = GetBlackBoard();
                 if (!boardData.DragInCurrentState)
                 {
                     return;
@@ -67,7 +67,7 @@ namespace GameA.Game
                 UnitDesc unitDesc;
                 if(EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), out unitDesc))
                 {
-                    EditMode2.Instance.DeleteUnitWithCheck(unitDesc);
+                    EditMode.Instance.DeleteUnitWithCheck(unitDesc);
                 }
                 //TODO 录像
             }

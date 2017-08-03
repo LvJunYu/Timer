@@ -98,8 +98,8 @@ namespace GameA.Game
 
 			if (mode == EMode.EditTest)
 			{
-				EditMode2.Instance.StopEdit();
-				PlayMode.Instance.SceneState.Init(EditMode2.Instance.MapStatistics);
+				EditMode.Instance.StopEdit();
+				PlayMode.Instance.SceneState.Init(EditMode.Instance.MapStatistics);
 				if (!GameRun.Instance.ChangeState(ESceneState.Play))
 				{
 					ChangeMode(EMode.Edit);
@@ -115,7 +115,7 @@ namespace GameA.Game
 			}
 			else if (mode == EMode.Edit)
 			{
-				EditMode2.Instance.StartEdit();
+				EditMode.Instance.StartEdit();
 				GameRun.Instance.ChangeState(ESceneState.Edit);
 				SocialGUIManager.Instance.OpenUI<UICtrlEdit>().ChangeToModifyMode();
 				SocialGUIManager.Instance.CloseUI<UICtrlSceneState>();

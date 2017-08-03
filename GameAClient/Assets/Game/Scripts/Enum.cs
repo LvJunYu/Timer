@@ -109,22 +109,7 @@ namespace GameA.Game
 		ChildGroupMax   = (1 << 6) - 1,
         ParentGroupMax  = 4032,
 	}
-
-    public enum ECommandType
-    {
-        None,
-        Erase,
-        Redo,
-        Undo,
-        Play,
-        Create,
-        Pause,
-		Drag,
-		Modify,
-        Switch,     // 编辑开关
-	    Camera,		// 调整摄像机视野
-        Max,
-    }
+	
 	/// <summary>
 	/// 改造类型
 	/// </summary>

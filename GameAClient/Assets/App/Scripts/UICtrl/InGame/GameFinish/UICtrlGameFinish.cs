@@ -457,7 +457,6 @@ namespace GameA
 
 		private void PauseGame()
 		{
-			Messenger<Game.ECommandType>.Broadcast(EMessengerType.OnCommandChanged, Game.ECommandType.Pause);
             GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
             if (gameModeEdit != null)
             {

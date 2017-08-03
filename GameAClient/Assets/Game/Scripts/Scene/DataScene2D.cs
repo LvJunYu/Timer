@@ -230,7 +230,7 @@ namespace GameA.Game
             UnitBase unit;
             if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
             {
-                EditMode2.Instance.MapStatistics.NeedSave = true;
+                EditMode.Instance.MapStatistics.NeedSave = true;
                 bool needRecreate = false;
                 if (ColliderScene2D.Instance.TryGetUnit(unitDesc.Guid, out unit))
                 {
@@ -260,7 +260,7 @@ namespace GameA.Game
                 }
                 if (needRecreate)
                 {
-                    EditMode2.Instance.DeleteUnit(unitDesc);
+                    EditMode.Instance.DeleteUnit(unitDesc);
                 }
                 if (unitExtra.Equals(UnitExtra.zero))
                 {
@@ -272,7 +272,7 @@ namespace GameA.Game
                 }
                 if (needRecreate)
                 {
-                    EditMode2.Instance.AddUnit(unitDesc);
+                    EditMode.Instance.AddUnit(unitDesc);
                 }
                 else
                 {
@@ -543,6 +543,33 @@ namespace GameA.Game
         #endregion
     }
 
+    public struct UnitEditData : IEquatable<UnitEditData>
+    {
+        public UnitDesc UnitDesc;
+        public UnitExtra UnitExtra;
+
+        public UnitEditData(UnitDesc unitDesc, UnitExtra unitExtra)
+        {
+            UnitDesc = unitDesc;
+            UnitExtra = unitExtra;
+        }
+        public static bool operator ==(UnitEditData a, UnitEditData other)
+        {
+            return (a.UnitDesc == other.UnitDesc) && (a.UnitExtra == other.UnitExtra);
+        }
+
+        public static bool operator !=(UnitEditData a, UnitEditData other)
+        {
+            return !(a == other);
+        }
+
+        public bool Equals (UnitEditData other)
+        {
+            return (UnitDesc == other.UnitDesc) && (UnitExtra == other.UnitExtra);
+        }
+    }
+
+    
 	public struct ModifyData {
 		public UnitEditData OrigUnit;
 		public UnitEditData ModifiedUnit;
@@ -592,7 +619,7 @@ namespace GameA.Game
             ModifiedUnit = new UnitEditData (modifiedDesc, modifiedExtra);
         }
 
-        public SoyEngine.Proto.ModifyItemData ToModifyItemData () {
+        public ModifyItemData ToModifyItemData () {
             SoyEngine.Proto.ModifyItemData mid = new SoyEngine.Proto.ModifyItemData ();
             mid.OrigData = new SoyEngine.Proto.MapRect2D ();
             mid.OrigData.Id = OrigUnit.UnitDesc.Id;

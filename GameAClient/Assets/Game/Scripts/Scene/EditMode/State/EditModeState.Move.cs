@@ -17,10 +17,11 @@ namespace GameA.Game
                 public Transform MovingRoot;
                 public Vector2 MouseActualPos;
                 public Vector3 MouseObjectOffsetInWorld;
+
                 /// <summary>
                 /// 正在拖拽的地块的Extra
                 /// </summary>
-                public UnitExtra DragUnitExtra { get; set; }
+                public UnitExtra DragUnitExtra;
                 
                 public enum EMode
                 {
@@ -30,9 +31,9 @@ namespace GameA.Game
                 }
             }
 
-            public override void Enter(EditMode2 owner)
+            public override void Enter(EditMode owner)
             {
-                var boardData = EditMode2.Instance.BoardData;
+                var boardData = GetBlackBoard();
                 var stateData = boardData.GetStateData<Data>();
                 if (null == stateData.MovingRoot
                     || null == stateData.CurrentMovingUnitBase)
@@ -45,7 +46,7 @@ namespace GameA.Game
                     boardData.DragInCurrentState = true;
                     if (boardData.CurrentTouchUnitDesc != UnitDesc.zero)
                     {
-                        EditMode2.Instance.DeleteUnitWithCheck(boardData.CurrentTouchUnitDesc);
+                        EditMode.Instance.DeleteUnitWithCheck(boardData.CurrentTouchUnitDesc);
                     }
                     stateData.MouseActualPos = Input.mousePosition;
                     stateData.MouseObjectOffsetInWorld = GM2DTools.GetUnitDragingOffset(stateData.CurrentMovingUnitBase
@@ -62,13 +63,13 @@ namespace GameA.Game
                 }
             }
 
-            public override void Execute(EditMode2 owner)
+            public override void Execute(EditMode owner)
             {
-                var boardData = EditMode2.Instance.BoardData;
+                var boardData = GetBlackBoard();
                 if (!boardData.DragInCurrentState)
                 {
                     LogHelper.Error("Move State, Param is null");
-                    EditMode2.Instance.StateMachine.RevertToPreviousState();
+                    EditMode.Instance.StateMachine.RevertToPreviousState();
                 }
                 if (Input.GetMouseButton(0))
                 {
@@ -80,7 +81,7 @@ namespace GameA.Game
                 }
             }
 
-            public override void Exit(EditMode2 owner)
+            public override void Exit(EditMode owner)
             {
                 Drop(Input.mousePosition);
             }
@@ -92,7 +93,7 @@ namespace GameA.Game
 
             private void Drag(Vector2 mousePos)
             {
-                var boardData = EditMode2.Instance.BoardData;
+                var boardData = GetBlackBoard();
                 if (!boardData.DragInCurrentState)
                 {
                     return;
@@ -137,7 +138,7 @@ namespace GameA.Game
 
             private void Drop(Vector2 mousePos)
             {
-                var boardData = EditMode2.Instance.BoardData;
+                var boardData = GetBlackBoard();
                 if (!boardData.DragInCurrentState)
                 {
                     return;
@@ -166,7 +167,7 @@ namespace GameA.Game
                 }
                 stateData.CurrentMode = Data.EMode.None;
                 stateData.DragUnitExtra = UnitExtra.zero;
-                EditMode2.Instance.StateMachine.RevertToPreviousState();
+                EditMode.Instance.StateMachine.RevertToPreviousState();
             }
 
 
@@ -219,7 +220,7 @@ namespace GameA.Game
                     {
                         for (int i = 0; i < coverUnits.Count; i++)
                         {
-                            EditMode2.Instance.DeleteUnitWithCheck(coverUnits[i]);
+                            EditMode.Instance.DeleteUnitWithCheck(coverUnits[i]);
                         }
                     }
                     else
@@ -227,7 +228,7 @@ namespace GameA.Game
                         return;
                     }
                 }
-                if (EditMode2.Instance.AddUnitWithCheck(target))
+                if (EditMode.Instance.AddUnitWithCheck(target))
                 {
                     DataScene2D.Instance.ProcessUnitExtra(target, stateData.DragUnitExtra);
                     GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioEditorLayItem);

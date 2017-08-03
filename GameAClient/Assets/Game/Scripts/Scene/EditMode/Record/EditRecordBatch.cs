@@ -98,11 +98,11 @@ namespace GameA.Game
             switch (recordData.ActionType)
             {
                 case EditRecordData.EAction.AddUnit:
-                    EditMode2.Instance.AddUnitWithCheck(recordData.UnitDesc);
+                    EditMode.Instance.AddUnitWithCheck(recordData.UnitDesc);
                     DataScene2D.Instance.ProcessUnitExtra(recordData.UnitDesc, recordData.UnitExtra);
                     break;
                 case EditRecordData.EAction.RemoveUnit:
-                    EditMode2.Instance.DeleteUnitWithCheck(recordData.UnitDesc);
+                    EditMode.Instance.DeleteUnitWithCheck(recordData.UnitDesc);
                     break;
                 case EditRecordData.EAction.UpdateExtra:
                     DataScene2D.Instance.ProcessUnitExtra(recordData.UnitDesc, recordData.UnitExtra);
@@ -121,10 +121,10 @@ namespace GameA.Game
             switch (recordData.ActionType)
             {
                 case EditRecordData.EAction.AddUnit:
-                    EditMode2.Instance.DeleteUnitWithCheck(recordData.UnitDesc);
+                    EditMode.Instance.DeleteUnitWithCheck(recordData.UnitDesc);
                     break;
                 case EditRecordData.EAction.RemoveUnit:
-                    EditMode2.Instance.AddUnitWithCheck(recordData.UnitDesc);
+                    EditMode.Instance.AddUnitWithCheck(recordData.UnitDesc);
                     DataScene2D.Instance.ProcessUnitExtra(recordData.UnitDesc, recordData.UnitExtra);
                     break;
                 case EditRecordData.EAction.UpdateExtra:

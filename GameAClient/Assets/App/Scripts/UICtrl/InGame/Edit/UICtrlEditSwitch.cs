@@ -82,7 +82,7 @@ namespace GameA
         }
 
         private void OnDelBtn (int idx) {
-            EditMode2.Instance.DeleteSwitchConnection (idx);
+            EditMode.Instance.DeleteSwitchConnection (idx);
         }
 
         private void OnCameraPosChanged () {

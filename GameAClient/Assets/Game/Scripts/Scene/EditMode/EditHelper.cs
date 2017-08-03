@@ -5,13 +5,9 @@
 ** Summary : EditHelper
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.ComTypes;
 using SoyEngine;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace GameA.Game
 {
@@ -23,12 +19,12 @@ namespace GameA.Game
         private static Dictionary<int, UnitDesc> _replaceUnits = new Dictionary<int, UnitDesc>();
         private static Dictionary<int, int> _unitIndexCount = new Dictionary<int, int>();
         private static List<UnitDesc> _cacheUnitDescs = new List<UnitDesc>();
-        private static List<byte> _directionList = new List<byte>()
+        private static List<byte> _directionList = new List<byte>
         {
             (byte)EDirectionType.Up,
             (byte)EDirectionType.Right,
             (byte)EDirectionType.Down,
-            (byte)EDirectionType.Left,
+            (byte)EDirectionType.Left
         };
         
         /// <summary>
@@ -69,7 +65,7 @@ namespace GameA.Game
             }
             if (tableUnit.CanRotate)
             {
-                unitDesc.Rotation = (byte)EditHelper.GetUnitOrigDirOrRot(tableUnit);
+                unitDesc.Rotation = (byte)GetUnitOrigDirOrRot(tableUnit);
             }
             unitDesc.Scale = Vector2.one;
             return true;
@@ -154,7 +150,6 @@ namespace GameA.Game
                 {
                     _unitOrigDirOrRot[table.Id] = newDir + 1;
                 }
-                return;
             }
         }
         
@@ -321,7 +316,7 @@ namespace GameA.Game
             }
             //数量不能超过限额
             {
-                int count = 0;
+                int count;
                 _unitIndexCount.TryGetValue(unitDesc.Id, out count);
                 if (tableUnit.Count > 0 && count >= tableUnit.Count)
                 {
@@ -349,7 +344,7 @@ namespace GameA.Game
                 {
                     if (desc.Id != 0)
                     {
-                        EditMode2.Instance.DeleteUnitWithCheck(desc);
+                        EditMode.Instance.DeleteUnitWithCheck(desc);
                     }
                 }
             }
@@ -384,7 +379,7 @@ namespace GameA.Game
                 _unitIndexCount[unitDesc.Id] += 1;
                 Messenger<int>.Broadcast(EMessengerType.OnUnitAddedInEditMode, unitDesc.Id);
             }
-            EditMode2.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, true, isInit);
+            EditMode.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, true, isInit);
         }
 
         public static List<UnitDesc> BeforeDeleteUnit(UnitDesc unitDesc)
@@ -418,7 +413,7 @@ namespace GameA.Game
                 }
                 Messenger<int>.Broadcast(EMessengerType.OnUnitAddedInEditMode, unitDesc.Id);
             }
-            EditMode2.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, false);
+            EditMode.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, false);
         }
 
         public static bool TryGetReplaceUnit(int id, out UnitDesc outUnitDesc)
@@ -488,6 +483,160 @@ namespace GameA.Game
                     DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
                 }
             }
+        }
+
+        private struct ProcessClickUnitOperationParam
+        {
+            public UnitDesc UnitDesc;
+            public Table_Unit TableUnit;
+            public UnitExtra UnitExtra;
+        }
+
+        public static bool ProcessClickUnitOperation(UnitDesc unitDesc)
+        {
+            var context = new ProcessClickUnitOperationParam();
+            context.UnitDesc = unitDesc;
+            context.TableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+            context.UnitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
+            if (context.TableUnit.CanMove || context.TableUnit.OriginMagicDirection != 0)
+            {
+                if (context.UnitExtra.MoveDirection != 0)
+                {
+                    return DoMove(ref context);
+                }
+            }
+            if (UnitDefine.IsWeaponPool(context.TableUnit.Id))
+            {
+                return DoWeapon(ref context);
+            }
+            if (UnitDefine.IsJet(context.TableUnit.Id))
+            {
+                return DoJet(ref context);
+            }
+            if (context.TableUnit.CanRotate)
+            {
+                return DoRotate(ref context);
+            }
+            if (context.UnitDesc.Id == UnitDefine.BillboardId)
+            {
+                return DoAddMsg(ref context);
+            }
+            if (context.UnitDesc.Id == UnitDefine.RollerId)
+            {
+                return DoRoller(ref context);
+            }
+            if (UnitDefine.IsEarth(context.UnitDesc.Id))
+            {
+                return DoEarth(ref context);
+            }
+            return false;
+        }
+
+        private static bool DoWeapon(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
+        {
+            processClickUnitOperationParam.UnitExtra.UnitValue++;
+            if (processClickUnitOperationParam.UnitExtra.UnitValue >= (int) EWeaponType.Max)
+            {
+                processClickUnitOperationParam.UnitExtra.UnitValue = 2;
+            }
+            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
+                processClickUnitOperationParam.UnitExtra);
+            return true;
+        }
+
+        private static bool DoJet(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
+        {
+            processClickUnitOperationParam.UnitExtra.UnitValue++;
+            if (processClickUnitOperationParam.UnitExtra.UnitValue >= (int) EJetWeaponType.Max)
+            {
+                processClickUnitOperationParam.UnitExtra.UnitValue = 1;
+            }
+            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
+                processClickUnitOperationParam.UnitExtra);
+            return true;
+        }
+
+        private static bool DoAddMsg(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlGameItemAddMessage>(processClickUnitOperationParam.UnitDesc);
+            return false;
+        }
+
+        private static bool DoRotate(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
+        {
+            byte dir;
+            if (!CalculateNextDir(processClickUnitOperationParam.UnitDesc.Rotation,
+                processClickUnitOperationParam.TableUnit.RotationMask, out dir))
+            {
+                return false;
+            }
+            processClickUnitOperationParam.UnitDesc.Rotation = dir;
+            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
+                processClickUnitOperationParam.UnitExtra);
+            return false;
+        }
+
+        private static bool DoRoller(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
+        {
+            byte dir;
+            if (!CalculateNextDir((byte) (processClickUnitOperationParam.UnitExtra.RollerDirection - 1), 10,
+                out dir))
+            {
+                return false;
+            }
+            processClickUnitOperationParam.UnitExtra.RollerDirection = (EMoveDirection) (dir + 1);
+            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
+                processClickUnitOperationParam.UnitExtra);
+            return true;
+        }
+
+        private static bool DoMove(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
+        {
+            byte dir;
+            if (!CalculateNextDir((byte) (processClickUnitOperationParam.UnitExtra.MoveDirection - 1),
+                processClickUnitOperationParam.TableUnit.MoveDirectionMask, out dir))
+            {
+                return false;
+            }
+            processClickUnitOperationParam.UnitExtra.MoveDirection = (EMoveDirection) (dir + 1);
+            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
+                processClickUnitOperationParam.UnitExtra);
+            return true;
+        }
+
+        private static bool DoEarth(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
+        {
+            processClickUnitOperationParam.UnitExtra.UnitValue++;
+            if (processClickUnitOperationParam.UnitExtra.UnitValue > 2)
+            {
+                processClickUnitOperationParam.UnitExtra.UnitValue = 0;
+            }
+            processClickUnitOperationParam.UnitExtra.UnitValue = processClickUnitOperationParam.UnitExtra.UnitValue;
+            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
+                processClickUnitOperationParam.UnitExtra);
+            return true;
+        }
+        
+        
+        public static GameObject CreateDragRoot(Vector3 pos, int unitId, EDirectionType rotate, out UnitBase unitBase)
+        {
+            Table_Unit tableUnit = TableManager.Instance.GetUnit(unitId);
+
+            unitBase = UnitManager.Instance.GetUnit(tableUnit, rotate);
+            CollectionBase collectUnit = unitBase as CollectionBase;
+            if (null != collectUnit)
+            {
+                collectUnit.StopTwenner();
+            }
+            var helperParentObj = new GameObject("DragHelperParent");
+            var tran = helperParentObj.transform;
+            pos.z = -50;
+            tran.position = pos;
+            tran.position += GM2DTools.GetUnitDragingOffset(unitId);
+            unitBase.Trans.parent = tran;
+            unitBase.Trans.localPosition = Vector3.zero;
+            unitBase.Trans.localScale = Vector3.one;
+            return helperParentObj;
         }
     }
 }

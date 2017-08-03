@@ -5,13 +5,18 @@ namespace GameA.Game
 {
     public partial class EditModeState
     {
-        public abstract class Base : State<EditMode2>
+        public abstract class Base : State<EditMode>
         {
             public virtual void Init() { }
-            public override void Enter(EditMode2 owner) { }
-            public override void Execute(EditMode2 owner) { }
-            public override void Exit(EditMode2 owner) { }
+            public override void Enter(EditMode owner) { }
+            public override void Execute(EditMode owner) { }
+            public override void Exit(EditMode owner) { }
             public virtual void Dispose() { }
+
+            protected EditMode.BlackBoard GetBlackBoard()
+            {
+                return EditMode.Instance.BoardData;
+            }
             
             public virtual void OnPinch(Gesture gesture) { }
             public virtual void OnPinchEnd(Gesture gesture) { }

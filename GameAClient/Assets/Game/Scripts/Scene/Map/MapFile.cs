@@ -256,7 +256,7 @@ namespace GameA.Game
 
             gm2DMapData.UserGUID = LocalUser.Instance.UserGuid;
             gm2DMapData.ValidMapRect = GM2DTools.ToProto(DataScene2D.Instance.ValidMapRect);
-            var mapEditor = EditMode2.Instance;
+            var mapEditor = EditMode.Instance;
             gm2DMapData.WinCondition = mapEditor.MapStatistics.WinCondition;
             gm2DMapData.TimeLimit = mapEditor.MapStatistics.TimeLimit;
             gm2DMapData.LifeCount = mapEditor.MapStatistics.LifeCount;

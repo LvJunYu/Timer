@@ -84,7 +84,7 @@ namespace GameA
                     //}
                 default:
                     {
-                        return "Error£¡";
+                        return "Error??";
                     }
             }
         }
@@ -95,15 +95,15 @@ namespace GameA
             {
                 case Game.EWinCondition.Arrived:
                     {
-                        return Game.EditMode2.Instance.MapStatistics.FinalCount;
+                        return Game.EditMode.Instance.MapStatistics.FinalCount;
                     }
                 case Game.EWinCondition.CollectTreasure:
                     {
-                        return Game.EditMode2.Instance.MapStatistics.GemCount;
+                        return Game.EditMode.Instance.MapStatistics.GemCount;
                     }
                 case Game.EWinCondition.KillMonster:
                     {
-                        return Game.EditMode2.Instance.MapStatistics.MonsterCount;
+                        return Game.EditMode.Instance.MapStatistics.MonsterCount;
                     }
                 //case Game.EWinCondition.RescueHero:
                     //{

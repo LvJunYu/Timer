@@ -26,7 +26,7 @@ namespace GameA.Game
 
             public override void Dispose()
             {
-                var boardData = EditMode2.Instance.BoardData;
+                var boardData = GetBlackBoard();
                 var data = boardData.GetStateData<Data>();
                 for (int i = 0; i < data.UnitMaskEffectCache.Count; i++) {
                     data.UnitMaskEffectCache [i].DestroySelf ();
@@ -43,16 +43,16 @@ namespace GameA.Game
                 }
             }
 
-            public override void Enter(EditMode2 owner)
+            public override void Enter(EditMode owner)
             {
-                var boardData = EditMode2.Instance.BoardData;
+                var boardData = GetBlackBoard();
                 boardData.DragInCurrentState = false;
                 OnEnterSwitchMode();
             }
 
-            public override void Exit(EditMode2 owner)
+            public override void Exit(EditMode owner)
             {
-                var boardData = EditMode2.Instance.BoardData;
+                var boardData = GetBlackBoard();
                 var data = boardData.GetStateData<Data>();
                 OnExitSwitchMode(boardData, data);
             }
@@ -64,7 +64,7 @@ namespace GameA.Game
 
             public override void OnDragStart(Gesture gesture)
             {
-                var boardData = EditMode2.Instance.BoardData;
+                var boardData = GetBlackBoard();
                 if (TrySelectUnit(gesture.position - gesture.deltaPosition))
                 {
                     boardData.DragInCurrentState = true;
@@ -80,7 +80,7 @@ namespace GameA.Game
 
             public override void OnDrag(Gesture gesture)
             {
-                var boardData = EditMode2.Instance.BoardData;
+                var boardData = GetBlackBoard();
                 if (!boardData.DragInCurrentState)
                 {
                     return;
@@ -110,7 +110,7 @@ namespace GameA.Game
 
             public override void OnDragEnd(Gesture gesture)
             {
-                var boardData = EditMode2.Instance.BoardData;
+                var boardData = GetBlackBoard();
                 if (!boardData.DragInCurrentState)
                 {
                     return;
@@ -153,7 +153,7 @@ namespace GameA.Game
 
             public void DeleteSwitchConnection(int idx)
             {
-                var boardData = EditMode2.Instance.BoardData;
+                var boardData = GetBlackBoard();
                 var data = boardData.GetStateData<Data>();
                 DeleteSwitchConnection(boardData, data, idx);
             }
@@ -188,13 +188,13 @@ namespace GameA.Game
 
             
             private void SelectUnit (UnitDesc unitDesc) {
-                var boardData = EditMode2.Instance.BoardData;
+                var boardData = GetBlackBoard();
                 var data = boardData.GetStateData<Data>();
                 boardData.CurrentTouchUnitDesc = unitDesc;
                 UpdateSwitchEffects(boardData, data);
             }
 
-            private void DeleteSwitchConnection (EditMode2.BlackBoard boardData, Data data, int idx) {
+            private void DeleteSwitchConnection (EditMode.BlackBoard boardData, Data data, int idx) {
                 if (boardData.CurrentTouchUnitDesc == UnitDesc.zero)
                     return;
                 if (idx >= data.CachedConnectedGUIDs.Count)
@@ -209,22 +209,22 @@ namespace GameA.Game
                     Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged, 
                         data.CachedConnectedGUIDs [idx], boardData.CurrentTouchUnitDesc.Guid, false);
                     UpdateSwitchEffects(boardData, data);
-                    EditMode2.Instance.MapStatistics.AddOrDeleteConnection();
+                    EditMode.Instance.MapStatistics.AddOrDeleteConnection();
                 }
                 // todo undo
             }
     
-            private void AddSwitchConnection(EditMode2.BlackBoard boardData, Data data, IntVec3 switchGuid, IntVec3 unitGuid)
+            private void AddSwitchConnection(EditMode.BlackBoard boardData, Data data, IntVec3 switchGuid, IntVec3 unitGuid)
             {
                 if (DataScene2D.Instance.BindSwitch (switchGuid, unitGuid)) {
                     Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged, 
                         switchGuid, unitGuid, true);
                     UpdateSwitchEffects(boardData, data);
-                    EditMode2.Instance.MapStatistics.AddOrDeleteConnection ();
+                    EditMode.Instance.MapStatistics.AddOrDeleteConnection ();
                 }
             }
     
-            private void UpdateSwitchEffects (EditMode2.BlackBoard boardData, Data data) {
+            private void UpdateSwitchEffects (EditMode.BlackBoard boardData, Data data) {
                 if (boardData.CurrentTouchUnitDesc == UnitDesc.zero) {
                     for (int i = 0; i < data.UnitMaskEffectCache.Count; i++) {
                         data.UnitMaskEffectCache [i].Stop ();
@@ -262,7 +262,7 @@ namespace GameA.Game
                 }
             }
     
-            private void UpdateEffectsOnSwitchMode(EditMode2.BlackBoard boardData, Data data) {
+            private void UpdateEffectsOnSwitchMode(EditMode.BlackBoard boardData, Data data) {
                 bool isFromSwitch = UnitDefine.IsSwitch (boardData.CurrentTouchUnitDesc.Id);
                 List<Vector3> lineCenterPoses = new List<Vector3> ();
                 int cnt = 0;
@@ -310,7 +310,7 @@ namespace GameA.Game
                 SocialGUIManager.Instance.OpenUI<UICtrlEditSwitch> (allEditableGuiDs);
             }
     
-            private void OnExitSwitchMode(EditMode2.BlackBoard boardData, Data data) {
+            private void OnExitSwitchMode(EditMode.BlackBoard boardData, Data data) {
                 boardData.CurrentTouchUnitDesc = UnitDesc.zero;
                 data.CachedConnectedGUIDs.Clear ();
                 UpdateSwitchEffects(boardData, data);
