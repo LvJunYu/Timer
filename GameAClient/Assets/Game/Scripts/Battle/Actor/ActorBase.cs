@@ -59,6 +59,22 @@ namespace GameA.Game
         {
             get { return _curMaxSpeedX; }
         }
+        
+        
+        protected override bool IsCheckGround()
+        {
+            return true;
+        }
+
+        protected override bool IsCheckClimb()
+        {
+            return true;
+        }
+
+        protected override bool IsUpdateSpeedY()
+        {
+            return true;
+        }
 
         protected override void Clear()
         {
@@ -66,8 +82,6 @@ namespace GameA.Game
             _canFanCross = true;
             _eDieType = EDieType.None;
             _attackedTimer = 0;
-            _checkGround = true;
-            _updateSpeedY = true;
             base.Clear();
         }
 

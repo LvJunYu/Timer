@@ -9,29 +9,29 @@ namespace GameA.Game
         protected int _maxSpeedX;
         protected int _curMaxSpeedX;
         
-        protected bool _checkGround;
-        protected bool _checkClimb;
-        protected bool _updateSpeedY;
-        
         protected float _speedRatio;
         protected int _motorAcc;
         
         protected PlayerInputBase _input;
+
+        protected abstract bool IsCheckGround();
+        protected abstract bool IsCheckClimb();
+        protected abstract bool IsUpdateSpeedY();
         
         public override void UpdateLogic()
         {
             base.UpdateLogic();
             if (_isAlive && _isStart && !_isFreezed)
             {
-                if (_checkGround)
+                if (IsCheckGround())
                 {
                     CheckGround();
                 }
-                if (_checkClimb)
+                if (IsCheckClimb())
                 {
                     CheckClimb();
                 }
-                if (_updateSpeedY)
+                if (IsUpdateSpeedY())
                 {
                     UpdateSpeedY();
                 }
