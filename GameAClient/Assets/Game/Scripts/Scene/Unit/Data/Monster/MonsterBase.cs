@@ -32,11 +32,21 @@ namespace GameA.Game
             return true;
         }
 
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            _view.StatusBar.ShowHP();
+            return true;
+        }
+
         protected override void Clear()
         {
             base.Clear();
             _lastPos = _curPos;
-            _input = _input ?? new PlayerInputBase(this);
+            _input = _input ?? new InputBase();
             _input.Clear();
         }
 

@@ -23,6 +23,8 @@ namespace GameA.Game
             {
                 srs[i].sortingOrder = (int) ESortingOrder.DragingItem;
             }
+            HideHP();
+            HideMP();
         }
 
         void Update()

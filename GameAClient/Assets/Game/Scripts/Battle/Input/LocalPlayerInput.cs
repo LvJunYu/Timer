@@ -6,7 +6,7 @@ using UnityStandardAssets.CrossPlatformInput;
 
 namespace GameA.Game
 {
-    public class LocalPlayerInput : PlayerInputBase
+    public class LocalPlayerInput : InputBase
     {
         #region 检查输入
         
@@ -31,10 +31,6 @@ namespace GameA.Game
         public List<int> CurCheckInputChangeList
         {
             get { return _curCheckInputChangeList; }
-        }
-
-        public LocalPlayerInput(PlayerBase unit) : base(unit)
-        {
         }
 
         public void ProcessCheckInput()

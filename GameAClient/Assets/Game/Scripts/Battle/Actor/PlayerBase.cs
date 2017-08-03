@@ -58,11 +58,6 @@ namespace GameA.Game
             }
         }
 
-        public PlayerInputBase Input
-        {
-            get { return _input; }
-        }
-
         public override IntVec2 FirePos
         {
             get { return CenterPos; }
@@ -86,11 +81,6 @@ namespace GameA.Game
         public void Set(RoomUser roomUser)
         {
             _playerId = roomUser.Guid;
-        }
-
-        public void Setup(PlayerInputBase inputBase)
-        {
-            _input = inputBase;
         }
         
         protected override void Clear()
@@ -186,7 +176,7 @@ namespace GameA.Game
                 {
                     _box.DirectionRelativeMain = EDirectionType.Right;
                 }
-                _input.ChangeLittleSkillState(ELittleSkillState.HoldBox);
+                ChangeLittleSkillState(ELittleSkillState.HoldBox);
             }
             else if (IsValidBox(_hitUnits[(int)EDirectionType.Left]))
             {
@@ -197,11 +187,11 @@ namespace GameA.Game
                 {
                     _box.DirectionRelativeMain = EDirectionType.Left;
                 }
-                _input.ChangeLittleSkillState(ELittleSkillState.HoldBox);
+                ChangeLittleSkillState(ELittleSkillState.HoldBox);
             }
             if (_box == null)
             {
-                _input.ChangeLittleSkillState(ELittleSkillState.Quicken);
+                ChangeLittleSkillState(ELittleSkillState.Quicken);
             }
         }
 
@@ -370,7 +360,7 @@ namespace GameA.Game
 
         public void Step(int stepY = 0)
         {
-            _input.StepY = stepY;
+            _stepY = stepY;
             OnLand();
         }
 
@@ -378,8 +368,7 @@ namespace GameA.Game
 
         internal void OnStun(ActorBase actor)
         {
-            //晕2秒
-            _attackedTimer = TableConvert.GetTime(BattleDefine.StunTime);
+            _stunTimer = TableConvert.GetTime(BattleDefine.StunTime);
             Speed = IntVec2.zero;
             ExtraSpeed.y = 120;
             ExtraSpeed.x = actor.CenterDownPos.x > CenterDownPos.x ? -100 : 100;
@@ -388,7 +377,7 @@ namespace GameA.Game
 
         internal void OnKnockBack(ActorBase actor)
         {
-            _attackedTimer = TableConvert.GetTime(BattleDefine.StunTime);
+            _stunTimer = TableConvert.GetTime(BattleDefine.StunTime);
             Speed = IntVec2.zero;
             ExtraSpeed.y = 280;
             ExtraSpeed.x = actor.CenterDownPos.x > CenterDownPos.x ? -80 : 80;
@@ -418,6 +407,8 @@ namespace GameA.Game
             _reviveEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null, ESortingOrder.LazerEffect));
             _portalEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null, ESortingOrder.LazerEffect));
             ChangeWeapon(2);
+            _view.StatusBar.ShowHP();
+            _view.StatusBar.ShowMP();
             return true;
         }
 
@@ -472,7 +463,7 @@ namespace GameA.Game
             {
                 if (!_grounded)
                 {
-                    if (_input.EClimbState > 0)
+                    if (_eClimbState > 0)
                     {
                         if (_animation.PlayLoop(ClimbAnimName()))
                         {
@@ -494,19 +485,19 @@ namespace GameA.Game
                     }
                     else
                     {
-                        if (_input.ClimbJump)
+                        if (_climbJump)
                         {
                             Vector3 effectPos = _trans.position;
                             effectPos += _curMoveDirection == EMoveDirection.Left ? Vector3.right * 0.25f + Vector3.forward * 0.6f : Vector3.left * 0.25f + Vector3.forward * 0.6f;
                             GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallJump, effectPos);
                         }
-                        if (_input.JumpState == EJumpState.Jump1 || _input.JumpState == EJumpState.Jump2)
+                        if (_jumpState == EJumpState.Jump1 || _jumpState == EJumpState.Jump2)
                         {
                             Messenger.Broadcast(EMessengerType.OnPlayerJump);
-                            _animation.PlayOnce(JumpAnimName(_input.JumpLevel));
-                            PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_input.JumpLevel), false);
+                            _animation.PlayOnce(JumpAnimName(_jumpLevel));
+                            PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_jumpLevel), false);
                         }
-                        else if (_input.JumpState == EJumpState.Fall)
+                        else if (_jumpState == EJumpState.Fall)
                         {
                             if (_animation.PlayLoop(FallAnimName()))
                             {
@@ -517,7 +508,7 @@ namespace GameA.Game
                 }
                 else
                 {
-                    if (_input.LeftInput || _input.RightInput)
+                    if (_input.GetKeyApplied(EInputType.Left) || _input.GetKeyApplied(EInputType.Right))
                     {
                         var speed = Math.Abs(SpeedX);
                         speed = Mathf.Clamp(speed, 20, 100);
@@ -591,10 +582,8 @@ namespace GameA.Game
             }
         }
 
-        protected override void OnLand()
-        {
-            _grounded = true;
-            _input.OnLand();
+//        protected override void OnLand()
+//        {
 //            // 新手引导需要知道主角落地了
 //            GuideManager.Instance.OnSpecialOperate(2);
 //            if (_downUnit == null || _view == null)
@@ -605,7 +594,7 @@ namespace GameA.Game
 //            {
 //                GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Land, _trans.position);
 //            }
-        }
+//        }
 
         protected void OnDeadAll()
         {
@@ -635,12 +624,12 @@ namespace GameA.Game
             {
                 if (_speed.x == 0)
                 {
-                    if (!_input.RightInput && !_input.LeftInput)
+                    if (!_input.GetKeyApplied(EInputType.Right) && !_input.GetKeyApplied(EInputType.Left))
                     {
                         return "Prepare";
                     }
-                    if (_input.RightInput && _box.DirectionRelativeMain == EDirectionType.Right
-                        || (_input.LeftInput && _box.DirectionRelativeMain == EDirectionType.Left))
+                    if (_input.GetKeyApplied(EInputType.Right) && _box.DirectionRelativeMain == EDirectionType.Right
+                        || (_input.GetKeyApplied(EInputType.Left) && _box.DirectionRelativeMain == EDirectionType.Left))
                     {
                         return "Push";
                     }
@@ -662,7 +651,7 @@ namespace GameA.Game
 
         protected virtual string JumpAnimName(int jumpLevel)
         {
-            if (_attackedTimer > 0)
+            if (_stunTimer > 0)
             {
                 return "StunStart";
             }
@@ -693,11 +682,11 @@ namespace GameA.Game
 
         protected virtual string FallAnimName()
         {
-            if (_attackedTimer > 0)
+            if (_stunTimer > 0)
             {
                 return "StunRun";
             }
-            if (_input.JumpLevel == 2)
+            if (_jumpLevel == 2)
             {
                 return "Fly";
             }
@@ -711,7 +700,7 @@ namespace GameA.Game
 
         protected virtual string LandAnimName()
         {
-            if (_attackedTimer > 0)
+            if (_stunTimer > 0)
             {
                 return "StunEnd";
             }

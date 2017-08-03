@@ -63,14 +63,14 @@ namespace GameA.Game
                 RoomUser roomUser = new RoomUser();
                 roomUser.Init(LocalUser.Instance.UserGuid, null, true);
                 player.Set(roomUser);
-                player.Setup(GM2DGame.Instance.GameMode.GetMainPlayerInput(player));
+                player.Setup(GM2DGame.Instance.GameMode.GetMainPlayerInput());
             }
             else
             {
                 player.Set(_userDataList[_playerList.Count]);
                 player.Setup(player.IsMain
-                    ? GM2DGame.Instance.GameMode.GetMainPlayerInput(player)
-                    : GM2DGame.Instance.GameMode.GetOtherPlayerInput(player));
+                    ? GM2DGame.Instance.GameMode.GetMainPlayerInput()
+                    : GM2DGame.Instance.GameMode.GetOtherPlayerInput());
             }
             _playerList.Add(player);
             if (player.IsMain)

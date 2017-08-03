@@ -12,12 +12,61 @@ namespace GameA.Game
         protected float _speedRatio;
         protected int _motorAcc;
         
-        protected PlayerInputBase _input;
+        protected InputBase _input;
+        protected int _stunTimer;
+        
+        [SerializeField]
+        protected ELittleSkillState _littleSkillState;
+
+        // 跳跃等级
+        [SerializeField]
+        protected int _jumpLevel;
+        // 跳跃状态
+        [SerializeField] protected EJumpState _jumpState;
+
+        [SerializeField]
+        protected EClimbState _eClimbState;
+        // 攀墙跳
+        [SerializeField]
+        protected bool _climbJump = false;
+        protected int _stepY;
+        /// <summary>
+        /// 起跳的动画时间
+        /// </summary>
+        protected int _jumpTimer;
 
         protected abstract bool IsCheckGround();
         protected abstract bool IsCheckClimb();
         protected abstract bool IsUpdateSpeedY();
         
+        public int StunTimer
+        {
+            get { return _stunTimer; }
+        }
+        
+        public InputBase Input
+        {
+            get { return _input; }
+        }
+
+        protected override void Clear()
+        {
+            base.Clear();
+            _jumpTimer = 0;
+            _jumpState = EJumpState.Land;
+            _jumpLevel = -1;
+            _eClimbState = EClimbState.None;
+            _climbJump = false;
+            _stepY = 0;
+            
+            _stunTimer = 0;
+        }
+        
+        public void Setup(InputBase inputBase)
+        {
+            _input = inputBase;
+        }
+
         public override void UpdateLogic()
         {
             base.UpdateLogic();
@@ -141,16 +190,16 @@ namespace GameA.Game
         
         protected virtual void CheckClimb()
         {
-            _input.EClimbState = EClimbState.None;
+            _eClimbState = EClimbState.None;
             if (!_grounded && SpeedY < 0)
             {
-                if (_input.LeftInput && CheckLeftFloor())
+                if (_input.GetKeyApplied(EInputType.Left) && CheckLeftFloor())
                 {
-                    _input.EClimbState = EClimbState.Left;
+                    _eClimbState = EClimbState.Left;
                 }
-                else if (_input.RightInput && CheckRightFloor())
+                else if (_input.GetKeyApplied(EInputType.Right) && CheckRightFloor())
                 {
-                    _input.EClimbState = EClimbState.Right;
+                    _eClimbState = EClimbState.Right;
                 }
             }
         }
@@ -160,11 +209,11 @@ namespace GameA.Game
             SpeedY += _fanForce.y;
             if (!_grounded)
             {
-                if (_input.JumpLevel == 2)
+                if (_jumpLevel == 2)
                 {
                     SpeedY = Util.ConstantLerp(SpeedY, -60, 6);
                 }
-                else if (_input.EClimbState > EClimbState.None)
+                else if (_eClimbState > EClimbState.None)
                 {
                     SpeedY = Util.ConstantLerp(SpeedY, -50, 6);
                 }
@@ -189,16 +238,20 @@ namespace GameA.Game
 
         protected virtual void OnLand()
         {
+            _grounded = true;
+            _jumpLevel = -1;
+            _jumpTimer = 0;
+            _jumpState = EJumpState.Land;
         }
 
         protected virtual void CalculateMotor()
         {
             _motorAcc = 0;
-            if (_input.RightInput)
+            if (_input.GetKeyApplied(EInputType.Right) && _stunTimer <=0)
             {
                 _motorAcc = _onIce ? 1 : 10;
             }
-            if (_input.LeftInput)
+            if (_input.GetKeyApplied(EInputType.Left) && _stunTimer <=0)
             {
                 _motorAcc = _onIce ? -1 : -10;
             }

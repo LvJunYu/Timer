@@ -29,7 +29,6 @@ namespace GameA.Game
         private Comparison<State> _comparisonState = SortState;
 
         protected EDieType _eDieType;
-        protected int _attackedTimer;
 
         /// <summary>
         /// 每一帧只检查一个水块
@@ -39,12 +38,7 @@ namespace GameA.Game
         protected int _curMaxSpeedX;
         
         protected SkillCtrl _skillCtrl;
-
-        public int AttackedTimer
-        {
-            get { return _attackedTimer; }
-        }
-
+ 
         public override EDieType EDieType
         {
             get { return _eDieType; }
@@ -81,7 +75,6 @@ namespace GameA.Game
             RemoveAllStates();
             _canFanCross = true;
             _eDieType = EDieType.None;
-            _attackedTimer = 0;
             base.Clear();
         }
 
@@ -101,15 +94,15 @@ namespace GameA.Game
         {
             if (_isAlive && _isStart && !_isFreezed)
             {
-                if (_attackedTimer > 0)
+                if (_stunTimer > 0)
                 {
-                    _attackedTimer--;
+                    _stunTimer--;
                 }
-                if (_attackedTimer <= 0)
+                if (_stunTimer <= 0)
                 {
                     if (_input != null)
                     {
-                        _input.UpdateLogic();
+                        UpdateInputLogic();
                     }
                     if (_skillCtrl != null)
                     {
@@ -122,6 +115,194 @@ namespace GameA.Game
                 }
             }
             base.UpdateLogic();
+        }
+
+        public void UpdateInputLogic()
+        {
+            if (!PlayMode.Instance.SceneState.GameRunning)
+            {
+                return;
+            }
+            if (_curBanInputTime == 0 && !IsHoldingBox())
+            {
+                if (_input.GetKeyApplied(EInputType.Left))
+                {
+                    if (_curMoveDirection != EMoveDirection.Left)
+                    {
+                        SetFacingDir(EMoveDirection.Left);
+                    }
+                }
+                else if (_input.GetKeyApplied(EInputType.Right))
+                {
+                    if (_curMoveDirection != EMoveDirection.Right)
+                    {
+                        SetFacingDir(EMoveDirection.Right);
+                    }
+                }
+            }
+            CheckJump();
+            CheckAssist();
+            CheckSkill();
+        }
+
+        protected virtual void CheckJump()
+        {
+            _climbJump = false;
+            if (_input.GetKeyApplied(EInputType.Jump))
+            {
+                //攀墙跳
+                if (_eClimbState > EClimbState.None)
+                {
+                    _climbJump = true;
+                    _curBanInputTime = BattleDefine.WallJumpBanInputTime;
+                    ExtraSpeed.y = 0;
+                    _jumpLevel = 0;
+                    _jumpState = EJumpState.Jump1;
+                    if (_eClimbState == EClimbState.Left)
+                    {
+                        SpeedX = 120;
+                        SetFacingDir(EMoveDirection.Right);
+                    }
+                    else if (_eClimbState == EClimbState.Right)
+                    {
+                        SpeedX = -120;
+                        SetFacingDir(EMoveDirection.Left);
+                    }
+                }
+                else if (_jumpLevel == -1)
+                {
+                    if (_stepY > 0)
+                    {
+                        ExtraSpeed.y = _stepY;
+                        _stepY = 0;
+                    }
+                    _jumpLevel = 0;
+                    SpeedY = OnClay ? 100 : 150;
+                    _jumpState = EJumpState.Jump1;
+                    _jumpTimer = 10;
+                }
+                else if (!_input.GetKeyLastApplied(EInputType.Jump) && IsCharacterAbilityAvailable(ECharacterAbility.DoubleJump))
+                {
+                    if (_jumpLevel == 0 || _jumpLevel == 2)
+                    {
+                        if (WingCount > 0)
+                        {
+                            WingCount--;
+                            _jumpLevel = 2;
+                            SpeedY = 120;
+                        }
+                        else
+                        {
+                            _jumpLevel = 1;
+                            SpeedY = 150;
+                            _jumpState = EJumpState.Jump2;
+                        }
+                        ExtraSpeed.y = 0;
+                        _jumpTimer = 15;
+                        _input.CurAppliedInputKeyAry[(int) EInputType.Jump] = false;
+                    }
+                }
+            }
+            if (_jumpTimer > 0)
+            {
+                _jumpTimer--;
+            }
+            if ((_jumpTimer == 0 && SpeedY > 0) || SpeedY < 0)
+            {
+                _jumpState = EJumpState.Fall;
+            }
+        }
+        
+        protected void CheckAssist()
+        {
+            switch (_littleSkillState)
+            {
+                case ELittleSkillState.HoldBox:
+                    {
+                        if (_input.GetKeyUpApplied(EInputType.Assist))
+                        {
+                            OnBoxHoldingChanged();
+                        }
+                    }
+                    break;
+                case ELittleSkillState.Quicken:
+                    {
+        
+                    }
+                    break;
+            }
+        }
+        
+        protected void CheckSkill()
+        {
+            var eShootDir = _curMoveDirection == EMoveDirection.Left ? EShootDirectionType.Left : EShootDirectionType.Right;
+            if (_input.GetKeyApplied(EInputType.Left))
+            {
+                eShootDir = EShootDirectionType.Left;
+                if (_input.GetKeyApplied(EInputType.Down))
+                {
+                    eShootDir = EShootDirectionType.LeftDown;
+                }
+                else if (_input.GetKeyApplied(EInputType.Up))
+                {
+                    eShootDir = EShootDirectionType.LeftUp;
+                }
+            }
+            else if (_input.GetKeyApplied(EInputType.Right))
+            {
+                eShootDir = EShootDirectionType.Right;
+                if (_input.GetKeyApplied(EInputType.Down))
+                {
+                    eShootDir = EShootDirectionType.RightDown;
+                }
+                else if (_input.GetKeyApplied(EInputType.Up))
+                {
+                    eShootDir = EShootDirectionType.RightUp;
+                }
+            }
+            else if (_input.GetKeyApplied(EInputType.Down))
+            {
+                eShootDir = EShootDirectionType.Down;
+            }
+            else if (_input.GetKeyApplied(EInputType.Up))
+            {
+                eShootDir = EShootDirectionType.Up;
+            }
+            _shootAngle = (int)eShootDir;
+            if (IsCharacterAbilityAvailable(ECharacterAbility.Shoot))
+            {
+                if (_input.GetKeyApplied(EInputType.Skill1))
+                {
+                    _skillCtrl.Fire(0);
+                }
+                if (_input.GetKeyDownApplied(EInputType.Skill2))
+                {
+                    _skillCtrl.Fire(1);
+                }
+                if (_input.GetKeyDownApplied(EInputType.Skill3))
+                {
+                    _skillCtrl.Fire(2);
+                }
+            }
+        }
+        
+        public void ChangeLittleSkillState(ELittleSkillState eLittleSkillState)
+        {
+            if (_littleSkillState == eLittleSkillState)
+            {
+                return;
+            }
+            _littleSkillState = eLittleSkillState;
+            Messenger<ELittleSkillState>.Broadcast(EMessengerType.OnLittleSkillChanged, _littleSkillState);
+        }
+
+        private bool IsCharacterAbilityAvailable(ECharacterAbility eCharacterAbility)
+        {
+            if (!IsMain)
+            {
+                return true;
+            }
+            return GM2DGame.Instance.GameMode.IsPlayerCharacterAbilityAvailable(this, eCharacterAbility);
         }
         
         public override void AddStates(params int[] ids)

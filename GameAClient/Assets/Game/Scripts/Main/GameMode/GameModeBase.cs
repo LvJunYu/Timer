@@ -115,21 +115,19 @@ namespace GameA.Game
         /// <summary>
         /// 获取主玩家输入的工厂方法
         /// </summary>
-        /// <param name="playerBase"></param>
         /// <returns></returns>
-        public virtual PlayerInputBase GetMainPlayerInput(PlayerBase playerBase)
+        public virtual InputBase GetMainPlayerInput()
         {
-            return new LocalPlayerInput(playerBase);
+            return new LocalPlayerInput();
         }
 
         /// <summary>
         /// 获取非主玩家输入的工厂方法
         /// </summary>
-        /// <param name="playerBase"></param>
         /// <returns></returns>
-        public virtual PlayerInputBase GetOtherPlayerInput(PlayerBase playerBase)
+        public virtual InputBase GetOtherPlayerInput()
         {
-            return new RemotePlayerInput(playerBase);
+            return new RemotePlayerInput();
         }
 
         public void OnDrawGizmos()

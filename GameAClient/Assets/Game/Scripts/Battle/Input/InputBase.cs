@@ -19,90 +19,21 @@ namespace GameA.Game
         Max
     }
     
+    public enum ELittleSkillState
+    {
+        Quicken,
+        HoldBox
+    }
+    
     public class InputBase
     {
-        [SerializeField]
-        protected ELittleSkillState _littleSkillState;
-
-        // 跳跃等级
-        [SerializeField]
-        protected int _jumpLevel = 0;
-        // 跳跃状态
-        [SerializeField] protected EJumpState _jumpState;
-
-        [SerializeField]
-        protected EClimbState _eClimbState;
-        // 攀墙跳
-        [SerializeField]
-        protected bool _climbJump = false;
-        protected int _stepY;
-        /// <summary>
-        /// 起跳的动画时间
-        /// </summary>
-        protected int _jumpTimer;
-
         [SerializeField]
         protected bool[] _curAppliedInputKeyAry = new bool[(int)EInputType.Max];
         protected bool[] _lastAppliedInputKeyAry = new bool[(int)EInputType.Max];
 
-        public bool LeftInput
-        {
-            get { return GetKeyApplied(EInputType.Left); }
-        }
-
-        public bool RightInput
-        {
-            get { return GetKeyApplied(EInputType.Right); }
-        }
-
-        public bool JumpInput
-        {
-            get { return GetKeyDownApplied(EInputType.Jump); }
-        }
-
-        public bool QuickenInputUp
-        {
-            get { return GetKeyUpApplied(EInputType.Assist); }
-        }
-
-        public bool ClimbJump
-        {
-            get { return _climbJump; }
-        }
-
         public bool[] CurAppliedInputKeyAry
         {
             get { return _curAppliedInputKeyAry; }
-            set { _curAppliedInputKeyAry = value; }
-        }
-
-        public int StepY
-        {
-            get { return _stepY; }
-            set { _stepY = value; }
-        }
-
-        public EJumpState JumpState
-        {
-            get { return _jumpState; }
-        }
-
-        public int JumpLevel
-        {
-            get { return _jumpLevel; }
-        }
-
-        public EClimbState EClimbState
-        {
-            get { return _eClimbState; }
-            set { _eClimbState = value; }
-        }
-
-        public void OnLand()
-        {
-            _jumpLevel = -1;
-            _jumpTimer = 0;
-            _jumpState = EJumpState.Land;
         }
 
         public virtual void Clear()
@@ -112,12 +43,6 @@ namespace GameA.Game
 
         public virtual void ClearInput()
         {
-            _jumpTimer = 0;
-            _jumpState = EJumpState.Land;
-            _jumpLevel = -1;
-            _eClimbState = EClimbState.None;
-            _climbJump = false;
-            _stepY = 0;
             for (int i = 0; i < _curAppliedInputKeyAry.Length; i++)
             {
                 _curAppliedInputKeyAry[i] = false;

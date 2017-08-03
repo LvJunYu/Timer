@@ -1,9 +1,7 @@
 ﻿namespace GameA.Game
 {
-    public class RemotePlayerInput : PlayerInputBase
+    public class RemotePlayerInput : InputBase
     {
-        public RemotePlayerInput(PlayerBase unit) : base(unit)
-        {
-        }
+
     }
 }
