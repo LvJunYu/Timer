@@ -249,7 +249,7 @@ namespace GameA
         public void Account()
         {
             Messenger.Broadcast(EMessengerType.OpenGameSetting);
-            SocialGUIManager.Instance.GetUI<UICtrlGameSetting>().ChangeToHomeUI();
+            SocialGUIManager.Instance.GetUI<UICtrlGameSetting>().ChangeToSettingAtHome();
         }
 
         public void OnWorldBtn()

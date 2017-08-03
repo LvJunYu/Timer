@@ -43,6 +43,7 @@ namespace GameA
         public GridDataScroller PublicProjectsGridScroller;
 
         public GameObject[] ObjectsShowWhenEmpty;
+        public GameObject Data;
 
     }
 }

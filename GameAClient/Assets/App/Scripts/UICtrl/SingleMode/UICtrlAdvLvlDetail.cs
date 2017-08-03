@@ -67,7 +67,6 @@ namespace GameA
             _chapterIdx = intVec3Param.x;
             _levelIdx = intVec3Param.y;
             _isBonus = intVec3Param.z == 1;
-
             _table = AppData.Instance.AdventureData.GetAdvLevelTable(_chapterIdx, _levelIdx,
                 _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal);
             if (null == _table) {

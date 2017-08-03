@@ -26,11 +26,14 @@ namespace GameA
         private EWorkShopState _state = EWorkShopState.None;
 
         private CardDataRendererWrapper<Project> _curSelectedPrivateProject;
+        private CardDataRendererWrapper<Project> _curSelectedPublicProject;
         private List<CardDataRendererWrapper<Project>> _privateContents = new List<CardDataRendererWrapper<Project>>();
+        private List<CardDataRendererWrapper<Project>> _publicContents = new List<CardDataRendererWrapper<Project>>();
         private Dictionary<long, CardDataRendererWrapper<Project>> _privateDict = new Dictionary<long, CardDataRendererWrapper<Project>>();
+        private Dictionary<long, CardDataRendererWrapper<Project>> _publicDict = new Dictionary<long, CardDataRendererWrapper<Project>>();
         private bool _autoSelectFirstProject = false;
 
-        private List<CardDataRendererWrapper<Project>> _publicContents = new List<CardDataRendererWrapper<Project>>();
+       
 
         /// <summary>
         /// 本地信息改变了等待update上传的关卡列表
@@ -81,22 +84,17 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-
             _cachedView.PublishedBtn.onClick.AddListener(OnChangeModeBtn);
             _cachedView.WorkingOnBtn.onClick.AddListener(OnChangeModeBtn);
             _cachedView.NewProjectBtn.onClick.AddListener(OnNewProjectBtn);
             _cachedView.PublishBtn.onClick.AddListener (OnPublishBtn);
             _cachedView.DeleteBtn.onClick.AddListener (OnDeleteBtn);
             _cachedView.EditBtn.onClick.AddListener (OnEditBtn);
-
             _cachedView.EditTitleBtn.onClick.AddListener (OnEditTitleBtn);
             _cachedView.ConfirmTitleBtn.onClick.AddListener (OnConfirmTitleBtn);
             _cachedView.EditDescBtn.onClick.AddListener (OnEditDescBtn);
             _cachedView.ConfirmDescBtn.onClick.AddListener (OnConfirmDescBtn);
-
-
 			_cachedView.ReturnBtn.onClick.AddListener (OnReturnBtn);
-
             _cachedView.PrivateProjectsGridScroller.SetCallback(OnPrivateItemRefresh, GetPrivateItemRenderer);
             _cachedView.PublicProjectsGridScroller.SetCallback (OnPublicItemRefresh, GetPublicItemRenderer);
         }
@@ -184,8 +182,9 @@ namespace GameA
                 RefreshWorkShopProjectList ();
                 RefreshProjectDetailInfoPanel ();
             } else if (_state == EWorkShopState.PublishList) {
-                RefreshPlayerInfoPanel ();
                 RefreshPublishedProjectList ();
+                RefreshPublishedInfoPanel();
+
             }
         }
 
@@ -234,6 +233,7 @@ namespace GameA
             _cachedView.DescInput.gameObject.SetActive (false);
             _cachedView.EditDescBtn.gameObject.SetActive (true);
             _cachedView.ConfirmDescBtn.gameObject.SetActive (false);
+            _cachedView.Data.gameObject.SetActive(false);
 
 
             if (null != _curSelectedPrivateProject && null != _curSelectedPrivateProject.Content) {
@@ -247,27 +247,47 @@ namespace GameA
             }
         }
 
-        private void RefreshPlayerInfoPanel () {
-            int curLv = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorLevel;
-            int nexLv = curLv + 1;
-            long curExp = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorExp;
-            Game.Table_PlayerLvToExp curLvTable = Game.TableManager.Instance.GetPlayerLvToExp (curLv);
-            Game.Table_PlayerLvToExp nextLvTable = Game.TableManager.Instance.GetPlayerLvToExp (nexLv);
-            long curLvExpBase = curLvTable == null ? curExp : curLvTable.AdvExp;
-            long nextLvExp = nextLvTable == null ? int.MaxValue : nextLvTable.AdvExp;
+        private void RefreshPublishedInfoPanel() {
 
-            _cachedView.MakerLvl.text = curLv.ToString ();
-            _cachedView.MakerExpText.text = string.Format ("{0} / {1}", curExp, nextLvExp);
-            _cachedView.MakerExpFillImg.fillAmount = Mathf.Clamp01((float)(curExp - curLvExpBase) / Mathf.Max(1, (nextLvExp - curLvExpBase)));
-//            _cachedView.PublishedProjectCnt.text = LocalUser.Instance.User.UserInfoSimple.
+            //int curLv = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorLevel;
+            //int nexLv = curLv + 1;
+            //long curExp = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorExp;
+            //Game.Table_PlayerLvToExp curLvTable = Game.TableManager.Instance.GetPlayerLvToExp (curLv);
+            //Game.Table_PlayerLvToExp nextLvTable = Game.TableManager.Instance.GetPlayerLvToExp (nexLv);
+            //long curLvExpBase = curLvTable == null ? curExp : curLvTable.AdvExp;
+            //long nextLvExp = nextLvTable == null ? int.MaxValue : nextLvTable.AdvExp;
+
+            //_cachedView.MakerLvl.text = curLv.ToString ();
+            //_cachedView.MakerExpText.text = string.Format ("{0} / {1}", curExp, nextLvExp);
+            //_cachedView.MakerExpFillImg.fillAmount = Mathf.Clamp01((float)(curExp - curLvExpBase) / Mathf.Max(1, (nextLvExp - curLvExpBase)));
+            //            _cachedView.PublishedProjectCnt.text = LocalUser.Instance.User.UserInfoSimple.
+            _cachedView.EditDescBtn.gameObject.SetActive(false);
+            _cachedView.EditTitleBtn.gameObject.SetActive(false);
+            _cachedView.Data.gameObject.SetActive(true);
+            if (null != _curSelectedPublicProject && null != _curSelectedPublicProject.Content)
+            {
+                Debug.Log("_Cover___" + _cachedView.Cover + "_curSelectedPublicProject" +
+                          _curSelectedPublicProject.Content.IconPath + "DefaultCoverTexture" +
+                          _cachedView.DefaultCoverTexture);
+                ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _curSelectedPublicProject.Content.IconPath, _cachedView.DefaultCoverTexture);
+                DictionaryTools.SetContentText(_cachedView.Title, _curSelectedPublicProject.Content.Name);
+                DictionaryTools.SetContentText(_cachedView.Desc, _curSelectedPublicProject.Content.Summary);
+            }
+            else
+            {
+                ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
+                DictionaryTools.SetContentText(_cachedView.Title, "关卡标题");
+                DictionaryTools.SetContentText(_cachedView.Desc, "关卡简介");
+            }
 
         }
 
         private void RefreshPublishedProjectList () {
-//            long preSelectPRojectId = 0;
-//            if (null != _curSelectedPrivateProject) {
-//                preSelectPRojectId = _curSelectedPrivateProject.Content.ProjectId;
-//            }
+            long preSelectPRojectId = 0;
+            if (null != _curSelectedPublicProject)
+            {
+                preSelectPRojectId = _curSelectedPublicProject.Content.ProjectId;
+            }
             //            LocalUser.Instance.per
             if (LocalUser.Instance.UserPublishedWorldProjectList.IsInited) {
                 List<Project> list = LocalUser.Instance.UserPublishedWorldProjectList.ProjectList;
@@ -276,6 +296,10 @@ namespace GameA
                 for(int i=0; i < list.Count; i++)
                 {
                     var wrapper = new CardDataRendererWrapper<Project>(list[i], OnPublicProjectCardClick);
+                    wrapper.IsSelected = list[i].ProjectId == preSelectPRojectId;
+                    _curSelectedPublicProject = wrapper.IsSelected ? wrapper : _curSelectedPublicProject;
+                    _publicContents.Add(wrapper);
+                    _publicDict.Add(wrapper.Content.ProjectId, wrapper);
                     //                    if(_mode == EMode.Edit)
                     //                    {
                     //                        wrapper.CardMode = ECardMode.Selectable;
@@ -285,12 +309,12 @@ namespace GameA
                     {
 //                        _curSelectedPrivateProject = wrapper.IsSelected ? wrapper : _curSelectedPrivateProject;
                     }
-                    _publicContents.Add(wrapper);
                 }
+                _cachedView.PublicProjectsGridScroller.SetItemCount(_publicContents.Count);
                 for (int i = 0; i < _cachedView.ObjectsShowWhenEmpty.Length; i++) {
                     _cachedView.ObjectsShowWhenEmpty [i].SetActive (list.Count == 0);
                 }
-                _cachedView.PublicProjectsGridScroller.SetItemCount(_publicContents.Count);
+                
 //                if (_autoSelectFirstProject && null == _curSelectedPrivateProject) {
 //                    _autoSelectFirstProject = false;
 //                    if (_privateContents.Count > 0) {
@@ -313,10 +337,13 @@ namespace GameA
         }
 
         private void OnPublicProjectCardClick (CardDataRendererWrapper<Project> item) {
-            return;
-            if (null != item && null != item.Content) {
-                SocialGUIManager.Instance.OpenUI<UICtrlProjectDetailInfo> (item.Content);
+            //return;
+            if (null != item && null != item.Content)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlAdvLvlDetail>(item.Content);
+
             }
+
         }
 
         private void OnPrivateItemRefresh(IDataItemRenderer item, int inx)

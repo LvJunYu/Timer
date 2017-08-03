@@ -74,7 +74,7 @@ namespace GameA
 
         public static int CaptureGameCover = SoyEngine.EMessengerType.NextId++;
 
-		public static int AfterCommandChanged = SoyEngine.EMessengerType.NextId++;
+		public static int AfterEditModeStateChange = SoyEngine.EMessengerType.NextId++;
 
         public static int OnSkillChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnAmmoChanged = SoyEngine.EMessengerType.NextId++;

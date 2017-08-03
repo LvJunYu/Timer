@@ -6,6 +6,7 @@
 ***********************************************************************/
 
 using System;
+using System.Collections.Generic;
 using NewResourceSolution;
 using SoyEngine;
 using SoyEngine.FSM;
@@ -43,6 +44,7 @@ namespace GameA.Game
 
         private bool _enable;
         private bool _inited;
+        private HashSet<EditModeState.Base> _initedStateSet;
         private StateMachine<EditMode2, EditModeState.Base> _stateMachine;
         private BlackBoard _boardData;
         private EditRecordManager _editRecordManager;
@@ -100,12 +102,22 @@ namespace GameA.Game
                 {
                     UnityEngine.Object.Destroy(_cameraMask.gameObject);
                 }
+                foreach (var state in _initedStateSet)
+                {
+                    state.Dispose();
+                }
+                EditHelper.Clear();
+                _initedStateSet.Clear();
+                _initedStateSet = null;
+                _stateMachine.AfterChangeStateCallback -= OnAfterStateChange;
+                _stateMachine.BeforeChangeStateCallback -= OnBeforeStateChange;
                 _stateMachine = null;
                 _boardData.Clear();
                 _boardData = null;
                 _editRecordManager.Clear();
                 _editRecordManager = null;
                 _enable = false;
+                Messenger.RemoveListener(EMessengerType.GameFinishSuccess, OnSuccess);
             }
             _instance = null;
         }
@@ -113,9 +125,12 @@ namespace GameA.Game
         public void Init()
         {
             _enable = false;
+            _initedStateSet = new HashSet<EditModeState.Base>();
             _stateMachine = new StateMachine<EditMode2, EditModeState.Base>(this);
             _stateMachine.GlobalState = EditModeState.Global.Instance;
             _stateMachine.ChangeState(EditModeState.None.Instance);
+            _stateMachine.AfterChangeStateCallback += OnAfterStateChange;
+            _stateMachine.BeforeChangeStateCallback += OnBeforeStateChange;
             _boardData = new BlackBoard();
             _boardData.Init();
             _editRecordManager = new EditRecordManager();
@@ -138,6 +153,7 @@ namespace GameA.Game
             InputManager.Instance.OnMouseRightButtonDragStart += OnMouseRightButtonDragStart;
             InputManager.Instance.OnMouseRightButtonDrag += OnMouseRightButtonDrag;
             InputManager.Instance.OnMouseRightButtonDragEnd += OnMouseRightButtonDragEnd;
+            Messenger.AddListener(EMessengerType.GameFinishSuccess, OnSuccess);
             _inited = true;
         }
 
@@ -173,6 +189,11 @@ namespace GameA.Game
             _stateMachine.RevertToPreviousState();
         }
 
+        public void Undo()
+        {
+            _editRecordManager.Undo();
+        }
+
         public void Update()
         {
             if (!_enable) return;
@@ -189,6 +210,21 @@ namespace GameA.Game
 
         #region PublicMethod
 
+        /// <summary>
+        /// 从地图文件反序列化时的处理方法
+        /// </summary>
+        /// <param name="unitDesc">Unit desc.</param>
+        /// <param name="tableUnit">Table unit.</param>
+        public void OnReadMapFile(UnitDesc unitDesc, Table_Unit tableUnit)
+        {
+            EditHelper.AfterAddUnit(unitDesc, tableUnit, true);
+        }
+
+        public void OnMapReady()
+        {
+            _cameraMask.SetValidMapWorldRect(GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect));
+        }
+        
         /// <summary>
         /// 改变当前选中的地块Id
         /// </summary>
@@ -211,6 +247,8 @@ namespace GameA.Game
         /// </summary>
         /// <param name="pos"></param>
         /// <param name="unitId"></param>
+        /// <param name="rotate"></param>
+        /// <param name="unitExtra"></param>
         public void StartDragUnit(Vector3 pos, int unitId, EDirectionType rotate, ref UnitExtra unitExtra)
         {
             if (IsInState(EditModeState.Move.Instance))
@@ -241,7 +279,12 @@ namespace GameA.Game
             _stateMachine.ChangeState(EditModeState.Move.Instance);
         }
         
-        public bool AddUnit(UnitDesc unitDesc)
+        /// <summary>
+        /// 生成地块并执行附加逻辑比如检查数量，生成草坪
+        /// </summary>
+        /// <param name="unitDesc"></param>
+        /// <returns></returns>
+        public bool AddUnitWithCheck(UnitDesc unitDesc)
         {
             Table_Unit tableUnit;
             if (!EditHelper.CheckCanAdd(unitDesc, out tableUnit))
@@ -251,31 +294,27 @@ namespace GameA.Game
             var unitDescs = EditHelper.BeforeAddUnit(unitDesc, tableUnit);
             for (int i = 0; i < unitDescs.Count; i++)
             {
-                if (!InternalAddUnit(unitDescs[i]))
+                if (!AddUnit(unitDescs[i]))
                 {
                     return false;
                 }
+                tableUnit = UnitManager.Instance.GetTableUnit(unitDescs[i].Id);
+                if (tableUnit.EPairType > 0)
+                {
+                    PairUnitManager.Instance.AddPairUnit(unitDesc, tableUnit);
+                    UpdateSelectItem();
+                }
+                EditHelper.AfterAddUnit(unitDesc, tableUnit);
             }
             return true;
         }
-        
-        
+
         /// <summary>
-        /// 从地图文件反序列化时的处理方法
+        /// 单纯的添加地块
         /// </summary>
-        /// <param name="unitDesc">Unit desc.</param>
-        /// <param name="tableUnit">Table unit.</param>
-        public void OnReadMapFile(UnitDesc unitDesc, Table_Unit tableUnit)
-        {
-            EditHelper.AfterAddUnit(unitDesc, tableUnit, true);
-        }
-
-        public void OnMapReady()
-        {
-            _cameraMask.SetValidMapWorldRect(GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect));
-        }
-
-        private bool InternalAddUnit(UnitDesc unitDesc)
+        /// <param name="unitDesc"></param>
+        /// <returns></returns>
+        public bool AddUnit(UnitDesc unitDesc)
         {
             var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
             if (tableUnit == null)
@@ -287,11 +326,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (tableUnit.EPairType > 0)
-            {
-                PairUnitManager.Instance.AddPairUnit(unitDesc, tableUnit);
-                UpdateSelectItem();
-            }
             if (!ColliderScene2D.Instance.AddUnit(unitDesc, tableUnit))
             {
                 return false;
@@ -300,24 +334,40 @@ namespace GameA.Game
             {
                 return false;
             }
-            EditHelper.AfterAddUnit(unitDesc, tableUnit);
             return true;
         }
 
-        public bool DeleteUnit(UnitDesc unitDesc)
+        /// <summary>
+        /// 删除地块并执行附加逻辑 比如删除草地 计数
+        /// </summary>
+        /// <param name="unitDesc"></param>
+        /// <returns></returns>
+        public bool DeleteUnitWithCheck(UnitDesc unitDesc)
         {
             var unitDescs = EditHelper.BeforeDeleteUnit(unitDesc);
             for (int i = 0; i < unitDescs.Count; i++)
             {
-                if (!InternalDeleteUnit(unitDescs[i]))
+                if (!DeleteUnit(unitDescs[i]))
                 {
                     return false;
                 }
+                var tableUnit = UnitManager.Instance.GetTableUnit(unitDescs[i].Id);
+                if (tableUnit.EPairType > 0)
+                {
+                    PairUnitManager.Instance.DeletePairUnit(unitDesc, tableUnit);
+                    UpdateSelectItem();
+                }
+                EditHelper.AfterDeleteUnit(unitDesc, tableUnit);
             }
             return true;
         }
 
-        private bool InternalDeleteUnit(UnitDesc unitDesc)
+        /// <summary>
+        /// 单纯的删除地块
+        /// </summary>
+        /// <param name="unitDesc"></param>
+        /// <returns></returns>
+        public bool DeleteUnit(UnitDesc unitDesc)
         {
             Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
             if (tableUnit == null)
@@ -341,12 +391,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (tableUnit.EPairType > 0)
-            {
-                PairUnitManager.Instance.DeletePairUnit(unitDesc, tableUnit);
-                UpdateSelectItem();
-            }
-            EditHelper.AfterDeleteUnit(unitDesc, tableUnit);
             return true;
         }
 
@@ -358,42 +402,6 @@ namespace GameA.Game
 
         #endregion
 
-
-        #region ToolMethod
-
-        public bool TryGetUnitDesc(Vector2 mouseWorldPos, out UnitDesc unitDesc)
-        {
-            if (!GM2DTools.TryGetUnitObject(mouseWorldPos, EEditorLayer.None, out unitDesc))
-            {
-                return false;
-            }
-            return true;
-        }
-        
-        public bool TryGetCreateKey(Vector2 mouseWorldPos, int unitId, out UnitDesc unitDesc)
-        {
-            unitDesc = new UnitDesc();
-            IntVec2 mouseTile = GM2DTools.WorldToTile(mouseWorldPos);
-            if (!DataScene2D.Instance.IsInTileMap(mouseTile))
-            {
-                return false;
-            }
-            IntVec3 tileIndex = DataScene2D.Instance.GetTileIndex(mouseWorldPos, unitId);
-            unitDesc.Id = (ushort)unitId;
-            unitDesc.Guid = tileIndex;
-            var tableUnit = UnitManager.Instance.GetTableUnit(unitId);
-            if (tableUnit == null)
-            {
-                return false;
-            }
-            if (tableUnit.CanRotate)
-            {
-                unitDesc.Rotation = (byte)EditHelper.GetUnitOrigDirOrRot(tableUnit);
-            }
-            unitDesc.Scale = Vector2.one;
-            return true;
-        }
-        #endregion
 
         #region InputEvent
 
@@ -585,7 +593,24 @@ namespace GameA.Game
             _cameraMask.SetSortOrdering((int) ESortingOrder.Mask);
         }
 
-
+        private void OnBeforeStateChange(EditModeState.Base oldState, EditModeState.Base newState)
+        {
+            if (!_initedStateSet.Contains(newState))
+            {
+                newState.Init();
+                _initedStateSet.Add(newState);
+            }
+        }
+        
+        private void OnAfterStateChange(EditModeState.Base oldState, EditModeState.Base newState)
+        {
+            Messenger.Broadcast(EMessengerType.AfterEditModeStateChange);
+        }
+        
+        private void OnSuccess()
+        {
+            _mapStatistics.AddFinishCount();
+        }
         #endregion
     }
 }

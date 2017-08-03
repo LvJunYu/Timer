@@ -156,12 +156,12 @@ namespace GameA.Game
             return true;
         }
         
-        protected void CreateProjectile(int projectileId, IntVec2 pos, int angle, int delayRunTime = 0)
+        protected void CreateProjectile(int projectileId, IntVec2 pos, int angle)
         {
             var bullet =  PlayMode.Instance.CreateRuntimeUnit(projectileId, pos) as ProjectileBase;
             if (bullet != null)
             {
-                bullet.Run(this, angle, delayRunTime);
+                bullet.Run(this, angle);
             }
         }
 
@@ -185,7 +185,7 @@ namespace GameA.Game
                     var delay = TableConvert.GetTime(_tableSkill.BehaviorValues[1]);
                     for (int i = 0; i < count; i++)
                     {
-                            CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.ShootAngle, delay * i);
+                            CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.ShootAngle);
                     }
                     break;
                 case EBehaviorType.Common:

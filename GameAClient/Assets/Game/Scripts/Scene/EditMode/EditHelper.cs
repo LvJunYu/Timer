@@ -41,6 +41,40 @@ namespace GameA.Game
             get { return _unitIndexCount; }
         }
         
+        
+        public static bool TryGetUnitDesc(Vector2 mouseWorldPos, out UnitDesc unitDesc)
+        {
+            if (!GM2DTools.TryGetUnitObject(mouseWorldPos, EEditorLayer.None, out unitDesc))
+            {
+                return false;
+            }
+            return true;
+        }
+        
+        public static bool TryGetCreateKey(Vector2 mouseWorldPos, int unitId, out UnitDesc unitDesc)
+        {
+            unitDesc = new UnitDesc();
+            IntVec2 mouseTile = GM2DTools.WorldToTile(mouseWorldPos);
+            if (!DataScene2D.Instance.IsInTileMap(mouseTile))
+            {
+                return false;
+            }
+            IntVec3 tileIndex = DataScene2D.Instance.GetTileIndex(mouseWorldPos, unitId);
+            unitDesc.Id = (ushort)unitId;
+            unitDesc.Guid = tileIndex;
+            var tableUnit = UnitManager.Instance.GetTableUnit(unitId);
+            if (tableUnit == null)
+            {
+                return false;
+            }
+            if (tableUnit.CanRotate)
+            {
+                unitDesc.Rotation = (byte)EditHelper.GetUnitOrigDirOrRot(tableUnit);
+            }
+            unitDesc.Scale = Vector2.one;
+            return true;
+        }
+        
 
         public static int GetUnitCnt(int unitId)
         {
@@ -315,7 +349,7 @@ namespace GameA.Game
                 {
                     if (desc.Id != 0)
                     {
-                        EditMode2.Instance.DeleteUnit(desc);
+                        EditMode2.Instance.DeleteUnitWithCheck(desc);
                     }
                 }
             }
@@ -433,7 +467,7 @@ namespace GameA.Game
                 if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
                 {
                     unitExtra.UnitValue = (byte) Random.Range(1, 3);
-                    DataScene2D.Instance.ProcessUnitExtra(unitDesc.Guid, unitExtra);
+                    DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
                 }
             }
             else if (UnitDefine.IsWeaponPool(tableUnit.Id))
@@ -442,7 +476,7 @@ namespace GameA.Game
                 if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
                 {
                     unitExtra.UnitValue = 2;
-                    DataScene2D.Instance.ProcessUnitExtra(unitDesc.Guid, unitExtra);
+                    DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
                 }
             }
             else if (UnitDefine.IsJet(tableUnit.Id))
@@ -451,7 +485,7 @@ namespace GameA.Game
                 if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
                 {
                     unitExtra.UnitValue = 1;
-                    DataScene2D.Instance.ProcessUnitExtra(unitDesc.Guid, unitExtra);
+                    DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
                 }
             }
         }

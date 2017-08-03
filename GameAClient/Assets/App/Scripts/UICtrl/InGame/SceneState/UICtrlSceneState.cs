@@ -345,6 +345,7 @@ namespace GameA
         private void OnHomeBtn ()
         {
             Messenger.Broadcast(EMessengerType.OpenGameSetting);
+            SocialGUIManager.Instance.GetUI<UICtrlGameSetting>().ChangeToSettingInGame();
         }
 
         private void OnHPChanged (int currentValue, int maxValue)

@@ -72,6 +72,11 @@ namespace GameA.Game
 				);
 				return;
 			}
+			if (null != successCB)
+			{
+				successCB.Invoke();
+			}
+			SocialApp.Instance.ReturnToApp();
         }
 
         public override void Save(Action successCallback = null, Action<EProjectOperateResult> failedCallback = null)
@@ -93,6 +98,15 @@ namespace GameA.Game
 
 			if (mode == EMode.EditTest)
 			{
+				EditMode2.Instance.StopEdit();
+				PlayMode.Instance.SceneState.Init(EditMode2.Instance.MapStatistics);
+				if (!GameRun.Instance.ChangeState(ESceneState.Play))
+				{
+					ChangeMode(EMode.Edit);
+					return;
+				}
+				GameRun.Instance.Playing();
+				_inputDatas.Clear();
 				SocialGUIManager.Instance.OpenUI<UICtrlEdit>();
 				SocialGUIManager.Instance.GetUI<UICtrlEdit>().ChangeToEditTestMode();
 				SocialGUIManager.Instance.OpenUI<UICtrlSceneState>();
@@ -101,6 +115,8 @@ namespace GameA.Game
 			}
 			else if (mode == EMode.Edit)
 			{
+				EditMode2.Instance.StartEdit();
+				GameRun.Instance.ChangeState(ESceneState.Edit);
 				SocialGUIManager.Instance.OpenUI<UICtrlEdit>().ChangeToModifyMode();
 				SocialGUIManager.Instance.CloseUI<UICtrlSceneState>();
 				SocialGUIManager.Instance.OpenUI<UICtrlModifyEdit>();

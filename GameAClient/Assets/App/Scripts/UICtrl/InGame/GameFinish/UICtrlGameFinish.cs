@@ -215,7 +215,7 @@ namespace GameA
 	                RewardExp = AppData.Instance.AdventureData.LastAdvReward.ItemList[i].Count;
 	            }
             }
-            _cachedView.PlusExp.text = String.Format("{+0}",RewardExp);
+            _cachedView.PlusExp.text = String.Format("+{0}",RewardExp);
             if (currentPlayerExp - RewardExp > 0)
             {
                long initialExp = currentPlayerExp - RewardExp;

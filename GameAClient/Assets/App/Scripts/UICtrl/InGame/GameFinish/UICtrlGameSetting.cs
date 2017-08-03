@@ -125,13 +125,13 @@ namespace GameA
             SocialGUIManager.Instance.CloseUI<UICtrlGameSetting>();
         }
 
-        public void ChangeToHomeUI()
+        public void ChangeToSettingAtHome()
         {
             _cachedView.BtnGroup1.SetActiveEx(true);
             _cachedView.BtnGroup2.SetActiveEx(false);
         }
 
-        public void ChangeToWorkShop()
+        public void ChangeToSettingInGame()
         {
             _cachedView.BtnGroup1.SetActiveEx(false);
             _cachedView.BtnGroup2.SetActiveEx(true);

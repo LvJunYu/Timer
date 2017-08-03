@@ -69,7 +69,7 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            RegisterEvent(EMessengerType.AfterCommandChanged, AfterCommandChanged);
+            RegisterEvent(EMessengerType.AfterEditModeStateChange, AfterCommandChanged);
             RegisterEvent(EMessengerType.OnModifyUnitChanged, OnModifyUnitChanged);
         }
 
@@ -88,7 +88,7 @@ namespace GameA
 		protected override void OnDestroy ()
 		{
 			base.OnDestroy ();
-			Messenger.RemoveListener(EMessengerType.AfterCommandChanged, AfterCommandChanged);
+			Messenger.RemoveListener(EMessengerType.AfterEditModeStateChange, AfterCommandChanged);
 			Messenger.RemoveListener(EMessengerType.OnModifyUnitChanged, OnModifyUnitChanged);
 		}
 

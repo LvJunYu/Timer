@@ -245,6 +245,7 @@ namespace GameA.Game
             if (mode == EMode.EditTest)
             {
                 EditMode2.Instance.StopEdit();
+	            PlayMode.Instance.SceneState.Init(EditMode2.Instance.MapStatistics);
                 if (!GameRun.Instance.ChangeState(ESceneState.Play))
                 {
                     ChangeMode(EMode.Edit);

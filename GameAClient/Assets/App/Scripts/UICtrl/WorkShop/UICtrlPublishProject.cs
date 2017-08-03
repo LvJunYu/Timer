@@ -34,6 +34,7 @@ namespace GameA
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _project.IconPath, _cachedView.DefaultCover);
             _cachedView.ProjectTitle.text = _project.Name;
             _cachedView.ProjectDesc.text = _project.Summary;
+            //_cachedView.ProjectDesc.text = _project.WinCondition.
         }
         
         protected override void OnClose() {
@@ -54,7 +55,7 @@ namespace GameA
         
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.PopUpUI2;
+            _groupId = (int)EUIGroupType.PopUpDialog;
         }
 
         private void OnOKBtn ()
