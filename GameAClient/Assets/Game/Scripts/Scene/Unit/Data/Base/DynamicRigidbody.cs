@@ -39,9 +39,9 @@ namespace GameA.Game
         protected abstract bool IsCheckClimb();
         protected abstract bool IsUpdateSpeedY();
         
-        public int StunTimer
+        public bool IsStunning
         {
-            get { return _stunTimer; }
+            get { return _stunTimer > 0; }
         }
         
         public InputBase Input
@@ -247,11 +247,11 @@ namespace GameA.Game
         protected virtual void CalculateMotor()
         {
             _motorAcc = 0;
-            if (_input.GetKeyApplied(EInputType.Right) && _stunTimer <=0)
+            if (_input.GetKeyApplied(EInputType.Right) && !IsStunning)
             {
                 _motorAcc = _onIce ? 1 : 10;
             }
-            if (_input.GetKeyApplied(EInputType.Left) && _stunTimer <=0)
+            if (_input.GetKeyApplied(EInputType.Left) && !IsStunning)
             {
                 _motorAcc = _onIce ? -1 : -10;
             }

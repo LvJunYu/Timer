@@ -508,7 +508,7 @@ namespace GameA.Game
                 }
                 else
                 {
-                    if (_input.GetKeyApplied(EInputType.Left) || _input.GetKeyApplied(EInputType.Right))
+                    if (!IsStunning && (_input.GetKeyApplied(EInputType.Left) || _input.GetKeyApplied(EInputType.Right)))
                     {
                         var speed = Math.Abs(SpeedX);
                         speed = Mathf.Clamp(speed, 20, 100);
@@ -651,7 +651,7 @@ namespace GameA.Game
 
         protected virtual string JumpAnimName(int jumpLevel)
         {
-            if (_stunTimer > 0)
+            if (IsStunning)
             {
                 return "StunStart";
             }
@@ -668,6 +668,10 @@ namespace GameA.Game
 
         protected virtual string IdleAnimName()
         {
+            if (IsStunning)
+            {
+                return "StunEnd";
+            }
             if (IsHoldingBox())
             {
                 return "Prepare";
@@ -682,7 +686,7 @@ namespace GameA.Game
 
         protected virtual string FallAnimName()
         {
-            if (_stunTimer > 0)
+            if (IsStunning)
             {
                 return "StunRun";
             }
@@ -700,7 +704,7 @@ namespace GameA.Game
 
         protected virtual string LandAnimName()
         {
-            if (_stunTimer > 0)
+            if (IsStunning)
             {
                 return "StunEnd";
             }

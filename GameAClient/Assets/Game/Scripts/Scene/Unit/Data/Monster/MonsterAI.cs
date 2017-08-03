@@ -126,7 +126,7 @@ namespace GameA.Game
             _reSeekTimer = 0;
             //晕的时候就不找了
             var mainUnit = PlayMode.Instance.MainPlayer;
-            if (mainUnit.StunTimer > 0)
+            if (mainUnit.IsStunning)
             {
                 _currentNodeId = -1;
                 ChangeState(EMonsterState.Think);
@@ -174,7 +174,7 @@ namespace GameA.Game
 
         protected virtual void OnAttack()
         {
-            if (_path.Count == 0 || PlayMode.Instance.MainPlayer.StunTimer > 0)
+            if (_path.Count == 0 || PlayMode.Instance.MainPlayer.IsStunning)
             {
                 ChangeState(EMonsterState.Think);
             }

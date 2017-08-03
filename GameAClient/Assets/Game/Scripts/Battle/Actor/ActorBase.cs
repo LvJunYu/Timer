@@ -98,7 +98,7 @@ namespace GameA.Game
                 {
                     _stunTimer--;
                 }
-                if (_stunTimer <= 0)
+                if (!IsStunning)
                 {
                     if (_input != null)
                     {
@@ -109,6 +109,15 @@ namespace GameA.Game
                         _skillCtrl.UpdateLogic();
                     }
                 }
+                if (_jumpTimer > 0)
+                {
+                    _jumpTimer--;
+                }
+                if ((_jumpTimer == 0 && SpeedY > 0) || SpeedY < 0)
+                {
+                    _jumpState = EJumpState.Fall;
+                }
+
                 for (int i = 0; i < _currentStates.Count; i++)
                 {
                     _currentStates[i].UpdateLogic();
@@ -202,14 +211,6 @@ namespace GameA.Game
                         _input.CurAppliedInputKeyAry[(int) EInputType.Jump] = false;
                     }
                 }
-            }
-            if (_jumpTimer > 0)
-            {
-                _jumpTimer--;
-            }
-            if ((_jumpTimer == 0 && SpeedY > 0) || SpeedY < 0)
-            {
-                _jumpState = EJumpState.Fall;
             }
         }
         
