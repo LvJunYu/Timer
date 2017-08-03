@@ -276,7 +276,8 @@ namespace GameA.Game
             {
                 unitExtra.Child = new UnitChild((ushort)unitExtraInfo.UnitChild.Id, (byte)unitExtraInfo.UnitChild.Rotation, (EMoveDirection)unitExtraInfo.UnitChild.MoveDirection);
             }
-            DataScene2D.Instance.ProcessUnitExtra(index, unitExtra);
+            var unitDesc = new UnitDesc {Guid = index};
+            DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
         }
     }
 }

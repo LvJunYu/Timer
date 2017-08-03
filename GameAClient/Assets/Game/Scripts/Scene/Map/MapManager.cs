@@ -255,7 +255,7 @@ namespace GameA.Game
                 unitObject.Guid = new IntVec3((2 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x),
                     (ConstDefineGM2D.DefaultGeneratedTileHeight + ConstDefineGM2D.MapStartPos.y),
                     (int) EUnitDepth.Dynamic);
-                EditMode2.Instance.AddUnit(unitObject);
+                EditMode2.Instance.AddUnitWithCheck(unitObject);
             }
             //生成胜利之门
             {
@@ -264,7 +264,7 @@ namespace GameA.Game
                 unitObject.Scale = Vector2.one;
                 unitObject.Guid = new IntVec3(12 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x,
                     ConstDefineGM2D.DefaultGeneratedTileHeight + ConstDefineGM2D.MapStartPos.y, 0);
-                EditMode2.Instance.AddUnit(unitObject);
+                EditMode2.Instance.AddUnitWithCheck(unitObject);
             }
             //生成地形
             var validMapRect = DataScene2D.Instance.ValidMapRect;
@@ -274,7 +274,7 @@ namespace GameA.Game
                     j < ConstDefineGM2D.DefaultGeneratedTileHeight + validMapRect.Min.y;
                     j += ConstDefineGM2D.ServerTileScale)
                 {
-                    EditMode2.Instance.AddUnit(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0,
+                    EditMode2.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0,
                         Vector2.one));
                 }
             }

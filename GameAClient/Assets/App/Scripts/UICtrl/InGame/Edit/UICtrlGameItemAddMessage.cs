@@ -12,7 +12,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
 	public class UICtrlGameItemAddMessage: UICtrlInGameBase<UIViewGameItemAddMessage>
 	{
 		private UnitDesc _selectItem;
@@ -77,10 +77,9 @@ namespace GameA
 
 	    private void SetData(string value)
 	    {
-	        EditMode.Instance.MapStatistics.NeedSave = true;
 	        UnitExtra unitExtra = DataScene2D.Instance.GetUnitExtra(_selectItem.Guid);
 	        unitExtra.Msg = value;
-	        DataScene2D.Instance.ProcessUnitExtra(_selectItem.Guid, unitExtra);
+	        DataScene2D.Instance.ProcessUnitExtra(_selectItem, unitExtra);
 	    }
 
 		#endregion

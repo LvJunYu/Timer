@@ -225,30 +225,79 @@ namespace GameA.Game
             return unitExtra;
         }
 
-        public void ProcessUnitExtra(IntVec3 guid, UnitExtra unitExtra)
+        public void ProcessUnitExtra(UnitDesc unitDesc, UnitExtra unitExtra)
         {
-            EditMode2.Instance.MapStatistics.NeedSave = true;
-            if (unitExtra.Equals(UnitExtra.zero))
+            UnitBase unit;
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
             {
-                DeleteUnitExtra(guid);
+                EditMode2.Instance.MapStatistics.NeedSave = true;
+                bool needRecreate = false;
+                if (ColliderScene2D.Instance.TryGetUnit(unitDesc.Guid, out unit))
+                {
+                    UnitDesc oldUnitDesc = unit.UnitDesc;
+                    if (oldUnitDesc.Rotation != unitDesc.Rotation)
+                    {
+                        needRecreate = true;
+                    }
+                    UnitExtra oldUnitExtra = GetUnitExtra(unitDesc.Guid);
+                    if (unitExtra.MoveDirection != oldUnitExtra.MoveDirection)
+                    {
+                        if (unit.DynamicCollider != null && unit.DynamicCollider.IsDynamic() )
+                        {
+                            if (unitExtra.MoveDirection == EMoveDirection.None)
+                            {
+                                needRecreate = true;
+                            }
+                        }
+                        else
+                        {
+                            if (unitExtra.MoveDirection != EMoveDirection.None)
+                            {
+                                needRecreate = true;
+                            }
+                        }
+                    }
+                }
+                if (needRecreate)
+                {
+                    EditMode2.Instance.DeleteUnit(unitDesc);
+                }
+                if (unitExtra.Equals(UnitExtra.zero))
+                {
+                    DeleteUnitExtra(unitDesc.Guid);
+                }
+                else
+                {
+                    _unitExtras.AddOrReplace(unitDesc.Guid, unitExtra);
+                }
+                if (needRecreate)
+                {
+                    EditMode2.Instance.AddUnit(unitDesc);
+                }
+                else
+                {
+                    if (unit != null)
+                    {
+                        unit.UpdateExtraData ();
+                    }
+                }
             }
             else
             {
-                _unitExtras.AddOrReplace(guid, unitExtra);
-            }
-            // 更新unit
-            UnitBase unit;
-            if (ColliderScene2D.Instance.TryGetUnit(guid, out unit))
-            {
-                unit.UpdateExtraData ();
+                _unitExtras.AddOrReplace(unitDesc.Guid, unitExtra);
+                // 更新unit
+                if (ColliderScene2D.Instance.TryGetUnit(unitDesc.Guid, out unit))
+                {
+                    unit.UpdateExtraData ();
+                }
             }
         }
 
-        public void ProcessUnitChild(IntVec3 guid, UnitChild unitChild)
+        public void ProcessUnitChild(UnitDesc unitDesc, UnitChild unitChild)
         {
-            UnitExtra unitExtra = GetUnitExtra(guid);
+            UnitExtra unitExtra = GetUnitExtra(unitDesc.Guid);
             unitExtra.Child = unitChild;
-            ProcessUnitExtra(guid, unitExtra);
+            ProcessUnitExtra(unitDesc, unitExtra);
         }
 
         public void DeleteUnitExtra(IntVec3 guid)
@@ -294,13 +343,18 @@ namespace GameA.Game
         public List<IntVec3> GetSwitchUnitsConnected(IntVec3 guid)
         {
             var result = new List<IntVec3>();
-            Dictionary<IntVec3, List<IntVec3>>.Enumerator itor = _switchedUnits.GetEnumerator();
-            while (itor.MoveNext())
+            if (_switchedUnits != null)
             {
-                List<IntVec3> units = itor.Current.Value;
-                if (units.Contains(guid))
+                using (var itor = _switchedUnits.GetEnumerator())
                 {
-                    result.Add(itor.Current.Key);
+                    while (itor.MoveNext())
+                    {
+                        List<IntVec3> units = itor.Current.Value;
+                        if (units.Contains(guid))
+                        {
+                            result.Add(itor.Current.Key);
+                        }
+                    }
                 }
             }
             return result;
@@ -497,7 +551,7 @@ namespace GameA.Game
 			ModifiedUnit = modified;
 		}
         // 从地图文件方序列化出来的构造函数
-        public ModifyData (SoyEngine.Proto.ModifyItemData modifyItemData) {
+        public ModifyData (ModifyItemData modifyItemData) {
             OrigUnit = new UnitEditData ();
             ModifiedUnit = new UnitEditData ();
             if (DataScene2D.Instance == null) {

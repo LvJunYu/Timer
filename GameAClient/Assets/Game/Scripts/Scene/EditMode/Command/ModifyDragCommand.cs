@@ -93,7 +93,7 @@ namespace GameA.Game
                                 ModifyEditMode editMode = ((ModifyEditMode)EditMode.Instance);
                                 if (null != editMode && editMode.ChackCanModifyModify (_dragUnitDesc, _addedDesc)) {
 
-                                    DataScene2D.Instance.ProcessUnitExtra (_addedDesc.Guid, _dragUnitExtra);
+//                                    DataScene2D.Instance.ProcessUnitExtra (_addedDesc.Guid, _dragUnitExtra);
                                     if (EditMode.Instance.AddUnit (target)) {
                                 
                                         ((ModifyEditMode)EditMode.Instance).OnModifyModify (
@@ -115,10 +115,10 @@ namespace GameA.Game
                             DataScene2D.Instance.DeleteUnitExtra (_addedDesc.Guid);
                             _addedDesc = UnitDesc.zero;
                             for (int i = 0; i < _buffers.Count; i++) {
-                                DataScene2D.Instance.ProcessUnitExtra (_buffers [i].UnitDesc.Guid, _buffers [i].UnitExtra);
+//                                DataScene2D.Instance.ProcessUnitExtra (_buffers [i].UnitDesc.Guid, _buffers [i].UnitExtra);
                                 EditMode.Instance.AddUnit (_buffers [i].UnitDesc);
                             }
-                            DataScene2D.Instance.ProcessUnitExtra (_dragUnitDesc.Guid, _dragUnitExtra);
+//                            DataScene2D.Instance.ProcessUnitExtra (_dragUnitDesc.Guid, _dragUnitExtra);
                             EditMode.Instance.AddUnit (_dragUnitDesc);
                             _pushFlag = false;
                         }

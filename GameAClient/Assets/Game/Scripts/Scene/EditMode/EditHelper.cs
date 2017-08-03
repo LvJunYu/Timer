@@ -349,7 +349,7 @@ namespace GameA.Game
                 {
                     if (desc.Id != 0)
                     {
-                        EditMode2.Instance.DeleteUnit(desc);
+                        EditMode2.Instance.DeleteUnitWithCheck(desc);
                     }
                 }
             }
@@ -467,7 +467,7 @@ namespace GameA.Game
                 if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
                 {
                     unitExtra.UnitValue = (byte) Random.Range(1, 3);
-                    DataScene2D.Instance.ProcessUnitExtra(unitDesc.Guid, unitExtra);
+                    DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
                 }
             }
             else if (UnitDefine.IsWeaponPool(tableUnit.Id))
@@ -476,7 +476,7 @@ namespace GameA.Game
                 if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
                 {
                     unitExtra.UnitValue = 2;
-                    DataScene2D.Instance.ProcessUnitExtra(unitDesc.Guid, unitExtra);
+                    DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
                 }
             }
             else if (UnitDefine.IsJet(tableUnit.Id))
@@ -485,7 +485,7 @@ namespace GameA.Game
                 if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
                 {
                     unitExtra.UnitValue = 1;
-                    DataScene2D.Instance.ProcessUnitExtra(unitDesc.Guid, unitExtra);
+                    DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
                 }
             }
         }

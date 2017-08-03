@@ -122,7 +122,7 @@ namespace GameA.Game
                             //绑定蓝石 如果方向允许就用蓝石方向，否则用默认初始方向。
                             unitExtra.MoveDirection = CheckMask((byte)(_dragUnitExtra.MoveDirection - 1),tableTarget.MoveDirectionMask)
                                 ? _dragUnitExtra.MoveDirection : (EMoveDirection) tableTarget.OriginMagicDirection;
-                            DataScene2D.Instance.ProcessUnitExtra(coverUnits[0].Guid, unitExtra);
+//                            DataScene2D.Instance.ProcessUnitExtra(coverUnits[0].Guid, unitExtra);
                             //从而变成了蓝石控制的物体
                             _addedDesc = coverUnits[0];
                             EditMode.Instance.AddUnit(_addedDesc);
@@ -132,7 +132,7 @@ namespace GameA.Game
                             _isAddChild = true;
                             _parentGuid = coverUnits[0].Guid;
                             _lastUnitChild = DataScene2D.Instance.GetUnitExtra(_parentGuid).Child;
-                            DataScene2D.Instance.ProcessUnitChild(_parentGuid, new UnitChild((ushort)_virUnit.Id, _virUnit.Rotation, _virUnit.MoveDirection));
+//                            DataScene2D.Instance.ProcessUnitChild(_parentGuid, new UnitChild((ushort)_virUnit.Id, _virUnit.Rotation, _virUnit.MoveDirection));
                         }
                         else
                         {
@@ -142,7 +142,7 @@ namespace GameA.Game
                                 EditMode.Instance.DeleteUnit(coverUnits[i]);
                             }
                             _addedDesc = target;
-                            DataScene2D.Instance.ProcessUnitExtra(_addedDesc.Guid, _dragUnitExtra);
+//                            DataScene2D.Instance.ProcessUnitExtra(_addedDesc.Guid, _dragUnitExtra);
                             if (EditMode.Instance.AddUnit(target))
                             {
 
@@ -153,10 +153,10 @@ namespace GameA.Game
                                 _addedDesc = UnitDesc.zero;
                                 for (int i = 0; i < _buffers.Count; i++)
                                 {
-                                    DataScene2D.Instance.ProcessUnitExtra(_buffers[i].UnitDesc.Guid, _buffers[i].UnitExtra);
+//                                    DataScene2D.Instance.ProcessUnitExtra(_buffers[i].UnitDesc.Guid, _buffers[i].UnitExtra);
                                     EditMode.Instance.AddUnit(_buffers[i].UnitDesc);
                                 }
-                                DataScene2D.Instance.ProcessUnitExtra(_dragUnitDesc.Guid, _dragUnitExtra);
+//                                DataScene2D.Instance.ProcessUnitExtra(_dragUnitDesc.Guid, _dragUnitExtra);
                                 EditMode.Instance.AddUnit(_dragUnitDesc);
                                 _pushFlag = false;
                             }
@@ -200,18 +200,18 @@ namespace GameA.Game
         {
             if (_isAddChild)
             {
-                DataScene2D.Instance.ProcessUnitChild(_parentGuid, _lastUnitChild);
+//                DataScene2D.Instance.ProcessUnitChild(_parentGuid, _lastUnitChild);
             }
             else
             {
                 EditMode.Instance.DeleteUnit(_addedDesc);
                 for (int i = 0; i < _buffers.Count; i++)
                 {
-                    DataScene2D.Instance.ProcessUnitExtra(_parentGuid, _buffers[i].UnitExtra);
+//                    DataScene2D.Instance.ProcessUnitExtra(_parentGuid, _buffers[i].UnitExtra);
                     EditMode.Instance.AddUnit(_buffers[i].UnitDesc);
                 }
             }
-            DataScene2D.Instance.ProcessUnitExtra(_dragUnitDesc.Guid, _dragUnitExtra);
+//            DataScene2D.Instance.ProcessUnitExtra(_dragUnitDesc.Guid, _dragUnitExtra);
             EditMode.Instance.AddUnit(_dragUnitDesc);
             return true;
         }

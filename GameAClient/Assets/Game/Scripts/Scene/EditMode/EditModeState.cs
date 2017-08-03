@@ -1,4 +1,5 @@
-﻿using SoyEngine;
+﻿using System.Collections.Generic;
+using SoyEngine;
 using SoyEngine.FSM;
 using UnityEngine;
 
@@ -188,7 +189,7 @@ namespace GameA.Game
                         var coverUnits = DataScene2D.GetUnits(grid, nodes);
                         for (int j = 0; j < coverUnits.Count; j++)
                         {
-                            EditMode2.Instance.DeleteUnit(coverUnits[j]);
+                            EditMode2.Instance.DeleteUnitWithCheck(coverUnits[j]);
                         }
                     }
                     else
@@ -201,19 +202,19 @@ namespace GameA.Game
                 {
                     //TODO 记录删除的地块
                 }
-                if (EditMode2.Instance.AddUnit(unitDesc))
+                if (EditMode2.Instance.AddUnitWithCheck(unitDesc))
                 {
                     GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioEditorLayItem);
                     UnitExtra extra = new UnitExtra();
                     if (tableUnit.CanMove)
                     {
                         extra.MoveDirection = (EMoveDirection)EditHelper.GetUnitOrigDirOrRot(tableUnit);
-                        DataScene2D.Instance.ProcessUnitExtra(unitDesc.Guid, extra);
+                        DataScene2D.Instance.ProcessUnitExtra(unitDesc, extra);
                     }
                     else if (tableUnit.Id == UnitDefine.RollerId)
                     {
                         extra.RollerDirection = (EMoveDirection)EditHelper.GetUnitOrigDirOrRot(tableUnit);
-                        DataScene2D.Instance.ProcessUnitExtra(unitDesc.Guid, extra);
+                        DataScene2D.Instance.ProcessUnitExtra(unitDesc, extra);
                     }
                     //TODO 保存记录
                 }
@@ -289,7 +290,7 @@ namespace GameA.Game
                 {
                     context.CurrentTouchUnitExtra.UnitValue = 2;
                 }
-                DataScene2D.Instance.ProcessUnitExtra(context.CurrentTouchUnitDesc.Guid, context.CurrentTouchUnitExtra);
+                DataScene2D.Instance.ProcessUnitExtra(context.CurrentTouchUnitDesc, context.CurrentTouchUnitExtra);
                 return true;
             }
     
@@ -300,7 +301,7 @@ namespace GameA.Game
                 {
                     context.CurrentTouchUnitExtra.UnitValue = 1;
                 }
-                DataScene2D.Instance.ProcessUnitExtra(context.CurrentTouchUnitDesc.Guid, context.CurrentTouchUnitExtra);
+                DataScene2D.Instance.ProcessUnitExtra(context.CurrentTouchUnitDesc, context.CurrentTouchUnitExtra);
                 return true;
             }
             
@@ -318,16 +319,8 @@ namespace GameA.Game
                 {
                     return false;
                 }
-                if (!EditMode2.Instance.DeleteUnit(context.CurrentTouchUnitDesc))
-                {
-                    return false;
-                }
                 context.CurrentTouchUnitDesc.Rotation = dir;
-                if (EditMode2.Instance.AddUnit(context.CurrentTouchUnitDesc))
-                {
-                    DataScene2D.Instance.ProcessUnitExtra(context.CurrentTouchUnitDesc.Guid, context.CurrentTouchUnitExtra);
-                    return true;
-                }
+                DataScene2D.Instance.ProcessUnitExtra(context.CurrentTouchUnitDesc, context.CurrentTouchUnitExtra);
                 return false;
             }
     
@@ -339,7 +332,7 @@ namespace GameA.Game
                     return false;
                 }
                 context.CurrentTouchUnitExtra.RollerDirection = (EMoveDirection)(dir + 1);
-                DataScene2D.Instance.ProcessUnitExtra(context.CurrentTouchUnitDesc.Guid, context.CurrentTouchUnitExtra);
+                DataScene2D.Instance.ProcessUnitExtra(context.CurrentTouchUnitDesc, context.CurrentTouchUnitExtra);
                 return true;
             }
     
@@ -352,7 +345,7 @@ namespace GameA.Game
                     return false;
                 }
                 context.CurrentTouchUnitExtra.MoveDirection = (EMoveDirection) (dir + 1);
-                DataScene2D.Instance.ProcessUnitExtra(context.CurrentTouchUnitDesc.Guid, context.CurrentTouchUnitExtra);
+                DataScene2D.Instance.ProcessUnitExtra(context.CurrentTouchUnitDesc, context.CurrentTouchUnitExtra);
                 return true;
             }
             
@@ -364,7 +357,7 @@ namespace GameA.Game
                     context.CurrentTouchUnitExtra.UnitValue = 0;
                 }
                 context.CurrentTouchUnitExtra.UnitValue = context.CurrentTouchUnitExtra.UnitValue;
-                DataScene2D.Instance.ProcessUnitExtra(context.CurrentTouchUnitDesc.Guid, context.CurrentTouchUnitExtra);
+                DataScene2D.Instance.ProcessUnitExtra(context.CurrentTouchUnitDesc, context.CurrentTouchUnitExtra);
                 return true;
             }
         }
@@ -432,7 +425,7 @@ namespace GameA.Game
                 UnitDesc unitDesc;
                 if(EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), out unitDesc))
                 {
-                    EditMode2.Instance.DeleteUnit(unitDesc);
+                    EditMode2.Instance.DeleteUnitWithCheck(unitDesc);
                 }
                 //TODO 录像
             }
@@ -440,7 +433,7 @@ namespace GameA.Game
 
         public class Move : GenericBase<Move>
         {
-            private static readonly Color SwitchModeUnitMaskColor = new Color(0.3f, 0.3f, 0.3f, 1f);
+            private static readonly Color MagicModeUnitMaskColor = new Color(0.3f, 0.3f, 0.3f, 1f);
 
             public class Data
             {
@@ -477,7 +470,7 @@ namespace GameA.Game
                     boardData.DragInCurrentState = true;
                     if (boardData.CurrentTouchUnitDesc != UnitDesc.zero)
                     {
-                        EditMode2.Instance.DeleteUnit(boardData.CurrentTouchUnitDesc);
+                        EditMode2.Instance.DeleteUnitWithCheck(boardData.CurrentTouchUnitDesc);
                     }
                     stateData.MouseActualPos = Input.mousePosition;
                     stateData.MouseObjectOffsetInWorld = GM2DTools.GetUnitDragingOffset(stateData.CurrentMovingUnitBase
@@ -632,7 +625,7 @@ namespace GameA.Game
                                 ? dragUnitExtra.MoveDirection
                                 : (EMoveDirection) tableTarget.OriginMagicDirection;
                             //从而变成了蓝石控制的物体
-                            DataScene2D.Instance.ProcessUnitExtra(coverUnits[0].Guid, coveredUnitExtra);
+                            DataScene2D.Instance.ProcessUnitExtra(coverUnits[0], coveredUnitExtra);
                             effectFlag = true;
                         }
                     }
@@ -640,7 +633,7 @@ namespace GameA.Game
                     {
                         if (EditHelper.CheckCanAddChild(stateData.CurrentMovingUnitBase.TableUnit, coverUnits[0]))
                         {
-                            DataScene2D.Instance.ProcessUnitChild(coverUnits[0].Guid,
+                            DataScene2D.Instance.ProcessUnitChild(coverUnits[0],
                                 new UnitChild((ushort) stateData.CurrentMovingUnitBase.Id,
                                     stateData.CurrentMovingUnitBase.Rotation,
                                     stateData.CurrentMovingUnitBase.MoveDirection));
@@ -651,22 +644,18 @@ namespace GameA.Game
                     {
                         for (int i = 0; i < coverUnits.Count; i++)
                         {
-                            EditMode2.Instance.DeleteUnit(coverUnits[i]);
+                            EditMode2.Instance.DeleteUnitWithCheck(coverUnits[i]);
                         }
-                        if (EditMode2.Instance.AddUnit(target))
-                        {
-                            DataScene2D.Instance.ProcessUnitExtra(target.Guid, stateData.DragUnitExtra);
-                            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioEditorLayItem);
-                        }
+                    }
+                    else
+                    {
+                        return;
                     }
                 }
-                else
+                if (EditMode2.Instance.AddUnitWithCheck(target))
                 {
-                    if (EditMode2.Instance.AddUnit(target))
-                    {
-                        DataScene2D.Instance.ProcessUnitExtra(target.Guid, stateData.DragUnitExtra);
-                        GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioEditorLayItem);
-                    }
+                    DataScene2D.Instance.ProcessUnitExtra(target, stateData.DragUnitExtra);
+                    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioEditorLayItem);
                 }
             }
 
@@ -680,7 +669,7 @@ namespace GameA.Game
                         {
                             if (!itor.Current.Value.TableUnit.CanAddMagic)
                             {
-                                itor.Current.Value.View.SetRendererColor(SwitchModeUnitMaskColor);
+                                itor.Current.Value.View.SetRendererColor(MagicModeUnitMaskColor);
                             }
                             else
                             {
@@ -743,7 +732,211 @@ namespace GameA.Game
         
         public class Switch : GenericBase<Switch>
         {
+            public class Data
+            {
+                public List<UnityNativeParticleItem> UnitMaskEffectCache = new List<UnityNativeParticleItem> ();
+                public List<UnityNativeParticleItem> ConnectLineEffectCache = new List<UnityNativeParticleItem> ();
+
+                /// <summary>
+                /// 与当前选择物体有连接的物体
+                /// </summary>
+                public List<IntVec3> CachedConnectedGUIDs = new List<IntVec3> ();
+                /// <summary>
+                /// 当前选择的物体
+                /// </summary>
+                public UnitDesc CurrentSelectedUnitOnSwitchMode;
+                
+            }
             
+            private static readonly Color SwitchModeUnitMaskColor = new Color (0.3f, 0.3f, 0.3f, 1f);
+            private static readonly Vector2 MaskEffectOffset = new Vector2(0.35f, 0.4f);
+            
+//            public void DeleteSwitchConnection (Data data, int idx) {
+//                if (data.CurrentSelectedUnitOnSwitchMode == UnitDesc.zero)
+//                    return;
+//                if (idx >= data.CachedConnectedGUIDs.Count)
+//                    return;
+//                bool success = false;
+//                if (UnitDefine.IsSwitch (data.CurrentSelectedUnitOnSwitchMode.Id)) {
+//                    success = DataScene2D.Instance.UnbindSwitch (data.CurrentSelectedUnitOnSwitchMode.Guid, data.CachedConnectedGUIDs[idx]);
+//                } else {
+//                    success = DataScene2D.Instance.UnbindSwitch (data.CachedConnectedGUIDs [idx], data.CurrentSelectedUnitOnSwitchMode.Guid);
+//                }
+//                if (success) {
+//                    Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged, 
+//                        data.CachedConnectedGUIDs [idx], data.CurrentSelectedUnitOnSwitchMode.Guid, false);
+//                    UpdateSwitchEffects (data);
+//                    EditMode2.Instance.MapStatistics.AddOrDeleteConnection();
+//                }
+//                // todo undo
+//            }
+//    
+//            public bool AddSwitchConnection(Data data, IntVec3 switchGuid, IntVec3 unitGuid)
+//            {
+//                if (DataScene2D.Instance.BindSwitch (switchGuid, unitGuid)) {
+//                    Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged, 
+//                        switchGuid, unitGuid, true);
+//                    UpdateSwitchEffects (data);
+//                    EditMode2.Instance.MapStatistics.AddOrDeleteConnection ();
+//                    return true;
+//                } else {
+//                    return false;
+//                }
+//            }
+//    
+//    
+//            private void UpdateSwitchEffects (Data data) {
+//                if (urrentSelectedUnitOnSwitchMode == UnitDesc.zero) {
+//                    for (int i = 0; i < _unitMaskEffectCache.Count; i++) {
+//                        _unitMaskEffectCache [i].Stop ();
+//                    }
+//                    for (int i = 0; i < _connectLineEffectCache.Count; i++) {
+//                        _connectLineEffectCache [i].Stop ();
+//                    }
+//                } else {
+//    //                List<IntVec3> connectedUnitIds = new List<IntVec3>();
+//    
+//                    Table_Unit table = TableManager.Instance.GetUnit (_currentSelectedUnitOnSwitchMode.Id);
+//                    if (null == table) {
+//                        LogHelper.Error ("CurSelectedUnitOnSwitchMode table is null, id: {0}", _currentSelectedUnitOnSwitchMode.Id);
+//                        _currentSelectedUnitOnSwitchMode = UnitDesc.zero;
+//                        UpdateSwitchEffects ();
+//                        return;
+//                    }
+//                    _cachedConnectedGUIDs.Clear ();
+//                    bool isFromSwitch = UnitDefine.IsSwitch (_currentSelectedUnitOnSwitchMode.Id);
+//                    if (isFromSwitch) {
+//                        
+//                        List<UnitBase> controlledUnits = DataScene2D.Instance.GetControlledUnits (_currentSelectedUnitOnSwitchMode.Guid);
+//                        if (null != controlledUnits) {
+//                            for (int i = 0; i < controlledUnits.Count; i++) {
+//                                _cachedConnectedGUIDs.Add (controlledUnits [i].Guid);
+//                            }
+//                        }
+//                    } else {
+//                        List<IntVec3> switchUnits = DataScene2D.Instance.GetSwitchUnitsConnected (_currentSelectedUnitOnSwitchMode.Guid);
+//                        for (int i = 0; i < switchUnits.Count; i++) {
+//                            _cachedConnectedGUIDs.Add (switchUnits [i]);
+//                        }
+//    
+//                    }
+//                    UpdateEffectsOnSwitchMode ();
+//    
+//                }
+//    
+//                    
+//            }
+//    
+//            private void UpdateEffectsOnSwitchMode () {
+//                bool isFromSwitch = UnitDefine.IsSwitch (_currentSelectedUnitOnSwitchMode.Id);
+//                List<Vector3> lineCenterPoses = new List<Vector3> ();
+//                int cnt = 0;
+//                for (; cnt < _cachedConnectedGUIDs.Count; cnt++) {
+//                    SetMaskEffectPos(GetUnusedMaskEffect(cnt), _cachedConnectedGUIDs[cnt]);
+//                    if (isFromSwitch) {
+//                        lineCenterPoses.Add(SetLineEffectPos (GetUnusedLineEffect (cnt), _currentSelectedUnitOnSwitchMode.Guid, _cachedConnectedGUIDs [cnt]));
+//                    } else {
+//                        lineCenterPoses.Add(SetLineEffectPos (GetUnusedLineEffect (cnt), _cachedConnectedGUIDs [cnt], _currentSelectedUnitOnSwitchMode.Guid));
+//                    }
+//                }
+//                for (; cnt < _unitMaskEffectCache.Count; cnt++) {
+//                    _unitMaskEffectCache [cnt].Stop ();
+//                    if (cnt < _connectLineEffectCache.Count) {
+//                        _connectLineEffectCache [cnt].Stop ();
+//                    }
+//                }
+//                SetMaskEffectPos(GetUnusedMaskEffect(_cachedConnectedGUIDs.Count), _currentSelectedUnitOnSwitchMode.Guid);
+//                Messenger<List<Vector3>>.Broadcast (EMessengerType.OnSelectedItemChangedOnSwitchMode, lineCenterPoses);
+//            }
+//    
+//            private void OnEnterSwitchMode () {
+//                List<IntVec3> allEditableGUIDs = new List<IntVec3> ();
+//                var itor = ColliderScene2D.Instance.Units.GetEnumerator();
+//                while (itor.MoveNext()) {
+//                    if (null != itor.Current.Value && null != itor.Current.Value.View) {
+//                        if (!UnitDefine.IsSwitch (itor.Current.Value.Id) &&
+//                            !itor.Current.Value.CanControlledBySwitch) {
+//                            itor.Current.Value.View.SetRendererColor (SwitchModeUnitMaskColor);
+//                        } else {
+//                            allEditableGUIDs.Add(itor.Current.Value.Guid);
+//                        }
+//                    }
+//                }
+//                SocialGUIManager.Instance.OpenUI<UICtrlEditSwitch> (allEditableGUIDs);
+//            }
+//    
+//            private void OnExitSwitchMode () {
+//                _currentSelectedUnitOnSwitchMode = UnitDesc.zero;
+//                _cachedConnectedGUIDs.Clear ();
+//                UpdateSwitchEffects ();
+//    
+//                var itor = ColliderScene2D.Instance.Units.GetEnumerator();
+//                while (itor.MoveNext()) {
+//                    if (null != itor.Current.Value && null != itor.Current.Value.View) {
+//    //                    if (!UnitDefine.Instance.IsSwitch (itor.Current.Value.Id) &&
+//    //                        !itor.Current.Value.CanControlledBySwitch) {
+//                        itor.Current.Value.View.SetRendererColor (Color.white);
+//    //                    }
+//                    }
+//                }
+//                SocialGUIManager.Instance.CloseUI<UICtrlEditSwitch> ();
+//            }
+//
+//            private UnityNativeParticleItem GetUnusedMaskEffect (int idx) { 
+//                if (_unitMaskEffectCache.Count <= idx) {
+//                    UnityNativeParticleItem newYellowMask = GameParticleManager.Instance.GetUnityNativeParticleItem (ParticleNameConstDefineGM2D.YellowMask, null);
+//                    if (null == newYellowMask) {
+//                        LogHelper.Error ("Load mask effect failed, name is {0}", ParticleNameConstDefineGM2D.YellowMask);
+//                        return null;
+//                    }
+//                    _unitMaskEffectCache.Add (newYellowMask);
+//                }
+//                return _unitMaskEffectCache[idx];
+//            }
+//            private UnityNativeParticleItem GetUnusedLineEffect (int idx) { 
+//                if (_connectLineEffectCache.Count <= idx) {
+//                    UnityNativeParticleItem newRedMask = GameParticleManager.Instance.GetUnityNativeParticleItem (ParticleNameConstDefineGM2D.ConnectLine, null);
+//                    if (null == newRedMask) {
+//                        LogHelper.Error ("Load connect line effect failed, name is {0}", ParticleNameConstDefineGM2D.ConnectLine);
+//                        return null;
+//                    }
+//                    _connectLineEffectCache.Add (newRedMask);
+//                }
+//                return _connectLineEffectCache[idx];
+//            }
+            private void SetMaskEffectPos (UnityNativeParticleItem effect, IntVec3 guid) {
+                Vector3 pos = GM2DTools.TileToWorld (guid);
+                pos.z = -60f;
+                pos.x += MaskEffectOffset.x;
+                pos.y += MaskEffectOffset.y;
+                effect.Trans.position = pos;
+                effect.Play ();
+            }
+    
+            /// <summary>
+            /// Sets the line effect position.
+            /// </summary>
+            /// <returns>返回这条连线的中点.</returns>
+            /// <param name="effect">Effect.</param>
+            /// <param name="orig">Original.</param>
+            /// <param name="target">Target.</param>
+            private Vector3 SetLineEffectPos (UnityNativeParticleItem effect, IntVec3 orig, IntVec3 target) {
+                SwitchConnection sc = effect.Trans.GetComponent<SwitchConnection> ();
+                if (null != sc) {
+                    Vector3 targetPos = GM2DTools.TileToWorld (target);
+                    Vector3 origPos = GM2DTools.TileToWorld (orig);
+                    targetPos.z = -60f;
+                    targetPos.x += MaskEffectOffset.x;
+                    targetPos.y += MaskEffectOffset.y;
+                    origPos.z = -60f;
+                    origPos.x += MaskEffectOffset.x;
+                    origPos.y += MaskEffectOffset.y;
+                    sc.Init (origPos, targetPos);
+                    effect.Play ();
+                    return (origPos + targetPos) * 0.5f;
+                }
+                return Vector3.zero;
+            }
         }
         
         public class ModifyAdd : GenericBase<ModifyAdd>

@@ -111,9 +111,20 @@ namespace GameA.Game
             return tableItems;
         }
 
+        private Table_Unit _lastTableUnit;
+        /// <summary>
+        /// 缓存最后一次查询的table 加速查询
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public Table_Unit GetTableUnit(int key)
         {
-            return TableManager.Instance.GetUnit(key);
+            if (_lastTableUnit != null && _lastTableUnit.Id == key)
+            {
+                return _lastTableUnit;
+            }
+            _lastTableUnit = TableManager.Instance.GetUnit(key);
+            return _lastTableUnit;
         }
 
         public Transform GetOriginParent()

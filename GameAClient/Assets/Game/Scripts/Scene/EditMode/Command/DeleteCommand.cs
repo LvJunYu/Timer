@@ -55,7 +55,7 @@ namespace GameA.Game
                 {
                     if (EditMode.Instance.AddUnit(_buffers[i].UnitDesc))
 	                {
-                        DataScene2D.Instance.ProcessUnitExtra(_buffers[i].UnitDesc.Guid, _buffers[i].UnitExtra);
+//                        DataScene2D.Instance.ProcessUnitExtra(_buffers[i].UnitDesc.Guid, _buffers[i].UnitExtra);
 	                }
                 }
                 return true;
