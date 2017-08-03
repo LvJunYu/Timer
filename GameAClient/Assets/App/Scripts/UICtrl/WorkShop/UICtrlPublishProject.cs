@@ -34,7 +34,7 @@ namespace GameA
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _project.IconPath, _cachedView.DefaultCover);
             _cachedView.ProjectTitle.text = _project.Name;
             _cachedView.ProjectDesc.text = _project.Summary;
-            //_cachedView.ProjectDesc.text = _project.WinCondition. todo
+            //_cachedView.ProjectDesc.text = _project.WinCondition.
         }
         
         protected override void OnClose() {
