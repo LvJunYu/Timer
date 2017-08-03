@@ -7,7 +7,6 @@
 
 using System;
 using UnityEngine;
-using UnitySampleAssets.CrossPlatformInput;
 using UnityStandardAssets.CrossPlatformInput;
 using Object = UnityEngine.Object;
 

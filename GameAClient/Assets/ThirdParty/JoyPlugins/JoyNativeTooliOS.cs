@@ -13,6 +13,7 @@ using UnityEngine;
 using SoyEngine;
 using System.Text;
 using System.Runtime.InteropServices;
+using NewResourceSolution;
 using UnityEngine.iOS;
 using NotificationServices = UnityEngine.iOS.NotificationServices;
 using RemoteNotification = UnityEngine.iOS.RemoteNotification;
@@ -52,7 +53,7 @@ public class JoyNativeTooliOS : MonoBehaviour, IJoyNativeTool
         string appkey = "5779c90d67e58e60150010c6";  
         GA.StartWithAppKeyAndChannelId(appkey, "App Store"); 
         GA.SetLogEnabled(GlobalVar.Instance.IsDebug);
-        GA.SetAppVersion(GameA.SocialApp.Instance.AppVersion);
+        GA.SetAppVersion(RuntimeConfig.Instance.Version);
     }
 
     private void AliasHandler(string response,string error)

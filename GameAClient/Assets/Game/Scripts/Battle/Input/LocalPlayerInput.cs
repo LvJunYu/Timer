@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnitySampleAssets.CrossPlatformInput;
+using UnityStandardAssets.CrossPlatformInput;
 
 namespace GameA.Game
 {
