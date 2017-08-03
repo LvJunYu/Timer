@@ -6,6 +6,7 @@
 ***********************************************************************/
 
 using System;
+using System.Collections.Generic;
 using NewResourceSolution;
 using SoyEngine;
 using SoyEngine.FSM;
@@ -43,6 +44,7 @@ namespace GameA.Game
 
         private bool _enable;
         private bool _inited;
+        private HashSet<EditModeState.Base> _initedStateSet;
         private StateMachine<EditMode2, EditModeState.Base> _stateMachine;
         private BlackBoard _boardData;
         private EditRecordManager _editRecordManager;
@@ -100,6 +102,14 @@ namespace GameA.Game
                 {
                     UnityEngine.Object.Destroy(_cameraMask.gameObject);
                 }
+                foreach (var state in _initedStateSet)
+                {
+                    state.Dispose();
+                }
+                _initedStateSet.Clear();
+                _initedStateSet = null;
+                _stateMachine.AfterChangeStateCallback -= OnAfterStateChange;
+                _stateMachine.BeforeChangeStateCallback -= OnBeforeStateChange;
                 _stateMachine = null;
                 _boardData.Clear();
                 _boardData = null;
@@ -113,9 +123,12 @@ namespace GameA.Game
         public void Init()
         {
             _enable = false;
+            _initedStateSet = new HashSet<EditModeState.Base>();
             _stateMachine = new StateMachine<EditMode2, EditModeState.Base>(this);
             _stateMachine.GlobalState = EditModeState.Global.Instance;
             _stateMachine.ChangeState(EditModeState.None.Instance);
+            _stateMachine.AfterChangeStateCallback += OnAfterStateChange;
+            _stateMachine.BeforeChangeStateCallback += OnBeforeStateChange;
             _boardData = new BlackBoard();
             _boardData.Init();
             _editRecordManager = new EditRecordManager();
@@ -171,6 +184,11 @@ namespace GameA.Game
         public void StopCamera()
         {
             _stateMachine.RevertToPreviousState();
+        }
+
+        public void Undo()
+        {
+            _editRecordManager.Undo();
         }
 
         public void Update()
@@ -358,42 +376,6 @@ namespace GameA.Game
 
         #endregion
 
-
-        #region ToolMethod
-
-        public bool TryGetUnitDesc(Vector2 mouseWorldPos, out UnitDesc unitDesc)
-        {
-            if (!GM2DTools.TryGetUnitObject(mouseWorldPos, EEditorLayer.None, out unitDesc))
-            {
-                return false;
-            }
-            return true;
-        }
-        
-        public bool TryGetCreateKey(Vector2 mouseWorldPos, int unitId, out UnitDesc unitDesc)
-        {
-            unitDesc = new UnitDesc();
-            IntVec2 mouseTile = GM2DTools.WorldToTile(mouseWorldPos);
-            if (!DataScene2D.Instance.IsInTileMap(mouseTile))
-            {
-                return false;
-            }
-            IntVec3 tileIndex = DataScene2D.Instance.GetTileIndex(mouseWorldPos, unitId);
-            unitDesc.Id = (ushort)unitId;
-            unitDesc.Guid = tileIndex;
-            var tableUnit = UnitManager.Instance.GetTableUnit(unitId);
-            if (tableUnit == null)
-            {
-                return false;
-            }
-            if (tableUnit.CanRotate)
-            {
-                unitDesc.Rotation = (byte)EditHelper.GetUnitOrigDirOrRot(tableUnit);
-            }
-            unitDesc.Scale = Vector2.one;
-            return true;
-        }
-        #endregion
 
         #region InputEvent
 
@@ -585,7 +567,19 @@ namespace GameA.Game
             _cameraMask.SetSortOrdering((int) ESortingOrder.Mask);
         }
 
-
+        private void OnBeforeStateChange(EditModeState.Base oldState, EditModeState.Base newState)
+        {
+            if (!_initedStateSet.Contains(newState))
+            {
+                newState.Init();
+                _initedStateSet.Add(newState);
+            }
+        }
+        
+        private void OnAfterStateChange(EditModeState.Base oldState, EditModeState.Base newState)
+        {
+            Messenger.Broadcast(EMessengerType.AfterEditModeStateChange);
+        }
         #endregion
     }
 }
