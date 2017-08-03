@@ -109,7 +109,6 @@ namespace GameA.Game
             _box = null;
             ClearView();
 
-            _checkClimb = true;
             _maxSpeedX = BattleDefine.MaxSpeedX;
             base.Clear();
         }

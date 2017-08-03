@@ -16,6 +16,11 @@ namespace GameA.Game
     {
         protected IntVec2 _lastPos;
 
+        protected override bool IsCheckClimb()
+        {
+            return false;
+        }
+
         protected override bool OnInit()
         {
             if (!base.OnInit())

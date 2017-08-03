@@ -28,12 +28,24 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            base.UpdateLogic();
-            if (!_run)
+            UpdateSpeedY();
+        }
+        
+        protected virtual void UpdateSpeedY()
+        {
+            SpeedY += _fanForce.y;
+//            if (!_grounded)
             {
-                return;
+                if (SpeedY > 0 && _fanForce.y == 0)
+                {
+                    SpeedY = Util.ConstantLerp(SpeedY, 0, 12);
+                }
+                else
+                {
+                    SpeedY = Util.ConstantLerp(SpeedY, -120, 2);
+                }
             }
-            
+            _fanForce.y = 0;
         }
 
         public override void UpdateView(float deltaTime)
@@ -64,13 +76,23 @@ namespace GameA.Game
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
-            if (unit.IsActor || unit.CanPainted)
+            if (unit.IsActor)
             {
                 _destroy = 1;
             }
             switch (eDirectionType)
             {
                     case EDirectionType.Down:
+                        if (_angle <=  180)
+                        {
+                            UpdateAngle(180 - _angle);
+                        }
+                        else
+                        {
+                            UpdateAngle(540 - _angle);
+                        }
+                        _speed /= 2;
+                        break;
                     case EDirectionType.Up:
                         if (_angle <=  180)
                         {

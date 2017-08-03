@@ -18,12 +18,7 @@ namespace GameA.Game
     [Poolable(MinPoolSize = 10, PreferedPoolSize = 100, MaxPoolSize = ConstDefineGM2D.MaxTileCount)]
     public class ProjectileBase : RigidbodyUnit, IPoolableObject
     {
-        protected bool _run;
         protected SkillBase _skill;
-        /// <summary>
-        /// 速度
-        /// </summary>
-        protected IntVec2 _speed;
         /// <summary>
         /// 是否被阻挡
         /// </summary>
@@ -36,8 +31,6 @@ namespace GameA.Game
         /// 初始位置
         /// </summary>
         protected IntVec2 _originPos;
-
-        protected int _delayRunTime;
 
         protected int _maskRandom;
         
@@ -87,15 +80,10 @@ namespace GameA.Game
             base.Clear();
         }
 
-        public virtual void Run(SkillBase skill, int angle, int delayRunTime)
+        public virtual void Run(SkillBase skill, int angle)
         {
             _skill = skill;
             _angle = angle;
-            _delayRunTime = delayRunTime;
-            if (_delayRunTime == 0)
-            {
-                _run = true;
-            }
             _maskRandom = UnityEngine.Random.Range(0, 2);
             _originPos = CenterPos;
             var rad = _angle * Mathf.Deg2Rad;
@@ -127,25 +115,9 @@ namespace GameA.Game
             _speed = new IntVec2((int)(_skill.ProjectileSpeed * Math.Sin(rad)), (int)(_skill.ProjectileSpeed * Math.Cos(rad)));
             _trans.eulerAngles = new Vector3(0, 0, -_angle);
         }
-
-        public override void UpdateLogic()
-        {
-            if (_delayRunTime > 0)
-            {
-                _delayRunTime--;
-                if (_delayRunTime == 0 && _skill.Owner.IsAlive)
-                {
-                    _run = true;
-                }
-            }
-        }
-
+        
         public override void UpdateView(float deltaTime)
         {
-            if (!_run)
-            {
-                return;
-            }
             if (_isAlive)
             {
                 _deltaPos = _speed + _extraDeltaPos;
