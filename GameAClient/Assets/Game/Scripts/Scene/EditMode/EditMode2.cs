@@ -106,6 +106,7 @@ namespace GameA.Game
                 {
                     state.Dispose();
                 }
+                EditHelper.Clear();
                 _initedStateSet.Clear();
                 _initedStateSet = null;
                 _stateMachine.AfterChangeStateCallback -= OnAfterStateChange;
