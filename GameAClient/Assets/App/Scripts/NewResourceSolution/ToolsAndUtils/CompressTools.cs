@@ -44,7 +44,7 @@ namespace NewResourceSolution
                     return 0;
                 }
             }
-            using (FileStream input = new FileStream (inFile, FileMode.Open))
+            using (FileStream input = new FileStream (inFile, FileMode.Open, FileAccess.Read))
             using(FileStream output = new FileStream (outFile, FileMode.Create))
             {
                 Decoder coder = new Decoder();
