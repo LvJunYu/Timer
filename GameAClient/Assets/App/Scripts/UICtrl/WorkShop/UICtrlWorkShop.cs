@@ -337,18 +337,12 @@ namespace GameA
         }
 
         private void OnPublicProjectCardClick (CardDataRendererWrapper<Project> item) {
-            ////return;
-            //if (null != item && null != item.Content) {
-            //    SocialGUIManager.Instance.OpenUI<UICtrlProjectDetailInfo> (item.Content);
-            if (null != _curSelectedPublicProject)
+            //return;
+            if (null != item && null != item.Content)
             {
-                _curSelectedPublicProject.IsSelected = false;
-            }
-            item.IsSelected = true;
-            _curSelectedPublicProject = item;
-            _cachedView.PublicProjectsGridScroller.RefreshCurrent();
-            RefreshPublishedProjectList();
+                SocialGUIManager.Instance.OpenUI<UICtrlAdvLvlDetail>(item.Content);
 
+            }
 
         }
 

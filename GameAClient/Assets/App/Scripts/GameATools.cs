@@ -323,7 +323,7 @@ namespace GameA {
             switch (DateType)
             {
                 case 1:
-                    return year + "年" + month + "月" + day + "日";
+                    return year + "." + month + "." + day;
                 default:
                     return null;
             }
@@ -358,19 +358,19 @@ namespace GameA {
                 minute = minute%60;
             }
 
-            if (hour > 0)
+            if (hour > 1)
             {
-                return (hour + "小时" + minute + "分"
-                        + (float) (Math.Round(second*100)/100) + "秒");
+                return (minute + "’"
+                        + (float) (Math.Round(second*100)/100) + "”");
             }
-            else if (minute > 0)
+            else if (minute > 1)
             {
-                return (minute + "分"
-                        + (float) (Math.Round(second*100)/100) + "秒");
+                return (minute + "’"
+                        + (float) (Math.Round(second*100)/100) + "”");
             }
             else
             {
-                return ((float) (Math.Round(second*100)/100) + "秒");
+                return ((float) (Math.Round(second*100)/100) + "”");
             }
         }
 
