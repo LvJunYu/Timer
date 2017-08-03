@@ -67,8 +67,8 @@ namespace GameA
 
 			_cachedView.ButtonFinishCondition.onClick.AddListener(OnClickFinishCondition);
 
-            _cachedView.EnterSwitchMode.onClick.AddListener (OnClickSwitchModeButton);
-            _cachedView.ExitSwitchMode.onClick.AddListener (OnClickSwitchModeButton);
+            _cachedView.EnterSwitchMode.onClick.AddListener (OnClickEnterSwitchModeBtn);
+            _cachedView.ExitSwitchMode.onClick.AddListener (OnClickExitSwitchModeBtn);
 	        _cachedView.EnterCamCtrlModeBtn.onClick.AddListener(OnEnterCamCtrlMode);
 	        _cachedView.ExitCamCtrlModeBtn.onClick.AddListener(OnExitCamCtrlMode);
         }
@@ -232,8 +232,13 @@ namespace GameA
             SocialGUIManager.Instance.OpenUI<UICtrlGamePlay>();
         }
 
-        private void OnClickSwitchModeButton () {
-        }
+		private void OnClickEnterSwitchModeBtn () {
+	        EditMode2.Instance.StartSwitch();
+		}
+
+		private void OnClickExitSwitchModeBtn () {
+	        EditMode2.Instance.StopSwitch();
+		}
 
         private void OnUndo()
         {

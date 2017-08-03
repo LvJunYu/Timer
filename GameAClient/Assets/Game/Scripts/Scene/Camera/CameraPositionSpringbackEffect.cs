@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -55,7 +56,7 @@ namespace GameA.Game
 	    public void SetPos(Vector2 pos)
 	    {
 		    pos = ClampValidMoveRect(pos);
-		    _cameraManager.MainCamaraPos = pos;
+		    ChangeCameraPos(pos);
 		    _curState = ESpingState.None;
 	    }
 	    
@@ -70,7 +71,7 @@ namespace GameA.Game
 			curPos -= offset;
 			curPos.x = Mathf.Clamp(curPos.x, _outerRect.xMin, _outerRect.xMax);
 			curPos.y = Mathf.Clamp(curPos.y, _outerRect.yMin, _outerRect.yMax);
-			_cameraManager.MainCamaraPos = curPos;
+			ChangeCameraPos(curPos);
 			_curState = ESpingState.None;
 		}
 
@@ -98,7 +99,7 @@ namespace GameA.Game
 		    {
 			    Vector2 pos = _cameraManager.MainCamaraPos;
 			    pos = ClampValidMoveRect(pos);
-			    _cameraManager.MainCamaraPos = pos;
+			    ChangeCameraPos(pos);
 		    }
 		    else if (ESpingState.LerpMove == _curState)
 		    {
@@ -161,12 +162,13 @@ namespace GameA.Game
 
         private void DoUpdateLerpMove () {
             Vector2 v = _lerpTargetPos - (Vector2)_cameraManager.MainCamaraPos;
-            if (v.sqrMagnitude < SmallDistance * 0.25f) {
-	            _cameraManager.MainCamaraPos = _lerpTargetPos;
+            if (v.sqrMagnitude < SmallDistance * 0.25f)
+            {
+	            ChangeCameraPos(_lerpTargetPos);
                 _curState = ESpingState.None;
                 return;
             }
-	        _cameraManager.MainCamaraPos = Vector3.Lerp(_cameraManager.MainCamaraPos, _lerpTargetPos, Time.deltaTime * 6);
+	        ChangeCameraPos(Vector3.Lerp(_cameraManager.MainCamaraPos, _lerpTargetPos, Time.deltaTime * 6));
         }
 
 		private void DoUpdateInertiaMove()
@@ -179,7 +181,7 @@ namespace GameA.Game
 				Vector3 tmp = _cameraManager.MainCamaraPos - pos;
                 if(tmp.magnitude>SmallDistance)
 				{
-					_cameraManager.MainCamaraPos = ClampedByOuterRect(pos);
+					ChangeCameraPos(ClampedByOuterRect(pos));
 					return;
 				}
 			}
@@ -192,14 +194,14 @@ namespace GameA.Game
 			if (curTime - _startTime > SpringbackDuringTime)
 			{
 				_curState = ESpingState.None;
-				_cameraManager.MainCamaraPos = _springbackAimPos;
+				ChangeCameraPos(_springbackAimPos);
 			}
 			else
 			{
 				Vector3 pos = _cameraManager.MainCamaraPos;
 				Vector2 offset = _curSpeed*Time.deltaTime;
 				pos = pos - new Vector3(offset.x, offset.y);
-				_cameraManager.MainCamaraPos = pos;
+				ChangeCameraPos(pos);
 			}
 		}
 
@@ -270,6 +272,12 @@ namespace GameA.Game
 		    _validMoveRect.center = new Vector2(_validMapRect.center.x,
 			    _validMapRect.center.y - cameraHalfSize.y * 2 *
 			    (ConstDefineGM2D.CameraMoveOutSizeYBottom - ConstDefineGM2D.CameraMoveOutSizeYTop) / 2);
+	    }
+
+	    private void ChangeCameraPos(Vector3 pos)
+	    {
+		    _cameraManager.MainCamaraPos = pos;
+		    Messenger.Broadcast(EMessengerType.OnEditCameraPosChange);
 	    }
 	}
 }

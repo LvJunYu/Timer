@@ -189,6 +189,16 @@ namespace GameA.Game
             _stateMachine.RevertToPreviousState();
         }
 
+        public void StartSwitch()
+        {
+            _stateMachine.ChangeState(EditModeState.Switch.Instance);
+        }
+
+        public void StopSwitch()
+        {
+            _stateMachine.RevertToPreviousState();
+        }
+
         public void Undo()
         {
             _editRecordManager.Undo();
@@ -277,6 +287,15 @@ namespace GameA.Game
             unitBase.Trans.localPosition = Vector3.zero;
             unitBase.Trans.localScale = Vector3.one;
             _stateMachine.ChangeState(EditModeState.Move.Instance);
+        }
+
+
+        public void DeleteSwitchConnection(int idx)
+        {
+            if (IsInState(EditModeState.Switch.Instance))
+            {
+                EditModeState.Switch.Instance.DeleteSwitchConnection(idx);
+            }
         }
         
         /// <summary>

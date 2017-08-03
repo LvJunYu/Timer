@@ -13,7 +13,8 @@ namespace GameA
         public Text Score;
         public Text Rank;
         public Image RankBg;
-
+        public RawImage HeadPortrait;
+        public Texture DefaultUserHeadTexture;
         public Button PlayBtn;
         //public Button Follow;
         //public Text ShowFollow;

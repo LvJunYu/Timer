@@ -56,7 +56,8 @@ namespace GameA
 
 		public static int OnGameRestart = SoyEngine.EMessengerType.NextId++;
 
-		public static int OnCameraOrthoSpringbackChangeEnd = SoyEngine.EMessengerType.NextId++;
+		public static int OnEditCameraOrthoSizeChange = SoyEngine.EMessengerType.NextId++;
+		public static int OnEditCameraPosChange = SoyEngine.EMessengerType.NextId++;
 
 		public static int ForceUpdateCameraMaskSize = SoyEngine.EMessengerType.NextId++;
         // 拾取了宝石
