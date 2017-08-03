@@ -243,7 +243,7 @@ namespace GameA
 	    private void OnClickHome()
 	    {
 			Messenger.Broadcast(EMessengerType.OpenGameSetting);
-            SocialGUIManager.Instance.GetUI<UICtrlGameSetting>().ChangeToWorkShop();
+            SocialGUIManager.Instance.GetUI<UICtrlGameSetting>().ChangeToSettingInGame();
         }
 
         private void OnEnterErase()

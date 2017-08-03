@@ -117,6 +117,7 @@ namespace GameA.Game
                 _editRecordManager.Clear();
                 _editRecordManager = null;
                 _enable = false;
+                Messenger.RemoveListener(EMessengerType.GameFinishSuccess, OnSuccess);
             }
             _instance = null;
         }
@@ -152,6 +153,7 @@ namespace GameA.Game
             InputManager.Instance.OnMouseRightButtonDragStart += OnMouseRightButtonDragStart;
             InputManager.Instance.OnMouseRightButtonDrag += OnMouseRightButtonDrag;
             InputManager.Instance.OnMouseRightButtonDragEnd += OnMouseRightButtonDragEnd;
+            Messenger.AddListener(EMessengerType.GameFinishSuccess, OnSuccess);
             _inited = true;
         }
 
@@ -580,6 +582,11 @@ namespace GameA.Game
         private void OnAfterStateChange(EditModeState.Base oldState, EditModeState.Base newState)
         {
             Messenger.Broadcast(EMessengerType.AfterEditModeStateChange);
+        }
+        
+        private void OnSuccess()
+        {
+            _mapStatistics.AddFinishCount();
         }
         #endregion
     }
