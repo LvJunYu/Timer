@@ -14,8 +14,20 @@ namespace GameA.Game
 //        public int TestCurrent = 100;
 //        public int TestMax = 100;
 //        public int TestMPGrids = 10;
+
+        void Awake()
+        {
+            _trans = transform;
+            var srs = _trans.GetComponentsInChildren<SpriteRenderer>();
+            for (int i = 0; i < srs.Length; i++)
+            {
+                srs[i].sortingOrder = (int) ESortingOrder.DragingItem;
+            }
+        }
+
         void Update()
         {
+            _trans.rotation = Quaternion.identity;
 //            if (Input.GetKeyDown(KeyCode.H))
 //            {
 //                TestCurrent -= UnityEngine.Random.Range(5, 10);
@@ -73,6 +85,7 @@ namespace GameA.Game
         private static int s_maxMPGridNum = 10;
         private static int s_minMPGridNum = 1;
 
+        private Transform _trans;
         public GameObject HPRoot;
         public GameObject MPRoot;
         
