@@ -93,6 +93,10 @@ namespace GameA
             _cachedView.NickName.text = _record.UserInfo.NickName;
             _cachedView.Score.text = _record.Score.ToString();
             _cachedView.Rank.text = rank.ToString();
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.HeadPortrait,
+                _record.UserInfo.HeadImgUrl,
+                _cachedView.DefaultUserHeadTexture);
+           
             _cachedView.Playerlvl.text = _record.UserInfo.LevelData.PlayerLevel.ToString();
             RefreshView();
             JudgeRankImage(rank);
