@@ -8,9 +8,11 @@ namespace GameA.Game
     {
         public abstract class Base : State<EditMode2>
         {
+            public virtual void Init() { }
             public override void Enter(EditMode2 owner) { }
             public override void Execute(EditMode2 owner) { }
             public override void Exit(EditMode2 owner) { }
+            public virtual void Dispose() { }
             
             public virtual void OnPinch(Gesture gesture) { }
             public virtual void OnPinchEnd(Gesture gesture) { }
@@ -78,7 +80,7 @@ namespace GameA.Game
                 var boardData = EditMode2.Instance.BoardData;
                 boardData.DragInCurrentState = false;
                 UnitDesc outValue;
-                if (EditMode2.Instance.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(Input.mousePosition), out outValue))
+                if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(Input.mousePosition), out outValue))
                 {//当前点击位置有地块，转换为移动模式
                     boardData.CurrentTouchUnitDesc = outValue;
                     var unitExtra = DataScene2D.Instance.GetUnitExtra(outValue.Guid);
@@ -107,7 +109,13 @@ namespace GameA.Game
                 {
                     return;
                 }
-                DragAddOne(gesture.position, boardData.CurrentSelectedUnitId);
+                //补齐两点之间的空隙
+                Vector2 worldDeltaSize = GM2DTools.ScreenToWorldSize(gesture.deltaPosition);
+                int totalCount = (int) worldDeltaSize.magnitude + 1;
+                for (int i = totalCount-1; i >= 0; i--)
+                {
+                    DragAddOne(gesture.position - gesture.deltaPosition * i / totalCount, boardData.CurrentSelectedUnitId);
+                }
             }
 
             public override void OnDragEnd(Gesture gesture)
@@ -121,6 +129,7 @@ namespace GameA.Game
                 {
                     return;
                 }
+                boardData.DragInCurrentState = false;
                 //TODO 如果InDrag保存录像
             }
 
@@ -128,7 +137,7 @@ namespace GameA.Game
             {
                 var boardData = EditMode2.Instance.BoardData;
                 UnitDesc touchedUnitDesc;
-                if (EditMode2.Instance.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(Input.mousePosition), out touchedUnitDesc))
+                if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(Input.mousePosition), out touchedUnitDesc))
                 {
                     boardData.CurrentTouchUnitDesc = touchedUnitDesc;
                     EditMode2.Instance.StateMachine.ChangeState(UnitClick.Instance);
@@ -140,7 +149,7 @@ namespace GameA.Game
                         return;
                     }
                     UnitDesc createUnitDesc;
-                    if (EditMode2.Instance.TryGetCreateKey(GM2DTools.ScreenToWorldPoint(gesture.position),
+                    if (EditHelper.TryGetCreateKey(GM2DTools.ScreenToWorldPoint(gesture.position),
                         boardData.CurrentSelectedUnitId, out createUnitDesc))
                     {
                         AddOne(createUnitDesc);
@@ -151,7 +160,7 @@ namespace GameA.Game
             private void DragAddOne(Vector2 mousePos, int unitId)
             {
                 UnitDesc unitDesc;
-                if (EditMode2.Instance.TryGetCreateKey(GM2DTools.ScreenToWorldPoint(mousePos), unitId, out unitDesc))
+                if (EditHelper.TryGetCreateKey(GM2DTools.ScreenToWorldPoint(mousePos), unitId, out unitDesc))
                 {
                     AddOne(unitDesc, true);
                 }
@@ -380,7 +389,13 @@ namespace GameA.Game
                 {
                     return;
                 }
-                TryRemove(gesture.position);
+                //补齐两点之间的空隙
+                Vector2 worldDeltaSize = GM2DTools.ScreenToWorldSize(gesture.deltaPosition);
+                int totalCount = (int) worldDeltaSize.magnitude + 1;
+                for (int i = totalCount-1; i >= 0; i--)
+                {
+                    TryRemove(gesture.position - gesture.deltaPosition * i / totalCount);
+                }
             }
 
             public override void OnDragEnd(Gesture gesture)
@@ -405,7 +420,7 @@ namespace GameA.Game
             private void TryRemove(Vector2 mousePos)
             {
                 UnitDesc unitDesc;
-                if(EditMode2.Instance.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), out unitDesc))
+                if(EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), out unitDesc))
                 {
                     EditMode2.Instance.DeleteUnit(unitDesc);
                 }
@@ -582,7 +597,7 @@ namespace GameA.Game
                 Vector3 mouseWorldPos = GM2DTools.ScreenToWorldPoint(stateData.MouseActualPos);
                 mouseWorldPos += stateData.MouseObjectOffsetInWorld;
                 UnitDesc target;
-                if (!EditMode2.Instance.TryGetCreateKey(mouseWorldPos, stateData.CurrentMovingUnitBase.Id, out target))
+                if (!EditHelper.TryGetCreateKey(mouseWorldPos, stateData.CurrentMovingUnitBase.Id, out target))
                 {
                     return;
                 }

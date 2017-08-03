@@ -851,7 +851,7 @@ namespace GameA.Game
             } else {
                 _commandType = eCommandType;
             }
-            Messenger.Broadcast(EMessengerType.AfterCommandChanged);
+            Messenger.Broadcast(EMessengerType.AfterEditModeStateChange);
             //Debug.Log("OnCommandChanged:" + eCommandType);
             if (_commandType == ECommandType.Pause)
             {
