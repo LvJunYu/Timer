@@ -94,13 +94,8 @@ namespace GameA
             Messenger<IntVec3, IntVec3, bool>.RemoveListener (EMessengerType.OnSwitchConnectionChanged, OnSwitchConnectionChanged);
 		}
 
-        public override void OnUpdate ()
-        {
-            base.OnUpdate ();
-        }
-
         private void OnDelBtn (int idx) {
-            EditMode.Instance.DeleteSwitchConnection (idx);
+            EditMode2.Instance.DeleteSwitchConnection (idx);
         }
 
         private void OnCameraPosChanged () {
