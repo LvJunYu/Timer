@@ -145,7 +145,7 @@ namespace GameA.Game
 				RemovedUnits.Insert (idx, data);
 				LogHelper.Error ("Can't undo the {0}'s erase action when add unit, unitdesc: {1}", idx, data.OrigUnit);
 			} else {
-				DataScene2D.Instance.ProcessUnitExtra(data.OrigUnit.UnitDesc.Guid, data.OrigUnit.UnitExtra);
+//				DataScene2D.Instance.ProcessUnitExtra(data.OrigUnit.UnitDesc.Guid, data.OrigUnit.UnitExtra);
 			}
             Messenger.Broadcast(EMessengerType.OnModifyUnitChanged);
             UpdateMaskEffects ();
@@ -167,14 +167,14 @@ namespace GameA.Game
                 LogHelper.Error ("Can't undo the {0}'s modify action when delete unit, unitdesc: {1}", idx, data.ModifiedUnit);
                 return;
             } else {
-                DataScene2D.Instance.ProcessUnitExtra(data.OrigUnit.UnitDesc.Guid, UnitExtra.zero);
+//                DataScene2D.Instance.ProcessUnitExtra(data.OrigUnit.UnitDesc.Guid, UnitExtra.zero);
             }
 			if (!AddUnit(data.OrigUnit.UnitDesc)) {
 				ModifiedUnits.Insert (idx, data);
 				LogHelper.Error ("Can't undo the {0}'s modify action when add unit, unitdesc: {1}", idx, data.OrigUnit);
 				return;
 			} else {
-				DataScene2D.Instance.ProcessUnitExtra(data.OrigUnit.UnitDesc.Guid, data.OrigUnit.UnitExtra);
+//				DataScene2D.Instance.ProcessUnitExtra(data.OrigUnit.UnitDesc.Guid, data.OrigUnit.UnitExtra);
 			}
             Messenger.Broadcast(EMessengerType.OnModifyUnitChanged);
             UpdateMaskEffects ();
@@ -194,7 +194,7 @@ namespace GameA.Game
                 LogHelper.Error ("Can't undo the {0}'s modify action when delete unit, unitdesc: {1}", idx, data.ModifiedUnit);
                 return;
             } else {
-                DataScene2D.Instance.ProcessUnitExtra(data.ModifiedUnit.UnitDesc.Guid, UnitExtra.zero);
+//                DataScene2D.Instance.ProcessUnitExtra(data.ModifiedUnit.UnitDesc.Guid, UnitExtra.zero);
             }
 
 //            for (int i = 0; i < TempAvailableUnits.Count; i++) {

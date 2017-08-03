@@ -98,14 +98,14 @@ namespace GameA.Game
             switch (recordData.ActionType)
             {
                 case EditRecordData.EAction.AddUnit:
-                    EditMode2.Instance.AddUnit(recordData.UnitDesc);
-                    DataScene2D.Instance.ProcessUnitExtra(recordData.UnitDesc.Guid, recordData.UnitExtra);
+                    EditMode2.Instance.AddUnitWithCheck(recordData.UnitDesc);
+                    DataScene2D.Instance.ProcessUnitExtra(recordData.UnitDesc, recordData.UnitExtra);
                     break;
                 case EditRecordData.EAction.RemoveUnit:
-                    EditMode2.Instance.DeleteUnit(recordData.UnitDesc);
+                    EditMode2.Instance.DeleteUnitWithCheck(recordData.UnitDesc);
                     break;
                 case EditRecordData.EAction.UpdateExtra:
-                    DataScene2D.Instance.ProcessUnitExtra(recordData.UnitDesc.Guid, recordData.UnitExtra);
+                    DataScene2D.Instance.ProcessUnitExtra(recordData.UnitDesc, recordData.UnitExtra);
                     break;
                 case EditRecordData.EAction.AddSwitchConnection:
                     DataScene2D.Instance.BindSwitch(recordData.SwitchGuid, recordData.UnitDesc.Guid);
@@ -121,14 +121,14 @@ namespace GameA.Game
             switch (recordData.ActionType)
             {
                 case EditRecordData.EAction.AddUnit:
-                    EditMode2.Instance.DeleteUnit(recordData.UnitDesc);
+                    EditMode2.Instance.DeleteUnitWithCheck(recordData.UnitDesc);
                     break;
                 case EditRecordData.EAction.RemoveUnit:
-                    EditMode2.Instance.AddUnit(recordData.UnitDesc);
-                    DataScene2D.Instance.ProcessUnitExtra(recordData.UnitDesc.Guid, recordData.UnitExtra);
+                    EditMode2.Instance.AddUnitWithCheck(recordData.UnitDesc);
+                    DataScene2D.Instance.ProcessUnitExtra(recordData.UnitDesc, recordData.UnitExtra);
                     break;
                 case EditRecordData.EAction.UpdateExtra:
-                    DataScene2D.Instance.ProcessUnitExtra(recordData.UnitDesc.Guid, recordData.UnitExtraOld);
+                    DataScene2D.Instance.ProcessUnitExtra(recordData.UnitDesc, recordData.UnitExtraOld);
                     break;
                 case EditRecordData.EAction.AddSwitchConnection:
                     DataScene2D.Instance.UnbindSwitch(recordData.SwitchGuid, recordData.UnitDesc.Guid);

@@ -72,6 +72,11 @@ namespace GameA.Game
 				);
 				return;
 			}
+			if (null != successCB)
+			{
+				successCB.Invoke();
+			}
+			SocialApp.Instance.ReturnToApp();
         }
 
         public override void Save(Action successCallback = null, Action<EProjectOperateResult> failedCallback = null)

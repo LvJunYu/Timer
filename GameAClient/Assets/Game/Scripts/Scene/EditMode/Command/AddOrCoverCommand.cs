@@ -50,7 +50,7 @@ namespace GameA.Game
                     _isAddChild = true;
                     _parentGuid = coverUnits[0].Guid;
                     _lastUnitChild = DataScene2D.Instance.GetUnitExtra(_parentGuid).Child;
-                    DataScene2D.Instance.ProcessUnitChild(_parentGuid, new UnitChild((ushort)_virUnit.Id, _virUnit.Rotation, _virUnit.MoveDirection));
+//                    DataScene2D.Instance.ProcessUnitChild(_parentGuid, new UnitChild((ushort)_virUnit.Id, _virUnit.Rotation, _virUnit.MoveDirection));
                 }
                 else
                 {
@@ -67,7 +67,7 @@ namespace GameA.Game
                     {
                         for (int i = 0; i < _buffers.Count; i++)
                         {
-                            DataScene2D.Instance.ProcessUnitExtra(_buffers[i].UnitDesc.Guid, _buffers[i].UnitExtra);
+//                            DataScene2D.Instance.ProcessUnitExtra(_buffers[i].UnitDesc.Guid, _buffers[i].UnitExtra);
                             EditMode.Instance.AddUnit(_buffers[i].UnitDesc);
                         }
                         _pushFlag = false;
@@ -86,7 +86,7 @@ namespace GameA.Game
 			}
 			if (_isAddChild)
 			{
-                DataScene2D.Instance.ProcessUnitChild(_parentGuid, new UnitChild((ushort)_virUnit.Id, _virUnit.Rotation, _virUnit.MoveDirection));
+//                DataScene2D.Instance.ProcessUnitChild(_parentGuid, new UnitChild((ushort)_virUnit.Id, _virUnit.Rotation, _virUnit.MoveDirection));
 				if (_deletedReplaceDesc.Id != 0)
 				{
 					EditMode.Instance.DeleteUnit(_deletedReplaceDesc);
@@ -107,14 +107,14 @@ namespace GameA.Game
 		{
             if (_isAddChild)
             {
-                DataScene2D.Instance.ProcessUnitChild(_parentGuid, _lastUnitChild);
+//                DataScene2D.Instance.ProcessUnitChild(_parentGuid, _lastUnitChild);
             }
             else
             {
                 EditMode.Instance.DeleteUnit(_addedDesc);
                 for (int i = 0; i < _buffers.Count; i++)
                 {
-                    DataScene2D.Instance.ProcessUnitExtra(_parentGuid, _buffers[i].UnitExtra);
+//                    DataScene2D.Instance.ProcessUnitExtra(_parentGuid, _buffers[i].UnitExtra);
                     EditMode.Instance.AddUnit(_buffers[i].UnitDesc);
                 }
             }

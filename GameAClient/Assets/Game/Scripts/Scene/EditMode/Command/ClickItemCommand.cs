@@ -216,7 +216,7 @@ namespace GameA.Game
 
         protected void SaveUnitExtra()
         {
-            DataScene2D.Instance.ProcessUnitExtra(_modifiedDesc.Guid, _modifiedExtra);
+//            DataScene2D.Instance.ProcessUnitExtra(_modifiedDesc.Guid, _modifiedExtra);
         }
 
         public static bool CalculateNextDir(byte curValue, int mask, out byte dir)
