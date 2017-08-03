@@ -403,7 +403,7 @@ namespace GameA
         private void ProcessDelete () {
             if (null == _curSelectedPrivateProject || null == _curSelectedPrivateProject.Content)
                 return;
-            CommonTools.ShowPopupDialog(string.Format("确定要删除作品《{0}》吗？", _curSelectedPrivateProject.Content.Name), null,
+            CommonTools.ShowPopupDialog(string.Format("删除之后将无法恢复，确定要删除《{0}》吗？", _curSelectedPrivateProject.Content.Name), null,
                 new KeyValuePair<string, Action>("确定",()=>{
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在删除");
                     var projList = new List<long>();

@@ -360,17 +360,17 @@ namespace GameA {
 
             if (hour > 1)
             {
-                return (minute + "’"
-                        + (float) (Math.Round(second*100)/100) + "”");
+                return (minute + "′"
+                        + (float) (Math.Round(second*100)/100) + "″");
             }
             else if (minute > 1)
             {
-                return (minute + "’"
-                        + (float) (Math.Round(second*100)/100) + "”");
+                return (minute + "′"
+                        + (float) (Math.Round(second*100)/100) + "″");
             }
             else
             {
-                return ((float) (Math.Round(second*100)/100) + "”");
+                return ((float) (Math.Round(second*100)/100) + "″");
             }
         }
 
