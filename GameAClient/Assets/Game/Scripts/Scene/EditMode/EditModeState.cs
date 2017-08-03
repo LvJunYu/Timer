@@ -80,11 +80,16 @@ namespace GameA.Game
                 var boardData = EditMode2.Instance.BoardData;
                 boardData.DragInCurrentState = false;
                 UnitDesc outValue;
-                if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(Input.mousePosition), out outValue))
+                Vector2 mousePos = Input.mousePosition;
+                if (gesture != null)
+                {
+                    mousePos = gesture.position - gesture.deltaPosition;
+                }
+                if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), out outValue))
                 {//当前点击位置有地块，转换为移动模式
                     boardData.CurrentTouchUnitDesc = outValue;
                     var unitExtra = DataScene2D.Instance.GetUnitExtra(outValue.Guid);
-                    EditMode2.Instance.StartDragUnit(GM2DTools.ScreenToWorldPoint(gesture.position),
+                    EditMode2.Instance.StartDragUnit(GM2DTools.ScreenToWorldPoint(mousePos),
                         outValue.Id, (EDirectionType) outValue.Rotation, ref unitExtra);
                 }
                 else
@@ -93,7 +98,7 @@ namespace GameA.Game
                     {
                         return;
                     }
-                    DragAddOne(gesture.position, boardData.CurrentSelectedUnitId);
+                    DragAddOne(mousePos, boardData.CurrentSelectedUnitId);
                     boardData.DragInCurrentState = true;
                 }
             }
@@ -375,7 +380,12 @@ namespace GameA.Game
             {
                 var boardData = EditMode2.Instance.BoardData;
                 boardData.DragInCurrentState = true;
-                TryRemove(gesture.position);
+                Vector2 mousePos = Input.mousePosition;
+                if (gesture != null)
+                {
+                    mousePos = gesture.position - gesture.deltaPosition;
+                }
+                TryRemove(mousePos);
             }
 
             public override void OnDrag(Gesture gesture)
