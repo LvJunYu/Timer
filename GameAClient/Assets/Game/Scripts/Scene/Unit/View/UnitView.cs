@@ -310,17 +310,13 @@ namespace GameA.Game
                         GenerateWing();
                         CreateDirTrans("M1Move");
                     }
-                    else if (tableUnit.Id == UnitDefine.BlueStoneRotateId)
-                    {
-                        CreateDirTrans("M1Rotate_1");
-                    }
-                    else if (tableUnit.CanRotate || tableUnit.Id == UnitDefine.RollerId)
-                    {
-                        CreateDirTrans("M1Rotate");
-                    }
                     else if (UnitDefine.IsEditClick(tableUnit.Id))
                     {
                         CreateDirTrans("M1Click");
+                    }
+                    else if (tableUnit.CanRotate || tableUnit.Id == UnitDefine.RollerId)
+                    {
+                        CreateDirTrans("M1Move");
                     }
                 }
             }
@@ -424,7 +420,7 @@ namespace GameA.Game
         private void InitStatusBar()
         {
             if (null != _statusBar) return;
-            GameObject statusBarObj = GameObject.Instantiate(ResourcesManager.Instance.GetPrefab(EResType.ParticlePrefab, "StatusBar", 1)) as GameObject;
+            GameObject statusBarObj = Object.Instantiate(ResourcesManager.Instance.GetPrefab(EResType.ParticlePrefab, "StatusBar", 1)) as GameObject;
             if (null != statusBarObj)
             {
                 _statusBar = statusBarObj.GetComponent<StatusBar>();

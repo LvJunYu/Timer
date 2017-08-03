@@ -68,6 +68,8 @@ namespace GameA.Game
                 }
                 _currentSkills[i] = new SkillBase(skillId, _owner);
             }
+            UpdateMp(_mpTotal);
+            UpdateRp(_rpTotal);
             return true;
         }
 
@@ -77,8 +79,8 @@ namespace GameA.Game
             {
                 _currentSkills[i] = null;
             }
-            _currentMp = _mpTotal;
-            _currentRp = _rpTotal;
+            UpdateMp(_mpTotal);
+            UpdateRp(_rpTotal);
             _timer = 0;
         }
 
@@ -154,7 +156,10 @@ namespace GameA.Game
             if (_currentMp != mp)
             {
                 _currentMp = mp;
-                Messenger<int,int>.Broadcast(EMessengerType.OnMPChanged,_currentMp,_mpTotal);
+                if (_owner != null && _owner.View != null)
+                {
+                    _owner.View.StatusBar.SetMP(_currentMp,_mpTotal);
+                }
             }
         }
         

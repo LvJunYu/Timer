@@ -134,7 +134,7 @@ namespace GameA.Game
 
         public static bool IsEditClick(int id)
         {
-            return id == BillboardId || IsWeaponPool(id);
+            return id == BillboardId || IsWeaponPool(id) || IsJet(id);
         }
 
         public static bool IsSameDirectionSwitchTrigger(SceneNode node, byte rotation)

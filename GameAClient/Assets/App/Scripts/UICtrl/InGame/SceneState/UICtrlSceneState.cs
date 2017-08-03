@@ -57,16 +57,12 @@ namespace GameA
             RegisterEvent(EMessengerType.OnKeyChanged, OnKeyCountChanged);
             RegisterEvent(EMessengerType.OnScoreChanged, OnScoreChanged);
 
-            Messenger<int, int>.AddListener (EMessengerType.OnHPChanged, OnHPChanged);
-            Messenger<int, int>.AddListener (EMessengerType.OnMPChanged, OnMPChanged);
             Messenger<int, int>.AddListener (EMessengerType.OnSpeedUpCDChanged, OnSpeedUpCDChanged);
 		}
 
         protected override void OnDestroy ()
         {
             base.OnDestroy ();
-            Messenger<int, int>.RemoveListener (EMessengerType.OnHPChanged, OnHPChanged);
-            Messenger<int, int>.RemoveListener (EMessengerType.OnMPChanged, OnMPChanged);
             Messenger<int, int>.RemoveListener (EMessengerType.OnSpeedUpCDChanged, OnSpeedUpCDChanged);
         }
 

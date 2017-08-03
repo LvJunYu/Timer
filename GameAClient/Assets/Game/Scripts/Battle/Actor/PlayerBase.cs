@@ -121,6 +121,9 @@ namespace GameA.Game
                 LogHelper.Error("GetEquipment Failed : {0}", id);
                 return false;
             }
+            _maxHp = tableEquipment.Hp;
+            OnHpChanged(_maxHp);
+
             _gun.ChangeView(tableEquipment.Model);
             _skillCtrl.SetPoint(tableEquipment.Mp,tableEquipment.MpRecover,tableEquipment.Rp,tableEquipment.RpRecover);
             int[] skillIds = new int[3];

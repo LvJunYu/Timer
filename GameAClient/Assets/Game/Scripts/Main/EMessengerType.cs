@@ -79,10 +79,6 @@ namespace GameA
         public static int OnSkillChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnAmmoChanged = SoyEngine.EMessengerType.NextId++;
 
-        // 主角mp发生变化
-        public static int OnMPChanged = SoyEngine.EMessengerType.NextId++;
-        // 主角hp发生变化
-        public static int OnHPChanged = SoyEngine.EMessengerType.NextId++;
 	    /// <summary>
 	    /// Rp发生变化
 	    /// </summary>

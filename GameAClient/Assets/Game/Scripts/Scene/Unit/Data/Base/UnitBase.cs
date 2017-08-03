@@ -859,10 +859,21 @@ namespace GameA.Game
             {
                 OnDead();
             }
+            if (IsActor && _view != null)
+            {
+                if (hpChanged > 0)
+                {
+                    _view.StatusBar.SetHP(EHPModifyCase.Heal, _hp,_maxHp);
+                }
+                else
+                {
+                    _view.StatusBar.SetHP(EHPModifyCase.Hit, _hp,_maxHp);
+                }
+            }
         }
 
         /// <summary>
-        /// 更新额外信息
+        /// 更新额外信息e
         /// </summary>
         public virtual void UpdateExtraData()
         {
