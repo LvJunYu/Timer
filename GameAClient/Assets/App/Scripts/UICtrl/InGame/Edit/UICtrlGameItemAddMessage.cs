@@ -63,12 +63,6 @@ namespace GameA
 			if (item == null)
 			{
 				LogHelper.Error("_selectItem.id is invalid! {0}", _selectItem.Id);
-				return;
-			}
-			if (item.Id==7001)
-			{
-				LogHelper.Error("_selectItem {0} .EScriptType is not BulletinBoard!", _selectItem.Id);
-				return;
 			}
 		}
 

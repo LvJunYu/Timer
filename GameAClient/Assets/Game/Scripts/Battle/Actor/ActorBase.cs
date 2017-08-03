@@ -62,13 +62,19 @@ namespace GameA.Game
 
         protected override void Clear()
         {
-            base.Clear();
+            RemoveAllStates();
             _canFanCross = true;
             _eDieType = EDieType.None;
             _attackedTimer = 0;
-            RemoveAllStates();
             _checkGround = true;
             _updateSpeedY = true;
+            base.Clear();
+        }
+
+        internal override void OnObjectDestroy()
+        {
+            base.OnObjectDestroy();
+            Clear();
         }
 
         public override void CheckStart()
@@ -231,9 +237,7 @@ namespace GameA.Game
             {
                 if (_currentStates[i].TableState.IsBuff == 0)
                 {
-                    _currentStates[i].OnRemoved();
-                    PoolFactory<State>.Free(_currentStates[i]);
-                    _currentStates.RemoveAt(i);
+                    RemoveState(_currentStates[i]);
                 }
             }
         }

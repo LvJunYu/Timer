@@ -74,15 +74,12 @@ namespace GameA
 
 			_cachedView.ButtonFinishCondition.onClick.AddListener(OnClickFinishCondition);
 
-	        _cachedView.EnterEffectMode.onClick.AddListener(OnClickEffectModeButton);
-	        _cachedView.ExitEffectMode.onClick.AddListener(OnClickEffectModeButton);
-
             _cachedView.EnterSwitchMode.onClick.AddListener (OnClickSwitchModeButton);
             _cachedView.ExitSwitchMode.onClick.AddListener (OnClickSwitchModeButton);
-	        //_cachedView.EnterCamCtrlModeBtn.onClick.AddListener(OnEnterCamCtrlMode);
-	        //_cachedView.ExitCamCtrlModeBtn.onClick.AddListener(OnExitCamCtrlMode);
-	        //_cachedView.EnterCamCtrlModeBtn.gameObject.SetActive(true);
-	        //_cachedView.ExitCamCtrlModeBtn.gameObject.SetActive(false);
+	        _cachedView.EnterCamCtrlModeBtn.onClick.AddListener(OnEnterCamCtrlMode);
+	        _cachedView.ExitCamCtrlModeBtn.onClick.AddListener(OnExitCamCtrlMode);
+	        _cachedView.EnterCamCtrlModeBtn.gameObject.SetActive(true);
+	        _cachedView.ExitCamCtrlModeBtn.gameObject.SetActive(false);
         }
 
 	    protected override void InitEventListener()
@@ -114,10 +111,6 @@ namespace GameA
             {
                 _cachedView.Capture.gameObject.SetActive(true);
             }
-			if (EditMode.Instance != null)
-			{
-				EditMode.Instance.SetEditorModeEffect(false);
-			}
 		}
 
         public void ChangeToEditMode()
@@ -268,28 +261,20 @@ namespace GameA
             SocialGUIManager.Instance.OpenUI<UICtrlGamePlay>();
         }
 
-	    private void OnClickEffectModeButton()
-	    {
-		    bool value = EditMode.Instance.CurEditorLayer == EEditorLayer.None;
-			EditMode.Instance.SetEditorModeEffect(value);
-		    UpdateEffectModeButtonState();
-            _cachedView.EnterSwitchMode.SetActiveEx (!value);
-	    }
-
         private void OnClickSwitchModeButton () {
-            if (EditMode.Instance.CurCommandType == ECommandType.Switch)
-            {
-                Broadcast(ECommandType.Create);
-                _cachedView.Erase.SetActiveEx (true);
-                _cachedView.EnterEffectMode.SetActiveEx (false);
-            }
-            else
-            {
-                Broadcast(ECommandType.Switch);
-                _cachedView.Erase.SetActiveEx (false);
-                _cachedView.EnterEffectMode.SetActiveEx (false);
-            }
-            UpdateModeButtonState();
+//            if (EditMode.Instance.CurCommandType == ECommandType.Switch)
+//            {
+//                Broadcast(ECommandType.Create);
+//                _cachedView.Erase.SetActiveEx (true);
+//                _cachedView.EnterEffectMode.SetActiveEx (false);
+//            }
+//            else
+//            {
+//                Broadcast(ECommandType.Switch);
+//                _cachedView.Erase.SetActiveEx (false);
+//                _cachedView.EnterEffectMode.SetActiveEx (false);
+//            }
+//            UpdateModeButtonState();
         }
 
         private void OnUndo()
@@ -315,14 +300,14 @@ namespace GameA
 
         private void OnErase()
         {
-            if (EditMode.Instance.CurCommandType == ECommandType.Erase)
+	        
+            if (EditMode2.Instance.IsInState(EditModeState.Remove.Instance))
             {
-                Broadcast(ECommandType.Create);
-                _cachedView.EnterSwitchMode.SetActiveEx (true);
+	            EditMode2.Instance.StopRemove();
             }
 	        else
 	        {
-				Broadcast(ECommandType.Erase);
+		        EditMode2.Instance.StartRemove();
                 _cachedView.EnterSwitchMode.SetActiveEx (false);
 			}
 	        UpdateEraseButtonState();
@@ -330,67 +315,61 @@ namespace GameA
 
         private void OnEnterCamCtrlMode ()
         {
-            if (EditMode.Instance.CurCommandType != ECommandType.Camera) {
-	            _cachedView.EnterCamCtrlModeBtn.gameObject.SetActive(false);
-	            _cachedView.ExitCamCtrlModeBtn.gameObject.SetActive(true);
-                Broadcast (ECommandType.Camera);
-            }
+	        EditMode2.Instance.StartCamera();
+			_cachedView.EnterCamCtrlModeBtn.gameObject.SetActive(false);
+			_cachedView.ExitCamCtrlModeBtn.gameObject.SetActive(true);
         }
 
         private void OnExitCamCtrlMode ()
         {
-            if (EditMode.Instance.CurCommandType == ECommandType.Camera) {
-	            _cachedView.EnterCamCtrlModeBtn.gameObject.SetActive(true);
-	            _cachedView.ExitCamCtrlModeBtn.gameObject.SetActive(false);
-                CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSizeEnd(0f);
-                CameraManager.Instance.CameraCtrlEdit.MovePosEnd(Vector2.zero);
-                Broadcast (ECommandType.Create);
-            }
+	        EditMode2.Instance.StopCamera();
+			_cachedView.EnterCamCtrlModeBtn.gameObject.SetActive(true);
+			_cachedView.ExitCamCtrlModeBtn.gameObject.SetActive(false);
         }
 
 
 	    private void UpdateEraseButtonState()
 	    {
-            if (EditMode.Instance == null || EditMode.Instance.CurCommandType == ECommandType.Play)
-			{
-				_cachedView.EraseSelected.SetActiveEx(false);
-				_cachedView.Erase.SetActiveEx(false);
-				return;
-			}
-            bool isSelect = EditMode.Instance.CurCommandType == ECommandType.Erase;
-            _cachedView.EraseSelected.SetActiveEx(isSelect);
-			_cachedView.Erase.SetActiveEx(!isSelect);
+//            if (EditMode.Instance == null || EditMode.Instance.CurCommandType == ECommandType.Play)
+//			{
+//				_cachedView.EraseSelected.SetActiveEx(false);
+//				_cachedView.Erase.SetActiveEx(false);
+//				return;
+//			}
+//            bool isSelect = EditMode.Instance.CurCommandType == ECommandType.Erase;
+//            _cachedView.EraseSelected.SetActiveEx(isSelect);
+//			_cachedView.Erase.SetActiveEx(!isSelect);
 		}
 
         private void UpdateModeButtonState () {
-            if (null == EditMode.Instance || EditMode.Instance.CurCommandType == ECommandType.Play) {
-                _cachedView.EnterSwitchMode.SetActiveEx (false);
-                _cachedView.ExitSwitchMode.SetActiveEx (false);
-	            
-	            _cachedView.EnterCamCtrlModeBtn.SetActiveEx(false);
-	            _cachedView.ExitCamCtrlModeBtn.SetActiveEx(false);
-                return;
-            }
-            bool isSwitchSelect = EditMode.Instance.CurCommandType == ECommandType.Switch;
-            _cachedView.EnterSwitchMode.SetActiveEx (!isSwitchSelect);
-            _cachedView.ExitSwitchMode.SetActiveEx (isSwitchSelect);
-	        
-	        bool isCameraSelect = EditMode.Instance.CurCommandType == ECommandType.Camera;
-	        _cachedView.EnterCamCtrlModeBtn.SetActiveEx(!isCameraSelect);
-	        _cachedView.ExitCamCtrlModeBtn.SetActiveEx(isCameraSelect);
+//            if (null == EditMode.Instance || EditMode.Instance.CurCommandType == ECommandType.Play) {
+//                _cachedView.EnterSwitchMode.SetActiveEx (false);
+//                _cachedView.ExitSwitchMode.SetActiveEx (false);
+//	            
+//	            _cachedView.EnterCamCtrlModeBtn.SetActiveEx(false);
+//	            _cachedView.ExitCamCtrlModeBtn.SetActiveEx(false);
+//                return;
+//            }
+//            bool isSwitchSelect = EditMode.Instance.CurCommandType == ECommandType.Switch;
+//            _cachedView.EnterSwitchMode.SetActiveEx (!isSwitchSelect);
+//            _cachedView.ExitSwitchMode.SetActiveEx (isSwitchSelect);
+//	        
+//	        bool isCameraSelect = EditMode.Instance.CurCommandType == ECommandType.Camera;
+//	        _cachedView.EnterCamCtrlModeBtn.SetActiveEx(!isCameraSelect);
+//	        _cachedView.ExitCamCtrlModeBtn.SetActiveEx(isCameraSelect);
         }
 
 	    private void UpdateEffectModeButtonState()
 	    {
-			if (EditMode.Instance == null)
-			{
-                _cachedView.EnterEffectMode.SetActiveEx(false);
-                _cachedView.ExitEffectMode.SetActiveEx(false);
-				return;
-			}
-			bool isSelect = EditMode.Instance.CurEditorLayer == EEditorLayer.Effect;
-			_cachedView.EnterEffectMode.SetActiveEx(!isSelect);
-			_cachedView.ExitEffectMode.SetActiveEx(isSelect);
+//			if (EditMode.Instance == null)
+//			{
+//                _cachedView.EnterEffectMode.SetActiveEx(false);
+//                _cachedView.ExitEffectMode.SetActiveEx(false);
+//				return;
+//			}
+//			bool isSelect = EditMode.Instance.CurEditorLayer == EEditorLayer.Effect;
+//			_cachedView.EnterEffectMode.SetActiveEx(!isSelect);
+//			_cachedView.ExitEffectMode.SetActiveEx(isSelect);
 		}
 
 		private void Broadcast(ECommandType type)

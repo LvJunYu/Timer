@@ -291,7 +291,7 @@ namespace GameA.Game
 
         protected void OnRevive()
         {
-            LogHelper.Debug("{0}, OnRevive", GetType().Name);
+            LogHelper.Debug("{0}, OnRevive {1}", GetType().Name, _revivePos);
             _eUnitState = EUnitState.Reviving;
             _trans.eulerAngles = new Vector3(90, 0, 0);
             _reviveEffect.Play(_trans.position + Vector3.up * 0.5f,
@@ -415,7 +415,7 @@ namespace GameA.Game
             }
             _reviveEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null, ESortingOrder.LazerEffect));
             _portalEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null, ESortingOrder.LazerEffect));
-            _gun.InstantiateView();
+            ChangeWeapon(2);
             return true;
         }
 

@@ -13,17 +13,11 @@ namespace GameA.Game
 {
     public class CommandManager : ICommandManager
     {
-//        private static CommandManager _instance;
 		private Stack<ICommand> _stackUndo;// = new Stack<ICommand>();
 		private Stack<ICommand> _stackRedo;// = new Stack<ICommand>();
 
         private bool _undoable;
         private bool _redoable;
-
-//        public static CommandManager Instance
-//        {
-//            get { return _instance??(_instance = new CommandManager()); }
-//        }
 
 		public void Init () {
 			_stackUndo = new Stack<ICommand> ();

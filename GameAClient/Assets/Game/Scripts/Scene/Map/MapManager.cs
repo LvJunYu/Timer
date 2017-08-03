@@ -57,10 +57,6 @@ namespace GameA.Game
                 UnityEngine.Object.Destroy(_mapFile.gameObject);
                 _mapFile = null;
             }
-            if (EditMode.Instance != null)
-            {
-                UnityEngine.Object.Destroy(EditMode.Instance.gameObject);
-            }
             DataScene2D.Instance.Dispose();
             ColliderScene2D.Instance.Dispose();
             BgScene2D.Instance.Dispose();
@@ -155,8 +151,6 @@ namespace GameA.Game
             //        LocalUser.Instance.UserGuid);
             //    return;
             //}
-            var go = new GameObject("EditMode");
-            go.AddComponent<EditMode>();
             _mapFile.Read(mapData, startType);
             //read是协程 后面不能写任何代码
         }
@@ -215,7 +209,7 @@ namespace GameA.Game
         {
             if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
             {
-                EditMode.Instance.OnReadMapFile(unitDesc, tableUnit);
+                EditMode2.Instance.OnReadMapFile(unitDesc, tableUnit);
             }
             else
             {
@@ -225,11 +219,7 @@ namespace GameA.Game
 
         private void InitCreate()
         {
-            var mapWorldStartPos = GM2DTools.TileToWorld(ConstDefineGM2D.MapStartPos);
             DataScene2D.Instance.SetDefaultMapSize(_defaultMapSize * ConstDefineGM2D.ServerTileScale);
-            var go = new GameObject("EditMode");
-            var editMode = go.AddComponent<EditMode>();
-            editMode.Init();
             CreateDefaultScene();
             GenerateMap(0);
         }
@@ -238,14 +228,6 @@ namespace GameA.Game
         {
             PlayMode.Instance.SceneState.Init(mapData);
             DataScene2D.Instance.InitPlay(GM2DTools.ToEngine(mapData.ValidMapRect));
-            if (EditMode.Instance != null)
-            {
-                EditMode.Instance.Init();
-                if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
-                {
-                    EditMode.Instance.MapStatistics.InitWithMapData(mapData);
-                }
-            }
             GenerateMap(mapData.BgRandomSeed);
         }
 
@@ -273,7 +255,7 @@ namespace GameA.Game
                 unitObject.Guid = new IntVec3((2 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x),
                     (ConstDefineGM2D.DefaultGeneratedTileHeight + ConstDefineGM2D.MapStartPos.y),
                     (int) EUnitDepth.Dynamic);
-                EditMode.Instance.AddUnit(unitObject);
+                EditMode2.Instance.AddUnit(unitObject);
             }
             //生成胜利之门
             {
@@ -282,7 +264,7 @@ namespace GameA.Game
                 unitObject.Scale = Vector2.one;
                 unitObject.Guid = new IntVec3(12 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x,
                     ConstDefineGM2D.DefaultGeneratedTileHeight + ConstDefineGM2D.MapStartPos.y, 0);
-                EditMode.Instance.AddUnit(unitObject);
+                EditMode2.Instance.AddUnit(unitObject);
             }
             //生成地形
             var validMapRect = DataScene2D.Instance.ValidMapRect;
@@ -292,7 +274,7 @@ namespace GameA.Game
                     j < ConstDefineGM2D.DefaultGeneratedTileHeight + validMapRect.Min.y;
                     j += ConstDefineGM2D.ServerTileScale)
                 {
-                    EditMode.Instance.AddUnit(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0,
+                    EditMode2.Instance.AddUnit(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0,
                         Vector2.one));
                 }
             }
@@ -302,6 +284,10 @@ namespace GameA.Game
         {
             GenerateBg(randomSeed);
             CameraManager.Instance.OnMapReady();
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+            {
+                EditMode2.Instance.OnMapReady();
+            }
             _generateMapComplete = true;
         }
 

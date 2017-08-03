@@ -7,11 +7,8 @@
 
 using System;
 using System.Collections.Generic;
-using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
-using UnityEngine.Rendering;
-using Object = System.Object;
 
 namespace GameA.Game
 {
@@ -392,6 +389,11 @@ namespace GameA.Game
             get { return _unitDesc.Rotation; }
         }
 
+        public Vector2 Scale
+        {
+            get { return _unitDesc.Scale; }
+        }
+
         public int Id
         {
             get { return _tableUnit.Id; }
@@ -603,6 +605,10 @@ namespace GameA.Game
                     if (UnitDefine.IsPlant(Id))
                     {
                         _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsetsPlant[i] - _viewZOffset);
+                    }
+                    else if (UnitDefine.IsRevive(Id))
+                    {
+                        _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsetsRevive[i] - _viewZOffset);
                     }
                     else
                     {
@@ -941,8 +947,8 @@ namespace GameA.Game
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, size, _tableUnit);
                 }
             }
-            var halfSize = GetDataSize() / 2;
-            float z = -(_curPos.x + halfSize.x + _curPos.y + halfSize.y) * 0.00078125f+ _viewZOffset;
+            var halfTile = ConstDefineGM2D.ServerTileScale / 2;
+            float z = -(_curPos.x + halfTile + _curPos.y + halfTile) * 0.00078125f+ _viewZOffset;
             if (UnitDefine.IsDownY(_tableUnit))
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, -0.1f, z);
@@ -962,7 +968,7 @@ namespace GameA.Game
                 return;
             }
             //默认等同于此Unit
-            if (viewZOffset == 0)
+            if (Math.Abs(viewZOffset) < float.Epsilon)
             {
                 viewZOffset = _viewZOffset;
             }

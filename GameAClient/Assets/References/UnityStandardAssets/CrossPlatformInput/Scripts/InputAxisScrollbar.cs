@@ -1,6 +1,6 @@
 ﻿using UnityEngine.UI;
 
-namespace UnitySampleAssets.CrossPlatformInput
+namespace UnityStandardAssets.CrossPlatformInput
 {
     public class InputAxisScrollbar : Scrollbar
     {

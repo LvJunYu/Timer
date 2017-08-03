@@ -14,7 +14,7 @@ using GameA.Game;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlItem : UICtrlInGameBase<UIViewItem>
     {
         private EUIType _selectedUnitType;
@@ -50,7 +50,6 @@ namespace GameA
             _cachedView.CategoryButtns [3].onClick.AddListener (OnCollection);
             _cachedView.CategoryButtns [4].onClick.AddListener (OnDecoration);
             _cachedView.CategoryButtns [5].onClick.AddListener (OnControl);
-            InitUI();
         }
 
 		protected override void OnOpen(object parameter)
@@ -85,10 +84,11 @@ namespace GameA
 		    if (IsOpen)
 		    {
 //				UpdateTabbarState();
-                EUIType showType = EditMode.Instance.CurEditorLayer == EEditorLayer.Effect
-                    ? EUIType.Effect
-				    : _lastSelectUnitType;
-				RefreshView(showType);
+//                EUIType showType = EditMode.Instance.CurEditorLayer == EEditorLayer.Effect
+//                    ? EUIType.Effect
+//				    : _lastSelectUnitType;
+//				RefreshView(showType);
+				RefreshView(_lastSelectUnitType);
 			}
 	    }
 
@@ -163,7 +163,7 @@ namespace GameA
                 {
                     var umItem = PoolFactory<UMCtrlItem>.Get ();
                     umItem.Init(_cachedView.ScrollRect.content);
-                    umItem.Set(items[i], EditMode.Instance.SelectedItemId == items[i].Id);
+                    umItem.Set(items[i], EditMode2.Instance.BoardData.CurrentSelectedUnitId == items[i].Id);
                     _umItems.Add(umItem);
                 }
                 int itemCount = items.Count;
@@ -195,12 +195,6 @@ namespace GameA
 
         private void UpdateButtonShow()
         {
-//            var enumerator = _cachedButtonDic.GetEnumerator();
-//            while (enumerator.MoveNext())
-//            {
-//                var item = enumerator.Current.Value;
-//                item.GetComponent<Image>().SetSpriteEx(enumerator.Current.Key == _selectedUnitType ? SelectButtonSpriteName:NormalButtonSpriteName);
-//            }
             for (int i = 0; i < _cachedView.SelectedCategorys.Length; i++) {
                 if (_selectedUnitType == (EUIType)(i + 1)) {
                     _cachedView.SelectedCategorys [i].SetActive (true);
@@ -209,56 +203,6 @@ namespace GameA
                 }
             }
         }
-
-        private void InitUI()
-        {
-//            _cachedButtonDic = new Dictionary<EUIType, Button>();
-//            _cachedButtonDic.Add(EUIType.Decoration,_cachedView.Decoration);
-//            _cachedButtonDic.Add(EUIType.Collection, _cachedView.Collection);
-//            _cachedButtonDic.Add(EUIType.Earth, _cachedView.Earth);
-//            _cachedButtonDic.Add(EUIType.Actor, _cachedView.Actor);
-//            _cachedButtonDic.Add(EUIType.Mechanism, _cachedView.Mechanism);
-//            _cachedButtonDic.Add(EUIType.Controller, _cachedView.Monster);
-//			var enumerator = _cachedButtonDic.GetEnumerator();
-//			while (enumerator.MoveNext())
-//			{
-//				var item = enumerator.Current.Value;
-//				item.transition = Selectable.Transition.None;
-//			}
-
-//			float differ = 1/6f;
-//	        int index = 0;
-//			_cachedView.Actor.rectTransform().anchorMin = new Vector2(index * differ ,0);
-//			_cachedView.Actor.rectTransform().anchorMax = new Vector2((index+1) * differ, 1);
-//	        index ++;
-//			_cachedView.Earth.rectTransform().anchorMin = new Vector2(index * differ, 0);
-//			_cachedView.Earth.rectTransform().anchorMax = new Vector2((index + 1) * differ, 1);
-//	        index++;
-//			_cachedView.Mechanism.rectTransform().anchorMin = new Vector2(index * differ, 0);
-//			_cachedView.Mechanism.rectTransform().anchorMax = new Vector2((index + 1) * differ, 1);
-//			index++;
-//			_cachedView.Monster.rectTransform().anchorMin = new Vector2(index * differ, 0);
-//			_cachedView.Monster.rectTransform().anchorMax = new Vector2((index + 1) * differ, 1);
-//			index++;
-//			_cachedView.Collection.rectTransform().anchorMin = new Vector2(index * differ, 0);
-//			_cachedView.Collection.rectTransform().anchorMax = new Vector2((index + 1) * differ, 1);
-//			index++;
-//			_cachedView.Decoration.rectTransform().anchorMin = new Vector2(index * differ, 0);
-//			_cachedView.Decoration.rectTransform().anchorMax = new Vector2((index + 1) * differ, 1);
-//			index++;
-
-		}
-
-        public void OnSelectItemChanged(ushort id)
-        {
-//            _curSelectId = id;
-//            _dragController.SetCurSelectId(_curSelectId);
-//            UpdateCurSelectItemShow();
-        }
-//	    private void UpdateTabbarState()
-//	    {
-//		    _cachedView.EditorTabbarGo.SetActive(EditMode.Instance.CurEditorLayer != EEditorLayer.Effect);
-//	    }
 
 		#endregion
 	}

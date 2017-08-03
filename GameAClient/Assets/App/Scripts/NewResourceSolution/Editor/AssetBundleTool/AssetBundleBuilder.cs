@@ -24,6 +24,24 @@ namespace NewResourceSolution.EditorTool
             string path = string.Format(StringFormat.ThreeLevelPath, Application.dataPath, buildABConfig.OutputPath, "ServerVersionConfig");
 			FileTools.WriteStringToFile(str, path);
 		}
+
+		[MenuItem("JoyTools/AssetBundleTools/CheckAssetDumplicate")]
+		private static void CheckAssetDumplicate()
+		{
+			// load config
+			BuildABConfig buildABConfig = AssetDatabase.LoadAssetAtPath<BuildABConfig>(ABConstDefine.BuildABConfigAssetPath);
+			if (null == buildABConfig)
+			{
+				LogHelper.Error("Load buildABConfig asset failed.");
+				return;
+			}
+			System.Version resVersion = new System.Version(buildABConfig.Version);
+			CHBuildingResManifest manifest = new CHBuildingResManifest(resVersion);
+
+//			LogHelper.Info("Set asset bundle names...");
+			SetAssetBundleNames(buildABConfig, manifest);
+//			LogHelper.Info("Set bundle name complete.");
+		}
 			
         [MenuItem("JoyTools/AssetBundleTools/BuildAllAB_Windows64")]
         private static void BuildAllAB_Windows ()

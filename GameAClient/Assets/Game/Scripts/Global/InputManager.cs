@@ -31,6 +31,7 @@ namespace GameA.Game
         public event Action<Gesture> OnDragStart;
         public event Action<Gesture> OnDrag;
         public event Action<Gesture> OnDragEnd;
+        public event Action<Gesture> OnTap;
         /// <summary>
         /// Pos, Delta
         /// </summary>
@@ -144,9 +145,13 @@ namespace GameA.Game
             {
                 EasyTouch.On_TouchDown -= EasyTouchOnOnTouchDown;
                 EasyTouch.On_TouchUp -= EasyTouchOnOnTouchUp;
+                
                 EasyTouch.On_Pinch -= EasyTouchOnOnPinch;
                 EasyTouch.On_PinchEnd -= EasyTouchOnOnPinchEnd;
                 EasyTouch.On_DragStart -= EasyTouchOnOnDragStart;
+                EasyTouch.On_Drag -= EasyTouchOnOnDrag;
+                EasyTouch.On_DragEnd -= EasyTouchOnOnDragEnd;
+                EasyTouch.On_SimpleTap -= EasyTouchOnSimpleTap;
                 _instance = null;
             }
         }
@@ -155,15 +160,27 @@ namespace GameA.Game
         {
             _easyTouchObject = new GameObject("EasyTouch");
             _easyTouchObject.AddComponent<EasyTouch>();
+            EasyTouch.SetEnable2DCollider(true);
+            EasyTouch.AddCamera(CameraManager.Instance.RendererCamera);
+            
+            
             EasyTouch.On_TouchDown += EasyTouchOnOnTouchDown;
             EasyTouch.On_TouchUp += EasyTouchOnOnTouchUp;
+            
             EasyTouch.On_Pinch += EasyTouchOnOnPinch;
             EasyTouch.On_PinchEnd += EasyTouchOnOnPinchEnd;
             EasyTouch.On_DragStart += EasyTouchOnOnDragStart;
             EasyTouch.On_Drag += EasyTouchOnOnDrag;
             EasyTouch.On_DragEnd += EasyTouchOnOnDragEnd;
-            EasyTouch.SetEnable2DCollider(true);
-            EasyTouch.AddCamera(CameraManager.Instance.RendererCamera);
+            EasyTouch.On_SimpleTap += EasyTouchOnSimpleTap;
+        }
+
+        private void EasyTouchOnSimpleTap(Gesture gesture)
+        {
+            if (null != OnTap)
+            {
+                OnTap.Invoke(gesture);
+            }
         }
 
         private void EasyTouchOnOnDragEnd(Gesture gesture)

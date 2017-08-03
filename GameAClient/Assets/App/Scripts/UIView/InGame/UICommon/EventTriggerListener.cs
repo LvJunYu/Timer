@@ -7,60 +7,54 @@
 
 
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 namespace SoyEngine
 {
     public class EventTriggerListener : EventTrigger
     {
-        public delegate void VoidDelegate(GameObject go);
-
-        public VoidDelegate onClick;
-        public VoidDelegate onDown;
-        public VoidDelegate onEnter;
-        public VoidDelegate onExit;
-        public VoidDelegate onSelect;
-        public VoidDelegate onUp;
-        public VoidDelegate onUpdateSelect;
-
         public static EventTriggerListener Get(GameObject go)
         {
-            return go.GetComponent<EventTriggerListener>() ?? go.AddComponent<EventTriggerListener>();
+            EventTriggerListener eventTriggerListener = go.GetComponent<EventTriggerListener>()
+                                                        ?? go.AddComponent<EventTriggerListener>();
+            return eventTriggerListener;
+        }
+        
+        public void AddListener(EventTriggerType type, UnityAction<BaseEventData> call)
+        {
+            var te = triggers.Find(t => t.eventID == type);
+            if (null == te)
+            {
+                te = new Entry {eventID = type};
+                triggers.Add(te);
+            }
+            te.callback.AddListener(call);
+        }
+        
+        public void RemoveListener(EventTriggerType type, UnityAction<BaseEventData> call)
+        {
+            Entry te = triggers.Find(t => t.eventID == type);
+            if (null == te)
+            {
+                return;
+            }
+            te.callback.RemoveListener(call);
         }
 
-        public override void OnPointerClick(PointerEventData eventData)
+        public void RemoveAllListener(EventTriggerType type)
         {
-            if (onClick != null) onClick(gameObject);
+            Entry te = triggers.Find(t => t.eventID == type);
+            if (null == te)
+            {
+                return;
+            }
+            te.callback.RemoveAllListeners();
         }
 
-        public override void OnPointerDown(PointerEventData eventData)
+        public void RemoveAllListener()
         {
-            if (onDown != null) onDown(gameObject);
-        }
-
-        public override void OnPointerEnter(PointerEventData eventData)
-        {
-            if (onEnter != null) onEnter(gameObject);
-        }
-
-        public override void OnPointerExit(PointerEventData eventData)
-        {
-            if (onExit != null) onExit(gameObject);
-        }
-
-        public override void OnPointerUp(PointerEventData eventData)
-        {
-            if (onUp != null) onUp(gameObject);
-        }
-
-        public override void OnSelect(BaseEventData eventData)
-        {
-            if (onSelect != null) onSelect(gameObject);
-        }
-
-        public override void OnUpdateSelected(BaseEventData eventData)
-        {
-            if (onUpdateSelect != null) onUpdateSelect(gameObject);
+            triggers.Clear();
         }
     }
 }

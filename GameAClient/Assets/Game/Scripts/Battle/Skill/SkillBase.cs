@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using SoyEngine;
+using Spine.Unity.MeshGeneration;
 using UnityEngine;
 
 namespace GameA.Game
@@ -82,6 +83,11 @@ namespace GameA.Game
         public int ProjectileSpeed
         {
             get { return _projectileSpeed; }
+        }
+
+        public bool IsBig
+        {
+            get { return RpCost > 0; }
         }
 
         public SkillBase(int id, UnitBase ower)
@@ -194,6 +200,12 @@ namespace GameA.Game
 
         public virtual void OnProjectileHit(ProjectileBase projectile)
         {
+            //生成陷阱
+            if (_tableSkill.TrapId > 0)
+            {
+                LogHelper.Debug("AddTrap {0}",_tableSkill.TrapId);
+                PlayMode.Instance.AddTrap(_tableSkill.TrapId);
+            }
             List<UnitBase> units = null;
             switch ((EEffcetMode)_tableSkill.EffectMode)
             {
@@ -252,11 +264,6 @@ namespace GameA.Game
                 {
                     unit.AddStates(_tableSkill.TriggerStates[i]);
                 }
-            }
-            //生成陷阱
-            if (_tableSkill.TrapId > 0)
-            {
-                PlayMode.Instance.AddTrap(_tableSkill.TrapId);
             }
             var forces = _tableSkill.KnockbackForces;
             if (forces.Length == 2)

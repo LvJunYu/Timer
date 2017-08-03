@@ -110,13 +110,13 @@ namespace GameA.Game
 			_skeletonName = "MainBoy0";
 			_skeleton = _skeletonAnimation.skeleton;
 			if (_skeleton == null) {
-				LogHelper.Error("Try get skeleton failed when init {0}", _unit.TableUnit.Name);
+				LogHelper.Error("Try get skeleton failed when init home avatar");
 				return false;
 			}
 			string baseSkinName = string.Format("Skin_{0}_0", _skeletonName);
 			_baseSkin = _skeleton.data.FindSkin(baseSkinName);
 			if (_baseSkin == null) {
-				LogHelper.Error("Try get default skin failed when init {0}", _unit.TableUnit.Name);
+				LogHelper.Error("Try get default skin failed when init home avatar");
 				return false;
 			}
 			_dynamicSkin = _skeleton.data.FindSkin("DynamicSkin");

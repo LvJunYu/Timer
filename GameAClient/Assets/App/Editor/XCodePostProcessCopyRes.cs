@@ -18,25 +18,25 @@ public static class XCodePostProcessCopyRes
 	public const string ResSubPath = "{0}/GameDesigner/AppGame/Resources/Ios";
 
 
-	[PostProcessBuild(100)]
-	public static void OnPostProcessBuild(BuildTarget target, string pathToBuiltProject)
-	{
-		if (target != BuildTarget.iOS)
-		{
-			return;
-		}
-		string dstPath = string.Format(CopyResSubPath, pathToBuiltProject);
-		DirectoryInfo dstDir = new DirectoryInfo(dstPath);
-		if (!dstDir.Exists)
-		{
-			dstDir.Create();
-		}
-		DirectoryInfo projectInfo = new DirectoryInfo(Application.dataPath).Parent.Parent.Parent.Parent;
-		string resPath = string.Format(ResSubPath, ReplaceBackSlash(projectInfo.FullName));
-		DirectoryInfo resDir = new DirectoryInfo(resPath);
-		CopyDir(resDir.FullName, dstDir.FullName);
-		Debug.Log("Copy res to xcodeProject success!");
-	}
+//	[PostProcessBuild(100)]
+//	public static void OnPostProcessBuild(BuildTarget target, string pathToBuiltProject)
+    //  {
+//      if (target != BuildTarget.iOS)
+//		{
+//			return;
+//		}
+//		string dstPath = string.Format(CopyResSubPath, pathToBuiltProject);
+//		DirectoryInfo dstDir = new DirectoryInfo(dstPath);
+//		if (!dstDir.Exists)
+//		{
+//			dstDir.Create();
+//		}
+//		DirectoryInfo projectInfo = new DirectoryInfo(Application.dataPath).Parent.Parent.Parent.Parent;
+//		string resPath = string.Format(ResSubPath, ReplaceBackSlash(projectInfo.FullName));
+//		DirectoryInfo resDir = new DirectoryInfo(resPath);
+//		CopyDir(resDir.FullName, dstDir.FullName);
+//		Debug.Log("Copy res to xcodeProject success!");
+//	}
 
 
 	private static string ReplaceBackSlash(string str)

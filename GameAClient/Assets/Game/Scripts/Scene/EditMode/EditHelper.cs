@@ -23,6 +23,13 @@ namespace GameA.Game
         private static Dictionary<int, UnitDesc> _replaceUnits = new Dictionary<int, UnitDesc>();
         private static Dictionary<int, int> _unitIndexCount = new Dictionary<int, int>();
         private static List<UnitDesc> _cacheUnitDescs = new List<UnitDesc>();
+        private static List<byte> _directionList = new List<byte>()
+        {
+            (byte)EDirectionType.Up,
+            (byte)EDirectionType.Right,
+            (byte)EDirectionType.Down,
+            (byte)EDirectionType.Left,
+        };
         
         /// <summary>
         /// 每个物体的初始旋转/移动方向，编辑状态下点击物品栏里的物体可以改变初始旋转/移动方向
@@ -93,7 +100,7 @@ namespace GameA.Game
             byte newDir;
             if (table.CanMove)
             {
-                if (ClickItemCommand.CalculateNextDir((byte) (current - 1), table.MoveDirectionMask, out newDir))
+                if (CalculateNextDir((byte) (current - 1), table.MoveDirectionMask, out newDir))
                 {
                     _unitOrigDirOrRot[table.Id] = newDir + 1;
                 }
@@ -101,7 +108,7 @@ namespace GameA.Game
             }
             if (table.CanRotate)
             {
-                if (ClickItemCommand.CalculateNextDir((byte) (current), table.RotationMask, out newDir))
+                if (CalculateNextDir((byte) (current), table.RotationMask, out newDir))
                 {
                     _unitOrigDirOrRot[table.Id] = newDir;
                 }
@@ -109,12 +116,106 @@ namespace GameA.Game
             }
             if (table.Id == UnitDefine.RollerId)
             {
-                if (ClickItemCommand.CalculateNextDir((byte) (current - 1), 10, out newDir))
+                if (CalculateNextDir((byte) (current - 1), 10, out newDir))
                 {
                     _unitOrigDirOrRot[table.Id] = newDir + 1;
                 }
                 return;
             }
+        }
+        
+        public static bool CalculateNextDir(byte curValue, int mask, out byte dir)
+        {
+            if (!CheckDirectionValid(curValue))
+            {
+                dir = 0;
+                return false;
+            }
+            dir = 0;
+            int index = 0;
+            bool hasFind = false;
+            bool res = false;
+            while (index < 8)
+            {
+                dir = GetRepeatDirByIndex(index);
+                if (hasFind)
+                {
+                    if (dir == curValue)
+                    {
+                        break;
+                    }
+                    if (CheckMask(dir, mask))
+                    {
+                        res = true;
+                        break;
+                    }
+                }
+                else
+                {
+                    if (dir == curValue)
+                    {
+                        hasFind = true;
+                    }
+                }
+                index++;
+            }
+            return res;
+        }
+        
+        protected static bool CheckDirectionValid(byte value)
+        {
+            return value == (byte)EDirectionType.Up ||
+                   value == (byte)EDirectionType.Right ||
+                   value == (byte)EDirectionType.Down ||
+                   value == (byte)EDirectionType.Left;
+        }
+        
+        protected static byte GetRepeatDirByIndex(int index)
+        {
+            int realIndex = index % 4;
+            return _directionList[realIndex];
+        }
+        
+        public static bool CheckCanAddChild(Table_Unit child, UnitDesc parent)
+        {
+            if (child == null || parent == UnitDesc.zero)
+            {
+                return false;
+            }
+            Table_Unit tableParent = UnitManager.Instance.GetTableUnit(parent.Id);
+            if (tableParent == null)
+            {
+                return false;
+            }
+            // check if parent and child in same group
+            if ((child.ChildType & tableParent.ParentType) == 0)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public static bool CheckCanBindMagic(Table_Unit child, UnitDesc parent)
+        {
+            if (child == null || parent == UnitDesc.zero)
+            {
+                return false;
+            }
+            Table_Unit tableParent = UnitManager.Instance.GetTableUnit(parent.Id);
+            if (tableParent == null)
+            {
+                return false;
+            }
+            if (child.Id == UnitDefine.BlueStoneId && tableParent.OriginMagicDirection != 0)
+            {
+                return true;
+            }
+            return false;
+        }
+        
+        public static bool CheckMask(byte rotation,int mask)
+        {
+            return (mask & (byte)(1 << rotation)) != 0;
         }
         
         public static void Clear()
@@ -214,7 +315,7 @@ namespace GameA.Game
                 {
                     if (desc.Id != 0)
                     {
-                        EditMode.Instance.DeleteUnit(desc);
+                        EditMode2.Instance.DeleteUnit(desc);
                     }
                 }
             }
@@ -249,7 +350,7 @@ namespace GameA.Game
                 _unitIndexCount[unitDesc.Id] += 1;
                 Messenger<int>.Broadcast(EMessengerType.OnUnitAddedInEditMode, unitDesc.Id);
             }
-            EditMode.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, true, isInit);
+            EditMode2.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, true, isInit);
         }
 
         public static List<UnitDesc> BeforeDeleteUnit(UnitDesc unitDesc)
@@ -283,7 +384,7 @@ namespace GameA.Game
                 }
                 Messenger<int>.Broadcast(EMessengerType.OnUnitAddedInEditMode, unitDesc.Id);
             }
-            EditMode.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, false);
+            EditMode2.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, false);
         }
 
         public static bool TryGetReplaceUnit(int id, out UnitDesc outUnitDesc)
@@ -305,7 +406,7 @@ namespace GameA.Game
             UnitBase unit;
             return !ColliderScene2D.Instance.TryGetUnit(pos, out unit);
         }
-
+        
         public static void InitUnitExtraEdit(UnitDesc unitDesc, Table_Unit tableUnit)
         {
 //            if (tableUnit.CanMove)

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
-using UnitySampleAssets.CrossPlatformInput;
+using UnityStandardAssets.CrossPlatformInput;
 
 public class AxisTouchButton : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler {
 

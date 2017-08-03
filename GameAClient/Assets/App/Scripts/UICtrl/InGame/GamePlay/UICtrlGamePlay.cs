@@ -46,10 +46,10 @@ namespace GameA
         {
             for (Game.EWinCondition i = 0; i < Game.EWinCondition.Max; i++)
             {
-				EditMode.Instance.MapStatistics.SetWinCondition(i, _curCondition.SettingValue[(int)i]);
+				EditMode2.Instance.MapStatistics.SetWinCondition(i, _curCondition.SettingValue[(int)i]);
             }
-            EditMode.Instance.MapStatistics.TimeLimit = _curCondition.TimeLimit;
-			EditMode.Instance.MapStatistics.LifeCount = _curCondition.LifeCount;
+            EditMode2.Instance.MapStatistics.TimeLimit = _curCondition.TimeLimit;
+			EditMode2.Instance.MapStatistics.LifeCount = _curCondition.LifeCount;
             SocialGUIManager.Instance.CloseUI<UICtrlGamePlay>();
 			GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioWindowClosed);
         }
@@ -104,10 +104,10 @@ namespace GameA
         {
             for (Game.EWinCondition i = 0; i < Game.EWinCondition.Max; i++)
             {
-                _curCondition.SettingValue[(int) i] = EditMode.Instance.MapStatistics.HasWinCondition(i);
+                _curCondition.SettingValue[(int) i] = EditMode2.Instance.MapStatistics.HasWinCondition(i);
             }
-            _curCondition.TimeLimit = EditMode.Instance.MapStatistics.TimeLimit;
-			_curCondition.LifeCount = EditMode.Instance.MapStatistics.LifeCount;
+            _curCondition.TimeLimit = EditMode2.Instance.MapStatistics.TimeLimit;
+			_curCondition.LifeCount = EditMode2.Instance.MapStatistics.LifeCount;
 		}
 
 		private void UpdateUIItem()

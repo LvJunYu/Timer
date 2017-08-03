@@ -5,7 +5,6 @@
 ** Summary : ICommand
 ***********************************************************************/
 
-using System;
 using UnityEngine;
 
 namespace GameA.Game

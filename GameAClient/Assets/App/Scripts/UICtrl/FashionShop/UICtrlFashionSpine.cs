@@ -5,6 +5,9 @@ using UnityEngine.UI;
 using SoyEngine.Proto;
 //using SoyEngine;
 using GameA.Game;
+using NewResourceSolution;
+using Spine;
+using Spine.Unity;
 
 namespace GameA
 {
@@ -66,6 +69,10 @@ namespace GameA
             AvatarRenderTexture = new RenderTexture(256, 512, 0);
             _cachedView.AvatarRenderCamera.targetTexture = AvatarRenderTexture;
             _cachedView.AvatarImage.texture = _cachedView.AvatarRenderCamera.targetTexture;
+
+            _cachedView.PlayerAvatarAnimation.skeletonDataAsset =
+                ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, "MainBoy0_SkeletonData", 1);
+            _cachedView.PlayerAvatarAnimation.Initialize(false);
             _avatarView = new ChangePartsSpineView();
             _avatarView.HomePlayerAvatarViewInit(_cachedView.PlayerAvatarAnimation);
             _cachedView.AvatarImage.SetActiveEx(false);
