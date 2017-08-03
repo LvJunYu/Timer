@@ -218,6 +218,10 @@ namespace GameA.Game
                 _target.Animation.Reset();
                 _target.Animation.PlayLoop(_tableState.Animation, 1, 1);
             }
+            if (_tableState.StateType == (int)EStateType.Fire)
+            {
+                _target.View.SetRendererColor(Color.grey);
+            }
         }
 
         private void OnRemovedView()
@@ -227,7 +231,7 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_tableState.StateType == (int)EStateType.Invincible)
+            if (_tableState.StateType == (int)EStateType.Invincible || _tableState.StateType == (int)EStateType.Fire)
             {
                 view.SetRendererColor(Color.white);
             }
