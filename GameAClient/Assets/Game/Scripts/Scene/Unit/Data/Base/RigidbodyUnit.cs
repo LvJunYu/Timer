@@ -32,7 +32,7 @@ namespace GameA.Game
         [SerializeField] protected IntVec2 _fanForce;
         protected Dictionary<IntVec3, IntVec2> _fanForces = new Dictionary<IntVec3, IntVec2>();
         protected const float SpeedClayRatio = 0.2f;
-        protected const float SpeedFireRatio = 1.5f;
+        protected const float SpeedFireRatio = 1.8f;
         protected const float SpeedHoldingBoxRatio = 0.3f;
 
         public bool OnClay

@@ -15,6 +15,7 @@ namespace GameA.Game
     public class MonsterBase : ActorBase
     {
         protected IntVec2 _lastPos;
+        protected int _fireTimer;
 
         protected override bool IsCheckClimb()
         {
@@ -48,6 +49,7 @@ namespace GameA.Game
             _lastPos = _curPos;
             _input = _input ?? new InputBase();
             _input.Clear();
+            _fireTimer = 0;
         }
 
         protected override void CalculateMotor()
@@ -57,9 +59,11 @@ namespace GameA.Game
             {
                 _speedRatio *= SpeedFireRatio;
                 OnFire();
+                ChangeState(EMonsterState.None);
             }
             else
             {
+                _fireTimer = 0;
                 UpdateMonsterAI();
             }
             if (_grounded)
@@ -79,22 +83,23 @@ namespace GameA.Game
             }
         }
 
-        protected virtual void OnFire()
+        protected virtual void ChangeState(EMonsterState state)
         {
-//            if (_curMoveDirection == EMoveDirection.Right)
-//            {
-//                SpeedX = Util.ConstantLerp(SpeedX, _curMaxSpeedX, _curFriction);
-//            }
-//            else
-//            {
-//                SpeedX = Util.ConstantLerp(SpeedX, -_curMaxSpeedX, _curFriction);
-//            }
-            //碰到墙壁转头
-            CheckWay();
+            //LogHelper.Debug("ChangeState : {0}", _eState);
         }
 
         protected virtual void UpdateMonsterAI()
         {
+        }
+
+        protected virtual void OnFire()
+        {
+            _fireTimer++;
+            if (_fireTimer % 80 == 0)
+            {
+                ChangeWay(_curMoveDirection == EMoveDirection.Left ? EMoveDirection.Right : EMoveDirection.Left);
+            }
+            CheckWay();
         }
 
         protected override void UpdateDynamicView(float deltaTime)
@@ -150,10 +155,12 @@ namespace GameA.Game
             {
                 if (_curMoveDirection == EMoveDirection.Left && _hitUnits[(int)EDirectionType.Left] != null)
                 {
+                    _fireTimer = 0;
                     return ChangeWay(EMoveDirection.Right);
                 }
                 else if (_curMoveDirection == EMoveDirection.Right && _hitUnits[(int)EDirectionType.Right] != null)
                 {
+                    _fireTimer = 0;
                     return ChangeWay(EMoveDirection.Left);
                 }
             }
@@ -166,11 +173,9 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (_curMaxSpeedX != 0)
-            {
-                SpeedX = eMoveDirection == EMoveDirection.Right ? _curMaxSpeedX : -_curMaxSpeedX;
-            }
-            SetFacingDir(eMoveDirection);
+            LogHelper.Debug("ChangeWay {0}", eMoveDirection);
+            SetInput(eMoveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
+            SetInput(eMoveDirection == EMoveDirection.Right ? EInputType.Left : EInputType.Right, false);
             return true;
         }
 

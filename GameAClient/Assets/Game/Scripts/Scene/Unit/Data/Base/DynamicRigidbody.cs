@@ -70,8 +70,10 @@ namespace GameA.Game
         public override void UpdateLogic()
         {
             base.UpdateLogic();
+
             if (_isAlive && _isStart && !_isFreezed)
             {
+                UpdateData();
                 if (IsCheckGround())
                 {
                     CheckGround();
@@ -86,7 +88,11 @@ namespace GameA.Game
                 }
             }
         }
-        
+
+        protected virtual void UpdateData()
+        {
+        }
+
         protected virtual void CheckGround()
         {
             bool air = false;

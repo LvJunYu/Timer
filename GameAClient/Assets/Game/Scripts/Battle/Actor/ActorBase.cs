@@ -90,43 +90,38 @@ namespace GameA.Game
             _hasWaterCheckedInFrame = false;
         }
 
-        public override void UpdateLogic()
+        protected override void UpdateData()
         {
-            if (_isAlive && _isStart && !_isFreezed)
+            if (_stunTimer > 0)
             {
-                if (_stunTimer > 0)
+                _stunTimer--;
+            }
+            if (!IsStunning)
+            {
+                if (_input != null)
                 {
-                    _stunTimer--;
+                    UpdateInput();
                 }
-                if (!IsStunning)
+                if (_skillCtrl != null)
                 {
-                    if (_input != null)
-                    {
-                        UpdateInputLogic();
-                    }
-                    if (_skillCtrl != null)
-                    {
-                        _skillCtrl.UpdateLogic();
-                    }
-                }
-                if (_jumpTimer > 0)
-                {
-                    _jumpTimer--;
-                }
-                if ((_jumpTimer == 0 && SpeedY > 0) || SpeedY < 0)
-                {
-                    _jumpState = EJumpState.Fall;
-                }
-
-                for (int i = 0; i < _currentStates.Count; i++)
-                {
-                    _currentStates[i].UpdateLogic();
+                    _skillCtrl.UpdateLogic();
                 }
             }
-            base.UpdateLogic();
+            if (_jumpTimer > 0)
+            {
+                _jumpTimer--;
+            }
+            if ((_jumpTimer == 0 && SpeedY > 0) || SpeedY < 0)
+            {
+                _jumpState = EJumpState.Fall;
+            }
+            for (int i = 0; i < _currentStates.Count; i++)
+            {
+                _currentStates[i].UpdateLogic();
+            }
         }
 
-        public void UpdateInputLogic()
+        public void UpdateInput()
         {
             if (!PlayMode.Instance.SceneState.GameRunning)
             {
@@ -340,12 +335,18 @@ namespace GameA.Game
                 state = PoolFactory<State>.Get();
                 if (state.OnAttached(tableState, this))
                 {
+                    OnAddState(state);
                     _currentStates.Add(state);
                     _currentStates.Sort(_comparisonState);
                     continue;
                 }
                 PoolFactory<State>.Free(state);
             }
+        }
+
+        protected virtual void OnAddState(State state)
+        {
+   
         }
 
         public override void RemoveStates(params int[] ids)

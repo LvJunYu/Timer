@@ -40,8 +40,6 @@ namespace GameA.Game
         protected int _reSeekTimer;
         protected int _attackTimer;
 
-        protected int _curFriction;
-
         protected override bool OnInit()
         {
             if (!base.OnInit())
@@ -62,7 +60,6 @@ namespace GameA.Game
             _thinkTimer = 0;
             _stuckTimer = 0;
             _reSeekTimer = 0;
-            _curFriction = _friction;
             _attackTimer = 0;
             base.Clear();
         }
@@ -113,7 +110,7 @@ namespace GameA.Game
             }
         }
 
-        private void ChangeState(EMonsterState state)
+        protected override void ChangeState(EMonsterState state)
         {
             _eState = state;
             //LogHelper.Debug("ChangeState : {0}", _eState);
