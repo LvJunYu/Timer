@@ -2,7 +2,7 @@
 using System.Collections;
 using SoyEngine;
 using SoyEngine.Proto;
-using UnitySampleAssets.CrossPlatformInput;
+using UnityStandardAssets.CrossPlatformInput;
 using GameA.Game;
 
 namespace GameA
@@ -112,30 +112,30 @@ namespace GameA
 #if MOBILE_INPUT
             //_joystick.onMove.AddListener(OnJoystickMove);
             //_joystick.onMoveEnd.AddListener(OnJoystickMoveEnd);
-            for (int i = 0; i < _jumpBtns.Length; i++) {
-                if (_jumpBtns [i] != null)
-                    _jumpBtns[i].onDown.AddListener (OnJumpBtnDown);
-            }
-            for (int i = 0; i < _jumpBtns.Length; i++) {
-                if (_jumpBtns [i] != null)
-                _jumpBtns[i].onUp.AddListener (OnJumpBtnUp);
-            }
-            for (int i = 0; i < _fire1Btns.Length; i++) {
-                if (_fire1Btns [i] != null)
-                _fire1Btns[i].onDown.AddListener (OnFire1BtnDown);
-            }
-            for (int i = 0; i < _fire1Btns.Length; i++) {
-                if (_fire1Btns [i] != null)
-                _fire1Btns[i].onUp.AddListener (OnFire1BtnUp);
-            }
-            for (int i = 0; i < _fire2Btns.Length; i++) {
-                if (_fire2Btns [i] != null)
-                _fire2Btns [i].onDown.AddListener (OnFire2BtnDown);
-            }
-            for (int i = 0; i < _fire2Btns.Length; i++) {
-                if (_fire2Btns [i] != null)
-                _fire2Btns [i].onUp.AddListener (OnFire2BtnUp);
-            }
+//            for (int i = 0; i < _jumpBtns.Length; i++) {
+//                if (_jumpBtns [i] != null)
+//                    _jumpBtns[i].onDown.AddListener (OnJumpBtnDown);
+//            }
+//            for (int i = 0; i < _jumpBtns.Length; i++) {
+//                if (_jumpBtns [i] != null)
+//                _jumpBtns[i].onUp.AddListener (OnJumpBtnUp);
+//            }
+//            for (int i = 0; i < _fire1Btns.Length; i++) {
+//                if (_fire1Btns [i] != null)
+//                _fire1Btns[i].onDown.AddListener (OnFire1BtnDown);
+//            }
+//            for (int i = 0; i < _fire1Btns.Length; i++) {
+//                if (_fire1Btns [i] != null)
+//                _fire1Btns[i].onUp.AddListener (OnFire1BtnUp);
+//            }
+//            for (int i = 0; i < _fire2Btns.Length; i++) {
+//                if (_fire2Btns [i] != null)
+//                _fire2Btns [i].onDown.AddListener (OnFire2BtnDown);
+//            }
+//            for (int i = 0; i < _fire2Btns.Length; i++) {
+//                if (_fire2Btns [i] != null)
+//                _fire2Btns [i].onUp.AddListener (OnFire2BtnUp);
+//            }
 #endif
 
             for (int i = 0; i < _cachedView.LeftButtons.Length; i++) {
@@ -193,30 +193,30 @@ namespace GameA
             base.OnDestroy();
 #if MOBILE_INPUT
             //_joystick.onMove.RemoveAllListeners();
-            for (int i = 0; i < _fire1Btns.Length; i++) {
-                if (_fire1Btns [i] != null)
-                _fire1Btns[i].onDown.RemoveAllListeners ();
-            }
-            for (int i = 0; i < _fire1Btns.Length; i++) {
-                if (_fire1Btns [i] != null)
-                _fire1Btns[i].onUp.RemoveAllListeners ();
-            }
-            for (int i = 0; i < _fire2Btns.Length; i++) {
-                if (_fire2Btns [i] != null)
-                _fire2Btns [i].onDown.RemoveAllListeners ();
-            }
-            for (int i = 0; i < _fire2Btns.Length; i++) {
-                if (_fire2Btns [i] != null)
-                _fire2Btns [i].onUp.RemoveAllListeners ();
-            }
-            for (int i = 0; i < _jumpBtns.Length; i++) {
-                if (_jumpBtns [i] != null)
-                _jumpBtns[i].onDown.RemoveAllListeners ();
-            }
-            for (int i = 0; i < _jumpBtns.Length; i++) {
-                if (_jumpBtns [i] != null)
-                _jumpBtns[i].onUp.RemoveAllListeners ();
-            }
+//            for (int i = 0; i < _fire1Btns.Length; i++) {
+//                if (_fire1Btns [i] != null)
+//                _fire1Btns[i].onDown.RemoveAllListeners ();
+//            }
+//            for (int i = 0; i < _fire1Btns.Length; i++) {
+//                if (_fire1Btns [i] != null)
+//                _fire1Btns[i].onUp.RemoveAllListeners ();
+//            }
+//            for (int i = 0; i < _fire2Btns.Length; i++) {
+//                if (_fire2Btns [i] != null)
+//                _fire2Btns [i].onDown.RemoveAllListeners ();
+//            }
+//            for (int i = 0; i < _fire2Btns.Length; i++) {
+//                if (_fire2Btns [i] != null)
+//                _fire2Btns [i].onUp.RemoveAllListeners ();
+//            }
+//            for (int i = 0; i < _jumpBtns.Length; i++) {
+//                if (_jumpBtns [i] != null)
+//                _jumpBtns[i].onDown.RemoveAllListeners ();
+//            }
+//            for (int i = 0; i < _jumpBtns.Length; i++) {
+//                if (_jumpBtns [i] != null)
+//                _jumpBtns[i].onUp.RemoveAllListeners ();
+//            }
             Messenger<int, int>.RemoveListener (EMessengerType.OnSkillChanged, OnSkillChanged);
             Messenger<int, int>.RemoveListener (EMessengerType.OnAmmoChanged, OnAmmoChanged);
             Messenger.RemoveListener (EMessengerType.OnPlay, OnGameRestart);

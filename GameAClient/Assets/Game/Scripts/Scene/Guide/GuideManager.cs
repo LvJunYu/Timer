@@ -2,7 +2,7 @@
 using UnityEngine;
 using System.Collections;
 using SoyEngine;
-using UnitySampleAssets.CrossPlatformInput;
+using UnityStandardAssets.CrossPlatformInput;
 
 namespace GameA.Game
 {

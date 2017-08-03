@@ -130,7 +130,7 @@ namespace GameA
 
 	    public void ShowAppView()
 		{
-			JoyNativeTool.Instance.SetStatusBarShow (true);
+//			JoyNativeTool.Instance.SetStatusBarShow (true);
 			OpenUI<UICtrlTaskbar>();//.ShowDefaultPage();
             OpenUI<UICtrlFashionSpine>();
             Messenger.AddListener(EMessengerType.OnEscapeClick, OnEscapeClick);
@@ -156,7 +156,7 @@ namespace GameA
             {
                 return;
             }
-            JoyNativeTool.Instance.SetStatusBarShow(false);
+//            JoyNativeTool.Instance.SetStatusBarShow(false);
             Messenger.RemoveListener(EMessengerType.OnEscapeClick, OnEscapeClick);
             Application.targetFrameRate = 60;
             ScreenOrientation so = GameManager.Instance.CurrentGame.ScreenOrientation;
@@ -196,7 +196,7 @@ namespace GameA
             Application.targetFrameRate = 60;
 
             _currentMode = EMode.App;
-			JoyNativeTool.Instance.SetStatusBarShow(true);
+//			JoyNativeTool.Instance.SetStatusBarShow(true);
 			CanvasScaler cs = _uiRoot.GetComponent<CanvasScaler>();
 			if (cs)
 			{

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-namespace UnitySampleAssets.CrossPlatformInput
+namespace UnityStandardAssets.CrossPlatformInput
 {
 	#if UNITY_EDITOR
 	using UnityEditor;

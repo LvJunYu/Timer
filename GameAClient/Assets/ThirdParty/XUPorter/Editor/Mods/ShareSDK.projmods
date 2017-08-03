@@ -98,7 +98,7 @@
             "storykompassauth"
         ],
         "NSAppTransportSecurity": {
-            "NSAllowsArbitraryLoads": false,
+            "NSAllowsArbitraryLoads": true,
             "NSExceptionDomains": {
                 "qq.com": {
                     "NSIncludesSubdomains": true,

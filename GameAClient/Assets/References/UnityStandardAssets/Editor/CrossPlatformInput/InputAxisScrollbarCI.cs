@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEditor.UI;
 
-namespace UnitySampleAssets.CrossPlatformInput.Inspector
+namespace UnityStandardAssets.CrossPlatformInput.Inspector
 {
     [CustomEditor(typeof (InputAxisScrollbar))]
     public class InputAxisScrollbarCI : ScrollbarEditor

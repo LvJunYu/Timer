@@ -1,11 +1,11 @@
 using System;
 using GameA.Game;
 using UnityEngine;
-using UnitySampleAssets.CrossPlatformInput.PlatformSpecific;
+using UnityStandardAssets.CrossPlatformInput.PlatformSpecific;
 using PlayMode = GameA.Game.PlayMode;
 
 
-namespace UnitySampleAssets.CrossPlatformInput
+namespace UnityStandardAssets.CrossPlatformInput
 {
     public static class CrossPlatformInputManager
     {

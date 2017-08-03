@@ -1,7 +1,7 @@
 using UnityEditor;
 using System.Collections.Generic;
 
-namespace UnitySampleAssets.CrossPlatformInput.Inspector
+namespace UnityStandardAssets.CrossPlatformInput.Inspector
 {
     [InitializeOnLoad]
     public class CrossPlatformInitialize
