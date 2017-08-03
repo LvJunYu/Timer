@@ -1,4 +1,5 @@
 ﻿using System;
+using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -58,7 +59,7 @@ namespace GameA.Game
         public void SetOrthoSize(float size)
         {
             size = Mathf.Clamp(size, _curMinCameraOrthoSizeLimited, _curMaxCameraOrthoSizeLimited);
-            _cameraManager.RendererCamera.orthographicSize = size;
+            ChangeCameraPos(size);
             FireOnOrthoSizeChange();
             _curState = ESpingState.None;
         }
@@ -73,7 +74,7 @@ namespace GameA.Game
             {
                 return;
             }
-            _cameraManager.RendererCamera.orthographicSize = newValue;
+            ChangeCameraPos(newValue);
             FireOnOrthoSizeChange();
             _curState = ESpingState.None;
         }
@@ -145,12 +146,12 @@ namespace GameA.Game
             if (curTime - _startTime > SpringbackDuringTime)
             {
                 _curState = ESpingState.None;
-                _cameraManager.RendererCamera.orthographicSize = _springAimValue;
+                ChangeCameraPos(_springAimValue);
             }
             float cur = _cameraManager.RendererCamera.orthographicSize;
             float offset = _curSpeed*Time.deltaTime;
             cur = cur - offset;
-            _cameraManager.RendererCamera.orthographicSize = cur;
+            ChangeCameraPos(cur);
         }
 
         private void FireOnOrthoSizeChange()
@@ -162,7 +163,12 @@ namespace GameA.Game
                 _onOrthoTargetSizeChangeCallback.Invoke(size);
             }
         }
-
+        
+        private void ChangeCameraPos(float size)
+        {
+            _cameraManager.RendererCamera.orthographicSize = size;
+            Messenger.Broadcast(EMessengerType.OnEditCameraOrthoSizeChange);
+        }
         #endregion
     }
 }

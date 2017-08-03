@@ -40,18 +40,13 @@ namespace GameA
             _groupId = (int) EUIGroupType.InGamePopup;
         }
 
-        protected override void OnViewCreated()
-        {
-            base.OnViewCreated();
-
-			
-        }
-
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            Messenger<List<Vector3>>.AddListener(EMessengerType.OnSelectedItemChangedOnSwitchMode, OnSelectedItemChanged);
-            Messenger<IntVec3, IntVec3, bool>.AddListener (EMessengerType.OnSwitchConnectionChanged, OnSwitchConnectionChanged);
+            RegisterEvent<List<Vector3>>(EMessengerType.OnSelectedItemChangedOnSwitchMode, OnSelectedItemChanged);
+            RegisterEvent<IntVec3, IntVec3, bool>(EMessengerType.OnSwitchConnectionChanged, OnSwitchConnectionChanged);
+            RegisterEvent(EMessengerType.OnEditCameraPosChange, OnCameraPosChanged);
+            RegisterEvent(EMessengerType.OnEditCameraOrthoSizeChange, OnCameraPosChanged);
         }
 
         protected override void OnOpen(object parameter)
@@ -74,7 +69,6 @@ namespace GameA
                 }
                 OnCameraPosChanged();
             }
-
         }
 
         protected override void OnClose ()
@@ -86,13 +80,6 @@ namespace GameA
                 _connectionCntCache [i].transform.parent.gameObject.SetActive (false);
             }
         }
-
-		protected override void OnDestroy ()
-		{
-			base.OnDestroy ();
-            Messenger<List<Vector3>>.RemoveListener(EMessengerType.OnSelectedItemChangedOnSwitchMode, OnSelectedItemChanged);
-            Messenger<IntVec3, IntVec3, bool>.RemoveListener (EMessengerType.OnSwitchConnectionChanged, OnSwitchConnectionChanged);
-		}
 
         private void OnDelBtn (int idx) {
             EditMode2.Instance.DeleteSwitchConnection (idx);
