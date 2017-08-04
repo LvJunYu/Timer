@@ -9,6 +9,7 @@ namespace GameA.Game
             public override void Exit(EditMode owner)
             {
                 OnDragEnd(null);
+                base.Exit(owner);
             }
 
             public override void OnDragStart(Gesture gesture)

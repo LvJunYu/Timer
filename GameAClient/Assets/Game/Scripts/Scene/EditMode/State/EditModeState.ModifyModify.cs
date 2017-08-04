@@ -15,6 +15,7 @@ namespace GameA.Game
             public override void Exit(EditMode owner)
             {
                 Drop();
+                base.Exit(owner);
             }
             
             public override void Execute(EditMode owner)
