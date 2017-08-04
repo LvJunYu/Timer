@@ -58,6 +58,7 @@ namespace GameA.Game
                 var data = boardData.GetStateData<Data>();
                 OnDragEnd(null);
                 OnExitSwitchMode(boardData, data);
+                base.Exit(owner);
             }
 
             public override void OnTap(Gesture gesture)

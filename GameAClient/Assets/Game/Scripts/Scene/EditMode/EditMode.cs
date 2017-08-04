@@ -240,6 +240,11 @@ namespace GameA.Game
 
         #region PublicMethod
 
+        public void CommitRecordBatch(EditRecordBatch editRecordBatch)
+        {
+            _editRecordManager.CommitRecord(editRecordBatch);
+        }
+
         /// <summary>
         /// 从地图文件反序列化时的处理方法
         /// </summary>

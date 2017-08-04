@@ -81,6 +81,7 @@ namespace GameA.Game
             public override void Exit(EditMode owner)
             {
                 Drop();
+                base.Exit(owner);
             }
 
             public override void OnDragEnd(Gesture gesture)
@@ -144,6 +145,7 @@ namespace GameA.Game
                 
                 ProcessDrop(boardData, stateData);
                 
+                boardData.DragInCurrentState = false;
                 if (null != stateData.CurrentMovingUnitBase)
                 {
                     UnitManager.Instance.FreeUnitView(stateData.CurrentMovingUnitBase);
@@ -161,7 +163,6 @@ namespace GameA.Game
                 stateData.CurrentMode = Data.EMode.None;
                 stateData.DragUnitExtra = UnitExtra.zero;
                 EditMode.Instance.StateMachine.RevertToPreviousState();
-                boardData.DragInCurrentState = false;
             }
 
 
@@ -249,6 +250,13 @@ namespace GameA.Game
                     if (boardData.CurrentTouchUnitDesc != UnitDesc.zero)
                     {
                         DataScene2D.Instance.OnUnitMoveUpdateSwitchData(boardData.CurrentTouchUnitDesc, target);
+                    }
+                }
+                else
+                {
+                    if (boardData.CurrentTouchUnitDesc != UnitDesc.zero)
+                    {
+                        DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(boardData.CurrentTouchUnitDesc);
                     }
                 }
             }
