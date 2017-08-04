@@ -75,7 +75,7 @@ namespace GameA.Game
             SetInput(EInputType.Right, false);
             SetInput(EInputType.Left, false);
             SetInput(EInputType.Skill1, false);
-            if (!_canMove)
+            if (!CanMove)
             {
                 SpeedX = 0;
                 ChangeState(EMonsterState.None);
@@ -124,14 +124,14 @@ namespace GameA.Game
             _reSeekTimer = 0;
             //晕的时候就不找了
             var mainUnit = PlayMode.Instance.MainPlayer;
-            if (mainUnit.IsStunning)
+            if (!mainUnit.CanMove)
             {
                 _currentNodeId = -1;
                 ChangeState(EMonsterState.Think);
                 return;
             }
             //如果怪物就在人的脚下，直接改为攻击。
-            if (mainUnit.DownUnits.Contains(this) && _canAttack)
+            if (mainUnit.DownUnits.Contains(this) && CanAttack)
             {
                 ChangeState(EMonsterState.Attack);
                 return;
@@ -172,7 +172,7 @@ namespace GameA.Game
 
         protected virtual void OnAttack()
         {
-            if (_path.Count == 0 || PlayMode.Instance.MainPlayer.IsStunning)
+            if (_path.Count == 0 || !PlayMode.Instance.MainPlayer.CanMove)
             {
                 ChangeState(EMonsterState.Think);
                 return;
@@ -188,7 +188,7 @@ namespace GameA.Game
 
         protected virtual bool IsInAttackRange()
         {
-            if (!_canAttack)
+            if (!CanAttack)
             {
                 return false;
             }

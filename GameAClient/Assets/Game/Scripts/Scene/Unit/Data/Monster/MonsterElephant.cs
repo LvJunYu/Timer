@@ -58,7 +58,7 @@ namespace GameA.Game
                     }
                     if (IsInAttackRange())
                     {
-                        PlayMode.Instance.MainPlayer.OnKnockBack(this);
+//                        PlayMode.Instance.MainPlayer.OnKnockBack(this);
                     }
                 }
             }

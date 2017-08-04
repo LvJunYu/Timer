@@ -24,7 +24,6 @@ namespace GameA
         /// 当前的状态
         /// </summary>
         private EWorkShopState _state = EWorkShopState.None;
-
         private CardDataRendererWrapper<Project> _curSelectedPrivateProject;
         private CardDataRendererWrapper<Project> _curSelectedPublicProject;
         private List<CardDataRendererWrapper<Project>> _privateContents = new List<CardDataRendererWrapper<Project>>();
@@ -301,6 +300,7 @@ namespace GameA
                     wrapper.IsSelected = list[i].ProjectId == preSelectPRojectId;
                     _curSelectedPublicProject = wrapper.IsSelected ? wrapper : _curSelectedPublicProject;
                     _publicContents.Add(wrapper);
+                    if(!_publicDict.ContainsKey(wrapper.Content.ProjectId))
                     _publicDict.Add(wrapper.Content.ProjectId, wrapper);
 
                     //                    if(_mode == EMode.Edit)
@@ -413,7 +413,7 @@ namespace GameA
         private void ProcessDelete () {
             if (null == _curSelectedPrivateProject || null == _curSelectedPrivateProject.Content)
                 return;
-            CommonTools.ShowPopupDialog(string.Format("删除之后将无法恢复，确定要删除《{0}》吗？", _curSelectedPrivateProject.Content.Name), null,
+            CommonTools.ShowPopupDialog(string.Format("删除之后将无法恢复，确定要删除《{0}》吗？", _curSelectedPrivateProject.Content.Name), "删除提示",
                 new KeyValuePair<string, Action>("确定",()=>{
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在删除");
                     var projList = new List<long>();
@@ -482,7 +482,10 @@ namespace GameA
             }
             else
             {
-                SocialGUIManager.Instance.OpenUI<UICtrlAdvLvlDetail>(_curSelectedPublicProject.Content);
+                if (_curSelectedPublicProject != null)
+                {
+                    SocialGUIManager.Instance.OpenUI<UICtrlProjectDetailInfo>(_curSelectedPublicProject.Content);
+                }
             }
         }
 
