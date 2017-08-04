@@ -43,7 +43,15 @@ namespace GameA.Game
                 {
                     return;
                 }
-                TryRemove(gesture.position - gesture.deltaPosition, gesture.position);
+                Vector3 startPos = Input.mousePosition;
+                Vector3 endPos = Input.mousePosition;
+                if (gesture != null)
+                {
+                    startPos = gesture.position - gesture.deltaPosition;
+                    endPos = gesture.position;
+                }
+                TryRemove(startPos, endPos);
+                boardData.DragInCurrentState = false;
                 //TODO 保存录像
             }
 
@@ -69,7 +77,10 @@ namespace GameA.Game
                 UnitDesc unitDesc;
                 if(EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), out unitDesc))
                 {
-                    EditMode.Instance.DeleteUnitWithCheck(unitDesc);
+                    if (EditMode.Instance.DeleteUnitWithCheck(unitDesc))
+                    {
+                        DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(unitDesc);
+                    }
                 }
                 //TODO 录像
             }
