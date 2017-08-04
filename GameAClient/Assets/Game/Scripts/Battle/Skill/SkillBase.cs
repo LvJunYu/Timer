@@ -171,6 +171,7 @@ namespace GameA.Game
             {
                 return false;
             }
+            _owner.StartSkill();
             _timerSing = _singTime;
             if (_timerSing == 0)
             {
@@ -201,6 +202,7 @@ namespace GameA.Game
         
         protected virtual void OnSkillCast()
         {
+            _owner.OnSkillCast();
             switch ((EBehaviorType)_tableSkill.BehaviorType)
             {
                 case EBehaviorType.Common:
@@ -240,7 +242,21 @@ namespace GameA.Game
                 case EEffcetMode.TargetLine:
                     break;
                 case EEffcetMode.SelfSector:
-                    break;
+                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                    var units = ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, hitLayerMask);
+                    for (int i = units.Count - 1; i >= 0; i--)
+                    {
+                        var unit = units[i];
+                        var rel = _owner.CenterDownPos - unit.CenterDownPos;
+                        if ((rel.x >= 0 && _owner.CurMoveDirection == EMoveDirection.Left) || (rel.x <= 0 && _owner.CurMoveDirection == EMoveDirection.Right))
+                        {
+                        }
+                        else
+                        {
+                            units.RemoveAt(i);
+                        }
+                    }
+                    return units;
                 case EEffcetMode.SelfCircle:
                     {
                         _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
@@ -314,8 +330,17 @@ namespace GameA.Game
             {
                 return;
             }
-            unit.OnHpChanged(-_damage);
-            unit.OnHpChanged(_cure);
+            if (!unit.IsInvincible)
+            {
+                var forces = _tableSkill.KnockbackForces;
+                if (forces.Length == 2)
+                {
+                    var direction = unit.CenterDownPos - centerDownPos;
+                    unit.ExtraSpeed.x = direction.x >= 0 ? forces[0] : -forces[0];
+                    unit.ExtraSpeed.y = direction.y >= -320 ? forces[1] : -forces[1];
+                    unit.Speed = IntVec2.zero;
+                }
+            }
             //触发状态
             for (int i = 0; i < _tableSkill.TriggerStates.Length; i++)
             {
@@ -324,16 +349,8 @@ namespace GameA.Game
                     unit.AddStates(_tableSkill.TriggerStates[i]);
                 }
             }
-            var forces = _tableSkill.KnockbackForces;
-            if (forces.Length == 2)
-            {
-                var direction = unit.CenterDownPos - centerDownPos;
-                unit.ExtraSpeed.x = direction.x >= 0 ? forces[0] : -forces[0];
-                unit.ExtraSpeed.y = direction.y >= -320 ? forces[1] : -forces[1];
-                unit.Speed = IntVec2.zero;
-                unit.CurBanInputTime = 20;
-            }
-//            LogHelper.Debug("OnActorHit, {0}", unit);
+            unit.OnHpChanged(-_damage);
+            unit.OnHpChanged(_cure);
         }
         
         protected void OnPaintHit(UnitBase target,ProjectileBase projectile)

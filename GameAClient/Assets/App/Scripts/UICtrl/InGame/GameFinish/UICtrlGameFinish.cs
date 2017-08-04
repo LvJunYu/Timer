@@ -81,7 +81,7 @@ namespace GameA
 		{
             _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtn);
             _cachedView.RetryBtn.onClick.AddListener(OnRetryBtn);
-            _cachedView.NextBtn.onClick.AddListener(OnNextBtn);
+            //_cachedView.NextBtn.onClick.AddListener(OnNextBtn);
             _cachedView.ContinueEditBtn.onClick.AddListener (OnContinueEditBtn);
 
             _rewardCtrl = new USCtrlGameFinishReward [_cachedView.Rewards.Length];
@@ -249,7 +249,7 @@ namespace GameA
                     _cachedView.RetryBtn.gameObject.SetActive (true);
                     _cachedView.ReturnBtn.gameObject.SetActive (true);
                     _cachedView.ContinueEditBtn.gameObject.SetActive (false);
-                    _cachedView.NextBtn.gameObject.SetActive (false);
+                    //_cachedView.NextBtn.gameObject.SetActive (false);
                     _cachedView.Score.gameObject.SetActive (true);
                     _cachedView.ScoreOutLine.gameObject.SetActive (true);
                     _cachedView.Score.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
@@ -266,7 +266,7 @@ namespace GameA
                     _cachedView.Lose.SetActive (true);
                     _cachedView.ReturnBtn.gameObject.SetActive (true);
                     _cachedView.RetryBtn.gameObject.SetActive (true);
-                    _cachedView.NextBtn.gameObject.SetActive (false);
+                    //_cachedView.NextBtn.gameObject.SetActive (false);
                     _cachedView.ContinueEditBtn.gameObject.SetActive (false);
                     _cachedView.Score.gameObject.SetActive (false);
                     _cachedView.ScoreOutLine.gameObject.SetActive (false);
@@ -280,7 +280,7 @@ namespace GameA
                 _cachedView.RetryBtn.gameObject.SetActive (false);
                 _cachedView.ReturnBtn.gameObject.SetActive (true);
                 _cachedView.ContinueEditBtn.gameObject.SetActive (false);
-                _cachedView.NextBtn.gameObject.SetActive (false);
+                //_cachedView.NextBtn.gameObject.SetActive (false);
                 _cachedView.Score.gameObject.SetActive (true);
                 _cachedView.ScoreOutLine.gameObject.SetActive (true);
                 _cachedView.Score.text = Game.PlayMode.Instance.SceneState.CurScore.ToString ();
@@ -299,7 +299,7 @@ namespace GameA
                 _cachedView.RetryBtn.gameObject.SetActive (false);
                 _cachedView.ReturnBtn.gameObject.SetActive (true);
                 _cachedView.ContinueEditBtn.gameObject.SetActive (false);
-                _cachedView.NextBtn.gameObject.SetActive (false);
+                //_cachedView.NextBtn.gameObject.SetActive (false);
 
                 // 如果是一章中的最后一关，则不显示下一关按钮
 //                if (GameManager.Instance.CurrentGame.Project.LevelId == Game.ConstDefineGM2D.AdvNormallevelPerChapter) {
@@ -336,7 +336,7 @@ namespace GameA
                 _cachedView.Lose.SetActive (true);
                 _cachedView.ReturnBtn.gameObject.SetActive (true);
                 _cachedView.RetryBtn.gameObject.SetActive (false);
-                _cachedView.NextBtn.gameObject.SetActive (false);
+                //_cachedView.NextBtn.gameObject.SetActive (false);
                 _cachedView.ContinueEditBtn.gameObject.SetActive (false);
                 _cachedView.Score.gameObject.SetActive (false);
                 _cachedView.ScoreOutLine.gameObject.SetActive (false);
@@ -353,7 +353,7 @@ namespace GameA
                 _cachedView.Lose.SetActive (true);
                 _cachedView.ReturnBtn.gameObject.SetActive (true);
                     _cachedView.RetryBtn.gameObject.SetActive (false);
-                _cachedView.NextBtn.gameObject.SetActive (false);
+                //_cachedView.NextBtn.gameObject.SetActive (false);
                 _cachedView.ContinueEditBtn.gameObject.SetActive (false);
                 _cachedView.Score.gameObject.SetActive (false);
                 _cachedView.ScoreOutLine.gameObject.SetActive (false);
@@ -369,7 +369,7 @@ namespace GameA
                 _cachedView.Lose.SetActive (false);
                 _cachedView.RetryBtn.gameObject.SetActive (false);
                 _cachedView.ReturnBtn.gameObject.SetActive (true);
-                _cachedView.NextBtn.gameObject.SetActive (false);
+                //_cachedView.NextBtn.gameObject.SetActive (false);
                 _cachedView.ContinueEditBtn.gameObject.SetActive (false);
 
                 // 得分
@@ -390,7 +390,7 @@ namespace GameA
                 _cachedView.Lose.SetActive (true);
                 _cachedView.ReturnBtn.gameObject.SetActive (true);
                 _cachedView.RetryBtn.gameObject.SetActive (false);
-                _cachedView.NextBtn.gameObject.SetActive (false);
+                //_cachedView.NextBtn.gameObject.SetActive (false);
                 _cachedView.ContinueEditBtn.gameObject.SetActive (false);
                 _cachedView.Score.gameObject.SetActive (false);
                 _cachedView.ScoreOutLine.gameObject.SetActive (false);
@@ -405,9 +405,9 @@ namespace GameA
             case EShowState.EditorLose:
                 _cachedView.Win.SetActive (false);
                 _cachedView.Lose.SetActive (true);
-                _cachedView.ReturnBtn.gameObject.SetActive (true);
-                _cachedView.RetryBtn.gameObject.SetActive (true);
-                _cachedView.NextBtn.gameObject.SetActive (false);
+                _cachedView.ReturnBtn.gameObject.SetActive (false);
+                _cachedView.RetryBtn.gameObject.SetActive (false);
+                //_cachedView.NextBtn.gameObject.SetActive (false);
                 _cachedView.ContinueEditBtn.gameObject.SetActive (true);
                 _cachedView.Score.gameObject.SetActive (false);
                 _cachedView.ScoreOutLine.gameObject.SetActive (false);
@@ -420,9 +420,9 @@ namespace GameA
             case EShowState.EditorWin:
                 _cachedView.Win.SetActive (true);
                 _cachedView.Lose.SetActive (false);
-                _cachedView.ReturnBtn.gameObject.SetActive (true);
-                _cachedView.RetryBtn.gameObject.SetActive (true);
-                _cachedView.NextBtn.gameObject.SetActive (false);
+                _cachedView.ReturnBtn.gameObject.SetActive (false);
+                _cachedView.RetryBtn.gameObject.SetActive (false);
+                //_cachedView.NextBtn.gameObject.SetActive (false);
                 _cachedView.ContinueEditBtn.gameObject.SetActive (true);
                 _cachedView.Score.gameObject.SetActive (true);
                 _cachedView.ScoreOutLine.gameObject.SetActive (true);

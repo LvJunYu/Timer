@@ -58,6 +58,7 @@ namespace GameA.Game
                 var data = boardData.GetStateData<Data>();
                 OnDragEnd(null);
                 OnExitSwitchMode(boardData, data);
+                base.Exit(owner);
             }
 
             public override void OnTap(Gesture gesture)
@@ -156,7 +157,7 @@ namespace GameA.Game
                             }
                             else
                             {
-                                AddSwitchConnection(boardData, data, boardData.CurrentTouchUnitDesc.Guid,
+                                AddSwitchConnection(boardData.CurrentTouchUnitDesc.Guid,
                                     coverUnits[0].Guid);
                             }
                         }
@@ -171,7 +172,7 @@ namespace GameA.Game
                         }
                         else
                         {
-                            AddSwitchConnection(boardData, data, coverUnits[0].Guid,
+                            AddSwitchConnection(coverUnits[0].Guid,
                                 boardData.CurrentTouchUnitDesc.Guid);
                         }
                     }
@@ -220,13 +221,11 @@ namespace GameA.Game
                 return false;
             }
 
-
             private void SelectUnit(UnitDesc unitDesc)
             {
                 var boardData = GetBlackBoard();
-                var data = boardData.GetStateData<Data>();
                 boardData.CurrentTouchUnitDesc = unitDesc;
-                UpdateSwitchEffects(boardData, data);
+                UpdateSwitchEffects();
             }
 
             private void DeleteSwitchConnection(EditMode.BlackBoard boardData, Data data, int idx)
@@ -235,41 +234,42 @@ namespace GameA.Game
                     return;
                 if (idx >= data.CachedConnectedGUIDs.Count)
                     return;
-                bool success;
+                IntVec3 switchGuid;
+                IntVec3 unitGuid;
                 if (UnitDefine.IsSwitch(boardData.CurrentTouchUnitDesc.Id))
                 {
-                    success = DataScene2D.Instance.UnbindSwitch(boardData.CurrentTouchUnitDesc.Guid,
-                        data.CachedConnectedGUIDs[idx]);
+                    switchGuid = boardData.CurrentTouchUnitDesc.Guid;
+                    unitGuid = data.CachedConnectedGUIDs[idx];
                 }
                 else
                 {
-                    success = DataScene2D.Instance.UnbindSwitch(data.CachedConnectedGUIDs[idx],
-                        boardData.CurrentTouchUnitDesc.Guid);
+                    switchGuid = data.CachedConnectedGUIDs[idx];
+                    unitGuid = boardData.CurrentTouchUnitDesc.Guid;
                 }
-                if (success)
+                if (DataScene2D.Instance.UnbindSwitch(switchGuid, unitGuid))
                 {
-                    Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
-                        data.CachedConnectedGUIDs[idx], boardData.CurrentTouchUnitDesc.Guid, false);
-                    UpdateSwitchEffects(boardData, data);
+                    GetRecordBatch().RecordRemoveSwitchConnection(switchGuid, unitGuid);
+                    CommitRecordBatch();
+                    UpdateSwitchEffects();
                     EditMode.Instance.MapStatistics.AddOrDeleteConnection();
                 }
-                // todo undo
             }
 
-            private void AddSwitchConnection(EditMode.BlackBoard boardData, Data data, IntVec3 switchGuid,
-                IntVec3 unitGuid)
+            private void AddSwitchConnection(IntVec3 switchGuid, IntVec3 unitGuid)
             {
                 if (DataScene2D.Instance.BindSwitch(switchGuid, unitGuid))
                 {
-                    Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
-                        switchGuid, unitGuid, true);
-                    UpdateSwitchEffects(boardData, data);
+                    GetRecordBatch().RecordAddSwitchConnection(switchGuid, unitGuid);
+                    CommitRecordBatch();
+                    UpdateSwitchEffects();
                     EditMode.Instance.MapStatistics.AddOrDeleteConnection();
                 }
             }
 
-            private void UpdateSwitchEffects(EditMode.BlackBoard boardData, Data data)
+            private void UpdateSwitchEffects()
             {
+                var boardData = GetBlackBoard();
+                var data = boardData.GetStateData<Data>();
                 if (boardData.CurrentTouchUnitDesc == UnitDesc.zero)
                 {
                     for (int i = 0; i < data.UnitMaskEffectCache.Count; i++)
@@ -289,7 +289,7 @@ namespace GameA.Game
                         LogHelper.Error("CurSelectedUnitOnSwitchMode table is null, id: {0}",
                             boardData.CurrentTouchUnitDesc.Id);
                         boardData.CurrentTouchUnitDesc = UnitDesc.zero;
-                        UpdateSwitchEffects(boardData, data);
+                        UpdateSwitchEffects();
                         return;
                     }
                     data.CachedConnectedGUIDs.Clear();
@@ -379,7 +379,7 @@ namespace GameA.Game
             {
                 boardData.CurrentTouchUnitDesc = UnitDesc.zero;
                 data.CachedConnectedGUIDs.Clear();
-                UpdateSwitchEffects(boardData, data);
+                UpdateSwitchEffects();
 
                 using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
                 {

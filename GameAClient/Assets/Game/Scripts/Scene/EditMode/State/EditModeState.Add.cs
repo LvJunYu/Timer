@@ -7,9 +7,24 @@ namespace GameA.Game
     {
         public class Add : GenericBase<Add>
         {
+            public override void Execute(EditMode owner)
+            {
+                var boardData = GetBlackBoard();
+                if (!boardData.DragInCurrentState)
+                {
+                    return;
+                }
+                //拖拽到UI上EasyTouch 不发出dragEnd事件
+                if (!Input.GetMouseButton(0))
+                {
+                    OnDragEnd(null);
+                }
+            }
+            
             public override void Exit(EditMode owner)
             {
                 OnDragEnd(null);
+                base.Exit(owner);
             }
 
             public override void OnDragStart(Gesture gesture)
@@ -76,6 +91,7 @@ namespace GameA.Game
                     endPos = gesture.position;
                 }
                 TryDragAdd(startPos, endPos, boardData.CurrentSelectedUnitId);
+                CommitRecordBatch();
                 boardData.DragInCurrentState = false;
                 //TODO 如果InDrag保存录像
             }
@@ -86,7 +102,23 @@ namespace GameA.Game
                 UnitDesc touchedUnitDesc;
                 if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(Input.mousePosition), out touchedUnitDesc))
                 {
-                    EditHelper.ProcessClickUnitOperation(touchedUnitDesc);
+                    var touchedUnitExtra = DataScene2D.Instance.GetUnitExtra(touchedUnitDesc.Guid);
+                    if (EditHelper.ProcessClickUnitOperation(touchedUnitDesc))
+                    {
+                        UnitBase unit;
+                        if (ColliderScene2D.Instance.TryGetUnit(touchedUnitDesc.Guid, out unit))
+                        {
+                            var newUnitDesc = unit.UnitDesc;
+                            var newUnitExtra = DataScene2D.Instance.GetUnitExtra(newUnitDesc.Guid);
+                            GetRecordBatch().RecordUpdateExtra(ref touchedUnitDesc, ref touchedUnitExtra,
+                                ref newUnitDesc, ref newUnitExtra);
+                            CommitRecordBatch();
+                        }
+                        else
+                        {
+                            LogHelper.Warning("OnTapUnit ProcessClickUnitOperation, UnitBase is null");
+                        }
+                    }
                 }
                 else
                 {
@@ -99,6 +131,7 @@ namespace GameA.Game
                         boardData.CurrentSelectedUnitId, out createUnitDesc))
                     {
                         AddOne(createUnitDesc);
+                        CommitRecordBatch();
                     }
                 }
             }
@@ -126,6 +159,7 @@ namespace GameA.Game
 
             private void AddOne(UnitDesc unitDesc, bool replaceSomeUnit = false)
             {
+                var recordBatch = GetRecordBatch();
                 var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
                 var grid = tableUnit.GetBaseDataGrid(unitDesc.Guid.x, unitDesc.Guid.y);
                 int layerMask = tableUnit.UnitType == (int)EUnitType.Effect
@@ -141,7 +175,12 @@ namespace GameA.Game
                         var coverUnits = DataScene2D.GetUnits(grid, nodes);
                         for (int j = 0; j < coverUnits.Count; j++)
                         {
-                            EditMode.Instance.DeleteUnitWithCheck(coverUnits[j]);
+                            var desc = coverUnits[i];
+                            var extra = DataScene2D.Instance.GetUnitExtra(desc.Guid);
+                            if(EditMode.Instance.DeleteUnitWithCheck(coverUnits[j]))
+                            {
+                                recordBatch.RecordRemoveUnit(ref desc, ref extra);
+                            }
                         }
                     }
                     else
@@ -152,9 +191,12 @@ namespace GameA.Game
                 UnitDesc needReplaceUnitDesc;
                 if (EditHelper.TryGetReplaceUnit(tableUnit.Id, out needReplaceUnitDesc))
                 {
-                    EditMode.Instance.DeleteUnitWithCheck(needReplaceUnitDesc);
-                    DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(needReplaceUnitDesc);
-                    //TODO 记录删除的地块
+                    var needReplaceUnitExtra = DataScene2D.Instance.GetUnitExtra(needReplaceUnitDesc.Guid);
+                    if (EditMode.Instance.DeleteUnitWithCheck(needReplaceUnitDesc))
+                    {
+                        recordBatch.RecordRemoveUnit(ref needReplaceUnitDesc, ref needReplaceUnitExtra);
+                        DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(needReplaceUnitDesc, recordBatch);
+                    }
                 }
                 if (EditMode.Instance.AddUnitWithCheck(unitDesc))
                 {
@@ -170,7 +212,7 @@ namespace GameA.Game
                         extra.RollerDirection = (EMoveDirection)EditHelper.GetUnitOrigDirOrRot(tableUnit);
                         DataScene2D.Instance.ProcessUnitExtra(unitDesc, extra);
                     }
-                    //TODO 保存记录
+                    recordBatch.RecordAddUnit(ref unitDesc, ref extra);
                 }
             }
         }

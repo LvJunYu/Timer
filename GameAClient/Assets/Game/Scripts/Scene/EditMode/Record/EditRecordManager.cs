@@ -24,21 +24,25 @@ namespace GameA.Game
 		}
 
 		public void Clear () {
-			ClearAllCommands ();
+			ClearAllRecordBatch ();
 			_stackUndo = null;
 			_stackRedo = null;
 		}
         
-        public void AddNewRecord(EditRecordBatch record)
+        public void CommitRecord(EditRecordBatch record)
         {
             _stackUndo.Push(record);
-            DeleteRedoCommands();
+            DeleteRedoRecord();
+            if (_stackUndo.Count == 1)
+            {
+                Messenger<bool>.Broadcast(EMessengerType.OnUndoChanged, CanUndo);
+            }
         }
 
-        public void ClearAllCommands()
+        public void ClearAllRecordBatch()
         {
-            DeleteRedoCommands();
-            DeleteUndoCommands();
+            DeleteRedoRecord();
+            DeleteUndoRecord();
         }
 
         public void Undo()
@@ -77,7 +81,7 @@ namespace GameA.Game
             }
         }
 
-        private void DeleteUndoCommands()
+        private void DeleteUndoRecord()
         {
             if (_stackUndo != null)
             {
@@ -85,7 +89,7 @@ namespace GameA.Game
             }
         }
 
-        private void DeleteRedoCommands()
+        private void DeleteRedoRecord()
         {
             if (_stackRedo != null)
             {

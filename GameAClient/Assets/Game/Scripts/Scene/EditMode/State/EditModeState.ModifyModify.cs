@@ -15,6 +15,7 @@ namespace GameA.Game
             public override void Exit(EditMode owner)
             {
                 Drop();
+                base.Exit(owner);
             }
             
             public override void Execute(EditMode owner)
@@ -24,7 +25,14 @@ namespace GameA.Game
                 {
                     return;
                 }
-                Drag(Input.mousePosition);
+                if (Input.GetMouseButton(0))
+                {
+                    Drag(Input.mousePosition);
+                }
+                else
+                {
+                    Drop();
+                }
             }
 
             public override void OnDragStart(Gesture gesture)

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SoyEngine;
 
 namespace GameA.Game
@@ -35,17 +34,19 @@ namespace GameA.Game
             AddRecordData(ref recordData);
         }
         
-        public void RecordUpdateExtra(ref UnitDesc unitDesc, ref UnitExtra unitExtra, ref UnitExtra oldUnitExtra)
+        public void RecordUpdateExtra(ref UnitDesc oldUnitDesc, ref UnitExtra oldUnitExtra,
+            ref UnitDesc newUnitDesc, ref UnitExtra newUnitExtra)
         {
             EditRecordData recordData = new EditRecordData();
             recordData.ActionType = EditRecordData.EAction.UpdateExtra;
-            recordData.UnitDesc = unitDesc;
-            recordData.UnitExtra = unitExtra;
+            recordData.UnitDesc = newUnitDesc;
+            recordData.UnitExtra = newUnitExtra;
+            recordData.UnitDescOld = oldUnitDesc;
             recordData.UnitExtraOld = oldUnitExtra;
             AddRecordData(ref recordData);
         }
         
-        public void RecordAddSwitchConnection(ref IntVec3 switchGuid, ref IntVec3 unitGuid)
+        public void RecordAddSwitchConnection(IntVec3 switchGuid, IntVec3 unitGuid)
         {
             EditRecordData recordData = new EditRecordData();
             recordData.ActionType = EditRecordData.EAction.AddSwitchConnection;
@@ -54,7 +55,7 @@ namespace GameA.Game
             AddRecordData(ref recordData);
         }
         
-        public void RecordRemoveSwitchConnection(ref IntVec3 switchGuid, ref IntVec3 unitGuid)
+        public void RecordRemoveSwitchConnection(IntVec3 switchGuid, IntVec3 unitGuid)
         {
             EditRecordData recordData = new EditRecordData();
             recordData.ActionType = EditRecordData.EAction.RemoveSwitchConnection;
@@ -76,6 +77,12 @@ namespace GameA.Game
                     RedoRecordData(_listRecordData[i]);
                 }
             }
+            // 开关模式不健壮，需要重刷
+            if (EditMode.Instance.IsInState(EditModeState.Switch.Instance))
+            {
+                EditMode.Instance.StopSwitch();
+                EditMode.Instance.StartSwitch();
+            }
         }
 
         public void Undo()
@@ -90,6 +97,12 @@ namespace GameA.Game
             if (EditRecordData.EAction.None != _firstRecordData.ActionType)
             {
                 UndoRecordData(_firstRecordData);
+            }
+            // 开关模式不健壮，需要重刷
+            if (EditMode.Instance.IsInState(EditModeState.Switch.Instance))
+            {
+                EditMode.Instance.StopSwitch();
+                EditMode.Instance.StartSwitch();
             }
         }
 
@@ -128,7 +141,7 @@ namespace GameA.Game
                     DataScene2D.Instance.ProcessUnitExtra(recordData.UnitDesc, recordData.UnitExtra);
                     break;
                 case EditRecordData.EAction.UpdateExtra:
-                    DataScene2D.Instance.ProcessUnitExtra(recordData.UnitDesc, recordData.UnitExtraOld);
+                    DataScene2D.Instance.ProcessUnitExtra(recordData.UnitDescOld, recordData.UnitExtraOld);
                     break;
                 case EditRecordData.EAction.AddSwitchConnection:
                     DataScene2D.Instance.UnbindSwitch(recordData.SwitchGuid, recordData.UnitDesc.Guid);

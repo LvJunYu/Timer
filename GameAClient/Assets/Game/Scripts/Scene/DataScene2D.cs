@@ -371,6 +371,8 @@ namespace GameA.Game
                 return false;
             }
             _switchedUnits[switchGuid].Add(unitGuid);
+            Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
+                switchGuid, unitGuid, true);
             return true;
         }
 
@@ -387,15 +389,28 @@ namespace GameA.Game
             {
                 _switchedUnits.Remove(switchGuid);
             }
+            Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
+                switchGuid, unitGuid, false);
             return true;
         }
 
-        public void OnUnitDeleteUpdateSwitchData(UnitDesc unitDesc)
+        public void OnUnitDeleteUpdateSwitchData(UnitDesc unitDesc, EditRecordBatch recordBatch = null)
         {
             if (UnitDefine.IsSwitch(unitDesc.Id))
             {
-                if (_switchedUnits.ContainsKey(unitDesc.Guid))
+                List<IntVec3> list;
+                if (_switchedUnits.TryGetValue(unitDesc.Guid, out list))
                 {
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        IntVec3 unitGuid = list[i];
+                        Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
+                            unitDesc.Guid, unitGuid, false);
+                        if (null != recordBatch)
+                        {
+                            recordBatch.RecordRemoveSwitchConnection(unitDesc.Guid, unitGuid);
+                        }
+                    }
                     _switchedUnits.Remove(unitDesc.Guid);
                 }
             }
@@ -405,14 +420,22 @@ namespace GameA.Game
                 {
                     while (itor.MoveNext())
                     {
+                        var switchGuid = itor.Current.Key;
                         List<IntVec3> units = itor.Current.Value;
                         units.Remove(unitDesc.Guid);
+                        Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
+                            switchGuid, unitDesc.Guid, true);
+                        if (null != recordBatch)
+                        {
+                            recordBatch.RecordRemoveSwitchConnection(switchGuid, unitDesc.Guid);
+                        }
                     }
                 }
             }
         }
 
-        public void OnUnitMoveUpdateSwitchData(UnitDesc oldUnitDesc, UnitDesc newUnitDesc)
+        public void OnUnitMoveUpdateSwitchData(UnitDesc oldUnitDesc, UnitDesc newUnitDesc,
+            EditRecordBatch recordBatch = null)
         {
             if (UnitDefine.IsSwitch(newUnitDesc.Id))
             {
@@ -421,6 +444,18 @@ namespace GameA.Game
                 {
                     _switchedUnits.Remove(oldUnitDesc.Guid);
                     _switchedUnits.Add(newUnitDesc.Guid, list);
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
+                            oldUnitDesc.Guid, list[i], false);
+                        Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
+                            newUnitDesc.Guid, list[i], true);
+                        if (null != recordBatch)
+                        {
+                            recordBatch.RecordRemoveSwitchConnection(oldUnitDesc.Guid, list[i]);
+                            recordBatch.RecordAddSwitchConnection(newUnitDesc.Guid, list[i]);
+                        }
+                    }
                 }
             }
             else
@@ -429,12 +464,23 @@ namespace GameA.Game
                 {
                     while (itor.MoveNext())
                     {
+                        var switchGuid = itor.Current.Key;
                         List<IntVec3> units = itor.Current.Value;
                         for (int i = 0; i < units.Count; i++)
                         {
                             if (units[i] == oldUnitDesc.Guid)
                             {
                                 units[i] = newUnitDesc.Guid;
+                                
+                                Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
+                                    switchGuid, oldUnitDesc.Guid, false);
+                                Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
+                                    switchGuid, newUnitDesc.Guid, true);
+                                if (null != recordBatch)
+                                {
+                                    recordBatch.RecordRemoveSwitchConnection(switchGuid, oldUnitDesc.Guid);
+                                    recordBatch.RecordAddSwitchConnection(switchGuid, newUnitDesc.Guid);
+                                }
                                 break;
                             }
                         }

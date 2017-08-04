@@ -6,9 +6,23 @@ namespace GameA.Game
     {
         public class Remove : GenericBase<Remove>
         {
+            public override void Execute(EditMode owner)
+            {
+                var boardData = GetBlackBoard();
+                if (!boardData.DragInCurrentState)
+                {
+                    return;
+                }
+                if (!Input.GetMouseButton(0))
+                {
+                    OnDragEnd(null);
+                }
+            }
+            
             public override void Exit(EditMode owner)
             {
                 OnDragEnd(null);
+                base.Exit(owner);
             }
 
             public override void OnDragStart(Gesture gesture)
@@ -51,6 +65,7 @@ namespace GameA.Game
                     endPos = gesture.position;
                 }
                 TryRemove(startPos, endPos);
+                CommitRecordBatch();
                 boardData.DragInCurrentState = false;
                 //TODO 保存录像
             }
@@ -58,6 +73,7 @@ namespace GameA.Game
             public override void OnTap(Gesture gesture)
             {
                 TryRemove(gesture.position);
+                CommitRecordBatch();
             }
 
             private void TryRemove(Vector2 startPos, Vector2 endPos)
@@ -77,9 +93,11 @@ namespace GameA.Game
                 UnitDesc unitDesc;
                 if(EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), out unitDesc))
                 {
+                    var unitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
                     if (EditMode.Instance.DeleteUnitWithCheck(unitDesc))
                     {
-                        DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(unitDesc);
+                        GetRecordBatch().RecordRemoveUnit(ref unitDesc, ref unitExtra);
+                        DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(unitDesc, GetRecordBatch());
                     }
                 }
                 //TODO 录像

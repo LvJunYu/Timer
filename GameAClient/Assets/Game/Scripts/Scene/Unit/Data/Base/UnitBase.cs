@@ -1636,7 +1636,16 @@ namespace GameA.Game
         {
             return true;
         }
+        
+        public virtual void OnSkillCast()
+        {
+        }
+        
+        public virtual void StartSkill()
+        {
+        }
 
         #endregion
+
     }
 }

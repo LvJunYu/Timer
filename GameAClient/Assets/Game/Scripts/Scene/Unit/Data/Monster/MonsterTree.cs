@@ -27,31 +27,19 @@ namespace GameA.Game
             base.Clear();
         }
 
-        protected override void UpdateMonsterView(float deltaTime)
+        public override void StartSkill()
         {
-            base.UpdateMonsterView(deltaTime);
-            if (_eState == EMonsterState.Attack)
+            if (_animation != null && !_animation.IsPlaying("Attack", 1))
             {
-                if (_animation != null && !_animation.IsPlaying("Attack", 1))
-                {
-                    _attackTimer = 15;
-                    _animation.PlayOnce("Attack", 1, 1);
-                }
+                _animation.PlayOnce("Attack", 1, 1);
             }
-            if (_attackTimer > 0)
+        }
+
+        public override void OnSkillCast()
+        {
+            if (_trans != null)
             {
-                _attackTimer--;
-                if (_attackTimer == 0)
-                {
-                    if (_trans != null)
-                    {
-                        GameParticleManager.Instance.Emit("M1EffectMonsterTree", _trans.position + Vector3.forward * 0.1f);
-                    }
-                    if (IsInAttackRange())
-                    {
-//                        PlayMode.Instance.MainPlayer.OnStun(this);
-                    }
-                }
+                GameParticleManager.Instance.Emit("M1EffectMonsterTree", _trans.position + Vector3.forward * 0.1f);
             }
         }
     }

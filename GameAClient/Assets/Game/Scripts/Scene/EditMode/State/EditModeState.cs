@@ -7,15 +7,39 @@ namespace GameA.Game
     {
         public abstract class Base : State<EditMode>
         {
+            private EditRecordBatch _recordBatch;
             public virtual void Init() { }
             public override void Enter(EditMode owner) { }
             public override void Execute(EditMode owner) { }
-            public override void Exit(EditMode owner) { }
+
+            public override void Exit(EditMode owner)
+            {
+                CommitRecordBatch();
+            }
             public virtual void Dispose() { }
 
             protected EditMode.BlackBoard GetBlackBoard()
             {
                 return EditMode.Instance.BoardData;
+            }
+
+            protected EditRecordBatch GetRecordBatch()
+            {
+                if (null == _recordBatch)
+                {
+                    _recordBatch = new EditRecordBatch();
+                }
+                return _recordBatch;
+            }
+
+            protected void CommitRecordBatch()
+            {
+                if (null == _recordBatch || _recordBatch.IsEmpty)
+                {
+                    return;
+                }
+                EditMode.Instance.CommitRecordBatch(_recordBatch);
+                _recordBatch = null;
             }
             
             public virtual void OnPinch(Gesture gesture) { }

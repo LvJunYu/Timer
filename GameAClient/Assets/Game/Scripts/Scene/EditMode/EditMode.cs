@@ -160,6 +160,11 @@ namespace GameA.Game
         public void StartEdit()
         {
             _enable = true;
+            InternalStartEdit();
+        }
+
+        private void InternalStartEdit()
+        {
             if (GM2DGame.Instance.GameMode.GameSituation == EGameSituation.Match)
             {
                 _stateMachine.ChangeState(EditModeState.ModifyAdd.Instance);
@@ -183,7 +188,18 @@ namespace GameA.Game
 
         public void StopRemove()
         {
-            _stateMachine.RevertToPreviousState();
+            if (!IsInState(EditModeState.Remove.Instance))
+            {
+                return;
+            }
+            if (_stateMachine.PreviousState != EditModeState.Camera.Instance)
+            {
+                _stateMachine.RevertToPreviousState();
+            }
+            else
+            {
+                InternalStartEdit();
+            }
         }
 
         public void StartCamera()
@@ -193,6 +209,10 @@ namespace GameA.Game
 
         public void StopCamera()
         {
+            if (!IsInState(EditModeState.Camera.Instance))
+            {
+                return;
+            }
             _stateMachine.RevertToPreviousState();
         }
 
@@ -203,7 +223,18 @@ namespace GameA.Game
 
         public void StopSwitch()
         {
-            _stateMachine.RevertToPreviousState();
+            if (!IsInState(EditModeState.Switch.Instance))
+            {
+                return;
+            }
+            if (_stateMachine.PreviousState != EditModeState.Camera.Instance)
+            {
+                _stateMachine.RevertToPreviousState();
+            }
+            else
+            {
+                InternalStartEdit();
+            }
         }
         
         public void StartModifyAdd()
@@ -224,6 +255,11 @@ namespace GameA.Game
             _editRecordManager.Undo();
         }
 
+        public void Redo()
+        {
+            _editRecordManager.Redo();
+        }
+
         public void Update()
         {
             if (!_enable) return;
@@ -239,6 +275,11 @@ namespace GameA.Game
         #endregion
 
         #region PublicMethod
+
+        public void CommitRecordBatch(EditRecordBatch editRecordBatch)
+        {
+            _editRecordManager.CommitRecord(editRecordBatch);
+        }
 
         /// <summary>
         /// 从地图文件反序列化时的处理方法

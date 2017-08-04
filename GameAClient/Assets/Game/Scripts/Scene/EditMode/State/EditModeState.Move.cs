@@ -45,7 +45,12 @@ namespace GameA.Game
                     boardData.DragInCurrentState = true;
                     if (boardData.CurrentTouchUnitDesc != UnitDesc.zero)
                     {
-                        EditMode.Instance.DeleteUnitWithCheck(boardData.CurrentTouchUnitDesc);
+                        var oriUnitDesc = boardData.CurrentTouchUnitDesc;
+                        var oriUnitExtra = DataScene2D.Instance.GetUnitExtra(oriUnitDesc.Guid);
+                        if (EditMode.Instance.DeleteUnitWithCheck(oriUnitDesc))
+                        {
+                            GetRecordBatch().RecordRemoveUnit(ref oriUnitDesc, ref oriUnitExtra);
+                        }
                     }
                     stateData.MouseActualPos = Input.mousePosition;
                     if (UnitDefine.IsBlueStone(stateData.CurrentMovingUnitBase.Id))
@@ -81,6 +86,7 @@ namespace GameA.Game
             public override void Exit(EditMode owner)
             {
                 Drop();
+                base.Exit(owner);
             }
 
             public override void OnDragEnd(Gesture gesture)
@@ -144,6 +150,7 @@ namespace GameA.Game
                 
                 ProcessDrop(boardData, stateData);
                 
+                boardData.DragInCurrentState = false;
                 if (null != stateData.CurrentMovingUnitBase)
                 {
                     UnitManager.Instance.FreeUnitView(stateData.CurrentMovingUnitBase);
@@ -161,7 +168,6 @@ namespace GameA.Game
                 stateData.CurrentMode = Data.EMode.None;
                 stateData.DragUnitExtra = UnitExtra.zero;
                 EditMode.Instance.StateMachine.RevertToPreviousState();
-                boardData.DragInCurrentState = false;
             }
 
 
@@ -174,6 +180,7 @@ namespace GameA.Game
                 {
                     return;
                 }
+                var recordBatch = GetRecordBatch();
                 target.Scale = stateData.CurrentMovingUnitBase.Scale;
                 target.Rotation = stateData.CurrentMovingUnitBase.Rotation;
                 int layerMask = EnvManager.UnitLayerWithoutEffect;
@@ -181,39 +188,44 @@ namespace GameA.Game
                 if (coverUnits != null && coverUnits.Count > 0)
                 {
                     bool effectFlag = false;
+                    var oldUnitDesc = coverUnits[0];
+                    var oldUnitExtra = DataScene2D.Instance.GetUnitExtra(oldUnitDesc.Guid);
                     if (stateData.CurrentMode == Data.EMode.Magic)
                     {
                         if (EditHelper.CheckCanBindMagic(stateData.CurrentMovingUnitBase.TableUnit, coverUnits[0]))
                         {
-                            Table_Unit tableTarget = UnitManager.Instance.GetTableUnit(coverUnits[0].Id);
-                            var coveredUnitExtra = DataScene2D.Instance.GetUnitExtra(coverUnits[0].Guid);
+                            Table_Unit tableTarget = UnitManager.Instance.GetTableUnit(oldUnitDesc.Id);
                             var dragUnitExtra = stateData.DragUnitExtra;
+                            var newUnitExtra = oldUnitExtra;
                             //绑定蓝石 如果方向允许就用蓝石方向，否则用默认初始方向。
-                            coveredUnitExtra.MoveDirection = EditHelper.CheckMask(
+                            newUnitExtra.MoveDirection = EditHelper.CheckMask(
                                 (byte) (stateData.DragUnitExtra.MoveDirection - 1), 
                                 tableTarget.MoveDirectionMask)
                                 ? dragUnitExtra.MoveDirection
                                 : (EMoveDirection) tableTarget.OriginMagicDirection;
                             //从而变成了蓝石控制的物体
-                            DataScene2D.Instance.ProcessUnitExtra(coverUnits[0], coveredUnitExtra);
+                            DataScene2D.Instance.ProcessUnitExtra(oldUnitDesc, newUnitExtra);
+                            recordBatch.RecordUpdateExtra(ref oldUnitDesc, ref oldUnitExtra, ref oldUnitDesc, ref newUnitExtra);
                             if (boardData.CurrentTouchUnitDesc != UnitDesc.zero)
                             {
-                                DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(boardData.CurrentTouchUnitDesc);
+                                DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(boardData.CurrentTouchUnitDesc, recordBatch);
                             }
                             effectFlag = true;
                         }
                     }
                     else
                     {
-                        if (EditHelper.CheckCanAddChild(stateData.CurrentMovingUnitBase.TableUnit, coverUnits[0]))
+                        if (EditHelper.CheckCanAddChild(stateData.CurrentMovingUnitBase.TableUnit, oldUnitDesc))
                         {
-                            DataScene2D.Instance.ProcessUnitChild(coverUnits[0],
+                            DataScene2D.Instance.ProcessUnitChild(oldUnitDesc,
                                 new UnitChild((ushort) stateData.CurrentMovingUnitBase.Id,
                                     stateData.CurrentMovingUnitBase.Rotation,
                                     stateData.CurrentMovingUnitBase.MoveDirection));
+                            var newUnitExtra = DataScene2D.Instance.GetUnitExtra(oldUnitDesc.Guid);
+                            recordBatch.RecordUpdateExtra(ref oldUnitDesc, ref oldUnitExtra, ref oldUnitDesc, ref newUnitExtra);
                             if (boardData.CurrentTouchUnitDesc != UnitDesc.zero)
                             {
-                                DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(boardData.CurrentTouchUnitDesc);
+                                DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(boardData.CurrentTouchUnitDesc, recordBatch);
                             }
                             effectFlag = true;
                         }
@@ -222,35 +234,51 @@ namespace GameA.Game
                     {
                         for (int i = 0; i < coverUnits.Count; i++)
                         {
-                            if (EditMode.Instance.DeleteUnitWithCheck(coverUnits[i]))
+                            var deleteUnitDesc = coverUnits[i];
+                            var deleteUnitExtra = DataScene2D.Instance.GetUnitExtra(deleteUnitDesc.Guid);
+                            if (EditMode.Instance.DeleteUnitWithCheck(deleteUnitDesc))
                             {
-                                DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(coverUnits[i]);
+                                recordBatch.RecordRemoveUnit(ref deleteUnitDesc, ref deleteUnitExtra);
+                                DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(coverUnits[i], recordBatch);
                             }
                         }
                     }
                     else
                     {
+                        CommitRecordBatch();
                         return;
                     }
                 }
                 UnitDesc needReplaceUnitDesc;
                 if (EditHelper.TryGetReplaceUnit(target.Id, out needReplaceUnitDesc))
                 {
+                    var needReplaceUnitExtra = DataScene2D.Instance.GetUnitExtra(needReplaceUnitDesc.Guid);
                     if (EditMode.Instance.DeleteUnitWithCheck(needReplaceUnitDesc))
                     {
-                        DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(needReplaceUnitDesc);
+                        recordBatch.RecordRemoveUnit(ref needReplaceUnitDesc, ref needReplaceUnitExtra);
+                        DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(needReplaceUnitDesc, recordBatch);
                     }
                     //TODO 记录删除的地块
                 }
                 if (EditMode.Instance.AddUnitWithCheck(target))
                 {
+                    var targetUnitExtra = stateData.DragUnitExtra;
                     DataScene2D.Instance.ProcessUnitExtra(target, stateData.DragUnitExtra);
+                    recordBatch.RecordAddUnit(ref target, ref targetUnitExtra);
                     GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioEditorLayItem);
                     if (boardData.CurrentTouchUnitDesc != UnitDesc.zero)
                     {
-                        DataScene2D.Instance.OnUnitMoveUpdateSwitchData(boardData.CurrentTouchUnitDesc, target);
+                        DataScene2D.Instance.OnUnitMoveUpdateSwitchData(boardData.CurrentTouchUnitDesc, target, recordBatch);
                     }
                 }
+                else
+                {
+                    if (boardData.CurrentTouchUnitDesc != UnitDesc.zero)
+                    {
+                        DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(boardData.CurrentTouchUnitDesc, recordBatch);
+                    }
+                }
+                CommitRecordBatch();
             }
 
             private void OnEnterMagicMode()
