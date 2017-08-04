@@ -121,8 +121,8 @@ namespace GameA.Game
             _singTime = TableConvert.GetTime(_tableSkill.SingTime);
             _castRange = TableConvert.GetRange(_tableSkill.CastRange);
             _projectileSpeed = TableConvert.GetSpeed(_tableSkill.ProjectileSpeed);
-            _damage = TableConvert.GetRange(_tableSkill.Damage);
-            _cure = TableConvert.GetRange(_tableSkill.Cure);
+            _damage = _tableSkill.Damage;
+            _cure = _tableSkill.Cure;
             _timerSing = 0;
             _timerCD = 0;
             _timerCharge = 0;
@@ -275,7 +275,7 @@ namespace GameA.Game
             {
                 return;
             }
-            unit.OnHpChanged(_damage);
+            unit.OnHpChanged(-_damage);
             unit.OnHpChanged(_cure);
             //触发状态
             for (int i = 0; i < _tableSkill.TriggerStates.Length; i++)

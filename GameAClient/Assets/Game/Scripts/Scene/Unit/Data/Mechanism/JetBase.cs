@@ -112,7 +112,7 @@ namespace GameA.Game
                 if (_skillCtrl != null)
                 {
                     _skillCtrl.UpdateLogic();
-                    if (_skillCtrl.FireForever(0))
+                    if (_skillCtrl.Fire(0))
                     {
                         if (_animation != null)
                         {

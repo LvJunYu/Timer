@@ -37,7 +37,7 @@ namespace GameA.Game
         
         protected int _curMaxSpeedX;
         
-        protected SkillCtrl _skillCtrl;
+        protected PlayerSkillCtrl _skillCtrl;
  
         public override EDieType EDieType
         {

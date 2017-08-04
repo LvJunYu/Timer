@@ -173,7 +173,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            LogHelper.Debug("ChangeWay {0}", eMoveDirection);
             SetInput(eMoveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
             SetInput(eMoveDirection == EMoveDirection.Right ? EInputType.Left : EInputType.Right, false);
             return true;

@@ -91,7 +91,7 @@ namespace GameA.Game
             }
             _gun = _gun ?? new Gun(this);
 
-            _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
+            _skillCtrl = _skillCtrl ?? new PlayerSkillCtrl(this, 3);
             _skillCtrl.Clear();
             ChangeWeapon(2);
             
@@ -121,7 +121,8 @@ namespace GameA.Game
             {
                 skillIds[i + 1] = tableEquipment.SkillIds[i];
             }
-            return _skillCtrl.ChangeSkill(skillIds);
+            _skillCtrl.ChangeSkill(skillIds);
+            return true;
         }
 
         internal override void OnPlay()
