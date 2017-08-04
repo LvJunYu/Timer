@@ -58,7 +58,7 @@ namespace GameA
 
         public Button ReturnBtn;
         public Button RetryBtn;
-        public Button NextBtn;
+        //public Button NextBtn;
         public Button ContinueEditBtn;
 
         public USViewGameFinishReward [] Rewards;
