@@ -75,15 +75,18 @@ namespace GameA.Game
                     case EEffectId.Speed:
                         _target.SpeedStateRatio += (value * 0.01f) * (_effectOverlapCount + 1);
                         break;
-                    case EEffectId.BanAttack:
-                        _target.CanAttack = false;
+                    case EEffectId.Ice:
+                        _target.AddEnvState(EEnvState.Ice);
                         break;
                     case EEffectId.HpMax:
                         break;
                     case EEffectId.Invincible:
                         break;
-                    case EEffectId.BanMove:
-                        _target.CanMove = false;
+                    case EEffectId.Clay:
+                        _target.AddEnvState(EEnvState.Clay);
+                        break;
+                    case EEffectId.Stun:
+                        _target.AddEnvState(EEnvState.Stun);
                         break;
                 }
                 if (!_run)
@@ -106,15 +109,18 @@ namespace GameA.Game
                     case EEffectId.Speed:
                         _target.SpeedStateRatio -= (value * 0.01f) * (_effectOverlapCount + 1);
                         break;
-                    case EEffectId.BanAttack:
-                        _target.CanAttack = true;
+                    case EEffectId.Ice:
+                        _target.RemoveEnvState(EEnvState.Ice);
                         break;
                     case EEffectId.HpMax:
                         break;
                     case EEffectId.Invincible:
                         break;
-                    case EEffectId.BanMove:
-                        _target.CanMove = true;
+                    case EEffectId.Clay:
+                        _target.RemoveEnvState(EEnvState.Clay);
+                        break;
+                    case EEffectId.Stun:
+                        _target.RemoveEnvState(EEnvState.Stun);
                         break;
                 }
             }

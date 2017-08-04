@@ -97,10 +97,11 @@ namespace GameA.Game
         None,
         Hp,
         Speed,
-        BanAttack,
+        Ice,
         HpMax,
         Invincible,
-        BanMove,
+        Clay,
+        Stun,
     }
         
     public enum EEffectType

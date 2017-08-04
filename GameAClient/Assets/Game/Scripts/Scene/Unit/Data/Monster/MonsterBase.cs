@@ -126,7 +126,7 @@ namespace GameA.Game
             {
                 if (_speed.x == 0)
                 {
-                    if (_canMove)
+                    if (CanMove)
                     {
                         _animation.PlayLoop("Idle");
                     }

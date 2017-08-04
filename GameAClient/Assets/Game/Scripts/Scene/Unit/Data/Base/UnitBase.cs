@@ -12,6 +12,14 @@ using UnityEngine;
 
 namespace GameA.Game
 {
+    public enum EEnvState
+    {
+        Ice,
+        Clay,
+        Stun,
+        Fire,
+    }
+
     [Serializable]
     public class UnitBase : ColliderBase, IEquatable<UnitBase>
     {
@@ -58,8 +66,7 @@ namespace GameA.Game
 
         protected  int _wingCount;
 
-        protected bool _canMove;
-        protected bool _canAttack;
+        protected int _envState;
 
         [SerializeField] protected IntVec2 _deltaPos;
         [SerializeField] protected IntVec2 _deltaImpactPos;
@@ -191,14 +198,12 @@ namespace GameA.Game
 
         public bool CanMove
         {
-            get { return _canMove; }
-            set { _canMove = value; }
+            get { return !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun); }
         }
 
         public bool CanAttack
         {
-            get { return _canAttack; }
-            set { _canAttack = value; }
+            get { return !IsInState(EEnvState.Ice) && !IsInState(EEnvState.Stun); }
         }
 
         public virtual SkillCtrl SkillCtrl
@@ -666,6 +671,7 @@ namespace GameA.Game
 
         protected virtual void Clear()
         {
+            _envState = 0;
             ClearRunTime();
             if (_tableUnit.Hp > 0)
             {
@@ -673,8 +679,6 @@ namespace GameA.Game
             }
             _hp = _maxHp;
             _wingCount = 0;
-            _canAttack = true;
-            _canMove = true;
             _speedStateRatio = 1;
             _isAlive = true;
             _dieTime = 0;
@@ -1589,7 +1593,7 @@ namespace GameA.Game
             }
         }
 
-        #region  skill
+        #region  skill State
 
         public virtual void AddStates(params int[] ids)
         {
@@ -1611,6 +1615,21 @@ namespace GameA.Game
         {
             state = null;
             return false;
+        }
+
+        public void AddEnvState(EEnvState eEnvState)
+        {
+            _envState |= 1 << (int)eEnvState;
+        }
+
+        public void RemoveEnvState(EEnvState eEnvState)
+        {
+            _envState &= ~(1 << (int)eEnvState);
+        }
+
+        public bool IsInState(EEnvState eEnvState)
+        {
+            return (_envState & (1 << (int) eEnvState)) != 0;
         }
 
         public virtual bool SetWeapon(int id)
