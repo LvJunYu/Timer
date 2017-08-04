@@ -15,12 +15,7 @@ namespace GameA.Game
             {
                 var boardData = GetBlackBoard();
                 boardData.DragInCurrentState = true;
-                Vector2 mousePos = Input.mousePosition;
-                if (gesture != null)
-                {
-                    mousePos = gesture.position - gesture.deltaPosition;
-                }
-                TryRemove(mousePos);
+                TryRemove(gesture.startPosition, gesture.position);
             }
 
             public override void OnDrag(Gesture gesture)
@@ -34,13 +29,7 @@ namespace GameA.Game
                 {
                     return;
                 }
-                //补齐两点之间的空隙
-                Vector2 worldDeltaSize = GM2DTools.ScreenToWorldSize(gesture.deltaPosition);
-                int totalCount = (int) worldDeltaSize.magnitude + 1;
-                for (int i = totalCount-1; i >= 0; i--)
-                {
-                    TryRemove(gesture.position - gesture.deltaPosition * i / totalCount);
-                }
+                TryRemove(gesture.position - gesture.deltaPosition, gesture.position);
             }
 
             public override void OnDragEnd(Gesture gesture)
@@ -54,12 +43,25 @@ namespace GameA.Game
                 {
                     return;
                 }
+                TryRemove(gesture.position - gesture.deltaPosition, gesture.position);
                 //TODO 保存录像
             }
 
             public override void OnTap(Gesture gesture)
             {
                 TryRemove(gesture.position);
+            }
+
+            private void TryRemove(Vector2 startPos, Vector2 endPos)
+            {
+                var delta = endPos - startPos;
+                //补齐两点之间的空隙
+                Vector2 worldDeltaSize = GM2DTools.ScreenToWorldSize(delta);
+                int totalCount = (int) worldDeltaSize.magnitude + 1;
+                for (int i = totalCount-1; i >= 0; i--)
+                {
+                    TryRemove(endPos - delta * i / totalCount);
+                }
             }
 
             private void TryRemove(Vector2 mousePos)

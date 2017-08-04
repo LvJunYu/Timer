@@ -77,9 +77,7 @@ namespace GameA
 
 	    private void SetData(string value)
 	    {
-	        UnitExtra unitExtra = DataScene2D.Instance.GetUnitExtra(_selectItem.Guid);
-	        unitExtra.Msg = value;
-	        DataScene2D.Instance.ProcessUnitExtra(_selectItem, unitExtra);
+		    EditModeState.Global.Instance.ChangeBillboardMessage(_selectItem, value);
 	    }
 
 		#endregion

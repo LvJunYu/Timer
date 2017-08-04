@@ -67,7 +67,7 @@ namespace GameA.Game
             public override void OnDragStart(Gesture gesture)
             {
                 var boardData = GetBlackBoard();
-                if (TrySelectUnit(gesture.position - gesture.deltaPosition))
+                if (TrySelectUnit(gesture.startPosition))
                 {
                     boardData.DragInCurrentState = true;
                     var data = boardData.GetStateData<Data>();

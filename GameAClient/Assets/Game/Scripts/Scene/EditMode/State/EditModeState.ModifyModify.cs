@@ -32,11 +32,7 @@ namespace GameA.Game
                 var boardData = GetBlackBoard();
                 boardData.DragInCurrentState = false;
                 UnitDesc touchedUnitDesc;
-                Vector2 mousePos = Input.mousePosition;
-                if (gesture != null)
-                {
-                    mousePos = gesture.position - gesture.deltaPosition;
-                }
+                Vector2 mousePos = gesture.startPosition;
                 var mouseWorldPos = GM2DTools.ScreenToWorldPoint(mousePos);
                 if (!EditHelper.TryGetUnitDesc(mouseWorldPos, out touchedUnitDesc))
                 {
