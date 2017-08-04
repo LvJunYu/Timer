@@ -7,7 +7,7 @@ namespace GameA.Game
     {
         public abstract class Base : State<EditMode>
         {
-            protected EditRecordBatch _recordBatch;
+            private EditRecordBatch _recordBatch;
             public virtual void Init() { }
             public override void Enter(EditMode owner) { }
             public override void Execute(EditMode owner) { }

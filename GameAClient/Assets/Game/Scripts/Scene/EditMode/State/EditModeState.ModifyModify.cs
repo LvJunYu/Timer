@@ -25,7 +25,14 @@ namespace GameA.Game
                 {
                     return;
                 }
-                Drag(Input.mousePosition);
+                if (Input.GetMouseButton(0))
+                {
+                    Drag(Input.mousePosition);
+                }
+                else
+                {
+                    Drop();
+                }
             }
 
             public override void OnDragStart(Gesture gesture)

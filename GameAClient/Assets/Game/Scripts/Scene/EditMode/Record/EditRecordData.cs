@@ -7,6 +7,7 @@ namespace GameA.Game
         public EAction ActionType;
         public UnitDesc UnitDesc;
         public UnitExtra UnitExtra;
+        public UnitDesc UnitDescOld;
         public UnitExtra UnitExtraOld;
         public IntVec3 SwitchGuid;
         
