@@ -16,8 +16,11 @@ namespace GameA.Game
             public void ChangeBillboardMessage(UnitDesc unitDesc, string newMsg)
             {
                 UnitExtra unitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
-                unitExtra.Msg = newMsg;
-                DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
+                var newUnitExtra = unitExtra;
+                newUnitExtra.Msg = newMsg;
+                DataScene2D.Instance.ProcessUnitExtra(unitDesc, newUnitExtra);
+                GetRecordBatch().RecordUpdateExtra(ref unitDesc, ref unitExtra, ref unitDesc, ref newUnitExtra);
+                CommitRecordBatch();
             }
 
             public override void OnMouseRightButtonDrag(Vector3 arg1, Vector2 delta)

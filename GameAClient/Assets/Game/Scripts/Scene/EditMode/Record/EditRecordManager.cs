@@ -33,6 +33,10 @@ namespace GameA.Game
         {
             _stackUndo.Push(record);
             DeleteRedoRecord();
+            if (_stackUndo.Count == 1)
+            {
+                Messenger<bool>.Broadcast(EMessengerType.OnUndoChanged, CanUndo);
+            }
         }
 
         public void ClearAllRecordBatch()

@@ -61,6 +61,7 @@ namespace GameA
 
 			_cachedView.Home.onClick.AddListener(OnClickHome);
 			_cachedView.Undo.onClick.AddListener(OnUndo);
+			_cachedView.Redo.onClick.AddListener(OnRedo);
 
 			_cachedView.Play.onClick.AddListener(OnPlay);
 			_cachedView.Pause.onClick.AddListener(OnPause);
@@ -117,7 +118,7 @@ namespace GameA
             case EMode.Edit:
 	            _cachedView.Erase.gameObject.SetActive (false);
 	            _cachedView.EraseSelected.gameObject.SetActive (false);
-                _cachedView.Redo.gameObject.SetActive (false);
+                _cachedView.Redo.gameObject.SetActive (true);
                 _cachedView.Undo.gameObject.SetActive (true);
                 _cachedView.Publish.gameObject.SetActive (false);
                 _cachedView.ButtonFinishCondition.SetActiveEx (true);
@@ -240,10 +241,15 @@ namespace GameA
 	        EditMode.Instance.StopSwitch();
 		}
 
-        private void OnUndo()
-        {
-	        EditMode.Instance.Undo();
-        }
+		private void OnUndo()
+		{
+			EditMode.Instance.Undo();
+		}
+		
+		private void OnRedo()
+		{
+			EditMode.Instance.Redo();
+		}
 
 	    private void OnClickHome()
 	    {
