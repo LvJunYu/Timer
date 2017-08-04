@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using SoyEngine;
+﻿using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -15,7 +14,7 @@ namespace GameA.Game
 
             public override void Exit(EditMode owner)
             {
-                Drop(Input.mousePosition);
+                Drop();
             }
             
             public override void Execute(EditMode owner)
@@ -33,11 +32,7 @@ namespace GameA.Game
                 var boardData = GetBlackBoard();
                 boardData.DragInCurrentState = false;
                 UnitDesc touchedUnitDesc;
-                Vector2 mousePos = Input.mousePosition;
-                if (gesture != null)
-                {
-                    mousePos = gesture.position - gesture.deltaPosition;
-                }
+                Vector2 mousePos = gesture.startPosition;
                 var mouseWorldPos = GM2DTools.ScreenToWorldPoint(mousePos);
                 if (!EditHelper.TryGetUnitDesc(mouseWorldPos, out touchedUnitDesc))
                 {
@@ -53,27 +48,31 @@ namespace GameA.Game
                     Object.Destroy(data.MovingRoot.gameObject);
                     data.MovingRoot = null;
                 }
-                UnitExtra unitExtra = DataScene2D.Instance.GetUnitExtra(touchedUnitDesc.Guid);
+                var unitPos = mouseWorldPos;
                 UnitBase unitBase;
-                var rootGo = EditHelper.CreateDragRoot(mouseWorldPos, touchedUnitDesc.Id,
+                if (ColliderScene2D.Instance.TryGetUnit(touchedUnitDesc.Guid, out unitBase))
+                {
+                    unitPos = GM2DTools.TileToWorld(unitBase.CenterPos);
+                }
+                UnitExtra unitExtra = DataScene2D.Instance.GetUnitExtra(touchedUnitDesc.Guid);
+                var rootGo = EditHelper.CreateDragRoot(unitPos, touchedUnitDesc.Id,
                     (EDirectionType) touchedUnitDesc.Rotation, out unitBase);
                 data.CurrentMovingUnitBase = unitBase;
                 data.DragUnitExtra = unitExtra;
                 data.MovingRoot = rootGo.transform;
+                data.MouseObjectOffsetInWorld = unitPos - mouseWorldPos;
                 boardData.CurrentTouchUnitDesc = touchedUnitDesc;
                 boardData.DragInCurrentState = true;
                 data.MouseActualPos = mousePos;
-                data.MouseObjectOffsetInWorld = GM2DTools.GetUnitDragingOffset(data.CurrentMovingUnitBase.Id);
             }
 
             public override void OnDragEnd(Gesture gesture)
             {
-                Drop(gesture.position);
+                Drop();
             }
 
             public override void OnTap(Gesture gesture)
             {
-                var boardData = GetBlackBoard();
                 UnitDesc touchedUnitDesc;
                 if (!EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(gesture.position), out touchedUnitDesc))
                 {
@@ -142,7 +141,7 @@ namespace GameA.Game
                     1f);
             }
             
-            private void Drop(Vector2 mousePos)
+            private void Drop()
             {
                 var boardData = GetBlackBoard();
                 if (!boardData.DragInCurrentState)
@@ -151,7 +150,7 @@ namespace GameA.Game
                 }
                 var stateData = boardData.GetStateData<Data>();
                 
-                ProcessDrop(mousePos, boardData, stateData);
+                ProcessDrop(boardData, stateData);
                 
                 boardData.DragInCurrentState = false;
                 if (null != stateData.CurrentMovingUnitBase)
@@ -167,7 +166,7 @@ namespace GameA.Game
                 stateData.DragUnitExtra = UnitExtra.zero;
             }
             
-            private void ProcessDrop(Vector2 mousePos, EditMode.BlackBoard boardData, Data stateData)
+            private void ProcessDrop(EditMode.BlackBoard boardData, Data stateData)
             {
                 Vector3 mouseWorldPos = GM2DTools.ScreenToWorldPoint(stateData.MouseActualPos);
                 mouseWorldPos += stateData.MouseObjectOffsetInWorld;
@@ -180,7 +179,7 @@ namespace GameA.Game
                 target.Rotation = stateData.CurrentMovingUnitBase.Rotation;
                 int layerMask = EnvManager.UnitLayerWithoutEffect;
                 var coverUnits = DataScene2D.GridCastAllReturnUnits(target, layerMask);
-                if (coverUnits.Count > 0)
+                if (coverUnits != null && coverUnits.Count > 0)
                 {
                     Messenger<string>.Broadcast(EMessengerType.GameLog, "只能移动或变换，不能覆盖");
                     return;

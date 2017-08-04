@@ -126,7 +126,7 @@ namespace GameA.Game
             {
                 if (_speed.x == 0)
                 {
-                    if (_canMove)
+                    if (CanMove)
                     {
                         _animation.PlayLoop("Idle");
                     }
@@ -173,7 +173,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            LogHelper.Debug("ChangeWay {0}", eMoveDirection);
             SetInput(eMoveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
             SetInput(eMoveDirection == EMoveDirection.Right ? EInputType.Left : EInputType.Right, false);
             return true;

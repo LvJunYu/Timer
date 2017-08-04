@@ -20,6 +20,13 @@ namespace GameA.Game
     [Unit(Id = 2001, Type = typeof(MonsterTree))]
     public class MonsterTree : MonsterAI
     {
+        protected override void Clear()
+        {
+            _skillCtrl = _skillCtrl ?? new SkillCtrl(this);
+            _skillCtrl.SetSkill(101);
+            base.Clear();
+        }
+
         protected override void UpdateMonsterView(float deltaTime)
         {
             base.UpdateMonsterView(deltaTime);
@@ -42,7 +49,7 @@ namespace GameA.Game
                     }
                     if (IsInAttackRange())
                     {
-                        PlayMode.Instance.MainPlayer.OnStun(this);
+//                        PlayMode.Instance.MainPlayer.OnStun(this);
                     }
                 }
             }

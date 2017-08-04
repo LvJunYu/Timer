@@ -632,9 +632,8 @@ namespace GameA.Game
             var tran = helperParentObj.transform;
             pos.z = -50;
             tran.position = pos;
-            tran.position += GM2DTools.GetUnitDragingOffset(unitId);
             unitBase.Trans.parent = tran;
-            unitBase.Trans.localPosition = Vector3.zero;
+            unitBase.Trans.localPosition = GM2DTools.GetUnitDragingOffset(unitId);
             unitBase.Trans.localScale = Vector3.one;
             return helperParentObj;
         }

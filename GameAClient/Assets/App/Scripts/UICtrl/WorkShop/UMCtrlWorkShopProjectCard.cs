@@ -75,6 +75,7 @@ namespace GameA
             {
                 ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
                 _cachedView.SeletedMark.SetActiveEx (false);
+                
                 return;
             }
 //            RefreshCardMode(_wrapper.CardMode, _wrapper.IsSelected);
@@ -90,7 +91,17 @@ namespace GameA
                 DictionaryTools.SetContentText(_cachedView.Title, _wrapper.Content.Name);
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _wrapper.Content.IconPath, _cachedView.DefaultCoverTexture);
                 _cachedView.SeletedMark.SetActiveEx (_wrapper.IsSelected);
-                _cachedView.CreateTime.text = DateTimeUtil.GetServerSmartDateStringByTimestampMillis(_wrapper.Content.UpdateTime);
+                if (_wrapper.IsSelected)
+                {
+                    _cachedView.Title.text = "<color=#ffffff>" + _wrapper.Content.Name + "</color>";
+                    _cachedView.CreateTime.text = "<color=#ffffff>" + GameATools.GetYearMonthDayHourMinuteSecondByMilli(_wrapper.Content.UpdateTime, 1) + "</color>";
+                }
+                else
+                {
+                    _cachedView.CreateTime.text =
+                        GameATools.GetYearMonthDayHourMinuteSecondByMilli(_wrapper.Content.UpdateTime, 1);
+                    //DateTimeUtil.GetServerSmartDateStringByTimestampMillis(_wrapper.Content.UpdateTime);
+                }
             }
         }
 

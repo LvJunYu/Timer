@@ -42,7 +42,7 @@ namespace GameA.Game
                 return false;
             }
             InitAssetRotation();
-            ChangeWeapon(_weaponId);
+            SetWeapon(_weaponId);
             return true;
         }
         
@@ -56,11 +56,11 @@ namespace GameA.Game
         public override void UpdateExtraData()
         {
             _weaponId = DataScene2D.Instance.GetUnitExtra(_guid).UnitValue;
-            ChangeWeapon(_weaponId);
+            SetWeapon(_weaponId);
             base.UpdateExtraData();
         }
         
-        public override bool ChangeWeapon(int id)
+        public override bool SetWeapon(int id)
         {
             var tableEquipment = TableManager.Instance.GetEquipment(id);
             if (tableEquipment == null)
@@ -93,9 +93,8 @@ namespace GameA.Game
                     _efffectWeapon.Play();
                 }
             }
-            _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 1);
-            _skillCtrl.Clear();
-            _skillCtrl.ChangeSkill(tableEquipment.SkillIds[0]);
+            _skillCtrl = _skillCtrl ?? new SkillCtrl(this);
+            _skillCtrl.SetSkill(tableEquipment.SkillIds[0]);
             SetValue();
             return true;
         }
@@ -112,7 +111,7 @@ namespace GameA.Game
                 if (_skillCtrl != null)
                 {
                     _skillCtrl.UpdateLogic();
-                    if (_skillCtrl.FireForever(0))
+                    if (_skillCtrl.Fire(0))
                     {
                         if (_animation != null)
                         {

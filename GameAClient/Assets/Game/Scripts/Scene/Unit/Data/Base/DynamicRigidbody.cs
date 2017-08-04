@@ -13,7 +13,6 @@ namespace GameA.Game
         protected int _motorAcc;
         
         protected InputBase _input;
-        protected int _stunTimer;
         
         [SerializeField]
         protected ELittleSkillState _littleSkillState;
@@ -38,12 +37,7 @@ namespace GameA.Game
         protected abstract bool IsCheckGround();
         protected abstract bool IsCheckClimb();
         protected abstract bool IsUpdateSpeedY();
-        
-        public bool IsStunning
-        {
-            get { return _stunTimer > 0; }
-        }
-        
+
         public InputBase Input
         {
             get { return _input; }
@@ -58,8 +52,6 @@ namespace GameA.Game
             _eClimbState = EClimbState.None;
             _climbJump = false;
             _stepY = 0;
-            
-            _stunTimer = 0;
         }
         
         public void Setup(InputBase inputBase)
@@ -253,11 +245,11 @@ namespace GameA.Game
         protected virtual void CalculateMotor()
         {
             _motorAcc = 0;
-            if (_input.GetKeyApplied(EInputType.Right) && !IsStunning)
+            if (_input.GetKeyApplied(EInputType.Right) && CanMove)
             {
                 _motorAcc = _onIce ? 1 : 10;
             }
-            if (_input.GetKeyApplied(EInputType.Left) && !IsStunning)
+            if (_input.GetKeyApplied(EInputType.Left) && CanMove)
             {
                 _motorAcc = _onIce ? -1 : -10;
             }
