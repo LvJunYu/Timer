@@ -81,7 +81,6 @@ namespace GameA.Game
                 UnitDesc touchedUnitDesc;
                 if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(Input.mousePosition), out touchedUnitDesc))
                 {
-                    boardData.CurrentTouchUnitDesc = touchedUnitDesc;
                     EditHelper.ProcessClickUnitOperation(touchedUnitDesc);
                 }
                 else
