@@ -24,11 +24,11 @@ namespace GameA
             base.OnOpen(parameter);
 
             if (null == parameter) {
-                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetailInfo> ();
+                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetailInfo>();
             }
             _project = parameter as Project;
             if (null == _project) {
-                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetailInfo> ();
+                SocialGUIManager.Instance.CloseUI<UICtrlProjectDetailInfo>();
             }
 
             RefreshView ();
@@ -53,7 +53,7 @@ namespace GameA
         
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.PopUpUI;
+            _groupId = (int)EUIGroupType.UIAdvDetail;
         }
 
         private void RefreshView () {
