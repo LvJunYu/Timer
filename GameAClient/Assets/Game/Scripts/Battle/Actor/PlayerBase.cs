@@ -174,28 +174,22 @@ namespace GameA.Game
             if (IsValidBox(_hitUnits[(int)EDirectionType.Right]))
             {
                 //弹出UI给提示
-                Messenger<string>.Broadcast(EMessengerType.GameLog, "按 L 键可以推拉木箱");
+                Messenger<string>.Broadcast(EMessengerType.GameLog, "按 E 键可以推拉木箱");
                 _box = _hitUnits[(int)EDirectionType.Right] as Box;
                 if (_box != null)
                 {
                     _box.DirectionRelativeMain = EDirectionType.Right;
                 }
-                ChangeLittleSkillState(ELittleSkillState.HoldBox);
             }
             else if (IsValidBox(_hitUnits[(int)EDirectionType.Left]))
             {
                 //弹出UI给提示
-                Messenger<string>.Broadcast(EMessengerType.GameLog, "按 L 键可以推拉木箱");
+                Messenger<string>.Broadcast(EMessengerType.GameLog, "按 E 键可以推拉木箱");
                 _box = _hitUnits[(int)EDirectionType.Left] as Box;
                 if (_box != null)
                 {
                     _box.DirectionRelativeMain = EDirectionType.Left;
                 }
-                ChangeLittleSkillState(ELittleSkillState.HoldBox);
-            }
-            if (_box == null)
-            {
-                ChangeLittleSkillState(ELittleSkillState.Quicken);
             }
         }
 

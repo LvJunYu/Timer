@@ -204,21 +204,9 @@ namespace GameA.Game
         
         protected void CheckAssist()
         {
-            switch (_littleSkillState)
+            if (_input.GetKeyUpApplied(EInputType.Assist))
             {
-                case ELittleSkillState.HoldBox:
-                    {
-                        if (_input.GetKeyUpApplied(EInputType.Assist))
-                        {
-                            OnBoxHoldingChanged();
-                        }
-                    }
-                    break;
-                case ELittleSkillState.Quicken:
-                    {
-        
-                    }
-                    break;
+                OnBoxHoldingChanged();
             }
         }
         
@@ -273,16 +261,6 @@ namespace GameA.Game
                     _skillCtrl.Fire(2);
                 }
             }
-        }
-        
-        public void ChangeLittleSkillState(ELittleSkillState eLittleSkillState)
-        {
-            if (_littleSkillState == eLittleSkillState)
-            {
-                return;
-            }
-            _littleSkillState = eLittleSkillState;
-            Messenger<ELittleSkillState>.Broadcast(EMessengerType.OnLittleSkillChanged, _littleSkillState);
         }
 
         private bool IsCharacterAbilityAvailable(ECharacterAbility eCharacterAbility)

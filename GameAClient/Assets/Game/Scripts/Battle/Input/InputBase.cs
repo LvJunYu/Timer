@@ -18,13 +18,7 @@ namespace GameA.Game
         Skill3,
         Max
     }
-    
-    public enum ELittleSkillState
-    {
-        Quicken,
-        HoldBox
-    }
-    
+
     public class InputBase
     {
         [SerializeField]

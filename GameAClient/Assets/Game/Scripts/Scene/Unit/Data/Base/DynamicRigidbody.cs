@@ -14,9 +14,6 @@ namespace GameA.Game
         
         protected InputBase _input;
         
-        [SerializeField]
-        protected ELittleSkillState _littleSkillState;
-
         // 跳跃等级
         [SerializeField]
         protected int _jumpLevel;
@@ -27,7 +24,7 @@ namespace GameA.Game
         protected EClimbState _eClimbState;
         // 攀墙跳
         [SerializeField]
-        protected bool _climbJump = false;
+        protected bool _climbJump;
         protected int _stepY;
         /// <summary>
         /// 起跳的动画时间
