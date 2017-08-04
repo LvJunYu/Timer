@@ -171,6 +171,7 @@ namespace GameA.Game
             {
                 return false;
             }
+            _owner.StartSkill();
             _timerSing = _singTime;
             if (_timerSing == 0)
             {
@@ -201,6 +202,7 @@ namespace GameA.Game
         
         protected virtual void OnSkillCast()
         {
+            _owner.OnSkillCast();
             switch ((EBehaviorType)_tableSkill.BehaviorType)
             {
                 case EBehaviorType.Common:
@@ -331,7 +333,6 @@ namespace GameA.Game
                 unit.ExtraSpeed.x = direction.x >= 0 ? forces[0] : -forces[0];
                 unit.ExtraSpeed.y = direction.y >= -320 ? forces[1] : -forces[1];
                 unit.Speed = IntVec2.zero;
-                unit.CurBanInputTime = 20;
             }
 //            LogHelper.Debug("OnActorHit, {0}", unit);
         }

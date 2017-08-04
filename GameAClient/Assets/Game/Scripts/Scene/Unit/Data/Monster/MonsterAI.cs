@@ -38,7 +38,6 @@ namespace GameA.Game
         protected int _thinkTimer;
         protected int _stuckTimer;
         protected int _reSeekTimer;
-        protected int _attackTimer;
 
         protected override bool OnInit()
         {
@@ -60,7 +59,6 @@ namespace GameA.Game
             _thinkTimer = 0;
             _stuckTimer = 0;
             _reSeekTimer = 0;
-            _attackTimer = 0;
             base.Clear();
         }
 

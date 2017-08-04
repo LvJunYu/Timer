@@ -35,32 +35,18 @@ namespace GameA.Game
             return _curPos.y <= PlayMode.Instance.MainPlayer.CurPos.y;
         }
 
-        protected override void UpdateMonsterView(float deltaTime)
+        protected override void Clear()
         {
-            //LogHelper.Debug("UpdateMonsterView : {0} {1}", _eState, _speed);
-            base.UpdateMonsterView(deltaTime);
-            if (_eState == EMonsterState.Attack)
+            _skillCtrl = _skillCtrl ?? new SkillCtrl(this);
+            _skillCtrl.SetSkill(102);
+            base.Clear();
+        }
+
+        public override void StartSkill()
+        {
+            if (_animation != null && !_animation.IsPlaying("Attack", 1))
             {
-                if (_animation != null && !_animation.IsPlaying("Attack", 1))
-                {
-                    _animation.PlayOnce("Attack", 1, 1);
-                    _attackTimer = 15;
-                }
-            }
-            if (_attackTimer > 0)
-            {
-                _attackTimer--;
-                if (_attackTimer == 0)
-                {
-                    if (_trans != null)
-                    {
-                        //GameParticleManager.Instance.Emit("M1EffectMonsterTree", _trans.position + Vector3.forward * 0.1f, Vector3.one);
-                    }
-                    if (IsInAttackRange())
-                    {
-//                        PlayMode.Instance.MainPlayer.OnKnockBack(this);
-                    }
-                }
+                _animation.PlayOnce("Attack", 1, 1);
             }
         }
     }
