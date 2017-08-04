@@ -53,7 +53,7 @@
         {
             if (other.IsActor && other.IsAlive)
             {
-                other.OnHpChanged(-99999);
+                other.InSaw();
             }
         }
     }
