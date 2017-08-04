@@ -242,7 +242,21 @@ namespace GameA.Game
                 case EEffcetMode.TargetLine:
                     break;
                 case EEffcetMode.SelfSector:
-                    break;
+                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                    var units = ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, hitLayerMask);
+                    for (int i = units.Count - 1; i >= 0; i--)
+                    {
+                        var unit = units[i];
+                        var rel = _owner.CenterDownPos - unit.CenterDownPos;
+                        if ((rel.x >= 0 && _owner.CurMoveDirection == EMoveDirection.Left) || (rel.x <= 0 && _owner.CurMoveDirection == EMoveDirection.Right))
+                        {
+                        }
+                        else
+                        {
+                            units.RemoveAt(i);
+                        }
+                    }
+                    return units;
                 case EEffcetMode.SelfCircle:
                     {
                         _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
