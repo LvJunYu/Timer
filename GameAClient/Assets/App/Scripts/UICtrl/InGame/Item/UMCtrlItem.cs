@@ -96,8 +96,8 @@ namespace GameA
                     {
                         rotate = (EDirectionType) current;
                     }
-                    EditMode.Instance.StartDragUnit(GM2DTools.ScreenToWorldPoint(pointerEventData.position),
-                        _table.Id, rotate, ref unitExtra);
+                    var mouseWorldPos = GM2DTools.ScreenToWorldPoint(pointerEventData.position);
+                    EditMode.Instance.StartDragUnit(mouseWorldPos, mouseWorldPos, _table.Id, rotate, ref unitExtra);
                 }
                 else if (Mathf.Abs(delta.x) > CheckDelta.x)
                 {

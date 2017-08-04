@@ -16,14 +16,21 @@ namespace GameA.Game
             {
                 var boardData = GetBlackBoard();
                 boardData.DragInCurrentState = false;
-                UnitDesc outValue;
+                UnitDesc touchedUnitDesc;
                 Vector2 mousePos = gesture.startPosition;
-                if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), out outValue))
+                if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), out touchedUnitDesc))
                 {//当前点击位置有地块，转换为移动模式
-                    boardData.CurrentTouchUnitDesc = outValue;
-                    var unitExtra = DataScene2D.Instance.GetUnitExtra(outValue.Guid);
-                    EditMode.Instance.StartDragUnit(GM2DTools.ScreenToWorldPoint(mousePos),
-                        outValue.Id, (EDirectionType) outValue.Rotation, ref unitExtra);
+                    boardData.CurrentTouchUnitDesc = touchedUnitDesc;
+                    var unitExtra = DataScene2D.Instance.GetUnitExtra(touchedUnitDesc.Guid);
+                    var mouseWorldPos = GM2DTools.ScreenToWorldPoint(mousePos);
+                    var unitPos = mouseWorldPos;
+                    UnitBase unitBase;
+                    if (ColliderScene2D.Instance.TryGetUnit(touchedUnitDesc.Guid, out unitBase))
+                    {
+                        unitPos = GM2DTools.TileToWorld(unitBase.CenterPos);
+                    }
+                    EditMode.Instance.StartDragUnit(mouseWorldPos, unitPos, touchedUnitDesc.Id,
+                        (EDirectionType) touchedUnitDesc.Rotation, ref unitExtra);
                 }
                 else
                 {//起始位置无地块，连续创建
@@ -138,6 +145,7 @@ namespace GameA.Game
                 UnitDesc needReplaceUnitDesc;
                 if (EditHelper.TryGetReplaceUnit(tableUnit.Id, out needReplaceUnitDesc))
                 {
+                    EditMode.Instance.DeleteUnitWithCheck(needReplaceUnitDesc);
                     //TODO 记录删除的地块
                 }
                 if (EditMode.Instance.AddUnitWithCheck(unitDesc))
