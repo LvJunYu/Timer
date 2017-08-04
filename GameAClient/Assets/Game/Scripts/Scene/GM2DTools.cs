@@ -639,7 +639,7 @@ namespace GameA.Game
                 offset.x = 0;
                 res = offset;
             }
-            return res;
+            return -res;
         }
 
         public static Vector3 GetModelOffsetInWorldPos(IntVec2 dataSize, IntVec2 modelSize, Table_Unit tableUnit)
