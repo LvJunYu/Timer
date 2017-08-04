@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using SoyEngine;
+using UnityEngine.EventSystems;
 
 
 namespace GameA
@@ -13,11 +14,14 @@ namespace GameA
         public Image SkillBtn1Icon;
         public Image SkillBtn2Icon;
 
-        public Button SkillBtn1;
-        public Button SkillBtn2;
-        public Button SkillBtn3;
+        public PushButton SkillBtn1;
+        public PushButton SkillBtn2;
+        public PushButton SkillBtn3;
 
-        public Button JumpBtn;
+        public PushButton AssistBtn;
+
+        public PushButton JumpBtn;
         public Image JumpBtnIcon;
+
     }
 }

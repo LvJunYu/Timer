@@ -26,6 +26,8 @@ namespace UnityStandardAssets.CrossPlatformInput
                 virtualInput = new StandaloneInput();
                 #endif
             }
+            
+//            virtualInput = new MobileInput ();
         }
 
         public static void Update ()

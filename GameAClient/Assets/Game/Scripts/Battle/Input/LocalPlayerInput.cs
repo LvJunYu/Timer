@@ -90,14 +90,6 @@ namespace GameA.Game
             _curCheckVertical = CrossPlatformInputManager.GetAxis(InputManager.TagVertical);
 #if IPHONE || ANDROID
 #else
-            if (EventSystem.current.IsPointerOverGameObject())
-            {
-                for (int i = 0; i < _curCheckInputKeyAry.Length; i++)
-                {
-                    _curCheckInputKeyAry[i] = false;
-                }
-                return;
-            }
 #endif
 
             if (GetKeyDownCheck(EInputType.Left))
