@@ -121,6 +121,11 @@ namespace GameA.Game
             _skillCtrl = _skillCtrl ?? new PlayerSkillCtrl(this);
             _skillCtrl.SetPoint(tableEquipment.Mp, tableEquipment.MpRecover, tableEquipment.Rp, tableEquipment.RpRecover);
             _skillCtrl.SetSkill(skillIds);
+            if (IsMain)
+            {
+                Messenger<string>.Broadcast(EMessengerType.SetSkill2Icon, _skillCtrl.CurrentSkills[1].TableSkill.Icon);
+                Messenger<string>.Broadcast(EMessengerType.SetSkill3Icon, _skillCtrl.CurrentSkills[2].TableSkill.Icon);
+            }
             return true;
         }
 

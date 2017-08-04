@@ -90,6 +90,11 @@ namespace GameA.Game
             get { return RpCost > 0; }
         }
 
+        public Table_Skill TableSkill
+        {
+            get { return _tableSkill; }
+        }
+
         public SkillBase(int id, UnitBase ower)
         {
             _owner = ower;
@@ -124,7 +129,7 @@ namespace GameA.Game
             _damage = _tableSkill.Damage;
             _cure = _tableSkill.Cure;
             _timerSing = 0;
-            _timerCD = 0;
+            SetTimerCD(0);
             _timerCharge = 0;
         }
 
@@ -148,8 +153,8 @@ namespace GameA.Game
             if (_timerCD > 0)
             {
                 _timerCD--;
+                SetTimerCD(_timerCD);
             }
-    
             if (_timerSing > 0)
             {
                 _timerSing--;
@@ -166,7 +171,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            _timerCD = _cdTime;
+            SetTimerCD(_cdTime);
             if (_timerSing > 0)
             {
                 return false;
@@ -179,7 +184,20 @@ namespace GameA.Game
             }
             return true;
         }
-        
+
+        private void SetTimerCD(int value)
+        {
+            if (_timerCD == value)
+            {
+                return;
+            }
+            _timerCD = value;
+            if (_owner.IsMain)
+            {
+                Messenger<float, float>.Broadcast(EMessengerType.OnSkill2CDChanged, _timerCD, _cdTime);
+            }
+        }
+
         protected void CreateProjectile(int projectileId, IntVec2 pos, int angle)
         {
             var bullet = PlayMode.Instance.CreateRuntimeUnit(projectileId, pos) as ProjectileBase;
