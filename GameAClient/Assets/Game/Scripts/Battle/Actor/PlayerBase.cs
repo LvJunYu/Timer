@@ -90,10 +90,7 @@ namespace GameA.Game
                 _input.Clear();
             }
             _gun = _gun ?? new Gun(this);
-
-            _skillCtrl = _skillCtrl ?? new PlayerSkillCtrl(this, 3);
-            _skillCtrl.Clear();
-            ChangeWeapon(2);
+            SetWeapon(2);
             
             _dieTime = 0;
             _box = null;
@@ -103,7 +100,7 @@ namespace GameA.Game
             base.Clear();
         }
 
-        public override bool ChangeWeapon(int id)
+        public override bool SetWeapon(int id)
         {
             var tableEquipment = TableManager.Instance.GetEquipment(id);
             if (tableEquipment == null)
@@ -114,14 +111,15 @@ namespace GameA.Game
             _maxHp = tableEquipment.Hp;
             OnHpChanged(_maxHp);
             _gun.ChangeView(tableEquipment.Model);
-            _skillCtrl.SetPoint(tableEquipment.Mp,tableEquipment.MpRecover,tableEquipment.Rp,tableEquipment.RpRecover);
-            int[] skillIds = new int[3];
+            var skillIds = new int[3];
             skillIds[0] = 1;
             for (int i = 0; i < tableEquipment.SkillIds.Length; i++)
             {
                 skillIds[i + 1] = tableEquipment.SkillIds[i];
             }
-            _skillCtrl.ChangeSkill(skillIds);
+            _skillCtrl = _skillCtrl ?? new PlayerSkillCtrl(this);
+            _skillCtrl.SetPoint(tableEquipment.Mp, tableEquipment.MpRecover, tableEquipment.Rp, tableEquipment.RpRecover);
+            _skillCtrl.SetSkill(skillIds);
             return true;
         }
 
@@ -366,24 +364,6 @@ namespace GameA.Game
 
         #endregion
 
-        internal void OnStun(ActorBase actor)
-        {
-            _stunTimer = TableConvert.GetTime(BattleDefine.StunTime);
-            Speed = IntVec2.zero;
-            ExtraSpeed.y = 120;
-            ExtraSpeed.x = actor.CenterDownPos.x > CenterDownPos.x ? -100 : 100;
-            _input.ClearInput();
-        }
-
-        internal void OnKnockBack(ActorBase actor)
-        {
-            _stunTimer = TableConvert.GetTime(BattleDefine.StunTime);
-            Speed = IntVec2.zero;
-            ExtraSpeed.y = 280;
-            ExtraSpeed.x = actor.CenterDownPos.x > CenterDownPos.x ? -80 : 80;
-            _input.ClearInput();
-        }
-
         #endregion
 
         #region View
@@ -406,7 +386,7 @@ namespace GameA.Game
             }
             _reviveEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null, ESortingOrder.LazerEffect));
             _portalEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null, ESortingOrder.LazerEffect));
-            ChangeWeapon(2);
+            SetWeapon(2);
             _view.StatusBar.ShowHP();
             _view.StatusBar.ShowMP();
             return true;
@@ -434,6 +414,7 @@ namespace GameA.Game
 
         protected override void UpdateDynamicView(float deltaTime)
         {
+            LogHelper.Debug("OnStun {0}", IsInState(EEnvState.Stun));
             if (!PlayMode.Instance.SceneState.GameRunning && PlayMode.Instance.SceneState.Arrived)
             {
                 return;
@@ -508,7 +489,7 @@ namespace GameA.Game
                 }
                 else
                 {
-                    if (!IsStunning && (_input.GetKeyApplied(EInputType.Left) || _input.GetKeyApplied(EInputType.Right)))
+                    if (CanMove && (_input.GetKeyApplied(EInputType.Left) || _input.GetKeyApplied(EInputType.Right)))
                     {
                         var speed = Math.Abs(SpeedX);
                         speed = Mathf.Clamp(speed, 20, 100);
@@ -651,7 +632,7 @@ namespace GameA.Game
 
         protected virtual string JumpAnimName(int jumpLevel)
         {
-            if (IsStunning)
+            if (IsInState(EEnvState.Stun))
             {
                 return "StunStart";
             }
@@ -668,9 +649,9 @@ namespace GameA.Game
 
         protected virtual string IdleAnimName()
         {
-            if (IsStunning)
+            if (IsInState(EEnvState.Stun))
             {
-                return "StunEnd";
+                return "StunLand";
             }
             if (IsHoldingBox())
             {
@@ -686,7 +667,7 @@ namespace GameA.Game
 
         protected virtual string FallAnimName()
         {
-            if (IsStunning)
+            if (IsInState(EEnvState.Stun))
             {
                 return "StunRun";
             }
@@ -704,7 +685,7 @@ namespace GameA.Game
 
         protected virtual string LandAnimName()
         {
-            if (IsStunning)
+            if (IsInState(EEnvState.Stun))
             {
                 return "StunEnd";
             }

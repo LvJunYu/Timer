@@ -37,7 +37,7 @@ namespace GameA.Game
         
         protected int _curMaxSpeedX;
         
-        protected PlayerSkillCtrl _skillCtrl;
+        protected SkillCtrl _skillCtrl;
  
         public override EDieType EDieType
         {
@@ -92,20 +92,13 @@ namespace GameA.Game
 
         protected override void UpdateData()
         {
-            if (_stunTimer > 0)
+            if (_input != null && CanMove)
             {
-                _stunTimer--;
+                UpdateInput();
             }
-            if (!IsStunning)
+            if (_skillCtrl != null && CanAttack)
             {
-                if (_input != null)
-                {
-                    UpdateInput();
-                }
-                if (_skillCtrl != null)
-                {
-                    _skillCtrl.UpdateLogic();
-                }
+                _skillCtrl.UpdateLogic();
             }
             if (_jumpTimer > 0)
             {

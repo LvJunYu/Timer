@@ -48,17 +48,22 @@ namespace GameA.Game
                     Object.Destroy(data.MovingRoot.gameObject);
                     data.MovingRoot = null;
                 }
-                UnitExtra unitExtra = DataScene2D.Instance.GetUnitExtra(touchedUnitDesc.Guid);
+                var unitPos = mouseWorldPos;
                 UnitBase unitBase;
-                var rootGo = EditHelper.CreateDragRoot(mouseWorldPos, touchedUnitDesc.Id,
+                if (ColliderScene2D.Instance.TryGetUnit(touchedUnitDesc.Guid, out unitBase))
+                {
+                    unitPos = GM2DTools.TileToWorld(unitBase.CenterPos);
+                }
+                UnitExtra unitExtra = DataScene2D.Instance.GetUnitExtra(touchedUnitDesc.Guid);
+                var rootGo = EditHelper.CreateDragRoot(unitPos, touchedUnitDesc.Id,
                     (EDirectionType) touchedUnitDesc.Rotation, out unitBase);
                 data.CurrentMovingUnitBase = unitBase;
                 data.DragUnitExtra = unitExtra;
                 data.MovingRoot = rootGo.transform;
+                data.MouseObjectOffsetInWorld = unitPos - mouseWorldPos;
                 boardData.CurrentTouchUnitDesc = touchedUnitDesc;
                 boardData.DragInCurrentState = true;
                 data.MouseActualPos = mousePos;
-                data.MouseObjectOffsetInWorld = GM2DTools.GetUnitDragingOffset(data.CurrentMovingUnitBase.Id);
             }
 
             public override void OnDragEnd(Gesture gesture)

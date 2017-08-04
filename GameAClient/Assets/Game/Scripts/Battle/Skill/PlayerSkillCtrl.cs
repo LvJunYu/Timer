@@ -25,22 +25,15 @@ namespace GameA.Game
         protected int _currentMp;
         protected int _currentRp;
 
-        public PlayerSkillCtrl(UnitBase owner, int count) : base(owner, count)
+        public PlayerSkillCtrl(UnitBase owner) : base(owner)
         {
-        }
-
-        public override void Clear()
-        {
-            base.Clear();
-            UpdateMp(_mpTotal);
-            UpdateRp(_rpTotal);
-            _timerMpRp = 0;
         }
 
         protected override void OnSkillChanged()
         {
             UpdateMp(_mpTotal);
             UpdateRp(_rpTotal);
+            _timerMpRp = 0;
         }
 
         public override void SetPoint(int mp, int mpRecover, int rp, int rpRecover)

@@ -74,7 +74,8 @@ namespace GameA.Game
         {
             SetInput(EInputType.Right, false);
             SetInput(EInputType.Left, false);
-            if (!_canMove)
+            SetInput(EInputType.Skill1, false);
+            if (!CanMove)
             {
                 SpeedX = 0;
                 ChangeState(EMonsterState.None);
@@ -123,14 +124,14 @@ namespace GameA.Game
             _reSeekTimer = 0;
             //晕的时候就不找了
             var mainUnit = PlayMode.Instance.MainPlayer;
-            if (mainUnit.IsStunning)
+            if (!mainUnit.CanMove)
             {
                 _currentNodeId = -1;
                 ChangeState(EMonsterState.Think);
                 return;
             }
             //如果怪物就在人的脚下，直接改为攻击。
-            if (mainUnit.DownUnits.Contains(this) && _canAttack)
+            if (mainUnit.DownUnits.Contains(this) && CanAttack)
             {
                 ChangeState(EMonsterState.Attack);
                 return;
@@ -171,23 +172,23 @@ namespace GameA.Game
 
         protected virtual void OnAttack()
         {
-            if (_path.Count == 0 || PlayMode.Instance.MainPlayer.IsStunning)
+            if (_path.Count == 0 || !PlayMode.Instance.MainPlayer.CanMove)
             {
                 ChangeState(EMonsterState.Think);
+                return;
             }
-            else
+            IntVec2 rel = CenterDownPos - PlayMode.Instance.MainPlayer.CenterDownPos;
+            if (Mathf.Abs(rel.x) > _attackRange.x || Mathf.Abs(rel.y) > _attackRange.y)
             {
-                IntVec2 rel = CenterDownPos - PlayMode.Instance.MainPlayer.CenterDownPos;
-                if (Mathf.Abs(rel.x) > _attackRange.x || Mathf.Abs(rel.y) > _attackRange.y)
-                {
-                    ChangeState(EMonsterState.Seek);
-                }
+                ChangeState(EMonsterState.Seek);
+                return;
             }
+            SetInput(EInputType.Skill1, true);
         }
 
         protected virtual bool IsInAttackRange()
         {
-            if (!_canAttack)
+            if (!CanAttack)
             {
                 return false;
             }

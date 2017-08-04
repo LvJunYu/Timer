@@ -48,8 +48,6 @@ namespace GameA.Game
                         EditMode.Instance.DeleteUnitWithCheck(boardData.CurrentTouchUnitDesc);
                     }
                     stateData.MouseActualPos = Input.mousePosition;
-                    stateData.MouseObjectOffsetInWorld = GM2DTools.GetUnitDragingOffset(stateData.CurrentMovingUnitBase
-                                                             .Id);
                     if (UnitDefine.IsBlueStone(stateData.CurrentMovingUnitBase.Id))
                     {
                         stateData.CurrentMode = Data.EMode.Magic;
@@ -223,6 +221,12 @@ namespace GameA.Game
                     {
                         return;
                     }
+                }
+                UnitDesc needReplaceUnitDesc;
+                if (EditHelper.TryGetReplaceUnit(target.Id, out needReplaceUnitDesc))
+                {
+                    EditMode.Instance.DeleteUnitWithCheck(needReplaceUnitDesc);
+                    //TODO 记录删除的地块
                 }
                 if (EditMode.Instance.AddUnitWithCheck(target))
                 {

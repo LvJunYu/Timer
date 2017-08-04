@@ -285,11 +285,12 @@ namespace GameA.Game
         /// <summary>
         /// 开始拖拽地块
         /// </summary>
-        /// <param name="pos"></param>
+        /// <param name="mouseWorldPos"></param>
+        /// <param name="unitWorldPos"></param>
         /// <param name="unitId"></param>
         /// <param name="rotate"></param>
         /// <param name="unitExtra"></param>
-        public void StartDragUnit(Vector3 pos, int unitId, EDirectionType rotate, ref UnitExtra unitExtra)
+        public void StartDragUnit(Vector3 mouseWorldPos, Vector3 unitWorldPos, int unitId, EDirectionType rotate, ref UnitExtra unitExtra)
         {
             if (IsInState(EditModeState.Move.Instance))
             {
@@ -302,8 +303,9 @@ namespace GameA.Game
                 UnityEngine.Object.Destroy(data.MovingRoot.parent);
             }
             UnitBase unitBase;
-            var rootGo = EditHelper.CreateDragRoot(pos, unitId, rotate, out unitBase);
+            var rootGo = EditHelper.CreateDragRoot(unitWorldPos, unitId, rotate, out unitBase);
             data.CurrentMovingUnitBase = unitBase;
+            data.MouseObjectOffsetInWorld = unitWorldPos - mouseWorldPos;
             data.DragUnitExtra = unitExtra;
             data.MovingRoot = rootGo.transform;
             _stateMachine.ChangeState(EditModeState.Move.Instance);

@@ -75,6 +75,7 @@ namespace GameA.Game
     public enum EBehaviorType
     {
         Common,
+        RangeShoot,
         ContinueShoot,
         SectorShoot,
         Summon,
@@ -96,10 +97,11 @@ namespace GameA.Game
         None,
         Hp,
         Speed,
-        BanAttack,
+        Ice,
         HpMax,
         Invincible,
-        BanMove,
+        Clay,
+        Stun,
     }
         
     public enum EEffectType
