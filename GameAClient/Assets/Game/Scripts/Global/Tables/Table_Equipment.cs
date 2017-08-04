@@ -51,21 +51,6 @@ namespace GameA.Game
 		[ColumnMapping("SkillIds")]
 		public int[] SkillIds;
 		/// <summary>
-        /// 伤害
-        /// </summary>
-		[ColumnMapping("Damages")]
-		public int[] Damages;
-		/// <summary>
-        /// 治疗
-        /// </summary>
-		[ColumnMapping("Cures")]
-		public int[] Cures;
-		/// <summary>
-        /// 护盾
-        /// </summary>
-		[ColumnMapping("Shields")]
-		public int[] Shields;
-		/// <summary>
         /// 图标
         /// </summary>
 		[ColumnMapping("Icon")]

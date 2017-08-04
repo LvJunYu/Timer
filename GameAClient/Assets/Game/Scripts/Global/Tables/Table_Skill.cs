@@ -16,10 +16,15 @@ namespace GameA.Game
 		[ColumnMapping("Name")]
 		public string Name;
 		/// <summary>
-        /// 技能类别
+        /// 伤害
         /// </summary>
-		[ColumnMapping("SkillType")]
-		public int SkillType;
+		[ColumnMapping("Damage")]
+		public int Damage;
+		/// <summary>
+        /// 治疗
+        /// </summary>
+		[ColumnMapping("Cure")]
+		public int Cure;
 		/// <summary>
         /// 魔法消耗
         /// </summary>

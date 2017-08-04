@@ -99,11 +99,30 @@ namespace GameA.Game
                 LogHelper.Error("GetSkill Failed, {0}", id);
                 return;
             }
-            _eSkillType = (ESkillType) _tableSkill.SkillType;
+            switch (_tableSkill.Id)
+            {
+                case 1:
+                    _eSkillType = ESkillType.Water;
+                    break;
+                case 3:
+                    _eSkillType = ESkillType.Fire;
+                    break;
+                case 5:
+                    _eSkillType = ESkillType.Ice;
+                    break;
+                case 7:
+                    _eSkillType = ESkillType.Jelly;
+                    break;
+                case 9:
+                    _eSkillType = ESkillType.Clay;
+                    break;
+            }
             _cdTime = TableConvert.GetTime(_tableSkill.CDTime);
             _singTime = TableConvert.GetTime(_tableSkill.SingTime);
             _castRange = TableConvert.GetRange(_tableSkill.CastRange);
             _projectileSpeed = TableConvert.GetSpeed(_tableSkill.ProjectileSpeed);
+            _damage = TableConvert.GetRange(_tableSkill.Damage);
+            _cure = TableConvert.GetRange(_tableSkill.Cure);
             _timerSing = 0;
             _timerCD = 0;
             _timerCharge = 0;
@@ -204,7 +223,7 @@ namespace GameA.Game
             if (_tableSkill.TrapId > 0)
             {
                 LogHelper.Debug("AddTrap {0}",_tableSkill.TrapId);
-                PlayMode.Instance.AddTrap(_tableSkill.TrapId);
+                PlayMode.Instance.AddTrap(_tableSkill.TrapId, projectile.CenterPos);
             }
             List<UnitBase> units = null;
             switch ((EEffcetMode)_tableSkill.EffectMode)
@@ -252,11 +271,12 @@ namespace GameA.Game
 
         private void OnActorHit(UnitBase unit, ProjectileBase projectile)
         {
-            unit.OnHpChanged(_damage);
             if (!unit.IsAlive)
             {
                 return;
             }
+            unit.OnHpChanged(_damage);
+            unit.OnHpChanged(_cure);
             //触发状态
             for (int i = 0; i < _tableSkill.TriggerStates.Length; i++)
             {

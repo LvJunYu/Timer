@@ -113,7 +113,6 @@ namespace GameA.Game
             }
             _maxHp = tableEquipment.Hp;
             OnHpChanged(_maxHp);
-
             _gun.ChangeView(tableEquipment.Model);
             _skillCtrl.SetPoint(tableEquipment.Mp,tableEquipment.MpRecover,tableEquipment.Rp,tableEquipment.RpRecover);
             int[] skillIds = new int[3];

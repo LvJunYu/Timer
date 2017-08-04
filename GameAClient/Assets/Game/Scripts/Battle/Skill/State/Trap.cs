@@ -33,7 +33,7 @@ namespace GameA.Game
             _guid = 0;
         }
 
-        public bool Init(int id)
+        public bool Init(int id, IntVec2 centerPos)
         {
             _tableTrap = TableManager.Instance.GetTrap(id);
             if (_tableTrap == null)
@@ -41,6 +41,7 @@ namespace GameA.Game
                 LogHelper.Error("GetTrap Failed : {0}", id);
                 return false;
             }
+            _centerPos = centerPos;
             _duration = TableConvert.GetTime(_tableTrap.Duration);
             _triggerRange = TableConvert.GetRange(_tableTrap.TriggerRange);
             _effectRange = TableConvert.GetRange(_tableTrap.EffectRange);

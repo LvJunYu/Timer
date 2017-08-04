@@ -591,10 +591,10 @@ namespace GameA.Game
 
         #endregion
         
-        public bool AddTrap(int trapId)
+        public bool AddTrap(int trapId, IntVec2 centerPos)
         {
             var trap = PoolFactory<Trap>.Get();
-            if (trap.Init(trapId))
+            if (trap.Init(trapId, centerPos))
             {
                 _traps.Add(trap);
                 return true;

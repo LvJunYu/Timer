@@ -667,6 +667,11 @@ namespace GameA.Game
         protected virtual void Clear()
         {
             ClearRunTime();
+            if (_tableUnit.Hp > 0)
+            {
+                _maxHp = _tableUnit.Hp;
+            }
+            _hp = _maxHp;
             _wingCount = 0;
             _canAttack = true;
             _canMove = true;
