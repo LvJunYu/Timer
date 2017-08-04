@@ -86,8 +86,8 @@ namespace GameA.Game
         
         public void CheckInput()
         {
-            _curCheckHorizontal = CrossPlatformInputManager.GetAxis("Horizontal");
-            _curCheckVertical = CrossPlatformInputManager.GetAxis("Vertical");
+            _curCheckHorizontal = CrossPlatformInputManager.GetAxis(InputManager.TagHorizontal);
+            _curCheckVertical = CrossPlatformInputManager.GetAxis(InputManager.TagVertical);
 #if IPHONE || ANDROID
 #else
             if (EventSystem.current.IsPointerOverGameObject())
@@ -187,15 +187,15 @@ namespace GameA.Game
                 case EInputType.Up:
                     return _lastCheckVertical < 0.1f && _curCheckVertical > 0.1f;
                 case EInputType.Jump:
-                    return CrossPlatformInputManager.GetButton("Jump");
+                    return CrossPlatformInputManager.GetButton(InputManager.TagJump);
                 case EInputType.Assist:
-                    return CrossPlatformInputManager.GetButton("Assist");
+                    return CrossPlatformInputManager.GetButton(InputManager.TagAssist);
                 case EInputType.Skill1:
-                    return CrossPlatformInputManager.GetButton("Fire1");
+                    return CrossPlatformInputManager.GetButton(InputManager.TagSkill1);
                 case EInputType.Skill2:
-                    return CrossPlatformInputManager.GetButton("Fire2");
+                    return CrossPlatformInputManager.GetButton(InputManager.TagSkill2);
                 case EInputType.Skill3:
-                    return CrossPlatformInputManager.GetButton("Fire3");
+                    return CrossPlatformInputManager.GetButton(InputManager.TagSkill3);
             }
             return false;
         }
@@ -221,15 +221,15 @@ namespace GameA.Game
                     {
                         return true;
                     }
-                    return !CrossPlatformInputManager.GetButton("Jump");
+                    return !CrossPlatformInputManager.GetButton(InputManager.TagJump);
                 case EInputType.Assist:
-                    return !CrossPlatformInputManager.GetButton("Assist");
+                    return !CrossPlatformInputManager.GetButton(InputManager.TagAssist);
                 case EInputType.Skill1:
-                    return !CrossPlatformInputManager.GetButton("Fire1");
+                    return !CrossPlatformInputManager.GetButton(InputManager.TagSkill1);
                 case EInputType.Skill2:
-                    return !CrossPlatformInputManager.GetButton("Fire2");
+                    return !CrossPlatformInputManager.GetButton(InputManager.TagSkill2);
                 case EInputType.Skill3:
-                    return !CrossPlatformInputManager.GetButton("Fire3");
+                    return !CrossPlatformInputManager.GetButton(InputManager.TagSkill3);
             }
             return false;
         }

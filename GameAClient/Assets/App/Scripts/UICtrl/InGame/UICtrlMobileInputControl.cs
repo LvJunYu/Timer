@@ -19,7 +19,7 @@ namespace GameA
         #region methods
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.InGameMainUI;
+            _groupId = (int) EUIGroupType.InputCtrl;
         }
         #endregion
     }
