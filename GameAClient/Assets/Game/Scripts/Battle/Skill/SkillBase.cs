@@ -332,6 +332,17 @@ namespace GameA.Game
             }
             unit.OnHpChanged(-_damage);
             unit.OnHpChanged(_cure);
+            if (!unit.IsInvincible)
+            {
+                var forces = _tableSkill.KnockbackForces;
+                if (forces.Length == 2)
+                {
+                    var direction = unit.CenterDownPos - centerDownPos;
+                    unit.ExtraSpeed.x = direction.x >= 0 ? forces[0] : -forces[0];
+                    unit.ExtraSpeed.y = direction.y >= -320 ? forces[1] : -forces[1];
+                    unit.Speed = IntVec2.zero;
+                }
+            }
             //触发状态
             for (int i = 0; i < _tableSkill.TriggerStates.Length; i++)
             {
@@ -340,15 +351,6 @@ namespace GameA.Game
                     unit.AddStates(_tableSkill.TriggerStates[i]);
                 }
             }
-            var forces = _tableSkill.KnockbackForces;
-            if (forces.Length == 2)
-            {
-                var direction = unit.CenterDownPos - centerDownPos;
-                unit.ExtraSpeed.x = direction.x >= 0 ? forces[0] : -forces[0];
-                unit.ExtraSpeed.y = direction.y >= -320 ? forces[1] : -forces[1];
-                unit.Speed = IntVec2.zero;
-            }
-//            LogHelper.Debug("OnActorHit, {0}", unit);
         }
         
         protected void OnPaintHit(UnitBase target,ProjectileBase projectile)

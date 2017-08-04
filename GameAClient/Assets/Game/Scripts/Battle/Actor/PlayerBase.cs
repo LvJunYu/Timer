@@ -270,7 +270,6 @@ namespace GameA.Game
             }
             else
             {
-                PlayMode.Instance.CurrentShadow.RecordNormalDeath();
                 if (_view != null)
                 {
                     GameParticleManager.Instance.Emit("M1EffectAirDeath", _trans.position + Vector3.up * 0.5f);
@@ -304,7 +303,6 @@ namespace GameA.Game
                                     }
                                     _animation.Reset();
                                     _animation.PlayLoop(IdleAnimName());
-                                    PlayMode.Instance.CurrentShadow.RecordAnimation(IdleAnimName(), true);
                                     GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.M2Reborn);
                                     Messenger.Broadcast(EMessengerType.OnMainPlayerRevive);
                                 });
@@ -332,7 +330,6 @@ namespace GameA.Game
                     PlayMode.Instance.UpdateWorldRegion(_curPos);
                     _animation.Reset();
                     _animation.PlayLoop(IdleAnimName());
-                    PlayMode.Instance.CurrentShadow.RecordAnimation(IdleAnimName(), true);
                     GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.M2Reborn);
                 }));
         }
@@ -340,15 +337,12 @@ namespace GameA.Game
         public virtual void OnSucceed()
         {
             _animation.ClearTrack(0);
-            PlayMode.Instance.CurrentShadow.RecordClearAnimTrack(0);
             _animation.ClearTrack(1);
-            PlayMode.Instance.CurrentShadow.RecordClearAnimTrack(1);
             if (_view != null)
             {
                 _view.SetRendererEnabled(true);
             }
             _animation.PlayLoop(VictoryAnimName(), 1, 1);
-            PlayMode.Instance.CurrentShadow.RecordAnimation(VictoryAnimName(), true);
         }
 
         public override void OnRevivePos(IntVec2 pos)
@@ -445,10 +439,7 @@ namespace GameA.Game
                 {
                     if (_eClimbState > 0)
                     {
-                        if (_animation.PlayLoop(ClimbAnimName()))
-                        {
-                            PlayMode.Instance.CurrentShadow.RecordAnimation(ClimbAnimName(), true);
-                        }
+                        _animation.PlayLoop(ClimbAnimName());
                         if (GameRun.Instance.LogicFrameCnt % 5 == 0)
                         {
                             Vector3 effectPos = _trans.position;
@@ -475,14 +466,10 @@ namespace GameA.Game
                         {
                             Messenger.Broadcast(EMessengerType.OnPlayerJump);
                             _animation.PlayOnce(JumpAnimName(_jumpLevel));
-                            PlayMode.Instance.CurrentShadow.RecordAnimation(JumpAnimName(_jumpLevel), false);
                         }
                         else if (_jumpState == EJumpState.Fall)
                         {
-                            if (_animation.PlayLoop(FallAnimName()))
-                            {
-                                PlayMode.Instance.CurrentShadow.RecordAnimation(FallAnimName(), true);
-                            }
+                            _animation.PlayLoop(FallAnimName());
                         }
                     }
                 }
@@ -496,10 +483,7 @@ namespace GameA.Game
                         {
                             speed = 50;
                         }
-                        if (_animation.PlayLoop(RunAnimName(speed), speed * deltaTime))
-                        {
-                            PlayMode.Instance.CurrentShadow.RecordAnimation(RunAnimName(speed), true, speed * deltaTime);
-                        }
+                        _animation.PlayLoop(RunAnimName(speed), speed * deltaTime);
                         if (speed <= BattleDefine.MaxSpeedX)
                         {
                             _walkAudioInternal -= 7;
@@ -529,10 +513,7 @@ namespace GameA.Game
                     }
                     else
                     {
-                        if (_animation.PlayLoop(IdleAnimName()))
-                        {
-                            PlayMode.Instance.CurrentShadow.RecordAnimation(IdleAnimName(), true);
-                        }
+                        _animation.PlayLoop(IdleAnimName());
                     }
                 }
             }
@@ -579,7 +560,6 @@ namespace GameA.Game
         protected void OnDeadAll()
         {
             _animation.PlayOnce(DeathAnimName());
-            PlayMode.Instance.CurrentShadow.RecordAnimation(DeathAnimName(), false);
         }
 
         /// <summary>
