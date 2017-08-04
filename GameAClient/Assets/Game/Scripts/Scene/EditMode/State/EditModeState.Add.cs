@@ -68,7 +68,14 @@ namespace GameA.Game
                 {
                     return;
                 }
-                TryDragAdd(gesture.position - gesture.deltaPosition, gesture.position, boardData.CurrentSelectedUnitId);
+                Vector3 startPos = Input.mousePosition;
+                Vector3 endPos = Input.mousePosition;
+                if (gesture != null)
+                {
+                    startPos = gesture.position - gesture.deltaPosition;
+                    endPos = gesture.position;
+                }
+                TryDragAdd(startPos, endPos, boardData.CurrentSelectedUnitId);
                 boardData.DragInCurrentState = false;
                 //TODO 如果InDrag保存录像
             }
@@ -146,6 +153,7 @@ namespace GameA.Game
                 if (EditHelper.TryGetReplaceUnit(tableUnit.Id, out needReplaceUnitDesc))
                 {
                     EditMode.Instance.DeleteUnitWithCheck(needReplaceUnitDesc);
+                    DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(needReplaceUnitDesc);
                     //TODO 记录删除的地块
                 }
                 if (EditMode.Instance.AddUnitWithCheck(unitDesc))

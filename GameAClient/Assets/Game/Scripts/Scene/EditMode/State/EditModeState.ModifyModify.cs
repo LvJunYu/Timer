@@ -179,7 +179,7 @@ namespace GameA.Game
                 target.Rotation = stateData.CurrentMovingUnitBase.Rotation;
                 int layerMask = EnvManager.UnitLayerWithoutEffect;
                 var coverUnits = DataScene2D.GridCastAllReturnUnits(target, layerMask);
-                if (coverUnits.Count > 0)
+                if (coverUnits != null && coverUnits.Count > 0)
                 {
                     Messenger<string>.Broadcast(EMessengerType.GameLog, "只能移动或变换，不能覆盖");
                     return;

@@ -56,6 +56,7 @@ namespace GameA.Game
             {
                 var boardData = GetBlackBoard();
                 var data = boardData.GetStateData<Data>();
+                OnDragEnd(null);
                 OnExitSwitchMode(boardData, data);
             }
 
@@ -126,8 +127,13 @@ namespace GameA.Game
                 {
                     return;
                 }
+                var mousePos = Input.mousePosition;
+                if (gesture != null)
+                {
+                    mousePos = gesture.position;
+                }
                 var data = boardData.GetStateData<Data>();
-                Vector3 mouseWorldPos = GM2DTools.ScreenToWorldPoint(gesture.position);
+                Vector3 mouseWorldPos = GM2DTools.ScreenToWorldPoint(mousePos);
                 var tile = DataScene2D.Instance.GetTileIndex(mouseWorldPos, boardData.CurrentTouchUnitDesc.Id);
                 tile.z = boardData.CurrentTouchUnitDesc.Guid.z;
                 var target = new UnitDesc(boardData.CurrentTouchUnitDesc.Id, tile,
@@ -135,7 +141,7 @@ namespace GameA.Game
                 int layerMask = EnvManager.UnitLayerWithoutEffect;
                 var coverUnits = DataScene2D.GridCastAllReturnUnits(target, layerMask);
 
-                if (coverUnits.Count == 0)
+                if (coverUnits == null || coverUnits.Count == 0)
                 {
                 }
                 else
@@ -177,6 +183,7 @@ namespace GameA.Game
                     data.ConnectingEffect.DestroySelf();
                     data.ConnectingEffect = null;
                 }
+                boardData.DragInCurrentState = false;
             }
 
             public void DeleteSwitchConnection(int idx)
