@@ -17,11 +17,14 @@ namespace GameA.Game
         private static InputManager _instance;
 
         public static readonly string TagJump = "Jump";
-        public static readonly string[] TagSkill = {"Fire1", "Fire2"};
+        public static readonly string TagSkill1 = "Fire1";
+        public static readonly string TagSkill2 = "Fire2";
+        public static readonly string TagSkill3 = "Fire3";
+        public static readonly string TagAssist = "Assist";
         public static readonly string TagHorizontal = "Horizontal";
         public static readonly string TagVertical = "Vertical";
 
-        public UICtrlGameInputControl GameInputControl;
+        public UICtrlMobileInputControl MobileInputCtrl;
         private GameObject _easyTouchObject;
 
         private EPhase _mouseRightButtonDragPhase;
@@ -235,24 +238,17 @@ namespace GameA.Game
 
         public void ShowGameInput()
         {
-            if (Application.isEditor)
-            {
-                HideGameInput();
-                return;
-            }
-            if (null != GameInputControl)
-            {
-                GameInputControl.Show();
-                GameInputControl.ShowAttack1Btn();
-            }
+//            if (Application.isEditor)
+//            {
+//                SocialGUIManager.Instance.CloseUI<UICtrlMobileInputControl>();
+//                return;
+//            }
+            SocialGUIManager.Instance.OpenUI<UICtrlMobileInputControl>();
         }
 
         public void HideGameInput()
         {
-            if (null != GameInputControl)
-            {
-                GameInputControl.Hide();
-            }
+            SocialGUIManager.Instance.CloseUI<UICtrlMobileInputControl>();
         }
         
         private enum EPhase
