@@ -20,7 +20,6 @@ namespace GameA.Game
     {
         private static PlayMode _instance;
         private readonly HashSet<UnitDesc> _addedDatas = new HashSet<UnitDesc>();
-        private readonly ShadowData _currentShadowData = new ShadowData();
         private readonly List<UnitDesc> _deletedDatas = new List<UnitDesc>();
 
         private readonly List<UnitBase> _freezingNodes = new List<UnitBase>();
@@ -76,11 +75,6 @@ namespace GameA.Game
         public SceneState SceneState
         {
             get { return _sceneState; }
-        }
-
-        public ShadowData CurrentShadow
-        {
-            get { return _currentShadowData; }
         }
 
         // 统计
