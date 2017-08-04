@@ -31,8 +31,8 @@ namespace GameA.Game
 
         protected override void OnSkillChanged()
         {
-            UpdateMp(_mpTotal);
-            UpdateRp(_rpTotal);
+            SetMp(_mpTotal);
+            SetRp(_rpTotal);
             _timerMpRp = 0;
         }
 
@@ -47,9 +47,9 @@ namespace GameA.Game
             _currentRp = _rpTotal;
         }
 
-        private void UpdateMp(int changedMp)
+        private void SetMp(int value)
         {
-            var mp = Mathf.Clamp(_currentMp + changedMp, 0, _mpTotal);
+            var mp = Mathf.Clamp(value, 0, _mpTotal);
             if (_currentMp != mp)
             {
                 _currentMp = mp;
@@ -60,13 +60,13 @@ namespace GameA.Game
             }
         }
 
-        private void UpdateRp(int changedRp)
+        private void SetRp(int value)
         {
-            var rp = Mathf.Clamp(_currentRp + changedRp, 0, _rpTotal);
+            var rp = Mathf.Clamp(value, 0, _rpTotal);
             if (_currentRp != rp)
             {
                 _currentRp = rp;
-                Messenger<int, int>.Broadcast(EMessengerType.OnRPChanged, _currentRp, _rpTotal);
+                Messenger<float, float>.Broadcast(EMessengerType.OnSkill3CDChanged, _currentRp, _rpTotal);
             }
         }
 
@@ -95,8 +95,8 @@ namespace GameA.Game
             {
                 return false;
             }
-            UpdateMp(-skill.MpCost);
-            UpdateRp(-skill.RpCost);
+            SetMp(_currentMp - skill.MpCost);
+            SetRp(_currentRp - skill.RpCost);
             return true;
         }
 
@@ -106,8 +106,8 @@ namespace GameA.Game
             _timerMpRp++;
             if (_timerMpRp == ConstDefineGM2D.FixedFrameCount)
             {
-                UpdateMp(_mpRecover);
-                UpdateRp(_rpRecover);
+                SetMp(_currentMp + _mpRecover);
+                SetRp(_currentRp + _rpRecover);
                 _timerMpRp = 0;
             }
         }

@@ -16,6 +16,11 @@ namespace GameA.Game
 		[ColumnMapping("Name")]
 		public string Name;
 		/// <summary>
+        /// 图标
+        /// </summary>
+		[ColumnMapping("Icon")]
+		public string Icon;
+		/// <summary>
         /// 伤害
         /// </summary>
 		[ColumnMapping("Damage")]
