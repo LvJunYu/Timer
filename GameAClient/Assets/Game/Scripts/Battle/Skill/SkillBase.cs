@@ -330,8 +330,6 @@ namespace GameA.Game
             {
                 return;
             }
-            unit.OnHpChanged(-_damage);
-            unit.OnHpChanged(_cure);
             if (!unit.IsInvincible)
             {
                 var forces = _tableSkill.KnockbackForces;
@@ -351,6 +349,8 @@ namespace GameA.Game
                     unit.AddStates(_tableSkill.TriggerStates[i]);
                 }
             }
+            unit.OnHpChanged(-_damage);
+            unit.OnHpChanged(_cure);
         }
         
         protected void OnPaintHit(UnitBase target,ProjectileBase projectile)

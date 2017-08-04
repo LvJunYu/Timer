@@ -6,6 +6,7 @@
 ***********************************************************************/
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
@@ -260,7 +261,6 @@ namespace GameA.Game
                 _gun.Stop();
             }
             _input.Clear();
-            Messenger.Broadcast(EMessengerType.OnMainPlayerDead);
             base.OnDead();
             if (_life <= 0)
             {
@@ -268,19 +268,16 @@ namespace GameA.Game
                 GameRun.Instance.Pause();
                 OnDeadAll();
             }
-            else
-            {
-                if (_view != null)
-                {
-                    GameParticleManager.Instance.Emit("M1EffectAirDeath", _trans.position + Vector3.up * 0.5f);
-                }
-                OnRevive();
-            }
+            Messenger.Broadcast(EMessengerType.OnMainPlayerDead);
         }
 
         protected void OnRevive()
         {
             LogHelper.Debug("{0}, OnRevive {1}", GetType().Name, _revivePos);
+            if (_view != null)
+            {
+                GameParticleManager.Instance.Emit("M1EffectAirDeath", _trans.position + Vector3.up * 0.5f);
+            }
             _eUnitState = EUnitState.Reviving;
             _trans.eulerAngles = new Vector3(90, 0, 0);
             _reviveEffect.Play(_trans.position + Vector3.up * 0.5f,
@@ -417,19 +414,19 @@ namespace GameA.Game
             if (!_isAlive)
             {
                 _dieTime++;
-                if (_life <= 0)
+                if (_dieTime == 50)
                 {
-                    if (_dieTime == 20)
+                    if (_life > 0)
                     {
-                        Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
-                        SpeedY = 150;
+                        OnRevive();
                     }
-                    if (_dieTime == 100)
-                    {
-                        PlayMode.Instance.SceneState.MainUnitSiTouLe();
-                        // 因生命用完而失败
-                        Messenger.Broadcast(EMessengerType.GameFinishFailed);
-                    }
+                    Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
+                }
+                if (_life <= 0 && _dieTime == 100)
+                {
+                    PlayMode.Instance.SceneState.MainUnitSiTouLe();
+                    // 因生命用完而失败
+                    Messenger.Broadcast(EMessengerType.GameFinishFailed);
                 }
             }
             CheckBox();
