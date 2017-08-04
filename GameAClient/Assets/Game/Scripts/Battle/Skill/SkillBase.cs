@@ -209,9 +209,11 @@ namespace GameA.Game
                     OnHit();
                     break;
                 case EBehaviorType.RangeShoot:
+                    CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.ShootAngle);
+                    break;
                 case EBehaviorType.ContinueShoot:
                     var count = _tableSkill.BehaviorValues[0];
-                    //                    var delay = TableConvert.GetTime(_tableSkill.BehaviorValues[1]);
+                    var delay = TableConvert.GetTime(_tableSkill.BehaviorValues[1]);
                     for (int i = 0; i < count; i++)
                     {
                         CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.ShootAngle);

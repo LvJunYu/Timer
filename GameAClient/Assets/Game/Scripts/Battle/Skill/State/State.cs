@@ -166,7 +166,7 @@ namespace GameA.Game
                 case EOverlapType.None:
                     break;
                 case EOverlapType.TimeMax:
-                    state._curDuration += state._duration - state._timer;
+                    state._curDuration = state._duration + state._timer;
                     break;
                 case EOverlapType.Time:
                     state._curDuration += state._duration;
