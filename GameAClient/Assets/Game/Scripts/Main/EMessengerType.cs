@@ -80,6 +80,15 @@ namespace GameA
         public static int OnSkillChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnAmmoChanged = SoyEngine.EMessengerType.NextId++;
 
+	    // skill2 cd 变化，参数1：float 剩余时间，参数2：float 总CD时长
+	    public static int OnSkill2CDChanged = SoyEngine.EMessengerType.NextId++;
+	    // skill3 怒气 变化，参数1：float 当前怒气，参数2：float 总怒气
+	    public static int OnSkill3CDChanged = SoyEngine.EMessengerType.NextId++;
+	    // 设置 skill2 icon，参数1：string icon名称
+	    public static int SetSkill2Icon = SoyEngine.EMessengerType.NextId++;
+	    // 设置 skill3 icon，参数1：string icon名称
+	    public static int SetSkill3Icon = SoyEngine.EMessengerType.NextId++;
+	    
 	    /// <summary>
 	    /// Rp发生变化
 	    /// </summary>

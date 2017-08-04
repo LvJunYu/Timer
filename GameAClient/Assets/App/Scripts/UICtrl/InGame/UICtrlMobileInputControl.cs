@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using GameA.Game;
+using NewResourceSolution;
 using UnityEngine;
 using SoyEngine;
 using UnityStandardAssets.CrossPlatformInput;
@@ -24,6 +25,15 @@ namespace GameA
             _groupId = (int) EUIGroupType.InputCtrl;
         }
 
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            RegisterEvent<string>(EMessengerType.SetSkill2Icon, SetSkill2Icon);
+            RegisterEvent<string>(EMessengerType.SetSkill3Icon, SetSkill3Icon);
+            RegisterEvent<float, float>(EMessengerType.OnSkill2CDChanged, OnSkill2CDChanged);
+            RegisterEvent<float, float>(EMessengerType.OnSkill3CDChanged, OnSkill3CDChanged);
+        }
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
@@ -42,6 +52,27 @@ namespace GameA
             _cachedView.AssistBtn.OnPress += OnAssistButtonDown;
             _cachedView.AssistBtn.OnRelease+= OnAssistButtonUp;
         }
+
+        private void SetSkill2Icon(string iconName)
+        {
+            _cachedView.SkillBtn2Icon.sprite = ResourcesManager.Instance.GetSprite(iconName);
+        }
+
+        private void SetSkill3Icon(string iconName)
+        {
+            _cachedView.SkillBtn3Icon.sprite = ResourcesManager.Instance.GetSprite(iconName);
+        }
+
+        private void OnSkill2CDChanged(float leftTime, float totalTime)
+        {
+            _cachedView.SkillBtn2CD.fillAmount = leftTime / totalTime;
+        }
+        
+        private void OnSkill3CDChanged(float current, float max)
+        {
+            _cachedView.SkillBtn3CD.fillAmount = current / max;
+        }
+        
 
         private void OnJumpButtonDown()
         {
