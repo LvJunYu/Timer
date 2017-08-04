@@ -55,21 +55,25 @@ namespace GameA
 
         private void SetSkill2Icon(string iconName)
         {
+            if (null == _cachedView) return;
             _cachedView.SkillBtn2Icon.sprite = ResourcesManager.Instance.GetSprite(iconName);
         }
 
         private void SetSkill3Icon(string iconName)
         {
+            if (null == _cachedView) return;
             _cachedView.SkillBtn3Icon.sprite = ResourcesManager.Instance.GetSprite(iconName);
         }
 
         private void OnSkill2CDChanged(float leftTime, float totalTime)
         {
+            if (null == _cachedView) return;
             _cachedView.SkillBtn2CD.fillAmount = leftTime / totalTime;
         }
         
         private void OnSkill3CDChanged(float current, float max)
         {
+            if (null == _cachedView) return;
             _cachedView.SkillBtn3CD.fillAmount = current / max;
         }
         
