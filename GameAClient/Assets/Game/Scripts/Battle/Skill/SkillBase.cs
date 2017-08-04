@@ -203,7 +203,6 @@ namespace GameA.Game
         {
             switch ((EBehaviorType)_tableSkill.BehaviorType)
             {
-
                 case EBehaviorType.Common:
                     OnHit();
                     break;

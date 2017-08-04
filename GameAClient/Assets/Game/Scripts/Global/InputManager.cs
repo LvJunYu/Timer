@@ -238,11 +238,11 @@ namespace GameA.Game
 
         public void ShowGameInput()
         {
-//            if (Application.isEditor)
-//            {
-//                SocialGUIManager.Instance.CloseUI<UICtrlMobileInputControl>();
-//                return;
-//            }
+            if (Application.isEditor)
+            {
+                SocialGUIManager.Instance.CloseUI<UICtrlMobileInputControl>();
+                return;
+            }
             SocialGUIManager.Instance.OpenUI<UICtrlMobileInputControl>();
         }
 
