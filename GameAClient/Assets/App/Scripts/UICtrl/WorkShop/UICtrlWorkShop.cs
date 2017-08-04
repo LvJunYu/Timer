@@ -234,6 +234,7 @@ namespace GameA
             _cachedView.EditDescBtn.gameObject.SetActive (true);
             _cachedView.ConfirmDescBtn.gameObject.SetActive (false);
             _cachedView.Data.gameObject.SetActive(false);
+            _cachedView.HummerIcon.gameObject.SetActive(true);
 
 
             if (null != _curSelectedPrivateProject && null != _curSelectedPrivateProject.Content) {
@@ -264,6 +265,7 @@ namespace GameA
             _cachedView.EditDescBtn.gameObject.SetActive(false);
             _cachedView.EditTitleBtn.gameObject.SetActive(false);
             _cachedView.Data.gameObject.SetActive(true);
+            _cachedView.HummerIcon.gameObject.SetActive(false);
             if (null != _curSelectedPublicProject && null != _curSelectedPublicProject.Content)
             {
                 Debug.Log("_Cover___" + _cachedView.Cover + "_curSelectedPublicProject" +
@@ -300,6 +302,7 @@ namespace GameA
                     _curSelectedPublicProject = wrapper.IsSelected ? wrapper : _curSelectedPublicProject;
                     _publicContents.Add(wrapper);
                     _publicDict.Add(wrapper.Content.ProjectId, wrapper);
+
                     //                    if(_mode == EMode.Edit)
                     //                    {
                     //                        wrapper.CardMode = ECardMode.Selectable;
@@ -338,11 +341,18 @@ namespace GameA
 
         private void OnPublicProjectCardClick (CardDataRendererWrapper<Project> item) {
             //return;
-            if (null != item && null != item.Content)
+            //if (null != item && null != item.Content)
+            //{
+            //    SocialGUIManager.Instance.OpenUI<UICtrlAdvLvlDetail>(item.Content);
+            //}
+            if (null != _curSelectedPublicProject)
             {
-                SocialGUIManager.Instance.OpenUI<UICtrlAdvLvlDetail>(item.Content);
-
+                _curSelectedPrivateProject.IsSelected = false;
             }
+            item.IsSelected = true;
+            _curSelectedPublicProject = item;
+            _cachedView.PublicProjectsGridScroller.RefreshCurrent();
+            RefreshPublishedInfoPanel();
 
         }
 
@@ -461,10 +471,18 @@ namespace GameA
             RefreshView ();
         }
 
-        private void OnEditBtn ()
+        private void OnEditBtn()
         {
-            if (null != _curSelectedPrivateProject && null != _curSelectedPrivateProject.Content) {
-                AppLogicUtil.EditPersonalProject(_curSelectedPrivateProject.Content);
+            if (_state == EWorkShopState.PersonalProject)
+            {
+                if (null != _curSelectedPrivateProject && null != _curSelectedPrivateProject.Content)
+                {
+                    AppLogicUtil.EditPersonalProject(_curSelectedPrivateProject.Content);
+                }
+            }
+            else
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlAdvLvlDetail>(_curSelectedPublicProject.Content);
             }
         }
 
