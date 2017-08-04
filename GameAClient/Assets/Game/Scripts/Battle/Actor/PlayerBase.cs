@@ -90,10 +90,7 @@ namespace GameA.Game
                 _input.Clear();
             }
             _gun = _gun ?? new Gun(this);
-
-            _skillCtrl = _skillCtrl ?? new PlayerSkillCtrl(this, 3);
-            _skillCtrl.Clear();
-            ChangeWeapon(2);
+            SetWeapon(2);
             
             _dieTime = 0;
             _box = null;
@@ -103,7 +100,7 @@ namespace GameA.Game
             base.Clear();
         }
 
-        public override bool ChangeWeapon(int id)
+        public override bool SetWeapon(int id)
         {
             var tableEquipment = TableManager.Instance.GetEquipment(id);
             if (tableEquipment == null)
@@ -114,14 +111,15 @@ namespace GameA.Game
             _maxHp = tableEquipment.Hp;
             OnHpChanged(_maxHp);
             _gun.ChangeView(tableEquipment.Model);
-            _skillCtrl.SetPoint(tableEquipment.Mp,tableEquipment.MpRecover,tableEquipment.Rp,tableEquipment.RpRecover);
-            int[] skillIds = new int[3];
+            var skillIds = new int[3];
             skillIds[0] = 1;
             for (int i = 0; i < tableEquipment.SkillIds.Length; i++)
             {
                 skillIds[i + 1] = tableEquipment.SkillIds[i];
             }
-            _skillCtrl.ChangeSkill(skillIds);
+            _skillCtrl = _skillCtrl ?? new PlayerSkillCtrl(this);
+            _skillCtrl.SetPoint(tableEquipment.Mp, tableEquipment.MpRecover, tableEquipment.Rp, tableEquipment.RpRecover);
+            _skillCtrl.SetSkill(skillIds);
             return true;
         }
 
@@ -406,7 +404,7 @@ namespace GameA.Game
             }
             _reviveEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null, ESortingOrder.LazerEffect));
             _portalEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null, ESortingOrder.LazerEffect));
-            ChangeWeapon(2);
+            SetWeapon(2);
             _view.StatusBar.ShowHP();
             _view.StatusBar.ShowMP();
             return true;

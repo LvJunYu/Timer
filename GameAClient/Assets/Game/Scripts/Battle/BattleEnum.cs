@@ -75,6 +75,7 @@ namespace GameA.Game
     public enum EBehaviorType
     {
         Common,
+        RangeShoot,
         ContinueShoot,
         SectorShoot,
         Summon,

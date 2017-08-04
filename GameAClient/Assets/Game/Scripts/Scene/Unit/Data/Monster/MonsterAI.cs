@@ -74,6 +74,7 @@ namespace GameA.Game
         {
             SetInput(EInputType.Right, false);
             SetInput(EInputType.Left, false);
+            SetInput(EInputType.Skill1, false);
             if (!_canMove)
             {
                 SpeedX = 0;
@@ -174,15 +175,15 @@ namespace GameA.Game
             if (_path.Count == 0 || PlayMode.Instance.MainPlayer.IsStunning)
             {
                 ChangeState(EMonsterState.Think);
+                return;
             }
-            else
+            IntVec2 rel = CenterDownPos - PlayMode.Instance.MainPlayer.CenterDownPos;
+            if (Mathf.Abs(rel.x) > _attackRange.x || Mathf.Abs(rel.y) > _attackRange.y)
             {
-                IntVec2 rel = CenterDownPos - PlayMode.Instance.MainPlayer.CenterDownPos;
-                if (Mathf.Abs(rel.x) > _attackRange.x || Mathf.Abs(rel.y) > _attackRange.y)
-                {
-                    ChangeState(EMonsterState.Seek);
-                }
+                ChangeState(EMonsterState.Seek);
+                return;
             }
+            SetInput(EInputType.Skill1, true);
         }
 
         protected virtual bool IsInAttackRange()

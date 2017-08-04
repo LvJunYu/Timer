@@ -15,10 +15,9 @@ namespace GameA.Game
         [SerializeField] protected SkillBase[] _currentSkills;
         protected UnitBase _owner;
 
-        public SkillCtrl(UnitBase owner, int count)
+        public SkillCtrl(UnitBase owner)
         {
             _owner = owner;
-            _currentSkills = new SkillBase[count];
         }
         
         public SkillBase[] CurrentSkills
@@ -30,8 +29,13 @@ namespace GameA.Game
         {
         }
 
-        public virtual void ChangeSkill(params int[] skillIds)
+        public virtual void SetSkill(params int[] skillIds)
         {
+            if (_currentSkills == null)
+            {
+                _currentSkills = new SkillBase[skillIds.Length];
+            }
+
             for (int i = 0; i < skillIds.Length; i++)
             {
                 var skillId = skillIds[i];
@@ -55,14 +59,6 @@ namespace GameA.Game
 
         protected virtual void OnSkillChanged()
         {
-        }
-
-        public virtual void Clear()
-        {
-            for (int i = 0; i < _currentSkills.Length; i++)
-            {
-                _currentSkills[i] = null;
-            }
         }
 
         public virtual void UpdateLogic()

@@ -93,7 +93,7 @@ namespace GameA.Game
                 if (_timer == 0)
                 {
                     _timer = UnitDefine.EnergyTimer;
-                    other.ChangeWeapon(_weaponId);
+                    other.SetWeapon(_weaponId);
                 }
             }
             return base.OnUpHit(other, ref y, checkOnly);

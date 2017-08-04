@@ -167,6 +167,10 @@ namespace GameA.Game
                 return false;
             }
             _timerCD = _cdTime;
+            if (_timerSing > 0)
+            {
+                return false;
+            }
             _timerSing = _singTime;
             if (_timerSing == 0)
             {
@@ -177,7 +181,7 @@ namespace GameA.Game
         
         protected void CreateProjectile(int projectileId, IntVec2 pos, int angle)
         {
-            var bullet =  PlayMode.Instance.CreateRuntimeUnit(projectileId, pos) as ProjectileBase;
+            var bullet = PlayMode.Instance.CreateRuntimeUnit(projectileId, pos) as ProjectileBase;
             if (bullet != null)
             {
                 bullet.Run(this, angle);
@@ -199,15 +203,19 @@ namespace GameA.Game
         {
             switch ((EBehaviorType)_tableSkill.BehaviorType)
             {
+
+                case EBehaviorType.Common:
+                    OnHit();
+                    break;
+                case EBehaviorType.RangeShoot:
                 case EBehaviorType.ContinueShoot:
                     var count = _tableSkill.BehaviorValues[0];
-                    var delay = TableConvert.GetTime(_tableSkill.BehaviorValues[1]);
+                    //                    var delay = TableConvert.GetTime(_tableSkill.BehaviorValues[1]);
                     for (int i = 0; i < count; i++)
                     {
-                            CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.ShootAngle);
+                        CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.ShootAngle);
                     }
                     break;
-                case EBehaviorType.Common:
                 case EBehaviorType.SectorShoot:
                 case EBehaviorType.Summon:
                 case EBehaviorType.Teleport:
@@ -217,15 +225,8 @@ namespace GameA.Game
             }
         }
 
-        public virtual void OnProjectileHit(ProjectileBase projectile)
+        protected List<UnitBase> GetHitUnits(IntVec2 centerPos, int hitLayerMask)
         {
-            //生成陷阱
-            if (_tableSkill.TrapId > 0)
-            {
-                LogHelper.Debug("AddTrap {0}",_tableSkill.TrapId);
-                PlayMode.Instance.AddTrap(_tableSkill.TrapId, projectile.CenterPos);
-            }
-            List<UnitBase> units = null;
             switch ((EEffcetMode)_tableSkill.EffectMode)
             {
                 case EEffcetMode.Single:
@@ -233,9 +234,8 @@ namespace GameA.Game
                 case EEffcetMode.TargetCircle:
                     {
                         _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
-                        units = ColliderScene2D.CircleCastAllReturnUnits(projectile.CenterPos, _radius, JoyPhysics2D.GetColliderLayerMask(projectile.DynamicCollider.Layer));
+                        return ColliderScene2D.CircleCastAllReturnUnits(centerPos, _radius, hitLayerMask);
                     }
-                    break;
                 case EEffcetMode.TargetGrid:
                     break;
                 case EEffcetMode.TargetLine:
@@ -243,12 +243,52 @@ namespace GameA.Game
                 case EEffcetMode.SelfSector:
                     break;
                 case EEffcetMode.SelfCircle:
-                {
-                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
-                    units = ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, JoyPhysics2D.GetColliderLayerMask(projectile.DynamicCollider.Layer));
-                }
-                    break;
+                    {
+                        _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                        return ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, hitLayerMask);
+                    }
             }
+            return null;
+        }
+
+        /// <summary>
+        /// 生成陷阱
+        /// </summary>
+        protected void CreateTrap(IntVec2 centerPos)
+        {
+            if (_tableSkill.TrapId > 0)
+            {
+                LogHelper.Debug("AddTrap {0}", _tableSkill.TrapId);
+                PlayMode.Instance.AddTrap(_tableSkill.TrapId, centerPos);
+            }
+        }
+
+        protected void OnHit()
+        {
+            var centerDownPos = _owner.CenterDownPos;
+            CreateTrap(centerDownPos);
+            //临时写 TODO
+            var units = GetHitUnits(centerDownPos, EnvManager.ActorLayer);
+            if (units != null && units.Count > 0)
+            {
+                for (int i = 0; i < units.Count; i++)
+                {
+                    var unit = units[i];
+                    if (unit.IsAlive && unit != _owner)
+                    {
+                        if (unit.IsActor)
+                        {
+                            OnActorHit(unit, centerDownPos);
+                        }
+                    }
+                }
+            }
+        }
+
+        public virtual void OnProjectileHit(ProjectileBase projectile)
+        {
+            CreateTrap(projectile.CenterPos);
+            var units = GetHitUnits(projectile.CenterPos, JoyPhysics2D.GetColliderLayerMask(projectile.DynamicCollider.Layer));
             if (units != null && units.Count > 0)
             {
                 for (int i = 0; i < units.Count; i++)
@@ -258,7 +298,7 @@ namespace GameA.Game
                     {
                         if (unit.IsActor)
                         {
-                            OnActorHit(unit, projectile);
+                            OnActorHit(unit, projectile.CenterDownPos);
                         }
                         else if(unit.CanPainted)
                         {
@@ -269,7 +309,7 @@ namespace GameA.Game
             }
         }
 
-        private void OnActorHit(UnitBase unit, ProjectileBase projectile)
+        private void OnActorHit(UnitBase unit, IntVec2 centerDownPos)
         {
             if (!unit.IsAlive)
             {
@@ -288,7 +328,7 @@ namespace GameA.Game
             var forces = _tableSkill.KnockbackForces;
             if (forces.Length == 2)
             {
-                var direction = unit.CenterDownPos - projectile.CenterDownPos;
+                var direction = unit.CenterDownPos - centerDownPos;
                 unit.ExtraSpeed.x = direction.x >= 0 ? forces[0] : -forces[0];
                 unit.ExtraSpeed.y = direction.y >= -320 ? forces[1] : -forces[1];
                 unit.Speed = IntVec2.zero;

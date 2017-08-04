@@ -425,7 +425,7 @@ namespace GameA.Game
                 _curPos = new IntVec2(value.x - dataSize.x / 2, value.y);
             }
         }
-        
+
         public IntVec2 CenterPos
         {
             get
@@ -1613,7 +1613,7 @@ namespace GameA.Game
             return false;
         }
 
-        public virtual bool ChangeWeapon(int id)
+        public virtual bool SetWeapon(int id)
         {
             return true;
         }
