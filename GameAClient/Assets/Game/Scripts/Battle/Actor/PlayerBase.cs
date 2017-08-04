@@ -414,7 +414,6 @@ namespace GameA.Game
 
         protected override void UpdateDynamicView(float deltaTime)
         {
-            LogHelper.Debug("OnStun {0}", IsInState(EEnvState.Stun));
             if (!PlayMode.Instance.SceneState.GameRunning && PlayMode.Instance.SceneState.Arrived)
             {
                 return;
