@@ -1,5 +1,4 @@
 ﻿using SoyEngine;
-using SoyEngine.FSM;
 using UnityEngine;
 
 namespace GameA.Game
@@ -145,7 +144,7 @@ namespace GameA.Game
                 }
                 var stateData = boardData.GetStateData<Data>();
                 
-                ProcessDrop(mousePos, boardData, stateData);
+                ProcessDrop(stateData);
                 
                 boardData.DragInCurrentState = false;
                 if (null != stateData.CurrentMovingUnitBase)
@@ -157,10 +156,7 @@ namespace GameA.Game
                     Object.Destroy(stateData.MovingRoot.gameObject);
                     stateData.MovingRoot = null;
                 }
-                if (boardData.CurrentTouchUnitDesc != UnitDesc.zero)
-                {
-                    boardData.CurrentTouchUnitDesc = UnitDesc.zero;
-                }
+                boardData.CurrentTouchUnitDesc = UnitDesc.zero;
                 if (stateData.CurrentMode == Data.EMode.Magic)
                 {
                     OnExitMagicMode();
@@ -171,7 +167,7 @@ namespace GameA.Game
             }
 
 
-            private void ProcessDrop(Vector2 mousePos, BlackBoard boardData, Data stateData)
+            private void ProcessDrop(Data stateData)
             {
                 Vector3 mouseWorldPos = GM2DTools.ScreenToWorldPoint(stateData.MouseActualPos);
                 mouseWorldPos += stateData.MouseObjectOffsetInWorld;

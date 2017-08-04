@@ -13,6 +13,13 @@ namespace GameA.Game
                 CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSizeEnd(0);
             }
 
+            public void ChangeBillboardMessage(UnitDesc unitDesc, string newMsg)
+            {
+                UnitExtra unitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
+                unitExtra.Msg = newMsg;
+                DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
+            }
+
             public override void OnMouseRightButtonDrag(Vector3 arg1, Vector2 delta)
             {
                 var deltaWorldPos = GM2DTools.ScreenToWorldSize(delta);

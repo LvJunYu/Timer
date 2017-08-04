@@ -17,11 +17,7 @@ namespace GameA.Game
                 var boardData = GetBlackBoard();
                 boardData.DragInCurrentState = false;
                 UnitDesc outValue;
-                Vector2 mousePos = Input.mousePosition;
-                if (gesture != null)
-                {
-                    mousePos = gesture.position - gesture.deltaPosition;
-                }
+                Vector2 mousePos = gesture.startPosition;
                 if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), out outValue))
                 {//当前点击位置有地块，转换为移动模式
                     boardData.CurrentTouchUnitDesc = outValue;
@@ -35,8 +31,8 @@ namespace GameA.Game
                     {
                         return;
                     }
-                    DragAddOne(mousePos, boardData.CurrentSelectedUnitId);
                     boardData.DragInCurrentState = true;
+                    TryDragAdd(gesture.startPosition, gesture.position, boardData.CurrentSelectedUnitId);
                 }
             }
 
@@ -51,13 +47,7 @@ namespace GameA.Game
                 {
                     return;
                 }
-                //补齐两点之间的空隙
-                Vector2 worldDeltaSize = GM2DTools.ScreenToWorldSize(gesture.deltaPosition);
-                int totalCount = (int) worldDeltaSize.magnitude + 1;
-                for (int i = totalCount-1; i >= 0; i--)
-                {
-                    DragAddOne(gesture.position - gesture.deltaPosition * i / totalCount, boardData.CurrentSelectedUnitId);
-                }
+                TryDragAdd(gesture.position - gesture.deltaPosition, gesture.position, boardData.CurrentSelectedUnitId);
             }
 
             public override void OnDragEnd(Gesture gesture)
@@ -71,6 +61,7 @@ namespace GameA.Game
                 {
                     return;
                 }
+                TryDragAdd(gesture.position - gesture.deltaPosition, gesture.position, boardData.CurrentSelectedUnitId);
                 boardData.DragInCurrentState = false;
                 //TODO 如果InDrag保存录像
             }
@@ -81,7 +72,6 @@ namespace GameA.Game
                 UnitDesc touchedUnitDesc;
                 if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(Input.mousePosition), out touchedUnitDesc))
                 {
-                    boardData.CurrentTouchUnitDesc = touchedUnitDesc;
                     EditHelper.ProcessClickUnitOperation(touchedUnitDesc);
                 }
                 else
@@ -96,6 +86,18 @@ namespace GameA.Game
                     {
                         AddOne(createUnitDesc);
                     }
+                }
+            }
+
+            private void TryDragAdd(Vector2 startPos, Vector2 endPos, int unitId)
+            {
+                var delta = endPos - startPos;
+                //补齐两点之间的空隙
+                Vector2 worldDeltaSize = GM2DTools.ScreenToWorldSize(delta);
+                int totalCount = (int) worldDeltaSize.magnitude + 1;
+                for (int i = totalCount-1; i >= 0; i--)
+                {
+                    DragAddOne(endPos - delta * i / totalCount, unitId);
                 }
             }
 

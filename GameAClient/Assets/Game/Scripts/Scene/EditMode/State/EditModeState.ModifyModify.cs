@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using SoyEngine;
+﻿using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -15,7 +14,7 @@ namespace GameA.Game
 
             public override void Exit(EditMode owner)
             {
-                Drop(Input.mousePosition);
+                Drop();
             }
             
             public override void Execute(EditMode owner)
@@ -33,11 +32,7 @@ namespace GameA.Game
                 var boardData = GetBlackBoard();
                 boardData.DragInCurrentState = false;
                 UnitDesc touchedUnitDesc;
-                Vector2 mousePos = Input.mousePosition;
-                if (gesture != null)
-                {
-                    mousePos = gesture.position - gesture.deltaPosition;
-                }
+                Vector2 mousePos = gesture.startPosition;
                 var mouseWorldPos = GM2DTools.ScreenToWorldPoint(mousePos);
                 if (!EditHelper.TryGetUnitDesc(mouseWorldPos, out touchedUnitDesc))
                 {
@@ -68,12 +63,11 @@ namespace GameA.Game
 
             public override void OnDragEnd(Gesture gesture)
             {
-                Drop(gesture.position);
+                Drop();
             }
 
             public override void OnTap(Gesture gesture)
             {
-                var boardData = GetBlackBoard();
                 UnitDesc touchedUnitDesc;
                 if (!EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(gesture.position), out touchedUnitDesc))
                 {
@@ -142,7 +136,7 @@ namespace GameA.Game
                     1f);
             }
             
-            private void Drop(Vector2 mousePos)
+            private void Drop()
             {
                 var boardData = GetBlackBoard();
                 if (!boardData.DragInCurrentState)
@@ -151,7 +145,7 @@ namespace GameA.Game
                 }
                 var stateData = boardData.GetStateData<Data>();
                 
-                ProcessDrop(mousePos, boardData, stateData);
+                ProcessDrop(boardData, stateData);
                 
                 boardData.DragInCurrentState = false;
                 if (null != stateData.CurrentMovingUnitBase)
@@ -167,7 +161,7 @@ namespace GameA.Game
                 stateData.DragUnitExtra = UnitExtra.zero;
             }
             
-            private void ProcessDrop(Vector2 mousePos, EditMode.BlackBoard boardData, Data stateData)
+            private void ProcessDrop(EditMode.BlackBoard boardData, Data stateData)
             {
                 Vector3 mouseWorldPos = GM2DTools.ScreenToWorldPoint(stateData.MouseActualPos);
                 mouseWorldPos += stateData.MouseObjectOffsetInWorld;
