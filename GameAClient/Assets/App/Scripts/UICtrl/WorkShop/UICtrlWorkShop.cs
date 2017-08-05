@@ -234,6 +234,7 @@ namespace GameA
             _cachedView.ConfirmDescBtn.gameObject.SetActive (false);
             _cachedView.Data.gameObject.SetActive(false);
             _cachedView.HummerIcon.gameObject.SetActive(true);
+            _cachedView.PlayIcon.gameObject.SetActive(false);
 
 
             if (null != _curSelectedPrivateProject && null != _curSelectedPrivateProject.Content) {
@@ -265,6 +266,7 @@ namespace GameA
             _cachedView.EditTitleBtn.gameObject.SetActive(false);
             _cachedView.Data.gameObject.SetActive(true);
             _cachedView.HummerIcon.gameObject.SetActive(false);
+            _cachedView.PlayIcon.gameObject.SetActive(true);
             if (null != _curSelectedPublicProject && null != _curSelectedPublicProject.Content)
             {
                 Debug.Log("_Cover___" + _cachedView.Cover + "_curSelectedPublicProject" +
@@ -523,6 +525,18 @@ namespace GameA
             _cachedView.ConfirmTitleBtn.gameObject.SetActive (true);
             EventSystem.current.SetSelectedGameObject(_cachedView.TitleInput.gameObject);
         }
+
+        //private void OnEditSubTitleBtn()
+        //{
+        //    if (null == _curSelectedPrivateProject || null == _curSelectedPrivateProject.Content)
+        //        return;
+        //    _cachedView.SubTitle.gameObject.SetActive(false);
+        //    _cachedView.SubTitleInput.text = _curSelectedPrivateProject.Content.Name;
+        //    _cachedView.TitleInput.gameObject.SetActive(true);
+        //    _cachedView.EditTitleBtn.gameObject.SetActive(false);
+        //    _cachedView.ConfirmTitleBtn.gameObject.SetActive(true);
+        //    EventSystem.current.SetSelectedGameObject(_cachedView.TitleInput.gameObject);
+        //}
 
         private void OnConfirmTitleBtn () {
             string newTitle = _cachedView.TitleInput.text;

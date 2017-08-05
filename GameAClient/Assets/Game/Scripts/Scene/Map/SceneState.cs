@@ -66,7 +66,7 @@ namespace GameA.Game
             {
                 if (PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_TimeAddPercent20))
                 {
-                    return _mapStatistics.TimeLimit * 12;
+                    return _mapStatistics.TimeLimit * 10+60;
                 }else
                 {
                     return _mapStatistics.TimeLimit * 10;
@@ -147,7 +147,19 @@ namespace GameA.Game
 
         public int Life
         {
-            get { return _mapStatistics.LifeCount; }
+
+            get
+            {
+                if (PlayMode.Instance.IsUsingBoostItem(EBoostItemType.BIT_ScoreAddPercent20))
+                {
+                    return _mapStatistics.LifeCount * 11/10;
+                }
+                else
+                {
+                    return _mapStatistics.LifeCount;
+                }
+               
+            }
         }
 
         public bool GameSucceed
@@ -179,10 +191,10 @@ namespace GameA.Game
                 }
                 total += _gemGain * 100;
                 total += _monsterKilled * 200;
-                if (PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_ScoreAddPercent20))
-                {
-                    total += total / 5;
-                }
+                //if (PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_ScoreAddPercent20))
+                //{
+                //    total += total / 5;
+                //}
                 return total;
             }
         }

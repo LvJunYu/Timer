@@ -19,10 +19,19 @@ namespace GameA
         public RawImage Cover;
         public Button EditBtn;
         public Text Title;
+        public Text SubTitle;
+
         public GameObject HummerIcon;
+        public GameObject PlayIcon;
+
+
         public InputField TitleInput;
+        public InputField SubTitleInput;
+
         public Button EditTitleBtn;
+        public Button EditSubTitleBtn;
         public Button ConfirmTitleBtn;
+        public Button ConfirmSubTitleBtn;
         public Text Desc;
         public InputField DescInput;
         public Button EditDescBtn;
