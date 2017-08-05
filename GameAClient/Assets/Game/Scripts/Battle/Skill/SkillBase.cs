@@ -335,7 +335,7 @@ namespace GameA.Game
                         {
                             OnActorHit(unit, projectile.CenterDownPos);
                         }
-                        else if(unit.CanPainted)
+                        else if(unit.CanPainted && _eSkillType != ESkillType.None)
                         {
                             OnPaintHit(unit, projectile);
                         }
