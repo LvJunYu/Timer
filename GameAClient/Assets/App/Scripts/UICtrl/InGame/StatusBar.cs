@@ -18,7 +18,7 @@ namespace GameA.Game
         void Awake()
         {
             _trans = transform;
-            var srs = _trans.GetComponentsInChildren<SpriteRenderer>();
+            var srs = _trans.GetComponentsInChildren<SpriteRenderer>(true);
             for (int i = 0; i < srs.Length; i++)
             {
                 srs[i].sortingOrder = (int) ESortingOrder.DragingItem;
