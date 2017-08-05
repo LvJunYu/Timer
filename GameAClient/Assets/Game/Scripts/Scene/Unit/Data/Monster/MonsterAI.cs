@@ -104,7 +104,14 @@ namespace GameA.Game
                     OnSeek();
                     break;
                 case EMonsterState.Attack:
-                    OnAttack();
+                    if (CanAttack)
+                    {
+                        OnAttack();
+                    }
+                    else
+                    {
+                        ChangeState(EMonsterState.Think);
+                    }
                     break;
             }
         }

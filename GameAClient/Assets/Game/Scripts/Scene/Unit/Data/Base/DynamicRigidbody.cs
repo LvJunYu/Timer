@@ -39,6 +39,11 @@ namespace GameA.Game
         {
             get { return _input; }
         }
+        
+        public int CurMaxSpeedX
+        {
+            get { return _curMaxSpeedX; }
+        }
 
         protected override void Clear()
         {
@@ -148,7 +153,7 @@ namespace GameA.Game
                 OnLand();
             }
             CalculateMotor();
-            _curMaxSpeedX = (int)(_maxSpeedX * _speedRatio);
+            _curMaxSpeedX = (int)(_maxSpeedX * _speedRatio * _speedStateRatio);
             if (_curBanInputTime <= 0)
             {
                 int speedAcc = _motorAcc + _fanForce.x;
