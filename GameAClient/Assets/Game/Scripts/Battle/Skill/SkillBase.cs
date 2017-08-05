@@ -359,6 +359,7 @@ namespace GameA.Game
                     unit.ExtraSpeed.x = direction.x >= 0 ? forces[0] : -forces[0];
                     unit.ExtraSpeed.y = direction.y >= -320 ? forces[1] : -forces[1];
                     unit.Speed = IntVec2.zero;
+                    unit.CurBanInputTime = 25;
                 }
             }
             //触发状态
