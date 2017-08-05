@@ -33,7 +33,8 @@
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
-            if (UnitDefine.IsEarth(unit.Id))
+            //静态物体
+            if (unit.DynamicCollider == null)
             {
                 _timer = TableConvert.GetTime(BattleDefine.IceSwordLifeTime);
                 //修改下layer

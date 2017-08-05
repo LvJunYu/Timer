@@ -16,6 +16,8 @@ namespace GameA.Game
         protected int _guid;
         public static int TrapNum;
 
+        protected UnityNativeParticleItem _effect;
+
         public int Guid
         {
             get { return _guid; }
@@ -31,6 +33,8 @@ namespace GameA.Game
             _centerPos = IntVec2.zero;
             _trapingUnits.Clear();
             _guid = 0;
+            GameParticleManager.FreeParticleItem(_effect);
+            _effect = null;
         }
 
         public bool Init(int id, IntVec2 centerPos)
@@ -46,6 +50,12 @@ namespace GameA.Game
             _triggerRange = TableConvert.GetRange(_tableTrap.TriggerRange);
             _effectRange = TableConvert.GetRange(_tableTrap.EffectRange);
             _guid = TrapNum++;
+            _effect = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableTrap.Particle, null);
+            if (_effect != null)
+            {
+                _effect.Trans.position = GM2DTools.TileToWorld(_centerPos,UnitDefine.ZOffsetEffectBackground);
+                _effect.Play();
+            }
             return true;
         }
 

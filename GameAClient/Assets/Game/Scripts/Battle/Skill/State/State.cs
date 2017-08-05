@@ -37,6 +37,7 @@ namespace GameA.Game
 
         public virtual bool OnAttached(Table_State tableState, ActorBase target)
         {
+            _run = true;
             _tableState = tableState;
             _target = target;
             if (_tableState.EffectTypes.Length != _tableState.EffectValues.Length || _tableState.EffectTypes.Length != _tableState.EffectIds.Length)
@@ -54,7 +55,6 @@ namespace GameA.Game
             }
             Excute(EEffectType.Always);
             OnAddView();
-            _run = true;
             return true;
         }
 

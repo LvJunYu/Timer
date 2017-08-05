@@ -198,7 +198,7 @@ namespace GameA.Game
 
         public bool CanMove
         {
-            get { return !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun); }
+            get { return !IsInState(EEnvState.Ice) && !IsInState(EEnvState.Stun); }
         }
 
         public bool CanAttack

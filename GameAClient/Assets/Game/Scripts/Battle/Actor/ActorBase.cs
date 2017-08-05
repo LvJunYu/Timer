@@ -35,8 +35,6 @@ namespace GameA.Game
         /// </summary>
         protected bool _hasWaterCheckedInFrame;
         
-        protected int _curMaxSpeedX;
-        
         protected SkillCtrl _skillCtrl;
  
         public override EDieType EDieType
@@ -48,12 +46,6 @@ namespace GameA.Game
         {
             get { return true; }
         }
-
-        public int CurMaxSpeedX
-        {
-            get { return _curMaxSpeedX; }
-        }
-        
         
         protected override bool IsCheckGround()
         {
