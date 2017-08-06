@@ -25,6 +25,8 @@ namespace GameA.Game
 
     public class ActorBase : DynamicRigidbody
     {
+        private static EInputType[] _skillInputs = new EInputType[3]{EInputType.Skill1, EInputType.Skill2, EInputType.Skill3};
+
         protected List<State> _currentStates = new List<State>();
         private Comparison<State> _comparisonState = SortState;
 
@@ -238,19 +240,27 @@ namespace GameA.Game
                 eShootDir = EShootDirectionType.Up;
             }
             _shootAngle = (int)eShootDir;
-            if (IsCharacterAbilityAvailable(ECharacterAbility.Shoot))
+            if (IsCharacterAbilityAvailable(ECharacterAbility.Shoot) && _skillCtrl != null)
             {
-                if (_input.GetKeyApplied(EInputType.Skill1))
+                for (int i = 0; i < _skillCtrl.CurrentSkills.Length; i++)
                 {
-                    _skillCtrl.Fire(0);
-                }
-                if (_input.GetKeyDownApplied(EInputType.Skill2))
-                {
-                    _skillCtrl.Fire(1);
-                }
-                if (_input.GetKeyDownApplied(EInputType.Skill3))
-                {
-                    _skillCtrl.Fire(2);
+                    var skill = _skillCtrl.CurrentSkills[i];
+                    switch ((ECostType)skill.TableSkill.CostType)
+                    {
+                            case ECostType.Paint:
+                                if (_input.GetKeyApplied(_skillInputs[i]))
+                                {
+                                    _skillCtrl.Fire(i);
+                                }
+                                break;
+                            case ECostType.Magic:
+                            case ECostType.Rage:
+                                if (_input.GetKeyApplied(_skillInputs[i]))
+                                {
+                                    _skillCtrl.Fire(i);
+                                }
+                                break;
+                    }
                 }
             }
         }

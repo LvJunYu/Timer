@@ -60,7 +60,7 @@ namespace GameA.Game
             base.UpdateExtraData();
         }
         
-        public override bool SetWeapon(int id)
+        public override bool SetWeapon(int id, int slot = 0)
         {
             var tableEquipment = TableManager.Instance.GetEquipment(id);
             if (tableEquipment == null)
@@ -94,7 +94,7 @@ namespace GameA.Game
                 }
             }
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this);
-            _skillCtrl.SetSkill(tableEquipment.SkillIds[0]);
+            _skillCtrl.SetSkill(tableEquipment.SkillId);
             SetValue();
             return true;
         }

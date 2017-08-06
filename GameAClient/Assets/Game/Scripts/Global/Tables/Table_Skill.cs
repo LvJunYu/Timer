@@ -16,30 +16,25 @@ namespace GameA.Game
 		[ColumnMapping("Name")]
 		public string Name;
 		/// <summary>
-        /// 图标
-        /// </summary>
-		[ColumnMapping("Icon")]
-		public string Icon;
-		/// <summary>
         /// 伤害
         /// </summary>
 		[ColumnMapping("Damage")]
 		public int Damage;
 		/// <summary>
-        /// 治疗
+        /// 触发类别
         /// </summary>
-		[ColumnMapping("Cure")]
-		public int Cure;
+		[ColumnMapping("CostType")]
+		public int CostType;
 		/// <summary>
-        /// 魔法消耗
+        /// 消耗
         /// </summary>
-		[ColumnMapping("MpCost")]
-		public int MpCost;
+		[ColumnMapping("Cost")]
+		public int Cost;
 		/// <summary>
-        /// 怒气消耗
+        /// 消耗品回复速度
         /// </summary>
-		[ColumnMapping("RpCost")]
-		public int RpCost;
+		[ColumnMapping("RegenSpeed")]
+		public int RegenSpeed;
 		/// <summary>
         /// CD时间
         /// </summary>

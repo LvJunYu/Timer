@@ -76,11 +76,6 @@ namespace GameA.Game
 		[ColumnMapping("EffectValues")]
 		public int[] EffectValues;
 		/// <summary>
-        /// 效果值上限
-        /// </summary>
-		[ColumnMapping("EffectMaxValues")]
-		public int[] EffectMaxValues;
-		/// <summary>
         /// 死亡去除
         /// </summary>
 		[ColumnMapping("DeadRemove")]

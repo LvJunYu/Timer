@@ -57,8 +57,8 @@ namespace GameA.Game
         protected List<UnitBase> _switchPressUnits = new List<UnitBase>();
         protected bool _ctrlBySwitch;
 
-        protected int _maxHp = 500;
-        protected int _hp = 500;
+        protected int _maxHp;
+        protected int _hp;
 
         #endregion
 
@@ -1632,7 +1632,7 @@ namespace GameA.Game
             return (_envState & (1 << (int) eEnvState)) != 0;
         }
 
-        public virtual bool SetWeapon(int id)
+        public virtual bool SetWeapon(int id, int slot = 0)
         {
             return true;
         }
