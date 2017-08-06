@@ -21,7 +21,6 @@ namespace GameA.Game
         protected Queue<UnitBase> _curCreatingQueue;
         protected List<Queue<UnitBase>> _waitingDestroyQueues = new List<Queue<UnitBase>>();
         private static List<Queue<UnitBase>> s_freeQueues = new List<Queue<UnitBase>>();
-        protected Dictionary<IntVec3, List<GridCheck>> _gridChecks = new Dictionary<IntVec3, List<GridCheck>>();
 
         protected override bool OnInit()
         {
@@ -44,7 +43,6 @@ namespace GameA.Game
             _curCreatingQueue = null;
             _waitingDestroyQueues.Clear();
             s_freeQueues.Clear();
-            _gridChecks.Clear();
         }
 
         public override void OnTriggerStart(UnitBase other)
@@ -98,18 +96,9 @@ namespace GameA.Game
 
                         for (int i = 0; i < units.Count; i++)
                         {
-                            var node = units[i];
-                            if (node.Id == UnitDefine.SwitchTriggerId)
+                            if (units[i].Id == UnitDefine.SwitchTriggerId)
                             {
-                                List<GridCheck> lists;
-                                if (!_gridChecks.TryGetValue(unit.Guid, out lists))
-                                {
-                                    lists = new List<GridCheck>();
-                                    _gridChecks.Add(unit.Guid, lists);
-                                }
-                                var gridCheck = new GridCheck(unit);
-                                gridCheck.Do((SwitchTrigger)node);
-                                _gridChecks[unit.Guid].Add(gridCheck);
+                                units[i].OnIntersect(unit);
                             }
                         }
                     }
@@ -120,16 +109,7 @@ namespace GameA.Game
                 for (int i = _waitingDestroyQueues.Count - 1; i >= 0; i--)
                 {
                     var curQueue = _waitingDestroyQueues[i];
-                    var unitDestroy = curQueue.Dequeue();
-                    PlayMode.Instance.DestroyUnit(unitDestroy);
-                    List<GridCheck> gridChecks;
-                    if (_gridChecks.TryGetValue(unitDestroy.Guid, out gridChecks))
-                    {
-                        for (int j = 0; j < gridChecks.Count; j++)
-                        {
-                            gridChecks[j].OnDestroySelf(unitDestroy);
-                        }
-                    }
+                    PlayMode.Instance.DestroyUnit(curQueue.Dequeue());
                     if (curQueue.Count == 0)
                     {
                         FreeQueue(curQueue);
