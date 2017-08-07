@@ -89,7 +89,8 @@ namespace GameA
                 _rewardCtrl [i] = new USCtrlGameFinishReward ();
                 _rewardCtrl [i].Init (_cachedView.Rewards [i]);
             }
-		}
+            _cachedView.UpGrade.SetActiveEx(false);
+        }
         #region UIEvent
 
         private void OnReturnBtn ()
@@ -192,7 +193,10 @@ namespace GameA
         #endregion
         private float CountExpRatio(float exp,int level)
         {
-            return exp/TableManager.Instance.Table_PlayerLvToExpDic[level].AdvExp;
+            return (exp
+                //- TableManager.Instance.Table_PlayerLvToExpDic[LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel].AdvExp
+                    )
+                    / (TableManager.Instance.Table_PlayerLvToExpDic[level+1].AdvExp- TableManager.Instance.Table_PlayerLvToExpDic[level].AdvExp);
         }
 
         public void GainExperienceAnimation(float endValue,Callback callback=null)
@@ -203,8 +207,9 @@ namespace GameA
 
         }
         private void JudgeExpAndLvl()
-	    {
-	        int PlayerLevel = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel;
+        {
+            //Debug.Log("LevelDataInGameFinish:"+ LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel);
+            int PlayerLevel = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel;
             long currentPlayerExp = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerExp;
 	        long RewardExp=0;
             if(AppData.Instance.AdventureData.LastAdvReward!=null&& AppData.Instance.AdventureData.LastAdvReward.ItemList.Count!=0)
@@ -216,25 +221,45 @@ namespace GameA
 	            }
             }
             _cachedView.PlusExp.text = String.Format("+{0}",RewardExp);
-            if (currentPlayerExp - RewardExp > 0)
+            if (currentPlayerExp - RewardExp >= TableManager.Instance.Table_PlayerLvToExpDic[
+                    LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel].AdvExp)//没有升级
             {
-               long initialExp = currentPlayerExp - RewardExp;
-               _cachedView.ExpBar.fillAmount = CountExpRatio(initialExp, PlayerLevel);
-                GainExperienceAnimation(CountExpRatio(currentPlayerExp, PlayerLevel));
+               long initialExp = currentPlayerExp - RewardExp- TableManager.Instance.Table_PlayerLvToExpDic[
+                    LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel].AdvExp;
+               _cachedView.ExpBar.fillAmount = CountExpRatio (initialExp, PlayerLevel);
+                GainExperienceAnimation(CountExpRatio(currentPlayerExp- TableManager.Instance.Table_PlayerLvToExpDic[
+                    LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel].AdvExp, PlayerLevel));
+                
             }
-	        else
+            else //升级
             {
-                long initialExp = TableManager.Instance.Table_PlayerLvToExpDic[PlayerLevel - 1].AdvExp - (currentPlayerExp - RewardExp);
-                _cachedView.ExpBar.fillAmount = CountExpRatio(initialExp, PlayerLevel-1);
-                 GainExperienceAnimation(1.0f, UpGrade);
+                long initialExp = 0;
+                if (LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel == 2)
+                {
+                    initialExp = (currentPlayerExp - RewardExp);
+
+                }
+                else
+                {
+                    initialExp = (currentPlayerExp - RewardExp) - TableManager.Instance.Table_PlayerLvToExpDic[
+                        LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel - 2].AdvExp;
+                }
+                _cachedView.ExpBar.fillAmount = CountExpRatio(initialExp, PlayerLevel - 1);
+                
+                GainExperienceAnimation(1.0f, UpGrade);
+                _cachedView.PlusExp.SetActiveEx(false);
+                _cachedView.UpGrade.SetActiveEx(true);
             }
 	    }
 
 	    private void UpGrade()
-        {
+	    {
+	        _cachedView.ExpBar.fillAmount = 0;
             int PlayerLevel = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel;
-            long currentPlayerExp = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerExp;
-            GainExperienceAnimation(CountExpRatio(currentPlayerExp, PlayerLevel));
+            long currentPlayerExp = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerExp- TableManager.Instance.Table_PlayerLvToExpDic[
+                        LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel].AdvExp;
+            GainExperienceAnimation(CountExpRatio(currentPlayerExp- TableManager.Instance.Table_PlayerLvToExpDic[
+                    LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel].AdvExp, PlayerLevel));
 	        _cachedView.PlusExp.SetActiveEx(false);
             _cachedView.UpGrade.SetActiveEx(true);
             _cachedView.level.text = PlayerLevel.ToString();
