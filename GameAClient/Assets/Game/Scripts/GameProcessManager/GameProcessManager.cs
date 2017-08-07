@@ -391,5 +391,6 @@ namespace GameA.Game
         World,
         SocialReLationShip,
         Mail,
+        Puzzle,
     }
 }
