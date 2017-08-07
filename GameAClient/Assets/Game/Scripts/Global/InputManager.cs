@@ -6,6 +6,8 @@
 ***********************************************************************/
 
 using System;
+using HedgehogTeam.EasyTouch;
+using SoyEngine;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 using Object = UnityEngine.Object;
@@ -34,7 +36,13 @@ namespace GameA.Game
         public event Action<Gesture> OnDragStart;
         public event Action<Gesture> OnDrag;
         public event Action<Gesture> OnDragEnd;
+        public event Action<Gesture> OnDragStartTwoFingers;
+        public event Action<Gesture> OnDragTwoFingers;
+        public event Action<Gesture> OnDragEndTwoFingers;
         public event Action<Gesture> OnTap;
+        public event Action<Gesture> OnTouchStart;
+        public event Action<Gesture> OnTouchDown;
+        public event Action<Gesture> OnTouchUp;
         /// <summary>
         /// Pos, Delta
         /// </summary>
@@ -60,6 +68,10 @@ namespace GameA.Game
         public void Update()
         {
             CrossPlatformInputManager.Update();
+            if (Application.isMobilePlatform)
+            {
+                return;
+            }
             if (OnMouseWheelChange != null)
             {
                 if (Input.mouseScrollDelta.sqrMagnitude > 0.0001f)
@@ -146,14 +158,14 @@ namespace GameA.Game
             }
             if (_instance != null)
             {
-                EasyTouch.On_TouchDown -= EasyTouchOnOnTouchDown;
-                EasyTouch.On_TouchUp -= EasyTouchOnOnTouchUp;
+                EasyTouch.On_TouchDown -= EasyTouchOnTouchDown;
+                EasyTouch.On_TouchUp -= EasyTouchOnTouchUp;
                 
-                EasyTouch.On_Pinch -= EasyTouchOnOnPinch;
-                EasyTouch.On_PinchEnd -= EasyTouchOnOnPinchEnd;
-                EasyTouch.On_DragStart -= EasyTouchOnOnDragStart;
-                EasyTouch.On_Drag -= EasyTouchOnOnDrag;
-                EasyTouch.On_DragEnd -= EasyTouchOnOnDragEnd;
+                EasyTouch.On_Pinch -= EasyTouchOnPinch;
+                EasyTouch.On_PinchEnd -= EasyTouchOnPinchEnd;
+                EasyTouch.On_DragStart -= EasyTouchOnDragStart;
+                EasyTouch.On_Drag -= EasyTouchOnDrag;
+                EasyTouch.On_DragEnd -= EasyTouchOnDragEnd;
                 EasyTouch.On_SimpleTap -= EasyTouchOnSimpleTap;
                 _instance = null;
             }
@@ -164,18 +176,49 @@ namespace GameA.Game
             _easyTouchObject = new GameObject("EasyTouch");
             _easyTouchObject.AddComponent<EasyTouch>();
             EasyTouch.SetEnable2DCollider(true);
+            EasyTouch.SetUICompatibily(false);
             EasyTouch.AddCamera(CameraManager.Instance.RendererCamera);
+
+            EasyTouch.On_TouchStart += EasyTouchOnTouchStart;
+            EasyTouch.On_TouchDown += EasyTouchOnTouchDown;
+            EasyTouch.On_TouchUp += EasyTouchOnTouchUp;
             
-            
-            EasyTouch.On_TouchDown += EasyTouchOnOnTouchDown;
-            EasyTouch.On_TouchUp += EasyTouchOnOnTouchUp;
-            
-            EasyTouch.On_Pinch += EasyTouchOnOnPinch;
-            EasyTouch.On_PinchEnd += EasyTouchOnOnPinchEnd;
-            EasyTouch.On_DragStart += EasyTouchOnOnDragStart;
-            EasyTouch.On_Drag += EasyTouchOnOnDrag;
-            EasyTouch.On_DragEnd += EasyTouchOnOnDragEnd;
+            EasyTouch.On_Pinch += EasyTouchOnPinch;
+            EasyTouch.On_PinchEnd += EasyTouchOnPinchEnd;
+            EasyTouch.On_DragStart += EasyTouchOnDragStart;
+            EasyTouch.On_Drag += EasyTouchOnDrag;
+            EasyTouch.On_DragEnd += EasyTouchOnDragEnd;
             EasyTouch.On_SimpleTap += EasyTouchOnSimpleTap;
+            EasyTouch.On_DragStart2Fingers += EasyTouchOnDragStart2Fingers;
+            EasyTouch.On_Drag2Fingers += EasyTouchOnDrag2Fingers;
+            EasyTouch.On_DragEnd2Fingers += EasyTouchOnDragEnd2Fingers;
+        }
+
+        private void EasyTouchOnDragStart2Fingers(Gesture gesture)
+        {
+            if (null != OnDragStartTwoFingers)
+            {
+                OnDragStartTwoFingers.Invoke(gesture);
+            }
+//            LogHelper.Info("OnDragStartTwoFingers: " + gesture);
+        }
+
+        private void EasyTouchOnDrag2Fingers(Gesture gesture)
+        {
+            if (null != OnDragTwoFingers)
+            {
+                OnDragTwoFingers.Invoke(gesture);
+            }
+//            LogHelper.Info("OnDragTwoFingers: " + gesture);
+        }
+
+        private void EasyTouchOnDragEnd2Fingers(Gesture gesture)
+        {
+            if (null != OnDragEndTwoFingers)
+            {
+                OnDragEndTwoFingers.Invoke(gesture);
+            }
+//            LogHelper.Info("OnDragEndTwoFingers: " + gesture);
         }
 
         private void EasyTouchOnSimpleTap(Gesture gesture)
@@ -184,56 +227,81 @@ namespace GameA.Game
             {
                 OnTap.Invoke(gesture);
             }
+//            LogHelper.Info("OnTap: " + gesture);
         }
 
-        private void EasyTouchOnOnDragEnd(Gesture gesture)
-        {
-            if (null != OnDragEnd)
-            {
-                OnDragEnd.Invoke(gesture);
-            }
-        }
-
-        private void EasyTouchOnOnDrag(Gesture gesture)
-        {
-            if (null != OnDrag)
-            {
-                OnDrag.Invoke(gesture);
-            }
-        }
-
-        private void EasyTouchOnOnDragStart(Gesture gesture)
+        private void EasyTouchOnDragStart(Gesture gesture)
         {
             if (null != OnDragStart)
             {
                 OnDragStart.Invoke(gesture);
             }
+//            LogHelper.Info("OnDragStart: " + gesture);
         }
 
-        private void EasyTouchOnOnPinchEnd(Gesture gesture)
+        private void EasyTouchOnDrag(Gesture gesture)
         {
-            if (OnPinchEnd != null)
+            if (null != OnDrag)
             {
-                OnPinchEnd.Invoke(gesture);
+                OnDrag.Invoke(gesture);
             }
+//            LogHelper.Info("OnDrag: " + gesture);
         }
 
-        private void EasyTouchOnOnPinch(Gesture gesture)
+        private void EasyTouchOnDragEnd(Gesture gesture)
+        {
+            if (null != OnDragEnd)
+            {
+                OnDragEnd.Invoke(gesture);
+            }
+//            LogHelper.Info("OnDragEnd: " + gesture);
+        }
+
+        private void EasyTouchOnPinch(Gesture gesture)
         {
             if (OnPinch != null)
             {
                 OnPinch.Invoke(gesture);
             }
+//            LogHelper.Info("OnPinch: " + gesture);
         }
 
-        private void EasyTouchOnOnTouchDown(Gesture gesture)
+        private void EasyTouchOnPinchEnd(Gesture gesture)
+        {
+            if (OnPinchEnd != null)
+            {
+                OnPinchEnd.Invoke(gesture);
+            }
+//            LogHelper.Info("OnPinchEnd: " + gesture);
+        }
+
+        private void EasyTouchOnTouchStart(Gesture gesture)
+        {
+            if (OnTouchStart != null)
+            {
+                OnTouchStart.Invoke(gesture);
+            }
+//            LogHelper.Info("OnTouchStart: " + gesture);
+        }
+        
+        private void EasyTouchOnTouchDown(Gesture gesture)
         {
             IsTouchDown = true;
+            if (OnTouchDown != null)
+            {
+                OnTouchDown.Invoke(gesture);
+            }
+//            LogHelper.Info("OnTouchDown: " + gesture);
         }
 
-        private void EasyTouchOnOnTouchUp(Gesture gesture)
+        private void EasyTouchOnTouchUp(Gesture gesture)
         {
             IsTouchDown = false;
+            if (OnTouchUp != null)
+            {
+                OnTouchUp.Invoke(gesture);
+            }
+//            LogHelper.Info("OnTouchUp: " + gesture);
         }
 
         public void ShowGameInput()

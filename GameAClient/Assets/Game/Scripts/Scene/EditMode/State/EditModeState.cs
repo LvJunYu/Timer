@@ -1,4 +1,5 @@
-﻿using SoyEngine.FSM;
+﻿using HedgehogTeam.EasyTouch;
+using SoyEngine.FSM;
 using UnityEngine;
 
 namespace GameA.Game
@@ -41,12 +42,20 @@ namespace GameA.Game
                 EditMode.Instance.CommitRecordBatch(_recordBatch);
                 _recordBatch = null;
             }
+
+            public virtual bool CanRevertTo()
+            {
+                return true;
+            }
             
             public virtual void OnPinch(Gesture gesture) { }
             public virtual void OnPinchEnd(Gesture gesture) { }
             public virtual void OnDragStart(Gesture gesture)  { }
             public virtual void OnDrag(Gesture gesture)  { }
             public virtual void OnDragEnd(Gesture gesture)  { }
+            public virtual void OnDragStartTwoFingers(Gesture gesture)  { }
+            public virtual void OnDragTwoFingers(Gesture gesture)  { }
+            public virtual void OnDragEndTwoFingers(Gesture gesture)  { }
             public virtual void OnTap(Gesture gesture)  { }
             public virtual void OnMouseWheelChange(Vector3 pos, Vector2 delta)  { }
             public virtual void OnMouseRightButtonDragStart(Vector3 pos)  { }

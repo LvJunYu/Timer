@@ -114,7 +114,7 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_curBanInputTime == 0 && !IsHoldingBox())
+            if (_curBanInputTime == 0 && !IsHoldingBox() && _eClimbState == EClimbState.None)
             {
                 if (_input.GetKeyApplied(EInputType.Left))
                 {
@@ -139,26 +139,32 @@ namespace GameA.Game
         protected virtual void CheckJump()
         {
             _climbJump = false;
-            if (_input.GetKeyApplied(EInputType.Jump))
+            if (_input.GetKeyDownApplied(EInputType.Jump))
             {
                 //攀墙跳
-                if (_eClimbState > EClimbState.None)
+                if (_eClimbState > EClimbState.None )
                 {
                     _climbJump = true;
-                    _curBanInputTime = BattleDefine.WallJumpBanInputTime;
                     ExtraSpeed.y = 0;
                     _jumpLevel = 0;
                     _jumpState = EJumpState.Jump1;
                     if (_eClimbState == EClimbState.Left)
                     {
                         SpeedX = 120;
+                        SpeedY = 120;
                         SetFacingDir(EMoveDirection.Right);
                     }
                     else if (_eClimbState == EClimbState.Right)
                     {
                         SpeedX = -120;
+                        SpeedY = 120;
                         SetFacingDir(EMoveDirection.Left);
                     }
+                    else if (_eClimbState == EClimbState.Up)
+                    {
+                        SpeedY = -10;
+                    }
+                    SetClimbState(EClimbState.None);
                 }
                 else if (_jumpLevel == -1)
                 {
@@ -172,7 +178,7 @@ namespace GameA.Game
                     _jumpState = EJumpState.Jump1;
                     _jumpTimer = 10;
                 }
-                else if (!_input.GetKeyLastApplied(EInputType.Jump) && IsCharacterAbilityAvailable(ECharacterAbility.DoubleJump))
+                else if (IsCharacterAbilityAvailable(ECharacterAbility.DoubleJump))
                 {
                     if (_jumpLevel == 0 || _jumpLevel == 2)
                     {
@@ -273,7 +279,7 @@ namespace GameA.Game
             }
             return GM2DGame.Instance.GameMode.IsPlayerCharacterAbilityAvailable(this, eCharacterAbility);
         }
-        
+
         public override void AddStates(params int[] ids)
         {
             if (!_isAlive)

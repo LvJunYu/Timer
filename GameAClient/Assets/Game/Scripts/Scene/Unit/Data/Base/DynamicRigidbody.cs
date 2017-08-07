@@ -72,10 +72,6 @@ namespace GameA.Game
                 {
                     CheckGround();
                 }
-                if (IsCheckClimb())
-                {
-                    CheckClimb();
-                }
                 if (IsUpdateSpeedY())
                 {
                     UpdateSpeedY();
@@ -138,6 +134,11 @@ namespace GameA.Game
                     air = true;
                 }
             }
+            CalculateMotor();
+            if (IsCheckClimb())
+            {
+                CheckClimb();
+            }
             //起跳瞬间！
             if (air && _grounded)
             {
@@ -152,7 +153,6 @@ namespace GameA.Game
             {
                 OnLand();
             }
-            CalculateMotor();
             _curMaxSpeedX = (int)(_maxSpeedX * _speedRatio * _speedStateRatio);
             if (_curBanInputTime <= 0)
             {
@@ -173,7 +173,7 @@ namespace GameA.Game
                     }
                     SpeedX = Util.ConstantLerp(SpeedX, speedAcc > 0 ? _curMaxSpeedX : -_curMaxSpeedX, Mathf.Abs(speedAcc));
                 }
-                else if (_grounded || _fanForce.y != 0)
+                else if (_grounded || _fanForce.y != 0 || _eClimbState == EClimbState.Up)
                 {
                     friction = MaxFriction;
                     if (_fanForce.x == 0)
@@ -187,20 +187,77 @@ namespace GameA.Game
                 }
             }
         }
-        
+
+        public override void SetClimbState(EClimbState eClimbState)
+        {
+            _eClimbState = eClimbState;
+            LogHelper.Debug(_eClimbState.ToString());
+        }
+
         protected virtual void CheckClimb()
         {
-            _eClimbState = EClimbState.None;
-            if (!_grounded && SpeedY < 0)
+            switch (_eClimbState)
             {
-                if (_input.GetKeyApplied(EInputType.Left) && CheckLeftFloor())
-                {
-                    _eClimbState = EClimbState.Left;
-                }
-                else if (_input.GetKeyApplied(EInputType.Right) && CheckRightFloor())
-                {
-                    _eClimbState = EClimbState.Right;
-                }
+                case EClimbState.Left:
+                    if (_input.GetKeyApplied(EInputType.Up))
+                    {
+                        if (!CheckLeftClimbUpFloor())
+                        {
+                            _motorAcc = 0;
+                        }
+                    }
+                    else if (_input.GetKeyApplied(EInputType.Down))
+                    {
+                        if (!CheckLeftClimbDownFloor())
+                        {
+                            _motorAcc = 0;
+                        }
+                        if (_grounded)
+                        {
+                            _eClimbState = EClimbState.None;
+                        }
+                    }
+                    break;
+                case EClimbState.Right:
+                    if (_input.GetKeyApplied(EInputType.Up))
+                    {
+                        if (!CheckRightClimbUpFloor())
+                        {
+                            _motorAcc = 0;
+                        }
+                    }
+                    else if (_input.GetKeyApplied(EInputType.Down))
+                    {
+                        if (!CheckRightClimbDownFloor())
+                        {
+                            _motorAcc = 0;
+                        }
+                        if (_grounded)
+                        {
+                            _eClimbState = EClimbState.None;
+                        }
+                    }
+                    break;
+                 case EClimbState.Up:
+                     if (_input.GetKeyApplied(EInputType.Right))
+                     {
+                         if (!CheckUpClimbRightFloor())
+                         {
+                             _motorAcc = 0;
+                         }
+                     }
+                     else if (_input.GetKeyApplied(EInputType.Left))
+                     {
+                         if (!CheckUpClimbLeftFloor())
+                         {
+                             _motorAcc = 0;
+                         }
+                     }
+                     break;
+            }
+            if (_eClimbState != EClimbState.None)
+            {
+                _grounded = false;
             }
         }
 
@@ -215,7 +272,51 @@ namespace GameA.Game
                 }
                 else if (_eClimbState > EClimbState.None)
                 {
-                    SpeedY = Util.ConstantLerp(SpeedY, -50, 6);
+                    switch (_eClimbState)
+                    {
+                        case EClimbState.Left:
+                            SpeedY = 0;
+                            if (_input.GetKeyApplied(EInputType.Up))
+                            {
+                                if (CheckLeftClimbUpFloor())
+                                {
+                                    SpeedY = _curMaxSpeedX;
+                                }
+                            }
+                            else if (_input.GetKeyApplied(EInputType.Down))
+                            {
+                                if (CheckLeftClimbDownFloor())
+                                {
+                                    SpeedY = -_curMaxSpeedX;
+                                }
+                                if (_grounded)
+                                {
+                                    _eClimbState = EClimbState.None;
+                                }
+                            }
+                            break;
+                        case EClimbState.Right:
+                            SpeedY = 0;
+                            if (_input.GetKeyApplied(EInputType.Up))
+                            {
+                                if (CheckRightClimbUpFloor())
+                                {
+                                    SpeedY = _curMaxSpeedX;
+                                }
+                            }
+                            else if (_input.GetKeyApplied(EInputType.Down))
+                            {
+                                if (CheckRightClimbDownFloor())
+                                {
+                                    SpeedY = - _curMaxSpeedX;
+                                }
+                                if (_grounded)
+                                {
+                                    _eClimbState = EClimbState.None;
+                                }
+                            }
+                            break;
+                    }
                 }
                 else
                 {
@@ -247,13 +348,16 @@ namespace GameA.Game
         protected virtual void CalculateMotor()
         {
             _motorAcc = 0;
-            if (_input.GetKeyApplied(EInputType.Right) && CanMove)
+            if (CanMove && (_eClimbState != EClimbState.Left && _eClimbState != EClimbState.Right))
             {
-                _motorAcc = _onIce ? 1 : 10;
-            }
-            if (_input.GetKeyApplied(EInputType.Left) && CanMove)
-            {
-                _motorAcc = _onIce ? -1 : -10;
+                if (_input.GetKeyApplied(EInputType.Right))
+                {
+                    _motorAcc = _onIce ? 1 : 10;
+                }
+                if (_input.GetKeyApplied(EInputType.Left))
+                {
+                    _motorAcc = _onIce ? -1 : -10;
+                }
             }
             _speedRatio = 1;
             if (IsHoldingBox())

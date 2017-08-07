@@ -53,6 +53,11 @@ namespace GameA.Game
             get { return true; }
         }
 
+        public override bool IsPlayer
+        {
+            get { return true; }
+        }
+
         public override bool IsInvincible
         {
             get
@@ -450,26 +455,26 @@ namespace GameA.Game
             CheckBox();
             if (_isAlive)
             {
-                if (!_grounded)
+                if (!_grounded && _eClimbState == EClimbState.None)
                 {
-                    if (_eClimbState > 0)
-                    {
-                        _animation.PlayLoop(ClimbAnimName());
-                        if (GameRun.Instance.LogicFrameCnt % 5 == 0)
-                        {
-                            Vector3 effectPos = _trans.position;
-                            if (_curMoveDirection == EMoveDirection.Left)
-                            {
-                                effectPos += Vector3.left * 0.25f + Vector3.forward * 0.6f;
-                            }
-                            else
-                            {
-                                effectPos += Vector3.right * 0.25f + Vector3.forward * 0.6f;
-                            }
-                            GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallClimb, effectPos);
-                        }
-                    }
-                    else
+//                    if (_eClimbState > 0)
+//                    {
+//                        _animation.PlayLoop(ClimbAnimName());
+//                        if (GameRun.Instance.LogicFrameCnt % 5 == 0)
+//                        {
+//                            Vector3 effectPos = _trans.position;
+//                            if (_curMoveDirection == EMoveDirection.Left)
+//                            {
+//                                effectPos += Vector3.left * 0.25f + Vector3.forward * 0.6f;
+//                            }
+//                            else
+//                            {
+//                                effectPos += Vector3.right * 0.25f + Vector3.forward * 0.6f;
+//                            }
+//                            GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallClimb, effectPos);
+//                        }
+//                    }
+//                    else
                     {
                         if (_climbJump)
                         {
@@ -617,11 +622,15 @@ namespace GameA.Game
                 }
                 return "Pull";
             }
+            if(_eClimbState != EClimbState.None)
+            {
+                return "ClimbRun";
+            }
             if (speed <= 60)
             {
                 return "Run";
             }
-            return "Run2";
+            return "Run";
         }
 
         protected virtual string JumpAnimName(int jumpLevel)
@@ -650,6 +659,10 @@ namespace GameA.Game
             if (IsHoldingBox())
             {
                 return "Prepare";
+            }
+            if(_eClimbState != EClimbState.None)
+            {
+                return "ClimbIdle";
             }
             return "Idle";
         }
