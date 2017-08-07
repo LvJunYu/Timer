@@ -1,4 +1,5 @@
-﻿using SoyEngine;
+﻿using HedgehogTeam.EasyTouch;
+using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -7,20 +8,6 @@ namespace GameA.Game
     {
         public class Add : GenericBase<Add>
         {
-            public override void Execute(EditMode owner)
-            {
-                var boardData = GetBlackBoard();
-                if (!boardData.DragInCurrentState)
-                {
-                    return;
-                }
-                //拖拽到UI上EasyTouch 不发出dragEnd事件
-                if (!Input.GetMouseButton(0))
-                {
-                    OnDragEnd(null);
-                }
-            }
-            
             public override void Exit(EditMode owner)
             {
                 OnDragEnd(null);

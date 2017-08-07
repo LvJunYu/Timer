@@ -1,4 +1,5 @@
-﻿using SoyEngine;
+﻿using HedgehogTeam.EasyTouch;
+using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -14,6 +15,7 @@ namespace GameA.Game
                 public EMode CurrentMode;
                 public UnitBase CurrentMovingUnitBase;
                 public Transform MovingRoot;
+                public Vector2 MousePos;
                 public Vector2 MouseActualPos;
                 public Vector3 MouseObjectOffsetInWorld;
 
@@ -52,6 +54,7 @@ namespace GameA.Game
                             GetRecordBatch().RecordRemoveUnit(ref oriUnitDesc, ref oriUnitExtra);
                         }
                     }
+                    stateData.MousePos = Input.mousePosition;
                     stateData.MouseActualPos = Input.mousePosition;
                     if (UnitDefine.IsBlueStone(stateData.CurrentMovingUnitBase.Id))
                     {
@@ -73,20 +76,24 @@ namespace GameA.Game
                     LogHelper.Error("Move State, Param is null");
                     EditMode.Instance.StateMachine.RevertToPreviousState();
                 }
-                if (Input.GetMouseButton(0))
-                {
-                    Drag(Input.mousePosition);
-                }
-                else
-                {
-                    Drop();
-                }
+                Drag(boardData.GetStateData<Data>().MousePos);
             }
 
             public override void Exit(EditMode owner)
             {
                 Drop();
                 base.Exit(owner);
+            }
+
+            public override void OnDrag(Gesture gesture)
+            {
+                var boardData = GetBlackBoard();
+                if (!boardData.DragInCurrentState)
+                {
+                    return;
+                }
+                var stateData = boardData.GetStateData<Data>();
+                stateData.MousePos = gesture.position;
             }
 
             public override void OnDragEnd(Gesture gesture)
