@@ -15,9 +15,10 @@ namespace GameA.Game
         [SerializeField] protected SkillBase[] _currentSkills;
         protected UnitBase _owner;
 
-        public SkillCtrl(UnitBase owner)
+        public SkillCtrl(UnitBase owner, int slotCount = 1)
         {
             _owner = owner;
+            _currentSkills = new SkillBase[slotCount];
         }
         
         public SkillBase[] CurrentSkills
@@ -25,40 +26,23 @@ namespace GameA.Game
             get { return _currentSkills; }
         }
 
-        public virtual void SetPoint(int mp,int mpRecover,int rp,int rpRecover)
+        public virtual bool SetSkill(int id, int slot = 0)
         {
-        }
-
-        public virtual void SetSkill(params int[] skillIds)
-        {
-            if (_currentSkills == null)
+            if (!CheckValid(slot))
             {
-                _currentSkills = new SkillBase[skillIds.Length];
+                return false;
             }
-
-            for (int i = 0; i < skillIds.Length; i++)
+            if (_currentSkills[slot] != null)
             {
-                var skillId = skillIds[i];
-                if (!CheckValid(i))
+                if (_currentSkills[slot].Id== id)
                 {
-                    continue;
+                    return false;
                 }
-                if (_currentSkills[i] != null)
-                {
-                    if (_currentSkills[i].Id== skillId)
-                    {
-                        continue;
-                    }
-                    _currentSkills[i].Exit();
-                    _currentSkills[i] = null;
-                }
-                _currentSkills[i] = new SkillBase(skillId, _owner);
+                _currentSkills[slot].Exit();
+                _currentSkills[slot] = null;
             }
-            OnSkillChanged();
-        }
-
-        protected virtual void OnSkillChanged()
-        {
+            _currentSkills[slot] = new SkillBase(id, _owner);
+            return true;
         }
 
         public virtual void UpdateLogic()

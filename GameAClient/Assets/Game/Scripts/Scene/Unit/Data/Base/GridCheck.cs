@@ -16,12 +16,6 @@ namespace GameA.Game
         private SwitchTrigger _hit;
         private bool _isStay;
 
-        public UnitBase Self
-        {
-            get { return _self; }
-            set { _self = value; }
-        }
-
         public GridCheck(UnitBase self)
         {
             _self = self;

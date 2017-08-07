@@ -57,10 +57,7 @@ namespace GameA.Game
 
         public override void OnIntersect(UnitBase other)
         {
-            if (other.IsActor || other is Box)
-            {
-                OnTrigger(other);
-            }
+            OnTrigger(other);
         }
 
         public void OnGridCheckEnter(UnitBase other)

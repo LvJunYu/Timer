@@ -31,6 +31,8 @@ namespace GameA.Game
         protected ReviveEffect _reviveEffect = new ReviveEffect();
         protected ReviveEffect _portalEffect = new ReviveEffect();
 
+        protected Table_Equipment[] _tableEquipments = new Table_Equipment[3];
+
         public long PlayerId
         {
             get { return _playerId; }
@@ -90,8 +92,15 @@ namespace GameA.Game
             {
                 _input.Clear();
             }
+            for (int i = 0; i < _tableEquipments.Length; i++)
+            {
+                _tableEquipments[i] = null;
+            }
             _gun = _gun ?? new Gun(this);
-            SetWeapon(2);
+            SetWeapon(101,0);
+            SetWeapon(102,1);
+            SetWeapon(103,2);
+            SetWeapon(201,2);
             
             _dieTime = 0;
             _box = null;
@@ -100,8 +109,8 @@ namespace GameA.Game
             _maxSpeedX = BattleDefine.MaxSpeedX;
             base.Clear();
         }
-
-        public override bool SetWeapon(int id)
+        
+        public override bool SetWeapon(int id, int slot = 0)
         {
             var tableEquipment = TableManager.Instance.GetEquipment(id);
             if (tableEquipment == null)
@@ -109,24 +118,31 @@ namespace GameA.Game
                 LogHelper.Error("GetEquipment Failed : {0}", id);
                 return false;
             }
-            _maxHp = tableEquipment.Hp;
+            _tableEquipments[slot] = tableEquipment;
+            CalculateMaxHp();
             OnHpChanged(_maxHp);
-            _gun.ChangeView(tableEquipment.Model);
-            var skillIds = new int[3];
-            skillIds[0] = 1;
-            for (int i = 0; i < tableEquipment.SkillIds.Length; i++)
+            _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
+            if (_skillCtrl.SetSkill(tableEquipment.SkillId, slot))
             {
-                skillIds[i + 1] = tableEquipment.SkillIds[i];
-            }
-            _skillCtrl = _skillCtrl ?? new PlayerSkillCtrl(this);
-            _skillCtrl.SetPoint(tableEquipment.Mp, tableEquipment.MpRecover, tableEquipment.Rp, tableEquipment.RpRecover);
-            _skillCtrl.SetSkill(skillIds);
-            if (IsMain)
-            {
-                Messenger<string>.Broadcast(EMessengerType.SetSkill2Icon, _skillCtrl.CurrentSkills[1].TableSkill.Icon);
-                Messenger<string>.Broadcast(EMessengerType.SetSkill3Icon, _skillCtrl.CurrentSkills[2].TableSkill.Icon);
+                if (_skillCtrl.CurrentSkills[slot].TableSkill.CostType == (int)ECostType.Magic)
+                {
+                    _gun.ChangeView(tableEquipment.Model);
+                }
             }
             return true;
+        }
+
+        private void CalculateMaxHp()
+        {
+            _maxHp = _tableUnit.Hp;
+            for (int i = 0; i < _tableEquipments.Length; i++)
+            {
+                var tableEquip = _tableEquipments[i];
+                if (tableEquip != null)
+                {
+                    _maxHp += tableEquip.HpAdd;
+                }
+            }
         }
 
         internal override void OnPlay()
@@ -376,7 +392,10 @@ namespace GameA.Game
             }
             _reviveEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null, ESortingOrder.LazerEffect));
             _portalEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null, ESortingOrder.LazerEffect));
-            SetWeapon(2);
+            SetWeapon(101,0);
+            SetWeapon(102,1);
+            SetWeapon(103,2);
+            SetWeapon(201,2);
             _view.StatusBar.ShowHP();
             _view.StatusBar.ShowMP();
             return true;

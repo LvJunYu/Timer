@@ -16,6 +16,11 @@ namespace GameA.Game
 		[ColumnMapping("Name")]
 		public string Name;
 		/// <summary>
+        /// 图标
+        /// </summary>
+		[ColumnMapping("Icon")]
+		public string Icon;
+		/// <summary>
         /// 模型
         /// </summary>
 		[ColumnMapping("Model")]
@@ -23,38 +28,13 @@ namespace GameA.Game
 		/// <summary>
         /// 生命值
         /// </summary>
-		[ColumnMapping("Hp")]
-		public int Hp;
-		/// <summary>
-        /// 魔法值
-        /// </summary>
-		[ColumnMapping("Mp")]
-		public int Mp;
-		/// <summary>
-        /// 魔法回复值
-        /// </summary>
-		[ColumnMapping("MpRecover")]
-		public int MpRecover;
-		/// <summary>
-        /// 怒气值
-        /// </summary>
-		[ColumnMapping("Rp")]
-		public int Rp;
-		/// <summary>
-        /// 怒气回复值
-        /// </summary>
-		[ColumnMapping("RpRecover")]
-		public int RpRecover;
+		[ColumnMapping("HpAdd")]
+		public int HpAdd;
 		/// <summary>
         /// 技能Id
         /// </summary>
-		[ColumnMapping("SkillIds")]
-		public int[] SkillIds;
-		/// <summary>
-        /// 图标
-        /// </summary>
-		[ColumnMapping("Icon")]
-		public string Icon;
+		[ColumnMapping("SkillId")]
+		public int SkillId;
 	}
 
     public class TableEquipmentAsset:BaseTableAsset

@@ -95,12 +95,7 @@ namespace GameA.Game
             }
             if (_tableUnit.EGeneratedType == EGeneratedType.Empty)
             {
-                string effectName = _tableUnit.Model;
-                if (_skill.IsBig)
-                {
-                    effectName = string.Format("{0}Big", effectName);
-                }
-                _effectBullet = GameParticleManager.Instance.GetUnityNativeParticleItem(effectName, _trans);
+                _effectBullet = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.Model, _trans);
                 if (_effectBullet != null)
                 {
                     _effectBullet.Play();
@@ -152,12 +147,7 @@ namespace GameA.Game
             if (_view != null)
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
-                string effectName = _tableUnit.DestroyEffectName;
-                if (_skill.IsBig)
-                {
-                    effectName = string.Format("{0}Big", effectName);
-                }
-                GameParticleManager.Instance.Emit(effectName, _trans.position, new Vector3(0, 0, _angle), Vector3.one);
+                GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position, new Vector3(0, 0, _angle), Vector3.one);
             }
             Clear();
             PlayMode.Instance.DestroyUnit(this);

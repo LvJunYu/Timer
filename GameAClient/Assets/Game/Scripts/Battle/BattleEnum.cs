@@ -112,4 +112,12 @@ namespace GameA.Game
         Interval,
         End,
     }
+
+    public enum ECostType
+    {
+        None,
+        Paint,
+        Magic,
+        Rage
+    }
 }

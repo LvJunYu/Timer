@@ -47,24 +47,18 @@ namespace GameA.Game
         protected int _timerSing;
 
         protected int _damage;
-        protected int _cure;
-        protected int _shield;
+
+        protected int _energyTotal = 1000;
+        protected int _energyCost;
+        protected int _regenSpeed;
+        protected int _currentEnergy;
+        protected int _energyTimer;
 
         public int Id
         {
             get { return _tableSkill.Id; }
         }
-        
-        public int MpCost
-        {
-            get { return _tableSkill.MpCost; }
-        }
-        
-        public int RpCost
-        {
-            get { return _tableSkill.RpCost; }
-        }
-
+   
         public UnitBase Owner
         {
             get { return _owner; }
@@ -83,11 +77,6 @@ namespace GameA.Game
         public int ProjectileSpeed
         {
             get { return _projectileSpeed; }
-        }
-
-        public bool IsBig
-        {
-            get { return RpCost > 0; }
         }
 
         public Table_Skill TableSkill
@@ -109,17 +98,17 @@ namespace GameA.Game
                 case 1:
                     _eSkillType = ESkillType.Water;
                     break;
+                case 2:
+                    _eSkillType = ESkillType.Clay;
+                    break;
                 case 3:
+                    _eSkillType = ESkillType.Jelly;
+                    break;
+                case 4:
                     _eSkillType = ESkillType.Fire;
                     break;
                 case 5:
                     _eSkillType = ESkillType.Ice;
-                    break;
-                case 7:
-                    _eSkillType = ESkillType.Jelly;
-                    break;
-                case 9:
-                    _eSkillType = ESkillType.Clay;
                     break;
             }
             _cdTime = TableConvert.GetTime(_tableSkill.CDTime);
@@ -127,7 +116,9 @@ namespace GameA.Game
             _castRange = TableConvert.GetRange(_tableSkill.CastRange);
             _projectileSpeed = TableConvert.GetSpeed(_tableSkill.ProjectileSpeed);
             _damage = _tableSkill.Damage;
-            _cure = _tableSkill.Cure;
+            _energyCost = _tableSkill.Cost;
+            _regenSpeed = _tableSkill.RegenSpeed;
+            SetEnergy(_energyTotal);
             _timerSing = 0;
             SetTimerCD(0);
             _timerCharge = 0;
@@ -150,6 +141,12 @@ namespace GameA.Game
 
         public virtual void UpdateLogic()
         {
+            _energyTimer++;
+            if (_energyTimer == ConstDefineGM2D.FixedFrameCount)
+            {
+                SetEnergy(_currentEnergy + _regenSpeed);
+                _energyTimer = 0;
+            }
             if (_timerCD > 0)
             {
                 _timerCD--;
@@ -167,6 +164,11 @@ namespace GameA.Game
         
         public bool Fire()
         {
+            if (_energyCost > 0 && _currentEnergy < _energyCost)
+            {
+                LogHelper.Debug("Energy is not enough! {0} | {1}", _currentEnergy, _energyCost);
+                return false;
+            }
             if (_timerCD > 0)
             {
                 return false;
@@ -182,7 +184,21 @@ namespace GameA.Game
             {
                 OnSkillCast();
             }
+            SetEnergy(_currentEnergy - _energyCost);
             return true;
+        }
+        
+        private void SetEnergy(int value)
+        {
+            var mp = Mathf.Clamp(value, 0, _energyTotal);
+            if (_currentEnergy != mp)
+            {
+                _currentEnergy = mp;
+                if (_owner != null && _owner.View != null)
+                {
+                    _owner.View.StatusBar.SetMP(_currentEnergy, _energyTotal);
+                }
+            }
         }
 
         private void SetTimerCD(int value)
@@ -371,7 +387,6 @@ namespace GameA.Game
                 }
             }
             unit.OnHpChanged(-_damage);
-            unit.OnHpChanged(_cure);
         }
         
         protected void OnPaintHit(UnitBase target,ProjectileBase projectile)
