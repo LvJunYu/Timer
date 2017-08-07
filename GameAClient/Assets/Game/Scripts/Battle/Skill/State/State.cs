@@ -224,7 +224,7 @@ namespace GameA.Game
                 _target.Animation.Reset();
                 _target.Animation.PlayLoop(_tableState.Animation, 1, 1);
             }
-            if (_tableState.StateType == (int)EStateType.Fire)
+            if (_tableState.StateType == (int)EStateType.Fire && _target.IsMain)
             {
                 _target.View.SetRendererColor(Color.grey);
             }
