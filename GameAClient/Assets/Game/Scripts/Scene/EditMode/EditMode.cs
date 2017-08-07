@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using HedgehogTeam.EasyTouch;
 using NewResourceSolution;
 using SoyEngine;
 using SoyEngine.FSM;
@@ -52,6 +53,10 @@ namespace GameA.Game
         [SerializeField]
         private GameObject _backgroundObject;
         private SlicedCameraMask _cameraMask;
+        private EDragMode _dragMode;
+        private Gesture _lastDragGesture;
+        private bool _pinchActive;
+        private Gesture _lastPinchGesture;
 
         #endregion
 
@@ -80,11 +85,16 @@ namespace GameA.Game
         {
             if (_inited)
             {
+                InputManager.Instance.OnTouchStart -= OnTouchStart;
+                InputManager.Instance.OnTouchUp -= OnTouchUp;
                 InputManager.Instance.OnPinch -= OnPinch;
                 InputManager.Instance.OnPinchEnd -= OnPinchEnd;
                 InputManager.Instance.OnDragStart -= OnDragStart;
                 InputManager.Instance.OnDrag -= OnDrag;
                 InputManager.Instance.OnDragEnd -= OnDragEnd;
+                InputManager.Instance.OnDragStartTwoFingers -= OnDragStartTwoFingers;
+                InputManager.Instance.OnDragTwoFingers -= OnDragTwoFingers;
+                InputManager.Instance.OnDragEndTwoFingers -= OnDragEndTwoFingers;
                 InputManager.Instance.OnTap -= OnTap;
                 InputManager.Instance.OnMouseWheelChange -= OnMouseWheelChange;
                 InputManager.Instance.OnMouseRightButtonDragStart -= OnMouseRightButtonDragStart;
@@ -117,6 +127,7 @@ namespace GameA.Game
                 _editRecordManager.Clear();
                 _editRecordManager = null;
                 _enable = false;
+                _dragMode = EDragMode.None;
                 Messenger.RemoveListener(EMessengerType.GameFinishSuccess, OnSuccess);
             }
             _instance = null;
@@ -135,6 +146,7 @@ namespace GameA.Game
             _boardData.Init();
             _editRecordManager = new EditRecordManager();
             _editRecordManager.Init();
+            _dragMode = EDragMode.None;
             
             _backgroundObject = new GameObject("BackGround");
             var box = _backgroundObject.AddComponent<BoxCollider2D>();
@@ -142,12 +154,17 @@ namespace GameA.Game
             box.transform.position = Vector3.forward;
             
             InitMask();
-            
+
+            InputManager.Instance.OnTouchStart += OnTouchStart;
+            InputManager.Instance.OnTouchUp += OnTouchUp;
             InputManager.Instance.OnPinch += OnPinch;
             InputManager.Instance.OnPinchEnd += OnPinchEnd;
             InputManager.Instance.OnDragStart += OnDragStart;
             InputManager.Instance.OnDrag += OnDrag;
             InputManager.Instance.OnDragEnd += OnDragEnd;
+            InputManager.Instance.OnDragStartTwoFingers += OnDragStartTwoFingers;
+            InputManager.Instance.OnDragTwoFingers += OnDragTwoFingers;
+            InputManager.Instance.OnDragEndTwoFingers += OnDragEndTwoFingers;
             InputManager.Instance.OnTap += OnTap;
             InputManager.Instance.OnMouseWheelChange += OnMouseWheelChange;
             InputManager.Instance.OnMouseRightButtonDragStart += OnMouseRightButtonDragStart;
@@ -192,7 +209,7 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_stateMachine.PreviousState != EditModeState.Camera.Instance)
+            if (_stateMachine.PreviousState.CanRevertTo())
             {
                 _stateMachine.RevertToPreviousState();
             }
@@ -213,7 +230,14 @@ namespace GameA.Game
             {
                 return;
             }
-            _stateMachine.RevertToPreviousState();
+            if (_stateMachine.PreviousState.CanRevertTo())
+            {
+                _stateMachine.RevertToPreviousState();
+            }
+            else
+            {
+                InternalStartEdit();
+            }
         }
 
         public void StartSwitch()
@@ -227,7 +251,7 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_stateMachine.PreviousState != EditModeState.Camera.Instance)
+            if (_stateMachine.PreviousState.CanRevertTo())
             {
                 _stateMachine.RevertToPreviousState();
             }
@@ -488,99 +512,282 @@ namespace GameA.Game
 
         #region InputEvent
 
-        private void OnPinch(Gesture obj)
+        private void OnTouchStart(Gesture gesture)
+        {
+            switch (_dragMode)
+            {
+                case EDragMode.None:
+                    break;
+                case EDragMode.DragOneFinger:
+                    if (gesture.touchCount != 1)
+                    {
+                        _lastDragGesture.deltaPosition = Vector2.zero;
+                        OnDragEnd(_lastDragGesture);
+                    }
+                    break;
+                case EDragMode.DragTwoFinger:
+                    if (gesture.touchCount != 2)
+                    {
+                        _lastDragGesture.deltaPosition = Vector2.zero;
+                        _lastDragGesture.deltaPinch = 0;
+                        OnDragEndTwoFingers(_lastDragGesture);
+                    }
+                    break;
+            }
+            if (_pinchActive)
+            {
+                if (gesture.touchCount != 2)
+                {
+                    _lastPinchGesture.deltaPinch = 0;
+                    OnPinchEnd(_lastPinchGesture);
+                }
+            }
+        }
+        
+        private void OnTouchUp(Gesture gesture)
+        {
+            switch (_dragMode)
+            {
+                case EDragMode.None:
+                    break;
+                case EDragMode.DragOneFinger:
+                    if (gesture.touchCount != 2)
+                    {
+                        _lastDragGesture.deltaPosition = Vector2.zero;
+                        OnDragEnd(_lastDragGesture);
+                    }
+                    break;
+                case EDragMode.DragTwoFinger:
+                    if (gesture.touchCount != 3)
+                    {
+                        _lastDragGesture.deltaPosition = Vector2.zero;
+                        _lastDragGesture.deltaPinch = 0;
+                        OnDragEndTwoFingers(_lastDragGesture);
+                    }
+                    break;
+            }
+            if (_pinchActive)
+            {
+                if (gesture.touchCount != 3)
+                {
+                    _lastPinchGesture.deltaPinch = 0;
+                    OnPinchEnd(_lastPinchGesture);
+                }
+            }
+        }
+        
+        private void OnPinch(Gesture gesture)
         {
             if (!_enable)
             {
                 return;
             }
+            _pinchActive = true;
+            _lastPinchGesture = gesture;
             if (null != _stateMachine.GlobalState)
             {
-                _stateMachine.GlobalState.OnPinch(obj);
+                _stateMachine.GlobalState.OnPinch(gesture);
             }
             if (null != _stateMachine.CurrentState)
             {
-                _stateMachine.CurrentState.OnPinch(obj);
+                _stateMachine.CurrentState.OnPinch(gesture);
             }
         }
 
-        private void OnPinchEnd(Gesture obj)
+        private void OnPinchEnd(Gesture gesture)
         {
             if (!_enable)
             {
                 return;
             }
+            if (!_pinchActive)
+            {
+                return;
+            }
+            _pinchActive = false;
+            _lastPinchGesture = null;
             if (null != _stateMachine.GlobalState)
             {
-                _stateMachine.GlobalState.OnPinchEnd(obj);
+                _stateMachine.GlobalState.OnPinchEnd(gesture);
             }
             if (null != _stateMachine.CurrentState)
             {
-                _stateMachine.CurrentState.OnPinchEnd(obj);
+                _stateMachine.CurrentState.OnPinchEnd(gesture);
             }
         }
 
-        private void OnDragStart(Gesture obj)
+        private void OnDragStart(Gesture gesture)
         {
             if (!_enable)
             {
                 return;
             }
+            if (gesture.touchCount > 1)
+            {
+                return;
+            }
+            if (_dragMode != EDragMode.None)
+            {
+                return;
+            }
+            _dragMode = EDragMode.DragOneFinger;
+            _lastDragGesture = gesture;
+            if (gesture.isOverGui)
+            {
+                return;
+            }
             if (null != _stateMachine.GlobalState)
             {
-                _stateMachine.GlobalState.OnDragStart(obj);
+                _stateMachine.GlobalState.OnDragStart(gesture);
             }
             if (null != _stateMachine.CurrentState)
             {
-                _stateMachine.CurrentState.OnDragStart(obj);
+                _stateMachine.CurrentState.OnDragStart(gesture);
             }
         }
 
-        private void OnDrag(Gesture obj)
+        private void OnDrag(Gesture gesture)
         {
             if (!_enable)
             {
                 return;
             }
+            if (_dragMode != EDragMode.DragOneFinger)
+            {
+                return;
+            }
+            if (gesture.fingerIndex != _lastDragGesture.fingerIndex)
+            {
+                return;
+            }
+            _lastDragGesture = gesture;
             if (null != _stateMachine.GlobalState)
             {
-                _stateMachine.GlobalState.OnDrag(obj);
+                _stateMachine.GlobalState.OnDrag(gesture);
             }
             if (null != _stateMachine.CurrentState)
             {
-                _stateMachine.CurrentState.OnDrag(obj);
+                _stateMachine.CurrentState.OnDrag(gesture);
             }
         }
 
-        private void OnDragEnd(Gesture obj)
+        private void OnDragEnd(Gesture gesture)
         {
             if (!_enable)
             {
                 return;
             }
+            if (_dragMode != EDragMode.DragOneFinger)
+            {
+                return;
+            }
+            if (gesture.fingerIndex != _lastDragGesture.fingerIndex)
+            {
+                return;
+            }
+            _dragMode = EDragMode.None;
+            _lastDragGesture = null;
             if (null != _stateMachine.GlobalState)
             {
-                _stateMachine.GlobalState.OnDragEnd(obj);
+                _stateMachine.GlobalState.OnDragEnd(gesture);
             }
             if (null != _stateMachine.CurrentState)
             {
-                _stateMachine.CurrentState.OnDragEnd(obj);
+                _stateMachine.CurrentState.OnDragEnd(gesture);
             }
         }
 
-        private void OnTap(Gesture obj)
+        private void OnDragStartTwoFingers(Gesture gesture)
         {
             if (!_enable)
             {
                 return;
             }
+            if (_dragMode != EDragMode.None)
+            {
+                return;
+            }
+            _dragMode = EDragMode.DragTwoFinger;
+            _lastDragGesture = gesture;
+
+            if (gesture.isOverGui)
+            {
+                return;
+            }
             if (null != _stateMachine.GlobalState)
             {
-                _stateMachine.GlobalState.OnTap(obj);
+                _stateMachine.GlobalState.OnDragStartTwoFingers(gesture);
             }
             if (null != _stateMachine.CurrentState)
             {
-                _stateMachine.CurrentState.OnTap(obj);
+                _stateMachine.CurrentState.OnDragStartTwoFingers(gesture);
+            }
+        }
+
+        private void OnDragTwoFingers(Gesture gesture)
+        {
+            if (!_enable)
+            {
+                return;
+            }
+            if (_dragMode != EDragMode.DragTwoFinger)
+            {
+                return;
+            }
+            _lastDragGesture = gesture;
+            if (null != _stateMachine.GlobalState)
+            {
+                _stateMachine.GlobalState.OnDragTwoFingers(gesture);
+            }
+            if (null != _stateMachine.CurrentState)
+            {
+                _stateMachine.CurrentState.OnDragTwoFingers(gesture);
+            }
+        }
+
+        private void OnDragEndTwoFingers(Gesture gesture)
+        {
+            if (!_enable)
+            {
+                return;
+            }
+            if (_dragMode != EDragMode.DragTwoFinger)
+            {
+                return;
+            }
+            _dragMode = EDragMode.None;
+            _lastDragGesture = null;
+            if (null != _stateMachine.GlobalState)
+            {
+                _stateMachine.GlobalState.OnDragEndTwoFingers(gesture);
+            }
+            if (null != _stateMachine.CurrentState)
+            {
+                _stateMachine.CurrentState.OnDragEndTwoFingers(gesture);
+            }
+        }
+
+        private void OnTap(Gesture gesture)
+        {
+            if (!_enable)
+            {
+                return;
+            }
+            if (gesture.touchCount > 1)
+            {
+                return;
+            }
+            if (gesture.isOverGui)
+            {
+                return;
+            }
+            if (null != _stateMachine.GlobalState)
+            {
+                _stateMachine.GlobalState.OnTap(gesture);
+            }
+            if (null != _stateMachine.CurrentState)
+            {
+                _stateMachine.CurrentState.OnTap(gesture);
             }
         }
 
@@ -695,6 +902,13 @@ namespace GameA.Game
             _mapStatistics.AddFinishCount();
         }
         #endregion
+        
+        private enum EDragMode
+        {
+            None,
+            DragOneFinger,
+            DragTwoFinger,
+        }
     }
 }
 

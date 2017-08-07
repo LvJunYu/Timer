@@ -53,6 +53,11 @@ namespace GameA.Game
             get { return true; }
         }
 
+        public override bool IsPlayer
+        {
+            get { return true; }
+        }
+
         public override bool IsInvincible
         {
             get

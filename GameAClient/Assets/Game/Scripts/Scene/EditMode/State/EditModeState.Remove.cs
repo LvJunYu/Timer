@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using HedgehogTeam.EasyTouch;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -6,19 +7,11 @@ namespace GameA.Game
     {
         public class Remove : GenericBase<Remove>
         {
-            public override void Execute(EditMode owner)
+            public override bool CanRevertTo()
             {
-                var boardData = GetBlackBoard();
-                if (!boardData.DragInCurrentState)
-                {
-                    return;
-                }
-                if (!Input.GetMouseButton(0))
-                {
-                    OnDragEnd(null);
-                }
+                return false;
             }
-            
+
             public override void Exit(EditMode owner)
             {
                 OnDragEnd(null);

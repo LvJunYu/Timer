@@ -1,4 +1,5 @@
-﻿using SoyEngine;
+﻿using HedgehogTeam.EasyTouch;
+using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -25,14 +26,7 @@ namespace GameA.Game
                 {
                     return;
                 }
-                if (Input.GetMouseButton(0))
-                {
-                    Drag(Input.mousePosition);
-                }
-                else
-                {
-                    Drop();
-                }
+                Drag(Input.mousePosition);
             }
 
             public override void OnDragStart(Gesture gesture)

@@ -12,9 +12,8 @@ namespace GameA.Game
             Springback,
         }
 
-        public const float TimePreFrame = 1f/30;
-        public const float SpringbackCheckPrecision = 0.01f;
-        public const float ChangeCheckPrecision = 0.01f;
+        public const float SpringbackCheckPrecision = 0.001f;
+        public const float ChangeCheckPrecision = 0.001f;
         public const float ExceedTopValue = 1.4f;
         public const float ExceedDownValue = 0.75f;
         public const float SpringbackDuringTime = 0.3f;
@@ -59,7 +58,7 @@ namespace GameA.Game
         public void SetOrthoSize(float size)
         {
             size = Mathf.Clamp(size, _curMinCameraOrthoSizeLimited, _curMaxCameraOrthoSizeLimited);
-            ChangeCameraPos(size);
+            ChangeCameraOrthoSize(size);
             FireOnOrthoSizeChange();
             _curState = ESpingState.None;
         }
@@ -74,7 +73,7 @@ namespace GameA.Game
             {
                 return;
             }
-            ChangeCameraPos(newValue);
+            ChangeCameraOrthoSize(newValue);
             FireOnOrthoSizeChange();
             _curState = ESpingState.None;
         }
@@ -146,12 +145,12 @@ namespace GameA.Game
             if (curTime - _startTime > SpringbackDuringTime)
             {
                 _curState = ESpingState.None;
-                ChangeCameraPos(_springAimValue);
+                ChangeCameraOrthoSize(_springAimValue);
             }
             float cur = _cameraManager.RendererCamera.orthographicSize;
             float offset = _curSpeed*Time.deltaTime;
             cur = cur - offset;
-            ChangeCameraPos(cur);
+            ChangeCameraOrthoSize(cur);
         }
 
         private void FireOnOrthoSizeChange()
@@ -164,7 +163,7 @@ namespace GameA.Game
             }
         }
         
-        private void ChangeCameraPos(float size)
+        private void ChangeCameraOrthoSize(float size)
         {
             _cameraManager.RendererCamera.orthographicSize = size;
             Messenger.Broadcast(EMessengerType.OnEditCameraOrthoSizeChange);

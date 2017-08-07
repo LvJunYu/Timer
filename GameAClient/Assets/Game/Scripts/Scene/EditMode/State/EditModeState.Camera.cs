@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using HedgehogTeam.EasyTouch;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -6,6 +7,11 @@ namespace GameA.Game
     {
         public class Camera : GenericBase<Camera>
         {
+            public override bool CanRevertTo()
+            {
+                return false;
+            }
+
             public override void Exit(EditMode owner)
             {
                 CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSizeEnd(0);
@@ -26,13 +32,16 @@ namespace GameA.Game
 
             public override void OnPinch(Gesture gesture)
             {
-                CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSize(gesture.deltaPinch/Screen.width*4);
+                Vector2 beforePos = GM2DTools.ScreenToWorldPoint(gesture.position);
+                CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSize(gesture.deltaPinch/Screen.height*4);
+                Vector2 afterPos = GM2DTools.ScreenToWorldPoint(gesture.position);
+                CameraManager.Instance.CameraCtrlEdit.MovePos(afterPos - beforePos);
             }
 
             public override void OnPinchEnd(Gesture gesture)
             {
-                CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSizeEnd(gesture.deltaPinch/Screen.width*4);
                 CameraManager.Instance.CameraCtrlEdit.MovePosEnd(Vector2.zero);
+                CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSizeEnd(0f);
             }
         }
     }

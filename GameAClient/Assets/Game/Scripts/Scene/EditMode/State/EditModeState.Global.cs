@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using HedgehogTeam.EasyTouch;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -8,7 +9,14 @@ namespace GameA.Game
         {
             public override void OnMouseWheelChange(Vector3 arg1, Vector2 delta)
             {
+                if (EditMode.Instance.IsInState(Camera.Instance))
+                {
+                    return;
+                }
+                Vector2 beforePos = GM2DTools.ScreenToWorldPoint(Input.mousePosition);
                 CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSize(delta.y*0.2f);
+                Vector2 afterPos = GM2DTools.ScreenToWorldPoint(Input.mousePosition);
+                CameraManager.Instance.CameraCtrlEdit.MovePos(afterPos - beforePos);
                 CameraManager.Instance.CameraCtrlEdit.MovePosEnd(Vector2.zero);
                 CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSizeEnd(0);
             }
@@ -25,14 +33,64 @@ namespace GameA.Game
 
             public override void OnMouseRightButtonDrag(Vector3 arg1, Vector2 delta)
             {
+                if (EditMode.Instance.IsInState(Camera.Instance))
+                {
+                    return;
+                }
                 var deltaWorldPos = GM2DTools.ScreenToWorldSize(delta);
                 CameraManager.Instance.CameraCtrlEdit.MovePos(deltaWorldPos);
             }
 
             public override void OnMouseRightButtonDragEnd(Vector3 arg1, Vector2 delta)
             {
+                if (EditMode.Instance.IsInState(Camera.Instance))
+                {
+                    return;
+                }
                 var deltaWorldPos = GM2DTools.ScreenToWorldSize(delta);
                 CameraManager.Instance.CameraCtrlEdit.MovePosEnd(deltaWorldPos);
+            }
+
+            public override void OnDragTwoFingers(Gesture gesture)
+            {
+                if (EditMode.Instance.IsInState(Camera.Instance))
+                {
+                    return;
+                }
+                Vector2 deltaWorldPos = GM2DTools.ScreenToWorldSize(gesture.deltaPosition);
+                CameraManager.Instance.CameraCtrlEdit.MovePos(deltaWorldPos);
+            }
+
+            public override void OnDragEndTwoFingers(Gesture gesture)
+            {
+                if (EditMode.Instance.IsInState(Camera.Instance))
+                {
+                    return;
+                }
+                Vector2 deltaWorldPos = GM2DTools.ScreenToWorldSize(gesture.deltaPosition);
+                CameraManager.Instance.CameraCtrlEdit.MovePosEnd(deltaWorldPos);
+            }
+
+            public override void OnPinch(Gesture gesture)
+            {
+                if (EditMode.Instance.IsInState(Camera.Instance))
+                {
+                    return;
+                }
+                Vector2 beforePos = GM2DTools.ScreenToWorldPoint(gesture.position);
+                CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSize(gesture.deltaPinch/Screen.height*4);
+                Vector2 afterPos = GM2DTools.ScreenToWorldPoint(gesture.position);
+                CameraManager.Instance.CameraCtrlEdit.MovePos(afterPos - beforePos);
+            }
+
+            public override void OnPinchEnd(Gesture gesture)
+            {
+                if (EditMode.Instance.IsInState(Camera.Instance))
+                {
+                    return;
+                }
+                CameraManager.Instance.CameraCtrlEdit.MovePosEnd(Vector2.zero);
+                CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSizeEnd(0f);
             }
         }
     }
