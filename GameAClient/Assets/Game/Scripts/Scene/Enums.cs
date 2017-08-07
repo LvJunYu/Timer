@@ -14,7 +14,8 @@ namespace GameA.Game
     {
         None,
         Left,
-        Right
+        Right,
+        Up,
     }
 
     public enum EUnitState

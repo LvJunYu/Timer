@@ -114,7 +114,7 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_curBanInputTime == 0 && !IsHoldingBox())
+            if (_curBanInputTime == 0 && !IsHoldingBox() && _eClimbState == EClimbState.None)
             {
                 if (_input.GetKeyApplied(EInputType.Left))
                 {
@@ -145,20 +145,26 @@ namespace GameA.Game
                 if (_eClimbState > EClimbState.None)
                 {
                     _climbJump = true;
-                    _curBanInputTime = BattleDefine.WallJumpBanInputTime;
                     ExtraSpeed.y = 0;
                     _jumpLevel = 0;
                     _jumpState = EJumpState.Jump1;
                     if (_eClimbState == EClimbState.Left)
                     {
-                        SpeedX = 120;
+                        SpeedX = 100;
+                        SpeedY = 100;
                         SetFacingDir(EMoveDirection.Right);
                     }
                     else if (_eClimbState == EClimbState.Right)
                     {
-                        SpeedX = -120;
+                        SpeedX = -100;
+                        SpeedY = 100;
                         SetFacingDir(EMoveDirection.Left);
                     }
+                    else if (_eClimbState == EClimbState.Up)
+                    {
+                        SpeedY = -10;
+                    }
+                    _eClimbState = EClimbState.None;
                 }
                 else if (_jumpLevel == -1)
                 {
@@ -273,7 +279,7 @@ namespace GameA.Game
             }
             return GM2DGame.Instance.GameMode.IsPlayerCharacterAbilityAvailable(this, eCharacterAbility);
         }
-        
+
         public override void AddStates(params int[] ids)
         {
             if (!_isAlive)
