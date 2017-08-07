@@ -417,12 +417,12 @@ namespace GameA.Game
                 }
                 _paintTexture = new Texture2D(textureWidth, textureHeight);
                 _paintTexture.wrapMode = TextureWrapMode.Clamp;
-                _paintTexture.filterMode = FilterMode.Point;
+                _paintTexture.filterMode = FilterMode.Bilinear;
                 _paintTexture.SetPixels32(EmptyPixels);
                 _paintTexture.Apply();
 
                 _maskTexture = new Texture2D(textureWidth, textureHeight);
-                _maskTexture.filterMode = FilterMode.Point;
+                _maskTexture.filterMode = FilterMode.Bilinear;
                 _maskTexture.SetPixels32(EmptyPixels);
                 _maskTexture.Apply();
 
