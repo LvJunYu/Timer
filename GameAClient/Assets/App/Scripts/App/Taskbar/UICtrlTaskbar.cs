@@ -310,8 +310,8 @@ namespace GameA
 			ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHeadAvatar, 
 				LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,
 				_cachedView.DefaultUserHeadTexture);
-			_cachedView.AdventureLevel.text = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel.ToString();
-			_cachedView.CreatorLevel.text = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorLevel.ToString();
+			//_cachedView.AdventureLevel.text = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel.ToString();
+			//_cachedView.CreatorLevel.text = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorLevel.ToString();
 			if (LocalUser.Instance.User.UserInfoSimple.Sex == ESex.S_Male) {
 				_cachedView.MaleIcon.gameObject.SetActive (true);
 				_cachedView.FemaleIcon.gameObject.SetActive (false);
