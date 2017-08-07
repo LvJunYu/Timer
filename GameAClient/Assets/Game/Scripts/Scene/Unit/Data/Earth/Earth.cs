@@ -32,7 +32,7 @@ namespace GameA.Game
         public override Edge GetUpEdge(UnitBase other)
         {
             int start, end;
-            if (GetPos(other, EDirectionType.Up, out start, out end))
+            if (GetPos(other.ColliderGrid, EDirectionType.Up, out start, out end))
             {
                 for (int i = 0; i < _edges.Count; i++)
                 {
@@ -46,10 +46,10 @@ namespace GameA.Game
             return base.GetUpEdge(other);
         }
 
-        protected override bool CanEdgeClimbed(UnitBase other, EDirectionType eDirectionType)
+        protected override bool CanEdgeClimbed(UnitBase other, Grid2D checkGrid, EDirectionType eDirectionType)
         {
             int start, end;
-            if (GetPos(other, eDirectionType, out start, out end))
+            if (GetPos(checkGrid, eDirectionType, out start, out end))
             {
                 for (int i = 0; i < _edges.Count; i++)
                 {
@@ -59,7 +59,7 @@ namespace GameA.Game
                     }
                 }
             }
-            return base.CanEdgeClimbed(other, eDirectionType);
+            return base.CanEdgeClimbed(other, checkGrid, eDirectionType);
         }
     }
 
@@ -114,11 +114,11 @@ namespace GameA.Game
             edges.Remove(this);
             int cutStart = Math.Max(Start, edge.Start);
             int cutEnd = Math.Min(End, edge.End);
-            if (cutStart - 1 >= Start + Earth.MinEdgeLength)
+            if (cutStart - 1 >= Start + PaintBlock.MinEdgeLength)
             {
                 edges.Add(new Edge(Start, cutStart - 1, Direction, ESkillType));
             }
-            if (End >= cutEnd + 1 + +Earth.MinEdgeLength)
+            if (End >= cutEnd + 1 + +PaintBlock.MinEdgeLength)
             {
                 edges.Add(new Edge(cutEnd + 1, End, Direction, ESkillType));
             }
