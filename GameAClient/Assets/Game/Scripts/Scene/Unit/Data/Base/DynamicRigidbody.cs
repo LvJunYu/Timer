@@ -198,6 +198,8 @@ namespace GameA.Game
         {
             switch (_eClimbState)
             {
+                case EClimbState.None:
+                    break;
                 case EClimbState.Left:
                     if (!CheckLeftClimbFloor())
                     {
