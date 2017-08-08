@@ -2,25 +2,43 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using GameA.Game;
 
 namespace GameA
 {
     /// <summary>
     /// 拼图
     /// </summary>
-    public partial class PictureFull: SyncronisticData
+    public partial class PictureFull : SyncronisticData
     {
         public PuzzleState CurState;
         public int Quality;
-        public PicturePart[] PuzzleFragments;
+        public PicturePart[] NeededFragments;
         public string Name;
-        public int Lv;
         public string Desc;
-        //拼图的属性
 
-        public void Init()
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        /// <param name="puzzle"></param>
+        public PictureFull(Table_Puzzle puzzle)
         {
+            _pictureId = puzzle.Id;
+            _level = -1;
+            _isUsing = false;
+            _slot = -1;
             CurState = PuzzleState.CantActive;
+            Quality = puzzle.Quality;
+            Name = puzzle.Name;
+            Desc = puzzle.Description;
+            //合成所需碎片
+            var FragmentIDs = puzzle.Fragments;
+            NeededFragments = new PicturePart[FragmentIDs.Length];
+            for (int i = 0; i < FragmentIDs.Length; i++)
+            {
+                var Fragment = TableManager.Instance.GetPuzzleFragment(FragmentIDs[i]);
+                NeededFragments[i] = new PicturePart(Fragment);
+            }
         }
 
         /// <summary>
@@ -53,9 +71,9 @@ namespace GameA
 
         private bool CheckActivatable()
         {
-            for (int i = 0; i < PuzzleFragments.Length; i++)
+            for (int i = 0; i < NeededFragments.Length; i++)
             {
-                if (!PuzzleFragments[i].Owned)
+                if (!(NeededFragments[i].TotalCount > 0))
                     return false;
             }
             return true;

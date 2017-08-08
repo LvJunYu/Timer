@@ -13,6 +13,12 @@ namespace GameA
         public bool IsLock;
         public int UnlockLv;
 
+        public UMCtrlPuzzleEquipLoc(int unlockLv, bool isLock)
+        {
+            this.UnlockLv = unlockLv;
+            this.IsLock = isLock;
+        }
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();

@@ -10,7 +10,6 @@ namespace GameA
     public class UMCtrlPuzzleFragmentItem : UMCtrlBase<UMViewPuzzleFragmentItem>
     {
         private PicturePart _fragment;
-        public int HaveNum;
         public bool IsShow;
 
         protected override void OnViewCreated()
@@ -34,8 +33,7 @@ namespace GameA
         public void SetData(PicturePart fragment)
         {
             _fragment = fragment;
-            HaveNum = fragment.HaveNum;
-            _cachedView.HaveNumTxt.text = HaveNum.ToString();
+            _cachedView.HaveNumTxt.text = fragment.TotalCount.ToString();
             _cachedView.NameTxt.text = fragment.Name;
         }
     }
