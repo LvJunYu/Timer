@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections;
-using SoyEngine;
+﻿using SoyEngine;
 using SoyEngine.Proto;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
+using GameA.Game;
+using SoyEngine;
 
 namespace GameA
 {
@@ -90,7 +92,6 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-
             _cachedView.BGBtn.onClick.AddListener(OnBGBtn);
             _rewardItemCtrls = new USCtrlRewardItem[_cachedView.ItemList.Length];
             for (int i = 0; i < _cachedView.ItemList.Length; i++)

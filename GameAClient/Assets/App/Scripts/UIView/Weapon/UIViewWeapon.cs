@@ -7,7 +7,7 @@ namespace GameA
 {
     public class UIViewWeapon : UIViewBase
     {
-        public Image RewardItemTitle;
+        public Image EffctImage;
         public Image UnlockSystemTitle;
         public Image UnlockAbilityTitle;
         public Image RewardLight;

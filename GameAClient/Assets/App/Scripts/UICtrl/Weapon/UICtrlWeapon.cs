@@ -47,7 +47,7 @@ namespace GameA
                 _cachedView.RewardLight.gameObject.SetActive(true);
                 _cachedView.UnlockLight.gameObject.SetActive(false);
                 _cachedView.AbilityLight.gameObject.SetActive(false);
-                _cachedView.RewardItemTitle.gameObject.SetActive((true));
+              //  _cachedView.RewardItemTitle.gameObject.SetActive((true));
                 _cachedView.UnlockSystemTitle.gameObject.SetActive((false));
                 _cachedView.UnlockAbilityTitle.gameObject.SetActive((false));
             }
@@ -56,7 +56,7 @@ namespace GameA
                 _cachedView.RewardLight.gameObject.SetActive(false);
                 _cachedView.UnlockLight.gameObject.SetActive(true);
                 _cachedView.AbilityLight.gameObject.SetActive(false);
-                _cachedView.RewardItemTitle.gameObject.SetActive((false));
+               // _cachedView.RewardItemTitle.gameObject.SetActive((false));
                 _cachedView.UnlockSystemTitle.gameObject.SetActive((true));
                 _cachedView.UnlockAbilityTitle.gameObject.SetActive((false));
             }
@@ -65,7 +65,7 @@ namespace GameA
                 _cachedView.RewardLight.gameObject.SetActive(false);
                 _cachedView.UnlockLight.gameObject.SetActive(false);
                 _cachedView.AbilityLight.gameObject.SetActive(true);
-                _cachedView.RewardItemTitle.gameObject.SetActive((false));
+                //_cachedView.RewardItemTitle.gameObject.SetActive((false));
                 _cachedView.UnlockSystemTitle.gameObject.SetActive((false));
                 _cachedView.UnlockAbilityTitle.gameObject.SetActive((true));
             }
