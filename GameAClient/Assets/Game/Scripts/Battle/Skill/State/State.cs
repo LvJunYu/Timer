@@ -60,7 +60,6 @@ namespace GameA.Game
             {
                 _run = false;
             }
-            LogHelper.Debug("OnAttached {0}", this.ToString());
             return true;
         }
 
@@ -132,7 +131,6 @@ namespace GameA.Game
             }
             OnRemovedView();
             Excute(EEffectType.End);
-            LogHelper.Debug("OnRemoved {0}", this.ToString());
             return true;
         }
         
