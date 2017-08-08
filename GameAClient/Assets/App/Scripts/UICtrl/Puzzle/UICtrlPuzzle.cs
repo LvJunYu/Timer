@@ -15,27 +15,72 @@ namespace GameA
     {
         private int _userLv;
         private Dictionary<int, Table_PuzzleSlot> _slots;//拼图装备栏
-        private Dictionary<int, Table_Puzzle> _puzzles;//拼图装备栏
-        private PictureFull[] _puzzleDatas;
+        private Dictionary<int, Table_Puzzle> _puzzles;//拼图读表
+        private List<PictureFull> _userPictureFull;
+        private List<PictureFull> _otherPictureFull;
 
         private void InitData()
         {
             _userLv = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel;
-            _slots = TableManager.Instance.Table_PuzzleSlotDic;
-
-            //所有拼图
-            _puzzles = TableManager.Instance.Table_PuzzleDic;
-            //LocalUser.Instance.UserPictureFull
-            _puzzleDatas = new PictureFull[_puzzles.Count];
-            int i = 0;
+            _userPictureFull = LocalUser.Instance.UserPictureFull.ItemDataList;
+            _otherPictureFull = new List<PictureFull>(_puzzles.Count - _userPictureFull.Count);
             foreach (int key in _puzzles.Keys)
             {
-                _puzzleDatas[i] = new PictureFull(_puzzles[key]);
-                i++;
+                var puzzle = _puzzles[key];
+                if (!TryGetPictureFull(puzzle.Id))
+                {
+                    _otherPictureFull.Add(new PictureFull(puzzle));
+                }
             }
         }
 
-        private void GetUserData()
+        private bool RefreshData()
+        {
+            bool refreshed = false;
+            _userPictureFull = LocalUser.Instance.UserPictureFull.ItemDataList;
+            //_otherPictureFull.Clear();
+            //_otherPictureFull = new List<PictureFull>(_puzzles.Count - _userPictureFull.Count);
+            //foreach (int key in _puzzles.Keys)
+            //{
+            //    var puzzle = _puzzles[key];
+            //    if (!CheckOwned(puzzle.Id))
+            //    {
+            //        _otherPictureFull.Add(new PictureFull(puzzle));
+            //    }
+            //}
+            for (int i = 0; i < _otherPictureFull.Count; i++)
+            {
+                PictureFull picture;
+                if (TryGetPictureFull(_otherPictureFull[i].PictureId, out picture))
+                {
+                    _otherPictureFull[i] = picture;
+                    refreshed = true;
+                }
+            }
+            return refreshed;
+        }
+
+        private bool TryGetPictureFull(long id, out PictureFull picture)
+        {
+            for (int i = 0; i < _userPictureFull.Count; i++)
+            {
+                if (_userPictureFull[i].PictureId == id)
+                {
+                    picture = _userPictureFull[i];
+                    return true;
+                }
+            }
+            picture = null;
+            return false;
+        }
+
+        private bool TryGetPictureFull(long id)
+        {
+            PictureFull picture;
+            return TryGetPictureFull(id, out picture);
+        }
+
+        private void RequestData()
         {
             LocalUser.Instance.UserPictureFull.Request(LocalUser.Instance.UserGuid, null,
                 code => { LogHelper.Error("Network error when get UsingAvatarData, {0}", code); });
@@ -49,16 +94,27 @@ namespace GameA
             foreach (int key in _slots.Keys)
             {
                 var unlockLv = _slots[key].UnlockLevel;
-                var equipLoc = new UMCtrlPuzzleEquipLoc(unlockLv, unlockLv >= _userLv);
+                var equipLoc = new UMCtrlPuzzleEquipLoc(unlockLv, unlockLv > _userLv);
                 equipLoc.Init(_cachedView.PuzzleLocsGrid);
             }
             //创建拼图
-            for (int i = 0; i < _puzzles.Count; i++)
+            for (int i = 0; i < _userPictureFull.Count; i++)
             {
                 var puzzle = new UMCtrlPuzzleItem();
-                puzzle.SetData(_puzzleDatas[i]);
+                puzzle.SetData(_userPictureFull[i]);
                 puzzle.Init(_cachedView.PuzzleItemGrid);
             }
+            for (int i = 0; i < _otherPictureFull.Count; i++)
+            {
+                var puzzle = new UMCtrlPuzzleItem();
+                puzzle.SetData(_otherPictureFull[i]);
+                puzzle.Init(_cachedView.PuzzleItemGrid);
+            }
+        }
+
+        private void RefreshUI()
+        {
+
         }
 
         protected override void InitGroupId()
@@ -70,14 +126,18 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            _slots = TableManager.Instance.Table_PuzzleSlotDic;
+            _puzzles = TableManager.Instance.Table_PuzzleDic;
+            InitData();
+            InitUI();
         }
 
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            //GetUserData();
-            InitData();
-            InitUI();
+            if (RefreshData())
+                RefreshUI();
+            //RefreshUserData();
         }
 
         private void OnCloseBtn()

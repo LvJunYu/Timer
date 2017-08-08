@@ -322,10 +322,9 @@ namespace GameA
 
         private void OnPuzzleBtn()
         {
-            Debug.Log("_________________________OnPuzzleBtn");
+            //Debug.Log("_________________________OnPuzzleBtn");
             if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.Puzzle))
             {
-                Debug.Log("OpenPuzzle");
                 SocialGUIManager.Instance.OpenUI<UICtrlPuzzle>();
             }
         }
