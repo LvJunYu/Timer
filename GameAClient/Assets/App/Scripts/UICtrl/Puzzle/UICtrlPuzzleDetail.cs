@@ -12,7 +12,10 @@ namespace GameA
 	[UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlPuzzleDetail : UICtrlGenericBase<UIViewPuzzleDetail>
     {
-        private UMCtrlPuzzleItem _puzzleItem;
+        private PuzzleData _puzzle;
+        private PuzzleFragmentData[] _puzzleFragments;
+        private UMCtrlPuzzleDetailItem _puzzleItem;
+        private List<UMCtrlPuzzleFragmentItem> _fragmentsCache;
 
         protected override void InitGroupId()
         {
@@ -23,17 +26,64 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-            InitUI();
+            _fragmentsCache = new List<UMCtrlPuzzleFragmentItem>(9);
+            //创建拼图
+            _puzzleItem = new UMCtrlPuzzleDetailItem();
+            _puzzleItem.Init(_cachedView.PuzzleItemPos);
         }
 
-        private void InitUI()
+        protected override void OnOpen(object parameter)
         {
-            _puzzleItem = new UMCtrlPuzzleItem();
-            _puzzleItem.Init(_cachedView.PuzzleItemPos);
-            for (int i = 0; i < 8; i++)
+            base.OnOpen(parameter);
+            _puzzle = parameter as PuzzleData;
+            UpdateUI();
+        }
+
+        private void UpdateUI()
+        {
+            //更新拼图数据
+            _puzzleItem.SetData(_puzzle);
+            _cachedView.NameTxt.text = _puzzle.Name;
+            _cachedView.UnlockLvTxt.text = _puzzle.UnlockLv.ToString();
+            _cachedView.DescTxt.text = _puzzle.Desc;
+
+            //创建拼图碎片
+            _puzzleFragments = _puzzle.PuzzleFragments;
+            for (int i = 0; i < _puzzleFragments.Length; i++)
             {
-                var puzzleItem = new UMCtrlPuzzleFragmentItem();
-                puzzleItem.Init(_cachedView.PuzzleFragmentGrid);
+                var puzzleFragment = CreatePuzzleFragment();
+                puzzleFragment.SetData(_puzzleFragments[i]);
+            }
+        }
+
+        private UMCtrlPuzzleFragmentItem CreatePuzzleFragment()
+        {
+            //查看缓存
+            foreach (var item in _fragmentsCache)
+            {
+                if (!item.IsShow)
+                {
+                    item.Show();
+                    return item;
+                }
+            }
+            //缓存没有，则创建新的
+            var puzzleFragment = new UMCtrlPuzzleFragmentItem();
+            puzzleFragment.Init(_cachedView.PuzzleFragmentGrid);
+            //新的添加到缓存
+            _fragmentsCache.Add(puzzleFragment);
+
+            return puzzleFragment;
+        }
+
+        protected override void OnClose()
+        {
+            base.OnClose();
+            //全部缓存起来
+            foreach (var item in _fragmentsCache)
+            {
+                if (item.IsShow)
+                    item.Collect();
             }
         }
 

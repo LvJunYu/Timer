@@ -19,7 +19,7 @@ namespace GameA
         private int _maxPuzzleNum = 35;
         private PuzzleData[] _puzzles;
 
-         private void GetTempData()
+        private void GetTempData()
         {
             _unLockLv = new int[_maxEquipedNum];
             for (int i = 0; i < _maxEquipedNum; i++)
@@ -30,6 +30,17 @@ namespace GameA
             for (int i = 0; i < _maxPuzzleNum; i++)
             {
                 _puzzles[i] = new PuzzleData();
+                _puzzles[i].Name = "来自东方的神秘力量" + i;
+                _puzzles[i].UnlockLv = i+1;
+                _puzzles[i].Desc = "金币产出增加" + i * 10 + "%";
+                var puzzleFragments = new PuzzleFragmentData[i + 1];
+                for (int j = 0; j < puzzleFragments.Length; j++)
+                {
+                    puzzleFragments[j] = new PuzzleFragmentData();
+                    puzzleFragments[j].HaveNum = j;
+                    puzzleFragments[j].Name = "碎片" + j;
+                }
+                _puzzles[i].PuzzleFragments = puzzleFragments;
             }
         }
 
