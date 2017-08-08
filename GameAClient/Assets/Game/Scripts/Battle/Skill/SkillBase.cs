@@ -17,7 +17,7 @@ namespace GameA.Game
     public class SkillBase
     {
         [SerializeField]
-        protected ESkillType _eSkillType;
+        protected EPaintType _epaintType;
         
         [SerializeField]
         protected UnitBase _owner;
@@ -69,9 +69,9 @@ namespace GameA.Game
             get { return _castRange; }
         }
 
-        public ESkillType ESkillType
+        public EPaintType EPaintType
         {
-            get { return _eSkillType; }
+            get { return _epaintType; }
         }
 
         public int ProjectileSpeed
@@ -96,19 +96,19 @@ namespace GameA.Game
             switch (_tableSkill.Id)
             {
                 case 1:
-                    _eSkillType = ESkillType.Water;
+                    _epaintType = EPaintType.Water;
                     break;
                 case 2:
-                    _eSkillType = ESkillType.Clay;
+                    _epaintType = EPaintType.Clay;
                     break;
                 case 3:
-                    _eSkillType = ESkillType.Jelly;
+                    _epaintType = EPaintType.Jelly;
                     break;
                 case 4:
-                    _eSkillType = ESkillType.Fire;
+                    _epaintType = EPaintType.Fire;
                     break;
                 case 5:
-                    _eSkillType = ESkillType.Ice;
+                    _epaintType = EPaintType.Ice;
                     break;
             }
             _cdTime = TableConvert.GetTime(_tableSkill.CDTime);
@@ -262,8 +262,84 @@ namespace GameA.Game
             }
         }
 
-        protected List<UnitBase> GetHitUnits(IntVec2 centerPos, int hitLayerMask)
+        protected void OnHit()
         {
+            var centerDownPos = _owner.CenterDownPos;
+            CreateTrap(centerDownPos);
+            //临时写 TODO
+            var units = GetHitUnits(centerDownPos);
+            if (units != null && units.Count > 0)
+            {
+                for (int i = 0; i < units.Count; i++)
+                {
+                    var unit = units[i];
+                    if (unit.IsAlive && unit != _owner)
+                    {
+                        if (unit.IsActor)
+                        {
+                            OnActorHit(unit, centerDownPos);
+                        }
+                    }
+                }
+            }
+        }
+
+        public virtual void OnProjectileHit(ProjectileBase projectile)
+        {
+            CreateTrap(projectile.CenterPos);
+            var units = GetHitUnits(projectile.CenterPos);
+            if (units != null && units.Count > 0)
+            {
+                for (int i = 0; i < units.Count; i++)
+                {
+                    var unit = units[i];
+                    if (unit.IsAlive)
+                    {
+                        if (unit.IsActor)
+                        {
+                            OnActorHit(unit, projectile.CenterDownPos);
+                        }
+                        else if(unit.CanPainted && _epaintType != EPaintType.None)
+                        {
+                            OnPaintHit(unit, projectile);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void OnActorHit(UnitBase unit, IntVec2 centerDownPos)
+        {
+            if (!unit.IsAlive)
+            {
+                return;
+            }
+            if (!unit.IsInvincible)
+            {
+                var forces = _tableSkill.KnockbackForces;
+                if (forces.Length == 2)
+                {
+                    var direction = unit.CenterDownPos - centerDownPos;
+                    unit.ExtraSpeed.x = direction.x >= 0 ? forces[0] : -forces[0];
+                    unit.ExtraSpeed.y = direction.y >= -320 ? forces[1] : -forces[1];
+                    unit.Speed = IntVec2.zero;
+                    unit.CurBanInputTime = 25;
+                }
+            }
+            //触发状态
+            for (int i = 0; i < _tableSkill.TriggerStates.Length; i++)
+            {
+                if (_tableSkill.TriggerStates[i] > 0)
+                {
+                    unit.AddStates(_tableSkill.TriggerStates[i]);
+                }
+            }
+            unit.OnHpChanged(-_damage);
+        }
+
+        protected List<UnitBase> GetHitUnits(IntVec2 centerPos)
+        {
+            var hitLayerMask = GetTargetType();
             switch ((EEffcetMode)_tableSkill.EffectMode)
             {
                 case EEffcetMode.Single:
@@ -313,80 +389,36 @@ namespace GameA.Game
                 PlayMode.Instance.AddTrap(_tableSkill.TrapId, centerPos);
             }
         }
-
-        protected void OnHit()
+        
+        protected int GetTargetType()
         {
-            var centerDownPos = _owner.CenterDownPos;
-            CreateTrap(centerDownPos);
-            //临时写 TODO
-            var units = GetHitUnits(centerDownPos, EnvManager.ActorLayer);
-            if (units != null && units.Count > 0)
+            int layer = 0;
+            if (HasTargetType(ETargetType.Earth))
             {
-                for (int i = 0; i < units.Count; i++)
-                {
-                    var unit = units[i];
-                    if (unit.IsAlive && unit != _owner)
-                    {
-                        if (unit.IsActor)
-                        {
-                            OnActorHit(unit, centerDownPos);
-                        }
-                    }
-                }
+                layer |= EnvManager.ItemLayer;
             }
+            if (HasTargetType(ETargetType.Monster))
+            {
+                layer |= EnvManager.MonsterLayer;
+            }
+            if (HasTargetType(ETargetType.MainPlayer))
+            {
+                layer |= EnvManager.MainPlayerLayer;
+            }
+            if (HasTargetType(ETargetType.RemotePlayer))
+            {
+                layer |= EnvManager.RemotePlayer;
+            }
+            if (HasTargetType(ETargetType.Self))
+            {
+//                layer |= EnvManager.ItemLayer;
+            }
+            return layer;
         }
 
-        public virtual void OnProjectileHit(ProjectileBase projectile)
+        private bool HasTargetType(ETargetType eTargetType)
         {
-            CreateTrap(projectile.CenterPos);
-            var units = GetHitUnits(projectile.CenterPos, JoyPhysics2D.GetColliderLayerMask(projectile.DynamicCollider.Layer));
-            if (units != null && units.Count > 0)
-            {
-                for (int i = 0; i < units.Count; i++)
-                {
-                    var unit = units[i];
-                    if (unit.IsAlive)
-                    {
-                        if (unit.IsActor)
-                        {
-                            OnActorHit(unit, projectile.CenterDownPos);
-                        }
-                        else if(unit.CanPainted && _eSkillType != ESkillType.None)
-                        {
-                            OnPaintHit(unit, projectile);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void OnActorHit(UnitBase unit, IntVec2 centerDownPos)
-        {
-            if (!unit.IsAlive)
-            {
-                return;
-            }
-            if (!unit.IsInvincible)
-            {
-                var forces = _tableSkill.KnockbackForces;
-                if (forces.Length == 2)
-                {
-                    var direction = unit.CenterDownPos - centerDownPos;
-                    unit.ExtraSpeed.x = direction.x >= 0 ? forces[0] : -forces[0];
-                    unit.ExtraSpeed.y = direction.y >= -320 ? forces[1] : -forces[1];
-                    unit.Speed = IntVec2.zero;
-                    unit.CurBanInputTime = 25;
-                }
-            }
-            //触发状态
-            for (int i = 0; i < _tableSkill.TriggerStates.Length; i++)
-            {
-                if (_tableSkill.TriggerStates[i] > 0)
-                {
-                    unit.AddStates(_tableSkill.TriggerStates[i]);
-                }
-            }
-            unit.OnHpChanged(-_damage);
+            return ((1<<(int) eTargetType) & _tableSkill.TargetType) != 0;
         }
         
         protected void OnPaintHit(UnitBase target,ProjectileBase projectile)
@@ -436,19 +468,19 @@ namespace GameA.Game
                     {
                         var start = centerPos.x - _radius;
                         var end = centerPos.x + _radius;
-                        target.DoPaint(start, end, EDirectionType.Down, _eSkillType, maskRandom);
+                        target.DoPaint(start, end, EDirectionType.Down, _epaintType, maskRandom);
 
                         if (start <= target.ColliderGrid.XMin)
                         {
                             start = target.ColliderGrid.YMin;
                             end = target.ColliderGrid.YMin + paintDepth;
-                            target.DoPaint(start, end, EDirectionType.Left, _eSkillType, maskRandom, false);
+                            target.DoPaint(start, end, EDirectionType.Left, _epaintType, maskRandom, false);
                         }
                         if (end >= target.ColliderGrid.XMax)
                         {
                             start = target.ColliderGrid.YMin;
                             end = target.ColliderGrid.YMin + paintDepth;
-                            target.DoPaint(start, end, EDirectionType.Right, _eSkillType, maskRandom, false);
+                            target.DoPaint(start, end, EDirectionType.Right, _epaintType, maskRandom, false);
                         }
                     }
                     break;
@@ -456,18 +488,18 @@ namespace GameA.Game
                     {
                         var start = centerPos.x - _radius;
                         var end = centerPos.x + _radius;
-                        target.DoPaint(start, end, EDirectionType.Up, _eSkillType, maskRandom);
+                        target.DoPaint(start, end, EDirectionType.Up, _epaintType, maskRandom);
                         if (start <= target.ColliderGrid.XMin)
                         {
                             start = target.ColliderGrid.YMax - paintDepth;
                             end = target.ColliderGrid.YMax;
-                            target.DoPaint(start, end, EDirectionType.Left, _eSkillType, maskRandom, false);
+                            target.DoPaint(start, end, EDirectionType.Left, _epaintType, maskRandom, false);
                         }
                         if (end >= target.ColliderGrid.XMax)
                         {
                             start = target.ColliderGrid.YMax - paintDepth;
                             end = target.ColliderGrid.YMax;
-                            target.DoPaint(start, end, EDirectionType.Right, _eSkillType, maskRandom, false);
+                            target.DoPaint(start, end, EDirectionType.Right, _epaintType, maskRandom, false);
                         }
                     }
                     break;
@@ -475,18 +507,18 @@ namespace GameA.Game
                     {
                         var start = centerPos.y - _radius;
                         var end = centerPos.y + _radius;
-                        target.DoPaint(start, end, EDirectionType.Right, _eSkillType, maskRandom);
+                        target.DoPaint(start, end, EDirectionType.Right, _epaintType, maskRandom);
                         if (start <= target.ColliderGrid.YMin)
                         {
                             start = target.ColliderGrid.XMax - paintDepth;
                             end = target.ColliderGrid.XMax;
-                            target.DoPaint(start, end, EDirectionType.Down, _eSkillType, maskRandom, false);
+                            target.DoPaint(start, end, EDirectionType.Down, _epaintType, maskRandom, false);
                         }
                         if (end >= target.ColliderGrid.YMax)
                         {
                             start = target.ColliderGrid.XMax - paintDepth;
                             end = target.ColliderGrid.XMax;
-                            target.DoPaint(start, end, EDirectionType.Up, _eSkillType, maskRandom, false);
+                            target.DoPaint(start, end, EDirectionType.Up, _epaintType, maskRandom, false);
                         }
                     }
                     break;
@@ -494,18 +526,18 @@ namespace GameA.Game
                     {
                         var start = centerPos.y - _radius;
                         var end = centerPos.y + _radius;
-                        target.DoPaint(start, end, EDirectionType.Left, _eSkillType, maskRandom);
+                        target.DoPaint(start, end, EDirectionType.Left, _epaintType, maskRandom);
                         if (start <= target.ColliderGrid.YMin)
                         {
                             start = target.ColliderGrid.XMin;
                             end = target.ColliderGrid.XMin + paintDepth;
-                            target.DoPaint(start, end, EDirectionType.Down, _eSkillType, maskRandom, false);
+                            target.DoPaint(start, end, EDirectionType.Down, _epaintType, maskRandom, false);
                         }
                         if (end >= target.ColliderGrid.YMax)
                         {
                             start = target.ColliderGrid.XMin;
                             end = target.ColliderGrid.XMin + paintDepth;
-                            target.DoPaint(start, end, EDirectionType.Up, _eSkillType, maskRandom, false);
+                            target.DoPaint(start, end, EDirectionType.Up, _epaintType, maskRandom, false);
                         }
                     }
                     break;

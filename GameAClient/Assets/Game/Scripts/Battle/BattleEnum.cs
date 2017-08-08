@@ -10,7 +10,7 @@ using System.Collections;
 
 namespace GameA.Game
 {
-    public enum ESkillType
+    public enum EPaintType
     {
         None,
         Water = 1,
@@ -30,6 +30,15 @@ namespace GameA.Game
         Clay,
         SpeedUp,
         Invincible
+    }
+
+    public enum ETargetType
+    {
+        Earth,
+        Monster,
+        MainPlayer,
+        RemotePlayer,
+        Self,
     }
 
     /// <summary>
