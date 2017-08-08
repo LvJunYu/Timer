@@ -13,35 +13,51 @@ namespace GameA
 	[UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlPuzzle : UICtrlGenericBase<UIViewPuzzle>
     {
-        //临时数据，接数据时修改
-        private int _maxEquipedNum = 8;
-        private int _curLv = 5;
-        private int[] _unLockLv;
-        private int _maxPuzzleNum;
-        private PictureFull[] _puzzles;
+        private int _userLv;
+        private Dictionary<int, Table_PuzzleSlot> _slots;//拼图装备栏
+        private Dictionary<int, Table_Puzzle> _puzzles;//拼图装备栏
+        private PictureFull[] _puzzleDatas;
 
         private void InitData()
         {
-            //装备栏数据
-            _unLockLv = new int[_maxEquipedNum];
-            for (int i = 0; i < _maxEquipedNum; i++)
+            _userLv = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel;
+            _slots = TableManager.Instance.Table_PuzzleSlotDic;
+
+            //所有拼图
+            _puzzles = TableManager.Instance.Table_PuzzleDic;
+            //LocalUser.Instance.UserPictureFull
+            _puzzleDatas = new PictureFull[_puzzles.Count];
+            int i = 0;
+            foreach (int key in _puzzles.Keys)
             {
-                _unLockLv[i] = i + 1;
+                _puzzleDatas[i] = new PictureFull(_puzzles[key]);
+                i++;
             }
-            //拼图数据
-            _maxPuzzleNum = TableManager.Instance.Table_PuzzleDic.Count;
-            _puzzles = new PictureFull[_maxPuzzleNum];
-            for (int i = 1; i <= _maxPuzzleNum; i++)
+        }
+
+        private void GetUserData()
+        {
+            LocalUser.Instance.UserPictureFull.Request(LocalUser.Instance.UserGuid, null,
+                code => { LogHelper.Error("Network error when get UsingAvatarData, {0}", code); });
+            LocalUser.Instance.UserUsingPictureFullData.Request(LocalUser.Instance.UserGuid, null,
+                code => { LogHelper.Error("Network error when get ValidAvatarData, {0}", code); });
+        }
+
+        private void InitUI()
+        {
+            //创建装备栏
+            foreach (int key in _slots.Keys)
             {
-                _puzzles[i] = new PictureFull();
-                var puzzleFragments = new PicturePart[i + 1];
-                for (int j = 0; j < puzzleFragments.Length; j++)
-                {
-                    puzzleFragments[j] = new PicturePart();
-                    puzzleFragments[j].HaveNum = j;
-                    puzzleFragments[j].Name = "碎片" + j;
-                }
-                _puzzles[i].PuzzleFragments = puzzleFragments;
+                var unlockLv = _slots[key].UnlockLevel;
+                var equipLoc = new UMCtrlPuzzleEquipLoc(unlockLv, unlockLv >= _userLv);
+                equipLoc.Init(_cachedView.PuzzleLocsGrid);
+            }
+            //创建拼图
+            for (int i = 0; i < _puzzles.Count; i++)
+            {
+                var puzzle = new UMCtrlPuzzleItem();
+                puzzle.SetData(_puzzleDatas[i]);
+                puzzle.Init(_cachedView.PuzzleItemGrid);
             }
         }
 
@@ -54,27 +70,14 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-            InitData();
-            InitUI();
         }
 
-        private void InitUI()
+        protected override void OnOpen(object parameter)
         {
-            //创建装备栏
-            for (int i = 0; i < _maxEquipedNum; i++)
-            {
-                var equipLoc = new UMCtrlPuzzleEquipLoc();
-                equipLoc.UnlockLv = _unLockLv[i];
-                equipLoc.IsLock = _unLockLv[i] >= _curLv;
-                equipLoc.Init(_cachedView.PuzzleLocsGrid);
-            }
-            //创建拼图
-            for (int i = 0; i < _maxPuzzleNum; i++)
-            {
-                var puzzle = new UMCtrlPuzzleItem();
-                puzzle.SetData(_puzzles[i]);
-                puzzle.Init(_cachedView.PuzzleItemGrid);
-            }
+            base.OnOpen(parameter);
+            //GetUserData();
+            InitData();
+            InitUI();
         }
 
         private void OnCloseBtn()

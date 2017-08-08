@@ -62,11 +62,11 @@ namespace GameA
             //更新拼图数据
             _puzzleItem.SetData(_puzzle);
             _cachedView.NameTxt.text = _puzzle.Name;
-            _cachedView.LvTxt.text = _puzzle.Lv.ToString();
+            _cachedView.LvTxt.text = _puzzle.Level.ToString();
             _cachedView.DescTxt.text = _puzzle.Desc;
 
             //创建拼图碎片
-            _puzzleFragments = _puzzle.PuzzleFragments;
+            _puzzleFragments = _puzzle.NeededFragments;
             for (int i = 0; i < _puzzleFragments.Length; i++)
             {
                 var puzzleFragment = CreatePuzzleFragment();
