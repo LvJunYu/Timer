@@ -27,6 +27,9 @@ namespace GameA.Game
         /// 是否相交
         /// </summary>
         private static HashSet<IntVec3> _cacheIntersectUnits = new HashSet<IntVec3>();
+        
+        protected bool _onClay;
+        protected bool _onIce;
 
         protected override void Clear()
         {
@@ -38,6 +41,18 @@ namespace GameA.Game
             _cacheCheckedDownUnits.Clear();
             _cacheHitUnits.Clear();
             _cacheIntersectUnits.Clear();
+            _onClay = false;
+            _onIce = false;
+        }
+        
+        public override void SetStepOnClay()
+        {
+            _onClay = true;
+        }
+
+        public override void SetStepOnIce()
+        {
+            _onIce = true;
         }
 
         protected override void UpdateCollider(IntVec2 min)

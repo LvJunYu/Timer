@@ -421,31 +421,37 @@ namespace GameA.Game
             int length = ConstDefineGM2D.ServerTileScale;
             var guid = target.Guid;
             UnitBase neighborUnit;
+            int v = 0;
             var curPos = projectile.CenterPos;
             if (curPos.y < target.ColliderGrid.YMin)
             {
-                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y - length, guid.z), out neighborUnit))
+                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y - length, guid.z), out neighborUnit)
+                || !neighborUnit.OnDownHit(projectile,ref v, true))
                 {
                     DoPaint(projectile, target, EDirectionType.Down);
                 }
             }
             else if (curPos.y > target.ColliderGrid.YMax)
             {
-                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y + length, guid.z), out neighborUnit))
+                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y + length, guid.z), out neighborUnit)
+                || !neighborUnit.OnUpHit(projectile,ref v, true))
+
                 {
                     DoPaint(projectile, target, EDirectionType.Up);
                 }
             }
             if (curPos.x < target.ColliderGrid.XMin)
             {
-                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x - length, guid.y, guid.z), out neighborUnit))
+                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x - length, guid.y, guid.z), out neighborUnit)
+                || !neighborUnit.OnLeftHit(projectile,ref v, true))
                 {
                     DoPaint(projectile, target, EDirectionType.Left);
                 }
             }
             else if (curPos.x > target.ColliderGrid.XMax)
             {
-                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x + length, guid.y, guid.z), out neighborUnit))
+                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x + length, guid.y, guid.z), out neighborUnit)
+                || !neighborUnit.OnRightHit(projectile,ref v, true))
                 {
                     DoPaint(projectile, target, EDirectionType.Right);
                 }

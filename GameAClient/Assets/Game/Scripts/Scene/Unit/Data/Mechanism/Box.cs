@@ -53,32 +53,25 @@ namespace GameA.Game
             if (_isAlive && _isStart)
             {
                 bool air = false;
-                int friction = 0;
                 if (SpeedY != 0)
                 {
                     air = true;
                 }
                 if (!air)
                 {
+                    _onClay = false;
+                    _onIce = false;
                     bool downExist = false;
                     var units = EnvManager.RetriveDownUnits(this);
                     for (int i = 0; i < units.Count; i++)
                     {
                         var unit = units[i];
-                        if (unit.IsMain || unit.IsMonster)
-                        {
-                            continue;
-                        }
                         int ymin = 0;
-                        if (unit != null && unit.IsAlive && CheckOnFloor(unit) && unit.OnUpHit(this, ref ymin, true))
+                        if (unit.IsAlive && CheckOnFloor(unit) && unit.OnUpHit(this, ref ymin, true))
                         {
                             downExist = true;
                             _grounded = true;
                             _downUnits.Add(unit);
-                            if (unit.Friction > friction)
-                            {
-                                friction = unit.Friction;
-                            }
                         }
                     }
                     if (!downExist)
@@ -91,8 +84,16 @@ namespace GameA.Game
                     Speed += _lastExtraDeltaPos;
                     _grounded = false;
                 }
-                SpeedX = Util.ConstantLerp(SpeedX, 0, friction);
-                if (!_grounded)
+                if (_grounded)
+                {
+                    var friction = MaxFriction;
+                    if (_onIce)
+                    {
+                        friction = 1;
+                    }
+                    SpeedX = Util.ConstantLerp(SpeedX, 0, friction);
+                }
+                else
                 {
                     SpeedY -= 15;
                     if (SpeedY < -160)

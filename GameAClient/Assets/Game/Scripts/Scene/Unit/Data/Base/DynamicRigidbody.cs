@@ -31,9 +31,6 @@ namespace GameA.Game
         /// </summary>
         protected int _jumpTimer;
         
-        protected bool _onClay;
-        protected bool _onIce;
-        
         [SerializeField] protected IntVec2 _fanForce;
         protected Dictionary<IntVec3, IntVec2> _fanForces = new Dictionary<IntVec3, IntVec2>();
         protected const float SpeedClayRatio = 0.2f;
@@ -63,8 +60,7 @@ namespace GameA.Game
             _eClimbState = EClimbState.None;
             _climbJump = false;
             _stepY = 0;
-            _onClay = false;
-            _onIce = false;
+      
             _fanForce = IntVec2.zero;
             _fanForces.Clear();
         }
@@ -99,7 +95,6 @@ namespace GameA.Game
         protected virtual void CheckGround()
         {
             bool air = false;
-            int friction = 0;
             if (SpeedY != 0)
             {
                 air = true;
@@ -121,10 +116,6 @@ namespace GameA.Game
                         downExist = true;
                         _grounded = true;
                         _downUnits.Add(unit);
-                        if (unit.Friction > friction)
-                        {
-                            friction = unit.Friction;
-                        }
                         var delta = Mathf.Abs(CenterDownPos.x - unit.CenterDownPos.x);
                         if (deltaX > delta)
                         {
@@ -179,7 +170,7 @@ namespace GameA.Game
                 }
                 else if (_grounded || _fanForce.y != 0 || _eClimbState == EClimbState.Up)
                 {
-                    friction = MaxFriction;
+                    var friction = MaxFriction;
                     if (_fanForce.x == 0)
                     {
                         if (_onIce)
@@ -335,16 +326,6 @@ namespace GameA.Game
                     break;
             }
             LogHelper.Debug(_eClimbState.ToString());
-        }
-
-        public override void SetStepOnClay()
-        {
-            _onClay = true;
-        }
-
-        public override void SetStepOnIce()
-        {
-            _onIce = true;
         }
         
         protected virtual void OnJump()
