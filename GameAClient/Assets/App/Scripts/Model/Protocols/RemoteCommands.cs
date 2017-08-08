@@ -1359,6 +1359,89 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingCompoundWeapon {
+            get { return _isRequstingCompoundWeapon; }
+        }
+        private static bool _isRequstingCompoundWeapon = false;
+        /// <summary>
+		/// 合成武器
+		/// </summary>
+		/// <param name="weaponId">武器Id</param>
+		/// <param name="universalCount">使用万能碎片数量</param>
+        public static void CompoundWeapon (
+            long weaponId,
+            int universalCount,
+            Action<Msg_SC_CMD_CompoundWeapon> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingCompoundWeapon) {
+                return;
+            }
+            _isRequstingCompoundWeapon = true;
+            Msg_CS_CMD_CompoundWeapon msg = new Msg_CS_CMD_CompoundWeapon();
+            // 合成武器
+            msg.WeaponId = weaponId;
+            msg.UniversalCount = universalCount;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CompoundWeapon>(
+                SoyHttpApiPath.CompoundWeapon, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingCompoundWeapon = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CompoundWeapon", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingCompoundWeapon = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpgradeWeapon {
+            get { return _isRequstingUpgradeWeapon; }
+        }
+        private static bool _isRequstingUpgradeWeapon = false;
+        /// <summary>
+		/// 升级武器
+		/// </summary>
+		/// <param name="weaponId">武器Id</param>
+		/// <param name="universalCount">使用万能碎片数量</param>
+		/// <param name="targetLevel">目标等级</param>
+        public static void UpgradeWeapon (
+            long weaponId,
+            int universalCount,
+            int targetLevel,
+            Action<Msg_SC_CMD_UpgradeWeapon> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpgradeWeapon) {
+                return;
+            }
+            _isRequstingUpgradeWeapon = true;
+            Msg_CS_CMD_UpgradeWeapon msg = new Msg_CS_CMD_UpgradeWeapon();
+            // 升级武器
+            msg.WeaponId = weaponId;
+            msg.UniversalCount = universalCount;
+            msg.TargetLevel = targetLevel;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpgradeWeapon>(
+                SoyHttpApiPath.UpgradeWeapon, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpgradeWeapon = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpgradeWeapon", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpgradeWeapon = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingBuyEnergy {
             get { return _isRequstingBuyEnergy; }
         }

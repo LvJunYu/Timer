@@ -134,6 +134,14 @@ namespace SoyEngine
         public const string CompoundPictureFull = "/home/compoundPictureFull";
         // 升级拼图
         public const string UpgradePictureFull = "/home/upgradePictureFull";
+        // 角色拥有的武器
+        public const string UserWeaponData = "/home/getUserWeaponData";
+        // 角色拥有的武器碎片
+        public const string UserWeaponPartData = "/home/getUserWeaponPartData";
+        // 合成武器
+        public const string CompoundWeapon = "/home/compoundWeapon";
+        // 升级武器
+        public const string UpgradeWeapon = "/home/upgradeWeapon";
         // 冒险模式关卡列表
         public const string AdventureProjectList = "/adventure/getProjectList";
         // 冒险模式进度
