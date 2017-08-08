@@ -30,6 +30,9 @@ namespace GameA.Game
         /// 起跳的动画时间
         /// </summary>
         protected int _jumpTimer;
+        
+        protected bool _onClay;
+        protected bool _onIce;
 
         protected abstract bool IsCheckGround();
         protected abstract bool IsCheckClimb();
@@ -54,6 +57,8 @@ namespace GameA.Game
             _eClimbState = EClimbState.None;
             _climbJump = false;
             _stepY = 0;
+            _onClay = false;
+            _onIce = false;
         }
         
         public void Setup(InputBase inputBase)
@@ -111,15 +116,6 @@ namespace GameA.Game
                         if (unit.Friction > friction)
                         {
                             friction = unit.Friction;
-                        }
-                        var edge = unit.GetUpEdge(this);
-                        if (unit.StepOnClay() || edge.ESkillType == ESkillType.Clay)
-                        {
-                            _onClay = true;
-                        }
-                        else if (unit.StepOnIce() || edge.ESkillType == ESkillType.Ice)
-                        {
-                            _onIce = true;
                         }
                         var delta = Mathf.Abs(CenterDownPos.x - unit.CenterDownPos.x);
                         if (deltaX > delta)
@@ -186,23 +182,6 @@ namespace GameA.Game
                     SpeedX = Util.ConstantLerp(SpeedX, 0, friction);
                 }
             }
-        }
-
-        public override void SetClimbState(EClimbState eClimbState)
-        {
-            _eClimbState = eClimbState;
-            switch (_eClimbState)
-            {
-                case EClimbState.None:
-                    break;
-                case EClimbState.Left:
-                    SetFacingDir(EMoveDirection.Left);
-                    break;
-                case EClimbState.Right:
-                    SetFacingDir(EMoveDirection.Right);
-                    break;
-            }
-            LogHelper.Debug(_eClimbState.ToString());
         }
 
         protected virtual void CheckClimb()
@@ -331,6 +310,33 @@ namespace GameA.Game
                 }
             }
             _fanForce.y = 0;
+        }
+        
+        public override void SetClimbState(EClimbState eClimbState)
+        {
+            _eClimbState = eClimbState;
+            switch (_eClimbState)
+            {
+                case EClimbState.None:
+                    break;
+                case EClimbState.Left:
+                    SetFacingDir(EMoveDirection.Left);
+                    break;
+                case EClimbState.Right:
+                    SetFacingDir(EMoveDirection.Right);
+                    break;
+            }
+            LogHelper.Debug(_eClimbState.ToString());
+        }
+
+        public override void SetStepOnClay()
+        {
+            _onClay = true;
+        }
+
+        public override void SetStepOnIce()
+        {
+            _onIce = true;
         }
         
         protected virtual void OnJump()

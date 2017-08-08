@@ -12,7 +12,7 @@ using SoyEngine;
 namespace GameA.Game
 {
     [Unit(Id = 4011, Type = typeof(Clay))]
-    public class Clay : BlockBase
+    public class Clay : SkillBlock
     {
         public override bool CanClimbed
         {
@@ -28,58 +28,22 @@ namespace GameA.Game
             _animation.Init("Run");
             return true;
         }
-
-        public override bool StepOnClay()
+        
+        protected override void CheckSkillHit(UnitBase other, Grid2D grid, EDirectionType eDirectionType)
         {
-            return true;
-        }
-
-        public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
-        {
-            if (!checkOnly && other.IsActor)
+            if (_colliderGrid.Intersects(grid))
             {
-                var min = new IntVec2(other.ColliderGrid.XMax + 1, other.CenterPos.y);
-                var grid = new Grid2D(min.x, min.y, min.x + ConstDefineGM2D.ServerTileScale, min.y);
-                if (_colliderGrid.Intersects(grid))
-                {
-                    OnEffect(other, EDirectionType.Left);
-                }
+                OnEffect(other, eDirectionType);
             }
-            return base.OnLeftHit(other, ref x, checkOnly);
-        }
-
-        public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
-        {
-            if (!checkOnly && other.IsActor)
-            {
-                var min = new IntVec2(other.ColliderGrid.XMin - 1, other.CenterPos.y);
-                var grid = new Grid2D(min.x, min.y, min.x + ConstDefineGM2D.ServerTileScale, min.y);
-                if (_colliderGrid.Intersects(grid))
-                {
-                    OnEffect(other, EDirectionType.Right);
-                }
-            }
-            return base.OnRightHit(other, ref x, checkOnly);
-        }
-
-        public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
-        {
-            if (!checkOnly && other.IsActor)
-            {
-                var min = new IntVec2(other.CenterPos.x, other.ColliderGrid.YMax + 1);
-                var grid = new Grid2D(min.x, min.y, min.x, min.y + ConstDefineGM2D.ServerTileScale);
-                if (_colliderGrid.Intersects(grid))
-                {
-                    OnEffect(other, EDirectionType.Down);
-                }
-            }
-            return base.OnDownHit(other, ref y, checkOnly);
         }
 
         public static void OnEffect(UnitBase other, EDirectionType eDirectionType)
         {
             switch (eDirectionType)
             {
+                case EDirectionType.Up:
+                    other.SetStepOnClay();
+                    break;
                 case EDirectionType.Down:
                     other.SetClimbState(EClimbState.Up);
                     break;

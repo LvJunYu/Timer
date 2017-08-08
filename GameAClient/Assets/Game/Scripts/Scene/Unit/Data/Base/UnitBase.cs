@@ -813,16 +813,6 @@ namespace GameA.Game
             return false;
         }
 
-        public virtual bool StepOnClay()
-        {
-            return false;
-        }
-
-        public virtual bool StepOnIce()
-        {
-            return false;
-        }
-
         /// <summary>
         /// 被电
         /// </summary>
@@ -1671,6 +1661,14 @@ namespace GameA.Game
         #endregion
 
         public virtual void SetClimbState(EClimbState eClimbState)
+        {
+        }
+
+        public virtual void SetStepOnClay()
+        {
+        }
+        
+        public virtual void SetStepOnIce()
         {
         }
     }
