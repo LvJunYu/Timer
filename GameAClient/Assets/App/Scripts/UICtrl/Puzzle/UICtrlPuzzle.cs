@@ -12,28 +12,56 @@ namespace GameA
 	[UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlPuzzle : UICtrlGenericBase<UIViewPuzzle>
     {
-        private UMCtrlPuzzleItem _puzzleItem;
+        //临时数据，接数据时修改
+        private int _maxEquipedNum = 8;
+        private int _curLv = 5;
+        private int[] _unLockLv;
+        private int _maxPuzzleNum = 35;
+        private PuzzleData[] _puzzles;
+
+         private void GetTempData()
+        {
+            _unLockLv = new int[_maxEquipedNum];
+            for (int i = 0; i < _maxEquipedNum; i++)
+            {
+                _unLockLv[i] = i + 1;
+            }
+            _puzzles = new PuzzleData[_maxPuzzleNum];
+            for (int i = 0; i < _maxPuzzleNum; i++)
+            {
+                _puzzles[i] = new PuzzleData();
+            }
+        }
 
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.PopUpUI2;
+            _groupId = (int)EUIGroupType.PopUpUI;
         }
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            GetTempData();
             InitUI();
         }
 
         private void InitUI()
         {
-            _puzzleItem = new UMCtrlPuzzleItem();
-            _puzzleItem.Init(_cachedView.PuzzleItemPos);
-            for (int i = 0; i < 8; i++)
+            //创建装备栏
+            for (int i = 0; i < _maxEquipedNum; i++)
             {
-                var puzzleItem = new UMCtrlPuzzleFragmentItem();
-                puzzleItem.Init(_cachedView.PuzzleFragmentGrid);
+                var equipLoc = new UMCtrlPuzzleEquipLoc();
+                equipLoc.UnlockLv = _unLockLv[i];
+                equipLoc.IsLock = _unLockLv[i] >= _curLv;
+                equipLoc.Init(_cachedView.PuzzleLocsGrid);
+            }
+            //创建拼图
+            for (int i = 0; i < _maxPuzzleNum; i++)
+            {
+                var puzzle = new UMCtrlPuzzleItem();
+                puzzle.SetData(_puzzles[i]);
+                puzzle.Init(_cachedView.PuzzleItemGrid);
             }
         }
 

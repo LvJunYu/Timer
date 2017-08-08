@@ -13,16 +13,23 @@ namespace GameA
         private PuzzleData _puzzle;
         public PuzzleState CurState;
         public int Quality;
-        public List<UMCtrlPuzzleFragmentItem> PuzzleFragments;
-        //拼图的属性
 
-        public void Init(PuzzleData puzzle)
+        public void SetData(PuzzleData puzzle)
         {
             _puzzle = puzzle;
             Quality = puzzle.Quality;
             CurState = puzzle.CurState;
+        }
 
-            //CurState = PuzzleState.CantActive;
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _cachedView.PuzzleDetail.onClick.AddListener(OnPuzzleDetailBtn);
+        }
+
+        private void OnPuzzleDetailBtn()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlPuzzleDetail>();
         }
 
         /// <summary>
