@@ -9,7 +9,7 @@ namespace GameA
     /// </summary>
     public class UMCtrlPuzzleFragmentItem : UMCtrlBase<UMViewPuzzleFragmentItem>
     {
-        private PuzzleFragmentData _fragment;
+        private PicturePart _fragment;
         public int HaveNum;
         public bool IsShow;
 
@@ -31,7 +31,7 @@ namespace GameA
             IsShow = true;
         }
 
-        public void SetData(PuzzleFragmentData fragment)
+        public void SetData(PicturePart fragment)
         {
             _fragment = fragment;
             HaveNum = fragment.HaveNum;

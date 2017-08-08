@@ -168,7 +168,7 @@ namespace GameA.Game
                         _stepY = 0;
                     }
                     _jumpLevel = 0;
-                    SpeedY = OnClay ? 100 : 150;
+                    SpeedY = _onClay ? 100 : 150;
                     _jumpState = EJumpState.Jump1;
                     _jumpTimer = 10;
                 }

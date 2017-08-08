@@ -160,10 +160,10 @@ namespace GameA.Game
             recordData.Data.AddRange(_inputDatas);
             recordData.BoostItem = new BoostItemData ();
             recordData.BoostItem.ExtraLife = PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_AddLifeCount1) ? 1 : 0;
-            recordData.BoostItem.InvinsibleOnDead = PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_DeadInvincibleCount1) ? 1 : 0;
-            recordData.BoostItem.LongerInvinsible = PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_InvincibleTime2) ? 1 : 0;
-            recordData.BoostItem.ScoreBonus = PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_ScoreAddPercent20) ? 1 : 0;
-            recordData.BoostItem.TimeBonus = PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_TimeAddPercent20) ? 1 : 0;
+//            recordData.BoostItem.InvinsibleOnDead = PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_DeadInvincibleCount1) ? 1 : 0;
+//            recordData.BoostItem.LongerInvinsible = PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_InvincibleTime2) ? 1 : 0;
+//            recordData.BoostItem.ScoreBonus = PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_ScoreAddPercent20) ? 1 : 0;
+//            recordData.BoostItem.TimeBonus = PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_TimeAddPercent20) ? 1 : 0;
             recordData.Avatar = new AvatarData ();
             if (null == LocalUser.Instance.UsingAvatarData || !LocalUser.Instance.UsingAvatarData.IsInited)
             {

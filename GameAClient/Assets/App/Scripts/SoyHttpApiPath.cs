@@ -122,6 +122,18 @@ namespace SoyEngine
         public const string Raffle = "/home/raffle";
         // Msg_CS_DAT_UserWorkshopUnitData
         public const string UserWorkshopUnitData = "/home/getUserWorkshopUnitData";
+        // 角色拥有的完整拼图
+        public const string UserPictureFull = "/home/getUserPictureFullData";
+        // 角色拥有的拼图碎片
+        public const string UserPicturePart = "/home/getUserPicturePartData";
+        // 角色装备的拼图数据
+        public const string UserUsingPictureFullData = "/home/getUserUsingPictureFullData";
+        // 装备拼图
+        public const string ChangePictureFull = "/home/changePictureFull";
+        // 合成拼图
+        public const string CompoundPictureFull = "/home/compoundPictureFull";
+        // 升级拼图
+        public const string UpgradePictureFull = "/home/upgradePictureFull";
         // 冒险模式关卡列表
         public const string AdventureProjectList = "/adventure/getProjectList";
         // 冒险模式进度

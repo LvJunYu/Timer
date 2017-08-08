@@ -12,8 +12,8 @@ namespace GameA
 	[UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlPuzzleDetail : UICtrlGenericBase<UIViewPuzzleDetail>
     {
-        private PuzzleData _puzzle;
-        private PuzzleFragmentData[] _puzzleFragments;
+        private PictureFull _puzzle;
+        private PicturePart[] _puzzleFragments;
         private UMCtrlPuzzleDetailItem _puzzleItem;
         private List<UMCtrlPuzzleFragmentItem> _fragmentsCache;
 
@@ -26,16 +26,34 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            _cachedView.ActiveBtn.onClick.AddListener(OnActiveBtn);
+            _cachedView.EquipBtn.onClick.AddListener(OnEquipBtn);
             _fragmentsCache = new List<UMCtrlPuzzleFragmentItem>(9);
             //创建拼图
             _puzzleItem = new UMCtrlPuzzleDetailItem();
             _puzzleItem.Init(_cachedView.PuzzleItemPos);
         }
 
+        private void OnEquipBtn()
+        {
+            _puzzle.EquipPuzzle();
+            //to do 通知服务器
+            //to do 更新UI
+            LogHelper.Debug("装备拼图{0}", _puzzle.Name);
+        }
+
+        private void OnActiveBtn()
+        {
+            _puzzle.ActivatePuzzle();
+            //to do 通知服务器
+            //to do 更新UI
+            LogHelper.Debug("合成拼图{0}", _puzzle.Name);
+        }
+
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            _puzzle = parameter as PuzzleData;
+            _puzzle = parameter as PictureFull;
             UpdateUI();
         }
 
@@ -44,7 +62,7 @@ namespace GameA
             //更新拼图数据
             _puzzleItem.SetData(_puzzle);
             _cachedView.NameTxt.text = _puzzle.Name;
-            _cachedView.UnlockLvTxt.text = _puzzle.UnlockLv.ToString();
+            _cachedView.LvTxt.text = _puzzle.Lv.ToString();
             _cachedView.DescTxt.text = _puzzle.Desc;
 
             //创建拼图碎片

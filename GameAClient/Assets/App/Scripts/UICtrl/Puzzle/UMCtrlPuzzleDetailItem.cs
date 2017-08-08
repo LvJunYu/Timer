@@ -10,11 +10,11 @@ namespace GameA
     /// </summary>
     public partial class UMCtrlPuzzleDetailItem : UMCtrlBase<UMViewPuzzleDetailItem>
     {
-        private PuzzleData _puzzle;
+        private PictureFull _puzzle;
         public PuzzleState CurState;
         public int Quality;
 
-        public void SetData(PuzzleData puzzle)
+        public void SetData(PictureFull puzzle)
         {
             _puzzle = puzzle;
             Quality = puzzle.Quality;

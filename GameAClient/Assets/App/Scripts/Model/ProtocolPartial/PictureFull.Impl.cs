@@ -8,13 +8,13 @@ namespace GameA
     /// <summary>
     /// 拼图
     /// </summary>
-    public partial class PuzzleData
+    public partial class PictureFull: SyncronisticData
     {
         public PuzzleState CurState;
         public int Quality;
-        public PuzzleFragmentData[] PuzzleFragments;
+        public PicturePart[] PuzzleFragments;
         public string Name;
-        public int UnlockLv;
+        public int Lv;
         public string Desc;
         //拼图的属性
 
