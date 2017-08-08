@@ -80,7 +80,6 @@ namespace GameA.Game
                 TryDragAdd(startPos, endPos, boardData.CurrentSelectedUnitId);
                 CommitRecordBatch();
                 boardData.DragInCurrentState = false;
-                //TODO 如果InDrag保存录像
             }
 
             public override void OnTap(Gesture gesture)
