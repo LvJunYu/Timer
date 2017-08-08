@@ -36,7 +36,7 @@ namespace GameA.Game
         {
             base.Exit();
             _cachedOrthoSize = InnerCameraManager.RendererCamera.orthographicSize;
-            _cachedPos = InnerCameraManager.MainCamaraPos;
+            _cachedPos = InnerCameraManager.MainCameraPos;
         }
 
         public void AdjustOrthoSize(float deltaOrthoSize)

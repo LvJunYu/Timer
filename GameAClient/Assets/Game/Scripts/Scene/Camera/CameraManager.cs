@@ -49,7 +49,7 @@ namespace GameA.Game
             get { return _mainCameraTrans; }
         }
 
-        public Vector3 MainCamaraPos
+        public Vector3 MainCameraPos
         {
             get { return _mainCameraTrans.position; }
             set { _mainCameraTrans.position = value; }
