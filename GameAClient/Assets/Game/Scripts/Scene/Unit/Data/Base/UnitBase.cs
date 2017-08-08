@@ -45,7 +45,6 @@ namespace GameA.Game
         protected bool _canBridgeCross;
         protected bool _canFanCross;
         [SerializeField] protected bool _isStart;
-        protected int _friction;
 
         protected List<UnitBase> _downUnits = new List<UnitBase>();
         protected UnitBase _downUnit;
@@ -255,11 +254,6 @@ namespace GameA.Game
         public List<UnitBase> DownUnits
         {
             get { return _downUnits; }
-        }
-
-        public int Friction
-        {
-            get { return _friction; }
         }
 
         public bool UseCorner
@@ -553,7 +547,6 @@ namespace GameA.Game
             _tableUnit = tableUnit;
             _unitDesc = unitDesc;
             _curPos = new IntVec2(_guid.x, _guid.y);
-            _friction = MaxFriction;
             if (dynamicCollider != null)
             {
                 _dynamicCollider = dynamicCollider;
