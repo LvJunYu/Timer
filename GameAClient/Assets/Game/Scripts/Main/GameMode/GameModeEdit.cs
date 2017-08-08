@@ -1,9 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using SoyEngine.Proto;
 using SoyEngine;
+using SoyEngine.Proto;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -277,16 +276,54 @@ namespace GameA.Game
 
 		public byte[] CaptureLevel()
 		{
-			const int ImageWidth = 960;
-			const int ImageHeight = 640;
+			const int imageWidth = 1280;
+			const int imageHeight = 720;
+			float imageAspectRatio = 1f * imageWidth / imageHeight;
 			Vector2 captureScreenSize = Vector2.zero;
 			Rect captureRect = new Rect();
-			captureRect.height = ImageHeight;
-			captureRect.width = ImageWidth;
-            captureScreenSize.Set(Mathf.CeilToInt(1f * Screen.width / Screen.height * ImageHeight), ImageHeight);
-			captureRect.y = 0;
-			captureRect.x = (captureScreenSize.x - ImageWidth) * 0.5f;
+			captureRect.height = imageHeight;
+			captureRect.width = imageWidth;
+			Rect mapRect = GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect);
+			float mapAspectRatio = mapRect.width / mapRect.height;
+			float oriCameraOrthoSize = CameraManager.Instance.RendererCamera.orthographicSize;
+			Vector3 oriCameraPos = CameraManager.Instance.MainCameraPos;
+			float cameraOrthoSize;
+			Vector3 cameraPos = mapRect.center;
+			cameraPos.z = oriCameraPos.z;
+			float screenAspectRatio = 1f * Screen.width / Screen.height;
+			if (screenAspectRatio  < imageAspectRatio)
+			{
+				captureScreenSize.Set(imageWidth, Mathf.CeilToInt(imageWidth / screenAspectRatio));
+				captureRect.y = (captureScreenSize.y - imageHeight) * 0.5f;
+				captureRect.x = 0;
+				if (mapAspectRatio > imageAspectRatio)
+				{
+					cameraOrthoSize = mapRect.width / screenAspectRatio / 2;
+				}
+				else
+				{
+					cameraOrthoSize = mapRect.height * imageAspectRatio / screenAspectRatio / 2;
+				}
+			}
+			else
+			{
+				captureScreenSize.Set(Mathf.CeilToInt(screenAspectRatio * imageHeight), imageHeight);
+				captureRect.y = 0;
+				captureRect.x = (captureScreenSize.x - imageWidth) * 0.5f;
+				if (mapAspectRatio > imageAspectRatio)
+				{
+					cameraOrthoSize = mapRect.width / imageAspectRatio / 2;
+				}
+				else
+				{
+					cameraOrthoSize = mapRect.height / 2;
+				}
+			}
+			CameraManager.Instance.MainCameraPos = cameraPos;
+			CameraManager.Instance.RendererCamera.orthographicSize = cameraOrthoSize;
 			Texture2D t2 = ClientTools.CaptureCamera(CameraManager.Instance.RendererCamera, captureScreenSize, captureRect);
+			CameraManager.Instance.MainCameraPos = oriCameraPos;
+			CameraManager.Instance.RendererCamera.orthographicSize = oriCameraOrthoSize;
 			return t2.EncodeToJPG(90);
 		}
 
