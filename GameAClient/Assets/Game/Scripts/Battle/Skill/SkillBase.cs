@@ -327,13 +327,8 @@ namespace GameA.Game
                 }
             }
             //触发状态
-            for (int i = 0; i < _tableSkill.TriggerStates.Length; i++)
-            {
-                if (_tableSkill.TriggerStates[i] > 0)
-                {
-                    unit.AddStates(_tableSkill.TriggerStates[i]);
-                }
-            }
+            unit.AddStates(_tableSkill.AddStates);
+            unit.RemoveStates(_tableSkill.RemoveStates);
             unit.OnHpChanged(-_damage);
         }
 

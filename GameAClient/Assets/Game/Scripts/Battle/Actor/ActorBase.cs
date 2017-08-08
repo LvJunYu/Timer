@@ -283,6 +283,10 @@ namespace GameA.Game
             for (int i = 0; i < ids.Length; i++)
             {
                 var id = ids[i];
+                if (id == 0)
+                {
+                    continue;
+                }
                 var tableState = TableManager.Instance.GetState(id);
                 if (tableState == null)
                 {
