@@ -27,24 +27,60 @@ namespace GameA
             foreach (int key in _puzzles.Keys)
             {
                 var puzzle = _puzzles[key];
-                if (!CheckOwned(puzzle.Id))
+                if (!TryGetPictureFull(puzzle.Id))
                 {
                     _otherPictureFull.Add(new PictureFull(puzzle));
                 }
             }
         }
 
-        private bool CheckOwned(int id)
+        private bool RefreshData()
+        {
+            bool refreshed = false;
+            _userPictureFull = LocalUser.Instance.UserPictureFull.ItemDataList;
+            //_otherPictureFull.Clear();
+            //_otherPictureFull = new List<PictureFull>(_puzzles.Count - _userPictureFull.Count);
+            //foreach (int key in _puzzles.Keys)
+            //{
+            //    var puzzle = _puzzles[key];
+            //    if (!CheckOwned(puzzle.Id))
+            //    {
+            //        _otherPictureFull.Add(new PictureFull(puzzle));
+            //    }
+            //}
+            for (int i = 0; i < _otherPictureFull.Count; i++)
+            {
+                PictureFull picture;
+                if (TryGetPictureFull(_otherPictureFull[i].PictureId, out picture))
+                {
+                    _otherPictureFull[i] = picture;
+                    refreshed = true;
+                }
+            }
+            return refreshed;
+        }
+
+        private bool TryGetPictureFull(long id, out PictureFull picture)
         {
             for (int i = 0; i < _userPictureFull.Count; i++)
             {
                 if (_userPictureFull[i].PictureId == id)
+                {
+                    picture = _userPictureFull[i];
                     return true;
+                }
             }
+            picture = null;
             return false;
         }
 
-        private void RefreshUserData()
+        private bool TryGetPictureFull(long id)
+        {
+            PictureFull picture;
+            return TryGetPictureFull(id, out picture);
+        }
+
+        private void RequestData()
         {
             LocalUser.Instance.UserPictureFull.Request(LocalUser.Instance.UserGuid, null,
                 code => { LogHelper.Error("Network error when get UsingAvatarData, {0}", code); });
@@ -58,7 +94,7 @@ namespace GameA
             foreach (int key in _slots.Keys)
             {
                 var unlockLv = _slots[key].UnlockLevel;
-                var equipLoc = new UMCtrlPuzzleEquipLoc(unlockLv, unlockLv >= _userLv);
+                var equipLoc = new UMCtrlPuzzleEquipLoc(unlockLv, unlockLv > _userLv);
                 equipLoc.Init(_cachedView.PuzzleLocsGrid);
             }
             //创建拼图
@@ -68,6 +104,17 @@ namespace GameA
                 puzzle.SetData(_userPictureFull[i]);
                 puzzle.Init(_cachedView.PuzzleItemGrid);
             }
+            for (int i = 0; i < _otherPictureFull.Count; i++)
+            {
+                var puzzle = new UMCtrlPuzzleItem();
+                puzzle.SetData(_otherPictureFull[i]);
+                puzzle.Init(_cachedView.PuzzleItemGrid);
+            }
+        }
+
+        private void RefreshUI()
+        {
+
         }
 
         protected override void InitGroupId()
@@ -88,8 +135,9 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+            if (RefreshData())
+                RefreshUI();
             //RefreshUserData();
-         
         }
 
         private void OnCloseBtn()
