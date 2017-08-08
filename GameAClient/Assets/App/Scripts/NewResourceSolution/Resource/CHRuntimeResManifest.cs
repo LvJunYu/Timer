@@ -319,7 +319,7 @@ namespace NewResourceSolution
 				return null;
 			}
             _bundleToCache.Clear();
-			_bundleToCache.Add(bundle);
+			
 			string[] dependencies = _unityManifest.GetAllDependencies(bundle.AssetBundleName);
 //			LogHelper.Info("Dependencies cnt: {0}", dependencies.Length);
 			for (int i = 0; i < dependencies.Length; i++)
@@ -360,6 +360,7 @@ namespace NewResourceSolution
 				}
 				_bundleToCache.Add(dependenceBundle);
 			}
+			_bundleToCache.Add(bundle);
 			bool anyError = false;
 			for (int i = 0; i < _bundleToCache.Count; i++)
 			{
