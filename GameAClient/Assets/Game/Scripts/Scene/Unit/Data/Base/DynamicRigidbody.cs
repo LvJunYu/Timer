@@ -198,7 +198,13 @@ namespace GameA.Game
         {
             switch (_eClimbState)
             {
+                case EClimbState.None:
+                    break;
                 case EClimbState.Left:
+                    if (!CheckLeftClimbFloor())
+                    {
+                        SetClimbState(EClimbState.None);
+                    }
                     if (_input.GetKeyApplied(EInputType.Up))
                     {
                         if (!CheckLeftClimbUpFloor())
@@ -214,11 +220,15 @@ namespace GameA.Game
                         }
                         if (_grounded)
                         {
-                            _eClimbState = EClimbState.None;
+                            SetClimbState(EClimbState.None);
                         }
                     }
                     break;
                 case EClimbState.Right:
+                    if (!CheckRightClimbFloor())
+                    {
+                        SetClimbState(EClimbState.None);
+                    }
                     if (_input.GetKeyApplied(EInputType.Up))
                     {
                         if (!CheckRightClimbUpFloor())
@@ -234,11 +244,15 @@ namespace GameA.Game
                         }
                         if (_grounded)
                         {
-                            _eClimbState = EClimbState.None;
+                            SetClimbState(EClimbState.None);
                         }
                     }
                     break;
                  case EClimbState.Up:
+                     if (!CheckUpClimbFloor())
+                     {
+                         SetClimbState(EClimbState.None);
+                     }
                      if (_input.GetKeyApplied(EInputType.Right))
                      {
                          if (!CheckUpClimbRightFloor())

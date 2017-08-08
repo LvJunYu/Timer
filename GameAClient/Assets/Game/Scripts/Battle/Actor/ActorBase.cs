@@ -139,10 +139,10 @@ namespace GameA.Game
         protected virtual void CheckJump()
         {
             _climbJump = false;
-            if (_input.GetKeyApplied(EInputType.Jump))
+            if (_input.GetKeyDownApplied(EInputType.Jump))
             {
                 //攀墙跳
-                if (_eClimbState > EClimbState.None)
+                if (_eClimbState > EClimbState.None )
                 {
                     _climbJump = true;
                     ExtraSpeed.y = 0;
@@ -150,21 +150,21 @@ namespace GameA.Game
                     _jumpState = EJumpState.Jump1;
                     if (_eClimbState == EClimbState.Left)
                     {
-                        SpeedX = 100;
-                        SpeedY = 100;
+                        SpeedX = 120;
+                        SpeedY = 120;
                         SetFacingDir(EMoveDirection.Right);
                     }
                     else if (_eClimbState == EClimbState.Right)
                     {
-                        SpeedX = -100;
-                        SpeedY = 100;
+                        SpeedX = -120;
+                        SpeedY = 120;
                         SetFacingDir(EMoveDirection.Left);
                     }
                     else if (_eClimbState == EClimbState.Up)
                     {
                         SpeedY = -10;
                     }
-                    _eClimbState = EClimbState.None;
+                    SetClimbState(EClimbState.None);
                 }
                 else if (_jumpLevel == -1)
                 {
@@ -178,7 +178,7 @@ namespace GameA.Game
                     _jumpState = EJumpState.Jump1;
                     _jumpTimer = 10;
                 }
-                else if (!_input.GetKeyLastApplied(EInputType.Jump) && IsCharacterAbilityAvailable(ECharacterAbility.DoubleJump))
+                else if (IsCharacterAbilityAvailable(ECharacterAbility.DoubleJump))
                 {
                     if (_jumpLevel == 0 || _jumpLevel == 2)
                     {

@@ -1,4 +1,5 @@
 ﻿using System;
+using GameA.Game;
 using SoyEngine;
 using UnityEngine;
 
@@ -178,20 +179,32 @@ namespace GameA {
 
         public static void LocalAddPlayerExp(int num)
         {
+            //Debug.Log("LevelData1:" + LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel);
             LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerExp += num;
+            if (LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerExp >=
+                TableManager.Instance.Table_PlayerLvToExpDic[
+                    LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel + 1].AdvExp)
+            {
+                ++LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel;
+                Debug.Log("LevelData2:" + LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel);
+            }
             if (DateTimeUtil.GetServerTimeNowTimestampMillis() -
                 LocalUser.Instance.User.UserInfoSimple.LevelData.FirstDirtyTime >
                 _updateLocalDirtyValueInterval)
             {
                 LocalUser.Instance.User.UserInfoSimple.LevelData.Request(
                     LocalUser.Instance.UserGuid,
-                    null,
+                    () => {
+                        // todo error handle
+                       // Debug.Log("LevelData3:" + LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel);
+                    },
                     code => {
                         // todo error handle
+                                //Debug.Log("LevelData:" + LocalUser.Instance.User.UserInfoSimple.LevelData);
                     }
                 );
             }
-            Messenger.Broadcast(EMessengerType.OnDiamondChanged);
+            //Messenger.Broadcast(EMessengerType.on);
         }
 
         public static void LocalAddCreatorExp(int num)
@@ -209,7 +222,7 @@ namespace GameA {
                     }
                 );
             }
-            Messenger.Broadcast(EMessengerType.OnDiamondChanged);
+            //Messenger.Broadcast(EMessengerType.OnDiamondChanged);
         }
         #endregion
 

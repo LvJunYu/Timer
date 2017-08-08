@@ -20,28 +20,6 @@ namespace GameA.Game
         Jelly,
         Max
     }
-    
-    public enum EWeaponType
-    {
-        None,
-        Fire = 2,
-        Ice,
-        Jelly,
-        Clay,
-        IceSword,
-        Max
-    }
-    
-    public enum EJetWeaponType
-    {
-        None,
-        Water,
-        Fire,
-        Ice,
-        Jelly,
-        Clay,
-        Max
-    }
 
     public enum EStateType
     {

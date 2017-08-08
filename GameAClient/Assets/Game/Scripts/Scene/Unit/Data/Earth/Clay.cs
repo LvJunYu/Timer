@@ -35,29 +35,45 @@ namespace GameA.Game
 
         public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (!checkOnly && other.IsPlayer)
+            if (!checkOnly && other.IsActor)
             {
-                other.SetClimbState(EClimbState.Right);
+                OnEffect(other, EDirectionType.Left);
             }
             return base.OnLeftHit(other, ref x, checkOnly);
         }
 
         public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (!checkOnly && other.IsPlayer)
+            if (!checkOnly && other.IsActor)
             {
-                other.SetClimbState(EClimbState.Left);
+                OnEffect(other, EDirectionType.Right);
             }
             return base.OnRightHit(other, ref x, checkOnly);
         }
 
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (!checkOnly && other.IsPlayer)
+            if (!checkOnly && other.IsActor)
             {
-                other.SetClimbState(EClimbState.Up);
+                OnEffect(other, EDirectionType.Down);
             }
             return base.OnDownHit(other, ref y, checkOnly);
+        }
+
+        public static void OnEffect(UnitBase other, EDirectionType eDirectionType)
+        {
+            switch (eDirectionType)
+            {
+                case EDirectionType.Down:
+                    other.SetClimbState(EClimbState.Up);
+                    break;
+                case EDirectionType.Left:
+                    other.SetClimbState(EClimbState.Right);
+                    break;
+                case EDirectionType.Right:
+                    other.SetClimbState(EClimbState.Left);
+                    break;
+            }
         }
     }
 }

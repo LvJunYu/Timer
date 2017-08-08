@@ -265,7 +265,6 @@ namespace GameA.Game
                         recordBatch.RecordRemoveUnit(ref needReplaceUnitDesc, ref needReplaceUnitExtra);
                         DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(needReplaceUnitDesc, recordBatch);
                     }
-                    //TODO 记录删除的地块
                 }
                 if (EditMode.Instance.AddUnitWithCheck(target))
                 {

@@ -27,6 +27,9 @@ namespace GameA.Game
             (byte)EDirectionType.Left
         };
         
+        private static ushort[] _weaponTypes = new ushort[6] {101, 102, 103, 201, 202, 203};
+        private static ushort[] _weaponJetTypes = new ushort[3] {101, 102, 103};
+        
         /// <summary>
         /// 每个物体的初始旋转/移动方向，编辑状态下点击物品栏里的物体可以改变初始旋转/移动方向
         /// </summary>
@@ -470,7 +473,7 @@ namespace GameA.Game
                 UnitExtra unitExtra;
                 if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
                 {
-                    unitExtra.UnitValue = 2;
+                    unitExtra.UnitValue = _weaponTypes[0];
                     DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
                 }
             }
@@ -479,7 +482,7 @@ namespace GameA.Game
                 UnitExtra unitExtra;
                 if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
                 {
-                    unitExtra.UnitValue = 1;
+                    unitExtra.UnitValue = _weaponJetTypes[0];
                     DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
                 }
             }
@@ -531,28 +534,18 @@ namespace GameA.Game
             }
             return false;
         }
-
+        
         private static bool DoWeapon(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
         {
-            processClickUnitOperationParam.UnitExtra.UnitValue++;
-            if (processClickUnitOperationParam.UnitExtra.UnitValue >= (int) EWeaponType.Max)
-            {
-                processClickUnitOperationParam.UnitExtra.UnitValue = 2;
-            }
-            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
-                processClickUnitOperationParam.UnitExtra);
+            FindNextWeapon(ref processClickUnitOperationParam.UnitExtra.UnitValue, _weaponTypes);
+            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc, processClickUnitOperationParam.UnitExtra);
             return true;
         }
 
         private static bool DoJet(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
         {
-            processClickUnitOperationParam.UnitExtra.UnitValue++;
-            if (processClickUnitOperationParam.UnitExtra.UnitValue >= (int) EJetWeaponType.Max)
-            {
-                processClickUnitOperationParam.UnitExtra.UnitValue = 1;
-            }
-            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
-                processClickUnitOperationParam.UnitExtra);
+            FindNextWeapon(ref processClickUnitOperationParam.UnitExtra.UnitValue, _weaponJetTypes);
+            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc, processClickUnitOperationParam.UnitExtra);
             return true;
         }
 
@@ -617,6 +610,23 @@ namespace GameA.Game
             return true;
         }
         
+        private static void FindNextWeapon(ref ushort id, ushort[] weapons)
+        {
+            for (int i = 0; i < weapons.Length; i++)
+            {
+                if (weapons[i] == id)
+                {
+                    if (i + 1 < weapons.Length)
+                    {
+                        id = weapons[i + 1];
+                        return;
+                    }
+                    id = weapons[0];
+                    return;
+                }
+            }
+            LogHelper.Error("FindNextWeapon Failed, {0}", id);
+        }
         
         public static GameObject CreateDragRoot(Vector3 pos, int unitId, EDirectionType rotate, out UnitBase unitBase)
         {

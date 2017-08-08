@@ -1132,6 +1132,12 @@ namespace GameA.Game
             return new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin,
                 min.y + _colliderGrid.YMax - _colliderGrid.YMin);
         }
+        
+        public bool CheckRightClimbFloor()
+        {
+            var min = new IntVec2(_colliderGrid.XMin + 1, _colliderGrid.YMin);
+            return CheckRightClimbFloor(new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin));
+        }
 
         public bool CheckRightClimbUpFloor()
         {
@@ -1144,6 +1150,12 @@ namespace GameA.Game
             var min = new IntVec2(_colliderGrid.XMax + 1, _colliderGrid.YMin);
             return CheckRightClimbFloor(new Grid2D(min.x, min.y, min.x, min.y));
         }
+        
+        public bool CheckLeftClimbFloor()
+        {
+            var min = new IntVec2(_colliderGrid.XMin - 1, _colliderGrid.YMin);
+            return CheckLeftClimbFloor(new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin));
+        }
 
         public bool CheckLeftClimbUpFloor()
         {
@@ -1155,6 +1167,12 @@ namespace GameA.Game
         {
             var min = new IntVec2(_colliderGrid.XMin - 1, _colliderGrid.YMin);
             return CheckLeftClimbFloor(new Grid2D(min.x, min.y, min.x, min.y));
+        }
+        
+        public bool CheckUpClimbFloor()
+        {
+            var min = new IntVec2(_colliderGrid.XMin, _colliderGrid.YMin + 1);
+            return CheckUpClimbFloor(new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin));
         }
         
         public bool CheckUpClimbRightFloor()
@@ -1176,7 +1194,7 @@ namespace GameA.Game
             for (int i = 0; i < units.Count; i++)
             {
                 var unit = units[i];
-                if (unit.IsAlive && (unit.CanClimbed || CanEdgeClimbed(this, EDirectionType.Right)) && CheckLeftFloor(unit))
+                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Right)) && CheckLeftFloor(unit))
                 {
                     return true;
                 }
@@ -1191,7 +1209,7 @@ namespace GameA.Game
             for (int i = 0; i < units.Count; i++)
             {
                 var unit = units[i];
-                if (unit.IsAlive && (unit.CanClimbed || CanEdgeClimbed(this, EDirectionType.Left)) && CheckRightFloor(unit))
+                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Left)) && CheckRightFloor(unit))
                 {
                     return true;
                 }
@@ -1206,7 +1224,7 @@ namespace GameA.Game
             for (int i = 0; i < units.Count; i++)
             {
                 var unit = units[i];
-                if (unit.IsAlive && (unit.CanClimbed || CanEdgeClimbed(this, EDirectionType.Down)) && CheckUpFloor(unit))
+                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Down)) && CheckUpFloor(unit))
                 {
                     return true;
                 }
@@ -1214,7 +1232,7 @@ namespace GameA.Game
             return false;
         }
 
-        protected virtual bool CanEdgeClimbed(UnitBase other, EDirectionType eDirectionType)
+        protected virtual bool CanEdgeClimbed(UnitBase other, Grid2D checkGrid, EDirectionType eDirectionType)
         {
             return false;
         }

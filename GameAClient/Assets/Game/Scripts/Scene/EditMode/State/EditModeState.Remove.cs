@@ -60,7 +60,6 @@ namespace GameA.Game
                 TryRemove(startPos, endPos);
                 CommitRecordBatch();
                 boardData.DragInCurrentState = false;
-                //TODO 保存录像
             }
 
             public override void OnTap(Gesture gesture)
@@ -93,7 +92,6 @@ namespace GameA.Game
                         DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(unitDesc, GetRecordBatch());
                     }
                 }
-                //TODO 录像
             }
         }
     }
