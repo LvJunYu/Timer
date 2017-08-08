@@ -12,6 +12,7 @@ namespace GameA
         public bool Owned;
         public PuzzleData ParentPuzzle;
         public int HaveNum;
+        public string Name;
         //掉率
 
         public void Add()

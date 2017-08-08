@@ -10,7 +10,7 @@ using SoyEngine;
 namespace GameA.Game
 {
     [Unit(Id = 4009, Type = typeof (Ice))]
-    public class Ice : UnitWithChild
+    public class Ice : SkillBlock
     {
         internal override bool InstantiateView()
         {
@@ -22,9 +22,22 @@ namespace GameA.Game
             return true;
         }
 
-        public override bool StepOnIce()
+        protected override void CheckSkillHit(UnitBase other, Grid2D grid, EDirectionType eDirectionType)
         {
-            return true;
+            if (_colliderGrid.Intersects(grid))
+            {
+                OnEffect(other, eDirectionType);
+            }
+        }
+
+        public static void OnEffect(UnitBase other, EDirectionType eDirectionType)
+        {
+            switch (eDirectionType)
+            {
+                    case EDirectionType.Up:
+                        other.SetStepOnIce();
+                        break;
+            }
         }
 
 //        public override void OnShootHit(UnitBase other)

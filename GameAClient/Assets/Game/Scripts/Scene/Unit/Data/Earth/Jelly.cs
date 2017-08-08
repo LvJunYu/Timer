@@ -12,7 +12,7 @@ using SoyEngine;
 namespace GameA.Game
 {
     [Unit(Id = 4012, Type = typeof(Jelly))]
-    public class Jelly : BlockBase
+    public class Jelly : SkillBlock
     {
         public static int ExtraSpeedX = 180;
         public static int ExtraSpeedY = 240;
@@ -37,62 +37,12 @@ namespace GameA.Game
             return true;
         }
 
-        public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
+        protected override void CheckSkillHit(UnitBase other, Grid2D grid, EDirectionType eDirectionType)
         {
-            if (!checkOnly && other.IsActor)
+            if (_colliderGrid.Intersects(grid))
             {
-                if (other.SpeedY <= 0)
-                {
-                    if (_animation != null)
-                    {
-                        _animation.PlayOnce("Up");
-                    }
-                }
-                OnEffect(other, EDirectionType.Up);
+                OnEffect(other, eDirectionType);
             }
-            return base.OnUpHit(other, ref y, checkOnly);
-        }
-
-        public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
-        {
-            if (!checkOnly && other.IsActor)
-            {
-                if (other.SpeedY >= 0)
-                {
-                    if (_animation != null)
-                    {
-                        _animation.PlayOnce("Down");
-                    }
-                }
-                OnEffect(other, EDirectionType.Down);
-            }
-            return base.OnDownHit(other, ref y, checkOnly);
-        }
-
-        public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
-        {
-            if (!checkOnly && other.IsActor)
-            {
-                if (_animation != null)
-                {
-                    _animation.PlayOnce("Left");
-                }
-                OnEffect(other, EDirectionType.Left);
-            }
-            return base.OnLeftHit(other, ref x, checkOnly);
-        }
-
-        public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
-        {
-            if (!checkOnly && other.IsActor)
-            {
-                if (_animation != null)
-                {
-                    _animation.PlayOnce("Right");
-                }
-                OnEffect(other, EDirectionType.Right);
-            }
-            return base.OnRightHit(other, ref x, checkOnly);
         }
 
         public static void OnEffect(UnitBase other, EDirectionType eDirectionType)
@@ -102,6 +52,10 @@ namespace GameA.Game
                 case EDirectionType.Up:
                     if (other.SpeedY <= 0)
                     {
+                        if (other.Animation != null)
+                        {
+                            other.Animation.PlayOnce("Up");
+                        }
                         other.SpeedY = 0;
                         if (other.IsMain)
                         {
@@ -118,6 +72,10 @@ namespace GameA.Game
                 case EDirectionType.Down:
                     if (other.SpeedY >= 0)
                     {
+                        if (other.Animation != null)
+                        {
+                            other.Animation.PlayOnce("Down");
+                        }
                         other.SpeedY = 0;
                         if (other.IsMain)
                         {
@@ -131,6 +89,10 @@ namespace GameA.Game
                     }
                     break;
                 case EDirectionType.Left:
+                    if (other.Animation != null)
+                    {
+                        other.Animation.PlayOnce("Left");
+                    }
                     other.Speed = IntVec2.zero;
                     other.ExtraSpeed.x = -ExtraSpeedX;
                     other.ExtraSpeed.y = ExtraSpeedX;
@@ -141,6 +103,10 @@ namespace GameA.Game
                     }
                     break;
                 case EDirectionType.Right:
+                    if (other.Animation != null)
+                    {
+                        other.Animation.PlayOnce("Right");
+                    }
                     other.Speed = IntVec2.zero;
                     other.ExtraSpeed.x = ExtraSpeedX;
                     other.ExtraSpeed.y = ExtraSpeedX;

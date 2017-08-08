@@ -9,34 +9,34 @@ namespace GameA
     /// </summary>
     public class UMCtrlPuzzleFragmentItem : UMCtrlBase<UMViewPuzzleFragmentItem>
     {
-        public bool Owned;
-        public UMCtrlPuzzleItem ParentPuzzle;
+        private PuzzleFragmentData _fragment;
         public int HaveNum;
-        //掉率
+        public bool IsShow;
 
-        public void Add()
+        protected override void OnViewCreated()
         {
-            HaveNum++;
-            if (HaveNum == 1)
-                ParentPuzzle.UpdateState();
+            base.OnViewCreated();
+            IsShow = true;
         }
 
-        public void Remove()
+        public void Collect()
         {
-            if (HaveNum > 0)
-            {
-                HaveNum--;
-                if (HaveNum == 0)
-                    ParentPuzzle.UpdateState();
-            }
+            IsShow = false;
+            _cachedView.gameObject.SetActive(false);
         }
 
-        /// <summary>
-        /// 赠予好友
-        /// </summary>
-        public void Grant()
+        public void Show()
         {
+            _cachedView.gameObject.SetActive(true);
+            IsShow = true;
+        }
 
+        public void SetData(PuzzleFragmentData fragment)
+        {
+            _fragment = fragment;
+            HaveNum = fragment.HaveNum;
+            _cachedView.HaveNumTxt.text = HaveNum.ToString();
+            _cachedView.NameTxt.text = fragment.Name;
         }
     }
 }

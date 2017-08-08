@@ -12,7 +12,10 @@ namespace GameA
     {
         public PuzzleState CurState;
         public int Quality;
-        public List<PuzzleFragmentData> PuzzleFragments;
+        public PuzzleFragmentData[] PuzzleFragments;
+        public string Name;
+        public int UnlockLv;
+        public string Desc;
         //拼图的属性
 
         public void Init()
@@ -50,7 +53,7 @@ namespace GameA
 
         private bool CheckActivatable()
         {
-            for (int i = 0; i < PuzzleFragments.Count; i++)
+            for (int i = 0; i < PuzzleFragments.Length; i++)
             {
                 if (!PuzzleFragments[i].Owned)
                     return false;
