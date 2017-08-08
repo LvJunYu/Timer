@@ -27,11 +27,6 @@ namespace GameA.Game
         /// 是否相交
         /// </summary>
         private static HashSet<IntVec3> _cacheIntersectUnits = new HashSet<IntVec3>();
-        [SerializeField] protected IntVec2 _fanForce;
-        protected Dictionary<IntVec3, IntVec2> _fanForces = new Dictionary<IntVec3, IntVec2>();
-        protected const float SpeedClayRatio = 0.2f;
-        protected const float SpeedFireRatio = 1.8f;
-        protected const float SpeedHoldingBoxRatio = 0.3f;
 
         protected override void Clear()
         {
@@ -43,8 +38,6 @@ namespace GameA.Game
             _cacheCheckedDownUnits.Clear();
             _cacheHitUnits.Clear();
             _cacheIntersectUnits.Clear();
-            _fanForce = IntVec2.zero;
-            _fanForces.Clear();
         }
 
         protected override void UpdateCollider(IntVec2 min)

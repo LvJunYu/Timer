@@ -33,6 +33,12 @@ namespace GameA.Game
         
         protected bool _onClay;
         protected bool _onIce;
+        
+        [SerializeField] protected IntVec2 _fanForce;
+        protected Dictionary<IntVec3, IntVec2> _fanForces = new Dictionary<IntVec3, IntVec2>();
+        protected const float SpeedClayRatio = 0.2f;
+        protected const float SpeedFireRatio = 1.8f;
+        protected const float SpeedHoldingBoxRatio = 0.3f;
 
         protected abstract bool IsCheckGround();
         protected abstract bool IsCheckClimb();
@@ -59,6 +65,8 @@ namespace GameA.Game
             _stepY = 0;
             _onClay = false;
             _onIce = false;
+            _fanForce = IntVec2.zero;
+            _fanForces.Clear();
         }
         
         public void Setup(InputBase inputBase)
