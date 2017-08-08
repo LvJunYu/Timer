@@ -41,6 +41,8 @@ namespace NewResourceSolution.EditorTool
 //			LogHelper.Info("Set asset bundle names...");
 			SetAssetBundleNames(buildABConfig, manifest);
 //			LogHelper.Info("Set bundle name complete.");
+			
+			LogHelper.Info("CheckAssetDumplicate done");
 		}
 			
         [MenuItem("JoyTools/AssetBundleTools/BuildAllAB_Windows64")]
@@ -219,6 +221,10 @@ namespace NewResourceSolution.EditorTool
                                     );
                                 var assets = AssetDatabase.FindAssets(allResList[i].SearchFilter, new[] {childDirRelatedToUnityProject});
                                 SetBundleNameToFolderAssets (buildABConfig, manifest, rootPath, childDirRelatedToUnityProject, assets);
+	                            if (EResType.Sprite == allResList[i].ResType)
+	                            {
+		                            SpriteAssetTools.SetAtlasSetting(rootPath, childDirRelatedToUnityProject, assets);
+	                            }
                             }
                         }
                         else

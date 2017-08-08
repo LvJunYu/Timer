@@ -228,7 +228,7 @@ namespace NewResourceSolution
         {
             if (null == CachedBundle)
             {
-                LogHelper.Info ("CAche {0}", AssetBundleName);
+//                LogHelper.Info ("CAche {0}", AssetBundleName);
                 CachedBundle = UnityEngine.AssetBundle.LoadFromFile (GetFilePath (FileLocation));
                 if (null == CachedBundle)
                 {
