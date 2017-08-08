@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using HedgehogTeam.EasyTouch;
+﻿using HedgehogTeam.EasyTouch;
 using SoyEngine;
-using UnityEngine;
 
 namespace GameA.Game
 {
