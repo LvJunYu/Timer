@@ -19,6 +19,12 @@ namespace GameA
             this.IsLock = isLock;
         }
 
+        public void SetData(PictureFull picture)
+        {
+            _cachedView.PuzzleItem.SetActive(picture != null);
+            //to do 其它UI设置
+        }
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
