@@ -6,9 +6,9 @@ using System.Collections.Generic;
 namespace GameA
 {
     /// <summary>
-    /// 拼图
+    /// 拼图详情的拼图
     /// </summary>
-    public partial class UMCtrlPuzzleItem : UMCtrlBase<UMViewPuzzleItem>
+    public partial class UMCtrlPuzzleDetailItem : UMCtrlBase<UMViewPuzzleDetailItem>
     {
         private PuzzleData _puzzle;
         public PuzzleState CurState;
@@ -24,12 +24,6 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.PuzzleDetail.onClick.AddListener(OnPuzzleDetailBtn);
-        }
-
-        private void OnPuzzleDetailBtn()
-        {
-            SocialGUIManager.Instance.OpenUI<UICtrlPuzzleDetail>(_puzzle);
         }
 
         /// <summary>
