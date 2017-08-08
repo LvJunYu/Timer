@@ -8,10 +8,10 @@ using GameA.Game;
 namespace GameA
 {
     /// <summary>
-    /// 
+    /// 拼图装备UI
     /// </summary>
 	[UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlPuzzle : UICtrlGenericBase<UIViewPuzzle>
+    public class UICtrlPuzzleSlots : UICtrlGenericBase<UIViewPuzzleSlots>
     {
         private int _userLv;
         private Dictionary<int, Table_PuzzleSlot> _slots;//拼图装备栏
@@ -109,19 +109,6 @@ namespace GameA
                 index++;
             }
 
-            //创建拼图
-            for (int i = 0; i < _userPictureFull.Count; i++)
-            {
-                var puzzle = new UMCtrlPuzzleItem();
-                puzzle.SetData(_userPictureFull[i]);
-                puzzle.Init(_cachedView.PuzzleItemGrid);
-            }
-            for (int i = 0; i < _otherPictureFull.Count; i++)
-            {
-                var puzzle = new UMCtrlPuzzleItem();
-                puzzle.SetData(_otherPictureFull[i]);
-                puzzle.Init(_cachedView.PuzzleItemGrid);
-            }
         }
 
         private void RefreshUI()
@@ -137,7 +124,6 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
             _slots = TableManager.Instance.Table_PuzzleSlotDic;
             _puzzles = TableManager.Instance.Table_PuzzleDic;
             InitData();
@@ -150,11 +136,6 @@ namespace GameA
             if (RefreshData())
                 RefreshUI();
             //RefreshUserData();
-        }
-
-        private void OnCloseBtn()
-        {
-            SocialGUIManager.Instance.CloseUI<UICtrlPuzzle>();
         }
     }
 }

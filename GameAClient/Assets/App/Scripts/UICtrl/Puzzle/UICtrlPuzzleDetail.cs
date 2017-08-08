@@ -28,6 +28,7 @@ namespace GameA
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.ActiveBtn.onClick.AddListener(OnActiveBtn);
             _cachedView.EquipBtn.onClick.AddListener(OnEquipBtn);
+            //碎片Item缓存
             _fragmentsCache = new List<UMCtrlPuzzleFragmentItem>(9);
             //创建拼图
             _puzzleItem = new UMCtrlPuzzleDetailItem();
@@ -54,6 +55,7 @@ namespace GameA
         {
             base.OnOpen(parameter);
             _puzzle = parameter as PictureFull;
+            _puzzleFragments = _puzzle.NeededFragments;
             UpdateUI();
         }
 
@@ -66,12 +68,31 @@ namespace GameA
             _cachedView.DescTxt.text = _puzzle.Desc;
 
             //创建拼图碎片
-            _puzzleFragments = _puzzle.NeededFragments;
             for (int i = 0; i < _puzzleFragments.Length; i++)
             {
                 var puzzleFragment = CreatePuzzleFragment();
+                //_puzzleFragments[i].TotalCount=1;
                 puzzleFragment.SetData(_puzzleFragments[i]);
             }
+            
+            //按钮状态
+            _cachedView.Unable_Active.SetActive(!CheckActivable());
+            _cachedView.Unable_Equip.SetActive(!CheckEquipable());
+        }
+
+        private bool CheckActivable()
+        {
+            for (int i = 0; i < _puzzleFragments.Length; i++)
+            {
+                if (_puzzleFragments[i].TotalCount == 0)
+                    return false;
+            }
+            return true;
+        }
+
+        private bool CheckEquipable()
+        {
+            return _puzzle.CurState == PuzzleState.HasActived;
         }
 
         private UMCtrlPuzzleFragmentItem CreatePuzzleFragment()
