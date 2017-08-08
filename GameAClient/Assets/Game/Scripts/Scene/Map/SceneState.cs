@@ -64,10 +64,10 @@ namespace GameA.Game
         {
             get
             {
-                if (PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_TimeAddPercent20))
-                {
-                    return _mapStatistics.TimeLimit * 10+60;
-                }else
+//                if (PlayMode.Instance.IsUsingBoostItem (EBoostItemType.BIT_TimeAddPercent20))
+//                {
+//                    return _mapStatistics.TimeLimit * 10+60;
+//                }else
                 {
                     return _mapStatistics.TimeLimit * 10;
                 }
@@ -150,11 +150,11 @@ namespace GameA.Game
 
             get
             {
-                if (PlayMode.Instance.IsUsingBoostItem(EBoostItemType.BIT_ScoreAddPercent20))
-                {
-                    return _mapStatistics.LifeCount * 11/10;
-                }
-                else
+//                if (PlayMode.Instance.IsUsingBoostItem(EBoostItemType.BIT_ScoreAddPercent20))
+//                {
+//                    return _mapStatistics.LifeCount * 11/10;
+//                }
+//                else
                 {
                     return _mapStatistics.LifeCount;
                 }

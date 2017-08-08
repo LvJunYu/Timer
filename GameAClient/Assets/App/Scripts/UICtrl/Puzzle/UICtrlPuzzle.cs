@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using GameA.Game;
 
 namespace GameA
 {
@@ -16,20 +17,31 @@ namespace GameA
         private int _maxEquipedNum = 8;
         private int _curLv = 5;
         private int[] _unLockLv;
-        private int _maxPuzzleNum = 35;
-        private PuzzleData[] _puzzles;
+        private int _maxPuzzleNum;
+        private PictureFull[] _puzzles;
 
-         private void GetTempData()
+        private void InitData()
         {
+            //装备栏数据
             _unLockLv = new int[_maxEquipedNum];
             for (int i = 0; i < _maxEquipedNum; i++)
             {
                 _unLockLv[i] = i + 1;
             }
-            _puzzles = new PuzzleData[_maxPuzzleNum];
-            for (int i = 0; i < _maxPuzzleNum; i++)
+            //拼图数据
+            _maxPuzzleNum = TableManager.Instance.Table_PuzzleDic.Count;
+            _puzzles = new PictureFull[_maxPuzzleNum];
+            for (int i = 1; i <= _maxPuzzleNum; i++)
             {
-                _puzzles[i] = new PuzzleData();
+                _puzzles[i] = new PictureFull();
+                var puzzleFragments = new PicturePart[i + 1];
+                for (int j = 0; j < puzzleFragments.Length; j++)
+                {
+                    puzzleFragments[j] = new PicturePart();
+                    puzzleFragments[j].HaveNum = j;
+                    puzzleFragments[j].Name = "碎片" + j;
+                }
+                _puzzles[i].PuzzleFragments = puzzleFragments;
             }
         }
 
@@ -42,7 +54,7 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-            GetTempData();
+            InitData();
             InitUI();
         }
 

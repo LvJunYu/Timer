@@ -7,11 +7,12 @@ namespace GameA
     /// <summary>
     /// 拼图碎片
     /// </summary>
-    public class PuzzleFragmentData
+    public partial class PicturePart : SyncronisticData
     {
         public bool Owned;
-        public PuzzleData ParentPuzzle;
+        public PictureFull ParentPuzzle;
         public int HaveNum;
+        public string Name;
         //掉率
 
         public void Add()

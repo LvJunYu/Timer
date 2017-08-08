@@ -87,8 +87,8 @@ namespace GameA
             }
             else
             {
-               
-
+                _cachedView.PlayerCnt.text = _wrapper.Content.ExtendData.PlayCount.ToString();
+                _cachedView.PassRate.text = _wrapper.Content.ExtendData.CompleteCount.ToString();
                 DictionaryTools.SetContentText(_cachedView.Title, _wrapper.Content.Name);
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _wrapper.Content.IconPath, _cachedView.DefaultCoverTexture);
                 _cachedView.SeletedMark.SetActiveEx(_wrapper.IsSelected);
@@ -104,7 +104,7 @@ namespace GameA
                         GameATools.GetYearMonthDayHourMinuteSecondByMilli(_wrapper.Content.UpdateTime, 1);
                     //DateTimeUtil.GetServerSmartDateStringByTimestampMillis(_wrapper.Content.UpdateTime);
                 }
-               // _cachedView.PublishTime.text = DateTimeUtil.GetServerSmartDateStringByTimestampMillis(_wrapper.Content.CreateTime);
+                  //_cachedView.PublishTime.text = DateTimeUtil.GetServerSmartDateStringByTimestampMillis(_wrapper.Content.CreateTime);
 //                DictionaryTools.SetContentText(_cachedView.ProjectCategoryText, EnumStringDefine.GetProjectCategoryString(_wrapper.Content.ProjectCategory));
             }
         }

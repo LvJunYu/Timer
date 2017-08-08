@@ -16,5 +16,8 @@ namespace GameA
         public Button EquipBtn;
         public RectTransform PuzzleItemPos;
         public RectTransform PuzzleFragmentGrid;
+        public Text LvTxt;
+        public Text NameTxt;
+        public Text DescTxt;
     }
 }

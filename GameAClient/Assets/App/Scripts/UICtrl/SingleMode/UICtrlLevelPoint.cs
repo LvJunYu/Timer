@@ -33,6 +33,7 @@ namespace GameA
 		public Text LevelTitle;
 
         public Text StartText;
+        public Text StartText2;
 
 		/// <summary>
 		/// 章节id
@@ -123,14 +124,18 @@ namespace GameA
 					}
 //				}0     /9
                 if (AppData.Instance.AdventureData.UserData.SectionList.Count > (chapterId - 1)) {
-                    StartText.text = string.Format ("{0}      /{1}",
-                        Mathf.Clamp (AppData.Instance.AdventureData.UserData.SectionList [chapterId - 1].GotStarCnt, 0, 9 * tableLevel.Type),
+                    StartText.text = string.Format ("{0}",
+                        Mathf.Clamp (AppData.Instance.AdventureData.UserData.SectionList [chapterId - 1].GotStarCnt, 0, 9 * tableLevel.Type)
+                    );
+                    StartText2.text = string.Format("/{0}",
                         9 * tableLevel.Type
                     );
-                } else {
-                    StartText.text = string.Format ("0      /{0}",
-                        9 * tableLevel.Type
-                    );
+                } else
+                {
+                    StartText.text = "0";
+                    StartText2.text = string.Format("/{0}",
+                       9 * tableLevel.Type
+                   );
                 }
 			}
             LevelTitle.text = tableLevel.Name;

@@ -12,11 +12,12 @@ using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
 using NewResourceSolution;
+using UnityEditor;
 using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
-    public class PaintBlock : BlockBase
+    public class PaintBlock : SkillBlock
     {
         public const int MinEdgeLength = 0;
         public const int OffsetEdgeLength = 10;
@@ -95,42 +96,6 @@ namespace GameA.Game
                 Object.Destroy(_paintObject);
                 _paintObject = null;
             }
-        }
-
-        public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
-        {
-            if (other.IsActor && !checkOnly)
-            {
-                CheckEdgeHit(other, other.ColliderGrid, EDirectionType.Up);
-            }
-            return base.OnUpHit(other, ref y, checkOnly);
-        }
-
-        public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
-        {
-            if (other.IsActor && !checkOnly)
-            {
-                CheckEdgeHit(other, other.ColliderGrid, EDirectionType.Down);
-            }
-            return base.OnDownHit(other, ref y, checkOnly);
-        }
-
-        public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
-        {
-            if (other.IsActor && !checkOnly)
-            {
-                CheckEdgeHit(other, other.ColliderGrid, EDirectionType.Left);
-            }
-            return base.OnLeftHit(other, ref x, checkOnly);
-        }
-
-        public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
-        {
-            if (other.IsActor && !checkOnly)
-            {
-                CheckEdgeHit(other, other.ColliderGrid, EDirectionType.Right);
-            }
-            return base.OnRightHit(other, ref x, checkOnly);
         }
 
         /// <summary>
@@ -436,10 +401,10 @@ namespace GameA.Game
             }
         }
 
-        protected void CheckEdgeHit(UnitBase other, Grid2D checkGrid, EDirectionType eDirectionType)
+        protected override void CheckSkillHit(UnitBase other, Grid2D grid, EDirectionType eDirectionType)
         {
             int start, end;
-            if (GetPos(checkGrid, eDirectionType, out start, out end))
+            if (GetPos(grid, eDirectionType, out start, out end))
             {
                 for (int i = 0; i < _edges.Count; i++)
                 {
@@ -466,6 +431,7 @@ namespace GameA.Game
                     Clay.OnEffect(other, edge.Direction);
                     break;
                 case ESkillType.Ice:
+                    Ice.OnEffect(other, edge.Direction);
                     break;
             }
         }

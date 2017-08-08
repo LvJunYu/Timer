@@ -7,12 +7,11 @@ using UnityEngine.UI;
 namespace GameA
 {
     /// <summary>
-    /// 拼图碎片
+    /// 拼图详情中的拼图
     /// </summary>
-    public class UMViewPuzzleFragmentItem : UMViewBase
+    public partial class UMViewPuzzleDetailItem : UMViewBase
     {
-        public Image Image;
-        public Text HaveNumTxt;
-        public Text NameTxt;
+        //public Button PuzzleDetail;
     }
+
 }
