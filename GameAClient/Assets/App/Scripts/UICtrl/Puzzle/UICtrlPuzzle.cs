@@ -13,39 +13,25 @@ namespace GameA
 	[UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlPuzzle : UICtrlGenericBase<UIViewPuzzle>
     {
-        private int _maxEquipedNum;
         private int _userLv;
-        private int[] _unLockLv;
-        private int _maxPuzzleNum;//拼图总数
-        private PictureFull[] _puzzles;
+        private Dictionary<int, Table_PuzzleSlot> _slots;//拼图装备栏
+        private Dictionary<int, Table_Puzzle> _puzzles;//拼图装备栏
+        private PictureFull[] _puzzleDatas;
 
         private void InitData()
         {
-            _maxEquipedNum = LocalUser.Instance.UserUsingPictureFullData.SlotCount;
             _userLv = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel;
-            //临时数据
-            _unLockLv = new int[_maxEquipedNum];
-            for (int i = 0; i < _maxEquipedNum; i++)
-            {
-                _unLockLv[i] = i + 1;
-            }
+            _slots = TableManager.Instance.Table_PuzzleSlotDic;
 
             //所有拼图
-            _maxPuzzleNum = TableManager.Instance.Table_PuzzleDic.Count;
+            _puzzles = TableManager.Instance.Table_PuzzleDic;
             //LocalUser.Instance.UserPictureFull
-
-           _puzzles = new PictureFull[_maxPuzzleNum];
-            for (int i = 1; i <= _maxPuzzleNum; i++)
+            _puzzleDatas = new PictureFull[_puzzles.Count];
+            int i = 0;
+            foreach (int key in _puzzles.Keys)
             {
-                _puzzles[i] = new PictureFull();
-                var puzzleFragments = new PicturePart[i + 1];
-                for (int j = 0; j < puzzleFragments.Length; j++)
-                {
-                    puzzleFragments[j] = new PicturePart();
-                    puzzleFragments[j].HaveNum = j;
-                    puzzleFragments[j].Name = "碎片" + j;
-                }
-                _puzzles[i].PuzzleFragments = puzzleFragments;
+                _puzzleDatas[i] = new PictureFull(_puzzles[key]);
+                i++;
             }
         }
 
@@ -57,6 +43,24 @@ namespace GameA
                 code => { LogHelper.Error("Network error when get ValidAvatarData, {0}", code); });
         }
 
+        private void InitUI()
+        {
+            //创建装备栏
+            foreach (int key in _slots.Keys)
+            {
+                var unlockLv = _slots[key].UnlockLevel;
+                var equipLoc = new UMCtrlPuzzleEquipLoc(unlockLv, unlockLv >= _userLv);
+                equipLoc.Init(_cachedView.PuzzleLocsGrid);
+            }
+            //创建拼图
+            for (int i = 0; i < _puzzles.Count; i++)
+            {
+                var puzzle = new UMCtrlPuzzleItem();
+                puzzle.SetData(_puzzleDatas[i]);
+                puzzle.Init(_cachedView.PuzzleItemGrid);
+            }
+        }
+
         protected override void InitGroupId()
         {
             _groupId = (int)EUIGroupType.PopUpUI;
@@ -66,27 +70,14 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-            InitData();
-            InitUI();
         }
 
-        private void InitUI()
+        protected override void OnOpen(object parameter)
         {
-            //创建装备栏
-            for (int i = 0; i < _maxEquipedNum; i++)
-            {
-                var equipLoc = new UMCtrlPuzzleEquipLoc();
-                equipLoc.UnlockLv = _unLockLv[i];
-                equipLoc.IsLock = _unLockLv[i] >= _userLv;
-                equipLoc.Init(_cachedView.PuzzleLocsGrid);
-            }
-            //创建拼图
-            for (int i = 0; i < _maxPuzzleNum; i++)
-            {
-                var puzzle = new UMCtrlPuzzleItem();
-                puzzle.SetData(_puzzles[i]);
-                puzzle.Init(_cachedView.PuzzleItemGrid);
-            }
+            base.OnOpen(parameter);
+            //GetUserData();
+            InitData();
+            InitUI();
         }
 
         private void OnCloseBtn()
