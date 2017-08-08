@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using SoyEngine;
 
 namespace GameA.Game
 {
@@ -37,7 +38,12 @@ namespace GameA.Game
         {
             if (!checkOnly && other.IsActor)
             {
-                OnEffect(other, EDirectionType.Left);
+                var min = new IntVec2(other.ColliderGrid.XMax + 1, other.CenterPos.y);
+                var grid = new Grid2D(min.x, min.y, min.x + ConstDefineGM2D.ServerTileScale, min.y);
+                if (_colliderGrid.Intersects(grid))
+                {
+                    OnEffect(other, EDirectionType.Left);
+                }
             }
             return base.OnLeftHit(other, ref x, checkOnly);
         }
@@ -46,7 +52,12 @@ namespace GameA.Game
         {
             if (!checkOnly && other.IsActor)
             {
-                OnEffect(other, EDirectionType.Right);
+                var min = new IntVec2(other.ColliderGrid.XMin - 1, other.CenterPos.y);
+                var grid = new Grid2D(min.x, min.y, min.x + ConstDefineGM2D.ServerTileScale, min.y);
+                if (_colliderGrid.Intersects(grid))
+                {
+                    OnEffect(other, EDirectionType.Right);
+                }
             }
             return base.OnRightHit(other, ref x, checkOnly);
         }
@@ -55,7 +66,12 @@ namespace GameA.Game
         {
             if (!checkOnly && other.IsActor)
             {
-                OnEffect(other, EDirectionType.Down);
+                var min = new IntVec2(other.CenterPos.x, other.ColliderGrid.YMax + 1);
+                var grid = new Grid2D(min.x, min.y, min.x, min.y + ConstDefineGM2D.ServerTileScale);
+                if (_colliderGrid.Intersects(grid))
+                {
+                    OnEffect(other, EDirectionType.Down);
+                }
             }
             return base.OnDownHit(other, ref y, checkOnly);
         }

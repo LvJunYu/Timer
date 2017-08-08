@@ -1133,62 +1133,27 @@ namespace GameA.Game
                 min.y + _colliderGrid.YMax - _colliderGrid.YMin);
         }
         
-        public bool CheckRightClimbFloor()
+        public bool CheckRightClimbFloor(int deltaPosY = 0)
         {
-            var min = new IntVec2(_colliderGrid.XMin + 1, _colliderGrid.YMin);
-            return CheckRightClimbFloor(new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin));
+            var min = new IntVec2(_colliderGrid.XMax + 1, CenterPos.y + deltaPosY);
+            var grid = new Grid2D(min.x, min.y, min.x, min.y);
+            var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
+                _dynamicCollider);
+            for (int i = 0; i < units.Count; i++)
+            {
+                var unit = units[i];
+                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Left)) && CheckRightFloor(unit))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
-        public bool CheckRightClimbUpFloor()
+        public bool CheckLeftClimbFloor(int deltaPosY = 0)
         {
-            var min = new IntVec2(_colliderGrid.XMax + 1, _colliderGrid.YMax);
-            return CheckRightClimbFloor(new Grid2D(min.x, min.y, min.x, min.y));
-        }
-        
-        public bool CheckRightClimbDownFloor()
-        {
-            var min = new IntVec2(_colliderGrid.XMax + 1, _colliderGrid.YMin);
-            return CheckRightClimbFloor(new Grid2D(min.x, min.y, min.x, min.y));
-        }
-        
-        public bool CheckLeftClimbFloor()
-        {
-            var min = new IntVec2(_colliderGrid.XMin - 1, _colliderGrid.YMin);
-            return CheckLeftClimbFloor(new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin));
-        }
-
-        public bool CheckLeftClimbUpFloor()
-        {
-            var min = new IntVec2(_colliderGrid.XMin - 1, _colliderGrid.YMax);
-            return CheckLeftClimbFloor(new Grid2D(min.x, min.y, min.x, min.y));
-        }
-        
-        public bool CheckLeftClimbDownFloor()
-        {
-            var min = new IntVec2(_colliderGrid.XMin - 1, _colliderGrid.YMin);
-            return CheckLeftClimbFloor(new Grid2D(min.x, min.y, min.x, min.y));
-        }
-        
-        public bool CheckUpClimbFloor()
-        {
-            var min = new IntVec2(_colliderGrid.XMin, _colliderGrid.YMin + 1);
-            return CheckUpClimbFloor(new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin, min.y + _colliderGrid.YMax - _colliderGrid.YMin));
-        }
-        
-        public bool CheckUpClimbRightFloor()
-        {
-            var min = new IntVec2(_colliderGrid.XMax, _colliderGrid.YMax + 1);
-            return CheckUpClimbFloor(new Grid2D(min.x, min.y, min.x, min.y));
-        }
-        
-        public bool CheckUpClimbLeftFloor()
-        {
-            var min = new IntVec2(_colliderGrid.XMin, _colliderGrid.YMax + 1);
-            return CheckUpClimbFloor(new Grid2D(min.x, min.y, min.x, min.y));
-        }
-
-        private bool CheckLeftClimbFloor(Grid2D grid)
-        {
+            var min = new IntVec2(_colliderGrid.XMin - 1, CenterPos.y + deltaPosY);
+            var grid = new Grid2D(min.x, min.y, min.x, min.y);
             var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
                 _dynamicCollider);
             for (int i = 0; i < units.Count; i++)
@@ -1202,23 +1167,10 @@ namespace GameA.Game
             return false;
         }
         
-        private bool CheckRightClimbFloor(Grid2D grid)
+        public bool CheckUpClimbFloor(int deltaPosX = 0)
         {
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
-                _dynamicCollider);
-            for (int i = 0; i < units.Count; i++)
-            {
-                var unit = units[i];
-                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Left)) && CheckRightFloor(unit))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        
-        private bool CheckUpClimbFloor(Grid2D grid)
-        {
+            var min = new IntVec2(CenterPos.x + deltaPosX, _colliderGrid.YMax + 1);
+            var grid = new Grid2D(min.x, min.y, min.x, min.y);
             var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
                 _dynamicCollider);
             for (int i = 0; i < units.Count; i++)
