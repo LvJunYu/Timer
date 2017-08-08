@@ -105,7 +105,7 @@ namespace GameA.Game
             SetWeapon(101,0);
             SetWeapon(102,1);
             SetWeapon(103,2);
-            SetWeapon(201,2);
+//            SetWeapon(201,2);
             
             _dieTime = 0;
             _box = null;
@@ -400,7 +400,7 @@ namespace GameA.Game
             SetWeapon(101,0);
             SetWeapon(102,1);
             SetWeapon(103,2);
-            SetWeapon(201,2);
+//            SetWeapon(201,2);
             _view.StatusBar.ShowHP();
             _view.StatusBar.ShowMP();
             return true;

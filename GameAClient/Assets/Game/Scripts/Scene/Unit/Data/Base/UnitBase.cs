@@ -198,12 +198,12 @@ namespace GameA.Game
 
         public bool CanMove
         {
-            get { return !IsInState(EEnvState.Ice) && !IsInState(EEnvState.Stun); }
+            get { return !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) && !IsInState(EEnvState.Ice); }
         }
 
         public bool CanAttack
         {
-            get { return !IsInState(EEnvState.Ice) && !IsInState(EEnvState.Stun); }
+            get { return !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) && !IsInState(EEnvState.Ice); }
         }
 
         public virtual SkillCtrl SkillCtrl
@@ -962,7 +962,7 @@ namespace GameA.Game
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, size, _tableUnit);
                 }
             }
-            var halfTile = ConstDefineGM2D.ServerTileScale / 2;
+            int halfTile = _tableUnit.Width / 2;
             float z = -(_curPos.x + halfTile + _curPos.y + halfTile) * 0.00078125f+ _viewZOffset;
             if (UnitDefine.IsDownY(_tableUnit))
             {
@@ -1531,7 +1531,7 @@ namespace GameA.Game
             _isDisposed = true;
         }
 
-        public virtual void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType, int maskRandom,
+        public virtual void DoPaint(int start, int end, EDirectionType direction, EPaintType ePaintType, int maskRandom,
             bool draw = true)
         {
         }

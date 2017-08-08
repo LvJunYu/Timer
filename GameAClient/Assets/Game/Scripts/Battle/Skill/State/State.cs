@@ -55,6 +55,11 @@ namespace GameA.Game
             }
             Excute(EEffectType.Always);
             OnAddView();
+            //0代表无穷
+            if (_curDuration == 0)
+            {
+                _run = false;
+            }
             return true;
         }
 

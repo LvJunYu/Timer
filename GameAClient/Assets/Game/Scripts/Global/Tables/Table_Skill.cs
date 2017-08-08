@@ -93,8 +93,13 @@ namespace GameA.Game
 		/// <summary>
         /// 击中目标触发状态
         /// </summary>
-		[ColumnMapping("TriggerStates")]
-		public int[] TriggerStates;
+		[ColumnMapping("AddStates")]
+		public int[] AddStates;
+		/// <summary>
+        /// 击中目标移除状态
+        /// </summary>
+		[ColumnMapping("RemoveStates")]
+		public int[] RemoveStates;
 		/// <summary>
         /// 陷阱Id
         /// </summary>
