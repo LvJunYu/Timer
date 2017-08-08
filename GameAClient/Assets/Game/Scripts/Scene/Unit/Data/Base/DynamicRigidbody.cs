@@ -191,6 +191,17 @@ namespace GameA.Game
         public override void SetClimbState(EClimbState eClimbState)
         {
             _eClimbState = eClimbState;
+            switch (_eClimbState)
+            {
+                case EClimbState.None:
+                    break;
+                case EClimbState.Left:
+                    SetFacingDir(EMoveDirection.Left);
+                    break;
+                case EClimbState.Right:
+                    SetFacingDir(EMoveDirection.Right);
+                    break;
+            }
             LogHelper.Debug(_eClimbState.ToString());
         }
 

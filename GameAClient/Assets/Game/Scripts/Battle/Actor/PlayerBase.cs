@@ -495,9 +495,13 @@ namespace GameA.Game
                 }
                 else
                 {
-                    if (CanMove && (_input.GetKeyApplied(EInputType.Left) || _input.GetKeyApplied(EInputType.Right)))
+                    if (CanMove && (IsInputSideValid() || IsClimbingSide()))
                     {
                         var speed = Math.Abs(SpeedX);
+                        if (IsClimbingSide())
+                        {
+                            speed = Math.Abs(SpeedY);
+                        }
                         speed = Mathf.Clamp(speed, 20, 100);
                         if (IsHoldingBox())
                         {
@@ -547,6 +551,18 @@ namespace GameA.Game
             }
         }
 
+        private bool IsClimbingSide()
+        {
+            return (_eClimbState == EClimbState.Left || _eClimbState == EClimbState.Right) &&
+                   (_input.GetKeyApplied(EInputType.Up) || _input.GetKeyApplied(EInputType.Down));
+        }
+
+        private bool IsInputSideValid()
+        {
+            return (_eClimbState == EClimbState.None || _eClimbState == EClimbState.Up) &&
+                   (_input.GetKeyApplied(EInputType.Left) || _input.GetKeyApplied(EInputType.Right));
+        }
+        
         protected override void OnJump()
         {
             if (!GameAudioManager.Instance.IsPlaying(AudioNameConstDefineGM2D.GameAudioSpingEffect))
@@ -622,9 +638,13 @@ namespace GameA.Game
                 }
                 return "Pull";
             }
-            if(_eClimbState != EClimbState.None)
+            switch (_eClimbState)
             {
-                return "ClimbRun";
+                case EClimbState.Left:
+                case EClimbState.Right:
+                    return "ClimbRunRight";
+                case EClimbState.Up:
+                    return "ClimbRunUp";
             }
             if (speed <= 60)
             {
@@ -660,9 +680,13 @@ namespace GameA.Game
             {
                 return "Prepare";
             }
-            if(_eClimbState != EClimbState.None)
+            switch (_eClimbState)
             {
-                return "ClimbIdle";
+                case EClimbState.Left:
+                case EClimbState.Right:
+                    return "ClimbIdleRight";
+                case EClimbState.Up:
+                    return "ClimbIdleUp";
             }
             return "Idle";
         }
