@@ -13,7 +13,8 @@ namespace GameA.Game
 		#region 常量与字段
 		private static TableManager _instance;
 		public readonly Dictionary<int,Table_Equipment> Table_EquipmentDic = new Dictionary<int, Table_Equipment>();
-		public readonly Dictionary<int,Table_Skill> Table_SkillDic = new Dictionary<int, Table_Skill>();
+        public readonly Dictionary<int, Table_EquipmentLevel> Table_EquipmentLevelDic = new Dictionary<int, Table_EquipmentLevel>();
+        public readonly Dictionary<int,Table_Skill> Table_SkillDic = new Dictionary<int, Table_Skill>();
 		public readonly Dictionary<int,Table_State> Table_StateDic = new Dictionary<int, Table_State>();
 		public readonly Dictionary<int,Table_Trap> Table_TrapDic = new Dictionary<int, Table_Trap>();
 		public readonly Dictionary<int,Table_Unit> Table_UnitDic = new Dictionary<int, Table_Unit>();
@@ -40,6 +41,7 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_ProgressUnlock> Table_ProgressUnlockDic = new Dictionary<int, Table_ProgressUnlock>();
 		public readonly Dictionary<int,Table_BoostItem> Table_BoostItemDic = new Dictionary<int, Table_BoostItem>();
 		[UnityEngine.SerializeField] private Table_Equipment[] _tableEquipments;
+       	[UnityEngine.SerializeField] private Table_EquipmentLevel[] _tableEquipmentLevels;
 		[UnityEngine.SerializeField] private Table_Skill[] _tableSkills;
 		[UnityEngine.SerializeField] private Table_State[] _tableStates;
 		[UnityEngine.SerializeField] private Table_Trap[] _tableTraps;
@@ -83,7 +85,9 @@ namespace GameA.Game
 		{
 			string EquipmentJsonStr = ResourceManager.Instance.GetJson ("Equipment", 31);
             _tableEquipments = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Equipment[]>(EquipmentJsonStr);
-			string SkillJsonStr = ResourceManager.Instance.GetJson ("Skill", 31);
+            string EquipmentLevelJsonStr =  ResourceManager.Instance.GetJson("EquipmentLevel", 31);
+            _tableEquipmentLevels = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_EquipmentLevel[]>(EquipmentLevelJsonStr);
+            string SkillJsonStr = ResourceManager.Instance.GetJson ("Skill", 31);
             _tableSkills = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Skill[]>(SkillJsonStr);
 			string StateJsonStr = ResourceManager.Instance.GetJson ("State", 31);
             _tableStates = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_State[]>(StateJsonStr);
@@ -147,7 +151,18 @@ namespace GameA.Game
 					LogHelper.Warning("_tableEquipments table.Id {0} is duplicated!", _tableEquipments[i].Id);
 				}
 			}
-			for (int i = 0; i < _tableSkills.Length; i++)
+            for (int i = 0; i < _tableEquipmentLevels.Length; i++)
+            {
+                if (!Table_EquipmentLevelDic.ContainsKey(_tableEquipmentLevels[i].Id))
+                {
+                    Table_EquipmentLevelDic.Add(_tableEquipmentLevels[i].Id, _tableEquipmentLevels[i]);
+                }
+                else
+                {
+                    LogHelper.Warning("_tableEquipmentLevels table.Id {0} is duplicated!", _tableEquipmentLevels[i].Id);
+                }
+            }
+            for (int i = 0; i < _tableSkills.Length; i++)
 			{
 				if (!Table_SkillDic.ContainsKey(_tableSkills[i].Id))
 				{
@@ -446,7 +461,16 @@ namespace GameA.Game
 			}
 			return null;
 		}
-		public Table_Skill GetSkill(int key)
+        public Table_EquipmentLevel GetEquipmentLevel(int key)
+        {
+            Table_EquipmentLevel tmp;
+            if (Table_EquipmentLevelDic.TryGetValue(key, out tmp))
+            {
+                return tmp;
+            }
+            return null;
+        }
+        public Table_Skill GetSkill(int key)
 		{
 			Table_Skill tmp;
 			if (Table_SkillDic.TryGetValue(key,out tmp))

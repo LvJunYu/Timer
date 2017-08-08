@@ -7,15 +7,24 @@ namespace GameA
 {
     public class UIViewWeapon : UIViewBase
     {
-        public Image EffctImage;
-        public Image UnlockSystemTitle;
-        public Image UnlockAbilityTitle;
-        public Image RewardLight;
-        public Image UnlockLight;
-        public Image AbilityLight;
-        public Text Tip;
-        public Button BGBtn;
 
-        public USViewRewardItem[] ItemList;
+
+        public Text UnlockedWeaponNum;
+        public Text OwnedUniversalFragmentsNum;
+        public Text OwnedWeaponFragmentsNum;    
+        public Text WeaponName;
+        public Text HpAddNum;
+        public Text AttackAddNum;
+        public Text SkillDescription;
+        public Text CostGolCoinNum;
+        public Text CostWeaponFragmentsNum;
+        public Text WeaponLv;
+        public Image OwnedUniversalFragmentsIcon;
+        public Image OwnedWeaponFragmentsIcon;
+        public Image EffectShow;
+        public Button LeftWeapon;
+        public Button RightWeapon;
+        public Button CloseButton;
+        public Button UpGrade;
     }
 }
