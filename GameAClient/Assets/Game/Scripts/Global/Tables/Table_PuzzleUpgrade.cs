@@ -3,7 +3,7 @@ using SoyEngine;
 namespace GameA.Game
 {
     [Serializable]
-	public partial class Table_Puzzle
+	public partial class Table_PuzzleUpgrade
 	{
 		/// <summary>
         /// 序号
@@ -11,20 +11,20 @@ namespace GameA.Game
 		[ColumnMapping("Id")]
 		public int Id;
 		/// <summary>
-        /// 名称
+        /// 拼图ID
         /// </summary>
-		[ColumnMapping("Name")]
-		public string Name;
+		[ColumnMapping("PuzzleID")]
+		public int PuzzleID;
 		/// <summary>
         /// 描述
         /// </summary>
 		[ColumnMapping("Description")]
 		public string Description;
 		/// <summary>
-        /// 品质
+        /// 等级
         /// </summary>
-		[ColumnMapping("Quality")]
-		public int Quality;
+		[ColumnMapping("Level")]
+		public int Level;
 		/// <summary>
         /// 属性加成类型
         /// </summary>
@@ -36,25 +36,15 @@ namespace GameA.Game
 		[ColumnMapping("AttriValue")]
 		public int AttriValue;
 		/// <summary>
-        /// 合成所需金币
+        /// 升级所需金币
         /// </summary>
-		[ColumnMapping("MergeCost")]
-		public int MergeCost;
-		/// <summary>
-        /// 最大等级
-        /// </summary>
-		[ColumnMapping("MaxLevel")]
-		public int MaxLevel;
-		/// <summary>
-        /// 组成的碎片
-        /// </summary>
-		[ColumnMapping("Fragments")]
-		public int[] Fragments;
+		[ColumnMapping("UpgradeCost")]
+		public int UpgradeCost;
 	}
 
-    public class TablePuzzleAsset:BaseTableAsset
+    public class TablePuzzleUpgradeAsset:BaseTableAsset
 	{
 		[UnityEngine.SerializeField]
-		public Table_Puzzle[] DataArray;
+		public Table_PuzzleUpgrade[] DataArray;
 	}
 }

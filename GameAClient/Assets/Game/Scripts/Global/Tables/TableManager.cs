@@ -30,7 +30,10 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_Background> Table_BackgroundDic = new Dictionary<int, Table_Background>();
 		public readonly Dictionary<int,Table_Decorate> Table_DecorateDic = new Dictionary<int, Table_Decorate>();
 		public readonly Dictionary<int,Table_PuzzleSummon> Table_PuzzleSummonDic = new Dictionary<int, Table_PuzzleSummon>();
+		public readonly Dictionary<int,Table_PuzzleFragment> Table_PuzzleFragmentDic = new Dictionary<int, Table_PuzzleFragment>();
 		public readonly Dictionary<int,Table_Puzzle> Table_PuzzleDic = new Dictionary<int, Table_Puzzle>();
+		public readonly Dictionary<int,Table_PuzzleUpgrade> Table_PuzzleUpgradeDic = new Dictionary<int, Table_PuzzleUpgrade>();
+		public readonly Dictionary<int,Table_PuzzleSlot> Table_PuzzleSlotDic = new Dictionary<int, Table_PuzzleSlot>();
 		public readonly Dictionary<int,Table_AvatarStruct> Table_AvatarStructDic = new Dictionary<int, Table_AvatarStruct>();
 		public readonly Dictionary<int,Table_AvatarSlotName> Table_AvatarSlotNameDic = new Dictionary<int, Table_AvatarSlotName>();
 		public readonly Dictionary<int,Table_Matrix> Table_MatrixDic = new Dictionary<int, Table_Matrix>();
@@ -58,7 +61,10 @@ namespace GameA.Game
 		[UnityEngine.SerializeField] private Table_Background[] _tableBackgrounds;
 		[UnityEngine.SerializeField] private Table_Decorate[] _tableDecorates;
 		[UnityEngine.SerializeField] private Table_PuzzleSummon[] _tablePuzzleSummons;
+		[UnityEngine.SerializeField] private Table_PuzzleFragment[] _tablePuzzleFragments;
 		[UnityEngine.SerializeField] private Table_Puzzle[] _tablePuzzles;
+		[UnityEngine.SerializeField] private Table_PuzzleUpgrade[] _tablePuzzleUpgrades;
+		[UnityEngine.SerializeField] private Table_PuzzleSlot[] _tablePuzzleSlots;
 		[UnityEngine.SerializeField] private Table_AvatarStruct[] _tableAvatarStructs;
 		[UnityEngine.SerializeField] private Table_AvatarSlotName[] _tableAvatarSlotNames;
 		[UnityEngine.SerializeField] private Table_Matrix[] _tableMatrixs;
@@ -119,8 +125,14 @@ namespace GameA.Game
             _tableDecorates = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Decorate[]>(DecorateJsonStr);
 			string PuzzleSummonJsonStr = ResourceManager.Instance.GetJson ("PuzzleSummon", 31);
             _tablePuzzleSummons = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleSummon[]>(PuzzleSummonJsonStr);
+			string PuzzleFragmentJsonStr = ResourceManager.Instance.GetJson ("PuzzleFragment", 31);
+            _tablePuzzleFragments = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleFragment[]>(PuzzleFragmentJsonStr);
 			string PuzzleJsonStr = ResourceManager.Instance.GetJson ("Puzzle", 31);
             _tablePuzzles = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Puzzle[]>(PuzzleJsonStr);
+			string PuzzleUpgradeJsonStr = ResourceManager.Instance.GetJson ("PuzzleUpgrade", 31);
+            _tablePuzzleUpgrades = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleUpgrade[]>(PuzzleUpgradeJsonStr);
+			string PuzzleSlotJsonStr = ResourceManager.Instance.GetJson ("PuzzleSlot", 31);
+            _tablePuzzleSlots = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleSlot[]>(PuzzleSlotJsonStr);
 			string AvatarStructJsonStr = ResourceManager.Instance.GetJson ("AvatarStruct", 31);
             _tableAvatarStructs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarStruct[]>(AvatarStructJsonStr);
 			string AvatarSlotNameJsonStr = ResourceManager.Instance.GetJson ("AvatarSlotName", 31);
@@ -338,6 +350,17 @@ namespace GameA.Game
 					LogHelper.Warning("_tablePuzzleSummons table.Id {0} is duplicated!", _tablePuzzleSummons[i].Id);
 				}
 			}
+			for (int i = 0; i < _tablePuzzleFragments.Length; i++)
+			{
+				if (!Table_PuzzleFragmentDic.ContainsKey(_tablePuzzleFragments[i].Id))
+				{
+					Table_PuzzleFragmentDic.Add(_tablePuzzleFragments[i].Id,_tablePuzzleFragments[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tablePuzzleFragments table.Id {0} is duplicated!", _tablePuzzleFragments[i].Id);
+				}
+			}
 			for (int i = 0; i < _tablePuzzles.Length; i++)
 			{
 				if (!Table_PuzzleDic.ContainsKey(_tablePuzzles[i].Id))
@@ -347,6 +370,28 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tablePuzzles table.Id {0} is duplicated!", _tablePuzzles[i].Id);
+				}
+			}
+			for (int i = 0; i < _tablePuzzleUpgrades.Length; i++)
+			{
+				if (!Table_PuzzleUpgradeDic.ContainsKey(_tablePuzzleUpgrades[i].Id))
+				{
+					Table_PuzzleUpgradeDic.Add(_tablePuzzleUpgrades[i].Id,_tablePuzzleUpgrades[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tablePuzzleUpgrades table.Id {0} is duplicated!", _tablePuzzleUpgrades[i].Id);
+				}
+			}
+			for (int i = 0; i < _tablePuzzleSlots.Length; i++)
+			{
+				if (!Table_PuzzleSlotDic.ContainsKey(_tablePuzzleSlots[i].Id))
+				{
+					Table_PuzzleSlotDic.Add(_tablePuzzleSlots[i].Id,_tablePuzzleSlots[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tablePuzzleSlots table.Id {0} is duplicated!", _tablePuzzleSlots[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableAvatarStructs.Length; i++)
@@ -614,10 +659,37 @@ namespace GameA.Game
 			}
 			return null;
 		}
+		public Table_PuzzleFragment GetPuzzleFragment(int key)
+		{
+			Table_PuzzleFragment tmp;
+			if (Table_PuzzleFragmentDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
 		public Table_Puzzle GetPuzzle(int key)
 		{
 			Table_Puzzle tmp;
 			if (Table_PuzzleDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_PuzzleUpgrade GetPuzzleUpgrade(int key)
+		{
+			Table_PuzzleUpgrade tmp;
+			if (Table_PuzzleUpgradeDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_PuzzleSlot GetPuzzleSlot(int key)
+		{
+			Table_PuzzleSlot tmp;
+			if (Table_PuzzleSlotDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
