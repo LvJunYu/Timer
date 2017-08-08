@@ -21,7 +21,7 @@ namespace GameA.Game
         /// <summary>
         /// 0代表zero，所以赋值时候不能为0
         /// </summary>
-        public byte UnitValue;
+        public ushort UnitValue;
         public UnitChild Child;
 
         public bool IsDynamic()

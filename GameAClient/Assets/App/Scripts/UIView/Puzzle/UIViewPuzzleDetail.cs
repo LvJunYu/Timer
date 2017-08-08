@@ -9,10 +9,12 @@ namespace GameA
     /// <summary>
     /// 
     /// </summary>
-    public class UIViewPuzzle : UIViewBase
+    public class UIViewPuzzleDetail : UIViewBase
     {
         public Button CloseBtn;
-        public RectTransform PuzzleLocsGrid;
-        public RectTransform PuzzleItemGrid;
+        public Button ActiveBtn;
+        public Button EquipBtn;
+        public RectTransform PuzzleItemPos;
+        public RectTransform PuzzleFragmentGrid;
     }
 }

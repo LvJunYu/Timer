@@ -7,11 +7,11 @@ using UnityEngine.UI;
 namespace GameA
 {
     /// <summary>
-    /// 拼图Item
+    /// 拼图装备栏位
     /// </summary>
-    public partial class UMViewPuzzleItem : UMViewBase
+    public class UMViewPuzzleEquipLoc : UMViewBase
     {
-        public Button PuzzleDetail;
+        public GameObject LockObj;
+        public Text UnlockLvTxt;
     }
-
 }
