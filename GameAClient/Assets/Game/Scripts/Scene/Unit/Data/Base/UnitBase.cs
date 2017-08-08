@@ -813,16 +813,6 @@ namespace GameA.Game
             return false;
         }
 
-        public virtual bool StepOnClay()
-        {
-            return false;
-        }
-
-        public virtual bool StepOnIce()
-        {
-            return false;
-        }
-
         /// <summary>
         /// 被电
         /// </summary>
@@ -1132,81 +1122,17 @@ namespace GameA.Game
             return new Grid2D(min.x, min.y, min.x + _colliderGrid.XMax - _colliderGrid.XMin,
                 min.y + _colliderGrid.YMax - _colliderGrid.YMin);
         }
-
-        public bool CheckRightClimbUpFloor()
-        {
-            var min = new IntVec2(_colliderGrid.XMax + 1, _colliderGrid.YMax);
-            return CheckRightClimbFloor(new Grid2D(min.x, min.y, min.x, min.y));
-        }
         
-        public bool CheckRightClimbDownFloor()
+        public bool CheckRightClimbFloor(int deltaPosY = 0)
         {
-            var min = new IntVec2(_colliderGrid.XMax + 1, _colliderGrid.YMin);
-            return CheckRightClimbFloor(new Grid2D(min.x, min.y, min.x, min.y));
-        }
-
-        public bool CheckLeftClimbUpFloor()
-        {
-            var min = new IntVec2(_colliderGrid.XMin - 1, _colliderGrid.YMax);
-            return CheckLeftClimbFloor(new Grid2D(min.x, min.y, min.x, min.y));
-        }
-        
-        public bool CheckLeftClimbDownFloor()
-        {
-            var min = new IntVec2(_colliderGrid.XMin - 1, _colliderGrid.YMin);
-            return CheckLeftClimbFloor(new Grid2D(min.x, min.y, min.x, min.y));
-        }
-        
-        public bool CheckUpClimbRightFloor()
-        {
-            var min = new IntVec2(_colliderGrid.XMax, _colliderGrid.YMax + 1);
-            return CheckUpClimbFloor(new Grid2D(min.x, min.y, min.x, min.y));
-        }
-        
-        public bool CheckUpClimbLeftFloor()
-        {
-            var min = new IntVec2(_colliderGrid.XMin, _colliderGrid.YMax + 1);
-            return CheckUpClimbFloor(new Grid2D(min.x, min.y, min.x, min.y));
-        }
-
-        private bool CheckLeftClimbFloor(Grid2D grid)
-        {
+            var min = new IntVec2(_colliderGrid.XMax + 1, CenterPos.y + deltaPosY);
+            var grid = new Grid2D(min.x, min.y, min.x, min.y);
             var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
                 _dynamicCollider);
             for (int i = 0; i < units.Count; i++)
             {
                 var unit = units[i];
-                if (unit.IsAlive && (unit.CanClimbed || CanEdgeClimbed(this, EDirectionType.Right)) && CheckLeftFloor(unit))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        
-        private bool CheckRightClimbFloor(Grid2D grid)
-        {
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
-                _dynamicCollider);
-            for (int i = 0; i < units.Count; i++)
-            {
-                var unit = units[i];
-                if (unit.IsAlive && (unit.CanClimbed || CanEdgeClimbed(this, EDirectionType.Left)) && CheckRightFloor(unit))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        
-        private bool CheckUpClimbFloor(Grid2D grid)
-        {
-            var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
-                _dynamicCollider);
-            for (int i = 0; i < units.Count; i++)
-            {
-                var unit = units[i];
-                if (unit.IsAlive && (unit.CanClimbed || CanEdgeClimbed(this, EDirectionType.Down)) && CheckUpFloor(unit))
+                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Left)) && CheckRightFloor(unit))
                 {
                     return true;
                 }
@@ -1214,7 +1140,41 @@ namespace GameA.Game
             return false;
         }
 
-        protected virtual bool CanEdgeClimbed(UnitBase other, EDirectionType eDirectionType)
+        public bool CheckLeftClimbFloor(int deltaPosY = 0)
+        {
+            var min = new IntVec2(_colliderGrid.XMin - 1, CenterPos.y + deltaPosY);
+            var grid = new Grid2D(min.x, min.y, min.x, min.y);
+            var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
+                _dynamicCollider);
+            for (int i = 0; i < units.Count; i++)
+            {
+                var unit = units[i];
+                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Right)) && CheckLeftFloor(unit))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        public bool CheckUpClimbFloor(int deltaPosX = 0)
+        {
+            var min = new IntVec2(CenterPos.x + deltaPosX, _colliderGrid.YMax + 1);
+            var grid = new Grid2D(min.x, min.y, min.x, min.y);
+            var units = ColliderScene2D.GridCastAllReturnUnits(grid, JoyPhysics2D.GetColliderLayerMask(_dynamicCollider.Layer), float.MinValue, float.MaxValue,
+                _dynamicCollider);
+            for (int i = 0; i < units.Count; i++)
+            {
+                var unit = units[i];
+                if (unit.IsAlive && (unit.CanClimbed || unit.CanEdgeClimbed(this, grid, EDirectionType.Down)) && CheckUpFloor(unit))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        protected virtual bool CanEdgeClimbed(UnitBase other, Grid2D checkGrid, EDirectionType eDirectionType)
         {
             return false;
         }
@@ -1701,6 +1661,14 @@ namespace GameA.Game
         #endregion
 
         public virtual void SetClimbState(EClimbState eClimbState)
+        {
+        }
+
+        public virtual void SetStepOnClay()
+        {
+        }
+        
+        public virtual void SetStepOnIce()
         {
         }
     }

@@ -53,8 +53,16 @@ namespace GameA
                 DirectionImg.SetActive(true);
                 Vector2 inputPos;
 #if (((UNITY_ANDROID || UNITY_IPHONE || UNITY_WINRT || UNITY_BLACKBERRY) && !UNITY_EDITOR))
-                var touch = UnityEngine.Input.GetTouch(_hoveringEventData.pointerId);
-                inputPos = touch.position;
+                if (UnityEngine.Input.touchCount > 0)
+                {
+                    var touch = UnityEngine.Input.GetTouch(_hoveringEventData.pointerId);
+                    inputPos = touch.position;
+                }
+                else
+                {
+                    DirectionImg.SetActive(false);
+                    return;
+                }
                 #else
                 inputPos = Input.mousePosition;
 #endif

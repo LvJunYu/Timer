@@ -114,21 +114,15 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_curBanInputTime == 0 && !IsHoldingBox() && _eClimbState == EClimbState.None)
+            if (_curBanInputTime == 0 && !IsHoldingBox() && (_eClimbState == EClimbState.None || _eClimbState == EClimbState.Up))
             {
                 if (_input.GetKeyApplied(EInputType.Left))
                 {
-                    if (_curMoveDirection != EMoveDirection.Left)
-                    {
-                        SetFacingDir(EMoveDirection.Left);
-                    }
+                    SetFacingDir(EMoveDirection.Left);
                 }
                 else if (_input.GetKeyApplied(EInputType.Right))
                 {
-                    if (_curMoveDirection != EMoveDirection.Right)
-                    {
-                        SetFacingDir(EMoveDirection.Right);
-                    }
+                    SetFacingDir(EMoveDirection.Right);
                 }
             }
             CheckJump();
@@ -174,7 +168,7 @@ namespace GameA.Game
                         _stepY = 0;
                     }
                     _jumpLevel = 0;
-                    SpeedY = OnClay ? 100 : 150;
+                    SpeedY = _onClay ? 100 : 150;
                     _jumpState = EJumpState.Jump1;
                     _jumpTimer = 10;
                 }

@@ -10,19 +10,26 @@ namespace GameA
     /// </summary>
     public partial class UMCtrlPuzzleItem : UMCtrlBase<UMViewPuzzleItem>
     {
-        private PuzzleData _puzzle;
+        private PictureFull _puzzle;
         public PuzzleState CurState;
         public int Quality;
-        public List<UMCtrlPuzzleFragmentItem> PuzzleFragments;
-        //拼图的属性
 
-        public void Init(PuzzleData puzzle)
+        public void SetData(PictureFull puzzle)
         {
             _puzzle = puzzle;
             Quality = puzzle.Quality;
             CurState = puzzle.CurState;
+        }
 
-            //CurState = PuzzleState.CantActive;
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _cachedView.PuzzleDetail.onClick.AddListener(OnPuzzleDetailBtn);
+        }
+
+        private void OnPuzzleDetailBtn()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlPuzzleDetail>(_puzzle);
         }
 
         /// <summary>

@@ -1,17 +1,17 @@
 ﻿using System.Collections;
 using System;
 using UnityEngine;
-using System.Collections.Generic;
 using SoyEngine;
+using UnityEngine.UI;
 
 namespace GameA
 {
     /// <summary>
-    /// 拼图
+    /// 拼图Item
     /// </summary>
     public partial class UMViewPuzzleItem : UMViewBase
     {
-        //public GameObject 
+        public Button PuzzleDetail;
     }
 
 }

@@ -30,6 +30,15 @@ namespace GameA.Game
         /// 起跳的动画时间
         /// </summary>
         protected int _jumpTimer;
+        
+        protected bool _onClay;
+        protected bool _onIce;
+        
+        [SerializeField] protected IntVec2 _fanForce;
+        protected Dictionary<IntVec3, IntVec2> _fanForces = new Dictionary<IntVec3, IntVec2>();
+        protected const float SpeedClayRatio = 0.2f;
+        protected const float SpeedFireRatio = 1.8f;
+        protected const float SpeedHoldingBoxRatio = 0.3f;
 
         protected abstract bool IsCheckGround();
         protected abstract bool IsCheckClimb();
@@ -54,6 +63,10 @@ namespace GameA.Game
             _eClimbState = EClimbState.None;
             _climbJump = false;
             _stepY = 0;
+            _onClay = false;
+            _onIce = false;
+            _fanForce = IntVec2.zero;
+            _fanForces.Clear();
         }
         
         public void Setup(InputBase inputBase)
@@ -112,15 +125,6 @@ namespace GameA.Game
                         {
                             friction = unit.Friction;
                         }
-                        var edge = unit.GetUpEdge(this);
-                        if (unit.StepOnClay() || edge.ESkillType == ESkillType.Clay)
-                        {
-                            _onClay = true;
-                        }
-                        else if (unit.StepOnIce() || edge.ESkillType == ESkillType.Ice)
-                        {
-                            _onIce = true;
-                        }
                         var delta = Mathf.Abs(CenterDownPos.x - unit.CenterDownPos.x);
                         if (deltaX > delta)
                         {
@@ -135,6 +139,7 @@ namespace GameA.Game
                 }
             }
             CalculateMotor();
+            _curMaxSpeedX = (int)(_maxSpeedX * _speedRatio * _speedStateRatio);
             if (IsCheckClimb())
             {
                 CheckClimb();
@@ -153,7 +158,6 @@ namespace GameA.Game
             {
                 OnLand();
             }
-            _curMaxSpeedX = (int)(_maxSpeedX * _speedRatio * _speedStateRatio);
             if (_curBanInputTime <= 0)
             {
                 int speedAcc = _motorAcc + _fanForce.x;
@@ -188,70 +192,53 @@ namespace GameA.Game
             }
         }
 
-        public override void SetClimbState(EClimbState eClimbState)
-        {
-            _eClimbState = eClimbState;
-            LogHelper.Debug(_eClimbState.ToString());
-        }
-
         protected virtual void CheckClimb()
         {
             switch (_eClimbState)
             {
+                case EClimbState.None:
+                    break;
                 case EClimbState.Left:
-                    if (_input.GetKeyApplied(EInputType.Up))
+                    if (_input.GetKeyApplied(EInputType.Down) && _grounded)
                     {
-                        if (!CheckLeftClimbUpFloor())
-                        {
-                            _motorAcc = 0;
-                        }
+                        SetClimbState(EClimbState.None);
                     }
-                    else if (_input.GetKeyApplied(EInputType.Down))
+                    if (!CheckLeftClimbFloor())
                     {
-                        if (!CheckLeftClimbDownFloor())
-                        {
-                            _motorAcc = 0;
-                        }
-                        if (_grounded)
-                        {
-                            _eClimbState = EClimbState.None;
-                        }
+                        SetClimbState(EClimbState.None);
                     }
                     break;
                 case EClimbState.Right:
-                    if (_input.GetKeyApplied(EInputType.Up))
+                    if (_input.GetKeyApplied(EInputType.Down) && _grounded)
                     {
-                        if (!CheckRightClimbUpFloor())
-                        {
-                            _motorAcc = 0;
-                        }
+                        SetClimbState(EClimbState.None);
                     }
-                    else if (_input.GetKeyApplied(EInputType.Down))
+                    if (!CheckRightClimbFloor())
                     {
-                        if (!CheckRightClimbDownFloor())
-                        {
-                            _motorAcc = 0;
-                        }
-                        if (_grounded)
-                        {
-                            _eClimbState = EClimbState.None;
-                        }
+                        SetClimbState(EClimbState.None);
                     }
                     break;
                  case EClimbState.Up:
-                     if (_input.GetKeyApplied(EInputType.Right))
+                     if (CheckUpClimbFloor())
                      {
-                         if (!CheckUpClimbRightFloor())
+                         if (_input.GetKeyApplied(EInputType.Right))
                          {
-                             _motorAcc = 0;
+                             if (!CheckUpClimbFloor(_curMaxSpeedX))
+                             {
+                                 _motorAcc = 0;
+                             }
+                         }
+                         else if (_input.GetKeyApplied(EInputType.Left))
+                         {
+                             if (!CheckUpClimbFloor(-_curMaxSpeedX))
+                             {
+                                 _motorAcc = 0;
+                             }
                          }
                      }
-                     else if (_input.GetKeyApplied(EInputType.Left))
+                     else
                      {
-                         if (!CheckUpClimbLeftFloor())
-                         {
-                             _motorAcc = 0;
-                         }
+                         SetClimbState(EClimbState.None);
                      }
                      break;
             }
@@ -278,14 +265,14 @@ namespace GameA.Game
                             SpeedY = 0;
                             if (_input.GetKeyApplied(EInputType.Up))
                             {
-                                if (CheckLeftClimbUpFloor())
+                                if (CheckLeftClimbFloor(_curMaxSpeedX))
                                 {
                                     SpeedY = _curMaxSpeedX;
                                 }
                             }
                             else if (_input.GetKeyApplied(EInputType.Down))
                             {
-                                if (CheckLeftClimbDownFloor())
+                                if (CheckLeftClimbFloor(-_curMaxSpeedX))
                                 {
                                     SpeedY = -_curMaxSpeedX;
                                 }
@@ -299,14 +286,14 @@ namespace GameA.Game
                             SpeedY = 0;
                             if (_input.GetKeyApplied(EInputType.Up))
                             {
-                                if (CheckRightClimbUpFloor())
+                                if (CheckRightClimbFloor(_curMaxSpeedX))
                                 {
                                     SpeedY = _curMaxSpeedX;
                                 }
                             }
                             else if (_input.GetKeyApplied(EInputType.Down))
                             {
-                                if (CheckRightClimbDownFloor())
+                                if (CheckRightClimbFloor(-_curMaxSpeedX))
                                 {
                                     SpeedY = - _curMaxSpeedX;
                                 }
@@ -331,6 +318,33 @@ namespace GameA.Game
                 }
             }
             _fanForce.y = 0;
+        }
+        
+        public override void SetClimbState(EClimbState eClimbState)
+        {
+            _eClimbState = eClimbState;
+            switch (_eClimbState)
+            {
+                case EClimbState.None:
+                    break;
+                case EClimbState.Left:
+                    SetFacingDir(EMoveDirection.Left);
+                    break;
+                case EClimbState.Right:
+                    SetFacingDir(EMoveDirection.Right);
+                    break;
+            }
+            LogHelper.Debug(_eClimbState.ToString());
+        }
+
+        public override void SetStepOnClay()
+        {
+            _onClay = true;
+        }
+
+        public override void SetStepOnIce()
+        {
+            _onIce = true;
         }
         
         protected virtual void OnJump()

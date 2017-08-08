@@ -12,11 +12,12 @@ using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
 using NewResourceSolution;
+using UnityEditor;
 using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
-    public class PaintBlock : BlockBase
+    public class PaintBlock : SkillBlock
     {
         public const int MinEdgeLength = 0;
         public const int OffsetEdgeLength = 10;
@@ -95,42 +96,6 @@ namespace GameA.Game
                 Object.Destroy(_paintObject);
                 _paintObject = null;
             }
-        }
-
-        public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
-        {
-            if (other.IsActor && !checkOnly)
-            {
-                CheckEdgeHit(other, EDirectionType.Up);
-            }
-            return base.OnUpHit(other, ref y, checkOnly);
-        }
-
-        public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
-        {
-            if (other.IsActor && !checkOnly)
-            {
-                CheckEdgeHit(other, EDirectionType.Down);
-            }
-            return base.OnDownHit(other, ref y, checkOnly);
-        }
-
-        public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
-        {
-            if (other.IsActor && !checkOnly)
-            {
-                CheckEdgeHit(other, EDirectionType.Left);
-            }
-            return base.OnLeftHit(other, ref x, checkOnly);
-        }
-
-        public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
-        {
-            if (other.IsActor && !checkOnly)
-            {
-                CheckEdgeHit(other, EDirectionType.Right);
-            }
-            return base.OnRightHit(other, ref x, checkOnly);
         }
 
         /// <summary>
@@ -213,7 +178,7 @@ namespace GameA.Game
             }
         }
 
-        protected bool GetPos(UnitBase other, EDirectionType eDirectionType, out int start, out int end)
+        protected bool GetPos(Grid2D colliderGrid, EDirectionType eDirectionType, out int start, out int end)
         {
             start = 0;
             end = 0;
@@ -221,13 +186,13 @@ namespace GameA.Game
             {
                 case EDirectionType.Up:
                 case EDirectionType.Down:
-                    start = Math.Max(_colliderGrid.XMin, other.ColliderGrid.XMin);
-                    end = Math.Min(_colliderGrid.XMax, other.ColliderGrid.XMax);
+                    start = Math.Max(_colliderGrid.XMin, colliderGrid.XMin);
+                    end = Math.Min(_colliderGrid.XMax, colliderGrid.XMax);
                     break;
                 case EDirectionType.Left:
                 case EDirectionType.Right:
-                    start = Math.Max(_colliderGrid.YMin, other.ColliderGrid.YMin);
-                    end = Math.Min(_colliderGrid.YMax, other.ColliderGrid.YMax);
+                    start = Math.Max(_colliderGrid.YMin, colliderGrid.YMin);
+                    end = Math.Min(_colliderGrid.YMax, colliderGrid.YMax);
                     break;
             }
             return end >= start + MinEdgeLength;
@@ -417,12 +382,12 @@ namespace GameA.Game
                 }
                 _paintTexture = new Texture2D(textureWidth, textureHeight);
                 _paintTexture.wrapMode = TextureWrapMode.Clamp;
-                _paintTexture.filterMode = FilterMode.Point;
+                _paintTexture.filterMode = FilterMode.Bilinear;
                 _paintTexture.SetPixels32(EmptyPixels);
                 _paintTexture.Apply();
 
                 _maskTexture = new Texture2D(textureWidth, textureHeight);
-                _maskTexture.filterMode = FilterMode.Point;
+                _maskTexture.filterMode = FilterMode.Bilinear;
                 _maskTexture.SetPixels32(EmptyPixels);
                 _maskTexture.Apply();
 
@@ -436,10 +401,10 @@ namespace GameA.Game
             }
         }
 
-        protected void CheckEdgeHit(UnitBase other, EDirectionType eDirectionType)
+        protected override void CheckSkillHit(UnitBase other, Grid2D grid, EDirectionType eDirectionType)
         {
             int start, end;
-            if (GetPos(other, eDirectionType, out start, out end))
+            if (GetPos(grid, eDirectionType, out start, out end))
             {
                 for (int i = 0; i < _edges.Count; i++)
                 {
@@ -463,9 +428,10 @@ namespace GameA.Game
                     Jelly.OnEffect(other, edge.Direction);
                     break;
                 case ESkillType.Clay:
+                    Clay.OnEffect(other, edge.Direction);
                     break;
-                //搞定 不用管
                 case ESkillType.Ice:
+                    Ice.OnEffect(other, edge.Direction);
                     break;
             }
         }

@@ -172,16 +172,19 @@ namespace GameA
                 LogHelper.Error("tableUnit {0} icon {1} invalid! tableUnit.EGeneratedType is {2}", tableUnit.Id,
                     tableUnit.Icon, tableUnit.EGeneratedType);
             }
-            if (_selected) {
-                _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up * 15;
-                
+            if (_selected)
+            {
+                _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up*15;
+
                 // 除了主角，所有能旋转，能移动，还有传送带 都需要显示箭头
                 if (_table.CanRotate || _table.CanMove || _table.Id == UnitDefine.RollerId)
                 {
                     _cachedView.Arrow.SetActive(true);
                     RefreshArrowRotation();
                 }
-            } else {
+            }
+            else
+            {
                 _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.zero;
             }
 
@@ -189,18 +192,22 @@ namespace GameA
             int limit = LocalUser.Instance.UserWorkshopUnitData.GetUnitLimt(_table.Id);
             int number = limit - currentCnt;
             if (number < 0) number = 0;
-            if (number > 1000)
+            if (number > 999)
             {
-                _cachedView.Number.gameObject.SetActive(false);
-                _cachedView.Unlimited.SetActive(true);
+                //_cachedView.Number.gameObject.SetActive(false);
+                //_cachedView.Unlimited.SetActive(true);
+                //                    _cachedView.Number.gameObject.SetActive(false);
+                //                    _cachedView.Unlimited.SetActive(true);
+                _cachedView.Number.text = "999+";
             }
             else
             {
-                _cachedView.Number.gameObject.SetActive(true);
-                _cachedView.Unlimited.SetActive(false);
+                //                    _cachedView.Unlimited.SetActive(false);
                 _cachedView.Number.text = number.ToString();
             }
+            _cachedView.Number.gameObject.SetActive(true);
         }
+
 
         private void OnSelectedItemChanged (ushort id)
         {

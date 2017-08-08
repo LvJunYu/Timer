@@ -1239,6 +1239,126 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingChangePictureFull {
+            get { return _isRequstingChangePictureFull; }
+        }
+        private static bool _isRequstingChangePictureFull = false;
+        /// <summary>
+		/// 装备拼图
+		/// </summary>
+		/// <param name="slot">槽位</param>
+		/// <param name="putOnId">装备上的拼图Id</param>
+		/// <param name="putOffId">卸下的拼图Id</param>
+        public static void ChangePictureFull (
+            int slot,
+            long putOnId,
+            long putOffId,
+            Action<Msg_SC_CMD_ChangePictureFull> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingChangePictureFull) {
+                return;
+            }
+            _isRequstingChangePictureFull = true;
+            Msg_CS_CMD_ChangePictureFull msg = new Msg_CS_CMD_ChangePictureFull();
+            // 装备拼图
+            msg.Slot = slot;
+            msg.PutOnId = putOnId;
+            msg.PutOffId = putOffId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_ChangePictureFull>(
+                SoyHttpApiPath.ChangePictureFull, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingChangePictureFull = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "ChangePictureFull", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingChangePictureFull = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingCompoundPictureFull {
+            get { return _isRequstingCompoundPictureFull; }
+        }
+        private static bool _isRequstingCompoundPictureFull = false;
+        /// <summary>
+		/// 合成拼图
+		/// </summary>
+		/// <param name="pictureId">拼图Id</param>
+        public static void CompoundPictureFull (
+            long pictureId,
+            Action<Msg_SC_CMD_CompoundPictureFull> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingCompoundPictureFull) {
+                return;
+            }
+            _isRequstingCompoundPictureFull = true;
+            Msg_CS_CMD_CompoundPictureFull msg = new Msg_CS_CMD_CompoundPictureFull();
+            // 合成拼图
+            msg.PictureId = pictureId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CompoundPictureFull>(
+                SoyHttpApiPath.CompoundPictureFull, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingCompoundPictureFull = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CompoundPictureFull", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingCompoundPictureFull = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpgradePictureFull {
+            get { return _isRequstingUpgradePictureFull; }
+        }
+        private static bool _isRequstingUpgradePictureFull = false;
+        /// <summary>
+		/// 升级拼图
+		/// </summary>
+		/// <param name="pictureId">拼图Id</param>
+		/// <param name="targetLevel">目标等级</param>
+        public static void UpgradePictureFull (
+            long pictureId,
+            int targetLevel,
+            Action<Msg_SC_CMD_UpgradePictureFull> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpgradePictureFull) {
+                return;
+            }
+            _isRequstingUpgradePictureFull = true;
+            Msg_CS_CMD_UpgradePictureFull msg = new Msg_CS_CMD_UpgradePictureFull();
+            // 升级拼图
+            msg.PictureId = pictureId;
+            msg.TargetLevel = targetLevel;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpgradePictureFull>(
+                SoyHttpApiPath.UpgradePictureFull, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpgradePictureFull = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpgradePictureFull", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpgradePictureFull = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingBuyEnergy {
             get { return _isRequstingBuyEnergy; }
         }

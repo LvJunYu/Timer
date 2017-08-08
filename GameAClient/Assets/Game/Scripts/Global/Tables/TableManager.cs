@@ -13,9 +13,9 @@ namespace GameA.Game
 		#region 常量与字段
 		private static TableManager _instance;
 		public readonly Dictionary<int,Table_Equipment> Table_EquipmentDic = new Dictionary<int, Table_Equipment>();
-        public readonly Dictionary<int, Table_EquipmentLevel> Table_EquipmentLevelDic = new Dictionary<int, Table_EquipmentLevel>();
-        public readonly Dictionary<int,Table_Skill> Table_SkillDic = new Dictionary<int, Table_Skill>();
 		public readonly Dictionary<int,Table_State> Table_StateDic = new Dictionary<int, Table_State>();
+		public readonly Dictionary<int,Table_Skill> Table_SkillDic = new Dictionary<int, Table_Skill>();
+		public readonly Dictionary<int,Table_EquipmentLevel> Table_EquipmentLevelDic = new Dictionary<int, Table_EquipmentLevel>();
 		public readonly Dictionary<int,Table_Trap> Table_TrapDic = new Dictionary<int, Table_Trap>();
 		public readonly Dictionary<int,Table_Unit> Table_UnitDic = new Dictionary<int, Table_Unit>();
 		public readonly Dictionary<int,Table_StandaloneLevel> Table_StandaloneLevelDic = new Dictionary<int, Table_StandaloneLevel>();
@@ -29,21 +29,24 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_FashionCoupon> Table_FashionCouponDic = new Dictionary<int, Table_FashionCoupon>();
 		public readonly Dictionary<int,Table_Background> Table_BackgroundDic = new Dictionary<int, Table_Background>();
 		public readonly Dictionary<int,Table_Decorate> Table_DecorateDic = new Dictionary<int, Table_Decorate>();
-		public readonly Dictionary<int,Table_Matrix> Table_MatrixDic = new Dictionary<int, Table_Matrix>();
-		public readonly Dictionary<int,Table_Morph> Table_MorphDic = new Dictionary<int, Table_Morph>();
 		public readonly Dictionary<int,Table_PuzzleSummon> Table_PuzzleSummonDic = new Dictionary<int, Table_PuzzleSummon>();
+		public readonly Dictionary<int,Table_PuzzleFragment> Table_PuzzleFragmentDic = new Dictionary<int, Table_PuzzleFragment>();
 		public readonly Dictionary<int,Table_Puzzle> Table_PuzzleDic = new Dictionary<int, Table_Puzzle>();
+		public readonly Dictionary<int,Table_PuzzleUpgrade> Table_PuzzleUpgradeDic = new Dictionary<int, Table_PuzzleUpgrade>();
+		public readonly Dictionary<int,Table_PuzzleSlot> Table_PuzzleSlotDic = new Dictionary<int, Table_PuzzleSlot>();
 		public readonly Dictionary<int,Table_AvatarStruct> Table_AvatarStructDic = new Dictionary<int, Table_AvatarStruct>();
 		public readonly Dictionary<int,Table_AvatarSlotName> Table_AvatarSlotNameDic = new Dictionary<int, Table_AvatarSlotName>();
+		public readonly Dictionary<int,Table_Matrix> Table_MatrixDic = new Dictionary<int, Table_Matrix>();
+		public readonly Dictionary<int,Table_Morph> Table_MorphDic = new Dictionary<int, Table_Morph>();
 		public readonly Dictionary<int,Table_PlayerLvToModifyLimit> Table_PlayerLvToModifyLimitDic = new Dictionary<int, Table_PlayerLvToModifyLimit>();
 		public readonly Dictionary<int,Table_PlayerLvToExp> Table_PlayerLvToExpDic = new Dictionary<int, Table_PlayerLvToExp>();
 		public readonly Dictionary<int,Table_ModifyReward> Table_ModifyRewardDic = new Dictionary<int, Table_ModifyReward>();
 		public readonly Dictionary<int,Table_ProgressUnlock> Table_ProgressUnlockDic = new Dictionary<int, Table_ProgressUnlock>();
 		public readonly Dictionary<int,Table_BoostItem> Table_BoostItemDic = new Dictionary<int, Table_BoostItem>();
 		[UnityEngine.SerializeField] private Table_Equipment[] _tableEquipments;
-       	[UnityEngine.SerializeField] private Table_EquipmentLevel[] _tableEquipmentLevels;
-		[UnityEngine.SerializeField] private Table_Skill[] _tableSkills;
 		[UnityEngine.SerializeField] private Table_State[] _tableStates;
+		[UnityEngine.SerializeField] private Table_Skill[] _tableSkills;
+		[UnityEngine.SerializeField] private Table_EquipmentLevel[] _tableEquipmentLevels;
 		[UnityEngine.SerializeField] private Table_Trap[] _tableTraps;
 		[UnityEngine.SerializeField] private Table_Unit[] _tableUnits;
 		[UnityEngine.SerializeField] private Table_StandaloneLevel[] _tableStandaloneLevels;
@@ -57,12 +60,15 @@ namespace GameA.Game
 		[UnityEngine.SerializeField] private Table_FashionCoupon[] _tableFashionCoupons;
 		[UnityEngine.SerializeField] private Table_Background[] _tableBackgrounds;
 		[UnityEngine.SerializeField] private Table_Decorate[] _tableDecorates;
-		[UnityEngine.SerializeField] private Table_Matrix[] _tableMatrixs;
-		[UnityEngine.SerializeField] private Table_Morph[] _tableMorphs;
 		[UnityEngine.SerializeField] private Table_PuzzleSummon[] _tablePuzzleSummons;
+		[UnityEngine.SerializeField] private Table_PuzzleFragment[] _tablePuzzleFragments;
 		[UnityEngine.SerializeField] private Table_Puzzle[] _tablePuzzles;
+		[UnityEngine.SerializeField] private Table_PuzzleUpgrade[] _tablePuzzleUpgrades;
+		[UnityEngine.SerializeField] private Table_PuzzleSlot[] _tablePuzzleSlots;
 		[UnityEngine.SerializeField] private Table_AvatarStruct[] _tableAvatarStructs;
 		[UnityEngine.SerializeField] private Table_AvatarSlotName[] _tableAvatarSlotNames;
+		[UnityEngine.SerializeField] private Table_Matrix[] _tableMatrixs;
+		[UnityEngine.SerializeField] private Table_Morph[] _tableMorphs;
 		[UnityEngine.SerializeField] private Table_PlayerLvToModifyLimit[] _tablePlayerLvToModifyLimits;
 		[UnityEngine.SerializeField] private Table_PlayerLvToExp[] _tablePlayerLvToExps;
 		[UnityEngine.SerializeField] private Table_ModifyReward[] _tableModifyRewards;
@@ -85,12 +91,12 @@ namespace GameA.Game
 		{
 			string EquipmentJsonStr = ResourceManager.Instance.GetJson ("Equipment", 31);
             _tableEquipments = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Equipment[]>(EquipmentJsonStr);
-            string EquipmentLevelJsonStr =  ResourceManager.Instance.GetJson("EquipmentLevel", 31);
-            _tableEquipmentLevels = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_EquipmentLevel[]>(EquipmentLevelJsonStr);
-            string SkillJsonStr = ResourceManager.Instance.GetJson ("Skill", 31);
-            _tableSkills = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Skill[]>(SkillJsonStr);
 			string StateJsonStr = ResourceManager.Instance.GetJson ("State", 31);
             _tableStates = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_State[]>(StateJsonStr);
+			string SkillJsonStr = ResourceManager.Instance.GetJson ("Skill", 31);
+            _tableSkills = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Skill[]>(SkillJsonStr);
+			string EquipmentLevelJsonStr = ResourceManager.Instance.GetJson ("EquipmentLevel", 31);
+            _tableEquipmentLevels = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_EquipmentLevel[]>(EquipmentLevelJsonStr);
 			string TrapJsonStr = ResourceManager.Instance.GetJson ("Trap", 31);
             _tableTraps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Trap[]>(TrapJsonStr);
 			string UnitJsonStr = ResourceManager.Instance.GetJson ("Unit", 31);
@@ -117,18 +123,24 @@ namespace GameA.Game
             _tableBackgrounds = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Background[]>(BackgroundJsonStr);
 			string DecorateJsonStr = ResourceManager.Instance.GetJson ("Decorate", 31);
             _tableDecorates = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Decorate[]>(DecorateJsonStr);
-			string MatrixJsonStr = ResourceManager.Instance.GetJson ("Matrix", 31);
-            _tableMatrixs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Matrix[]>(MatrixJsonStr);
-			string MorphJsonStr = ResourceManager.Instance.GetJson ("Morph", 31);
-            _tableMorphs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Morph[]>(MorphJsonStr);
 			string PuzzleSummonJsonStr = ResourceManager.Instance.GetJson ("PuzzleSummon", 31);
             _tablePuzzleSummons = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleSummon[]>(PuzzleSummonJsonStr);
+			string PuzzleFragmentJsonStr = ResourceManager.Instance.GetJson ("PuzzleFragment", 31);
+            _tablePuzzleFragments = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleFragment[]>(PuzzleFragmentJsonStr);
 			string PuzzleJsonStr = ResourceManager.Instance.GetJson ("Puzzle", 31);
             _tablePuzzles = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Puzzle[]>(PuzzleJsonStr);
+			string PuzzleUpgradeJsonStr = ResourceManager.Instance.GetJson ("PuzzleUpgrade", 31);
+            _tablePuzzleUpgrades = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleUpgrade[]>(PuzzleUpgradeJsonStr);
+			string PuzzleSlotJsonStr = ResourceManager.Instance.GetJson ("PuzzleSlot", 31);
+            _tablePuzzleSlots = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleSlot[]>(PuzzleSlotJsonStr);
 			string AvatarStructJsonStr = ResourceManager.Instance.GetJson ("AvatarStruct", 31);
             _tableAvatarStructs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarStruct[]>(AvatarStructJsonStr);
 			string AvatarSlotNameJsonStr = ResourceManager.Instance.GetJson ("AvatarSlotName", 31);
             _tableAvatarSlotNames = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarSlotName[]>(AvatarSlotNameJsonStr);
+			string MatrixJsonStr = ResourceManager.Instance.GetJson ("Matrix", 31);
+            _tableMatrixs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Matrix[]>(MatrixJsonStr);
+			string MorphJsonStr = ResourceManager.Instance.GetJson ("Morph", 31);
+            _tableMorphs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Morph[]>(MorphJsonStr);
 			string PlayerLvToModifyLimitJsonStr = ResourceManager.Instance.GetJson ("PlayerLvToModifyLimit", 31);
             _tablePlayerLvToModifyLimits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PlayerLvToModifyLimit[]>(PlayerLvToModifyLimitJsonStr);
 			string PlayerLvToExpJsonStr = ResourceManager.Instance.GetJson ("PlayerLvToExp", 31);
@@ -151,18 +163,18 @@ namespace GameA.Game
 					LogHelper.Warning("_tableEquipments table.Id {0} is duplicated!", _tableEquipments[i].Id);
 				}
 			}
-            for (int i = 0; i < _tableEquipmentLevels.Length; i++)
-            {
-                if (!Table_EquipmentLevelDic.ContainsKey(_tableEquipmentLevels[i].Id))
-                {
-                    Table_EquipmentLevelDic.Add(_tableEquipmentLevels[i].Id, _tableEquipmentLevels[i]);
-                }
-                else
-                {
-                    LogHelper.Warning("_tableEquipmentLevels table.Id {0} is duplicated!", _tableEquipmentLevels[i].Id);
-                }
-            }
-            for (int i = 0; i < _tableSkills.Length; i++)
+			for (int i = 0; i < _tableStates.Length; i++)
+			{
+				if (!Table_StateDic.ContainsKey(_tableStates[i].Id))
+				{
+					Table_StateDic.Add(_tableStates[i].Id,_tableStates[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableStates table.Id {0} is duplicated!", _tableStates[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableSkills.Length; i++)
 			{
 				if (!Table_SkillDic.ContainsKey(_tableSkills[i].Id))
 				{
@@ -173,15 +185,15 @@ namespace GameA.Game
 					LogHelper.Warning("_tableSkills table.Id {0} is duplicated!", _tableSkills[i].Id);
 				}
 			}
-			for (int i = 0; i < _tableStates.Length; i++)
+			for (int i = 0; i < _tableEquipmentLevels.Length; i++)
 			{
-				if (!Table_StateDic.ContainsKey(_tableStates[i].Id))
+				if (!Table_EquipmentLevelDic.ContainsKey(_tableEquipmentLevels[i].Id))
 				{
-					Table_StateDic.Add(_tableStates[i].Id,_tableStates[i]);
+					Table_EquipmentLevelDic.Add(_tableEquipmentLevels[i].Id,_tableEquipmentLevels[i]);
 				}
 				else
 				{
-					LogHelper.Warning("_tableStates table.Id {0} is duplicated!", _tableStates[i].Id);
+					LogHelper.Warning("_tableEquipmentLevels table.Id {0} is duplicated!", _tableEquipmentLevels[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableTraps.Length; i++)
@@ -327,28 +339,6 @@ namespace GameA.Game
 					LogHelper.Warning("_tableDecorates table.Id {0} is duplicated!", _tableDecorates[i].Id);
 				}
 			}
-			for (int i = 0; i < _tableMatrixs.Length; i++)
-			{
-				if (!Table_MatrixDic.ContainsKey(_tableMatrixs[i].Id))
-				{
-					Table_MatrixDic.Add(_tableMatrixs[i].Id,_tableMatrixs[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableMatrixs table.Id {0} is duplicated!", _tableMatrixs[i].Id);
-				}
-			}
-			for (int i = 0; i < _tableMorphs.Length; i++)
-			{
-				if (!Table_MorphDic.ContainsKey(_tableMorphs[i].Id))
-				{
-					Table_MorphDic.Add(_tableMorphs[i].Id,_tableMorphs[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableMorphs table.Id {0} is duplicated!", _tableMorphs[i].Id);
-				}
-			}
 			for (int i = 0; i < _tablePuzzleSummons.Length; i++)
 			{
 				if (!Table_PuzzleSummonDic.ContainsKey(_tablePuzzleSummons[i].Id))
@@ -360,6 +350,17 @@ namespace GameA.Game
 					LogHelper.Warning("_tablePuzzleSummons table.Id {0} is duplicated!", _tablePuzzleSummons[i].Id);
 				}
 			}
+			for (int i = 0; i < _tablePuzzleFragments.Length; i++)
+			{
+				if (!Table_PuzzleFragmentDic.ContainsKey(_tablePuzzleFragments[i].Id))
+				{
+					Table_PuzzleFragmentDic.Add(_tablePuzzleFragments[i].Id,_tablePuzzleFragments[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tablePuzzleFragments table.Id {0} is duplicated!", _tablePuzzleFragments[i].Id);
+				}
+			}
 			for (int i = 0; i < _tablePuzzles.Length; i++)
 			{
 				if (!Table_PuzzleDic.ContainsKey(_tablePuzzles[i].Id))
@@ -369,6 +370,28 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tablePuzzles table.Id {0} is duplicated!", _tablePuzzles[i].Id);
+				}
+			}
+			for (int i = 0; i < _tablePuzzleUpgrades.Length; i++)
+			{
+				if (!Table_PuzzleUpgradeDic.ContainsKey(_tablePuzzleUpgrades[i].Id))
+				{
+					Table_PuzzleUpgradeDic.Add(_tablePuzzleUpgrades[i].Id,_tablePuzzleUpgrades[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tablePuzzleUpgrades table.Id {0} is duplicated!", _tablePuzzleUpgrades[i].Id);
+				}
+			}
+			for (int i = 0; i < _tablePuzzleSlots.Length; i++)
+			{
+				if (!Table_PuzzleSlotDic.ContainsKey(_tablePuzzleSlots[i].Id))
+				{
+					Table_PuzzleSlotDic.Add(_tablePuzzleSlots[i].Id,_tablePuzzleSlots[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tablePuzzleSlots table.Id {0} is duplicated!", _tablePuzzleSlots[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableAvatarStructs.Length; i++)
@@ -391,6 +414,28 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableAvatarSlotNames table.Id {0} is duplicated!", _tableAvatarSlotNames[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableMatrixs.Length; i++)
+			{
+				if (!Table_MatrixDic.ContainsKey(_tableMatrixs[i].Id))
+				{
+					Table_MatrixDic.Add(_tableMatrixs[i].Id,_tableMatrixs[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableMatrixs table.Id {0} is duplicated!", _tableMatrixs[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableMorphs.Length; i++)
+			{
+				if (!Table_MorphDic.ContainsKey(_tableMorphs[i].Id))
+				{
+					Table_MorphDic.Add(_tableMorphs[i].Id,_tableMorphs[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableMorphs table.Id {0} is duplicated!", _tableMorphs[i].Id);
 				}
 			}
 			for (int i = 0; i < _tablePlayerLvToModifyLimits.Length; i++)
@@ -461,16 +506,16 @@ namespace GameA.Game
 			}
 			return null;
 		}
-        public Table_EquipmentLevel GetEquipmentLevel(int key)
-        {
-            Table_EquipmentLevel tmp;
-            if (Table_EquipmentLevelDic.TryGetValue(key, out tmp))
-            {
-                return tmp;
-            }
-            return null;
-        }
-        public Table_Skill GetSkill(int key)
+		public Table_State GetState(int key)
+		{
+			Table_State tmp;
+			if (Table_StateDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_Skill GetSkill(int key)
 		{
 			Table_Skill tmp;
 			if (Table_SkillDic.TryGetValue(key,out tmp))
@@ -479,10 +524,10 @@ namespace GameA.Game
 			}
 			return null;
 		}
-		public Table_State GetState(int key)
+		public Table_EquipmentLevel GetEquipmentLevel(int key)
 		{
-			Table_State tmp;
-			if (Table_StateDic.TryGetValue(key,out tmp))
+			Table_EquipmentLevel tmp;
+			if (Table_EquipmentLevelDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
@@ -605,24 +650,6 @@ namespace GameA.Game
 			}
 			return null;
 		}
-		public Table_Matrix GetMatrix(int key)
-		{
-			Table_Matrix tmp;
-			if (Table_MatrixDic.TryGetValue(key,out tmp))
-			{
-				return tmp;
-			}
-			return null;
-		}
-		public Table_Morph GetMorph(int key)
-		{
-			Table_Morph tmp;
-			if (Table_MorphDic.TryGetValue(key,out tmp))
-			{
-				return tmp;
-			}
-			return null;
-		}
 		public Table_PuzzleSummon GetPuzzleSummon(int key)
 		{
 			Table_PuzzleSummon tmp;
@@ -632,10 +659,37 @@ namespace GameA.Game
 			}
 			return null;
 		}
+		public Table_PuzzleFragment GetPuzzleFragment(int key)
+		{
+			Table_PuzzleFragment tmp;
+			if (Table_PuzzleFragmentDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
 		public Table_Puzzle GetPuzzle(int key)
 		{
 			Table_Puzzle tmp;
 			if (Table_PuzzleDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_PuzzleUpgrade GetPuzzleUpgrade(int key)
+		{
+			Table_PuzzleUpgrade tmp;
+			if (Table_PuzzleUpgradeDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_PuzzleSlot GetPuzzleSlot(int key)
+		{
+			Table_PuzzleSlot tmp;
+			if (Table_PuzzleSlotDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
@@ -654,6 +708,24 @@ namespace GameA.Game
 		{
 			Table_AvatarSlotName tmp;
 			if (Table_AvatarSlotNameDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_Matrix GetMatrix(int key)
+		{
+			Table_Matrix tmp;
+			if (Table_MatrixDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_Morph GetMorph(int key)
+		{
+			Table_Morph tmp;
+			if (Table_MorphDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

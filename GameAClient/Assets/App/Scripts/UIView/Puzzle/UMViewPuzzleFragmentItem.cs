@@ -2,6 +2,7 @@
 using System;
 using UnityEngine;
 using SoyEngine;
+using UnityEngine.UI;
 
 namespace GameA
 {
@@ -10,6 +11,8 @@ namespace GameA
     /// </summary>
     public class UMViewPuzzleFragmentItem : UMViewBase
     {
-        
+        public Image Image;
+        public Text HaveNumTxt;
+        public Text NameTxt;
     }
 }
