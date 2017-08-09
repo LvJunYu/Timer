@@ -20,5 +20,7 @@ namespace GameA
             Name = fragement.Name;
         }
 
+        //public 
+
     }
 }
