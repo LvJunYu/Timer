@@ -70,6 +70,10 @@ namespace GameA
             if (null == _curSelectedPrivateProject) {
                 AutoSelectFirstProject ();
             }
+            if (null == _curSelectedPublicProject)
+            {
+                AutoSelectFirstProject();
+            }
             RefreshView();
         }
 
@@ -177,10 +181,14 @@ namespace GameA
         private void RefreshView()
         {
 //            RefreshView();
-            if (_state == EWorkShopState.PersonalProject) {
+            if (_state == EWorkShopState.PersonalProject)
+            {
+                AutoSelectFirstProject();
                 RefreshWorkShopProjectList ();
                 RefreshProjectDetailInfoPanel ();
             } else if (_state == EWorkShopState.PublishList) {
+
+                AutoSelectFirstProject();
                 RefreshPublishedProjectList ();
                 RefreshPublishedInfoPanel();
 
@@ -286,6 +294,16 @@ namespace GameA
         }
 
         private void RefreshPublishedProjectList () {
+
+            if (_autoSelectFirstProject && null == _curSelectedPublicProject)
+            {
+                //_autoSelectFirstProject = false;
+                if (_publicContents.Count > 0)
+                {
+                    _publicContents[0].IsSelected = true;
+                    _curSelectedPublicProject = _publicContents[0];
+                }
+            }
             long preSelectPRojectId = 0;
             if (null != _curSelectedPublicProject)
             {
@@ -316,18 +334,20 @@ namespace GameA
                     }
                 }
                 _cachedView.PublicProjectsGridScroller.SetItemCount(_publicContents.Count);
+
+                if (_autoSelectFirstProject && null == _curSelectedPublicProject)
+                {
+                    //_autoSelectFirstProject = false;
+                    if (_privateContents.Count > 0)
+                    {
+                        _publicContents[0].IsSelected = true;
+                        _curSelectedPublicProject = _publicContents[0];
+                    }
+                }
                 for (int i = 0; i < _cachedView.ObjectsShowWhenEmpty.Length; i++) {
                     _cachedView.ObjectsShowWhenEmpty [i].SetActive (list.Count == 0);
                 }
                 
-//                if (_autoSelectFirstProject && null == _curSelectedPrivateProject) {
-//                    _autoSelectFirstProject = false;
-//                    if (_privateContents.Count > 0) {
-//                        _privateContents [0].IsSelected = true;
-//                        _curSelectedPrivateProject = _privateContents [0];
-//                    }
-//                }
-                //                _currentSelectedCount = 0;
             }
         }
 
@@ -349,7 +369,7 @@ namespace GameA
             //}
             if (null != _curSelectedPublicProject)
             {
-                _curSelectedPrivateProject.IsSelected = false;
+                _curSelectedPublicProject.IsSelected = false;
             }
             item.IsSelected = true;
             _curSelectedPublicProject = item;
