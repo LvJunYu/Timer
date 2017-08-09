@@ -293,21 +293,9 @@ namespace GameA
 
         }
 
-<<<<<<< HEAD
-        private void RefreshPublishedProjectList () {
 
-            if (_autoSelectFirstProject && null == _curSelectedPublicProject)
-            {
-                //_autoSelectFirstProject = false;
-                if (_publicContents.Count > 0)
-                {
-                    _publicContents[0].IsSelected = true;
-                    _curSelectedPublicProject = _publicContents[0];
-                }
-            }
-=======
+
         private void RefreshPublishedProjectList () {
->>>>>>> e28186d09ce6b763a1b9dbe79af63c8634aae4b2
             long preSelectPRojectId = 0;
             if (null != _curSelectedPublicProject)
             {
