@@ -15,6 +15,14 @@ namespace GameA.Game
     [Unit(Id = 10002, Type = typeof(ProjectileFire))]
     public class ProjectileFire : ProjectileBase
     {
-        
+        protected override void OnRun()
+        {
+            base.OnRun();
+            _effectBullet = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.Model, _trans);
+            if (_effectBullet != null)
+            {
+                _effectBullet.Play();
+            }
+        }
     }
 }

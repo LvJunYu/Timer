@@ -89,21 +89,14 @@ namespace GameA.Game
             var rad = _angle * Mathf.Deg2Rad;
             _speed = new IntVec2((int)(_skill.ProjectileSpeed * Math.Sin(rad)), (int)(_skill.ProjectileSpeed * Math.Cos(rad)));
             _trans.eulerAngles = new Vector3(0, 0, -_angle);
-            if (_animation != null)
-            {
-                _animation.Init("Run", false);
-            }
-            if (_tableUnit.EGeneratedType == EGeneratedType.Empty)
-            {
-                _effectBullet = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.Model, _trans);
-                if (_effectBullet != null)
-                {
-                    _effectBullet.Play();
-                }
-            }
+            OnRun();
         }
 
-        protected void UpdateAngle(int angle)
+        protected virtual void OnRun()
+        {
+        }
+
+        protected virtual void UpdateAngle(int angle)
         {
             _angle = angle;
             var rad = _angle * Mathf.Deg2Rad;
@@ -147,7 +140,7 @@ namespace GameA.Game
             if (_view != null)
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
-                GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position, new Vector3(0, 0, _angle), Vector3.one);
+                GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position, new Vector3(0, 0, _angle), Vector3.one, 1f);
             }
             Clear();
             PlayMode.Instance.DestroyUnit(this);
