@@ -14,5 +14,9 @@ namespace GameA
         public Button CloseBtn;
         public RectTransform PuzzleLocsGrid;
         public RectTransform PuzzleItemGrid;
+        public ToggleGroup ToggleGroup;
+        public Toggle Qulity;
+        public Toggle Level;
+        public Toggle Func;
     }
 }

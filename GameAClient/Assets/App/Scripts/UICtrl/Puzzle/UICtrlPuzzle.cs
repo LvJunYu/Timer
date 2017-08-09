@@ -135,14 +135,14 @@ namespace GameA
 
         private void RefreshAfterActivePuzzle()
         {
-            if (CurActivePicFull == null || CurActivePicFull.Level > 1)
-                return;
+            //if (CurActivePicFull == null || CurActivePicFull.Level > 1)
+            //    return;
             if (_otherPictureFull.Contains(CurActivePicFull))
             {
                 _otherPictureFull.Remove(CurActivePicFull);
                 _userPictureFull.Add(CurActivePicFull);
-                SetPuzzleOrder();
             }
+            SetPuzzleOrder();
         }
 
         private void SetPuzzleOrder()
@@ -189,12 +189,42 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            _cachedView.Qulity.onValueChanged.AddListener(OnQulityToggle);
+            _cachedView.Level.onValueChanged.AddListener(OnLevelToggle);
+            _cachedView.Func.onValueChanged.AddListener(OnFuncToggle);
             _slots = TableManager.Instance.Table_PuzzleSlotDic;
             _puzzles = TableManager.Instance.Table_PuzzleDic;
             InitData();
             InitUI();
             Messenger.AddListener(EMessengerType.OnPuzzleCompound, RefreshAfterActivePuzzle);
             Messenger.AddListener(EMessengerType.OnPuzzleEquip, RefreshSlotsAfterEquipPuzzle);
+        }
+
+        private void OnFuncToggle(bool arg0)
+        {
+            if (arg0)
+            {
+                _orderType = EPuzzleOrderType.Func;
+                SetPuzzleOrder();
+            }
+        }
+
+        private void OnLevelToggle(bool arg0)
+        {
+            if (arg0)
+            {
+                _orderType = EPuzzleOrderType.Level;
+                SetPuzzleOrder();
+            }
+        }
+
+        private void OnQulityToggle(bool arg0)
+        {
+            if (arg0)
+            {
+                _orderType = EPuzzleOrderType.Qulity;
+                SetPuzzleOrder();
+            }
         }
 
         protected override void OnOpen(object parameter)
