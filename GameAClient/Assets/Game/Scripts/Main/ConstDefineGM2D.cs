@@ -30,7 +30,6 @@ namespace GameA.Game
         //public static IntVec2 RegionTileSize = new IntVec2(16, 16) * ServerTileScale;
         public static IntVec2 RegionTileSize = new IntVec2(120, 120) * ServerTileScale;
         //小于RegionTileSize 16 大于半屏幕格子数6.5*2=13
-        public static IntVec2 Start = new IntVec2(14,30) * ServerTileScale;
 
         public static IntVec2 HalfMaxScreenSize = new IntVec2(26,13) * ServerTileScale / 2;
 
@@ -43,7 +42,7 @@ namespace GameA.Game
         public static IntVec2 MapTileSize = new IntVec2(300, 300) * ServerTileScale;
         public const int MaxMapDistance = 300 * ServerTileScale;
 
-		public static IntVec2 MapStartPos = new IntVec2(20,20) * ServerTileScale;
+		public static IntVec2 MapStartPos = new IntVec2(100,100) * ServerTileScale;
         public const int DefaultGeneratedTileHeight = 3 * ServerTileScale;
         public const int DefaultGeneratedTileWidth = 30 * ServerTileScale;
         public const int MaxHeightTileCount = 10;
