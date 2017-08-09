@@ -22,8 +22,5 @@ namespace GameA
         public Text LvTxt;
         public Text NameTxt;
         public Text DescTxt;
-        public GameObject Unable_Active;
-        public GameObject Unable_Equip;
-        public Text ActiveTxt;
     }
 }

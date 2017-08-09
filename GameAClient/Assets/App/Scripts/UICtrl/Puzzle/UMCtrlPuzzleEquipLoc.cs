@@ -31,11 +31,5 @@ namespace GameA
             _cachedView.LockObj.SetActive(IsLock);
             _cachedView.UnlockLvTxt.text = UnlockLv.ToString();
         }
-
-        internal void SetData(PictureFull picture)
-        {
-            _cachedView.PuzzleItem.SetActive(picture != null);
-            //to do 其它UI设置
-        }
     }
 }
