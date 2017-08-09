@@ -43,10 +43,6 @@ namespace GameA
         public PicturePart[] NeededFragments { get { return _neededFragments; } }
 
         //方法
-        /// <summary>
-        /// 初始化
-        /// </summary>
-        /// <param name="puzzle"></param>
         public PictureFull(Table_Puzzle puzzleTable)
         {
             //初始化信息
@@ -77,7 +73,7 @@ namespace GameA
             for (int i = 0; i < FragmentIDs.Length; i++)
             {
                 var Fragment = TableManager.Instance.GetPuzzleFragment(FragmentIDs[i]);
-                NeededFragments[i] = new PicturePart(Fragment);
+                _neededFragments[i] = new PicturePart(Fragment);
             }
             //等级信息字典
             _lvTableDic = new Dictionary<int, Table_PuzzleUpgrade>();
@@ -102,26 +98,24 @@ namespace GameA
 
         }
 
-        /// <summary>
-        /// 激活拼图
-        /// </summary>
         public void ActivatePuzzle()
         {
             _level++;
             _curState = PuzzleState.HasActived;
         }
 
-        /// <summary>
-        /// 装备拼图
-        /// </summary>
         public void EquipPuzzle()
         {
-            _curState = PuzzleState.HasEquiped;
+            _isUsing = true;
+            //_slot = 1;
         }
 
-        /// <summary>
-        /// 更新状态
-        /// </summary>
+        public void Unload()
+        {
+            _isUsing = false;
+            _slot = -1;
+        }
+
         public void UpdateState()
         {
             if (_curState == PuzzleState.CantActive && CheckActivatable())
@@ -133,14 +127,15 @@ namespace GameA
 
         private bool CheckActivatable()
         {
-            for (int i = 0; i < NeededFragments.Length; i++)
+            if (_level == _puzzleTable.MaxLevel)
+                return false;
+            for (int i = 0; i < _neededFragments.Length; i++)
             {
-                if (!(NeededFragments[i].TotalCount > 0))
+                if (!(_neededFragments[i].TotalCount > 0))
                     return false;
             }
             return true;
         }
-
     }
 
     /// <summary>
@@ -152,6 +147,6 @@ namespace GameA
         CantActive,//不可激活
         CanActive,//可激活
         HasActived,//已激活
-        HasEquiped//已装备
+        //HasEquiped//已装备
     }
 }
