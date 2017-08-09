@@ -37,24 +37,16 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-//            ListMenuViewCreator creator = new ListMenuViewCreator(_cachedView.MenuListDock);
-//            creator.AddSimpleItem("账号和密码", ()=>{
-//                if(!AppLogicUtil.CheckAndRequiredLogin())
-//                {
-//                    return;
-//                }
-//                SocialGUIManager.Instance.OpenUI<UICtrlAccountModify>();
-//            });
-//            creator.AddSimpleItem("清除缓存", ()=>{
-//                SocialApp.Instance.ClearCache();
-//                Application.Quit();
-//            });
+        //    public Button Exit;
+        //public Button AddFriend;
+        //public Button Modification;
+        //public Button SelectPhoto;
 
-//            _listMenuView = creator.GetView();
-//            _cachedView.LogoutButton.onClick.AddListener(OnLogoutClick);
-//            _cachedView.RecommendConsoleBtn.onClick.AddListener(()=>{
-////                SocialGUIManager.Instance.OpenUI<UICtrlRecommendConsole>();
-//            });
+
+
+        _cachedView.Exit.onClick.AddListener(OnDestroy);
+
+
         }
 
         protected override void InitEventListener()
