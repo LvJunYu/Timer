@@ -23,7 +23,7 @@ namespace GameA.Game
 	    {
 		    get
 		    {
-			    return (GM2DGame.Instance.GameScreenHeight / ConstDefineGM2D.MaxHeightTileCount * ConstDefineGM2D.ClientTileScale);
+			    return (1f * GM2DGame.Instance.GameScreenHeight / ConstDefineGM2D.MaxHeightTileCount * ConstDefineGM2D.ClientTileScale);
 			}
 	    }
 		
@@ -350,6 +350,11 @@ namespace GameA.Game
             Vector2 min = TileToWorld(tileRect.Min);
             Vector2 max = TileToWorld(tileRect.Max + IntVec2.one);
             return new Rect(min, max - min);
+        }
+        
+        public static IntRect WorldRectToTileRect(Rect rect)
+        {
+            return new IntRect(WorldToTile(rect.min), WorldToTile(rect.max));
         }
 
         public static Vector2 TileToScreen(IntVec2 tile)

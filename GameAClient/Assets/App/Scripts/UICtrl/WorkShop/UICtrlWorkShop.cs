@@ -293,6 +293,7 @@ namespace GameA
 
         }
 
+<<<<<<< HEAD
         private void RefreshPublishedProjectList () {
 
             if (_autoSelectFirstProject && null == _curSelectedPublicProject)
@@ -304,6 +305,9 @@ namespace GameA
                     _curSelectedPublicProject = _publicContents[0];
                 }
             }
+=======
+        private void RefreshPublishedProjectList () {
+>>>>>>> e28186d09ce6b763a1b9dbe79af63c8634aae4b2
             long preSelectPRojectId = 0;
             if (null != _curSelectedPublicProject)
             {
@@ -443,6 +447,7 @@ namespace GameA
                     RemoteCommands.DeleteProject(projList, msg => {
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                         LocalUser.Instance.PersonalProjectList.ProjectList.Remove(_curSelectedPrivateProject.Content);
+                        _curSelectedPrivateProject.Content.Delete();
                         _curSelectedPrivateProject = null;
                         AutoSelectFirstProject ();
                         RefreshView ();

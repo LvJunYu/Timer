@@ -467,6 +467,7 @@ namespace GameA.Game
             _run = false;
             Reset();
             CameraManager.Instance.SetCameraState(ECameraState.Edit);
+            BgScene2D.Instance.OnStop();
             BgScene2D.Instance.Reset();
             UpdateWorldRegion(GM2DTools.WorldToTile(CameraManager.Instance.MainCameraPos), true);
             UnitBase[] units = ColliderScene2D.Instance.Units.Values.ToArray();

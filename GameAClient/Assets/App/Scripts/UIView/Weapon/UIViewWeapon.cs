@@ -22,6 +22,8 @@ namespace GameA
         public Image OwnedUniversalFragmentsIcon;
         public Image OwnedWeaponFragmentsIcon;
         public Image EffectShow;
+        public Image UpGradeImage;
+        public Image Compound;
         public Button LeftWeapon;
         public Button RightWeapon;
         public Button CloseButton;

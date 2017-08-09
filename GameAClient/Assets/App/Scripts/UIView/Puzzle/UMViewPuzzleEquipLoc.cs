@@ -14,5 +14,6 @@ namespace GameA
         public GameObject LockObj;
         public Text UnlockLvTxt;
         public GameObject PuzzleItem;
+        public Button EquipBtn;
     }
 }
