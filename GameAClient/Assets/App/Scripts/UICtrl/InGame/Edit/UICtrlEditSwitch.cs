@@ -5,28 +5,26 @@
 ** Summary : UICtrlEdit
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
-using GameA.Game;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlEditSwitch : UICtrlInGameBase<UIViewEditSwitch>
     {
         #region 常量与字段
 
-        private static Vector2 TextOffset = new Vector2(0.35f, 0.4f);
+        private static readonly Vector2 TextOffset = new Vector2(0.35f, 0.4f);
 
-        private List<Text> _connectionCntCache = new List<Text> ();
-        private List<Button> _delBtnCache = new List<Button> ();
+        private readonly List<Text> _connectionCntCache = new List<Text> ();
+        private readonly List<Button> _delBtnCache = new List<Button> ();
 
         private List<IntVec3> _allUnitGuids;
-        private List<int> _allUnitConnectionCnts = new List<int>();
+        private readonly List<int> _allUnitConnectionCnts = new List<int>();
         #endregion
 
         #region 属性
@@ -53,8 +51,8 @@ namespace GameA
         {
             base.OnOpen(parameter);
 
-            if (null != parameter) {
-                _allUnitGuids = parameter as List<IntVec3>;
+            _allUnitGuids = parameter as List<IntVec3>;
+            if (null != _allUnitGuids) {
                 _allUnitConnectionCnts.Clear ();
                 for (int i = 0; i < _allUnitGuids.Count; i++) {
                     var list = DataScene2D.Instance.GetControlledUnits (_allUnitGuids [i]);
@@ -86,6 +84,10 @@ namespace GameA
         }
 
         private void OnCameraPosChanged () {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             if (null != _allUnitGuids) {
                 int i = 0;
                 for (; i < _allUnitGuids.Count; i++) {
@@ -103,6 +105,10 @@ namespace GameA
         }
 
         private void OnSelectedItemChanged (List<Vector3> lineCenters) {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             if (null == lineCenters) {
                 for (int j = 0; j < _delBtnCache.Count; j++) {
                     _delBtnCache [j].gameObject.SetActive (false);
@@ -112,7 +118,7 @@ namespace GameA
             int i = 0;
             for (; i < lineCenters.Count; i++) {
                 Button btn = GetDelBtn (i);
-                btn.transform.localPosition = GM2DTools.WorldToScreenPoint ((Vector2)lineCenters[i]);
+                btn.transform.localPosition = GM2DTools.WorldToScreenPoint (lineCenters[i]);
                 btn.gameObject.SetActive (true);
             }
             for (; i < _delBtnCache.Count; i++) {
@@ -121,6 +127,10 @@ namespace GameA
         }
 
         private void OnSwitchConnectionChanged (IntVec3 a, IntVec3 b, bool isAdd) {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             int found = 0;
             for (int i = 0; i < _allUnitGuids.Count; i++) {
                 if (_allUnitGuids [i] == a || _allUnitGuids [i] == b) {
@@ -140,7 +150,7 @@ namespace GameA
 
         private Button GetDelBtn (int idx) {
             while (_delBtnCache.Count <= idx) {
-                GameObject newObj = GameObject.Instantiate (_cachedView.LineDelBtnPrefb.gameObject, _cachedView.LineDelBtnPrefb.transform.parent);
+                GameObject newObj = Object.Instantiate (_cachedView.LineDelBtnPrefb.gameObject, _cachedView.LineDelBtnPrefb.transform.parent);
                 Button newBtn = newObj.GetComponent<Button> ();
                 _delBtnCache.Add (newBtn);
             }
@@ -151,7 +161,7 @@ namespace GameA
 
         private Text GetCntText (int idx) {
             while (_connectionCntCache.Count <= idx) {
-                GameObject newObj = GameObject.Instantiate (_cachedView.ConnectionCntPrefb.gameObject, _cachedView.ConnectionCntPrefb.transform.parent);
+                GameObject newObj = Object.Instantiate (_cachedView.ConnectionCntPrefb.gameObject, _cachedView.ConnectionCntPrefb.transform.parent);
                 Text newTxt = newObj.GetComponentInChildren<Text> ();
                 _connectionCntCache.Add (newTxt);
             }
