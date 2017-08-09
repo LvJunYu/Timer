@@ -12,5 +12,6 @@ namespace GameA
     public class UIViewPuzzleSlots : UIViewBase
     {
         public RectTransform PuzzleLocsGrid;
+        public Button CloseBtn;
     }
 }

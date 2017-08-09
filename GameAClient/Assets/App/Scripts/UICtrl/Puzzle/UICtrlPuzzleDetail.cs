@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using SoyEngine.Proto;
 
 namespace GameA
 {
@@ -39,16 +40,38 @@ namespace GameA
         {
             _puzzle.EquipPuzzle();
             //to do 通知服务器
-            //to do 更新UI
-            LogHelper.Debug("装备拼图{0}", _puzzle.Name);
+            SocialGUIManager.Instance.OpenUI<UICtrlPuzzleSlots>(_puzzle);
         }
 
         private void OnActiveBtn()
         {
             _puzzle.ActivatePuzzle();
-            //to do 通知服务器
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在进入挑战关卡");
+            RemoteCommands.CompoundPictureFull(_puzzle.PictureId, res =>
+            {
+                if (res.ResultCode == (int)ECompoundPictureFullCode.CPF_Success)
+                {
+                    Compound();
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    LogHelper.Debug("合成成功");
+                }
+                else
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    LogHelper.Debug("合成失败");
+                }
+
+            }, code =>
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                LogHelper.Debug("合成失败");
+            });
             //to do 更新UI
-            LogHelper.Debug("合成拼图{0}", _puzzle.Name);
+        }
+
+        private void Compound()
+        {
+
         }
 
         protected override void OnOpen(object parameter)
@@ -71,10 +94,10 @@ namespace GameA
             for (int i = 0; i < _puzzleFragments.Length; i++)
             {
                 var puzzleFragment = CreatePuzzleFragment();
-                //_puzzleFragments[i].TotalCount=1;
+                _puzzleFragments[i].TotalCount = 2;
                 puzzleFragment.SetData(_puzzleFragments[i]);
             }
-            
+
             //按钮状态
             _cachedView.Unable_Active.SetActive(!CheckActivable());
             _cachedView.Unable_Equip.SetActive(!CheckEquipable());
