@@ -292,7 +292,7 @@ namespace GameA.Game
             _eUnitState = EUnitState.Reviving;
             _trans.eulerAngles = new Vector3(90, 0, 0);
             _reviveEffect.Play(_trans.position + Vector3.up * 0.5f,
-                                GM2DTools.TileToWorld(_revivePos), 10, () =>
+                                GM2DTools.TileToWorld(_revivePos), 8, () =>
                                 {
                                     _eUnitState = EUnitState.Normal;
                                     _input.Clear();
@@ -328,7 +328,7 @@ namespace GameA.Game
             ClearRunTime();
             _trans.eulerAngles = new Vector3(90, 0, 0);
             _portalEffect.Play(_trans.position + Vector3.up * 0.5f,
-                GM2DTools.TileToWorld(targetPos), 10, () => PlayMode.Instance.RunNextLogic(() =>
+                GM2DTools.TileToWorld(targetPos), 8, () => PlayMode.Instance.RunNextLogic(() =>
                 {
                     _eUnitState = EUnitState.Normal;
                     PlayMode.Instance.UnFreeze(this);
