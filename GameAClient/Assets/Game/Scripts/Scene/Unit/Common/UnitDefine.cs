@@ -161,7 +161,7 @@ namespace GameA.Game
         {
             ushort id = node.Id;
             return id != TransparentEarthId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
-                   !IsBoard(id) && !IsCollection(id);
+                   !IsBoard(id) && !IsCollection(id) && !UnitDefine.IsBullet(id);
         }
         
         public static bool IsFanEffect(int layer, int id)
