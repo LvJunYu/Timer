@@ -72,6 +72,16 @@ namespace GameA.Game
             base.Clear();
         }
 
+        protected override void OnLand()
+        {
+            base.OnLand();
+            if (HasStateType(EStateType.Stun))
+            {
+                //落地时候移除掉猛犸象的晕眩
+                RemoveStates(72);
+            }
+        }
+
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();
@@ -288,9 +298,19 @@ namespace GameA.Game
                                 break;
                             case ECostType.Magic:
                             case ECostType.Rage:
-                                if (_input.GetKeyUpApplied(_skillInputs[i]))
+                                if (IsPlayer)
                                 {
-                                    _skillCtrl.Fire(i);
+                                    if (_input.GetKeyUpApplied(_skillInputs[i]))
+                                    {
+                                        _skillCtrl.Fire(i);
+                                    }
+                                }
+                                else
+                                {
+                                    if (_input.GetKeyApplied(_skillInputs[i]))
+                                    {
+                                        _skillCtrl.Fire(i);
+                                    }
                                 }
                                 break;
                     }
