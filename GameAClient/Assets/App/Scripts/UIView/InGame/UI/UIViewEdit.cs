@@ -23,11 +23,13 @@ namespace GameA
         public Button EnterCamCtrlModeBtn;
 		public Button ExitCamCtrlModeBtn;
 
-		public Button Save;
+		public Button Capture;
+
 
 
 		public Button Pause;
 		public Button Play;
+		public Button Publish;
 		public Button ButtonFinishCondition;
 
 		public Button EnterEffectMode;
@@ -35,5 +37,10 @@ namespace GameA
 
         public Button EnterSwitchMode;
         public Button ExitSwitchMode;
+
+		//public Button ButtonSettingMusic;
+		//public Button ButtonSettingSoundEffect;
+		//public Text SettingMusicText;
+		//public Text SettingSoundEffectText;
     }
 }

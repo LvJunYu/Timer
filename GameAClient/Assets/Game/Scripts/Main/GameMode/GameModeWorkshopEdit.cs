@@ -78,25 +78,8 @@ namespace GameA.Game
 			}
         }
 
-	    public override void ChangeMode(EMode mode)
-	    {
-		    base.ChangeMode(mode);
-		    if (mode == EMode.EditTest && NeedSave)
-		    {
-			    IconBytes = CaptureLevel();
-		    }
-	    }
-
-	    public override void Save(Action successCallback = null, Action<EProjectOperateResult> failedCallback = null)
+        public override void Save(Action successCallback = null, Action<EProjectOperateResult> failedCallback = null)
 		{
-			if (!NeedSave)
-			{
-				if (successCallback != null)
-				{
-					successCallback.Invoke();
-				}
-				return;
-			}
 			byte[] mapDataBytes = MapManager.Instance.SaveMapData();
 			mapDataBytes = MatrixProjectTools.CompressLZMA(mapDataBytes);
 			if (IconBytes == null)

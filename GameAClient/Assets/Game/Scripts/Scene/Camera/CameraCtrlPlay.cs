@@ -49,7 +49,7 @@ namespace GameA.Game
             _targetRollPos = rollPos;
             _rollPos = rollPos;
             LimitRollPos();
-            InnerCameraManager.MainCameraPos = GM2DTools.TileToWorld(_rollPos);
+            InnerCameraManager.MainCamaraPos = GM2DTools.TileToWorld(_rollPos);
         }
 
         public override void UpdateLogic(float deltaTime)
@@ -130,7 +130,7 @@ namespace GameA.Game
                 }
             }
             LimitRollPos();
-            InnerCameraManager.MainCameraPos = GM2DTools.TileToWorld(_rollPos);
+            InnerCameraManager.MainCamaraPos = GM2DTools.TileToWorld(_rollPos);
         }
 
         private void LimitRollPos()

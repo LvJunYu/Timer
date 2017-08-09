@@ -18,6 +18,7 @@ namespace GameA
         private Dictionary<int, Table_Puzzle> _puzzles;//拼图读表
         private List<PictureFull> _userPictureFull;
         private List<PictureFull> _otherPictureFull;
+        private List<PictureFull> _equipedPuzzles;//装备的拼图
 
         private void InitData()
         {
@@ -32,6 +33,7 @@ namespace GameA
                     _otherPictureFull.Add(new PictureFull(puzzle));
                 }
             }
+            _equipedPuzzles = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
         }
 
         private bool RefreshData()
@@ -48,6 +50,8 @@ namespace GameA
             //        _otherPictureFull.Add(new PictureFull(puzzle));
             //    }
             //}
+
+            //查看未获得的拼图
             for (int i = 0; i < _otherPictureFull.Count; i++)
             {
                 PictureFull picture;
@@ -91,12 +95,20 @@ namespace GameA
         private void InitUI()
         {
             //创建装备栏
+            int index = 0;
             foreach (int key in _slots.Keys)
             {
                 var unlockLv = _slots[key].UnlockLevel;
                 var equipLoc = new UMCtrlPuzzleEquipLoc(unlockLv, unlockLv > _userLv);
                 equipLoc.Init(_cachedView.PuzzleLocsGrid);
+                //显示装备的拼图
+                if (_equipedPuzzles.Count > index && _equipedPuzzles[index] != null)
+                    equipLoc.SetData(_equipedPuzzles[index]);
+                else
+                    equipLoc.SetData(null);
+                index++;
             }
+
             //创建拼图
             for (int i = 0; i < _userPictureFull.Count; i++)
             {
