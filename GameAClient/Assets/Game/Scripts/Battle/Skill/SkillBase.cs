@@ -335,17 +335,21 @@ namespace GameA.Game
         protected List<UnitBase> GetHitUnits(IntVec2 centerPos)
         {
             var hitLayerMask = GetTargetType();
-            switch ((EEffcetMode)_tableSkill.EffectMode)
+            switch ((EEffcetMode) _tableSkill.EffectMode)
             {
                 case EEffcetMode.Single:
                     break;
                 case EEffcetMode.TargetCircle:
-                    {
-                        _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
-                        return ColliderScene2D.CircleCastAllReturnUnits(centerPos, _radius, hitLayerMask);
-                    }
+                {
+                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                    return ColliderScene2D.CircleCastAllReturnUnits(centerPos, _radius, hitLayerMask);
+                }
                 case EEffcetMode.TargetGrid:
-                    break;
+                {
+                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                    var grid = new Grid2D(centerPos.x - _radius, centerPos.y - _radius, centerPos.x + _radius - 1, centerPos.y + _radius - 1);
+                    return ColliderScene2D.GridCastAllReturnUnits(grid, hitLayerMask);
+                }
                 case EEffcetMode.TargetLine:
                     break;
                 case EEffcetMode.SelfSector:
@@ -355,7 +359,8 @@ namespace GameA.Game
                     {
                         var unit = units[i];
                         var rel = _owner.CenterDownPos - unit.CenterDownPos;
-                        if ((rel.x >= 0 && _owner.CurMoveDirection == EMoveDirection.Left) || (rel.x <= 0 && _owner.CurMoveDirection == EMoveDirection.Right))
+                        if ((rel.x >= 0 && _owner.CurMoveDirection == EMoveDirection.Left) ||
+                            (rel.x <= 0 && _owner.CurMoveDirection == EMoveDirection.Right))
                         {
                         }
                         else
@@ -365,10 +370,10 @@ namespace GameA.Game
                     }
                     return units;
                 case EEffcetMode.SelfCircle:
-                    {
-                        _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
-                        return ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, hitLayerMask);
-                    }
+                {
+                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                    return ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, hitLayerMask);
+                }
             }
             return null;
         }
