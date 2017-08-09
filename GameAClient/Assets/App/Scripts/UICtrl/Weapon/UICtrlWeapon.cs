@@ -25,6 +25,8 @@ namespace GameA
         private int[] _idColltions = new int[] { 101,102,103,201,202,203};
         private string[] _weaponName = new string[] { "weapon1", "weapon2", "weapon3", "weapon4", "weapon5", "weapon6", };
         private int index = 0;
+        private UserWeaponData _userWeaponData = new UserWeaponData();
+        private UserWeaponPartData _userWeaponPartData = new UserWeaponPartData();
         private Action _closeCB;
         #endregion
 
@@ -55,6 +57,7 @@ namespace GameA
             _cachedView.LeftWeapon.onClick.AddListener(OnLeftButton);
             _cachedView.RightWeapon.onClick.AddListener(OnRightButton);
             _cachedView.UpGrade.onClick.AddListener(OnUpgrade);
+            LoadUserData();
             RefershWeaponShow();
 
 
@@ -100,10 +103,9 @@ namespace GameA
         }
         private void RefershWeaponShow()
         {
-            // _weaponEffectSpriteName = TableManager.Instance.GetEquipment(_weaponID).Icon; 
+            // _weaponEffectSpriteName = TableManager.Instance.GetEquipment(_weaponID).Icon;  //加载图片
 
             ResourcesManager.Instance.TryGetSprite(_weaponName[index], out _weaponEffect);
-            Debug.Log(_weaponEffect);
             _cachedView.EffectShow.sprite = _weaponEffect;
             _skillID = TableManager.Instance.GetEquipment(_weaponID).SkillId;
             _weaponlevelID = _skillID * _multiple + _weaponLv;
@@ -111,12 +113,50 @@ namespace GameA
             _cachedView.HpAddNum.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).HpAdd.ToString();
             _cachedView.AttackAddNum.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).AttackAdd.ToString();
             _cachedView.WeaponName.text = TableManager.Instance.GetEquipment(_weaponID).Name;
-           // _colorName = TableManager.Instance.GetEquipment(_weaponID).Color;
+           // _colorName = TableManager.Instance.GetEquipment(_weaponID).Color; //获得颜色
             ColorUtility.TryParseHtmlString("#F20000FF", out _weaponColor);
             _cachedView.WeaponName.color = _weaponColor;
             _cachedView.WeaponLv.text = _weaponLv.ToString();
             }
+        private void LoadUserData()
+        {
+            Debug.Log("用户id"+ LocalUser.Instance.UserGuid);
+            _userWeaponData.Request(LocalUser.Instance.UserGuid,OnSucess, code => {});
+        }
+        private void OnSucess()
+        {
+            Debug.Log(_userWeaponData.ItemDataList.Count);
+        }
+        private void OnFaild()
+        { }
+        private void SetUserWeaponData()
+        {
 
+            Weapon weapon1 = new Weapon();
+            weapon1.Id = 101;
+            weapon1.Level = 5;
+            Weapon weapon2 = new Weapon();
+            weapon2.Id = 102;
+            weapon2.Level = 3;
+            Weapon weapon3 = new Weapon();
+            weapon3.Id = 103;
+            weapon3.Level = 1;
+            _userWeaponData.ItemDataList.Add(weapon1);
+            _userWeaponData.ItemDataList.Add(weapon2);
+            _userWeaponData.ItemDataList.Add(weapon3);
+        }
+        private void SetUserWeaponPartData()
+        {
+            WeaponPart weaponpart1 = new WeaponPart();
+            weaponpart1.Id = 201;
+            weaponpart1.TotalCount = 10;
+            WeaponPart weaponpart2 = new WeaponPart();
+            weaponpart2.Id = 202;
+            weaponpart2.TotalCount = 5;
+            WeaponPart weaponpart3 = new WeaponPart();
+            weaponpart3.Id = 203;
+            weaponpart3.TotalCount = 3;
+        }
         #endregion
     }
 }

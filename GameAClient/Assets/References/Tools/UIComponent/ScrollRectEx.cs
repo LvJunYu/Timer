@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class ScrollRectEx : ScrollRect
 {
@@ -15,16 +16,19 @@ public class ScrollRectEx : ScrollRect
     protected PointEvent _onEndDragEvent = new PointEvent();
 	protected PointEvent _onDragEvent = new PointEvent();
 
-    public bool VScrollingNeeded
+    public bool vScrollingNeeded
     {
         get
         {
-            UpdateBounds();
-            if (_contentBounds.size.y <= _viewBounds.size.y)
+            this.UpdateBounds();
+            if (this._contentBounds.size.y <= this._viewBounds.size.y)
             {
                 return false;
             }
-            return true;
+            else
+            {
+                return true;
+            }
         }
     }
 
@@ -77,17 +81,17 @@ public class ScrollRectEx : ScrollRect
 
     protected Bounds GetBounds()
     {
-        if (content == null)
+        if (this.content == null)
         {
             return default(Bounds);
         }
         Vector3 vector = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
         Vector3 vector2 = new Vector3(float.MinValue, float.MinValue, float.MinValue);
-        Matrix4x4 worldToLocalMatrix = viewRect.worldToLocalMatrix;
-        content.GetWorldCorners(_corners);
+        Matrix4x4 worldToLocalMatrix = this.viewRect.worldToLocalMatrix;
+        this.content.GetWorldCorners(this._corners);
         for (int i = 0; i < 4; i++)
         {
-            Vector3 vector3 = worldToLocalMatrix.MultiplyPoint3x4(_corners[i]);
+            Vector3 vector3 = worldToLocalMatrix.MultiplyPoint3x4(this._corners[i]);
             vector = Vector3.Min(vector3, vector);
             vector2 = Vector3.Max(vector3, vector2);
         }
@@ -96,29 +100,29 @@ public class ScrollRectEx : ScrollRect
         return result;
     }
 
-    protected new void UpdateBounds()
+    protected void UpdateBounds()
     {
-        _viewBounds = new Bounds(viewRect.rect.center, viewRect.rect.size);
-        _contentBounds = GetBounds();
-        if (content == null)
+        this._viewBounds = new Bounds(this.viewRect.rect.center, this.viewRect.rect.size);
+        this._contentBounds = this.GetBounds();
+        if (this.content == null)
         {
             return;
         }
-        Vector3 size = _contentBounds.size;
-        Vector3 center = _contentBounds.center;
-        Vector3 vector = _viewBounds.size - size;
+        Vector3 size = this._contentBounds.size;
+        Vector3 center = this._contentBounds.center;
+        Vector3 vector = this._viewBounds.size - size;
         if (vector.x > 0)
         {
-            center.x -= vector.x * (content.pivot.x - 0.5f);
-            size.x = _viewBounds.size.x;
+            center.x -= vector.x * (this.content.pivot.x - 0.5f);
+            size.x = this._viewBounds.size.x;
         }
         if (vector.y > 0)
         {
-            center.y -= vector.y * (content.pivot.y - 0.5f);
-            size.y = _viewBounds.size.y;
+            center.y -= vector.y * (this.content.pivot.y - 0.5f);
+            size.y = this._viewBounds.size.y;
         }
-        _contentBounds.size = size;
-        _contentBounds.center = center;
+        this._contentBounds.size = size;
+        this._contentBounds.center = center;
     }
 
     protected override void LateUpdate()

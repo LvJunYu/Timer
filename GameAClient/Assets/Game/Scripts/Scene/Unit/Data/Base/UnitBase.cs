@@ -45,6 +45,7 @@ namespace GameA.Game
         protected bool _canBridgeCross;
         protected bool _canFanCross;
         [SerializeField] protected bool _isStart;
+        protected int _friction;
 
         protected List<UnitBase> _downUnits = new List<UnitBase>();
         protected UnitBase _downUnit;
@@ -197,12 +198,12 @@ namespace GameA.Game
 
         public bool CanMove
         {
-            get { return !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) && !IsInState(EEnvState.Ice); }
+            get { return !IsInState(EEnvState.Ice) && !IsInState(EEnvState.Stun); }
         }
 
         public bool CanAttack
         {
-            get { return !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) && !IsInState(EEnvState.Ice); }
+            get { return !IsInState(EEnvState.Ice) && !IsInState(EEnvState.Stun); }
         }
 
         public virtual SkillCtrl SkillCtrl
@@ -254,6 +255,11 @@ namespace GameA.Game
         public List<UnitBase> DownUnits
         {
             get { return _downUnits; }
+        }
+
+        public int Friction
+        {
+            get { return _friction; }
         }
 
         public bool UseCorner
@@ -547,6 +553,7 @@ namespace GameA.Game
             _tableUnit = tableUnit;
             _unitDesc = unitDesc;
             _curPos = new IntVec2(_guid.x, _guid.y);
+            _friction = MaxFriction;
             if (dynamicCollider != null)
             {
                 _dynamicCollider = dynamicCollider;
@@ -955,7 +962,7 @@ namespace GameA.Game
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, size, _tableUnit);
                 }
             }
-            int halfTile = _tableUnit.Width / 2;
+            var halfTile = ConstDefineGM2D.ServerTileScale / 2;
             float z = -(_curPos.x + halfTile + _curPos.y + halfTile) * 0.00078125f+ _viewZOffset;
             if (UnitDefine.IsDownY(_tableUnit))
             {
@@ -1524,7 +1531,7 @@ namespace GameA.Game
             _isDisposed = true;
         }
 
-        public virtual void DoPaint(int start, int end, EDirectionType direction, EPaintType ePaintType, int maskRandom,
+        public virtual void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType, int maskRandom,
             bool draw = true)
         {
         }

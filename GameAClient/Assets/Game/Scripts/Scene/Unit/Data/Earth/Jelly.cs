@@ -41,45 +41,7 @@ namespace GameA.Game
         {
             if (_colliderGrid.Intersects(grid))
             {
-                PlayAnimation(other, eDirectionType);
                 OnEffect(other, eDirectionType);
-            }
-        }
-
-        private void PlayAnimation(UnitBase other, EDirectionType eDirectionType)
-        {
-            switch (eDirectionType)
-            {
-                case EDirectionType.Up:
-                    if (other.SpeedY <= 0)
-                    {
-                        if (_animation != null)
-                        {
-                            _animation.PlayOnce("Up");
-                        }
-                    }
-                    break;
-                case EDirectionType.Down:
-                    if (other.SpeedY >= 0)
-                    {
-                        if (_animation != null)
-                        {
-                            _animation.PlayOnce("Down");
-                        }
-                    }
-                    break;
-                case EDirectionType.Left:
-                    if (_animation != null)
-                    {
-                        _animation.PlayOnce("Left");
-                    }
-                    break;
-                case EDirectionType.Right:
-                    if (_animation != null)
-                    {
-                        _animation.PlayOnce("Right");
-                    }
-                    break;
             }
         }
 
@@ -90,6 +52,10 @@ namespace GameA.Game
                 case EDirectionType.Up:
                     if (other.SpeedY <= 0)
                     {
+                        if (other.Animation != null)
+                        {
+                            other.Animation.PlayOnce("Up");
+                        }
                         other.SpeedY = 0;
                         if (other.IsMain)
                         {
@@ -106,6 +72,10 @@ namespace GameA.Game
                 case EDirectionType.Down:
                     if (other.SpeedY >= 0)
                     {
+                        if (other.Animation != null)
+                        {
+                            other.Animation.PlayOnce("Down");
+                        }
                         other.SpeedY = 0;
                         if (other.IsMain)
                         {
@@ -119,6 +89,10 @@ namespace GameA.Game
                     }
                     break;
                 case EDirectionType.Left:
+                    if (other.Animation != null)
+                    {
+                        other.Animation.PlayOnce("Left");
+                    }
                     other.Speed = IntVec2.zero;
                     other.ExtraSpeed.x = -ExtraSpeedX;
                     other.ExtraSpeed.y = ExtraSpeedX;
@@ -129,6 +103,10 @@ namespace GameA.Game
                     }
                     break;
                 case EDirectionType.Right:
+                    if (other.Animation != null)
+                    {
+                        other.Animation.PlayOnce("Right");
+                    }
                     other.Speed = IntVec2.zero;
                     other.ExtraSpeed.x = ExtraSpeedX;
                     other.ExtraSpeed.y = ExtraSpeedX;

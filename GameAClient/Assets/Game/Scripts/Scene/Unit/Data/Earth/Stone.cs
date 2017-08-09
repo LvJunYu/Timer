@@ -14,14 +14,14 @@ namespace GameA.Game
     [Unit(Id = 4007, Type = typeof(Stone))]
     public class Stone : PaintBlock
     {
-        public override void DoPaint(int start, int end, EDirectionType direction, EPaintType ePaintType, int maskRandom, bool draw = true)
+        public override void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType, int maskRandom, bool draw = true)
         {
             if (!_isAlive)
             {
                 return;
             }
             //如果是火的话干掉自己生成焦土
-            if (ePaintType == EPaintType.Fire)
+            if (eSkillType == ESkillType.Fire)
             {
                 OnChanged();
             }

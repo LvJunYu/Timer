@@ -72,11 +72,9 @@ namespace GameA
             _cachedView.ExitSwitchMode.onClick.AddListener (OnClickExitSwitchModeBtn);
 	        _cachedView.EnterCamCtrlModeBtn.onClick.AddListener(OnEnterCamCtrlMode);
 	        _cachedView.ExitCamCtrlModeBtn.onClick.AddListener(OnExitCamCtrlMode);
-	        _cachedView.Save.onClick.AddListener(OnSave);
         }
 
-
-		protected override void InitEventListener()
+	    protected override void InitEventListener()
 	    {
 		    base.InitEventListener();
 			RegisterEvent(EMessengerType.AfterEditModeStateChange, AfterEditModeStateChange);
@@ -122,6 +120,7 @@ namespace GameA
 	            _cachedView.EraseSelected.gameObject.SetActive (false);
                 _cachedView.Redo.gameObject.SetActive (true);
                 _cachedView.Undo.gameObject.SetActive (true);
+                _cachedView.Publish.gameObject.SetActive (false);
                 _cachedView.ButtonFinishCondition.SetActiveEx (true);
 
 	            _cachedView.EnterEffectMode.SetActiveEx (false);
@@ -135,7 +134,7 @@ namespace GameA
 
                 _cachedView.Play.gameObject.SetActive (true);
                 _cachedView.Pause.gameObject.SetActive (false);
-	            _cachedView.Save.gameObject.SetActive (true);
+				_cachedView.Capture.gameObject.SetActive (false);
                 _cachedView.Home.gameObject.SetActive (true);
 				break;
 			case EMode.EditTest:
@@ -143,6 +142,7 @@ namespace GameA
 				_cachedView.EraseSelected.gameObject.SetActive (false);
 				_cachedView.Redo.gameObject.SetActive (false);
 				_cachedView.Undo.gameObject.SetActive (false);
+				_cachedView.Publish.gameObject.SetActive (false);
 				_cachedView.ButtonFinishCondition.SetActiveEx (false);
 
 				_cachedView.EnterEffectMode.SetActiveEx (false);
@@ -156,7 +156,7 @@ namespace GameA
 
 				_cachedView.Play.gameObject.SetActive (false);
 				_cachedView.Pause.gameObject.SetActive (true);
-				_cachedView.Save.gameObject.SetActive (false);
+				_cachedView.Capture.gameObject.SetActive (false);
 				_cachedView.Home.gameObject.SetActive (false);
 				break;
 			case EMode.PlayRecord:
@@ -164,6 +164,7 @@ namespace GameA
 				_cachedView.EraseSelected.gameObject.SetActive (false);
 				_cachedView.Redo.gameObject.SetActive (false);
 				_cachedView.Undo.gameObject.SetActive (false);
+				_cachedView.Publish.gameObject.SetActive (false);
 				_cachedView.ButtonFinishCondition.SetActiveEx (false);
 
 				_cachedView.EnterEffectMode.SetActiveEx (false);
@@ -177,7 +178,7 @@ namespace GameA
 
 				_cachedView.Play.gameObject.SetActive (false);
 				_cachedView.Pause.gameObject.SetActive (false);
-				_cachedView.Save.gameObject.SetActive (false);
+				_cachedView.Capture.gameObject.SetActive (false);
 				_cachedView.Home.gameObject.SetActive (false);
 				break;
 			case EMode.ModifyEdit:
@@ -185,6 +186,7 @@ namespace GameA
 				_cachedView.EraseSelected.gameObject.SetActive (false);
 				_cachedView.Redo.gameObject.SetActive (false);
 				_cachedView.Undo.gameObject.SetActive (false);
+				_cachedView.Publish.gameObject.SetActive (false);
 				_cachedView.ButtonFinishCondition.SetActiveEx (false);
 
 				_cachedView.EnterEffectMode.SetActiveEx (false);
@@ -198,28 +200,10 @@ namespace GameA
 
 				_cachedView.Play.gameObject.SetActive (true);
 				_cachedView.Pause.gameObject.SetActive (false);
-				_cachedView.Save.gameObject.SetActive (false);
+				_cachedView.Capture.gameObject.SetActive (false);
 				_cachedView.Home.gameObject.SetActive (true);
 				break;
             }
-		}
-		
-		private void OnSave()
-		{
-			GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
-			if (null != gameModeEdit)
-			{
-				SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存");
-				gameModeEdit.Save(() =>
-				{
-					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-					SocialGUIManager.ShowPopupDialog("保存成功");
-				}, result =>
-				{
-					SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-					SocialGUIManager.ShowPopupDialog("保存失败");
-				});
-			}
 		}
 
         private void OnPlay()

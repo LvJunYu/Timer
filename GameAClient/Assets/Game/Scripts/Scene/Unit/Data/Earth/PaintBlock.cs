@@ -106,18 +106,18 @@ namespace GameA.Game
         /// <returns></returns>
         private static int SortEdge(Edge x, Edge y)
         {
-            return y.EPaintType.CompareTo(x.EPaintType);
+            return y.ESkillType.CompareTo(x.ESkillType);
         }
 
-        public override void DoPaint(int start, int end, EDirectionType direction, EPaintType ePaintType, int maskRandom, bool draw = true)
+        public override void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType, int maskRandom, bool draw = true)
         {
             var center = (start + end) * 0.5f * ConstDefineGM2D.ClientTileScale;
             if (!GetPos(ref start, ref end, direction))
             {
                 return;
             }
-            var edge = new Edge(start, end, direction, ePaintType);
-            if (ePaintType == EPaintType.Water)
+            var edge = new Edge(start, end, direction, eSkillType);
+            if (eSkillType == ESkillType.Water)
             {
                 Cut(ref edge);
             }
@@ -146,7 +146,7 @@ namespace GameA.Game
                 for (int i = _edges.Count - 1; i >= 0; i--)
                 {
                     var current = _edges[i];
-                    if (edge.Direction == current.Direction && edge.EPaintType == current.EPaintType)
+                    if (edge.Direction == current.Direction && edge.ESkillType == current.ESkillType)
                     {
                         if (edge.Merge(ref current))
                         {
@@ -170,7 +170,7 @@ namespace GameA.Game
                 if (_edges[i].Direction == edge.Direction)
                 {
                     //不同类切割添加
-                    if (_edges[i].EPaintType != edge.EPaintType)
+                    if (_edges[i].ESkillType != edge.ESkillType)
                     {
                         _edges[i].Cut(ref edge, _edges);
                     }
@@ -224,7 +224,7 @@ namespace GameA.Game
             }
             Texture maskingTexture = null;
             string maskName = string.Format("Mask_{0}_{1}", (int) edge.Direction, maskRandom);
-            if (edge.EPaintType == EPaintType.Water)
+            if (edge.ESkillType == ESkillType.Water)
             {
                 maskName = string.Format("MaskWater_{0}", (int)edge.Direction);
             }
@@ -298,7 +298,7 @@ namespace GameA.Game
                 {
                     continue;
                 }
-                if (edge.EPaintType == EPaintType.Water)
+                if (edge.ESkillType == ESkillType.Water)
                 {
                     if (maskingColor[i].a > 0)
                     {
@@ -341,19 +341,19 @@ namespace GameA.Game
                     }
                     if (maskBaseColor[i].r == 1f)
                     {
-                        paintedColor[i] = PaintUpColor[(int) edge.EPaintType - 2];
+                        paintedColor[i] = PaintUpColor[(int) edge.ESkillType - 2];
                     }
                     else if (maskBaseColor[i].g == 1f)
                     {
-                        paintedColor[i] = PaintRightColor[(int) edge.EPaintType - 2];
+                        paintedColor[i] = PaintRightColor[(int) edge.ESkillType - 2];
                     }
                     else if (maskBaseColor[i].b == 1f)
                     {
-                        paintedColor[i] = PaintFrontColor[(int) edge.EPaintType - 2];
+                        paintedColor[i] = PaintFrontColor[(int) edge.ESkillType - 2];
                     }
                     else
                     {
-                        paintedColor[i] = PaintEdgeColor[(int) edge.EPaintType - 2];
+                        paintedColor[i] = PaintEdgeColor[(int) edge.ESkillType - 2];
                     }
                 }
             }
@@ -419,18 +419,18 @@ namespace GameA.Game
         protected void OnEdgeHit(UnitBase other, Edge edge)
         {
             //LogHelper.Debug("OnEdgeHit: {0}", edge);
-            switch (edge.EPaintType)
+            switch (edge.ESkillType)
             {
-                case EPaintType.Fire:
+                case ESkillType.Fire:
                     Fire.OnEffect(other);
                     break;
-                case EPaintType.Jelly:
+                case ESkillType.Jelly:
                     Jelly.OnEffect(other, edge.Direction);
                     break;
-                case EPaintType.Clay:
+                case ESkillType.Clay:
                     Clay.OnEffect(other, edge.Direction);
                     break;
-                case EPaintType.Ice:
+                case ESkillType.Ice:
                     Ice.OnEffect(other, edge.Direction);
                     break;
             }
