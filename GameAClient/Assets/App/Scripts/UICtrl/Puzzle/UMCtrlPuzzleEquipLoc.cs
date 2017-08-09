@@ -31,6 +31,5 @@ namespace GameA
             _cachedView.LockObj.SetActive(IsLock);
             _cachedView.UnlockLvTxt.text = UnlockLv.ToString();
         }
-
     }
 }

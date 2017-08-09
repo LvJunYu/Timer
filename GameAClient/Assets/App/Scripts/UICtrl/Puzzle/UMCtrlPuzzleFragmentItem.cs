@@ -33,8 +33,13 @@ namespace GameA
         public void SetData(PicturePart fragment)
         {
             _fragment = fragment;
-            _cachedView.HaveNumTxt.text = fragment.TotalCount.ToString();
-            _cachedView.NameTxt.text = fragment.Name;
+            _cachedView.HaveNumTxt.text = _fragment.TotalCount.ToString();
+            _cachedView.NameTxt.text = _fragment.Name;
+        }
+
+        public void RefreshData()
+        {
+            _cachedView.HaveNumTxt.text = _fragment.TotalCount.ToString();
         }
     }
 }

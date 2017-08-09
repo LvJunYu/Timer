@@ -13,6 +13,7 @@ namespace GameA.Game
 		#region 常量与字段
 		private static TableManager _instance;
 		public readonly Dictionary<int,Table_Equipment> Table_EquipmentDic = new Dictionary<int, Table_Equipment>();
+		public readonly Dictionary<int,Table_Rarity> Table_RarityDic = new Dictionary<int, Table_Rarity>();
 		public readonly Dictionary<int,Table_State> Table_StateDic = new Dictionary<int, Table_State>();
 		public readonly Dictionary<int,Table_Skill> Table_SkillDic = new Dictionary<int, Table_Skill>();
 		public readonly Dictionary<int,Table_EquipmentLevel> Table_EquipmentLevelDic = new Dictionary<int, Table_EquipmentLevel>();
@@ -44,6 +45,7 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_ProgressUnlock> Table_ProgressUnlockDic = new Dictionary<int, Table_ProgressUnlock>();
 		public readonly Dictionary<int,Table_BoostItem> Table_BoostItemDic = new Dictionary<int, Table_BoostItem>();
 		[UnityEngine.SerializeField] private Table_Equipment[] _tableEquipments;
+		[UnityEngine.SerializeField] private Table_Rarity[] _tableRaritys;
 		[UnityEngine.SerializeField] private Table_State[] _tableStates;
 		[UnityEngine.SerializeField] private Table_Skill[] _tableSkills;
 		[UnityEngine.SerializeField] private Table_EquipmentLevel[] _tableEquipmentLevels;
@@ -91,6 +93,8 @@ namespace GameA.Game
 		{
 			string EquipmentJsonStr = ResourceManager.Instance.GetJson ("Equipment", 31);
             _tableEquipments = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Equipment[]>(EquipmentJsonStr);
+			string RarityJsonStr = ResourceManager.Instance.GetJson ("Rarity", 31);
+            _tableRaritys = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Rarity[]>(RarityJsonStr);
 			string StateJsonStr = ResourceManager.Instance.GetJson ("State", 31);
             _tableStates = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_State[]>(StateJsonStr);
 			string SkillJsonStr = ResourceManager.Instance.GetJson ("Skill", 31);
@@ -161,6 +165,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableEquipments table.Id {0} is duplicated!", _tableEquipments[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableRaritys.Length; i++)
+			{
+				if (!Table_RarityDic.ContainsKey(_tableRaritys[i].Id))
+				{
+					Table_RarityDic.Add(_tableRaritys[i].Id,_tableRaritys[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableRaritys table.Id {0} is duplicated!", _tableRaritys[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableStates.Length; i++)
@@ -501,6 +516,15 @@ namespace GameA.Game
 		{
 			Table_Equipment tmp;
 			if (Table_EquipmentDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_Rarity GetRarity(int key)
+		{
+			Table_Rarity tmp;
+			if (Table_RarityDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

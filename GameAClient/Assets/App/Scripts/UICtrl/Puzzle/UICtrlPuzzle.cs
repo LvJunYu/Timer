@@ -33,7 +33,7 @@ namespace GameA
                     _otherPictureFull.Add(new PictureFull(puzzle));
                 }
             }
-            //_equipedPuzzles = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
+            _equipedPuzzles = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
         }
 
         private bool RefreshData()
@@ -102,10 +102,10 @@ namespace GameA
                 var equipLoc = new UMCtrlPuzzleEquipLoc(unlockLv, unlockLv > _userLv);
                 equipLoc.Init(_cachedView.PuzzleLocsGrid);
                 //显示装备的拼图
-                //if (_equipedPuzzles[index] != null)
-                //    equipLoc.SetData(_equipedPuzzles[index]);
-                //else
-                //    equipLoc.SetData(null);
+                if (_equipedPuzzles.Count > index && _equipedPuzzles[index] != null)
+                    equipLoc.SetData(_equipedPuzzles[index]);
+                else
+                    equipLoc.SetData(null);
                 index++;
             }
 
