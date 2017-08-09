@@ -16,7 +16,7 @@ using UnityEngine;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlPersonalInformation : UISocialContentCtrlBase<UIViewPersonalInformation>, IUIWithTitle
+    public class UICtrlPersonalInformation : UICtrlInGameBase<UIViewPersonalInformation>, IUIWithTitle
     {
         #region 常量与字段
         private const string AccountSettingIconSpriteName = "face_s";
@@ -42,67 +42,47 @@ namespace GameA
         //public Button Modification;
         //public Button SelectPhoto;
 
-
-
         _cachedView.Exit.onClick.AddListener(OnDestroy);
-
-
         }
 
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            RegisterEvent(SoyEngine.EMessengerType.OnAccountLoginStateChanged, OnAccountLoginStateChanged);
         }
 
         protected override void OnDestroy()
         {
-            //_cachedView.LogoutButton.onClick.RemoveListener(OnLogoutClick);
+            SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
         }
 
         private void UpdateView()
         {
-            //if(LocalUser.Instance.Account.HasLogin)
-            //{
-            //    _cachedView.LogoutButton.gameObject.SetActive(true);
-            //}
-            //else
-            //{
-            //    _cachedView.LogoutButton.gameObject.SetActive(false);
-            //}
 
-//            _cachedView.AdminDock.SetActive(LocalUser.Instance.UserLegacy != null && LocalUser.Instance.UserLegacy.AccountRoleType == EAccountRoleType.AcRT_Admin);
         }
 
         protected override void OnOpen(object parameter)
         {
             UpdateView();
             base.OnOpen(parameter);
+            InitPanel();
         }
 
         #endregion
 
         #region 事件处理
-        private void OnAccountLoginStateChanged()
+
+        private void InitPanel()
         {
-            if(_isViewCreated && _isOpen)
-            {
-                UpdateView();
-            }
+            //_cachedView.NumberOfArts.text=LocalUser.Instance.Account.
+            //_cachedView.NumberOfPlayed.text=LocalUser.Instance.Account.
+            //_cachedView.NumberOfPraise.text=LocalUser.Instance.Account.
+            //_cachedView.NumberOfRecompose.NumberOfArts.text=LocalUser.Instance.Account.
+            //if(LocalUser.Instance.UserLegacy.NickName!=null)
+            //{ _cachedView.Name.text = LocalUser.Instance.UserLegacy.NickName; }
+            _cachedView.Lvl.text = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel.ToString();
+            _cachedView.CraftLvl.text = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorExp.ToString();
+
         }
-
-
-        private void OnLogoutClick()
-        {
-            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_Logout>(SoyHttpApiPath.Logout, new Msg_CS_CMD_Logout(), ret=>{
-
-            }, (intCode, str)=>{
-
-            });
-            LocalUser.Instance.Account.Logout();
-            _uiStack.OpenPrevious();
-        }
-
 
         #endregion 事件处理
 
