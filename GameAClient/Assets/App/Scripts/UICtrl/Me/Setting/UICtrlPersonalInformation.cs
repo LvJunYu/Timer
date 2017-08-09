@@ -9,6 +9,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -65,6 +66,7 @@ namespace GameA
             UpdateView();
             base.OnOpen(parameter);
             InitPanel();
+            Exp();
         }
 
         #endregion
@@ -82,6 +84,43 @@ namespace GameA
             _cachedView.Lvl.text = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel.ToString();
             _cachedView.CraftLvl.text = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorExp.ToString();
 
+        }
+
+        private void Exp()
+        {
+            int playerLevel = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel;
+            long currentPlayerExp = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerExp;
+
+            long initialExp = currentPlayerExp -TableManager.Instance.Table_PlayerLvToExpDic[
+            playerLevel].AdvExp;
+            //_cachedView.CurExp.text = initialExp.ToString();
+            _cachedView.CurExp.text = String.Format("{0}/{1}", initialExp, (TableManager.Instance.Table_PlayerLvToExpDic[playerLevel + 1].AdvExp - TableManager.Instance.Table_PlayerLvToExpDic[playerLevel].AdvExp));
+            _cachedView.ExpBar.fillAmount = CountExpRatio(initialExp, playerLevel);
+
+            int playerCraftLevel = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorLevel;
+            long currentPlayerCraftExp = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorExp;
+            long initialCraftExp = currentPlayerCraftExp -TableManager.Instance.Table_PlayerLvToExpDic[
+            playerCraftLevel].MakerExp;
+            //_cachedView.CurCraftExp.text = initialCraftExp.ToString();
+            _cachedView.CurCraftExp.text = String.Format("{0}/{1}", initialCraftExp, (TableManager.Instance.Table_PlayerLvToExpDic[playerCraftLevel + 1].MakerExp - TableManager.Instance.Table_PlayerLvToExpDic[playerCraftLevel].MakerExp));
+            _cachedView.CraftExpBar.fillAmount = CountCraftExpRatio(initialCraftExp, playerCraftLevel);
+
+        }
+
+        private float CountExpRatio(float exp, int level)
+        {
+            return (exp
+                    //- TableManager.Instance.Table_PlayerLvToExpDic[LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel].AdvExp
+                    )
+                    / (TableManager.Instance.Table_PlayerLvToExpDic[level + 1].AdvExp - TableManager.Instance.Table_PlayerLvToExpDic[level].AdvExp);
+        }
+
+        private float CountCraftExpRatio(float exp, int level)
+        {
+            return (exp
+                    //- TableManager.Instance.Table_PlayerLvToExpDic[LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel].AdvExp
+                    )
+                    / (TableManager.Instance.Table_PlayerLvToExpDic[level + 1].MakerExp - TableManager.Instance.Table_PlayerLvToExpDic[level].MakerExp);
         }
 
         #endregion 事件处理
