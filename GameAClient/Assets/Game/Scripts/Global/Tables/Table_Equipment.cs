@@ -45,6 +45,11 @@ namespace GameA.Game
         /// </summary>
 		[ColumnMapping("WeaponPartCout")]
 		public int WeaponPartCout;
+		/// <summary>
+        /// 武器碎片图标
+        /// </summary>
+		[ColumnMapping("WeaponPartIcon")]
+		public string WeaponPartIcon;
 	}
 
     public class TableEquipmentAsset:BaseTableAsset
