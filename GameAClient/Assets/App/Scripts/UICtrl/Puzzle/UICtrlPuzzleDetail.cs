@@ -64,6 +64,7 @@ namespace GameA
             }
             //升级
             _puzzle.ActivatePuzzle();
+            SocialGUIManager.Instance.GetUI<UICtrlPuzzle>().CurActivePicFull = _puzzle;
             Messenger.Broadcast(EMessengerType.OnPuzzleCompound);
         }
 
