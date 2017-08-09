@@ -288,7 +288,7 @@ namespace GameA.Game
                                 break;
                             case ECostType.Magic:
                             case ECostType.Rage:
-                                if (_input.GetKeyApplied(_skillInputs[i]))
+                                if (_input.GetKeyUpApplied(_skillInputs[i]))
                                 {
                                     _skillCtrl.Fire(i);
                                 }

@@ -328,7 +328,7 @@ namespace GameA.Game
                 }
                 if (count >= LocalUser.Instance.UserWorkshopUnitData.GetUnitLimt(unitDesc.Id))
                 {
-                    Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("不可放置，目前上限{0}个", count));
+                    Messenger<string>.Broadcast(EMessengerType.GameLog, string.Format("不可放置，目前剩余{0}个", count));
                     return false;
                 }
             }
