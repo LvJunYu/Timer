@@ -27,10 +27,18 @@ namespace GameA
         public Button SelectPhoto;
 
         public Image Photo;
+        public Image ExpBar;
+        public Image CraftExpBar;
 
         public Text Name;
         public Text Lvl;
         public Text CraftLvl;
+
+        public Text CurExp;
+        //public Text CurLvlExp;
+        public Text CurCraftExp;
+        //public Text CurCraftLvlExp;
+
         public Text NumberOfArts;
         public Text NumberOfPlayed;
         public Text NumberOfPraise;
