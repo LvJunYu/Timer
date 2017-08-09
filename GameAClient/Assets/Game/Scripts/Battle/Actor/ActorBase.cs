@@ -514,39 +514,6 @@ namespace GameA.Game
                 _animation.PlayOnce("DeathWater");
             }
         }
-        
-        internal override void InFan(UnitBase fanUnit, IntVec2 force)
-        {
-            if (_fanForces.ContainsKey(fanUnit.Guid))
-            {
-                _fanForces[fanUnit.Guid] = force;
-            }
-            else
-            {
-                _fanForces.Add(fanUnit.Guid, force);
-            }
-            _fanForce= IntVec2.zero;
-            var iter = _fanForces.GetEnumerator();
-            while (iter.MoveNext())
-            {
-                _fanForce += iter.Current.Value;
-            }
-            ExtraSpeed.x = _fanForce.x;
-        }
-
-        internal override void OutFan(UnitBase fanUnit)
-        {
-            _fanForces.Remove(fanUnit.Guid);
-            _fanForce = IntVec2.zero;
-            if (_fanForces.Count > 0)
-            {
-                var iter = _fanForces.GetEnumerator();
-                while (iter.MoveNext())
-                {
-                    _fanForce += iter.Current.Value;
-                }
-            }
-        }
 
         protected override bool CheckOutOfMap()
         {

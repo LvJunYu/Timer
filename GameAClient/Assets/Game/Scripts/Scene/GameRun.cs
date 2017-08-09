@@ -81,6 +81,7 @@ namespace GameA.Game
             CameraManager.Instance.Dispose();
             UnitManager.Instance.Dispose();
             _instance = null;
+            LogHelper.Info("GameRun.Dispose");
         }
 
         public IEnumerator Init(GameManager.EStartType eGameInitType, Project project)
