@@ -23,7 +23,6 @@ namespace GameA
 
         private void OnEquipBtn()
         {
-            _puzzle.EquipPuzzle();
             SocialGUIManager.Instance.OpenUI<UICtrlPuzzleSlots>(_puzzle);
         }
 
@@ -44,12 +43,11 @@ namespace GameA
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     LogHelper.Debug("合成失败");
                 }
-
             }, code =>
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 //测试，服务器完成后删除
-                LogHelper.Debug("合成测试");
+                LogHelper.Debug("服务器请求失败，进行合成测试");
                 Compound();
                 //LogHelper.Debug("合成失败");
             });
