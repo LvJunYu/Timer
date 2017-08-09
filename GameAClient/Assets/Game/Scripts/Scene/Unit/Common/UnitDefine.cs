@@ -43,6 +43,7 @@ namespace GameA.Game
         public const int LaserId = 5010;
         public const int SwitchTriggerId = 8101;
         public const int BillboardId = 7001;
+        public const int BulletIceId = 10003;
 
         public static bool IsSpawn(int id)
         {
@@ -163,9 +164,10 @@ namespace GameA.Game
                    !IsBoard(id) && !IsCollection(id);
         }
         
-        public static bool IsFanEffect(int layer)
+        public static bool IsFanEffect(int layer, int id)
         {
-            return ((1 << layer) & (EnvManager.MonsterLayer | EnvManager.MainPlayerLayer| EnvManager.RemotePlayer)) != 0;
+            return (((1 << layer) & (EnvManager.MonsterLayer | EnvManager.MainPlayerLayer | EnvManager.RemotePlayer)) != 0) 
+                   || id == BulletIceId;
         }
 
         internal static bool IsGround(int id)

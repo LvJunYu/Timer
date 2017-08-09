@@ -109,12 +109,12 @@ namespace GameA.Game
                             break;
                         }
                     }
-                    if (UnitDefine.IsFanEffect(hit.node.Layer))
+                    if (UnitDefine.IsFanEffect(hit.node.Layer, hit.node.Id))
                     {
                         UnitBase unit;
                         if (ColliderScene2D.Instance.TryGetUnit(hit.node, out unit))
                         {
-                            if (unit != null && unit.IsAlive && unit.IsActor)
+                            if (unit != null && unit.IsAlive)
                             {
                                 if (!_units.Contains(unit))
                                 {
