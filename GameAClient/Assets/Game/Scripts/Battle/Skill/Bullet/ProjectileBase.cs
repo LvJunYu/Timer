@@ -36,6 +36,8 @@ namespace GameA.Game
         
         protected UnityNativeParticleItem _effectBullet;
 
+        protected IntVec2 _newSpeed;
+
         public int Angle
         {
             get { return _angle; }
@@ -75,6 +77,7 @@ namespace GameA.Game
             _destroy = 0;
             _angle = 0;
             _originPos = IntVec2.zero;
+            _newSpeed = IntVec2.zero;
             FreeEffect(_effectBullet);
             _effectBullet = null;
             base.Clear();
@@ -96,11 +99,11 @@ namespace GameA.Game
         {
         }
 
-        protected virtual void UpdateAngle(int angle)
+        protected virtual void UpdateAngle(int angle, EDirectionType eDirectionType)
         {
             _angle = angle;
             var rad = _angle * Mathf.Deg2Rad;
-            _speed = new IntVec2((int)(_skill.ProjectileSpeed * Math.Sin(rad)), (int)(_skill.ProjectileSpeed * Math.Cos(rad)));
+            _newSpeed = new IntVec2((int)(_skill.ProjectileSpeed * Math.Sin(rad)), (int)(_skill.ProjectileSpeed * Math.Cos(rad)));
             _trans.eulerAngles = new Vector3(0, 0, -_angle);
         }
         
