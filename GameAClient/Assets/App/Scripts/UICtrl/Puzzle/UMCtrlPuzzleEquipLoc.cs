@@ -12,7 +12,6 @@ namespace GameA
     {
         public bool IsLock;
         public int UnlockLv;
-        private PictureFull _picture;
 
         public UMCtrlPuzzleEquipLoc(int unlockLv, bool isLock)
         {
@@ -27,9 +26,10 @@ namespace GameA
             _cachedView.UnlockLvTxt.text = UnlockLv.ToString();
         }
 
-        internal void SetData(PictureFull pictureFull)
+        internal void SetData(PictureFull picture)
         {
-            _picture = pictureFull;
+            _cachedView.PuzzleItem.SetActive(picture != null);
+            //to do 其它UI设置
         }
     }
 }

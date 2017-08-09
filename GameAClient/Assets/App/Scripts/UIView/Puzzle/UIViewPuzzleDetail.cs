@@ -21,5 +21,6 @@ namespace GameA
         public Text DescTxt;
         public GameObject Unable_Active;
         public GameObject Unable_Equip;
+        public Text ActiveTxt;
     }
 }
