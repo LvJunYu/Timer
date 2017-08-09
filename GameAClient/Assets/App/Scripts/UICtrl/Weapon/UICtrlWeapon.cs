@@ -15,18 +15,30 @@ namespace GameA
         #region Fields
         private Sprite _weaponEffect = null;
         private string _weaponEffectSpriteName;
+        private Sprite _weaponPartSprite;
+        private string _weaponPartSpriteName;
+        private Sprite _universalSprie;
+        private string _universalSpriteName = "universalpart";
         private int _weaponID = 101;
         private int _skillID;
-        private int _weaponlevelID ;
+        private int _weaponlevelID;
         private int _weaponLv = 2;
         private int _multiple = 100;
         private Color _weaponColor;
         private string _colorName;
-        private int[] _idColltions = new int[] { 101,102,103,201,202,203};
-        private string[] _weaponName = new string[] { "weapon1", "weapon2", "weapon3", "weapon4", "weapon5", "weapon6", };
+        private int[] _idColltions = new int[] { 101, 102, 103, 201, 202, 203 };
+        private int _universalCount = 5;
         private int index = 0;
+        private int _isCompoudAddNum;
+        private int _userGoldCoin= 10;
+        private int _needCoin;
+        private int _needPart;
+        private int _userOwnWeaponPart;
         private UserWeaponData _userWeaponData = new UserWeaponData();
         private UserWeaponPartData _userWeaponPartData = new UserWeaponPartData();
+        private Dictionary<long, int> _userWeaponPartDataDic = new Dictionary<long, int>();
+        private Dictionary<long, Weapon> _userWeaponDataDic = new Dictionary<long, Weapon>();
+
         private Action _closeCB;
         #endregion
 
@@ -56,9 +68,11 @@ namespace GameA
             _cachedView.CloseButton.onClick.AddListener(OnCloseBtn);
             _cachedView.LeftWeapon.onClick.AddListener(OnLeftButton);
             _cachedView.RightWeapon.onClick.AddListener(OnRightButton);
-            _cachedView.UpGrade.onClick.AddListener(OnUpgrade);
-            LoadUserData();
+            _cachedView.UpGrade.onClick.AddListener(OnUpgrade);         
+            SetUserWeaponData();
+            SetUserWeaponPartData();
             RefershWeaponShow();
+
 
 
         }
@@ -77,11 +91,11 @@ namespace GameA
             //  _weaponID = TableManager.Instance.GetEquipment.
             if (index > 0)
             {
-                _weaponID = _idColltions[--index ];
+                _weaponID = _idColltions[--index];
                 RefershWeaponShow();
             }
-         
-       
+
+
         }
         private void OnRightButton()
         {
@@ -94,8 +108,24 @@ namespace GameA
         }
         private void OnUpgrade()
         {
-            int[] _weaponIDlv = new int[] { _weaponID,_weaponLv , _weaponlevelID };
-            SocialGUIManager.Instance.OpenUI<UICtrlWeaponUpgrade>(_weaponIDlv);
+                        if (_needPart > _userOwnWeaponPart + _universalCount)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlGetCoin>();
+                return;
+            }
+            if (_needCoin > _userGoldCoin)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlGetCoin>();
+                return;
+            }
+            if (_needPart <= _userOwnWeaponPart + _universalCount && _needCoin < _userGoldCoin)
+            {
+                int[] _weaponIDlv = new int[] { _weaponID, _weaponLv, _weaponlevelID , _isCompoudAddNum ,_needCoin ,
+                    Math.Min(_userOwnWeaponPart,_needPart) ,Math.Max(0, _needPart - _userOwnWeaponPart) };
+                SocialGUIManager.Instance.OpenUI<UICtrlWeaponUpgrade>(_weaponIDlv);
+
+                SocialGUIManager.Instance.OpenUI<UICtrlWeaponUpgrade>(_weaponIDlv);
+            }
         }
         private void OnCloseBtn()
         {
@@ -103,25 +133,72 @@ namespace GameA
         }
         private void RefershWeaponShow()
         {
-            // _weaponEffectSpriteName = TableManager.Instance.GetEquipment(_weaponID).Icon;  //加载图片
-
-            ResourcesManager.Instance.TryGetSprite(_weaponName[index], out _weaponEffect);
+            //等级的判断合成或者升级
+            if (_userWeaponDataDic.ContainsKey(_weaponID))
+            {
+                _weaponLv = _userWeaponDataDic[_weaponID].Level;
+                _cachedView.UpGradeImage.gameObject.SetActive(true);
+                _cachedView.Compound.gameObject.SetActive(false);
+                _isCompoudAddNum = 1;
+            }
+            else
+            {
+                _weaponLv = 1;
+                _cachedView.UpGradeImage.gameObject.SetActive(false);
+                _cachedView.Compound.gameObject.SetActive(true);
+                _isCompoudAddNum = 0;
+            }
+            //图片显示
+            _weaponEffectSpriteName = TableManager.Instance.GetEquipment(_weaponID).Icon;  //加载图片
+            ResourcesManager.Instance.TryGetSprite(_weaponEffectSpriteName, out _weaponEffect);
             _cachedView.EffectShow.sprite = _weaponEffect;
+            //技能显示
             _skillID = TableManager.Instance.GetEquipment(_weaponID).SkillId;
             _weaponlevelID = _skillID * _multiple + _weaponLv;
-            _cachedView.SkillDescription.text = TableManager.Instance.GetSkill(_skillID).Summary;
-            _cachedView.HpAddNum.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).HpAdd.ToString();
-            _cachedView.AttackAddNum.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).AttackAdd.ToString();
-            _cachedView.WeaponName.text = TableManager.Instance.GetEquipment(_weaponID).Name;
-           // _colorName = TableManager.Instance.GetEquipment(_weaponID).Color; //获得颜色
-            ColorUtility.TryParseHtmlString("#F20000FF", out _weaponColor);
-            _cachedView.WeaponName.color = _weaponColor;
-            _cachedView.WeaponLv.text = _weaponLv.ToString();
+            _cachedView.SkillDescription.text = TableManager.Instance.GetSkill(_skillID).Summary;//技能描述
+            _cachedView.HpAddNum.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).HpAdd.ToString();//血量增加
+            _cachedView.AttackAddNum.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).AttackAdd.ToString();//攻击力增加
+            _cachedView.WeaponName.text = TableManager.Instance.GetEquipment(_weaponID).Name;//武器的名字
+            _colorName = TableManager.Instance.GetRarity(TableManager.Instance.GetEquipment(_weaponID).Rarity).Color;
+            ColorUtility.TryParseHtmlString(_colorName, out _weaponColor);
+            _cachedView.WeaponName.color = _weaponColor;//颜色
+            _cachedView.WeaponLv.text = _weaponLv.ToString();//武器的等级
+            _cachedView.UnlockedWeaponNum.text = _userWeaponData.ItemDataList.Count.ToString();//解锁的武器数目
+            _cachedView.OwnedUniversalFragmentsNum.text = _universalCount.ToString();//拥有的万能碎片的数目
+            _weaponEffectSpriteName = TableManager.Instance.GetEquipment(_weaponID).Icon;  //加载图片
+            //花费的金币数目
+            _needCoin =  TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).GoldCoinNum;
+             _cachedView.CostGolCoinNum.text = _needCoin.ToString();
+            _needPart = TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).WeaponFragment;
+            _cachedView.CostWeaponFragmentsNum.text  = _needPart.ToString();
+
+            //武器碎片图片
+            _weaponPartSpriteName = TableManager.Instance.GetEquipment(_weaponID).WeaponPartIcon;
+            ResourcesManager.Instance.TryGetSprite(_weaponPartSpriteName, out _weaponPartSprite);
+            _cachedView.OwnedWeaponFragmentsIcon.sprite = _weaponPartSprite;
+
+            //万能碎片的图片
+            ResourcesManager.Instance.TryGetSprite(_universalSpriteName, out _universalSprie);
+            _cachedView.OwnedUniversalFragmentsIcon.sprite = _universalSprie;
+
+
+            //武器碎片的额数目
+            if (_userWeaponPartDataDic.ContainsKey(_weaponID))
+            {
+                _userOwnWeaponPart = _userWeaponPartDataDic[_weaponID];
+                _cachedView.OwnedWeaponFragmentsNum.text = _userOwnWeaponPart.ToString();
             }
+            else
+            {
+                _userOwnWeaponPart = 0;
+                _cachedView.OwnedWeaponFragmentsNum.text = _userOwnWeaponPart.ToString();
+            }
+
+        }
         private void LoadUserData()
         {
-            Debug.Log("用户id"+ LocalUser.Instance.UserGuid);
-            _userWeaponData.Request(LocalUser.Instance.UserGuid,OnSucess, code => {});
+            Debug.Log("用户id" + LocalUser.Instance.UserGuid);
+            _userWeaponData.Request(LocalUser.Instance.UserGuid, OnSucess, code => { });
         }
         private void OnSucess()
         {
@@ -140,10 +217,14 @@ namespace GameA
             weapon2.Level = 3;
             Weapon weapon3 = new Weapon();
             weapon3.Id = 103;
-            weapon3.Level = 1;
+            weapon3.Level = 5;
             _userWeaponData.ItemDataList.Add(weapon1);
             _userWeaponData.ItemDataList.Add(weapon2);
             _userWeaponData.ItemDataList.Add(weapon3);
+            foreach (var item in _userWeaponData.ItemDataList)
+            {
+                _userWeaponDataDic.Add(item.Id, item);
+            }
         }
         private void SetUserWeaponPartData()
         {
@@ -155,7 +236,18 @@ namespace GameA
             weaponpart2.TotalCount = 5;
             WeaponPart weaponpart3 = new WeaponPart();
             weaponpart3.Id = 203;
-            weaponpart3.TotalCount = 3;
+            weaponpart3.TotalCount = 0;
+            WeaponPart weaponpart4 = new WeaponPart();
+            weaponpart4.Id = 101;
+            weaponpart4.TotalCount = 10;
+            _userWeaponPartData.ItemDataList.Add(weaponpart1);
+            _userWeaponPartData.ItemDataList.Add(weaponpart2);
+            _userWeaponPartData.ItemDataList.Add(weaponpart3);
+            _userWeaponPartData.ItemDataList.Add(weaponpart4);
+            foreach (var item in _userWeaponPartData.ItemDataList)
+            {
+                _userWeaponPartDataDic.Add(item.Id, item.TotalCount);
+            }
         }
         #endregion
     }

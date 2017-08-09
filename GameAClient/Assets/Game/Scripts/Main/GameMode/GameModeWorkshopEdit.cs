@@ -78,15 +78,6 @@ namespace GameA.Game
 			}
         }
 
-	    public override void ChangeMode(EMode mode)
-	    {
-		    base.ChangeMode(mode);
-		    if (mode == EMode.EditTest && NeedSave)
-		    {
-			    IconBytes = CaptureLevel();
-		    }
-	    }
-
 	    public override void Save(Action successCallback = null, Action<EProjectOperateResult> failedCallback = null)
 		{
 			if (!NeedSave)
@@ -99,10 +90,7 @@ namespace GameA.Game
 			}
 			byte[] mapDataBytes = MapManager.Instance.SaveMapData();
 			mapDataBytes = MatrixProjectTools.CompressLZMA(mapDataBytes);
-			if (IconBytes == null)
-			{
-				IconBytes = CaptureLevel();
-			}
+			IconBytes = CaptureLevel();
 			if (mapDataBytes == null
 				|| mapDataBytes.Length == 0)
 			{

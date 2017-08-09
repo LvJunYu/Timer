@@ -21,6 +21,7 @@ namespace GameA
         public Button Confirm;
         public Button Cancel;
         public Button CloseBtn;
-    
+        public GameObject UniversalPart;
+
     }
 }
