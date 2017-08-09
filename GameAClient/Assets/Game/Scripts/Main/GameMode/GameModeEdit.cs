@@ -299,6 +299,7 @@ namespace GameA.Game
 				if (mapAspectRatio > imageAspectRatio)
 				{
 					cameraOrthoSize = mapRect.width / screenAspectRatio / 2;
+					cameraPos.y += mapRect.width / imageAspectRatio / 2 - mapRect.height / 2;
 				}
 				else
 				{
@@ -313,6 +314,7 @@ namespace GameA.Game
 				if (mapAspectRatio > imageAspectRatio)
 				{
 					cameraOrthoSize = mapRect.width / imageAspectRatio / 2;
+					cameraPos.y += cameraOrthoSize - mapRect.height / 2;
 				}
 				else
 				{
@@ -321,9 +323,13 @@ namespace GameA.Game
 			}
 			CameraManager.Instance.MainCameraPos = cameraPos;
 			CameraManager.Instance.RendererCamera.orthographicSize = cameraOrthoSize;
+			EditMode.Instance.CameraMask.Hide();
+			BgScene2D.Instance.UpdateLogic(cameraPos);
 			Texture2D t2 = ClientTools.CaptureCamera(CameraManager.Instance.RendererCamera, captureScreenSize, captureRect);
 			CameraManager.Instance.MainCameraPos = oriCameraPos;
 			CameraManager.Instance.RendererCamera.orthographicSize = oriCameraOrthoSize;
+			BgScene2D.Instance.ResetByFollowPos(oriCameraPos);
+			EditMode.Instance.CameraMask.Show();
 			return t2.EncodeToJPG(90);
 		}
 
