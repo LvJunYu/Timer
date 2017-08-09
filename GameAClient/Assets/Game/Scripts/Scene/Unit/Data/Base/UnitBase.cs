@@ -956,7 +956,7 @@ namespace GameA.Game
                 }
             }
             int halfTile = _tableUnit.Width / 2;
-            float z = -(_curPos.x + halfTile + _curPos.y + halfTile) * 0.00078125f+ _viewZOffset;
+            float z = -(_curPos.x + halfTile + _curPos.y + halfTile) * 0.0015625f+ _viewZOffset;
             if (UnitDefine.IsDownY(_tableUnit))
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, -0.1f, z);
