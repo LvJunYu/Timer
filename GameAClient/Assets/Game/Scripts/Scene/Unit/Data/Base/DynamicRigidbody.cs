@@ -30,9 +30,7 @@ namespace GameA.Game
         /// 起跳的动画时间
         /// </summary>
         protected int _jumpTimer;
-        
-        [SerializeField] protected IntVec2 _fanForce;
-        protected Dictionary<IntVec3, IntVec2> _fanForces = new Dictionary<IntVec3, IntVec2>();
+
         protected const float SpeedClayRatio = 0.2f;
         protected const float SpeedFireRatio = 1.8f;
         protected const float SpeedHoldingBoxRatio = 0.3f;
@@ -60,9 +58,6 @@ namespace GameA.Game
             _eClimbState = EClimbState.None;
             _climbJump = false;
             _stepY = 0;
-      
-            _fanForce = IntVec2.zero;
-            _fanForces.Clear();
         }
         
         public void Setup(InputBase inputBase)
