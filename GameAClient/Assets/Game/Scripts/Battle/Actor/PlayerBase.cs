@@ -382,7 +382,7 @@ namespace GameA.Game
         /// <summary>
         /// 跑步声音间隔
         /// </summary>
-        protected int _walkAudioInternal = 12;
+        protected int _walkAudioTimer = 12;
 
         internal override bool InstantiateView()
         {
@@ -457,25 +457,6 @@ namespace GameA.Game
             {
                 if (!_grounded && _eClimbState == EClimbState.None)
                 {
-//                    if (_eClimbState > 0)
-//                    {
-//                        _animation.PlayLoop(ClimbAnimName());
-//                        if (GameRun.Instance.LogicFrameCnt % 5 == 0)
-//                        {
-//                            Vector3 effectPos = _trans.position;
-//                            if (_curMoveDirection == EMoveDirection.Left)
-//                            {
-//                                effectPos += Vector3.left * 0.25f + Vector3.forward * 0.6f;
-//                            }
-//                            else
-//                            {
-//                                effectPos += Vector3.right * 0.25f + Vector3.forward * 0.6f;
-//                            }
-//                            GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallClimb, effectPos);
-//                        }
-//                    }
-//                    else
-                    {
                         if (_climbJump)
                         {
                             Vector3 effectPos = _trans.position;
@@ -491,7 +472,6 @@ namespace GameA.Game
                         {
                             _animation.PlayLoop(FallAnimName());
                         }
-                    }
                 }
                 else
                 {
@@ -508,16 +488,8 @@ namespace GameA.Game
                             speed = 50;
                         }
                         _animation.PlayLoop(RunAnimName(speed), speed * deltaTime);
-                        if (speed <= BattleDefine.MaxSpeedX)
-                        {
-                            _walkAudioInternal -= 7;
-                        }
-                        else
-                        {
-                            _walkAudioInternal -= 5;
-                            //GuideManager.Instance.OnSpecialOperate(1);
-                        }
-                        if (_walkAudioInternal <= 0)
+                        _walkAudioTimer--;
+                        if (_walkAudioTimer <= 0 && _grounded)
                         {
                             int randomValue = Random.Range(0, 3);
                             switch (randomValue)
@@ -532,7 +504,7 @@ namespace GameA.Game
                                     GameAudioManager.Instance.PlaySoundsEffects("AudioWalkWood03");
                                     break;
                             }
-                            _walkAudioInternal = 35;
+                            _walkAudioTimer = 12;
                         }
                     }
                     else

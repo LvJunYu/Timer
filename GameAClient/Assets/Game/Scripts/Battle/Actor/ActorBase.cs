@@ -114,15 +114,30 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_curBanInputTime == 0 && !IsHoldingBox() && (_eClimbState == EClimbState.None || _eClimbState == EClimbState.Up))
+            if (_curBanInputTime == 0 && !IsHoldingBox())
             {
-                if (_input.GetKeyApplied(EInputType.Left))
+                switch (_eClimbState)
                 {
-                    SetFacingDir(EMoveDirection.Left);
-                }
-                else if (_input.GetKeyApplied(EInputType.Right))
-                {
-                    SetFacingDir(EMoveDirection.Right);
+                    case EClimbState.None:
+                        if (_input.GetKeyApplied(EInputType.Left))
+                        {
+                            SetFacingDir(EMoveDirection.Left);
+                        }
+                        else if (_input.GetKeyApplied(EInputType.Right))
+                        {
+                            SetFacingDir(EMoveDirection.Right);
+                        }
+                        break;
+                    case EClimbState.Up://翻转
+                        if (_input.GetKeyApplied(EInputType.Left))
+                        {
+                            SetFacingDir(EMoveDirection.Right);
+                        }
+                        else if (_input.GetKeyApplied(EInputType.Right))
+                        {
+                            SetFacingDir(EMoveDirection.Left);
+                        }
+                        break;
                 }
             }
             CheckJump();
@@ -144,15 +159,33 @@ namespace GameA.Game
                     _jumpState = EJumpState.Jump1;
                     if (_eClimbState == EClimbState.Left)
                     {
-                        SpeedX = 120;
-                        SpeedY = 120;
-                        SetFacingDir(EMoveDirection.Right);
+                        //按着下的时候 直接下来
+                        if (_input.GetKeyApplied(EInputType.Down) && !_input.GetKeyApplied(EInputType.Right))
+                        {
+                            SpeedX = 0;
+                            SpeedY = 0;
+                        }
+                        else
+                        {
+                            SpeedX = 100;
+                            SpeedY = 120;
+                            SetFacingDir(EMoveDirection.Right);
+                        }
                     }
                     else if (_eClimbState == EClimbState.Right)
                     {
-                        SpeedX = -120;
-                        SpeedY = 120;
-                        SetFacingDir(EMoveDirection.Left);
+                        //按着下的时候 直接下来
+                        if (_input.GetKeyApplied(EInputType.Down) && !_input.GetKeyApplied(EInputType.Left))
+                        {
+                            SpeedX = 0;
+                            SpeedY = 0;
+                        }
+                        else
+                        {
+                            SpeedX = -100;
+                            SpeedY = 120;
+                            SetFacingDir(EMoveDirection.Left);
+                        }
                     }
                     else if (_eClimbState == EClimbState.Up)
                     {

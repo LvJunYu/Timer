@@ -65,8 +65,11 @@ namespace GameA.Game
         {
             if (UnitDefine.IsBullet(other.Id))
             {
-                OnTrigger();
-                base.OnUpHit(other, ref y, checkOnly);
+                if (!checkOnly)
+                {
+                    OnTrigger();
+                }
+                return base.OnUpHit(other, ref y, checkOnly);
             }
             return false;
         }
@@ -75,7 +78,10 @@ namespace GameA.Game
         {
             if (UnitDefine.IsBullet(other.Id))
             {
-                OnTrigger();
+                if (!checkOnly)
+                {
+                    OnTrigger();
+                }
                 return base.OnDownHit(other, ref y, checkOnly);
             }
             return false;
@@ -85,7 +91,10 @@ namespace GameA.Game
         {
             if (UnitDefine.IsBullet(other.Id))
             {
-                OnTrigger();
+                if (!checkOnly)
+                {
+                    OnTrigger();
+                }
                 return base.OnLeftHit(other, ref x, checkOnly);
             }
             return false;
@@ -95,7 +104,10 @@ namespace GameA.Game
         {
             if (UnitDefine.IsBullet(other.Id))
             {
-                OnTrigger();
+                if (!checkOnly)
+                {
+                    OnTrigger();
+                }
                 return base.OnRightHit(other, ref x, checkOnly);
             }
             return false;

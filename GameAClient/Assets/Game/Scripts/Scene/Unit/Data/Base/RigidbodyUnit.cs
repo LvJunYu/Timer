@@ -30,6 +30,8 @@ namespace GameA.Game
         
         protected bool _onClay;
         protected bool _onIce;
+        [SerializeField] protected IntVec2 _fanForce;
+        protected Dictionary<IntVec3, IntVec2> _fanForces = new Dictionary<IntVec3, IntVec2>();
 
         protected override void Clear()
         {
@@ -43,6 +45,8 @@ namespace GameA.Game
             _cacheIntersectUnits.Clear();
             _onClay = false;
             _onIce = false;
+            _fanForce = IntVec2.zero;
+            _fanForces.Clear();
         }
         
         public override void SetStepOnClay()
