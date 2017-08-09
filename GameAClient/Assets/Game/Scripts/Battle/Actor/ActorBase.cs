@@ -448,14 +448,22 @@ namespace GameA.Game
             return TryGetState(stateType, out state);
         }
 
-        public void RemoveAllStates()
+        public void RemoveAllStates(bool deadRemove = false)
         {
-            for (int i = 0; i < _currentStates.Count; i++)
+            for (int i = _currentStates.Count - 1; i >= 0; i--)
             {
-                _currentStates[i].OnRemoved();
-                PoolFactory<State>.Free(_currentStates[i]);
+                var state = _currentStates[i];
+                if (state != null)
+                {
+                    if (deadRemove && state.TableState.DeadRemove == 0)
+                    {
+                        continue;
+                    }
+                    state.OnRemoved();
+                    PoolFactory<State>.Free(state);
+                    _currentStates.Remove(state);
+                }
             }
-            _currentStates.Clear();
         }
 
         public override void RemoveAllDebuffs()
@@ -487,10 +495,6 @@ namespace GameA.Game
             }
             _eDieType = EDieType.Lazer;
             OnDead();
-            if (_animation != null)
-            {
-                _animation.PlayOnce("DeathLazer");
-            }
         }
         
         internal override void InSaw()
@@ -501,10 +505,6 @@ namespace GameA.Game
             }
             _eDieType = EDieType.Saw;
             OnDead();
-            if (_animation != null)
-            {
-                _animation.PlayOnce("OnSawStart");
-            }
         }
    
         internal override void InWater()
@@ -529,10 +529,6 @@ namespace GameA.Game
             }
             _eDieType = EDieType.Water;
             OnDead();
-            if (_animation != null)
-            {
-                _animation.PlayOnce("DeathWater");
-            }
         }
 
         protected override bool CheckOutOfMap()
@@ -543,6 +539,39 @@ namespace GameA.Game
                 return true;
             }
             return false;
+        }
+        
+        protected override void OnDead ()
+        {
+            base.OnDead ();
+            if (HasStateType(EStateType.Fire))
+            {
+                _eDieType = EDieType.Fire;
+            }
+            if (_animation != null)
+            {
+                RemoveAllStates(true);
+                _animation.Reset();
+                switch (_eDieType)
+                {
+                    case EDieType.None:
+                    case EDieType.OutofMap:
+                        _animation.PlayOnce("Death");
+                        break;
+                    case EDieType.Lazer:
+                        _animation.PlayOnce("DeathLazer");
+                        break;
+                    case EDieType.Water:
+                        _animation.PlayOnce("DeathWater");
+                        break;
+                    case EDieType.Fire:
+                        _animation.PlayOnce("DeathFire");
+                        break;
+                    case EDieType.Saw:
+                        _animation.PlayOnce(IsPlayer ? "OnSawStart" : "OnDead");
+                        break;
+                }
+            }
         }
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)

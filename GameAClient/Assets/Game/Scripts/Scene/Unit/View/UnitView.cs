@@ -225,6 +225,11 @@ namespace GameA.Game
             {
                 _wingRight.Trans.SetActiveEx(true);
             }
+            if (_statusBar != null)
+            {
+                Object.Destroy(_statusBar.gameObject);
+                _statusBar = null;
+            }
             UpdateSign();
         }
 

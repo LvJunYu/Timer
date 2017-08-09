@@ -638,7 +638,6 @@ namespace GameA.Game
 
         protected virtual void OnDead()
         {
-            Clear();
             _isAlive = false;
             --Life;
             if (_view != null)
@@ -858,14 +857,7 @@ namespace GameA.Game
             }
             if (IsActor && _view != null)
             {
-                if (hpChanged > 0)
-                {
-                    _view.StatusBar.SetHP(EHPModifyCase.Heal, _hp,_maxHp);
-                }
-                else
-                {
-                    _view.StatusBar.SetHP(EHPModifyCase.Hit, _hp,_maxHp);
-                }
+                _view.StatusBar.SetHP(hpChanged > 0 ? EHPModifyCase.Heal : EHPModifyCase.Hit, _hp, _maxHp);
             }
         }
 
