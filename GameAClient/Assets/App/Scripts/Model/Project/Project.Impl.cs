@@ -354,8 +354,8 @@ namespace GameA
                     msg => {
                         if (msg.ResultCode == (int)EProjectOperateResult.POR_Success) {
 //                            LocalCacheManager.Instance.Save(dataBytes, LocalCacheManager.EType.File, ResPath);
-                            ImageResourceManager.Instance.SaveOrUpdateImageData(IconPath, iconBytes);
                             OnSyncFromParent(msg.ProjectData);
+                            ImageResourceManager.Instance.SaveOrUpdateImageData(IconPath, iconBytes);
                             Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectCreated, this);
                             if (successCallback != null)
                             {

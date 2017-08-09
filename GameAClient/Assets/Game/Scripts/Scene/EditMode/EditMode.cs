@@ -77,6 +77,11 @@ namespace GameA.Game
             get { return _mapStatistics; }
         }
 
+        public SlicedCameraMask CameraMask
+        {
+            get { return _cameraMask; }
+        }
+
         #endregion
 
         #region DefaultMethod
