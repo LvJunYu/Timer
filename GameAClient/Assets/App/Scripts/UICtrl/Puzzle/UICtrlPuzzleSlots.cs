@@ -18,6 +18,7 @@ namespace GameA
         private List<UMCtrlPuzzleEquipLoc> _allEquipLocs;
         private PictureFull _curPicture;
         public PictureFull CurPicture { get { return _curPicture; } }
+        public List<PictureFull> UsingPicFull { get { return _usingPicFull; } set { _usingPicFull = value; } }
 
         private void RequestData()
         {
@@ -30,13 +31,20 @@ namespace GameA
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
             _slots = TableManager.Instance.Table_PuzzleSlotDic;
             _usingPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
-            _allEquipLocs = new List<UMCtrlPuzzleEquipLoc>(_slots.Count);
+            //测试用，实际应用服务器数据
+            _usingPicFull = new List<PictureFull>(_slots.Count);
+            for (int i = 0; i < _slots.Count; i++)
+            {
+                _usingPicFull.Add(null);
+            }
+
             //创建装备栏
+            _allEquipLocs = new List<UMCtrlPuzzleEquipLoc>(_slots.Count);
             int index = 0;
             foreach (int key in _slots.Keys)
             {
                 var unlockLv = _slots[key].UnlockLevel;
-                var equipLoc = new UMCtrlPuzzleEquipLoc(key,unlockLv);
+                var equipLoc = new UMCtrlPuzzleEquipLoc(key, unlockLv);
                 _allEquipLocs.Add(equipLoc);
                 equipLoc.Init(_cachedView.PuzzleLocsGrid);
                 //显示装备的拼图
@@ -45,6 +53,15 @@ namespace GameA
                 else
                     equipLoc.SetUI(null);
                 index++;
+            }
+        }
+
+        private void RefreshSlotsAfterEquipPuzzle()
+        {
+            //_usingPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
+            for (int i = 0; i < _allEquipLocs.Count; i++)
+            {
+                _allEquipLocs[i].SetUI(_usingPicFull[i]);
             }
         }
 
@@ -57,6 +74,7 @@ namespace GameA
         {
             base.OnViewCreated();
             InitUI();
+            Messenger.AddListener(EMessengerType.OnPuzzleEquip, RefreshSlotsAfterEquipPuzzle);
         }
 
         private void OnCloseBtn()

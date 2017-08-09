@@ -104,10 +104,10 @@ namespace GameA
             _curState = PuzzleState.HasActived;
         }
 
-        public void EquipPuzzle()
+        public void EquipPuzzle(int slotID)
         {
             _isUsing = true;
-            //_slot = 1;
+            _slot = slotID;
         }
 
         public void Unload()
