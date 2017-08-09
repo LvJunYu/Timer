@@ -11,74 +11,131 @@ namespace GameA
     /// </summary>
     public partial class PictureFull : SyncronisticData
     {
-        public PuzzleState CurState;
-        public int Quality;
-        public PicturePart[] NeededFragments;
-        public string Name;
-        public string Desc;
+        //字段
+        private bool _Inited;
+        private PuzzleState _curState;
+        private Table_Puzzle _puzzleTable;
+        private PicturePart[] _neededFragments;
+        private Dictionary<int, Table_PuzzleUpgrade> _lvTableDic;//键是等级，值是当前等级对应的信息
 
-        /// <summary>
-        /// 初始化
-        /// </summary>
-        /// <param name="puzzle"></param>
-        public PictureFull(Table_Puzzle puzzle)
+        //属性
+        public PuzzleState CurState { get { return _curState; } }
+        public int Quality { get { return _puzzleTable.Quality; } }
+        public string Name { get { return _puzzleTable.Name; } }
+        public string Desc
         {
-            _pictureId = puzzle.Id;
-            _level = -1;
+            get
+            {
+                if (_lvTableDic.ContainsKey(_level))
+                    return _lvTableDic[_level].Description;
+                else
+                    return _puzzleTable.Description;
+            }
+        }
+        public int CostMoeny { get
+            {
+                if (_lvTableDic.ContainsKey(_level))
+                    return _lvTableDic[_level].UpgradeCost;
+                else
+                    return _puzzleTable.MergeCost;
+            } }
+        public Dictionary<int, Table_PuzzleUpgrade> LvTableDic { get { return _lvTableDic; } }
+        public PicturePart[] NeededFragments { get { return _neededFragments; } }
+
+        //方法
+        public PictureFull(Table_Puzzle puzzleTable)
+        {
+            //初始化信息
+            _pictureId = puzzleTable.Id;
+            _level = 0;
             _isUsing = false;
             _slot = -1;
-            CurState = PuzzleState.CantActive;
-            Quality = puzzle.Quality;
-            Name = puzzle.Name;
-            Desc = puzzle.Description;
+
+            InitData(puzzleTable);
+        }
+
+        public void InitData()
+        {
+            if (_inited == true)
+                return;
+            var puzzleTable = TableManager.Instance.GetPuzzle((int)_pictureId);
+            InitData(puzzleTable);
+        }
+
+        public void InitData(Table_Puzzle puzzleTable)
+        {
+            _puzzleTable = puzzleTable;
+            _curState = PuzzleState.CantActive;
+
             //合成所需碎片
-            var FragmentIDs = puzzle.Fragments;
-            NeededFragments = new PicturePart[FragmentIDs.Length];
+            var FragmentIDs = _puzzleTable.Fragments;
+            _neededFragments = new PicturePart[FragmentIDs.Length];
             for (int i = 0; i < FragmentIDs.Length; i++)
             {
                 var Fragment = TableManager.Instance.GetPuzzleFragment(FragmentIDs[i]);
-                NeededFragments[i] = new PicturePart(Fragment);
+                _neededFragments[i] = new PicturePart(Fragment);
             }
+            //等级信息字典
+            _lvTableDic = new Dictionary<int, Table_PuzzleUpgrade>();
+            var table = TableManager.Instance.Table_PuzzleUpgradeDic;
+            foreach (int key in table.Keys)
+            {
+                Table_PuzzleUpgrade value = table[key];
+                if (value.PuzzleID == this._pictureId)
+                    _lvTableDic.Add(value.Level, value);
+            }
+            _Inited = true;
         }
 
-        /// <summary>
-        /// 激活拼图
-        /// </summary>
+        private void InitLvDic()
+        {
+
+        }
+
+        private void UpdateDesc()
+        {
+            //Desc = puzzle.Description;
+
+        }
+
         public void ActivatePuzzle()
         {
-            CurState = PuzzleState.HasActived;
+            _level++;
+            _curState = PuzzleState.HasActived;
         }
 
-        /// <summary>
-        /// 装备拼图
-        /// </summary>
         public void EquipPuzzle()
         {
-            CurState = PuzzleState.HasEquiped;
+            _isUsing = true;
+            //_slot = 1;
         }
 
-        /// <summary>
-        /// 更新状态
-        /// </summary>
+        public void Unload()
+        {
+            _isUsing = false;
+            _slot = -1;
+        }
+
         public void UpdateState()
         {
-            if (CurState == PuzzleState.CantActive && CheckActivatable())
-                CurState = PuzzleState.CanActive;
-            else if (CurState == PuzzleState.CanActive && !CheckActivatable())
-                CurState = PuzzleState.CantActive;
+            if (_curState == PuzzleState.CantActive && CheckActivatable())
+                _curState = PuzzleState.CanActive;
+            else if (_curState == PuzzleState.CanActive && !CheckActivatable())
+                _curState = PuzzleState.CantActive;
 
         }
 
         private bool CheckActivatable()
         {
-            for (int i = 0; i < NeededFragments.Length; i++)
+            if (_level == _puzzleTable.MaxLevel)
+                return false;
+            for (int i = 0; i < _neededFragments.Length; i++)
             {
-                if (!(NeededFragments[i].TotalCount > 0))
+                if (!(_neededFragments[i].TotalCount > 0))
                     return false;
             }
             return true;
         }
-
     }
 
     /// <summary>
@@ -90,6 +147,6 @@ namespace GameA
         CantActive,//不可激活
         CanActive,//可激活
         HasActived,//已激活
-        HasEquiped//已装备
+        //HasEquiped//已装备
     }
 }

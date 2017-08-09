@@ -28,25 +28,28 @@ namespace GameA.Game
             return true;
         }
 
-        public override void UpdateLogic()
+        protected override void OnRun()
         {
-            UpdateSpeedY();
+            _effectBullet = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.Model, _trans);
+            if (_effectBullet != null)
+            {
+                _effectBullet.Play();
+            }
+            _angle = _skill.Owner.CurMoveDirection == EMoveDirection.Right
+                ? (int) EShootDirectionType.RightUp
+                : (int) EShootDirectionType.LeftUp;
+            var rad = _angle * Mathf.Deg2Rad;
+            _speed = new IntVec2((int)(_skill.ProjectileSpeed * Math.Sin(rad)), (int)(_skill.ProjectileSpeed * Math.Cos(rad)));
+            _trans.eulerAngles = new Vector3(0, 0, -_angle);
         }
         
-        protected virtual void UpdateSpeedY()
+        public override void UpdateLogic()
         {
             SpeedY += _fanForce.y;
-            if (SpeedY > 0 && _fanForce.y == 0)
-            {
-                SpeedY = Util.ConstantLerp(SpeedY, 0, 12);
-            }
-            else
-            {
-                SpeedY = Util.ConstantLerp(SpeedY, -120, 2);
-            }
+            SpeedY = Util.ConstantLerp(SpeedY, -120, 5);
             _fanForce.y = 0;
         }
-
+   
         public override void UpdateView(float deltaTime)
         {
             if (!_run)
@@ -106,6 +109,7 @@ namespace GameA.Game
                         UpdateAngle(360 - _angle);
                         break;
             }
+            LogHelper.Debug(_speed+"~~"+eDirectionType);
         }
     }
 }

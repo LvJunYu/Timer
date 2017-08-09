@@ -109,20 +109,22 @@ namespace GameA.Game
 			_trans = transform;
 		}
 
-		void Update()
-		{
-			//if (Input.GetKeyDown(KeyCode.A))
-			//{
-			//	UpdateShow();
-			//}
-		}
-
 		void OnDestroy()
 		{
 			if (_cachedMesh != null)
 			{
 				Destroy(_cachedMesh);
 			}
+		}
+
+		public void Show()
+		{
+			gameObject.SetActive(true);
+		}
+
+		public void Hide()
+		{
+			gameObject.SetActive(false);
 		}
 
 		public void SetSortOrdering(int value)

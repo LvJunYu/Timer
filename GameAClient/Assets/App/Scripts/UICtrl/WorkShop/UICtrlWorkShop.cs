@@ -423,6 +423,7 @@ namespace GameA
                     RemoteCommands.DeleteProject(projList, msg => {
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                         LocalUser.Instance.PersonalProjectList.ProjectList.Remove(_curSelectedPrivateProject.Content);
+                        _curSelectedPrivateProject.Content.Delete();
                         _curSelectedPrivateProject = null;
                         AutoSelectFirstProject ();
                         RefreshView ();
