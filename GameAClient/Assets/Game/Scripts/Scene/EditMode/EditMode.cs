@@ -413,12 +413,6 @@ namespace GameA.Game
                 {
                     return false;
                 }
-                tableUnit = UnitManager.Instance.GetTableUnit(unitDescs[i].Id);
-                if (tableUnit.EPairType > 0)
-                {
-                    PairUnitManager.Instance.AddPairUnit(unitDesc, tableUnit);
-                    UpdateSelectItem();
-                }
                 EditHelper.AfterAddUnit(unitDesc, tableUnit);
             }
             return true;
@@ -440,6 +434,11 @@ namespace GameA.Game
             if (!DataScene2D.Instance.AddData(unitDesc, tableUnit))
             {
                 return false;
+            }
+            if (tableUnit.EPairType > 0)
+            {
+                PairUnitManager.Instance.AddPairUnit(unitDesc, tableUnit);
+                UpdateSelectItem();
             }
             if (!ColliderScene2D.Instance.AddUnit(unitDesc, tableUnit))
             {

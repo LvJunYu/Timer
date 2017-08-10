@@ -249,7 +249,7 @@ namespace GameA.Game
     public enum EPairType
     {
         None,
-        ProtalDoor,
+        PortalDoor,
         TrapDoor,
         Max
     }
