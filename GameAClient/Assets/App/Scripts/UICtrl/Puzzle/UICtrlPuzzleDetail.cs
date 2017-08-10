@@ -15,7 +15,7 @@ namespace GameA
     {
         private PictureFull _puzzle;
         private PicturePart[] _puzzleFragments;
-        private UMCtrlPuzzleDetailItem _puzzleItem;
+        private UMCtrlPuzzleDetailItem _umPuzzleItem;
         private List<UMCtrlPuzzleFragmentItem> _fragmentsCache;
         private List<UMCtrlPuzzleFragmentItem> _curFragments;
         private const string _upgrateTxt = "升级";
@@ -28,15 +28,25 @@ namespace GameA
 
         private void OnActiveBtn()
         {
+            if (!GameATools.CheckGold(_puzzle.CostMoeny, true))
+                return;
+            //通知服务器
+            if (_puzzle.CurState == EPuzzleState.HasActived)
+                UpgradeCommand();
+            else
+                CompoundCommand();
+        }
+
+        private void CompoundCommand()
+        {
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在合成拼图");
             RemoteCommands.CompoundPictureFull(_puzzle.PictureId, res =>
             {
                 if (res.ResultCode == (int)ECompoundPictureFullCode.CPF_Success)
                 {
-                    Compound();
+                    CompoundOrUpgrade();
                     RequesUserPictureFull();
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    LogHelper.Debug("合成成功");
                 }
                 else
                 {
@@ -47,14 +57,46 @@ namespace GameA
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 //测试，服务器完成后删除
-                LogHelper.Debug("服务器请求失败，进行合成测试");
-                Compound();
+                LogHelper.Debug("服务器请求失败，客服端合成测试");
+                CompoundOrUpgrade();
                 //LogHelper.Debug("合成失败");
             });
         }
 
-        private void Compound()
+        private void UpgradeCommand()
         {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在升级拼图");
+            RemoteCommands.UpgradePictureFull(_puzzle.PictureId, _puzzle.Level + 1, res =>
+               {
+                   if (res.ResultCode == (int)ECompoundPictureFullCode.CPF_Success)
+                   {
+                       CompoundOrUpgrade();
+                       RequesUserPictureFull();
+                       SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                   }
+                   else
+                   {
+                       SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                       LogHelper.Debug("升级失败");
+                   }
+               }, code =>
+               {
+                   SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                   //测试，服务器完成后删除
+                   LogHelper.Debug("服务器请求失败，客服端升级测试");
+                   CompoundOrUpgrade();
+                   //LogHelper.Debug("升级失败");
+               });
+        }
+
+        private void CompoundOrUpgrade()
+        {
+            //消耗金币
+            if (!GameATools.LocalUseGold(_puzzle.CostMoeny))
+            {
+                LogHelper.Debug("Don't have enough moeny !!");
+                return;
+            };
             //消耗材料
             for (int i = 0; i < _puzzleFragments.Length; i++)
             {
@@ -62,8 +104,10 @@ namespace GameA
             }
             //升级
             _puzzle.ActivatePuzzle();
+            //传递当前合成的拼图
             SocialGUIManager.Instance.GetUI<UICtrlPuzzle>().CurActivePicFull = _puzzle;
             Messenger.Broadcast(EMessengerType.OnPuzzleCompound);
+            LogHelper.Debug("合成/升级成功");
         }
 
         private void RefreshFragments()
@@ -88,37 +132,10 @@ namespace GameA
                 code => { LogHelper.Error("Network error when get UserUsingPictureFullData, {0}", code); });
         }
 
-        protected override void OnOpen(object parameter)
-        {
-            base.OnOpen(parameter);
-            _puzzle = parameter as PictureFull;
-            _puzzleFragments = _puzzle.NeededFragments;
-            SetUI();
-        }
-
-        protected override void OnViewCreated()
-        {
-            base.OnViewCreated();
-            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-            _cachedView.ActiveBtn.onClick.AddListener(OnActiveBtn);
-            _cachedView.EquipBtn.onClick.AddListener(OnEquipBtn);
-            //碎片Item缓存
-            _fragmentsCache = new List<UMCtrlPuzzleFragmentItem>(9);
-            //当前拼图所需碎片
-            _curFragments = new List<UMCtrlPuzzleFragmentItem>(9);
-            //创建拼图
-            _puzzleItem = new UMCtrlPuzzleDetailItem();
-            _puzzleItem.Init(_cachedView.PuzzleItemPos);
-            //监听事件
-            Messenger.AddListener(EMessengerType.OnPuzzleCompound, RefreshFragments);
-            Messenger.AddListener(EMessengerType.OnPuzzleCompound, SetButtons);
-            Messenger.AddListener(EMessengerType.OnPuzzleCompound, SetPuzzleItem);
-        }
-
         private void SetUI()
         {
             //更新拼图数据
-            SetPuzzleItem();
+            SetUMPuzzleDetailItem();
 
             //创建拼图碎片
             _curFragments.Clear();
@@ -134,9 +151,9 @@ namespace GameA
             SetButtons();
         }
 
-        private void SetPuzzleItem()
+        private void SetUMPuzzleDetailItem()
         {
-            _puzzleItem.SetData(_puzzle);
+            _umPuzzleItem.SetData(_puzzle);
             _cachedView.NameTxt.text = _puzzle.Name;
             _cachedView.LvTxt.text = _puzzle.Level.ToString();
             _cachedView.DescTxt.text = _puzzle.Desc;
@@ -146,12 +163,13 @@ namespace GameA
         {
             _cachedView.Unable_Active.SetActive(!CheckActivable());
             _cachedView.Unable_Equip.SetActive(!CheckEquipable());
+            _cachedView.CostNumTxt.text = _puzzle.CostMoeny.ToString();
             SetActiveTxt();
         }
 
         private void SetActiveTxt()
         {
-            if (_puzzle.CurState == PuzzleState.HasActived)
+            if (_puzzle.CurState == EPuzzleState.HasActived)
                 _cachedView.ActiveTxt.text = _upgrateTxt;
             else
                 _cachedView.ActiveTxt.text = _activeTxt;
@@ -169,7 +187,14 @@ namespace GameA
 
         private bool CheckEquipable()
         {
-            return _puzzle.CurState == PuzzleState.HasActived;
+            return _puzzle.CurState == EPuzzleState.HasActived;
+        }
+
+        private void OnPuzzleCompound()
+        {
+            RefreshFragments();
+            SetButtons();
+            SetUMPuzzleDetailItem();
         }
 
         private UMCtrlPuzzleFragmentItem CreatePuzzleFragment()
@@ -190,6 +215,35 @@ namespace GameA
             _fragmentsCache.Add(puzzleFragment);
 
             return puzzleFragment;
+        }
+
+        protected override void OnOpen(object parameter)
+        {
+            base.OnOpen(parameter);
+            _puzzle = parameter as PictureFull;
+            _puzzleFragments = _puzzle.NeededFragments;
+            SetUI();
+        }
+
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            _cachedView.ActiveBtn.onClick.AddListener(OnActiveBtn);
+            _cachedView.EquipBtn.onClick.AddListener(OnEquipBtn);
+            //碎片Item缓存
+            _fragmentsCache = new List<UMCtrlPuzzleFragmentItem>(9);
+            //当前拼图所需碎片
+            _curFragments = new List<UMCtrlPuzzleFragmentItem>(9);
+            //创建拼图
+            _umPuzzleItem = new UMCtrlPuzzleDetailItem();
+            _umPuzzleItem.Init(_cachedView.PuzzleItemPos);
+        }
+
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            RegisterEvent(EMessengerType.OnPuzzleCompound, OnPuzzleCompound);
         }
 
         protected override void OnClose()

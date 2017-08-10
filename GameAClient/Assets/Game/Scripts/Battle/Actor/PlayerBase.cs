@@ -102,11 +102,7 @@ namespace GameA.Game
                 _tableEquipments[i] = null;
             }
             _gun = _gun ?? new Gun(this);
-            SetWeapon(101,0);
-            SetWeapon(102,1);
-            SetWeapon(103,2);
-//            SetWeapon(201,2);
-            
+            SetWeapon(101);
             _dieTime = 0;
             _box = null;
             ClearView();
@@ -115,26 +111,114 @@ namespace GameA.Game
             base.Clear();
         }
         
-        public override bool SetWeapon(int id, int slot = 0)
+        public override bool SetWeapon(int weaponId)
         {
-            var tableEquipment = TableManager.Instance.GetEquipment(id);
+            var tableEquipment = TableManager.Instance.GetEquipment(weaponId);
             if (tableEquipment == null)
             {
-                LogHelper.Error("GetEquipment Failed : {0}", id);
+                LogHelper.Error("SetWeapon Failed, WeaponId: {0}", weaponId);
                 return false;
             }
+            var tableSkill = TableManager.Instance.GetSkill(tableEquipment.SkillId);
+            if (tableSkill == null)
+            {
+                LogHelper.Error("SetWeapon Failed, SkillId : {0}", tableEquipment.SkillId);
+                return false;
+            }
+            _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
+            int slot = 0;
+            switch ((ECostType) tableSkill.CostType)
+            {
+                case ECostType.None:
+                case ECostType.Paint:
+                    FindPaintSlot(tableSkill.Id, _skillCtrl.CurrentSkills, out slot);
+                    break;
+                case ECostType.Magic:
+                    slot = 1;
+                    break;
+                case ECostType.Rage:
+                    slot = 2;
+                    break;
+            }
+            if (!_skillCtrl.SetSkill(tableSkill.Id, slot))
+            {
+                return false;
+            }
+            //发送事件
+            Messenger<Table_Skill,int>.Broadcast(EMessengerType.OnSkillSlotChanged, tableSkill, slot);
             _tableEquipments[slot] = tableEquipment;
             CalculateMaxHp();
             OnHpChanged(_maxHp);
-            _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
-            if (_skillCtrl.SetSkill(tableEquipment.SkillId, slot))
+            if (tableSkill.CostType == (int) ECostType.Magic)
             {
-                if (_skillCtrl.CurrentSkills[slot].TableSkill.CostType == (int)ECostType.Magic)
-                {
-                    _gun.ChangeView(tableEquipment.Model);
-                }
+                _gun.ChangeView(tableEquipment.Model);
             }
             return true;
+        }
+
+        private int _changedSlot;
+        
+        private bool FindPaintSlot(int skillId, SkillBase[] skills, out int slot)
+        {
+            slot = 0;
+            //0号位置专门用来放置paint
+            if (skills[0] == null)
+            {
+                return true;
+            }
+            if (skills[0].TableSkill.Id == skillId)
+            {
+                return false;
+            }
+            //先遍历找空位
+            for (int i = 1; i < skills.Length; i++)
+            {
+                var skill = skills[i];
+                if (skill == null)
+                {
+                    slot = i;
+                    return true;
+                }
+            }
+            //无空位的情况下
+//            if (skills)
+//            {
+//            }
+            //再判断技能是否已经存在，理解为更换按键顺序。
+            for (int i = 1; i < skills.Length; i++)
+            {
+                var skill = skills[i];
+                if (skill.Id == skillId)
+                {
+                    if (i == _changedSlot)
+                    {
+                        CalculateChangedSlot();
+                    }
+                    _skillCtrl.UpdateSkill(skills[_changedSlot].Id, i);
+                    slot = _changedSlot;
+                    return true;
+                }
+            }
+            //替换掉不是paint类型的
+            for (int i = 0; i < skills.Length; i++)
+            {
+                var skill = skills[i];
+                if (skill.TableSkill.CostType != (int)ECostType.Paint)
+                {
+                    slot = i;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void CalculateChangedSlot()
+        {
+            _changedSlot++;
+            if (_changedSlot >= 2)
+            {
+                _changedSlot = 0;
+            }
         }
 
         private void CalculateMaxHp()
@@ -149,7 +233,7 @@ namespace GameA.Game
                 }
             }
         }
-
+        
         internal override void OnPlay()
         {
             base.OnPlay();
@@ -261,14 +345,6 @@ namespace GameA.Game
 
         #region event
 
-        public override void OnCrushHit(UnitBase other)
-        {
-            if (_grounded)
-            {
-                OnDead();
-            }
-        }
-
         protected override void OnDead()
         {
             if (!_isAlive)
@@ -286,7 +362,6 @@ namespace GameA.Game
             {
                 LogHelper.Debug("GameOver!");
                 GameRun.Instance.Pause();
-                OnDeadAll();
             }
             Messenger.Broadcast(EMessengerType.OnMainPlayerDead);
         }
@@ -301,7 +376,7 @@ namespace GameA.Game
             _eUnitState = EUnitState.Reviving;
             _trans.eulerAngles = new Vector3(90, 0, 0);
             _reviveEffect.Play(_trans.position + Vector3.up * 0.5f,
-                                GM2DTools.TileToWorld(_revivePos), 20, () =>
+                                GM2DTools.TileToWorld(_revivePos), 8, () =>
                                 {
                                     _eUnitState = EUnitState.Normal;
                                     _input.Clear();
@@ -337,7 +412,7 @@ namespace GameA.Game
             ClearRunTime();
             _trans.eulerAngles = new Vector3(90, 0, 0);
             _portalEffect.Play(_trans.position + Vector3.up * 0.5f,
-                GM2DTools.TileToWorld(targetPos), 30, () => PlayMode.Instance.RunNextLogic(() =>
+                GM2DTools.TileToWorld(targetPos), 8, () => PlayMode.Instance.RunNextLogic(() =>
                 {
                     _eUnitState = EUnitState.Normal;
                     PlayMode.Instance.UnFreeze(this);
@@ -397,10 +472,7 @@ namespace GameA.Game
             }
             _reviveEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null, ESortingOrder.LazerEffect));
             _portalEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null, ESortingOrder.LazerEffect));
-            SetWeapon(101,0);
-            SetWeapon(102,1);
-            SetWeapon(103,2);
-//            SetWeapon(201,2);
+            SetWeapon(101);
             _view.StatusBar.ShowHP();
             _view.StatusBar.ShowMP();
             return true;
@@ -565,11 +637,6 @@ namespace GameA.Game
 //            }
 //        }
 
-        protected void OnDeadAll()
-        {
-            _animation.PlayOnce(DeathAnimName());
-        }
-
         /// <summary>
         /// 播放跑步烟尘
         /// </summary>
@@ -679,11 +746,6 @@ namespace GameA.Game
                 return "Fly";
             }
             return "Fall";
-        }
-
-        protected virtual string DeathAnimName()
-        {
-            return "Death";
         }
 
         protected virtual string LandAnimName()

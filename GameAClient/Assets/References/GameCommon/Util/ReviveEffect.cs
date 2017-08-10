@@ -1,4 +1,5 @@
 ﻿using System;
+using GameA.Game;
 using SoyEngine;
 using UnityEngine;
 
@@ -63,9 +64,9 @@ public class ReviveEffect
         _endPos = endPos;
         _callback = callback;
         _timer = 0;
-        float distance = (startPos - endPos).magnitude;
+        float distance = (_startPos - endPos).magnitude;
         _maxScale = distance < 10f ? Mathf.Clamp01(1f - 1.3f * (10 - distance) * 0.1f) : 1f;
-        _lifeTime = (int)(distance / (speed * 0.02f));
+        _lifeTime = (int)(distance / (speed * ConstDefineGM2D.FixedDeltaTime));
         _lifeTime = Mathf.Max(1, _lifeTime);
         _playing = true;
     }
@@ -90,7 +91,7 @@ public class ReviveEffect
             }
             return;
         }
-        _curPos = Vector3.Lerp(_startPos, _endPos, (float) _timer/_lifeTime);
+        _curPos = Vector3.Lerp(_startPos, _endPos, (float) _timer / _lifeTime);
         if (_particle != null)
         {
             float t = (float) _timer/_lifeTime;

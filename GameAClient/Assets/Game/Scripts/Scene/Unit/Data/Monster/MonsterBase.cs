@@ -140,7 +140,7 @@ namespace GameA.Game
                 }
             }
         }
-
+        
         protected virtual void OnRightStampedEmpty()
         {
         }

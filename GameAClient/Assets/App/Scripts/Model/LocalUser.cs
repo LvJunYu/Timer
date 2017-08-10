@@ -49,6 +49,9 @@ namespace GameA
         private UserUsingPictureFullData _userUsingPictureFullData = new UserUsingPictureFullData();
         private UserPicturePart _userPicturePart = new UserPicturePart();
 
+        //武器数据
+        private UserWeaponData _userWeaponData = new UserWeaponData();
+        private UserWeaponPartData _userWeaponPartData = new UserWeaponPartData();
         #endregion
         #region 属性
 
@@ -187,6 +190,16 @@ namespace GameA
         public UserPicturePart UserPicturePart
         {
             get { return _userPicturePart; }
+        }
+
+        //武器数据
+        public UserWeaponData UserWeaponData
+        {
+            get { return _userWeaponData; }
+        }
+        public UserWeaponPartData UserWeaponPartData
+        {
+            get { return _userWeaponPartData; }
         }
         #endregion
 

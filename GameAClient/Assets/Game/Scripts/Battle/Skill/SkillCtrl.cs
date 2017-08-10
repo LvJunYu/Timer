@@ -45,6 +45,25 @@ namespace GameA.Game
             return true;
         }
 
+        public void UpdateSkill(int id, int slot)
+        {
+            RemoveSlot(slot);
+            SetSkill(id, slot);
+        }
+
+        private void RemoveSlot(int slot)
+        {
+            if (!CheckValid(slot))
+            {
+                return;
+            }
+            if (_currentSkills[slot] != null)
+            {
+                _currentSkills[slot].Exit();
+                _currentSkills[slot] = null;
+            }
+        }
+
         public virtual void UpdateLogic()
         {
             for (int i = 0; i < _currentSkills.Length; i++)

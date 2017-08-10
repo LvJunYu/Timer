@@ -133,7 +133,7 @@ namespace GameA
                 code => { LogHelper.Error("Network error when get ValidAvatarData, {0}", code); });
         }
 
-        private void RefreshAfterActivePuzzle()
+        private void OnPuzzleCompound()
         {
             //if (CurActivePicFull == null || CurActivePicFull.Level > 1)
             //    return;
@@ -154,7 +154,7 @@ namespace GameA
             }
         }
 
-        private void RefreshSlotsAfterEquipPuzzle()
+        private void OnPuzzleEquip()
         {
             //_usingPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
             for (int i = 0; i < _allEquipLocs.Count; i++)
@@ -196,8 +196,18 @@ namespace GameA
             _puzzles = TableManager.Instance.Table_PuzzleDic;
             InitData();
             InitUI();
-            Messenger.AddListener(EMessengerType.OnPuzzleCompound, RefreshAfterActivePuzzle);
-            Messenger.AddListener(EMessengerType.OnPuzzleEquip, RefreshSlotsAfterEquipPuzzle);
+        }
+
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            RegisterEvent(EMessengerType.OnPuzzleCompound, OnPuzzleCompound);
+            RegisterEvent(EMessengerType.OnPuzzleEquip, OnPuzzleEquip);
+        }
+
+        protected override void OnOpen(object parameter)
+        {
+            base.OnOpen(parameter);
         }
 
         private void OnFuncToggle(bool arg0)
@@ -227,11 +237,6 @@ namespace GameA
             }
         }
 
-        protected override void OnOpen(object parameter)
-        {
-            base.OnOpen(parameter);
-        }
-
         private void OnCloseBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlPuzzle>();
@@ -241,7 +246,6 @@ namespace GameA
         {
             _groupId = (int)EUIGroupType.PopUpUI;
         }
-
     }
 
     public enum EPuzzleOrderType

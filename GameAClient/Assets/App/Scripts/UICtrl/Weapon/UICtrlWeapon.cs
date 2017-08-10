@@ -21,27 +21,24 @@ namespace GameA
         private string _universalSpriteName = "universalpart";
         private int _weaponID = 101;
         private int _skillID;
+        private int _weaponLv;
         private int _weaponlevelID;
-        private int _weaponLv = 2;
         private int _multiple = 100;
         private Color _weaponColor;
         private string _colorName;
-        private int[] _idColltions = new int[] { 101, 102, 103, 201, 202, 203 };
-        private int _universalCount = 5;
+        private int[] _idColltions;
+        private int _universalCount ;
         private int index = 0;
         private int _isCompoudAddNum;
         private int _userGoldCoin= 10;
         private int _needCoin;
         private int _needPart;
         private int _userOwnWeaponPart;
-        private UserWeaponData _userWeaponData = new UserWeaponData();
-        private UserWeaponPartData _userWeaponPartData = new UserWeaponPartData();
+        private UserWeaponData _userWeaponData  = new UserWeaponData();
+        private UserWeaponPartData _userWeaponPartData = new UserWeaponPartData() ;
         private Dictionary<long, int> _userWeaponPartDataDic = new Dictionary<long, int>();
         private Dictionary<long, Weapon> _userWeaponDataDic = new Dictionary<long, Weapon>();
-
-        private Action _closeCB;
         #endregion
-
         #region Properties
         #endregion
 
@@ -49,6 +46,7 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+            RefershWeaponShow();
         }
 
         protected override void OnClose()
@@ -68,13 +66,11 @@ namespace GameA
             _cachedView.CloseButton.onClick.AddListener(OnCloseBtn);
             _cachedView.LeftWeapon.onClick.AddListener(OnLeftButton);
             _cachedView.RightWeapon.onClick.AddListener(OnRightButton);
-            _cachedView.UpGrade.onClick.AddListener(OnUpgrade);         
+            _cachedView.UpGrade.onClick.AddListener(OnUpgrade);            
             SetUserWeaponData();
             SetUserWeaponPartData();
+            InitData();
             RefershWeaponShow();
-
-
-
         }
 
         public override void OnUpdate()
@@ -88,7 +84,6 @@ namespace GameA
         }
         private void OnLeftButton()
         {
-            //  _weaponID = TableManager.Instance.GetEquipment.
             if (index > 0)
             {
                 _weaponID = _idColltions[--index];
@@ -159,9 +154,10 @@ namespace GameA
             _cachedView.HpAddNum.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).HpAdd.ToString();//血量增加
             _cachedView.AttackAddNum.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).AttackAdd.ToString();//攻击力增加
             _cachedView.WeaponName.text = TableManager.Instance.GetEquipment(_weaponID).Name;//武器的名字
-            _colorName = TableManager.Instance.GetRarity(TableManager.Instance.GetEquipment(_weaponID).Rarity).Color;
-            ColorUtility.TryParseHtmlString(_colorName, out _weaponColor);
-            _cachedView.WeaponName.color = _weaponColor;//颜色
+
+            //_colorName = TableManager.Instance.GetRarity(TableManager.Instance.GetEquipment(_weaponID).Rarity).Color;
+            //ColorUtility.TryParseHtmlString(_colorName, out _weaponColor);
+            _cachedView.WeaponName.color = GetRarityColor(TableManager.Instance.GetEquipment(_weaponID).Rarity);//颜色
             _cachedView.WeaponLv.text = _weaponLv.ToString();//武器的等级
             _cachedView.UnlockedWeaponNum.text = _userWeaponData.ItemDataList.Count.ToString();//解锁的武器数目
             _cachedView.OwnedUniversalFragmentsNum.text = _universalCount.ToString();//拥有的万能碎片的数目
@@ -181,8 +177,7 @@ namespace GameA
             ResourcesManager.Instance.TryGetSprite(_universalSpriteName, out _universalSprie);
             _cachedView.OwnedUniversalFragmentsIcon.sprite = _universalSprie;
 
-
-            //武器碎片的额数目
+            //武器碎片的数目
             if (_userWeaponPartDataDic.ContainsKey(_weaponID))
             {
                 _userOwnWeaponPart = _userWeaponPartDataDic[_weaponID];
@@ -206,9 +201,29 @@ namespace GameA
         }
         private void OnFaild()
         { }
+        private void InitData()
+        {
+            //网络请求数据
+            //LocalUser.Instance.UserWeaponData.Request(LocalUser.Instance.UserGuid, null,
+            //    code => { LogHelper.Error("Network error when get UserWeaponData, {0}", code); });
+            //LocalUser.Instance.UserWeaponPartData.Request(LocalUser.Instance.UserGuid,null,
+            //    code => { LogHelper.Error("Network error when get UserWeaponPartData, {0}" ,code); });
+            //_userWeaponData = LocalUser.Instance.UserWeaponData;
+            //_userWeaponPartData = LocalUser.Instance.UserWeaponPartData;
+            foreach (var item in _userWeaponData.ItemDataList)
+            {
+                _userWeaponDataDic.Add(item.Id, item);
+            }
+            foreach (var item in _userWeaponPartData.ItemDataList)
+            {
+                _userWeaponPartDataDic.Add(item.Id, item.TotalCount);
+            }
+            _idColltions = new int[TableManager.Instance.Table_EquipmentDic.Keys.Count];
+            TableManager.Instance.Table_EquipmentDic.Keys.CopyTo(_idColltions, 0);
+            _universalCount = _userWeaponPartDataDic[0];
+        }
         private void SetUserWeaponData()
         {
-
             Weapon weapon1 = new Weapon();
             weapon1.Id = 101;
             weapon1.Level = 5;
@@ -221,13 +236,13 @@ namespace GameA
             _userWeaponData.ItemDataList.Add(weapon1);
             _userWeaponData.ItemDataList.Add(weapon2);
             _userWeaponData.ItemDataList.Add(weapon3);
-            foreach (var item in _userWeaponData.ItemDataList)
-            {
-                _userWeaponDataDic.Add(item.Id, item);
-            }
+           
         }
         private void SetUserWeaponPartData()
         {
+            WeaponPart weaponpart0 = new WeaponPart();
+            weaponpart0.Id = 0;
+            weaponpart0.TotalCount = 5;
             WeaponPart weaponpart1 = new WeaponPart();
             weaponpart1.Id = 201;
             weaponpart1.TotalCount = 10;
@@ -240,14 +255,32 @@ namespace GameA
             WeaponPart weaponpart4 = new WeaponPart();
             weaponpart4.Id = 101;
             weaponpart4.TotalCount = 10;
+            _userWeaponPartData.ItemDataList.Add(weaponpart0);
             _userWeaponPartData.ItemDataList.Add(weaponpart1);
             _userWeaponPartData.ItemDataList.Add(weaponpart2);
             _userWeaponPartData.ItemDataList.Add(weaponpart3);
             _userWeaponPartData.ItemDataList.Add(weaponpart4);
-            foreach (var item in _userWeaponPartData.ItemDataList)
+         
+        }
+        public Color GetRarityColor(int Rarity)
+        {
+            Color _color = new Color();
+            switch ( Rarity)
             {
-                _userWeaponPartDataDic.Add(item.Id, item.TotalCount);
+                case 1:
+                    _color = Color.red;
+                    break;
+                case 2:
+                    _color = Color.yellow;
+                    break;
+                case 3:
+                    _color = Color.green;
+                    break;
+                case 4:
+                    _color = Color.blue;
+                    break;
             }
+            return _color; 
         }
         #endregion
     }
