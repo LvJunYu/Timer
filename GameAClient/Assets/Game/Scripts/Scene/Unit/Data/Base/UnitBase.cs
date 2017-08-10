@@ -947,18 +947,17 @@ namespace GameA.Game
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, size, _tableUnit);
                 }
             }
-            int halfTile = _tableUnit.Width / 2;
-            float z = -(_curPos.x + halfTile + _curPos.y + halfTile) * 0.0015625f+ _viewZOffset;
+            float z = GetZ(_curPos);
             if (UnitDefine.IsDownY(_tableUnit))
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, -0.1f, z);
             }
             return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + Vector3.forward * z;
         }
-
+        
         protected float GetZ(IntVec2 pos)
         {
-            return -(pos.x + pos.y) * 0.00078125f;
+            return -(pos.x + pos.y + _tableUnit.Width) * UnitDefine.UnitSorttingLayerRatio+ _viewZOffset;
         }
 
         protected void SetRelativeEffectPos(Transform trans, EDirectionType eDirectionType, float viewZOffset = 0)
