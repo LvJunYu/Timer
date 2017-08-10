@@ -1,4 +1,6 @@
-﻿namespace GameA.Game
+﻿using SoyEngine;
+
+namespace GameA.Game
 {
     [Unit(Id = 10006, Type = typeof(ProjectileIceSword))]
     public class ProjectileIceSword : ProjectileBase
@@ -12,6 +14,16 @@
             if (_dynamicCollider != null)
             {
                 _dynamicCollider.Layer = (int)ESceneLayer.Bullet;
+            }
+        }
+
+        protected override void OnRun()
+        {
+            base.OnRun();
+            _effectBullet = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.Model, _trans);
+            if (_effectBullet != null)
+            {
+                _effectBullet.Play();
             }
         }
 

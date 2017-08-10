@@ -49,7 +49,7 @@ namespace GameA.Game
             get { return _mainCameraTrans; }
         }
 
-        public Vector3 MainCamaraPos
+        public Vector3 MainCameraPos
         {
             get { return _mainCameraTrans.position; }
             set { _mainCameraTrans.position = value; }
@@ -167,7 +167,7 @@ namespace GameA.Game
             c.orthographic = true;
             c.transparencySortMode = TransparencySortMode.Orthographic;
             c.orthographicSize = ConstDefineGM2D.CameraOrthoSizeOnPlay;
-            c.nearClipPlane = -200;
+            c.nearClipPlane = -800;
             c.farClipPlane = 200;
             c.enabled = false;
             return c;

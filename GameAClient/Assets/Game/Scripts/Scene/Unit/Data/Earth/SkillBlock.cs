@@ -39,7 +39,7 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.IsActor)
+            if (other.IsActor || other.Id == UnitDefine.BoxId)
             {
                 var min = new IntVec2(other.CenterPos.x, other.ColliderGrid.YMin - 1);
                 var grid = new Grid2D(min.x, min.y, min.x, min.y + ConstDefineGM2D.ServerTileScale);

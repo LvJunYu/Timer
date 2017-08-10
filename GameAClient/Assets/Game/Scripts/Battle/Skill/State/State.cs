@@ -1,4 +1,5 @@
-﻿using SoyEngine;
+﻿using System.Linq;
+using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -48,13 +49,13 @@ namespace GameA.Game
             _duration = TableConvert.GetTime(_tableState.Duration);
             _curDuration = _duration;
             _intervalTime = TableConvert.GetTime(_tableState.IntervalTime);
-            if (!string.IsNullOrEmpty(_tableState.Particle))
-            {
-                _effect = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableState.Particle, _target.Trans);
-                _effect.Play();
-            }
             Excute(EEffectType.Always);
             OnAddView();
+            //0代表无穷
+            if (_curDuration == 0)
+            {
+                _run = false;
+            }
             return true;
         }
 
@@ -131,6 +132,7 @@ namespace GameA.Game
         
         public void UpdateLogic()
         {
+            UpdateStateView();
             if (!_run)
             {
                 return;
@@ -142,7 +144,6 @@ namespace GameA.Game
                     return;
                 }
             }
-            UpdateStateView();
             if (_timer >= _curDuration)
             {
                 //移除
@@ -219,6 +220,19 @@ namespace GameA.Game
 
         private void OnAddView()
         {
+            string path = _tableState.Particle;
+            if (_tableState.StateType == (int)EStateType.Clay)
+            {
+                path += "Down";
+            }
+            if (!string.IsNullOrEmpty(path))
+            {
+                _effect = GameParticleManager.Instance.GetUnityNativeParticleItem(path, _target.Trans);
+                if (_effect != null)
+                {
+                    _effect.Play();
+                }
+            }
             if (_target.Animation != null && !string.IsNullOrEmpty(_tableState.Animation) && _target.Animation.HasAnimation(_tableState.Animation))
             {
                 _target.Animation.Reset();

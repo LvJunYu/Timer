@@ -14,6 +14,13 @@ namespace GameA.Game
     [Unit(Id = 10005, Type = typeof(ProjectileClay))]
     public class ProjectileClay : ProjectileBase
     {
-        
+        protected override void OnRun()
+        {
+            base.OnRun();
+            if (_animation != null)
+            {
+                _animation.Init("Run", false);
+            }
+        }
     }
 }

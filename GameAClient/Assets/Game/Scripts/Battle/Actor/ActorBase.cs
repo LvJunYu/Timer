@@ -72,6 +72,16 @@ namespace GameA.Game
             base.Clear();
         }
 
+        protected override void OnLand()
+        {
+            base.OnLand();
+            if (HasStateType(EStateType.Stun))
+            {
+                //落地时候移除掉猛犸象的晕眩
+                RemoveStates(72);
+            }
+        }
+
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();
@@ -114,15 +124,30 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_curBanInputTime == 0 && !IsHoldingBox() && (_eClimbState == EClimbState.None || _eClimbState == EClimbState.Up))
+            if (_curBanInputTime == 0 && !IsHoldingBox())
             {
-                if (_input.GetKeyApplied(EInputType.Left))
+                switch (_eClimbState)
                 {
-                    SetFacingDir(EMoveDirection.Left);
-                }
-                else if (_input.GetKeyApplied(EInputType.Right))
-                {
-                    SetFacingDir(EMoveDirection.Right);
+                    case EClimbState.None:
+                        if (_input.GetKeyApplied(EInputType.Left))
+                        {
+                            SetFacingDir(EMoveDirection.Left);
+                        }
+                        else if (_input.GetKeyApplied(EInputType.Right))
+                        {
+                            SetFacingDir(EMoveDirection.Right);
+                        }
+                        break;
+                    case EClimbState.Up://翻转
+                        if (_input.GetKeyApplied(EInputType.Left))
+                        {
+                            SetFacingDir(EMoveDirection.Right);
+                        }
+                        else if (_input.GetKeyApplied(EInputType.Right))
+                        {
+                            SetFacingDir(EMoveDirection.Left);
+                        }
+                        break;
                 }
             }
             CheckJump();
@@ -144,15 +169,33 @@ namespace GameA.Game
                     _jumpState = EJumpState.Jump1;
                     if (_eClimbState == EClimbState.Left)
                     {
-                        SpeedX = 120;
-                        SpeedY = 120;
-                        SetFacingDir(EMoveDirection.Right);
+                        //按着下的时候 直接下来
+                        if (_input.GetKeyApplied(EInputType.Down) && !_input.GetKeyApplied(EInputType.Right))
+                        {
+                            SpeedX = 0;
+                            SpeedY = 0;
+                        }
+                        else
+                        {
+                            SpeedX = 100;
+                            SpeedY = 120;
+                            SetFacingDir(EMoveDirection.Right);
+                        }
                     }
                     else if (_eClimbState == EClimbState.Right)
                     {
-                        SpeedX = -120;
-                        SpeedY = 120;
-                        SetFacingDir(EMoveDirection.Left);
+                        //按着下的时候 直接下来
+                        if (_input.GetKeyApplied(EInputType.Down) && !_input.GetKeyApplied(EInputType.Left))
+                        {
+                            SpeedX = 0;
+                            SpeedY = 0;
+                        }
+                        else
+                        {
+                            SpeedX = -100;
+                            SpeedY = 120;
+                            SetFacingDir(EMoveDirection.Left);
+                        }
                     }
                     else if (_eClimbState == EClimbState.Up)
                     {
@@ -245,6 +288,10 @@ namespace GameA.Game
                 for (int i = 0; i < _skillCtrl.CurrentSkills.Length; i++)
                 {
                     var skill = _skillCtrl.CurrentSkills[i];
+                    if (skill == null)
+                    {
+                        continue;
+                    }
                     switch ((ECostType)skill.TableSkill.CostType)
                     {
                             case ECostType.Paint:
@@ -255,9 +302,19 @@ namespace GameA.Game
                                 break;
                             case ECostType.Magic:
                             case ECostType.Rage:
-                                if (_input.GetKeyApplied(_skillInputs[i]))
+                                if (IsPlayer)
                                 {
-                                    _skillCtrl.Fire(i);
+                                    if (_input.GetKeyUpApplied(_skillInputs[i]))
+                                    {
+                                        _skillCtrl.Fire(i);
+                                    }
+                                }
+                                else
+                                {
+                                    if (_input.GetKeyApplied(_skillInputs[i]))
+                                    {
+                                        _skillCtrl.Fire(i);
+                                    }
                                 }
                                 break;
                     }
@@ -283,6 +340,10 @@ namespace GameA.Game
             for (int i = 0; i < ids.Length; i++)
             {
                 var id = ids[i];
+                if (id == 0)
+                {
+                    continue;
+                }
                 var tableState = TableManager.Instance.GetState(id);
                 if (tableState == null)
                 {
@@ -391,14 +452,22 @@ namespace GameA.Game
             return TryGetState(stateType, out state);
         }
 
-        public void RemoveAllStates()
+        public void RemoveAllStates(bool deadRemove = false)
         {
-            for (int i = 0; i < _currentStates.Count; i++)
+            for (int i = _currentStates.Count - 1; i >= 0; i--)
             {
-                _currentStates[i].OnRemoved();
-                PoolFactory<State>.Free(_currentStates[i]);
+                var state = _currentStates[i];
+                if (state != null)
+                {
+                    if (deadRemove && state.TableState.DeadRemove == 0)
+                    {
+                        continue;
+                    }
+                    state.OnRemoved();
+                    PoolFactory<State>.Free(state);
+                    _currentStates.Remove(state);
+                }
             }
-            _currentStates.Clear();
         }
 
         public override void RemoveAllDebuffs()
@@ -430,10 +499,6 @@ namespace GameA.Game
             }
             _eDieType = EDieType.Lazer;
             OnDead();
-            if (_animation != null)
-            {
-                _animation.PlayOnce("DeathLazer");
-            }
         }
         
         internal override void InSaw()
@@ -444,10 +509,6 @@ namespace GameA.Game
             }
             _eDieType = EDieType.Saw;
             OnDead();
-            if (_animation != null)
-            {
-                _animation.PlayOnce("OnSawStart");
-            }
         }
    
         internal override void InWater()
@@ -472,43 +533,6 @@ namespace GameA.Game
             }
             _eDieType = EDieType.Water;
             OnDead();
-            if (_animation != null)
-            {
-                _animation.PlayOnce("DeathWater");
-            }
-        }
-        
-        internal override void InFan(UnitBase fanUnit, IntVec2 force)
-        {
-            if (_fanForces.ContainsKey(fanUnit.Guid))
-            {
-                _fanForces[fanUnit.Guid] = force;
-            }
-            else
-            {
-                _fanForces.Add(fanUnit.Guid, force);
-            }
-            _fanForce= IntVec2.zero;
-            var iter = _fanForces.GetEnumerator();
-            while (iter.MoveNext())
-            {
-                _fanForce += iter.Current.Value;
-            }
-            ExtraSpeed.x = _fanForce.x;
-        }
-
-        internal override void OutFan(UnitBase fanUnit)
-        {
-            _fanForces.Remove(fanUnit.Guid);
-            _fanForce = IntVec2.zero;
-            if (_fanForces.Count > 0)
-            {
-                var iter = _fanForces.GetEnumerator();
-                while (iter.MoveNext())
-                {
-                    _fanForce += iter.Current.Value;
-                }
-            }
         }
 
         protected override bool CheckOutOfMap()
@@ -519,6 +543,39 @@ namespace GameA.Game
                 return true;
             }
             return false;
+        }
+        
+        protected override void OnDead ()
+        {
+            base.OnDead ();
+            if (HasStateType(EStateType.Fire))
+            {
+                _eDieType = EDieType.Fire;
+            }
+            if (_animation != null)
+            {
+                RemoveAllStates(true);
+                _animation.Reset();
+                switch (_eDieType)
+                {
+                    case EDieType.None:
+                    case EDieType.OutofMap:
+                        _animation.PlayOnce("Death");
+                        break;
+                    case EDieType.Lazer:
+                        _animation.PlayOnce("DeathLazer");
+                        break;
+                    case EDieType.Water:
+                        _animation.PlayOnce("DeathWater");
+                        break;
+                    case EDieType.Fire:
+                        _animation.PlayOnce("DeathFire");
+                        break;
+                    case EDieType.Saw:
+                        _animation.PlayOnce(IsPlayer ? "OnSawStart" : "OnDead");
+                        break;
+                }
+            }
         }
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)

@@ -97,12 +97,20 @@ namespace GameA.Game
         {
             base.OnInit();
             var validMapTileRect = DataScene2D.Instance.ValidMapRect;
+            validMapTileRect.Max = new IntVec2(validMapTileRect.Max.x, validMapTileRect.Min.y + ConstDefineGM2D.DefaultValidMapRectSize.y);
             var validMapRect = GM2DTools.TileRectToWorldRect(validMapTileRect);
             _basePos = validMapRect.center;
-            _followTileRect = GM2DTools.ToGrid2D(validMapTileRect);
-            _followRect = GM2DTools.TileRectToWorldRect(GM2DTools.ToIntRect(_followTileRect));
-            _cloudTileRect = new Grid2D(validMapTileRect.Min.x - 15 * ConstDefineGM2D.ServerTileScale, validMapTileRect.Min.y, validMapTileRect.Max.x + 15 * ConstDefineGM2D.ServerTileScale, validMapTileRect.Max.y);
-            _cloudRect = GM2DTools.TileRectToWorldRect(GM2DTools.ToIntRect(_cloudTileRect));
+            _followRect = validMapRect;
+            _followRect.size = GM2DTools.TileToWorld(ConstDefineGM2D.DefaultValidMapRectSize);
+            _followRect.width += 4;
+            _followRect.height += 4;//地图编辑黑边有渐变 防止走光
+            _followRect.center = _basePos;
+            
+            _followTileRect = GM2DTools.ToGrid2D(GM2DTools.WorldRectToTileRect(_followRect));
+            _cloudRect = _followRect;
+            _cloudRect.size += new Vector2(20, 0);
+            _cloudRect.center = _basePos;
+            _cloudTileRect = GM2DTools.ToGrid2D(GM2DTools.WorldRectToTileRect(_cloudRect));
             _parent = new GameObject("Background").transform;
             _parents = new Transform[(int)EBgDepth.Max];
             for (int i = 0; i < (int)EBgDepth.Max; i++)
@@ -127,6 +135,11 @@ namespace GameA.Game
         public void OnPlay()
         {
             _run = true;
+        }
+
+        public void OnStop()
+        {
+            _run = false;
         }
 
         public void Reset()
@@ -305,20 +318,20 @@ namespace GameA.Game
             return true;
         }
 
-        private bool DeleteView(SceneNode node)
-        {
-            BgItem bgItem;
-            if (!_items.TryGetValue(node.Guid, out bgItem))
-            {
-                return false;
-            }
-            FreeItem(bgItem);
-            return _items.Remove(node.Guid);
-        }
+//        private bool DeleteView(SceneNode node)
+//        {
+//            BgItem bgItem;
+//            if (!_items.TryGetValue(node.Guid, out bgItem))
+//            {
+//                return false;
+//            }
+//            FreeItem(bgItem);
+//            return _items.Remove(node.Guid);
+//        }
 
-        private void FreeItem(BgItem bgItem)
-        {
-            PoolFactory<BgItem>.Free(bgItem);
-        }
+//        private void FreeItem(BgItem bgItem)
+//        {
+//            PoolFactory<BgItem>.Free(bgItem);
+//        }
     }
 }

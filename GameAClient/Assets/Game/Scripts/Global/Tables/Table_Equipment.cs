@@ -35,6 +35,21 @@ namespace GameA.Game
         /// </summary>
 		[ColumnMapping("SkillId")]
 		public int SkillId;
+		/// <summary>
+        /// 稀有度
+        /// </summary>
+		[ColumnMapping("Rarity")]
+		public  int Rarity;
+		/// <summary>
+        /// 武器碎片数目
+        /// </summary>
+		[ColumnMapping("WeaponPartCout")]
+		public int WeaponPartCout;
+		/// <summary>
+        /// 武器碎片图标
+        /// </summary>
+		[ColumnMapping("WeaponPartIcon")]
+		public string WeaponPartIcon;
 	}
 
     public class TableEquipmentAsset:BaseTableAsset

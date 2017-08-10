@@ -27,6 +27,11 @@ namespace GameA.Game
         /// 是否相交
         /// </summary>
         private static HashSet<IntVec3> _cacheIntersectUnits = new HashSet<IntVec3>();
+        
+        protected bool _onClay;
+        protected bool _onIce;
+        [SerializeField] protected IntVec2 _fanForce;
+        protected Dictionary<IntVec3, IntVec2> _fanForces = new Dictionary<IntVec3, IntVec2>();
 
         protected override void Clear()
         {
@@ -38,6 +43,20 @@ namespace GameA.Game
             _cacheCheckedDownUnits.Clear();
             _cacheHitUnits.Clear();
             _cacheIntersectUnits.Clear();
+            _onClay = false;
+            _onIce = false;
+            _fanForce = IntVec2.zero;
+            _fanForces.Clear();
+        }
+        
+        public override void SetStepOnClay()
+        {
+            _onClay = true;
+        }
+
+        public override void SetStepOnIce()
+        {
+            _onIce = true;
         }
 
         protected override void UpdateCollider(IntVec2 min)
@@ -305,6 +324,39 @@ namespace GameA.Game
 
         protected virtual void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
+        }
+        
+        internal override void InFan(UnitBase fanUnit, IntVec2 force)
+        {
+            if (_fanForces.ContainsKey(fanUnit.Guid))
+            {
+                _fanForces[fanUnit.Guid] = force;
+            }
+            else
+            {
+                _fanForces.Add(fanUnit.Guid, force);
+            }
+            _fanForce= IntVec2.zero;
+            var iter = _fanForces.GetEnumerator();
+            while (iter.MoveNext())
+            {
+                _fanForce += iter.Current.Value;
+            }
+            ExtraSpeed.x = _fanForce.x;
+        }
+
+        internal override void OutFan(UnitBase fanUnit)
+        {
+            _fanForces.Remove(fanUnit.Guid);
+            _fanForce = IntVec2.zero;
+            if (_fanForces.Count > 0)
+            {
+                var iter = _fanForces.GetEnumerator();
+                while (iter.MoveNext())
+                {
+                    _fanForce += iter.Current.Value;
+                }
+            }
         }
     }
 }

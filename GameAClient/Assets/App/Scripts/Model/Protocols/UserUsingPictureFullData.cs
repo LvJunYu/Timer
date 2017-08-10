@@ -16,7 +16,7 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        private List<PicturePart> _itemDataList;
+        private List<PictureFull> _itemDataList;
         /// <summary>
         /// 槽位数
         /// </summary>
@@ -44,7 +44,7 @@ namespace GameA
         /// <summary>
         /// 
         /// </summary>
-        public List<PicturePart> ItemDataList { 
+        public List<PictureFull> ItemDataList { 
             get { return _itemDataList; }
             set { if (_itemDataList != value) {
                 _itemDataList = value;
@@ -121,9 +121,9 @@ namespace GameA
         {
             if (null == msg) return false;
             _userId = msg.UserId;           
-            _itemDataList = new List<PicturePart>();
+            _itemDataList = new List<PictureFull>();
             for (int i = 0; i < msg.ItemDataList.Count; i++) {
-                _itemDataList.Add(new PicturePart(msg.ItemDataList[i]));
+                _itemDataList.Add(new PictureFull(msg.ItemDataList[i]));
             }
             _slotCount = msg.SlotCount;           
             OnSyncPartial();
@@ -143,7 +143,7 @@ namespace GameA
         }
 
         public UserUsingPictureFullData () { 
-            _itemDataList = new List<PicturePart>();
+            _itemDataList = new List<PictureFull>();
             OnCreate();
         }
         #endregion

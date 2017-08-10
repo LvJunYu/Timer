@@ -114,6 +114,10 @@ namespace GameA
         public static int OnRoomPlayerExit = SoyEngine.EMessengerType.NextId++;
         public static int OnRoomWarnningHost = SoyEngine.EMessengerType.NextId++;
         public static int OnOpenBattle = SoyEngine.EMessengerType.NextId++;
+
+        //拼图
+        public static int OnPuzzleCompound = SoyEngine.EMessengerType.NextId++;
+        public static int OnPuzzleEquip = SoyEngine.EMessengerType.NextId++;
     }
 }
 

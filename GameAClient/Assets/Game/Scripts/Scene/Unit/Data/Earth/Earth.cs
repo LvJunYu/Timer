@@ -55,7 +55,7 @@ namespace GameA.Game
                 {
                     if (_edges[i].Direction == eDirectionType && _edges[i].Intersect(start, end))
                     {
-                        return _edges[i].ESkillType == ESkillType.Clay;
+                        return _edges[i].EPaintType == EPaintType.Clay;
                     }
                 }
             }
@@ -69,19 +69,19 @@ namespace GameA.Game
         public int Start;
         public int End;
         public EDirectionType Direction;
-        public ESkillType ESkillType;
+        public EPaintType EPaintType;
 
-        public Edge(int start, int end, EDirectionType direction, ESkillType eSkillType)
+        public Edge(int start, int end, EDirectionType direction, EPaintType ePaintType)
         {
             Start = start;
             End = end;
             Direction = direction;
-            ESkillType = eSkillType;
+            EPaintType = ePaintType;
         }
 
         public override string ToString()
         {
-            return string.Format("Start: {0}, End: {1}, Direction: {2}, ESkillType: {3}", Start, End, Direction, ESkillType);
+            return string.Format("Start: {0}, End: {1}, Direction: {2}, ESkillType: {3}", Start, End, Direction, EPaintType);
         }
 
         private bool Intersect(ref Edge edge)
@@ -116,11 +116,11 @@ namespace GameA.Game
             int cutEnd = Math.Min(End, edge.End);
             if (cutStart - 1 >= Start + PaintBlock.MinEdgeLength)
             {
-                edges.Add(new Edge(Start, cutStart - 1, Direction, ESkillType));
+                edges.Add(new Edge(Start, cutStart - 1, Direction, EPaintType));
             }
             if (End >= cutEnd + 1 + +PaintBlock.MinEdgeLength)
             {
-                edges.Add(new Edge(cutEnd + 1, End, Direction, ESkillType));
+                edges.Add(new Edge(cutEnd + 1, End, Direction, EPaintType));
             }
         }
     }

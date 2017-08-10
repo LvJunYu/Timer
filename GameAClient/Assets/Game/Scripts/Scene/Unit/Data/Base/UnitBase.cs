@@ -45,7 +45,6 @@ namespace GameA.Game
         protected bool _canBridgeCross;
         protected bool _canFanCross;
         [SerializeField] protected bool _isStart;
-        protected int _friction;
 
         protected List<UnitBase> _downUnits = new List<UnitBase>();
         protected UnitBase _downUnit;
@@ -198,12 +197,12 @@ namespace GameA.Game
 
         public bool CanMove
         {
-            get { return !IsInState(EEnvState.Ice) && !IsInState(EEnvState.Stun); }
+            get { return !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) && !IsInState(EEnvState.Ice); }
         }
 
         public bool CanAttack
         {
-            get { return !IsInState(EEnvState.Ice) && !IsInState(EEnvState.Stun); }
+            get { return !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) && !IsInState(EEnvState.Ice); }
         }
 
         public virtual SkillCtrl SkillCtrl
@@ -255,11 +254,6 @@ namespace GameA.Game
         public List<UnitBase> DownUnits
         {
             get { return _downUnits; }
-        }
-
-        public int Friction
-        {
-            get { return _friction; }
         }
 
         public bool UseCorner
@@ -553,7 +547,6 @@ namespace GameA.Game
             _tableUnit = tableUnit;
             _unitDesc = unitDesc;
             _curPos = new IntVec2(_guid.x, _guid.y);
-            _friction = MaxFriction;
             if (dynamicCollider != null)
             {
                 _dynamicCollider = dynamicCollider;
@@ -645,7 +638,6 @@ namespace GameA.Game
 
         protected virtual void OnDead()
         {
-            Clear();
             _isAlive = false;
             --Life;
             if (_view != null)
@@ -865,14 +857,7 @@ namespace GameA.Game
             }
             if (IsActor && _view != null)
             {
-                if (hpChanged > 0)
-                {
-                    _view.StatusBar.SetHP(EHPModifyCase.Heal, _hp,_maxHp);
-                }
-                else
-                {
-                    _view.StatusBar.SetHP(EHPModifyCase.Hit, _hp,_maxHp);
-                }
+                _view.StatusBar.SetHP(hpChanged > 0 ? EHPModifyCase.Heal : EHPModifyCase.Hit, _hp, _maxHp);
             }
         }
 
@@ -962,18 +947,17 @@ namespace GameA.Game
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, size, _tableUnit);
                 }
             }
-            var halfTile = ConstDefineGM2D.ServerTileScale / 2;
-            float z = -(_curPos.x + halfTile + _curPos.y + halfTile) * 0.00078125f+ _viewZOffset;
+            float z = GetZ(_curPos);
             if (UnitDefine.IsDownY(_tableUnit))
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, -0.1f, z);
             }
             return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + Vector3.forward * z;
         }
-
+        
         protected float GetZ(IntVec2 pos)
         {
-            return -(pos.x + pos.y) * 0.00078125f;
+            return -(pos.x + pos.y + _tableUnit.Width) * UnitDefine.UnitSorttingLayerRatio+ _viewZOffset;
         }
 
         protected void SetRelativeEffectPos(Transform trans, EDirectionType eDirectionType, float viewZOffset = 0)
@@ -1531,7 +1515,7 @@ namespace GameA.Game
             _isDisposed = true;
         }
 
-        public virtual void DoPaint(int start, int end, EDirectionType direction, ESkillType eSkillType, int maskRandom,
+        public virtual void DoPaint(int start, int end, EDirectionType direction, EPaintType ePaintType, int maskRandom,
             bool draw = true)
         {
         }
@@ -1566,6 +1550,7 @@ namespace GameA.Game
         internal virtual void OnCtrlBySwitch()
         {
             _ctrlBySwitch = !_ctrlBySwitch;
+//            LogHelper.Debug("OnCtrlBySwitch: {0}",_ctrlBySwitch);
         }
 
         public bool IsBlockedBy(UnitBase unit)
@@ -1645,7 +1630,7 @@ namespace GameA.Game
             return (_envState & (1 << (int) eEnvState)) != 0;
         }
 
-        public virtual bool SetWeapon(int id, int slot = 0)
+        public virtual bool SetWeapon(int weaponId)
         {
             return true;
         }

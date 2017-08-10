@@ -24,6 +24,7 @@ namespace GameA
 //        public RectTransform ScaleRoot;
         //public Button SignUpBtn;
         public Button Account;
+        public Button PersonalInformation;
         /// <summary>
         /// 选择游戏按钮
         /// </summary>

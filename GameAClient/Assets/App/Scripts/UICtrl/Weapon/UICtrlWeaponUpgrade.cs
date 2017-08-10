@@ -1,34 +1,31 @@
-﻿using System;
-using System.Collections;
-using SoyEngine;
+﻿using SoyEngine;
 using SoyEngine.Proto;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
+using GameA.Game;
+using NewResourceSolution;
 
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlWeaponUpgrade : UICtrlGenericBase<UIViewWeaponUpgrade>
     {
-        public enum ERewardType
-        {
-            Reward,
-            Unlock,
-            Ability,
-        }
+
         #region Fields
-        /// <summary>
-        /// 奖励界面关闭锁定的时间，打开界面后，这个时间内不能关闭
-        /// </summary>
-        private const float _closeTime = 1f;
-        private float _closeTimer;
-
-        private ERewardType _openType;
-
-        private USCtrlRewardItem[] _rewardItemCtrls;
-
-        private Action _closeCB;
+        private int _weaponID;
+        private int _weaponLv;
+        private int _weaponlevelID;
+        private int _isCompoudAddNum;
+        private int _needGoldCoinNum;
+        private int _needWeaponPartNum;
+        private int _needUniversalNum;
+        private string _universalSpriteName = "universalpart";
+        private Sprite _universalSprie;
+        private string _weaponPartSpriteName;
+        private Sprite _weaponPartSprite;
         #endregion
 
         #region Properties
@@ -38,48 +35,23 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            _closeTimer = 1f;
-            _cachedView.Tip.gameObject.SetActive(false);
+            int[] _weaponIDlv = parameter as int[];
+            _weaponID = _weaponIDlv[0];
+            _weaponLv = _weaponIDlv[1];
+            _weaponlevelID = _weaponIDlv[2];
+            _isCompoudAddNum = _weaponIDlv[3];
+            _needGoldCoinNum = _weaponIDlv[4];
+            _needWeaponPartNum = _weaponIDlv[5];
+            _needUniversalNum = _weaponIDlv[6];
+            InitData();
 
-            _openType = (ERewardType)parameter;
-            if (ERewardType.Reward == _openType)
-            {
-                _cachedView.RewardLight.gameObject.SetActive(true);
-                _cachedView.UnlockLight.gameObject.SetActive(false);
-                _cachedView.AbilityLight.gameObject.SetActive(false);
-                _cachedView.RewardItemTitle.gameObject.SetActive((true));
-                _cachedView.UnlockSystemTitle.gameObject.SetActive((false));
-                _cachedView.UnlockAbilityTitle.gameObject.SetActive((false));
-            }
-            if (ERewardType.Unlock == _openType)
-            {
-                _cachedView.RewardLight.gameObject.SetActive(false);
-                _cachedView.UnlockLight.gameObject.SetActive(true);
-                _cachedView.AbilityLight.gameObject.SetActive(false);
-                _cachedView.RewardItemTitle.gameObject.SetActive((false));
-                _cachedView.UnlockSystemTitle.gameObject.SetActive((true));
-                _cachedView.UnlockAbilityTitle.gameObject.SetActive((false));
-            }
-            if (ERewardType.Ability == _openType)
-            {
-                _cachedView.RewardLight.gameObject.SetActive(false);
-                _cachedView.UnlockLight.gameObject.SetActive(false);
-                _cachedView.AbilityLight.gameObject.SetActive(true);
-                _cachedView.RewardItemTitle.gameObject.SetActive((false));
-                _cachedView.UnlockSystemTitle.gameObject.SetActive((false));
-                _cachedView.UnlockAbilityTitle.gameObject.SetActive((true));
-            }
         }
 
         protected override void OnClose()
         {
 
             base.OnClose();
-            if (null != _closeCB)
-            {
-                _closeCB.Invoke();
-                _closeCB = null;
-            }
+
         }
 
         protected override void InitEventListener()
@@ -90,30 +62,15 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
+            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+           
 
-            _cachedView.BGBtn.onClick.AddListener(OnBGBtn);
-            _rewardItemCtrls = new USCtrlRewardItem[_cachedView.ItemList.Length];
-            for (int i = 0; i < _cachedView.ItemList.Length; i++)
-            {
-                _rewardItemCtrls[i] = new USCtrlRewardItem();
-                _rewardItemCtrls[i].Init(_cachedView.ItemList[i]);
-            }
         }
 
         public override void OnUpdate()
         {
             base.OnUpdate();
-            _closeTimer -= Time.deltaTime;
-            if (_closeTimer < 0 && _cachedView.Tip.gameObject.activeSelf == false)
-            {
-                _cachedView.Tip.gameObject.SetActive(true);
-            }
-            if (ERewardType.Reward == _openType)
-                _cachedView.RewardLight.transform.localRotation = Quaternion.Euler(0, 0, Time.realtimeSinceStartup * 20f);
-            if (ERewardType.Unlock == _openType)
-                _cachedView.UnlockLight.transform.localRotation = Quaternion.Euler(0, 0, Time.realtimeSinceStartup * 20f);
-            if (ERewardType.Ability == _openType)
-                _cachedView.AbilityLight.transform.localRotation = Quaternion.Euler(0, 0, Time.realtimeSinceStartup * 20f);
+
         }
 
         protected override void InitGroupId()
@@ -121,60 +78,122 @@ namespace GameA
             _groupId = (int)EUIGroupType.PopUpUI;
         }
 
-        public void SetRewards(Reward reward, Action closeCB = null)
+        private void OnCloseBtn()
         {
-            if (null == reward)
+            SocialGUIManager.Instance.CloseUI<UICtrlWeaponUpgrade>();
+        }
+        private void InitData()
+        {
+            if (_isCompoudAddNum == 0)
             {
-                // todo error handle
-                return;
+                _cachedView.TipUpgrade.text = "合成";
+                _cachedView.HpAdd.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).HpAdd.ToString();
+                _cachedView.AttackAdd.text =  TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).AttackAdd.ToString();
+                _cachedView.SkillEffect.text =  TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).SkillEffect.ToString();
             }
-            int i = 0;
-            for (; i < reward.ItemList.Count && i < _cachedView.ItemList.Length; i++)
+            else
             {
-                _cachedView.ItemList[i].gameObject.SetActive(true);
-                _rewardItemCtrls[i].SetItem(reward.ItemList[i]);
-            }
+                _cachedView.TipUpgrade.text = "升级";
+                _cachedView.HpAdd.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).HpAdd.ToString() +
+                    "---" + TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).HpAdd.ToString();
+                _cachedView.AttackAdd.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).AttackAdd.ToString() +
+                    "---" + TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).AttackAdd.ToString();
+                _cachedView.SkillEffect.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).SkillEffect.ToString() + 
+                    "---" + TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).SkillEffect.ToString();
+        }
+            _cachedView.WeaponName.text = TableManager.Instance.GetEquipment(_weaponID).Name;
+            //武器碎片的图标
+             _weaponPartSpriteName = TableManager.Instance.GetEquipment(_weaponID).WeaponPartIcon;
+            ResourcesManager.Instance.TryGetSprite(_weaponPartSpriteName, out _weaponPartSprite);
+            _cachedView.WeaponFragmentIcon.sprite = _weaponPartSprite;
 
-            for (; i < _cachedView.ItemList.Length; i++)
-            {
-                _cachedView.ItemList[i].gameObject.SetActive(false);
-            }
+            //万能碎片的图片
 
-            _closeCB = closeCB;
+            ResourcesManager.Instance.TryGetSprite(_universalSpriteName, out _universalSprie);
+            _cachedView.UniversalFragmentsIcon.sprite = _universalSprie;
+            //金币的数目
+            _cachedView.CoinNum.text = _needGoldCoinNum.ToString();
+            //武器碎片的名字
+            _cachedView.WeaponFragmentNum.text = _needWeaponPartNum.ToString();
+            //万能图标数量
+            if (_needUniversalNum > 0)
+            {
+                _cachedView.UniversalPart.SetActive(true);
+                _cachedView.UniversalFragmentsNum.text = _needUniversalNum.ToString();
+            }
+            else
+            {
+                _cachedView.UniversalPart.SetActive(false);
+            }
         }
 
-        public void SetUnlockSystem(string title, string icon, Action closeCB = null)
+        private void OnConfirmBtn()
         {
-            for (int i = 1; i < _cachedView.ItemList.Length; i++)
+            if (_isCompoudAddNum == 0)
             {
-                _cachedView.ItemList[i].gameObject.SetActive(false);
+                CompoundWeapon();
             }
-            _rewardItemCtrls[0].SetItem(title, icon);
-            _closeCB = closeCB;
-        }
-
-        public void SetAbility(string title, string icon, Action closeCB = null)
-        {
-            for (int i = 1; i < _cachedView.ItemList.Length; i++)
+            else
             {
-                _cachedView.ItemList[i].gameObject.SetActive(false);
+                UpgradeWeapon();
             }
-            _rewardItemCtrls[0].SetItem(title, icon);
-            _closeCB = closeCB;
+            SocialGUIManager.Instance.CloseUI<UICtrlWeaponUpgrade>();
+            SocialGUIManager.Instance.OpenUI<UICtrlGetCoin>();
         }
-
-        private void OnBGBtn()
+        private void OnCancelBtn()
         {
-            if (_closeTimer < 0)
-            {
-                SocialGUIManager.Instance.CloseUI<UICtrlReward>();
-            }
+            SocialGUIManager.Instance.CloseUI<UICtrlWeaponUpgrade>();
         }
-
-
-        private void OnAddTagBtn()
+        private void CompoundWeapon()
         {
+            RemoteCommands.CompoundWeapon(_weaponID, _needUniversalNum, null, 
+                code => { LogHelper.Error("Network error when CompoundWeapon , {0}", code); });
+            LocalUser.Instance.UserWeaponData.Request(LocalUser.Instance.UserGuid, null,
+                code => { LogHelper.Error("Network error when get UserWeaponData, {0}", code); });
+            LocalUser.Instance.UserWeaponPartData.Request(LocalUser.Instance.UserGuid, null,
+                code => { LogHelper.Error("Network error when get UserWeaponPartData, {0}", code); });
         }
+        private void UpgradeWeapon()
+        {
+            RemoteCommands.UpgradeWeapon(_weaponID, _needUniversalNum, _weaponLv + 1, null,
+                code => { LogHelper.Error("Network error when UpgradeWeapon , {0}", code); });
+            LocalUser.Instance.UserWeaponData.Request(LocalUser.Instance.UserGuid, null,
+                  code => { LogHelper.Error("Network error when get UserWeaponData, {0}", code); });
+            LocalUser.Instance.UserWeaponPartData.Request(LocalUser.Instance.UserGuid, null,
+                code => { LogHelper.Error("Network error when get UserWeaponPartData, {0}", code); });
+        }
+        //public void UseRaffleTicket(long selectedTicketNum, Action<long> successCallback, Action<ENetResultCode> failedCallback)
+        //{
+        //    this._RaffleTicketDict[selectedTicketNum]--;
+        //    RemoteCommands.Raffle(
+        //        selectedTicketNum,
+        //        (re) =>
+        //        {
+        //            ERaffleCode resultCode = (ERaffleCode)re.ResultCode;
+        //            List<Msg_RewardItem> RewardList = re.Reward.ItemList;
+
+        //            if (resultCode == ERaffleCode.RC_Success)
+        //            {
+        //                //SuccessfullyUseRaffleTicket(re.RewardId, (int)selectedTicketNum);
+        //                for (int i = 0; i < RewardList.Count; i++)
+        //                {
+        //                    RewardItem item = new RewardItem(RewardList[i]);
+        //                    item.AddToLocal();
+        //                }
+        //                successCallback(ReturnRewardOnPanel(re.RewardId, (int)selectedTicketNum));
+        //                _reward.OnSync(re.Reward);
+        //            }
+        //            else
+        //            {
+        //                UnsuccessfullyUseRaffleTicket();
+        //            }
+        //        },
+        //        code => {
+        //            LogHelper.Error("Network error when use Raffle, {0}", code);
+        //            UnsuccessfullyUseRaffleTicket();
+        //            this._RaffleTicketDict[selectedTicketNum]++;
+        //        });
+        //}
         #endregion
     }
 }

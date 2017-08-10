@@ -35,6 +35,11 @@ namespace GameA.Game
         /// </summary>
 		[ColumnMapping("AttackAdd")]
 		public int AttackAdd;
+		/// <summary>
+        ///  技能加成
+        /// </summary>
+		[ColumnMapping("SkillEffect")]
+		public int SkillEffect;
 	}
 
     public class TableEquipmentLevelAsset:BaseTableAsset

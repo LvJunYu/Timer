@@ -78,14 +78,19 @@ namespace GameA.Game
 			}
         }
 
-        public override void Save(Action successCallback = null, Action<EProjectOperateResult> failedCallback = null)
+	    public override void Save(Action successCallback = null, Action<EProjectOperateResult> failedCallback = null)
 		{
+			if (!NeedSave)
+			{
+				if (successCallback != null)
+				{
+					successCallback.Invoke();
+				}
+				return;
+			}
 			byte[] mapDataBytes = MapManager.Instance.SaveMapData();
 			mapDataBytes = MatrixProjectTools.CompressLZMA(mapDataBytes);
-			if (IconBytes == null)
-			{
-				IconBytes = CaptureLevel();
-			}
+			IconBytes = CaptureLevel();
 			if (mapDataBytes == null
 				|| mapDataBytes.Length == 0)
 			{

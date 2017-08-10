@@ -16,7 +16,7 @@ namespace GameA.Game
         
         public const int StunTime = 2000;
         
-        public const int IceLifeTime = 2000;
+        public const int IceLifeTime = 3000;
         public const int IceSwordLifeTime = 5000;
         
         public const int WallJumpBanInputTime = 10;

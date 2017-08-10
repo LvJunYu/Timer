@@ -90,6 +90,7 @@ namespace GameA
 
             _cachedView.WorldButton.onClick.AddListener(OnWorldBtn);
             _cachedView.WorkshopButton.onClick.AddListener(OnCreateBtn);
+            _cachedView.PersonalInformation.onClick.AddListener(UIPersonalInformation);
             _cachedView.SingleModeButton.onClick.AddListener(OnSingleGameBtn);
             _cachedView.LotteryBtn.onClick.AddListener(OnLotteryBtn);
             _cachedView.UnlockAll.onClick.AddListener(OnUnlockAll);
@@ -243,6 +244,14 @@ namespace GameA
             }
         }
 
+        public void UIPersonalInformation()
+        {
+            if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.WorkShop))
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlPersonalInformation>();
+            }
+        }
+
         public void OnSignUpBtn()
         {
             SocialGUIManager.Instance.OpenUI<UICtrlSignup>();
@@ -313,10 +322,9 @@ namespace GameA
 
         private void OnPuzzleBtn()
         {
-            Debug.Log("_________________________OnPuzzleBtn");
+            //Debug.Log("_________________________OnPuzzleBtn");
             if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.Puzzle))
             {
-                Debug.Log("OpenPuzzle");
                 SocialGUIManager.Instance.OpenUI<UICtrlPuzzle>();
             }
         }

@@ -17,12 +17,14 @@ namespace GameA.Game
         public static Vector2 HidePos = Vector3.one * -5;
         public static int EnergyTimer = 30 * ConstDefineGM2D.FixedFrameCount;
 
+        public const float UnitSorttingLayerRatio = 0.0015625f;
+
         public const int ZOffsetEffectBackground = 90;
         public const int ZOffsetBackground = 100;
-        public const int ZOffsetFrontest = -100;
+        public const int ZOffsetFrontest = -400;
 
-        public const float ZOffsetBack = 0.25f;
-        public const float ZOffsetFront = -0.25f;
+        public const float ZOffsetBack = 0.5f;
+        public const float ZOffsetFront = -0.5f;
         
         public static float[] ZOffsets = new float[2]{ZOffsetFrontest, ZOffsetFront};
         public static float[] ZOffsetsPlant = new float[2]{ZOffsetFrontest, ZOffsetBack};
@@ -43,6 +45,7 @@ namespace GameA.Game
         public const int LaserId = 5010;
         public const int SwitchTriggerId = 8101;
         public const int BillboardId = 7001;
+        public const int BulletIceId = 10003;
 
         public static bool IsSpawn(int id)
         {
@@ -160,12 +163,13 @@ namespace GameA.Game
         {
             ushort id = node.Id;
             return id != TransparentEarthId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
-                   !IsBoard(id) && !IsCollection(id);
+                   !IsBoard(id) && !IsCollection(id) && !UnitDefine.IsBullet(id);
         }
         
-        public static bool IsFanEffect(int layer)
+        public static bool IsFanEffect(int layer, int id)
         {
-            return ((1 << layer) & (EnvManager.MonsterLayer | EnvManager.MainPlayerLayer| EnvManager.RemotePlayer)) != 0;
+            return (((1 << layer) & (EnvManager.MonsterLayer | EnvManager.MainPlayerLayer | EnvManager.RemotePlayer)) != 0) 
+                   || id == BulletIceId;
         }
 
         internal static bool IsGround(int id)

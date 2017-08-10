@@ -67,7 +67,7 @@ namespace GameA.Game
 
 		public void MovePos(Vector2 offset)
 		{
-			Vector2 curPos = _cameraManager.MainCamaraPos;
+			Vector2 curPos = _cameraManager.MainCameraPos;
 			curPos -= offset;
 			curPos.x = Mathf.Clamp(curPos.x, _outerRect.xMin, _outerRect.xMax);
 			curPos.y = Mathf.Clamp(curPos.y, _outerRect.yMin, _outerRect.yMax);
@@ -97,7 +97,7 @@ namespace GameA.Game
 		    CalcMoveRect();
 		    if (ESpingState.None == _curState)
 		    {
-			    Vector2 pos = _cameraManager.MainCamaraPos;
+			    Vector2 pos = _cameraManager.MainCameraPos;
 			    pos = ClampValidMoveRect(pos);
 			    ChangeCameraPos(pos);
 		    }
@@ -161,14 +161,14 @@ namespace GameA.Game
 		}
 
         private void DoUpdateLerpMove () {
-            Vector2 v = _lerpTargetPos - (Vector2)_cameraManager.MainCamaraPos;
+            Vector2 v = _lerpTargetPos - (Vector2)_cameraManager.MainCameraPos;
             if (v.sqrMagnitude < SmallDistance * 0.25f)
             {
 	            ChangeCameraPos(_lerpTargetPos);
                 _curState = ESpingState.None;
                 return;
             }
-	        ChangeCameraPos(Vector3.Lerp(_cameraManager.MainCamaraPos, _lerpTargetPos, Time.deltaTime * 6));
+	        ChangeCameraPos(Vector3.Lerp(_cameraManager.MainCameraPos, _lerpTargetPos, Time.deltaTime * 6));
         }
 
 		private void DoUpdateInertiaMove()
@@ -176,9 +176,9 @@ namespace GameA.Game
 			if (UpdateSpeed())
 			{
 				Vector2 offset = _curSpeed * Time.deltaTime;
-				Vector3 pos = _cameraManager.MainCamaraPos - new Vector3(offset.x, offset.y);
+				Vector3 pos = _cameraManager.MainCameraPos - new Vector3(offset.x, offset.y);
 				pos = ClampedByOuterRect(pos);
-				Vector3 tmp = _cameraManager.MainCamaraPos - pos;
+				Vector3 tmp = _cameraManager.MainCameraPos - pos;
                 if(tmp.magnitude>SmallDistance)
 				{
 					ChangeCameraPos(ClampedByOuterRect(pos));
@@ -198,7 +198,7 @@ namespace GameA.Game
 			}
 			else
 			{
-				Vector3 pos = _cameraManager.MainCamaraPos;
+				Vector3 pos = _cameraManager.MainCameraPos;
 				Vector2 offset = _curSpeed*Time.deltaTime;
 				pos = pos - new Vector3(offset.x, offset.y);
 				ChangeCameraPos(pos);
@@ -237,7 +237,7 @@ namespace GameA.Game
 
 	    private void TrySpringback()
 	    {
-		    Vector2 delta = GetSpringbackDelta(_cameraManager.MainCamaraPos);
+		    Vector2 delta = GetSpringbackDelta(_cameraManager.MainCameraPos);
 		    if (!NeedSpringback(delta))
 		    {
 			    _curState = ESpingState.None;
@@ -276,7 +276,7 @@ namespace GameA.Game
 
 	    private void ChangeCameraPos(Vector3 pos)
 	    {
-		    _cameraManager.MainCamaraPos = pos;
+		    _cameraManager.MainCameraPos = pos;
 		    Messenger.Broadcast(EMessengerType.OnEditCameraPosChange);
 	    }
 	}

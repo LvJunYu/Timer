@@ -34,7 +34,7 @@ namespace GameA.Game
 
         public const int LazerShootLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
         public const int LazerBlockLayer = ItemLayer;
-        public const int FanCheckLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
+        public const int FanCheckLayer = MainPlayerLayer | MonsterLayer | ItemLayer | 1<<(int)ESceneLayer.Bullet;
 
         public const int BridgeBlockLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
 
@@ -69,7 +69,7 @@ namespace GameA.Game
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.Item);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.RigidbodyItem);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.Monster);
-	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.BulletOther);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.Bullet);
 
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Gun, (int) ESceneLayer.Item);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Gun, (int) ESceneLayer.RigidbodyItem);
@@ -101,7 +101,6 @@ namespace GameA.Game
 		Effect,
         RigidbodyItem,
         Bullet,
-	    BulletOther,
         Gun,
 	    Decoration,
 		HomeAvatar = 30,

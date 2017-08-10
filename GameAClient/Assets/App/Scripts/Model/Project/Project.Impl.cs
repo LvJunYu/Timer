@@ -6,38 +6,25 @@
 ***********************************************************************/
 
 using System;
-using System.Collections.Generic;
+using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using SoyEngine;
 
 namespace GameA
 {
     [Poolable(MinPoolSize = ConstDefine.MaxLRUProjectCount / 10, PreferedPoolSize = ConstDefine.MaxLRUProjectCount / 5,
         MaxPoolSize = ConstDefine.MaxLRUProjectCount)]
-	public partial class Project : SyncronisticData {
+	public partial class Project
+    {
         #region 变量
         private long _guid;
         private int _downloadPrice;
 
-        private bool _extendReady = false;
+        private bool _extendReady;
         private byte[] _deadPos;
         private long _commitToken;
 
         private GameTimer _projectInfoRequestTimer;
-
-        /// <summary>
-        /// 下载资源成功回调
-        /// </summary>
-        private Action _downloadResSucceedCB;
-        /// <summary>
-        /// 下载资源失败回调
-        /// </summary>
-        private Action _downloadResFailedCB;
-        /// <summary>
-        /// 是否正在下载资源
-        /// </summary>
-        private bool _isdownloadingRes;
 
         /// <summary>
         /// 冒险模式的第几章，如果不是冒险模式关卡，则为0
@@ -354,17 +341,18 @@ namespace GameA
                     msg => {
                         if (msg.ResultCode == (int)EProjectOperateResult.POR_Success) {
 //                            LocalCacheManager.Instance.Save(dataBytes, LocalCacheManager.EType.File, ResPath);
-                            ImageResourceManager.Instance.SaveOrUpdateImageData(IconPath, iconBytes);
                             OnSyncFromParent(msg.ProjectData);
+                            ImageResourceManager.Instance.SaveOrUpdateImageData(IconPath, iconBytes);
                             Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectCreated, this);
                             if (successCallback != null)
                             {
                                 successCallback.Invoke();
                             }
                         } else {
+                            LogHelper.Error("level create error, code: {0}", msg.ResultCode);
                             if (failedCallback != null)
                             {
-                                failedCallback.Invoke(EProjectOperateResult.POR_Error);
+                                failedCallback.Invoke((EProjectOperateResult) msg.ResultCode);
                             }
                         }
                     },
@@ -391,15 +379,26 @@ namespace GameA
                     // 如果是在工坊界面修改关卡的信息，就不必传附加参数
                     null == dataBytes ? null : GetMsgProjectUploadParam(),
                     msg => {
-                        OnSyncFromParent(msg.ProjectData);
-                        if (null != iconBytes && msg.ProjectData.IconPath != oldIconPath) {
-                            ImageResourceManager.Instance.DeleteImageCache(oldIconPath);
-                            ImageResourceManager.Instance.SaveOrUpdateImageData(msg.ProjectData.IconPath, iconBytes);
-                        }
-                        Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, this);
-                        if (successCallback != null)
+                        if (msg.ResultCode == (int)EProjectOperateResult.POR_Success)
                         {
-                            successCallback.Invoke();
+                            OnSyncFromParent(msg.ProjectData);
+                            if (null != iconBytes && msg.ProjectData.IconPath != oldIconPath) {
+                                ImageResourceManager.Instance.DeleteImageCache(oldIconPath);
+                                ImageResourceManager.Instance.SaveOrUpdateImageData(msg.ProjectData.IconPath, iconBytes);
+                            }
+                            Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, this);
+                            if (successCallback != null)
+                            {
+                                successCallback.Invoke();
+                            }
+                        }
+                        else
+                        {
+                            LogHelper.Error("level upload error, code: {0}", msg.ResultCode);
+                            if (failedCallback != null)
+                            {
+                                failedCallback.Invoke((EProjectOperateResult) msg.ResultCode);
+                            }
                         }
                     },
                     code => {
@@ -516,38 +515,21 @@ namespace GameA
                 }
                 return;
             }
-            if (_downloadResSucceedCB != null)
-            {
-                _downloadResSucceedCB -= successCallback;
-            }
-            _downloadResSucceedCB += successCallback;
-            if (_downloadResFailedCB != null)
-            {
-                _downloadResFailedCB -= failedCallback;
-            }
-            _downloadResFailedCB += failedCallback;
-            if (_isdownloadingRes) {
-                return;
-            }
-            _isdownloadingRes = true;
             SFile file = SFile.GetFileWithUrl(SoyPath.Instance.GetFileUrl(targetRes));
             //Debug.Log ("____________________download map file: " + targetRes + " success cb: " + _downloadResSucceedCB + " / successCallback: " + successCallback);
             file.DownloadAsync((f) =>
                 {
-                    _isdownloadingRes = false;
                     LocalCacheManager.Instance.Save(f.FileBytes, LocalCacheManager.EType.File, targetRes);
                     //Debug.Log ("__________________________ call download success cb : " + _downloadResSucceedCB);
-                    if (_downloadResSucceedCB != null)
+                    if (successCallback != null)
                     {
-                        _downloadResSucceedCB.Invoke();
+                        successCallback.Invoke();
                     }
                 }, sFile =>
                 {
-                    _isdownloadingRes = false;
-                    //Debug.Log("__________________________" + SoyPath.Instance.GetFileUrl(targetRes));
-                    if (_downloadResFailedCB != null)
+                    if (failedCallback != null)
                     {
-                        _downloadResFailedCB.Invoke();
+                        failedCallback.Invoke();
                     }
                 });
         }

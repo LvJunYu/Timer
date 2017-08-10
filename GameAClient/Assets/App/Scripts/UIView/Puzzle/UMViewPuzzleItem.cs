@@ -12,6 +12,7 @@ namespace GameA
     public partial class UMViewPuzzleItem : UMViewBase
     {
         public Button PuzzleDetail;
+        public Image DisActiveImg;
     }
 
 }

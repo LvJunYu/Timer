@@ -17,7 +17,7 @@ namespace GameA.Game
     public class SkillBase
     {
         [SerializeField]
-        protected ESkillType _eSkillType;
+        protected EPaintType _epaintType;
         
         [SerializeField]
         protected UnitBase _owner;
@@ -69,9 +69,9 @@ namespace GameA.Game
             get { return _castRange; }
         }
 
-        public ESkillType ESkillType
+        public EPaintType EPaintType
         {
-            get { return _eSkillType; }
+            get { return _epaintType; }
         }
 
         public int ProjectileSpeed
@@ -96,19 +96,19 @@ namespace GameA.Game
             switch (_tableSkill.Id)
             {
                 case 1:
-                    _eSkillType = ESkillType.Water;
+                    _epaintType = EPaintType.Water;
                     break;
                 case 2:
-                    _eSkillType = ESkillType.Clay;
+                    _epaintType = EPaintType.Clay;
                     break;
                 case 3:
-                    _eSkillType = ESkillType.Jelly;
+                    _epaintType = EPaintType.Jelly;
                     break;
                 case 4:
-                    _eSkillType = ESkillType.Fire;
+                    _epaintType = EPaintType.Fire;
                     break;
                 case 5:
-                    _eSkillType = ESkillType.Ice;
+                    _epaintType = EPaintType.Ice;
                     break;
             }
             _cdTime = TableConvert.GetTime(_tableSkill.CDTime);
@@ -247,8 +247,8 @@ namespace GameA.Game
                     break;
                 case EBehaviorType.ContinueShoot:
                     var count = _tableSkill.BehaviorValues[0];
-                    var delay = TableConvert.GetTime(_tableSkill.BehaviorValues[1]);
-                    for (int i = 0; i < count; i++)
+//                    var delay = TableConvert.GetTime(_tableSkill.BehaviorValues[1]);
+//                    for (int i = 0; i < count; i++)
                     {
                         CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.ShootAngle);
                     }
@@ -262,64 +262,12 @@ namespace GameA.Game
             }
         }
 
-        protected List<UnitBase> GetHitUnits(IntVec2 centerPos, int hitLayerMask)
-        {
-            switch ((EEffcetMode)_tableSkill.EffectMode)
-            {
-                case EEffcetMode.Single:
-                    break;
-                case EEffcetMode.TargetCircle:
-                    {
-                        _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
-                        return ColliderScene2D.CircleCastAllReturnUnits(centerPos, _radius, hitLayerMask);
-                    }
-                case EEffcetMode.TargetGrid:
-                    break;
-                case EEffcetMode.TargetLine:
-                    break;
-                case EEffcetMode.SelfSector:
-                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
-                    var units = ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, hitLayerMask);
-                    for (int i = units.Count - 1; i >= 0; i--)
-                    {
-                        var unit = units[i];
-                        var rel = _owner.CenterDownPos - unit.CenterDownPos;
-                        if ((rel.x >= 0 && _owner.CurMoveDirection == EMoveDirection.Left) || (rel.x <= 0 && _owner.CurMoveDirection == EMoveDirection.Right))
-                        {
-                        }
-                        else
-                        {
-                            units.RemoveAt(i);
-                        }
-                    }
-                    return units;
-                case EEffcetMode.SelfCircle:
-                    {
-                        _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
-                        return ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, hitLayerMask);
-                    }
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 生成陷阱
-        /// </summary>
-        protected void CreateTrap(IntVec2 centerPos)
-        {
-            if (_tableSkill.TrapId > 0)
-            {
-                LogHelper.Debug("AddTrap {0}", _tableSkill.TrapId);
-                PlayMode.Instance.AddTrap(_tableSkill.TrapId, centerPos);
-            }
-        }
-
         protected void OnHit()
         {
             var centerDownPos = _owner.CenterDownPos;
             CreateTrap(centerDownPos);
             //临时写 TODO
-            var units = GetHitUnits(centerDownPos, EnvManager.ActorLayer);
+            var units = GetHitUnits(centerDownPos);
             if (units != null && units.Count > 0)
             {
                 for (int i = 0; i < units.Count; i++)
@@ -339,7 +287,7 @@ namespace GameA.Game
         public virtual void OnProjectileHit(ProjectileBase projectile)
         {
             CreateTrap(projectile.CenterPos);
-            var units = GetHitUnits(projectile.CenterPos, JoyPhysics2D.GetColliderLayerMask(projectile.DynamicCollider.Layer));
+            var units = GetHitUnits(projectile.CenterPos);
             if (units != null && units.Count > 0)
             {
                 for (int i = 0; i < units.Count; i++)
@@ -351,7 +299,7 @@ namespace GameA.Game
                         {
                             OnActorHit(unit, projectile.CenterDownPos);
                         }
-                        else if(unit.CanPainted && _eSkillType != ESkillType.None)
+                        else if(unit.CanPainted && _epaintType != EPaintType.None)
                         {
                             OnPaintHit(unit, projectile);
                         }
@@ -379,14 +327,98 @@ namespace GameA.Game
                 }
             }
             //触发状态
-            for (int i = 0; i < _tableSkill.TriggerStates.Length; i++)
+            unit.AddStates(_tableSkill.AddStates);
+            unit.RemoveStates(_tableSkill.RemoveStates);
+            unit.OnHpChanged(-_damage);
+        }
+
+        protected List<UnitBase> GetHitUnits(IntVec2 centerPos)
+        {
+            var hitLayerMask = GetTargetType();
+            switch ((EEffcetMode) _tableSkill.EffectMode)
             {
-                if (_tableSkill.TriggerStates[i] > 0)
+                case EEffcetMode.Single:
+                    break;
+                case EEffcetMode.TargetCircle:
                 {
-                    unit.AddStates(_tableSkill.TriggerStates[i]);
+                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                    return ColliderScene2D.CircleCastAllReturnUnits(centerPos, _radius, hitLayerMask);
+                }
+                case EEffcetMode.TargetGrid:
+                {
+                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                    var grid = new Grid2D(centerPos.x - _radius, centerPos.y - _radius, centerPos.x + _radius - 1, centerPos.y + _radius - 1);
+                    return ColliderScene2D.GridCastAllReturnUnits(grid, hitLayerMask);
+                }
+                case EEffcetMode.TargetLine:
+                    break;
+                case EEffcetMode.SelfSector:
+                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                    var units = ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, hitLayerMask);
+                    for (int i = units.Count - 1; i >= 0; i--)
+                    {
+                        var unit = units[i];
+                        var rel = _owner.CenterDownPos - unit.CenterDownPos;
+                        if ((rel.x >= 0 && _owner.CurMoveDirection == EMoveDirection.Left) ||
+                            (rel.x <= 0 && _owner.CurMoveDirection == EMoveDirection.Right))
+                        {
+                        }
+                        else
+                        {
+                            units.RemoveAt(i);
+                        }
+                    }
+                    return units;
+                case EEffcetMode.SelfCircle:
+                {
+                    _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
+                    return ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, hitLayerMask);
                 }
             }
-            unit.OnHpChanged(-_damage);
+            return null;
+        }
+
+        /// <summary>
+        /// 生成陷阱
+        /// </summary>
+        protected void CreateTrap(IntVec2 centerPos)
+        {
+            if (_tableSkill.TrapId > 0)
+            {
+                LogHelper.Debug("AddTrap {0}", _tableSkill.TrapId);
+                PlayMode.Instance.AddTrap(_tableSkill.TrapId, centerPos);
+            }
+        }
+        
+        protected int GetTargetType()
+        {
+            int layer = 0;
+            if (HasTargetType(ETargetType.Earth))
+            {
+                layer |= EnvManager.ItemLayer;
+            }
+            if (HasTargetType(ETargetType.Monster))
+            {
+                layer |= EnvManager.MonsterLayer;
+            }
+            if (HasTargetType(ETargetType.MainPlayer))
+            {
+                layer |= EnvManager.MainPlayerLayer;
+            }
+            if (HasTargetType(ETargetType.RemotePlayer))
+            {
+                layer |= EnvManager.RemotePlayer;
+            }
+            if (HasTargetType(ETargetType.Self))
+            {
+//                layer |= EnvManager.ItemLayer;
+            }
+            return layer;
+        }
+
+        private bool HasTargetType(ETargetType eTargetType)
+        {
+            return ((1<<(int) eTargetType) & _tableSkill.TargetType) != 0;
         }
         
         protected void OnPaintHit(UnitBase target,ProjectileBase projectile)
@@ -394,31 +426,37 @@ namespace GameA.Game
             int length = ConstDefineGM2D.ServerTileScale;
             var guid = target.Guid;
             UnitBase neighborUnit;
+            int v = 0;
             var curPos = projectile.CenterPos;
             if (curPos.y < target.ColliderGrid.YMin)
             {
-                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y - length, guid.z), out neighborUnit))
+                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y - length, guid.z), out neighborUnit)
+                || !neighborUnit.OnDownHit(projectile,ref v, true))
                 {
                     DoPaint(projectile, target, EDirectionType.Down);
                 }
             }
             else if (curPos.y > target.ColliderGrid.YMax)
             {
-                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y + length, guid.z), out neighborUnit))
+                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y + length, guid.z), out neighborUnit)
+                || !neighborUnit.OnUpHit(projectile,ref v, true))
+
                 {
                     DoPaint(projectile, target, EDirectionType.Up);
                 }
             }
             if (curPos.x < target.ColliderGrid.XMin)
             {
-                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x - length, guid.y, guid.z), out neighborUnit))
+                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x - length, guid.y, guid.z), out neighborUnit)
+                || !neighborUnit.OnLeftHit(projectile,ref v, true))
                 {
                     DoPaint(projectile, target, EDirectionType.Left);
                 }
             }
             else if (curPos.x > target.ColliderGrid.XMax)
             {
-                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x + length, guid.y, guid.z), out neighborUnit))
+                if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x + length, guid.y, guid.z), out neighborUnit)
+                || !neighborUnit.OnRightHit(projectile,ref v, true))
                 {
                     DoPaint(projectile, target, EDirectionType.Right);
                 }
@@ -436,19 +474,19 @@ namespace GameA.Game
                     {
                         var start = centerPos.x - _radius;
                         var end = centerPos.x + _radius;
-                        target.DoPaint(start, end, EDirectionType.Down, _eSkillType, maskRandom);
+                        target.DoPaint(start, end, EDirectionType.Down, _epaintType, maskRandom);
 
                         if (start <= target.ColliderGrid.XMin)
                         {
                             start = target.ColliderGrid.YMin;
                             end = target.ColliderGrid.YMin + paintDepth;
-                            target.DoPaint(start, end, EDirectionType.Left, _eSkillType, maskRandom, false);
+                            target.DoPaint(start, end, EDirectionType.Left, _epaintType, maskRandom, false);
                         }
                         if (end >= target.ColliderGrid.XMax)
                         {
                             start = target.ColliderGrid.YMin;
                             end = target.ColliderGrid.YMin + paintDepth;
-                            target.DoPaint(start, end, EDirectionType.Right, _eSkillType, maskRandom, false);
+                            target.DoPaint(start, end, EDirectionType.Right, _epaintType, maskRandom, false);
                         }
                     }
                     break;
@@ -456,18 +494,18 @@ namespace GameA.Game
                     {
                         var start = centerPos.x - _radius;
                         var end = centerPos.x + _radius;
-                        target.DoPaint(start, end, EDirectionType.Up, _eSkillType, maskRandom);
+                        target.DoPaint(start, end, EDirectionType.Up, _epaintType, maskRandom);
                         if (start <= target.ColliderGrid.XMin)
                         {
                             start = target.ColliderGrid.YMax - paintDepth;
                             end = target.ColliderGrid.YMax;
-                            target.DoPaint(start, end, EDirectionType.Left, _eSkillType, maskRandom, false);
+                            target.DoPaint(start, end, EDirectionType.Left, _epaintType, maskRandom, false);
                         }
                         if (end >= target.ColliderGrid.XMax)
                         {
                             start = target.ColliderGrid.YMax - paintDepth;
                             end = target.ColliderGrid.YMax;
-                            target.DoPaint(start, end, EDirectionType.Right, _eSkillType, maskRandom, false);
+                            target.DoPaint(start, end, EDirectionType.Right, _epaintType, maskRandom, false);
                         }
                     }
                     break;
@@ -475,18 +513,18 @@ namespace GameA.Game
                     {
                         var start = centerPos.y - _radius;
                         var end = centerPos.y + _radius;
-                        target.DoPaint(start, end, EDirectionType.Right, _eSkillType, maskRandom);
+                        target.DoPaint(start, end, EDirectionType.Right, _epaintType, maskRandom);
                         if (start <= target.ColliderGrid.YMin)
                         {
                             start = target.ColliderGrid.XMax - paintDepth;
                             end = target.ColliderGrid.XMax;
-                            target.DoPaint(start, end, EDirectionType.Down, _eSkillType, maskRandom, false);
+                            target.DoPaint(start, end, EDirectionType.Down, _epaintType, maskRandom, false);
                         }
                         if (end >= target.ColliderGrid.YMax)
                         {
                             start = target.ColliderGrid.XMax - paintDepth;
                             end = target.ColliderGrid.XMax;
-                            target.DoPaint(start, end, EDirectionType.Up, _eSkillType, maskRandom, false);
+                            target.DoPaint(start, end, EDirectionType.Up, _epaintType, maskRandom, false);
                         }
                     }
                     break;
@@ -494,18 +532,18 @@ namespace GameA.Game
                     {
                         var start = centerPos.y - _radius;
                         var end = centerPos.y + _radius;
-                        target.DoPaint(start, end, EDirectionType.Left, _eSkillType, maskRandom);
+                        target.DoPaint(start, end, EDirectionType.Left, _epaintType, maskRandom);
                         if (start <= target.ColliderGrid.YMin)
                         {
                             start = target.ColliderGrid.XMin;
                             end = target.ColliderGrid.XMin + paintDepth;
-                            target.DoPaint(start, end, EDirectionType.Down, _eSkillType, maskRandom, false);
+                            target.DoPaint(start, end, EDirectionType.Down, _epaintType, maskRandom, false);
                         }
                         if (end >= target.ColliderGrid.YMax)
                         {
                             start = target.ColliderGrid.XMin;
                             end = target.ColliderGrid.XMin + paintDepth;
-                            target.DoPaint(start, end, EDirectionType.Up, _eSkillType, maskRandom, false);
+                            target.DoPaint(start, end, EDirectionType.Up, _epaintType, maskRandom, false);
                         }
                     }
                     break;

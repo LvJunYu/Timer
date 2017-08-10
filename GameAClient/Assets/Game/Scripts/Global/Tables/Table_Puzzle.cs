@@ -21,10 +21,10 @@ namespace GameA.Game
 		[ColumnMapping("Description")]
 		public string Description;
 		/// <summary>
-        /// 等级
+        /// 品质
         /// </summary>
-		[ColumnMapping("Level")]
-		public int Level;
+		[ColumnMapping("Quality")]
+		public int Quality;
 		/// <summary>
         /// 属性加成类型
         /// </summary>
@@ -40,6 +40,16 @@ namespace GameA.Game
         /// </summary>
 		[ColumnMapping("MergeCost")]
 		public int MergeCost;
+		/// <summary>
+        /// 最大等级
+        /// </summary>
+		[ColumnMapping("MaxLevel")]
+		public int MaxLevel;
+		/// <summary>
+        /// 组成的碎片
+        /// </summary>
+		[ColumnMapping("Fragments")]
+		public int[] Fragments;
 	}
 
     public class TablePuzzleAsset:BaseTableAsset

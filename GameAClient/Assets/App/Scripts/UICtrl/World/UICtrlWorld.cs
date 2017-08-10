@@ -6,17 +6,13 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
-using SoyEngine;
-using SoyEngine.Proto;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlWorld : UICtrlGenericBase<UIViewWorld>
     {
         #region 常量与字段
@@ -49,11 +45,6 @@ namespace GameA
             base.OnOpen(parameter);
             HideDetail();
             ChangeMenu(EMenu.NewestProject);
-        }
-
-        protected override void OnClose()
-        {
-            base.OnClose();
         }
 
         #region private

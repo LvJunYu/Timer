@@ -77,6 +77,11 @@ namespace GameA.Game
             get { return _mapStatistics; }
         }
 
+        public SlicedCameraMask CameraMask
+        {
+            get { return _cameraMask; }
+        }
+
         #endregion
 
         #region DefaultMethod
@@ -108,9 +113,11 @@ namespace GameA.Game
                 {
                     UnityEngine.Object.Destroy(_backgroundObject);
                 }
+                _backgroundObject = null;
                 if (_cameraMask != null)
                 {
                     UnityEngine.Object.Destroy(_cameraMask.gameObject);
+                    _cameraMask = null;
                 }
                 foreach (var state in _initedStateSet)
                 {
@@ -131,6 +138,7 @@ namespace GameA.Game
                 Messenger.RemoveListener(EMessengerType.GameFinishSuccess, OnSuccess);
             }
             _instance = null;
+            LogHelper.Info("EditMode Dispose");
         }
 
         public void Init()
