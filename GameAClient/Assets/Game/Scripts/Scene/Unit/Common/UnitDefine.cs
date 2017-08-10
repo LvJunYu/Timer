@@ -17,6 +17,8 @@ namespace GameA.Game
         public static Vector2 HidePos = Vector3.one * -5;
         public static int EnergyTimer = 30 * ConstDefineGM2D.FixedFrameCount;
 
+        public const float UnitSorttingLayerRatio = 0.0015625f;
+
         public const int ZOffsetEffectBackground = 90;
         public const int ZOffsetBackground = 100;
         public const int ZOffsetFrontest = -400;
