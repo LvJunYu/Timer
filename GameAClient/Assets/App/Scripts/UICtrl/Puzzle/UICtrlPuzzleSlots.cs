@@ -56,7 +56,7 @@ namespace GameA
             }
         }
 
-        private void RefreshSlotsAfterEquipPuzzle()
+        private void OnPuzzleEquip()
         {
             //_usingPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
             for (int i = 0; i < _allEquipLocs.Count; i++)
@@ -65,16 +65,16 @@ namespace GameA
             }
         }
 
-        protected override void InitGroupId()
-        {
-            _groupId = (int)EUIGroupType.FrontUI;
-        }
-
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             InitUI();
-            Messenger.AddListener(EMessengerType.OnPuzzleEquip, RefreshSlotsAfterEquipPuzzle);
+        }
+
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            RegisterEvent(EMessengerType.OnPuzzleEquip, OnPuzzleEquip);
         }
 
         private void OnCloseBtn()
@@ -101,6 +101,11 @@ namespace GameA
                 _allEquipLocs[i].SetEquipable(false);
             }
             base.OnClose();
+        }
+
+        protected override void InitGroupId()
+        {
+            _groupId = (int)EUIGroupType.FrontUI;
         }
     }
 }

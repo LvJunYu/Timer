@@ -15,7 +15,7 @@ namespace GameA
     {
         private PictureFull _puzzle;
         private PicturePart[] _puzzleFragments;
-        private UMCtrlPuzzleDetailItem _puzzleItem;
+        private UMCtrlPuzzleDetailItem _umPuzzleItem;
         private List<UMCtrlPuzzleFragmentItem> _fragmentsCache;
         private List<UMCtrlPuzzleFragmentItem> _curFragments;
         private const string _upgrateTxt = "升级";
@@ -88,37 +88,10 @@ namespace GameA
                 code => { LogHelper.Error("Network error when get UserUsingPictureFullData, {0}", code); });
         }
 
-        protected override void OnOpen(object parameter)
-        {
-            base.OnOpen(parameter);
-            _puzzle = parameter as PictureFull;
-            _puzzleFragments = _puzzle.NeededFragments;
-            SetUI();
-        }
-
-        protected override void OnViewCreated()
-        {
-            base.OnViewCreated();
-            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-            _cachedView.ActiveBtn.onClick.AddListener(OnActiveBtn);
-            _cachedView.EquipBtn.onClick.AddListener(OnEquipBtn);
-            //碎片Item缓存
-            _fragmentsCache = new List<UMCtrlPuzzleFragmentItem>(9);
-            //当前拼图所需碎片
-            _curFragments = new List<UMCtrlPuzzleFragmentItem>(9);
-            //创建拼图
-            _puzzleItem = new UMCtrlPuzzleDetailItem();
-            _puzzleItem.Init(_cachedView.PuzzleItemPos);
-            //监听事件
-            Messenger.AddListener(EMessengerType.OnPuzzleCompound, RefreshFragments);
-            Messenger.AddListener(EMessengerType.OnPuzzleCompound, SetButtons);
-            Messenger.AddListener(EMessengerType.OnPuzzleCompound, SetPuzzleItem);
-        }
-
         private void SetUI()
         {
             //更新拼图数据
-            SetPuzzleItem();
+            SetUMPuzzleDetailItem();
 
             //创建拼图碎片
             _curFragments.Clear();
@@ -134,9 +107,9 @@ namespace GameA
             SetButtons();
         }
 
-        private void SetPuzzleItem()
+        private void SetUMPuzzleDetailItem()
         {
-            _puzzleItem.SetData(_puzzle);
+            _umPuzzleItem.SetData(_puzzle);
             _cachedView.NameTxt.text = _puzzle.Name;
             _cachedView.LvTxt.text = _puzzle.Level.ToString();
             _cachedView.DescTxt.text = _puzzle.Desc;
@@ -172,6 +145,13 @@ namespace GameA
             return _puzzle.CurState == EPuzzleState.HasActived;
         }
 
+        private void OnPuzzleCompound()
+        {
+            RefreshFragments();
+            SetButtons();
+            SetUMPuzzleDetailItem();
+        }
+
         private UMCtrlPuzzleFragmentItem CreatePuzzleFragment()
         {
             //查看缓存
@@ -190,6 +170,35 @@ namespace GameA
             _fragmentsCache.Add(puzzleFragment);
 
             return puzzleFragment;
+        }
+
+        protected override void OnOpen(object parameter)
+        {
+            base.OnOpen(parameter);
+            _puzzle = parameter as PictureFull;
+            _puzzleFragments = _puzzle.NeededFragments;
+            SetUI();
+        }
+
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            _cachedView.ActiveBtn.onClick.AddListener(OnActiveBtn);
+            _cachedView.EquipBtn.onClick.AddListener(OnEquipBtn);
+            //碎片Item缓存
+            _fragmentsCache = new List<UMCtrlPuzzleFragmentItem>(9);
+            //当前拼图所需碎片
+            _curFragments = new List<UMCtrlPuzzleFragmentItem>(9);
+            //创建拼图
+            _umPuzzleItem = new UMCtrlPuzzleDetailItem();
+            _umPuzzleItem.Init(_cachedView.PuzzleItemPos);
+        }
+
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            RegisterEvent(EMessengerType.OnPuzzleCompound, OnPuzzleCompound);
         }
 
         protected override void OnClose()
