@@ -53,28 +53,98 @@ namespace GameA
             _cachedView.AssistBtn.OnRelease+= OnAssistButtonUp;
         }
 
+        private void SetSkill1Type(int bg, int cdType)
+        {
+            if (null == _cachedView) return;
+            bg = Mathf.Clamp(bg, 0, 3);
+            cdType = Mathf.Clamp(cdType, 0, 2);
+            for (int i = 0; i < _cachedView.Btn1ColorBgArray.Length; i++)
+            {
+                if (i == bg)
+                {
+                    _cachedView.Btn1ColorBgArray[i].SetActive(true);
+                }
+                else
+                {
+                    _cachedView.Btn1ColorBgArray[i].SetActive(false);
+                }
+            }
+            _cachedView.Btn1CD1.gameObject.SetActive(cdType == 0);
+            _cachedView.Btn1CD2.gameObject.SetActive(cdType != 0);
+        }
+        private void SetSkill2Type(int bg, int cdType)
+        {
+            if (null == _cachedView) return;
+            bg = Mathf.Clamp(bg, 0, 3);
+            cdType = Mathf.Clamp(cdType, 0, 2);
+            for (int i = 0; i < _cachedView.Btn2ColorBgArray.Length; i++)
+            {
+                if (i == bg)
+                {
+                    _cachedView.Btn2ColorBgArray[i].SetActive(true);
+                }
+                else
+                {
+                    _cachedView.Btn2ColorBgArray[i].SetActive(false);
+                }
+            }
+            _cachedView.Btn2CD1.gameObject.SetActive(cdType == 0);
+            _cachedView.Btn2CD2.gameObject.SetActive(cdType != 0);
+        }
+        private void SetSkill3Type(int bg, int cdType)
+        {
+            if (null == _cachedView) return;
+            bg = Mathf.Clamp(bg, 0, 3);
+            cdType = Mathf.Clamp(cdType, 0, 2);
+            for (int i = 0; i < _cachedView.Btn3ColorBgArray.Length; i++)
+            {
+                if (i == bg)
+                {
+                    _cachedView.Btn3ColorBgArray[i].SetActive(true);
+                }
+                else
+                {
+                    _cachedView.Btn3ColorBgArray[i].SetActive(false);
+                }
+            }
+            _cachedView.Btn3CD1.gameObject.SetActive(cdType == 0);
+            _cachedView.Btn3CD2.gameObject.SetActive(cdType != 0);
+        }
+        
+        private void SetSkill1Icon(string iconName)
+        {
+            if (null == _cachedView) return;
+            _cachedView.Btn1Icon.sprite = ResourcesManager.Instance.GetSprite(iconName);
+        }
         private void SetSkill2Icon(string iconName)
         {
             if (null == _cachedView) return;
-            _cachedView.SkillBtn2Icon.sprite = ResourcesManager.Instance.GetSprite(iconName);
+            _cachedView.Btn2Icon.sprite = ResourcesManager.Instance.GetSprite(iconName);
         }
 
         private void SetSkill3Icon(string iconName)
         {
             if (null == _cachedView) return;
-            _cachedView.SkillBtn3Icon.sprite = ResourcesManager.Instance.GetSprite(iconName);
+            _cachedView.Btn3Icon.sprite = ResourcesManager.Instance.GetSprite(iconName);
         }
 
+        private void OnSkill1CDChanged(float leftTime, float totalTime)
+        {
+            if (null == _cachedView) return;
+            _cachedView.Btn1CD1.fillAmount = leftTime / totalTime;
+            _cachedView.Btn1CD2.fillAmount = leftTime / totalTime;
+        }
         private void OnSkill2CDChanged(float leftTime, float totalTime)
         {
             if (null == _cachedView) return;
-            _cachedView.SkillBtn2CD.fillAmount = leftTime / totalTime;
+            _cachedView.Btn2CD1.fillAmount = leftTime / totalTime;
+            _cachedView.Btn2CD2.fillAmount = leftTime / totalTime;
         }
-        
         private void OnSkill3CDChanged(float current, float max)
         {
             if (null == _cachedView) return;
-            _cachedView.SkillBtn3CD.fillAmount = current / max;
+            _cachedView.Btn3CD1.fillAmount = current / max;
+            _cachedView.Btn3CD2.fillAmount = current / max;
         }
         
 
