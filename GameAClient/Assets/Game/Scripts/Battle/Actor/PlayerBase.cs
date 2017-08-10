@@ -131,7 +131,7 @@ namespace GameA.Game
             {
                 case ECostType.None:
                 case ECostType.Paint:
-                    slot = FindPaintSlot(tableSkill.Id, _skillCtrl.CurrentSkills);
+                    FindPaintSlot(tableSkill.Id, _skillCtrl.CurrentSkills, out slot);
                     break;
                 case ECostType.Magic:
                     slot = 1;
