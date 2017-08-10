@@ -221,7 +221,7 @@ namespace GameA.Game
                 return;
             }
             _timerCD = value;
-            if (_owner.IsMain)
+            if (_owner.IsMain && _tableSkill.CostType == (int)ECostType.Magic)
             {
                 Messenger<float, float>.Broadcast(EMessengerType.OnSkill2CDChanged, _timerCD, _cdTime);
             }
