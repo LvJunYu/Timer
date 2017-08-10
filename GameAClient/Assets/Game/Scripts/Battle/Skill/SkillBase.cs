@@ -111,6 +111,7 @@ namespace GameA.Game
                     _epaintType = EPaintType.Ice;
                     break;
             }
+            SetTimerCD(0);
             _cdTime = TableConvert.GetTime(_tableSkill.CDTime);
             _singTime = TableConvert.GetTime(_tableSkill.SingTime);
             _castRange = TableConvert.GetRange(_tableSkill.CastRange);
@@ -120,7 +121,6 @@ namespace GameA.Game
             _regenSpeed = _tableSkill.RegenSpeed;
             SetEnergy(_energyTotal);
             _timerSing = 0;
-            SetTimerCD(0);
             _timerCharge = 0;
         }
 
@@ -149,8 +149,7 @@ namespace GameA.Game
             }
             if (_timerCD > 0)
             {
-                _timerCD--;
-                SetTimerCD(_timerCD);
+                SetTimerCD(_timerCD - 1);
             }
             if (_timerSing > 0)
             {
