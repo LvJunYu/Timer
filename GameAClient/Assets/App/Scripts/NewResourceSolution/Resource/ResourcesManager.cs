@@ -110,6 +110,7 @@ namespace NewResourceSolution
             ELocale locale = ELocale.WW
             ) where T : UnityEngine.Object
         {
+            if (null == name) return null;
             #if UNITY_EDITOR
             if (!RuntimeConfig.Instance.UseAssetBundleRes)
             {

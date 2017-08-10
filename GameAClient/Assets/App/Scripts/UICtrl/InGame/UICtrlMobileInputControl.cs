@@ -57,7 +57,7 @@ namespace GameA
         {
             if (null == _cachedView) return;
             if (null == tableSkill) return;
-            if (0 < slot || slot > 2) return;
+            if (0 > slot || slot > 2) return;
             int bgIdx = 0;
             int cdType = -1;
             if (tableSkill.CostType == (int) ECostType.Magic)
