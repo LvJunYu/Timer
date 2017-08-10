@@ -106,6 +106,7 @@ namespace GameA
                 }
             }
             _cachedView.Btn1Icon.sprite = ResourcesManager.Instance.GetSprite(icon);
+            _cachedView.Btn1Icon.gameObject.SetActive(true);
             _cachedView.Btn1CD1.gameObject.SetActive(cdType == 0);
             _cachedView.Btn1CD2.gameObject.SetActive(cdType == 1);
         }
@@ -125,6 +126,7 @@ namespace GameA
                 }
             }
             _cachedView.Btn2Icon.sprite = ResourcesManager.Instance.GetSprite(icon);
+            _cachedView.Btn2Icon.gameObject.SetActive(true);
             _cachedView.Btn2CD1.gameObject.SetActive(cdType == 0);
             _cachedView.Btn2CD2.gameObject.SetActive(cdType == 1);
         }
@@ -144,6 +146,7 @@ namespace GameA
                 }
             }
             _cachedView.Btn3Icon.sprite = ResourcesManager.Instance.GetSprite(icon);
+            _cachedView.Btn3Icon.gameObject.SetActive(true);
             _cachedView.Btn3CD1.gameObject.SetActive(cdType == 0);
             _cachedView.Btn3CD2.gameObject.SetActive(cdType == 0);
         }
