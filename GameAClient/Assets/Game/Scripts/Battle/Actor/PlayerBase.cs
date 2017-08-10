@@ -104,7 +104,6 @@ namespace GameA.Game
                 _tableEquipments[i] = null;
             }
             _gun = _gun ?? new Gun(this);
-            SetWeapon(101);
             _dieTime = 0;
             _box = null;
             ClearView();
@@ -185,6 +184,7 @@ namespace GameA.Game
         {
             base.OnPlay();
             LogHelper.Debug("{0}, OnPlay", GetType().Name);
+            SetWeapon(101);
             _gun.Play();
             AddStates(61);
             _revivePos = _curPos;
@@ -419,7 +419,6 @@ namespace GameA.Game
             }
             _reviveEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null, ESortingOrder.LazerEffect));
             _portalEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null, ESortingOrder.LazerEffect));
-            SetWeapon(101);
             _view.StatusBar.ShowHP();
             _view.StatusBar.ShowMP();
             return true;
