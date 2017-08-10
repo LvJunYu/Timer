@@ -11,6 +11,7 @@ namespace GameA
     /// </summary>
     public class UMViewPuzzleEquipLoc : UMViewBase
     {
+        public Image ActiveImage;
         public GameObject LockObj;
         public Text UnlockLvTxt;
         public GameObject PuzzleItem;
