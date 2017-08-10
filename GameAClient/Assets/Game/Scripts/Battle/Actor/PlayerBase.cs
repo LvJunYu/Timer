@@ -143,16 +143,16 @@ namespace GameA.Game
                 switch (_paintIds.Count)
                 {
                     case 1:
-                        _skillCtrl.UpdateSkill(_paintIds.First.Value, 0);
+                        _skillCtrl.SetSkill(_paintIds.First.Value, 0);
                         break;
                     case 2:
-                        _skillCtrl.UpdateSkill(_paintIds.First.Value, 0);
-                        _skillCtrl.UpdateSkill(_paintIds.Last.Value, _skillCtrl.HasEmptySlot(out slot) ? slot : 1);
+                        _skillCtrl.SetSkill(_paintIds.First.Value, 0);
+                        _skillCtrl.SetSkill(_paintIds.Last.Value, _skillCtrl.HasEmptySlot(out slot) ? slot : 1);
                         break;
                     case 3:
                         foreach (var paintId in _paintIds)
                         {
-                            _skillCtrl.UpdateSkill(paintId, slot);
+                            _skillCtrl.SetSkill(paintId, slot);
                             slot++;
                         }
                         break;

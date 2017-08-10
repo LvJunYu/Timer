@@ -60,12 +60,6 @@ namespace GameA.Game
             return true;
         }
 
-        public void UpdateSkill(int id, int slot)
-        {
-            RemoveSlot(slot);
-            SetSkill(id, slot);
-        }
-
         public void RemoveSkill(int id)
         {
             for (int i = 0; i < _currentSkills.Length; i++)
