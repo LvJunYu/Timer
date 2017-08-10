@@ -151,7 +151,7 @@ namespace GameA
 
         private void SetActiveTxt()
         {
-            if (_puzzle.CurState == PuzzleState.HasActived)
+            if (_puzzle.CurState == EPuzzleState.HasActived)
                 _cachedView.ActiveTxt.text = _upgrateTxt;
             else
                 _cachedView.ActiveTxt.text = _activeTxt;
@@ -169,7 +169,7 @@ namespace GameA
 
         private bool CheckEquipable()
         {
-            return _puzzle.CurState == PuzzleState.HasActived;
+            return _puzzle.CurState == EPuzzleState.HasActived;
         }
 
         private UMCtrlPuzzleFragmentItem CreatePuzzleFragment()
