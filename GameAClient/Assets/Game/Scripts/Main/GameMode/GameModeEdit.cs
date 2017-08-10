@@ -250,7 +250,6 @@ namespace GameA.Game
                     ChangeMode(EMode.Edit);
                     return;
                 }
-                GameRun.Instance.Playing();
 	            _inputDatas.Clear();
                 SocialGUIManager.Instance.CloseUI<UICtrlItem>();
 //                SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
@@ -260,6 +259,7 @@ namespace GameA.Game
                 SocialGUIManager.Instance.OpenUI<UICtrlSceneState>();
                 SocialGUIManager.Instance.CloseUI<UICtrlModifyEdit>();
                 InputManager.Instance.ShowGameInput();
+	            GameRun.Instance.Playing();
             }
             else if (mode == EMode.Edit)
             {
