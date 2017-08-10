@@ -83,16 +83,8 @@ namespace GameA
                     _checkBehaviour = ECheckBehaviour.Drag;
                     var current = EditHelper.GetUnitOrigDirOrRot(_table);
                     EDirectionType rotate = EDirectionType.Up;
-                    UnitExtra unitExtra = new UnitExtra();
-                    if (UnitDefine.IsRoller(_table.Id))
-                    {
-                        unitExtra.RollerDirection = (EMoveDirection) current;
-                    }
-                    if (_table.CanMove)
-                    {
-                        unitExtra.MoveDirection = (EMoveDirection) current;
-                    }
-                    else if (_table.CanRotate)
+                    UnitExtra unitExtra = UnitExtra.zero;
+                    if (_table.CanRotate)
                     {
                         rotate = (EDirectionType) current;
                     }
