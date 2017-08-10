@@ -26,19 +26,22 @@ namespace GameA
         {
             get
             {
-                if (_lvTableDic.ContainsKey(_level))
+                if (_curState == EPuzzleState.HasActived)
                     return _lvTableDic[_level].Description;
                 else
                     return _puzzleTable.Description;
             }
         }
-        public int CostMoeny { get
+        public int CostMoeny
+        {
+            get
             {
-                if (_lvTableDic.ContainsKey(_level))
+                if (_curState == EPuzzleState.HasActived)
                     return _lvTableDic[_level].UpgradeCost;
                 else
                     return _puzzleTable.MergeCost;
-            } }
+            }
+        }
         public Dictionary<int, Table_PuzzleUpgrade> LvTableDic { get { return _lvTableDic; } }
         public PicturePart[] NeededFragments { get { return _neededFragments; } }
 
@@ -87,17 +90,6 @@ namespace GameA
             _Inited = true;
         }
 
-        private void InitLvDic()
-        {
-
-        }
-
-        private void UpdateDesc()
-        {
-            //Desc = puzzle.Description;
-
-        }
-
         public void ActivatePuzzle()
         {
             _level++;
@@ -122,7 +114,6 @@ namespace GameA
                 _curState = EPuzzleState.CanActive;
             else if (_curState == EPuzzleState.CanActive && !CheckActivatable())
                 _curState = EPuzzleState.CantActive;
-
         }
 
         private bool CheckActivatable()

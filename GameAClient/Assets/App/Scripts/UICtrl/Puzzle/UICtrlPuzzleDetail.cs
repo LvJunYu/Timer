@@ -28,15 +28,25 @@ namespace GameA
 
         private void OnActiveBtn()
         {
+            if (!GameATools.CheckGold(_puzzle.CostMoeny, true))
+                return;
+            //通知服务器
+            if (_puzzle.CurState == EPuzzleState.HasActived)
+                UpgradeCommand();
+            else
+                CompoundCommand();
+        }
+
+        private void CompoundCommand()
+        {
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在合成拼图");
             RemoteCommands.CompoundPictureFull(_puzzle.PictureId, res =>
             {
                 if (res.ResultCode == (int)ECompoundPictureFullCode.CPF_Success)
                 {
-                    Compound();
+                    CompoundOrUpgrade();
                     RequesUserPictureFull();
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    LogHelper.Debug("合成成功");
                 }
                 else
                 {
@@ -47,14 +57,46 @@ namespace GameA
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 //测试，服务器完成后删除
-                LogHelper.Debug("服务器请求失败，进行合成测试");
-                Compound();
+                LogHelper.Debug("服务器请求失败，客服端合成测试");
+                CompoundOrUpgrade();
                 //LogHelper.Debug("合成失败");
             });
         }
 
-        private void Compound()
+        private void UpgradeCommand()
         {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在升级拼图");
+            RemoteCommands.UpgradePictureFull(_puzzle.PictureId, _puzzle.Level + 1, res =>
+               {
+                   if (res.ResultCode == (int)ECompoundPictureFullCode.CPF_Success)
+                   {
+                       CompoundOrUpgrade();
+                       RequesUserPictureFull();
+                       SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                   }
+                   else
+                   {
+                       SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                       LogHelper.Debug("升级失败");
+                   }
+               }, code =>
+               {
+                   SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                   //测试，服务器完成后删除
+                   LogHelper.Debug("服务器请求失败，客服端升级测试");
+                   CompoundOrUpgrade();
+                   //LogHelper.Debug("升级失败");
+               });
+        }
+
+        private void CompoundOrUpgrade()
+        {
+            //消耗金币
+            if (!GameATools.LocalUseGold(_puzzle.CostMoeny))
+            {
+                LogHelper.Debug("Don't have enough moeny !!");
+                return;
+            };
             //消耗材料
             for (int i = 0; i < _puzzleFragments.Length; i++)
             {
@@ -62,8 +104,10 @@ namespace GameA
             }
             //升级
             _puzzle.ActivatePuzzle();
+            //传递当前合成的拼图
             SocialGUIManager.Instance.GetUI<UICtrlPuzzle>().CurActivePicFull = _puzzle;
             Messenger.Broadcast(EMessengerType.OnPuzzleCompound);
+            LogHelper.Debug("合成/升级成功");
         }
 
         private void RefreshFragments()
@@ -119,6 +163,7 @@ namespace GameA
         {
             _cachedView.Unable_Active.SetActive(!CheckActivable());
             _cachedView.Unable_Equip.SetActive(!CheckEquipable());
+            _cachedView.CostNumTxt.text = _puzzle.CostMoeny.ToString();
             SetActiveTxt();
         }
 
