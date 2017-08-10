@@ -27,6 +27,7 @@ namespace GameA
         private string _maleIcon = "icon_male";
         private string _femaleIcon= "icon_famale";
         private bool _isMale=true;
+        private List<UMCtrlAchievement> _cardList = new List<UMCtrlAchievement>();
 
         #endregion
 
@@ -72,6 +73,7 @@ namespace GameA
             base.OnOpen(parameter);
             InitPanel();
             Exp();
+            Set();
         }
 
         #endregion
@@ -214,6 +216,18 @@ namespace GameA
                     //- TableManager.Instance.Table_PlayerLvToExpDic[LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel].AdvExp
                     )
                     / (TableManager.Instance.Table_PlayerLvToExpDic[level + 1].MakerExp - TableManager.Instance.Table_PlayerLvToExpDic[level].MakerExp);
+        }
+
+        public void Set()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                var UM = new UMCtrlAchievement();
+                UM.Init(_cachedView.Dock as RectTransform);
+                UM.Set();
+                _cardList.Add(UM);
+            }
+
         }
 
         #endregion 事件处理

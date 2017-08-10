@@ -28,8 +28,8 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            RegisterEvent<string>(EMessengerType.SetSkill2Icon, SetSkill2Icon);
-            RegisterEvent<string>(EMessengerType.SetSkill3Icon, SetSkill3Icon);
+            RegisterEvent<Table_Skill, int>(EMessengerType.OnSkillSlotChanged, OnSkillSlotChanged);
+            RegisterEvent<float, float>(EMessengerType.OnSkill2CDChanged, OnSkill1CDChanged);
             RegisterEvent<float, float>(EMessengerType.OnSkill2CDChanged, OnSkill2CDChanged);
             RegisterEvent<float, float>(EMessengerType.OnSkill3CDChanged, OnSkill3CDChanged);
         }
@@ -53,11 +53,47 @@ namespace GameA
             _cachedView.AssistBtn.OnRelease+= OnAssistButtonUp;
         }
 
+        private void OnSkillSlotChanged(Table_Skill tableSkill, int slot)
+        {
+            if (null == _cachedView) return;
+            if (null == tableSkill) return;
+            if (0 < slot || slot > 2) return;
+            int bgIdx = 0;
+            int cdType = -1;
+            if (tableSkill.CostType == (int) ECostType.Magic)
+            {
+                bgIdx = 0;
+                cdType = 0;
+            }
+            else if (tableSkill.CostType == (int) ECostType.Paint)
+            {
+                bgIdx = 1;
+                cdType = -1;
+            }
+            else if (tableSkill.CostType == (int) ECostType.Rage)
+            {
+                bgIdx = 2;
+                cdType = 1;
+            }
+
+            if (slot == 0)
+            {
+                SetSkill1Type(bgIdx, cdType);
+            }
+            else if (slot == 1)
+            {
+                SetSkill2Type(bgIdx, cdType);
+            }
+            else if (slot == 2)
+            {
+                SetSkill3Type(bgIdx, cdType);
+            }
+
+        }
         private void SetSkill1Type(int bg, int cdType)
         {
             if (null == _cachedView) return;
             bg = Mathf.Clamp(bg, 0, 3);
-            cdType = Mathf.Clamp(cdType, 0, 2);
             for (int i = 0; i < _cachedView.Btn1ColorBgArray.Length; i++)
             {
                 if (i == bg)
@@ -70,13 +106,12 @@ namespace GameA
                 }
             }
             _cachedView.Btn1CD1.gameObject.SetActive(cdType == 0);
-            _cachedView.Btn1CD2.gameObject.SetActive(cdType != 0);
+            _cachedView.Btn1CD2.gameObject.SetActive(cdType == 1);
         }
         private void SetSkill2Type(int bg, int cdType)
         {
             if (null == _cachedView) return;
             bg = Mathf.Clamp(bg, 0, 3);
-            cdType = Mathf.Clamp(cdType, 0, 2);
             for (int i = 0; i < _cachedView.Btn2ColorBgArray.Length; i++)
             {
                 if (i == bg)
@@ -89,13 +124,12 @@ namespace GameA
                 }
             }
             _cachedView.Btn2CD1.gameObject.SetActive(cdType == 0);
-            _cachedView.Btn2CD2.gameObject.SetActive(cdType != 0);
+            _cachedView.Btn2CD2.gameObject.SetActive(cdType == 1);
         }
         private void SetSkill3Type(int bg, int cdType)
         {
             if (null == _cachedView) return;
             bg = Mathf.Clamp(bg, 0, 3);
-            cdType = Mathf.Clamp(cdType, 0, 2);
             for (int i = 0; i < _cachedView.Btn3ColorBgArray.Length; i++)
             {
                 if (i == bg)
@@ -108,7 +142,7 @@ namespace GameA
                 }
             }
             _cachedView.Btn3CD1.gameObject.SetActive(cdType == 0);
-            _cachedView.Btn3CD2.gameObject.SetActive(cdType != 0);
+            _cachedView.Btn3CD2.gameObject.SetActive(cdType == 0);
         }
         
         private void SetSkill1Icon(string iconName)

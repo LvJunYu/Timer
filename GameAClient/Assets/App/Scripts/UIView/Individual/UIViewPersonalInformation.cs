@@ -57,6 +57,11 @@ namespace GameA
         public Button SelectFemaleBtn;
         public Image SelectFemale;
 
+        public RectTransform Dock;
+
+
+
+
 
 
 

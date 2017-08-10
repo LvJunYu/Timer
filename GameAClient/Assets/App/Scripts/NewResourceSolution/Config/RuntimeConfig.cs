@@ -21,6 +21,9 @@ namespace NewResourceSolution
 		/// </summary>
 		[SerializeField]
 		private bool _useAssetBundleRes;
+		
+		[SerializeField]
+		private bool _useDebugMobileInput;
 
         private static RuntimeConfig _instance;
 		#endregion
@@ -57,6 +60,11 @@ namespace NewResourceSolution
 				return true;
 				#endif
 			}
+		}
+
+		public bool UseDebugMobileInput
+		{
+			get { return _useDebugMobileInput; }
 		}
         #endregion
 
