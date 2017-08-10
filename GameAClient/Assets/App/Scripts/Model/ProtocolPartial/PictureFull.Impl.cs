@@ -13,13 +13,13 @@ namespace GameA
     {
         //字段
         private bool _Inited;
-        private PuzzleState _curState;
+        private EPuzzleState _curState;
         private Table_Puzzle _puzzleTable;
         private PicturePart[] _neededFragments;
         private Dictionary<int, Table_PuzzleUpgrade> _lvTableDic;//键是等级，值是当前等级对应的信息
 
         //属性
-        public PuzzleState CurState { get { return _curState; } }
+        public EPuzzleState CurState { get { return _curState; } }
         public int Quality { get { return _puzzleTable.Quality; } }
         public string Name { get { return _puzzleTable.Name; } }
         public string Desc
@@ -65,7 +65,7 @@ namespace GameA
         public void InitData(Table_Puzzle puzzleTable)
         {
             _puzzleTable = puzzleTable;
-            _curState = PuzzleState.CantActive;
+            _curState = EPuzzleState.CantActive;
 
             //合成所需碎片
             var FragmentIDs = _puzzleTable.Fragments;
@@ -101,7 +101,7 @@ namespace GameA
         public void ActivatePuzzle()
         {
             _level++;
-            _curState = PuzzleState.HasActived;
+            _curState = EPuzzleState.HasActived;
         }
 
         public void EquipPuzzle(int slotID)
@@ -118,10 +118,10 @@ namespace GameA
 
         public void UpdateState()
         {
-            if (_curState == PuzzleState.CantActive && CheckActivatable())
-                _curState = PuzzleState.CanActive;
-            else if (_curState == PuzzleState.CanActive && !CheckActivatable())
-                _curState = PuzzleState.CantActive;
+            if (_curState == EPuzzleState.CantActive && CheckActivatable())
+                _curState = EPuzzleState.CanActive;
+            else if (_curState == EPuzzleState.CanActive && !CheckActivatable())
+                _curState = EPuzzleState.CantActive;
 
         }
 
@@ -141,7 +141,7 @@ namespace GameA
     /// <summary>
     /// 拼图状态
     /// </summary>
-    public enum PuzzleState
+    public enum EPuzzleState
     {
         None,
         CantActive,//不可激活

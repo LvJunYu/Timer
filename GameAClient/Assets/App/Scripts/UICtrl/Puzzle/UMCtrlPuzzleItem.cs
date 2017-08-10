@@ -19,7 +19,7 @@ namespace GameA
 
         public void SetItem()
         {
-            _cachedView.DisActiveImg.enabled = !(_puzzle.CurState == PuzzleState.HasActived);
+            _cachedView.DisActiveImg.enabled = !(_puzzle.CurState == EPuzzleState.HasActived);
         }
 
         public void SetItem(PictureFull puzzle)

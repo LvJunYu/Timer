@@ -11,7 +11,8 @@ namespace GameA
     /// </summary>
     public partial class UMViewPuzzleDetailItem : UMViewBase
     {
-        //public Button PuzzleDetail;
+        public Image Puzzle_Active;
+        public Image Puzzle_DisActive;
     }
 
 }
