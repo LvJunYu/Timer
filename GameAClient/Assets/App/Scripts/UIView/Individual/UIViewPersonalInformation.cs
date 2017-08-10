@@ -16,10 +16,6 @@ namespace GameA
 {
     public class UIViewPersonalInformation : UIViewBase
     {
-        public RectTransform MenuListDock;
-        public GameObject AdminDock;
-        public Button RecommendConsoleBtn;
-        public Button LogoutButton;
 
         public Button Exit;
         public Button AddFriend;
@@ -29,6 +25,7 @@ namespace GameA
         public Image Photo;
         public Image ExpBar;
         public Image CraftExpBar;
+        public Image Sex;
 
         public Text Name;
         public Text Lvl;
@@ -43,10 +40,23 @@ namespace GameA
         public Text NumberOfPlayed;
         public Text NumberOfPraise;
         public Text NumberOfRecompose;
+        public GameObject Editable;
+        public GameObject Editing;
 
-        public Text Signature;
-         
-        
+        public Text SignatureDesc;
+        public Text NameDesc;
+        public InputField NameDescInput;
+        public InputField SignatureDescInput;
+        public Button EditDescBtn;
+        public Button ConfirmDescBtn;
+
+
+        public Button SelectMaleBtn;
+        public Button SelectFemaleBtnBtn;
+
+
+
+
 
 
 

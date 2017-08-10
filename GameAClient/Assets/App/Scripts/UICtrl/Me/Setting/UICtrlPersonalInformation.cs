@@ -23,6 +23,9 @@ namespace GameA
         private const string AccountSettingIconSpriteName = "face_s";
         private const string ClearCacheIconSpriteName = "face_s";
         private ListMenuView _listMenuView;
+        private string _name;
+        private string _signature;
+
         #endregion
 
         #region 属性
@@ -83,7 +86,58 @@ namespace GameA
             //{ _cachedView.Name.text = LocalUser.Instance.UserLegacy.NickName; }
             _cachedView.Lvl.text = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel.ToString();
             _cachedView.CraftLvl.text = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorExp.ToString();
+            _cachedView.Editing.gameObject.SetActiveEx(false);
+            _cachedView.Editable.gameObject.SetActiveEx(true);
 
+            _cachedView.EditDescBtn.onClick.AddListener(OnEditBtn);
+            _cachedView.ConfirmDescBtn.onClick.AddListener(OnConfirmDescBtn);
+        }
+
+        private void OnEditBtn()
+        {
+
+            _cachedView.Editing.gameObject.SetActiveEx(true);
+            _cachedView.Editable.gameObject.SetActiveEx(false);
+            _cachedView.NameDescInput.text = _name;
+            _cachedView.SignatureDescInput.text = _signature;
+
+
+        }
+
+        private void OnConfirmDescBtn()
+        {
+            string newName = _cachedView.NameDescInput.text;
+            newName = CheckNameValid(newName);
+            if (!string.IsNullOrEmpty(newName) &&
+                newName != _cachedView.Name.text)
+            {
+                _cachedView.Name.text = newName;
+                //Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, _curSelectedPrivateProject.Content);
+            }
+
+            string newSignature = _cachedView.NameDescInput.text;
+            newSignature = CheckPSignatureValid(newSignature);
+            if (!string.IsNullOrEmpty(newSignature) &&
+                newSignature != _cachedView.Name.text)
+            {
+                _cachedView.SignatureDesc.text = newSignature;
+                //Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, _curSelectedPrivateProject.Content);
+            }
+            _cachedView.Editing.gameObject.SetActiveEx(false);
+            _cachedView.Editable.gameObject.SetActiveEx(true);
+
+        }
+
+
+        private string CheckNameValid(string title)
+        {
+            // todo 检测合法性
+            return title;
+        }
+        private string CheckPSignatureValid(string desc)
+        {
+            // todo 检测合法性
+            return desc;
         }
 
         private void Exp()
