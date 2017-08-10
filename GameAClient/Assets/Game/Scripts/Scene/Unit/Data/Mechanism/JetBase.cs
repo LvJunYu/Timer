@@ -60,7 +60,7 @@ namespace GameA.Game
             base.UpdateExtraData();
         }
         
-        public override bool SetWeapon(int id, int slot = 0)
+        public override bool SetWeapon(int id)
         {
             var tableEquipment = TableManager.Instance.GetEquipment(id);
             if (tableEquipment == null)

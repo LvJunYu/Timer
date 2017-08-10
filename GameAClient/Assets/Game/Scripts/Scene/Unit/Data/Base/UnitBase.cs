@@ -1630,7 +1630,7 @@ namespace GameA.Game
             return (_envState & (1 << (int) eEnvState)) != 0;
         }
 
-        public virtual bool SetWeapon(int id, int slot = 0)
+        public virtual bool SetWeapon(int weaponId)
         {
             return true;
         }

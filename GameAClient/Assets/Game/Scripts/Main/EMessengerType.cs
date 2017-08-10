@@ -88,6 +88,10 @@ namespace GameA
 	    public static int SetSkill2Icon = SoyEngine.EMessengerType.NextId++;
 	    // 设置 skill3 icon，参数1：string icon名称
 	    public static int SetSkill3Icon = SoyEngine.EMessengerType.NextId++;
+	    /// <summary>
+	    /// TableSkill, Slot
+	    /// </summary>
+	    public static int OnSkillSlotChanged = SoyEngine.EMessengerType.NextId++;
 
         // 主角加速跑技能cd发生变化
         public static int OnSpeedUpCDChanged = SoyEngine.EMessengerType.NextId++;

@@ -288,6 +288,10 @@ namespace GameA.Game
                 for (int i = 0; i < _skillCtrl.CurrentSkills.Length; i++)
                 {
                     var skill = _skillCtrl.CurrentSkills[i];
+                    if (skill == null)
+                    {
+                        continue;
+                    }
                     switch ((ECostType)skill.TableSkill.CostType)
                     {
                             case ECostType.Paint:
