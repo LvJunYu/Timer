@@ -22,5 +22,6 @@ namespace GameA
         public Text LvTxt;
         public Text NameTxt;
         public Text DescTxt;
+        public Text CostNumTxt;
     }
 }
