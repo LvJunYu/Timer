@@ -94,9 +94,12 @@ namespace GameA
             else
             {
                 _cachedView.TipUpgrade.text = "升级";
-                _cachedView.HpAdd.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).HpAdd.ToString() + "---" + TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).HpAdd.ToString();
-                _cachedView.AttackAdd.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).AttackAdd.ToString() + "---" + TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).AttackAdd.ToString();
-                _cachedView.SkillEffect.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).SkillEffect.ToString() + "---" + TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).SkillEffect.ToString();
+                _cachedView.HpAdd.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).HpAdd.ToString() +
+                    "---" + TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).HpAdd.ToString();
+                _cachedView.AttackAdd.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).AttackAdd.ToString() +
+                    "---" + TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).AttackAdd.ToString();
+                _cachedView.SkillEffect.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).SkillEffect.ToString() + 
+                    "---" + TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).SkillEffect.ToString();
         }
             _cachedView.WeaponName.text = TableManager.Instance.GetEquipment(_weaponID).Name;
             //武器碎片的图标
@@ -124,10 +127,73 @@ namespace GameA
             }
         }
 
-        private void OnConfirm()
+        private void OnConfirmBtn()
         {
-
+            if (_isCompoudAddNum == 0)
+            {
+                CompoundWeapon();
+            }
+            else
+            {
+                UpgradeWeapon();
+            }
+            SocialGUIManager.Instance.CloseUI<UICtrlWeaponUpgrade>();
+            SocialGUIManager.Instance.OpenUI<UICtrlGetCoin>();
         }
+        private void OnCancelBtn()
+        {
+            SocialGUIManager.Instance.CloseUI<UICtrlWeaponUpgrade>();
+        }
+        private void CompoundWeapon()
+        {
+            RemoteCommands.CompoundWeapon(_weaponID, _needUniversalNum, null, 
+                code => { LogHelper.Error("Network error when CompoundWeapon , {0}", code); });
+            LocalUser.Instance.UserWeaponData.Request(LocalUser.Instance.UserGuid, null,
+                code => { LogHelper.Error("Network error when get UserWeaponData, {0}", code); });
+            LocalUser.Instance.UserWeaponPartData.Request(LocalUser.Instance.UserGuid, null,
+                code => { LogHelper.Error("Network error when get UserWeaponPartData, {0}", code); });
+        }
+        private void UpgradeWeapon()
+        {
+            RemoteCommands.UpgradeWeapon(_weaponID, _needUniversalNum, _weaponLv + 1, null,
+                code => { LogHelper.Error("Network error when UpgradeWeapon , {0}", code); });
+            LocalUser.Instance.UserWeaponData.Request(LocalUser.Instance.UserGuid, null,
+                  code => { LogHelper.Error("Network error when get UserWeaponData, {0}", code); });
+            LocalUser.Instance.UserWeaponPartData.Request(LocalUser.Instance.UserGuid, null,
+                code => { LogHelper.Error("Network error when get UserWeaponPartData, {0}", code); });
+        }
+        //public void UseRaffleTicket(long selectedTicketNum, Action<long> successCallback, Action<ENetResultCode> failedCallback)
+        //{
+        //    this._RaffleTicketDict[selectedTicketNum]--;
+        //    RemoteCommands.Raffle(
+        //        selectedTicketNum,
+        //        (re) =>
+        //        {
+        //            ERaffleCode resultCode = (ERaffleCode)re.ResultCode;
+        //            List<Msg_RewardItem> RewardList = re.Reward.ItemList;
+
+        //            if (resultCode == ERaffleCode.RC_Success)
+        //            {
+        //                //SuccessfullyUseRaffleTicket(re.RewardId, (int)selectedTicketNum);
+        //                for (int i = 0; i < RewardList.Count; i++)
+        //                {
+        //                    RewardItem item = new RewardItem(RewardList[i]);
+        //                    item.AddToLocal();
+        //                }
+        //                successCallback(ReturnRewardOnPanel(re.RewardId, (int)selectedTicketNum));
+        //                _reward.OnSync(re.Reward);
+        //            }
+        //            else
+        //            {
+        //                UnsuccessfullyUseRaffleTicket();
+        //            }
+        //        },
+        //        code => {
+        //            LogHelper.Error("Network error when use Raffle, {0}", code);
+        //            UnsuccessfullyUseRaffleTicket();
+        //            this._RaffleTicketDict[selectedTicketNum]++;
+        //        });
+        //}
         #endregion
     }
 }
