@@ -10,6 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using GameA.Game;
+using NewResourceSolution;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -20,11 +21,12 @@ namespace GameA
     public class UICtrlPersonalInformation : UICtrlInGameBase<UIViewPersonalInformation>, IUIWithTitle
     {
         #region 常量与字段
-        private const string AccountSettingIconSpriteName = "face_s";
-        private const string ClearCacheIconSpriteName = "face_s";
         private ListMenuView _listMenuView;
         private string _name;
         private string _signature;
+        private string _maleIcon = "icon_male";
+        private string _femaleIcon= "icon_famale";
+        private bool _isMale=true;
 
         #endregion
 
@@ -91,6 +93,18 @@ namespace GameA
 
             _cachedView.EditDescBtn.onClick.AddListener(OnEditBtn);
             _cachedView.ConfirmDescBtn.onClick.AddListener(OnConfirmDescBtn);
+            _cachedView.SelectMaleBtn.onClick.AddListener(SelectMale);
+            _cachedView.SelectFemaleBtn.onClick.AddListener(SelectFemale);
+            if (_isMale)
+            {
+                _cachedView.MSex.SetActiveEx(true);
+                _cachedView.FSex.SetActiveEx(false);
+            }
+            else
+            {
+                _cachedView.MSex.SetActiveEx(false);
+                _cachedView.FSex.SetActiveEx(true);
+            }
         }
 
         private void OnEditBtn()
@@ -100,6 +114,9 @@ namespace GameA
             _cachedView.Editable.gameObject.SetActiveEx(false);
             _cachedView.NameDescInput.text = _name;
             _cachedView.SignatureDescInput.text = _signature;
+
+            _cachedView.SelectMale.SetActiveEx(false);
+            _cachedView.SelectFemale.SetActiveEx(false);
 
 
         }
@@ -115,18 +132,40 @@ namespace GameA
                 //Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, _curSelectedPrivateProject.Content);
             }
 
-            string newSignature = _cachedView.NameDescInput.text;
+            string newSignature = _cachedView.SignatureDescInput.text;
             newSignature = CheckPSignatureValid(newSignature);
             if (!string.IsNullOrEmpty(newSignature) &&
-                newSignature != _cachedView.Name.text)
+                newSignature != _cachedView.SignatureDesc.text)
             {
                 _cachedView.SignatureDesc.text = newSignature;
                 //Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, _curSelectedPrivateProject.Content);
             }
+
             _cachedView.Editing.gameObject.SetActiveEx(false);
             _cachedView.Editable.gameObject.SetActiveEx(true);
 
         }
+
+        private void SelectMale()
+        {
+            _cachedView.SelectMale.SetActiveEx(true);
+            _cachedView.SelectFemale.SetActiveEx(false);
+            _isMale = true;
+            Sprite fashion = null;
+            _cachedView.MSex.SetActiveEx(true);
+            _cachedView.FSex.SetActiveEx(false);
+        }
+
+        private void SelectFemale()
+        {
+            _cachedView.SelectMale.SetActiveEx(false);
+            _cachedView.SelectFemale.SetActiveEx(true);
+            _isMale = false;
+            Sprite fashion = null;
+            _cachedView.MSex.SetActiveEx(false);
+            _cachedView.FSex.SetActiveEx(true);
+        }
+
 
 
         private string CheckNameValid(string title)
