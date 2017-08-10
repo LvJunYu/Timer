@@ -194,9 +194,23 @@ namespace GameA.Game
             if (_currentEnergy != mp)
             {
                 _currentEnergy = mp;
-                if (_owner != null && _owner.View != null)
+                if (_owner != null)
                 {
-                    _owner.View.StatusBar.SetMP(_currentEnergy, _energyTotal);
+                    switch ((ECostType)_tableSkill.CostType)
+                    {
+                        case ECostType.Magic:
+                            if (_owner.View != null)
+                            {
+                                _owner.View.StatusBar.SetMP(_currentEnergy, _energyTotal);
+                            }
+                            break;
+                        case ECostType.Rage:
+                            if (_owner.IsMain)
+                            {
+                                Messenger<float, float>.Broadcast(EMessengerType.OnSkill2CDChanged, _currentEnergy, _energyTotal);
+                            }
+                            break;
+                    }
                 }
             }
         }
