@@ -5,6 +5,7 @@
 ** Summary : SkillCtrl
 ***********************************************************************/
 
+using System.Linq;
 using SoyEngine;
 using UnityEngine;
 
@@ -24,6 +25,20 @@ namespace GameA.Game
         public SkillBase[] CurrentSkills
         {
             get { return _currentSkills; }
+        }
+
+        public bool HasEmptySlot(out int slot)
+        {
+            for (int i = 0; i < _currentSkills.Length; i++)
+            {
+                if (_currentSkills[i] == null)
+                {
+                    slot = i;
+                    return true;
+                }
+            }
+            slot = 0;
+            return false;
         }
 
         public virtual bool SetSkill(int id, int slot = 0)
@@ -49,6 +64,18 @@ namespace GameA.Game
         {
             RemoveSlot(slot);
             SetSkill(id, slot);
+        }
+
+        public void RemoveSkill(int id)
+        {
+            for (int i = 0; i < _currentSkills.Length; i++)
+            {
+                if (_currentSkills[i] != null && _currentSkills[i].Id == id)
+                {
+                    RemoveSlot(i);
+                    break;
+                }
+            }
         }
 
         private void RemoveSlot(int slot)
