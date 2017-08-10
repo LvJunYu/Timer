@@ -88,23 +88,6 @@ namespace GameA
             }
         }
 
-        private void RefreshData()
-        {
-            //bool refreshed = false;
-            //_userPictureFull = LocalUser.Instance.UserPictureFull.ItemDataList;
-            ////查看未获得的拼图
-            //for (int i = 0; i < _otherPictureFull.Count; i++)
-            //{
-            //    PictureFull picture;
-            //    if (TryGetPictureFull(_otherPictureFull[i].PictureId, out picture))
-            //    {
-            //        _otherPictureFull[i] = picture;
-            //        refreshed = true;
-            //    }
-            //}
-            //return refreshed;
-        }
-
         private bool TryGetPictureFull(long id, out PictureFull picture)
         {
             for (int i = 0; i < _userPictureFull.Count; i++)
@@ -128,9 +111,9 @@ namespace GameA
         private void RequestData()
         {
             LocalUser.Instance.UserPictureFull.Request(LocalUser.Instance.UserGuid, null,
-                code => { LogHelper.Error("Network error when get UsingAvatarData, {0}", code); });
+                code => { LogHelper.Error("Network error when get UserPictureFull, {0}", code); });
             LocalUser.Instance.UserUsingPictureFullData.Request(LocalUser.Instance.UserGuid, null,
-                code => { LogHelper.Error("Network error when get ValidAvatarData, {0}", code); });
+                code => { LogHelper.Error("Network error when get UserUsingPictureFullData, {0}", code); });
         }
 
         private void OnPuzzleCompound()
@@ -154,7 +137,7 @@ namespace GameA
             }
         }
 
-        private void OnPuzzleEquip()
+        private void SetEquipLocs()
         {
             //_usingPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
             for (int i = 0; i < _allEquipLocs.Count; i++)
@@ -177,6 +160,8 @@ namespace GameA
                     _otherPictureFull.Sort((p, q) => p.Level.CompareTo(q.Level));
                     break;
                 case EPuzzleOrderType.Func:
+                    _userPictureFull.Sort((p, q) => p.AttriBonus.CompareTo(q.AttriBonus));
+                    _otherPictureFull.Sort((p, q) => p.AttriBonus.CompareTo(q.AttriBonus));
                     break;
                 default:
                     break;
@@ -202,12 +187,13 @@ namespace GameA
         {
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnPuzzleCompound, OnPuzzleCompound);
-            RegisterEvent(EMessengerType.OnPuzzleEquip, OnPuzzleEquip);
+            RegisterEvent(EMessengerType.OnPuzzleEquip, SetEquipLocs);
         }
 
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+            SetEquipLocs();
         }
 
         private void OnFuncToggle(bool arg0)
