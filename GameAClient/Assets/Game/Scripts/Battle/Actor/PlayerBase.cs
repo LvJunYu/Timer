@@ -94,6 +94,7 @@ namespace GameA.Game
         
         protected override void Clear()
         {
+            base.Clear();
             if (_input != null)
             {
                 _input.Clear();
@@ -103,13 +104,10 @@ namespace GameA.Game
                 _tableEquipments[i] = null;
             }
             _gun = _gun ?? new Gun(this);
-            SetWeapon(101);
             _dieTime = 0;
             _box = null;
             ClearView();
-
             _maxSpeedX = BattleDefine.MaxSpeedX;
-            base.Clear();
         }
         
         public override bool SetWeapon(int weaponId)
@@ -129,54 +127,37 @@ namespace GameA.Game
             }
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
             int slot = 0;
-            if (tableSkill.CostType == (int)ECostType.None || tableSkill.CostType == (int)ECostType.Paint)
+            switch ((ECostType) tableSkill.CostType)
             {
-                if (_skillCtrl.CurrentSkills[0] != null && _skillCtrl.CurrentSkills[0].Id == skillId)
-                {
-                    return false;
-                }
-                if (_paintIds.Remove(skillId))
-                {
+                case ECostType.None:
+                case ECostType.Paint:
                     _skillCtrl.RemoveSkill(skillId);
-                }
-                _paintIds.AddFirst(skillId);
-                switch (_paintIds.Count)
-                {
-                    case 1:
-                        _skillCtrl.SetSkill(_paintIds.First.Value, 0);
-                        break;
-                    case 2:
-                        _skillCtrl.SetSkill(_paintIds.First.Value, 0);
-                        _skillCtrl.SetSkill(_paintIds.Last.Value, _skillCtrl.HasEmptySlot(out slot) ? slot : 1);
-                        break;
-                    case 3:
-                        foreach (var paintId in _paintIds)
+                    if (!_skillCtrl.HasEmptySlot(out slot))
+                    {
+                        if (_skillCtrl.CurrentSkills[1].TableSkill.CostType != (int) ECostType.Paint)
                         {
-                            _skillCtrl.SetSkill(paintId, slot);
-                            slot++;
+                            slot = 1;
                         }
-                        break;
-                }
+                        else if (_skillCtrl.CurrentSkills[2].TableSkill.CostType != (int) ECostType.Paint)
+                        {
+                            slot = 2;
+                        }
+                    }
+                    break;
+                case ECostType.Magic:
+                    slot = 1;
+                    break;
+                case ECostType.Rage:
+                    slot = 2;
+                    break;
             }
-            else
+            if (!_skillCtrl.SetSkill(tableSkill.Id, slot))
             {
-                switch ((ECostType) tableSkill.CostType)
-                {
-                    case ECostType.Magic:
-                        slot = 1;
-                        break;
-                    case ECostType.Rage:
-                        slot = 2;
-                        break;
-                }
-                if (!_skillCtrl.SetSkill(tableSkill.Id, slot))
-                {
-                    return false;
-                }
+                return false;
             }
+            _tableEquipments[slot] = tableEquipment;
             //发送事件
             Messenger<Table_Skill,int>.Broadcast(EMessengerType.OnSkillSlotChanged, tableSkill, slot);
-            _tableEquipments[slot] = tableEquipment;
             CalculateMaxHp();
             OnHpChanged(_maxHp);
             if (tableSkill.CostType == (int) ECostType.Magic)
@@ -203,6 +184,7 @@ namespace GameA.Game
         {
             base.OnPlay();
             LogHelper.Debug("{0}, OnPlay", GetType().Name);
+            SetWeapon(101);
             _gun.Play();
             AddStates(61);
             _revivePos = _curPos;
@@ -437,7 +419,6 @@ namespace GameA.Game
             }
             _reviveEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null, ESortingOrder.LazerEffect));
             _portalEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null, ESortingOrder.LazerEffect));
-            SetWeapon(101);
             _view.StatusBar.ShowHP();
             _view.StatusBar.ShowMP();
             return true;

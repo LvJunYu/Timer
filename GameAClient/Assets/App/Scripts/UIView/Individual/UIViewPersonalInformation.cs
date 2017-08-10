@@ -25,7 +25,8 @@ namespace GameA
         public Image Photo;
         public Image ExpBar;
         public Image CraftExpBar;
-        public Image Sex;
+        public Image MSex;
+        public Image FSex;
 
         public Text Name;
         public Text Lvl;
@@ -52,7 +53,14 @@ namespace GameA
 
 
         public Button SelectMaleBtn;
-        public Button SelectFemaleBtnBtn;
+        public Image SelectMale;
+        public Button SelectFemaleBtn;
+        public Image SelectFemale;
+
+        public RectTransform Dock;
+
+
+
 
 
 

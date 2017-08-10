@@ -104,7 +104,7 @@ namespace GameA.Game
 
         public PairUnitManager()
         {
-            _pairUnits.Add(EPairType.ProtalDoor, new PairUnit[20]);
+            _pairUnits.Add(EPairType.PortalDoor, new PairUnit[20]);
             foreach (var pairUnits in _pairUnits.Values)
             {
                 for (int i = 0; i < pairUnits.Length; i++)
@@ -183,7 +183,7 @@ namespace GameA.Game
             pairUnit.TriggeredCnt++;
             pairUnit.Sender = sender;
             //传送门要特殊处理
-            if (unit.TableUnit.EPairType == EPairType.ProtalDoor)
+            if (unit.TableUnit.EPairType == EPairType.PortalDoor)
             {
                 Portal.OnPortal(pairUnit, unit.Guid == pairUnit.UnitA.Guid ? pairUnit.UnitB : pairUnit.UnitA);
                 return;

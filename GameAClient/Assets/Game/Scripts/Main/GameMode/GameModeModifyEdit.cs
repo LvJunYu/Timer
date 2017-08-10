@@ -105,13 +105,13 @@ namespace GameA.Game
 					ChangeMode(EMode.Edit);
 					return;
 				}
-				GameRun.Instance.Playing();
 				_inputDatas.Clear();
 				SocialGUIManager.Instance.OpenUI<UICtrlEdit>();
 				SocialGUIManager.Instance.GetUI<UICtrlEdit>().ChangeToEditTestMode();
 				SocialGUIManager.Instance.OpenUI<UICtrlSceneState>();
 				SocialGUIManager.Instance.CloseUI<UICtrlModifyEdit>();
 				InputManager.Instance.ShowGameInput();
+				GameRun.Instance.Playing();
 			}
 			else if (mode == EMode.Edit)
 			{
