@@ -38,6 +38,7 @@ namespace GameA.Game
         protected bool _hasWaterCheckedInFrame;
         
         protected SkillCtrl _skillCtrl;
+        protected LinkedList<int> _paintIds = new LinkedList<int>();
  
         public override EDieType EDieType
         {
@@ -69,6 +70,7 @@ namespace GameA.Game
             RemoveAllStates();
             _canFanCross = true;
             _eDieType = EDieType.None;
+            _paintIds.Clear();
             base.Clear();
         }
 

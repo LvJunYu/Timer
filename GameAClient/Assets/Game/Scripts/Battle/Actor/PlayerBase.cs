@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json.Serialization;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -119,30 +120,59 @@ namespace GameA.Game
                 LogHelper.Error("SetWeapon Failed, WeaponId: {0}", weaponId);
                 return false;
             }
-            var tableSkill = TableManager.Instance.GetSkill(tableEquipment.SkillId);
+            int skillId = tableEquipment.SkillId;
+            var tableSkill = TableManager.Instance.GetSkill(skillId);
             if (tableSkill == null)
             {
-                LogHelper.Error("SetWeapon Failed, SkillId : {0}", tableEquipment.SkillId);
+                LogHelper.Error("SetWeapon Failed, SkillId : {0}", skillId);
                 return false;
             }
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
             int slot = 0;
-            switch ((ECostType) tableSkill.CostType)
+            if (tableSkill.CostType == (int)ECostType.None || tableSkill.CostType == (int)ECostType.Paint)
             {
-                case ECostType.None:
-                case ECostType.Paint:
-                    FindPaintSlot(tableSkill.Id, _skillCtrl.CurrentSkills, out slot);
-                    break;
-                case ECostType.Magic:
-                    slot = 1;
-                    break;
-                case ECostType.Rage:
-                    slot = 2;
-                    break;
+                if (_skillCtrl.CurrentSkills[0] != null && _skillCtrl.CurrentSkills[0].Id == skillId)
+                {
+                    return false;
+                }
+                if (_paintIds.Remove(skillId))
+                {
+                    _skillCtrl.RemoveSkill(skillId);
+                }
+                _paintIds.AddFirst(skillId);
+                switch (_paintIds.Count)
+                {
+                    case 1:
+                        _skillCtrl.SetSkill(_paintIds.First.Value, 0);
+                        break;
+                    case 2:
+                        _skillCtrl.SetSkill(_paintIds.First.Value, 0);
+                        _skillCtrl.SetSkill(_paintIds.Last.Value, _skillCtrl.HasEmptySlot(out slot) ? slot : 1);
+                        break;
+                    case 3:
+                        foreach (var paintId in _paintIds)
+                        {
+                            _skillCtrl.SetSkill(paintId, slot);
+                            slot++;
+                        }
+                        break;
+                }
             }
-            if (!_skillCtrl.SetSkill(tableSkill.Id, slot))
+            else
             {
-                return false;
+                switch ((ECostType) tableSkill.CostType)
+                {
+                    case ECostType.Magic:
+                        slot = 1;
+                        break;
+                    case ECostType.Rage:
+                        slot = 2;
+                        break;
+                }
+                if (!_skillCtrl.SetSkill(tableSkill.Id, slot))
+                {
+                    return false;
+                }
             }
             //发送事件
             Messenger<Table_Skill,int>.Broadcast(EMessengerType.OnSkillSlotChanged, tableSkill, slot);
@@ -155,72 +185,7 @@ namespace GameA.Game
             }
             return true;
         }
-
-        private int _changedSlot;
         
-        private bool FindPaintSlot(int skillId, SkillBase[] skills, out int slot)
-        {
-            slot = 0;
-            //0号位置专门用来放置paint
-            if (skills[0] == null)
-            {
-                return true;
-            }
-            if (skills[0].TableSkill.Id == skillId)
-            {
-                return false;
-            }
-            //先遍历找空位
-            for (int i = 1; i < skills.Length; i++)
-            {
-                var skill = skills[i];
-                if (skill == null)
-                {
-                    slot = i;
-                    return true;
-                }
-            }
-            //无空位的情况下
-//            if (skills)
-//            {
-//            }
-            //再判断技能是否已经存在，理解为更换按键顺序。
-            for (int i = 1; i < skills.Length; i++)
-            {
-                var skill = skills[i];
-                if (skill.Id == skillId)
-                {
-                    if (i == _changedSlot)
-                    {
-                        CalculateChangedSlot();
-                    }
-                    _skillCtrl.UpdateSkill(skills[_changedSlot].Id, i);
-                    slot = _changedSlot;
-                    return true;
-                }
-            }
-            //替换掉不是paint类型的
-            for (int i = 0; i < skills.Length; i++)
-            {
-                var skill = skills[i];
-                if (skill.TableSkill.CostType != (int)ECostType.Paint)
-                {
-                    slot = i;
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private void CalculateChangedSlot()
-        {
-            _changedSlot++;
-            if (_changedSlot >= 2)
-            {
-                _changedSlot = 0;
-            }
-        }
-
         private void CalculateMaxHp()
         {
             _maxHp = _tableUnit.Hp;
