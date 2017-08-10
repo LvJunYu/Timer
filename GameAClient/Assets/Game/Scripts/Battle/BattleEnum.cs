@@ -29,7 +29,8 @@ namespace GameA.Game
         Ice,
         Clay,
         SpeedUp,
-        Invincible
+        Invincible,
+        Stun
     }
 
     public enum ETargetType

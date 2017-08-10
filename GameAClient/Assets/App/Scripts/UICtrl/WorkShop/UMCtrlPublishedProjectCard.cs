@@ -75,7 +75,7 @@ namespace GameA
             {
                 ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
                 _cachedView.SeletedMark.SetActiveEx (false);
-                _cachedView.Title.text= "<color=#ffffff><size=26></size></color>";
+                //_cachedView.Title.text= "<color=#ffffff><size=26></size></color>";
                 //_cachedView.PublishTime.text
                 return;
             }
@@ -96,12 +96,12 @@ namespace GameA
                 if (_wrapper.IsSelected)
                 {
                     _cachedView.Title.text = "<color=#ffffff>" + _wrapper.Content.Name + "</color>";
-                    _cachedView.PublishTime.text = "<color=#ffffff>" + GameATools.GetYearMonthDayHourMinuteSecondByMilli(_wrapper.Content.UpdateTime, 1) + "</color>";
+                    _cachedView.PublishTime.text = "<color=#ffffff>" + GameATools.GetYearMonthDayHourMinuteSecondByMilli(_wrapper.Content.CreateTime, 1) + "</color>";
                 }
                 else
                 {
                     _cachedView.PublishTime.text =
-                        GameATools.GetYearMonthDayHourMinuteSecondByMilli(_wrapper.Content.UpdateTime, 1);
+                        GameATools.GetYearMonthDayHourMinuteSecondByMilli(_wrapper.Content.CreateTime, 1);
                     //DateTimeUtil.GetServerSmartDateStringByTimestampMillis(_wrapper.Content.UpdateTime);
                 }
                   //_cachedView.PublishTime.text = DateTimeUtil.GetServerSmartDateStringByTimestampMillis(_wrapper.Content.CreateTime);

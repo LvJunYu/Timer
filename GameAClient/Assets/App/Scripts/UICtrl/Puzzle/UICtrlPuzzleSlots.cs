@@ -13,16 +13,12 @@ namespace GameA
 	[UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlPuzzleSlots : UICtrlGenericBase<UIViewPuzzleSlots>
     {
-        private int _userLv;
         private Dictionary<int, Table_PuzzleSlot> _slots;//拼图装备栏
-        private List<PictureFull> _equipedPuzzles;//装备的拼图
+        private List<PictureFull> _usingPicFull;//装备的拼图
+        private List<UMCtrlPuzzleEquipLoc> _allEquipLocs;
         private PictureFull _curPicture;
-
-        private void InitData()
-        {
-            _userLv = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel;
-            _equipedPuzzles = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
-        }
+        public PictureFull CurPicture { get { return _curPicture; } }
+        public List<PictureFull> UsingPicFull { get { return _usingPicFull; } set { _usingPicFull = value; } }
 
         private void RequestData()
         {
@@ -32,19 +28,40 @@ namespace GameA
 
         private void InitUI()
         {
+            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            _slots = TableManager.Instance.Table_PuzzleSlotDic;
+            _usingPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
+            //测试用，实际应用服务器数据
+            _usingPicFull = new List<PictureFull>(_slots.Count);
+            for (int i = 0; i < _slots.Count; i++)
+            {
+                _usingPicFull.Add(null);
+            }
+
             //创建装备栏
+            _allEquipLocs = new List<UMCtrlPuzzleEquipLoc>(_slots.Count);
             int index = 0;
             foreach (int key in _slots.Keys)
             {
                 var unlockLv = _slots[key].UnlockLevel;
-                var equipLoc = new UMCtrlPuzzleEquipLoc(unlockLv, unlockLv > _userLv);
+                var equipLoc = new UMCtrlPuzzleEquipLoc(key, unlockLv);
+                _allEquipLocs.Add(equipLoc);
                 equipLoc.Init(_cachedView.PuzzleLocsGrid);
                 //显示装备的拼图
-                if (_equipedPuzzles.Count > index && _equipedPuzzles[index] != null)
-                    equipLoc.SetData(_equipedPuzzles[index]);
+                if (_usingPicFull.Count > index && _usingPicFull[index] != null)
+                    equipLoc.SetUI(_usingPicFull[index]);
                 else
-                    equipLoc.SetData(null);
+                    equipLoc.SetUI(null);
                 index++;
+            }
+        }
+
+        private void RefreshSlotsAfterEquipPuzzle()
+        {
+            //_usingPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
+            for (int i = 0; i < _allEquipLocs.Count; i++)
+            {
+                _allEquipLocs[i].SetUI(_usingPicFull[i]);
             }
         }
 
@@ -56,10 +73,8 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-            _slots = TableManager.Instance.Table_PuzzleSlotDic;
-            InitData();
             InitUI();
+            Messenger.AddListener(EMessengerType.OnPuzzleEquip, RefreshSlotsAfterEquipPuzzle);
         }
 
         private void OnCloseBtn()
@@ -71,6 +86,21 @@ namespace GameA
         {
             base.OnOpen(parameter);
             _curPicture = parameter as PictureFull;
+            //槽位可点击
+            for (int i = 0; i < _allEquipLocs.Count; i++)
+            {
+                _allEquipLocs[i].SetEquipable(true);
+            }
+        }
+
+        protected override void OnClose()
+        {
+            //槽位点击关闭
+            for (int i = 0; i < _allEquipLocs.Count; i++)
+            {
+                _allEquipLocs[i].SetEquipable(false);
+            }
+            base.OnClose();
         }
     }
 }

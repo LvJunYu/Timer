@@ -48,7 +48,6 @@ namespace GameA.Game
         
         public override void UpdateLogic()
         {
-            LogHelper.Debug("_fa{0}", _fanForce);
             SpeedY += _fanForce.y;
             SpeedY = Util.ConstantLerp(SpeedY, -120, 5);
             _fanForce.y = 0;
