@@ -1,5 +1,6 @@
 using System;
 using GameA.Game;
+using NewResourceSolution;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput.PlatformSpecific;
 using PlayMode = GameA.Game.PlayMode;
@@ -14,6 +15,11 @@ namespace UnityStandardAssets.CrossPlatformInput
 
         static CrossPlatformInputManager()
         {
+            if (RuntimeConfig.Instance.UseDebugMobileInput && Application.isEditor)
+            {
+                virtualInput = new MobileInput ();
+                return;
+            }
             if(Application.isEditor)
             {
                 virtualInput = new StandaloneInput();
@@ -26,8 +32,6 @@ namespace UnityStandardAssets.CrossPlatformInput
                 virtualInput = new StandaloneInput();
                 #endif
             }
-            
-//            virtualInput = new MobileInput ();
         }
 
         public static void Update ()

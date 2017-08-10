@@ -42,6 +42,16 @@ namespace GameA
                     return _puzzleTable.MergeCost;
             }
         }
+        public int AttriBonus
+        {
+            get
+            {
+                if (_curState == EPuzzleState.HasActived)
+                    return _lvTableDic[_level].AttriBonus;
+                else
+                    return _puzzleTable.AttriBonus;
+            }
+        }
         public Dictionary<int, Table_PuzzleUpgrade> LvTableDic { get { return _lvTableDic; } }
         public PicturePart[] NeededFragments { get { return _neededFragments; } }
 

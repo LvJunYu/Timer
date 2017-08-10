@@ -7,6 +7,7 @@
 
 using System;
 using HedgehogTeam.EasyTouch;
+using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
@@ -308,7 +309,14 @@ namespace GameA.Game
         {
             if (Application.isEditor)
             {
-                SocialGUIManager.Instance.CloseUI<UICtrlMobileInputControl>();
+                if (RuntimeConfig.Instance.UseDebugMobileInput)
+                {
+                    SocialGUIManager.Instance.OpenUI<UICtrlMobileInputControl>();
+                }
+                else
+                {
+                    SocialGUIManager.Instance.CloseUI<UICtrlMobileInputControl>();
+                }
                 return;
             }
             SocialGUIManager.Instance.OpenUI<UICtrlMobileInputControl>();
