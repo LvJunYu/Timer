@@ -42,8 +42,10 @@ namespace GameA
         {
             _cachedView.PuzzleItem.SetActive(_curEquipedPic != null);
             //测试用，应取实际等级
-            _cachedView.LockObj.SetActive(_unlockLv > 5);
-            //_cachedView.LockObj.SetActive(_unlockLv > LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel);
+            bool unlock = _unlockLv > 2;
+            //bool unlock = _unlockLv > LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel;
+            _cachedView.ActiveImage.enabled = !unlock;
+            _cachedView.LockObj.SetActive(unlock);
         }
 
         public void SetEquipable(bool value)
