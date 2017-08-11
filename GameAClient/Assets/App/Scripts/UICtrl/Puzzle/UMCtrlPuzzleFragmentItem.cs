@@ -33,11 +33,11 @@ namespace GameA
         public void SetData(PicturePart fragment)
         {
             _fragment = fragment;
-            _cachedView.NameTxt.text = _fragment.Name;
-            RefreshData();
+            _cachedView.OrderTxt.text = _fragment.PictureInx.ToString();
+            SetData();
         }
 
-        public void RefreshData()
+        public void SetData()
         {
             _cachedView.HaveNumTxt.text = _fragment.TotalCount.ToString();
             _cachedView.Image_Disable.enabled = !(_fragment.TotalCount > 0);

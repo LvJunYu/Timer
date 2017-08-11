@@ -19,15 +19,15 @@ namespace GameA
         private List<PictureFull> _userPictureFull;
         private List<PictureFull> _otherPictureFull;
         private List<PictureFull> _allPictureFull;
-        private List<PictureFull> _usingPicFull;//装备的拼图
+        private List<PictureFull> _usingUserPicFull;//装备的拼图
         private List<UMCtrlPuzzleItem> _allPuzzleItem;//所有拼图
         private List<UMCtrlPuzzleEquipLoc> _allEquipLocs;//所有槽位
 
         public PictureFull CurActivePicFull;
         public List<PictureFull> UsingPicFull
         {
-            get { return _usingPicFull; }
-            set { _usingPicFull = value; }
+            get { return _usingUserPicFull; }
+            set { _usingUserPicFull = value; }
         }
 
         private void InitData()
@@ -38,23 +38,22 @@ namespace GameA
                 _userPictureFull[i].InitData();
             }
             _otherPictureFull = new List<PictureFull>(_puzzles.Count - _userPictureFull.Count);
-            foreach (int key in _puzzles.Keys)
+            foreach (int id in _puzzles.Keys)
             {
-                var puzzle = _puzzles[key];
-                if (!TryGetPictureFull(puzzle.Id))
+                if (_userPictureFull.Find(p => p.PictureId == id) == null)
                 {
-                    var picFull = new PictureFull(puzzle);
+                    var picFull = new PictureFull(id);
                     _otherPictureFull.Add(picFull);
                 }
             }
             _allPictureFull = new List<PictureFull>(_puzzles.Count);
             SortOrder();
-            _usingPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
+            _usingUserPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
             //测试用，实际应用服务器数据
-            _usingPicFull = new List<PictureFull>(_slots.Count);
+            _usingUserPicFull = new List<PictureFull>(_slots.Count);
             for (int i = 0; i < _slots.Count; i++)
             {
-                _usingPicFull.Add(null);
+                _usingUserPicFull.Add(null);
             }
         }
 
@@ -86,26 +85,6 @@ namespace GameA
                 puzzle.SetItem();
                 _allPuzzleItem.Add(puzzle);
             }
-        }
-
-        private bool TryGetPictureFull(long id, out PictureFull picture)
-        {
-            for (int i = 0; i < _userPictureFull.Count; i++)
-            {
-                if (_userPictureFull[i].PictureId == id)
-                {
-                    picture = _userPictureFull[i];
-                    return true;
-                }
-            }
-            picture = null;
-            return false;
-        }
-
-        private bool TryGetPictureFull(long id)
-        {
-            PictureFull picture;
-            return TryGetPictureFull(id, out picture);
         }
 
         private void RequestData()
@@ -142,7 +121,7 @@ namespace GameA
             //_usingPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
             for (int i = 0; i < _allEquipLocs.Count; i++)
             {
-                _allEquipLocs[i].SetUI(_usingPicFull[i]);
+                _allEquipLocs[i].SetUI(_usingUserPicFull[i]);
             }
         }
 

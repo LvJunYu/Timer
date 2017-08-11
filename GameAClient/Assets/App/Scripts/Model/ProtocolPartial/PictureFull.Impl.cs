@@ -17,6 +17,7 @@ namespace GameA
         private Table_Puzzle _puzzleTable;
         private PicturePart[] _neededFragments;
         private Dictionary<int, Table_PuzzleUpgrade> _lvTableDic;//键是等级，值是当前等级对应的信息
+        private List<PicturePart> _unOwnedPicParts;
 
         //属性
         public EPuzzleState CurState { get { return _curState; } }
@@ -52,42 +53,43 @@ namespace GameA
                     return _puzzleTable.AttriBonus;
             }
         }
+        public int[] FragmentIDs { get { return _puzzleTable.Fragments; } }
         public Dictionary<int, Table_PuzzleUpgrade> LvTableDic { get { return _lvTableDic; } }
         public PicturePart[] NeededFragments { get { return _neededFragments; } }
 
         //方法
-        public PictureFull(Table_Puzzle puzzleTable)
+        public PictureFull(int puzzleID)
         {
             //初始化信息
-            _pictureId = puzzleTable.Id;
+            _pictureId = puzzleID;
             _level = 0;
             _isUsing = false;
             _slot = -1;
 
-            InitData(puzzleTable);
+            InitData(puzzleID);
         }
 
         public void InitData()
         {
             if (_inited == true)
                 return;
-            var puzzleTable = TableManager.Instance.GetPuzzle((int)_pictureId);
-            InitData(puzzleTable);
+            InitData((int)_pictureId);
         }
 
-        public void InitData(Table_Puzzle puzzleTable)
+        public void InitData(int puzzleID)
         {
-            _puzzleTable = puzzleTable;
+            _puzzleTable = TableManager.Instance.GetPuzzle(puzzleID);
             _curState = EPuzzleState.CantActive;
 
             //合成所需碎片
             var FragmentIDs = _puzzleTable.Fragments;
             _neededFragments = new PicturePart[FragmentIDs.Length];
+            _unOwnedPicParts = new List<PicturePart>(FragmentIDs.Length);
             for (int i = 0; i < FragmentIDs.Length; i++)
             {
-                var Fragment = TableManager.Instance.GetPuzzleFragment(FragmentIDs[i]);
-                _neededFragments[i] = new PicturePart(Fragment);
+                _neededFragments[i] = GetPicturePart(FragmentIDs[i], this);
             }
+
             //等级信息字典
             _lvTableDic = new Dictionary<int, Table_PuzzleUpgrade>();
             var table = TableManager.Instance.Table_PuzzleUpgradeDic;
@@ -136,6 +138,21 @@ namespace GameA
                     return false;
             }
             return true;
+        }
+
+        private PicturePart GetPicturePart(int id, PictureFull parent)
+        {
+            //查看是否已拥有碎片
+            PicturePart fragment = null;
+            if ((fragment = LocalUser.Instance.UserPicturePart.ItemDataList.Find(p => p.PictureId == id)) != null)
+            {
+                fragment.InitData(parent);
+                return fragment;
+            }
+            //没有则创建新的
+            fragment = new PicturePart(id, parent);
+            _unOwnedPicParts.Add(fragment);
+            return new PicturePart(id, parent);
         }
     }
 

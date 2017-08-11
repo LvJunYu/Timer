@@ -85,7 +85,6 @@ namespace GameA
                   Equip();
                   //LogHelper.Debug("装备失败");
               });
-
         }
 
         private void Equip()
@@ -101,6 +100,7 @@ namespace GameA
             //更新当前槽位数据
             SetSlotData(_slotID, true);
             Messenger.Broadcast(EMessengerType.OnPuzzleEquip);
+            SocialGUIManager.Instance.CloseUI<UICtrlPuzzleSlots>();
         }
 
         private void SetSlotData(int slotID, bool value)
