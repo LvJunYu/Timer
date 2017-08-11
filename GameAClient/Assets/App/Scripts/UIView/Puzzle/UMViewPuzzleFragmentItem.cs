@@ -14,7 +14,6 @@ namespace GameA
         public Image Image;
         public Image Image_Disable;
         public Text HaveNumTxt;
-        public Text NameTxt;
         public Text OrderTxt;
     }
 }

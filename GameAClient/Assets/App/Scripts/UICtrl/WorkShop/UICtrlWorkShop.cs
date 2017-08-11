@@ -341,7 +341,6 @@ namespace GameA
                 for (int i = 0; i < _cachedView.ObjectsShowWhenEmpty.Length; i++) {
                     _cachedView.ObjectsShowWhenEmpty [i].SetActive (list.Count == 0);
                 }
-                
             }
         }
 
