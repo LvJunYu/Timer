@@ -68,7 +68,6 @@ namespace GameA.Game
         protected int _envState;
 
         [SerializeField] protected IntVec2 _deltaPos;
-        [SerializeField] protected IntVec2 _deltaImpactPos;
 
         [SerializeField] protected IntVec2 _speed;
 
@@ -1430,7 +1429,7 @@ namespace GameA.Game
 
         public virtual IntVec2 GetDeltaImpactPos(UnitBase unit)
         {
-            return _deltaImpactPos;
+            return IntVec2.zero;
         }
 
         public virtual void SetFacingDir(EMoveDirection eMoveDirection, bool initView = false)
