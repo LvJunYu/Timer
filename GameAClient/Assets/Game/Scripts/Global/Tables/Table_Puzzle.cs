@@ -46,10 +46,10 @@ namespace GameA.Game
 		[ColumnMapping("MaxLevel")]
 		public int MaxLevel;
 		/// <summary>
-        /// 组成的碎片
+        /// 组成的碎片数
         /// </summary>
-		[ColumnMapping("Fragments")]
-		public int[] Fragments;
+		[ColumnMapping("FragNum")]
+		public int FragNum;
 	}
 
     public class TablePuzzleAsset:BaseTableAsset
