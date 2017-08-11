@@ -11,7 +11,7 @@ using Spine.Unity;
 namespace GameA.Game
 {
     [Unit(Id = 5013, Type = typeof (Gate))]
-    public class Gate : SwitchPress
+    public class Gate : BlockBase
     {
         private bool _opened;
 

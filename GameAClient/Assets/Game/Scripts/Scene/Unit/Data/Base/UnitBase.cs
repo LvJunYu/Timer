@@ -953,10 +953,11 @@ namespace GameA.Game
             }
             return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + Vector3.forward * z;
         }
-        
+
         protected float GetZ(IntVec2 pos)
         {
-            return -(pos.x + pos.y + _tableUnit.Width) * UnitDefine.UnitSorttingLayerRatio+ _viewZOffset;
+            var size = Mathf.Clamp(_tableUnit.Width, 0, ConstDefineGM2D.ServerTileScale);
+            return -(pos.x + pos.y + size) * UnitDefine.UnitSorttingLayerRatio + _viewZOffset;
         }
 
         protected void SetRelativeEffectPos(Transform trans, EDirectionType eDirectionType, float viewZOffset = 0)
@@ -995,7 +996,7 @@ namespace GameA.Game
                     offset.y += halfSize.y;
                     break;
             }
-            float z = -(pos.x + halfSize.x + pos.y + halfSize.y) * 0.00078125f + viewZOffset;
+            float z = -(pos.x + halfSize.x + pos.y + halfSize.y) * UnitDefine.UnitSorttingLayerRatio + viewZOffset;
             float y = 0f;
             if (UnitDefine.IsDownY(_tableUnit))
             {
