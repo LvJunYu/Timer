@@ -325,6 +325,18 @@ namespace GameA
 //                        _curSelectedPrivateProject = wrapper.IsSelected ? wrapper : _curSelectedPrivateProject;
                     }
                 }
+<<<<<<< HEAD
+                _cachedView.PublicProjectsGridScroller.SetItemCount(_publicContents.Count);
+
+                if (_autoSelectFirstProject && null == _curSelectedPublicProject)
+                {
+                    //_autoSelectFirstProject = false;
+                    if (_publicContents.Count > 0)
+                    {
+                        _publicContents[0].IsSelected = true;
+                        _curSelectedPublicProject = _publicContents[0];
+                    }
+=======
                 _cachedView.PublicProjectsGridScroller.SetItemCount(_publicContents.Count);
 
                 if (_autoSelectFirstProject && null == _curSelectedPublicProject)
@@ -335,6 +347,7 @@ namespace GameA
                         _publicContents[0].IsSelected = true;
                         _curSelectedPublicProject = _publicContents[0];
                     }
+>>>>>>> 7fe23cfe4888edf2042eb3fa966906c839fa20e0
                 }
                 for (int i = 0; i < _cachedView.ObjectsShowWhenEmpty.Length; i++) {
                     _cachedView.ObjectsShowWhenEmpty [i].SetActive (list.Count == 0);
