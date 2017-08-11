@@ -8,13 +8,6 @@ namespace NewResourceSolution.EditorTool
 {
 	public static class SpriteAssetTools
 	{
-		public enum ETextureCompressQuality
-		{
-			ShowAs16Bit = 0,
-			NoCompress,
-			Compress,
-		}
-	
 		public enum ESpritePivot
 		{
 			Center = 0,
@@ -90,7 +83,7 @@ namespace NewResourceSolution.EditorTool
 //						assetNameList.Add (assetName);
 //					ai.assetBundleName = bundleName;
 
-					SetTextureImporterSetting(textureImporter, bundleName, ETextureCompressQuality.NoCompress);
+					SetTextureImporterSetting(textureImporter, bundleName, TextureCompressionQuality.Normal);
 					EditorUtility.UnloadUnusedAssetsImmediate ();
 				}
 				else
@@ -100,7 +93,7 @@ namespace NewResourceSolution.EditorTool
 			}
 		}
 		
-		private static void SetTextureImporterSetting (TextureImporter textureImporter, string atlasName, ETextureCompressQuality quality)
+		private static void SetTextureImporterSetting (TextureImporter textureImporter, string atlasName, TextureCompressionQuality quality)
 		{
 			textureImporter.textureType = TextureImporterType.Sprite;
 			textureImporter.spriteImportMode = SpriteImportMode.Single;
@@ -115,7 +108,7 @@ namespace NewResourceSolution.EditorTool
 			TextureImporterPlatformSettings defaultSetting = new TextureImporterPlatformSettings();
 			defaultSetting.name = "Standalone";
 			defaultSetting.overridden = true;
-			defaultSetting.compressionQuality = (int)GetTextureImporterFormatByETextureCompressQuality(quality);
+			defaultSetting.compressionQuality = (int)quality;
 			defaultSetting.maxTextureSize = 1024;
 			textureImporter.SetPlatformTextureSettings(defaultSetting);
 			
@@ -123,7 +116,7 @@ namespace NewResourceSolution.EditorTool
 			TextureImporterPlatformSettings iosSetting = new TextureImporterPlatformSettings();
 			iosSetting.name = "iPhone";
 			iosSetting.overridden = true;
-			iosSetting.compressionQuality = (int)GetTextureImporterFormatByETextureCompressQuality(quality);
+			iosSetting.compressionQuality = (int)(int)quality;
 			iosSetting.maxTextureSize = 1024;
 			iosSetting.format = TextureImporterFormat.PVRTC_RGBA4;
 			textureImporter.SetPlatformTextureSettings(iosSetting);
@@ -132,28 +125,12 @@ namespace NewResourceSolution.EditorTool
 			TextureImporterPlatformSettings androidSetting = new TextureImporterPlatformSettings();
 			androidSetting.name = "Android";
 			androidSetting.overridden = true;
-			androidSetting.compressionQuality = (int)GetTextureImporterFormatByETextureCompressQuality(quality);
+			androidSetting.compressionQuality = (int)quality;
 			androidSetting.maxTextureSize = 1024;
 			androidSetting.format = TextureImporterFormat.ETC2_RGBA8;
 			textureImporter.SetPlatformTextureSettings(androidSetting);
 			
 			textureImporter.SaveAndReimport();
-		}
-
-		private static TextureCompressionQuality GetTextureImporterFormatByETextureCompressQuality(ETextureCompressQuality quality)
-		{
-			if (quality == ETextureCompressQuality.Compress)
-			{
-				return TextureCompressionQuality.Fast;
-			}
-			else if (quality == ETextureCompressQuality.ShowAs16Bit)
-			{
-				return TextureCompressionQuality.Normal;
-			}
-			else
-			{
-				return TextureCompressionQuality.Best;
-			}
 		}
 	}
 	

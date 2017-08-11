@@ -9,7 +9,7 @@ using UnityEngine.UI;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlAccountModify : UISocialContentCtrlBase<UIVIewAccountModify>, IUIWithTitle
+    public class UICtrlAccountModify : UISocialContentCtrlBase<UIViewAccountModify>, IUIWithTitle
     {
         #region 常量与字段
         private User _user;

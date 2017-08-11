@@ -5,24 +5,15 @@
 ** Summary : UPCtrlWorldProjectInfo.cs
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
-using SoyEngine.Proto;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using System.Collections.Generic;
 
 namespace GameA
 {
-    public class UPCtrlWorldProjectInfo : UPCtrlBase<UICtrlWorld, UIViewWorld>, IOnChangeHandler<long>
+    public class UPCtrlProjectInfo : UPCtrlBase<UICtrlProjectDetail, UIViewProjectDetail>, IOnChangeHandler<long>
     {
         #region 常量与字段
         private Project _content;
-        private bool _isRequestFavorite = false;
-        private bool _currentfollowstate = false;
-        private bool _currentBlockstate = false;
+        private bool _isRequestFavorite;
         private UserInfoDetail _userInfoDetail;
         #endregion
 
@@ -67,18 +58,6 @@ namespace GameA
         {
             Project p = _content;
             UserInfoSimple u = _content.UserInfo;
-            _userInfoDetail = new UserInfoDetail(u);
-            //LoadUserData(Action successCallback, Action < ENetResultCode > failedCallback)
-            JudgeFollowRelationshipWithMe(_userInfoDetail);
-            _userInfoDetail.Request(_userInfoDetail.UserInfoSimple.UserId,() => {
-                JudgeFollowRelationshipWithMe(_userInfoDetail);
-           }, null
-           );
-            JudgeBlockRelationshipWithMe(_userInfoDetail);
-            _userInfoDetail.Request(_userInfoDetail.UserInfoSimple.UserId, () => {
-                JudgeBlockRelationshipWithMe(_userInfoDetail);
-            }, null
-           );
             DictionaryTools.SetContentText(_cachedView.TitleText, p.Name);
             DictionaryTools.SetContentText(_cachedView.SubTitleText, "");
             DictionaryTools.SetContentText(_cachedView.UserNickNameText, u.NickName);
@@ -98,34 +77,7 @@ namespace GameA
             bool favorite = _content.ProjectUserData != null && _content.ProjectUserData.Favorite;
             _cachedView.FavoriteBtn.gameObject.SetActive(!favorite);
             _cachedView.UnfavoriteBtn.gameObject.SetActive(favorite);
-        }
-
-        private void JudgeFollowRelationshipWithMe(UserInfoDetail userInfoDetail)
-        {
-            _currentfollowstate = userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe;
-            //Debug.Log("__________关注状态___" + userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe);
-            if (_currentfollowstate)
-            {
-                _cachedView.FollowText.text = "取消关注";
-            }
-            else
-            {
-                _cachedView.FollowText.text = "关注";
-            }
-        }
-
-        private void JudgeBlockRelationshipWithMe(UserInfoDetail userInfoDetail)
-        {
-            _currentBlockstate = userInfoDetail.UserInfoSimple.RelationWithMe.BlockedByMe;
-            //Debug.Log("__________关注状态___" + userInfoDetail.UserInfoSimple.RelationWithMe.FollowedByMe);
-            if (_currentBlockstate)
-            {
-                _cachedView.BlockText.text = "取消屏蔽";
-            }
-            else
-            {
-                _cachedView.BlockText.text = "屏蔽";
-            }
+            DictionaryTools.SetContentText(_cachedView.FavoriteCount, _content.FavoriteCount.ToString());
         }
 
         public void OnChangeToApp()
@@ -140,14 +92,7 @@ namespace GameA
                 return;
             }
             Project requestP = _content;
-            requestP.Request(requestP.ProjectId, 
-                //() => {
-                //if (_content != null && _content.ProjectId == requestP.ProjectId) {
-                //   RefreshView();
-                //}
-            null
-            , code=>{
-            });
+            requestP.Request(requestP.ProjectId, null, null);
         }
 
         private void RequestUpdateFavorite(bool favorite)
@@ -180,7 +125,7 @@ namespace GameA
             {
                 return;
             }
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, string.Format ("请求进入关卡"));
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "请求进入关卡");
 
             _content.RequestPlay (() => {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
@@ -193,78 +138,6 @@ namespace GameA
             });
         }
 
-
-        private void RefreshFollowState(bool ifChecked)
-        {
-            if (!ifChecked)
-            {
-                _cachedView.FollowText.text = "关注";
-                _userInfoDetail.UpdateFollowState(ifChecked, () =>
-                {
-
-                    _cachedView.FollowText.text = "关注";
-
-                },
-                (ret) =>
-                {
-                    _cachedView.BlockText.text = "取消关注";
-                }
-                );
-            }
-            else
-            {
-                _cachedView.FollowText.text = "取消关注";
-                _userInfoDetail.UpdateFollowState(ifChecked, () =>
-                {
-
-                    _cachedView.FollowText.text = "取消关注";
-
-                },
-                (ret) =>
-                {
-                    _cachedView.BlockText.text = "关注";
-                }
-                );
-            }
-            //_ifChecked = ifChecked;
-        }
-
-        private void RefreshBlockState(bool ifChecked)
-        {
-            if (!ifChecked)
-            {
-                _cachedView.BlockText.text = "屏蔽";
-                _userInfoDetail.UpdateBlockState(ifChecked, () =>
-                {
-
-                    _cachedView.BlockText.text = "屏蔽";
-                },
-                (ret) =>
-                {
-                    _cachedView.BlockText.text = "取消屏蔽";
-                }
-                
-                );
-            }
-            else
-            {
-                _cachedView.BlockText.text = "取消屏蔽";
-                _userInfoDetail.UpdateBlockState(ifChecked, () =>
-                {
-
-                    _cachedView.BlockText.text = "取消屏蔽";
-                },
-                 (ret) =>
-                {
-                    _cachedView.BlockText.text = "屏蔽";
-                }
-                );
-            }
-            //_ifChecked = ifChecked;
-        }
-
-
-
         #region 接口
         protected override void OnViewCreated()
         {
@@ -272,8 +145,6 @@ namespace GameA
             _cachedView.FavoriteBtn.onClick.AddListener(OnFavoriteBtnClick);
             _cachedView.UnfavoriteBtn.onClick.AddListener(OnUnFavoriteBtnClick);
             _cachedView.PlayBtn.onClick.AddListener(OnPlayBtnClick);
-            _cachedView.FollowToggle.onValueChanged.AddListener(RefreshFollowState);
-            _cachedView.BlockToggle.onValueChanged.AddListener(RefreshBlockState);
         }
 
         private void OnFavoriteBtnClick()

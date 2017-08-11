@@ -5,27 +5,19 @@
 ** Summary : UPCtrlWorldProjectDetail.cs
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
-using SoyEngine.Proto;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using System.Collections.Generic;
 
 namespace GameA
 {
-    public class UPCtrlWorldProjectDetail : UPCtrlBase<UICtrlWorld, UIViewWorld>
+    public class UPCtrlProjectExtra : UPCtrlBase<UICtrlProjectDetail, UIViewProjectDetail>
     {
         #region 常量与字段
-        private Project _content;
-        private UPCtrlWorldProjectRecentRecord _upCtrlRecentRecord;
-        private UPCtrlWorldProjectRecordRank _upCtrlRecordRank;
-        private UPCtrlWorldProjectComment _upCtrlProjectComment;
-        private UPCtrlBase<UICtrlWorld, UIViewWorld>[] _ctrlAry;
+        private UPCtrlProjectDetail _upCtrlProjectDetail;
+        private UPCtrlProjectRecordRank _upCtrlRecordRank;
+        private UPCtrlProjectComment _upCtrlProjectComment;
+        private UPCtrlBase<UICtrlProjectDetail, UIViewProjectDetail>[] _ctrlAry;
 
-        private UPCtrlBase<UICtrlWorld, UIViewWorld> _curCtrl;
+        private UPCtrlBase<UICtrlProjectDetail, UIViewProjectDetail> _curCtrl;
         #endregion
 
         #region 属性
@@ -36,14 +28,11 @@ namespace GameA
 
         public void SetData(Project project)
         {
-            _content = project;
-            _upCtrlRecentRecord.SetData(project);
+            _upCtrlProjectDetail.SetData(project);
             _upCtrlRecordRank.SetData(project);
             _upCtrlProjectComment.SetData(project);
-
-            _upCtrlRecentRecord.Close();
-            _upCtrlRecordRank.Close();
-            _upCtrlProjectComment.Close();
+            
+            _cachedView.TabGroup.SelectIndex(0, true);
         }
 
         public override void Open()
@@ -57,20 +46,20 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _upCtrlRecentRecord = new UPCtrlWorldProjectRecentRecord();
-            _upCtrlRecentRecord.Init(_mainCtrl, _cachedView);
-            _upCtrlRecordRank = new UPCtrlWorldProjectRecordRank();
+            _upCtrlProjectDetail = new UPCtrlProjectDetail();
+            _upCtrlProjectDetail.Init(_mainCtrl, _cachedView);
+            _upCtrlRecordRank = new UPCtrlProjectRecordRank();
             _upCtrlRecordRank.Init(_mainCtrl, _cachedView);
-            _upCtrlProjectComment = new UPCtrlWorldProjectComment();
+            _upCtrlProjectComment = new UPCtrlProjectComment();
             _upCtrlProjectComment.Init(_mainCtrl, _cachedView);
-            _ctrlAry = new UPCtrlBase<UICtrlWorld, UIViewWorld>[]
+            _ctrlAry = new UPCtrlBase<UICtrlProjectDetail, UIViewProjectDetail>[]
             {
-                _upCtrlRecentRecord,
+                _upCtrlProjectDetail,
                 _upCtrlRecordRank,
                 _upCtrlProjectComment,
             };
-            _cachedView.TabGroup.AddButton(_cachedView.RecentRecordTab,
-                _cachedView.RecentRecordTab2, flag=>OnTabChange(0, flag));
+            _cachedView.TabGroup.AddButton(_cachedView.DetailTab,
+                _cachedView.DetailTab2, flag=>OnTabChange(0, flag));
             _cachedView.TabGroup.AddButton(_cachedView.RecordRankTab,
                 _cachedView.RecordRankTab2, flag=>OnTabChange(1, flag));
             _cachedView.TabGroup.AddButton(_cachedView.CommentListTab,

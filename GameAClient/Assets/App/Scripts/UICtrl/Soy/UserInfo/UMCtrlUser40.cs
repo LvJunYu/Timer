@@ -16,7 +16,7 @@ namespace GameA
 {
     public class UMCtrlUser40 : UMCtrlBase<UMViewUser40>
     {
-        private User _content;
+        private UserInfoSimple _content;
 
         protected override void OnViewCreated()
         {
@@ -34,7 +34,7 @@ namespace GameA
             SocialGUIManager.Instance.OpenUI<UICtrlUserInfo>(_content);
         }
 
-        public void Set(User data)
+        public void Set(UserInfoSimple data)
         {
             _content = data;
             RefreshView();

@@ -15,9 +15,9 @@ namespace GameA
     {
         private PictureFull _puzzle;
         private PicturePart[] _puzzleFragments;
-        private UMCtrlPuzzleDetailItem _umPuzzleItem;
+        private UMCtrlPuzzleDetailItem _curUMPuzzleItem;
         private List<UMCtrlPuzzleFragmentItem> _fragmentsCache;
-        private List<UMCtrlPuzzleFragmentItem> _curFragments;
+        private List<UMCtrlPuzzleFragmentItem> _curUMFragments;
         private const string _upgrateTxt = "升级";
         private const string _activeTxt = "合成";
 
@@ -110,11 +110,11 @@ namespace GameA
             LogHelper.Debug("合成/升级成功");
         }
 
-        private void RefreshFragments()
+        private void SetFragments()
         {
-            for (int i = 0; i < _curFragments.Count; i++)
+            for (int i = 0; i < _curUMFragments.Count; i++)
             {
-                _curFragments[i].RefreshData();
+                _curUMFragments[i].SetData();
             }
         }
 
@@ -135,14 +135,15 @@ namespace GameA
         private void SetUI()
         {
             //更新拼图数据
-            SetUMPuzzleDetailItem();
+            SetPuzzleInfo();
 
-            //创建拼图碎片
-            _curFragments.Clear();
+            //创建拼图碎片Item
+            _curUMFragments.Clear();
             for (int i = 0; i < _puzzleFragments.Length; i++)
             {
                 UMCtrlPuzzleFragmentItem puzzleFragment = CreatePuzzleFragment();
-                _curFragments.Add(puzzleFragment);
+                _curUMFragments.Add(puzzleFragment);
+                //测试用
                 _puzzleFragments[i].TotalCount = 2;
                 puzzleFragment.SetData(_puzzleFragments[i]);
             }
@@ -151,9 +152,9 @@ namespace GameA
             SetButtons();
         }
 
-        private void SetUMPuzzleDetailItem()
+        private void SetPuzzleInfo()
         {
-            _umPuzzleItem.SetData(_puzzle);
+            _curUMPuzzleItem.SetData(_puzzle);
             _cachedView.NameTxt.text = _puzzle.Name;
             _cachedView.LvTxt.text = _puzzle.Level.ToString();
             _cachedView.DescTxt.text = _puzzle.Desc;
@@ -161,20 +162,18 @@ namespace GameA
 
         private void SetButtons()
         {
+            //设置按钮是否可用
             _cachedView.Unable_Active.SetActive(!CheckActivable());
             _cachedView.ActiveBtn.gameObject.SetActive(CheckActivable());
             _cachedView.Unable_Equip.SetActive(!CheckEquipable());
             _cachedView.EquipBtn.gameObject.SetActive(CheckEquipable());
+            //按钮上显示消耗的金币
             _cachedView.CostNumTxt.text = _puzzle.CostMoeny.ToString();
-            SetActiveTxt();
-        }
-
-        private void SetActiveTxt()
-        {
+            //按钮上显示合成或升级文字
             if (_puzzle.CurState == EPuzzleState.HasActived)
                 _cachedView.ActiveTxt.text = _upgrateTxt;
             else
-                _cachedView.ActiveTxt.text = _activeTxt;
+                _cachedView.ActiveTxt.text = _activeTxt; 
         }
 
         private bool CheckActivable()
@@ -194,9 +193,9 @@ namespace GameA
 
         private void OnPuzzleCompound()
         {
-            RefreshFragments();
+            SetFragments();
             SetButtons();
-            SetUMPuzzleDetailItem();
+            SetPuzzleInfo();
         }
 
         private UMCtrlPuzzleFragmentItem CreatePuzzleFragment()
@@ -236,10 +235,10 @@ namespace GameA
             //碎片Item缓存
             _fragmentsCache = new List<UMCtrlPuzzleFragmentItem>(9);
             //当前拼图所需碎片
-            _curFragments = new List<UMCtrlPuzzleFragmentItem>(9);
+            _curUMFragments = new List<UMCtrlPuzzleFragmentItem>(9);
             //创建拼图
-            _umPuzzleItem = new UMCtrlPuzzleDetailItem();
-            _umPuzzleItem.Init(_cachedView.PuzzleItemPos);
+            _curUMPuzzleItem = new UMCtrlPuzzleDetailItem();
+            _curUMPuzzleItem.Init(_cachedView.PuzzleItemPos);
         }
 
         protected override void InitEventListener()

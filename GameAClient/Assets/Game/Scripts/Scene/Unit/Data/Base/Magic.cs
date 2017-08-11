@@ -115,7 +115,6 @@ namespace GameA.Game
                                     _magicRotate = units[i];
                                     break;
                                 }
-                                //if (GM2DTools.OnDirectionHit(units[i], PlayMode.Instance.MainPlayer, _curMoveDirection))
                                 if (_magicRotate == null)
                                 {
                                     _timerMagic = 0;
@@ -232,42 +231,9 @@ namespace GameA.Game
         {
             if (!_run || !UseMagic())
             {
-                return _deltaImpactPos;
+                return base.GetDeltaImpactPos(unit);
             }
-            return _deltaImpactPos + Speed;
-//            if (!_isCalculated && _dynamicCollider != null)
-//            {
-//                if (_downUnits.Count > 0)
-//                {
-//                    int right = 0;
-//                    int left = 0;
-//                    int deltaY = int.MinValue;
-//                    for (int i = 0; i < _downUnits.Count; i++)
-//                    {
-//                        var deltaPos = _downUnits[i].GetDeltaImpactPos();
-//                        if (deltaPos.x > 0 && deltaPos.x > right)
-//                        {
-//                            right = deltaPos.x;
-//                        }
-//                        if (deltaPos.x < 0 && deltaPos.x < left)
-//                        {
-//                            left = deltaPos.x;
-//                        }
-//                        if (deltaPos.y > deltaY)
-//                        {
-//                            deltaY = deltaPos.y;
-//                        }
-//                    }
-//                    int deltaX = right + left;
-//                    _deltaImpactPos = new IntVec2(SpeedX + deltaX, SpeedY + deltaY);
-//                }
-//                else
-//                {
-//                    _deltaImpactPos = Speed;
-//                }
-//                _isCalculated = true;
-//            }
-//            return _deltaImpactPos;
+            return Speed;
         }
     }
 }

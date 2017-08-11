@@ -16,7 +16,7 @@ using UnityEngine.UI;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlChangePhoneNum : UISocialContentCtrlBase<UIVIewChangePhoneNum>, IUIWithTitle
+    public class UICtrlChangePhoneNum : UISocialContentCtrlBase<UIViewChangePhoneNum>, IUIWithTitle
     {
         #region 常量与字段
         #endregion

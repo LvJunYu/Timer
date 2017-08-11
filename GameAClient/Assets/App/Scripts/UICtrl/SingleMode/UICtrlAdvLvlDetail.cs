@@ -132,7 +132,7 @@ namespace GameA
         
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.UIAdvDetail;
+            _groupId = (int)EUIGroupType.FrontUI2;
         }
 
         private void RefreshRankData()
