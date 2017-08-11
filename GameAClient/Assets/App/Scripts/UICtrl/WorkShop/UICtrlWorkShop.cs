@@ -330,7 +330,7 @@ namespace GameA
                 if (_autoSelectFirstProject && null == _curSelectedPublicProject)
                 {
                     //_autoSelectFirstProject = false;
-                    if (_privateContents.Count > 0)
+                    if (_publicContents.Count > 0)
                     {
                         _publicContents[0].IsSelected = true;
                         _curSelectedPublicProject = _publicContents[0];
