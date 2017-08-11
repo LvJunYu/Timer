@@ -162,7 +162,9 @@ namespace GameA
         private void SetButtons()
         {
             _cachedView.Unable_Active.SetActive(!CheckActivable());
+            _cachedView.ActiveBtn.gameObject.SetActive(CheckActivable());
             _cachedView.Unable_Equip.SetActive(!CheckEquipable());
+            _cachedView.EquipBtn.gameObject.SetActive(CheckEquipable());
             _cachedView.CostNumTxt.text = _puzzle.CostMoeny.ToString();
             SetActiveTxt();
         }
