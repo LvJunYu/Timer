@@ -500,7 +500,7 @@ namespace GameA
             {
                 if (_curSelectedPublicProject != null)
                 {
-                   // SocialGUIManager.Instance.OpenUI<>(_curSelectedPublicProject.Content);todo
+                   SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(_curSelectedPublicProject.Content);
                 }
             }
         }
