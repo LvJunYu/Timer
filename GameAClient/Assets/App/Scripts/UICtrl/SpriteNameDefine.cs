@@ -28,51 +28,19 @@ namespace GameA
             return null;
         }
 
-        public const string PlayerExpIcon20 = "ExpMXJ_20";
-        public const string CreatorExpIcon20 = "ExpJR_20";
-        public const string CurrencyIcon20 = "Gold_20";
-//        public static string GetRewardIcon20(ERewardType reward)
-//        {
-//            if(reward == ERewardType.RT_CreatorExp)
-//            {
-//                return CreatorExpIcon20;
-//            }
-//            else if (reward == ERewardType.RT_PlayerExp)
-//            {
-//                return PlayerExpIcon20;
-//            }
-//            else if(reward == ERewardType.RT_Currency)
-//            {
-//                return CurrencyIcon20;
-//            }
-//            else
-//            {
-//                return DefaultImageName;
-//            }
-//        }
-
-        public const string PlayerExpIcon36 = "ExpMXJ_36";
-        public const string CreatorExpIcon36 = "ExpJR_36";
-        public const string CurrencyIcon36 = "Gold_36";
-//        public static string GetRewardIcon36(ERewardType reward)
-//        {
-//            if(reward == ERewardType.RT_CreatorExp)
-//            {
-//                return CreatorExpIcon36;
-//            }
-//            else if (reward == ERewardType.RT_PlayerExp)
-//            {
-//                return PlayerExpIcon36;
-//            }
-//            else if(reward == ERewardType.RT_Currency)
-//            {
-//                return CurrencyIcon36;
-//            }
-//            else
-//            {
-//                return DefaultImageName;
-//            }
-//        }
+        public static string GetRank(int rank)
+        {
+            switch (rank)
+            {
+                case 1:
+                    return "icon_crown_1";
+                case 2:
+                    return "icon_crown_2";
+                case 3:
+                    return "icon_crown_3";
+            }
+            return null;
+        }
     }
 }
 

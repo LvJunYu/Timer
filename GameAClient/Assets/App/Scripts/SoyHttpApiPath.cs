@@ -90,6 +90,8 @@ namespace SoyEngine
         public const string UserWorldProjectPlayHistoryList = "/world/getUserProjectPlayHistoryList";
         // 最近录像
         public const string WorldProjectRecentRecordList = "/world/getProjectRecentRecordList";
+        // 最近玩过的用户
+        public const string WorldProjectRecentPlayedUserList = "/world/getProjectRecentPlayedUserList";
         // 高分排行榜
         public const string WorldProjectRecordRankList = "/world/getProjectRecordRankList";
         // 最新关卡

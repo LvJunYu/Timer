@@ -27,25 +27,16 @@ namespace GameA.Game
             {
                 _animation.Init(_rollerDirection == EMoveDirection.Left ? "LeftRun" : "RightRun");
             }
-            switch (_rollerDirection)
-            {
-                case EMoveDirection.Right:
-                    _deltaImpactPos.x = 50;
-                    break;
-                case EMoveDirection.Left:
-                    _deltaImpactPos.x = -50;
-                    break;
-            }
             base.UpdateExtraData();
         }
 
         public override IntVec2 GetDeltaImpactPos(UnitBase unit)
         {
+            IntVec2 deltaImpactPos = IntVec2.zero;
             var player = unit as PlayerBase;
             //推箱子的时候额外处理
             if (player != null && player.IsHoldingBox())
             {
-                IntVec2 deltaImpactPos = IntVec2.zero;
                 switch (_rollerDirection)
                 {
                     case EMoveDirection.Right:
@@ -61,7 +52,16 @@ namespace GameA.Game
                 }
                 return deltaImpactPos + Speed;
             }
-            return base.GetDeltaImpactPos(unit);
+            switch (_rollerDirection)
+            {
+                case EMoveDirection.Right:
+                    deltaImpactPos.x = 50;
+                    break;
+                case EMoveDirection.Left:
+                    deltaImpactPos.x = -50;
+                    break;
+            }
+            return deltaImpactPos + Speed;
         }
 
         internal override bool InstantiateView()

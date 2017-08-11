@@ -115,7 +115,6 @@ namespace GameA.Game
                                     _magicRotate = units[i];
                                     break;
                                 }
-                                //if (GM2DTools.OnDirectionHit(units[i], PlayMode.Instance.MainPlayer, _curMoveDirection))
                                 if (_magicRotate == null)
                                 {
                                     _timerMagic = 0;
@@ -232,9 +231,9 @@ namespace GameA.Game
         {
             if (!_run || !UseMagic())
             {
-                return _deltaImpactPos;
+                return base.GetDeltaImpactPos(unit);
             }
-            return _deltaImpactPos + Speed;
+            return Speed;
 //            if (!_isCalculated && _dynamicCollider != null)
 //            {
 //                if (_downUnits.Count > 0)

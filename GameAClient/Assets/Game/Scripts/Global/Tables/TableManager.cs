@@ -30,7 +30,6 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_Background> Table_BackgroundDic = new Dictionary<int, Table_Background>();
 		public readonly Dictionary<int,Table_Decorate> Table_DecorateDic = new Dictionary<int, Table_Decorate>();
 		public readonly Dictionary<int,Table_PuzzleSummon> Table_PuzzleSummonDic = new Dictionary<int, Table_PuzzleSummon>();
-		public readonly Dictionary<int,Table_PuzzleFragment> Table_PuzzleFragmentDic = new Dictionary<int, Table_PuzzleFragment>();
 		public readonly Dictionary<int,Table_Puzzle> Table_PuzzleDic = new Dictionary<int, Table_Puzzle>();
 		public readonly Dictionary<int,Table_PuzzleUpgrade> Table_PuzzleUpgradeDic = new Dictionary<int, Table_PuzzleUpgrade>();
 		public readonly Dictionary<int,Table_PuzzleSlot> Table_PuzzleSlotDic = new Dictionary<int, Table_PuzzleSlot>();
@@ -61,7 +60,6 @@ namespace GameA.Game
 		[UnityEngine.SerializeField] private Table_Background[] _tableBackgrounds;
 		[UnityEngine.SerializeField] private Table_Decorate[] _tableDecorates;
 		[UnityEngine.SerializeField] private Table_PuzzleSummon[] _tablePuzzleSummons;
-		[UnityEngine.SerializeField] private Table_PuzzleFragment[] _tablePuzzleFragments;
 		[UnityEngine.SerializeField] private Table_Puzzle[] _tablePuzzles;
 		[UnityEngine.SerializeField] private Table_PuzzleUpgrade[] _tablePuzzleUpgrades;
 		[UnityEngine.SerializeField] private Table_PuzzleSlot[] _tablePuzzleSlots;
@@ -125,8 +123,6 @@ namespace GameA.Game
             _tableDecorates = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Decorate[]>(DecorateJsonStr);
 			string PuzzleSummonJsonStr = ResourceManager.Instance.GetJson ("PuzzleSummon", 31);
             _tablePuzzleSummons = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleSummon[]>(PuzzleSummonJsonStr);
-			string PuzzleFragmentJsonStr = ResourceManager.Instance.GetJson ("PuzzleFragment", 31);
-            _tablePuzzleFragments = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleFragment[]>(PuzzleFragmentJsonStr);
 			string PuzzleJsonStr = ResourceManager.Instance.GetJson ("Puzzle", 31);
             _tablePuzzles = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Puzzle[]>(PuzzleJsonStr);
 			string PuzzleUpgradeJsonStr = ResourceManager.Instance.GetJson ("PuzzleUpgrade", 31);
@@ -348,17 +344,6 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tablePuzzleSummons table.Id {0} is duplicated!", _tablePuzzleSummons[i].Id);
-				}
-			}
-			for (int i = 0; i < _tablePuzzleFragments.Length; i++)
-			{
-				if (!Table_PuzzleFragmentDic.ContainsKey(_tablePuzzleFragments[i].Id))
-				{
-					Table_PuzzleFragmentDic.Add(_tablePuzzleFragments[i].Id,_tablePuzzleFragments[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tablePuzzleFragments table.Id {0} is duplicated!", _tablePuzzleFragments[i].Id);
 				}
 			}
 			for (int i = 0; i < _tablePuzzles.Length; i++)
@@ -654,15 +639,6 @@ namespace GameA.Game
 		{
 			Table_PuzzleSummon tmp;
 			if (Table_PuzzleSummonDic.TryGetValue(key,out tmp))
-			{
-				return tmp;
-			}
-			return null;
-		}
-		public Table_PuzzleFragment GetPuzzleFragment(int key)
-		{
-			Table_PuzzleFragment tmp;
-			if (Table_PuzzleFragmentDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
