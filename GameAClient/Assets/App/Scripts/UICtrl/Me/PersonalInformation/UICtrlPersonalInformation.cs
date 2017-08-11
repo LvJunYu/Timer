@@ -27,6 +27,7 @@ namespace GameA
         private string _maleIcon = "icon_male";
         private string _femaleIcon= "icon_famale";
         private bool _isMale=true;
+        private Project _representativeProjectle = null;
         private List<UMCtrlAchievement> _cardList = new List<UMCtrlAchievement>();
 
         #endregion
@@ -73,7 +74,16 @@ namespace GameA
             base.OnOpen(parameter);
             InitPanel();
             Exp();
-            Set();
+            SetAchievement();
+
+            LocalUser.Instance.UserPublishedWorldProjectList.Request(
+                LocalUser.Instance.UserGuid,
+                0, int.MaxValue,
+                EPublishedProjectOrderBy.PPOB_PublishTime,
+                EOrderType.OT_Asc,
+                ()=> { SetRepresentativeWorks(); },
+                null
+                );
         }
 
         #endregion
@@ -107,6 +117,7 @@ namespace GameA
                 _cachedView.MSex.SetActiveEx(false);
                 _cachedView.FSex.SetActiveEx(true);
             }
+            SetRepresentativeWorks();
         }
 
         private void OnEditBtn()
@@ -218,7 +229,7 @@ namespace GameA
                     / (TableManager.Instance.Table_PlayerLvToExpDic[level + 1].MakerExp - TableManager.Instance.Table_PlayerLvToExpDic[level].MakerExp);
         }
 
-        public void Set()
+        public void SetAchievement()
         {
             for (int i = 0; i < 10; i++)
             {
@@ -226,6 +237,28 @@ namespace GameA
                 UM.Init(_cachedView.Dock as RectTransform);
                 UM.Set();
                 _cardList.Add(UM);
+            }
+
+        }
+
+        public void SetRepresentativeWorks()
+        {
+            if (LocalUser.Instance.UserPublishedWorldProjectList.IsInited)
+            {
+                List<Project> list = LocalUser.Instance.UserPublishedWorldProjectList.ProjectList;
+                _representativeProjectle = list[0];
+            }
+            if (null != _representativeProjectle)
+            {
+                ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _representativeProjectle.IconPath, _cachedView.DefaultCoverTexture);
+                DictionaryTools.SetContentText(_cachedView.Title, _representativeProjectle.Name);
+                //DictionaryTools.SetContentText(_cachedView.Desc, _representativeProjectle.Summary);
+            }
+            else
+            {
+                ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
+                DictionaryTools.SetContentText(_cachedView.Title, "关卡标题");
+                //DictionaryTools.SetContentText(_cachedView.Desc, "关卡简介");
             }
 
         }

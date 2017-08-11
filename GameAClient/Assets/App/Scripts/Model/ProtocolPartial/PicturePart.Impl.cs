@@ -2,6 +2,7 @@
 using System;
 using UnityEngine;
 using GameA.Game;
+using System.Collections.Generic;
 
 namespace GameA
 {
@@ -10,17 +11,27 @@ namespace GameA
     /// </summary>
     public partial class PicturePart : SyncronisticData
     {
-        public string Name;
-       
-        public PicturePart(Table_PuzzleFragment fragement)
+        private string _name;
+        private PictureFull _parent;
+        private Table_PuzzleFragment _fragmentTable;
+        //private bool _inited;
+
+        public PicturePart(int fragmentID, PictureFull parent)
         {
-            _pictureId = fragement.Id;
-            _pictureInx = 0;
+            _pictureId = fragmentID;
             _totalCount = 0;
-            Name = fragement.Name;
+            InitData(parent);
         }
 
-        //public 
-
+        public void InitData(PictureFull parent)
+        {
+            //if (_inited)
+            //    return;
+            _fragmentTable = TableManager.Instance.GetPuzzleFragment((int)_pictureId);
+            _name = _fragmentTable.Name;
+            _parent = parent;
+            _pictureInx = Array.IndexOf(_parent.FragmentIDs, (int)_pictureId) + 1;
+            //_inited = true;
+        }
     }
 }
