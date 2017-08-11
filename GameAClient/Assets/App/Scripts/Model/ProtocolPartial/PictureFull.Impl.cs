@@ -12,12 +12,11 @@ namespace GameA
     public partial class PictureFull : SyncronisticData
     {
         //字段
-        private bool _Inited;
+        private bool _hasInited;
         private EPuzzleState _curState;
         private Table_Puzzle _puzzleTable;
         private PicturePart[] _neededFragments;
         private Dictionary<int, Table_PuzzleUpgrade> _lvTableDic;//键是等级，值是当前等级对应的信息
-        private List<PicturePart> _unOwnedPicParts;
 
         //属性
         public EPuzzleState CurState { get { return _curState; } }
@@ -53,7 +52,6 @@ namespace GameA
                     return _puzzleTable.AttriBonus;
             }
         }
-        public int[] FragmentIDs { get { return _puzzleTable.Fragments; } }
         public Dictionary<int, Table_PuzzleUpgrade> LvTableDic { get { return _lvTableDic; } }
         public PicturePart[] NeededFragments { get { return _neededFragments; } }
 
@@ -71,7 +69,7 @@ namespace GameA
 
         public void InitData()
         {
-            if (_inited == true)
+            if (_hasInited == true)
                 return;
             InitData((int)_pictureId);
         }
@@ -82,12 +80,10 @@ namespace GameA
             _curState = EPuzzleState.CantActive;
 
             //合成所需碎片
-            var FragmentIDs = _puzzleTable.Fragments;
-            _neededFragments = new PicturePart[FragmentIDs.Length];
-            _unOwnedPicParts = new List<PicturePart>(FragmentIDs.Length);
-            for (int i = 0; i < FragmentIDs.Length; i++)
+            _neededFragments = new PicturePart[_puzzleTable.FragNum];
+            for (int i = 0; i < _neededFragments.Length; i++)
             {
-                _neededFragments[i] = GetPicturePart(FragmentIDs[i], this);
+                _neededFragments[i] = PicturePart.GetPicturePart((int)this._pictureId, i + 1);
             }
 
             //等级信息字典
@@ -99,7 +95,7 @@ namespace GameA
                 if (value.PuzzleID == this._pictureId)
                     _lvTableDic.Add(value.Level, value);
             }
-            _Inited = true;
+            _hasInited = true;
         }
 
         public void ActivatePuzzle()
@@ -138,21 +134,6 @@ namespace GameA
                     return false;
             }
             return true;
-        }
-
-        private PicturePart GetPicturePart(int id, PictureFull parent)
-        {
-            //查看是否已拥有碎片
-            PicturePart fragment = null;
-            if ((fragment = LocalUser.Instance.UserPicturePart.ItemDataList.Find(p => p.PictureId == id)) != null)
-            {
-                fragment.InitData(parent);
-                return fragment;
-            }
-            //没有则创建新的
-            fragment = new PicturePart(id, parent);
-            _unOwnedPicParts.Add(fragment);
-            return new PicturePart(id, parent);
         }
     }
 
