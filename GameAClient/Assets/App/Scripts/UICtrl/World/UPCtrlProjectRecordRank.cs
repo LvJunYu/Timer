@@ -5,18 +5,13 @@
 ** Summary : UPCtrlWorldProjectRecordRank.cs
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using SoyEngine;
-using SoyEngine.Proto;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
-    public class UPCtrlWorldProjectRecordRank : UPCtrlBase<UICtrlWorld, UIViewWorld>
+    public class UPCtrlProjectRecordRank : UPCtrlBase<UICtrlProjectDetail, UIViewProjectDetail>
     {
         #region 常量与字段
         private const int PageSize = 10;

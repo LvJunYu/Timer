@@ -499,7 +499,7 @@ namespace GameA
             {
                 if (_curSelectedPublicProject != null)
                 {
-                    SocialGUIManager.Instance.OpenUI<UICtrlProjectDetailInfo>(_curSelectedPublicProject.Content);
+                    SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(_curSelectedPublicProject.Content);
                 }
             }
         }
@@ -517,7 +517,7 @@ namespace GameA
         #region 接口
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.UIAdvDetail;
+            _groupId = (int) EUIGroupType.FrontUI2;
         }
 
         private void OnChangeModeBtn () {

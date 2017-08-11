@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 namespace GameA
 {
-    public class UIVIewAccountModify : UIViewBase
+    public class UIViewAccountModify : UIViewBase
     {
         public Button PhoneNumBtn;
         public Text PhoneNumText;
