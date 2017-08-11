@@ -58,6 +58,9 @@ namespace GameA
         public Image SelectFemale;
 
         public RectTransform Dock;
+        public RawImage Cover;
+        public Texture DefaultCoverTexture;
+        public Text Title;
 
 
 
