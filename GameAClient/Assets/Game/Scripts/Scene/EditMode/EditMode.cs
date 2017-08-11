@@ -878,7 +878,7 @@ namespace GameA.Game
                 return;
             }
             var go = UnityEngine.Object.Instantiate (ResourcesManager.Instance.GetPrefab(
-                EResType.UIPrefab, 
+                EResType.ParticlePrefab, 
                 ConstDefineGM2D.CameraMaskPrefabName)
             ) as GameObject;
             if (go == null)
@@ -886,6 +886,18 @@ namespace GameA.Game
                 LogHelper.Error("Prefab {0} is invalid!", ConstDefineGM2D.CameraMaskPrefabName);
                 return;
             }
+
+            // 解决shader丢失的临时代码-----
+            Renderer r = go.GetComponent<Renderer>();
+            if (r != null)
+            {
+                Material m = r.sharedMaterial;
+//                Debug.LogError("m.shader: " + m.shader);
+                Shader s = ResourcesManager.Instance.GetAsset<Shader>(EResType.Shader, "SFVertexColor", 1);
+                m.shader = s;
+            }
+            // --------------------------
+            
             _cameraMask = go.GetComponent<SlicedCameraMask>();
             _cameraMask.SetSortOrdering((int) ESortingOrder.Mask);
         }
