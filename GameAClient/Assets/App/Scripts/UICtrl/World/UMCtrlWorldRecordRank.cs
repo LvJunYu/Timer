@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
 
@@ -79,12 +80,22 @@ namespace GameA
             RecordRankHolder holder = _wrapper.Content;
             Record record = holder.Record;
             UserInfoSimple user = record.UserInfo;
-            DictionaryTools.SetContentText(_cachedView.Rank, (holder.Rank + 1).ToString());
+            var rank = holder.Rank + 1;
+            if (rank <=3)
+            {
+                _cachedView.RankText.SetActiveEx(false);
+                _cachedView.RankImage.SetActiveEx(true);
+                _cachedView.RankImage.sprite = ResourcesManager.Instance.GetSprite(SpriteNameDefine.GetRank(rank));
+            }
+            else
+            {
+                _cachedView.RankText.SetActiveEx(true);
+                _cachedView.RankImage.SetActiveEx(false);
+                DictionaryTools.SetContentText(_cachedView.RankText, rank.ToString());
+            }
             DictionaryTools.SetContentText(_cachedView.UserName, user.NickName);
-            DictionaryTools.SetContentText(_cachedView.UserLevel, GameATools.GetLevelString(user.LevelData.PlayerLevel));
+            DictionaryTools.SetContentText(_cachedView.UserLevel, user.LevelData.PlayerLevel.ToString());
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, user.HeadImgUrl, _cachedView.DefaultUserIconTexture);
-            DictionaryTools.SetContentText(_cachedView.CreateTime, DateTimeUtil.GetServerSmartDateStringByTimestampMillis(record.CreateTime));
-            DictionaryTools.SetContentText(_cachedView.UsedTime, GameATools.SecondToHour(record.UsedTime));
             DictionaryTools.SetContentText(_cachedView.Score, record.Score.ToString());
         }
 

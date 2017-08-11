@@ -4,19 +4,14 @@
 ** Date : 6/7/2017 3:30 PM
 ** Summary : UPCtrlWorldProjectRecentRecord.cs
 ***********************************************************************/
-
-using System;
-using System.Collections;
-using SoyEngine;
-using SoyEngine.Proto;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
+/*
 using System.Collections.Generic;
+using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
-    public class UPCtrlWorldProjectRecentRecord : UPCtrlBase<UICtrlWorld, UIViewWorld>
+    public class UPCtrlProjectRecentRecord : UPCtrlBase<UICtrlProjectDetail, UIViewProjectDetail>
     {
         #region 常量与字段
         private const int PageSize = 10;
@@ -46,7 +41,7 @@ namespace GameA
         public override void Open()
         {
             base.Open();
-            _cachedView.RecentRecordDock.SetActive(true);
+//            _cachedView.RecentRecordDock.SetActive(true);
             RefreshView();
             RequestData();
         }
@@ -157,3 +152,4 @@ namespace GameA
 
     }
 }
+*/

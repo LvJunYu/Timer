@@ -18,13 +18,11 @@ namespace GameA
     {
         public Texture DefaultUserIconTexture;
         public Button Button;
-        public Text Rank;
+        public Text RankText;
+        public Image RankImage;
         public RawImage UserIcon;
         public Text UserName;
         public Text UserLevel;
-        public Text CreateTime;
-        public Text UsedTime;
         public Text Score;
-        public Image SeletedMark;
     }
 }

@@ -5,25 +5,20 @@
 ** Summary : UPCtrlWorldProjectComment.cs
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using SoyEngine;
-using SoyEngine.Proto;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
-    public class UPCtrlWorldProjectComment : UPCtrlBase<UICtrlWorld, UIViewWorld>
+    public class UPCtrlProjectComment : UPCtrlBase<UICtrlProjectDetail, UIViewProjectDetail>
     {
         #region 常量与字段
         private const int PageSize = 10;
         private Project _content;
         private List<ProjectComment> _contentList = new List<ProjectComment>();
         private WorldProjectCommentList _data;
-        private bool _isPostComment = false;
+        private bool _isPostComment;
         #endregion
 
         #region 属性
@@ -101,10 +96,6 @@ namespace GameA
                 }
             }, code=>{
             });
-        }
-
-        private void OnItemClick(ProjectComment item)
-        {
         }
 
         private void OnItemRefresh(IDataItemRenderer item, int inx)

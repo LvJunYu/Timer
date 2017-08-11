@@ -40,7 +40,7 @@ namespace GameA
         /// <summary>
         /// 录像 排名 关卡详情
         /// </summary>
-        UIAdvDetail,
+        FrontUI2,
         /// <summary>
         /// 游戏内UI
         /// </summary>

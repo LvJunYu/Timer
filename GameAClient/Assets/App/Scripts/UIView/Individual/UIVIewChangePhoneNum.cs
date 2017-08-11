@@ -10,7 +10,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    public class UIVIewChangePhoneNum : UIViewBase
+    public class UIViewChangePhoneNum : UIViewBase
     {
         public InputField PhoneNumInput;
         public InputField SmsCodeInput;

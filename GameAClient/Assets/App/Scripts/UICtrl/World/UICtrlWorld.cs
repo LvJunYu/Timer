@@ -6,9 +6,7 @@
 ***********************************************************************/
 
 using System;
-using System.Collections.Generic;
 using SoyEngine;
-using UnityEngine;
 
 namespace GameA
 {
@@ -16,14 +14,7 @@ namespace GameA
     public class UICtrlWorld : UICtrlGenericBase<UIViewWorld>
     {
         #region 常量与字段
-        private static readonly Vector2 LeftHidePos = new Vector2(-1000, -66);
-        private static readonly Vector2 LeftPos = new Vector2(-300, -66);
-        private static readonly Vector2 RightPos = new Vector2(300, -66);
-        private static readonly Vector2 RightHidePos = new Vector2(1000, -66);
-
         private EMenu _curMenu = EMenu.None;
-        private UPCtrlWorldProjectInfo _projectInfoPanel;
-        private UPCtrlWorldProjectDetail _detailPanel;
         private UPCtrlBase<UICtrlWorld, UIViewWorld> _curMenuCtrl;
         private UPCtrlBase<UICtrlWorld, UIViewWorld>[] _menuCtrlArray;
         #endregion
@@ -34,50 +25,34 @@ namespace GameA
 
         #region 方法
 
-        public void SetProject(Project project)
-        {
-            _projectInfoPanel.SetData(project);
-            _detailPanel.SetData(project);
-        }
-
-        protected override void OnOpen(object parameter)
-        {
-            base.OnOpen(parameter);
-            HideDetail();
-            ChangeMenu(EMenu.NewestProject);
-        }
-
         #region private
         private void InitUI()
         {
-            _cachedView.ShowDetailBtn.onClick.AddListener(ShowDetail);
-            _cachedView.HideDetailBtn.onClick.AddListener(HideDetail);
-            _cachedView.TopBtn.onClick.AddListener(ClickTop);
             _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtnClick);
 
-            List<string> menuList = new List<string>();
-            menuList.Add("最新关卡");
-            menuList.Add("最近玩过的关卡");
-            menuList.Add("收藏的关卡");
-            _cachedView.MenuDropDown.ClearOptions();
-            _cachedView.MenuDropDown.AddOptions(menuList);
-            _cachedView.MenuDropDown.onValueChanged.AddListener(OnMenuChanged);
-
-            _menuCtrlArray = new UPCtrlBase<UICtrlWorld, UIViewWorld>[]{
-                new UPCtrlWorldNewestProject(),
-                new UPCtrlWorldUserPlayHistory(),
-                new UPCtrlWorldUserFavorite(),
-            };
-            Array.ForEach(_menuCtrlArray, c=>c.Init(this, _cachedView));
-            _projectInfoPanel = new UPCtrlWorldProjectInfo();
-            _projectInfoPanel.Init(this, _cachedView);
-
-            _detailPanel = new UPCtrlWorldProjectDetail();
-            _detailPanel.Init(this, _cachedView);
-
-            _cachedView.GridScroller.SetCallback(OnItemRefresh, GetItemRenderer);
+            _menuCtrlArray = new UPCtrlBase<UICtrlWorld, UIViewWorld>[(int) EMenu.Max];
+            _menuCtrlArray[(int) EMenu.Recommend] = new UPCtrlWorldRecommendProject();
+            _menuCtrlArray[(int) EMenu.UserPlayHistory] = new UPCtrlWorldUserPlayHistory();
+            _menuCtrlArray[(int) EMenu.UserFavorite] = new UPCtrlWorldUserFavorite();
+            Array.ForEach(_menuCtrlArray, c=>
+            {
+                if (null == c)
+                {
+                    return;
+                }
+                c.Init(this, _cachedView);
+            });
+            for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
+            {
+                var inx = i;
+                _cachedView.TabGroup.AddButton(_cachedView.MenuButtonAry[i], _cachedView.MenuSelectedButtonAry[i],
+                    b => ClickMenu(inx, b));
+                if (i < _menuCtrlArray.Length && null != _menuCtrlArray[i])
+                {
+                    _menuCtrlArray[i].Close();
+                }
+            }
         }
-
 
         private void ChangeMenu(EMenu menu)
         {
@@ -86,7 +61,7 @@ namespace GameA
                 _curMenuCtrl.Close();
             }
             _curMenu = menu;
-            int inx = (int)_curMenu;
+            var inx = (int) _curMenu;
             if (inx < _menuCtrlArray.Length)
             {
                 _curMenuCtrl = _menuCtrlArray[inx];
@@ -95,31 +70,6 @@ namespace GameA
             {
                 _curMenuCtrl.Open();
             }
-        }
-
-        private void ShowDetail()
-        {
-            _cachedView.ListPanel.anchoredPosition = LeftHidePos;
-            _cachedView.InfoPanel.anchoredPosition = LeftPos;
-            _cachedView.DetailPanel.anchoredPosition = RightPos;
-            _cachedView.ShowDetailBtn.gameObject.SetActive(false);
-            _cachedView.HideDetailBtn.gameObject.SetActive(true);
-            _detailPanel.Open();
-        }
-
-        private void HideDetail()
-        {
-            _cachedView.ListPanel.anchoredPosition = LeftPos;
-            _cachedView.InfoPanel.anchoredPosition = RightPos;
-            _cachedView.DetailPanel.anchoredPosition = RightHidePos;
-            _cachedView.ShowDetailBtn.gameObject.SetActive(true);
-            _cachedView.HideDetailBtn.gameObject.SetActive(false);
-            _detailPanel.Close();
-        }
-
-        private void ClickTop()
-        {
-            _cachedView.GridScroller.ContentPosition = Vector2.zero;
         }
 
         #endregion private
@@ -140,40 +90,28 @@ namespace GameA
         {
             base.InitEventListener();
             RegisterEvent<long>(EMessengerType.OnProjectDataChanged, OnProjectDataChanged);
-            RegisterEvent(EMessengerType.OnChangeToAppMode, OnChangeToApp);
         }
 
-        private void OnMenuChanged(int selectInx)
+        protected override void OnOpen(object parameter)
         {
-            ChangeMenu((EMenu)selectInx);
+            base.OnOpen(parameter);
+            if (_curMenu == EMenu.None)
+            {
+                _cachedView.TabGroup.SelectIndex((int)EMenu.Recommend, true);
+            }
+        }
+
+        private void ClickMenu(int selectInx, bool open)
+        {
+            if (open)
+            {
+                ChangeMenu((EMenu)selectInx);
+            }
         }
 
         private void OnReturnBtnClick()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlWorld>();
-        }
-
-        private IDataItemRenderer GetItemRenderer(RectTransform parent)
-        {
-            var item = new UMCtrlWorldProject();
-            item.Init(parent, Vector3.zero);
-            return item;
-        }
-
-        private void OnItemRefresh(IDataItemRenderer item, int inx)
-        {
-            if (EMenu.NewestProject == _curMenu)
-            {
-                ((UPCtrlWorldNewestProject)_menuCtrlArray[0]).OnItemRefresh(item, inx);
-            }
-            else if (EMenu.UserPlayHistory == _curMenu)
-            {
-                ((UPCtrlWorldUserPlayHistory)_menuCtrlArray[1]).OnItemRefresh(item, inx);
-            }
-            else if (EMenu.UserFavorite == _curMenu)
-            {
-                ((UPCtrlWorldUserFavorite)_menuCtrlArray[2]).OnItemRefresh(item, inx);
-            }
         }
 
         #endregion 接口
@@ -183,29 +121,21 @@ namespace GameA
             {
                 return;
             }
-            _projectInfoPanel.OnChangeHandler(projectId);
             if (_curMenuCtrl != null)
             {
                 ((IOnChangeHandler<long>)_curMenuCtrl).OnChangeHandler(projectId);
             }
         }
-
-        private void OnChangeToApp()
-        {
-            if (!_isOpen)
-            {
-                return;
-            }
-            _projectInfoPanel.OnChangeToApp();
-        }
         #endregion
 
         private enum EMenu
         {
-            NewestProject,
+            None = -1,
+            Recommend,
             UserPlayHistory,
             UserFavorite,
-            None,
+            RankList,
+            Max
         }
     }
 }
