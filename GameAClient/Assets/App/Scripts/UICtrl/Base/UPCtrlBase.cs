@@ -1,8 +1,4 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.UI;
-
-namespace SoyEngine
+﻿namespace SoyEngine
 {
     public class UPCtrlBase<C, V> where C:UICtrlBase where V:UIViewBase
 	{
