@@ -234,6 +234,39 @@ namespace GameA.Game
                 return base.GetDeltaImpactPos(unit);
             }
             return Speed;
+//            if (!_isCalculated && _dynamicCollider != null)
+//            {
+//                if (_downUnits.Count > 0)
+//                {
+//                    int right = 0;
+//                    int left = 0;
+//                    int deltaY = int.MinValue;
+//                    for (int i = 0; i < _downUnits.Count; i++)
+//                    {
+//                        var deltaPos = _downUnits[i].GetDeltaImpactPos();
+//                        if (deltaPos.x > 0 && deltaPos.x > right)
+//                        {
+//                            right = deltaPos.x;
+//                        }
+//                        if (deltaPos.x < 0 && deltaPos.x < left)
+//                        {
+//                            left = deltaPos.x;
+//                        }
+//                        if (deltaPos.y > deltaY)
+//                        {
+//                            deltaY = deltaPos.y;
+//                        }
+//                    }
+//                    int deltaX = right + left;
+//                    _deltaImpactPos = new IntVec2(SpeedX + deltaX, SpeedY + deltaY);
+//                }
+//                else
+//                {
+//                    _deltaImpactPos = Speed;
+//                }
+//                _isCalculated = true;
+//            }
+//            return _deltaImpactPos;
         }
     }
 }
