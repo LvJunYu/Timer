@@ -996,7 +996,7 @@ namespace GameA.Game
                     offset.y += halfSize.y;
                     break;
             }
-            float z = -(pos.x + halfSize.x + pos.y + halfSize.y) * 0.00078125f + viewZOffset;
+            float z = -(pos.x + halfSize.x + pos.y + halfSize.y) * UnitDefine.UnitSorttingLayerRatio + viewZOffset;
             float y = 0f;
             if (UnitDefine.IsDownY(_tableUnit))
             {
