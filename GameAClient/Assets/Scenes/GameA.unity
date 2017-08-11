@@ -141,7 +141,7 @@ MonoBehaviour:
     _trans: {fileID: 0}
   _run: 0
   Language: 0
-  _env: 0
+  _env: 1
   _clearCache: 0
   _roomServerAddress: 192.168.1.91
   _appServerAddress:
@@ -154,7 +154,7 @@ MonoBehaviour:
   - Enable: 0
     AppServerApiRoot: http://localhost:8080/GameAServer/gameaapi
     GameResoureRoot: http://www.joy-you.com:9081
-  - Enable: 1
+  - Enable: 0
     AppServerApiRoot: http://127.0.0.1:8080/GameAServer/gameaapi
     GameResoureRoot: http://127.0.0.1
   - Enable: 0
@@ -283,7 +283,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1148256116
 MonoBehaviour:
   m_ObjectHideFlags: 0
