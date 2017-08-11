@@ -124,15 +124,5 @@ namespace GameA
             SocialGUIManager.Instance.CloseUI <UICtrlBoostItem>();
         }
 
-        private void OnReady2Play ()
-        {
-            Debug.Log ("project type: " + Game.GM2DGame.Instance.Project.ProjectStatus);
-            if (EProjectStatus.PS_AdvNormal == Game.GM2DGame.Instance.Project.ProjectStatus ||
-                EProjectStatus.PS_Challenge == Game.GM2DGame.Instance.Project.ProjectStatus) {
-                SocialGUIManager.Instance.OpenUI<UICtrlBoostItem> ();
-            } else {
-                _selectComplete = true;
-            }                
-        }
     }
 }
