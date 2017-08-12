@@ -72,6 +72,8 @@ namespace GameA.Game
 
         [SerializeField] public IntVec2 ExtraSpeed;
 
+        protected IntVec2 _deltaImpactPos;
+        
         [SerializeField] protected bool _grounded;
         [SerializeField] protected bool _lastGrounded = true;
 
@@ -141,6 +143,11 @@ namespace GameA.Game
         {
             get { return _view == null ? null : _view.Animation; }
         }
+        
+        public IntVec2 DeltaImpactPos
+        {
+            get { return _deltaImpactPos; }
+        }
 
         public AnimationSystem Animation
         {
@@ -195,12 +202,12 @@ namespace GameA.Game
 
         public bool CanMove
         {
-            get { return !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) && !IsInState(EEnvState.Ice); }
+            get { return _isAlive && !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) && !IsInState(EEnvState.Ice); }
         }
 
         public bool CanAttack
         {
-            get { return !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) && !IsInState(EEnvState.Ice); }
+            get { return _isAlive && !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) && !IsInState(EEnvState.Ice); }
         }
 
         public virtual SkillCtrl SkillCtrl
