@@ -1624,9 +1624,5 @@ namespace GameA.Game
         public virtual void SetStepOnIce()
         {
         }
-
-        public virtual void OnMagicUpHit()
-        {
-        }
     }
 }

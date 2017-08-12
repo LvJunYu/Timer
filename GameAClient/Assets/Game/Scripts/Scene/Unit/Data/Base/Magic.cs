@@ -96,23 +96,35 @@ namespace GameA.Game
                         ChangeMoveDirection();
                         return;
                     }
-                    var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, _curMoveDirection == EMoveDirection.Up
-                        ? EnvManager.MovingEarthBlockUpLayer
-                        : EnvManager.MovingEarthBlockLayer, float.MinValue, float.MaxValue, _dynamicCollider);
+                    var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.MovingEarthBlockLayer, float.MinValue, float.MaxValue, _dynamicCollider);
                     for (int i = 0; i < units.Count; i++)
                     {
                         var unit = units[i];
                         if (unit.IsAlive)
                         {
+                            //朝上运动时，如果是角色或者箱子。
+                            if (_curMoveDirection == EMoveDirection.Up)
+                            {
+                                if (unit.IsActor || unit.Id == UnitDefine.BoxId)
+                                {
+                                    //如果远离
+                                    if (unit.ColliderGrid.YMin > _colliderGrid.YMax + 1)
+                                    {
+                                        Speed = IntVec2.zero;
+                                        _timerMagic = 24;
+                                    }
+                                    continue;
+                                }
+                            }
                             if (unit.Id == UnitDefine.SwitchTriggerId)
                             {
                                 unit.OnIntersect(this);
                             }
-                            if (!units[i].CanMagicCross)
+                            if (!unit.CanMagicCross)
                             {
-                                if (IsValidBlueStoneRotation(units[i]))
+                                if (unit.Id == UnitDefine.BlueStoneRotateId)
                                 {
-                                    _magicRotate = units[i];
+                                    _magicRotate = unit;
                                     break;
                                 }
                                 if (_magicRotate == null)
@@ -160,20 +172,6 @@ namespace GameA.Game
                     }
                 }
             }
-        }
-
-        private bool IsValidBlueStoneRotation(UnitBase unit)
-        {
-            if (unit == null || unit.Id != UnitDefine.BlueStoneRotateId)
-            {
-                return false;
-            }
-            //var delta = Mathf.Abs(unit.Rotation + 1 - (int) _curMoveDirection);
-            //if (delta == 0 || delta == 2)
-            //{
-            //    return false;
-            //}
-            return true;
         }
 
         private void ChangeMoveDirection()
@@ -225,13 +223,6 @@ namespace GameA.Game
                 ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider);
                 _lastColliderGrid = _colliderGrid;
             }
-        }
-
-        public override void OnMagicUpHit()
-        {
-            _curMoveDirection = EMoveDirection.Down;
-            _timerMagic = 0;
-            Speed = IntVec2.zero;
         }
 
         public override IntVec2 GetDeltaImpactPos(UnitBase unit)
