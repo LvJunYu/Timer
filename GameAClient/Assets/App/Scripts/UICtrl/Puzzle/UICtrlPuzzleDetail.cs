@@ -134,9 +134,6 @@ namespace GameA
 
         private void SetUI()
         {
-            //更新拼图数据
-            SetPuzzleInfo();
-
             //创建拼图碎片Item
             _curUMFragments.Clear();
             for (int i = 0; i < _puzzleFragments.Length; i++)
@@ -144,17 +141,20 @@ namespace GameA
                 UMCtrlPuzzleFragmentItem puzzleFragment = CreatePuzzleFragment();
                 _curUMFragments.Add(puzzleFragment);
                 //测试用
-                _puzzleFragments[i].TotalCount = 2;
+                _puzzleFragments[i].TotalCount = UnityEngine.Random.Range(0, 4);
                 puzzleFragment.SetData(_puzzleFragments[i]);
             }
 
+            //拼图数据
+            _curUMPuzzleItem.SetData(_puzzle);
+            //文字信息
+            SetTexts();
             //按钮信息
             SetButtons();
         }
 
-        private void SetPuzzleInfo()
+        private void SetTexts()
         {
-            _curUMPuzzleItem.SetData(_puzzle);
             _cachedView.NameTxt.text = _puzzle.Name;
             _cachedView.LvTxt.text = _puzzle.Level.ToString();
             _cachedView.DescTxt.text = _puzzle.Desc;
@@ -173,7 +173,7 @@ namespace GameA
             if (_puzzle.CurState == EPuzzleState.HasActived)
                 _cachedView.ActiveTxt.text = _upgrateTxt;
             else
-                _cachedView.ActiveTxt.text = _activeTxt; 
+                _cachedView.ActiveTxt.text = _activeTxt;
         }
 
         private bool CheckActivable()
@@ -193,9 +193,12 @@ namespace GameA
 
         private void OnPuzzleCompound()
         {
+            //更新拼图
+            _curUMPuzzleItem.SetData();
+            //更新碎片
             SetFragments();
+            SetTexts();
             SetButtons();
-            SetPuzzleInfo();
         }
 
         private UMCtrlPuzzleFragmentItem CreatePuzzleFragment()
