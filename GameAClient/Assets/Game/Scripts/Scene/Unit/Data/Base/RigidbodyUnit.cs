@@ -30,7 +30,6 @@ namespace GameA.Game
         
         protected bool _onClay;
         protected bool _onIce;
-        protected bool _onMagicUp;
         [SerializeField] protected IntVec2 _fanForce;
         protected Dictionary<IntVec3, IntVec2> _fanForces = new Dictionary<IntVec3, IntVec2>();
 
@@ -155,13 +154,6 @@ namespace GameA.Game
                         if (unit.OnDownHit(this, ref ymin, true))
                         {
                             CheckHit(unit, EDirectionType.Up);
-                            if (_onMagicUp)
-                            {
-                                for (int j = 0; j < _downUnits.Count; j++)
-                                {
-                                    _downUnits[j].OnMagicUpHit();
-                                }
-                            }
                         }
                         if (!Intersect(unit) && unit.OnDownHit(this, ref ymin))
                         {
@@ -205,13 +197,9 @@ namespace GameA.Game
                         int ymin = 0;
                         if (unit.OnUpHit(this, ref ymin, true))
                         {
-                            if (unit.UseMagic())
-                            {
-                                _onMagicUp = true;
-                            }
                             CheckHit(unit, EDirectionType.Down);
                         }
-                        if ((_onMagicUp || !Intersect(unit)) && unit.OnUpHit(this, ref ymin))
+                        if (!Intersect(unit) && unit.OnUpHit(this, ref ymin))
                         {
                             flag = true;
                             if (ymin > y)

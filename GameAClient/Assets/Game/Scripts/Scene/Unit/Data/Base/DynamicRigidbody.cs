@@ -89,7 +89,6 @@ namespace GameA.Game
 
         protected virtual void CheckGround()
         {
-            _onMagicUp = false;
             bool air = SpeedY != 0;
             if (!air)
             {
@@ -108,10 +107,6 @@ namespace GameA.Game
                         downExist = true;
                         _grounded = true;
                         _downUnits.Add(unit);
-                        if (unit.UseMagic())
-                        {
-                            _onMagicUp = true;
-                        }
                         var delta = Mathf.Abs(CenterDownPos.x - unit.CenterDownPos.x);
                         if (deltaX > delta)
                         {
