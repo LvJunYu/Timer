@@ -18,10 +18,14 @@ namespace GameA
         public GameObject Unable_Equip;
         public Text ActiveTxt;
         public RectTransform PuzzleItemPos;
-        public RectTransform PuzzleFragmentGrid;
+        public HorizontalLayoutGroup PuzzleFragmentGrid;
         public Text LvTxt;
         public Text NameTxt;
         public Text DescTxt;
         public Text CostNumTxt;
+        public Transform HalfFragImages;
+        public Transform QuarterFragImages;
+        public Transform SixthFragImages;
+        public Transform NinthFragImages;
     }
 }

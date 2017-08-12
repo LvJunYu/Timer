@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using GameA.Game;
 using System.Collections.Generic;
+using SoyEngine;
 
 namespace GameA
 {
@@ -16,6 +17,12 @@ namespace GameA
         private long _id;
         private bool _hasInited;
         private bool _sync;//当前对象是否是服务器同步的对象
+
+        public void AddFrag(int num)
+        {
+            TotalCount += num;
+            Messenger.Broadcast(EMessengerType.OnPuzzleFragChanged);
+        }
 
         public PicturePart(int pictureId, int index)
         {
