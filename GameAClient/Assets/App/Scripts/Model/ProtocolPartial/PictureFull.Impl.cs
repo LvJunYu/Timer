@@ -53,6 +53,7 @@ namespace GameA
             }
         }
         public int FragNum { get { return _puzzleTable.FragNum; } }
+        public EPuzzleType PuzzleType { get { return (EPuzzleType)_puzzleTable.FragNum; } }
         public Dictionary<int, Table_PuzzleUpgrade> LvTableDic { get { return _lvTableDic; } }
         public PicturePart[] NeededFragments { get { return _neededFragments; } }
 
