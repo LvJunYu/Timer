@@ -44,7 +44,6 @@ namespace GameA.Game
         protected bool _canMagicCross;
         protected bool _canBridgeCross;
         protected bool _canFanCross;
-        [SerializeField] protected bool _isStart;
 
         protected List<UnitBase> _downUnits = new List<UnitBase>();
         protected UnitBase _downUnit;
@@ -243,11 +242,6 @@ namespace GameA.Game
         {
             get { return _isAlive; }
             set { _isAlive = value; }
-        }
-
-        public bool IsStart
-        {
-            get { return _isStart; }
         }
 
         public List<UnitBase> DownUnits
@@ -720,31 +714,6 @@ namespace GameA.Game
 
         public virtual void CheckStart()
         {
-            _downUnit = null;
-            _downUnits.Clear();
-            _isCalculated = false;
-            Speed += ExtraSpeed;
-            ExtraSpeed = IntVec2.zero;
-            if (_curBanInputTime > 0)
-            {
-                _curBanInputTime--;
-            }
-            _isStart = true;
-            //if (!MapConfig.UseAOI)
-            //{
-            //    _isStart = true;
-            //    return;
-            //}
-            //IntVec2 focusPos = PlayMode.Instance.FocusPos;
-            //IntVec2 rel = _curPos - focusPos;
-            //if (Mathf.Abs(rel.x) > ConstDefineGM2D.Start.x || rel.y > ConstDefineGM2D.Start.y || rel.y < -ConstDefineGM2D.Start.x)
-            //{
-            //    _isStart = false;
-            //}
-            //else
-            //{
-            //    _isStart = true;
-            //}
         }
 
         public virtual void UpdateLogic()
@@ -1400,7 +1369,6 @@ namespace GameA.Game
 
         public virtual void SetPos(IntVec2 pos)
         {
-            _isStart = true;
             _curPos = pos;
             //TODO StaticCollider也可以设置位置 改变SceneNode
             if (_dynamicCollider != null)
@@ -1654,6 +1622,10 @@ namespace GameA.Game
         }
         
         public virtual void SetStepOnIce()
+        {
+        }
+
+        public virtual void OnMagicUpHit()
         {
         }
     }

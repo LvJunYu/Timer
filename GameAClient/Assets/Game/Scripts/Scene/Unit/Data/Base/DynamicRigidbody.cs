@@ -69,7 +69,7 @@ namespace GameA.Game
         {
             base.UpdateLogic();
 
-            if (_isAlive && _isStart && !_isFreezed)
+            if (_isAlive && !_isFreezed)
             {
                 UpdateData();
                 if (IsCheckGround())
@@ -89,11 +89,8 @@ namespace GameA.Game
 
         protected virtual void CheckGround()
         {
-            bool air = false;
-            if (SpeedY != 0)
-            {
-                air = true;
-            }
+            _onMagicUp = false;
+            bool air = SpeedY != 0;
             if (!air)
             {
                 _onClay = false;
@@ -111,6 +108,10 @@ namespace GameA.Game
                         downExist = true;
                         _grounded = true;
                         _downUnits.Add(unit);
+                        if (unit.UseMagic())
+                        {
+                            _onMagicUp = true;
+                        }
                         var delta = Mathf.Abs(CenterDownPos.x - unit.CenterDownPos.x);
                         if (deltaX > delta)
                         {
@@ -371,7 +372,7 @@ namespace GameA.Game
         
         public override void UpdateView(float deltaTime)
         {
-            if (_isStart && _isAlive)
+            if (_isAlive)
             {
                 _deltaPos = _speed + _extraDeltaPos;
                 _curPos += _deltaPos;

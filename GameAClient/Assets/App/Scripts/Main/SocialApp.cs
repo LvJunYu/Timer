@@ -166,7 +166,7 @@ namespace GameA
             AppData.Instance.Init();
             //            LoginLogicUtil.Init();
             ShareUtil.Init();
-            RoomManager.Instance.Init();
+//            RoomManager.Instance.Init();
 
             GetUserData ();
         }

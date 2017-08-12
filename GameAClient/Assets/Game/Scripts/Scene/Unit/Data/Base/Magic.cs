@@ -83,7 +83,7 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_isStart && _isAlive)
+            if (_isAlive)
             {
                 if (Speed != IntVec2.zero)
                 {
@@ -201,7 +201,7 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_isStart && _isAlive)
+            if (_isAlive)
             {
                 _deltaPos = _speed + _extraDeltaPos;
                 _curPos += _deltaPos;
@@ -225,6 +225,13 @@ namespace GameA.Game
                 ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider);
                 _lastColliderGrid = _colliderGrid;
             }
+        }
+
+        public override void OnMagicUpHit()
+        {
+            _curMoveDirection = EMoveDirection.Down;
+            _timerMagic = 0;
+            Speed = IntVec2.zero;
         }
 
         public override IntVec2 GetDeltaImpactPos(UnitBase unit)
