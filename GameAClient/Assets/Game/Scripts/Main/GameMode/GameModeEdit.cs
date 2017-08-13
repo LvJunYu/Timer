@@ -35,7 +35,7 @@ namespace GameA.Game
 			set
 			{
 				_recordBytes = value;
-				if (_recordBytes != null && MapDirty)
+				if (_recordBytes != null && (MapDirty || !_project.PassFlag))
 				{
 					NeedSave = true;
 					MapDirty = false;

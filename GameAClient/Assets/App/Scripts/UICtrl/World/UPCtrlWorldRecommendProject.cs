@@ -16,6 +16,7 @@ namespace GameA
         private List<Project> _contentList;
         private List<UMCtrlWorldRecommendProject> _umCtrlWorldRecommendProjects;
         private WorldRecommendProjectList _data;
+        private bool _isRequest;
         private bool _hasInited;
         #endregion
 
@@ -47,14 +48,21 @@ namespace GameA
         
         private void RequestData()
         {
+            if (_isRequest)
+            {
+                return;
+            }
+            _isRequest = true;
             _data.Request(0, ()=>
             {
                 _hasInited = true;
+                _isRequest = false;
                 if (!_isOpen) {
                     return;
                 }
                 RefreshView();
             }, code=>{
+                _isRequest = false;
             });
         }
 

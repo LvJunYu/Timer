@@ -9,6 +9,7 @@ namespace GameA
         public Texture DefaultCoverTexture;
         
         public Button CloseBtn;
+        public Button BgBtn;
         public Button PlayBtn;
         public Text TitleText;
         public Text SubTitleText;

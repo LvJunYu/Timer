@@ -59,6 +59,7 @@ namespace GameA
         protected override void OnViewCreated() {
             base.OnViewCreated ();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            _cachedView.BgBtn.onClick.AddListener(OnCloseBtn);
             _projectInfoPanel = new UPCtrlProjectInfo();
             _projectInfoPanel.Init(this, _cachedView);
 
