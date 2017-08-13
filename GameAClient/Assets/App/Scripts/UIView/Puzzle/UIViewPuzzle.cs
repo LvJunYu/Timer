@@ -18,5 +18,6 @@ namespace GameA
         public Toggle Qulity;
         public Toggle Level;
         public Toggle Func;
+        public GridDataScroller PuzzleItemGridDataScroller;
     }
 }

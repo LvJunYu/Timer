@@ -17,9 +17,10 @@ namespace GameA
         private List<PictureFull> _usingPicFull;//装备的拼图
         private List<UMCtrlPuzzleEquipLoc> _allEquipLocs;
         private PictureFull _curPicture;
+        
         public PictureFull CurPicture { get { return _curPicture; } }
         public List<PictureFull> UsingPicFull { get { return _usingPicFull; } set { _usingPicFull = value; } }
-
+        
         private void RequestData()
         {
             LocalUser.Instance.UserUsingPictureFullData.Request(LocalUser.Instance.UserGuid, null,
@@ -28,7 +29,6 @@ namespace GameA
 
         private void InitUI()
         {
-            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
             _slots = TableManager.Instance.Table_PuzzleSlotDic;
             _usingPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
             //测试用，实际应用服务器数据
@@ -37,7 +37,6 @@ namespace GameA
             {
                 _usingPicFull.Add(null);
             }
-
             //创建装备栏
             _allEquipLocs = new List<UMCtrlPuzzleEquipLoc>(_slots.Count);
             int index = 0;
@@ -49,25 +48,28 @@ namespace GameA
                 equipLoc.Init(_cachedView.PuzzleLocsGrid);
                 //显示装备的拼图
                 if (_usingPicFull.Count > index && _usingPicFull[index] != null)
-                    equipLoc.SetUI(_usingPicFull[index]);
+                    equipLoc.SetPic(_usingPicFull[index]);
                 else
-                    equipLoc.SetUI(null);
+                    equipLoc.SetPic(null);
                 index++;
             }
         }
 
         private void OnPuzzleEquip()
         {
+            //LocalUser.Instance.UserUsingPictureFullData.Request(LocalUser.Instance.UserGuid, null,
+            //code => { LogHelper.Error("Network error when get UserUsingPictureFullData, {0}", code); });
             //_usingPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
             for (int i = 0; i < _allEquipLocs.Count; i++)
             {
-                _allEquipLocs[i].SetUI(_usingPicFull[i]);
+                _allEquipLocs[i].SetPic(_usingPicFull[i]);
             }
         }
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
+            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
             InitUI();
         }
 

@@ -2,6 +2,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using SoyEngine;
 
 namespace GameA
 {
@@ -19,10 +20,10 @@ namespace GameA
         private Image _curPicImg;
         private Text _curIndexTxt;
         private Text _curNumTxt;
-        private const string _halfImageName = "img_puzzle_half_";
-        private const string _quarterImageName = "img_puzzle_quarter_";
-        private const string _sixthImageName = "img_puzzle_sixth_";
-        private const string _ninthImageName = "img_puzzle_ninth_";
+        //private const string _halfImageName = "img_puzzle_half_";
+        //private const string _quarterImageName = "img_puzzle_quarter_";
+        //private const string _sixthImageName = "img_puzzle_sixth_";
+        //private const string _ninthImageName = "img_puzzle_ninth_";
         private bool _hasInited;
 
         public bool IsShow;
@@ -85,5 +86,6 @@ namespace GameA
             //_cachedView.HaveNumTxt.text = _fragment.TotalCount.ToString();
             //_cachedView.Image_Disable.enabled = !(_fragment.TotalCount > 0);
         }
+
     }
 }
