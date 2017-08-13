@@ -39,7 +39,6 @@ namespace GameA.Game
         public const int BridgeBlockLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
 
         public const int MovingEarthBlockLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
-        public const int MovingEarthBlockUpLayer = 1 << (int)ESceneLayer.Item;
 
         public const int BulletHitLayer = MonsterLayer | ItemLayer;
 

@@ -83,7 +83,7 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_isStart && _isAlive)
+            if (_isAlive)
             {
                 if (Speed != IntVec2.zero)
                 {
@@ -96,23 +96,35 @@ namespace GameA.Game
                         ChangeMoveDirection();
                         return;
                     }
-                    var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, _curMoveDirection == EMoveDirection.Up
-                        ? EnvManager.MovingEarthBlockUpLayer
-                        : EnvManager.MovingEarthBlockLayer, float.MinValue, float.MaxValue, _dynamicCollider);
+                    var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.MovingEarthBlockLayer, float.MinValue, float.MaxValue, _dynamicCollider);
                     for (int i = 0; i < units.Count; i++)
                     {
                         var unit = units[i];
                         if (unit.IsAlive)
                         {
+                            //朝上运动时，如果是角色或者箱子。
+                            if (_curMoveDirection == EMoveDirection.Up)
+                            {
+                                if (unit.IsActor || unit.Id == UnitDefine.BoxId)
+                                {
+                                    //如果远离
+                                    if (unit.ColliderGrid.YMin > _colliderGrid.YMax + 1)
+                                    {
+                                        Speed = IntVec2.zero;
+                                        _timerMagic = 24;
+                                    }
+                                    continue;
+                                }
+                            }
                             if (unit.Id == UnitDefine.SwitchTriggerId)
                             {
                                 unit.OnIntersect(this);
                             }
-                            if (!units[i].CanMagicCross)
+                            if (!unit.CanMagicCross)
                             {
-                                if (IsValidBlueStoneRotation(units[i]))
+                                if (unit.Id == UnitDefine.BlueStoneRotateId)
                                 {
-                                    _magicRotate = units[i];
+                                    _magicRotate = unit;
                                     break;
                                 }
                                 if (_magicRotate == null)
@@ -162,20 +174,6 @@ namespace GameA.Game
             }
         }
 
-        private bool IsValidBlueStoneRotation(UnitBase unit)
-        {
-            if (unit == null || unit.Id != UnitDefine.BlueStoneRotateId)
-            {
-                return false;
-            }
-            //var delta = Mathf.Abs(unit.Rotation + 1 - (int) _curMoveDirection);
-            //if (delta == 0 || delta == 2)
-            //{
-            //    return false;
-            //}
-            return true;
-        }
-
         private void ChangeMoveDirection()
         {
             switch (_curMoveDirection)
@@ -201,7 +199,7 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_isStart && _isAlive)
+            if (_isAlive)
             {
                 _deltaPos = _speed + _extraDeltaPos;
                 _curPos += _deltaPos;
@@ -231,42 +229,10 @@ namespace GameA.Game
         {
             if (!_run || !UseMagic())
             {
-                return base.GetDeltaImpactPos(unit);
+                return IntVec2.zero;
             }
-            return Speed;
-//            if (!_isCalculated && _dynamicCollider != null)
-//            {
-//                if (_downUnits.Count > 0)
-//                {
-//                    int right = 0;
-//                    int left = 0;
-//                    int deltaY = int.MinValue;
-//                    for (int i = 0; i < _downUnits.Count; i++)
-//                    {
-//                        var deltaPos = _downUnits[i].GetDeltaImpactPos();
-//                        if (deltaPos.x > 0 && deltaPos.x > right)
-//                        {
-//                            right = deltaPos.x;
-//                        }
-//                        if (deltaPos.x < 0 && deltaPos.x < left)
-//                        {
-//                            left = deltaPos.x;
-//                        }
-//                        if (deltaPos.y > deltaY)
-//                        {
-//                            deltaY = deltaPos.y;
-//                        }
-//                    }
-//                    int deltaX = right + left;
-//                    _deltaImpactPos = new IntVec2(SpeedX + deltaX, SpeedY + deltaY);
-//                }
-//                else
-//                {
-//                    _deltaImpactPos = Speed;
-//                }
-//                _isCalculated = true;
-//            }
-//            return _deltaImpactPos;
+            _deltaImpactPos = Speed;
+            return _deltaImpactPos;
         }
     }
 }

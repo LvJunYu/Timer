@@ -105,11 +105,11 @@ namespace GameA.Game
         protected override void UpdateDynamicView(float deltaTime)
         {
             base.UpdateDynamicView(deltaTime);
-            if (_isStart && _isAlive)
+            if (_isAlive)
             {
                 UpdateMonsterView(deltaTime);
             }
-            if (!_isAlive)
+            else
             {
                 _dieTime ++;
                 if (_dieTime == 100)
