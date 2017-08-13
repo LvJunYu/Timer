@@ -23,6 +23,7 @@ namespace GameA.Game
 
         private int _logicFrameCnt;
         private float _gameTimeSinceGameStarted;
+        private bool _isPlaying;
         private ESceneState _eSceneState;
 
         public static GameRun Instance
@@ -53,6 +54,11 @@ namespace GameA.Game
         public bool IsPlay
         {
             get { return _eSceneState == ESceneState.Play; }
+        }
+
+        public bool IsPlaying
+        {
+            get { return _isPlaying; }
         }
 
         public void Dispose()
@@ -88,6 +94,7 @@ namespace GameA.Game
         {
             _gameTimeSinceGameStarted = 0;
             _logicFrameCnt = 0;
+            _isPlaying = false;
             UnitManager.Instance.Init();
             CameraManager.Instance.Init();
             EnvManager.Instance.Init();
@@ -113,15 +120,18 @@ namespace GameA.Game
         internal void Pause()
         {
             PlayMode.Instance.Pause();
+            _isPlaying = false;
         }
 
         internal void Continue()
         {
             PlayMode.Instance.Continue();
+            _isPlaying = true;
         }
 
         internal void Stop()
         {
+            _isPlaying = false;
             MapManager.Instance.Stop();
             Dispose();
         }
@@ -199,6 +209,7 @@ namespace GameA.Game
             }
             _gameTimeSinceGameStarted = 0;
             _logicFrameCnt = 0;
+            _isPlaying = false;
             Messenger.Broadcast(EMessengerType.OnEdit);
             return true;
         }
@@ -239,6 +250,7 @@ namespace GameA.Game
             }
             _gameTimeSinceGameStarted = 0;
             _logicFrameCnt = 0;
+            _isPlaying = true;
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioStartGame);
             GameAudioManager.Instance.PlayMusic(AudioNameConstDefineGM2D.GameAudioBgm01);
             Messenger.Broadcast(EMessengerType.OnPlay);

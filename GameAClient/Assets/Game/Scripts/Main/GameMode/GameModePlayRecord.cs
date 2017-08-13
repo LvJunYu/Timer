@@ -40,7 +40,7 @@ namespace GameA.Game
             GameRun.Instance.Update();
             while (GameRun.Instance.LogicTimeSinceGameStarted < GameRun.Instance.GameTimeSinceGameStarted)
             {
-                if (null != PlayerManager.Instance.MainPlayer)
+                if (GameRun.Instance.IsPlaying && null != PlayerManager.Instance.MainPlayer)
                 {
                     LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.Input as LocalPlayerInput;
                     if (localPlayerInput != null)
