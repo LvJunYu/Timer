@@ -28,6 +28,7 @@ namespace GameA.Game
             {
                 allUnits[i].CalculateExtraDeltaPos();
             }
+            
             var mainUnit = PlayMode.Instance.MainPlayer;
             var boxOperateType = mainUnit.GetBoxOperateType();
             switch (boxOperateType)
@@ -42,10 +43,10 @@ namespace GameA.Game
                         }
                         allUnits[i].UpdateView(deltaTime);
                     }
-                    PlayMode.Instance.MainPlayer.UpdateView(deltaTime);
+                    mainUnit.UpdateView(deltaTime);
                     break;
                 case EBoxOperateType.Pull:
-                    PlayMode.Instance.MainPlayer.UpdateView(deltaTime);
+                    mainUnit.UpdateView(deltaTime);
                     for (int i = 0; i < allUnits.Count; i++)
                     {
                         if (allUnits[i].IsMain)

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using SoyEngine.Proto;
+using UnityEngine.UI;
 
 namespace GameA
 {
@@ -13,13 +14,54 @@ namespace GameA
 	[UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlPuzzleDetail : UICtrlGenericBase<UIViewPuzzleDetail>
     {
+        //碎片间距
+        private const float _halfSpacing = 160;
+        private const float _quarterSpacing = 35;
+        private const float _sixthSpacing = 40;
+        private const float _ninthSpacing = 9;
+        //按钮文字
+        private const string _upgrateTxt = "升级";
+        private const string _activeTxt = "合成";
+
         private PictureFull _puzzle;
         private PicturePart[] _puzzleFragments;
         private UMCtrlPuzzleDetailItem _curUMPuzzleItem;
         private List<UMCtrlPuzzleFragmentItem> _fragmentsCache;
         private List<UMCtrlPuzzleFragmentItem> _curUMFragments;
-        private const string _upgrateTxt = "升级";
-        private const string _activeTxt = "合成";
+        private Image[] _halfImages;
+        private Image[] _quarterImages;
+        private Image[] _sixthImages;
+        private Image[] _ninthImages;
+
+        public Sprite GetFragSprite(EPuzzleType puzzleType, int fragIndex)
+        {
+            InitImages();
+            switch (puzzleType)
+            {
+                case EPuzzleType.Half:
+                    return _halfImages[fragIndex - 1].sprite;
+                case EPuzzleType.Quarter:
+                    return _quarterImages[fragIndex - 1].sprite;
+                case EPuzzleType.Sixth:
+                    return _sixthImages[fragIndex - 1].sprite;
+                case EPuzzleType.Ninth:
+                    return _ninthImages[fragIndex - 1].sprite;
+                default:
+                    return null;
+            }
+        }
+
+        private void InitImages()
+        {
+            if (_halfImages == null)
+                _halfImages = _cachedView.HalfFragImages.GetComponentsInChildren<Image>();
+            if (_quarterImages == null)
+                _quarterImages = _cachedView.QuarterFragImages.GetComponentsInChildren<Image>();
+            if (_sixthImages == null)
+                _sixthImages = _cachedView.SixthFragImages.GetComponentsInChildren<Image>();
+            if (_ninthImages == null)
+                _ninthImages = _cachedView.NinthFragImages.GetComponentsInChildren<Image>();
+        }
 
         private void OnEquipBtn()
         {
@@ -134,8 +176,8 @@ namespace GameA
 
         private void SetUI()
         {
-            //更新拼图数据
-            SetPuzzleInfo();
+            //拼图数据
+            _curUMPuzzleItem.SetData(_puzzle);
 
             //创建拼图碎片Item
             _curUMFragments.Clear();
@@ -144,17 +186,37 @@ namespace GameA
                 UMCtrlPuzzleFragmentItem puzzleFragment = CreatePuzzleFragment();
                 _curUMFragments.Add(puzzleFragment);
                 //测试用
-                _puzzleFragments[i].TotalCount = 2;
-                puzzleFragment.SetData(_puzzleFragments[i]);
+                _puzzleFragments[i].AddFrag(UnityEngine.Random.Range(0, 4));
+                puzzleFragment.SetData(_puzzleFragments[i], _puzzle, _curUMPuzzleItem);
             }
+            //设置碎片间距
+            _cachedView.PuzzleFragmentGrid.spacing = GetSpace(_puzzle.PuzzleType);
 
+            //文字信息
+            SetTexts();
             //按钮信息
             SetButtons();
         }
 
-        private void SetPuzzleInfo()
+        private float GetSpace(EPuzzleType puzzleType)
         {
-            _curUMPuzzleItem.SetData(_puzzle);
+            switch (puzzleType)
+            {
+                case EPuzzleType.Half:
+                    return _halfSpacing;
+                case EPuzzleType.Quarter:
+                    return _quarterSpacing;
+                case EPuzzleType.Sixth:
+                    return _sixthSpacing;
+                case EPuzzleType.Ninth:
+                    return _ninthSpacing;
+                default:
+                    return 0;
+            }
+        }
+
+        private void SetTexts()
+        {
             _cachedView.NameTxt.text = _puzzle.Name;
             _cachedView.LvTxt.text = _puzzle.Level.ToString();
             _cachedView.DescTxt.text = _puzzle.Desc;
@@ -173,7 +235,7 @@ namespace GameA
             if (_puzzle.CurState == EPuzzleState.HasActived)
                 _cachedView.ActiveTxt.text = _upgrateTxt;
             else
-                _cachedView.ActiveTxt.text = _activeTxt; 
+                _cachedView.ActiveTxt.text = _activeTxt;
         }
 
         private bool CheckActivable()
@@ -193,9 +255,22 @@ namespace GameA
 
         private void OnPuzzleCompound()
         {
+            //更新拼图
+            _curUMPuzzleItem.SetData();
+            //更新碎片
             SetFragments();
+            SetTexts();
             SetButtons();
-            SetPuzzleInfo();
+        }
+
+        private void OnPuzzleFragChanged()
+        {
+            //更新拼图
+            _curUMPuzzleItem.SetData();
+            //更新碎片
+            SetFragments();
+
+            SetButtons();
         }
 
         private UMCtrlPuzzleFragmentItem CreatePuzzleFragment()
@@ -211,7 +286,7 @@ namespace GameA
             }
             //缓存没有，则创建新的
             var puzzleFragment = new UMCtrlPuzzleFragmentItem();
-            puzzleFragment.Init(_cachedView.PuzzleFragmentGrid);
+            puzzleFragment.Init(_cachedView.PuzzleFragmentGrid.transform as RectTransform);
             //新的添加到缓存
             _fragmentsCache.Add(puzzleFragment);
 
@@ -245,6 +320,7 @@ namespace GameA
         {
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnPuzzleCompound, OnPuzzleCompound);
+            RegisterEvent(EMessengerType.OnPuzzleFragChanged, OnPuzzleFragChanged);
         }
 
         protected override void OnClose()

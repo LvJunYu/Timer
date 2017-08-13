@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using SoyEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace GameA
 {
@@ -13,6 +14,7 @@ namespace GameA
     {
         public Image Puzzle_Active;
         public Image Puzzle_DisActive;
+        public List<RectTransform> RectTFs;
     }
 
 }

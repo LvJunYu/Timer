@@ -52,6 +52,8 @@ namespace GameA
                     return _puzzleTable.AttriBonus;
             }
         }
+        public int FragNum { get { return _puzzleTable.FragNum; } }
+        public EPuzzleType PuzzleType { get { return (EPuzzleType)_puzzleTable.FragNum; } }
         public Dictionary<int, Table_PuzzleUpgrade> LvTableDic { get { return _lvTableDic; } }
         public PicturePart[] NeededFragments { get { return _neededFragments; } }
 
@@ -80,7 +82,7 @@ namespace GameA
             _curState = EPuzzleState.CantActive;
 
             //合成所需碎片
-            _neededFragments = new PicturePart[_puzzleTable.FragNum];
+            _neededFragments = new PicturePart[FragNum];
             for (int i = 0; i < _neededFragments.Length; i++)
             {
                 _neededFragments[i] = PicturePart.GetPicturePart((int)this._pictureId, i + 1);
@@ -147,5 +149,13 @@ namespace GameA
         CanActive,//可激活
         HasActived,//已激活
         //HasEquiped//已装备
+    }
+
+    public enum EPuzzleType
+    {
+        Half = 2,
+        Quarter = 4,
+        Sixth = 6,
+        Ninth = 9
     }
 }

@@ -50,13 +50,9 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            if (_isAlive && _isStart)
+            if (_isAlive)
             {
-                bool air = false;
-                if (SpeedY != 0)
-                {
-                    air = true;
-                }
+                bool air = SpeedY != 0;
                 if (!air)
                 {
                     _onClay = false;
@@ -106,7 +102,7 @@ namespace GameA.Game
 
         public override void UpdateView(float deltaTime)
         {
-            if (_isStart && _isAlive && _dynamicCollider != null)
+            if (_isAlive && _dynamicCollider != null)
             {
                 _deltaPos = _speed + _extraDeltaPos;
                 if (_isHoldingByMain)
