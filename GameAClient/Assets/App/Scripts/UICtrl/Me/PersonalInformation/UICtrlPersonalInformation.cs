@@ -51,6 +51,7 @@ namespace GameA
         //public Button SelectPhoto;
 
         _cachedView.Exit.onClick.AddListener(OnDestroy);
+        _cachedView.SelectPhoto.onClick.AddListener(OnPhoto);
         }
 
         protected override void InitEventListener()
@@ -84,6 +85,8 @@ namespace GameA
                 ()=> { SetRepresentativeWorks(); },
                 null
                 );
+
+
         }
 
         #endregion
@@ -134,6 +137,12 @@ namespace GameA
 
         }
 
+        private void OnPhoto()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlHeadPortraitSelect>();
+
+        }
+
         private void OnConfirmDescBtn()
         {
             string newName = _cachedView.NameDescInput.text;
@@ -158,6 +167,7 @@ namespace GameA
             _cachedView.Editable.gameObject.SetActiveEx(true);
 
         }
+
 
         private void SelectMale()
         {

@@ -37,7 +37,7 @@ namespace GameA
 
             int winCondition = _project.WinCondition;
             // 为什么每次得到的 winconditon都是1 想测试一下其他值 又老资源出错
-            winCondition = 6;
+            // winCondition = 6;
             // 等于1 就是什么也没有
             if (winCondition == 1)
             {

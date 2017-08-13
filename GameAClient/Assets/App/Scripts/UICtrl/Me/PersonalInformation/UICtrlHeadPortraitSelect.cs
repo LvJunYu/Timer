@@ -10,119 +10,94 @@ namespace GameA
     [UIAutoSetup (EUIAutoSetupType.Add)]
     public class UICtrlHeadPortraitSelect : UICtrlInGameBase<UIViewHeadPortraitSelect>
     {
-        private USCtrlBoostItem[] _boostItems;
-        private List<int> _selectedItems = new List<int> ();
-        private bool _selectComplete;
 
-        public bool SelectComplete
-        {
-            get
-            {
-                return this._selectComplete;
-            }
-        }
-
-        public List<int> SelectedItems
-        { get { return _selectedItems; } }
 
         protected override void InitGroupId ()
         {
             _groupId = (int)EUIGroupType.InGamePopup;
         }
 
-        protected override void InitEventListener ()
+        protected override void OnViewCreated()
         {
-            base.InitEventListener ();
+            base.OnViewCreated();
+            //    public Button Exit;
+            //public Button AddFriend;
+            //public Button Modification;
+            //public Button SelectPhoto;
+            InitTagGroup();
+            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            _cachedView.OKBtn.onClick.AddListener(OnOkBtn);
         }
 
-        protected override void OnViewCreated ()
-        {
-            base.OnViewCreated ();
-            _boostItems = new USCtrlBoostItem [_cachedView.BoostItems.Length];
-            for (int i = 0; i < _boostItems.Length; i++)
-            {
-                _boostItems [i] = new USCtrlBoostItem ();
-                _boostItems [i].Init (_cachedView.BoostItems [i]);
-            }
-
-            _cachedView.OKBtn.onClick.AddListener (OnOKBtn);
-            _cachedView.CloseBtn.onClick.AddListener (OnCloseBtn);
-        }
-
-        protected override void OnOpen (object parameter)
-        {
-            base.OnOpen (parameter);
-
-            if (!LocalUser.Instance.UserProp.IsInited) {
-                SocialGUIManager.Instance.CloseUI<UICtrlBoostItem> ();
-            }
-            else
-            {
-                _selectComplete = false;
-                _selectedItems.Clear();
-                for (int j = 0; j < _boostItems.Length; j++) 
-                {
-                    _boostItems [j].SetEmpty ();
-                }
-                for (int i = 0; i < LocalUser.Instance.UserProp.ItemDataList.Count; i++)
-                {
-                    for (int j = 0; j < _boostItems.Length; j++)
-                    {
-                        if (LocalUser.Instance.UserProp.ItemDataList[i].Type == _boostItems[j].BoostItemType)
-                        {
-                            _boostItems [j].SetItem (LocalUser.Instance.UserProp.ItemDataList [i]);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        private void OnOKBtn ()
-        {
-            int totalPrice = 0;
-            for (int i = 0; i < _boostItems.Length; i++)
-            {
-                if (_boostItems[i].Checked)
-                {
-                    _selectedItems.Add (_boostItems[i].BoostItemType);
-                    totalPrice += _boostItems [i].Price;
-                }
-            }
-            if (totalPrice > 0)
-            {
-                SocialGUIManager.ShowPopupDialog (
-                    string.Format ("确定花费 {0} 钻石购买未拥有的道具吗？", totalPrice),
-                    "道具购买",
-                    new KeyValuePair<string, Action> ("确认", ()=>{
-                        if (GameATools.CheckDiamond (totalPrice))
-                        {
-                            GameModePlay gameModePlay = GM2DGame.Instance.GameMode as GameModePlay;
-                            if (null != gameModePlay)
-                            {
-                                gameModePlay.UseBoostItem(_selectedItems);
-                            }
-                            SocialGUIManager.Instance.CloseUI<UICtrlBoostItem> ();
-                            _selectComplete = true;
-                        }
-                    }),
-                    new KeyValuePair<string, Action> ("取消", null)
-                );
-            } else
-			{
-				GameModePlay gameModePlay = GM2DGame.Instance.GameMode as GameModePlay;
-				if (null != gameModePlay)
-				{
-					gameModePlay.UseBoostItem(_selectedItems);
-				}
-                SocialGUIManager.Instance.CloseUI<UICtrlBoostItem> ();
-                _selectComplete = true;
-            }
-        }
 
         private void OnCloseBtn ()
         {
-            SocialGUIManager.Instance.CloseUI <UICtrlBoostItem>();
+            SocialGUIManager.Instance.CloseUI <UICtrlHeadPortraitSelect>();
         }
 
+        private void OnOkBtn()
+        {
+           
+        }
+
+        private void InitTagGroup()
+        {
+            _cachedView.TagGroup.AddButton(_cachedView.HeadPortrait1, OnHead1Seleted);
+            _cachedView.TagGroup.AddButton(_cachedView.HeadPortrait2, OnHead2Seleted);
+            _cachedView.TagGroup.AddButton(_cachedView.HeadPortrait3, OnHead3Seleted);
+            _cachedView.TagGroup.AddButton(_cachedView.HeadPortrait4, OnHead4Seleted);
+            _cachedView.TagGroup.AddButton(_cachedView.HeadPortrait5, OnHead5Seleted);
+            _cachedView.TagGroup.AddButton(_cachedView.HeadPortrait6, OnHead6Seleted);
+
+            //_usctrlFashionPage1 = new USCtrlFashionShop();
+            //_usctrlFashionPage1.Init(_cachedView.FashionPage1);
+            //_usctrlFashionPage1.ShoppingPage = USCtrlFashionShop.EShoppingPage.FashionPage1;
+
+            //_usctrlFashionPage2 = new USCtrlFashionShop();
+            //_usctrlFashionPage2.Init(_cachedView.FashionPage2);
+            //_usctrlFashionPage2.ShoppingPage = USCtrlFashionShop.EShoppingPage.FashionPage2;
+
+            //_usctrlFashionPage3 = new USCtrlFashionShop();
+            //_usctrlFashionPage3.Init(_cachedView.FashionPage3);
+            //_usctrlFashionPage3.ShoppingPage = USCtrlFashionShop.EShoppingPage.FashionPage3;
+
+            //_usctrlFashionPage4 = new USCtrlFashionShop();
+            //_usctrlFashionPage4.Init(_cachedView.FashionPage4);
+            //_usctrlFashionPage4.ShoppingPage = USCtrlFashionShop.EShoppingPage.FashionPage4;
+
+            //_cachedView.CloseBtn.onClick.AddListener(OnCloseBtnClick);
+            //_cachedView.RestoreFashionBtn.onClick.AddListener(OnRestoreFashionBtnClick);
+            //_cachedView.PurchaseAllFittingFashionBtn.onClick.AddListener(OnPurchaseAllFittingFashionBtnClick);
+        }
+
+        private void OnHead1Seleted(bool open)
+        {
+            _cachedView.SeletctedHead1Image.SetActiveEx(open);
+        }
+
+        private void OnHead2Seleted(bool open)
+        {
+            _cachedView.SeletctedHead2Image.SetActiveEx(open);
+        }
+
+        private void OnHead3Seleted(bool open)
+        {
+            _cachedView.SeletctedHead3Image.SetActiveEx(open);
+        }
+
+        private void OnHead4Seleted(bool open)
+        {
+            _cachedView.SeletctedHead4Image.SetActiveEx(open);
+        }
+
+        private void OnHead5Seleted(bool open)
+        {
+            _cachedView.SeletctedHead5Image.SetActiveEx(open);
+        }
+
+        private void OnHead6Seleted(bool open)
+        {
+            _cachedView.SeletctedHead6Image.SetActiveEx(open);
+        }
     }
 }
