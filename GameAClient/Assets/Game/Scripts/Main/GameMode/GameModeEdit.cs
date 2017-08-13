@@ -214,7 +214,7 @@ namespace GameA.Game
 		    }
 		    if (GameRun.Instance.LogicTimeSinceGameStarted < GameRun.Instance.GameTimeSinceGameStarted)
 		    {
-			    if (_mode == EMode.EditTest && null != PlayerManager.Instance.MainPlayer)
+			    if (GameRun.Instance.IsPlaying && _mode == EMode.EditTest && null != PlayerManager.Instance.MainPlayer)
 			    {
 				    LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.Input as LocalPlayerInput;
 				    if (localPlayerInput != null)

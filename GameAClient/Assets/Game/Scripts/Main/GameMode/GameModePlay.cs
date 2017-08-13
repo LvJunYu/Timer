@@ -139,5 +139,11 @@ namespace GameA.Game
                 view.SetParts(appendageId, SpinePartsHelper.ESpineParts.Appendage);
             }
         }
+
+	    public override void OnGameStart()
+	    {
+		    base.OnGameStart();
+		    _inputDatas.Clear();
+	    }
     }
 }
