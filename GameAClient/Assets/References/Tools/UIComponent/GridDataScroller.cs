@@ -8,7 +8,8 @@ using System.Collections.Generic;
 namespace SoyEngine
 {
     [RequireComponent(typeof(ScrollRect))]
-	public class GridDataScroller : MonoBehaviour {
+    public class GridDataScroller : MonoBehaviour
+    {
 
         [SerializeField]
         private GridLayoutGroup _grid;
@@ -20,7 +21,7 @@ namespace SoyEngine
 
         // private UI elements //
         private ScrollRect _scroller;
-//        private RectTransform _scrollerTransform;
+        //        private RectTransform _scrollerTransform;
 
         public Vector2 ContentPosition
         {
@@ -38,7 +39,7 @@ namespace SoyEngine
         // public fields //
         [SerializeField]
         private Movement _moveType = Movement.Horizontal;
-        
+
         public delegate void OnChange(IDataItemRenderer item, int index);
 
         private Dictionary<int, IDataItemRenderer> _itemDict = new Dictionary<int, IDataItemRenderer>();
@@ -84,7 +85,7 @@ namespace SoyEngine
 
         public void RefreshCurrent()
         {
-            foreach (var itemEntity  in _itemDict)
+            foreach (var itemEntity in _itemDict)
             {
                 if (_onChange != null)
                 {
@@ -95,7 +96,7 @@ namespace SoyEngine
 
         public void SetItemCount(int count)
         {
-            if(!_hasInited)
+            if (!_hasInited)
             {
                 Init();
             }
@@ -120,7 +121,7 @@ namespace SoyEngine
 
         private void Init()
         {
-            if(_hasInited)
+            if (_hasInited)
             {
                 return;
             }
@@ -134,19 +135,19 @@ namespace SoyEngine
         {
             // Init Scroller //
             _scroller = GetComponent<ScrollRect>();
-//            _scrollerTransform = _scroller.GetComponent<RectTransform>();
+            //            _scrollerTransform = _scroller.GetComponent<RectTransform>();
 
             if (_moveType == Movement.Horizontal)
             {
                 _scroller.vertical = false;
                 _scroller.horizontal = true;
-//                _gridTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, _scrollerRect.height);
+                //                _gridTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, _scrollerRect.height);
             }
             else
             {
                 _scroller.vertical = true;
                 _scroller.horizontal = false;
-//                _gridTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, _scrollerRect.width);
+                //                _gridTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, _scrollerRect.width);
             }
             _scroller.onValueChanged.AddListener(OnValueChanged);
         }
@@ -159,7 +160,7 @@ namespace SoyEngine
             _grid.enabled = false;
             _gridTransform = _grid.GetComponent<RectTransform>();
             _layoutElement = _grid.GetComponent<LayoutElement>();
-            if(_layoutElement == null)
+            if (_layoutElement == null)
             {
                 _layoutElement = _grid.gameObject.AddComponent<LayoutElement>();
             }
@@ -167,17 +168,18 @@ namespace SoyEngine
 
         private void CalculateParam()
         {
-            Canvas.ForceUpdateCanvases ();
+            Canvas.ForceUpdateCanvases();
+            var name = _scroller.viewport.name;
             float vWidth = _scroller.viewport.rect.width;
             float vHeight = _scroller.viewport.rect.height;
             LayoutElement le = _scroller.viewport.GetComponent<LayoutElement>();
-            if(le != null && le.enabled)
+            if (le != null && le.enabled)
             {
-                if(le.preferredHeight >= 0)
+                if (le.preferredHeight >= 0)
                 {
                     vHeight = le.preferredHeight;
                 }
-                if(le.preferredWidth >= 0)
+                if (le.preferredWidth >= 0)
                 {
                     vWidth = le.preferredWidth;
                 }
@@ -194,7 +196,7 @@ namespace SoyEngine
             }
             _transCount = _col * _row;
         }
-   
+
         private void InitItem(RectTransform rectTrans)
         {
             rectTrans.anchorMax = new Vector2(0, 1);
@@ -208,11 +210,11 @@ namespace SoyEngine
             if (_moveType == Movement.Horizontal)
             {
                 var width = 0f;
-                if(_row != 0)
+                if (_row != 0)
                 {
-                    width =  ((_itemCount + _row - 1) / _row) * ItemSize.x;
+                    width = ((_itemCount + _row - 1) / _row) * ItemSize.x;
                 }
-                if(!Util.IsFloatEqual(_gridTransform.GetWidth(), width, 10))
+                if (!Util.IsFloatEqual(_gridTransform.GetWidth(), width, 10))
                 {
                     _gridTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
                     _layoutElement.minWidth = _layoutElement.preferredWidth = width;
@@ -221,11 +223,11 @@ namespace SoyEngine
             else
             {
                 var height = 0f;
-                if(_col != 0)
+                if (_col != 0)
                 {
                     height = ((_itemCount + _col - 1) / _col) * ItemSize.y;
                 }
-                if(!Util.IsFloatEqual(_gridTransform.GetHeight(), height, 10))
+                if (!Util.IsFloatEqual(_gridTransform.GetHeight(), height, 10))
                 {
                     _gridTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
                     _layoutElement.minHeight = _layoutElement.preferredHeight = height;
@@ -246,7 +248,7 @@ namespace SoyEngine
 
         public void OnViewportSizeChanged()
         {
-            if(!_hasInited)
+            if (!_hasInited)
             {
                 Init();
             }
@@ -263,7 +265,7 @@ namespace SoyEngine
             int startIndex = 0;
             if (_moveType == Movement.Horizontal)
             {
-                float scrollLength = - _scrollContent.anchoredPosition.x - _padding.left;
+                float scrollLength = -_scrollContent.anchoredPosition.x - _padding.left;
                 int scrollCol = (int)(scrollLength / ItemSize.x);
                 startIndex = scrollCol * _row;
             }
@@ -273,7 +275,7 @@ namespace SoyEngine
                 int scrollRow = (int)(scrollLength / ItemSize.y);
                 startIndex = scrollRow * _col;
             }
-            if(_startIndex == startIndex && !_isDirty)
+            if (_startIndex == startIndex && !_isDirty)
             {
                 return;
             }
@@ -284,9 +286,9 @@ namespace SoyEngine
         private void ProcessNewStartIndex(int startIndex)
         {
             _tempIndexList.Clear();
-            foreach(var entity in _itemDict)
+            foreach (var entity in _itemDict)
             {
-                if(
+                if (
                     entity.Key < startIndex
                     || entity.Key >= startIndex + _transCount
                     || entity.Key >= _itemCount
@@ -295,21 +297,21 @@ namespace SoyEngine
                     _tempIndexList.Add(entity.Key);
                 }
             }
-            for(int i=0; i<_tempIndexList.Count; i++)
+            for (int i = 0; i < _tempIndexList.Count; i++)
             {
                 FreeItem(_itemDict[_tempIndexList[i]]);
                 _itemDict.Remove(_tempIndexList[i]);
             }
             _tempIndexList.Clear();
-            for(int i=startIndex, max=Math.Min(startIndex + _transCount, _itemCount); i<max; i++)
+            for (int i = startIndex, max = Math.Min(startIndex + _transCount, _itemCount); i < max; i++)
             {
-                if(!_itemDict.ContainsKey(i))
+                if (!_itemDict.ContainsKey(i))
                 {
                     _tempIndexList.Add(i);
                 }
             }
 
-            for(int i=0; i<_tempIndexList.Count; i++)
+            for (int i = 0; i < _tempIndexList.Count; i++)
             {
                 CreateItemForIndex(_tempIndexList[i]);
             }
@@ -328,17 +330,18 @@ namespace SoyEngine
         private Vector2 IndexToPosition(int index)
         {
             if (_moveType == Movement.Horizontal)
-	        {
+            {
                 return new Vector2(_padding.left + ItemSize.x * (index / _row), -_padding.top - ItemSize.y * (index % _row));
-	        }else
-	        {
+            }
+            else
+            {
                 return new Vector2(_padding.left + ItemSize.x * (index % _col), -_padding.top - ItemSize.y * (index / _col));
-	        }
+            }
         }
 
         private void FreeItem(IDataItemRenderer item)
         {
-            item.Transform.anchoredPosition = new Vector2(-10000,0);
+            item.Transform.anchoredPosition = new Vector2(-10000, 0);
             item.Set(null);
             _itemPool.Push(item);
         }
@@ -346,7 +349,7 @@ namespace SoyEngine
         private IDataItemRenderer GetItem()
         {
             IDataItemRenderer item = null;
-            if(_itemPool.Count > 0)
+            if (_itemPool.Count > 0)
             {
                 item = _itemPool.Pop();
             }
@@ -363,7 +366,7 @@ namespace SoyEngine
 
     public interface IDataItemRenderer
     {
-        RectTransform Transform {get;}
+        RectTransform Transform { get; }
         int Index { get; set; }
         object Data { get; }
         void Set(object data);

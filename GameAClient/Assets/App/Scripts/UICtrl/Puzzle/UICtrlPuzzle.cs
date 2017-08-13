@@ -13,15 +13,15 @@ namespace GameA
 	[UIAutoSetup(EUIAutoSetupType.Add)]
     public class UICtrlPuzzle : UICtrlGenericBase<UIViewPuzzle>
     {
-        private Dictionary<int, Table_PuzzleSlot> _slots;//拼图装备栏
-        private Dictionary<int, Table_Puzzle> _puzzles;//拼图读表
-        private EPuzzleOrderType _orderType;
-        private List<PictureFull> _userPictureFull;
+        private Dictionary<int, Table_PuzzleSlot> _slots;//装备栏数据
+        private Dictionary<int, Table_Puzzle> _puzzles;//拼图表数据
+        private EPuzzleOrderType _curOrderType;
+        private List<PictureFull> _usingUserPicFull;//装备的拼图
+        private List<PictureFull> _userPictureFull;//玩家拥有的拼图数据
         private List<PictureFull> _otherPictureFull;
         private List<PictureFull> _allPictureFull;
-        private List<PictureFull> _usingUserPicFull;//装备的拼图
-        private List<UMCtrlPuzzleItem> _allPuzzleItem;//所有拼图
-        private List<UMCtrlPuzzleEquipLoc> _allEquipLocs;//所有槽位
+        private List<UMCtrlPuzzleItem> _allUMPuzzleItem;//所有拼图
+        private List<UMCtrlPuzzleEquipLoc> _allUMEquipLocs;//所有槽位
 
         public PictureFull CurActivePicFull;
         public List<PictureFull> UsingPicFull
@@ -32,6 +32,8 @@ namespace GameA
 
         private void InitData()
         {
+            _slots = TableManager.Instance.Table_PuzzleSlotDic;
+            _puzzles = TableManager.Instance.Table_PuzzleDic;
             _userPictureFull = LocalUser.Instance.UserPictureFull.ItemDataList;
             for (int i = 0; i < _userPictureFull.Count; i++)
             {
@@ -47,7 +49,8 @@ namespace GameA
                 }
             }
             _allPictureFull = new List<PictureFull>(_puzzles.Count);
-            SortOrder();
+            RefreshPuzzleOrder();
+
             _usingUserPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
             //测试用，实际应用服务器数据
             _usingUserPicFull = new List<PictureFull>(_slots.Count);
@@ -57,78 +60,125 @@ namespace GameA
             }
         }
 
-        private void InitUI()
+        private void InitView()
         {
             //创建装备栏
-            _allEquipLocs = new List<UMCtrlPuzzleEquipLoc>(_slots.Count);
+            _allUMEquipLocs = new List<UMCtrlPuzzleEquipLoc>(_slots.Count);
             int index = 0;
             foreach (int key in _slots.Keys)
             {
                 var unlockLv = _slots[key].UnlockLevel;
                 var equipLoc = new UMCtrlPuzzleEquipLoc(key, unlockLv);
-                _allEquipLocs.Add(equipLoc);
+                _allUMEquipLocs.Add(equipLoc);
                 equipLoc.Init(_cachedView.PuzzleLocsGrid);
                 //显示装备的拼图
-                if (UsingPicFull.Count > index && UsingPicFull[index] != null)
-                    equipLoc.SetUI(UsingPicFull[index]);
+                if (index < _usingUserPicFull.Count && _usingUserPicFull[index] != null)
+                    equipLoc.SetPic(_usingUserPicFull[index]);
                 else
-                    equipLoc.SetUI(null);
+                    equipLoc.SetPic(null);
                 index++;
             }
 
             //创建拼图
-            _allPuzzleItem = new List<UMCtrlPuzzleItem>(_puzzles.Count);
-            for (int i = 0; i < _allPictureFull.Count; i++)
-            {
-                var puzzle = new UMCtrlPuzzleItem(_allPictureFull[i]);
-                puzzle.Init(_cachedView.PuzzleItemGrid);
-                puzzle.SetItem();
-                _allPuzzleItem.Add(puzzle);
-            }
+            _allUMPuzzleItem = new List<UMCtrlPuzzleItem>(_puzzles.Count);
+            if (!_cachedView.PuzzleItemGridDataScroller.enabled)
+                for (int i = 0; i < _allPictureFull.Count; i++)
+                {
+                    var puzzle = new UMCtrlPuzzleItem(_allPictureFull[i]);
+                    _allUMPuzzleItem.Add(puzzle);
+                    puzzle.Init(_cachedView.PuzzleItemGrid);
+                    puzzle.RefreshView();
+                }
+            else
+                _cachedView.PuzzleItemGridDataScroller.SetItemCount(_allPictureFull.Count);
         }
 
-        private void RequestData()
+        public void OnPuzzleItemRefresh(IDataItemRenderer item, int inx)
         {
-            LocalUser.Instance.UserPictureFull.Request(LocalUser.Instance.UserGuid, null,
-                code => { LogHelper.Error("Network error when get UserPictureFull, {0}", code); });
-            LocalUser.Instance.UserUsingPictureFullData.Request(LocalUser.Instance.UserGuid, null,
-                code => { LogHelper.Error("Network error when get UserUsingPictureFullData, {0}", code); });
+            if (inx >= _allPictureFull.Count)
+            {
+                LogHelper.Error("OnPuzzleItemRefresh Error: Inx > count");
+                return;
+            }
+            item.Set(_allPictureFull[inx]);
+        }
+
+        private IDataItemRenderer CreateUMPuzzleItem(RectTransform parent)
+        {
+            //var puzzle = new UMCtrlPuzzleItem(_allPictureFull[i]);
+            var puzzle = new UMCtrlPuzzleItem();
+            _allUMPuzzleItem.Add(puzzle);
+            puzzle.Init(parent);
+            return puzzle;
         }
 
         private void OnPuzzleCompound()
         {
-            //if (CurActivePicFull == null || CurActivePicFull.Level > 1)
-            //    return;
+            RefreshLocalView();
+            RefreshView();
+        }
+
+        private void RefreshLocalView()
+        {
             if (_otherPictureFull.Contains(CurActivePicFull))
             {
                 _otherPictureFull.Remove(CurActivePicFull);
                 _userPictureFull.Add(CurActivePicFull);
             }
-            SetPuzzleOrder();
+            ResetPuzzleItem();
         }
 
-        private void SetPuzzleOrder()
+        private void RefreshView()
         {
-            SortOrder();
-            for (int i = 0; i < _allPuzzleItem.Count; i++)
+            //同步数据
+            //LocalUser.Instance.UserPictureFull.Request(LocalUser.Instance.UserGuid, null,
+            //    code => { LogHelper.Error("Network error when get UserPictureFull, {0}", code); });
+            _userPictureFull = LocalUser.Instance.UserPictureFull.ItemDataList;
+            for (int i = 0; i < _userPictureFull.Count; i++)
             {
-                _allPuzzleItem[i].SetItem(_allPictureFull[i]);
+                _userPictureFull[i].InitData();
+                var pic = _otherPictureFull.Find(p => p.PictureId == _userPictureFull[i].PictureId);
+                if (pic != null)
+                    _otherPictureFull.Remove(pic);
+            }
+            foreach (int id in _puzzles.Keys)
+            {
+                if (_userPictureFull.Find(p => p.PictureId == id) == null
+                    && _otherPictureFull.Find(p => p.PictureId == id) == null)
+                {
+                    var picFull = new PictureFull(id);
+                    _otherPictureFull.Add(picFull);
+                }
+            }
+            ResetPuzzleItem();
+        }
+
+        private void ResetPuzzleItem()
+        {
+            //重新排序
+            RefreshPuzzleOrder();
+            //更新排序后的拼图信息
+            for (int i = 0; i < _allUMPuzzleItem.Count; i++)
+            {
+                _allUMPuzzleItem[i].ResetData(_allPictureFull[i]);
             }
         }
 
-        private void SetEquipLocs()
+        private void RefreshSlots()
         {
-            //_usingPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
-            for (int i = 0; i < _allEquipLocs.Count; i++)
+            //LocalUser.Instance.UserUsingPictureFullData.Request(LocalUser.Instance.UserGuid, null,
+            //code => { LogHelper.Error("Network error when get UserUsingPictureFullData, {0}", code); });
+            //_usingUserPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
+            for (int i = 0; i < _allUMEquipLocs.Count; i++)
             {
-                _allEquipLocs[i].SetUI(_usingUserPicFull[i]);
+                _allUMEquipLocs[i].SetPic(_usingUserPicFull[i]);
             }
         }
 
-        private void SortOrder()
+        private void RefreshPuzzleOrder()
         {
             _allPictureFull.Clear();
-            switch (_orderType)
+            switch (_curOrderType)
             {
                 case EPuzzleOrderType.Qulity:
                     _userPictureFull.Sort((p, q) => p.Quality.CompareTo(q.Quality));
@@ -156,31 +206,31 @@ namespace GameA
             _cachedView.Qulity.onValueChanged.AddListener(OnQulityToggle);
             _cachedView.Level.onValueChanged.AddListener(OnLevelToggle);
             _cachedView.Func.onValueChanged.AddListener(OnFuncToggle);
-            _slots = TableManager.Instance.Table_PuzzleSlotDic;
-            _puzzles = TableManager.Instance.Table_PuzzleDic;
+            _cachedView.PuzzleItemGridDataScroller.SetCallback(OnPuzzleItemRefresh, CreateUMPuzzleItem);
             InitData();
-            InitUI();
+            InitView();
         }
 
         protected override void InitEventListener()
         {
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnPuzzleCompound, OnPuzzleCompound);
-            RegisterEvent(EMessengerType.OnPuzzleEquip, SetEquipLocs);
+            RegisterEvent(EMessengerType.OnPuzzleEquip, RefreshSlots);
         }
 
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            SetEquipLocs();
+            RefreshView();
+            RefreshSlots();
         }
 
         private void OnFuncToggle(bool arg0)
         {
             if (arg0)
             {
-                _orderType = EPuzzleOrderType.Func;
-                SetPuzzleOrder();
+                _curOrderType = EPuzzleOrderType.Func;
+                ResetPuzzleItem();
             }
         }
 
@@ -188,8 +238,8 @@ namespace GameA
         {
             if (arg0)
             {
-                _orderType = EPuzzleOrderType.Level;
-                SetPuzzleOrder();
+                _curOrderType = EPuzzleOrderType.Level;
+                ResetPuzzleItem();
             }
         }
 
@@ -197,8 +247,8 @@ namespace GameA
         {
             if (arg0)
             {
-                _orderType = EPuzzleOrderType.Qulity;
-                SetPuzzleOrder();
+                _curOrderType = EPuzzleOrderType.Qulity;
+                ResetPuzzleItem();
             }
         }
 

@@ -2,13 +2,14 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using SoyEngine;
 
 namespace GameA
 {
     /// <summary>
-    /// 拼图
+    /// 
     /// </summary>
-    public partial class UMCtrlPuzzleItem : UMCtrlBase<UMViewPuzzleItem>
+    public partial class UMCtrlPuzzleItem : UMCtrlBase<UMViewPuzzleItem>, IDataItemRenderer
     {
         private PictureFull _puzzle;
 
@@ -17,15 +18,44 @@ namespace GameA
             _puzzle = puzzle;
         }
 
-        public void SetItem()
+        public UMCtrlPuzzleItem() { }
+
+        public object Data
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        private int _index;
+        public int Index
+        {
+            get { return _index; }
+            set { _index = value; }
+        }
+
+        public RectTransform Transform { get { return _cachedView.Trans; } }
+
+        public void Set(object data)
+        {
+            _puzzle = data as PictureFull;
+            RefreshView();
+        }
+
+        public void Unload()
+        {
+        }
+
+        public void RefreshView()
         {
             _cachedView.DisActiveImg.enabled = !(_puzzle.CurState == EPuzzleState.HasActived);
         }
 
-        public void SetItem(PictureFull puzzle)
+        public void ResetData(PictureFull puzzle)
         {
             _puzzle = puzzle;
-            SetItem();
+            RefreshView();
         }
 
         protected override void OnViewCreated()

@@ -14,7 +14,7 @@ namespace GameA
     {
         private static Dictionary<int, PicturePart> _picPartsDic = new Dictionary<int, PicturePart>();//所有拼图碎片字典
 
-        private long _id;
+        private int _id;
         private bool _hasInited;
         private bool _sync;//当前对象是否是服务器同步的对象
 
@@ -38,22 +38,28 @@ namespace GameA
             if (_hasInited)
                 return;
             _id = GetFragId((int)_pictureId, _pictureInx);
-            //_fragmentTable = TableManager.Instance.GetPuzzleFragment((int)_pictureId);
-            //_name = _fragmentTable.Name;
             _hasInited = true;
         }
 
         /// <summary>
-        /// 同步本地引用到服务器数据引用
+        /// 同步本地数据
         /// </summary>
-        private void Sync()
+        private void Request()
         {
             PicturePart fragment = null;
+            LocalUser.Instance.UserPicturePart.Request(LocalUser.Instance.UserGuid, null,
+                code => { LogHelper.Error("Network error when get UserPicturePart, {0}", code); });
+
+            if (_sync) return;
             fragment = LocalUser.Instance.UserPicturePart.ItemDataList.Find(p => p._pictureId == this._pictureId && p._pictureInx == this._pictureInx);
             if (fragment != null)
             {
+                fragment.InitData();
                 fragment._sync = true;
-                _picPartsDic[GetFragId((int)_pictureId, _pictureInx)] = fragment;
+                if (_picPartsDic.ContainsKey(_id))
+                    _picPartsDic[_id] = fragment;
+                else
+                    _picPartsDic.Add(_id, fragment);
             }
         }
 
@@ -90,11 +96,22 @@ namespace GameA
 
         public static void AddPicturePart(int picId, int index, int num)
         {
-            PicturePart fragment = GetPicturePart(picId, index);
-            if (!fragment._sync)
-                fragment.Sync();
-            if (!fragment._sync)
-                fragment.TotalCount += num;
+            int id = GetFragId(picId, index);
+            PicturePart picPart = null;
+            //修改本地数据
+            if (_picPartsDic.ContainsKey(id))
+            {
+                picPart = _picPartsDic[id];
+                picPart.TotalCount += num;
+            }
+            else
+            {
+                picPart = new PicturePart(picId, index);
+                picPart.TotalCount += num;
+                _picPartsDic.Add(id, picPart);
+            }
+            //请求同步服务器数据
+            picPart.Request();
         }
     }
 }

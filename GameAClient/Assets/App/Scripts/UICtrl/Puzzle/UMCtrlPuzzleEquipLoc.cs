@@ -14,15 +14,15 @@ namespace GameA
     {
         private int _slotID;
         public int _unlockLv;
-        private PictureFull _curEquipedPic;
+        private PictureFull _curPicFull;
 
         public int CurPicID
         {
             get
             {
-                if (_curEquipedPic == null)
+                if (_curPicFull == null)
                     return 0;
-                return (int)_curEquipedPic.PictureId;
+                return (int)_curPicFull.PictureId;
             }
         }
 
@@ -32,15 +32,15 @@ namespace GameA
             this._unlockLv = unlockLv;
         }
 
-        public void SetUI(PictureFull picture)
+        public void SetPic(PictureFull picture)
         {
-            _curEquipedPic = picture;
-            SetUI();
+            _curPicFull = picture;
+            RefreshView();
         }
 
-        public void SetUI()
+        public void RefreshView()
         {
-            _cachedView.PuzzleItem.SetActive(_curEquipedPic != null);
+            _cachedView.PuzzleItem.SetActive(_curPicFull != null);
             //测试用，应取实际等级
             bool unlock = _unlockLv > 2;
             //bool unlock = _unlockLv > LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel;
@@ -48,6 +48,7 @@ namespace GameA
             _cachedView.LockObj.SetActive(unlock);
         }
 
+        //用于UICtrlPuzzleSlots中
         public void SetEquipable(bool value)
         {
             _cachedView.EquipBtn.gameObject.SetActive(value);
@@ -56,8 +57,8 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.UnlockLvTxt.text = _unlockLv.ToString();
             _cachedView.EquipBtn.onClick.AddListener(OnEquipBtn);
+            _cachedView.UnlockLvTxt.text = _unlockLv.ToString();
         }
 
         private void OnEquipBtn()
@@ -89,14 +90,17 @@ namespace GameA
 
         private void Equip()
         {
-            if (_curEquipedPic != null)
-                _curEquipedPic.Unload();
+            if (_curPicFull != null)
+                _curPicFull.Unload();
             //替换当前
-            _curEquipedPic = SocialGUIManager.Instance.GetUI<UICtrlPuzzleSlots>().CurPicture;
+            _curPicFull = SocialGUIManager.Instance.GetUI<UICtrlPuzzleSlots>().CurPicture;
             //若已经装备，则删除之前槽位数据
-            if (_curEquipedPic.IsUsing == true)
-                SetSlotData(_curEquipedPic.Slot, false);
-            _curEquipedPic.EquipPuzzle(_slotID);
+            if (_curPicFull.IsUsing == true)
+            {
+                SetSlotData(_curPicFull.Slot, false);
+                _curPicFull.Unload();
+            }
+            _curPicFull.EquipPuzzle(_slotID);
             //更新当前槽位数据
             SetSlotData(_slotID, true);
             Messenger.Broadcast(EMessengerType.OnPuzzleEquip);
@@ -108,14 +112,9 @@ namespace GameA
             //不应用slotID
             //LocalUser.Instance.UserUsingPictureFullData.ItemDataList[slotID - 1] = _curEquipedPic;
             //测试用
-            SocialGUIManager.Instance.GetUI<UICtrlPuzzle>().UsingPicFull[slotID - 1] = value ? _curEquipedPic : null;
-            SocialGUIManager.Instance.GetUI<UICtrlPuzzleSlots>().UsingPicFull[slotID - 1] = value ? _curEquipedPic : null;
+            SocialGUIManager.Instance.GetUI<UICtrlPuzzle>().UsingPicFull[slotID - 1] = value ? _curPicFull : null;
+            SocialGUIManager.Instance.GetUI<UICtrlPuzzleSlots>().UsingPicFull[slotID - 1] = value ? _curPicFull : null;
 
-        }
-
-        private void UnLoad(int slotID)
-        {
-            SetSlotData(slotID, false);
         }
     }
 }
