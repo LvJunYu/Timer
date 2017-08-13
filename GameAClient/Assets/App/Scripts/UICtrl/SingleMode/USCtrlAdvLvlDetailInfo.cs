@@ -75,9 +75,13 @@ namespace GameA
             }
             _cachedView.Star3Desc.text = string.Format (tableStarRequire3.Desc, table.Star3Value);
 
-            string winCondition = string.Empty;
             if (table.WinConditions.Length == 1 && table.WinConditions [0] == (int)EWinCondition.TimeLimit) {
-                winCondition = string.Format ("坚持存活 {0} 秒", table.TimeLimit);
+                string winCondition = string.Format ("坚持存活 {0} 秒", table.TimeLimit);
+                _cachedView.Pass1Desc.text = winCondition;
+                _cachedView.Pass1Desc.SetActiveEx(true);
+                _cachedView.Pass2Desc.SetActiveEx(false);
+                _cachedView.Pass3Desc.SetActiveEx(false);
+
             } else
             {
                 // 给的效果图 最多只能放3个条件

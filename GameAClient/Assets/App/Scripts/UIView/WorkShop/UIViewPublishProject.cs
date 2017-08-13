@@ -11,7 +11,12 @@ namespace GameA
         public Button CancelBtn;
 
         public Text ProjectTitle;
-        public Text ProjectDesc;
+        public Text ProjectSubTitle;
+        public Text ProjectDetailIntro;
+
+        public Text PassCondition;
+        public Text TimeLimit;
+        
 
         public RawImage Cover;
         public Texture DefaultCover;
