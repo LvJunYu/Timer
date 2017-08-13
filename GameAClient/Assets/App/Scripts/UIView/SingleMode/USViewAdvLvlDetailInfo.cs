@@ -15,6 +15,10 @@ namespace GameA
         public Text Star2Desc;
         public Text Star3Desc;
 
+        public Text Pass1Desc;
+        public Text Pass2Desc;
+        public Text Pass3Desc;
+
         public Text WinCondition;
         public Texture DefaultCover;
     }
