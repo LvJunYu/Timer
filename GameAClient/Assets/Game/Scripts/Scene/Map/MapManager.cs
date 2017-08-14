@@ -277,7 +277,7 @@ namespace GameA.Game
                     EditMode.Instance.AddUnit(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one));
                 }
                 //up
-                for (int j = validMapRect.Max.y; j < validMapRect.Max.y + 2 * ConstDefineGM2D.ServerTileScale; j += ConstDefineGM2D.ServerTileScale)
+                for (int j = validMapRect.Max.y + 1; j < validMapRect.Max.y + 2 * ConstDefineGM2D.ServerTileScale; j += ConstDefineGM2D.ServerTileScale)
                 {
                     EditMode.Instance.AddUnit(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one));
                 }
@@ -290,7 +290,7 @@ namespace GameA.Game
                     EditMode.Instance.AddUnit(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(j, i, 0), 0, Vector2.one));
                 }
                 //right
-                for (int j = validMapRect.Max.x; j < validMapRect.Max.x + 2 * ConstDefineGM2D.ServerTileScale; j += ConstDefineGM2D.ServerTileScale)
+                for (int j = validMapRect.Max.x + 1; j < validMapRect.Max.x + 2 * ConstDefineGM2D.ServerTileScale; j += ConstDefineGM2D.ServerTileScale)
                 {
                     EditMode.Instance.AddUnit(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(j, i, 0), 0, Vector2.one));
                 }
