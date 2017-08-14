@@ -170,10 +170,6 @@ namespace GameA.Game
                 _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 0;
             }
             _allUnits.Add(unit);
-            if (!MapConfig.UseAOI)
-            {
-                InstantiateView(unitDesc, tableUnit);
-            }
             return true;
         }
 

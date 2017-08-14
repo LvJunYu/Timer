@@ -408,15 +408,12 @@ namespace GameA.Game
             {
                 return false;
             }
-            var unitDescs = EditHelper.BeforeAddUnit(unitDesc, tableUnit);
-            for (int i = 0; i < unitDescs.Count; i++)
+            EditHelper.BeforeAddUnit(tableUnit);
+            if (!AddUnit(unitDesc))
             {
-                if (!AddUnit(unitDescs[i]))
-                {
-                    return false;
-                }
-                EditHelper.AfterAddUnit(unitDesc, tableUnit);
+                return false;
             }
+            EditHelper.AfterAddUnit(unitDesc, tableUnit);
             return true;
         }
 
@@ -460,21 +457,17 @@ namespace GameA.Game
         /// <returns></returns>
         public bool DeleteUnitWithCheck(UnitDesc unitDesc)
         {
-            var unitDescs = EditHelper.BeforeDeleteUnit(unitDesc);
-            for (int i = 0; i < unitDescs.Count; i++)
+            if (!DeleteUnit(unitDesc))
             {
-                if (!DeleteUnit(unitDescs[i]))
-                {
-                    return false;
-                }
-                var tableUnit = UnitManager.Instance.GetTableUnit(unitDescs[i].Id);
-                if (tableUnit.EPairType > 0)
-                {
-                    PairUnitManager.Instance.DeletePairUnit(unitDesc, tableUnit);
-                    UpdateSelectItem();
-                }
-                EditHelper.AfterDeleteUnit(unitDesc, tableUnit);
+                return false;
             }
+            var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+            if (tableUnit.EPairType > 0)
+            {
+                PairUnitManager.Instance.DeletePairUnit(unitDesc, tableUnit);
+                UpdateSelectItem();
+            }
+            EditHelper.AfterDeleteUnit(unitDesc, tableUnit);
             return true;
         }
 

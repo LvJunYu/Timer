@@ -262,12 +262,12 @@ namespace GameA.Game
                 //down
                 for (int j = validMapRect.Min.y - ConstDefineGM2D.ServerTileScale; j < validMapRect.Min.y +ConstDefineGM2D.ServerTileScale ; j += ConstDefineGM2D.ServerTileScale)
                 {
-                    EditMode.Instance.AddUnit(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one));
+                    EditMode.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one));
                 }
                 //up
                 for (int j = validMapRect.Max.y + 1 - ConstDefineGM2D.ServerTileScale; j < validMapRect.Max.y + ConstDefineGM2D.ServerTileScale; j += ConstDefineGM2D.ServerTileScale)
                 {
-                    EditMode.Instance.AddUnit(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one));
+                    EditMode.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one));
                 }
             }
             for (int i = validMapRect.Min.y + ConstDefineGM2D.ServerTileScale; i < validMapRect.Max.y - ConstDefineGM2D.ServerTileScale; i += ConstDefineGM2D.ServerTileScale)
@@ -275,12 +275,12 @@ namespace GameA.Game
                 //left
                 for (int j = validMapRect.Min.x - ConstDefineGM2D.ServerTileScale; j < validMapRect.Min.x + ConstDefineGM2D.ServerTileScale; j += ConstDefineGM2D.ServerTileScale)
                 {
-                    EditMode.Instance.AddUnit(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(j, i, 0), 0, Vector2.one));
+                    EditMode.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(j, i, 0), 0, Vector2.one));
                 }
                 //right
                 for (int j = validMapRect.Max.x + 1 - ConstDefineGM2D.ServerTileScale; j < validMapRect.Max.x + ConstDefineGM2D.ServerTileScale; j += ConstDefineGM2D.ServerTileScale)
                 {
-                    EditMode.Instance.AddUnit(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(j, i, 0), 0, Vector2.one));
+                    EditMode.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(j, i, 0), 0, Vector2.one));
                 }
             }
         }
