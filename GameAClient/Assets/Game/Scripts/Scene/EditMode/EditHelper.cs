@@ -278,7 +278,7 @@ namespace GameA.Game
             }
             //怪物同屏数量不可过多
             {
-                if (tableUnit.EUnitType == EUnitType.Monster)
+                if (tableUnit.EUnitType == EUnitType.Monster || UnitDefine.BoxId == tableUnit.Id)
                 {
                     IntVec2 size = new IntVec2(15, 10) * ConstDefineGM2D.ServerTileScale;
                     IntVec2 mapSize = ConstDefineGM2D.MapTileSize;
@@ -287,7 +287,7 @@ namespace GameA.Game
                     var units = DataScene2D.GridCastAllReturnUnits(grid, EnvManager.MonsterLayer);
                     if (units.Count >= ConstDefineGM2D.MaxPhysicsUnitCount)
                     {
-                        Messenger<string>.Broadcast(EMessengerType.GameLog, "同屏不能放置太多的怪物喔~");
+                        Messenger<string>.Broadcast(EMessengerType.GameLog, "同屏不能放置太多的动态物体喔~");
                         return false;
                     }
                 }
