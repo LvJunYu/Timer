@@ -22,10 +22,5 @@ namespace GameA
         public Button DoSignup;
         public Button ReturnLogin;
         public Text DoSignupText;
-        public Text RegistrationAgreement;
-
-        public Button QQ;
-        public Button Weibo;
-        public Button WeChat;
     }
 }
