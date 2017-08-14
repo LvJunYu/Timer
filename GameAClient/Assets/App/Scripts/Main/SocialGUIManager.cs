@@ -54,22 +54,19 @@ namespace GameA
         InGameMainUI,
         InGamePopup,
         InGameTip,
-        AppGameUI,
         InputCtrl,
         InGameEnd,
+        
+        AppGameUI,
+        Purchase,
         /// <summary>
         /// 提示弹窗
         /// </summary>
         PopUpDialog,
-        Purchase,
         /// <summary>
         /// 小loading
         /// </summary>
         LittleLoading,
-        /// <summary>
-        /// 旋转屏幕蒙版
-        /// </summary>
-        ScreenRotateMask,
         Max,
     }
     /*社交管理器*/
@@ -106,49 +103,21 @@ namespace GameA
             InitUI(GetType());
         }
 
-        void Start()
-        {
-        }
-
         protected override void Update()
         {
             base.Update();
 //            _globalGestureReturn.Update();
         }
 
-	    protected override void OnDestroy()
-	    {
-		    base.OnDestroy();
-	    }
-
-        public Transform GetFirstGroupParent ()
-        {
-            SocialUIRoot root = _uiRoot as SocialUIRoot;
-
-            return root.GetFirstGroupTrans ();
-        }
 
 	    public void ShowAppView()
 		{
 //			JoyNativeTool.Instance.SetStatusBarShow (true);
 			OpenUI<UICtrlTaskbar>();//.ShowDefaultPage();
             OpenUI<UICtrlFashionSpine>();
+		    ChangeToAppMode();
             Messenger.AddListener(EMessengerType.OnEscapeClick, OnEscapeClick);
         }
-
-		internal void ChangeToGameRecordMode()
-		{
-			if (_currentMode == EMode.Game)
-			{
-				return;
-			}
-			//JoyNativeTool.Instance.SetStatusBarShow(false);
-			Messenger.RemoveListener(EMessengerType.OnEscapeClick, OnEscapeClick);
-			Application.targetFrameRate = 60;
-			_currentMode = EMode.Game;
-			_uiRoot.SetGroupActive((int)EUIGroupType.InGameStart, true);
-			Messenger.Broadcast(EMessengerType.OnChangeToGameMode);
-		}
 
 		internal void ChangeToGameMode()
         {
