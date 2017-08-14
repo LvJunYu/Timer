@@ -184,13 +184,6 @@ namespace GameA.Game
             {
                 return false;
             }
-		    if (!MapConfig.UseAOI)
-		    {
-		        if (!ColliderScene2D.Instance.InstantiateView(unitDesc, tableUnit))
-		        {
-		            return false;
-		        }
-		    }
             MapManager.Instance.OnReadMapFile(unitDesc, tableUnit);
 			return true;
 		}
