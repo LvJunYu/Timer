@@ -148,7 +148,12 @@ namespace GameA
                     //RefreshAdventureUserLevelDataDetail();
                     _rankPanel.Set(LocalUser.Instance.AdventureLevelRankList.RecordList);
                     _cachedView.FirstName.text = LocalUser.Instance.AdventureLevelRankList.RecordList[0].UserInfo.NickName;
-                    _cachedView.FirstScore.text = LocalUser.Instance.AdventureLevelRankList.RecordList[0].Score.ToString();
+                    //_cachedView.FirstScore.text =string.Format("{0}",) ;
+                    //_cachedView.FirstScore.text = "<color=#0000ff><size=60>小明</size></color>送了<color=#0000ff><size=60>小红</size></color>一辆游艇";
+                    _cachedView.FirstScore.text =
+                        "<color=#84684CFF><size=24>最高得分: </size></color>"
+                    +"<color=#FE8300FF><size=28>" + LocalUser.Instance.AdventureLevelRankList.RecordList[0].Score +
+                    "</size></color>";
                 }
             , null)
             ;
