@@ -186,7 +186,7 @@ namespace GameA
                 UMCtrlPuzzleFragmentItem puzzleFragment = CreatePuzzleFragment();
                 _curUMFragments.Add(puzzleFragment);
                 //测试用
-                _puzzleFragments[i].AddFrag(UnityEngine.Random.Range(0, 4));
+                _puzzleFragments[i].AddFrag(UnityEngine.Random.Range(0, 2));
                 puzzleFragment.SetData(_puzzleFragments[i], _puzzle, _curUMPuzzleItem);
             }
             //设置碎片间距

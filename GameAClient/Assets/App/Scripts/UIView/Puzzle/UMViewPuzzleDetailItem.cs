@@ -15,6 +15,7 @@ namespace GameA
         public Image Puzzle_Active;
         public Image Puzzle_DisActive;
         public List<RectTransform> RectTFs;
+        public Color DisableColor;
     }
 
 }
