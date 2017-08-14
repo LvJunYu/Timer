@@ -130,18 +130,13 @@ namespace GameA.Game
                         }
                         unitObject.Guid.x = node.Grid.XMin + j * size.x;
                         unitObject.Guid.y = node.Grid.YMin + k * size.y;
-                        //play的时候只生成区域内的即可 不是主角
-                        if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Play
-                            || GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.PlayRecord)
-                        {
-                            var grid = tableUnit.GetDataGrid(unitObject.Guid.x, unitObject.Guid.y, unitObject.Rotation, unitObject.Scale);
-                            if (!validMapGrid.Contains(grid) && !validMapGrid.Intersects(grid))
-                            {
-                                num++;
-                                _mapProcess = num * ratio;
-                                continue;
-                            }
-                        }
+//                        var grid = tableUnit.GetDataGrid(unitObject.Guid.x, unitObject.Guid.y, unitObject.Rotation, unitObject.Scale);
+//                        if (!validMapGrid.Contains(grid) && !validMapGrid.Intersects(grid))
+//                        {
+//                            num++;
+//                            _mapProcess = num * ratio;
+//                            continue;
+//                        }
                         if (tableUnit.EPairType > 0)
                         {
                             PairUnitData pairUnitData;
@@ -189,6 +184,13 @@ namespace GameA.Game
             {
                 return false;
             }
+		    if (!MapConfig.UseAOI)
+		    {
+		        if (!ColliderScene2D.Instance.InstantiateView(unitDesc, tableUnit))
+		        {
+		            return false;
+		        }
+		    }
             MapManager.Instance.OnReadMapFile(unitDesc, tableUnit);
 			return true;
 		}
