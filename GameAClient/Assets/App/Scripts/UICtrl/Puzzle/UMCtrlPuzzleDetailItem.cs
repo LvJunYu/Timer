@@ -48,9 +48,10 @@ namespace GameA
                 Image image = picTF.GetComponent<Image>();
                 image.sprite = _cachedView.Puzzle_Active.sprite;
                 _imageDic.Add(i + 1, image);
-                Image disableIma = _masks[i].transform.GetChild(1).GetComponent<Image>();
-                disableIma.sprite = _masks[i].GetComponent<Image>().sprite;
-                _disableImgDic.Add(i + 1, disableIma);
+                Image disableImg = picTF.GetChild(0).GetComponent<Image>();
+                disableImg.sprite = _cachedView.Puzzle_Active.sprite;
+                disableImg.color = _cachedView.DisableColor;
+                _disableImgDic.Add(i + 1, disableImg);
             }
             hasInited = true;
             SetData();
