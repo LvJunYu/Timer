@@ -5,18 +5,15 @@
   ** Summary : UICtrlForgetPassword.cs
   ***********************************************************************/
 
-using System;
 using System.Collections;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 using UnityEngine.UI;
-using cn.sharesdk.unity3d;
-using SoyEngine.Proto;
-using System.Text;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlForgetPassword : UICtrlGenericBase<UIViewForgetPassword>
     {
         #region 常量与字段
@@ -98,6 +95,7 @@ namespace GameA
                 },
                 (ret) =>
                 {
+                    LoginLogicUtil.ShowForgetPasswordError(ret);
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     LogHelper.Error("密码重置失败, Code: " + ret);
                 });

@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using NewResourceSolution;
 using SoyEngine;
 using Spine.Unity;
 using UnityEngine;
@@ -106,10 +107,9 @@ namespace GameA.Game
             MapManager.Instance.Init(eGameInitType, project);
             while (!MapManager.Instance.GenerateMapComplete)
             {
-                Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 0.8f + MapManager.Instance.MapProcess * 0.2f);
+                Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, MapManager.Instance.MapProcess * 0.8f);
                 yield return new WaitForSeconds(0.1f);
             }
-            Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 1f);
         }
 
         public void Clear()

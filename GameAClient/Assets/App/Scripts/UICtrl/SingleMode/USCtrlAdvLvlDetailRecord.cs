@@ -20,9 +20,9 @@ namespace GameA
         #region 常量与字段
         public List<UMCtrlRecord> _cardList = new List<UMCtrlRecord>();
         private string HighScoreRecord = "最高记录录像";
-        private string Star3FlagRecord = "首次获得三星录像";
-        private string Star2FlagRecord = "首次获得二星录像";
-        private string Star1FlagRecord = "首次获得一星录像";
+        private string Star3FlagRecord = "首次获得3星录像";
+        private string Star2FlagRecord = "首次获得2星录像";
+        private string Star1FlagRecord = "首次获得1星录像";
         #endregion
 
         #region 属性

@@ -216,7 +216,8 @@ namespace GameA.Game
         {
             yield return new WaitForSeconds(0.5f);
             yield return GameRun.Instance.Init(_eGameInitType, _project);
-            _gameMode.InitByStep();
+            yield return _gameMode.InitByStep();
+            Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 1f);
             CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(()=>{
                 Messenger.Broadcast(EMessengerType.OnGameStartComplete);
                 _gameMode.OnGameStart();
