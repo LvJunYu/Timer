@@ -22,6 +22,7 @@ namespace GameA
         public Button Modification;
         public Button SelectPhoto;
 
+        public Image PhotoPortrait;
         public Image Photo;
         public Image ExpBar;
         public Image CraftExpBar;

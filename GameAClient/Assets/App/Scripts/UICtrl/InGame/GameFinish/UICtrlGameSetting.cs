@@ -78,7 +78,7 @@ namespace GameA
                 _showShadow.SetData(_setting.ShowPlayModeShadow, OnClickShowRuntimeShadow);
 		        _showRoute.SetData(_setting.ShowEidtModeShadow, OnClickShowEditShadow);
 		    }
-		    _cachedView.NickName.text = LocalUser.Instance.User.UserInfoSimple.NickName;
+		    _cachedView.NickName.text = string.Format("账号：{0}", LocalUser.Instance.User.UserInfoSimple.NickName); 
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHeadAvatar,
             LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,
             _cachedView.DefaultUserHeadTexture);
@@ -301,16 +301,16 @@ namespace GameA
             });
 		}
 
-		private void ReceiveOpenSettingCommand()
-		{
-			if (_isOpen)
-			{
-				LogHelper.Error("ReceiveOpenSettingCommand called but isopen is true");
-				return;
-			}
-			SocialGUIManager.Instance.OpenUI<UICtrlGameSetting>();
-		}
-		#endregion
-	}
+        private void ReceiveOpenSettingCommand()
+        {
+            if (_isOpen&&GM2DGame.Instance!= null)
+            {
+                LogHelper.Error("ReceiveOpenSettingCommand called but isopen is true");
+                return;
+            }
+            SocialGUIManager.Instance.OpenUI<UICtrlGameSetting>();
+        }
+        #endregion
+    }
 }
 

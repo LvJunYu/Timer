@@ -27,6 +27,7 @@ namespace GameA
         private string _maleIcon = "icon_male";
         private string _femaleIcon= "icon_famale";
         private bool _isMale=true;
+        private int _Male;
         private Project _representativeProjectle = null;
         private List<UMCtrlAchievement> _cardList = new List<UMCtrlAchievement>();
 
@@ -50,7 +51,7 @@ namespace GameA
         //public Button Modification;
         //public Button SelectPhoto;
 
-        _cachedView.Exit.onClick.AddListener(OnDestroy);
+        _cachedView.Exit.onClick.AddListener(OnSubmit);
         _cachedView.SelectPhoto.onClick.AddListener(OnPhoto);
         }
 
@@ -61,11 +62,39 @@ namespace GameA
 
         protected override void OnDestroy()
         {
+           
+           
+
+        }
+
+        private void OnSubmit()
+        {
+
+            //Msg_SC_DAT_UserInfoDetail UpdateUserInfo = new Msg_SC_DAT_UserInfoDetail();
+            //Debug.Log("name+++"+ _name);
+            //UpdateUserInfo.UserInfoSimple.NickName = "111";
+            ////UpdateUserInfo.UserInfoSimple.Sex = (ESex)_Male;
+            ////UpdateUserInfo.UserInfoSimple.HeadImgUrl = _name;
+            //RemoteCommands.UpdateUserInfo(UpdateUserInfo,
+            //  (ret) =>
+            //  {
+            //  }, null
+            //  );
             SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
         }
 
         private void UpdateView()
         {
+
+        }
+
+        public void SetHead(string HeadName)
+        {
+            Sprite fashion = null;
+            if (ResourcesManager.Instance.TryGetSprite(HeadName, out fashion))
+            {
+                _cachedView.PhotoPortrait.sprite = fashion;
+            }
 
         }
 
@@ -141,6 +170,12 @@ namespace GameA
         {
             SocialGUIManager.Instance.OpenUI<UICtrlHeadPortraitSelect>();
 
+        }
+
+        private void ModifiUserInformation()
+        {
+
+            
         }
 
         private void OnConfirmDescBtn()
@@ -253,23 +288,23 @@ namespace GameA
 
         public void SetRepresentativeWorks()
         {
-            if (LocalUser.Instance.UserPublishedWorldProjectList.IsInited)
-            {
-                List<Project> list = LocalUser.Instance.UserPublishedWorldProjectList.ProjectList;
-                _representativeProjectle = list[0];
-            }
-            if (null != _representativeProjectle)
-            {
-                ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _representativeProjectle.IconPath, _cachedView.DefaultCoverTexture);
-                DictionaryTools.SetContentText(_cachedView.Title, _representativeProjectle.Name);
-                //DictionaryTools.SetContentText(_cachedView.Desc, _representativeProjectle.Summary);
-            }
-            else
-            {
-                ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
-                DictionaryTools.SetContentText(_cachedView.Title, "关卡标题");
-                //DictionaryTools.SetContentText(_cachedView.Desc, "关卡简介");
-            }
+            //if (LocalUser.Instance.UserPublishedWorldProjectList.IsInited)
+            //{
+            //    List<Project> list = LocalUser.Instance.UserPublishedWorldProjectList.ProjectList;
+            //    _representativeProjectle = list[0];
+            //}
+            //if (null != _representativeProjectle)
+            //{
+            //    ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _representativeProjectle.IconPath, _cachedView.DefaultCoverTexture);
+            //    DictionaryTools.SetContentText(_cachedView.Title, _representativeProjectle.Name);
+            //    //DictionaryTools.SetContentText(_cachedView.Desc, _representativeProjectle.Summary);
+            //}
+            //else
+            //{
+            //    ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
+            //    DictionaryTools.SetContentText(_cachedView.Title, "关卡标题");
+            //    //DictionaryTools.SetContentText(_cachedView.Desc, "关卡简介");
+            //}
 
         }
 

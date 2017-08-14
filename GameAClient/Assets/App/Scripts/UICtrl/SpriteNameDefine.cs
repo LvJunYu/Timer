@@ -41,6 +41,26 @@ namespace GameA
             }
             return null;
         }
+
+        public static string GetHeadImage(int head)
+        {
+            switch (head)
+            {
+                case 1:
+                    return "icon_life_240";
+                case 2:
+                    return "icon_time_240";
+                case 3:
+                    return "icon_master_240";
+                case 4:
+                    return "icon_magnet";
+                case 5:
+                    return "icon_Invincible";
+                case 6:
+                    return "icon_tooth_240";
+            }
+            return null;
+        }
     }
 }
 
