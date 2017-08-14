@@ -462,11 +462,6 @@ namespace GameA.Game
                 return false;
             }
             var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-            if (tableUnit.EPairType > 0)
-            {
-                PairUnitManager.Instance.DeletePairUnit(unitDesc, tableUnit);
-                UpdateSelectItem();
-            }
             EditHelper.AfterDeleteUnit(unitDesc, tableUnit);
             return true;
         }
@@ -499,6 +494,11 @@ namespace GameA.Game
             if (!DataScene2D.Instance.DeleteData(unitDesc, tableUnit))
             {
                 return false;
+            }
+            if (tableUnit.EPairType > 0)
+            {
+                PairUnitManager.Instance.DeletePairUnit(unitDesc, tableUnit);
+                UpdateSelectItem();
             }
             return true;
         }
