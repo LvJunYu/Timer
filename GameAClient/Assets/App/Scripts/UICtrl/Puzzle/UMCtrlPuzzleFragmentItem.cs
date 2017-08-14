@@ -66,9 +66,12 @@ namespace GameA
             //_cachedView.OrderTxt.text = _fragment.PictureInx.ToString();
             _curIndexTxt.text = _fragment.PictureInx.ToString();
             //设置图片
-            _curImageDisable.sprite = _curImage.sprite = SocialGUIManager.Instance.GetUI<UICtrlPuzzleDetail>().GetFragSprite(_pictureFull.PuzzleType, _fragment.PictureInx);
+            _curImage.sprite = SocialGUIManager.Instance.GetUI<UICtrlPuzzleDetail>().GetFragSprite(_pictureFull.PuzzleType, _fragment.PictureInx);
             _curPicImg = _curImage.transform.GetChild(0).GetComponent<Image>();
-            _curPicImg.sprite = _umCtrlPuzzleDetailItem.PicImage.sprite;
+            //底图取Puzzle的Sprite
+            _curImageDisable.sprite = _curPicImg.sprite = _umCtrlPuzzleDetailItem.PicImage.sprite;
+            _curImageDisable.color = _cachedView.disableColor;
+            //根据PuzzleItem上碎片底图的相对位置，计算当前碎片底图的相对位置
             float bigPicWidth = (_umCtrlPuzzleDetailItem.PicImage.transform as RectTransform).rect.width;
             float picWidth = (_curPicImg.transform as RectTransform).rect.width;
             _curPicImg.transform.localPosition = _umCtrlPuzzleDetailItem.ImageDic[_fragment.PictureInx].transform.localPosition * picWidth / bigPicWidth;
@@ -81,10 +84,9 @@ namespace GameA
         {
             if (!_hasInited) return;
             _curNumTxt.text = _fragment.TotalCount.ToString();
-            _curImageDisable.enabled = !(_fragment.TotalCount > 0);
-            _curPicImg.enabled = _fragment.TotalCount > 0;
-            //_cachedView.HaveNumTxt.text = _fragment.TotalCount.ToString();
-            //_cachedView.Image_Disable.enabled = !(_fragment.TotalCount > 0);
+            bool owned = _fragment.TotalCount > 0;
+            _curImageDisable.enabled = !owned;
+            //_curPicImg.enabled = _fragment.TotalCount > 0;
         }
 
     }

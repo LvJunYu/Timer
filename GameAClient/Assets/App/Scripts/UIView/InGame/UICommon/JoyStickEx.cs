@@ -52,13 +52,21 @@ namespace GameA
             {
                 DirectionImg.SetActive(true);
                 Vector2 inputPos;
+
+                
 #if (((UNITY_ANDROID || UNITY_IPHONE || UNITY_WINRT || UNITY_BLACKBERRY) && !UNITY_EDITOR))
-                if (UnityEngine.Input.touchCount > 0)
+                var currentTouches = UnityEngine.Input.touches;
+                bool touchOn = false;
+                for (int i = 0; i < currentTouches.Length; i++)
                 {
-                    var touch = UnityEngine.Input.GetTouch(_hoveringEventData.pointerId);
-                    inputPos = touch.position;
+                    if (currentTouches[i].fingerId == _hoveringEventData.pointerId)
+                    {
+                        inputPos = currentTouches[i].position;
+                        touchOn = true;
+                        break;
+                    }
                 }
-                else
+                if (!touchOn)
                 {
                     DirectionImg.SetActive(false);
                     return;
