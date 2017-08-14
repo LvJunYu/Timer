@@ -27,11 +27,12 @@ namespace GameA.Game
             return true;
 		}
 
-        public override void InitByStep()
+        public override IEnumerator InitByStep()
         {
             GameRun.Instance.ChangeState(ESceneState.Play);
             InitUI();
             InitGame();
+            yield return null;
         }
 
 

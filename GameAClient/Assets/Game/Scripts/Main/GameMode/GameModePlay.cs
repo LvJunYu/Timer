@@ -19,12 +19,13 @@ namespace GameA.Game
             return true;
 		}
 
-        public override void InitByStep()
+        public override IEnumerator InitByStep()
 		{
             GameRun.Instance.ChangeState(ESceneState.Play);
 			InitUI();
 			InitGame();
-        }
+			yield return null;
+		}
 
 
         public virtual bool PlayNext(Action successCb, Action failedCb)
