@@ -17,5 +17,6 @@ namespace GameA
         public List<Image> Image_Disables;
         public List<Text> HaveNumTxts;
         public List<Text> OrderTxts;
+        public Color disableColor;
     }
 }
