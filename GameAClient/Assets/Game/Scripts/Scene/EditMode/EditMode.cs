@@ -185,6 +185,7 @@ namespace GameA.Game
         public void StartEdit()
         {
             _enable = true;
+            _cameraMask.Show();
             InternalStartEdit();
         }
 
@@ -203,6 +204,7 @@ namespace GameA.Game
         public void StopEdit()
         {
             _stateMachine.ChangeState(EditModeState.None.Instance);
+            _cameraMask.Hide();
             _enable = false;
         }
 

@@ -283,7 +283,10 @@ namespace GameA.Game
 			Rect captureRect = new Rect();
 			captureRect.height = imageHeight;
 			captureRect.width = imageWidth;
-			Rect mapRect = GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect);
+			var mapTiledRect = DataScene2D.Instance.ValidMapRect;
+			mapTiledRect.Max += new IntVec2(2, 2) * ConstDefineGM2D.ServerTileScale;
+			mapTiledRect.Min -= new IntVec2(2, 2) * ConstDefineGM2D.ServerTileScale;
+			Rect mapRect = GM2DTools.TileRectToWorldRect(mapTiledRect);
 			float mapAspectRatio = mapRect.width / mapRect.height;
 			float oriCameraOrthoSize = CameraManager.Instance.RendererCamera.orthographicSize;
 			Vector3 oriCameraPos = CameraManager.Instance.MainCameraPos;

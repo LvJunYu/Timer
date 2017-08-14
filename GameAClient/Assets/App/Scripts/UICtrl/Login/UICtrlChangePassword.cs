@@ -9,7 +9,7 @@ using System.Text;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlChangePassword : UICtrlGenericBase<UIViewChangePassword>
     {
 

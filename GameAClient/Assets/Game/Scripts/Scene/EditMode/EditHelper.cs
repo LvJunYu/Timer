@@ -16,10 +16,10 @@ namespace GameA.Game
         /// <summary>
         /// 关卡中只能存在一个的物体的索引
         /// </summary>
-        private static Dictionary<int, UnitDesc> _replaceUnits = new Dictionary<int, UnitDesc>();
-        private static Dictionary<int, int> _unitIndexCount = new Dictionary<int, int>();
-        private static List<UnitDesc> _cacheUnitDescs = new List<UnitDesc>();
-        private static List<byte> _directionList = new List<byte>
+        private static readonly Dictionary<int, UnitDesc> _replaceUnits = new Dictionary<int, UnitDesc>();
+        private static readonly Dictionary<int, int> _unitIndexCount = new Dictionary<int, int>();
+        private static readonly List<UnitDesc> _cacheUnitDescs = new List<UnitDesc>();
+        private static readonly List<byte> _directionList = new List<byte>
         {
             (byte)EDirectionType.Up,
             (byte)EDirectionType.Right,
@@ -27,13 +27,13 @@ namespace GameA.Game
             (byte)EDirectionType.Left
         };
         
-        private static ushort[] _weaponTypes = new ushort[6] {101, 102, 103, 201, 202, 203};
-        private static ushort[] _weaponJetTypes = new ushort[3] {101, 102, 103};
+        private static readonly ushort[] _weaponTypes = {101, 102, 103, 201, 202, 203};
+        private static readonly ushort[] _weaponJetTypes = {101, 102, 103};
         
         /// <summary>
         /// 每个物体的初始旋转/移动方向，编辑状态下点击物品栏里的物体可以改变初始旋转/移动方向
         /// </summary>
-        private static Dictionary<int, int> _unitOrigDirOrRot = new Dictionary<int, int>();
+        private static readonly Dictionary<int, int> _unitOrigDirOrRot = new Dictionary<int, int>();
 
         public static Dictionary<int, int> UnitIndexCount
         {
@@ -43,6 +43,12 @@ namespace GameA.Game
         
         public static bool TryGetUnitDesc(Vector2 mouseWorldPos, out UnitDesc unitDesc)
         {
+            unitDesc = new UnitDesc();
+            IntVec2 mouseTile = GM2DTools.WorldToTile(mouseWorldPos);
+            if (!DataScene2D.Instance.IsInTileMap(mouseTile))
+            {
+                return false;
+            }
             if (!GM2DTools.TryGetUnitObject(mouseWorldPos, EEditorLayer.None, out unitDesc))
             {
                 return false;
@@ -265,7 +271,6 @@ namespace GameA.Game
                 LogHelper.Error("CheckCanAdd failed,{0}", unitDesc.ToString());
                 return false;
             }
-                
             //不可超出地图范围
             {
                 var dataGrid = tableUnit.GetDataGrid(unitDesc.Guid.x, unitDesc.Guid.y, unitDesc.Rotation, unitDesc.Scale);

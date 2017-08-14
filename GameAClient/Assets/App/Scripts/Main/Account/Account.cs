@@ -96,7 +96,6 @@ namespace SoyEngine
             Action<Msg_SC_CMD_ChangePassword> successCallback, Action<EChangePasswordCode> failedCallback
             )
         {
-            string Res = AppData.Instance.AppResVersion.ToString();
             RemoteCommands.ChangePassword(oldPassword, newPassword,verificationCode, ret =>
                 {
                     if (ret.ResultCode == (int)EChangePasswordCode.CPC_Success)
@@ -113,6 +112,7 @@ namespace SoyEngine
                         failedCallback.Invoke((EChangePasswordCode)ret.ResultCode);
                     }
                 }, (errorCode) => {
+                    SoyHttpClient.ShowErrorTip(errorCode);
                     if (null != failedCallback)
                     {
                         failedCallback.Invoke(EChangePasswordCode.CPC_None);
@@ -147,6 +147,7 @@ namespace SoyEngine
                         failedCallback.Invoke((EForgetPasswordCode)ret.ResultCode);
                     }
                 }, (errorCode) => {
+                    SoyHttpClient.ShowErrorTip(errorCode);
                     if (null != failedCallback)
                     {
                         failedCallback.Invoke(EForgetPasswordCode.FPC_None);
@@ -174,20 +175,12 @@ namespace SoyEngine
                             successCallback.Invoke(ret);
                         }
                     }
-                    //else if (ret.ResultCode == (int)ERegisterCode.)
-                    //{
-                    //    _userGuid = ret.UserId;
-                    //    OnTokenChange(ret.Token.ToString());
-                    //    if (null != successCallback)
-                    //    {
-                    //        successCallback.Invoke();
-                    //    }
-                    //}
                     else
                     {
                         failedCallback.Invoke((ERegisterCode)ret.ResultCode);
                     }
                 }, (errorCode) => {
+                    SoyHttpClient.ShowErrorTip(errorCode);
                     if (null != failedCallback)
                     {
                         failedCallback.Invoke(ERegisterCode.RegisterC_None);
@@ -198,7 +191,6 @@ namespace SoyEngine
 
         public void LoginByToken(Action successCallback, Action<ELoginByTokenCode> failedCallback)
         {
-          
             string Res = AppData.Instance.AppResVersion.ToString();
             RemoteCommands.LoginByToken(GlobalVar.Instance.AppVersion, Res, _devicePlatform, ret =>
             {
@@ -224,6 +216,7 @@ namespace SoyEngine
                     failedCallback.Invoke((ELoginByTokenCode)ret.ResultCode);
                 }
             }, (errorCode) => {
+                SoyHttpClient.ShowErrorTip(errorCode);
                 if (null != failedCallback)
                 {
                     failedCallback.Invoke(ELoginByTokenCode.LBTC_None);
@@ -254,14 +247,12 @@ namespace SoyEngine
                     failedCallback.Invoke((ELoginByTokenCode)ret.ResultCode);
                 }
             }, (errorCode) => {
+                SoyHttpClient.ShowErrorTip(errorCode);
                 if (null != failedCallback)
                 {
                     failedCallback.Invoke(ELoginByTokenCode.LBTC_None);
                 }
             });
-            //(ret) => { SocialApp.Instance.LoginSucceed(); },
-            // (ret) => { }
-            //);
         }
 
 
@@ -271,11 +262,10 @@ namespace SoyEngine
             EAccountIdentifyType accountType,
             Msg_SNSUserInfo snsUserInfo,
             Action<Msg_SC_CMD_Login> successCallback, Action<ELoginCode> failedCallback,
-            UnityEngine.WWWForm form = null)
+            WWWForm form = null)
         {
             MessengerAsync.Broadcast(EMessengerType.OnAccountLogin);
             MessengerAsync.Broadcast(EMessengerType.OnAccountLoginStateChanged);
-            //Msg_SNSUserInfo msg_SNSUserInfo = new Msg_SNSUserInfo();
 
             string Res = AppData.Instance.AppResVersion.ToString();
             RemoteCommands.Login(account, password, accountType, snsUserInfo, GlobalVar.Instance.AppVersion,
@@ -295,6 +285,7 @@ namespace SoyEngine
                         failedCallback.Invoke((ELoginCode)ret.ResultCode);
                     }
                 }, (errorCode) => {
+                    SoyHttpClient.ShowErrorTip(errorCode);
                     if (null != failedCallback)
                     {
                         failedCallback.Invoke(ELoginCode.LoginC_None);
