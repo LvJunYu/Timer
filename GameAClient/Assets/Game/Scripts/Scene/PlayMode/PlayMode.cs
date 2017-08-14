@@ -132,6 +132,10 @@ namespace GameA.Game
                 UnitDesc unitDesc = _deletedDatas[i];
                 Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
                 ColliderScene2D.Instance.AddUnit(unitDesc, tableUnit);
+                if (!MapConfig.UseAOI)
+                {
+                    ColliderScene2D.Instance.InstantiateView(unitDesc, tableUnit);
+                }
             }
             _deletedDatas.Clear();
             ColliderScene2D.Instance.Reset();

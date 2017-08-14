@@ -56,8 +56,6 @@ namespace GameA.Game
             _mapProcess = 0f;
             var timer = new GameTimer();
             var rectData = mapData.Data;
-            var validMapRect = GM2DTools.ToEngine(mapData.ValidMapRect);
-            var validMapGrid = new Grid2D(validMapRect.Min, validMapRect.Max);
 
             var childList = mapData.UnitExtraInfos;
             if (childList != null)
@@ -80,10 +78,12 @@ namespace GameA.Game
             }
 
             var switchUnitDatas = mapData.SwitchUnitDatas;
-            for (int i = 0; i < switchUnitDatas.Count; i++) {
-                for (int j = 0; j < switchUnitDatas [i].ControlledGUIDs.Count; j++) {
+            for (int i = 0; i < switchUnitDatas.Count; i++)
+            {
+                for (int j = 0; j < switchUnitDatas[i].ControlledGUIDs.Count; j++)
+                {
                     DataScene2D.Instance.BindSwitch(GM2DTools.ToEngine(switchUnitDatas[i].SwitchGUID),
-                        GM2DTools.ToEngine(switchUnitDatas [i].ControlledGUIDs[j]));
+                        GM2DTools.ToEngine(switchUnitDatas[i].ControlledGUIDs[j]));
                 }
             }
 
@@ -184,6 +184,13 @@ namespace GameA.Game
             {
                 return false;
             }
+		    if (!MapConfig.UseAOI)
+		    {
+		        if (!ColliderScene2D.Instance.InstantiateView(unitDesc, tableUnit))
+		        {
+		            return false;
+		        }
+		    }
             MapManager.Instance.OnReadMapFile(unitDesc, tableUnit);
 			return true;
 		}

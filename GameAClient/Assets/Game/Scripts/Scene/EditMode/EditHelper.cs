@@ -18,7 +18,6 @@ namespace GameA.Game
         /// </summary>
         private static Dictionary<int, UnitDesc> _replaceUnits = new Dictionary<int, UnitDesc>();
         private static Dictionary<int, int> _unitIndexCount = new Dictionary<int, int>();
-        private static List<UnitDesc> _cacheUnitDescs = new List<UnitDesc>();
         private static List<byte> _directionList = new List<byte>
         {
             (byte)EDirectionType.Up,
@@ -260,7 +259,6 @@ namespace GameA.Game
         {
             _replaceUnits.Clear();
             _unitIndexCount.Clear();
-            _cacheUnitDescs.Clear();
         }
 
         public static bool CheckCanAdd(UnitDesc unitDesc, out Table_Unit tableUnit)
@@ -270,16 +268,6 @@ namespace GameA.Game
             {
                 LogHelper.Error("CheckCanAdd failed,{0}", unitDesc.ToString());
                 return false;
-            }
-            //不可超出地图范围
-            {
-                var dataGrid = tableUnit.GetDataGrid(unitDesc.Guid.x, unitDesc.Guid.y, unitDesc.Rotation, unitDesc.Scale);
-                var validMapRect = DataScene2D.Instance.ValidMapRect;
-                var mapGrid = new Grid2D(validMapRect.Min.x, validMapRect.Min.y, validMapRect.Max.x, validMapRect.Max.y);
-                if (!dataGrid.Intersects(mapGrid))
-                {
-                    return false;
-                }
             }
             //怪物同屏数量不可过多
             {
@@ -340,15 +328,13 @@ namespace GameA.Game
             return true;
         }
 
-        public static List<UnitDesc> BeforeAddUnit(UnitDesc unitDesc, Table_Unit tableUnit)
+        public static void BeforeAddUnit(Table_Unit tableUnit)
         {
-            _cacheUnitDescs.Clear();
-            _cacheUnitDescs.Add(unitDesc);
             //只有一个的自动删除
             if (tableUnit.Count == 1)
             {
                 UnitDesc desc;
-                if (_replaceUnits.TryGetValue(unitDesc.Id, out desc))
+                if (_replaceUnits.TryGetValue(tableUnit.Id, out desc))
                 {
                     if (desc.Id != 0)
                     {
@@ -356,20 +342,6 @@ namespace GameA.Game
                     }
                 }
             }
-            //地块上的树草自动生成
-            if (UnitDefine.IsEarth(tableUnit.Id))
-            {
-                int random = Random.Range(0, 6);
-                if (random == 0)
-                {
-                    IntVec3 up = unitDesc.GetUpPos((int) EUnitDepth.Earth);
-                    if (IsEmpty(up))
-                    {
-                        _cacheUnitDescs.Add(new UnitDesc(UnitDefine.GetRandomPlantId(Random.Range(0, 3)), up, 0, Vector2.one));
-                    }
-                }
-            }
-            return _cacheUnitDescs;
         }
 
         public static void AfterAddUnit(UnitDesc unitDesc, Table_Unit tableUnit, bool isInit = false)
@@ -388,23 +360,6 @@ namespace GameA.Game
                 Messenger<int>.Broadcast(EMessengerType.OnUnitAddedInEditMode, unitDesc.Id);
             }
             EditMode.Instance.MapStatistics.AddOrDeleteUnit(tableUnit, true, isInit);
-        }
-
-        public static List<UnitDesc> BeforeDeleteUnit(UnitDesc unitDesc)
-        {
-            _cacheUnitDescs.Clear();
-            _cacheUnitDescs.Add(unitDesc);
-            //地块上的植被自动删除
-            if (UnitDefine.IsEarth(unitDesc.Id))
-            {
-                var up = unitDesc.GetUpPos((int) EUnitDepth.Earth);
-                UnitBase unit;
-                if (TryGetUnit(up, out unit) && UnitDefine.IsPlant(unit.Id))
-                {
-                    _cacheUnitDescs.Add(new UnitDesc(unit.Id, up, 0, Vector3.one));
-                }
-            }
-            return _cacheUnitDescs;
         }
 
         public static void AfterDeleteUnit(UnitDesc unitDesc, Table_Unit tableUnit)
