@@ -68,8 +68,11 @@ namespace GameA.Game
         public void Init(IntVec2 regionTilesCount, int width, int height)
         {
             Init(width, height);
-            InitRegions(regionTilesCount);
-            _interestArea = new InterestArea(RegionTileSize * 1.5f, RegionTileSize * 2.5f, this);
+            if (MapConfig.UseAOI)
+            {
+                InitRegions(regionTilesCount);
+                _interestArea = new InterestArea(RegionTileSize * 1.5f, RegionTileSize * 2.5f, this);
+            }
             _pathGrid = new byte[Mathf.NextPowerOfTwo(width / JoyConfig.ServerTileScale), Mathf.NextPowerOfTwo(height / JoyConfig.ServerTileScale)];
             for (int i = 0; i < _pathGrid.GetLength(0); i++)
             {

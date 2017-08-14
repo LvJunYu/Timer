@@ -42,7 +42,7 @@ namespace GameA.Game
         public const int MaxMapDistance = 300 * ServerTileScale;
 
 		public static IntVec2 MapStartPos = new IntVec2(100,100) * ServerTileScale;
-        public const int DefaultGeneratedTileHeight = 3 * ServerTileScale;
+        public const int DefaultGeneratedTileHeight = 2 * ServerTileScale;
         public const int DefaultGeneratedTileWidth = 30 * ServerTileScale;
         public const int MaxHeightTileCount = 9;
 

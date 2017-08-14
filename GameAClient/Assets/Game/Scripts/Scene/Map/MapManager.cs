@@ -73,15 +73,8 @@ namespace GameA.Game
             }
 
             DataScene2D.Instance.Init(ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
-            if (MapConfig.UseAOI)
-            {
-                ColliderScene2D.Instance.Init(ConstDefineGM2D.RegionTileSize, ConstDefineGM2D.MapTileSize.x,
-                    ConstDefineGM2D.MapTileSize.y);
-            }
-            else
-            {
-                ColliderScene2D.Instance.Init(ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
-            }
+            ColliderScene2D.Instance.Init(ConstDefineGM2D.RegionTileSize, ConstDefineGM2D.MapTileSize.x, ConstDefineGM2D.MapTileSize.y);
+
             _mapFile = new GameObject("MapFile").AddComponent<MapFile>();
             switch (eGameInitType)
             {
@@ -266,14 +259,40 @@ namespace GameA.Game
             }
             //生成地形
             var validMapRect = DataScene2D.Instance.ValidMapRect;
-            for (int i = validMapRect.Min.x; i < validMapRect.Max.x; i += ConstDefineGM2D.ServerTileScale)
+//            for (int i = validMapRect.Min.x; i < validMapRect.Max.x; i += ConstDefineGM2D.ServerTileScale)
+//            {
+//                for (int j = validMapRect.Min.y + 2 * ConstDefineGM2D.ServerTileScale;
+//                    j < ConstDefineGM2D.DefaultGeneratedTileHeight + validMapRect.Min.y;
+//                    j += ConstDefineGM2D.ServerTileScale)
+//                {
+//                    EditMode.Instance.AddUnit(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0,
+//                        Vector2.one));
+//                }
+//            }
+            for (int i = validMapRect.Min.x - 2 * ConstDefineGM2D.ServerTileScale; i < validMapRect.Max.x +2 * ConstDefineGM2D.ServerTileScale; i += ConstDefineGM2D.ServerTileScale)
             {
-                for (int j = validMapRect.Min.y + 2 * ConstDefineGM2D.ServerTileScale;
-                    j < ConstDefineGM2D.DefaultGeneratedTileHeight + validMapRect.Min.y;
-                    j += ConstDefineGM2D.ServerTileScale)
+                //down
+                for (int j = validMapRect.Min.y - 2 * ConstDefineGM2D.ServerTileScale; j < validMapRect.Min.y; j += ConstDefineGM2D.ServerTileScale)
                 {
-                    EditMode.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0,
-                        Vector2.one));
+                    EditMode.Instance.AddUnit(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one));
+                }
+                //up
+                for (int j = validMapRect.Max.y; j < validMapRect.Max.y + 2 * ConstDefineGM2D.ServerTileScale; j += ConstDefineGM2D.ServerTileScale)
+                {
+                    EditMode.Instance.AddUnit(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one));
+                }
+            }
+            for (int i = validMapRect.Min.y; i < validMapRect.Max.y; i += ConstDefineGM2D.ServerTileScale)
+            {
+                //left
+                for (int j = validMapRect.Min.x - 2 * ConstDefineGM2D.ServerTileScale; j < validMapRect.Min.x; j += ConstDefineGM2D.ServerTileScale)
+                {
+                    EditMode.Instance.AddUnit(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(j, i, 0), 0, Vector2.one));
+                }
+                //right
+                for (int j = validMapRect.Max.x; j < validMapRect.Max.x + 2 * ConstDefineGM2D.ServerTileScale; j += ConstDefineGM2D.ServerTileScale)
+                {
+                    EditMode.Instance.AddUnit(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(j, i, 0), 0, Vector2.one));
                 }
             }
         }

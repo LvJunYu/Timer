@@ -265,7 +265,6 @@ namespace GameA.Game
                 LogHelper.Error("CheckCanAdd failed,{0}", unitDesc.ToString());
                 return false;
             }
-                
             //不可超出地图范围
             {
                 var dataGrid = tableUnit.GetDataGrid(unitDesc.Guid.x, unitDesc.Guid.y, unitDesc.Rotation, unitDesc.Scale);

@@ -12,7 +12,7 @@ namespace GameA
     public class UICtrlSetProjectSize : UICtrlGenericBase<UIViewSetProjectSize>
     {
         #region Fields
-        private static IntVec2 DefaultSelectedIdx = new IntVec2(2, 1);
+        private static IntVec2 DefaultSelectedIdx = new IntVec2(1, 1);
         private static int[] HorizontalSizes = {20,30,40,50,60};
         private static int[] VerticalSizes = {10,20,30};
         private IntVec2 _selectedIdx;
