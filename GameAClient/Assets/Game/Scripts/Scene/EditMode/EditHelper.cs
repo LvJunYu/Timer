@@ -43,6 +43,12 @@ namespace GameA.Game
         
         public static bool TryGetUnitDesc(Vector2 mouseWorldPos, out UnitDesc unitDesc)
         {
+            unitDesc = new UnitDesc();
+            IntVec2 mouseTile = GM2DTools.WorldToTile(mouseWorldPos);
+            if (!DataScene2D.Instance.IsInTileMap(mouseTile))
+            {
+                return false;
+            }
             if (!GM2DTools.TryGetUnitObject(mouseWorldPos, EEditorLayer.None, out unitDesc))
             {
                 return false;
