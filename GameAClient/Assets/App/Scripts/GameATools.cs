@@ -25,7 +25,8 @@ namespace GameA {
             } else {
                 if (showBuy) {
                     // todo buy gold ui
-                    SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
+//                    SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
+                    SocialGUIManager.ShowPopupDialog("金币花完啦，快去挣钱吧~");
                 }
                 return false;
             }
@@ -41,7 +42,8 @@ namespace GameA {
             } else {
                 if (showBuy) {
                     // todo buy gold ui
-                    SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
+//                    SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
+                    SocialGUIManager.ShowPopupDialog("钻石花完啦，快去氪金吧~");
                 }
                 return false;
             }
