@@ -5,8 +5,6 @@
   ** Summary : UMCtrlWorldRecordRank.cs
   ***********************************************************************/
 
-using System;
-using System.Collections;
 using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
