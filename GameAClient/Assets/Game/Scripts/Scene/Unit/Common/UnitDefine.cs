@@ -45,6 +45,7 @@ namespace GameA.Game
         public const int LaserId = 5010;
         public const int SwitchTriggerId = 8101;
         public const int BillboardId = 7001;
+        public const int MagicSwitchId = 8102;
         public const int BulletIceId = 10003;
 
         public static bool IsSpawn(int id)
@@ -80,6 +81,11 @@ namespace GameA.Game
         public static bool IsSwitch(int id)
         {
             return id >= 8101 && id <= 8200;
+        }
+        
+        public static bool IsMagicSwitch(int id)
+        {
+            return id == MagicSwitchId;
         }
 
         public static bool IsFakePart(int one, int other)
@@ -151,7 +157,7 @@ namespace GameA.Game
         {
             ushort id = node.Id;
             return id != TransparentEarthId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
-                   !IsBoard(id) && !IsCollection(id) && (((1 << node.Layer) & EnvManager.LazerBlockLayer) != 0);
+                   !IsBoard(id) && !IsCollection(id) && !IsMagicSwitch(id)&& (((1 << node.Layer) & EnvManager.LazerBlockLayer) != 0);
         }
         
         public static bool IsLaserDamage(int layer)
@@ -162,8 +168,8 @@ namespace GameA.Game
         public static bool IsFanBlock(SceneNode node)
         {
             ushort id = node.Id;
-            return id != TransparentEarthId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
-                   !IsBoard(id) && !IsCollection(id) && !UnitDefine.IsBullet(id);
+            return  id != LaserId && id != TransparentEarthId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
+                   !IsBoard(id) && !IsCollection(id) && !IsMagicSwitch(id)&& !IsBullet(id);
         }
         
         public static bool IsFanEffect(int layer, int id)
@@ -175,7 +181,7 @@ namespace GameA.Game
         internal static bool IsGround(int id)
         {
             return id != SwitchTriggerId && id != LaserId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
-                   !IsBoard(id) && !IsCollection(id) && !IsMain(id) && !IsBullet(id);
+                   !IsBoard(id) && !IsCollection(id) && !IsMagicSwitch(id)&& !IsMain(id) && !IsBullet(id);
         }
 
         public static bool IsDownY(Table_Unit tableUnit)

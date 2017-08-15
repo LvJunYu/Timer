@@ -388,11 +388,14 @@ namespace GameA.Game
         {
             _revivePos = pos;
         }
-
+        
         public void Step(int stepY = 0)
         {
             _stepY = stepY;
-            OnLand();
+            _grounded = true;
+            _jumpLevel = 0;
+            _jumpTimer = 10;
+            _jumpState = EJumpState.Jump1;
         }
 
         #endregion

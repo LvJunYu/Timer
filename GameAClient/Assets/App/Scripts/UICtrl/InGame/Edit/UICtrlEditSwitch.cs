@@ -25,6 +25,8 @@ namespace GameA
 
         private List<IntVec3> _allUnitGuids;
         private readonly List<int> _allUnitConnectionCnts = new List<int>();
+
+        private List<Vector3> _lineCenters;
         #endregion
 
         #region 属性
@@ -92,7 +94,9 @@ namespace GameA
                 int i = 0;
                 for (; i < _allUnitGuids.Count; i++) {
                     Text txt = GetCntText (i);
-                    txt.transform.parent.localPosition = GM2DTools.WorldToScreenPoint ((Vector2)GM2DTools.TileToWorld(_allUnitGuids[i]) + TextOffset);
+                    var screenPos = GM2DTools.WorldToScreenPoint ((Vector2)GM2DTools.TileToWorld(_allUnitGuids[i]) + TextOffset);
+                    Vector2 uiPos = SocialGUIManager.ScreenToRectLocal(screenPos, _cachedView.Trans);
+                    ((RectTransform) txt.transform.parent).anchoredPosition = uiPos;
                     txt.transform.parent.gameObject.SetActive (true);
                     if (_allUnitConnectionCnts.Count > i) {
                         txt.text = _allUnitConnectionCnts [i].ToString ();
@@ -102,9 +106,12 @@ namespace GameA
                     _connectionCntCache[i].transform.parent.gameObject.SetActive (false);
                 }
             }
+            OnSelectedItemChanged(_lineCenters);
         }
 
-        private void OnSelectedItemChanged (List<Vector3> lineCenters) {
+        private void OnSelectedItemChanged (List<Vector3> lineCenters)
+        {
+            _lineCenters = lineCenters;
             if (!_isViewCreated)
             {
                 return;
@@ -118,7 +125,8 @@ namespace GameA
             int i = 0;
             for (; i < lineCenters.Count; i++) {
                 Button btn = GetDelBtn (i);
-                btn.transform.localPosition = GM2DTools.WorldToScreenPoint (lineCenters[i]);
+                btn.transform.localPosition =
+                    SocialGUIManager.ScreenToRectLocal(GM2DTools.WorldToScreenPoint(lineCenters[i]), _cachedView.Trans);
                 btn.gameObject.SetActive (true);
             }
             for (; i < _delBtnCache.Count; i++) {

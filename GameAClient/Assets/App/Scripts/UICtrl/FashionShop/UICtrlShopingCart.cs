@@ -230,7 +230,7 @@ namespace GameA
             }
             else if (buyType == ECurrencyType.CT_Diamond)
             {
-                if (GameATools.CheckGold(CalculateDiamondCount()))
+                if (GameATools.CheckDiamond(CalculateDiamondCount()))
                 {
                     return ret = true;
                 }
@@ -294,8 +294,9 @@ namespace GameA
                 }
                 else
                 {
-                    SocialGUIManager.ShowPopupDialog("货币不足", null,
-                        new KeyValuePair<string, Action>("确定", () => { }));
+                    // commonTools在检查货币的接口里已经封装好了货币不足的逻辑，这里不要手动加处理逻辑
+//                    SocialGUIManager.ShowPopupDialog("货币不足", null,
+//                        new KeyValuePair<string, Action>("确定", () => { }));
                 }
                 SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().ShowAllUsingAvatar();
             }

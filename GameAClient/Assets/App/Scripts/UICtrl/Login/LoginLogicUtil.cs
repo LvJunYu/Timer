@@ -57,7 +57,7 @@ namespace GameA
             {
                 CommonTools.ShowPopupDialog("登录信息已经过期，请重新登录");
                 LocalUser.Instance.Account.Logout();
-                SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
+//                SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
             }
         }
 
