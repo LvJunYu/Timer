@@ -173,6 +173,7 @@ namespace GameA
         {
             if (GM2DGame.Instance.GameMode.GameSituation == EGameSituation.Adventure)
             {
+                _cachedView.Home.SetActiveEx(true);
                 _cachedView.LevelInfoDock.SetActive(true);
                 _cachedView.SpaceDock.SetActive(true);
                 SituationAdventureParam param = null;
@@ -218,6 +219,8 @@ namespace GameA
                         _cachedView.BonusLevelDock.SetActive(true);
                         _cachedView.BonusLevelText.text = param.Level.ToString();
                         _cachedView.StarConditions.SetActive (false);
+                        
+
                     }
                 }
             }
@@ -226,6 +229,7 @@ namespace GameA
                 _cachedView.SpaceDock.SetActive(true);
                 _cachedView.LevelInfoDock.SetActive(false);
                 _cachedView.StarConditions.SetActive (false);
+                _cachedView.Home.SetActiveEx(false);
             }
 
 		    UpdateLifeItemValue();
