@@ -157,7 +157,7 @@ namespace GameA
 				_cachedView.Play.gameObject.SetActive (false);
 				_cachedView.Pause.gameObject.SetActive (true);
 				_cachedView.Save.gameObject.SetActive (false);
-				_cachedView.Home.gameObject.SetActive (false);
+				_cachedView.Home.gameObject.SetActive (true);
 				break;
 			case EMode.PlayRecord:
 				_cachedView.Erase.gameObject.SetActive (false);
