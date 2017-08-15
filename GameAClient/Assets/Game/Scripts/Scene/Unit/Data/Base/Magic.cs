@@ -116,7 +116,7 @@ namespace GameA.Game
                                     continue;
                                 }
                             }
-                            if (unit.Id == UnitDefine.SwitchTriggerId)
+                            if (UnitDefine.IsSwitchTrigger(unit.Id))
                             {
                                 unit.OnIntersect(this);
                             }

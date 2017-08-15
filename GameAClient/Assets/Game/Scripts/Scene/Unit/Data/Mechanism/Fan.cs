@@ -5,7 +5,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     [Unit(Id = 5018, Type = typeof(Fan))]
-    public class Fan : SwitchPress
+    public class Fan : SwitchUnit
     {
         protected Grid2D _checkGrid;
         protected IntVec2 _pointA;
@@ -13,11 +13,11 @@ namespace GameA.Game
         protected List<UnitBase> _fanEffectUnits = new List<UnitBase>();
         protected UnityNativeParticleItem _effect;
         
-        public override bool CanControlledBySwitch
+        public override int SwitchTriggerId
         {
-            get { return true; }
+            get { return UnitDefine.SwitchTriggerId; }
         }
-
+        
         protected override bool OnInit()
         {
             _triggerReverse = true;
@@ -56,24 +56,30 @@ namespace GameA.Game
         {
             base.Clear();
             _fanEffectUnits.Clear();
-        }
-
-        internal override void OnCtrlBySwitch()
-        {
-            base.OnCtrlBySwitch();
-            if (_effect != null)
+            if (_switchTrigger != null)
             {
-                if (_ctrlBySwitch)
-                {
-                    _effect.Stop();
-                }
-                else
-                {
-                    _effect.Play();
-                }
+                _switchTrigger.Trigger = true;
             }
         }
 
+        public override void OnTriggerStart(UnitBase other)
+        {
+            base.OnTriggerStart(other);
+            if (_effect != null)
+            {
+                _effect.Play();
+            }
+        }
+
+        public override void OnTriggerEnd()
+        {
+            base.OnTriggerEnd();
+            if (_effect != null)
+            {
+                _effect.Stop();
+            }
+        }
+        
         private void Calculate()
         {
             GM2DTools.GetBorderPoint(_colliderGrid, (EDirectionType)Rotation, ref _pointA, ref _pointB);
@@ -94,7 +100,7 @@ namespace GameA.Game
             }
             base.UpdateLogic();
             //停止
-            if (_ctrlBySwitch)
+            if (_switchTrigger==null || !_switchTrigger.Trigger)
             {
                 return;
             }

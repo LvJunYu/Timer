@@ -7,6 +7,11 @@ namespace GameA.Game
     {
         protected bool _triggerReverse;
         protected SwitchTrigger _switchTrigger;
+        
+        public virtual int SwitchTriggerId
+        {
+            get { return UnitDefine.SwitchTriggerPressId; }
+        }
 
         internal override void OnObjectDestroy()
         {
@@ -22,18 +27,20 @@ namespace GameA.Game
         {
             base.Clear();
             CreateSwitchTrigger();
+            if (_switchTrigger != null)
+            {
+                _switchTrigger.Trigger = false;
+            }
         }
 
         public virtual void OnTriggerStart(UnitBase other)
         {
-            //LogHelper.Debug("OnTriggerStart {0}", ToString() + "~" + _trans.GetInstanceID());
-            OnCtrlBySwitch();
+            LogHelper.Debug("OnTriggerStart {0}", ToString());
         }
 
         public virtual void OnTriggerEnd()
         {
-            //LogHelper.Debug("OnTriggerEnd {0}", ToString());
-            OnCtrlBySwitch();
+            LogHelper.Debug("OnTriggerEnd {0}", ToString());
         }
 
         protected bool CreateSwitchTrigger()
@@ -42,9 +49,14 @@ namespace GameA.Game
             {
                 return false;
             }
+            Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(SwitchTriggerId);
+            if (tableUnit == null)
+            {
+                LogHelper.Error("GetTableUnit Failed, {0}", SwitchTriggerId);
+                return false;
+            }
             IntVec3 guid = _guid;
             guid.z = GM2DTools.GetRuntimeCreatedUnitDepth();
-            Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(UnitDefine.SwitchTriggerId);
             IntVec2 dataSize = tableUnit.GetDataSize(0, Vector2.one);
             var triggerDir = EDirectionType.Up;
             switch ((EDirectionType)_unitDesc.Rotation)
@@ -66,7 +78,7 @@ namespace GameA.Game
                     guid.x = _triggerReverse ? guid.x - dataSize.x : _colliderGrid.XMax + 1;
                     break;
             }
-            _switchTrigger = PlayMode.Instance.CreateUnit(new UnitDesc(UnitDefine.SwitchTriggerId, guid, (byte)triggerDir, Vector2.one)) as SwitchTrigger;
+            _switchTrigger = PlayMode.Instance.CreateUnit(new UnitDesc(SwitchTriggerId, guid, (byte)triggerDir, Vector2.one)) as SwitchTrigger;
             if (_switchTrigger == null)
             {
                 LogHelper.Error("CreateUnit switchTrigger Faield,{0}", ToString());

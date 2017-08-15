@@ -57,7 +57,7 @@ namespace GameA.Game
             {
                 return;
             }
-            if (!_ctrlBySwitch)
+            if (_switchTrigger==null || !_switchTrigger.Trigger)
             {
                 if (_curCreatingQueue != null)
                 {
@@ -96,7 +96,7 @@ namespace GameA.Game
 
                         for (int i = 0; i < units.Count; i++)
                         {
-                            if (units[i].Id == UnitDefine.SwitchTriggerId)
+                            if (UnitDefine.IsSwitchTrigger(units[i].Id))
                             {
                                 units[i].OnIntersect(unit);
                             }
