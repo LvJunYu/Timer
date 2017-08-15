@@ -4,9 +4,9 @@
 //  ** Date : 2016/4/13 13:46
 //  ** Summary : SpriteNameDefine.cs
 //  ***********************************************************************/
-using System;
+
 using SoyEngine.Proto;
-using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
@@ -15,52 +15,35 @@ namespace GameA
         public const string DefaultImageName = "CommonWhite";
         public const string MaleIcon = "Male_0";
         public const string FemaleIcon = "Female_0";
+
         public static string GetSexIcon(ESex sex)
         {
-            if(sex == ESex.S_Female)
+            if (sex == ESex.S_Female)
             {
                 return FemaleIcon;
             }
-            else if( sex == ESex.S_Male)
+            if (sex == ESex.S_Male)
             {
                 return MaleIcon;
             }
             return null;
         }
 
+        private static readonly string[] RankSpriteName = {"icon_crown_1", "icon_crown_2", "icon_crown_3"};
         public static string GetRank(int rank)
         {
-            switch (rank)
+            if (rank >= 0 && rank < RankSpriteName.Length)
             {
-                case 1:
-                    return "icon_crown_1";
-                case 2:
-                    return "icon_crown_2";
-                case 3:
-                    return "icon_crown_3";
+                return RankSpriteName[rank];
             }
             return null;
         }
 
+        private static readonly string[] HeadImageSpriteName =
+            {"icon_life_240", "icon_time_240", "icon_master_240", "icon_magnet", "icon_Invincible", "icon_tooth_240"};
         public static string GetHeadImage(int head)
         {
-            switch (head)
-            {
-                case 1:
-                    return "icon_life_240";
-                case 2:
-                    return "icon_time_240";
-                case 3:
-                    return "icon_master_240";
-                case 4:
-                    return "icon_magnet";
-                case 5:
-                    return "icon_Invincible";
-                case 6:
-                    return "icon_tooth_240";
-            }
-            return null;
+            return HeadImageSpriteName[Mathf.Clamp(head, 0, HeadImageSpriteName.Length - 1)];
         }
     }
 }
-
