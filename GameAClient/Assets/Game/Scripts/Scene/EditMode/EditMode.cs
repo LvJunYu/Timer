@@ -461,6 +461,16 @@ namespace GameA.Game
             {
                 return false;
             }
+            //地块上的植被自动删除
+            if (UnitDefine.IsEarth(unitDesc.Id))
+            {
+                var up = unitDesc.GetUpPos((int) EUnitDepth.Earth);
+                UnitBase unit;
+                if (EditHelper.TryGetUnit(up, out unit) && UnitDefine.IsPlant(unit.Id))
+                {
+                    DeleteUnit(new UnitDesc(unit.Id, up, 0, Vector3.one));
+                }
+            }
             var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
             EditHelper.AfterDeleteUnit(unitDesc, tableUnit);
             return true;
