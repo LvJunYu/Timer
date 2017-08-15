@@ -636,7 +636,7 @@ namespace GameA.Game
             if (tableUnit == null)
             {
                 LogHelper.Error("GetTableUnit failed.{0}", node.Id);
-                return null;
+                return _cachedUnits;
             }
             if (node.IsDynamic())
             {
@@ -645,7 +645,7 @@ namespace GameA.Game
                 if (!_instance.TryGetUnit(guid, out unit))
                 {
                     //LogHelper.Warning("TryGetUnits failed,{0}", node);
-                    return null;
+                    return _cachedUnits;
                 }
                 _cachedUnits.Add(unit);
             }
