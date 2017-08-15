@@ -44,6 +44,7 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.SubTitleText, "-");
             DictionaryTools.SetContentText(_cachedView.UserNickNameText, "-");
             DictionaryTools.SetContentText(_cachedView.UserLevelText, "");
+            DictionaryTools.SetContentText(_cachedView.CreateTimeText, "");
             DictionaryTools.SetContentText(_cachedView.PlayCountText, "-");
             DictionaryTools.SetContentText(_cachedView.LikeCountText, "-");
             DictionaryTools.SetContentText(_cachedView.CompleteRateText, "-");
@@ -62,6 +63,7 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.SubTitleText, "");
             DictionaryTools.SetContentText(_cachedView.UserNickNameText, u.NickName);
             DictionaryTools.SetContentText(_cachedView.UserLevelText, GameATools.GetLevelString(u.LevelData.PlayerLevel));
+            DictionaryTools.SetContentText(_cachedView.CreateTimeText, GameATools.FormatServerDateString(p.CreateTime));
             DictionaryTools.SetContentText(_cachedView.PlayCountText, p.ExtendReady ? p.PlayCount.ToString() : "-");
             DictionaryTools.SetContentText(_cachedView.LikeCountText, p.ExtendReady ? p.LikeCount.ToString() : "-");
             DictionaryTools.SetContentText(_cachedView.CompleteRateText, p.ExtendReady ? GameATools.GetCompleteRateString(p.CompleteRate) : "-");
