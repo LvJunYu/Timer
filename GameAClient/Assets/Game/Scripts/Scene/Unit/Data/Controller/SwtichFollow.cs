@@ -12,7 +12,7 @@ using SoyEngine;
 namespace GameA.Game
 {
     [Unit(Id = 8103, Type = typeof(SwtichFollow))]
-    public class SwtichFollow : Switch
+    public class SwtichFollow : SwitchMagic
     {
         protected override void CreateParticle()
         {

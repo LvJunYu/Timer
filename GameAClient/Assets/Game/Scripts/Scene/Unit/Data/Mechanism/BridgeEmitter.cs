@@ -14,7 +14,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     [Unit(Id = 5008, Type = typeof(BridgeEmitter))]
-    public class BridgeEmitter : SwitchPress
+    public class BridgeEmitter : SwitchUnit
     {
         private const int BridgeUnitId = 5009;
         protected Grid2D _checkGrid;

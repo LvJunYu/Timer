@@ -10,7 +10,7 @@ namespace GameA.Game
         protected Grid2D _checkGrid;
         protected IntVec2 _pointA;
         protected IntVec2 _pointB;
-        protected List<UnitBase> _units = new List<UnitBase>();
+        protected List<UnitBase> _fanEffectUnits = new List<UnitBase>();
         protected UnityNativeParticleItem _effect;
         
         public override bool CanControlledBySwitch
@@ -55,11 +55,12 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
-            _units.Clear();
+            _fanEffectUnits.Clear();
         }
 
         internal override void OnCtrlBySwitch()
         {
+            base.OnCtrlBySwitch();
             if (_effect != null)
             {
                 if (_ctrlBySwitch)
@@ -82,13 +83,13 @@ namespace GameA.Game
         
         public override void UpdateLogic()
         {
-            for (int i = _units.Count - 1; i >= 0; i--)
+            for (int i = _fanEffectUnits.Count - 1; i >= 0; i--)
             {
-                var unit = _units[i];
+                var unit = _fanEffectUnits[i];
                 if (!_checkGrid.Intersects(unit.ColliderGrid))
                 {
                     unit.OutFan(this);
-                    _units.Remove(unit);
+                    _fanEffectUnits.Remove(unit);
                 }
             }
             base.UpdateLogic();
@@ -131,9 +132,9 @@ namespace GameA.Game
                         {
                             if (unit != null && unit.IsAlive)
                             {
-                                if (!_units.Contains(unit))
+                                if (!_fanEffectUnits.Contains(unit))
                                 {
-                                    _units.Add(unit);
+                                    _fanEffectUnits.Add(unit);
                                 }
                                 var range = TableConvert.GetRange(UnitDefine.FanRange);
                                 int force = (int) ((float) (range - hit.distance) / range * UnitDefine.FanForce);

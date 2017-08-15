@@ -1495,13 +1495,13 @@ namespace GameA.Game
         {
         }
 
-        internal bool OnSwitchPressStart(SwitchPress switchPress)
+        internal bool OnSwitchPressStart(SwitchUnit switchUnit)
         {
-            if (_switchPressUnits.Contains(switchPress))
+            if (_switchPressUnits.Contains(switchUnit))
             {
                 return false;
             }
-            _switchPressUnits.Add(switchPress);
+            _switchPressUnits.Add(switchUnit);
             if (_switchPressUnits.Count == 1)
             {
                 OnCtrlBySwitch();
@@ -1509,9 +1509,9 @@ namespace GameA.Game
             return true;
         }
 
-        internal bool OnSwitchPressEnd(SwitchPress switchPress)
+        internal bool OnSwitchPressEnd(SwitchUnit switchUnit)
         {
-            if (!_switchPressUnits.Remove(switchPress))
+            if (!_switchPressUnits.Remove(switchUnit))
             {
                 return false;
             }
@@ -1530,7 +1530,7 @@ namespace GameA.Game
 
         public bool IsBlockedBy(UnitBase unit)
         {
-            if (unit != null && unit.IsAlive && unit != this && !(unit is SwitchTrigger))
+            if (unit != null && unit.IsAlive && unit != this && !(unit is SwitchTriggerPress))
             {
                 return true;
             }

@@ -13,8 +13,8 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 8102, Type = typeof(Switch))]
-    public class Switch : BlockBase
+    [Unit(Id = 8102, Type = typeof(SwitchMagic))]
+    public class SwitchMagic : BlockBase
     {
         protected List<UnitBase> _units;
         protected UnityNativeParticleItem _effectStart;

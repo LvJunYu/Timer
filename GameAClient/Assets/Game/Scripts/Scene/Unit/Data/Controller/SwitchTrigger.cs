@@ -1,30 +1,18 @@
-﻿/********************************************************************
-** Filename : SwitchTrigger
-** Author : Dong
-** Date : 2017/5/9 星期二 上午 10:32:53
-** Summary : SwitchTrigger
-***********************************************************************/
-
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using SoyEngine;
+﻿using System.Collections.Generic;
 
 namespace GameA.Game
 {
-    [Unit(Id = 8101, Type = typeof(SwitchTrigger))]
+    [Unit(Id = 8100, Type = typeof(SwitchTrigger))]
     public class SwitchTrigger : UnitBase
     {
-        protected SwitchPress _switchPress;
+        protected SwitchUnit _switchUnit;
         protected bool _trigger;
         protected List<UnitBase> _units = new List<UnitBase>();
-        protected bool _gridCheckTrigger;
-        protected List<UnitBase> _gridCheckUnits = new List<UnitBase>();
 
-        public SwitchPress SwitchPress
+        public SwitchUnit SwitchUnit
         {
-            get { return _switchPress; }
-            set { _switchPress = value; }
+            get { return _switchUnit; }
+            set { _switchUnit = value; }
         }
 
         protected override bool OnInit()
@@ -50,39 +38,12 @@ namespace GameA.Game
         {
             base.Clear();
             _trigger = false;
-            _gridCheckTrigger = false;
             _units.Clear();
-            _gridCheckUnits.Clear();
         }
 
         public override void OnIntersect(UnitBase other)
         {
             OnTrigger(other);
-        }
-
-        public void OnGridCheckEnter(UnitBase other)
-        {
-            if (_gridCheckUnits.Contains(other))
-            {
-                return;
-            }
-            _gridCheckUnits.Add(other);
-            if (_gridCheckTrigger)
-            {
-                return;
-            }
-            _gridCheckTrigger = true;
-            OnTriggerStart(other);
-        }
-
-        public void OnGridCheckExit(UnitBase other)
-        {
-            _gridCheckUnits.Remove(other);
-            if (_gridCheckUnits.Count == 0)
-            {
-                _gridCheckTrigger = false;
-                OnTriggerEnd();
-            }
         }
 
         protected virtual void OnTrigger(UnitBase other)
@@ -92,17 +53,20 @@ namespace GameA.Game
                 return;
             }
             _units.Add(other);
+            _trigger = !_trigger;
             if (_trigger)
             {
-                return;
+                OnTriggerStart(other);
             }
-            _trigger = true;
-            OnTriggerStart(other);
+            else
+            {
+                OnTriggerEnd();
+            }
         }
 
         public override void UpdateLogic()
         {
-            if (_trigger)
+            if (_units.Count > 0)
             {
                 for (int i = _units.Count - 1; i >= 0; i--)
                 {
@@ -111,11 +75,6 @@ namespace GameA.Game
                         _units.RemoveAt(i);
                     }
                 }
-                if (_units.Count == 0)
-                {
-                    _trigger = false;
-                    OnTriggerEnd();
-                }
             }
         }
 
@@ -123,25 +82,25 @@ namespace GameA.Game
         {
             if (_view != null)
             {
-                _view.ChangeView("M1SwitchTriggerOn_"+_unitDesc.Rotation);
+                _view.ChangeView("M1SwitchTriggerOn_" + _unitDesc.Rotation);
             }
-            if (_switchPress != null)
+            if (_switchUnit != null)
             {
-                _switchPress.OnTriggerStart(other);
+                _switchUnit.OnTriggerStart(other);
             }
         }
 
         protected void OnTriggerEnd()
         {
-            if (!_trigger && !_gridCheckTrigger)
+            if (!_trigger)
             {
                 if (_view != null)
                 {
                     _view.ChangeView("M1SwitchTriggerOff_" + _unitDesc.Rotation);
                 }
-                if (_switchPress != null)
+                if (_switchUnit != null)
                 {
-                    _switchPress.OnTriggerEnd();
+                    _switchUnit.OnTriggerEnd();
                 }
             }
         }
