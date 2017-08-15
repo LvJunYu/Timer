@@ -227,6 +227,7 @@ namespace GameA.Game
 
         public void ProcessUnitExtra(UnitDesc unitDesc, UnitExtra unitExtra)
         {
+            UnitDesc oldUnitDesc = unitDesc;
             UnitBase unit;
             if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
             {
@@ -234,7 +235,7 @@ namespace GameA.Game
                 bool needRecreate = false;
                 if (ColliderScene2D.Instance.TryGetUnit(unitDesc.Guid, out unit))
                 {
-                    UnitDesc oldUnitDesc = unit.UnitDesc;
+                    oldUnitDesc = unit.UnitDesc;
                     if (oldUnitDesc.Rotation != unitDesc.Rotation)
                     {
                         needRecreate = true;
@@ -260,7 +261,7 @@ namespace GameA.Game
                 }
                 if (needRecreate)
                 {
-                    EditMode.Instance.DeleteUnit(unitDesc);
+                    EditMode.Instance.DeleteUnit(oldUnitDesc);
                 }
                 if (unitExtra.Equals(UnitExtra.zero))
                 {

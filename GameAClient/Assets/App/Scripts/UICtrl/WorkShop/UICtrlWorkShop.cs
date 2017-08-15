@@ -251,8 +251,8 @@ namespace GameA
                 DictionaryTools.SetContentText(_cachedView.Desc, _curSelectedPrivateProject.Content.Summary);
             } else {
                 ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
-                DictionaryTools.SetContentText(_cachedView.Title, "关卡标题");
-                DictionaryTools.SetContentText(_cachedView.Desc, "关卡简介");
+                DictionaryTools.SetContentText(_cachedView.Title, "");
+                DictionaryTools.SetContentText(_cachedView.Desc, "");
             }
         }
 
@@ -287,8 +287,8 @@ namespace GameA
             else
             {
                 ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
-                DictionaryTools.SetContentText(_cachedView.Title, "关卡标题");
-                DictionaryTools.SetContentText(_cachedView.Desc, "关卡简介");
+                DictionaryTools.SetContentText(_cachedView.Title, "");
+                DictionaryTools.SetContentText(_cachedView.Desc, "");
             }
 
         }

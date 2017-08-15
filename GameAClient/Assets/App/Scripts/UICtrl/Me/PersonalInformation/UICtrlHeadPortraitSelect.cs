@@ -10,7 +10,7 @@ namespace GameA
     [UIAutoSetup (EUIAutoSetupType.Add)]
     public class UICtrlHeadPortraitSelect : UICtrlInGameBase<UIViewHeadPortraitSelect>
     {
-
+        private int _seletctedHeadImage;
 
         protected override void InitGroupId ()
         {
@@ -26,7 +26,7 @@ namespace GameA
             //public Button SelectPhoto;
             InitTagGroup();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-            _cachedView.OKBtn.onClick.AddListener(OnOkBtn);
+            _cachedView.OKBtn.onClick.AddListener(OnOKBtn);
         }
 
 
@@ -35,10 +35,14 @@ namespace GameA
             SocialGUIManager.Instance.CloseUI <UICtrlHeadPortraitSelect>();
         }
 
-        private void OnOkBtn()
+        private void OnOKBtn()
         {
-           
+            SocialGUIManager.Instance.GetUI<UICtrlPersonalInformation>().SetHead(SpriteNameDefine.GetHeadImage(_seletctedHeadImage));
+            SocialGUIManager.Instance.CloseUI<UICtrlHeadPortraitSelect>();
         }
+
+
+
 
         private void InitTagGroup()
         {
@@ -73,31 +77,37 @@ namespace GameA
         private void OnHead1Seleted(bool open)
         {
             _cachedView.SeletctedHead1Image.SetActiveEx(open);
+            _seletctedHeadImage = 1;
         }
 
         private void OnHead2Seleted(bool open)
         {
             _cachedView.SeletctedHead2Image.SetActiveEx(open);
+            _seletctedHeadImage = 2;
         }
 
         private void OnHead3Seleted(bool open)
         {
             _cachedView.SeletctedHead3Image.SetActiveEx(open);
+            _seletctedHeadImage = 3;
         }
 
         private void OnHead4Seleted(bool open)
         {
             _cachedView.SeletctedHead4Image.SetActiveEx(open);
+            _seletctedHeadImage = 4;
         }
 
         private void OnHead5Seleted(bool open)
         {
             _cachedView.SeletctedHead5Image.SetActiveEx(open);
+            _seletctedHeadImage = 5;
         }
 
         private void OnHead6Seleted(bool open)
         {
             _cachedView.SeletctedHead6Image.SetActiveEx(open);
+            _seletctedHeadImage = 6;
         }
     }
 }

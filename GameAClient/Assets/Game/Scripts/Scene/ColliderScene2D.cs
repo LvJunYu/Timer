@@ -68,8 +68,11 @@ namespace GameA.Game
         public void Init(IntVec2 regionTilesCount, int width, int height)
         {
             Init(width, height);
-            InitRegions(regionTilesCount);
-            _interestArea = new InterestArea(RegionTileSize * 1.5f, RegionTileSize * 2.5f, this);
+            if (MapConfig.UseAOI)
+            {
+                InitRegions(regionTilesCount);
+                _interestArea = new InterestArea(RegionTileSize * 1.5f, RegionTileSize * 2.5f, this);
+            }
             _pathGrid = new byte[Mathf.NextPowerOfTwo(width / JoyConfig.ServerTileScale), Mathf.NextPowerOfTwo(height / JoyConfig.ServerTileScale)];
             for (int i = 0; i < _pathGrid.GetLength(0); i++)
             {
@@ -633,7 +636,7 @@ namespace GameA.Game
             if (tableUnit == null)
             {
                 LogHelper.Error("GetTableUnit failed.{0}", node.Id);
-                return null;
+                return _cachedUnits;
             }
             if (node.IsDynamic())
             {
@@ -642,7 +645,7 @@ namespace GameA.Game
                 if (!_instance.TryGetUnit(guid, out unit))
                 {
                     //LogHelper.Warning("TryGetUnits failed,{0}", node);
-                    return null;
+                    return _cachedUnits;
                 }
                 _cachedUnits.Add(unit);
             }

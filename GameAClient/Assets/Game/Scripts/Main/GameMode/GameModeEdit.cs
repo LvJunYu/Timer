@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
+using NewResourceSolution;
 using SoyEngine;
 using SoyEngine.Proto;
+using Spine.Unity;
 using UnityEngine;
 
 namespace GameA.Game
@@ -107,12 +110,41 @@ namespace GameA.Game
 		    return base.Stop();
 	    }
 
-	    public override void InitByStep()
+	    public override IEnumerator InitByStep()
 		{
             GameRun.Instance.ChangeState(ESceneState.Edit);
             InitUI();
             InitGame();
-        }
+			yield return null;
+			//Spine预加载
+			var tableUnitDict = TableManager.Instance.Table_UnitDic;
+			int i = 0;
+			foreach (var entry in tableUnitDict)
+			{
+				i++;
+				var table = entry.Value;
+				if (table.Id != 1002 && table.Use != 1)
+				{
+					continue;
+				}
+				if (table.GeneratedType != (int) EGeneratedType.Spine)
+				{
+					continue;
+				}
+                
+				string skeletonDataAssetName = string.Format ("{0}_SkeletonData", table.Model);
+				SkeletonDataAsset data =
+					ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, skeletonDataAssetName, 0);
+				if (data != null)
+				{
+					data.GetAnimationStateData();
+					BroadcastLoadProgress(0.8f + 0.2f * i / tableUnitDict.Count);
+					yield return null;
+				}
+			}
+			//预加载背景音乐
+			ResourcesManager.Instance.GetAudio(AudioNameConstDefineGM2D.GameAudioBgm01);
+		}
 
         public abstract void Save(Action successCallback = null,
                                   Action<EProjectOperateResult> failedCallback = null);
@@ -283,7 +315,10 @@ namespace GameA.Game
 			Rect captureRect = new Rect();
 			captureRect.height = imageHeight;
 			captureRect.width = imageWidth;
-			Rect mapRect = GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect);
+			var mapTiledRect = DataScene2D.Instance.ValidMapRect;
+			mapTiledRect.Max += new IntVec2(2, 2) * ConstDefineGM2D.ServerTileScale;
+			mapTiledRect.Min -= new IntVec2(2, 2) * ConstDefineGM2D.ServerTileScale;
+			Rect mapRect = GM2DTools.TileRectToWorldRect(mapTiledRect);
 			float mapAspectRatio = mapRect.width / mapRect.height;
 			float oriCameraOrthoSize = CameraManager.Instance.RendererCamera.orthographicSize;
 			Vector3 oriCameraPos = CameraManager.Instance.MainCameraPos;

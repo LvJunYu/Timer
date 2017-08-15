@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using NewResourceSolution;
 using SoyEngine;
 using Spine.Unity;
 using UnityEngine;
@@ -106,10 +107,9 @@ namespace GameA.Game
             MapManager.Instance.Init(eGameInitType, project);
             while (!MapManager.Instance.GenerateMapComplete)
             {
-                Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 0.8f + MapManager.Instance.MapProcess * 0.2f);
+                Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, MapManager.Instance.MapProcess * 0.8f);
                 yield return new WaitForSeconds(0.1f);
             }
-            Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 1f);
         }
 
         public void Clear()
@@ -164,7 +164,25 @@ namespace GameA.Game
             DeadMarkManager.Instance.Update();
             CameraManager.Instance.Update();
             MapManager.Instance.Update();
-            _gameTimeSinceGameStarted += Time.deltaTime*GM2DGame.Instance.GamePlaySpeed;
+            
+            float debugSpeed = 1;
+            
+            #if UNITY_EDITOR
+            if (Input.GetKey(KeyCode.T))
+            {
+                debugSpeed = 2;
+            }
+            else if (Input.GetKey(KeyCode.Y))
+            {
+                debugSpeed = 4;
+            }
+            else if (Input.GetKey(KeyCode.U))
+            {
+                debugSpeed = 8;
+            }
+            #endif
+            
+            _gameTimeSinceGameStarted += Time.deltaTime*GM2DGame.Instance.GamePlaySpeed * debugSpeed;
         }
 
         public void UpdateLogic(float deltaTime)

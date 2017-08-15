@@ -22,6 +22,7 @@ namespace GameA
         //按钮文字
         private const string _upgrateTxt = "升级";
         private const string _activeTxt = "合成";
+        private const string _maxLvTxt = "等级MAX";
 
         private PictureFull _puzzle;
         private PicturePart[] _puzzleFragments;
@@ -186,7 +187,7 @@ namespace GameA
                 UMCtrlPuzzleFragmentItem puzzleFragment = CreatePuzzleFragment();
                 _curUMFragments.Add(puzzleFragment);
                 //测试用
-                _puzzleFragments[i].AddFrag(UnityEngine.Random.Range(0, 2));
+                _puzzleFragments[i].AddFrag(UnityEngine.Random.Range(10, 20));
                 puzzleFragment.SetData(_puzzleFragments[i], _puzzle, _curUMPuzzleItem);
             }
             //设置碎片间距
@@ -231,15 +232,28 @@ namespace GameA
             _cachedView.EquipBtn.gameObject.SetActive(CheckEquipable());
             //按钮上显示消耗的金币
             _cachedView.CostNumTxt.text = _puzzle.CostMoeny.ToString();
+            //_cachedView.CostNumTxt.gameObject.SetActive(true);
             //按钮上显示合成或升级文字
             if (_puzzle.CurState == EPuzzleState.HasActived)
-                _cachedView.ActiveTxt.text = _upgrateTxt;
+            {
+                if (_puzzle.Level >= _puzzle.PuzzleTable.MaxLevel)
+                {
+                    //_cachedView.CostNumTxt.gameObject.SetActive(false);
+                    _cachedView.ActiveTxt.text = _maxLvTxt;
+                }
+                else
+                {
+                    _cachedView.ActiveTxt.text = _upgrateTxt;
+                }
+            }
             else
                 _cachedView.ActiveTxt.text = _activeTxt;
         }
 
         private bool CheckActivable()
         {
+            if (_puzzle.Level >= _puzzle.PuzzleTable.MaxLevel)
+                return false;
             for (int i = 0; i < _puzzleFragments.Length; i++)
             {
                 if (_puzzleFragments[i].TotalCount == 0)

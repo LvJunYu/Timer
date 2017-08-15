@@ -81,7 +81,7 @@ namespace GameA.Game
 
         public override string ToString()
         {
-            return string.Format("UnitA: {0}, UnitB: {1}, TriggeredCnt: {2}, Sender: {3}", UnitA, UnitB, TriggeredCnt, Sender);
+            return string.Format("Num: {0}, UnitA: {1}, UnitB: {2}", Num, UnitA, UnitB);
         }
     }
 
