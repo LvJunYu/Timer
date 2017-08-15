@@ -31,6 +31,11 @@ namespace GameA.Game
                     Magic,
                 }
             }
+            
+            public override bool CanRevertTo()
+            {
+                return false;
+            }
 
             public override void Enter(EditMode owner)
             {
