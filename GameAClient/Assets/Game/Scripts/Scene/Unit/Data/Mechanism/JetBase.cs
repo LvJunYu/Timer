@@ -110,17 +110,18 @@ namespace GameA.Game
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            if (!_ctrlBySwitch)
+            if (_ctrlBySwitch)
             {
-                if (_skillCtrl != null)
+                return;
+            }
+            if (_skillCtrl != null)
+            {
+                _skillCtrl.UpdateLogic();
+                if (_skillCtrl.Fire(0))
                 {
-                    _skillCtrl.UpdateLogic();
-                    if (_skillCtrl.Fire(0))
+                    if (_animation != null)
                     {
-                        if (_animation != null)
-                        {
-                            _animation.PlayOnce(((EDirectionType)_unitDesc.Rotation).ToString(), _timeScale);
-                        }
+                        _animation.PlayOnce(((EDirectionType)_unitDesc.Rotation).ToString(), _timeScale);
                     }
                 }
             }

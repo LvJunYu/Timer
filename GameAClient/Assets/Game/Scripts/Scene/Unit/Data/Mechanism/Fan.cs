@@ -5,7 +5,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     [Unit(Id = 5018, Type = typeof(Fan))]
-    public class Fan : BlockBase
+    public class Fan : SwitchPress
     {
         protected Grid2D _checkGrid;
         protected IntVec2 _pointA;
@@ -20,6 +20,7 @@ namespace GameA.Game
 
         protected override bool OnInit()
         {
+            _triggerReverse = true;
             if (!base.OnInit())
             {
                 return false;
@@ -54,8 +55,22 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
-            _ctrlBySwitch = true;
             _units.Clear();
+        }
+
+        internal override void OnCtrlBySwitch()
+        {
+            if (_effect != null)
+            {
+                if (_ctrlBySwitch)
+                {
+                    _effect.Stop();
+                }
+                else
+                {
+                    _effect.Play();
+                }
+            }
         }
 
         private void Calculate()
@@ -78,7 +93,7 @@ namespace GameA.Game
             }
             base.UpdateLogic();
             //停止
-            if (!_ctrlBySwitch)
+            if (_ctrlBySwitch)
             {
                 return;
             }

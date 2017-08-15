@@ -1524,8 +1524,8 @@ namespace GameA.Game
 
         internal virtual void OnCtrlBySwitch()
         {
-            _ctrlBySwitch = !_ctrlBySwitch;
-//            LogHelper.Debug("OnCtrlBySwitch: {0}",_ctrlBySwitch);
+            _ctrlBySwitch = !_ctrlBySwitch
+            LogHelper.Debug("OnCtrlBySwitch: {0}",_ctrlBySwitch);
         }
 
         public bool IsBlockedBy(UnitBase unit)

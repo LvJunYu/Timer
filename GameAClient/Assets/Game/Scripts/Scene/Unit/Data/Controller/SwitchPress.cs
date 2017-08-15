@@ -17,7 +17,6 @@ namespace GameA.Game
     public class SwitchPress : BlockBase
     {
         protected List<UnitBase> _units;
-        protected bool _trigger;
         protected bool _triggerReverse;
         protected SwitchTrigger _switchTrigger;
 
@@ -35,20 +34,18 @@ namespace GameA.Game
         {
             base.OnPlay();
             _units = DataScene2D.Instance.GetControlledUnits(_guid);
-            _trigger = false;
         }
 
         protected override void Clear()
         {
             base.Clear();
             CreateSwitchTrigger();
-            _trigger = false;
         }
 
         public virtual void OnTriggerStart(UnitBase other)
         {
             //LogHelper.Debug("OnTriggerStart {0}", ToString() + "~" + _trans.GetInstanceID());
-            _trigger = true;
+            _ctrlBySwitch = true;
 
             if (_units != null)
             {
@@ -66,7 +63,7 @@ namespace GameA.Game
         public virtual void OnTriggerEnd()
         {
             //LogHelper.Debug("OnTriggerEnd {0}", ToString());
-            _trigger = false;
+            _ctrlBySwitch = false;
 
             if (_units != null)
             {

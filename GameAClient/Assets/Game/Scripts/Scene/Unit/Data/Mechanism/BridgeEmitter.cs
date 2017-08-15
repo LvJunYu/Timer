@@ -57,7 +57,7 @@ namespace GameA.Game
             {
                 return;
             }
-            if (!_trigger)
+            if (!_ctrlBySwitch)
             {
                 if (_curCreatingQueue != null)
                 {
