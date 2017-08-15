@@ -164,7 +164,25 @@ namespace GameA.Game
             DeadMarkManager.Instance.Update();
             CameraManager.Instance.Update();
             MapManager.Instance.Update();
-            _gameTimeSinceGameStarted += Time.deltaTime*GM2DGame.Instance.GamePlaySpeed;
+            
+            float debugSpeed = 1;
+            
+            #if UNITY_EDITOR
+            if (Input.GetKey(KeyCode.T))
+            {
+                debugSpeed = 2;
+            }
+            else if (Input.GetKey(KeyCode.Y))
+            {
+                debugSpeed = 4;
+            }
+            else if (Input.GetKey(KeyCode.U))
+            {
+                debugSpeed = 8;
+            }
+            #endif
+            
+            _gameTimeSinceGameStarted += Time.deltaTime*GM2DGame.Instance.GamePlaySpeed * debugSpeed;
         }
 
         public void UpdateLogic(float deltaTime)
