@@ -211,7 +211,7 @@ namespace GameA.Game
                         _stepY = 0;
                     }
                     _jumpLevel = 0;
-                    SpeedY = _onClay ? 100 : 150;
+                    SpeedY = _onClay ? 100 : 165;
                     _jumpState = EJumpState.Jump1;
                     _jumpTimer = 10;
                 }
@@ -228,7 +228,7 @@ namespace GameA.Game
                         else
                         {
                             _jumpLevel = 1;
-                            SpeedY = 150;
+                            SpeedY = 165;
                             _jumpState = EJumpState.Jump2;
                         }
                         ExtraSpeed.y = 0;
