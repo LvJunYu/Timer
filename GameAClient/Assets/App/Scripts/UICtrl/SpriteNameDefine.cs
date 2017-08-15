@@ -32,9 +32,9 @@ namespace GameA
         private static readonly string[] RankSpriteName = {"icon_crown_1", "icon_crown_2", "icon_crown_3"};
         public static string GetRank(int rank)
         {
-            if (rank >= 0 && rank < RankSpriteName.Length)
+            if (rank > 0 && rank <= RankSpriteName.Length)
             {
-                return RankSpriteName[rank];
+                return RankSpriteName[rank - 1];
             }
             return null;
         }

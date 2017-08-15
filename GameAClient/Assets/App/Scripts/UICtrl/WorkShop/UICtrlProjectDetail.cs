@@ -53,6 +53,7 @@ namespace GameA
                 return;
             }
             _projectInfoPanel.OnChangeToApp();
+            _extraPanel.OnChangeToAppMode();
         }
 
         

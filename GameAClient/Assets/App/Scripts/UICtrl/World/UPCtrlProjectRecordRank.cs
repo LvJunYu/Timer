@@ -38,6 +38,14 @@ namespace GameA
             }
         }
 
+        public void OnChangeToAppMode()
+        {
+            if (_isOpen)
+            {
+                RequestData();
+            }
+        }
+
         public override void Open()
         {
             base.Open();

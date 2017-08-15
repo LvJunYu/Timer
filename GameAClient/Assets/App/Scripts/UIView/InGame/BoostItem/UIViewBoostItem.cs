@@ -9,6 +9,6 @@ namespace GameA
         public USViewBoostItem [] BoostItems;
         public Text Tip;
         public Button OKBtn;
-        public Button CloseBtn;
+        //public Button CloseBtn;
     }
 }

@@ -40,6 +40,11 @@ namespace GameA
             base.Open();
             _cachedView.TabGroup.SelectIndex(0, true);
         }
+
+        public void OnChangeToAppMode()
+        {
+            _upCtrlRecordRank.OnChangeToAppMode();
+        }
         #region private
         #endregion private
         #region 接口
