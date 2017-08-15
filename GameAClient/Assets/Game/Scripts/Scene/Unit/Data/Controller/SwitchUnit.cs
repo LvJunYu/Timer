@@ -35,12 +35,12 @@ namespace GameA.Game
 
         public virtual void OnTriggerStart(UnitBase other)
         {
-            LogHelper.Debug("OnTriggerStart {0}", ToString());
+//            LogHelper.Debug("OnTriggerStart {0}", ToString());
         }
 
         public virtual void OnTriggerEnd()
         {
-            LogHelper.Debug("OnTriggerEnd {0}", ToString());
+//            LogHelper.Debug("OnTriggerEnd {0}", ToString());
         }
 
         protected bool CreateSwitchTrigger()
