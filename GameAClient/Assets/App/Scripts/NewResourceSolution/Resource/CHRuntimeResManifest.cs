@@ -37,7 +37,7 @@ namespace NewResourceSolution
 		/// <summary>
 		/// 加载bundle用的列表缓存
 		/// </summary>
-		private List<CHResBundle> _bundleToCache = new List<CHResBundle>();
+		private List<string> _bundleToCache = new List<string>();
 		/// <summary>
 		/// ResourcesManager的manifest缓存
 		/// </summary>
@@ -319,31 +319,37 @@ namespace NewResourceSolution
 				return null;
 			}
             _bundleToCache.Clear();
-			
-			string[] dependencies = _unityManifest.GetAllDependencies(bundle.AssetBundleName);
+			bool anyError = false;
+			GetBundleDependenciesQueue(bundle.AssetBundleName);
+			_bundleToCache.Add(bundle.AssetBundleName);
+//			string[] dependencies = _unityManifest.GetAllDependencies(bundle.AssetBundleName);
 //			LogHelper.Info("Dependencies cnt: {0}", dependencies.Length);
-			for (int i = 0; i < dependencies.Length; i++)
+			for (int i = 0; i < _bundleToCache.Count; i++)
 			{
 				//				LogHelper.Info("Dependence {0}: {1}", i, dependencies[i]);
                 // 判断是否已缓存
 				CHResBundle dependenceBundle = null;
-				if (_cachedBundleDic.TryGetValue(dependencies[i], out dependenceBundle))
+				if (_cachedBundleDic.TryGetValue(_bundleToCache[i], out dependenceBundle))
 				{
-					if ((dependenceBundle.ScenaryMask & scenary) != 0)
+					if ((dependenceBundle.ScenaryMask & scenary) == 0)
 					{
-                        _bundleToCache.Add(dependenceBundle);
+						if (!dependenceBundle.Cache (scenary, logWhenError))
+						{
+							anyError = true;
+						}
 					}
-                    continue;
+                   	continue;
 				}
-				dependenceBundle = GetBundleByBundleName(dependencies[i]);
+				dependenceBundle = GetBundleByBundleName(_bundleToCache[i]);
                 // 判断bundle数据是否存在
 				if (null == dependenceBundle)
 				{
                     if (logWhenError)
                     {
-                        LogHelper.Error("Load bundle <{0}> failed", dependencies[0]);
+                        LogHelper.Error("Load bundle <{0}> failed", _bundleToCache[0]);
                     }
-					return null;
+					anyError = true;
+					continue;
 				}
                 // 判断文件是否存在
 				if (EFileLocation.Persistent != dependenceBundle.FileLocation &&
@@ -356,35 +362,63 @@ namespace NewResourceSolution
                     {
                         LogHelper.Error("Bundle <{0}> not downloaded", dependenceBundle.AssetBundleName);
                     }
-					return null;
+					anyError = true;
+					continue;
 				}
-				_bundleToCache.Add(dependenceBundle);
+				if (!dependenceBundle.Cache (scenary, logWhenError))
+				{
+					anyError = true;
+				}
+				_cachedAssetsTotalSize += dependenceBundle.Size;
+				_cachedBundleDic.Add(dependenceBundle.AssetBundleName, dependenceBundle);
 			}
-			_bundleToCache.Add(bundle);
-			bool anyError = false;
-			for (int i = 0; i < _bundleToCache.Count; i++)
-			{
-//				LogHelper.Info("bundle to load [{0}]: {1}", i, _bundleToLoad[i].AssetBundleName);
-                if (!_bundleToCache [i].Cache (scenary, logWhenError))
-                {
-                    anyError = true;
-                }
-                _cachedAssetsTotalSize += _bundleToCache [i].Size;
-				_cachedBundleDic.Add(_bundleToCache[i].AssetBundleName, _bundleToCache[i]);
-			}
+			
+//			for (int i = 0; i < _bundleToCache.Count; i++)
+//			{
+////				LogHelper.Info("bundle to load [{0}]: {1}", i, _bundleToLoad[i].AssetBundleName);
+//                if (!_bundleToCache [i].Cache (scenary, logWhenError))
+//                {
+//                    anyError = true;
+//                }
+//                _cachedAssetsTotalSize += _bundleToCache [i].Size;
+//				_cachedBundleDic.Add(_bundleToCache[i].AssetBundleName, _bundleToCache[i]);
+//			}
 			if (anyError)
 			{
 				// undo all actions in this method
 				for (int i = 0; i < _bundleToCache.Count; i++)
 				{
-                    _bundleToCache [i].Uncache (scenary);
-                    _cachedAssetsTotalSize -= _bundleToCache [i].Size;
-                    _cachedBundleDic.Remove(_bundleToCache [i].AssetBundleName);
+					CHResBundle dependenceBundle = null;
+					if (_cachedBundleDic.TryGetValue(_bundleToCache[i], out dependenceBundle))
+					{
+						dependenceBundle.Uncache (scenary);
+						if (0 == dependenceBundle.ScenaryMask)
+						{
+							_cachedAssetsTotalSize -= dependenceBundle.Size;
+							_cachedBundleDic.Remove(dependenceBundle.AssetBundleName);
+						}
+					}
 				}
 				return null;
 			}
 			return bundle;
 		}
+
+	    /// <summary>
+	    /// 得到bundle载入顺序列表
+	    /// </summary>
+	    private void GetBundleDependenciesQueue(string bundleName)
+	    {
+		    string[] dependencies = _unityManifest.GetDirectDependencies(bundleName);
+		    for (int i = 0; i < dependencies.Length; i++)
+		    {
+			    if (!_bundleToCache.Contains(dependencies[i]))
+			    {
+				    GetBundleDependenciesQueue(dependencies[i]);
+				    _bundleToCache.Add(dependencies[i]);
+			    }
+		    }
+	    }
 
 		#endregion
 

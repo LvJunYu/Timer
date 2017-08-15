@@ -147,7 +147,7 @@ namespace GameA
             CommonTools.ShowPopupDialog("登录后玩游戏可以获取成绩进入排行榜，速度登录吧~", null,
                 new System.Collections.Generic.KeyValuePair<string, Action>("暂不登录", onPlay),
                 new System.Collections.Generic.KeyValuePair<string, Action>("立即登录", ()=>{
-                    SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
+//                    SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
                 }));
         }
 

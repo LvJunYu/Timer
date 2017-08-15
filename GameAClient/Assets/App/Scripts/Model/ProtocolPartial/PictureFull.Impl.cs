@@ -20,6 +20,7 @@ namespace GameA
 
         //属性
         public EPuzzleState CurState { get { return _curState; } }
+        public Table_Puzzle PuzzleTable { get { return _puzzleTable; } }
         public int Quality { get { return _puzzleTable.Quality; } }
         public string Name { get { return _puzzleTable.Name; } }
         public string Desc
@@ -56,7 +57,6 @@ namespace GameA
         public EPuzzleType PuzzleType { get { return (EPuzzleType)_puzzleTable.FragNum; } }
         public Dictionary<int, Table_PuzzleUpgrade> LvTableDic { get { return _lvTableDic; } }
         public PicturePart[] NeededFragments { get { return _neededFragments; } }
-
         //方法
         public PictureFull(int puzzleID)
         {
