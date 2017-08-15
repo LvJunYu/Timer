@@ -129,6 +129,7 @@ namespace GameA
         }
 
         private void OnAccBtn () {
+            SocialGUIManager.ShowPopupDialog("测试版还没有开启这个功能哦，请耐心等待正式版吧~");
         }
 
         private void OnRaiseBtn () {

@@ -87,10 +87,12 @@ namespace GameA
             }
         }
         private void OnGoldPlusBtn () {
-            SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
+//            SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
+            SocialGUIManager.ShowPopupDialog("测试版还没有开启氪金功能哦~");
         }
         private void OnDiamondPlusBtn () {
-            SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
+//            SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
+            SocialGUIManager.ShowPopupDialog("测试版还没有开启氪金功能哦~");
         }
 
         private void OnEnergyChanged () {

@@ -25,6 +25,8 @@ namespace GameA
 
         private List<IntVec3> _allUnitGuids;
         private readonly List<int> _allUnitConnectionCnts = new List<int>();
+
+        private List<Vector3> _lineCenters;
         #endregion
 
         #region 属性
@@ -104,9 +106,12 @@ namespace GameA
                     _connectionCntCache[i].transform.parent.gameObject.SetActive (false);
                 }
             }
+            OnSelectedItemChanged(_lineCenters);
         }
 
-        private void OnSelectedItemChanged (List<Vector3> lineCenters) {
+        private void OnSelectedItemChanged (List<Vector3> lineCenters)
+        {
+            _lineCenters = lineCenters;
             if (!_isViewCreated)
             {
                 return;
