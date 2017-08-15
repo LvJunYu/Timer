@@ -174,12 +174,12 @@ namespace GameA
 
         private void OnLoginBtnClick()
         {
-            SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
+//            SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
         }
 
         private void OnRegisterBtnClick()
         {
-            SocialGUIManager.Instance.OpenPopupUI<UICtrlSignup>();
+//            SocialGUIManager.Instance.OpenPopupUI<UICtrlSignup>();
         }
 
         private void OnEditUserInfoClick()

@@ -62,6 +62,10 @@ namespace GameA.Game
         
         public override bool SetWeapon(int id)
         {
+            if (id == 0)
+            {
+                return false;
+            }
             var tableEquipment = TableManager.Instance.GetEquipment(id);
             if (tableEquipment == null)
             {
