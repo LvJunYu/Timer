@@ -33,7 +33,7 @@ namespace GameA
             {
                 return true;
             }
-            SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
+//            SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
             return false;
         }
 
