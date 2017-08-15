@@ -43,6 +43,22 @@ namespace GameA.Game
 //            LogHelper.Debug("OnTriggerEnd {0}", ToString());
         }
 
+        public override void UpdateView(float deltaTime)
+        {
+            if (!_run || !UseMagic())
+            {
+                return;
+            }
+            base.UpdateView(deltaTime);
+            if (_isAlive)
+            {
+                if (_switchTrigger != null)
+                {
+                    _switchTrigger.UpdateView(_deltaPos);
+                }
+            }
+        }
+
         protected bool CreateSwitchTrigger()
         {
             if (_switchTrigger != null)

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using SoyEngine;
 
 namespace GameA.Game
 {
     [Unit(Id = 8100, Type = typeof(SwitchTrigger))]
-    public class SwitchTrigger : UnitBase
+    public class SwitchTrigger : Magic
     {
         protected SwitchUnit _switchUnit;
         protected bool _trigger;
@@ -80,6 +81,18 @@ namespace GameA.Game
                         _units.RemoveAt(i);
                     }
                 }
+            }
+        }
+
+        public void UpdateView(IntVec2 deltaPos)
+        {
+            if (_isAlive)
+            {
+                _deltaPos = deltaPos;
+                _curPos += _deltaPos;
+                UpdateCollider(GetColliderPos(_curPos));
+                _curPos = GetPos(_colliderPos);
+                UpdateTransPos();
             }
         }
 
