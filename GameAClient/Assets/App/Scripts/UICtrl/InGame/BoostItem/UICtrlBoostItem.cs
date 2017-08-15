@@ -46,7 +46,7 @@ namespace GameA
             }
 
             _cachedView.OKBtn.onClick.AddListener (OnOKBtn);
-            _cachedView.CloseBtn.onClick.AddListener (OnCloseBtn);
+            //_cachedView.CloseBtn.onClick.AddListener (OnCloseBtn);
         }
 
         protected override void OnOpen (object parameter)
@@ -119,10 +119,6 @@ namespace GameA
             }
         }
 
-        private void OnCloseBtn ()
-        {
-            SocialGUIManager.Instance.CloseUI <UICtrlBoostItem>();
-        }
 
         private void OnReady2Play ()
         {
