@@ -77,8 +77,11 @@ namespace GameA.Game
                 {
                     return;
                 }
+                var orthographicSize = CameraManager.Instance.RendererCamera.orthographicSize;
+                var oriDis = Mathf.Max(5, gesture.twoFingerDistance - gesture.deltaPinch);
+                var deltaOrthographicSize = orthographicSize * (gesture.deltaPinch/oriDis);
                 Vector2 beforePos = GM2DTools.ScreenToWorldPoint(gesture.position);
-                CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSize(gesture.deltaPinch/Screen.height*4);
+                CameraManager.Instance.CameraCtrlEdit.AdjustOrthoSize(deltaOrthographicSize);
                 Vector2 afterPos = GM2DTools.ScreenToWorldPoint(gesture.position);
                 CameraManager.Instance.CameraCtrlEdit.MovePos(afterPos - beforePos);
             }
