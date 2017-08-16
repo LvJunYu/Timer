@@ -44,7 +44,6 @@ namespace GameA
             base.OnViewCreated();
             _cachedView.EnterBtn.onClick.AddListener (OnEnterBtn);
             _cachedView.SwitchBtn.onClick.AddListener (OnSwitchBtn);
-            _cachedView.Weapon.onClick.AddListener(OnWeaponBtn);
         }
 
 
@@ -100,11 +99,6 @@ namespace GameA
                 _cachedView.InputObj.SetActive (true);
             }
         }
-        private void OnWeaponBtn()
-        {
-            SocialGUIManager.Instance.OpenUI<UICtrlWeapon>();
-        }
-
         #endregion
     }
 }

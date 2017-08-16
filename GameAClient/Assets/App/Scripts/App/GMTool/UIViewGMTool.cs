@@ -22,7 +22,6 @@ namespace GameA
         public Image SucceedImg;
         public Image FailedImg;
         public GameObject InputObj;
-        public Button Weapon;
         public Text Version;
 
         protected override void Start ()

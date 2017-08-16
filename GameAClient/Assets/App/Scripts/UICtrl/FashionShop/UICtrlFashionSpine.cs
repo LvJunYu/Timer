@@ -64,8 +64,8 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.AvatarBtn.enabled = SocialGUIManager.Instance.OpenUI<UICtrlTaskbar>().FashionShopAvailable;
-            _cachedView.AvatarBtn.onClick.AddListener(OnAvatarBtn);
+            //_cachedView.AvatarBtn.enabled = SocialGUIManager.Instance.OpenUI<UICtrlTaskbar>().FashionShopAvailable; todo
+            //_cachedView.AvatarBtn.onClick.AddListener(OnAvatarBtn);
             AvatarRenderTexture = new RenderTexture(256, 512, 0);
             _cachedView.AvatarRenderCamera.targetTexture = AvatarRenderTexture;
             _cachedView.AvatarImage.texture = _cachedView.AvatarRenderCamera.targetTexture;
