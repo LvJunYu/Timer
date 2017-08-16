@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 using UnityEngine.UI;
-using cn.sharesdk.unity3d;
-using SoyEngine.Proto;
-using System.Text;
 
 namespace GameA
 {
@@ -84,7 +81,7 @@ namespace GameA
             }
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "密码修改中");
 
-            LocalUser.Instance.Account.ChangePassword(Oldpwd, Newpwd,verificationCode,
+            LocalUser.Instance.Account.ChangePassword(Oldpwd, Newpwd, verificationCode,
                 (ret) => {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     Close();

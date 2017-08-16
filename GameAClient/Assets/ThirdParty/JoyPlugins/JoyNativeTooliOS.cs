@@ -46,9 +46,9 @@ public class JoyNativeTooliOS : MonoBehaviour, IJoyNativeTool
 
     public void Init()
     {
-        UMPushiOS.setAutoAlert(false);
-        UMPushiOS.setBadgeClear(true);
-        UMPushiOS.setLogEnabled(GlobalVar.Instance.IsDebug);
+//        UMPushiOS.setAutoAlert(false);
+//        UMPushiOS.setBadgeClear(true);
+//        UMPushiOS.setLogEnabled(GlobalVar.Instance.IsDebug);
 
         string appkey = "5779c90d67e58e60150010c6";  
         GA.StartWithAppKeyAndChannelId(appkey, "App Store"); 
@@ -62,17 +62,17 @@ public class JoyNativeTooliOS : MonoBehaviour, IJoyNativeTool
 
     public void AddPushAlias(string alias, string type)
     {
-        UMPushiOS.addAlias(alias, type, AliasHandler);
+//        UMPushiOS.addAlias(alias, type, AliasHandler);
     }
 
     public void SetPushAlias(string alias, string type)
     {
-        UMPushiOS.setAlias(alias, type, AliasHandler);
+//        UMPushiOS.setAlias(alias, type, AliasHandler);
     }
 
     public void RemovePushAlias(string alias, string type)
     {
-        UMPushiOS.removeAlias(alias, type, AliasHandler);
+//        UMPushiOS.removeAlias(alias, type, AliasHandler);
     }
 
     public void SetStatusBarShow(bool show)
@@ -82,8 +82,8 @@ public class JoyNativeTooliOS : MonoBehaviour, IJoyNativeTool
 
     public void PickImage()
     {
-        NativeToolkit.OnImagePicked = JoyNativeTool.OnImagePicked;
-        NativeToolkit.PickImage();
+//        NativeToolkit.OnImagePicked = JoyNativeTool.OnImagePicked;
+//        NativeToolkit.PickImage();
     }
 
     public string GetCustomNotificationField()
