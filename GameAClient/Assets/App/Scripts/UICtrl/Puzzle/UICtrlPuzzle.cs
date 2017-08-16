@@ -1,8 +1,6 @@
 ﻿using SoyEngine;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 using GameA.Game;
 
 namespace GameA
@@ -10,20 +8,21 @@ namespace GameA
     /// <summary>
     /// 
     /// </summary>
-	[UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlPuzzle : UICtrlGenericBase<UIViewPuzzle>
     {
-        private Dictionary<int, Table_PuzzleSlot> _slots;//装备栏数据
-        private Dictionary<int, Table_Puzzle> _puzzles;//拼图表数据
+        private Dictionary<int, Table_PuzzleSlot> _slots; //装备栏数据
+        private Dictionary<int, Table_Puzzle> _puzzles; //拼图表数据
         private EPuzzleOrderType _curOrderType;
-        private List<PictureFull> _usingUserPicFull;//装备的拼图
-        private List<PictureFull> _userPictureFull;//玩家拥有的拼图数据
+        private List<PictureFull> _usingUserPicFull; //装备的拼图
+        private List<PictureFull> _userPictureFull; //玩家拥有的拼图数据
         private List<PictureFull> _otherPictureFull;
         private List<PictureFull> _allPictureFull;
-        private List<UMCtrlPuzzleItem> _allUMPuzzleItem;//所有拼图
-        private List<UMCtrlPuzzleEquipLoc> _allUMEquipLocs;//所有槽位
+        private List<UMCtrlPuzzleItem> _allUMPuzzleItem; //所有拼图
+        private List<UMCtrlPuzzleEquipLoc> _allUMEquipLocs; //所有槽位
 
         public PictureFull CurActivePicFull;
+
         public List<PictureFull> UsingPicFull
         {
             get { return _usingUserPicFull; }
@@ -131,8 +130,9 @@ namespace GameA
         private void RefreshView()
         {
             //同步数据
-            //LocalUser.Instance.UserPictureFull.Request(LocalUser.Instance.UserGuid, null,
-            //    code => { LogHelper.Error("Network error when get UserPictureFull, {0}", code); });
+//            if (!LocalUser.Instance.UserPictureFull.IsInited)
+//                LocalUser.Instance.UserPictureFull.Request(LocalUser.Instance.UserGuid, null,
+//                    code => { LogHelper.Error("Network error when get UserPictureFull, {0}", code); });
             _userPictureFull = LocalUser.Instance.UserPictureFull.ItemDataList;
             for (int i = 0; i < _userPictureFull.Count; i++)
             {
@@ -166,9 +166,10 @@ namespace GameA
 
         private void RefreshSlots()
         {
-            //LocalUser.Instance.UserUsingPictureFullData.Request(LocalUser.Instance.UserGuid, null,
-            //code => { LogHelper.Error("Network error when get UserUsingPictureFullData, {0}", code); });
-            //_usingUserPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
+//            if (!LocalUser.Instance.UserUsingPictureFullData.IsInited)
+//                LocalUser.Instance.UserUsingPictureFullData.Request(LocalUser.Instance.UserGuid, null,
+//                    code => { LogHelper.Error("Network error when get UserUsingPictureFullData, {0}", code); });
+//            _usingUserPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
             for (int i = 0; i < _allUMEquipLocs.Count; i++)
             {
                 _allUMEquipLocs[i].SetPic(_usingUserPicFull[i]);
@@ -191,8 +192,6 @@ namespace GameA
                 case EPuzzleOrderType.Func:
                     _userPictureFull.Sort((p, q) => p.AttriBonus.CompareTo(q.AttriBonus));
                     _otherPictureFull.Sort((p, q) => p.AttriBonus.CompareTo(q.AttriBonus));
-                    break;
-                default:
                     break;
             }
             _allPictureFull.AddRange(_userPictureFull);
@@ -259,7 +258,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.PopUpUI;
+            _groupId = (int) EUIGroupType.PopUpUI;
         }
     }
 
