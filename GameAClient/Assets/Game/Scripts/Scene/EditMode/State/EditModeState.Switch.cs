@@ -48,8 +48,7 @@ namespace GameA.Game
 
             public override void Enter(EditMode owner)
             {
-                var boardData = GetBlackBoard();
-                boardData.DragInCurrentState = false;
+                base.Enter(owner);
                 OnEnterSwitchMode();
             }
 

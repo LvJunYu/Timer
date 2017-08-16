@@ -10,11 +10,24 @@ namespace GameA.Game
         {
             private EditRecordBatch _recordBatch;
             public virtual void Init() { }
-            public override void Enter(EditMode owner) { }
+
+            public override void Enter(EditMode owner)
+            {
+                if (owner == null || owner.BoardData == null)
+                {
+                    return;
+                }
+                owner.BoardData.DragInCurrentState = false;
+            }
             public override void Execute(EditMode owner) { }
 
             public override void Exit(EditMode owner)
             {
+                if (owner == null || owner.BoardData == null)
+                {
+                    return;
+                }
+                owner.BoardData.DragInCurrentState = false;
                 CommitRecordBatch();
             }
             public virtual void Dispose() { }

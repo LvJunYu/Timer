@@ -7,7 +7,6 @@
 
 using GameA.Game;
 using SoyEngine;
-using UnityEngine;
 
 namespace GameA
 {
@@ -31,12 +30,6 @@ namespace GameA
 		}
 
         #region 常量与字段
-        //private Social.UIDraggableButton _moveBtn;
-        //private bool _moveBtnDragged = false;
-        private Vector2 _moveBtnOrigPos;
-        private Vector2 _moveBtnDragOffset;
-        private float _maxMoveY = 270f;
-
 		// 编辑类型，是正常编辑还是改造编辑
 		private EMode _editMode = EMode.Edit;
         #endregion
@@ -178,7 +171,7 @@ namespace GameA
 				_cachedView.Play.gameObject.SetActive (false);
 				_cachedView.Pause.gameObject.SetActive (false);
 				_cachedView.Save.gameObject.SetActive (false);
-				_cachedView.Home.gameObject.SetActive (false);
+				_cachedView.Home.gameObject.SetActive (true);
 				break;
 			case EMode.ModifyEdit:
 				_cachedView.Erase.gameObject.SetActive (false);

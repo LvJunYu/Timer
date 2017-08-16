@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections;
-using SoyEngine;
+﻿using SoyEngine;
 using SoyEngine.Proto;
-using UnityEngine;
-using UnityEngine.UI;
-using System.Collections.Generic;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlPublishProject : UICtrlGenericBase<UIViewPublishProject>
     {
         #region Fields
@@ -23,12 +18,10 @@ namespace GameA
         {
             base.OnOpen(parameter);
 
-            if (null == parameter) {
-                SocialGUIManager.Instance.CloseUI<UICtrlPublishProject> ();
-            }
             _project = parameter as Project;
             if (null == _project) {
                 SocialGUIManager.Instance.CloseUI<UICtrlPublishProject> ();
+                return;
             }
 
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _project.IconPath, _cachedView.DefaultCover);
@@ -68,7 +61,7 @@ namespace GameA
 
                 // 单独判断只有一个或者3个都有的情况
                 string conditon = timeCondition;
-                string tmp = string.Empty;
+                string tmp;
                 int conditonCount = 0;
                 // 先判断到达终点
                 if (((winCondition >> (int) EWinCondition.WC_Arrive)&1) == 1)
@@ -109,7 +102,6 @@ namespace GameA
                     {
                         conditon = string.Format("{0}{1}", conditon, tmp);
                     }
-                    conditonCount++;
                 }
                 _cachedView.PassCondition.text = conditon;
                 _cachedView.TimeLimit.text = "时间限制：" + timelimit + "s";
@@ -120,15 +112,6 @@ namespace GameA
 
 
 
-        }
-        
-        protected override void OnClose() {
-            
-            base.OnClose ();
-        }
-        
-        protected override void InitEventListener() {
-            base.InitEventListener ();
         }
         
         protected override void OnViewCreated() {

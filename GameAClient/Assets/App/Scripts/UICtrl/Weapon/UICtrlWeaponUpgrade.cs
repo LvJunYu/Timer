@@ -26,6 +26,8 @@ namespace GameA
         private Sprite _universalSprie;
         private string _weaponPartSpriteName;
         private Sprite _weaponPartSprite;
+        private string _upStr = "升级";
+        private string _comStr = "合成";
         #endregion
 
         #region Properties
@@ -57,14 +59,15 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
+
         }
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-           
-
+            _cachedView.Cancel.onClick.AddListener(OnCancelBtn);
+            _cachedView.Confirm.onClick.AddListener(OnConfirmBtn);
         }
 
         public override void OnUpdate()
@@ -86,20 +89,26 @@ namespace GameA
         {
             if (_isCompoudAddNum == 0)
             {
-                _cachedView.TipUpgrade.text = "合成";
-                _cachedView.HpAdd.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).HpAdd.ToString();
-                _cachedView.AttackAdd.text =  TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).AttackAdd.ToString();
-                _cachedView.SkillEffect.text =  TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).SkillEffect.ToString();
+                _cachedView.TipUpgrade.text = _comStr;              
+                _cachedView.TileText.text = _comStr;
+                _cachedView.HpOld.text = "+0";
+                _cachedView.HpAdd.text = "+"+ TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).HpAdd.ToString();
+                _cachedView.AttactOld.text = "+0" ;
+                _cachedView.AttackAdd.text = "+" +TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).AttackAdd.ToString();
+                _cachedView.SkillOld.text = "+0";
+                _cachedView.SkillEffect.text = "+"+ TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).SkillEffect.ToString();
+
             }
             else
             {
-                _cachedView.TipUpgrade.text = "升级";
-                _cachedView.HpAdd.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).HpAdd.ToString() +
-                    "---" + TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).HpAdd.ToString();
-                _cachedView.AttackAdd.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).AttackAdd.ToString() +
-                    "---" + TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).AttackAdd.ToString();
-                _cachedView.SkillEffect.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).SkillEffect.ToString() + 
-                    "---" + TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).SkillEffect.ToString();
+                _cachedView.TipUpgrade.text = _upStr;
+                _cachedView.TileText.text = _upStr;
+                _cachedView.HpOld.text = "+"+TableManager.Instance.GetEquipmentLevel(_weaponlevelID).HpAdd.ToString();
+                _cachedView.HpAdd.text = "+"+ TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).HpAdd.ToString();
+                _cachedView.AttactOld.text = "+" + TableManager.Instance.GetEquipmentLevel(_weaponlevelID).AttackAdd.ToString();
+                _cachedView.AttackAdd.text = "+" + TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).AttackAdd.ToString();
+                _cachedView.SkillOld.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).SkillEffect.ToString();
+                _cachedView.SkillEffect.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).SkillEffect.ToString();
         }
             _cachedView.WeaponName.text = TableManager.Instance.GetEquipment(_weaponID).Name;
             //武器碎片的图标
@@ -123,22 +132,25 @@ namespace GameA
             }
             else
             {
-                _cachedView.UniversalPart.SetActive(false);
+                _cachedView.UniversalPart.transform.parent.gameObject.SetActive(false);
             }
+           
         }
 
         private void OnConfirmBtn()
         {
-            if (_isCompoudAddNum == 0)
-            {
-                CompoundWeapon();
-            }
-            else
-            {
-                UpgradeWeapon();
-            }
-            SocialGUIManager.Instance.CloseUI<UICtrlWeaponUpgrade>();
-            SocialGUIManager.Instance.OpenUI<UICtrlGetCoin>();
+            //if (_isCompoudAddNum == 0)
+            //{
+            //    CompoundWeapon();
+            //}
+            //else
+            //{
+            //    UpgradeWeapon();
+            //}
+            //SocialGUIManager.Instance.CloseUI<UICtrlWeaponUpgrade>();
+            //SocialGUIManager.Instance.OpenUI<UICtrlGetCoin>();
+            //测试
+            Messenger.Broadcast(EMessengerType.OnWeaponDataChange);
         }
         private void OnCancelBtn()
         {

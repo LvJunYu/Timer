@@ -9,25 +9,10 @@ using System.Collections.Generic;
 namespace GameA
 {
     [UIAutoSetup (EUIAutoSetupType.Add)]
-    public class UICtrlGetCoin : UICtrlGenericBase<UIViewGetCoin>
+    public class UICtrlGetWeaponPart : UICtrlGenericBase<UIViewGetWeaponPart>
     {
-        public enum ERewardType {
-            Reward,
-            Unlock,
-            Ability,
-        }
+
         #region Fields
-        /// <summary>
-        /// 奖励界面关闭锁定的时间，打开界面后，这个时间内不能关闭
-        /// </summary>
-        private const float _closeTime = 1f;
-        private float _closeTimer;
-
-        private ERewardType _openType;
-
-        private USCtrlRewardItem [] _rewardItemCtrls;
-
-        private Action _closeCB;
         #endregion
 
         #region Properties
@@ -37,7 +22,8 @@ namespace GameA
         protected override void OnOpen (object parameter)
         {
             base.OnOpen(parameter);
-            _cachedView.BGBtn.onClick.AddListener(OnBGBtn);
+            _cachedView.BtnClose.onClick.AddListener(OnBGBtn);
+            _cachedView.BtnConfirm.onClick.AddListener(OnBGBtn);
         }
         
         protected override void OnClose() {
@@ -65,16 +51,15 @@ namespace GameA
         
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.PopUpUI;
+            _groupId = (int)EUIGroupType.InGameTip;
         }
 
         private void OnBGBtn () {
-                SocialGUIManager.Instance.CloseUI<UICtrlGetCoin> ();
+                SocialGUIManager.Instance.CloseUI<UICtrlGetWeaponPart> ();
         }
 
 
-        private void OnAddTagBtn () {
-        }
+    
         #endregion
     }
 }
