@@ -31,8 +31,6 @@ namespace GameA
             get { return _eGameType; }
         }
 
-        public abstract ScreenOrientation ScreenOrientation { get; }
-
         public Project Project
         {
             get { return _project; }

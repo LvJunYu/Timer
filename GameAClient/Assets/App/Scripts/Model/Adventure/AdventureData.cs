@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine.Proto;
 using SoyEngine;
 
@@ -358,7 +359,7 @@ namespace GameA
                 form
 			);
 		}
-        // 成功提交冒险模式通关数据后，客户端自主刷洗数据
+        // 成功提交冒险模式通关数据后，客户端自主刷新数据
 		private void LocalRefreshCommitedLevelData (
 			bool success,
 			float usedTime,
@@ -410,6 +411,7 @@ namespace GameA
 			}
 		}
 
+        // 检查三星条件
         private bool CheckStarRequire(int starType, int starValue, Game.GameStatistic statistic)
         {
             if (null == statistic)
@@ -469,6 +471,14 @@ namespace GameA
             // 使怪物坠亡N次
             else if (starType == 13) {
                 return statistic.MonsterKilledByFallCnt >= starValue;
+            }
+            // 剩余血量大于{0}%
+            else if (starType == 14)
+            {
+                float currentHPPercentage =
+                    (float) PlayerManager.Instance.MainPlayer.Hp /
+                    PlayerManager.Instance.MainPlayer.MaxHp;
+                return currentHPPercentage > starValue * 0.01f;
             }
             return false;
         }

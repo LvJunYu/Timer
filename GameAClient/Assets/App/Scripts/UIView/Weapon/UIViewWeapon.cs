@@ -19,11 +19,10 @@ namespace GameA
         public Text CostGolCoinNum;
         public Text CostWeaponFragmentsNum;
         public Text WeaponLv;
+        public Text UpGradeOrCompound;
         public Image OwnedUniversalFragmentsIcon;
         public Image OwnedWeaponFragmentsIcon;
-        public Image EffectShow;
-        public Image UpGradeImage;
-        public Image Compound;
+        public Transform EffectShow;
         public Button LeftWeapon;
         public Button RightWeapon;
         public Button CloseButton;

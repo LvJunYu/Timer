@@ -53,6 +53,23 @@ namespace GameA
             _cachedView.AssistBtn.OnRelease+= OnAssistButtonUp;
         }
 
+        protected override void OnOpen(object parameter)
+        {
+            base.OnOpen(parameter);
+            _cachedView.SkillBtn2.gameObject.SetActive(false);
+            _cachedView.SkillBtn3.gameObject.SetActive(false);
+        }
+
+        public void SetSkillBtn2Visible(bool visible)
+        {
+            _cachedView.SkillBtn2.gameObject.SetActive(visible);
+        }
+        
+        public void SetSkillBtn3Visible(bool visible)
+        {
+            _cachedView.SkillBtn3.gameObject.SetActive(visible);
+        }
+
         private void OnSkillSlotChanged(Table_Skill tableSkill, int slot)
         {
             if (null == _cachedView) return;

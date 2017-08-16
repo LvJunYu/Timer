@@ -124,5 +124,10 @@ namespace GameA
 
 
         public Button UnlockAll;
+
+        /// <summary>
+        /// 武器按钮
+        /// </summary>
+        public Button Weapon;
     }
 }

@@ -365,38 +365,42 @@ namespace GameA
         }
 
 
-        private void ProcessDelete () {
+        private void ProcessDelete()
+        {
             if (null == _curSelectedPrivateProject || null == _curSelectedPrivateProject.Content)
                 return;
-            CommonTools.ShowPopupDialog(string.Format("删除之后将无法恢复，确定要删除《{0}》吗？", _curSelectedPrivateProject.Content.Name), "删除提示",
-                new KeyValuePair<string, Action>("确定",()=>{
+            CommonTools.ShowPopupDialog(
+                string.Format("删除之后将无法恢复，确定要删除《{0}》吗？", _curSelectedPrivateProject.Content.Name), "删除提示",
+                new KeyValuePair<string, Action>("取消", () => { LogHelper.Info("Cancel Delete"); }),
+                new KeyValuePair<string, Action>("确定", () =>
+                {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在删除");
                     var projList = new List<long>();
                     projList.Add(_curSelectedPrivateProject.Content.ProjectId);
-                    RemoteCommands.DeleteProject(projList, msg => {
+                    RemoteCommands.DeleteProject(projList, msg =>
+                    {
                         SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                         LocalUser.Instance.PersonalProjectList.ProjectList.Remove(_curSelectedPrivateProject.Content);
                         _curSelectedPrivateProject.Content.Delete();
                         _curSelectedPrivateProject = null;
-                            if (_isOpen && _state == EWorkShopState.PersonalProject)
+                        if (_isOpen && _state == EWorkShopState.PersonalProject)
+                        {
+                            RefreshWorkShopProjectList();
+                        }
+                        LocalUser.Instance.PersonalProjectList.Request(
+                            () => { },
+                            code =>
                             {
-                                RefreshWorkShopProjectList();
-                            }
-                        LocalUser.Instance.PersonalProjectList.Request (
-                            () => {
-                            },
-                            code => {
                                 // todo error handle
                             }
-                        );
+                            );
                     },
-                    code => {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                        CommonTools.ShowPopupDialog("删除失败");
-                    });
-                }), new KeyValuePair<string, Action>("取消", ()=>{
-                    LogHelper.Info("Cancel Delete");
-            }));
+                        code =>
+                        {
+                            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                            CommonTools.ShowPopupDialog("删除失败");
+                        });
+                }));
         }
 
         private void SetMode(EWorkShopState mode)

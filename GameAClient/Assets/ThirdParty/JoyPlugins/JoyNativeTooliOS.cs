@@ -8,16 +8,13 @@
 
 #if UNITY_IOS
 
-using System;
-using UnityEngine;
-using SoyEngine;
 using System.Text;
-using System.Runtime.InteropServices;
-using NewResourceSolution;
-using UnityEngine.iOS;
+using SoyEngine;
+using Umeng;
+using UnityEngine;
+using EMessengerType = GameA.EMessengerType;
 using NotificationServices = UnityEngine.iOS.NotificationServices;
 using RemoteNotification = UnityEngine.iOS.RemoteNotification;
-using Umeng;
 
 public class JoyNativeTooliOS : MonoBehaviour, IJoyNativeTool
 {
@@ -46,9 +43,9 @@ public class JoyNativeTooliOS : MonoBehaviour, IJoyNativeTool
 
     public void Init()
     {
-        UMPushiOS.setAutoAlert(false);
-        UMPushiOS.setBadgeClear(true);
-        UMPushiOS.setLogEnabled(GlobalVar.Instance.IsDebug);
+//        UMPushiOS.setAutoAlert(false);
+//        UMPushiOS.setBadgeClear(true);
+//        UMPushiOS.setLogEnabled(GlobalVar.Instance.IsDebug);
 
         string appkey = "5779c90d67e58e60150010c6";  
         GA.StartWithAppKeyAndChannelId(appkey, "App Store"); 
@@ -62,28 +59,28 @@ public class JoyNativeTooliOS : MonoBehaviour, IJoyNativeTool
 
     public void AddPushAlias(string alias, string type)
     {
-        UMPushiOS.addAlias(alias, type, AliasHandler);
+//        UMPushiOS.addAlias(alias, type, AliasHandler);
     }
 
     public void SetPushAlias(string alias, string type)
     {
-        UMPushiOS.setAlias(alias, type, AliasHandler);
+//        UMPushiOS.setAlias(alias, type, AliasHandler);
     }
 
     public void RemovePushAlias(string alias, string type)
     {
-        UMPushiOS.removeAlias(alias, type, AliasHandler);
+//        UMPushiOS.removeAlias(alias, type, AliasHandler);
     }
 
     public void SetStatusBarShow(bool show)
     {
-        _setStatusBarShow(show);
+//        _setStatusBarShow(show);
     }
 
     public void PickImage()
     {
-        NativeToolkit.OnImagePicked = JoyNativeTool.OnImagePicked;
-        NativeToolkit.PickImage();
+//        NativeToolkit.OnImagePicked = JoyNativeTool.OnImagePicked;
+//        NativeToolkit.PickImage();
     }
 
     public string GetCustomNotificationField()
@@ -112,29 +109,30 @@ public class JoyNativeTooliOS : MonoBehaviour, IJoyNativeTool
         return sb.ToString();;
     }
 
-    [DllImport("__Internal")]
-    private static extern void _setStatusBarShow(bool show);
+//    [DllImport("__Internal")]
+//    private static extern void _setStatusBarShow(bool show);
 
     public void OnReceiveRemoteNotification(string param)
     {
         LogHelper.Debug("OnReceiveRemoteNotification");
-        MessengerAsync.Broadcast(GameA.EMessengerType.OnReceiveRemoteNotification);
+        MessengerAsync.Broadcast(EMessengerType.OnReceiveRemoteNotification);
     }
 
-    [DllImport("__Internal")]
-    private static extern void _copyTextToClipboard(string text);
+//    [DllImport("__Internal")]
+//    private static extern void _copyTextToClipboard(string text);
 
     public void CopyTextToClipboard(string text)
     {
-        _copyTextToClipboard(text);
+//        _copyTextToClipboard(text);
     }
 
-    [DllImport("__Internal")]
-    private static extern string _getTextFromClipboard();
+//    [DllImport("__Internal")]
+//    private static extern string _getTextFromClipboard();
 
     public string GetTextFromClipboard()
     {
-        return _getTextFromClipboard();
+//        return _getTextFromClipboard();
+        return string.Empty;
     }
 }
 #endif

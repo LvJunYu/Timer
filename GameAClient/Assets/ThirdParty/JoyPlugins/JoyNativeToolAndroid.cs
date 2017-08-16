@@ -41,9 +41,9 @@ public class JoyNativeToolAndroid: MonoBehaviour, IJoyNativeTool
 
     public void Init()
     {
-        UMPushAndroid.enable();
-        UMPushAndroid.onAppStart();
-        UMPushAndroid.setDebugMode(GlobalVar.Instance.IsDebug);
+//        UMPushAndroid.enable();
+//        UMPushAndroid.onAppStart();
+//        UMPushAndroid.setDebugMode(GlobalVar.Instance.IsDebug);
         LogHelper.Info("Device Token:"+UMPushAndroid.getRegistrationId());
         string appkey = "5779c8d167e58e5d37003c26";  
         GA.StartWithAppKeyAndChannelId(appkey, "default");  
@@ -52,20 +52,20 @@ public class JoyNativeToolAndroid: MonoBehaviour, IJoyNativeTool
 
     public void AddPushAlias(string alias, string type)
     {
-        bool result = UMPushAndroid.addAlias(alias, type);
-        LogHelper.Info("AddPushAlias, result: " + result);
+//        bool result = UMPushAndroid.addAlias(alias, type);
+//        LogHelper.Info("AddPushAlias, result: " + result);
     }
 
     public void SetPushAlias(string alias, string type)
     {
-        bool result = UMPushAndroid.addExclusiveAlias(alias, type);
-        LogHelper.Info("SetPushAlias, result: " + result);
+//        bool result = UMPushAndroid.addExclusiveAlias(alias, type);
+//        LogHelper.Info("SetPushAlias, result: " + result);
     }
 
     public void RemovePushAlias(string alias, string type)
     {
-            bool result = UMPushAndroid.removeAlias(alias, type);
-            LogHelper.Info("RemovePushAlias, result: " + result);
+//            bool result = UMPushAndroid.removeAlias(alias, type);
+//            LogHelper.Info("RemovePushAlias, result: " + result);
     }
 
     public void SetStatusBarShow(bool show)
@@ -85,16 +85,16 @@ public class JoyNativeToolAndroid: MonoBehaviour, IJoyNativeTool
 
     public void PickImage()
     {
-        _androidObj.CallStatic("pickImageFromGallery");
+//        _androidObj.CallStatic("pickImageFromGallery");
     }
 
     public void OnPickImage(string path)
     {
-        Texture2D texture = JoyNativeTool.LoadImageFromFile(path);
-        if (JoyNativeTool.OnImagePicked != null)
-        {
-            JoyNativeTool.OnImagePicked(texture, path);
-        }
+//        Texture2D texture = JoyNativeTool.LoadImageFromFile(path);
+//        if (JoyNativeTool.OnImagePicked != null)
+//        {
+//            JoyNativeTool.OnImagePicked(texture, path);
+//        }
     }
     public string GetCustomNotificationField()
     {
@@ -103,12 +103,13 @@ public class JoyNativeToolAndroid: MonoBehaviour, IJoyNativeTool
 
     public void CopyTextToClipboard(string text)
     {
-        _androidObj.CallStatic("copyTextToClipboard", text);
+//        _androidObj.CallStatic("copyTextToClipboard", text);
     }
 
     public string GetTextFromClipboard()
     {
-        return _androidObj.CallStatic<String>("getTextFromClipboard");
+        return string.Empty;
+//        return _androidObj.CallStatic<String>("getTextFromClipboard");
     }
 }
 #endif
