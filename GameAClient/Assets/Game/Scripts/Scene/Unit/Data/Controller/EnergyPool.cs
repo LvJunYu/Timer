@@ -68,6 +68,10 @@ namespace GameA.Game
 
         private void UpdateEnergyEffect()
         {
+            if (_weaponId == 0)
+            {
+                return;
+            }
             var tableEquipment = TableManager.Instance.GetEquipment(_weaponId);
             if (tableEquipment == null)
             {
