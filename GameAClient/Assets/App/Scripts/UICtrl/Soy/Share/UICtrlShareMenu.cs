@@ -107,25 +107,25 @@ namespace GameA
 
         private void OnWechatFriendsClick()
         {
-            ShareUtil.ShareWechatFriends(_shareObj);
+//            ShareUtil.ShareWechatFriends(_shareObj);
             StartCloseAnimation();
         }
 
         private void OnWechatMomentsClick()
         {
-            ShareUtil.ShareToWechatMoments(_shareObj);
+//            ShareUtil.ShareToWechatMoments(_shareObj);
             StartCloseAnimation();
         }
 
         private void OnQQFriendsClick()
         {
-            ShareUtil.ShareToQQFriends(_shareObj);
+//            ShareUtil.ShareToQQFriends(_shareObj);
             StartCloseAnimation();
         }
 
         private void OnQZoneClick()
         {
-            ShareUtil.ShareToQZone(_shareObj);
+//            ShareUtil.ShareToQZone(_shareObj);
             StartCloseAnimation();
         }
         #endregion

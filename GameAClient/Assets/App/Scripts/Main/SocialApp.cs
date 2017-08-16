@@ -148,7 +148,7 @@ namespace GameA
         public void LoginSucceed ()
         {
             AppData.Instance.Init();
-            ShareUtil.Init();
+//            ShareUtil.Init();
 //            RoomManager.Instance.Init();
 
             GetUserData ();
