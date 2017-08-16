@@ -16,7 +16,6 @@ namespace GameA
         #region field
 
         private bool _hasInit = false;
-        private bool _isRequest = false;
         private int _appResVersion = 1;
         private AdventureData _adventureData;
         private WorldData _worldData;

@@ -53,7 +53,6 @@ public class JoyNativeTooliOS : MonoBehaviour, IJoyNativeTool
         string appkey = "5779c90d67e58e60150010c6";  
         GA.StartWithAppKeyAndChannelId(appkey, "App Store"); 
         GA.SetLogEnabled(GlobalVar.Instance.IsDebug);
-        GA.SetAppVersion(RuntimeConfig.Instance.Version);
     }
 
     private void AliasHandler(string response,string error)

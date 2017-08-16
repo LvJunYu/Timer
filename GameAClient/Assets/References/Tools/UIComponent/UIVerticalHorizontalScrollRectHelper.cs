@@ -21,7 +21,7 @@ namespace SoyEngine
         private IBeginDragHandler[] _aryBeginDragHandler;
         private IDragHandler[] _aryDragHandler;
         private IEndDragHandler[] _aryEndDragHandler;
-        private int _curInx = 0;//0 = H, 1 = V;
+        private int _curInx;//0 = H, 1 = V;
 
         void Start()
         {
@@ -39,14 +39,14 @@ namespace SoyEngine
                 return;
             }
             var bda = go.GetComponents<IBeginDragHandler>();
-            IBeginDragHandler ib = this as IBeginDragHandler;
+            IBeginDragHandler ib = this;
             _aryBeginDragHandler[inx] = Array.Find(bda, handler => handler != ib);
             var da = go.GetComponents<IDragHandler>();
-            IDragHandler id = this as IDragHandler;
+            IDragHandler id = this;
             _aryDragHandler[inx] = Array.Find(da, handler => handler != id);
             var eda = go.GetComponents<IEndDragHandler>();
-            IEndDragHandler ie = this as IEndDragHandler;
-            _aryEndDragHandler[inx] = Array.Find(eda, handler => handler != id);
+            IEndDragHandler ie = this;
+            _aryEndDragHandler[inx] = Array.Find(eda, handler => handler != ie);
         }
 
         public void OnBeginDrag(PointerEventData eventData)

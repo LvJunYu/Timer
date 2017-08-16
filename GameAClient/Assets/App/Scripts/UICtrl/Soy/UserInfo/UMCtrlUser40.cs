@@ -6,11 +6,7 @@
   ***********************************************************************/
 
 
-using System;
-using System.Collections;
 using SoyEngine;
-using UnityEngine.UI;
-using UnityEngine;
 
 namespace GameA
 {
@@ -31,7 +27,7 @@ namespace GameA
 
         private void OnItemClick()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlUserInfo>(_content);
+//            SocialGUIManager.Instance.OpenUI<UICtrlUserInfo>(_content);
         }
 
         public void Set(UserInfoSimple data)

@@ -10,11 +10,16 @@ namespace GameA.Game
         {
             private EditRecordBatch _recordBatch;
             public virtual void Init() { }
-            public override void Enter(EditMode owner) { }
+
+            public override void Enter(EditMode owner)
+            {
+                owner.BoardData.DragInCurrentState = false;
+            }
             public override void Execute(EditMode owner) { }
 
             public override void Exit(EditMode owner)
             {
+                owner.BoardData.DragInCurrentState = false;
                 CommitRecordBatch();
             }
             public virtual void Dispose() { }

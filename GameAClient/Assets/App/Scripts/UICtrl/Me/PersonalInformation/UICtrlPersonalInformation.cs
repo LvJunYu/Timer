@@ -17,11 +17,10 @@ using UnityEngine;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlPersonalInformation : UICtrlInGameBase<UIViewPersonalInformation>, IUIWithTitle
+    [UIAutoSetup]
+    public class UICtrlPersonalInformation : UICtrlGenericBase<UIViewPersonalInformation>
     {
         #region 常量与字段
-        private ListMenuView _listMenuView;
         private string _name;
         private string _signature;
         private string _maleIcon = "icon_male";
@@ -311,10 +310,6 @@ namespace GameA
         #endregion 事件处理
 
         #region 接口
-        public object GetTitle()
-        {
-            return "设置";
-        }
 
         #endregion
     }
