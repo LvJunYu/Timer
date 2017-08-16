@@ -134,6 +134,11 @@ namespace GameA.Game
             get { return _hp; }
         }
 
+        public int MaxHp
+        {
+            get { return _maxHp; }
+        }
+
         public virtual EDieType EDieType
         {
             get { return EDieType.None; }
