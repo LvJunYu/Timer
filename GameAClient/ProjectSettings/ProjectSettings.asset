@@ -6,12 +6,12 @@ PlayerSettings:
   serializedVersion: 10
   productGUID: 4b4eaf1df844d6f438eaa6705c09b138
   AndroidProfiler: 0
-  defaultScreenOrientation: 2
+  defaultScreenOrientation: 4
   targetDevice: 0
   useOnDemandResources: 0
   accelerometerFrequency: 15
   companyName: "\u5317\u4EAC\u5320\u6E38\u79D1\u6280\u6709\u9650\u516C\u53F8"
-  productName: "\u5320\u6E38"
+  productName: "\u5192\u9669\u4E0E\u521B\u9020"
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13333334, g: 0.17254902, b: 0.21176471, a: 1}
@@ -57,8 +57,8 @@ PlayerSettings:
   iosAppInBackgroundBehavior: -1
   displayResolutionDialog: 1
   iosAllowHTTPDownload: 1
-  allowedAutorotateToPortrait: 1
-  allowedAutorotateToPortraitUpsideDown: 1
+  allowedAutorotateToPortrait: 0
+  allowedAutorotateToPortraitUpsideDown: 0
   allowedAutorotateToLandscapeRight: 1
   allowedAutorotateToLandscapeLeft: 1
   useOSAutorotation: 1
@@ -118,7 +118,7 @@ PlayerSettings:
     16:10: 0
     16:9: 1
     Others: 0
-  bundleIdentifier: com.GameLife.Soy
+  bundleIdentifier: com.joyyou.gamea
   bundleVersion: 1.0
   preloadedAssets: []
   metroInputSource: 0
@@ -171,12 +171,12 @@ PlayerSettings:
   tvOSTopShelfImageWideLayers: []
   iOSLaunchScreenType: 1
   iOSLaunchScreenPortrait: {fileID: 0}
-  iOSLaunchScreenLandscape: {fileID: 2800000, guid: 69bed87f973ceae46b3f80699b0d4da5,
+  iOSLaunchScreenLandscape: {fileID: 2800000, guid: 58224884bc5e02546add5f8e6cfefa4f,
     type: 3}
   iOSLaunchScreenBackgroundColor:
     serializedVersion: 2
-    rgba: 4294967295
-  iOSLaunchScreenFillPct: 1
+    rgba: 4290308351
+  iOSLaunchScreenFillPct: 30
   iOSLaunchScreenSize: 100
   iOSLaunchScreenCustomXibPath: 
   iOSLaunchScreeniPadType: 0
@@ -213,7 +213,7 @@ PlayerSettings:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: 6a194756d04f1344ab256eb08be77f71, type: 3}
+      m_Icon: {fileID: 2800000, guid: ad73120d1b82c40f3958e456c936db8a, type: 3}
       m_Width: 128
       m_Height: 128
   - m_BuildTarget: Android
@@ -449,10 +449,10 @@ PlayerSettings:
   webGLUseWasm: 0
   webGLCompressionFormat: 1
   scriptingDefineSymbols:
-    1: CROSS_PLATFORM_INPUT;GM2DPROJECT;Mario
+    1: CROSS_PLATFORM_INPUT;GM2DPROJECT
     2: 
     4: MOBILE_INPUT;CROSS_PLATFORM_INPUT;GM2DPROJECT
-    7: MOBILE_INPUT;GM2DPROJECT;Mario
+    7: MOBILE_INPUT;GM2DPROJECT
     15: CROSS_PLATFORM_INPUT;MOBILE_INPUT
     16: CROSS_PLATFORM_INPUT;MOBILE_INPUT
     25: 
