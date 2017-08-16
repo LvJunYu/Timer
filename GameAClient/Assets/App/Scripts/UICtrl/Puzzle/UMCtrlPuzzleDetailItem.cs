@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using SoyEngine;
@@ -41,17 +39,21 @@ namespace GameA
             //初始化碎片遮罩图片，构建索引字典
             _disableImgDic.Clear();
             _imageDic.Clear();
+
             for (int i = 0; i < _masks.Count; i++)
             {
                 Transform picTF = _masks[i].transform.GetChild(0);
                 picTF.localPosition = -_masks[i].transform.localPosition;
+                //设置碎片外框
+                //Image outlime = _curTF.GetChild(_masks[i].transform.GetSiblingIndex() + 1).GetComponent<Image>();
+                //outlime.sprite = _masks[i].GetComponent<Image>().sprite;
+                //设置底图
                 Image image = picTF.GetComponent<Image>();
-                image.sprite = _cachedView.Puzzle_Active.sprite;
                 _imageDic.Add(i + 1, image);
                 Image disableImg = picTF.GetChild(0).GetComponent<Image>();
-                disableImg.sprite = _cachedView.Puzzle_Active.sprite;
-                disableImg.color = _cachedView.DisableColor;
                 _disableImgDic.Add(i + 1, disableImg);
+                disableImg.sprite = image.sprite = _cachedView.Puzzle_Active.sprite;
+                disableImg.color = _cachedView.DisableColor;
             }
             hasInited = true;
             SetData();

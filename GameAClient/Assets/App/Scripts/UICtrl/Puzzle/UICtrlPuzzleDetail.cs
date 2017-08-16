@@ -1,8 +1,6 @@
 ﻿using SoyEngine;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 using SoyEngine.Proto;
 using UnityEngine.UI;
 
@@ -11,16 +9,20 @@ namespace GameA
     /// <summary>
     /// 
     /// </summary>
-	[UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlPuzzleDetail : UICtrlGenericBase<UIViewPuzzleDetail>
     {
         //碎片间距
         private const float _halfSpacing = 160;
+
         private const float _quarterSpacing = 35;
         private const float _sixthSpacing = 40;
+
         private const float _ninthSpacing = 9;
+
         //按钮文字
         private const string _upgrateTxt = "升级";
+
         private const string _activeTxt = "合成";
         private const string _maxLvTxt = "等级MAX";
 
@@ -71,7 +73,7 @@ namespace GameA
 
         private void OnActiveBtn()
         {
-            if (!GameATools.CheckGold(_puzzle.CostMoeny, true))
+            if (!GameATools.CheckGold(_puzzle.CostMoeny))
                 return;
             //通知服务器
             if (_puzzle.CurState == EPuzzleState.HasActived)
@@ -85,7 +87,7 @@ namespace GameA
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在合成拼图");
             RemoteCommands.CompoundPictureFull(_puzzle.PictureId, res =>
             {
-                if (res.ResultCode == (int)ECompoundPictureFullCode.CPF_Success)
+                if (res.ResultCode == (int) ECompoundPictureFullCode.CPF_Success)
                 {
                     CompoundOrUpgrade();
                     RequesUserPictureFull();
@@ -110,26 +112,26 @@ namespace GameA
         {
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在升级拼图");
             RemoteCommands.UpgradePictureFull(_puzzle.PictureId, _puzzle.Level + 1, res =>
-               {
-                   if (res.ResultCode == (int)ECompoundPictureFullCode.CPF_Success)
-                   {
-                       CompoundOrUpgrade();
-                       RequesUserPictureFull();
-                       SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                   }
-                   else
-                   {
-                       SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                       LogHelper.Debug("升级失败");
-                   }
-               }, code =>
-               {
-                   SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                   //测试，服务器完成后删除
-                   LogHelper.Debug("服务器请求失败，客服端升级测试");
-                   CompoundOrUpgrade();
-                   //LogHelper.Debug("升级失败");
-               });
+            {
+                if (res.ResultCode == (int) ECompoundPictureFullCode.CPF_Success)
+                {
+                    CompoundOrUpgrade();
+                    RequesUserPictureFull();
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                }
+                else
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    LogHelper.Debug("升级失败");
+                }
+            }, code =>
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                //测试，服务器完成后删除
+                LogHelper.Debug("服务器请求失败，客服端升级测试");
+                CompoundOrUpgrade();
+                //LogHelper.Debug("升级失败");
+            });
         }
 
         private void CompoundOrUpgrade()
@@ -139,7 +141,7 @@ namespace GameA
             {
                 LogHelper.Debug("Don't have enough moeny !!");
                 return;
-            };
+            }
             //消耗材料
             for (int i = 0; i < _puzzleFragments.Length; i++)
             {
@@ -169,12 +171,6 @@ namespace GameA
                 code => { LogHelper.Error("Network error when get UserPicturePart, {0}", code); });
         }
 
-        private void RequesUsingPictureFull()
-        {
-            LocalUser.Instance.UserUsingPictureFullData.Request(LocalUser.Instance.UserGuid, null,
-                code => { LogHelper.Error("Network error when get UserUsingPictureFullData, {0}", code); });
-        }
-
         private void SetUI()
         {
             //拼图数据
@@ -187,7 +183,7 @@ namespace GameA
                 UMCtrlPuzzleFragmentItem puzzleFragment = CreatePuzzleFragment();
                 _curUMFragments.Add(puzzleFragment);
                 //测试用
-                _puzzleFragments[i].AddFrag(UnityEngine.Random.Range(10, 20));
+                _puzzleFragments[i].AddFrag(Random.Range(0, 2));
                 puzzleFragment.SetData(_puzzleFragments[i], _puzzle, _curUMPuzzleItem);
             }
             //设置碎片间距
@@ -311,6 +307,7 @@ namespace GameA
         {
             base.OnOpen(parameter);
             _puzzle = parameter as PictureFull;
+            if (_puzzle == null) return;
             _puzzleFragments = _puzzle.NeededFragments;
             SetUI();
         }
@@ -355,8 +352,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.PopUpUI2;
+            _groupId = (int) EUIGroupType.PopUpUI2;
         }
-
     }
 }
