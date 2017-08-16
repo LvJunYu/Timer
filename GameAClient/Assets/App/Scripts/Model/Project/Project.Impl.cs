@@ -307,7 +307,7 @@ namespace GameA
             }
             if (string.IsNullOrEmpty(name))
             {
-                name = "我的匠游大作";
+                name = "我的大作";
             }
             Name = name;
             Summary = summary;

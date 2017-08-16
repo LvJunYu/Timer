@@ -41,7 +41,7 @@ namespace GameA.Game
 		{
 			if (ELocalDataState.LDS_UnCreated == _project.LocalDataState)
 			{
-				_project.Name = "我的酱油大作";
+				_project.Name = "我的大作";
 				_project.Summary = "这个家伙没写简介";
 			}
 
