@@ -5,6 +5,7 @@
 ** Summary : UMCtrlBase
 ***********************************************************************/
 
+using System;
 using SoyEngine;
 using UnityEngine.UI;
 using UnityEngine;

@@ -17,7 +17,7 @@ namespace SoyEngine
         {
             get
             {
-                return this._curInx;
+                return _curInx;
             }
         }
 
@@ -73,7 +73,7 @@ namespace SoyEngine
 
         private void OnClickTag(int inx)
         {
-            SelectIndex(inx, false);
+            SelectIndex(inx);
         }
 
         private void OnEnable()

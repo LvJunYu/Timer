@@ -5,14 +5,9 @@
 ** Summary : UPCtrlWorldUserPlayHistory.cs
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using SoyEngine;
-using SoyEngine.Proto;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
@@ -23,8 +18,6 @@ namespace GameA
         private List<CardDataRendererWrapper<Project>> _contentList = new List<CardDataRendererWrapper<Project>>();
         private Dictionary<long, CardDataRendererWrapper<Project>> _dict = new Dictionary<long, CardDataRendererWrapper<Project>>();
         private UserWorldProjectPlayHistoryList _data;
-        private Vector2 _pagePosition = Vector2.zero;
-        private CardDataRendererWrapper<Project> _curSelectedProject;
         #endregion
 
         #region 属性
@@ -35,21 +28,33 @@ namespace GameA
         public override void Open()
         {
             base.Open();
+            _cachedView.PlayHistoryPanel.SetActiveEx(true);
             _data = AppData.Instance.WorldData.UserPlayHistoryList;
             RefreshView();
             RequestData();
-            _cachedView.GridScroller.ContentPosition = _pagePosition;
         }
 
         public override void Close()
         {
-            _pagePosition = _cachedView.GridScroller.ContentPosition;
+            _cachedView.PlayHistoryPanel.SetActiveEx(false);
             base.Close();
         }
 
         private void OnItemClick(CardDataRendererWrapper<Project> item)
         {
-            SelectItem(item);
+            if (item == null || item.Content == null)
+            {
+                return;
+            }
+            SocialGUIManager.Instance.OpenUI<UICtrlProjectDetail>(item.Content);
+        }
+        
+        private IDataItemRenderer GetItemRenderer(RectTransform parent)
+        {
+            var item = new UMCtrlWorldProject();
+            item.Init(parent, Vector3.zero);
+            item.GetTimeFunc = GetTime;
+            return item;
         }
 
         public void OnItemRefresh(IDataItemRenderer item, int inx)
@@ -67,6 +72,11 @@ namespace GameA
                     RequestData(true);
                 }
             }
+        }
+
+        private string GetTime(Project p)
+        {
+            return DateTimeUtil.GetServerSmartDateStringByTimestampMillis(p.ProjectUserData.LastPlayTime);
         }
         #region private
         private void RequestData(bool append = false)
@@ -91,53 +101,26 @@ namespace GameA
             _contentList.Clear();
             _contentList.Capacity = Mathf.Max(_contentList.Capacity, list.Count);
             _dict.Clear();
-            bool findFlag = false;
             for (int i = 0; i < list.Count; i++)
             {
                 Project p = list[i];
                 CardDataRendererWrapper<Project> w = new CardDataRendererWrapper<Project>(p, OnItemClick);
-                if (_curSelectedProject != null
-                    && _curSelectedProject.Content.ProjectId == p.ProjectId)
-                {
-                    SelectItem(w);
-                    findFlag = true;
-                }
-                w.IsSelected = false;
                 _contentList.Add(w);
                 _dict.Add(p.ProjectId, w);
             }
-            if (!findFlag)
-            {
-                if (_contentList.Count > 0)
-                {
-                    SelectItem(_contentList[0]);
-                }
-                else
-                {
-                    SelectItem(null);
-                }
-            }
-            _cachedView.GridScroller.SetItemCount(_contentList.Count);
+            _cachedView.PlayHistoryGridScroller.SetItemCount(_contentList.Count);
         }
 
-        private void SelectItem(CardDataRendererWrapper<Project> item)
-        {
-            if (_curSelectedProject != null)
-            {
-                _curSelectedProject.IsSelected = false;
-                _curSelectedProject.BroadcastDataChanged();
-            }
-            _curSelectedProject = item;
-            if (_curSelectedProject != null)
-            {
-                _curSelectedProject.IsSelected = true;
-                _curSelectedProject.BroadcastDataChanged();
-            }
-            _mainCtrl.SetProject(item == null ? null : item.Content);
-        }
         #endregion private
 
         #region 接口
+
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _cachedView.PlayHistoryGridScroller.SetCallback(OnItemRefresh, GetItemRenderer);
+        }
+
         public void OnChangeHandler(long val)
         {
             CardDataRendererWrapper<Project> w;

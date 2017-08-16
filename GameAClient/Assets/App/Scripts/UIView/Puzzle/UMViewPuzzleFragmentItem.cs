@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using SoyEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace GameA
 {
@@ -11,9 +12,11 @@ namespace GameA
     /// </summary>
     public class UMViewPuzzleFragmentItem : UMViewBase
     {
-        public Image Image;
-        public Image Image_Disable;
-        public Text HaveNumTxt;
-        public Text NameTxt;
+        public List<RectTransform> Rects;
+        public List<Image> Images;
+        public List<Image> Image_Disables;
+        public List<Text> HaveNumTxts;
+        public List<Text> OrderTxts;
+        public Color disableColor;
     }
 }

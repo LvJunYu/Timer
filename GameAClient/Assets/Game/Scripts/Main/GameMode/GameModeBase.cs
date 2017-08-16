@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
@@ -37,7 +38,7 @@ namespace GameA.Game
             return true;
         }
 
-        public abstract void InitByStep();
+        public abstract IEnumerator InitByStep();
         public abstract void OnGameSuccess();
         public abstract void OnGameFailed();
 
@@ -50,7 +51,7 @@ namespace GameA.Game
             GameRun.Instance.Update();
             if (GameRun.Instance.LogicTimeSinceGameStarted < GameRun.Instance.GameTimeSinceGameStarted)
             {
-                if (null != PlayerManager.Instance.MainPlayer)
+                if (GameRun.Instance.IsPlaying && null != PlayerManager.Instance.MainPlayer)
                 {
                     LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.Input as LocalPlayerInput;
                     if (localPlayerInput != null)
@@ -133,6 +134,11 @@ namespace GameA.Game
         public void OnDrawGizmos()
         {
             GameRun.Instance.OnDrawGizmos();
+        }
+
+        protected void BroadcastLoadProgress(float val)
+        {
+            Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, val);
         }
     }
 }

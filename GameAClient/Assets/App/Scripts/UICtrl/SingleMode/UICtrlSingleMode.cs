@@ -163,10 +163,10 @@ namespace GameA
 			
 		public override void OnUpdate ()
 		{
-            if (_cachedView.NextSection.gameObject!=null)
-            _cachedView.NextSection.rectTransform.localPosition = new Vector2(3f, 0) * Mathf.Sin(Time.time * 3f) + new Vector2(-70.3f, -13.3f);
+		    if (_cachedView.NextSection.gameObject != null)
+		        _cachedView.NextSection.rectTransform.localPosition = new Vector2(3f, 0)*Mathf.Sin(Time.time*3f)+new Vector2(-70.3f, -15);
             if (_cachedView.PREVSection.gameObject != null)
-                _cachedView.PREVSection.rectTransform.localPosition = new Vector2(3f, 0) * Mathf.Sin(Time.time * 3f) + new Vector2(0, 0);
+                _cachedView.PREVSection.rectTransform.localPosition = -new Vector2(3f, 0) * Mathf.Sin(Time.time * 3f) ;
             base.OnUpdate ();
 			if (_currentChapter < 1) {
 				CurrentChapter = 1;

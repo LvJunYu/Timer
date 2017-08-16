@@ -58,6 +58,19 @@ namespace GameA.Game
         {
             _onIce = true;
         }
+        
+        public override void CheckStart()
+        {
+            _downUnit = null;
+            _downUnits.Clear();
+            _isCalculated = false;
+            Speed += ExtraSpeed;
+            ExtraSpeed = IntVec2.zero;
+            if (_curBanInputTime > 0)
+            {
+                _curBanInputTime--;
+            }
+        }
 
         protected override void UpdateCollider(IntVec2 min)
         {
@@ -357,6 +370,40 @@ namespace GameA.Game
                     _fanForce += iter.Current.Value;
                 }
             }
+        }
+        
+        public override IntVec2 GetDeltaImpactPos(UnitBase unit)
+        {
+            IntVec2 deltaImpactPos = IntVec2.zero;
+            if (!_isCalculated)
+            {
+                if (_downUnits.Count > 0)
+                {
+                    int right = 0;
+                    int left = 0;
+                    int deltaY = int.MinValue;
+                    for (int i = 0; i < _downUnits.Count; i++)
+                    {
+                        var deltaPos = _downUnits[i].GetDeltaImpactPos(this);
+                        if (deltaPos.x > 0 && deltaPos.x > right)
+                        {
+                            right = deltaPos.x;
+                        }
+                        if (deltaPos.x < 0 && deltaPos.x < left)
+                        {
+                            left = deltaPos.x;
+                        }
+                        if (deltaPos.y > deltaY)
+                        {
+                            deltaY = deltaPos.y;
+                        }
+                    }
+                    int deltaX = right + left;
+                    deltaImpactPos = new IntVec2(deltaX, deltaY);
+                }
+                _isCalculated = true;
+            }
+            return deltaImpactPos;
         }
     }
 }

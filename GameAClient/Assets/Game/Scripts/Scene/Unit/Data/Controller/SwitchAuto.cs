@@ -11,7 +11,7 @@ using System.Collections;
 namespace GameA.Game
 {
     [Unit(Id = 8104, Type = typeof(SwitchAuto))]
-    public class SwitchAuto : Switch
+    public class SwitchAuto : SwitchMagic
     {
     }
 }

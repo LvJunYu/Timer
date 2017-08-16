@@ -12,7 +12,7 @@ using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
 using NewResourceSolution;
-using UnityEditor;
+//using UnityEditor;
 using Object = UnityEngine.Object;
 
 namespace GameA.Game

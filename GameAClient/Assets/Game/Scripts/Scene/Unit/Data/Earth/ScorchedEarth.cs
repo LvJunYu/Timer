@@ -88,10 +88,7 @@ namespace GameA.Game
         {
             if (!checkOnly)
             {
-                if (other.IsMain)
-                {
-                    OnExplode();
-                }
+                OnExplode();
             }
         }
 
@@ -179,7 +176,7 @@ namespace GameA.Game
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (unit != null && unit.IsAlive && unit != this)
+                    if (unit != null && unit.IsAlive && unit != this && unit.Id == UnitDefine.ScorchedEarthId)
                     {
                         var scorchedEarth = unit as ScorchedEarth;
                         if (scorchedEarth != null)

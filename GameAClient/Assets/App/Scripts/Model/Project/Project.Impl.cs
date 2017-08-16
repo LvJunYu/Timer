@@ -24,6 +24,8 @@ namespace GameA
         private byte[] _deadPos;
         private long _commitToken;
 
+        private WorldProjectRecentPlayedUserList _recentPlayedUserList;
+
         private GameTimer _projectInfoRequestTimer;
 
         /// <summary>
@@ -209,6 +211,20 @@ namespace GameA
                 _levelId = value;
             }
         }
+
+        public WorldProjectRecentPlayedUserList RecentPlayedUserList
+        {
+            get
+            {
+                if (_recentPlayedUserList == null)
+                {
+                    _recentPlayedUserList = new WorldProjectRecentPlayedUserList();
+                    _recentPlayedUserList.CS_ProjectId = _projectId;
+                }
+                return _recentPlayedUserList;
+            }
+        }
+
         #endregion 属性
 
         #region 方法
@@ -623,6 +639,10 @@ namespace GameA
                 }
                 if (_projectUserData != null) {
                     _projectUserData.Favorite = true;
+                }
+                if (_extendData != null)
+                {
+                    _extendData.FavoriteCount += favorite ? 1 : -1;
                 }
                 if (successCallback != null)
                 {

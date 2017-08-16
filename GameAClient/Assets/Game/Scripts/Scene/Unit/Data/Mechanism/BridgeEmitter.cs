@@ -14,7 +14,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     [Unit(Id = 5008, Type = typeof(BridgeEmitter))]
-    public class BridgeEmitter : SwitchPress
+    public class BridgeEmitter : SwitchUnit
     {
         private const int BridgeUnitId = 5009;
         protected Grid2D _checkGrid;
@@ -57,7 +57,7 @@ namespace GameA.Game
             {
                 return;
             }
-            if (!_trigger)
+            if (_switchTrigger==null || !_switchTrigger.Trigger)
             {
                 if (_curCreatingQueue != null)
                 {
@@ -96,7 +96,7 @@ namespace GameA.Game
 
                         for (int i = 0; i < units.Count; i++)
                         {
-                            if (units[i].Id == UnitDefine.SwitchTriggerId)
+                            if (UnitDefine.IsSwitchTrigger(units[i].Id))
                             {
                                 units[i].OnIntersect(unit);
                             }

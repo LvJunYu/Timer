@@ -156,7 +156,7 @@ namespace GameA.Game
                             UnitBase switchTrigger;
                             if (ColliderScene2D.Instance.TryGetUnit(hit.node, out switchTrigger))
                             {
-                                _gridCheck.Do((SwitchTrigger) switchTrigger);
+                                _gridCheck.Do((SwitchTriggerPress) switchTrigger);
                                 _distance = hit.distance + 80;
                                 break;
                             }

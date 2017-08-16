@@ -38,7 +38,7 @@ namespace GameA.Game
         protected bool _hasWaterCheckedInFrame;
         
         protected SkillCtrl _skillCtrl;
- 
+        
         public override EDieType EDieType
         {
             get { return _eDieType; }
@@ -211,7 +211,7 @@ namespace GameA.Game
                         _stepY = 0;
                     }
                     _jumpLevel = 0;
-                    SpeedY = _onClay ? 100 : 150;
+                    SpeedY = _onClay ? 100 : 165;
                     _jumpState = EJumpState.Jump1;
                     _jumpTimer = 10;
                 }
@@ -228,7 +228,7 @@ namespace GameA.Game
                         else
                         {
                             _jumpLevel = 1;
-                            SpeedY = 150;
+                            SpeedY = 165;
                             _jumpState = EJumpState.Jump2;
                         }
                         ExtraSpeed.y = 0;
@@ -288,6 +288,10 @@ namespace GameA.Game
                 for (int i = 0; i < _skillCtrl.CurrentSkills.Length; i++)
                 {
                     var skill = _skillCtrl.CurrentSkills[i];
+                    if (skill == null)
+                    {
+                        continue;
+                    }
                     switch ((ECostType)skill.TableSkill.CostType)
                     {
                             case ECostType.Paint:

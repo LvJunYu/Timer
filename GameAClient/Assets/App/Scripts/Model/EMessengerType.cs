@@ -118,6 +118,7 @@ namespace GameA
         //拼图
         public static int OnPuzzleCompound = SoyEngine.EMessengerType.NextId++;
         public static int OnPuzzleEquip = SoyEngine.EMessengerType.NextId++;
+        public static int OnPuzzleFragChanged = SoyEngine.EMessengerType.NextId++;
     }
 }
 

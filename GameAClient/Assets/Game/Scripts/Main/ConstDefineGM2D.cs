@@ -22,7 +22,7 @@ namespace GameA.Game
         public const float FixedDeltaTime = 0.02f;
 	    public const int FixedFrameCount = 50;
         public const int FixedDeltaTile = (int)(FixedDeltaTime * ServerTileScale);
-	    public const float CameraOrthoSizeOnPlay = 5f;
+	    public const float CameraOrthoSizeOnPlay = 4.5f;
 
         /// <summary>
         /// 8+16 = 24
@@ -30,7 +30,6 @@ namespace GameA.Game
         //public static IntVec2 RegionTileSize = new IntVec2(16, 16) * ServerTileScale;
         public static IntVec2 RegionTileSize = new IntVec2(120, 120) * ServerTileScale;
         //小于RegionTileSize 16 大于半屏幕格子数6.5*2=13
-
         public static IntVec2 HalfMaxScreenSize = new IntVec2(26,13) * ServerTileScale / 2;
 
         public static int MaxPhysicsUnitCount = 30;
@@ -43,14 +42,9 @@ namespace GameA.Game
         public const int MaxMapDistance = 300 * ServerTileScale;
 
 		public static IntVec2 MapStartPos = new IntVec2(100,100) * ServerTileScale;
-        public const int DefaultGeneratedTileHeight = 3 * ServerTileScale;
-        public const int DefaultGeneratedTileWidth = 30 * ServerTileScale;
-        public const int MaxHeightTileCount = 10;
+        public const int MaxHeightTileCount = 9;
 
         public const float AIMaxPositionError = 10;
-
-
-        public static Vector2 RatioPlayerPos = new Vector2(0.5f,0.5f);
 
         public const int MaxTileCount = 10000;
 
@@ -58,21 +52,12 @@ namespace GameA.Game
 
 		public const int MaxLevelNameLength = 20;
 
-        public const int MonsterUpdateDeltaTimeMS = 200;
-
-		public const string GameBgResourcesName = "Bg";
-
 	    public const float EditorModeCameraDragFactor = 1;
-
-        public const int GoalUnitId = 5001;
 
 		public const int InitialTimeLimit = 10;
 
         public const int TimeLimitMinValue = 1;
         public const int TimeLimitMaxValue = 60;
-
-        public const int MainPlayerLife = 100;
-
 
 	    public const float ScreenOperatorVisibleDiffer = 1f;
 
@@ -81,58 +66,29 @@ namespace GameA.Game
 	    public const string CameraMaskPrefabName = "CameraMask";
 	    public const string MapRectMaskPrefabName = "MapRectMask";
 
-
 		public const float CameraMoveExceedValueX = 0.8f;
 		public const float CameraMoveExceedValueY = 0.8f;
 
-
 	    public const float CameraOrthoSizeMaxValue = 15f;
 	    public const float CameraOrthoSizeMinValue = 2.5f;
-
-	    public const float TouchEffectiveDelayTime = 0.01f;
-
-        public const float StandardRunSpeedInv = 0.25f; //(1f / 4);
-
-	    public const float VisibleFactor = 1.5f;
 
 	    public const float CameraMoveOutSizeYTop = 0.12f;
 		public const float CameraMoveOutSizeYBottom = 0.25f;
 
 		public const float CameraMoveOutSizeX = 0.15f;
 
-
-	    public const int MaxItemMinGridSize = 100;
-
-	    public const int CombinedItemReleaseResId = 4007;
-
 		public const float DefaultParticlePlayTime = 4;
 
-        // 熊猫死后魂飞特效的资源名
-        public const string PandaSoulSEPrefabName = "M2PandaSoul";
         public const string M1EffectSoul = "M1EffectSoul";
         public const string PortalingEffect = "M1EffectPortaling";
         public const string M1EffectAlertLazerPoint = "M1EffectAlertLazerPoint";
         public const string M1LazerEffect1 = "M1LazerEffect1";
         public const string M1LazerEffect2 = "M1LazerEffect2";
-        // 主角无敌时长
-        public const float HeroInvincibleTime = 2.03125f;
-        // 主角无敌效果id
-        public const int HeroInvincibleEffectId = 30006;
-        // 死亡后爆炸特殊效果的id
-        public const int BombOnDeadSpecialEffectId = 30501;
-        // 煤气罐破坏起火特效的资源名
-        public const string GasTankFireSEPrefabName = "M2Fire";
-        // 没有摩擦力的地块ID
-        public const int NoFrictionEarthID = 4004;
-        // 高摩擦力的地块ID
-        public const int HighFrictionEarthID = 4011;
-
 
         // 冒险模式每章普通关卡数
         public const int AdvNormallevelPerChapter = 9;
         // 冒险模式每章奖励关卡数
         public const int AdvBonuslevelPerChapter = 3;
-
         public const int MaxUserCount = 6;
     }
 }

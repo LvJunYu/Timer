@@ -6,11 +6,9 @@
   ***********************************************************************/
 
 
-using System;
-using System.Collections;
 using SoyEngine;
-using UnityEngine.UI;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameA
 {
@@ -19,13 +17,8 @@ namespace GameA
         public Button Button;
         public Texture DefaultCoverTexture;
         public RawImage Cover;
+        public Text Time;
         public Text Title;
-        public Text SubTitle;
-        public Text PlayCount;
-        public Text LikeCount;
-        public Text CompleteRate;
-        public Text CommentCount;
-        public Text PublishTime;
-        public Image SeletedMark;
+        public GameObject BottomDock;
     }
 }

@@ -5,19 +5,15 @@
 ** Summary : UICtrlSignup
 ***********************************************************************/
 
-using System;
 using System.Collections;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 using UnityEngine.UI;
-using cn.sharesdk.unity3d;
-using SoyEngine.Proto;
-using System.Text;
-using GameA.Game;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlSignup : UICtrlGenericBase<UIViewSignup>
     {
         #region 常量与字段
@@ -51,8 +47,8 @@ namespace GameA
 
             _cachedView.Pwd.text = "";
             _cachedView.SmsCode.text = "";
-            LoginLogicUtil.OnSuccess = OnLoginSuccess;
-            LoginLogicUtil.OnFailed = OnLoginFailed;
+//            LoginLogicUtil.OnSuccess = OnLoginSuccess;
+//            LoginLogicUtil.OnFailed = OnLoginFailed;
 //            LoginLogicUtil.OnSnsInfoLogin = LoginLogicUtil.RequestLogin;
             LoginLogicUtil.OnSnsInfoCancel = OnSnsInfoCancel;
             base.OnOpen(parameter);
@@ -107,6 +103,7 @@ namespace GameA
                 },
                 (ret) =>
                 {
+                    LoginLogicUtil.ShowRegisterError(ret);
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     LogHelper.Error("登录失败, Code: " + ret);
                 });
@@ -170,18 +167,18 @@ namespace GameA
             SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
             Close();
         }
-
-        private void OnLoginSuccess()
-        {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-            CommonTools.ShowPopupDialog("注册成功");
-            Close();
-        }
-
-        private void OnLoginFailed()
-        {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-        }
+//
+//        private void OnLoginSuccess()
+//        {
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//            CommonTools.ShowPopupDialog("注册成功");
+//            Close();
+//        }
+//
+//        private void OnLoginFailed()
+//        {
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//        }
 
         #endregion
 
@@ -197,22 +194,22 @@ namespace GameA
             OnSignup();
         }
 
-        private void OnQQ()
-        {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请稍等");
-            LoginLogicUtil.OnQQ();
-        }
-        private void OnWeibo()
-        {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请稍等");
-            LoginLogicUtil.OnWeibo();
-        }
-
-        private void OnWeChat()
-        {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请稍等");
-            LoginLogicUtil.OnWeChat();
-        }
+//        private void OnQQ()
+//        {
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请稍等");
+//            LoginLogicUtil.OnQQ();
+//        }
+//        private void OnWeibo()
+//        {
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请稍等");
+//            LoginLogicUtil.OnWeibo();
+//        }
+//
+//        private void OnWeChat()
+//        {
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "请稍等");
+//            LoginLogicUtil.OnWeChat();
+//        }
 
         private void OnSnsInfoCancel()
         {

@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using NewResourceSolution;
 using SoyEngine;
 using Spine.Unity;
 using UnityEngine;
@@ -23,6 +24,7 @@ namespace GameA.Game
 
         private int _logicFrameCnt;
         private float _gameTimeSinceGameStarted;
+        private bool _isPlaying;
         private ESceneState _eSceneState;
 
         public static GameRun Instance
@@ -53,6 +55,11 @@ namespace GameA.Game
         public bool IsPlay
         {
             get { return _eSceneState == ESceneState.Play; }
+        }
+
+        public bool IsPlaying
+        {
+            get { return _isPlaying; }
         }
 
         public void Dispose()
@@ -88,6 +95,7 @@ namespace GameA.Game
         {
             _gameTimeSinceGameStarted = 0;
             _logicFrameCnt = 0;
+            _isPlaying = false;
             UnitManager.Instance.Init();
             CameraManager.Instance.Init();
             EnvManager.Instance.Init();
@@ -99,10 +107,9 @@ namespace GameA.Game
             MapManager.Instance.Init(eGameInitType, project);
             while (!MapManager.Instance.GenerateMapComplete)
             {
-                Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 0.8f + MapManager.Instance.MapProcess * 0.2f);
+                Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, MapManager.Instance.MapProcess * 0.8f);
                 yield return new WaitForSeconds(0.1f);
             }
-            Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 1f);
         }
 
         public void Clear()
@@ -113,15 +120,18 @@ namespace GameA.Game
         internal void Pause()
         {
             PlayMode.Instance.Pause();
+            _isPlaying = false;
         }
 
         internal void Continue()
         {
             PlayMode.Instance.Continue();
+            _isPlaying = true;
         }
 
         internal void Stop()
         {
+            _isPlaying = false;
             MapManager.Instance.Stop();
             Dispose();
         }
@@ -154,7 +164,25 @@ namespace GameA.Game
             DeadMarkManager.Instance.Update();
             CameraManager.Instance.Update();
             MapManager.Instance.Update();
-            _gameTimeSinceGameStarted += Time.deltaTime*GM2DGame.Instance.GamePlaySpeed;
+            
+            float debugSpeed = 1;
+            
+            #if UNITY_EDITOR
+            if (Input.GetKey(KeyCode.T))
+            {
+                debugSpeed = 2;
+            }
+            else if (Input.GetKey(KeyCode.Y))
+            {
+                debugSpeed = 4;
+            }
+            else if (Input.GetKey(KeyCode.U))
+            {
+                debugSpeed = 8;
+            }
+            #endif
+            
+            _gameTimeSinceGameStarted += Time.deltaTime*GM2DGame.Instance.GamePlaySpeed * debugSpeed;
         }
 
         public void UpdateLogic(float deltaTime)
@@ -199,6 +227,7 @@ namespace GameA.Game
             }
             _gameTimeSinceGameStarted = 0;
             _logicFrameCnt = 0;
+            _isPlaying = false;
             Messenger.Broadcast(EMessengerType.OnEdit);
             return true;
         }
@@ -239,6 +268,7 @@ namespace GameA.Game
             }
             _gameTimeSinceGameStarted = 0;
             _logicFrameCnt = 0;
+            _isPlaying = true;
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioStartGame);
             GameAudioManager.Instance.PlayMusic(AudioNameConstDefineGM2D.GameAudioBgm01);
             Messenger.Broadcast(EMessengerType.OnPlay);

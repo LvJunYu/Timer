@@ -20,7 +20,7 @@ namespace GameA.Game
 
         public static bool Init()
         {
-            UseAOI = true;
+            UseAOI = false;
             TerrainItemId = 4001;
             SpawnId = 1001;
             FinalItemId = 5001;

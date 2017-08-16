@@ -27,11 +27,12 @@ namespace GameA.Game
             return true;
 		}
 
-        public override void InitByStep()
+        public override IEnumerator InitByStep()
         {
             GameRun.Instance.ChangeState(ESceneState.Play);
             InitUI();
             InitGame();
+            yield return null;
         }
 
 
@@ -40,7 +41,7 @@ namespace GameA.Game
             GameRun.Instance.Update();
             while (GameRun.Instance.LogicTimeSinceGameStarted < GameRun.Instance.GameTimeSinceGameStarted)
             {
-                if (null != PlayerManager.Instance.MainPlayer)
+                if (GameRun.Instance.IsPlaying && null != PlayerManager.Instance.MainPlayer)
                 {
                     LocalPlayerInput localPlayerInput = PlayerManager.Instance.MainPlayer.Input as LocalPlayerInput;
                     if (localPlayerInput != null)

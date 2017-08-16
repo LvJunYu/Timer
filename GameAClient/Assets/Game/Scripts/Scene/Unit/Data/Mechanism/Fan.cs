@@ -5,21 +5,22 @@ using UnityEngine;
 namespace GameA.Game
 {
     [Unit(Id = 5018, Type = typeof(Fan))]
-    public class Fan : BlockBase
+    public class Fan : SwitchUnit
     {
         protected Grid2D _checkGrid;
         protected IntVec2 _pointA;
         protected IntVec2 _pointB;
-        protected List<UnitBase> _units = new List<UnitBase>();
+        protected List<UnitBase> _fanEffectUnits = new List<UnitBase>();
         protected UnityNativeParticleItem _effect;
         
-        public override bool CanControlledBySwitch
+        public override int SwitchTriggerId
         {
-            get { return true; }
+            get { return UnitDefine.SwitchTriggerId; }
         }
-
+        
         protected override bool OnInit()
         {
+            _triggerReverse = true;
             if (!base.OnInit())
             {
                 return false;
@@ -54,10 +55,31 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
-            _ctrlBySwitch = true;
-            _units.Clear();
+            _fanEffectUnits.Clear();
+            if (_switchTrigger != null)
+            {
+                _switchTrigger.Trigger = true;
+            }
         }
 
+        public override void OnTriggerStart(UnitBase other)
+        {
+            base.OnTriggerStart(other);
+            if (_effect != null)
+            {
+                _effect.Play();
+            }
+        }
+
+        public override void OnTriggerEnd()
+        {
+            base.OnTriggerEnd();
+            if (_effect != null)
+            {
+                _effect.Stop();
+            }
+        }
+        
         private void Calculate()
         {
             GM2DTools.GetBorderPoint(_colliderGrid, (EDirectionType)Rotation, ref _pointA, ref _pointB);
@@ -67,18 +89,18 @@ namespace GameA.Game
         
         public override void UpdateLogic()
         {
-            for (int i = _units.Count - 1; i >= 0; i--)
+            for (int i = _fanEffectUnits.Count - 1; i >= 0; i--)
             {
-                var unit = _units[i];
+                var unit = _fanEffectUnits[i];
                 if (!_checkGrid.Intersects(unit.ColliderGrid))
                 {
                     unit.OutFan(this);
-                    _units.Remove(unit);
+                    _fanEffectUnits.Remove(unit);
                 }
             }
             base.UpdateLogic();
             //停止
-            if (!_ctrlBySwitch)
+            if (_switchTrigger==null || !_switchTrigger.Trigger)
             {
                 return;
             }
@@ -116,9 +138,9 @@ namespace GameA.Game
                         {
                             if (unit != null && unit.IsAlive)
                             {
-                                if (!_units.Contains(unit))
+                                if (!_fanEffectUnits.Contains(unit))
                                 {
-                                    _units.Add(unit);
+                                    _fanEffectUnits.Add(unit);
                                 }
                                 var range = TableConvert.GetRange(UnitDefine.FanRange);
                                 int force = (int) ((float) (range - hit.distance) / range * UnitDefine.FanForce);

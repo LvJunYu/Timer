@@ -221,10 +221,11 @@ namespace NewResourceSolution.EditorTool
                                     );
                                 var assets = AssetDatabase.FindAssets(allResList[i].SearchFilter, new[] {childDirRelatedToUnityProject});
                                 SetBundleNameToFolderAssets (buildABConfig, manifest, rootPath, childDirRelatedToUnityProject, assets);
-	                            if (EResType.Sprite == allResList[i].ResType)
-	                            {
-		                            SpriteAssetTools.SetAtlasSetting(rootPath, childDirRelatedToUnityProject, assets);
-	                            }
+	                           	// 这段代码会造成增两打包时会重打全部图集，所以注掉，流程改为需要自动设置图片属性时手动调用菜单快捷方式
+//	                            if (EResType.Sprite == allResList[i].ResType)
+//	                            {
+//		                            SpriteAssetTools.SetAtlasSetting(rootPath, childDirRelatedToUnityProject, assets);
+//	                            }
                             }
                         }
                         else

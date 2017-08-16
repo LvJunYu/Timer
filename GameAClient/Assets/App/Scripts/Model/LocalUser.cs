@@ -6,8 +6,8 @@
 ***********************************************************************/
 
 using System;
-using SoyEngine.Proto;
 using SoyEngine;
+using SoyEngine.Proto;
 
 namespace GameA
 {
@@ -15,43 +15,35 @@ namespace GameA
     {
         #region 常量与字段
 
-        public readonly static LocalUser Instance = new LocalUser();
+        public static readonly LocalUser Instance = new LocalUser();
 
         private readonly Account _account = Account.Instance;
         private UserInfoDetail _user;
-        private UsingAvatarPart _usingAvatarData = new UsingAvatarPart();
-        private MailList _mailList = new MailList();
-        private ValidAvatarPart _validAvatarData = new ValidAvatarPart();
-        private RelationUserList _followRelationUserList = new RelationUserList();
-        private RelationUserList _blockRelationUserList = new RelationUserList();
+        private readonly UsingAvatarPart _usingAvatarData = new UsingAvatarPart();
+        private readonly MailList _mailList = new MailList();
+        private readonly ValidAvatarPart _validAvatarData = new ValidAvatarPart();
+        private readonly RelationUserList _followRelationUserList = new RelationUserList();
+        private readonly RelationUserList _blockRelationUserList = new RelationUserList();
         // 抽奖相关数据
-        private UserRaffleTicket _userRaffleTicket = new UserRaffleTicket();
+        private readonly UserRaffleTicket _userRaffleTicket = new UserRaffleTicket();
         // 匹配挑战相关数据
-        private MatchUserData _matchUserData = new MatchUserData();
+        private readonly MatchUserData _matchUserData = new MatchUserData();
         // 单人模式排名
-        private AdventureLevelRankList _adventureLevelRankList = new AdventureLevelRankList();
+        private readonly AdventureLevelRankList _adventureLevelRankList = new AdventureLevelRankList();
         // 增益道具
-        private UserProp _userProp = new UserProp();
-
-        //        private User _user;
-        private AdventureUserLevelDataDetail _adventureUserLevelDataDetail = new AdventureUserLevelDataDetail();
-
-
-        private PersonalProjectList _personalProjectList = new PersonalProjectList();
-
-        private UserPublishedWorldProjectList _userPublishedWorldProjectList = new UserPublishedWorldProjectList();
-
+        private readonly UserProp _userProp = new UserProp();
+        private readonly AdventureUserLevelDataDetail _adventureUserLevelDataDetail = new AdventureUserLevelDataDetail();
+        private readonly PersonalProjectList _personalProjectList = new PersonalProjectList();
+        private readonly UserPublishedWorldProjectList _userPublishedWorldProjectList = new UserPublishedWorldProjectList();
         // 工坊地块数量上限数据
-        private UserWorkshopUnitData _userWorkshopUnitData = new UserWorkshopUnitData();
-
+        private readonly UserWorkshopUnitData _userWorkshopUnitData = new UserWorkshopUnitData();
         //拼图数据
-        private UserPictureFull _userPictureFull = new UserPictureFull();
-        private UserUsingPictureFullData _userUsingPictureFullData = new UserUsingPictureFullData();
-        private UserPicturePart _userPicturePart = new UserPicturePart();
-
+        private readonly UserPictureFull _userPictureFull = new UserPictureFull();
+        private readonly UserUsingPictureFullData _userUsingPictureFullData = new UserUsingPictureFullData();
+        private readonly UserPicturePart _userPicturePart = new UserPicturePart();
         //武器数据
-        private UserWeaponData _userWeaponData = new UserWeaponData();
-        private UserWeaponPartData _userWeaponPartData = new UserWeaponPartData();
+        private readonly UserWeaponData _userWeaponData = new UserWeaponData();
+        private readonly UserWeaponPartData _userWeaponPartData = new UserWeaponPartData();
         #endregion
         #region 属性
 
@@ -84,7 +76,7 @@ namespace GameA
         {
             get
             {
-                return this._followRelationUserList;
+                return _followRelationUserList;
             }
         }
 
@@ -92,7 +84,7 @@ namespace GameA
         {
             get
             {
-                return this._blockRelationUserList;
+                return _blockRelationUserList;
             }
         }
 
@@ -100,14 +92,14 @@ namespace GameA
         {
             get
             {
-                return this._usingAvatarData;
+                return _usingAvatarData;
             }
         }
         public ValidAvatarPart ValidAvatarData
         {
             get
             {
-                return this._validAvatarData;
+                return _validAvatarData;
             }
         }
         /// <summary>
@@ -116,7 +108,7 @@ namespace GameA
         /// <value>The raffle ticket.</value>
         public UserRaffleTicket RaffleTicket
         {
-            get { return this._userRaffleTicket; }
+            get { return _userRaffleTicket; }
         }
         /// <summary>
         /// 匹配挑战相关数据
@@ -126,7 +118,7 @@ namespace GameA
         {
             get
             {
-                return this._adventureUserLevelDataDetail;
+                return _adventureUserLevelDataDetail;
             }
         }
 
@@ -134,7 +126,7 @@ namespace GameA
         {
             get
             {
-                return this._matchUserData;
+                return _matchUserData;
             }
         }
 
@@ -142,7 +134,7 @@ namespace GameA
         {
             get
             {
-                return this._adventureLevelRankList;
+                return _adventureLevelRankList;
             }
         }
 
@@ -150,7 +142,7 @@ namespace GameA
         {
             get
             {
-                return this._personalProjectList;
+                return _personalProjectList;
             }
         }
 
@@ -158,7 +150,7 @@ namespace GameA
         {
             get
             {
-                return this._userPublishedWorldProjectList;
+                return _userPublishedWorldProjectList;
             }
         }
         // 增益道具

@@ -125,7 +125,7 @@ namespace NewResourceSolution.EditorTool
 			iosSetting.overridden = true;
 			iosSetting.compressionQuality = (int)GetTextureImporterFormatByETextureCompressQuality(quality);
 			iosSetting.maxTextureSize = 1024;
-			iosSetting.format = TextureImporterFormat.PVRTC_RGBA4;
+			iosSetting.format = ETextureCompressQuality.NoCompress == quality ? TextureImporterFormat.RGBA32 : TextureImporterFormat.PVRTC_RGBA4;
 			textureImporter.SetPlatformTextureSettings(iosSetting);
 
 			// android
@@ -134,7 +134,7 @@ namespace NewResourceSolution.EditorTool
 			androidSetting.overridden = true;
 			androidSetting.compressionQuality = (int)GetTextureImporterFormatByETextureCompressQuality(quality);
 			androidSetting.maxTextureSize = 1024;
-			androidSetting.format = TextureImporterFormat.ETC2_RGBA8;
+			androidSetting.format = ETextureCompressQuality.NoCompress == quality ? TextureImporterFormat.RGBA32 : TextureImporterFormat.ETC2_RGBA8;
 			textureImporter.SetPlatformTextureSettings(androidSetting);
 			
 			textureImporter.SaveAndReimport();

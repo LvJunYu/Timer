@@ -185,6 +185,7 @@ namespace GameA.Game
         public void StartEdit()
         {
             _enable = true;
+            _cameraMask.Show();
             InternalStartEdit();
         }
 
@@ -203,6 +204,7 @@ namespace GameA.Game
         public void StopEdit()
         {
             _stateMachine.ChangeState(EditModeState.None.Instance);
+            _cameraMask.Hide();
             _enable = false;
         }
 
@@ -406,21 +408,12 @@ namespace GameA.Game
             {
                 return false;
             }
-            var unitDescs = EditHelper.BeforeAddUnit(unitDesc, tableUnit);
-            for (int i = 0; i < unitDescs.Count; i++)
+            EditHelper.BeforeAddUnit(tableUnit);
+            if (!AddUnit(unitDesc))
             {
-                if (!AddUnit(unitDescs[i]))
-                {
-                    return false;
-                }
-                tableUnit = UnitManager.Instance.GetTableUnit(unitDescs[i].Id);
-                if (tableUnit.EPairType > 0)
-                {
-                    PairUnitManager.Instance.AddPairUnit(unitDesc, tableUnit);
-                    UpdateSelectItem();
-                }
-                EditHelper.AfterAddUnit(unitDesc, tableUnit);
+                return false;
             }
+            EditHelper.AfterAddUnit(unitDesc, tableUnit);
             return true;
         }
 
@@ -441,6 +434,11 @@ namespace GameA.Game
             {
                 return false;
             }
+            if (tableUnit.EPairType > 0)
+            {
+                PairUnitManager.Instance.AddPairUnit(unitDesc, tableUnit);
+                UpdateSelectItem();
+            }
             if (!ColliderScene2D.Instance.AddUnit(unitDesc, tableUnit))
             {
                 return false;
@@ -459,21 +457,22 @@ namespace GameA.Game
         /// <returns></returns>
         public bool DeleteUnitWithCheck(UnitDesc unitDesc)
         {
-            var unitDescs = EditHelper.BeforeDeleteUnit(unitDesc);
-            for (int i = 0; i < unitDescs.Count; i++)
+            if (!DeleteUnit(unitDesc))
             {
-                if (!DeleteUnit(unitDescs[i]))
-                {
-                    return false;
-                }
-                var tableUnit = UnitManager.Instance.GetTableUnit(unitDescs[i].Id);
-                if (tableUnit.EPairType > 0)
-                {
-                    PairUnitManager.Instance.DeletePairUnit(unitDesc, tableUnit);
-                    UpdateSelectItem();
-                }
-                EditHelper.AfterDeleteUnit(unitDesc, tableUnit);
+                return false;
             }
+            //地块上的植被自动删除
+            if (UnitDefine.IsEarth(unitDesc.Id))
+            {
+                var up = unitDesc.GetUpPos((int) EUnitDepth.Earth);
+                UnitBase unit;
+                if (EditHelper.TryGetUnit(up, out unit) && UnitDefine.IsPlant(unit.Id))
+                {
+                    DeleteUnit(new UnitDesc(unit.Id, up, 0, Vector3.one));
+                }
+            }
+            var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+            EditHelper.AfterDeleteUnit(unitDesc, tableUnit);
             return true;
         }
 
@@ -505,6 +504,11 @@ namespace GameA.Game
             if (!DataScene2D.Instance.DeleteData(unitDesc, tableUnit))
             {
                 return false;
+            }
+            if (tableUnit.EPairType > 0)
+            {
+                PairUnitManager.Instance.DeletePairUnit(unitDesc, tableUnit);
+                UpdateSelectItem();
             }
             return true;
         }
@@ -879,7 +883,7 @@ namespace GameA.Game
                 return;
             }
             var go = UnityEngine.Object.Instantiate (ResourcesManager.Instance.GetPrefab(
-                EResType.UIPrefab, 
+                EResType.ParticlePrefab, 
                 ConstDefineGM2D.CameraMaskPrefabName)
             ) as GameObject;
             if (go == null)
@@ -887,6 +891,18 @@ namespace GameA.Game
                 LogHelper.Error("Prefab {0} is invalid!", ConstDefineGM2D.CameraMaskPrefabName);
                 return;
             }
+
+            // 解决shader丢失的临时代码-----
+            Renderer r = go.GetComponent<Renderer>();
+            if (r != null)
+            {
+                Material m = r.sharedMaterial;
+//                Debug.LogError("m.shader: " + m.shader);
+                Shader s = ResourcesManager.Instance.GetAsset<Shader>(EResType.Shader, "SFVertexColor", 1);
+                m.shader = s;
+            }
+            // --------------------------
+            
             _cameraMask = go.GetComponent<SlicedCameraMask>();
             _cameraMask.SetSortOrdering((int) ESortingOrder.Mask);
         }

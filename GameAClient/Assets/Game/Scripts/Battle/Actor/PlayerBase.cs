@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json.Serialization;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -93,6 +94,7 @@ namespace GameA.Game
         
         protected override void Clear()
         {
+            base.Clear();
             if (_input != null)
             {
                 _input.Clear();
@@ -102,41 +104,69 @@ namespace GameA.Game
                 _tableEquipments[i] = null;
             }
             _gun = _gun ?? new Gun(this);
-            SetWeapon(101,0);
-            SetWeapon(102,1);
-            SetWeapon(103,2);
-//            SetWeapon(201,2);
-            
             _dieTime = 0;
             _box = null;
             ClearView();
-
             _maxSpeedX = BattleDefine.MaxSpeedX;
-            base.Clear();
         }
         
-        public override bool SetWeapon(int id, int slot = 0)
+        public override bool SetWeapon(int weaponId)
         {
-            var tableEquipment = TableManager.Instance.GetEquipment(id);
+            var tableEquipment = TableManager.Instance.GetEquipment(weaponId);
             if (tableEquipment == null)
             {
-                LogHelper.Error("GetEquipment Failed : {0}", id);
+                LogHelper.Error("SetWeapon Failed, WeaponId: {0}", weaponId);
+                return false;
+            }
+            int skillId = tableEquipment.SkillId;
+            var tableSkill = TableManager.Instance.GetSkill(skillId);
+            if (tableSkill == null)
+            {
+                LogHelper.Error("SetWeapon Failed, SkillId : {0}", skillId);
+                return false;
+            }
+            _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
+            int slot = 0;
+            switch ((ECostType) tableSkill.CostType)
+            {
+                case ECostType.None:
+                case ECostType.Paint:
+                    _skillCtrl.RemoveSkill(skillId);
+                    if (!_skillCtrl.HasEmptySlot(out slot))
+                    {
+                        if (_skillCtrl.CurrentSkills[1].TableSkill.CostType != (int) ECostType.Paint)
+                        {
+                            slot = 1;
+                        }
+                        else if (_skillCtrl.CurrentSkills[2].TableSkill.CostType != (int) ECostType.Paint)
+                        {
+                            slot = 2;
+                        }
+                    }
+                    break;
+                case ECostType.Magic:
+                    slot = 1;
+                    break;
+                case ECostType.Rage:
+                    slot = 2;
+                    break;
+            }
+            if (!_skillCtrl.SetSkill(tableSkill.Id, slot))
+            {
                 return false;
             }
             _tableEquipments[slot] = tableEquipment;
+            //发送事件
+            Messenger<Table_Skill,int>.Broadcast(EMessengerType.OnSkillSlotChanged, tableSkill, slot);
             CalculateMaxHp();
             OnHpChanged(_maxHp);
-            _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
-            if (_skillCtrl.SetSkill(tableEquipment.SkillId, slot))
+            if (tableSkill.CostType == (int) ECostType.Magic)
             {
-                if (_skillCtrl.CurrentSkills[slot].TableSkill.CostType == (int)ECostType.Magic)
-                {
-                    _gun.ChangeView(tableEquipment.Model);
-                }
+                _gun.ChangeView(tableEquipment.Model);
             }
             return true;
         }
-
+        
         private void CalculateMaxHp()
         {
             _maxHp = _tableUnit.Hp;
@@ -149,11 +179,12 @@ namespace GameA.Game
                 }
             }
         }
-
+        
         internal override void OnPlay()
         {
             base.OnPlay();
             LogHelper.Debug("{0}, OnPlay", GetType().Name);
+            SetWeapon(101);
             _gun.Play();
             AddStates(61);
             _revivePos = _curPos;
@@ -357,11 +388,14 @@ namespace GameA.Game
         {
             _revivePos = pos;
         }
-
+        
         public void Step(int stepY = 0)
         {
             _stepY = stepY;
-            OnLand();
+            _grounded = true;
+            _jumpLevel = 0;
+            _jumpTimer = 10;
+            _jumpState = EJumpState.Jump1;
         }
 
         #endregion
@@ -388,10 +422,6 @@ namespace GameA.Game
             }
             _reviveEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null, ESortingOrder.LazerEffect));
             _portalEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null, ESortingOrder.LazerEffect));
-            SetWeapon(101,0);
-            SetWeapon(102,1);
-            SetWeapon(103,2);
-//            SetWeapon(201,2);
             _view.StatusBar.ShowHP();
             _view.StatusBar.ShowMP();
             return true;

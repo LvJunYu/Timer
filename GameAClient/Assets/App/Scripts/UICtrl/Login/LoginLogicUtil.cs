@@ -4,10 +4,11 @@
   ** Date : 2016/6/24 10:57
   ** Summary : LoginLogicUtil.cs
   ***********************************************************************/
+
 using System;
 using System.Collections;
-using cn.sharesdk.unity3d;
 using System.Text;
+using cn.sharesdk.unity3d;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
@@ -17,7 +18,7 @@ namespace GameA
     public static class LoginLogicUtil
     {
         private const string PhoneNumKey = "PhoneNum";
-        private static bool _hasInited = false;
+        private static bool _hasInited;
         private static string _phoneNum;
         public static Action OnSuccess;
         public static Action OnFailed;
@@ -56,7 +57,7 @@ namespace GameA
             {
                 CommonTools.ShowPopupDialog("登录信息已经过期，请重新登录");
                 LocalUser.Instance.Account.Logout();
-                SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
+//                SocialGUIManager.Instance.OpenPopupUI<UICtrlLogin>();
             }
         }
 
@@ -108,7 +109,7 @@ namespace GameA
             }
             else
             {
-                CommonTools.ShowPopupDialog("手机号码输入有误", null);
+                CommonTools.ShowPopupDialog("手机号码输入有误");
             }
         }
 
@@ -119,15 +120,15 @@ namespace GameA
             }
             else if (checkResult == CheckTools.ECheckPasswordResult.TooShort)
             {
-                CommonTools.ShowPopupDialog("密码过短，密码长度8-16个字符", null);
+                CommonTools.ShowPopupDialog("密码过短，密码长度8-16个字符");
             }
             else if (checkResult == CheckTools.ECheckPasswordResult.TooLong)
             {
-                CommonTools.ShowPopupDialog("密码过长，密码长度8-16个字符", null);
+                CommonTools.ShowPopupDialog("密码过长，密码长度8-16个字符");
             }
             else
             {
-                CommonTools.ShowPopupDialog("密码格式有误", null);
+                CommonTools.ShowPopupDialog("密码格式有误");
             }
         }
 
@@ -139,121 +140,71 @@ namespace GameA
             }
             else
             {
-                CommonTools.ShowPopupDialog("验证码错误", null);
+                CommonTools.ShowPopupDialog("验证码错误");
             }
         }
 
-        //        public static void RequestLogin(Msg_CA_Login msg)
-        //        {
-        //            NetworkManager.AppHttpClient.SendWithCb<Msg_AC_LoginRet>(SoyHttpApiPath.Login ,msg, ret =>
-        //                {
-        //                    if (ret.ResultCode == EAccountLoginResult.ALR_Success)
-        //                    {
-        ////                        LocalUser.Instance.OnLoginSuccess(ret.UserInfo, ret.Token);
-        //                        if (ret.Reward != null)
-        //                        {
-        //                            Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
-        //                        }
-        //                        OnSuccess.Invoke();
-        //                    }
-        //                    else
-        //                    {
-        //                        if (ret.ResultCode == EAccountLoginResult.ALR_ErrorTooMany)
-        //                        {
-        //                            CommonTools.ShowPopupDialog("登录失败次数过多，请稍后重试", null);
-        //                        }
-        //                        else if(ret.ResultCode == EAccountLoginResult.ALR_PasswordError)
-        //                        {
-        //                            CommonTools.ShowPopupDialog("密码错误", null);
-        //                        }
-        //                        else if (ret.ResultCode == EAccountLoginResult.ALR_UserNotExsit)
-        //                        {
-        //                            CommonTools.ShowPopupDialog("用户不存在", null);
-        //                        }
-        //                        else
-        //                        {
-        //                            CommonTools.ShowPopupDialog("登录失败", null);
-        //                        }
-        //                        if(OnFailed != null)
-        //                        {
-        //                            OnFailed.Invoke();
-        //                        }
-        //                    }
-        //                }, (i, s) =>
-        //                {
-        //                    ENetResultCode code = (ENetResultCode) i;
-        //                    LogHelper.Warning("Login error, msg: {0}", s);
-        //                    if (code == ENetResultCode.NR_NetworkNotReachable)
-        //                    {
-        //                        CommonTools.ShowPopupDialog("网络错误", null);
-        //                    }
-        //                    else
-        //                    {
-        //                        CommonTools.ShowPopupDialog("登录超时", null);
-        //                    }
-        //                    if(OnFailed != null)
-        //                    {
-        //                        OnFailed.Invoke();
-        //                    }
-        //                });
-        //        }
-
-        public static void RequestSmsLogin(string phoneNum, string verificationCode, string newPassword, EVerifyCodeType vcType)
+        public static void ShowLoginError(ELoginCode code)
         {
-            //Msg_CA_Register msg = new Msg_CA_Register();
-            //msg.Account = phoneNum;
-            //msg.Password = newPassword;
-            //msg.RegisterType = Msg_CA_Register.ERegisterType.PhoneNum;
-            //msg.VerificationCode = verificationCode;
-            //msg.VerifyCodeType = vcType;
-            //NetworkManager.AppHttpClient.SendWithCb<Msg_AC_RegisterRet>(SoyHttpApiPath.Register, msg, ret =>
-            //    {
-            //        if (ret.ResultCode == EAccountRegisterResult.ARR_Success)
-            //        {
-            //            //                        LocalUser.Instance.OnLoginSuccess(ret.UserInfo, ret.Token);
-            //            if (ret.Reward != null)
-            //            {
-            //                Messenger<Msg_AC_Reward>.Broadcast(EMessengerType.OnReceiveReward, ret.Reward);
-            //            }
-            //            OnSuccess.Invoke();
-            //        }
-            //        else
-            //        {
-            //            if (ret.ResultCode == EAccountRegisterResult.ARR_VerificationCodeError)
-            //            {
-            //                CommonTools.ShowPopupDialog("验证码错误", null);
-            //            }
-            //            else
-            //            {
-            //                {
-            //                    CommonTools.ShowPopupDialog("失败", null);
-            //                }
-            //            }
-            //            if (OnFailed != null)
-            //            {
-            //                OnFailed.Invoke();
-            //            }
-            //        }
-            //    }, (i, s) =>
-            //    {
-            //        ENetResultCode code = (ENetResultCode)i;
-            //        LogHelper.Warning("Login error, msg: {0}", s);
-            //        if (code == ENetResultCode.NR_NetworkNotReachable)
-            //        {
-            //            CommonTools.ShowPopupDialog("网络错误", null);
-            //        }
-            //        else
-            //        {
-            //            {
-            //                CommonTools.ShowPopupDialog("超时", null);
-            //            }
-            //        }
-            //        if (OnFailed != null)
-            //        {
-            //            OnFailed.Invoke();
-            //        }
-            //    });
+            if (code == ELoginCode.LoginC_None)
+            {
+            }
+            else if (code == ELoginCode.LoginC_ErrorTooMany)
+            {
+                CommonTools.ShowPopupDialog("登录失败次数过多，请稍后重试");
+            }
+            else if (code == ELoginCode.LoginC_PasswordError)
+            {
+                CommonTools.ShowPopupDialog("密码错误");
+            }
+            else if (code == ELoginCode.LoginC_UserNotExsit)
+            {
+                CommonTools.ShowPopupDialog("用户不存在");
+            }
+            else
+            {
+                CommonTools.ShowPopupDialog("登录失败");
+            }
         }
+
+        public static void ShowRegisterError(ERegisterCode code)
+        {
+            if (code == ERegisterCode.RegisterC_None)
+            {
+            }
+            else if (code == ERegisterCode.RegisterC_IdentifyDuplication)
+            {
+                CommonTools.ShowPopupDialog("该账号已经存在");
+            }
+            else if (code == ERegisterCode.RegisterC_VerificationCodeError)
+            {
+                CommonTools.ShowPopupDialog("验证码错误");
+            }
+            else
+            {
+                CommonTools.ShowPopupDialog("注册失败");
+            }
+        }
+
+        public static void ShowForgetPasswordError(EForgetPasswordCode code)
+        {
+            if (code == EForgetPasswordCode.FPC_None)
+            {
+            }
+            else if (code == EForgetPasswordCode.FPC_AccountNotExsit)
+            {
+                CommonTools.ShowPopupDialog("账号不存在");
+            }
+            else if (code == EForgetPasswordCode.FPC_VerificationCodeError)
+            {
+                CommonTools.ShowPopupDialog("验证码错误");
+            }
+            else
+            {
+                CommonTools.ShowPopupDialog("找回密码失败");
+            }
+        }
+
 
         private static void LogHashTable(Hashtable table, string title = null)
         {
@@ -419,14 +370,14 @@ namespace GameA
 //            }
 //        }
 
-        private static string ObjectToString(object obj)
-        {
-            if(obj == null)
-            {
-                return null;
-            }
-            return obj.ToString().Trim();
-        }
+//        private static string ObjectToString(object obj)
+//        {
+//            if(obj == null)
+//            {
+//                return null;
+//            }
+//            return obj.ToString().Trim();
+//        }
 
 
         private static void OnAuthResultHandler(int reqID, ResponseState state, PlatformType type, Hashtable result)

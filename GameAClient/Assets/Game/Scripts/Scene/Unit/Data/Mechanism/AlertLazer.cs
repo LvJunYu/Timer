@@ -58,8 +58,20 @@ namespace GameA.Game
         {
             GM2DTools.GetBorderPoint(_colliderGrid, (EDirectionType)Rotation, ref _pointA, ref _pointB);
             _distance = GM2DTools.GetDistanceToBorder(_pointA, Rotation);
+            switch (Rotation)
+            {
+                case 0:
+                case 2:
+                    _pointA += new IntVec2(160, 0);
+                    _pointB -= new IntVec2(160, 0);
+                    break;
+                case 1:
+                case 3:
+                    _pointA += new IntVec2(0, 160);
+                    _pointB -= new IntVec2(0, 160);
+                    break;
+            }
             _checkGrid = SceneQuery2D.GetGrid(_pointA, _pointB, Rotation, _distance);
-            _checkGrid.ShrinkSelf(160);
             _borderCenterPoint = (_pointA + _pointB) / 2;
         }
 
@@ -165,7 +177,7 @@ namespace GameA.Game
                                 UnitBase switchTrigger;
                                 if (ColliderScene2D.Instance.TryGetUnit(hit.node, out switchTrigger))
                                 {
-                                    _gridCheck.Do((SwitchTrigger)switchTrigger);
+                                    _gridCheck.Do((SwitchTriggerPress)switchTrigger);
                                     _distance = hit.distance + 80;
                                     break;
                                 }
@@ -247,7 +259,6 @@ namespace GameA.Game
                 if (_effectStart == null)
                 {
                     _effectStart = GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectAlertLazerPoint, _trans);
-                    _effectStart.Trans.position += Vector3.back*0.1f;
                 }
                 _effectStart.Play();
             }

@@ -8,7 +8,7 @@ namespace GameA.Game
         {
             if (other.IsActor)
             {
-                var min = new IntVec2(other.ColliderGrid.XMax + 1, other.CenterPos.y);
+                var min = new IntVec2(_colliderGrid.XMin, other.CenterPos.y);
                 var grid = new Grid2D(min.x, min.y, min.x + ConstDefineGM2D.ServerTileScale, min.y);
                 CheckSkillHit(other, grid, EDirectionType.Left);
             }
@@ -19,7 +19,7 @@ namespace GameA.Game
         {
             if (other.IsActor)
             {
-                var min = new IntVec2(other.ColliderGrid.XMin - 1, other.CenterPos.y);
+                var min = new IntVec2(_colliderGrid.XMin, other.CenterPos.y);
                 var grid = new Grid2D(min.x, min.y, min.x + ConstDefineGM2D.ServerTileScale, min.y);
                 CheckSkillHit(other, grid, EDirectionType.Right);
             }
@@ -30,7 +30,7 @@ namespace GameA.Game
         {
             if (other.IsActor)
             {
-                var min = new IntVec2(other.CenterPos.x, other.ColliderGrid.YMax + 1);
+                var min = new IntVec2(other.CenterPos.x, _colliderGrid.YMin);
                 var grid = new Grid2D(min.x, min.y, min.x, min.y + ConstDefineGM2D.ServerTileScale);
                 CheckSkillHit(other, grid, EDirectionType.Down);
             }
@@ -41,7 +41,7 @@ namespace GameA.Game
         {
             if (other.IsActor || other.Id == UnitDefine.BoxId)
             {
-                var min = new IntVec2(other.CenterPos.x, other.ColliderGrid.YMin - 1);
+                var min = new IntVec2(other.CenterPos.x, _colliderGrid.YMin);
                 var grid = new Grid2D(min.x, min.y, min.x, min.y + ConstDefineGM2D.ServerTileScale);
                 CheckSkillHit(other, grid, EDirectionType.Up);
             }

@@ -22,14 +22,6 @@ namespace GameA
 			InitGameUIRenderCamera(_canvas);
 		}
 
-        public Transform GetFirstGroupTrans ()
-        {
-            if (_uiGroups != null && _uiGroups.Length > 1) {
-                return _uiGroups [0].Trans.transform;
-            }
-            return null;
-        }
-
         protected override UIViewBase InstanceView(string path)
         {
             Object obj = ResourcesManager.Instance.GetPrefab (EResType.UIPrefab, path, 0);

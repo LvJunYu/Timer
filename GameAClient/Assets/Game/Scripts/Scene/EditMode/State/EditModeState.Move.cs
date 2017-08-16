@@ -31,6 +31,11 @@ namespace GameA.Game
                     Magic,
                 }
             }
+            
+            public override bool CanRevertTo()
+            {
+                return false;
+            }
 
             public override void Enter(EditMode owner)
             {
@@ -182,16 +187,16 @@ namespace GameA.Game
             {
                 Vector3 mouseWorldPos = GM2DTools.ScreenToWorldPoint(stateData.MouseActualPos);
                 mouseWorldPos += stateData.MouseObjectOffsetInWorld;
-                UnitDesc target;
-                if (!EditHelper.TryGetCreateKey(mouseWorldPos, stateData.CurrentMovingUnitBase.Id, out target))
+                UnitDesc unitDesc;
+                if (!EditHelper.TryGetCreateKey(mouseWorldPos, stateData.CurrentMovingUnitBase.Id, out unitDesc))
                 {
                     return;
                 }
                 var recordBatch = GetRecordBatch();
-                target.Scale = stateData.CurrentMovingUnitBase.Scale;
-                target.Rotation = stateData.CurrentMovingUnitBase.Rotation;
+                unitDesc.Scale = stateData.CurrentMovingUnitBase.Scale;
+                unitDesc.Rotation = stateData.CurrentMovingUnitBase.Rotation;
                 int layerMask = EnvManager.UnitLayerWithoutEffect;
-                var coverUnits = DataScene2D.GridCastAllReturnUnits(target, layerMask);
+                var coverUnits = DataScene2D.GridCastAllReturnUnits(unitDesc, layerMask);
                 if (coverUnits != null && coverUnits.Count > 0)
                 {
                     bool effectFlag = false;
@@ -257,7 +262,7 @@ namespace GameA.Game
                     }
                 }
                 UnitDesc needReplaceUnitDesc;
-                if (EditHelper.TryGetReplaceUnit(target.Id, out needReplaceUnitDesc))
+                if (EditHelper.TryGetReplaceUnit(unitDesc.Id, out needReplaceUnitDesc))
                 {
                     var needReplaceUnitExtra = DataScene2D.Instance.GetUnitExtra(needReplaceUnitDesc.Guid);
                     if (EditMode.Instance.DeleteUnitWithCheck(needReplaceUnitDesc))
@@ -266,15 +271,33 @@ namespace GameA.Game
                         DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(needReplaceUnitDesc, recordBatch);
                     }
                 }
-                if (EditMode.Instance.AddUnitWithCheck(target))
+                var tableUnit = stateData.CurrentMovingUnitBase.TableUnit;
+                if (EditMode.Instance.AddUnitWithCheck(unitDesc))
                 {
-                    var targetUnitExtra = stateData.DragUnitExtra;
-                    DataScene2D.Instance.ProcessUnitExtra(target, stateData.DragUnitExtra);
-                    recordBatch.RecordAddUnit(ref target, ref targetUnitExtra);
                     GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioEditorLayItem);
+                    UnitExtra extra = stateData.DragUnitExtra;
+                    if (extra != UnitExtra.zero)
+                    {
+                        DataScene2D.Instance.ProcessUnitExtra(unitDesc, stateData.DragUnitExtra);
+                    }
+                    else
+                    {
+                        if (tableUnit.CanMove)
+                        {
+                            extra.MoveDirection = (EMoveDirection)EditHelper.GetUnitOrigDirOrRot(tableUnit);
+                            DataScene2D.Instance.ProcessUnitExtra(unitDesc, extra);
+                        }
+                        else if (tableUnit.Id == UnitDefine.RollerId)
+                        {
+                            extra.RollerDirection = (EMoveDirection)EditHelper.GetUnitOrigDirOrRot(tableUnit);
+                            DataScene2D.Instance.ProcessUnitExtra(unitDesc, extra);
+                        }
+                    }
+                    extra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
+                    recordBatch.RecordAddUnit(ref unitDesc, ref extra);
                     if (boardData.CurrentTouchUnitDesc != UnitDesc.zero)
                     {
-                        DataScene2D.Instance.OnUnitMoveUpdateSwitchData(boardData.CurrentTouchUnitDesc, target, recordBatch);
+                        DataScene2D.Instance.OnUnitMoveUpdateSwitchData(boardData.CurrentTouchUnitDesc, unitDesc, recordBatch);
                     }
                 }
                 else

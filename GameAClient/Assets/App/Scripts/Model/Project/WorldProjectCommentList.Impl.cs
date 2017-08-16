@@ -14,7 +14,7 @@ namespace GameA
 {
     public partial class WorldProjectCommentList : SyncronisticData
     {
-        private List<ProjectComment> _allList = new List<ProjectComment>();
+        private readonly List<ProjectComment> _allList = new List<ProjectComment>();
         public bool IsEnd { get; private set; }
         public List<ProjectComment> AllList
         {

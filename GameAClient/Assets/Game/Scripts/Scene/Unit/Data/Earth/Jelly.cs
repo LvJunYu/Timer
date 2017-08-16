@@ -15,7 +15,7 @@ namespace GameA.Game
     public class Jelly : SkillBlock
     {
         public static int ExtraSpeedX = 180;
-        public static int ExtraSpeedY = 240;
+        public static int ExtraSpeedY = 260;
 
         protected override bool OnInit()
         {
@@ -93,7 +93,7 @@ namespace GameA.Game
                         other.SpeedY = 0;
                         if (other.IsMain)
                         {
-                            PlayMode.Instance.MainPlayer.Step(80);
+                            PlayMode.Instance.MainPlayer.Step(0);
                             other.ExtraSpeed.y = ExtraSpeedY;
                             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
                         }
@@ -122,9 +122,9 @@ namespace GameA.Game
                     other.Speed = IntVec2.zero;
                     other.ExtraSpeed.x = -ExtraSpeedX;
                     other.ExtraSpeed.y = ExtraSpeedX;
-                    other.CurBanInputTime = 20;
                     if (other.IsMain)
                     {
+                        PlayMode.Instance.MainPlayer.Step(0);
                         GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
                     }
                     break;
@@ -132,9 +132,9 @@ namespace GameA.Game
                     other.Speed = IntVec2.zero;
                     other.ExtraSpeed.x = ExtraSpeedX;
                     other.ExtraSpeed.y = ExtraSpeedX;
-                    other.CurBanInputTime = 20;
                     if (other.IsMain)
                     {
+                        PlayMode.Instance.MainPlayer.Step(0);
                         GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
                     }
                     break;

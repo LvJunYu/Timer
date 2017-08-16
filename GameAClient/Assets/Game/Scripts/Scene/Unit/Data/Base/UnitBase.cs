@@ -44,7 +44,6 @@ namespace GameA.Game
         protected bool _canMagicCross;
         protected bool _canBridgeCross;
         protected bool _canFanCross;
-        [SerializeField] protected bool _isStart;
 
         protected List<UnitBase> _downUnits = new List<UnitBase>();
         protected UnitBase _downUnit;
@@ -68,12 +67,13 @@ namespace GameA.Game
         protected int _envState;
 
         [SerializeField] protected IntVec2 _deltaPos;
-        [SerializeField] protected IntVec2 _deltaImpactPos;
 
         [SerializeField] protected IntVec2 _speed;
 
         [SerializeField] public IntVec2 ExtraSpeed;
 
+        protected IntVec2 _deltaImpactPos;
+        
         [SerializeField] protected bool _grounded;
         [SerializeField] protected bool _lastGrounded = true;
 
@@ -143,6 +143,11 @@ namespace GameA.Game
         {
             get { return _view == null ? null : _view.Animation; }
         }
+        
+        public IntVec2 DeltaImpactPos
+        {
+            get { return _deltaImpactPos; }
+        }
 
         public AnimationSystem Animation
         {
@@ -197,12 +202,12 @@ namespace GameA.Game
 
         public bool CanMove
         {
-            get { return !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) && !IsInState(EEnvState.Ice); }
+            get { return _isAlive && !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) && !IsInState(EEnvState.Ice); }
         }
 
         public bool CanAttack
         {
-            get { return !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) && !IsInState(EEnvState.Ice); }
+            get { return _isAlive && !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) && !IsInState(EEnvState.Ice); }
         }
 
         public virtual SkillCtrl SkillCtrl
@@ -244,11 +249,6 @@ namespace GameA.Game
         {
             get { return _isAlive; }
             set { _isAlive = value; }
-        }
-
-        public bool IsStart
-        {
-            get { return _isStart; }
         }
 
         public List<UnitBase> DownUnits
@@ -721,31 +721,6 @@ namespace GameA.Game
 
         public virtual void CheckStart()
         {
-            _downUnit = null;
-            _downUnits.Clear();
-            _isCalculated = false;
-            Speed += ExtraSpeed;
-            ExtraSpeed = IntVec2.zero;
-            if (_curBanInputTime > 0)
-            {
-                _curBanInputTime--;
-            }
-            _isStart = true;
-            //if (!MapConfig.UseAOI)
-            //{
-            //    _isStart = true;
-            //    return;
-            //}
-            //IntVec2 focusPos = PlayMode.Instance.FocusPos;
-            //IntVec2 rel = _curPos - focusPos;
-            //if (Mathf.Abs(rel.x) > ConstDefineGM2D.Start.x || rel.y > ConstDefineGM2D.Start.y || rel.y < -ConstDefineGM2D.Start.x)
-            //{
-            //    _isStart = false;
-            //}
-            //else
-            //{
-            //    _isStart = true;
-            //}
         }
 
         public virtual void UpdateLogic()
@@ -947,8 +922,7 @@ namespace GameA.Game
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, size, _tableUnit);
                 }
             }
-            int halfTile = _tableUnit.Width / 2;
-            float z = -(_curPos.x + halfTile + _curPos.y + halfTile) * 0.0015625f+ _viewZOffset;
+            float z = GetZ(_curPos);
             if (UnitDefine.IsDownY(_tableUnit))
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, -0.1f, z);
@@ -958,7 +932,8 @@ namespace GameA.Game
 
         protected float GetZ(IntVec2 pos)
         {
-            return -(pos.x + pos.y) * 0.00078125f;
+            var size = Mathf.Clamp(_tableUnit.Width, 0, ConstDefineGM2D.ServerTileScale);
+            return -(pos.x + pos.y + size) * UnitDefine.UnitSorttingLayerRatio + _viewZOffset;
         }
 
         protected void SetRelativeEffectPos(Transform trans, EDirectionType eDirectionType, float viewZOffset = 0)
@@ -997,7 +972,7 @@ namespace GameA.Game
                     offset.y += halfSize.y;
                     break;
             }
-            float z = -(pos.x + halfSize.x + pos.y + halfSize.y) * 0.00078125f + viewZOffset;
+            float z = -(pos.x + halfSize.x + pos.y + halfSize.y) * UnitDefine.UnitSorttingLayerRatio + viewZOffset;
             float y = 0f;
             if (UnitDefine.IsDownY(_tableUnit))
             {
@@ -1401,7 +1376,6 @@ namespace GameA.Game
 
         public virtual void SetPos(IntVec2 pos)
         {
-            _isStart = true;
             _curPos = pos;
             //TODO StaticCollider也可以设置位置 改变SceneNode
             if (_dynamicCollider != null)
@@ -1431,7 +1405,7 @@ namespace GameA.Game
 
         public virtual IntVec2 GetDeltaImpactPos(UnitBase unit)
         {
-            return _deltaImpactPos;
+            return IntVec2.zero;
         }
 
         public virtual void SetFacingDir(EMoveDirection eMoveDirection, bool initView = false)
@@ -1521,13 +1495,13 @@ namespace GameA.Game
         {
         }
 
-        internal bool OnSwitchPressStart(SwitchPress switchPress)
+        internal bool OnSwitchPressStart(SwitchUnit switchUnit)
         {
-            if (_switchPressUnits.Contains(switchPress))
+            if (_switchPressUnits.Contains(switchUnit))
             {
                 return false;
             }
-            _switchPressUnits.Add(switchPress);
+            _switchPressUnits.Add(switchUnit);
             if (_switchPressUnits.Count == 1)
             {
                 OnCtrlBySwitch();
@@ -1535,9 +1509,9 @@ namespace GameA.Game
             return true;
         }
 
-        internal bool OnSwitchPressEnd(SwitchPress switchPress)
+        internal bool OnSwitchPressEnd(SwitchUnit switchUnit)
         {
-            if (!_switchPressUnits.Remove(switchPress))
+            if (!_switchPressUnits.Remove(switchUnit))
             {
                 return false;
             }
@@ -1556,7 +1530,7 @@ namespace GameA.Game
 
         public bool IsBlockedBy(UnitBase unit)
         {
-            if (unit != null && unit.IsAlive && unit != this && !(unit is SwitchTrigger))
+            if (unit != null && unit.IsAlive && unit != this && !(unit is SwitchTriggerPress))
             {
                 return true;
             }
@@ -1631,7 +1605,7 @@ namespace GameA.Game
             return (_envState & (1 << (int) eEnvState)) != 0;
         }
 
-        public virtual bool SetWeapon(int id, int slot = 0)
+        public virtual bool SetWeapon(int weaponId)
         {
             return true;
         }

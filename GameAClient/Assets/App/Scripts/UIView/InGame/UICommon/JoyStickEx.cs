@@ -1,15 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Security.Cryptography;
-using GameA.Game;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
+﻿using GameA.Game;
 using SoyEngine;
-using SoyEngine.Proto;
-using Spine;
-using UnityEngine.Networking;
+using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityStandardAssets.CrossPlatformInput;
 
 namespace GameA
@@ -34,7 +26,7 @@ namespace GameA
 
         private Vector2 _centerPos;
 
-        private bool _hovering = false;
+        private bool _hovering;
         private PointerEventData _hoveringEventData;
 
         void Start()
@@ -51,26 +43,36 @@ namespace GameA
             if (_hovering)
             {
                 DirectionImg.SetActive(true);
-                Vector2 inputPos;
+                Vector2 inputPos = Vector2.zero;
+
+                
 #if (((UNITY_ANDROID || UNITY_IPHONE || UNITY_WINRT || UNITY_BLACKBERRY) && !UNITY_EDITOR))
-                if (UnityEngine.Input.touchCount > 0)
+                var currentTouches = UnityEngine.Input.touches;
+                bool touchOn = false;
+                for (int i = 0; i < currentTouches.Length; i++)
                 {
-                    var touch = UnityEngine.Input.GetTouch(_hoveringEventData.pointerId);
-                    inputPos = touch.position;
+                    if (currentTouches[i].fingerId == _hoveringEventData.pointerId)
+                    {
+                        inputPos = currentTouches[i].position;
+                        touchOn = true;
+                        break;
+                    }
                 }
-                else
+                if (!touchOn)
                 {
                     DirectionImg.SetActive(false);
                     return;
                 }
-                #else
+#else
                 inputPos = Input.mousePosition;
 #endif
 
                 Vector2 localPos;
                 if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(transform as RectTransform, inputPos,
                     _hoveringEventData.enterEventCamera, out localPos))
+                {
                     return;
+                }
                 Vector2 delta = localPos - _centerPos;
                 HandleDeltaPosition(delta);
             }

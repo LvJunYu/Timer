@@ -28,6 +28,10 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
+            if (UnitDefine.IsBullet(other.Id))
+            {
+                return false;
+            }
             OnTrigger(other, checkOnly);
             return base.OnUpHit(other, ref y, checkOnly);
         }

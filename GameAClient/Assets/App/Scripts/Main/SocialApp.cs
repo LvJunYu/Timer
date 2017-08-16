@@ -6,12 +6,12 @@
 ***********************************************************************/
 
 using System;
+using System.Collections.Generic;
 using GameA.Game;
+using NewResourceSolution;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using NewResourceSolution;
-using EMessengerType = SoyEngine.EMessengerType;
 using FileTools = SoyEngine.FileTools;
 
 namespace GameA
@@ -112,8 +112,8 @@ namespace GameA
             JoySceneManager.Instance.Init();
             Application.targetFrameRate = 60;
             QualitySettings.vSyncCount = 1;
-            GlobalVar.Instance.Env = this._env;
-            GlobalVar.Instance.AppVersion = RuntimeConfig.Instance.Version.ToString();
+            GlobalVar.Instance.Env = _env;
+            GlobalVar.Instance.AppVersion = RuntimeConfig.Instance.Version;
             var addressConfig = GetAppServerAddress();
             NetworkManager.AppHttpClient.BaseUrl = addressConfig.AppServerApiRoot;
             NetworkManager.AppHttpClient.SendInspector = Account.AppHttpClientAccountInspector;
@@ -121,80 +121,60 @@ namespace GameA
             CoroutineManager.Instance.Init(this);
             ResourcesManager.Instance.Init ();
             LocalizationManager.Instance.Init();
-//            TableManager.Instance.Init();
             ResourcesManager.Instance.CheckApplicationAndResourcesVersion();
         }
 
         public void LoginAfterUpdateResComplete()
         {
+            SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
             gameObject.AddComponent<TableManager>();
             TableManager.Instance.Init();
             LocalUser.Instance.Init();
-            //Debug.Log("________"+ LocalUser.Instance.Account.Token);
-            if (string.IsNullOrEmpty(LocalUser.Instance.Account.Token))
+            if (!string.IsNullOrEmpty(LocalUser.Instance.Account.Token))
             {
-                SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
-            }
-            else
-            {
-                LocalUser.Instance.Account.LoginByToken(() =>
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "自动登录中");
+                LocalUser.Instance.Account.LoginByToken(()=>
                 {
-                    SocialApp.Instance.LoginSucceed();
-
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    LoginSucceed();
                 }, code =>
-                {                   
-                    //if (code == ELoginByTokenCode.LBTC_Success)
-                    //{
-                    //    SocialApp.Instance.LoginSucceed();
-                    //}
-                    //else if (code == ELoginByTokenCode.LBTC_SuccessNewToken)
-                    //{
-                    //    SocialApp.Instance.LoginSucceed();
-                    //}
-                    //else
-                    //{
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
-                        LogHelper.Error("登录失败, Code: " + code);
-                    //}
                 });
             }
-            //SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
 		}
 
         public void LoginSucceed ()
         {
             AppData.Instance.Init();
-            //            LoginLogicUtil.Init();
             ShareUtil.Init();
-            RoomManager.Instance.Init();
+//            RoomManager.Instance.Init();
 
             GetUserData ();
         }
 
         private void GetUserData ()
         {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在加载用户数据");
             ParallelTaskHelper<ENetResultCode> helper = new ParallelTaskHelper<ENetResultCode>(()=>{
                 GameProcessManager.Instance.Init ();
                 SocialGUIManager.Instance.CloseUI<UICtrlLogin>();
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 SocialGUIManager.Instance.ShowAppView ();
             }, code=>{
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 SocialGUIManager.ShowPopupDialog("服务器连接失败，请检查网络后重试，错误代码："+code.ToString(), null,
-                    new System.Collections.Generic.KeyValuePair<string, System.Action>("重试", ()=>{
-                        CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(()=>GetUserData()));
+                    new KeyValuePair<string, Action>("重试", ()=>{
+                        CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(GetUserData));
                     }));
             });
             helper.AddTask(AppData.Instance.LoadAppData);
             helper.AddTask(LocalUser.Instance.LoadUserData);
             helper.AddTask(AppData.Instance.AdventureData.PrepareAllData);
-            helper.AddTask (LocalUser.Instance.LoadPropData);
-            helper.AddTask (LocalUser.Instance.LoadWorkshopUnitData);
+            helper.AddTask(LocalUser.Instance.LoadPropData);
+            helper.AddTask(LocalUser.Instance.LoadWorkshopUnitData);
         }
-
-//	    private void InitLocalResource()
-//	    {
-//			LocalResourceManager.Instance.Init();
-//			LocaleManager.Instance.Init();
-//		}
 
         internal void ReturnToApp(bool withScreenEffect = true)
         {
@@ -227,7 +207,7 @@ namespace GameA
         {
             base.Update();
             GameManager.Instance.Update();
-            RoomManager.Instance.Update();
+//            RoomManager.Instance.Update();
             if(Input.GetKeyDown(KeyCode.Escape))
             {
                 Messenger.Broadcast(EMessengerType.OnEscapeClick);
