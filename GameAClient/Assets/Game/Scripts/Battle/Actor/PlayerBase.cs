@@ -155,16 +155,19 @@ namespace GameA.Game
             {
                 return false;
             }
-            var inputControl =  SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
-            if (inputControl != null)
+            if (Application.isMobilePlatform)
             {
-                if (slot == 1)
+                var inputControl =  SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
+                if (inputControl != null)
                 {
-                    inputControl.SetSkillBtn2Visible(true);
-                }
-                if (slot == 2)
-                {
-                    inputControl.SetSkillBtn3Visible(true);
+                    if (slot == 1)
+                    {
+                        inputControl.SetSkillBtn2Visible(true);
+                    }
+                    if (slot == 2)
+                    {
+                        inputControl.SetSkillBtn3Visible(true);
+                    }
                 }
             }
             _tableEquipments[slot] = tableEquipment;
