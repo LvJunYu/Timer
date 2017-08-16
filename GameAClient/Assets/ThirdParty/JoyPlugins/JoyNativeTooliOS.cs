@@ -8,16 +8,13 @@
 
 #if UNITY_IOS
 
-using System;
-using UnityEngine;
-using SoyEngine;
 using System.Text;
-using System.Runtime.InteropServices;
-using NewResourceSolution;
-using UnityEngine.iOS;
+using SoyEngine;
+using Umeng;
+using UnityEngine;
+using EMessengerType = GameA.EMessengerType;
 using NotificationServices = UnityEngine.iOS.NotificationServices;
 using RemoteNotification = UnityEngine.iOS.RemoteNotification;
-using Umeng;
 
 public class JoyNativeTooliOS : MonoBehaviour, IJoyNativeTool
 {
@@ -77,7 +74,7 @@ public class JoyNativeTooliOS : MonoBehaviour, IJoyNativeTool
 
     public void SetStatusBarShow(bool show)
     {
-        _setStatusBarShow(show);
+//        _setStatusBarShow(show);
     }
 
     public void PickImage()
@@ -112,29 +109,30 @@ public class JoyNativeTooliOS : MonoBehaviour, IJoyNativeTool
         return sb.ToString();;
     }
 
-    [DllImport("__Internal")]
-    private static extern void _setStatusBarShow(bool show);
+//    [DllImport("__Internal")]
+//    private static extern void _setStatusBarShow(bool show);
 
     public void OnReceiveRemoteNotification(string param)
     {
         LogHelper.Debug("OnReceiveRemoteNotification");
-        MessengerAsync.Broadcast(GameA.EMessengerType.OnReceiveRemoteNotification);
+        MessengerAsync.Broadcast(EMessengerType.OnReceiveRemoteNotification);
     }
 
-    [DllImport("__Internal")]
-    private static extern void _copyTextToClipboard(string text);
+//    [DllImport("__Internal")]
+//    private static extern void _copyTextToClipboard(string text);
 
     public void CopyTextToClipboard(string text)
     {
-        _copyTextToClipboard(text);
+//        _copyTextToClipboard(text);
     }
 
-    [DllImport("__Internal")]
-    private static extern string _getTextFromClipboard();
+//    [DllImport("__Internal")]
+//    private static extern string _getTextFromClipboard();
 
     public string GetTextFromClipboard()
     {
-        return _getTextFromClipboard();
+//        return _getTextFromClipboard();
+        return string.Empty;
     }
 }
 #endif
