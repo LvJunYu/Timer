@@ -171,12 +171,12 @@ PlayerSettings:
   tvOSTopShelfImageWideLayers: []
   iOSLaunchScreenType: 1
   iOSLaunchScreenPortrait: {fileID: 0}
-  iOSLaunchScreenLandscape: {fileID: 2800000, guid: 58224884bc5e02546add5f8e6cfefa4f,
+  iOSLaunchScreenLandscape: {fileID: 2800000, guid: b9b54847faf844f7a80a199f5e0505c4,
     type: 3}
   iOSLaunchScreenBackgroundColor:
     serializedVersion: 2
     rgba: 4290308351
-  iOSLaunchScreenFillPct: 30
+  iOSLaunchScreenFillPct: 45
   iOSLaunchScreenSize: 100
   iOSLaunchScreenCustomXibPath: 
   iOSLaunchScreeniPadType: 0
