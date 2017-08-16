@@ -16,6 +16,10 @@ namespace GameA
         public Text SkillEffect;
         public Text HpAdd;
         public Text AttackAdd;
+        public Text HpOld;
+        public Text AttactOld;
+        public Text SkillOld;
+        public Text TileText;
         public Image WeaponFragmentIcon;
         public Image UniversalFragmentsIcon;
         public Button Confirm;
