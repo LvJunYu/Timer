@@ -36,6 +36,7 @@ namespace GameA.Game
         public const int PlayerTableId = 1001;
         public const int TransparentEarthId = 4004;
         public const int ClayId = 4011;
+        public const int ScorchedEarthId = 4013;
         public const int BlueStoneId = 8002;
         public const int BlueStoneBanId = 8003;
         public const int BlueStoneRotateId = 8004;
@@ -43,9 +44,12 @@ namespace GameA.Game
         public const int BoxId = 5004;
         public const int RollerId = 5005;
         public const int LaserId = 5010;
-        public const int SwitchTriggerId = 8101;
         public const int BillboardId = 7001;
+        
+        public const int SwitchTriggerId = 8100;
+        public const int SwitchTriggerPressId = 8101;
         public const int MagicSwitchId = 8102;
+        
         public const int BulletIceId = 10003;
 
         public static bool IsSpawn(int id)
@@ -80,7 +84,12 @@ namespace GameA.Game
 
         public static bool IsSwitch(int id)
         {
-            return id >= 8101 && id <= 8200;
+            return id > 8101 && id <= 8200;
+        }
+        
+        public static bool IsSwitchTrigger(int id)
+        {
+            return id == SwitchTriggerId || id == SwitchTriggerPressId;
         }
         
         public static bool IsMagicSwitch(int id)
@@ -149,7 +158,7 @@ namespace GameA.Game
 
         public static bool IsSameDirectionSwitchTrigger(SceneNode node, byte rotation)
         {
-            return node.Id == SwitchTriggerId &&
+            return node.Id == SwitchTriggerPressId &&
                    (node.Rotation + rotation == 2 || node.Rotation + rotation == 4);
         }
 
@@ -169,7 +178,7 @@ namespace GameA.Game
         {
             ushort id = node.Id;
             return  id != LaserId && id != TransparentEarthId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
-                   !IsBoard(id) && !IsCollection(id) && !IsMagicSwitch(id)&& !IsBullet(id);
+                   !IsBoard(id) && !IsCollection(id) && !IsMagicSwitch(id)&& !IsBullet(id) && !IsSwitchTrigger(id);
         }
         
         public static bool IsFanEffect(int layer, int id)
@@ -180,7 +189,7 @@ namespace GameA.Game
 
         internal static bool IsGround(int id)
         {
-            return id != SwitchTriggerId && id != LaserId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
+            return !IsSwitchTrigger(id)&& id != LaserId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
                    !IsBoard(id) && !IsCollection(id) && !IsMagicSwitch(id)&& !IsMain(id) && !IsBullet(id);
         }
 

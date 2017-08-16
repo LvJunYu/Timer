@@ -16,6 +16,7 @@ namespace GameA
         public RawImage UserIcon;
         public Text UserNickNameText;
         public Text UserLevelText;
+        public Text CreateTimeText;
         public RawImage Cover;
         public Text PlayCountText;
         public Text LikeCountText;

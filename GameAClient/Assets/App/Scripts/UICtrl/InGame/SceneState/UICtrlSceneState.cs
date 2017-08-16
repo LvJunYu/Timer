@@ -6,21 +6,23 @@
 ***********************************************************************/
 
 
-using System;
 using System.Collections.Generic;
-
-using SoyEngine;
 using GameA.Game;
+using SoyEngine;
+using SoyEngine.Proto;
+using UnityEngine;
+using EWinCondition = GameA.Game.EWinCondition;
+using PlayMode = GameA.Game.PlayMode;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlSceneState: UICtrlInGameBase<UIViewSceneState>
     {
 
         private Dictionary<EWinCondition, UIViewSceneStateItem> _cachedItem;
         private List<EWinCondition> _activeConditions;
-	    private bool _hasTimeLimit = false;
+	    private bool _hasTimeLimit;
 	    private int _lastShowSceonds = -100;
 
         private float _showHelpTimer;
@@ -76,8 +78,8 @@ namespace GameA
 
             if (_showHelpTimer > 0)
             {
-                _showHelpTimer-= UnityEngine.Time.deltaTime;
-                if (UnityEngine.Input.anyKey)
+                _showHelpTimer-= Time.deltaTime;
+                if (Input.anyKey)
                 {
                     _showHelpTimer = 0;
                 }
@@ -88,7 +90,7 @@ namespace GameA
             }
             else
             {
-                if (UnityEngine.Input.GetKey (UnityEngine.KeyCode.H))
+                if (Input.GetKey (KeyCode.H))
                 {
                     if (!_cachedView.HelpPage.activeSelf)
                     {
@@ -176,13 +178,12 @@ namespace GameA
                 _cachedView.Home.SetActiveEx(true);
                 _cachedView.LevelInfoDock.SetActive(true);
                 _cachedView.SpaceDock.SetActive(true);
-                SituationAdventureParam param = null;
                 ISituationAdventure situation = GM2DGame.Instance.GameMode as ISituationAdventure;
                 if (situation != null && situation.GetLevelInfo() != null)
                 {
-                    param = situation.GetLevelInfo();
-                    _cachedView.SectionText.text = "第" + ClientTools.ToCNLowerCase(param.Section) + "章";
-                    if (param.ProjectType == SoyEngine.Proto.EAdventureProjectType.APT_Normal)
+                    var param = situation.GetLevelInfo();
+                    _cachedView.SectionText.text = "第" + param.Section.ToCNLowerCase() + "章";
+                    if (param.ProjectType == EAdventureProjectType.APT_Normal)
                     {
                         _cachedView.NormalLevelDock.SetActive(true);
                         _cachedView.BonusLevelDock.SetActive(false);
@@ -190,21 +191,21 @@ namespace GameA
 
                         _cachedView.StarConditions.SetActive (true);
                         var table = param.Table;
-                        var tableStarRequire1 = Game.TableManager.Instance.GetStarRequire (table.StarConditions [0]);
+                        var tableStarRequire1 = TableManager.Instance.GetStarRequire (table.StarConditions [0]);
                         if (null == tableStarRequire1) {
                             LogHelper.Error ("Cant find table starrequire of id: {0}", table.StarConditions [0]);
                         } else {
                             _cachedView.StarConditionText [0].text = string.Format (tableStarRequire1.Desc, table.Star1Value);
                             _cachedView.StarConditionStar [0].gameObject.SetActive (false);
                         }
-                        var tableStarRequire2 = Game.TableManager.Instance.GetStarRequire (table.StarConditions [1]);
+                        var tableStarRequire2 = TableManager.Instance.GetStarRequire (table.StarConditions [1]);
                         if (null == tableStarRequire2) {
                             LogHelper.Error ("Cant find table starrequire of id: {0}", table.StarConditions [1]);
                         } else {
                             _cachedView.StarConditionText [1].text = string.Format (tableStarRequire2.Desc, table.Star2Value);
                             _cachedView.StarConditionStar [1].gameObject.SetActive (false);
                         }
-                        var tableStarRequire3 = Game.TableManager.Instance.GetStarRequire (table.StarConditions [2]);
+                        var tableStarRequire3 = TableManager.Instance.GetStarRequire (table.StarConditions [2]);
                         if (null == tableStarRequire3) {
                             LogHelper.Error ("Cant find table starrequire of id: {0}", table.StarConditions [2]);
                         } else {
@@ -238,7 +239,7 @@ namespace GameA
 		    UpdateKeyCount();
             UpdateScore();
 
-            UpdateSpeedUpCD ();
+            UpdateSpeedUpCd ();
 	    }
 
         private void InitUI()
@@ -334,7 +335,7 @@ namespace GameA
             _cachedView.ScoreItem.Dex.text = string.Format(GM2DUIConstDefine.WinDataScoreFormat, curValue);
         }
 
-        private void UpdateSpeedUpCD ()
+        private void UpdateSpeedUpCd ()
         {
             _cachedView.SpeedUpReady.SetActive (true);
             _cachedView.SpeedUpCDImg.fillAmount = 0;
@@ -348,24 +349,11 @@ namespace GameA
             SocialGUIManager.Instance.GetUI<UICtrlGameSetting>().ChangeToSettingInGame();
         }
 
-        private void OnHPChanged (int currentValue, int maxValue)
-        {
-            if (!_isOpen)
-                return;
-            _cachedView.HP.fillAmount = (float)currentValue / maxValue;
-        }
-        private void OnMPChanged (int currentValue, int maxValue)
-        {
-            if (!_isOpen)
-                return;
-            _cachedView.MP.fillAmount = (float)currentValue / maxValue;
-        }
-
         private void OnSpeedUpCDChanged (int currentCD, int maxCD)
         {
             if (maxCD == 0)
                 return;
-            currentCD = UnityEngine.Mathf.Clamp (currentCD, 0, maxCD);
+            currentCD = Mathf.Clamp (currentCD, 0, maxCD);
             if (currentCD <= 0) {
                 _cachedView.SpeedUpReady.SetActive (true);
                 _cachedView.SpeedUpCDImg.fillAmount = 0;

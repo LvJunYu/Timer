@@ -17,7 +17,7 @@ namespace GameA.Game
     public class SwitchPress : SwitchUnit
     {
         protected List<UnitBase> _units;
-
+        
         internal override void OnPlay()
         {
             base.OnPlay();

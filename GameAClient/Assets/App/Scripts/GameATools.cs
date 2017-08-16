@@ -7,7 +7,7 @@ namespace GameA {
     /// <summary>
     /// 提供了一些常用的工具
     /// </summary>
-    public class GameATools {
+    public static class GameATools {
         /// <summary>
         /// 刷新本地脏数据（金币、钻石、体力）的最小间隔时间
         /// </summary>
@@ -398,5 +398,81 @@ namespace GameA {
         {
             return "" + Mathf.CeilToInt(rate*1000)/10f + " %";
         }
+        
+        public static string FormatServerDateString(long timestamp, string format = null)
+        {
+            if (format == null)
+            {
+                format = "yyyy-M-d HH:mm";
+            }
+            DateTime localDateTime = DateTimeUtil.UnixTimestampMillisToLocalDateTime(timestamp);
+            return localDateTime.ToString(format);
+        }
+        
+        public static string FormatNumberString(long num)
+        {
+            if(num > 100000000)
+            {
+                return "" + (num / 100000000) + "亿";
+            }
+            else if(num > 10000)
+            {
+                return "" + (num / 10000) + "万";
+            }
+            return "" + num;
+        }
+
+        /// <summary>
+        /// 将整数转为小写的中文数字
+        /// </summary>
+        /// <param name="ni_intInput"></param>
+        /// <returns></returns>
+        public static string ToCNLowerCase(this int ni_intInput)
+        {
+            string tstrRet = "";
+            int tintInput;
+            int tintRemainder, tintDigitPosIndex = 0;
+            int tintLoopX = 0;
+
+            string[] tastrNumCNChar = new string[] { "零", "一", "二", "三", "四", "五", "六", "七", "八", "九" };
+            string[] tastrDigitPosCNChar = new string[] { "", "十", "百", "千", "万", "亿" };
+
+            tintInput = ni_intInput;
+            tintLoopX = 0;
+
+            while (tintInput / 10 > 0 || tintInput > 0)
+            {
+                tintRemainder = (tintInput % 10);
+                if (tintLoopX == 5)//十万
+                {
+                    tintDigitPosIndex = 1;
+                }
+                else if (tintLoopX == 8)//亿
+                {
+                    tintDigitPosIndex = 5;
+                }
+                else if (tintLoopX == 9)//十亿
+                {
+                    tintDigitPosIndex = 1;
+                }
+                //end if
+                if (tintRemainder > 0)
+                {
+                    tstrRet
+                    = tastrNumCNChar[tintRemainder] + tastrDigitPosCNChar[tintDigitPosIndex] + tstrRet;
+                }
+                else
+                {
+                    tstrRet
+                    = tastrNumCNChar[tintRemainder] + tstrRet;
+                }
+                //end if
+                tintDigitPosIndex += 1;
+                tintLoopX += 1;
+                tintInput /= 10;
+            }//end while
+            tstrRet = System.Text.RegularExpressions.Regex.Replace(tstrRet, "零零*零*", "零");
+            return tstrRet;
+        }//end
     }
 }

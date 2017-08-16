@@ -116,9 +116,17 @@ namespace GameA.Game
                                     continue;
                                 }
                             }
-                            if (unit.Id == UnitDefine.SwitchTriggerId)
+                            if (UnitDefine.IsSwitchTrigger(unit.Id))
                             {
                                 unit.OnIntersect(this);
+                            }
+                            if (unit.Id == UnitDefine.ScorchedEarthId)
+                            {
+                                var se = unit as ScorchedEarth;
+                                if (se != null)
+                                {
+                                    se.OnExplode();
+                                }
                             }
                             if (!unit.CanMagicCross)
                             {
