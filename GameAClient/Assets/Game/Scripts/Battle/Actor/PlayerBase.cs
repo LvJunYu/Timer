@@ -155,6 +155,18 @@ namespace GameA.Game
             {
                 return false;
             }
+            var inputControl =  SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
+            if (inputControl != null)
+            {
+                if (slot == 1)
+                {
+                    inputControl.SetSkillBtn2Visible(true);
+                }
+                if (slot == 2)
+                {
+                    inputControl.SetSkillBtn3Visible(true);
+                }
+            }
             _tableEquipments[slot] = tableEquipment;
             //发送事件
             Messenger<Table_Skill,int>.Broadcast(EMessengerType.OnSkillSlotChanged, tableSkill, slot);
