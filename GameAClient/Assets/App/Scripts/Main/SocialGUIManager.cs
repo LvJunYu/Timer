@@ -182,6 +182,14 @@ namespace GameA
             );
         }
 
+        public static Vector2 GetUIResolution()
+        {
+            var canvasTran = Instance._uiRoot.Trans;
+            float aspectRatio = 1f * Screen.width / Screen.height;
+            Vector2 canvasSize = new Vector2(2 * aspectRatio, 2) / canvasTran.localScale.x;
+            return new Vector2(Mathf.RoundToInt(canvasSize.x), Mathf.RoundToInt(canvasSize.y));
+        }
+
         public static Vector2 ScreenToRectLocal(Vector2 screenPos, RectTransform parentRectTransform)
         {
             var canvasTran = Instance._uiRoot.Trans;
