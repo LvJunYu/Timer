@@ -45,9 +45,5 @@ namespace GameA
         public InputField CommentInput;
         public Button PostCommentBtn;
 
-        public Toggle FollowToggle;
-        public Text   FollowText;
-        public Toggle BlockToggle;
-        public Text   BlockText;
     }
 }
