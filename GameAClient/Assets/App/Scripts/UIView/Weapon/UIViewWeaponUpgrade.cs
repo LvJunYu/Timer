@@ -7,9 +7,8 @@ namespace GameA
 {
     public class UIViewWeaponUpgrade : UIViewBase
     {
-
-        public Text WeaponName;
-        public Text TipUpgrade;
+        public Text TileText;
+        public Text TipText;
         public Text CoinNum;
         public Text WeaponFragmentNum;
         public Text UniversalFragmentsNum;
@@ -19,7 +18,6 @@ namespace GameA
         public Text HpOld;
         public Text AttactOld;
         public Text SkillOld;
-        public Text TileText;
         public Image WeaponFragmentIcon;
         public Image UniversalFragmentsIcon;
         public Button Confirm;
