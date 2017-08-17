@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
-using SoyEngine;
 
 namespace GameA
 {

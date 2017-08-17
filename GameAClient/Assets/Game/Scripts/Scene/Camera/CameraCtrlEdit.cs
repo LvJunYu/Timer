@@ -82,20 +82,28 @@ namespace GameA.Game
         {
             Rect validMapRect = GM2DTools.TileRectToWorldRect(DataScene2D.Instance.ValidMapRect);
             
-            float cWHRatio = GM2DGame.Instance.GameScreenAspectRatio;
+            float sWHRatio = GM2DGame.Instance.GameScreenAspectRatio;
             float mWHRatio = validMapRect.width / validMapRect.height;
 
             float orthoSize = validMapRect.height / 2;
             Vector3 pos = Vector3.zero;
-            if (cWHRatio > mWHRatio)
-            {
-                orthoSize = validMapRect.width / cWHRatio / 2;
-                pos = new Vector3(validMapRect.center.x, validMapRect.yMin + validMapRect.width / cWHRatio / 2);
+            Vector2 uiResolution = SocialGUIManager.GetUIResolution();
+            if (sWHRatio > mWHRatio)
+            {//屏幕比地图宽 全显地图底部
+                orthoSize = validMapRect.width / sWHRatio / 2;
+                pos = new Vector3(validMapRect.center.x,
+                    validMapRect.yMin + validMapRect.width / sWHRatio / 2);
+                
             }
             else
-            {
+            {//地图比屏幕宽 全显地图左侧
                 pos = new Vector3(validMapRect.xMin + orthoSize * GM2DGame.Instance.GameScreenAspectRatio, validMapRect.center.y);
             }
+            //往左移动一个x遮罩的宽度
+            pos.x -= orthoSize * 2 * sWHRatio * ConstDefineGM2D.CameraMoveOutUISizeX / uiResolution.x;
+            //往下移动一个Bottom遮罩的高度
+            pos.y -= orthoSize * 2 * ConstDefineGM2D.CameraMoveOutSizeYBottom / uiResolution.y;
+            
             _cachedOrthoSize = orthoSize;
             _cachedPos = pos;
             _orthoSizeSpringbackEffect.SetOrthoSize(orthoSize);

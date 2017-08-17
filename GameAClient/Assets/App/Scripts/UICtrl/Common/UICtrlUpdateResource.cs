@@ -28,11 +28,14 @@ namespace GameA
 
         private void OnResourcesCheckStart ()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlUpdateResource> ();
+            if (!_isOpen)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlUpdateResource>();
+            }
         }
         private void OnResourcesCheckFinish ()
         {
-            SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource> ();
+            SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource>();
         }
         private void OnVersionUpdateStateChange (string state)
         {

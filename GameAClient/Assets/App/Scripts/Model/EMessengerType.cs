@@ -4,7 +4,6 @@
   ** Date : 3/29/2017 11:53 AM
   ** Summary : EMessengerType.cs
   ***********************************************************************/
-using System;
 
 namespace GameA
 {
@@ -119,6 +118,11 @@ namespace GameA
         public static int OnPuzzleCompound = SoyEngine.EMessengerType.NextId++;
         public static int OnPuzzleEquip = SoyEngine.EMessengerType.NextId++;
         public static int OnPuzzleFragChanged = SoyEngine.EMessengerType.NextId++;
+        
+        //武器升级后广播消息
+        public static int OnWeaponDataChange = SoyEngine.EMessengerType.NextId++;
+        //设置变化
+        public static int OnGameSettingChanged = SoyEngine.EMessengerType.NextId++;
     }
 }
 

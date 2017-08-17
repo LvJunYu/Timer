@@ -92,7 +92,7 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.IsAlive)
+            if (other.IsAlive && other.IsPlayer)
             {
                 if (_timer == 0)
                 {
