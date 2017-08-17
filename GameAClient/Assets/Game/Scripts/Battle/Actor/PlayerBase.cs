@@ -405,9 +405,12 @@ namespace GameA.Game
         {
             _stepY = stepY;
             _grounded = true;
-            _jumpLevel = 0;
-            _jumpTimer = 10;
-            _jumpState = EJumpState.Jump1;
+//            _jumpLevel = 0;
+//            _jumpTimer = 10;
+//            _jumpState = EJumpState.Jump1;
+            _jumpLevel = -1;
+            _jumpTimer = 0;
+            _jumpState = EJumpState.Land;
         }
 
         #endregion
