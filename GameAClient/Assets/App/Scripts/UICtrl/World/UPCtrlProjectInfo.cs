@@ -77,8 +77,8 @@ namespace GameA
         private void RefreshFavoriteBtnView()
         {
             bool favorite = _content.ProjectUserData != null && _content.ProjectUserData.Favorite;
-            _cachedView.FavoriteBtn.gameObject.SetActive(!favorite);
-            _cachedView.UnfavoriteBtn.gameObject.SetActive(favorite);
+            _cachedView.FavoriteBtn.SetActiveEx(!favorite);
+            _cachedView.UnfavoriteBtn.SetActiveEx(favorite);
             DictionaryTools.SetContentText(_cachedView.FavoriteCount, _content.FavoriteCount.ToString());
         }
 
