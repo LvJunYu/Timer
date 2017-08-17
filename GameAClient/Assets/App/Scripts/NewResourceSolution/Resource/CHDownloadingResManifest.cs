@@ -10,7 +10,11 @@ namespace NewResourceSolution
         /// <summary>
         /// 同时并发的www请求数
         /// </summary>
-        private static int s_maxcConcurrentDownloadNum = 2;
+        private static int s_maxConcurrentDownloadNum = 2;
+        /// <summary>
+        /// 同时并发的bundle解压缩线程
+        /// </summary>
+        private static int s_maxDecompressThreadNum = 3;
         /// <summary>
         /// 对单个文件的最大重试次数，任意文件的下载重试次数大于此数则整体下载失败
         /// </summary>
@@ -237,7 +241,7 @@ namespace NewResourceSolution
                     break;
                 }
 
-                while (_downloadingList.Count < s_maxcConcurrentDownloadNum && _waitQueue.Count > 0)
+                while (_downloadingList.Count < s_maxConcurrentDownloadNum && _waitQueue.Count > 0)
                 {
                     var downloader = _waitQueue.Dequeue ();
                     downloader.BeginDownload ();
@@ -340,18 +344,52 @@ namespace NewResourceSolution
 				totalSizeToDecompress += _bundles[i].Size;
 			}
 			long sizeDone = 0;
-            for (int i = 0; i < _bundles.Count; i++)
+            List<IEnumerator> workingIEnumerator = new List<IEnumerator>();
+            List<long> compressedSizeOfWorkingBundle = new List<long>();
+            List<string> names = new List<string>();
+            int itor = 0;
+            do
             {
-				if (EFileLocation.Server == _bundles[i].FileLocation ||
-					EFileLocation.Persistent == _bundles[i].FileLocation)
-				{
-					continue;
-				}
-                long compressedSize = _bundles [i].Size;
-                yield return _bundles [i].DecompressOrCopyToPersistant (_adamBundleNameList.Contains(_bundles[i].AssetBundleName));
-                sizeDone += compressedSize;
-                Messenger<long, long>.Broadcast(EMessengerType.OnResourcesUpdateProgressUpdate, sizeDone, totalSizeToDecompress);
-            }
+                for (int i = workingIEnumerator.Count - 1; i >= 0; i--)
+                {
+                    if (!workingIEnumerator[i].MoveNext())
+                    {
+                        sizeDone += compressedSizeOfWorkingBundle[i];
+                        Messenger<long, long>.Broadcast(EMessengerType.OnResourcesUpdateProgressUpdate, sizeDone,
+                            totalSizeToDecompress);
+                        workingIEnumerator.RemoveAt(i);
+                        compressedSizeOfWorkingBundle.RemoveAt(i);
+                        names.RemoveAt(i);
+                    }
+                }
+                while (workingIEnumerator.Count < s_maxDecompressThreadNum && itor < _bundles.Count)
+                {
+                    if (EFileLocation.Server == _bundles[itor].FileLocation ||
+                        EFileLocation.Persistent == _bundles[itor].FileLocation)
+                    {
+                        itor++;
+                        continue;
+                    }
+                    workingIEnumerator.Add(_bundles[itor]
+                        .DecompressOrCopyToPersistant(_adamBundleNameList.Contains(_bundles[itor].AssetBundleName)));
+                    compressedSizeOfWorkingBundle.Add(_bundles[itor].Size);
+                    names.Add(_bundles[itor].AssetBundleName);
+                    itor++;
+                }
+                yield return null;
+            } while (itor < _bundles.Count || workingIEnumerator.Count > 0);
+//            for (int i = 0; i < _bundles.Count; i++)
+//            {
+//				if (EFileLocation.Server == _bundles[i].FileLocation ||
+//					EFileLocation.Persistent == _bundles[i].FileLocation)
+//				{
+//					continue;
+//				}
+//                long compressedSize = _bundles [i].Size;
+//                yield return _bundles [i].DecompressOrCopyToPersistant (_adamBundleNameList.Contains(_bundles[i].AssetBundleName));
+//                sizeDone += compressedSize;
+//                Messenger<long, long>.Broadcast(EMessengerType.OnResourcesUpdateProgressUpdate, sizeDone, totalSizeToDecompress);
+//            }
             // 写入manifest文件
 			UnityTools.TrySaveObjectToLocal<CHResManifest> (this, ResDefine.CHResManifestFileName);
         }

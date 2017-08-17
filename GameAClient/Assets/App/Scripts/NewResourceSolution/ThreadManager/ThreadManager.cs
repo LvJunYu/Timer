@@ -179,7 +179,7 @@ namespace NewResourceSolution
 		/// todo 优化 主线程中连续多次调用该方法，会造成前两个入队的任务压到同一个线程中执行
 		/// </summary>
 		/// <param name="threadAction">Thread action.</param>
-		/// <param name="ioAction">If set to <c>true</c> io action.</param>
+		/// <param name="ioAction">如果为true，则只会排队到主子线程</param>
         public void EnqueueAction (ThreadAction threadAction, bool ioAction = false)
         {
 //            LogHelper.Info ("EnqueueAction");

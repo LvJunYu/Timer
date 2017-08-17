@@ -364,6 +364,7 @@ namespace NewResourceSolution
 		                    else
 		                    {
 			                    yield return latestResManifest.DecompressOrCopyToPersistant ();
+			                    manifestUpdated = true;
 			                    updateFinish = true;
 		                    }
 	                    }
