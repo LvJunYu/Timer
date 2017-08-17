@@ -66,16 +66,16 @@ namespace GameA.Game
 	    public const string CameraMaskPrefabName = "CameraMask";
 	    public const string MapRectMaskPrefabName = "MapRectMask";
 
-		public const float CameraMoveExceedValueX = 0.8f;
-		public const float CameraMoveExceedValueY = 0.8f;
+		public const float CameraMoveExceedUISizeX = 300f;
+		public const float CameraMoveExceedUISizeY = 300f;
 
 	    public const float CameraOrthoSizeMaxValue = 15f;
 	    public const float CameraOrthoSizeMinValue = 2.5f;
 
-	    public const float CameraMoveOutSizeYTop = 0.12f;
-		public const float CameraMoveOutSizeYBottom = 0.25f;
+	    public const float CameraMoveOutSizeYTop = 80f;
+		public const float CameraMoveOutSizeYBottom = 140f;
 
-		public const float CameraMoveOutSizeX = 0.15f;
+		public const float CameraMoveOutUISizeX = 80f;
 
 		public const float DefaultParticlePlayTime = 4;
 
