@@ -5,19 +5,13 @@
 ** Summary : UICtrlSingleMode
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using UnityEngine.EventSystems;
-using GameA.Game;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlModifyMatchMain : UICtrlGenericBase<UIViewModifyMatchMain>
     {
         #region 常量与字段
@@ -69,7 +63,7 @@ namespace GameA
             if (LocalUser.Instance.MatchUserData.IsInited) {
                 LocalUser.Instance.MatchUserData.LocalRefresh ();
             }
-            SocialGUIManager.HideGoldEnergyBar ();
+            SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.None);
             //RefreshViewAll ();
             _lastAutoRefreshView = DateTimeUtil.GetServerTimeNowTimestampMillis ();
             _lastRequstDataTime = _lastAutoRefreshView;
@@ -78,7 +72,7 @@ namespace GameA
         protected override void OnClose()
         {
             base.OnClose();
-            SocialGUIManager.ShowGoldEnergyBar (true);
+            SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
         }
 
         protected override void InitEventListener()
@@ -153,14 +147,11 @@ namespace GameA
             _cachedView.MatchPoint.text = string.Format ("{0} / {1}", matchPoint, matchPointMax);
 
             long now = DateTimeUtil.GetServerTimeNowTimestampMillis ();
-            float getMatchPointLeftTimeInSecond = 0f;
-            float getMatchPointLeftTimeInPercentage = 0f;
             if (0 == matchPoint) {
-                getMatchPointLeftTimeInSecond = 
-                    LocalUser.Instance.MatchUserData.ChallengeIntervalSecond - 
-                             0.001f * (now - LocalUser.Instance.MatchUserData.LeftChallengeCountRefreshTime);
-                getMatchPointLeftTimeInPercentage = getMatchPointLeftTimeInSecond /
-                (float)LocalUser.Instance.MatchUserData.ChallengeIntervalSecond;
+                var getMatchPointLeftTimeInSecond = LocalUser.Instance.MatchUserData.ChallengeIntervalSecond - 
+                                                      0.001f * (now - LocalUser.Instance.MatchUserData.LeftChallengeCountRefreshTime);
+                var getMatchPointLeftTimeInPercentage = getMatchPointLeftTimeInSecond /
+                                                          LocalUser.Instance.MatchUserData.ChallengeIntervalSecond;
                 _cachedView.MatchPoint.gameObject.SetActive (false);
                 int hour = (int)getMatchPointLeftTimeInSecond / 60 / 60;
                 int minute = (int)getMatchPointLeftTimeInSecond / 60 - hour * 60;

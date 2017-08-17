@@ -5,19 +5,15 @@
 ** Summary : UICtrlSingleMode
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using GameA.Game;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlSingleMode : UICtrlGenericBase<UIViewSingleMode>
     {
         #region 常量与字段
@@ -49,7 +45,7 @@ namespace GameA
 		/// <summary>
 		/// 是否正在拖拽
 		/// </summary>
-		private bool _dragging = false;
+		private bool _dragging;
 		/// <summary>
 		/// 屏蔽玩家输入计时器
 		/// </summary>
@@ -62,9 +58,6 @@ namespace GameA
 		/// </summary>
 		/// <value>The current chapter.</value>
 		private int CurrentChapter {
-			get {
-				return _currentChapter;
-			}
 			set {
 				if (_currentChapter != value) {
 					_currentChapter = value;
@@ -99,7 +92,7 @@ namespace GameA
 					);
 				}
 			}
-            SocialGUIManager.ShowGoldEnergyBar (true);
+	        SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.EnergyGoldDiamond);
 //			AppData.Instance.AdventureData.UserData.UserEnergyData.Request (
 //				LocalUser.Instance.UserGuid,
 //				() => {
@@ -118,8 +111,9 @@ namespace GameA
 
         protected override void OnClose()
         {
-            base.OnClose();
+	        SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
 			_dragging = false;
+            base.OnClose();
         }
 
         protected override void InitEventListener()
@@ -163,9 +157,9 @@ namespace GameA
 			
 		public override void OnUpdate ()
 		{
-		    if (_cachedView.NextSection.gameObject != null)
+		    if (_cachedView.NextSection != null)
 		        _cachedView.NextSection.rectTransform.localPosition = new Vector2(3f, 0)*Mathf.Sin(Time.time*3f)+new Vector2(-70.3f, -15);
-            if (_cachedView.PREVSection.gameObject != null)
+            if (_cachedView.PREVSection != null)
                 _cachedView.PREVSection.rectTransform.localPosition = -new Vector2(3f, 0) * Mathf.Sin(Time.time * 3f) ;
             base.OnUpdate ();
 			if (_currentChapter < 1) {
@@ -195,7 +189,6 @@ namespace GameA
 			if ((Input.touchCount == 0 && !Input.anyKey) && _cachedView.ChapterScrollRect.isForceReleased) {
 				_cachedView.ChapterScrollRect.EnableDrag ();
 			}
-			///----------------------------------------------
 		}
 
 		/// <summary>
@@ -309,8 +302,6 @@ namespace GameA
 		/// <param name="param">Parameter.</param>
 		private void OnLevelClicked (object param) {
             IntVec3 intVec3Param = (IntVec3)param;
-            if (intVec3Param == null)
-                return;
             var chapterIdx = intVec3Param.x;
             var levelIdx = intVec3Param.y;
             bool isBonus = intVec3Param.z == 1;
