@@ -298,6 +298,7 @@ namespace GameA.Game
                                 if (_input.GetKeyApplied(_skillInputs[i]))
                                 {
                                     _skillCtrl.Fire(i);
+                                    return;
                                 }
                                 break;
                             case ECostType.Magic:
