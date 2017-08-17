@@ -8,9 +8,9 @@
 
 using System;
 using System.Collections.Generic;
-using GameA.Game;
-using UnityEngine;
+using GameA;
 using NewResourceSolution;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace SoyEngine
@@ -41,11 +41,15 @@ namespace SoyEngine
         private readonly Dictionary<string, AudioItem> _playingAudioEffect = new Dictionary<string, AudioItem>();
         private GameObject _cachedAudioGo;
         private float _lastCheckTime;
-        public GameSettingData _setting;
 
         public static GameAudioManager Instance
         {
             get { return _instance ?? (_instance = new GameAudioManager()); }
+        }
+
+        public GameAudioManager()
+        {
+            Messenger.AddListener(GameA.EMessengerType.OnGameSettingChanged, OnSettingChanged);
         }
 
         public void Dispose()
@@ -57,6 +61,7 @@ namespace SoyEngine
                 Object.Destroy(_cachedAudioGo);
                 _cachedAudioGo = null;
             }
+            Messenger.RemoveListener(GameA.EMessengerType.OnGameSettingChanged, OnSettingChanged);
             _instance = null;
         }
 
@@ -64,7 +69,6 @@ namespace SoyEngine
         {
             _cachedAudioGo = new GameObject("AudioRoot");
             _cachedAudioGo.AddComponent<AudioListener>();
-            _setting = GM2DGame.Instance.Settings;
         }
 
         public void PlayMusic(string audioName)
@@ -117,7 +121,7 @@ namespace SoyEngine
             }
         }
 
-        public void OnSettingChanged()
+        private void OnSettingChanged()
         {
             Dictionary<string, AudioItem>.Enumerator enumerator = _playingAudioEffect.GetEnumerator();
             while (enumerator.MoveNext())
@@ -218,11 +222,11 @@ namespace SoyEngine
 
         private float GetPlayVolume(EAudioType type)
         {
-            if (type == EAudioType.Music && _setting.PlayMusic)
+            if (type == EAudioType.Music && GameSettingData.Instance.PlayMusic)
             {
                 return 0.6f;
             }
-            if (type == EAudioType.SoundsEffects && _setting.PlaySoundsEffects)
+            if (type == EAudioType.SoundsEffects && GameSettingData.Instance.PlaySoundsEffects)
             {
                 return 1;
             }

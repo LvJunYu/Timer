@@ -132,8 +132,5 @@ namespace GameA
 
 		public static int OnCancelSelectState = SoyEngine.EMessengerType.NextId++;
 
-        //武器升级后广播消息
-        public static int OnWeaponDataChange = SoyEngine.EMessengerType.NextId++;
-
 	}
 }
