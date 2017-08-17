@@ -97,12 +97,12 @@ namespace GameA
             _cachedView.FriendsBtn.onClick.AddListener(OnFriendBtn);
             _cachedView.MailBoxBtn.onClick.AddListener(OnMailBtn);
             _cachedView.PuzzleBtn.onClick.AddListener(OnPuzzleBtn);
-            //_cachedView.Weapon.onClick.AddListener(OnWeapon);
+            _cachedView.Weapon.onClick.AddListener(OnWeapon);
             SetLock(UIFunction.UI_FashionShop, _fashionShopAvailable);
             SetLock(UIFunction.UI_Friends, _friendsAvailable);
             SetLock(UIFunction.UI_Lottery, _lotteryAvailable);
             SetLock(UIFunction.UI_MailBox, _mailBoxAvailable);
-            //SetLock(UIFunction.UI_Puzzle, _puzzleAvailable);
+            SetLock(UIFunction.UI_Puzzle, _puzzleAvailable);
             SetLock(UIFunction.UI_SingleMode, _singleModeAvailable);
             SetLock(UIFunction.UI_Workshop, _workshopAvailable);
             SetLock(UIFunction.UI_World, _worldAvailable);

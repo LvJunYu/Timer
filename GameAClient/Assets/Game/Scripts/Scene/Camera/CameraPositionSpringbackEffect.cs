@@ -263,12 +263,14 @@ namespace GameA.Game
 	    {
 		    Vector2 cameraHalfSize = _cameraViewHalfSizeFactor * _orthoSize;
 		    Vector2 uiSize = SocialGUIManager.GetUIResolution();
+		    _outerRect = new Rect();
 		    _outerRect.width = _validMapRect.width +
 		                       cameraHalfSize.x * 2 * (ConstDefineGM2D.CameraMoveExceedUISizeX * 2 / uiSize.x - 1);
 		    _outerRect.height = _validMapRect.height +
 		                        cameraHalfSize.y * 2 * (ConstDefineGM2D.CameraMoveExceedUISizeY * 2 / uiSize.y - 1);
 		    _outerRect.center = _validMapRect.center;
 
+		    _validMoveRect = new Rect();
 		    _validMoveRect.width = _validMapRect.width +
 		                           cameraHalfSize.x * 2 * (ConstDefineGM2D.CameraMoveOutUISizeX * 2 / uiSize.x - 1);
 		    _validMoveRect.height = _validMapRect.height + cameraHalfSize.y * 2 *

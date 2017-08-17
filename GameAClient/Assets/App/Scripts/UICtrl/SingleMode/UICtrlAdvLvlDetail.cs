@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections.Generic;
+using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
-using UnityEngine;
-using UnityEngine.UI;
-using System.Collections.Generic;
 
 namespace GameA
 {
-    [UIAutoSetup (EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlAdvLvlDetail : UICtrlGenericBase<UIViewAdvLvlDetail>
     {
         #region Fields
@@ -23,7 +20,7 @@ namespace GameA
         private int EndDisplayOnRank = 20;
         private int BeginningDisplayOnRank = 0;
 
-        private Game.Table_StandaloneLevel _table;
+        private Table_StandaloneLevel _table;
         #endregion
 
         #region Properties
@@ -31,7 +28,7 @@ namespace GameA
         {
             get
             {
-                return this._chapterIdx;
+                return _chapterIdx;
             }
         }
 
@@ -39,7 +36,7 @@ namespace GameA
         {
             get
             {
-                return this._levelIdx;
+                return _levelIdx;
             }
         }
 
@@ -47,7 +44,7 @@ namespace GameA
         {
             get
             {
-                return this._isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal;
+                return _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal;
             }
         }
 
@@ -62,8 +59,6 @@ namespace GameA
         {
             base.OnOpen(parameter);
             IntVec3 intVec3Param = (IntVec3)parameter;
-            if (intVec3Param == null)
-                return;
             _chapterIdx = intVec3Param.x;
             _levelIdx = intVec3Param.y;
             _isBonus = intVec3Param.z == 1;
@@ -81,16 +76,6 @@ namespace GameA
             InitPanel();
             //RefreshRankData();
             //RefreshAdventureUserLevelDataDetail();
-        }
-        
-        protected override void OnClose() {
-            
-            base.OnClose ();
-            //LocalUser.Instance.AdventureUserLevelDataDetail.ClearData();
-        }
-        
-        protected override void InitEventListener() {
-            base.InitEventListener ();
         }
         
         protected override void OnViewCreated() {
@@ -125,14 +110,9 @@ namespace GameA
 
         }
 
-        public override void OnUpdate ()
-        {
-            base.OnUpdate ();
-        }
-        
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.FrontUI2;
+            _groupId = (int) EUIGroupType.FrontUI2;
         }
 
         private void RefreshRankData()
@@ -165,9 +145,9 @@ namespace GameA
         {
             if (_isBonus)
                 return EAdventureProjectType.APT_Bonus;
-            else if (_isBonus == false)
+            if (_isBonus == false)
                 return EAdventureProjectType.APT_Normal;
-            else return EAdventureProjectType.APT_None;
+            return EAdventureProjectType.APT_None;
         }
 
         private void InitPanel()
@@ -178,7 +158,6 @@ namespace GameA
             {
                 LogHelper.Error("No project data of chapter {0}", _chapterIdx);
                 SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
-                return;
             }
             else
             {
@@ -191,10 +170,7 @@ namespace GameA
                     SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
                     return;
                 }
-                else
-                {
-                    project = projectList[_levelIdx - 1];
-                }
+                project = projectList[_levelIdx - 1];
 
                 if (null == project) return;
                 ImageResourceManager.Instance.SetDynamicImage(
@@ -221,18 +197,16 @@ namespace GameA
                 LogHelper.Error ("No project data of chapter {0}", _chapterIdx);
                 SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail> ();
                 return;
-            } else {
-                List<Project> projectList = _isBonus ?
-                    AppData.Instance.AdventureData.ProjectList.SectionList [_chapterIdx - 1].BonusProjectList :
-                    AppData.Instance.AdventureData.ProjectList.SectionList [_chapterIdx - 1].NormalProjectList;
-                if (projectList.Count <= _levelIdx - 1) {
-                    LogHelper.Error ("No project data of level in idx {0} in chapter {1}", _levelIdx, _chapterIdx);
-                    SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail> ();
-                    return;
-                } else {
-                    project = projectList [_levelIdx - 1];
-                }
             }
+            List<Project> projectList = _isBonus ?
+                AppData.Instance.AdventureData.ProjectList.SectionList [_chapterIdx - 1].BonusProjectList :
+                AppData.Instance.AdventureData.ProjectList.SectionList [_chapterIdx - 1].NormalProjectList;
+            if (projectList.Count <= _levelIdx - 1) {
+                LogHelper.Error ("No project data of level in idx {0} in chapter {1}", _levelIdx, _chapterIdx);
+                SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail> ();
+                return;
+            }
+            project = projectList [_levelIdx - 1];
             _infoPanel.Open (project, _table);
             _recordPanel.Close ();
             _rankPanel.Close ();
@@ -300,7 +274,7 @@ namespace GameA
                     // set local energy data
                     GameATools.LocalUseEnergy (_table.EnergyCost);
                 },
-                (error) => {
+                error => {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
                 }
             );

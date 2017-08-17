@@ -5,12 +5,8 @@
 ** Summary : UICtrlSingleMode
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using SoyEngine;
-using UnityEngine;
-using UnityEngine.UI;
 using GameA.Game;
+using SoyEngine;
 
 namespace GameA
 {
@@ -25,50 +21,28 @@ namespace GameA
         #endregion
 
         #region 方法
-        public override void Init (USViewAdvLvlDetailInfo view)
-        {
-            base.Init (view);
-        }
-
-        protected override void OnViewCreated ()
-        {
-            base.OnViewCreated ();
-//            _cachedView.SelectBtn.onClick.AddListener (OnSelectBtn);
-        }
 
         public void Open (Project project, Table_StandaloneLevel table) {
             _cachedView.gameObject.SetActive (true);
             if (null == project) return;
-            //ImageResourceManager.Instance.SetDynamicImage (
-            //    _cachedView.Cover1,
-            //    project.IconPath,
-            //    _cachedView.DefaultCover);
-            //ImageResourceManager.Instance.SetDynamicImage (
-            //    _cachedView.Cover2,
-            //    project.IconPath,
-            //    _cachedView.DefaultCover);
-            //ImageResourceManager.Instance.SetDynamicImage (
-            //    _cachedView.Cover3,
-            //    project.IconPath,
-            //    _cachedView.DefaultCover);
 
             if (table.StarConditions.Length < 3) {
                 LogHelper.Error ("standalonelevel table error, starCond cnt < 3, id: {0}", table.Id);
                 return;
             }
-            var tableStarRequire1 = Game.TableManager.Instance.GetStarRequire (table.StarConditions [0]);
+            var tableStarRequire1 = TableManager.Instance.GetStarRequire (table.StarConditions [0]);
             if (null == tableStarRequire1) {
                 LogHelper.Error ("Cant find table starrequire of id: {0}", table.StarConditions [0]);
                 return;
             }
             _cachedView.Star1Desc.text = string.Format (tableStarRequire1.Desc, table.Star1Value);
-            var tableStarRequire2 = Game.TableManager.Instance.GetStarRequire (table.StarConditions [1]);
+            var tableStarRequire2 = TableManager.Instance.GetStarRequire (table.StarConditions [1]);
             if (null == tableStarRequire2) {
                 LogHelper.Error ("Cant find table starrequire of id: {0}", table.StarConditions [1]);
                 return;
             }
             _cachedView.Star2Desc.text = string.Format (tableStarRequire2.Desc, table.Star2Value);
-            var tableStarRequire3 = Game.TableManager.Instance.GetStarRequire (table.StarConditions [2]);
+            var tableStarRequire3 = TableManager.Instance.GetStarRequire (table.StarConditions [2]);
             if (null == tableStarRequire3) {
                 LogHelper.Error ("Cant find table starrequire of id: {0}", table.StarConditions [2]);
                 return;
