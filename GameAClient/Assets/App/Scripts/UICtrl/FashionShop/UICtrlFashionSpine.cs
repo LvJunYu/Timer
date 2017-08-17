@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,6 +9,7 @@ using GameA.Game;
 using NewResourceSolution;
 using Spine;
 using Spine.Unity;
+
 
 namespace GameA
 {
@@ -66,12 +68,14 @@ namespace GameA
             base.OnViewCreated();
             //_cachedView.AvatarBtn.enabled = SocialGUIManager.Instance.OpenUI<UICtrlTaskbar>().FashionShopAvailable; todo
             //_cachedView.AvatarBtn.onClick.AddListener(OnAvatarBtn);
-            AvatarRenderTexture = new RenderTexture(256, 512, 0);
+            AvatarRenderTexture = new RenderTexture(768, 1536, 0);
             _cachedView.AvatarRenderCamera.targetTexture = AvatarRenderTexture;
+
+            CoroutineProxy.Instance.StartCoroutine(DoFunc());
             _cachedView.AvatarImage.texture = _cachedView.AvatarRenderCamera.targetTexture;
 
             _cachedView.PlayerAvatarAnimation.skeletonDataAsset =
-                ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, "MainBoy0_SkeletonData", 1);
+                ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, "SMainBoy0_SkeletonData", 1);
             _cachedView.PlayerAvatarAnimation.Initialize(false);
             _avatarView = new ChangePartsSpineView();
             _avatarView.HomePlayerAvatarViewInit(_cachedView.PlayerAvatarAnimation);
@@ -82,6 +86,13 @@ namespace GameA
                 () => { ShowAllUsingAvatar(); },
                 code => { LogHelper.Error("Network error when get avatarData, {0}", code); }
                 );
+        }
+
+        IEnumerator DoFunc()
+        {
+            _cachedView.AvatarRenderCamera.SetActiveEx(false);
+            yield return new WaitForSeconds(0.4f);
+            _cachedView.AvatarRenderCamera.SetActiveEx(true);
         }
 
         protected override void InitGroupId()
