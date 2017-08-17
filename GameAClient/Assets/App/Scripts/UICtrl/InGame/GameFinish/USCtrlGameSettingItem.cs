@@ -16,23 +16,26 @@ namespace GameA
             _cachedView.Btn.onClick.AddListener (OnBtn);
         }
 
-        public override void Init (USViewGameSettingItem view)
-        {
-            base.Init (view);
-        }
         public void SetData (bool isOn, System.Action<bool> cb)
         {
             _isOn = isOn;
             _cb = cb;
+            RefreshView();
         }
+        
         private void OnBtn ()
         {
             _isOn = !_isOn;
-            _cachedView.On.SetActive (_isOn);
-            _cachedView.Off.SetActive (!_isOn);
+            RefreshView();
             if (null != _cb) {
                 _cb.Invoke (_isOn);
             }
+        }
+
+        private void RefreshView()
+        {
+            _cachedView.On.SetActiveEx(_isOn);
+            _cachedView.Off.SetActiveEx(!_isOn);
         }
     }
 }

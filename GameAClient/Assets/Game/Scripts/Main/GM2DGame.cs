@@ -51,13 +51,6 @@ namespace GameA.Game
         private GameModeBase _gameMode;
         private GameObject _inputControl;
 
-        private GameSettingData _settings;
-
-        public GameSettingData Settings
-        {
-            get { return _settings; }
-        }
-
         public GameModeBase GameMode
         {
             get { return _gameMode; }
@@ -90,12 +83,6 @@ namespace GameA.Game
         }
 
         #region 方法
-
-        private void Awake()
-        {
-            _settings = new GameSettingData();
-        }
-
 
         public GM2DGame()
         {
