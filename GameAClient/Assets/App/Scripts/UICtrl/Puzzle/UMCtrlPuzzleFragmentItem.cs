@@ -1,9 +1,5 @@
-﻿using System.Collections;
-using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
-using SoyEngine;
-using NewResourceSolution;
 
 namespace GameA
 {
@@ -22,24 +18,7 @@ namespace GameA
         private Image _outlineImg;
         private Text _curIndexTxt;
         private Text _curNumTxt;
-        private const string _halfImageName = "img_puzzle_half_{0}{0}";
-        private const string _quarterImageName = "img_puzzle_quarter_{0}{0}";
-        private const string _sixthImageName = "img_puzzle_sixth_{0}{0}";
-        private const string _ninthImageName = "img_puzzle_ninth_{0}{0}";
-        private const string _halfMaskImageName = "img_puzzle_half_{0}{0}_mask";
-        private const string _quarterMaskImageName = "img_puzzle_quarter_{0}{0}_mask";
-        private const string _sixthMaskImageName = "img_puzzle_sixth_{0}{0}_mask";
-        private const string _ninthMaskImageName = "img_puzzle_ninth_{0}{0}_mask";
-
-        private Sprite _halfMaskImage;
-        private Sprite _quarterMaskImage;
-        private Sprite _sixthMaskImage;
-        private Sprite _ninthMaskImage;
-        private Sprite _halfImage;
-        private Sprite _quarterImage;
-        private Sprite _sixthImage;
-        private Sprite _ninthImage;
-
+        private UICtrlPuzzleDetail _uiCtrlPuzzleDetail;
         private bool _hasInited;
 
         public bool IsShow;
@@ -83,110 +62,31 @@ namespace GameA
             //设置序号
             _curIndexTxt.text = _fragment.PictureInx.ToString();
             //设置遮罩图片
-            _maskImage.sprite = GetSprite(_pictureFull.PuzzleType, _fragment.PictureInx);
-            _outlineImg.sprite = GetSprite(_pictureFull.PuzzleType, _fragment.PictureInx, false);
+            if (null == _uiCtrlPuzzleDetail)
+                _uiCtrlPuzzleDetail = SocialGUIManager.Instance.GetUI<UICtrlPuzzleDetail>();
+            _maskImage.sprite = _uiCtrlPuzzleDetail.GetSprite(_pictureFull.PuzzleType, _fragment.PictureInx);
+            _outlineImg.sprite = _uiCtrlPuzzleDetail.GetSprite(_pictureFull.PuzzleType, _fragment.PictureInx, false);
             _maskImage.SetNativeSize();
             _outlineImg.SetNativeSize();
             //设置拼图底图
             _curImageDisable.sprite = _curPicImg.sprite = _umCtrlPuzzleDetailItem.PicImage.sprite;
             _curImageDisable.color = _cachedView.disableColor;
-            //设置底图位置，根据PuzzleItem上碎片底图的相对位置，计算当前碎片底图的相对位置
-            float bigPicWidth = (_umCtrlPuzzleDetailItem.PicImage.transform as RectTransform).rect.width;
-            float picWidth = (_curPicImg.transform as RectTransform).rect.width;
-            _curPicImg.transform.localPosition = _umCtrlPuzzleDetailItem.ImageDic[_fragment.PictureInx].transform.localPosition * picWidth / bigPicWidth;
+            //设置底图位置，根据PuzzleItem上大图中碎片底图的相对位置，计算当前碎片底图的相对位置
+            var rectTransform = _umCtrlPuzzleDetailItem.PicImage.transform as RectTransform;
+            if (rectTransform != null)
+            {
+                float bigPicWidth = rectTransform.rect.width;//大图宽度
+                var transform = _curPicImg.transform as RectTransform;
+                if (transform != null)
+                {
+                    float picWidth = transform.rect.width;//小图宽度
+                    _curPicImg.transform.localPosition =
+                        _umCtrlPuzzleDetailItem.ImageDic[_fragment.PictureInx].transform.localPosition * picWidth / bigPicWidth;
+                }
+            }
 
             _hasInited = true;
             SetData();
-        }
-
-        private Sprite GetSprite(EPuzzleType puzzleType, int index, bool isMask = true)
-        {
-            switch (puzzleType)
-            {
-                case EPuzzleType.Half:
-                    if (isMask)
-                    {
-                        if (null == _halfMaskImage)
-                            _halfMaskImage = ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index));
-                        return _halfMaskImage;
-                    }
-                    else
-                    {
-                        if (null == _halfImage)
-                            _halfImage = ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index, false));
-                        return _halfImage;
-                    }
-                case EPuzzleType.Quarter:
-                    if (isMask)
-                    {
-                        if (null == _quarterMaskImage)
-                            _quarterMaskImage = ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index));
-                        return _quarterMaskImage;
-                    }
-                    else
-                    {
-                        if (null == _quarterImage)
-                            _quarterImage = ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index, false));
-                        return _quarterImage;
-                    }
-                case EPuzzleType.Sixth:
-                    if (isMask)
-                    {
-                        if (null == _sixthMaskImage)
-                            _sixthMaskImage = ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index));
-                        return _sixthMaskImage;
-                    }
-                    else
-                    {
-                        if (null == _sixthImage)
-                            _sixthImage = ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index, false));
-                        return _sixthImage;
-                    }
-                case EPuzzleType.Ninth:
-                    if (isMask)
-                    {
-                        if (null == _ninthMaskImage)
-                            _ninthMaskImage = ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index));
-                        return _ninthMaskImage;
-                    }
-                    else
-                    {
-                        if (null == _ninthImage)
-                            _ninthImage = ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index, false));
-                        return _ninthImage;
-                    }
-                default:
-                    return null;
-            }
-        }
-
-        private string GetSpriteName(EPuzzleType puzzleType, int index, bool isMask = true)
-        {
-            switch (puzzleType)
-            {
-                case EPuzzleType.Half:
-                    if (isMask)
-                        return string.Format(_halfMaskImageName, index);
-                    else
-                        return string.Format(_halfImageName, index);
-                case EPuzzleType.Quarter:
-                    if (isMask)
-                        return string.Format(_quarterMaskImageName, index);
-                    else
-                        return string.Format(_quarterImageName, index);
-                case EPuzzleType.Sixth:
-                    if (isMask)
-                        return string.Format(_sixthMaskImageName, index);
-                    else
-                        return string.Format(_sixthImageName, index);
-                case EPuzzleType.Ninth:
-                    if (isMask)
-                        return string.Format(_ninthMaskImageName, index);
-                    else
-                        return string.Format(_ninthImageName, index);
-                default:
-                    return null;
-            }
         }
 
         public void SetData()
@@ -197,6 +97,5 @@ namespace GameA
             _curImageDisable.enabled = !owned;
             //_curPicImg.enabled = _fragment.TotalCount > 0;
         }
-
     }
 }

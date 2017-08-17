@@ -23,9 +23,5 @@ namespace GameA
         public Text NameTxt;
         public Text DescTxt;
         public Text CostNumTxt;
-        public Transform HalfFragImages;
-        public Transform QuarterFragImages;
-        public Transform SixthFragImages;
-        public Transform NinthFragImages;
     }
 }

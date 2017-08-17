@@ -31,6 +31,9 @@ namespace GameA
 
         private void InitData()
         {
+//            if (!LocalUser.Instance.UserPictureFull.IsInited)
+//                LocalUser.Instance.UserPictureFull.Request(LocalUser.Instance.UserGuid, null,
+//                    code => { LogHelper.Error("Network error when get UserPictureFull, {0}", code); });
             _slots = TableManager.Instance.Table_PuzzleSlotDic;
             _puzzles = TableManager.Instance.Table_PuzzleDic;
             _userPictureFull = LocalUser.Instance.UserPictureFull.ItemDataList;
@@ -114,7 +117,7 @@ namespace GameA
         private void OnPuzzleCompound()
         {
             RefreshLocalView();
-            RefreshView();
+//            RefreshView();
         }
 
         private void RefreshLocalView()
@@ -124,10 +127,10 @@ namespace GameA
                 _otherPictureFull.Remove(CurActivePicFull);
                 _userPictureFull.Add(CurActivePicFull);
             }
-            ResetPuzzleItem();
+            ResetPuzzleItems();
         }
 
-        private void RefreshView()
+        private void RefreshData()
         {
             //同步数据
 //            if (!LocalUser.Instance.UserPictureFull.IsInited)
@@ -150,10 +153,9 @@ namespace GameA
                     _otherPictureFull.Add(picFull);
                 }
             }
-            ResetPuzzleItem();
         }
 
-        private void ResetPuzzleItem()
+        private void ResetPuzzleItems()
         {
             //重新排序
             RefreshPuzzleOrder();
@@ -220,7 +222,7 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            RefreshView();
+            ResetPuzzleItems();
             RefreshSlots();
         }
 
@@ -229,7 +231,7 @@ namespace GameA
             if (arg0)
             {
                 _curOrderType = EPuzzleOrderType.Func;
-                ResetPuzzleItem();
+                ResetPuzzleItems();
             }
         }
 
@@ -238,7 +240,7 @@ namespace GameA
             if (arg0)
             {
                 _curOrderType = EPuzzleOrderType.Level;
-                ResetPuzzleItem();
+                ResetPuzzleItems();
             }
         }
 
@@ -247,7 +249,7 @@ namespace GameA
             if (arg0)
             {
                 _curOrderType = EPuzzleOrderType.Qulity;
-                ResetPuzzleItem();
+                ResetPuzzleItems();
             }
         }
 
