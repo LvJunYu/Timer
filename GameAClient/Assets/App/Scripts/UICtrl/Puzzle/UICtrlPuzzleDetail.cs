@@ -1,8 +1,8 @@
 ﻿using SoyEngine;
 using System.Collections.Generic;
+using NewResourceSolution;
 using UnityEngine;
 using SoyEngine.Proto;
-using UnityEngine.UI;
 
 namespace GameA
 {
@@ -26,44 +26,126 @@ namespace GameA
         private const string _activeTxt = "合成";
         private const string _maxLvTxt = "等级MAX";
 
+        private const string _halfImageName = "img_puzzle_half_{0}{0}";
+        private const string _quarterImageName = "img_puzzle_quarter_{0}{0}";
+        private const string _sixthImageName = "img_puzzle_sixth_{0}{0}";
+        private const string _ninthImageName = "img_puzzle_ninth_{0}{0}";
+
+        private const string _halfMaskImageName = "img_puzzle_half_{0}{0}_mask";
+        private const string _quarterMaskImageName = "img_puzzle_quarter_{0}{0}_mask";
+        private const string _sixthMaskImageName = "img_puzzle_sixth_{0}{0}_mask";
+        private const string _ninthMaskImageName = "img_puzzle_ninth_{0}{0}_mask";
+
         private PictureFull _puzzle;
         private PicturePart[] _puzzleFragments;
         private UMCtrlPuzzleDetailItem _curUMPuzzleItem;
         private List<UMCtrlPuzzleFragmentItem> _fragmentsCache;
         private List<UMCtrlPuzzleFragmentItem> _curUMFragments;
-        private Image[] _halfImages;
-        private Image[] _quarterImages;
-        private Image[] _sixthImages;
-        private Image[] _ninthImages;
+        private Sprite[] _halfImages = new Sprite[2];
+        private Sprite[] _quarterImages = new Sprite[4];
+        private Sprite[] _sixthImages = new Sprite[6];
+        private Sprite[] _ninthImages = new Sprite[9];
+        private Sprite[] _halfMaskImages = new Sprite[2];
+        private Sprite[] _quarterMaskImages = new Sprite[4];
+        private Sprite[] _sixthMaskImages = new Sprite[6];
+        private Sprite[] _ninthMaskImages = new Sprite[9];
 
-        public Sprite GetFragSprite(EPuzzleType puzzleType, int fragIndex)
+        public Sprite GetSprite(EPuzzleType puzzleType, int index, bool isMask = true)
         {
-            InitImages();
             switch (puzzleType)
             {
                 case EPuzzleType.Half:
-                    return _halfImages[fragIndex - 1].sprite;
+                    if (isMask)
+                    {
+                        if (null == _halfMaskImages[index - 1])
+                            _halfMaskImages[index - 1] =
+                                ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index));
+                        return _halfMaskImages[index - 1];
+                    }
+                    else
+                    {
+                        if (null == _halfImages[index - 1])
+                            _halfImages[index - 1] =
+                                ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index, false));
+                        return _halfImages[index - 1];
+                    }
                 case EPuzzleType.Quarter:
-                    return _quarterImages[fragIndex - 1].sprite;
+                    if (isMask)
+                    {
+                        if (null == _quarterMaskImages[index - 1])
+                            _quarterMaskImages[index - 1] =
+                                ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index));
+                        return _quarterMaskImages[index - 1];
+                    }
+                    else
+                    {
+                        if (null == _quarterImages[index - 1])
+                            _quarterImages[index - 1] =
+                                ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index, false));
+                        return _quarterImages[index - 1];
+                    }
                 case EPuzzleType.Sixth:
-                    return _sixthImages[fragIndex - 1].sprite;
+                    if (isMask)
+                    {
+                        if (null == _sixthMaskImages[index - 1])
+                            _sixthMaskImages[index - 1] =
+                                ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index));
+                        return _sixthMaskImages[index - 1];
+                    }
+                    else
+                    {
+                        if (null == _sixthImages[index - 1])
+                            _sixthImages[index - 1] =
+                                ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index, false));
+                        return _sixthImages[index - 1];
+                    }
                 case EPuzzleType.Ninth:
-                    return _ninthImages[fragIndex - 1].sprite;
+                    if (isMask)
+                    {
+                        if (null == _ninthMaskImages[index - 1])
+                            _ninthMaskImages[index - 1] =
+                                ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index));
+                        return _ninthMaskImages[index - 1];
+                    }
+                    else
+                    {
+                        if (null == _ninthImages[index - 1])
+                            _ninthImages[index - 1] =
+                                ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index, false));
+                        return _ninthImages[index - 1];
+                    }
                 default:
                     return null;
             }
         }
 
-        private void InitImages()
+        private string GetSpriteName(EPuzzleType puzzleType, int index, bool isMask = true)
         {
-            if (_halfImages == null)
-                _halfImages = _cachedView.HalfFragImages.GetComponentsInChildren<Image>();
-            if (_quarterImages == null)
-                _quarterImages = _cachedView.QuarterFragImages.GetComponentsInChildren<Image>();
-            if (_sixthImages == null)
-                _sixthImages = _cachedView.SixthFragImages.GetComponentsInChildren<Image>();
-            if (_ninthImages == null)
-                _ninthImages = _cachedView.NinthFragImages.GetComponentsInChildren<Image>();
+            switch (puzzleType)
+            {
+                case EPuzzleType.Half:
+                    if (isMask)
+                        return string.Format(_halfMaskImageName, index);
+                    else
+                        return string.Format(_halfImageName, index);
+                case EPuzzleType.Quarter:
+                    if (isMask)
+                        return string.Format(_quarterMaskImageName, index);
+                    else
+                        return string.Format(_quarterImageName, index);
+                case EPuzzleType.Sixth:
+                    if (isMask)
+                        return string.Format(_sixthMaskImageName, index);
+                    else
+                        return string.Format(_sixthImageName, index);
+                case EPuzzleType.Ninth:
+                    if (isMask)
+                        return string.Format(_ninthMaskImageName, index);
+                    else
+                        return string.Format(_ninthImageName, index);
+                default:
+                    return null;
+            }
         }
 
         private void OnEquipBtn()

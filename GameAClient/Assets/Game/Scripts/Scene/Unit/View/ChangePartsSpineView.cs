@@ -107,7 +107,7 @@ namespace GameA.Game
 			_skeletonAnimation.enabled = true;
 
 			_avatarId = 0;
-			_skeletonName = "MainBoy0";
+			_skeletonName = "SMainBoy0";
 			_skeleton = _skeletonAnimation.skeleton;
 			if (_skeleton == null) {
 				LogHelper.Error("Try get skeleton failed when init home avatar");

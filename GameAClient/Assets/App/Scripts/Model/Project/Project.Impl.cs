@@ -638,7 +638,7 @@ namespace GameA
                     return;
                 }
                 if (_projectUserData != null) {
-                    _projectUserData.Favorite = true;
+                    _projectUserData.Favorite = favorite;
                 }
                 if (_extendData != null)
                 {

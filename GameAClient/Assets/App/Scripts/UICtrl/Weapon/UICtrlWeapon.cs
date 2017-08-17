@@ -92,9 +92,6 @@ namespace GameA
                 _weaponID = _idColltions[--index];
                 RefershWeaponShow();
             }
-            Debug.Log("left");
-
-
         }
         private void OnRightButton()
         {
@@ -143,16 +140,28 @@ namespace GameA
                 _cachedView.UpGradeOrCompound.text = _compoud;
                 _isCompoudAddNum = 0;
             }
+            //获得玩家拥有的武器碎片数
+            if(_userWeaponPartDataDic.ContainsKey(_weaponID))
+            {
+                _userOwnWeaponPart = _userWeaponPartDataDic[_weaponID];
+            }
+            else
+            {
+                _userOwnWeaponPart = 0;
+            }
             //武器特效显示
             if(_weaponModelEffect != null)
-            _weaponModelEffect.Particle.Release();
+            {     
+             GameParticleManager.FreeParticleItem(_weaponModelEffect.Particle);          
+            }           
             _weaponModel = TableManager.Instance.GetEquipment(_weaponID).Model;
-            _weaponModelEffect =   GameParticleManager.Instance.GetUIParticleItem(_weaponModel, _cachedView.EffectShow.transform, _groupId);
+            _weaponModelEffect = GameParticleManager.Instance.GetUIParticleItem(_weaponModel, _cachedView.EffectShow.transform, _groupId);
             _weaponModelEffect.Particle.Play();
             //技能显示
             _skillID = TableManager.Instance.GetEquipment(_weaponID).SkillId;
             _weaponlevelID = _skillID * _multiple + _weaponLv;
-            _cachedView.SkillDescription.text = TableManager.Instance.GetSkill(_skillID).Summary;//技能描述
+            _cachedView.SkillDescription.text =  string.Format(TableManager.Instance.GetSkill(_skillID).Summary,
+                                                               TableManager.Instance.GetEquipmentLevel(_weaponlevelID).AttackAdd.ToString()); //技能描述
             _cachedView.HpAddNum.text = "+"+ TableManager.Instance.GetEquipmentLevel(_weaponlevelID).HpAdd.ToString();//血量增加
             _cachedView.AttackAddNum.text = "+"+ TableManager.Instance.GetEquipmentLevel(_weaponlevelID).AttackAdd.ToString();//攻击力增加
             _cachedView.WeaponName.text = TableManager.Instance.GetEquipment(_weaponID).Name;//武器的名字
@@ -163,7 +172,7 @@ namespace GameA
             _cachedView.WeaponLv.text = "Lv."+ _weaponLv.ToString();//武器的等级
             _cachedView.UnlockedWeaponNum.text = _userWeaponData.ItemDataList.Count.ToString()+"/"+ _weaponTotalNum.ToString();//解锁的武器数目
             _cachedView.OwnedUniversalFragmentsNum.text = _universalCount.ToString();//拥有的万能碎片的数目
-            //花费的金币数目
+            //花费的金币数目和碎片的数目
             _needCoin =  TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).GoldCoinNum;
              _cachedView.CostGolCoinNum.text = _needCoin.ToString();
             _needPart = TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).WeaponFragment;
@@ -177,18 +186,8 @@ namespace GameA
             //万能碎片的图片
             ResourcesManager.Instance.TryGetSprite(_universalSpriteName, out _universalSprie);
             _cachedView.OwnedUniversalFragmentsIcon.sprite = _universalSprie;
-
             //武器碎片的数目
-            if (_userWeaponPartDataDic.ContainsKey(_weaponID))
-            {
-                _userOwnWeaponPart = _userWeaponPartDataDic[_weaponID];
-                _cachedView.OwnedWeaponFragmentsNum.text = _userOwnWeaponPart.ToString();
-            }
-            else
-            {
-                _userOwnWeaponPart = 0;
-                _cachedView.OwnedWeaponFragmentsNum.text = _userOwnWeaponPart.ToString();
-            }
+             _cachedView.OwnedWeaponFragmentsNum.text = _userOwnWeaponPart.ToString();
 
         }
         private void LoadUserData()

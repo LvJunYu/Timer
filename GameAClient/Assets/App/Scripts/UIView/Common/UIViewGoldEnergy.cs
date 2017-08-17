@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace GameA
 {
-    public class UIVIewGoldEnergy : UIViewBase {
+    public class UIViewGoldEnergy : UIViewBase {
 
         public Text GoldNumber;
         public Text DiamondNumber;
@@ -18,5 +18,7 @@ namespace GameA
         public Text EnergyNumber;
 
         public GameObject Energy;
+        public GameObject Gold;
+        public GameObject Diamond;
     }
 }

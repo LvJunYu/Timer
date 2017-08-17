@@ -26,8 +26,10 @@ namespace GameA
         private Sprite _universalSprie;
         private string _weaponPartSpriteName;
         private Sprite _weaponPartSprite;
+        private string _weaponName;
         private string _upStr = "升级";
         private string _comStr = "合成";
+        private string _tipStr = "确定使用以下资源{0}{1}吗？";
         #endregion
 
         #region Properties
@@ -87,30 +89,30 @@ namespace GameA
         }
         private void InitData()
         {
+            _weaponName = TableManager.Instance.GetEquipment(_weaponID).Name;
             if (_isCompoudAddNum == 0)
-            {
-                _cachedView.TipUpgrade.text = _comStr;              
-                _cachedView.TileText.text = _comStr;
-                _cachedView.HpOld.text = "+0";
-                _cachedView.HpAdd.text = "+"+ TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).HpAdd.ToString();
-                _cachedView.AttactOld.text = "+0" ;
-                _cachedView.AttackAdd.text = "+" +TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).AttackAdd.ToString();
-                _cachedView.SkillOld.text = "+0";
-                _cachedView.SkillEffect.text = "+"+ TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).SkillEffect.ToString();
-
+            {   
+                _cachedView.TileText.text = _comStr;  
+                _cachedView.TipText.text = string.Format(_tipStr,_comStr,_weaponName);      
+                _cachedView.HpOld.text =  TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).HpAdd.ToString();
+                _cachedView.HpOld.transform.GetChild(0).gameObject.SetActive(false);
+                _cachedView.AttactOld.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).AttackAdd.ToString();
+                _cachedView.AttactOld.transform.GetChild(0).gameObject.SetActive(false);
+                _cachedView.SkillOld.text =  TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).SkillEffect.ToString();
+                _cachedView.SkillOld.transform.GetChild(0).gameObject.SetActive(false);
             }
             else
             {
-                _cachedView.TipUpgrade.text = _upStr;
-                _cachedView.TileText.text = _upStr;
+                _cachedView.TipText.text = _upStr;
+                _cachedView.TipText.text = string.Format(_tipStr,_upStr,_weaponName);
                 _cachedView.HpOld.text = "+"+TableManager.Instance.GetEquipmentLevel(_weaponlevelID).HpAdd.ToString();
                 _cachedView.HpAdd.text = "+"+ TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).HpAdd.ToString();
                 _cachedView.AttactOld.text = "+" + TableManager.Instance.GetEquipmentLevel(_weaponlevelID).AttackAdd.ToString();
                 _cachedView.AttackAdd.text = "+" + TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).AttackAdd.ToString();
                 _cachedView.SkillOld.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID).SkillEffect.ToString();
                 _cachedView.SkillEffect.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).SkillEffect.ToString();
-        }
-            _cachedView.WeaponName.text = TableManager.Instance.GetEquipment(_weaponID).Name;
+            }
+
             //武器碎片的图标
              _weaponPartSpriteName = TableManager.Instance.GetEquipment(_weaponID).WeaponPartIcon;
             ResourcesManager.Instance.TryGetSprite(_weaponPartSpriteName, out _weaponPartSprite);
@@ -132,7 +134,7 @@ namespace GameA
             }
             else
             {
-                _cachedView.UniversalPart.transform.parent.gameObject.SetActive(false);
+                _cachedView.UniversalPart.SetActive(false);
             }
            
         }

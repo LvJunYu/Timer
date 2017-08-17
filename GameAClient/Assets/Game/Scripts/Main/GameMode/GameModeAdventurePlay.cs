@@ -217,10 +217,13 @@ namespace GameA.Game
             PlayMode.Instance.OnBoostItemSelectFinish(useItems);
             UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
             yield return new WaitUntil(()=>uictrlCountDown.ShowComplete);
-
-            UICtrlSceneState uictrlSceneState = SocialGUIManager.Instance.GetUI<UICtrlSceneState>();
-            uictrlSceneState.ShowHelpPage3Seconds();
-            yield return new WaitUntil(()=>uictrlSceneState.ShowHelpPage3SecondsComplete);
+	        
+	        if (!Application.isMobilePlatform)
+	        {
+				UICtrlSceneState uictrlSceneState = SocialGUIManager.Instance.GetUI<UICtrlSceneState>();
+				uictrlSceneState.ShowHelpPage3Seconds();
+				yield return new WaitUntil(()=>uictrlSceneState.ShowHelpPage3SecondsComplete);
+	        }
 
             GameRun.Instance.Playing();
         }

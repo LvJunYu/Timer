@@ -141,7 +141,7 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            SocialGUIManager.ShowGoldEnergyBar(false);
+            SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamond);
             RefreshUserInfo();
             //if (_lotteryAvailable)
             //{
@@ -149,6 +149,12 @@ namespace GameA
             //}
             //RefreshAvatar ();
             GameProcessManager.Instance.RefreshHomeUIUnlock();
+        }
+
+        protected override void OnClose()
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
+            base.OnClose();
         }
 
         public void SetLock(UIFunction UI, bool ifunlock)

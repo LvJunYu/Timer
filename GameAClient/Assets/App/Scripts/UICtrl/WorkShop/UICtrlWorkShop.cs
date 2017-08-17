@@ -227,16 +227,29 @@ namespace GameA
             _cachedView.PlayIcon.gameObject.SetActive(true);
             if (null != _curSelectedPublicProject && null != _curSelectedPublicProject.Content)
             {
+                var p = _curSelectedPublicProject.Content;
                 ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover,
                     _curSelectedPublicProject.Content.IconPath, _cachedView.DefaultCoverTexture);
                 DictionaryTools.SetContentText(_cachedView.Title, _curSelectedPublicProject.Content.Name);
                 DictionaryTools.SetContentText(_cachedView.Desc, _curSelectedPublicProject.Content.Summary);
+                if (p.ExtendReady)
+                {
+                    _cachedView.Data.SetActiveEx(true);
+                    DictionaryTools.SetContentText(_cachedView.PlayCount, p.PlayCount.ToString());
+                    DictionaryTools.SetContentText(_cachedView.LikedCnt, p.LikeCount.ToString());
+                    DictionaryTools.SetContentText(_cachedView.CompleteRate, GameATools.GetCompleteRateString(p.CompleteRate));
+                }
+                else
+                {
+                    _cachedView.Data.SetActiveEx(false);
+                }
             }
             else
             {
                 ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
                 DictionaryTools.SetContentText(_cachedView.Title, "");
                 DictionaryTools.SetContentText(_cachedView.Desc, "");
+                _cachedView.Data.SetActiveEx(false);
             }
 
         }
@@ -411,12 +424,10 @@ namespace GameA
             if (_state == EWorkShopState.PersonalProject) {
                 _cachedView.Private.SetActive (true);
                 _cachedView.Public.SetActive (false);
-                DictionaryTools.SetContentText(_cachedView.ChangeModeBtnText, "创作中的关卡");
                 RefreshWorkShopProjectList ();
             } else if (_state == EWorkShopState.PublishList) {
                 _cachedView.Private.SetActive (false);
                 _cachedView.Public.SetActive (true);
-                DictionaryTools.SetContentText(_cachedView.ChangeModeBtnText, "已发布的关卡");
                 RequestPublishedProject();
                 RefreshPublishedProjectList();
             }

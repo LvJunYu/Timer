@@ -182,6 +182,14 @@ namespace GameA
             );
         }
 
+        public static Vector2 GetUIResolution()
+        {
+            var canvasTran = Instance._uiRoot.Trans;
+            float aspectRatio = 1f * Screen.width / Screen.height;
+            Vector2 canvasSize = new Vector2(2 * aspectRatio, 2) / canvasTran.localScale.x;
+            return new Vector2(Mathf.RoundToInt(canvasSize.x), Mathf.RoundToInt(canvasSize.y));
+        }
+
         public static Vector2 ScreenToRectLocal(Vector2 screenPos, RectTransform parentRectTransform)
         {
             var canvasTran = Instance._uiRoot.Trans;
@@ -234,28 +242,6 @@ namespace GameA
         {
             Instance.OpenUI<UICtrlReward> (UICtrlReward.ERewardType.Ability);
             Instance.GetUI<UICtrlReward> ().SetAbility (title, icon, closeCb);
-        }
-
-        /// <summary>
-        /// 打开金钱体力栏
-        /// </summary>
-        /// <param name="showEnergy">If set to <c>true</c> show energy.</param>
-        public static void ShowGoldEnergyBar (bool showEnergy = false) {
-            var ui = Instance.GetUI<UICtrlGoldEnergy> ();
-            if (!ui.IsOpen) {
-                ui = Instance.OpenUI<UICtrlGoldEnergy> ();
-            }
-            ui.Show (showEnergy);
-        }
-
-        /// <summary>
-        /// 关闭金钱体力栏
-        /// </summary>
-        public static void HideGoldEnergyBar () {
-            var ui = Instance.GetUI<UICtrlGoldEnergy> ();
-            if (ui.IsOpen) {
-                ui.Hide ();
-            }
         }
 
         public enum EMode

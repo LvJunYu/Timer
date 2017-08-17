@@ -12,38 +12,6 @@
     ],
     "headerpaths": [],
     "files":   [
-        "../../../../../iOSLibs/ShareSDK/ShareSDK.framework",
-        "../../../../../iOSLibs/ShareSDK/Support/Optional/ShareSDKConfigFile.bundle",
-        "../../../../../iOSLibs/ShareSDK/Support/Optional/ShareSDKConfigFile.framework",
-        "../../../../../iOSLibs/ShareSDK/Support/Optional/ShareSDKExtension.framework",
-        "../../../../../iOSLibs/ShareSDK/Support/Optional/ShareSDKUI.framework",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformConnector/QQConnector.framework",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformConnector/SinaWeiboConnector.framework",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformConnector/WechatConnector.framework",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformSDK/QQSDK/TencentOpenAPI.framework",
-        "../../../../../iOSLibs/ShareSDK/Support/Required/MOBFoundation.framework",
-        "../../../../../iOSLibs/ShareSDK/Support/Required/ShareSDKConnector.framework",
-        "../../../../../iOSLibs/ShareSDK/Support/Optional/ShareSDKUI.bundle",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformSDK/QQSDK/TencentOpenApi_IOS_Bundle.bundle",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformSDK/SinaWeiboSDK/WeiboSDK.bundle",
-        "../../../../../iOSLibs/ShareSDK/Support/Required/ShareSDK.bundle",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformSDK/SinaWeiboSDK/libWeiboSDK.a",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformSDK/SinaWeiboSDK/WBHttpRequest+WeiboGame.h",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformSDK/SinaWeiboSDK/WBHttpRequest+WeiboShare.h",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformSDK/SinaWeiboSDK/WBHttpRequest+WeiboToken.h",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformSDK/SinaWeiboSDK/WBHttpRequest+WeiboUser.h",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformSDK/SinaWeiboSDK/WBHttpRequest.h",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformSDK/SinaWeiboSDK/WBSDKBasicButton.h",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformSDK/SinaWeiboSDK/WBSDKCommentButton.h",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformSDK/SinaWeiboSDK/WBSDKRelationshipButton.h",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformSDK/SinaWeiboSDK/WeiboSDK+Statistics.h",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformSDK/SinaWeiboSDK/WeiboSDK.h",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformSDK/SinaWeiboSDK/WeiboUser.h",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformSDK/WeChatSDK/libWeChatSDK.a",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformSDK/WeChatSDK/README.txt",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformSDK/WeChatSDK/WechatAuthSDK.h",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformSDK/WeChatSDK/WXApi.h",
-        "../../../../../iOSLibs/ShareSDK/Support/PlatformSDK/WeChatSDK/WXApiObject.h"
     ],
     "folders": [],    
     "excludes": ["^.*.meta$", "^.*.mdown$", "^.*.pdf$"],
@@ -52,51 +20,6 @@
         "-all_load"
     ],
     "plist": {
-    	"NSPhotoLibraryUsageDescription" : "匠游需要您的同意才能访问相册",
-        "urltype" : [
-            {
-                "role": "Editor",
-                "name" : "wechat",
-                "schemes":["wxbde03bfb311496b5"]
-            },
-            {
-                "role": "Editor",
-                "name" : "weibo",
-                "schemes":["wb2982166496"]
-            },
-            {
-                "role": "Editor",
-                "name" : "qq",
-                "schemes":["tencent1105166877"]
-            },
-            {
-                "role": "Editor",
-                "name" : "qq1",
-                "schemes":["QQ41DF821D"]
-            },
-            {
-                "role": "Editor",
-                "name" : "default",
-                "schemes":["joy"]
-            }
-        ],
-        "LSApplicationQueriesSchemes": [
-            "sinaweibo",
-            "sinaweibohd",
-            "sinaweibosso",
-            "sinaweibohdsso",
-            "weibosdk",
-            "weibosdk2.5",
-            "wechat",
-            "weixin",
-            "mqq",
-            "mqqOpensdkSSoLogin",
-            "mqqopensdkapiV2",
-            "mqqopensdkapiV3",
-            "wtloginmqq2",
-            "mqqapi",
-            "storykompassauth"
-        ],
         "NSAppTransportSecurity": {
             "NSAllowsArbitraryLoads": true,
             "NSExceptionDomains": {

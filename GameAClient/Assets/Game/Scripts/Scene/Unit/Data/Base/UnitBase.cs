@@ -143,6 +143,11 @@ namespace GameA.Game
         {
             get { return EDieType.None; }
         }
+        
+        protected virtual bool IsClimbing
+        {
+            get { return false; }
+        }
 
         protected AnimationSystem _animation
         {
@@ -302,7 +307,10 @@ namespace GameA.Game
         public int SpeedY
         {
             get { return _speed.y; }
-            set { _speed.y = value; }
+            set
+            {
+                _speed.y = value;
+            }
         }
 
         public IntVec2 Speed
@@ -1198,7 +1206,7 @@ namespace GameA.Game
                     extraDeltaX = 0;
                 }
                 _extraDeltaPos = new IntVec2(extraDeltaX, extraDeltaY);
-                if (!_lastGrounded && IsMain)
+                if (!_lastGrounded && IsMain && !IsClimbing)
                 {
                     SpeedX -= extraDeltaX;
                 }

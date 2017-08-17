@@ -298,6 +298,7 @@ namespace GameA.Game
                                 if (_input.GetKeyApplied(_skillInputs[i]))
                                 {
                                     _skillCtrl.Fire(i);
+                                    return;
                                 }
                                 break;
                             case ECostType.Magic:
@@ -572,7 +573,7 @@ namespace GameA.Game
                         _animation.PlayOnce("DeathFire");
                         break;
                     case EDieType.Saw:
-                        _animation.PlayOnce(IsPlayer ? "OnSawStart" : "OnDead");
+                        _animation.PlayOnce(IsPlayer ? "OnSawStart" : "Death");
                         break;
                 }
             }

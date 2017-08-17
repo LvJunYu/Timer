@@ -1,23 +1,18 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
-using SoyEngine.Proto;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using GameA.Game;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlGoldEnergy : UICtrlGenericBase<UIVIewGoldEnergy>
+    [UIAutoSetup]
+    public class UICtrlGoldEnergy : UICtrlGenericBase<UIViewGoldEnergy>
     {
         #region 常量与字段
         /// <summary>
         /// 下一次长体力的时间
         /// </summary>
         private long _nextEnergyGenerateTime;
+        private readonly Stack<EStyle> _styleStack = new Stack<EStyle>(5);
         #endregion
 
         #region 属性
@@ -44,6 +39,7 @@ namespace GameA
             _cachedView.EnergyPlusBtn.onClick.AddListener (OnEnergyPlusBtn);
             _cachedView.GoldPlusBtn.onClick.AddListener (OnGoldPlusBtn);
             _cachedView.DiamondPlusBtn.onClick.AddListener (OnDiamondPlusBtn);
+            _styleStack.Push(EStyle.None);
         }
 
         protected override void OnOpen (object parameter)
@@ -54,6 +50,37 @@ namespace GameA
             OnDiamondChanged ();
         }
 
+        public void PushStyle(EStyle eStyle)
+        {
+            if (!_isOpen)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlGoldEnergy>();
+            }
+            _styleStack.Push(eStyle);
+            SetStyle(eStyle);
+        }
+
+        public void PopStyle()
+        {
+            _styleStack.Pop();
+            if (_styleStack.Count > 0)
+            {
+                SetStyle(_styleStack.Peek());
+            }
+            else
+            {
+                SetStyle(EStyle.None);
+            }
+        }
+
+        private void SetStyle(EStyle eStyle)
+        {
+            var styleVal = (int) eStyle;
+            _cachedView.Diamond.SetActiveEx((styleVal & 1<<(int) ESlot.Diamond) > 0);
+            _cachedView.Gold.SetActiveEx((styleVal & 1<<(int) ESlot.Gold) > 0);
+            _cachedView.Energy.SetActiveEx((styleVal & 1<<(int) ESlot.Energy) > 0);
+        }
+
         public override void OnUpdate ()
         {
             base.OnUpdate ();
@@ -62,16 +89,6 @@ namespace GameA
                 OnEnergyChanged ();
             }
         }
-
-        public void Show (bool showEnergy) {
-            _cachedView.gameObject.SetActive (true);
-            _cachedView.Energy.SetActive (showEnergy);
-        }
-
-        public void Hide () {
-            _cachedView.gameObject.SetActive (false);
-        }
-
 
         private void OnEnergyPlusBtn () {
             if (AppData.Instance.AdventureData.UserData.UserEnergyData.Energy >=
@@ -119,5 +136,18 @@ namespace GameA
             _cachedView.DiamondNumber.text = LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond.ToString();
         }
         #endregion
+
+        private enum ESlot
+        {
+            Diamond,
+            Gold,
+            Energy
+        }
+        public enum EStyle
+        {
+            None = 0,
+            EnergyGoldDiamond = 1<<ESlot.Diamond | 1<<ESlot.Gold | 1<<ESlot.Energy,
+            GoldDiamond = 1<<ESlot.Diamond | 1<<ESlot.Gold
+        }
     }
 }
