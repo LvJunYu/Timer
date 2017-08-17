@@ -39,6 +39,11 @@ namespace GameA.Game
         protected abstract bool IsCheckClimb();
         protected abstract bool IsUpdateSpeedY();
 
+        protected override bool IsClimbing
+        {
+            get { return _eClimbState != EClimbState.None; }
+        }
+
         public InputBase Input
         {
             get { return _input; }
@@ -316,7 +321,7 @@ namespace GameA.Game
                     SetFacingDir(EMoveDirection.Right);
                     break;
             }
-            LogHelper.Debug(_eClimbState.ToString());
+//            LogHelper.Debug(_eClimbState.ToString());
         }
         
         protected virtual void OnJump()
