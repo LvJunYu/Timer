@@ -366,6 +366,7 @@ namespace GameA.Game
                 if (forces.Length == 2)
                 {
                     unit.Speed = IntVec2.zero;
+                    unit.CurBanInputTime = 25;
                     if (direction.x > 0)
                     {
                         unit.ExtraSpeed.x = forces[0];

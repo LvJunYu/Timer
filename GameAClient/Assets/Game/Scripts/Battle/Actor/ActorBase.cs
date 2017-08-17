@@ -573,7 +573,7 @@ namespace GameA.Game
                         _animation.PlayOnce("DeathFire");
                         break;
                     case EDieType.Saw:
-                        _animation.PlayOnce(IsPlayer ? "OnSawStart" : "OnDead");
+                        _animation.PlayOnce(IsPlayer ? "OnSawStart" : "Death");
                         break;
                 }
             }
