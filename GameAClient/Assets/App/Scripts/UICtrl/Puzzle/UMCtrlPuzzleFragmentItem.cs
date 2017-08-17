@@ -75,13 +75,20 @@ namespace GameA
             var rectTransform = _umCtrlPuzzleDetailItem.PicImage.transform as RectTransform;
             if (rectTransform != null)
             {
-                float bigPicWidth = rectTransform.rect.width;//大图宽度
+                float bigPicWidth = rectTransform.rect.width; //大图宽度
+                float bigPicHeight = rectTransform.rect.height; //大图高度
                 var transform = _curPicImg.transform as RectTransform;
                 if (transform != null)
                 {
-                    float picWidth = transform.rect.width;//小图宽度
+                    //设置宽高
+                    transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,
+                        bigPicWidth * _umCtrlPuzzleDetailItem.GetScale(_pictureFull.PuzzleType));
+                    transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
+                        bigPicHeight * _umCtrlPuzzleDetailItem.GetScale(_pictureFull.PuzzleType));
+                    //设置位置
                     _curPicImg.transform.localPosition =
-                        _umCtrlPuzzleDetailItem.ImageDic[_fragment.PictureInx].transform.localPosition * picWidth / bigPicWidth;
+                        _umCtrlPuzzleDetailItem.ImageDic[_fragment.PictureInx].transform.localPosition *
+                        _umCtrlPuzzleDetailItem.GetScale(_pictureFull.PuzzleType);
                 }
             }
 
