@@ -25,8 +25,8 @@ namespace GameA
         private string _signature;
         private string _maleIcon = "icon_male";
         private string _femaleIcon= "icon_famale";
-        private bool _isMale=true;
-        private int _Male;
+        //private bool _isMale=true;
+        private ESex _eMale;
         private Project _representativeProjectle = null;
         private List<UMCtrlAchievement> _cardList = new List<UMCtrlAchievement>();
 
@@ -69,16 +69,16 @@ namespace GameA
         private void OnSubmit()
         {
 
-            //Msg_SC_DAT_UserInfoDetail UpdateUserInfo = new Msg_SC_DAT_UserInfoDetail();
-            //Debug.Log("name+++"+ _name);
-            //UpdateUserInfo.UserInfoSimple.NickName = "111";
-            ////UpdateUserInfo.UserInfoSimple.Sex = (ESex)_Male;
-            ////UpdateUserInfo.UserInfoSimple.HeadImgUrl = _name;
-            //RemoteCommands.UpdateUserInfo(UpdateUserInfo,
-            //  (ret) =>
-            //  {
-            //  }, null
-            //  );
+            Msg_SC_DAT_UserInfoDetail UpdateUserInfo = new Msg_SC_DAT_UserInfoDetail();
+            Debug.Log("name+++" + _name);
+            UpdateUserInfo.UserInfoSimple.NickName = "111";
+            //UpdateUserInfo.UserInfoSimple.Sex = (ESex)_Male;
+            //UpdateUserInfo.UserInfoSimple.HeadImgUrl = _name;
+            RemoteCommands.UpdateUserInfo(UpdateUserInfo,
+              (ret) =>
+              { Debug.Log("SubmitNewName" + UpdateUserInfo.UserInfoSimple.NickName);
+              }, null
+              );
             SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
         }
 
@@ -131,6 +131,8 @@ namespace GameA
             //{ _cachedView.Name.text = LocalUser.Instance.UserLegacy.NickName; }
             _cachedView.Lvl.text = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel.ToString();
             _cachedView.CraftLvl.text = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorExp.ToString();
+            _eMale = LocalUser.Instance.User.UserInfoSimple.Sex == (ESex) 1 ? ESex.S_Male : ESex.S_Male;
+
             _cachedView.Editing.gameObject.SetActiveEx(false);
             _cachedView.Editable.gameObject.SetActiveEx(true);
 
@@ -138,7 +140,7 @@ namespace GameA
             _cachedView.ConfirmDescBtn.onClick.AddListener(OnConfirmDescBtn);
             _cachedView.SelectMaleBtn.onClick.AddListener(SelectMale);
             _cachedView.SelectFemaleBtn.onClick.AddListener(SelectFemale);
-            if (_isMale)
+            if (_eMale == ESex.S_Male)
             {
                 _cachedView.MSex.SetActiveEx(true);
                 _cachedView.FSex.SetActiveEx(false);
@@ -207,7 +209,7 @@ namespace GameA
         {
             _cachedView.SelectMale.SetActiveEx(true);
             _cachedView.SelectFemale.SetActiveEx(false);
-            _isMale = true;
+            _eMale = ESex.S_Male;
             Sprite fashion = null;
             _cachedView.MSex.SetActiveEx(true);
             _cachedView.FSex.SetActiveEx(false);
@@ -217,7 +219,7 @@ namespace GameA
         {
             _cachedView.SelectMale.SetActiveEx(false);
             _cachedView.SelectFemale.SetActiveEx(true);
-            _isMale = false;
+            _eMale = ESex.S_Female;
             Sprite fashion = null;
             _cachedView.MSex.SetActiveEx(false);
             _cachedView.FSex.SetActiveEx(true);

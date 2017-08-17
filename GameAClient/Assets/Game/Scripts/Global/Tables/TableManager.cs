@@ -15,13 +15,13 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_Equipment> Table_EquipmentDic = new Dictionary<int, Table_Equipment>();
 		public readonly Dictionary<int,Table_State> Table_StateDic = new Dictionary<int, Table_State>();
 		public readonly Dictionary<int,Table_Skill> Table_SkillDic = new Dictionary<int, Table_Skill>();
+		public readonly Dictionary<int,Table_Reward> Table_RewardDic = new Dictionary<int, Table_Reward>();
 		public readonly Dictionary<int,Table_EquipmentLevel> Table_EquipmentLevelDic = new Dictionary<int, Table_EquipmentLevel>();
 		public readonly Dictionary<int,Table_Trap> Table_TrapDic = new Dictionary<int, Table_Trap>();
 		public readonly Dictionary<int,Table_Unit> Table_UnitDic = new Dictionary<int, Table_Unit>();
 		public readonly Dictionary<int,Table_StandaloneLevel> Table_StandaloneLevelDic = new Dictionary<int, Table_StandaloneLevel>();
 		public readonly Dictionary<int,Table_StarRequire> Table_StarRequireDic = new Dictionary<int, Table_StarRequire>();
 		public readonly Dictionary<int,Table_StandaloneChapter> Table_StandaloneChapterDic = new Dictionary<int, Table_StandaloneChapter>();
-		public readonly Dictionary<int,Table_Reward> Table_RewardDic = new Dictionary<int, Table_Reward>();
 		public readonly Dictionary<int,Table_FashionShop> Table_FashionShopDic = new Dictionary<int, Table_FashionShop>();
 		public readonly Dictionary<int,Table_FashionUnit> Table_FashionUnitDic = new Dictionary<int, Table_FashionUnit>();
 		public readonly Dictionary<int,Table_TreasureMap> Table_TreasureMapDic = new Dictionary<int, Table_TreasureMap>();
@@ -45,13 +45,13 @@ namespace GameA.Game
 		[UnityEngine.SerializeField] private Table_Equipment[] _tableEquipments;
 		[UnityEngine.SerializeField] private Table_State[] _tableStates;
 		[UnityEngine.SerializeField] private Table_Skill[] _tableSkills;
+		[UnityEngine.SerializeField] private Table_Reward[] _tableRewards;
 		[UnityEngine.SerializeField] private Table_EquipmentLevel[] _tableEquipmentLevels;
 		[UnityEngine.SerializeField] private Table_Trap[] _tableTraps;
 		[UnityEngine.SerializeField] private Table_Unit[] _tableUnits;
 		[UnityEngine.SerializeField] private Table_StandaloneLevel[] _tableStandaloneLevels;
 		[UnityEngine.SerializeField] private Table_StarRequire[] _tableStarRequires;
 		[UnityEngine.SerializeField] private Table_StandaloneChapter[] _tableStandaloneChapters;
-		[UnityEngine.SerializeField] private Table_Reward[] _tableRewards;
 		[UnityEngine.SerializeField] private Table_FashionShop[] _tableFashionShops;
 		[UnityEngine.SerializeField] private Table_FashionUnit[] _tableFashionUnits;
 		[UnityEngine.SerializeField] private Table_TreasureMap[] _tableTreasureMaps;
@@ -93,6 +93,8 @@ namespace GameA.Game
             _tableStates = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_State[]>(StateJsonStr);
 			string SkillJsonStr = ResourceManager.Instance.GetJson ("Skill", 31);
             _tableSkills = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Skill[]>(SkillJsonStr);
+			string RewardJsonStr = ResourceManager.Instance.GetJson ("Reward", 31);
+            _tableRewards = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Reward[]>(RewardJsonStr);
 			string EquipmentLevelJsonStr = ResourceManager.Instance.GetJson ("EquipmentLevel", 31);
             _tableEquipmentLevels = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_EquipmentLevel[]>(EquipmentLevelJsonStr);
 			string TrapJsonStr = ResourceManager.Instance.GetJson ("Trap", 31);
@@ -105,8 +107,6 @@ namespace GameA.Game
             _tableStarRequires = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StarRequire[]>(StarRequireJsonStr);
 			string StandaloneChapterJsonStr = ResourceManager.Instance.GetJson ("StandaloneChapter", 31);
             _tableStandaloneChapters = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneChapter[]>(StandaloneChapterJsonStr);
-			string RewardJsonStr = ResourceManager.Instance.GetJson ("Reward", 31);
-            _tableRewards = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Reward[]>(RewardJsonStr);
 			string FashionShopJsonStr = ResourceManager.Instance.GetJson ("FashionShop", 31);
             _tableFashionShops = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionShop[]>(FashionShopJsonStr);
 			string FashionUnitJsonStr = ResourceManager.Instance.GetJson ("FashionUnit", 31);
@@ -181,6 +181,17 @@ namespace GameA.Game
 					LogHelper.Warning("_tableSkills table.Id {0} is duplicated!", _tableSkills[i].Id);
 				}
 			}
+			for (int i = 0; i < _tableRewards.Length; i++)
+			{
+				if (!Table_RewardDic.ContainsKey(_tableRewards[i].Id))
+				{
+					Table_RewardDic.Add(_tableRewards[i].Id,_tableRewards[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableRewards table.Id {0} is duplicated!", _tableRewards[i].Id);
+				}
+			}
 			for (int i = 0; i < _tableEquipmentLevels.Length; i++)
 			{
 				if (!Table_EquipmentLevelDic.ContainsKey(_tableEquipmentLevels[i].Id))
@@ -245,17 +256,6 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableStandaloneChapters table.Id {0} is duplicated!", _tableStandaloneChapters[i].Id);
-				}
-			}
-			for (int i = 0; i < _tableRewards.Length; i++)
-			{
-				if (!Table_RewardDic.ContainsKey(_tableRewards[i].Id))
-				{
-					Table_RewardDic.Add(_tableRewards[i].Id,_tableRewards[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableRewards table.Id {0} is duplicated!", _tableRewards[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableFashionShops.Length; i++)
@@ -509,6 +509,15 @@ namespace GameA.Game
 			}
 			return null;
 		}
+		public Table_Reward GetReward(int key)
+		{
+			Table_Reward tmp;
+			if (Table_RewardDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
 		public Table_EquipmentLevel GetEquipmentLevel(int key)
 		{
 			Table_EquipmentLevel tmp;
@@ -558,15 +567,6 @@ namespace GameA.Game
 		{
 			Table_StandaloneChapter tmp;
 			if (Table_StandaloneChapterDic.TryGetValue(key,out tmp))
-			{
-				return tmp;
-			}
-			return null;
-		}
-		public Table_Reward GetReward(int key)
-		{
-			Table_Reward tmp;
-			if (Table_RewardDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

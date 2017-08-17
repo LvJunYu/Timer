@@ -92,5 +92,20 @@ namespace GameA.Game
                 }
             }
         }
+
+        protected override void ChangView(bool on)
+        {
+            if (_view != null)
+            {
+                if (on)
+                {
+                    _view.ChangeView("M1SwitchTriggerOn_" + _unitDesc.Rotation);
+                }
+                else
+                {
+                    _view.ChangeView("M1SwitchTriggerOff_" + _unitDesc.Rotation);
+                }
+            }
+        }
     }
 }

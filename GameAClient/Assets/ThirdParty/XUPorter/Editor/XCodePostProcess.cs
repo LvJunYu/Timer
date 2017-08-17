@@ -31,7 +31,7 @@ public static class XCodePostProcess
 
 		//TODO implement generic settings as a module option
 		project.overwriteBuildSetting("CODE_SIGN_IDENTITY[sdk=iphoneos*]", "iPhone Developer", "Release");
-        EditCode(pathToBuiltProject);
+//        EditCode(pathToBuiltProject);
 		// Finally save the xcode project
 		project.Save();
 

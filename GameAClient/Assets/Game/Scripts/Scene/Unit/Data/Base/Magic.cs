@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using SoyEngine;
 using UnityEngine;
 
@@ -132,15 +133,17 @@ namespace GameA.Game
                             {
                                 if (unit.Id == UnitDefine.BlueStoneRotateId)
                                 {
-                                    _magicRotate = unit;
-                                    break;
+                                    if (_magicRotate ==null)
+                                    {
+                                        _magicRotate = unit;
+                                    }
                                 }
-                                if (_magicRotate == null)
+                                else
                                 {
                                     _timerMagic = 0;
                                     Speed = IntVec2.zero;
-                                    _magicRotate = null;
                                     ChangeMoveDirection();
+                                    _magicRotate = null;
                                     break;
                                 }
                             }
@@ -148,7 +151,7 @@ namespace GameA.Game
                     }
                     if (_magicRotate != null)
                     {
-                        if (_magicRotate.CurPos == _curPos)
+                        if (_curPos == _magicRotate.CurPos)
                         {
                             _timerMagic = 0;
                             Speed = IntVec2.zero;

@@ -19,7 +19,14 @@ namespace GameA.Game
         public bool Trigger
         {
             get { return _trigger; }
-            set { _trigger = value; }
+            set
+            {
+                _trigger = value;
+                if (_trigger)
+                {
+                    OnTriggerStart(this);
+                }
+            }
         }
 
         protected override bool OnInit()
@@ -98,10 +105,7 @@ namespace GameA.Game
 
         protected void OnTriggerStart(UnitBase other)
         {
-            if (_view != null)
-            {
-                _view.ChangeView("M1SwitchTriggerOn_" + _unitDesc.Rotation);
-            }
+            ChangView(true);
             if (_switchUnit != null)
             {
                 _switchUnit.OnTriggerStart(other);
@@ -112,13 +116,25 @@ namespace GameA.Game
         {
             if (!_trigger)
             {
-                if (_view != null)
-                {
-                    _view.ChangeView("M1SwitchTriggerOff_" + _unitDesc.Rotation);
-                }
+                ChangView(false);
                 if (_switchUnit != null)
                 {
                     _switchUnit.OnTriggerEnd();
+                }
+            }
+        }
+
+        protected virtual void ChangView(bool on)
+        {
+            if (_view != null)
+            {
+                if (on)
+                {
+                    _view.ChangeView("M1SwitchTriggerPressOn_" + _unitDesc.Rotation);
+                }
+                else
+                {
+                    _view.ChangeView("M1SwitchTriggerPressOff_" + _unitDesc.Rotation);
                 }
             }
         }

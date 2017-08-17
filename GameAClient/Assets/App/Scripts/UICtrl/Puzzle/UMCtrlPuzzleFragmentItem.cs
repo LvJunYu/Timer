@@ -1,8 +1,5 @@
-﻿using System.Collections;
-using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
-using SoyEngine;
 
 namespace GameA
 {
@@ -15,15 +12,13 @@ namespace GameA
         private PictureFull _pictureFull;
         private UMCtrlPuzzleDetailItem _umCtrlPuzzleDetailItem;
         private int _curIndex;
-        private Image _curImage;
+        private Image _maskImage;
         private Image _curImageDisable;
         private Image _curPicImg;
+        private Image _outlineImg;
         private Text _curIndexTxt;
         private Text _curNumTxt;
-        //private const string _halfImageName = "img_puzzle_half_";
-        //private const string _quarterImageName = "img_puzzle_quarter_";
-        //private const string _sixthImageName = "img_puzzle_sixth_";
-        //private const string _ninthImageName = "img_puzzle_ninth_";
+        private UICtrlPuzzleDetail _uiCtrlPuzzleDetail;
         private bool _hasInited;
 
         public bool IsShow;
@@ -55,26 +50,47 @@ namespace GameA
             _cachedView.Rects[1].gameObject.SetActive(_pictureFull.PuzzleType == EPuzzleType.Quarter);
             _cachedView.Rects[2].gameObject.SetActive(_pictureFull.PuzzleType == EPuzzleType.Sixth);
             _cachedView.Rects[3].gameObject.SetActive(_pictureFull.PuzzleType == EPuzzleType.Ninth);
-            _curIndex = _cachedView.Rects.Find(p => p.gameObject.activeSelf == true).GetSiblingIndex();
+            _curIndex = _cachedView.Rects.Find(p => p.gameObject.activeSelf).GetSiblingIndex();
 
-            _curImage = _cachedView.Images[_curIndex];
+            _curPicImg = _cachedView.Images[_curIndex];
             _curImageDisable = _cachedView.Image_Disables[_curIndex];
             _curIndexTxt = _cachedView.OrderTxts[_curIndex];
             _curNumTxt = _cachedView.HaveNumTxts[_curIndex];
+            _maskImage = _cachedView.MaskImgs[_curIndex];
+            _outlineImg = _cachedView.OutlineImgs[_curIndex];
 
             //设置序号
-            //_cachedView.OrderTxt.text = _fragment.PictureInx.ToString();
             _curIndexTxt.text = _fragment.PictureInx.ToString();
-            //设置图片
-            _curImage.sprite = SocialGUIManager.Instance.GetUI<UICtrlPuzzleDetail>().GetFragSprite(_pictureFull.PuzzleType, _fragment.PictureInx);
-            _curPicImg = _curImage.transform.GetChild(0).GetComponent<Image>();
-            //底图取Puzzle的Sprite
+            //设置遮罩图片
+            if (null == _uiCtrlPuzzleDetail)
+                _uiCtrlPuzzleDetail = SocialGUIManager.Instance.GetUI<UICtrlPuzzleDetail>();
+            _maskImage.sprite = _uiCtrlPuzzleDetail.GetSprite(_pictureFull.PuzzleType, _fragment.PictureInx);
+            _outlineImg.sprite = _uiCtrlPuzzleDetail.GetSprite(_pictureFull.PuzzleType, _fragment.PictureInx, false);
+            _maskImage.SetNativeSize();
+            _outlineImg.SetNativeSize();
+            //设置拼图底图
             _curImageDisable.sprite = _curPicImg.sprite = _umCtrlPuzzleDetailItem.PicImage.sprite;
             _curImageDisable.color = _cachedView.disableColor;
-            //根据PuzzleItem上碎片底图的相对位置，计算当前碎片底图的相对位置
-            float bigPicWidth = (_umCtrlPuzzleDetailItem.PicImage.transform as RectTransform).rect.width;
-            float picWidth = (_curPicImg.transform as RectTransform).rect.width;
-            _curPicImg.transform.localPosition = _umCtrlPuzzleDetailItem.ImageDic[_fragment.PictureInx].transform.localPosition * picWidth / bigPicWidth;
+            //设置底图位置，根据PuzzleItem上大图中碎片底图的相对位置，计算当前碎片底图的相对位置
+            var rectTransform = _umCtrlPuzzleDetailItem.PicImage.transform as RectTransform;
+            if (rectTransform != null)
+            {
+                float bigPicWidth = rectTransform.rect.width; //大图宽度
+                float bigPicHeight = rectTransform.rect.height; //大图高度
+                var transform = _curPicImg.transform as RectTransform;
+                if (transform != null)
+                {
+                    //设置宽高
+                    transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,
+                        bigPicWidth * _umCtrlPuzzleDetailItem.GetScale(_pictureFull.PuzzleType));
+                    transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
+                        bigPicHeight * _umCtrlPuzzleDetailItem.GetScale(_pictureFull.PuzzleType));
+                    //设置位置
+                    _curPicImg.transform.localPosition =
+                        _umCtrlPuzzleDetailItem.ImageDic[_fragment.PictureInx].transform.localPosition *
+                        _umCtrlPuzzleDetailItem.GetScale(_pictureFull.PuzzleType);
+                }
+            }
 
             _hasInited = true;
             SetData();
@@ -88,6 +104,5 @@ namespace GameA
             _curImageDisable.enabled = !owned;
             //_curPicImg.enabled = _fragment.TotalCount > 0;
         }
-
     }
 }

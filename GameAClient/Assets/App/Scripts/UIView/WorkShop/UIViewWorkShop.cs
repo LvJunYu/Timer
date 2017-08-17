@@ -13,7 +13,6 @@ namespace GameA
         public Button PublishedBtn;
         public Button WorkingOnBtn;
 
-        public Text ChangeModeBtnText;
         public GameObject Private;
         // private project info detail
         public RawImage Cover;
@@ -43,11 +42,8 @@ namespace GameA
         public Button NewProjectBtn;
 
         public GameObject Public;
-        public Text MakerLvl;
-        public Image MakerExpFillImg;
-        public Text MakerExpText;
-        public Text PublishedProjectCnt;
-        public Text ServedPlayerCnt;
+        public Text CompleteRate;
+        public Text PlayCount;
         public Text LikedCnt;
         public Text MostPopulerProjectName;
         public GridDataScroller PublicProjectsGridScroller;

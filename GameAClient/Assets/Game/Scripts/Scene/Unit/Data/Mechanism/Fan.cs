@@ -69,6 +69,10 @@ namespace GameA.Game
             {
                 _effect.Play();
             }
+//            if (_animation != null)
+//            {
+//                _animation.Init(((EDirectionType) Rotation).ToString());
+//            }
         }
 
         public override void OnTriggerEnd()
@@ -77,6 +81,9 @@ namespace GameA.Game
             if (_effect != null)
             {
                 _effect.Stop();
+            }
+            if (_animation != null)
+            {
             }
         }
         

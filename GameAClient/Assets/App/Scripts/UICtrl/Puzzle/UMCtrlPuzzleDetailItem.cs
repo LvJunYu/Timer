@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System;
+﻿using System;
 using UnityEngine;
 using System.Collections.Generic;
+using NewResourceSolution;
 using UnityEngine.UI;
 using SoyEngine;
 
@@ -17,10 +17,71 @@ namespace GameA
         private Dictionary<int, Image> _disableImgDic = new Dictionary<int, Image>(9);
         private Dictionary<int, Image> _imageDic = new Dictionary<int, Image>(9);
         private RectTransform _curTF;
-        private bool hasInited;
+        private bool _hasInited;
+        private float _halfScale;
+        private float _quarterScale;
+        private float _sixthScale;
+        private float _ninthScale;
+        private const string _halfBigSprite = "img_puzzle_half_1";
+        private const string _halfSmallSprite = "img_puzzle_half_11";
+        private const string _quarterBigSprite = "img_puzzle_quarter_1";
+        private const string _quarterSmallSprite = "img_puzzle_quarter_11";
+        private const string _sixthBigSprite = "img_puzzle_sixth_1";
+        private const string _sixthSmallSprite = "img_puzzle_sixth_11";
+        private const string _ninthBigSprite = "img_puzzle_ninth_1";
+        private const string _ninthSmallSprite = "img_puzzle_ninth_11";
+        
+        public Dictionary<int, Image> ImageDic
+        {
+            get { return _imageDic; }
+        }
 
-        public Dictionary<int, Image> ImageDic { get { return _imageDic; } }
-        public Image PicImage { get { return _cachedView.Puzzle_Active; } }
+        public Image PicImage
+        {
+            get { return _cachedView.Puzzle_Active; }
+        }
+
+        public float GetScale(EPuzzleType puzzleType)
+        {
+            switch (puzzleType)
+            {
+                case EPuzzleType.Half:
+                    if (_halfScale < 0.01f)
+                    {
+                        Sprite bigSprite = ResourcesManager.Instance.GetSprite(_halfBigSprite);
+                        Sprite smallSprite = ResourcesManager.Instance.GetSprite(_halfSmallSprite);
+                        _halfScale = smallSprite.rect.width / bigSprite.rect.width;
+                    }
+                    return _halfScale;
+                case EPuzzleType.Quarter:
+                    if (_quarterScale < 0.01f)
+                    {
+                        Sprite bigSprite = ResourcesManager.Instance.GetSprite(_quarterBigSprite);
+                        Sprite smallSprite = ResourcesManager.Instance.GetSprite(_quarterSmallSprite);
+                        _quarterScale = smallSprite.rect.width / bigSprite.rect.width;
+                    }
+                    return _quarterScale;
+                case EPuzzleType.Sixth:
+                    if (_sixthScale < 0.01f)
+                    {
+                        Sprite bigSprite = ResourcesManager.Instance.GetSprite(_sixthBigSprite);
+                        Sprite smallSprite = ResourcesManager.Instance.GetSprite(_sixthSmallSprite);
+                        _sixthScale = smallSprite.rect.width / bigSprite.rect.width;
+                    }
+                    return _sixthScale;
+                case EPuzzleType.Ninth:
+                    if (_ninthScale < 0.01f)
+                    {
+                        Sprite bigSprite = ResourcesManager.Instance.GetSprite(_ninthBigSprite);
+                        Sprite smallSprite = ResourcesManager.Instance.GetSprite(_ninthSmallSprite);
+                        _ninthScale = smallSprite.rect.width / bigSprite.rect.width;
+                    }
+                    return _ninthScale;
+                default:
+                    return 0;
+            }
+   
+        }
 
         public void SetData(PictureFull puzzle)
         {
@@ -41,40 +102,42 @@ namespace GameA
             //初始化碎片遮罩图片，构建索引字典
             _disableImgDic.Clear();
             _imageDic.Clear();
+
             for (int i = 0; i < _masks.Count; i++)
             {
                 Transform picTF = _masks[i].transform.GetChild(0);
                 picTF.localPosition = -_masks[i].transform.localPosition;
+                //设置碎片外框
+                //Image outlime = _curTF.GetChild(_masks[i].transform.GetSiblingIndex() + 1).GetComponent<Image>();
+                //outlime.sprite = _masks[i].GetComponent<Image>().sprite;
+                //设置底图
                 Image image = picTF.GetComponent<Image>();
-                image.sprite = _cachedView.Puzzle_Active.sprite;
                 _imageDic.Add(i + 1, image);
                 Image disableImg = picTF.GetChild(0).GetComponent<Image>();
-                disableImg.sprite = _cachedView.Puzzle_Active.sprite;
-                disableImg.color = _cachedView.DisableColor;
                 _disableImgDic.Add(i + 1, disableImg);
+                disableImg.sprite = image.sprite = _cachedView.Puzzle_Active.sprite;
+                disableImg.color = _cachedView.DisableColor;
             }
-            hasInited = true;
+            _hasInited = true;
             SetData();
         }
 
         public void SetData()
         {
-            if (!hasInited) return;
+            if (!_hasInited) return;
             _cachedView.Puzzle_Active.enabled = _puzzle.CurState == EPuzzleState.HasActived;
             //
             for (int i = 0; i < _puzzle.FragNum; i++)
             {
                 var frag = _puzzle.NeededFragments[i];
-                _disableImgDic[frag.PictureInx].enabled = !(_puzzle.CurState == EPuzzleState.HasActived) && !(frag.TotalCount > 0);
+                _disableImgDic[frag.PictureInx].enabled =
+                    !(_puzzle.CurState == EPuzzleState.HasActived) && !(frag.TotalCount > 0);
             }
-
         }
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
         }
-
-
     }
 }

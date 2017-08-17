@@ -290,7 +290,7 @@ namespace GameA.Game
                     {
                         if (unit.IsActor)
                         {
-                            OnActorHit(unit, centerDownPos);
+                            OnActorHit(unit, unit.CenterPos - centerDownPos);
                         }
                     }
                 }
@@ -310,7 +310,7 @@ namespace GameA.Game
                     {
                         if (unit.IsActor)
                         {
-                            OnActorHit(unit, projectile.CenterDownPos);
+                            OnActorHit(unit, GetShootDirection(projectile.Angle));
                         }
                         else if(unit.CanPainted && _epaintType != EPaintType.None)
                         {
@@ -321,7 +321,40 @@ namespace GameA.Game
             }
         }
 
-        private void OnActorHit(UnitBase unit, IntVec2 centerDownPos)
+        private IntVec2 GetShootDirection(int angle)
+        {
+            IntVec2 direction = IntVec2.zero;
+            switch ((EShootDirectionType) angle)
+            {
+                case EShootDirectionType.Up:
+                    direction = IntVec2.up;
+                    break;
+                case EShootDirectionType.Down:
+                    direction = IntVec2.down;
+                    break;
+                case EShootDirectionType.Left:
+                    direction = IntVec2.left;
+                    break;
+                case EShootDirectionType.Right:
+                    direction = IntVec2.right;
+                    break;
+                case EShootDirectionType.RightUp:
+                    direction = new IntVec2(1, 1);
+                    break;
+                case EShootDirectionType.LeftUp:
+                    direction = new IntVec2(-1, 1);
+                    break;
+                case EShootDirectionType.RightDown:
+                    direction = new IntVec2(1, -1);
+                    break;
+                case EShootDirectionType.LeftDown:
+                    direction = new IntVec2(-1, -1);
+                    break;
+            }
+            return direction;
+        }
+
+        private void OnActorHit(UnitBase unit, IntVec2 direction)
         {
             if (!unit.IsAlive)
             {
@@ -332,11 +365,23 @@ namespace GameA.Game
                 var forces = _tableSkill.KnockbackForces;
                 if (forces.Length == 2)
                 {
-                    var direction = unit.CenterDownPos - centerDownPos;
-                    unit.ExtraSpeed.x = direction.x >= 0 ? forces[0] : -forces[0];
-                    unit.ExtraSpeed.y = direction.y >= -320 ? forces[1] : -forces[1];
                     unit.Speed = IntVec2.zero;
-                    unit.CurBanInputTime = 25;
+                    if (direction.x > 0)
+                    {
+                        unit.ExtraSpeed.x = forces[0];
+                    }
+                    else if (direction.x < 0)
+                    {
+                        unit.ExtraSpeed.x = -forces[0];
+                    }
+                    if (direction.y > 0)
+                    {
+                        unit.ExtraSpeed.y = forces[1];
+                    }
+                    else if (direction.y < 0)
+                    {
+                        unit.ExtraSpeed.y = -forces[1];
+                    }
                 }
             }
             //触发状态

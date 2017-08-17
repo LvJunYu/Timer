@@ -5,14 +5,13 @@
 ** Summary : UserFavoriteWorldProjectList.Impl.cs
 ***********************************************************************/
 
-using System;
 using System.Collections.Generic;
-using SoyEngine.Proto;
 using SoyEngine;
+using SoyEngine.Proto;
 
 namespace GameA
 {
-    public partial class UserFavoriteWorldProjectList : SyncronisticData
+    public partial class UserFavoriteWorldProjectList
     {
         private List<Project> _allList = new List<Project>();
         public bool IsEnd { get; private set; }

@@ -307,7 +307,7 @@ namespace GameA
             }
             if (string.IsNullOrEmpty(name))
             {
-                name = "我的匠游大作";
+                name = "我的大作";
             }
             Name = name;
             Summary = summary;
@@ -638,7 +638,7 @@ namespace GameA
                     return;
                 }
                 if (_projectUserData != null) {
-                    _projectUserData.Favorite = true;
+                    _projectUserData.Favorite = favorite;
                 }
                 if (_extendData != null)
                 {

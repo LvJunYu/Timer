@@ -5,19 +5,20 @@
   ** Summary : ShareUtil.cs
   ***********************************************************************/
 
-using System;
-using System.Collections;
-using cn.sharesdk.unity3d;
-using System.Text;
-using System.Text.RegularExpressions;
-using SoyEngine;
-using SoyEngine.Proto;
-using UnityEngine;
+//using System;
+//using System.Collections;
+//using cn.sharesdk.unity3d;
+//using System.Text;
+//using System.Text.RegularExpressions;
+//using SoyEngine;
+//using SoyEngine.Proto;
+//using UnityEngine;
 
 namespace GameA
 {
     public static class ShareUtil
     {
+        /*
         private static bool _hasInited = false;
         public static Action OnShareSuccess;
         public static Action OnShareFailed;
@@ -341,6 +342,7 @@ namespace GameA
 //            }));
             return true;
         }
+        */
     }
 }
 

@@ -350,8 +350,27 @@ namespace NewResourceSolution
 					}
 					else
 					{
-						// 目前的策略是：只要persistent目录中有资源manifest，则认为是包含有启动游戏所需的所有非压缩资源
-						updateFinish = true;
+						if (persistentManifest.Ver < buildInManifest.Ver)
+	                    {
+		                    CHDownloadingResManifest latestResManifest = null;
+		                    latestResManifest = new CHDownloadingResManifest(buildInManifest);
+		                    yield return latestResManifest.MergeExistingManifest(persistentManifest);
+		                    latestResManifest.CalculateFilesNeedsDownload ();
+		                    if (latestResManifest.NeedsDownloadTotalCnt != 0)
+		                    {
+			                    // 提示用户需要下载必须的资源，请检查网络再重试
+			                    updateFinish = true;
+		                    }
+		                    else
+		                    {
+			                    yield return latestResManifest.DecompressOrCopyToPersistant ();
+			                    updateFinish = true;
+		                    }
+	                    }
+	                    else
+	                    {
+							updateFinish = true;
+	                    }
 					}
 	            }
 				if (!updateFinish)

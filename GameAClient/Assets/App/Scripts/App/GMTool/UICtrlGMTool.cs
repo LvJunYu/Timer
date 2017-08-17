@@ -28,10 +28,6 @@ namespace GameA
         #endregion
 
         #region 方法
-        public override void Open(object parameter)
-        {
-            base.Open(parameter);
-        }
         public override void OnUpdate ()
         {
             base.OnUpdate ();
