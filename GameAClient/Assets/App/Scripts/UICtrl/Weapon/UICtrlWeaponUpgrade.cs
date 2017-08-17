@@ -94,14 +94,12 @@ namespace GameA
             {   
                 _cachedView.TileText.text = _comStr;  
                 _cachedView.TipText.text = string.Format(_tipStr,_comStr,_weaponName);      
-                _cachedView.HpOld.text = "+0";
-                _cachedView.HpAdd.text = "+"+ TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).HpAdd.ToString();
-                _cachedView.AttactOld.text = "+0" ;
-                _cachedView.AttackAdd.text = "+" +TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).AttackAdd.ToString();
-                _cachedView.SkillOld.text = "+0";
-                _cachedView.SkillEffect.text = "+"+ TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).SkillEffect.ToString();
-
-
+                _cachedView.HpOld.text =  TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).HpAdd.ToString();
+                _cachedView.HpOld.transform.GetChild(0).gameObject.SetActive(false);
+                _cachedView.AttactOld.text = TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).AttackAdd.ToString();
+                _cachedView.AttactOld.transform.GetChild(0).gameObject.SetActive(false);
+                _cachedView.SkillOld.text =  TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).SkillEffect.ToString();
+                _cachedView.SkillOld.transform.GetChild(0).gameObject.SetActive(false);
             }
             else
             {

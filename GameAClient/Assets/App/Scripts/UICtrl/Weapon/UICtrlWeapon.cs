@@ -151,11 +151,8 @@ namespace GameA
             }
             //武器特效显示
             if(_weaponModelEffect != null)
-            {            
-                _weaponModelEffect.Particle.Stop();
-               _weaponModelEffect.Particle.OnFree(); 
-               
-              
+            {     
+             GameParticleManager.FreeParticleItem(_weaponModelEffect.Particle);          
             }           
             _weaponModel = TableManager.Instance.GetEquipment(_weaponID).Model;
             _weaponModelEffect = GameParticleManager.Instance.GetUIParticleItem(_weaponModel, _cachedView.EffectShow.transform, _groupId);
