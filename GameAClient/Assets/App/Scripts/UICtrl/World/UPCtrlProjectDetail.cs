@@ -54,7 +54,10 @@ namespace GameA
                         _umCtrlUser40List[i].Show();
                         _umCtrlUser40List[i].Set(_content.RecentPlayedUserList.DataList[i].UserData);
                     }
-                    _umCtrlUser40List[i].Hide();
+                    else
+                    {
+                        _umCtrlUser40List[i].Hide();
+                    }
                 }
             }
             else

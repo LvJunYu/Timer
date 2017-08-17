@@ -494,12 +494,12 @@ namespace GameA.Game
 
         public bool RePlay()
         {
+            Reset();
             if (!CheckPlayerValid())
             {
                 return false;
             }
             CameraManager.Instance.SetCameraState(ECameraState.None);
-            Reset();
             PreparePlay();
             return true;
         }
