@@ -51,6 +51,8 @@ namespace GameA.Game
         private GameModeBase _gameMode;
         private GameObject _inputControl;
 
+        public static PaintMask PaintMask;
+
         public GameModeBase GameMode
         {
             get { return _gameMode; }
@@ -196,6 +198,23 @@ namespace GameA.Game
         private IEnumerator InitByStep()
         {
             yield return new WaitForSeconds(0.5f);
+            if (PaintMask == null)
+            {
+                var paintMaskPrefab = Resources.Load<GameObject>("PaintMask");
+                if (paintMaskPrefab == null)
+                {
+                    LogHelper.Error("Load PaintMask Failed!");
+                    yield break;
+                }
+                var paintMask = Instantiate(paintMaskPrefab);
+                PaintMask = paintMask.GetComponent<PaintMask>();
+                if (PaintMask == null)
+                {
+                    LogHelper.Error("GetComponent PaintMask Failed!");
+                    yield break;
+                }
+                yield return PaintMask.Init();
+            }
             yield return GameRun.Instance.Init(_eGameInitType, _project);
             yield return _gameMode.InitByStep();
             Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, 1f);
