@@ -31,7 +31,7 @@ namespace GameA
             string projectIdStr = _cachedView.ProjectIdInput.text;
             if (string.IsNullOrEmpty(projectIdStr))
             {
-                var project = AppData.Instance.AdventureData.GetAdvLevelProject(1, 1, EAdventureProjectType.APT_Normal);
+                var project = AppData.Instance.AdventureData.GetAdvLevelProject(1, EAdventureProjectType.APT_Normal, 1);
                 if (project == null)
                 {
                     LogHelper.Error("GetAdvLevelProject is Null");
