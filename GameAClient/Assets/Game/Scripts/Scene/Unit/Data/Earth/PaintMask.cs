@@ -6,7 +6,6 @@ namespace GameA.Game
 {
     public class PaintMask : MonoBehaviour
     {
-        private const int TextureSize = 64;
         [SerializeField]
         private Texture2D _mainMaskTexture;
         [SerializeField]
@@ -20,15 +19,15 @@ namespace GameA.Game
 
         public static PaintMask Instance;
         
-        public static Color[] CacheColors1 = new Color[TextureSize * TextureSize];
-        public static Color[] CacheColors2 = new Color[TextureSize * TextureSize];
+        public static Color[] CacheColors1 = new Color[PaintBlock.TextureSize * PaintBlock.TextureSize];
+        public static Color[] CacheColors2 = new Color[PaintBlock.TextureSize * PaintBlock.TextureSize];
         
         private void Awake()
         {
             Instance = this;
         }
 
-        public static Color[][] GetColors(Color[] colors, int width = TextureSize, int height = TextureSize)
+        public static Color[][] GetColors(Color[] colors, int width = PaintBlock.TextureSize, int height = PaintBlock.TextureSize)
         {
             var retColors = new Color[height][];
             for (int i = 0; i < height; i++)

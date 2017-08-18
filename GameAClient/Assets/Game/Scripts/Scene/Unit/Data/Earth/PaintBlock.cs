@@ -31,7 +31,8 @@ namespace GameA.Game
         private Color[][] _maskColors;
 
         private static Color[] EmptyPixels;
-        private const int Ratio = 4;
+        public const int Ratio = 4;
+        public const int TextureSize = 64;
         private const int PixelsPerUnit = 256 / (Ratio * 2);
         
         private const float StandardPixelsPerTile = 256f / (640 * 2) ;
@@ -39,7 +40,6 @@ namespace GameA.Game
         private const float PixelsPerTile = StandardPixelsPerTile / Ratio;
 
         private const int MaxPixel = 256 / Ratio - 1;
-
         
         private static int TileOffsetX = (int) (22f / StandardPixelsPerTile);
         private static int TileOffsetY = (int) (14 / StandardPixelsPerTile);
@@ -294,9 +294,9 @@ namespace GameA.Game
                     offsetYmin, width, height);
 
             int count = -1;
-            for (int j = ymin; j < ymin + height; j++)
+            for (int i = ymin; i < ymin + height; i++)
             {
-                for (int i = xmin; i < xmin + width; i++)
+                for (int j = xmin; j < xmin + width; j++)
                 {
                     count++;
                     if (mainMaskColors[count].a == 0f)
@@ -310,34 +310,34 @@ namespace GameA.Game
                             //边缘
                             if (maskingColors[count].maxColorComponent < 0.2f)
                             {
-                                _maskColors[j][i] = CleanColor;
-                                if (_paintColors[j][i].a > 0)
+                                _maskColors[i][j] = CleanColor;
+                                if (_paintColors[i][j].a > 0)
                                 {
-                                    _paintColors[j][i] = EdgeColor;
+                                    _paintColors[i][j] = EdgeColor;
                                 }
                             }
                             else
                             {
-                                _maskColors[j][i] = CleanColor;
-                                _paintColors[j][i] = CleanColor;
+                                _maskColors[i][j] = CleanColor;
+                                _paintColors[i][j] = CleanColor;
                             }
                         }
                         continue;
                     }
                     //叠加mask
-                    if (_maskColors[j][i].a == 0f ||
-                        (_maskColors[j][i].maxColorComponent < 0.2f && maskingColors[count].maxColorComponent >= 0.2f))
+                    if (_maskColors[i][j].a == 0f ||
+                        (_maskColors[i][j].maxColorComponent < 0.2f && maskingColors[count].maxColorComponent >= 0.2f))
                     {
-                        _maskColors[j][i] = maskingColors[count];
+                        _maskColors[i][j] = maskingColors[count];
                     }
                     //直接不显示
-                    if (_maskColors[j][i].a == 0f)
+                    if (_maskColors[i][j].a == 0f)
                     {
                         continue;
                     }
-                    if (_maskColors[j][i].maxColorComponent < 0.2f)
+                    if (_maskColors[i][j].maxColorComponent < 0.2f)
                     {
-                        _paintColors[j][i] = EdgeColor;
+                        _paintColors[i][j] = EdgeColor;
                     }
                     else
                     {
@@ -347,28 +347,28 @@ namespace GameA.Game
                         }
                         if (mainMaskColors[count].r == 1f)
                         {
-                            _paintColors[j][i] = PaintUpColor[(int) edge.EPaintType - 2];
+                            _paintColors[i][j] = PaintUpColor[(int) edge.EPaintType - 2];
                         }
                         else if (mainMaskColors[count].g == 1f)
                         {
-                            _paintColors[j][i] = PaintRightColor[(int) edge.EPaintType - 2];
+                            _paintColors[i][j] = PaintRightColor[(int) edge.EPaintType - 2];
                         }
                         else if (mainMaskColors[count].b == 1f)
                         {
-                            _paintColors[j][i] = PaintFrontColor[(int) edge.EPaintType - 2];
+                            _paintColors[i][j] = PaintFrontColor[(int) edge.EPaintType - 2];
                         }
                         else
                         {
-                            _paintColors[j][i] = PaintEdgeColor[(int) edge.EPaintType - 2];
+                            _paintColors[i][j] = PaintEdgeColor[(int) edge.EPaintType - 2];
                         }
                     }
                 }
             }
-            _paintTexture.SetPixels(PaintMask.GetColors(_paintColors, PaintMask.CacheColors1, 0, 0, 64, 64));
+            _paintTexture.SetPixels(PaintMask.GetColors(_paintColors, PaintMask.CacheColors1, 0, 0, TextureSize, TextureSize));
             _paintTexture.Apply();
-            _maskTexture.SetPixels(PaintMask.GetColors(_maskColors, PaintMask.CacheColors2, 0, 0, 64, 64));
+            _maskTexture.SetPixels(PaintMask.GetColors(_maskColors, PaintMask.CacheColors2, 0, 0, TextureSize, TextureSize));
             _maskTexture.Apply();
-//LogHelper.Debug("{0} | {1} | {2} | {3} | {4}", xmin, ymin, width, height, offsetX);
+            //LogHelper.Debug("{0} | {1} | {2} | {3} | {4}", xmin, ymin, width, height, offsetX);
         }
 
         private void CreatePaintObject()
@@ -387,7 +387,6 @@ namespace GameA.Game
                         EmptyPixels[i] = CleanColor;
                     }
                 }
-                
                 _paintColors = PaintMask.GetColors(EmptyPixels);
                 _maskColors = PaintMask.GetColors(EmptyPixels);
 

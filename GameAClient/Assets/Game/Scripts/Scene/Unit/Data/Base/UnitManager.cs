@@ -261,22 +261,22 @@ namespace GameA.Game
             {
                 case 10001:
                     PoolFactory<ProjectileWater>.Free((ProjectileWater) unit);
-                    break;
+                    return;
                 case 10002:
                     PoolFactory<ProjectileFire>.Free((ProjectileFire) unit);
-                    break;
+                    return;
                 case 10003:
                     PoolFactory<ProjectileIce>.Free((ProjectileIce) unit);
-                    break;
+                    return;
                 case 10004:
                     PoolFactory<ProjectileJelly>.Free((ProjectileJelly) unit);
-                    break;
+                    return;
                 case 10005:
                     PoolFactory<ProjectileClay>.Free((ProjectileClay) unit);
-                    break;
+                    return;
                 case 10006:
                     PoolFactory<ProjectileIceSword>.Free((ProjectileIceSword) unit);
-                    break;
+                    return;
             }
             if (unit.View == null)
             {
