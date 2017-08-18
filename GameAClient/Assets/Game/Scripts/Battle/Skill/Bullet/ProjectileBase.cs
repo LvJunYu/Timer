@@ -63,12 +63,6 @@ namespace GameA.Game
         {
         }
 
-        internal override void Reset()
-        {
-            base.Reset();
-            PlayMode.Instance.DestroyUnit(this);
-        }
-
         protected override void Clear()
         {
             _run = false;

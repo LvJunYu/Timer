@@ -27,11 +27,6 @@ namespace GameA.Game
 
         protected override bool OnInit()
         {
-            //不释放的情况下
-            if (_skeletonAnimation.skeletonDataAsset != null)
-            {
-                return true;
-            }
             string skeletonDataAssetName = string.Format ("{0}_SkeletonData", _unit.AssetPath);
             SkeletonDataAsset data = ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData,skeletonDataAssetName,0);
             if (null == data)
