@@ -83,8 +83,6 @@ namespace GameA
 
             OpenInfoPanel ();
             InitPanel();
-            //RefreshRankData();
-            //RefreshAdventureUserLevelDataDetail();
         }
         
         protected override void OnViewCreated() {
@@ -282,6 +280,22 @@ namespace GameA
         {
             OpenRankPanel ();
         }
+
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            RegisterEvent(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
+        }
+
+        private void OnChangeToAppMode()
+        {
+            if (_isOpen)
+            {
+                OpenInfoPanel ();
+                InitPanel();
+            }
+        }
+
         #endregion
     }
 }
