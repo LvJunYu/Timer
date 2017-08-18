@@ -115,7 +115,7 @@ namespace GameA.Game
         /// <returns></returns>
         private static int SortEdge(Edge x, Edge y)
         {
-            return y.EPaintType.CompareTo(x.EPaintType);
+            return ((int)y.EPaintType).CompareTo((int)x.EPaintType);
         }
 
         public override void DoPaint(int start, int end, EDirectionType direction, EPaintType ePaintType,

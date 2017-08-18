@@ -194,7 +194,10 @@ namespace GameA.Game
             }
             unit.OnDispose();
             _allUnits.Remove(unit);
-            _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 1;
+            if (UnitDefine.IsGround(tableUnit.Id))
+            {
+                _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 1;
+            }
             return _units.Remove(unitDesc.Guid);
         }
 
