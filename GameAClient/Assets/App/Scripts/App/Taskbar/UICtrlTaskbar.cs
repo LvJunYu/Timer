@@ -75,6 +75,7 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
+            RegisterEvent(EMessengerType.OpenGameSetting, ShowPuzzleBtn);
             //            RegisterEvent(SoyEngine.EMessengerType.OnMeNewMessageStateChanged, RefreshMeNewMessageState);
         }
 
@@ -333,6 +334,20 @@ namespace GameA
             if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.Puzzle))
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlPuzzle>();
+            }
+        }
+
+        //拼图入口秘密通道
+        private int _puzzlePasswordCount;
+        private void ShowPuzzleBtn()
+        {
+            _puzzlePasswordCount++;
+            if (_puzzlePasswordCount > 3)
+            {
+                _cachedView.PuzzleBtn.transform.parent.gameObject.SetActive(true);
+                _cachedView.PuzzleBtn.gameObject.SetActive(true);
+                _cachedView.PuzzleDisable.SetActive(false);
+                _puzzlePasswordCount = 0;
             }
         }
 
