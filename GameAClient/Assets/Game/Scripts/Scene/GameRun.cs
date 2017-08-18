@@ -67,7 +67,7 @@ namespace GameA.Game
             Clear();
 
             EnvManager.Instance.Dispose();
-            GameParticleManager.Instance.Dispose();
+//            GameParticleManager.Instance.Dispose();
             GameAudioManager.Instance.Dispose();
             DeadMarkManager.Instance.Dispose();
             InputManager.Instance.Dispose();
