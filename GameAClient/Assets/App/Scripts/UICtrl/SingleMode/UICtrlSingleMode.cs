@@ -50,6 +50,8 @@ namespace GameA
 		/// 屏蔽玩家输入计时器
 		/// </summary>
 		private float _blockInputTimer;
+
+	    private UIParticleItem _uiParticleItem;
         #endregion
 
         #region 属性
@@ -107,12 +109,22 @@ namespace GameA
             } else {
                 _cachedView.MatchBtn.gameObject.SetActive (false);
             }
+	        if (null == _uiParticleItem)
+	        {
+		        _uiParticleItem = GameParticleManager.Instance.GetUIParticleItem(
+			        ParticleNameConstDefineGM2D.SingleModeBgEffect, SocialGUIManager.Instance.SceneUIRoot, _groupId);
+	        }
+	        _uiParticleItem.Particle.Play();
         }
 
         protected override void OnClose()
         {
 	        SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
 			_dragging = false;
+	        if (null != _uiParticleItem)
+	        {
+		        _uiParticleItem.Particle.Stop();
+	        }
             base.OnClose();
         }
 
@@ -120,10 +132,12 @@ namespace GameA
         {
             base.InitEventListener();
 			RegisterEvent(EMessengerType.OnChangeToAppMode, OnReturnToApp);
+			RegisterEvent(EMessengerType.OnChangeToGameMode, OnChangeToGameMode);
 //            RegisterEvent(EMessengerType.OnAccountLoginStateChanged, OnEvent);
         }
 
-        protected override void OnViewCreated()
+
+	    protected override void OnViewCreated()
         {
             base.OnViewCreated();
 
@@ -394,7 +408,21 @@ namespace GameA
             } else {
                 _cachedView.MatchBtn.gameObject.SetActive (false);
             }
+			if (null != _uiParticleItem)
+			{
+				_uiParticleItem.Particle.Play();
+			}
 		}
+	    
+	    private void OnChangeToGameMode()
+	    {
+		    if (!_isOpen)
+			    return;
+		    if (null != _uiParticleItem)
+		    {
+			    _uiParticleItem.Particle.Stop();
+		    }
+	    }
         #endregion 接口
         #endregion
 

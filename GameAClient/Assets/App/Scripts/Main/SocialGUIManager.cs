@@ -76,10 +76,16 @@ namespace GameA
 
         private EMode _currentMode = EMode.App;
         private bool _exitDialogIsOpen;
+        private Transform _sceneUIRoot;
 
         public EMode CurrentMode
         {
             get {  return _currentMode; }
+        }
+
+        public Transform SceneUIRoot
+        {
+            get { return _sceneUIRoot; }
         }
 
         void Awake()
@@ -88,6 +94,7 @@ namespace GameA
             SocialUIConfig.Init();
             InitUIRoot<SocialUIRoot>(GetType().Name, 999, (int)EUIGroupType.Max);
 			_uiRoot.Canvas.pixelPerfect =false;
+            _sceneUIRoot = _uiRoot.Canvas.worldCamera.transform;
 
 			CanvasScaler cs = _uiRoot.GetComponent<CanvasScaler> ();
 			cs.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
