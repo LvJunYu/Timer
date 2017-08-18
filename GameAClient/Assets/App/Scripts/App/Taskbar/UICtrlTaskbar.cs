@@ -339,10 +339,15 @@ namespace GameA
 
         //拼图入口秘密通道
         private int _puzzlePasswordCount;
+        private float _lastClickTime;
         private void ShowPuzzleBtn()
         {
-            _puzzlePasswordCount++;
-            if (_puzzlePasswordCount > 3)
+            if (Time.time - _lastClickTime < 0.5f)
+                _puzzlePasswordCount++;
+            else
+                _puzzlePasswordCount = 0;
+            _lastClickTime = Time.time;
+            if (_puzzlePasswordCount > 2)
             {
                 _cachedView.PuzzleBtn.transform.parent.gameObject.SetActive(true);
                 _cachedView.PuzzleBtn.gameObject.SetActive(true);
