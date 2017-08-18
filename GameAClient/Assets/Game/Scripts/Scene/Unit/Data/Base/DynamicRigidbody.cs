@@ -376,11 +376,9 @@ namespace GameA.Game
             {
                 _deltaPos = _speed + _extraDeltaPos;
                 _curPos += _deltaPos;
-                LimitPos();
                 UpdateCollider(GetColliderPos(_curPos));
                 _curPos = GetPos(_colliderPos);
                 UpdateTransPos();
-                CheckOutOfMap();
             }
             UpdateDynamicView(deltaTime);
             _lastGrounded = _grounded;

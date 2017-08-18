@@ -54,7 +54,7 @@ namespace GameA.Game
 
         public void OnFree()
         {
-            //赋值为空
+            //赋值为空 TODO
             _dynamicCollider = null;
             Clear();
         }
@@ -145,7 +145,6 @@ namespace GameA.Game
                 GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
                 GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position, new Vector3(0, 0, _angle), Vector3.one, 1f);
             }
-            Clear();
             PlayMode.Instance.DestroyUnit(this);
         }
     }

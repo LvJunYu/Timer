@@ -73,13 +73,7 @@ namespace GameA.Game
 
         public bool Equals(UnitDesc other)
         {
-            return Id == other.Id && Guid.Equals(other.Guid) && Rotation == other.Rotation && Scale.Equals(other.Scale);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            return obj is UnitDesc && Equals((UnitDesc) obj);
+            return Id == other.Id && Guid == other.Guid && Rotation == other.Rotation &&Util.IsVector2Equal(Scale, other.Scale);
         }
 
         public override int GetHashCode()

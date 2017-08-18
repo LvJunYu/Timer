@@ -308,7 +308,7 @@ namespace GameA.Game
                         if (maskingColors[count].a > 0)
                         {
                             //边缘
-                            if (maskingColors[count].maxColorComponent < 0.2f)
+                            if (maskingColors[count].r < 0.2f && maskingColors[count].g < 0.2f && maskingColors[count].b < 0.2f)
                             {
                                 _maskColors[i][j] = CleanColor;
                                 if (_paintColors[i][j].a > 0)
@@ -326,7 +326,8 @@ namespace GameA.Game
                     }
                     //叠加mask
                     if (_maskColors[i][j].a == 0f ||
-                        (_maskColors[i][j].maxColorComponent < 0.2f && maskingColors[count].maxColorComponent >= 0.2f))
+                        ((_maskColors[i][j].r < 0.2f && _maskColors[i][j].g < 0.2f && _maskColors[i][j].b < 0.2f) &&
+                         (maskingColors[count].r >= 0.2f && maskingColors[count].g >= 0.2f &&maskingColors[count].b >= 0.2f)))
                     {
                         _maskColors[i][j] = maskingColors[count];
                     }
@@ -335,7 +336,7 @@ namespace GameA.Game
                     {
                         continue;
                     }
-                    if (_maskColors[i][j].maxColorComponent < 0.2f)
+                    if (_maskColors[i][j].r < 0.2f && _maskColors[i][j].g < 0.2f && _maskColors[i][j].b < 0.2f)
                     {
                         _paintColors[i][j] = EdgeColor;
                     }
