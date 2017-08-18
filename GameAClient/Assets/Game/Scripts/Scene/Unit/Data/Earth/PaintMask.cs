@@ -1,8 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using NewResourceSolution;
-using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -23,15 +20,15 @@ namespace GameA.Game
 
         public static PaintMask Instance;
         
-        private static Color[] CacheColors = new Color[TextureSize * TextureSize];
-        private static Color[] CacheMainColors = new Color[TextureSize * TextureSize];
-
+        public static Color[] CacheColors1 = new Color[TextureSize * TextureSize];
+        public static Color[] CacheColors2 = new Color[TextureSize * TextureSize];
+        
         private void Awake()
         {
             Instance = this;
         }
 
-        private Color[][] GetColors(Color[] colors, int width = TextureSize, int height = TextureSize)
+        public static Color[][] GetColors(Color[] colors, int width = TextureSize, int height = TextureSize)
         {
             var retColors = new Color[height][];
             for (int i = 0; i < height; i++)
@@ -44,35 +41,21 @@ namespace GameA.Game
             }
             return retColors;
         }
-
-        private Color[] GetColors(Color[][] colors, int x, int y, int width, int height)
+        
+        public static Color[] GetColors(Color[][] colors, Color[] retCache, int x, int y, int width, int height)
         {
             int count = 0;
             for (int j = y; j < y + height; j++)
             {
                 for (int i = x; i < x + width; i++)
                 {
-                    CacheColors[count] = colors[j][i];
+                    retCache[count] = colors[j][i];
                     count++;
                 }
             }
-            return CacheColors;
+            return retCache;
         }
         
-        private Color[] GetMainColors(Color[][] colors, int x, int y, int width, int height)
-        {
-            int count = 0;
-            for (int j = y; j < y + height; j++)
-            {
-                for (int i = x; i < x + width; i++)
-                {
-                    CacheMainColors[count] = colors[j][i];
-                    count++;
-                }
-            }
-            return CacheMainColors;
-        }
-
         public IEnumerator Init()
         {
             _mainMaskColors = GetColors(_mainMaskTexture.GetPixels());
@@ -93,19 +76,19 @@ namespace GameA.Game
         
         public Color[] GetMainMaskColors(int x, int y, int width, int height)
         {
-            return GetMainColors(_mainMaskColors, x, y, width, height);
+            return GetColors(_mainMaskColors, CacheColors2, x, y, width, height);
         }
 
         public Color[] GetMaskColors(int edge, int num, int x, int y, int width, int height)
         {
             int i = 2 * edge + num;
-            return GetColors(_maskTextureColors[i], x, y, width, height);
+            return GetColors(_maskTextureColors[i], CacheColors1, x, y, width, height);
         }
         
         public Color[] GetWaterMaskColors(int edge, int num, int x, int y, int width, int height)
         {
             int i = edge;
-            return GetColors(_maskWaterTextureColors[i], x, y, width, height);
+            return GetColors(_maskWaterTextureColors[i], CacheColors1, x, y, width, height);
         }
     }
 }

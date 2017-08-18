@@ -27,8 +27,10 @@ namespace GameA.Game
         protected GameObject _paintObject;
         private Texture2D _paintTexture;
         private Texture2D _maskTexture;
+        private Color[][] _paintColors;
+        private Color[][] _maskColors;
 
-        private static Color32[] EmptyPixels;
+        private static Color[] EmptyPixels;
         private const int Ratio = 4;
         private const int PixelsPerUnit = 256 / (Ratio * 2);
         
@@ -284,84 +286,87 @@ namespace GameA.Game
             var width = offsetXmax - offsetXmin;
             var height = offsetYmax - offsetYmin;
             
-            var paintedColor = _paintTexture.GetPixels(xmin, ymin, width, height);
-            var maskedColor = _maskTexture.GetPixels(xmin, ymin, width, height);
-            
             var mainMaskColors = PaintMask.Instance.GetMainMaskColors(xmin, ymin, width, height);
             Color[] maskingColors = edge.EPaintType == EPaintType.Water
                 ? PaintMask.Instance.GetWaterMaskColors((int) edge.Direction, maskRandom, offsetXmin,
                     offsetYmin, width, height)
                 : PaintMask.Instance.GetMaskColors((int) edge.Direction, maskRandom, offsetXmin,
                     offsetYmin, width, height);
-            for (int i = 0; i < paintedColor.Length; i++)
+
+            int count = -1;
+            for (int j = ymin; j < ymin + height; j++)
             {
-                if (mainMaskColors[i].a == 0f)
+                for (int i = xmin; i < xmin + width; i++)
                 {
-                    continue;
-                }
-                if (edge.EPaintType == EPaintType.Water)
-                {
-                    if (maskingColors[i].a > 0)
-                    {
-                        //边缘
-                        if (maskingColors[i].maxColorComponent < 0.2f)
-                        {
-                            maskedColor[i] = CleanColor;
-                            if (paintedColor[i].a > 0)
-                            {
-                                paintedColor[i] = EdgeColor;
-                            }
-                        }
-                        else
-                        {
-                            maskedColor[i] = CleanColor;
-                            paintedColor[i] = CleanColor;
-                        }
-                    }
-                    continue;
-                }
-                //叠加mask
-                if (maskedColor[i].a == 0f ||
-                    (maskedColor[i].maxColorComponent < 0.2f && maskingColors[i].maxColorComponent >= 0.2f))
-                {
-                    maskedColor[i] = maskingColors[i];
-                }
-                //直接不显示
-                if (maskedColor[i].a == 0f)
-                {
-                    continue;
-                }
-                if (maskedColor[i].maxColorComponent < 0.2f)
-                {
-                    paintedColor[i] = EdgeColor;
-                }
-                else
-                {
-                    if (maskingColors[i].a == 0f)
+                    count++;
+                    if (mainMaskColors[count].a == 0f)
                     {
                         continue;
                     }
-                    if (mainMaskColors[i].r == 1f)
+                    if (edge.EPaintType == EPaintType.Water)
                     {
-                        paintedColor[i] = PaintUpColor[(int) edge.EPaintType - 2];
+                        if (maskingColors[count].a > 0)
+                        {
+                            //边缘
+                            if (maskingColors[count].maxColorComponent < 0.2f)
+                            {
+                                _maskColors[j][i] = CleanColor;
+                                if (_paintColors[j][i].a > 0)
+                                {
+                                    _paintColors[j][i] = EdgeColor;
+                                }
+                            }
+                            else
+                            {
+                                _maskColors[j][i] = CleanColor;
+                                _paintColors[j][i] = CleanColor;
+                            }
+                        }
+                        continue;
                     }
-                    else if (mainMaskColors[i].g == 1f)
+                    //叠加mask
+                    if (_maskColors[j][i].a == 0f ||
+                        (_maskColors[j][i].maxColorComponent < 0.2f && maskingColors[count].maxColorComponent >= 0.2f))
                     {
-                        paintedColor[i] = PaintRightColor[(int) edge.EPaintType - 2];
+                        _maskColors[j][i] = maskingColors[count];
                     }
-                    else if (mainMaskColors[i].b == 1f)
+                    //直接不显示
+                    if (_maskColors[j][i].a == 0f)
                     {
-                        paintedColor[i] = PaintFrontColor[(int) edge.EPaintType - 2];
+                        continue;
+                    }
+                    if (_maskColors[j][i].maxColorComponent < 0.2f)
+                    {
+                        _paintColors[j][i] = EdgeColor;
                     }
                     else
                     {
-                        paintedColor[i] = PaintEdgeColor[(int) edge.EPaintType - 2];
+                        if (maskingColors[count].a == 0f)
+                        {
+                            continue;
+                        }
+                        if (mainMaskColors[count].r == 1f)
+                        {
+                            _paintColors[j][i] = PaintUpColor[(int) edge.EPaintType - 2];
+                        }
+                        else if (mainMaskColors[count].g == 1f)
+                        {
+                            _paintColors[j][i] = PaintRightColor[(int) edge.EPaintType - 2];
+                        }
+                        else if (mainMaskColors[count].b == 1f)
+                        {
+                            _paintColors[j][i] = PaintFrontColor[(int) edge.EPaintType - 2];
+                        }
+                        else
+                        {
+                            _paintColors[j][i] = PaintEdgeColor[(int) edge.EPaintType - 2];
+                        }
                     }
                 }
             }
-            _paintTexture.SetPixels(xmin, ymin, width, height, paintedColor);
+            _paintTexture.SetPixels(PaintMask.GetColors(_paintColors, PaintMask.CacheColors1, 0, 0, 64, 64));
             _paintTexture.Apply();
-            _maskTexture.SetPixels(xmin, ymin, width, height, maskedColor);
+            _maskTexture.SetPixels(PaintMask.GetColors(_maskColors, PaintMask.CacheColors2, 0, 0, 64, 64));
             _maskTexture.Apply();
 //LogHelper.Debug("{0} | {1} | {2} | {3} | {4}", xmin, ymin, width, height, offsetX);
         }
@@ -376,21 +381,25 @@ namespace GameA.Game
                 if (EmptyPixels == null)
                 {
                     var count = textureWidth * textureHeight;
-                    EmptyPixels = new Color32[count];
+                    EmptyPixels = new Color[count];
                     for (int i = 0; i < count; i++)
                     {
                         EmptyPixels[i] = CleanColor;
                     }
                 }
+                
+                _paintColors = PaintMask.GetColors(EmptyPixels);
+                _maskColors = PaintMask.GetColors(EmptyPixels);
+
                 _paintTexture = new Texture2D(textureWidth, textureHeight);
                 _paintTexture.wrapMode = TextureWrapMode.Clamp;
                 _paintTexture.filterMode = FilterMode.Bilinear;
-                _paintTexture.SetPixels32(EmptyPixels);
+                _paintTexture.SetPixels(EmptyPixels);
                 _paintTexture.Apply();
 
                 _maskTexture = new Texture2D(textureWidth, textureHeight);
                 _maskTexture.filterMode = FilterMode.Bilinear;
-                _maskTexture.SetPixels32(EmptyPixels);
+                _maskTexture.SetPixels(EmptyPixels);
                 _maskTexture.Apply();
 
                 _paintObject = new GameObject("Paint");
