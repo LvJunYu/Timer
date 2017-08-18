@@ -10,7 +10,7 @@
 
 using System.Text;
 using SoyEngine;
-using Umeng;
+//using Umeng;
 using UnityEngine;
 using EMessengerType = GameA.EMessengerType;
 using NotificationServices = UnityEngine.iOS.NotificationServices;
@@ -46,10 +46,10 @@ public class JoyNativeTooliOS : MonoBehaviour, IJoyNativeTool
 //        UMPushiOS.setAutoAlert(false);
 //        UMPushiOS.setBadgeClear(true);
 //        UMPushiOS.setLogEnabled(GlobalVar.Instance.IsDebug);
-
-        string appkey = "5779c90d67e58e60150010c6";  
-        GA.StartWithAppKeyAndChannelId(appkey, "App Store"); 
-        GA.SetLogEnabled(GlobalVar.Instance.IsDebug);
+//
+//        string appkey = "5779c90d67e58e60150010c6";  
+//        GA.StartWithAppKeyAndChannelId(appkey, "App Store"); 
+//        GA.SetLogEnabled(GlobalVar.Instance.IsDebug);
     }
 
     private void AliasHandler(string response,string error)

@@ -9,7 +9,7 @@
 using System;
 using UnityEngine;
 using SoyEngine;
-using Umeng;
+//using Umeng;
 
 
 public class JoyNativeToolAndroid: MonoBehaviour, IJoyNativeTool
@@ -44,10 +44,10 @@ public class JoyNativeToolAndroid: MonoBehaviour, IJoyNativeTool
 //        UMPushAndroid.enable();
 //        UMPushAndroid.onAppStart();
 //        UMPushAndroid.setDebugMode(GlobalVar.Instance.IsDebug);
-        LogHelper.Info("Device Token:"+UMPushAndroid.getRegistrationId());
-        string appkey = "5779c8d167e58e5d37003c26";  
-        GA.StartWithAppKeyAndChannelId(appkey, "default");  
-        GA.SetLogEnabled(GlobalVar.Instance.IsDebug); 
+//        LogHelper.Info("Device Token:"+UMPushAndroid.getRegistrationId());
+//        string appkey = "5779c8d167e58e5d37003c26";  
+//        GA.StartWithAppKeyAndChannelId(appkey, "default");  
+//        GA.SetLogEnabled(GlobalVar.Instance.IsDebug); 
     }
 
     public void AddPushAlias(string alias, string type)

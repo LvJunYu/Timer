@@ -185,34 +185,18 @@ namespace GameA
         public static Vector2 GetUIResolution()
         {
             var canvasTran = Instance._uiRoot.Trans;
-            float aspectRatio = 1f * Screen.width / Screen.height;
-            Vector2 canvasSize = new Vector2(2 * aspectRatio, 2) / canvasTran.localScale.x;
+            Vector2 canvasSize = canvasTran.GetSize();
             return new Vector2(Mathf.RoundToInt(canvasSize.x), Mathf.RoundToInt(canvasSize.y));
         }
 
         public static Vector2 ScreenToRectLocal(Vector2 screenPos, RectTransform parentRectTransform)
         {
-            var canvasTran = Instance._uiRoot.Trans;
-            float aspectRatio = 1f * Screen.width / Screen.height;
-            Vector2 canvasSize = new Vector2(2 * aspectRatio, 2) / canvasTran.localScale.x;
-            var sCanvasPos = new Vector2(screenPos.x / Screen.width, screenPos.y / Screen.height) - 0.5f * Vector2.one;
-            sCanvasPos = new Vector2(sCanvasPos.x * canvasSize.x, sCanvasPos.y * canvasSize.y);
-            Vector2 rectLocalPos = parentRectTransform.InverseTransformPoint(canvasTran.TransformPoint(sCanvasPos));
-            return rectLocalPos - parentRectTransform.rect.min;
+            Vector2 localPos;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRectTransform, screenPos,
+                Instance._uiRoot.Canvas.worldCamera, out localPos);
+            return localPos;
         }
         
-        public static Vector2 RectLocalToScreen(Vector2 localPos, RectTransform parentRectTransform)
-        {
-            var canvasTran = Instance._uiRoot.Trans;
-            float aspectRatio = 1f * Screen.width / Screen.height;
-            Vector2 canvasSize = new Vector2(2 * aspectRatio, 2) / canvasTran.localScale.x;
-            var lp = parentRectTransform.rect.min + localPos;
-            Vector2 cp = canvasTran.InverseTransformPoint(parentRectTransform.TransformPoint(lp));
-            var v = new Vector2(cp.x / canvasSize.x, cp.y / canvasSize.y) + 0.5f * Vector2.one;
-            return new Vector2(v.x * Screen.width, v.y * Screen.height);
-        }
-        
-
         /// <summary>
         /// 最多支持三个按钮 btnParam= (string Action) * 3
         /// </summary>
