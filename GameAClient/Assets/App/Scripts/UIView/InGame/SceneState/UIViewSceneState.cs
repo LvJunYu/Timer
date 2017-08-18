@@ -20,7 +20,6 @@ namespace GameA
         public Text NormalLevelText;
         public GameObject BonusLevelDock;
         public Text BonusLevelText;
-        public Button Home;
         public UIViewSceneStateItem HpItem;
         public UIViewSceneStateItem CollectionItem;
         public UIViewSceneStateItem EnemyItem;

@@ -14,8 +14,6 @@ namespace GameA
         public Button RankBtn1;
         public Button RankBtn2;
         public RawImage Cover1;
-        public RawImage Cover2;
-        public RawImage Cover3;
         public Text FirstName;
         public Text FirstScore;
 

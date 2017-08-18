@@ -8,8 +8,10 @@
 using System;
 using System.Collections.Generic;
 using GameA.Game;
-using SoyEngine.Proto;
 using SoyEngine;
+using SoyEngine.Proto;
+using UnityEngine;
+using PlayMode = GameA.Game.PlayMode;
 
 namespace GameA
 {
@@ -97,6 +99,35 @@ namespace GameA
 			_userData.Request(LocalUser.Instance.UserGuid, successCallback, failedCallback);
         }
 
+        public AdventureUserLevelDataDetail GetAdventureUserLevelDataDetail(int section, EAdventureProjectType projectType,
+            int level)
+        {
+            if (null == _userData)
+            {
+                return null;
+            }
+            if (section <= 0
+                || projectType == EAdventureProjectType.APT_None
+                || level <= 0)
+            {
+                return null;
+            }
+            for (int i = _userData.SectionList.Count; i < section; i++)
+            {
+                _userData.SectionList.Add(new AdventureUserSection(){Section = i+1});
+            }
+            var sectionData = _userData.SectionList[section-1];
+
+            List<AdventureUserLevelDataDetail> projectList = projectType == EAdventureProjectType.APT_Normal
+                ? sectionData.NormalLevelUserDataList
+                : sectionData.BonusLevelUserDataList;
+            for (int i = projectList.Count; i < level; i++)
+            {
+                projectList.Add(new AdventureUserLevelDataDetail());
+            }
+            return projectList[level - 1];
+        }
+
 		/// <summary>
 		/// 请求进入冒险模式关卡
 		/// </summary>
@@ -144,8 +175,6 @@ namespace GameA
                 }
                 return;
             }
-		    project.SectionId = sectionId;
-            project.LevelId = levelIdx;
 			RemoteCommands.PlayAdventureLevel (sectionId, type, levelIdx, ret => {
 				if (ret.ResultCode == (int)EPlayAdventureLevelCode.PALC_Success) {
 					_lastRequiredLevelToken = ret.Token;
@@ -157,14 +186,12 @@ namespace GameA
 						successCallback.Invoke();
                         if (AppData.Instance.AdventureData.ProjectList.SectionList.Count < sectionId) {
                             LogHelper.Error ("No project data of chapter {0}", sectionId);
-                            return;
                         } else {
                             List<Project> projectList = EAdventureProjectType.APT_Bonus == type ?
                                 AppData.Instance.AdventureData.ProjectList.SectionList [sectionId - 1].BonusProjectList :
                                 AppData.Instance.AdventureData.ProjectList.SectionList [sectionId - 1].NormalProjectList;
                             if (projectList.Count < levelIdx) {
                                 LogHelper.Error ("No project data of level in idx {0} in chapter {1}", levelIdx, sectionId);
-                                return;
                             } else {
                                 projectList [levelIdx - 1].PrepareRes (() => {
                                     var param = new SituationAdventureParam();
@@ -205,14 +232,14 @@ namespace GameA
             PlayAdventureLevel (_lastPlayedChapterIdx + 1, _lastPlayedLevelIdx + 1, _lastPlayedLevelType, successCallback, failedCallback);
         }
 
-        public Game.Table_StandaloneLevel GetAdvLevelTable (int chapteIdx, int levelIdx, EAdventureProjectType type) {
+        public Table_StandaloneLevel GetAdvLevelTable (int chapteIdx, EAdventureProjectType type, int levelIdx) {
             if (chapteIdx == 0 || levelIdx == 0) return null;
 
-            var tableChapter = Game.TableManager.Instance.GetStandaloneChapter (chapteIdx);
+            var tableChapter = TableManager.Instance.GetStandaloneChapter (chapteIdx);
             if (null == tableChapter) {
                 return null;
             }
-            int levelId = 0;
+            int levelId;
             if (EAdventureProjectType.APT_Bonus == type) {
                 if (levelIdx <= tableChapter.BonusLevels.Length) {
                     levelId = tableChapter.BonusLevels [levelIdx - 1];
@@ -226,10 +253,10 @@ namespace GameA
                     return null;
                 }
             }
-            return Game.TableManager.Instance.GetStandaloneLevel (levelId);
+            return TableManager.Instance.GetStandaloneLevel (levelId);
         }
 
-        public Project GetAdvLevelProject (int chapteIdx, int levelIdx, EAdventureProjectType type) {
+        public Project GetAdvLevelProject (int chapteIdx, EAdventureProjectType type, int levelIdx) {
             if (chapteIdx <= 0 || levelIdx <= 0) return null;
             int chapteInx = chapteIdx - 1;
             int levelInx = levelIdx - 1;
@@ -253,6 +280,7 @@ namespace GameA
             }
             return projectList[levelInx];
         }
+        
 
 		/// <summary>
 		/// 提交冒险模式关卡成绩
@@ -284,7 +312,7 @@ namespace GameA
 				}
                 return;
 			}
-            var table = GetAdvLevelTable (_lastPlayedChapterIdx + 1, _lastPlayedLevelIdx + 1, _lastPlayedLevelType);
+            var table = GetAdvLevelTable (_lastPlayedChapterIdx + 1, _lastPlayedLevelType, _lastPlayedLevelIdx + 1);
             if (null == table)
             {
                 if (null != failedCallback) {
@@ -298,23 +326,23 @@ namespace GameA
             bool star3 = false;
             if (null != table.StarConditions) {
                 if (table.StarConditions.Length > 0) {
-                    star1 = CheckStarRequire (table.StarConditions [0], table.Star1Value, Game.PlayMode.Instance.Statistic);
+                    star1 = CheckStarRequire (table.StarConditions [0], table.Star1Value, PlayMode.Instance.Statistic);
                 }
                 if (table.StarConditions.Length > 1) {
-                    star2 = CheckStarRequire (table.StarConditions [1], table.Star2Value, Game.PlayMode.Instance.Statistic);
+                    star2 = CheckStarRequire (table.StarConditions [1], table.Star2Value, PlayMode.Instance.Statistic);
                 }
                 if (table.StarConditions.Length > 2) {
-                    star3 = CheckStarRequire (table.StarConditions [2], table.Star3Value, Game.PlayMode.Instance.Statistic);
+                    star3 = CheckStarRequire (table.StarConditions [2], table.Star3Value, PlayMode.Instance.Statistic);
                 }
             }
 
             // 记录得星数以便在结算界面显示
             _lastAdvStarCnt = (star1 ? 1 : 0) + (star2 ? 1 : 0) + (star3 ? 1 : 0);
 
-            UnityEngine.WWWForm form = new UnityEngine.WWWForm ();
+            WWWForm form = new WWWForm ();
             form.AddBinaryData ("recordFile", recordBytes);
 
-		    Msg_RecordUploadParam recordUploadParam = new Msg_RecordUploadParam()
+		    Msg_RecordUploadParam recordUploadParam = new Msg_RecordUploadParam
 		    {
 		        Success = success,
 		        UsedTime = usedTime,
@@ -383,13 +411,14 @@ namespace GameA
 			if (_lastPlayedLevelIdx > levelDataList.Count) {
 				LogHelper.Error("Try to modify {0}'s level data in chapter {1} in an unexpected way", _lastPlayedLevelIdx, _lastPlayedChapterIdx);
 				return;
-			} else if (_lastPlayedLevelIdx == levelDataList.Count) {
-				levelData = sectionData.LocalAddLevelData(_lastPlayedLevelType);
-			} else {
-				levelData = levelDataList[_lastPlayedLevelIdx];
 			}
+		    if (_lastPlayedLevelIdx == levelDataList.Count) {
+		        levelData = sectionData.LocalAddLevelData(_lastPlayedLevelType);
+		    } else {
+		        levelData = levelDataList[_lastPlayedLevelIdx];
+		    }
 
-			levelData.SimpleData.Star1Flag = star1Flag;
+		    levelData.SimpleData.Star1Flag = star1Flag;
 			levelData.SimpleData.Star2Flag = star2Flag;
 			levelData.SimpleData.Star3Flag = star3Flag;
 			if (success) levelData.SimpleData.SuccessCount++;
@@ -412,7 +441,7 @@ namespace GameA
 		}
 
         // 检查三星条件
-        private bool CheckStarRequire(int starType, int starValue, Game.GameStatistic statistic)
+        public bool CheckStarRequire(int starType, int starValue, GameStatistic statistic)
         {
             if (null == statistic)
             {
@@ -424,56 +453,56 @@ namespace GameA
                 return statistic.Passed;
             }
             // 通关用时少于N秒
-            else if (starType == 2)
+            if (starType == 2)
             {
                 return statistic.UsedTime < starValue;
             }
             // 死亡次数少于N次
-            else if (starType == 3) {
+            if (starType == 3) {
                 return statistic.DeathCnt < starValue;
             }
             // 得分超过N
-            else if (starType == 4) {
+            if (starType == 4) {
                 return statistic.Score >= starValue;
             }
             // 拾取所有钻石
-            else if (starType == 5) {
-                return statistic.CollectGem == Game.PlayMode.Instance.SceneState.TotalGem;
+            if (starType == 5) {
+                return statistic.CollectGem == PlayMode.Instance.SceneState.TotalGem;
             }
             // 消灭所有怪物
-            else if (starType == 6) {
-                return statistic.MonsterDeathCnt == Game.PlayMode.Instance.SceneState.MonsterCount;
+            if (starType == 6) {
+                return statistic.MonsterDeathCnt == PlayMode.Instance.SceneState.MonsterCount;
             }
             // 行走距离小于米
-            else if (starType == 7) {
+            if (starType == 7) {
                 return false;
             }
             // 跳跃次数小于N次
-            else if (starType == 8) {
+            if (starType == 8) {
                 return statistic.JumpCnt < starValue;
             }
             // 消灭的怪物少于N个
-            else if (starType == 9) {
+            if (starType == 9) {
                 return statistic.MonsterDeathCnt < starValue;
             }
             // 触发开关少于N次
-            else if (starType == 10) {
+            if (starType == 10) {
                 return statistic.SwitchTriggerCnt < starValue;
             }
             // 不使用传送门
-            else if (starType == 11) {
+            if (starType == 11) {
                 return statistic.PortalUsedCnt == 0;
             }
             // 用激光消灭N个怪物
-            else if (starType == 12) {
+            if (starType == 12) {
                 return statistic.MonsterKilledByLazerCnt >= starValue;
             }
             // 使怪物坠亡N次
-            else if (starType == 13) {
+            if (starType == 13) {
                 return statistic.MonsterKilledByFallCnt >= starValue;
             }
             // 剩余血量大于{0}%
-            else if (starType == 14)
+            if (starType == 14)
             {
                 float currentHPPercentage =
                     (float) PlayerManager.Instance.MainPlayer.Hp /

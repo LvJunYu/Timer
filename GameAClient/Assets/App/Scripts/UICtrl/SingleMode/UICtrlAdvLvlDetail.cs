@@ -21,6 +21,8 @@ namespace GameA
         private int BeginningDisplayOnRank = 0;
 
         private Table_StandaloneLevel _table;
+        private Project _project;
+        private AdventureUserLevelDataDetail _userLevelDataDetail;
         #endregion
 
         #region Properties
@@ -50,7 +52,7 @@ namespace GameA
 
         public Project Project
         {
-            get { return AppData.Instance.AdventureData.GetAdvLevelProject(ChapterIdx, LevelIdx, ProjectType); }
+            get { return _project; }
         }
         #endregion
 
@@ -62,15 +64,22 @@ namespace GameA
             _chapterIdx = intVec3Param.x;
             _levelIdx = intVec3Param.y;
             _isBonus = intVec3Param.z == 1;
-            _table = AppData.Instance.AdventureData.GetAdvLevelTable(_chapterIdx, _levelIdx,
-                _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal);
+            _table = AppData.Instance.AdventureData.GetAdvLevelTable(_chapterIdx,
+                _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal, _levelIdx);
             if (null == _table) {
                 LogHelper.Error ("Get table standalonelevel failed");
                 SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail> ();
                 return;
             }
-
-
+            _project = AppData.Instance.AdventureData.GetAdvLevelProject(_chapterIdx,
+                _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal, _levelIdx);
+            if (null == _project) {
+                LogHelper.Error ("Get Project failed");
+                SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail> ();
+                return;
+            }
+            _userLevelDataDetail = AppData.Instance.AdventureData.GetAdventureUserLevelDataDetail(_chapterIdx,
+                _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal, _levelIdx);
 
             OpenInfoPanel ();
             InitPanel();
@@ -93,19 +102,16 @@ namespace GameA
             _cachedView.InfoBtn1.onClick.AddListener (OnInfoBtn1);
             _cachedView.RecordBtn1.onClick.AddListener (OnRecordBtn1);
             _cachedView.RankBtn1.onClick.AddListener (OnRankBtn1);
-            
-
-
         }
 
         public void RefreshAdventureUserLevelDataDetail()
         {
-            LocalUser.Instance.AdventureUserLevelDataDetail.Request(
+            _userLevelDataDetail.Request(
                 LocalUser.Instance.UserGuid,
                 _chapterIdx,
                 JudgeBonus(),
                 _levelIdx,
-                () => { _recordPanel.Set(); }
+                () => { _recordPanel.Set(_userLevelDataDetail); }
                 , null);
 
         }
@@ -117,7 +123,7 @@ namespace GameA
 
         private void RefreshRankData()
         {
-            LocalUser.Instance.AdventureLevelRankList.Request(
+            _project.AdventureLevelRankList.Request(
             _chapterIdx,
             JudgeBonus(),
             _levelIdx,
@@ -126,14 +132,23 @@ namespace GameA
                 () =>
                 {
                     //RefreshAdventureUserLevelDataDetail();
-                    _rankPanel.Set(LocalUser.Instance.AdventureLevelRankList.RecordList);
-                    _cachedView.FirstName.text = LocalUser.Instance.AdventureLevelRankList.RecordList[0].UserInfo.NickName;
-                    //_cachedView.FirstScore.text =string.Format("{0}",) ;
-                    //_cachedView.FirstScore.text = "<color=#0000ff><size=60>小明</size></color>送了<color=#0000ff><size=60>小红</size></color>一辆游艇";
-                    _cachedView.FirstScore.text =
-                        "<color=#84684CFF><size=24>最高得分: </size></color>"
-                    +"<color=#FE8300FF><size=28>" + LocalUser.Instance.AdventureLevelRankList.RecordList[0].Score +
-                    "</size></color>";
+                    _rankPanel.Set(_project.AdventureLevelRankList.RecordList);
+                    if (_project.AdventureLevelRankList.RecordList.Count > 0)
+                    {
+                        _cachedView.FirstName.text = _project.AdventureLevelRankList.RecordList[0].UserInfo.NickName;
+                        _cachedView.FirstScore.text =
+                            "<color=#84684CFF><size=24>最高得分: </size></color>"
+                            + "<color=#FE8300FF><size=28>" + _project.AdventureLevelRankList.RecordList[0].Score +
+                            "</size></color>";
+                    }
+                    else
+                    {
+                        _cachedView.FirstName.text = "--";
+                        _cachedView.FirstScore.text =
+                            "<color=#84684CFF><size=24>最高得分: </size></color>"
+                            + "<color=#FE8300FF><size=28>--</size></color>";
+                        
+                    }
                 }
             , null)
             ;
@@ -177,14 +192,6 @@ namespace GameA
                     _cachedView.Cover1,
                     project.IconPath,
                     _cachedView.DefaultCover);
-                ImageResourceManager.Instance.SetDynamicImage(
-                    _cachedView.Cover2,
-                    project.IconPath,
-                    _cachedView.DefaultCover);
-                ImageResourceManager.Instance.SetDynamicImage(
-                    _cachedView.Cover3,
-                    project.IconPath,
-                    _cachedView.DefaultCover);
                 RefreshRankData();
               
 
@@ -192,22 +199,7 @@ namespace GameA
         }
 
         private void OpenInfoPanel () {
-            Project project;
-            if (AppData.Instance.AdventureData.ProjectList.SectionList.Count < _chapterIdx) {
-                LogHelper.Error ("No project data of chapter {0}", _chapterIdx);
-                SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail> ();
-                return;
-            }
-            List<Project> projectList = _isBonus ?
-                AppData.Instance.AdventureData.ProjectList.SectionList [_chapterIdx - 1].BonusProjectList :
-                AppData.Instance.AdventureData.ProjectList.SectionList [_chapterIdx - 1].NormalProjectList;
-            if (projectList.Count <= _levelIdx - 1) {
-                LogHelper.Error ("No project data of level in idx {0} in chapter {1}", _levelIdx, _chapterIdx);
-                SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail> ();
-                return;
-            }
-            project = projectList [_levelIdx - 1];
-            _infoPanel.Open (project, _table);
+            _infoPanel.Open (_project, _table, _userLevelDataDetail);
             _recordPanel.Close ();
             _rankPanel.Close ();
 
