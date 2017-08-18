@@ -58,6 +58,7 @@ namespace GameA
             base.OnOpen(parameter);
             _cachedView.SkillBtn2.gameObject.SetActive(false);
             _cachedView.SkillBtn3.gameObject.SetActive(false);
+            _cachedView.AssistBtn.gameObject.SetActive(false);
         }
 
         public void SetSkillBtn2Visible(bool visible)
@@ -68,6 +69,11 @@ namespace GameA
         public void SetSkillBtn3Visible(bool visible)
         {
             _cachedView.SkillBtn3.gameObject.SetActive(visible);
+        }
+        
+        public void SetAssistBtnVisible(bool visible)
+        {
+            _cachedView.AssistBtn.gameObject.SetActive(visible);
         }
 
         private void OnSkillSlotChanged(Table_Skill tableSkill, int slot)
@@ -168,22 +174,6 @@ namespace GameA
             _cachedView.Btn3CD2.gameObject.SetActive(cdType == 0);
         }
         
-//        private void SetSkill1Icon(string iconName)
-//        {
-//            if (null == _cachedView) return;
-//            _cachedView.Btn1Icon.sprite = ResourcesManager.Instance.GetSprite(iconName);
-//        }
-//        private void SetSkill2Icon(string iconName)
-//        {
-//            if (null == _cachedView) return;
-//            _cachedView.Btn2Icon.sprite = ResourcesManager.Instance.GetSprite(iconName);
-//        }
-//
-//        private void SetSkill3Icon(string iconName)
-//        {
-//            if (null == _cachedView) return;
-//            _cachedView.Btn3Icon.sprite = ResourcesManager.Instance.GetSprite(iconName);
-//        }
 
         private void OnSkill1CDChanged(float leftTime, float totalTime)
         {
