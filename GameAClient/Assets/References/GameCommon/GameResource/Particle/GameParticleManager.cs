@@ -186,14 +186,6 @@ namespace SoyEngine
             }
         }
 
-        public static void FreeSpineObject(SpineObject item)
-        {
-            if (item != null)
-            {
-                PoolFactory<SpineObject>.Free(item);
-            }
-        }
-
         public static void FreeParticleItem(UnityNativeParticleItem item)
         {
             if (item == null || item.Trans == null)
@@ -221,31 +213,43 @@ namespace SoyEngine
 
         internal SpineObject EmitLoop(string path, Vector3 pos)
         {
-            SpineObject so;
-            if (GM2DTools.TryGetSpineObject(path, out so))
+            SpineObject so = GetSpineObject(path);
+            if (so != null)
             {
                 so.Trans.position = pos;
-                so.SkeletonAnimation.state.SetAnimation(0, "Run", true);
+                so.Play(true);
+            }
+            return so;
+        }
+        
+        internal SpineObject EmitOnce(string path, Vector3 pos)
+        {
+            SpineObject so = GetSpineObject(path);
+            if (so != null)
+            {
+                so.Trans.position = pos;
+                so.Play(false);
             }
             return so;
         }
 
-        internal SpineObject EmitLoop(string path, Transform parent)
+        private SpineObject GetSpineObject(string path)
         {
-            SpineObject so;
-            if (GM2DTools.TryGetSpineObject(path, out so))
+            SpineObject so = PoolManager<SpineObject>.Get(path);
+            if (!so.Init(path))
             {
-                so.Trans.SetParent(parent, false);
-                if (so.SkeletonAnimation == null || so.SkeletonAnimation.state == null)
-                {
-                    LogHelper.Error("EmitLoop Failed, {0}", path);
-                }
-                else
-                {
-                    so.SkeletonAnimation.state.SetAnimation(0, "Run", true);
-                }
+                PoolManager<SpineObject>.Free(path, so);
+                return null;
             }
             return so;
+        }
+
+        public static void FreeSpineObject(SpineObject item)
+        {
+            if (item != null)
+            {
+                PoolManager<SpineObject>.Free(item.Path, item);
+            }
         }
 
         #region private

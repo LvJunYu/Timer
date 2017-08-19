@@ -718,20 +718,6 @@ namespace GameA.Game
             return offsetInWorld;
         }
 
-        public static bool TryGetSpineObject<T>(string path, out T so) where T : SpineObject, new()
-        {
-            so = PoolFactory<T>.Get();
-            if (so != null)
-            {
-                if (so.Init(path))
-                {
-                    return true;
-                }
-                PoolFactory<T>.Free(so);
-            }
-            return false;
-        }
-
         public static IntRect ToIntRect(Grid2D grid2D)
         {
             return new IntRect(grid2D.XMin, grid2D.YMin, grid2D.XMax, grid2D.YMax);

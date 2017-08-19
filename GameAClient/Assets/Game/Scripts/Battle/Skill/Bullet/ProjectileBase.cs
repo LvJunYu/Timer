@@ -35,6 +35,7 @@ namespace GameA.Game
         protected int _maskRandom;
         
         protected UnityNativeParticleItem _effectBullet;
+        protected SpineObject _effectSpineBullet;
 
         protected IntVec2 _newSpeed;
 
@@ -74,6 +75,8 @@ namespace GameA.Game
             _newSpeed = IntVec2.zero;
             FreeEffect(_effectBullet);
             _effectBullet = null;
+            GameParticleManager.FreeSpineObject(_effectSpineBullet);
+            _effectSpineBullet = null;
             base.Clear();
         }
 
