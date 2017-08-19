@@ -80,7 +80,7 @@ namespace GameA
             base.OnViewCreated();
 
             _cachedView.Account.onClick.AddListener(Account);
-            SocialGUIManager.Instance.OpenUI<UICtrlGMTool>();
+//            SocialGUIManager.Instance.OpenUI<UICtrlGMTool>();
 
             _cachedView.WorldButton.onClick.AddListener(OnWorldBtn);
             _cachedView.WorkshopButton.onClick.AddListener(OnCreateBtn);

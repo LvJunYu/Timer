@@ -291,8 +291,36 @@ namespace GameA
         {
             if (_isOpen)
             {
-                OpenInfoPanel ();
-                InitPanel();
+                if (!AppData.Instance.AdventureData.LastAdvSuccess)
+                {
+                    OpenInfoPanel ();
+                    InitPanel();
+                    return;
+                }
+                if (_isBonus)
+                {
+                    SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
+                }
+                else
+                {
+                    
+                    int nextLevel;
+                    if (!AppData.Instance.AdventureData.TryGetNextNormalLevel(_chapterIdx, _levelIdx, out nextLevel))
+                    {
+                        SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
+                    }
+                    else
+                    {
+                        IntVec3 intVec3 = new IntVec3();
+                        intVec3.x = _chapterIdx;
+                        intVec3.y = nextLevel;
+                        intVec3.z = 0;
+                        SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
+                        CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
+                            SocialGUIManager.Instance.OpenUI<UICtrlAdvLvlDetail>(intVec3)));
+
+                    }
+                }
             }
         }
 

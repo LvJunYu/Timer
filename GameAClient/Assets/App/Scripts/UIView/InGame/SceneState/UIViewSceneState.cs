@@ -38,6 +38,7 @@ namespace GameA
         public GameObject StarConditions;
         public Text[] StarConditionText;
         public Image[] StarConditionStar;
+        public Image[] StarConditionEmptyStar;
 
 
         // 临时引导界面

@@ -122,6 +122,7 @@ namespace GameA
 	                    bool showStar = AppData.Instance.AdventureData.CheckStarRequire(
 	                        _tableStandaloneLevel.StarConditions[i], _starValueAry[i], PlayMode.Instance.Statistic);
                         _cachedView.StarConditionStar[i].SetActiveEx(showStar);
+                        _cachedView.StarConditionEmptyStar[i].SetActiveEx(!showStar);
 	                }
 	            }
 	        }

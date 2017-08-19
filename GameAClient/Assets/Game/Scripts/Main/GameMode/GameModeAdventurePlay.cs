@@ -104,6 +104,10 @@ namespace GameA.Game
 
         public override bool Restart (Action successCb, Action failedCb)
         {
+	        if (successCb != null)
+	        {
+		        successCb.Invoke();
+	        }
             SocialApp.Instance.ReturnToApp ();
             return true;
         }
