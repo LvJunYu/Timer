@@ -165,16 +165,16 @@ namespace GameA
 			_dragging = false;
 			_blockInputTimer = 0f;
 			_cachedView.InputBlock.enabled = false;
+	        
+	        _cachedView.MatchBtn.SetActiveEx(false);
 
 			_currentChapter = AppData.Instance.AdventureData.UserData.AdventureUserProgress.SectionUnlockProgress;
         }
 			
 		public override void OnUpdate ()
 		{
-		    if (_cachedView.NextSection.gameObject != null)
-		        _cachedView.NextSection.rectTransform.localPosition = new Vector2(3f, 0)*Mathf.Sin(Time.time*3f)+new Vector2(-70f, -16);
-            if (_cachedView.PREVSection.gameObject != null)
-                _cachedView.PREVSection.rectTransform.localPosition = -new Vector2(3f, 0) * Mathf.Sin(Time.time * 3f) ;
+			_cachedView.NextSection.rectTransform.localPosition = new Vector2(3f, 0)*Mathf.Sin(Time.time*3f)+new Vector2(-70f, -16);
+			_cachedView.PREVSection.rectTransform.localPosition = -new Vector2(3f, 0) * Mathf.Sin(Time.time * 3f) ;
             base.OnUpdate ();
 			if (_currentChapter < 1) {
 				CurrentChapter = 1;
@@ -326,7 +326,7 @@ namespace GameA
                 // 奖励关直接进去游戏 todo
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (
                     this, 
-                    string.Format ("请求进入冒险[{0}]关卡， 第{1}章，第{2}关...", isBonus ? "奖励" : "普通", chapterIdx, levelIdx));
+                    string.Format ("请求进入冒险[{0}]关卡， 第{1}章，第{2}关...", "奖励", chapterIdx, levelIdx));
 
                 AppData.Instance.AdventureData.PlayAdventureLevel (
                     chapterIdx,
