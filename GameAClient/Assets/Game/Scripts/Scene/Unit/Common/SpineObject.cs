@@ -114,9 +114,11 @@ namespace GameA.Game
             _loop = loop;
             if (_skeletonAnimation != null && _skeletonAnimation.state != null)
             {
+                _skeletonAnimation.SetEnableEx(true);
                 _skeletonAnimation.state.SetAnimation(0, "Run", _loop);
                 _isPlaying = true;
             }
+            SetActive(true);
         }
 
         public void Stop()
@@ -126,6 +128,7 @@ namespace GameA.Game
                 return;
             }
             _isPlaying = false;
+            SetActive(false);
             _skeletonAnimation.Reset();
             _skeletonAnimation.SetEnableEx(false);
         }

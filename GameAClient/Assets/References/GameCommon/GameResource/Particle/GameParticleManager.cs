@@ -222,12 +222,12 @@ namespace SoyEngine
             return so;
         }
         
-        internal SpineObject EmitOnce(string path, Vector3 pos)
+        internal SpineObject EmitOnce(string path, Transform parent)
         {
             SpineObject so = GetSpineObject(path);
             if (so != null)
             {
-                so.Trans.position = pos;
+                CommonTools.SetParent(so.Trans, parent);
                 so.Play(false);
             }
             return so;

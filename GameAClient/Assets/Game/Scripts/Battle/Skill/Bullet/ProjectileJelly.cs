@@ -17,7 +17,7 @@ namespace GameA.Game
         protected override void OnRun()
         {
             base.OnRun();
-            _effectSpineBullet = GameParticleManager.Instance.EmitOnce(_tableUnit.Model, GM2DTools.TileToWorld(_curPos));
+            _effectSpineBullet = GameParticleManager.Instance.EmitOnce(_tableUnit.Model, _trans);
         }
     }
 }
