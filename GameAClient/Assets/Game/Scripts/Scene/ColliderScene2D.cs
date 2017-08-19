@@ -439,114 +439,19 @@ namespace GameA.Game
 
         #region Physics
 
-        private static List<RayHit2D> _cachedRayHits = new List<RayHit2D>();
         private static readonly List<UnitBase> _cachedUnits = new List<UnitBase>();
-
-        internal static bool PointCast(Vector2 point, out SceneNode sceneNode, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue)
-        {
-            return SceneQuery2D.PointCast(GM2DTools.WorldToTile(point), out sceneNode, layerMask, _instance, minDepth, maxDepth);
-        }
 
         internal static bool PointCast(IntVec2 point, out SceneNode sceneNode, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue)
         {
             return SceneQuery2D.PointCast(point, out sceneNode, layerMask, _instance, minDepth, maxDepth);
         }
 
-        //public static bool Raycast(Vector2 origin, Vector2 direction, out RayHit2D hit, float distance, int layerMask, Color color)
-        //{
-        //    Debug.DrawRay(origin, direction * distance, color);
-        //    return RaycastInternal(origin, direction, out hit, distance, layerMask, false);
-        //}
-
-        //public static bool RaycastQueryInCollider(Vector2 origin, Vector2 direction, out RayHit2D hit, float distance, int layerMask = JoyPhysics2D.LayMaskAll)
-        //{
-        //    Debug.DrawRay(origin, direction * distance, Color.white);
-        //    return RaycastInternal(origin, direction, out hit, distance, layerMask, true);
-        //}
-
-        //private static bool RaycastInternal(Vector2 orgin, Vector2 direction, out RayHit2D hit, float distance, int layerMask, bool inCollider)
-        //{
-        //    hit = new RayHit2D();
-        //    List<RayHit2D> hits = inCollider ? RaycastAllInternalQueryInCollider(orgin, direction, distance, layerMask) : RaycastAllInternal(orgin, direction, distance, layerMask);
-        //    var count = hits.Count;
-        //    if (count == 0)
-        //    {
-        //        return false;
-        //    }
-        //    for (int i = 0; i < count; i++)
-        //    {
-        //        hit = hits[i];
-        //        var tableUnit = UnitManager.Instance.GetTableUnit(hits[i].node.Id);
-        //        if (tableUnit == null)
-        //        {
-        //            LogHelper.Error("Raycast Failed, GetTableUnit:{0}", hits[i].node.Id);
-        //            continue;
-        //        }
-        //        //物体是单向的时候
-        //        if (tableUnit.ColliderDirection != 15)
-        //        {
-        //            int dir = GM2DTools.GetDirection(hits[i].normal);
-        //            if ((dir & GM2DTools.GetCurrentColliderDirection(tableUnit, hits[i].node.Rotation)) == 0)
-        //            {
-        //                continue;
-        //            }
-        //        }
-        //        return true;
-        //    }
-        //    return false;
-        //}
-
-        //public static List<RayHit2D> RaycastAll(Vector2 orgin, Vector2 direction, float distance, int layerMask, bool inCollider = false)
-        //{
-        //    List<RayHit2D> hits = inCollider ? RaycastAllInternalQueryInCollider(orgin, direction, distance, layerMask) : RaycastAllInternal(orgin, direction, distance, layerMask);
-        //    var count = hits.Count;
-        //    if (count == 0)
-        //    {
-        //        return null;
-        //    }
-        //    _cachedRayHits.Clear();
-        //    for (int i = 0; i < count; i++)
-        //    {
-        //        var tableUnit = UnitManager.Instance.GetTableUnit(hits[i].node.Id);
-        //        if (tableUnit == null)
-        //        {
-        //            LogHelper.Error("Raycast Failed, GetTableUnit:{0}", hits[i].node.Id);
-        //            continue;
-        //        }
-        //        //物体是单向的时候
-        //        if (tableUnit.ColliderDirection != 15)
-        //        {
-        //            int dir = GM2DTools.GetDirection(hits[i].normal);
-        //            if ((dir & GM2DTools.GetCurrentColliderDirection(tableUnit, hits[i].node.Rotation)) == 0)
-        //            {
-        //                continue;
-        //            }
-        //        }
-        //        _cachedRayHits.Add(hits[i]);
-        //    }
-        //    return _cachedRayHits;
-        //}
-
-        //internal static List<RayHit2D> RaycastAllInternal(Vector2 origin, Vector2 direction, float distance,
-        //    int layerMask = JoyPhysics2D.LayMaskAll,
-        //    float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
-        //{
-        //    JoyPhysics2D.QueryInCollider = false;
-        //    return SceneQuery2D.RaycastAll(origin * ConstDefineGM2D.ServerTileScale, direction,
-        //        distance * ConstDefineGM2D.ServerTileScale, layerMask, Instance, minDepth, maxDepth,
-        //        excludeNode);
-        //}
-
-        //internal static List<RayHit2D> RaycastAllInternalQueryInCollider(Vector2 origin, Vector2 direction, float distance,
-        //    int layerMask = JoyPhysics2D.LayMaskAll,
-        //    float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
-        //{
-        //    JoyPhysics2D.QueryInCollider = true;
-        //    return SceneQuery2D.RaycastAll(origin * ConstDefineGM2D.ServerTileScale, direction,
-        //        distance * ConstDefineGM2D.ServerTileScale, layerMask, Instance, minDepth, maxDepth,
-        //        excludeNode);
-        //}
-
+        internal static bool Raycast(Vector2 origin, Vector2 direction, out RayHit2D hit, float distance, int layerMask,SceneNode excludeNode = null)
+        {
+            Debug.DrawRay(origin, direction * distance, Color.white);
+            return SceneQuery2D.Raycast(origin, direction, out hit, distance, layerMask, Instance, float.MinValue,float.MaxValue,excludeNode);
+        }
+      
         internal static bool GridCast(Grid2D grid2D, out SceneNode node, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
