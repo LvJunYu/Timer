@@ -32,7 +32,7 @@ namespace GameA
         private readonly UserProp _userProp = new UserProp();
         private readonly PersonalProjectList _personalProjectList = new PersonalProjectList();
         private readonly UserPublishedWorldProjectList _userPublishedWorldProjectList = new UserPublishedWorldProjectList();
-        // 工坊地块数量上限数据
+        // 工坊地块数量上限数据Z
         private readonly UserWorkshopUnitData _userWorkshopUnitData = new UserWorkshopUnitData();
         //拼图数据
         private readonly UserPictureFull _userPictureFull = new UserPictureFull();

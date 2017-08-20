@@ -57,6 +57,7 @@ namespace GameA
             RegisterEvent(EMessengerType.OpenGameSetting, ShowPuzzleBtn);
             RegisterEvent(EMessengerType.OnChangeToGameMode, OnChangeToGameMode);
             RegisterEvent(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
+            RegisterEvent(EMessengerType.OnUserInfoChanged, OnChangeToUserInfo);
         }
 
         private void OnChangeToGameMode()
@@ -72,6 +73,12 @@ namespace GameA
             {
                 _uiParticleItem.Particle.Play();
             }
+        }
+
+        private void OnChangeToUserInfo()
+        {
+
+            RefreshUserInfo();
         }
 
 

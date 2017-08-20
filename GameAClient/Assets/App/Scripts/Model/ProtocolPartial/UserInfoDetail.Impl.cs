@@ -13,10 +13,18 @@ namespace GameA
         private Dictionary<long, GameTimer> _personalProjectRequestTimerDict;
         private GameTimer _followedListRequestTimer;
         private GameTimer _userInfoRequestTimer;
+        private Msg_SC_DAT_UserInfoDetail _msg_SC_DAT_UserInfoDetail;
 
         #endregion
 
         #region 属性
+        public Msg_SC_DAT_UserInfoDetail GetUserInfoDetail
+        {
+            get
+            {
+                return _msg_SC_DAT_UserInfoDetail;
+            }
+        }
 
         public GameTimer FollowedListRequestTimer
         {
@@ -53,6 +61,47 @@ namespace GameA
         public UserInfoDetail(UserInfoSimple userInfoSimple)
         {
             _userInfoSimple = userInfoSimple;
+        }
+
+        public void RequestInfor(
+            long userId,
+            Action successCallback, Action<ENetResultCode> failedCallback)
+        {
+            if (_isRequesting)
+            {
+                if (_cs_userId != userId)
+                {
+                    if (null != failedCallback) failedCallback.Invoke(ENetResultCode.NR_None);
+                    return;
+                }
+                OnRequest(successCallback, failedCallback);
+            }
+            else
+            {
+                _cs_userId = userId;
+                OnRequest(successCallback, failedCallback);
+
+                Msg_CS_DAT_UserInfoDetail msg = new Msg_CS_DAT_UserInfoDetail();
+                msg.UserId = userId;
+                NetworkManager.AppHttpClient.SendWithCb<Msg_SC_DAT_UserInfoDetail>(
+                    SoyHttpApiPath.UserInfoDetail, msg, ret =>
+                    {
+                        if (OnSyncPartialCompelete(ret))
+                        {
+                            OnSyncSucceed();
+                        }
+                    }, (failedCode, failedMsg) =>
+                    {
+                        OnSyncFailed(failedCode, failedMsg);
+                    });
+            }
+        }
+
+
+        private bool OnSyncPartialCompelete(Msg_SC_DAT_UserInfoDetail msg_SC_DAT_UserInfoDetail)
+        {
+            _msg_SC_DAT_UserInfoDetail = msg_SC_DAT_UserInfoDetail;
+            return true;
         }
 
         public void UpdateFollowState(bool follow, Action successCallback = null,
