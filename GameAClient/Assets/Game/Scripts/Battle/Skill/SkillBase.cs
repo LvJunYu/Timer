@@ -137,6 +137,19 @@ namespace GameA.Game
             }
         }
 
+        public virtual void Clear()
+        {
+            for (int i = 0; i < _bullets.Count; i++)
+            {
+                var bullet = _bullets[i];
+                if (bullet != null)
+                {
+                    PoolFactory<Bullet>.Free(bullet);
+                }
+            }
+            _bullets.Clear();
+        }
+
         internal virtual void Exit()
         {
         }

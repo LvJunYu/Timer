@@ -48,7 +48,16 @@ namespace GameA.Game
             SetWeapon(_weaponId);
             return true;
         }
-        
+
+        protected override void Clear()
+        {
+            if (_skillCtrl != null)
+            {
+                _skillCtrl.Clear();
+            }
+            base.Clear();
+        }
+
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();

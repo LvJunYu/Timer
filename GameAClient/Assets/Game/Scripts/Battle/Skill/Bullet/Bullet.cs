@@ -10,6 +10,7 @@ namespace GameA.Game
         protected bool _run;
         protected Transform _trans;
         protected SpineObject _effectBullet;
+        protected Table_Unit _tableUnit;
 
         protected SkillBase _skill;
         protected Vector2 _direction;
@@ -70,6 +71,7 @@ namespace GameA.Game
 
         public void Init(SkillBase skill, IntVec2 pos, int angle)
         {
+            _tableUnit = UnitManager.Instance.GetTableUnit(skill.TableSkill.ProjectileId);
             _maskRandom = UnityEngine.Random.Range(0, 2);
             _skill = skill;
             _curPos = _originPos = pos;
@@ -90,8 +92,13 @@ namespace GameA.Game
         {
             if (_trans != null)
             {
-                _trans.position = GM2DTools.TileToWorld(_curPos);
+                _trans.position = GM2DTools.TileToWorld(_curPos, GetZ());
             }
+        }
+        
+        protected float GetZ()
+        {
+            return -(_curPos.x + _curPos.y) * UnitDefine.UnitSorttingLayerRatio;
         }
 
         public void UpdateLogic()
@@ -126,11 +133,11 @@ namespace GameA.Game
             _run = false;
             _skill.OnBulletHit(this);
             PoolFactory<Bullet>.Free(this);
-//            if (_trans != null)
-//            {
-//                GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
-//                GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position, new Vector3(0, 0, _angle), Vector3.one, 1f);
-//            }
+            if (_trans != null)
+            {
+                GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
+                GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position, new Vector3(0, 0, _angle), Vector3.one, 1f);
+            }
         }
     }
 }
