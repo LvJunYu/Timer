@@ -446,6 +446,11 @@ namespace GameA.Game
             return SceneQuery2D.PointCast(point, out sceneNode, layerMask, _instance, minDepth, maxDepth);
         }
 
+        internal static bool Raycast(IntVec2 origin, Vector2 direction, out RayHit2D hit, float distance, int layerMask,SceneNode excludeNode = null)
+        {
+            return SceneQuery2D.Raycast(new Vector2(origin.x, origin.y), direction, out hit, distance, layerMask, Instance, float.MinValue,float.MaxValue,excludeNode);
+        }
+        
         internal static bool Raycast(Vector2 origin, Vector2 direction, out RayHit2D hit, float distance, int layerMask,SceneNode excludeNode = null)
         {
             Debug.DrawRay(origin, direction * distance, Color.white);

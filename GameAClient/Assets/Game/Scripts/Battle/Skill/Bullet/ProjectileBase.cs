@@ -27,6 +27,8 @@ namespace GameA.Game
         /// 角度
         /// </summary>
         protected int _angle;
+
+        protected Vector2 _direction;
         /// <summary>
         /// 初始位置
         /// </summary>
@@ -39,9 +41,9 @@ namespace GameA.Game
 
         protected IntVec2 _newSpeed;
 
-        public int Angle
+        public Vector2 Direction
         {
-            get { return _angle; }
+            get { return _direction; }
         }
 
         public int MaskRandom
@@ -83,13 +85,19 @@ namespace GameA.Game
         public virtual void Run(SkillBase skill, int angle)
         {
             _skill = skill;
-            _angle = angle;
             _maskRandom = UnityEngine.Random.Range(0, 2);
             _originPos = CenterPos;
-            var rad = _angle * Mathf.Deg2Rad;
-            _speed = new IntVec2((int)(_skill.ProjectileSpeed * Math.Sin(rad)), (int)(_skill.ProjectileSpeed * Math.Cos(rad)));
-            _trans.eulerAngles = new Vector3(0, 0, -_angle);
+            SetAngle(_angle);
             OnRun();
+        }
+
+        protected void SetAngle(int angle)
+        {
+            _angle = angle;
+            _direction = GM2DTools.GetDirection(_angle);
+            _speed = new IntVec2((int) (_skill.ProjectileSpeed * _direction.x),
+                (int) (_skill.ProjectileSpeed * _direction.y));
+            _trans.eulerAngles = new Vector3(0, 0, -_angle);
         }
 
         protected virtual void OnRun()
@@ -98,10 +106,7 @@ namespace GameA.Game
 
         protected virtual void UpdateAngle(int angle, EDirectionType eDirectionType)
         {
-            _angle = angle;
-            var rad = _angle * Mathf.Deg2Rad;
-            _newSpeed = new IntVec2((int)(_skill.ProjectileSpeed * Math.Sin(rad)), (int)(_skill.ProjectileSpeed * Math.Cos(rad)));
-            _trans.eulerAngles = new Vector3(0, 0, -_angle);
+            SetAngle(angle);
         }
         
         public override void UpdateView(float deltaTime)
@@ -113,8 +118,7 @@ namespace GameA.Game
                 //超出最大射击距离
                 if ((CenterPos - _originPos).SqrMagnitude() >= _skill.CastRange * _skill.CastRange)
                 {
-                    var rad = _angle*Mathf.Deg2Rad;
-                    CenterPos = _originPos + new IntVec2((int)(_skill.CastRange * Math.Sin(rad)), (int)(_skill.CastRange * Math.Cos(rad)));
+                    CenterPos = _originPos + new IntVec2((int)(_skill.CastRange * _direction.x), (int)(_skill.CastRange * _direction.y));
                     _destroy = 1;
                 }
                 UpdateCollider(GetColliderPos(_curPos));

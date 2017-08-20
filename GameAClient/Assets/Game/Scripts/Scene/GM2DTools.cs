@@ -727,5 +727,12 @@ namespace GameA.Game
         {
             return new Grid2D(rect.Min.x, rect.Min.y, rect.Max.x, rect.Max.y);
         }
+        
+        
+        public static Vector2 GetDirection(int angle)
+        {
+            var rad = angle * Mathf.Deg2Rad;
+            return new Vector2((float) Math.Sin(rad), (float) Math.Cos(rad));
+        }
     }
 }

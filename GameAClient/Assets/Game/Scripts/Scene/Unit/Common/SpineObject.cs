@@ -23,7 +23,6 @@ namespace GameA.Game
         protected Renderer _renderer;
         protected string _path;
         protected bool _isPlaying;
-        protected bool _loop;
         
         public string Path
         {
@@ -111,11 +110,10 @@ namespace GameA.Game
             {
                 return;
             }
-            _loop = loop;
             if (_skeletonAnimation != null && _skeletonAnimation.state != null)
             {
                 _skeletonAnimation.SetEnableEx(true);
-                _skeletonAnimation.state.SetAnimation(0, "Run", _loop);
+                _skeletonAnimation.state.SetAnimation(0, "Run", loop);
                 _isPlaying = true;
             }
             SetActive(true);
