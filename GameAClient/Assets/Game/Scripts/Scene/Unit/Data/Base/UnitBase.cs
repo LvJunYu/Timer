@@ -1416,31 +1416,6 @@ namespace GameA.Game
             return -90 * rotation;
         }
 
-        public Vector3 GetRotationPosOffset()
-        {
-            if (UnitDefine.IsBullet(Id))
-            {
-                Vector3 res = Vector3.zero;
-                Vector3 size = GM2DTools.TileToWorld(GetDataSize() * 0.5f);
-                switch ((EDirectionType) Rotation)
-                {
-                    case EDirectionType.Right:
-                        res.x = -size.x;
-                        res.y = size.y;
-                        break;
-                    case EDirectionType.Down:
-                        res.y = size.y * 2;
-                        break;
-                    case EDirectionType.Left:
-                        res.x = size.x;
-                        res.y = size.y;
-                        break;
-                }
-                return res;
-            }
-            return Vector3.zero;
-        }
-
         internal virtual void OnObjectDestroy()
         {
             _view = null;

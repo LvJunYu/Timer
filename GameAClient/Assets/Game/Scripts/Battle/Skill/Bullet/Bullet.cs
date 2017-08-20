@@ -125,9 +125,13 @@ namespace GameA.Game
             {
                 OnDestroy();
             }
-
         }
-        
+
+        protected void OnHit(ref RayHit2D hit)
+        {
+            //MagicSwith Brick Cloud
+        }
+
         protected void OnDestroy()
         {
             _run = false;
