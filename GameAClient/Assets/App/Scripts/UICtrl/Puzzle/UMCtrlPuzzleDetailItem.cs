@@ -102,7 +102,6 @@ namespace GameA
             //初始化碎片遮罩图片，构建索引字典
             _disableImgDic.Clear();
             _imageDic.Clear();
-
             for (int i = 0; i < _masks.Count; i++)
             {
                 Transform picTF = _masks[i].transform.GetChild(0);
@@ -119,10 +118,10 @@ namespace GameA
                 disableImg.color = _cachedView.DisableColor;
             }
             _hasInited = true;
-            SetData();
+            RefreshView();
         }
 
-        public void SetData()
+        public void RefreshView()
         {
             if (!_hasInited) return;
             _cachedView.Puzzle_Active.enabled = _puzzle.CurState == EPuzzleState.HasActived;

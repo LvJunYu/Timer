@@ -31,16 +31,15 @@ namespace GameA
 
         private void InitData()
         {
-//            if (!LocalUser.Instance.UserPictureFull.IsInited)
-//                LocalUser.Instance.UserPictureFull.Request(LocalUser.Instance.UserGuid, null,
-//                    code => { LogHelper.Error("Network error when get UserPictureFull, {0}", code); });
             _slots = TableManager.Instance.Table_PuzzleSlotDic;
             _puzzles = TableManager.Instance.Table_PuzzleDic;
+            //已有拼图
             _userPictureFull = LocalUser.Instance.UserPictureFull.ItemDataList;
             for (int i = 0; i < _userPictureFull.Count; i++)
             {
                 _userPictureFull[i].InitData();
             }
+            //未拥有拼图
             _otherPictureFull = new List<PictureFull>(_puzzles.Count - _userPictureFull.Count);
             foreach (int id in _puzzles.Keys)
             {
@@ -50,9 +49,11 @@ namespace GameA
                     _otherPictureFull.Add(picFull);
                 }
             }
+            //所有拼图排序
             _allPictureFull = new List<PictureFull>(_puzzles.Count);
             RefreshPuzzleOrder();
 
+            //已装备拼图
             _usingUserPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
             //测试用，实际应用服务器数据
             _usingUserPicFull = new List<PictureFull>(_slots.Count);
@@ -116,18 +117,13 @@ namespace GameA
 
         private void OnPuzzleCompound()
         {
-            RefreshLocalView();
-//            RefreshView();
-        }
-
-        private void RefreshLocalView()
-        {
             if (_otherPictureFull.Contains(CurActivePicFull))
             {
                 _otherPictureFull.Remove(CurActivePicFull);
                 _userPictureFull.Add(CurActivePicFull);
             }
-            ResetPuzzleItems();
+            if (_isOpen)
+                RefreshPuzzleItems();
         }
 
         private void RefreshData()
@@ -155,7 +151,7 @@ namespace GameA
             }
         }
 
-        private void ResetPuzzleItems()
+        private void RefreshPuzzleItems()
         {
             //重新排序
             RefreshPuzzleOrder();
@@ -168,10 +164,6 @@ namespace GameA
 
         private void RefreshSlots()
         {
-//            if (!LocalUser.Instance.UserUsingPictureFullData.IsInited)
-//                LocalUser.Instance.UserUsingPictureFullData.Request(LocalUser.Instance.UserGuid, null,
-//                    code => { LogHelper.Error("Network error when get UserUsingPictureFullData, {0}", code); });
-//            _usingUserPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
             for (int i = 0; i < _allUMEquipLocs.Count; i++)
             {
                 _allUMEquipLocs[i].SetPic(_usingUserPicFull[i]);
@@ -208,6 +200,33 @@ namespace GameA
             _cachedView.Level.onValueChanged.AddListener(OnLevelToggle);
             _cachedView.Func.onValueChanged.AddListener(OnFuncToggle);
             _cachedView.PuzzleItemGridDataScroller.SetCallback(OnPuzzleItemRefresh, CreateUMPuzzleItem);
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
+//            LocalUser.Instance.UserPictureFull.Request(LocalUser.Instance.UserGuid,
+//                () =>
+//                {
+//                    InitData();
+//                    InitView();
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                },
+//                code =>
+//                {
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                    LogHelper.Error("Network error when get UserPictureFull, {0}", code);
+//                });
+
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
+//            LocalUser.Instance.UserUsingPictureFullData.Request(LocalUser.Instance.UserGuid,
+//                () =>
+//                {
+//                    InitData();
+//                    InitView();
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                },
+//                code =>
+//                {
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                    LogHelper.Error("Network error when get UserUsingPictureFullData, {0}", code);
+//                });
             InitData();
             InitView();
         }
@@ -222,7 +241,7 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            ResetPuzzleItems();
+            RefreshPuzzleItems();
             RefreshSlots();
         }
 
@@ -231,7 +250,7 @@ namespace GameA
             if (arg0)
             {
                 _curOrderType = EPuzzleOrderType.Func;
-                ResetPuzzleItems();
+                RefreshPuzzleItems();
             }
         }
 
@@ -240,7 +259,7 @@ namespace GameA
             if (arg0)
             {
                 _curOrderType = EPuzzleOrderType.Level;
-                ResetPuzzleItems();
+                RefreshPuzzleItems();
             }
         }
 
@@ -249,7 +268,7 @@ namespace GameA
             if (arg0)
             {
                 _curOrderType = EPuzzleOrderType.Qulity;
-                ResetPuzzleItems();
+                RefreshPuzzleItems();
             }
         }
 
