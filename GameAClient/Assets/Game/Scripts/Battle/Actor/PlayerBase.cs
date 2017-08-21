@@ -237,8 +237,13 @@ namespace GameA.Game
             }
             if (IsValidBox(_hitUnits[(int)EDirectionType.Right]))
             {
+                var uiControl = SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
+                if (uiControl != null)
+                {
+                    uiControl.SetAssistBtnVisible(true);
+                }
                 //弹出UI给提示
-                Messenger<string>.Broadcast(EMessengerType.GameLog, "按 E 键可以推拉木箱");
+                Messenger<string>.Broadcast(EMessengerType.GameLog, "按 辅助 键可以推拉木箱");
                 _box = _hitUnits[(int)EDirectionType.Right] as Box;
                 if (_box != null)
                 {
@@ -247,8 +252,13 @@ namespace GameA.Game
             }
             else if (IsValidBox(_hitUnits[(int)EDirectionType.Left]))
             {
+                var uiControl = SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
+                if (uiControl != null)
+                {
+                    uiControl.SetAssistBtnVisible(true);
+                }
                 //弹出UI给提示
-                Messenger<string>.Broadcast(EMessengerType.GameLog, "按 E 键可以推拉木箱");
+                Messenger<string>.Broadcast(EMessengerType.GameLog, "按 辅助 键可以推拉木箱");
                 _box = _hitUnits[(int)EDirectionType.Left] as Box;
                 if (_box != null)
                 {
