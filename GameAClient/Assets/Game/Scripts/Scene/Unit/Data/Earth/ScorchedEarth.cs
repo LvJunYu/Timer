@@ -86,7 +86,7 @@ namespace GameA.Game
 
         private void OnTrigger(UnitBase other, bool checkOnly = false)
         {
-            if (!checkOnly)
+            if (!checkOnly && other.IsPlayer)
             {
                 OnExplode();
             }
