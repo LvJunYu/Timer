@@ -87,7 +87,7 @@ namespace GameA.Game
             _skill = skill;
             _maskRandom = UnityEngine.Random.Range(0, 2);
             _originPos = CenterPos;
-            SetAngle(_angle);
+            SetAngle(angle);
             OnRun();
         }
 
