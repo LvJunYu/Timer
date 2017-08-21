@@ -7,8 +7,7 @@ namespace GameA
 {
     public class USViewAdvLvlDetailRank : USViewBase
     {
-        public Image Icon;
-        public Text Name;
         public RectTransform Dock;
+        public GridDataScroller GridDataScroller;
     }
 }
