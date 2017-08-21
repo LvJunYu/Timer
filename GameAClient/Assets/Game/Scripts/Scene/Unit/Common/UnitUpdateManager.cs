@@ -42,7 +42,7 @@ namespace GameA.Game
                 allOtherUnits[i].CalculateExtraDeltaPos();
             }
             
-            for (int i = 0; i < allOtherUnits.Count; i++)
+            for (int i = 0; i < allBulletUnits.Count; i++)
             {
                 allBulletUnits[i].UpdateLogic();
             }
@@ -80,7 +80,7 @@ namespace GameA.Game
                     }
                     break;
             }
-            for (int i = 0; i < allOtherUnits.Count; i++)
+            for (int i = 0; i < allBulletUnits.Count; i++)
             {
                 allBulletUnits[i].UpdateView(deltaTime);
             }
