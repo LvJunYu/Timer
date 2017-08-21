@@ -8,18 +8,14 @@ namespace GameA
 {
     public class UMViewRank : UMViewBase
     {
-        public Text NickName;
-        public Text Playerlvl;
+        public Texture DefaultUserIconTexture;
+        public Button Button;
+        public Text RankText;
+        public Image RankImage;
+        public RawImage UserIcon;
+        public Text UserName;
+        public Text UserLevel;
         public Text Score;
-        public Text Rank;
-        public Image RankBg;
-        public RawImage HeadPortrait;
-        public Texture DefaultUserHeadTexture;
-        public Button PlayBtn;
-        //public Button Follow;
-        //public Text ShowFollow;
-       
-       
     }
 }
 
