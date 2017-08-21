@@ -64,6 +64,7 @@ namespace GameA
             _chapterIdx = intVec3Param.x;
             _levelIdx = intVec3Param.y;
             _isBonus = intVec3Param.z == 1;
+            _cachedView.Title.text = string.Format("{0} - {1}", _chapterIdx, _levelIdx);
             _table = AppData.Instance.AdventureData.GetAdvLevelTable(_chapterIdx,
                 _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal, _levelIdx);
             if (null == _table) {

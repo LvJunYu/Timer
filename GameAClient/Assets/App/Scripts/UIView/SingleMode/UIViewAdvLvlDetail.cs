@@ -16,6 +16,7 @@ namespace GameA
         public RawImage Cover1;
         public Text FirstName;
         public Text FirstScore;
+        public Text Title;
 
 
 

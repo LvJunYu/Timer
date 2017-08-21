@@ -75,6 +75,10 @@ namespace GameA
         {
             base.OnOpen (parameter);
 			_dragging = true;
+	        if (_currentChapter <= 0)
+	        {
+		        _currentChapter = AppData.Instance.AdventureData.UserData.AdventureUserProgress.SectionUnlockProgress;
+	        }
 
 			if (_currentChapter < 1) {
 				CurrentChapter = 1;
@@ -112,7 +116,7 @@ namespace GameA
 	        if (null == _uiParticleItem)
 	        {
 		        _uiParticleItem = GameParticleManager.Instance.GetUIParticleItem(
-			        ParticleNameConstDefineGM2D.SingleModeBgEffect, SocialGUIManager.Instance.SceneUIRoot, _groupId);
+			        ParticleNameConstDefineGM2D.SingleModeBgEffect, _cachedView.Trans, _groupId);
 	        }
 	        _uiParticleItem.Particle.Play();
         }
@@ -132,7 +136,6 @@ namespace GameA
         {
             base.InitEventListener();
 			RegisterEvent(EMessengerType.OnChangeToAppMode, OnReturnToApp);
-			RegisterEvent(EMessengerType.OnChangeToGameMode, OnChangeToGameMode);
 //            RegisterEvent(EMessengerType.OnAccountLoginStateChanged, OnEvent);
         }
 
@@ -167,8 +170,8 @@ namespace GameA
 			_cachedView.InputBlock.enabled = false;
 	        
 	        _cachedView.MatchBtn.SetActiveEx(false);
-
-			_currentChapter = AppData.Instance.AdventureData.UserData.AdventureUserProgress.SectionUnlockProgress;
+			
+	        _cachedView.SetActiveEx(false);
         }
 			
 		public override void OnUpdate ()
@@ -404,25 +407,11 @@ namespace GameA
 			}
 
             if (GameProcessManager.Instance.IsGameSystemAvailable (EGameSystem.ModifyMatch)) {
-                _cachedView.MatchBtn.gameObject.SetActive (true);
+//                _cachedView.MatchBtn.gameObject.SetActive (true);
             } else {
                 _cachedView.MatchBtn.gameObject.SetActive (false);
             }
-			if (null != _uiParticleItem)
-			{
-				_uiParticleItem.Particle.Play();
-			}
 		}
-	    
-	    private void OnChangeToGameMode()
-	    {
-		    if (!_isOpen)
-			    return;
-		    if (null != _uiParticleItem)
-		    {
-			    _uiParticleItem.Particle.Stop();
-		    }
-	    }
         #endregion 接口
         #endregion
 
