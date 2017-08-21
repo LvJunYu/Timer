@@ -37,7 +37,7 @@ namespace GameA.Game
 
         public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (other.IsMain)
+            if (!checkOnly && other.IsMain)
             {
                 OnTrigger(other);
             }
@@ -46,7 +46,7 @@ namespace GameA.Game
 
         public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (other.IsMain)
+            if (!checkOnly && other.IsMain)
             {
                 OnTrigger(other);
             } 
@@ -55,7 +55,7 @@ namespace GameA.Game
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.IsMain)
+            if (!checkOnly && other.IsMain)
             {
                 OnTrigger(other);
             }
@@ -64,7 +64,7 @@ namespace GameA.Game
 
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (other.IsMain)
+            if (!checkOnly && other.IsMain)
             {
                 OnTrigger(other);
             }

@@ -234,10 +234,6 @@ namespace GameA.Game
             {
                 _monsterKilledByLazerCnt++;
             }
-            if (dieType == EDieType.OutofMap)
-            {
-                _monsterKilledByFallCnt++;
-            }
         }
         private void OnSwitchTriggered ()
         {

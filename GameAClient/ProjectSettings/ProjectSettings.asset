@@ -175,7 +175,7 @@ PlayerSettings:
     type: 3}
   iOSLaunchScreenBackgroundColor:
     serializedVersion: 2
-    rgba: 4290308351
+    rgba: 4294967295
   iOSLaunchScreenFillPct: 45
   iOSLaunchScreenSize: 100
   iOSLaunchScreenCustomXibPath: 

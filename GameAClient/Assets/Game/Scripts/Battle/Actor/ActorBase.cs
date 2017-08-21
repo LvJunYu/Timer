@@ -20,7 +20,6 @@ namespace GameA.Game
         Water,
         Fire,
         Saw,
-        OutofMap,
     }
 
     public class ActorBase : DynamicRigidbody
@@ -69,6 +68,10 @@ namespace GameA.Game
             RemoveAllStates();
             _canFanCross = true;
             _eDieType = EDieType.None;
+            if (_skillCtrl != null)
+            {
+                _skillCtrl.Clear();
+            }
             base.Clear();
         }
 
@@ -84,8 +87,13 @@ namespace GameA.Game
 
         internal override void OnObjectDestroy()
         {
+            //有特效
+            if (_skillCtrl != null)
+            {
+                _skillCtrl.Clear();
+            }
+            RemoveAllStates();
             base.OnObjectDestroy();
-            Clear();
         }
 
         public override void CheckStart()
@@ -536,16 +544,6 @@ namespace GameA.Game
             OnDead();
         }
 
-        protected override bool CheckOutOfMap()
-        {
-            if (base.CheckOutOfMap())
-            {
-                _eDieType = EDieType.OutofMap;
-                return true;
-            }
-            return false;
-        }
-        
         protected override void OnDead ()
         {
             base.OnDead ();
@@ -560,7 +558,6 @@ namespace GameA.Game
                 switch (_eDieType)
                 {
                     case EDieType.None:
-                    case EDieType.OutofMap:
                         _animation.PlayOnce("Death");
                         break;
                     case EDieType.Lazer:

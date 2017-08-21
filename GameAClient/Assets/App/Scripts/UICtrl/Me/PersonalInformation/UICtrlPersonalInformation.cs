@@ -23,6 +23,8 @@ namespace GameA
         #region 常量与字段
         private string _name;
         private string _signature;
+        private string _returnName;
+        private string _returnSignature;
         private string _maleIcon = "icon_male";
         private string _femaleIcon= "icon_famale";
         //private bool _isMale=true;
@@ -61,22 +63,35 @@ namespace GameA
 
         protected override void OnDestroy()
         {
-           
-           
-
         }
 
         private void OnSubmit()
         {
+            LocalUser.Instance.User.RequestInfor(LocalUser.Instance.UserGuid,
+                () => { UpdateUserInfo(LocalUser.Instance.User.GetUserInfoDetail); },
+                null
+                );
+        }
 
-            Msg_SC_DAT_UserInfoDetail UpdateUserInfo = new Msg_SC_DAT_UserInfoDetail();
-            Debug.Log("name+++" + _name);
-            UpdateUserInfo.UserInfoSimple.NickName = "111";
-            //UpdateUserInfo.UserInfoSimple.Sex = (ESex)_Male;
-            //UpdateUserInfo.UserInfoSimple.HeadImgUrl = _name;
-            RemoteCommands.UpdateUserInfo(UpdateUserInfo,
+        private void UpdateUserInfo(Msg_SC_DAT_UserInfoDetail userInfo)
+        {
+            userInfo.UserInfoSimple.Sex = (ESex)_eMale;
+            userInfo.UserInfoSimple.NickName = _name;
+            //userInfo.UserInfoSimple.HeadImgUrl = "";
+            RemoteCommands.UpdateUserInfo(userInfo,
               (ret) =>
-              { Debug.Log("SubmitNewName" + UpdateUserInfo.UserInfoSimple.NickName);
+              {
+                  if (ret.ResultCode == 1)
+                  {
+                      //或者直接替换localuser.user
+                      LocalUser.Instance.LoadUserData(
+                          () => {
+                              Messenger.Broadcast(EMessengerType.OnUserInfoChanged);
+              }
+                          , null);
+                  }
+                  //_returnName=ret.UserInfo.
+                  Debug.Log("SubmitNewName" + userInfo.UserInfoSimple.NickName);
               }, null
               );
             SocialGUIManager.Instance.CloseUI<UICtrlPersonalInformation>();
@@ -94,7 +109,6 @@ namespace GameA
             {
                 _cachedView.PhotoPortrait.sprite = fashion;
             }
-
         }
 
         protected override void OnOpen(object parameter)
@@ -113,8 +127,6 @@ namespace GameA
                 ()=> { SetRepresentativeWorks(); },
                 null
                 );
-
-
         }
 
         #endregion
@@ -155,28 +167,21 @@ namespace GameA
 
         private void OnEditBtn()
         {
-
             _cachedView.Editing.gameObject.SetActiveEx(true);
             _cachedView.Editable.gameObject.SetActiveEx(false);
             _cachedView.NameDescInput.text = _name;
             _cachedView.SignatureDescInput.text = _signature;
-
             _cachedView.SelectMale.SetActiveEx(false);
             _cachedView.SelectFemale.SetActiveEx(false);
-
-
         }
 
         private void OnPhoto()
         {
             SocialGUIManager.Instance.OpenUI<UICtrlHeadPortraitSelect>();
-
         }
 
         private void ModifiUserInformation()
-        {
-
-            
+        {  
         }
 
         private void OnConfirmDescBtn()
@@ -187,21 +192,20 @@ namespace GameA
                 newName != _cachedView.Name.text)
             {
                 _cachedView.Name.text = newName;
+                _name= newName;
                 //Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, _curSelectedPrivateProject.Content);
-            }
-
+            }       
             string newSignature = _cachedView.SignatureDescInput.text;
             newSignature = CheckPSignatureValid(newSignature);
             if (!string.IsNullOrEmpty(newSignature) &&
                 newSignature != _cachedView.SignatureDesc.text)
             {
                 _cachedView.SignatureDesc.text = newSignature;
+                _signature= newSignature;
                 //Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, _curSelectedPrivateProject.Content);
             }
-
             _cachedView.Editing.gameObject.SetActiveEx(false);
             _cachedView.Editable.gameObject.SetActiveEx(true);
-
         }
 
 

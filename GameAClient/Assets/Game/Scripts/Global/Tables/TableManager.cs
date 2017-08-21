@@ -20,6 +20,7 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_Trap> Table_TrapDic = new Dictionary<int, Table_Trap>();
 		public readonly Dictionary<int,Table_Unit> Table_UnitDic = new Dictionary<int, Table_Unit>();
 		public readonly Dictionary<int,Table_StandaloneLevel> Table_StandaloneLevelDic = new Dictionary<int, Table_StandaloneLevel>();
+		public readonly Dictionary<int,Table_CharacterUpgrade> Table_CharacterUpgradeDic = new Dictionary<int, Table_CharacterUpgrade>();
 		public readonly Dictionary<int,Table_StarRequire> Table_StarRequireDic = new Dictionary<int, Table_StarRequire>();
 		public readonly Dictionary<int,Table_StandaloneChapter> Table_StandaloneChapterDic = new Dictionary<int, Table_StandaloneChapter>();
 		public readonly Dictionary<int,Table_FashionShop> Table_FashionShopDic = new Dictionary<int, Table_FashionShop>();
@@ -50,6 +51,7 @@ namespace GameA.Game
 		[UnityEngine.SerializeField] private Table_Trap[] _tableTraps;
 		[UnityEngine.SerializeField] private Table_Unit[] _tableUnits;
 		[UnityEngine.SerializeField] private Table_StandaloneLevel[] _tableStandaloneLevels;
+		[UnityEngine.SerializeField] private Table_CharacterUpgrade[] _tableCharacterUpgrades;
 		[UnityEngine.SerializeField] private Table_StarRequire[] _tableStarRequires;
 		[UnityEngine.SerializeField] private Table_StandaloneChapter[] _tableStandaloneChapters;
 		[UnityEngine.SerializeField] private Table_FashionShop[] _tableFashionShops;
@@ -103,6 +105,8 @@ namespace GameA.Game
             _tableUnits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Unit[]>(UnitJsonStr);
 			string StandaloneLevelJsonStr = ResourceManager.Instance.GetJson ("StandaloneLevel", 31);
             _tableStandaloneLevels = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneLevel[]>(StandaloneLevelJsonStr);
+			string CharacterUpgradeJsonStr = ResourceManager.Instance.GetJson ("CharacterUpgrade", 31);
+            _tableCharacterUpgrades = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_CharacterUpgrade[]>(CharacterUpgradeJsonStr);
 			string StarRequireJsonStr = ResourceManager.Instance.GetJson ("StarRequire", 31);
             _tableStarRequires = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StarRequire[]>(StarRequireJsonStr);
 			string StandaloneChapterJsonStr = ResourceManager.Instance.GetJson ("StandaloneChapter", 31);
@@ -234,6 +238,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableStandaloneLevels table.Id {0} is duplicated!", _tableStandaloneLevels[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableCharacterUpgrades.Length; i++)
+			{
+				if (!Table_CharacterUpgradeDic.ContainsKey(_tableCharacterUpgrades[i].Id))
+				{
+					Table_CharacterUpgradeDic.Add(_tableCharacterUpgrades[i].Id,_tableCharacterUpgrades[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableCharacterUpgrades table.Id {0} is duplicated!", _tableCharacterUpgrades[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableStarRequires.Length; i++)
@@ -549,6 +564,15 @@ namespace GameA.Game
 		{
 			Table_StandaloneLevel tmp;
 			if (Table_StandaloneLevelDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_CharacterUpgrade GetCharacterUpgrade(int key)
+		{
+			Table_CharacterUpgrade tmp;
+			if (Table_CharacterUpgradeDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

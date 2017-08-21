@@ -28,14 +28,11 @@ namespace GameA
         private readonly UserRaffleTicket _userRaffleTicket = new UserRaffleTicket();
         // 匹配挑战相关数据
         private readonly MatchUserData _matchUserData = new MatchUserData();
-        // 单人模式排名
-        private readonly AdventureLevelRankList _adventureLevelRankList = new AdventureLevelRankList();
         // 增益道具
         private readonly UserProp _userProp = new UserProp();
-        private readonly AdventureUserLevelDataDetail _adventureUserLevelDataDetail = new AdventureUserLevelDataDetail();
         private readonly PersonalProjectList _personalProjectList = new PersonalProjectList();
         private readonly UserPublishedWorldProjectList _userPublishedWorldProjectList = new UserPublishedWorldProjectList();
-        // 工坊地块数量上限数据
+        // 工坊地块数量上限数据Z
         private readonly UserWorkshopUnitData _userWorkshopUnitData = new UserWorkshopUnitData();
         //拼图数据
         private readonly UserPictureFull _userPictureFull = new UserPictureFull();
@@ -110,31 +107,12 @@ namespace GameA
         {
             get { return _userRaffleTicket; }
         }
-        /// <summary>
-        /// 匹配挑战相关数据
-        /// </summary>
-        /// <value>The using avatar data.</value>
-        public AdventureUserLevelDataDetail AdventureUserLevelDataDetail
-        {
-            get
-            {
-                return _adventureUserLevelDataDetail;
-            }
-        }
 
         public MatchUserData MatchUserData
         {
             get
             {
                 return _matchUserData;
-            }
-        }
-
-        public AdventureLevelRankList AdventureLevelRankList
-        {
-            get
-            {
-                return _adventureLevelRankList;
             }
         }
 

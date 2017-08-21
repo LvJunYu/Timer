@@ -7,11 +7,14 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using NewResourceSolution;
 using GameA.Game;
+
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlWeapon : UICtrlGenericBase<UIViewWeapon>       {
+    public class UICtrlWeapon : UICtrlGenericBase<UIViewWeapon>
+    {
         #region Fields
+
         private Sprite _weaponPartSprite;
         private string _weaponPartSpriteName;
         private Sprite _universalSprie;
@@ -27,24 +30,28 @@ namespace GameA
         private Color _weaponColor;
         private string _colorName;
         private int[] _idColltions;
-        private int _universalCount ;
+        private int _universalCount;
         private int index = 0;
         private int _isCompoudAddNum;
-        private int _userGoldCoin= 10;
+        private int _userGoldCoin = 10;
         private int _needCoin;
         private int _needPart;
         private int _userOwnWeaponPart;
         private string _weaponModel;
         private UIParticleItem _weaponModelEffect;
-        private UserWeaponData _userWeaponData  = new UserWeaponData();
-        private UserWeaponPartData _userWeaponPartData = new UserWeaponPartData() ;
+        private UserWeaponData _userWeaponData = new UserWeaponData();
+        private UserWeaponPartData _userWeaponPartData = new UserWeaponPartData();
         private Dictionary<long, int> _userWeaponPartDataDic = new Dictionary<long, int>();
         private Dictionary<long, Weapon> _userWeaponDataDic = new Dictionary<long, Weapon>();
+
         #endregion
+
         #region Properties
+
         #endregion
 
         #region Methods
+
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
@@ -53,15 +60,13 @@ namespace GameA
 
         protected override void OnClose()
         {
-
-          base.OnClose();
+            base.OnClose();
         }
 
         protected override void InitEventListener()
         {
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnWeaponDataChange, OnWeaponDataChange);
-
         }
 
         protected override void OnViewCreated()
@@ -70,7 +75,7 @@ namespace GameA
             _cachedView.CloseButton.onClick.AddListener(OnCloseBtn);
             _cachedView.LeftWeapon.onClick.AddListener(OnLeftButton);
             _cachedView.RightWeapon.onClick.AddListener(OnRightButton);
-            _cachedView.UpGrade.onClick.AddListener(OnUpgrade);            
+            _cachedView.UpGrade.onClick.AddListener(OnUpgrade);
             SetUserWeaponData();
             SetUserWeaponPartData();
             InitData();
@@ -83,8 +88,9 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.MainUI;
+            _groupId = (int) EUIGroupType.MainUI;
         }
+
         private void OnLeftButton()
         {
             if (index > 0)
@@ -93,18 +99,19 @@ namespace GameA
                 RefershWeaponShow();
             }
         }
+
         private void OnRightButton()
         {
             if (index < _idColltions.Length - 1)
             {
                 _weaponID = _idColltions[++index];
                 RefershWeaponShow();
-
             }
         }
+
         private void OnUpgrade()
         {
-                        if (_needPart > _userOwnWeaponPart + _universalCount)
+            if (_needPart > _userOwnWeaponPart + _universalCount)
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlGetWeaponPart>();
                 return;
@@ -116,15 +123,20 @@ namespace GameA
             }
             if (_needPart <= _userOwnWeaponPart + _universalCount && _needCoin < _userGoldCoin)
             {
-                int[] _weaponIDlv = new int[] { _weaponID, _weaponLv, _weaponlevelID , _isCompoudAddNum ,_needCoin ,
-                    Math.Min(_userOwnWeaponPart,_needPart) ,Math.Max(0, _needPart - _userOwnWeaponPart) };
+                int[] _weaponIDlv = new int[]
+                {
+                    _weaponID, _weaponLv, _weaponlevelID, _isCompoudAddNum, _needCoin,
+                    Math.Min(_userOwnWeaponPart, _needPart), Math.Max(0, _needPart - _userOwnWeaponPart)
+                };
                 SocialGUIManager.Instance.OpenUI<UICtrlWeaponUpgrade>(_weaponIDlv);
             }
         }
+
         private void OnCloseBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlWeapon>();
         }
+
         private void RefershWeaponShow()
         {
             //等级的判断合成或者升级
@@ -132,16 +144,18 @@ namespace GameA
             {
                 _weaponLv = _userWeaponDataDic[_weaponID].Level;
                 _cachedView.UpGradeOrCompound.text = _upGrade;
+                _cachedView.LockedImage.gameObject.SetActive(false);
                 _isCompoudAddNum = 1;
             }
             else
             {
                 _weaponLv = 1;
+                _cachedView.LockedImage.gameObject.SetActive(true);      
                 _cachedView.UpGradeOrCompound.text = _compoud;
                 _isCompoudAddNum = 0;
             }
             //获得玩家拥有的武器碎片数
-            if(_userWeaponPartDataDic.ContainsKey(_weaponID))
+            if (_userWeaponPartDataDic.ContainsKey(_weaponID))
             {
                 _userOwnWeaponPart = _userWeaponPartDataDic[_weaponID];
             }
@@ -150,36 +164,40 @@ namespace GameA
                 _userOwnWeaponPart = 0;
             }
             //武器特效显示
-            if(_weaponModelEffect != null)
-            {            
-                _weaponModelEffect.Particle.Stop();
-               _weaponModelEffect.Particle.OnFree(); 
-               
-              
-            }           
+            if (_weaponModelEffect != null)
+            {
+                GameParticleManager.FreeParticleItem(_weaponModelEffect.Particle);
+            }
             _weaponModel = TableManager.Instance.GetEquipment(_weaponID).Model;
-            _weaponModelEffect = GameParticleManager.Instance.GetUIParticleItem(_weaponModel, _cachedView.EffectShow.transform, _groupId);
+            _weaponModelEffect =
+                GameParticleManager.Instance.GetUIParticleItem(_weaponModel, _cachedView.EffectShow.transform,
+                    _groupId);
             _weaponModelEffect.Particle.Play();
+
             //技能显示
             _skillID = TableManager.Instance.GetEquipment(_weaponID).SkillId;
             _weaponlevelID = _skillID * _multiple + _weaponLv;
-            _cachedView.SkillDescription.text =  string.Format(TableManager.Instance.GetSkill(_skillID).Summary,
-                                                               TableManager.Instance.GetEquipmentLevel(_weaponlevelID).AttackAdd.ToString()); //技能描述
-            _cachedView.HpAddNum.text = "+"+ TableManager.Instance.GetEquipmentLevel(_weaponlevelID).HpAdd.ToString();//血量增加
-            _cachedView.AttackAddNum.text = "+"+ TableManager.Instance.GetEquipmentLevel(_weaponlevelID).AttackAdd.ToString();//攻击力增加
-            _cachedView.WeaponName.text = TableManager.Instance.GetEquipment(_weaponID).Name;//武器的名字
+            _cachedView.SkillDescription.text = string.Format(TableManager.Instance.GetSkill(_skillID).Summary,
+                TableManager.Instance.GetEquipmentLevel(_weaponlevelID).AttackAdd.ToString()); //技能描述
+            _cachedView.HpAddNum.text =
+                "+" + TableManager.Instance.GetEquipmentLevel(_weaponlevelID).HpAdd.ToString(); //血量增加
+            _cachedView.AttackAddNum.text =
+                "+" + TableManager.Instance.GetEquipmentLevel(_weaponlevelID).AttackAdd.ToString(); //攻击力增加
+            _cachedView.WeaponName.text = TableManager.Instance.GetEquipment(_weaponID).Name; //武器的名字
 
             //_colorName = TableManager.Instance.GetRarity(TableManager.Instance.GetEquipment(_weaponID).Rarity).Color;
             //ColorUtility.TryParseHtmlString(_colorName, out _weaponColor);
-            _cachedView.WeaponName.color = GetRarityColor(TableManager.Instance.GetEquipment(_weaponID).Rarity);//颜色
-            _cachedView.WeaponLv.text = "Lv."+ _weaponLv.ToString();//武器的等级
-            _cachedView.UnlockedWeaponNum.text = _userWeaponData.ItemDataList.Count.ToString()+"/"+ _weaponTotalNum.ToString();//解锁的武器数目
-            _cachedView.OwnedUniversalFragmentsNum.text = _universalCount.ToString();//拥有的万能碎片的数目
+            _cachedView.WeaponName.color = GetRarityColor(TableManager.Instance.GetEquipment(_weaponID).Rarity); //颜色
+            _cachedView.WeaponLv.text = "Lv." + _weaponLv.ToString(); //武器的等级
+            _cachedView.UnlockedWeaponNum.text =
+                _userWeaponData.ItemDataList.Count.ToString() + "/" + _weaponTotalNum.ToString(); //解锁的武器数目
+            _cachedView.OwnedUniversalFragmentsNum.text = _universalCount.ToString(); //拥有的万能碎片的数目
             //花费的金币数目和碎片的数目
-            _needCoin =  TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).GoldCoinNum;
-             _cachedView.CostGolCoinNum.text = _needCoin.ToString();
+            _needCoin = TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).GoldCoinNum;
+            _cachedView.CostGolCoinNum.text = _needCoin.ToString();
             _needPart = TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).WeaponFragment;
-            _cachedView.CostWeaponFragmentsNum.text = _needPart.ToString() + "/" + _userOwnWeaponPart.ToString(); ;
+            _cachedView.CostWeaponFragmentsNum.text = _needPart.ToString() + "/" + _userOwnWeaponPart.ToString();
+            ;
 
             //武器碎片图片
             _weaponPartSpriteName = TableManager.Instance.GetEquipment(_weaponID).WeaponPartIcon;
@@ -190,20 +208,23 @@ namespace GameA
             ResourcesManager.Instance.TryGetSprite(_universalSpriteName, out _universalSprie);
             _cachedView.OwnedUniversalFragmentsIcon.sprite = _universalSprie;
             //武器碎片的数目
-             _cachedView.OwnedWeaponFragmentsNum.text = _userOwnWeaponPart.ToString();
-
+            _cachedView.OwnedWeaponFragmentsNum.text = _userOwnWeaponPart.ToString();
         }
+
         private void LoadUserData()
         {
-            Debug.Log("用户id" + LocalUser.Instance.UserGuid);
             _userWeaponData.Request(LocalUser.Instance.UserGuid, OnSucess, code => { });
         }
+
         private void OnSucess()
         {
             Debug.Log(_userWeaponData.ItemDataList.Count);
         }
+
         private void OnFaild()
-        { }
+        {
+        }
+
         private void InitData()
         {
             //网络请求数据
@@ -225,6 +246,7 @@ namespace GameA
             TableManager.Instance.Table_EquipmentDic.Keys.CopyTo(_idColltions, 0);
             _universalCount = _userWeaponPartDataDic[0];
         }
+
         private void SetUserWeaponData()
         {
             Weapon weapon1 = new Weapon();
@@ -239,8 +261,8 @@ namespace GameA
             _userWeaponData.ItemDataList.Add(weapon1);
             _userWeaponData.ItemDataList.Add(weapon2);
             _userWeaponData.ItemDataList.Add(weapon3);
-           
         }
+
         private void SetUserWeaponPartData()
         {
             WeaponPart weaponpart0 = new WeaponPart();
@@ -263,12 +285,12 @@ namespace GameA
             _userWeaponPartData.ItemDataList.Add(weaponpart2);
             _userWeaponPartData.ItemDataList.Add(weaponpart3);
             _userWeaponPartData.ItemDataList.Add(weaponpart4);
-         
         }
+
         public Color GetRarityColor(int Rarity)
         {
             Color _color = new Color();
-            switch ( Rarity)
+            switch (Rarity)
             {
                 case 1:
                     _color = Color.red;
@@ -283,13 +305,15 @@ namespace GameA
                     _color = Color.blue;
                     break;
             }
-            return _color; 
+            return _color;
         }
+
         private void OnWeaponDataChange()
         {
             InitData();
             RefershWeaponShow();
         }
+
         #endregion
     }
 }

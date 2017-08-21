@@ -6,13 +6,9 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
-using UnityEngine.UI;
-using NewResourceSolution;
-//using UnityEditor;
 using Object = UnityEngine.Object;
 
 namespace GameA.Game
@@ -21,29 +17,46 @@ namespace GameA.Game
     {
         public const int MinEdgeLength = 0;
         public const int OffsetEdgeLength = 10;
+
         /// <summary>
-        /// 被涂装的边信息，有序从小到大 
+        /// 被涂装的边信息，有序从小到大
         /// </summary>
         protected List<Edge> _edges = new List<Edge>();
+
         private static Comparison<Edge> _comparisonSkillType = SortEdge;
         protected GameObject _paintObject;
         private Texture2D _paintTexture;
         private Texture2D _maskTexture;
+        private Color[][] _paintColors;
+        private Color[][] _maskColors;
 
-        private static Color32[] EmptyPixels;
-        private const int Ratio = 1;
+        private static Color[] EmptyPixels;
+        public const int Ratio = 4;
+        public const int TextureSize = 64;
         private const int PixelsPerUnit = 256 / (Ratio * 2);
-        private const float PixelsPerTile = 256f / (640 * 2);
-        private static Color CleanColor = new Color(1f, 1f, 1f, 0f);
+        
+        private const float StandardPixelsPerTile = 256f / (640 * 2) ;
+
+        private const float PixelsPerTile = StandardPixelsPerTile / Ratio;
+
+        private const int MaxPixel = 256 / Ratio - 1;
+        
+        private static int TileOffsetX = (int) (22f / StandardPixelsPerTile);
+        private static int TileOffsetY = (int) (14 / StandardPixelsPerTile);
+        public static int TileOffsetHeight = (int) (45 / StandardPixelsPerTile);
+        
+        
+        public static Color CleanColor = new Color(1f, 1f, 1f, 0f);
         private static Color EdgeColor = new Color32(111, 47, 11, 255);
 
         private static Color[] PaintUpColor = new Color[4]
         {
             new Color32(255, 128, 36, 255),
-            new Color32(197, 245, 246, 255), 
+            new Color32(197, 245, 246, 255),
             new Color32(241, 213, 74, 255),
             new Color32(141, 254, 184, 255)
         };
+
         private static Color[] PaintRightColor = new Color[4]
         {
             new Color32(214, 32, 31, 255),
@@ -59,7 +72,7 @@ namespace GameA.Game
             new Color32(221, 183, 53, 255),
             new Color32(40, 221, 152, 255),
         };
-        
+
         private static Color[] PaintEdgeColor = new Color[4]
         {
             new Color32(255, 209, 111, 255),
@@ -67,11 +80,7 @@ namespace GameA.Game
             new Color32(250, 234, 104, 255),
             new Color32(210, 255, 226, 255),
         };
-
-        private static int TileOffsetX = (int)(22f / PixelsPerTile);
-        private static int TileOffsetY = (int)(14 / PixelsPerTile);
-        public static int TileOffsetHeight = (int)(45 / PixelsPerTile);
-
+        
         public override bool CanPainted
         {
             get { return true; }
@@ -106,10 +115,11 @@ namespace GameA.Game
         /// <returns></returns>
         private static int SortEdge(Edge x, Edge y)
         {
-            return y.EPaintType.CompareTo(x.EPaintType);
+            return ((int)y.EPaintType).CompareTo((int)x.EPaintType);
         }
 
-        public override void DoPaint(int start, int end, EDirectionType direction, EPaintType ePaintType, int maskRandom, bool draw = true)
+        public override void DoPaint(int start, int end, EDirectionType direction, EPaintType ePaintType,
+            int maskRandom, bool draw = true)
         {
             var center = (start + end) * 0.5f * ConstDefineGM2D.ClientTileScale;
             if (!GetPos(ref start, ref end, direction))
@@ -127,7 +137,7 @@ namespace GameA.Game
                 Cut(ref edge);
                 _edges.Add(edge);
             }
-            //排序下
+//排序下
             if (_edges.Count > 1)
             {
                 _edges.Sort(_comparisonSkillType);
@@ -166,10 +176,10 @@ namespace GameA.Game
         {
             for (int i = _edges.Count - 1; i >= 0; i--)
             {
-                //判断同面
+//判断同面
                 if (_edges[i].Direction == edge.Direction)
                 {
-                    //不同类切割添加
+//不同类切割添加
                     if (_edges[i].EPaintType != edge.EPaintType)
                     {
                         _edges[i].Cut(ref edge, _edges);
@@ -222,144 +232,142 @@ namespace GameA.Game
             {
                 CreatePaintObject();
             }
-            Texture maskingTexture = null;
-            string maskName = string.Format("Mask_{0}_{1}", (int) edge.Direction, maskRandom);
-            if (edge.EPaintType == EPaintType.Water)
-            {
-                maskName = string.Format("MaskWater_{0}", (int)edge.Direction);
-            }
-            if (!ResourcesManager.Instance.TryGetTexture (maskName, out maskingTexture))
-            {
-                LogHelper.Error("TryGetTexture Failed : {0} ", maskName);
-                return;
-            }
             int xmin = 0, ymin = 0, xmax = 0, ymax = 0, offsetX = 0, offsetY = 0;
             switch (edge.Direction)
             {
                 case EDirectionType.Up:
-                    {
-                        offsetX = (int) ((center - _trans.position.x) * PixelsPerUnit);
-                        xmin = edge.Start - TileOffsetX;
-                        ymin = _colliderGrid.YMax - TileOffsetY - TileOffsetHeight;
-                        xmax = edge.End + TileOffsetX;
-                        ymax = _colliderGrid.YMax + TileOffsetX;
-                    }
+                {
+                    offsetX = (int) ((center - _trans.position.x) * PixelsPerUnit);
+                    xmin = edge.Start - TileOffsetX;
+                    ymin = _colliderGrid.YMax - TileOffsetY - TileOffsetHeight;
+                    xmax = edge.End + TileOffsetX;
+                    ymax = _colliderGrid.YMax + TileOffsetX;
+                }
                     break;
                 case EDirectionType.Down:
-                    {
-                        offsetX = (int)((center - _trans.position.x) * PixelsPerUnit);
-                        xmin = edge.Start - TileOffsetX;
-                        ymin = _colliderGrid.YMin - TileOffsetY;
-                        xmax = edge.End + TileOffsetX;
-                        ymax = _colliderGrid.YMin + TileOffsetX+ TileOffsetHeight;
-                    }
+                {
+                    offsetX = (int) ((center - _trans.position.x) * PixelsPerUnit);
+                    xmin = edge.Start - TileOffsetX;
+                    ymin = _colliderGrid.YMin - TileOffsetY;
+                    xmax = edge.End + TileOffsetX;
+                    ymax = _colliderGrid.YMin + TileOffsetX + TileOffsetHeight;
+                }
                     break;
                 case EDirectionType.Left:
-                    {
-                        offsetY = (int)((center - _trans.position.y) * PixelsPerUnit);
-                        xmin = _colliderGrid.XMin - TileOffsetX;
-                        ymin = edge.Start - TileOffsetY;
-                        xmax = _colliderGrid.XMin + TileOffsetX + TileOffsetHeight;
-                        ymax = edge.End + TileOffsetY;
-                    }
+                {
+                    offsetY = (int) ((center - _trans.position.y) * PixelsPerUnit);
+                    xmin = _colliderGrid.XMin - TileOffsetX;
+                    ymin = edge.Start - TileOffsetY;
+                    xmax = _colliderGrid.XMin + TileOffsetX + TileOffsetHeight;
+                    ymax = edge.End + TileOffsetY;
+                }
                     break;
                 case EDirectionType.Right:
-                    {
-                        offsetY = (int)((center - _trans.position.y) * PixelsPerUnit);
-                        xmin = _colliderGrid.XMax - TileOffsetX - TileOffsetHeight;
-                        ymin = edge.Start - TileOffsetY;
-                        xmax = _colliderGrid.XMax + TileOffsetX;
-                        ymax = edge.End + TileOffsetY;
-                    }
+                {
+                    offsetY = (int) ((center - _trans.position.y) * PixelsPerUnit);
+                    xmin = _colliderGrid.XMax - TileOffsetX - TileOffsetHeight;
+                    ymin = edge.Start - TileOffsetY;
+                    xmax = _colliderGrid.XMax + TileOffsetX;
+                    ymax = edge.End + TileOffsetY;
+                }
                     break;
             }
 
-            xmin = (int) ((xmin - (_colliderGrid.XMin - 320))*PixelsPerTile);
-            ymin = (int) ((ymin - (_colliderGrid.YMin - 320))*PixelsPerTile);
-            xmax = (int) ((xmax - (_colliderGrid.XMin - 320))*PixelsPerTile);
-            ymax = (int) ((ymax - (_colliderGrid.YMin - 320))*PixelsPerTile);
+            xmin = (int) ((xmin - (_colliderGrid.XMin - 320)) * PixelsPerTile);
+            ymin = (int) ((ymin - (_colliderGrid.YMin - 320)) * PixelsPerTile);
+            xmax = (int) ((xmax - (_colliderGrid.XMin - 320)) * PixelsPerTile);
+            ymax = (int) ((ymax - (_colliderGrid.YMin - 320)) * PixelsPerTile);
 
-            var offsetXmin = Mathf.Clamp(xmin - offsetX, 0, 255);
-            var offsetYmin = Mathf.Clamp(ymin - offsetY, 0, 255);
-            var offsetXmax = Mathf.Clamp(xmax - offsetX, 0, 255);
-            var offsetYmax = Mathf.Clamp(ymax - offsetY, 0, 255);
+            var offsetXmin = Mathf.Clamp(xmin - offsetX, 0, MaxPixel);
+            var offsetYmin = Mathf.Clamp(ymin - offsetY, 0, MaxPixel);
+            var offsetXmax = Mathf.Clamp(xmax - offsetX, 0, MaxPixel);
+            var offsetYmax = Mathf.Clamp(ymax - offsetY, 0, MaxPixel);
 
             var width = offsetXmax - offsetXmin;
             var height = offsetYmax - offsetYmin;
+            
+            var mainMaskColors = PaintMask.Instance.GetMainMaskColors(xmin, ymin, width, height);
+            Color[] maskingColors = edge.EPaintType == EPaintType.Water
+                ? PaintMask.Instance.GetWaterMaskColors((int) edge.Direction, maskRandom, offsetXmin,
+                    offsetYmin, width, height)
+                : PaintMask.Instance.GetMaskColors((int) edge.Direction, maskRandom, offsetXmin,
+                    offsetYmin, width, height);
 
-            var paintedColor = _paintTexture.GetPixels(xmin, ymin, width, height);
-            var maskedColor = _maskTexture.GetPixels(xmin, ymin, width, height);
-            var maskBaseColor = PlayMode.Instance.MaskBaseTexture.GetPixels(xmin, ymin, width, height);
-            var maskingColor = ((Texture2D)maskingTexture).GetPixels(offsetXmin, offsetYmin, width, height);
-
-            for (int i = 0; i < paintedColor.Length; i++)
+            int count = -1;
+            for (int i = ymin; i < ymin + height; i++)
             {
-                if (maskBaseColor[i].a == 0f)
+                for (int j = xmin; j < xmin + width; j++)
                 {
-                    continue;
-                }
-                if (edge.EPaintType == EPaintType.Water)
-                {
-                    if (maskingColor[i].a > 0)
-                    {
-                        //边缘
-                        if (maskingColor[i].maxColorComponent < 0.2f)
-                        {
-                            maskedColor[i] = CleanColor;
-                            if (paintedColor[i].a > 0)
-                            {
-                                paintedColor[i] = EdgeColor;
-                            }
-                        }
-                        else
-                        {
-                            maskedColor[i] = CleanColor;
-                            paintedColor[i] = CleanColor;
-                        }
-                    }
-                    continue;
-                }
-                //叠加mask
-                if (maskedColor[i].a == 0f || (maskedColor[i].maxColorComponent < 0.2f && maskingColor[i].maxColorComponent >= 0.2f))
-                {
-                    maskedColor[i] = maskingColor[i];
-                }
-                //直接不显示
-                if (maskedColor[i].a == 0f)
-                {
-                    continue;
-                }
-                if (maskedColor[i].maxColorComponent < 0.2f)
-                {
-                    paintedColor[i] = EdgeColor;
-                }
-                else 
-                {
-                    if (maskingColor[i].a == 0f)
+                    count++;
+                    if (mainMaskColors[count].a == 0f)
                     {
                         continue;
                     }
-                    if (maskBaseColor[i].r == 1f)
+                    if (edge.EPaintType == EPaintType.Water)
                     {
-                        paintedColor[i] = PaintUpColor[(int) edge.EPaintType - 2];
+                        if (maskingColors[count].a > 0)
+                        {
+                            //边缘
+                            if (maskingColors[count].r < 0.2f && maskingColors[count].g < 0.2f && maskingColors[count].b < 0.2f)
+                            {
+                                _maskColors[i][j] = CleanColor;
+                                if (_paintColors[i][j].a > 0)
+                                {
+                                    _paintColors[i][j] = EdgeColor;
+                                }
+                            }
+                            else
+                            {
+                                _maskColors[i][j] = CleanColor;
+                                _paintColors[i][j] = CleanColor;
+                            }
+                        }
+                        continue;
                     }
-                    else if (maskBaseColor[i].g == 1f)
+                    //叠加mask
+                    if (_maskColors[i][j].a == 0f ||
+                        ((_maskColors[i][j].r < 0.2f && _maskColors[i][j].g < 0.2f && _maskColors[i][j].b < 0.2f) &&
+                         (maskingColors[count].r >= 0.2f && maskingColors[count].g >= 0.2f &&maskingColors[count].b >= 0.2f)))
                     {
-                        paintedColor[i] = PaintRightColor[(int) edge.EPaintType - 2];
+                        _maskColors[i][j] = maskingColors[count];
                     }
-                    else if (maskBaseColor[i].b == 1f)
+                    //直接不显示
+                    if (_maskColors[i][j].a == 0f)
                     {
-                        paintedColor[i] = PaintFrontColor[(int) edge.EPaintType - 2];
+                        continue;
+                    }
+                    if (_maskColors[i][j].r < 0.2f && _maskColors[i][j].g < 0.2f && _maskColors[i][j].b < 0.2f)
+                    {
+                        _paintColors[i][j] = EdgeColor;
                     }
                     else
                     {
-                        paintedColor[i] = PaintEdgeColor[(int) edge.EPaintType - 2];
+                        if (maskingColors[count].a == 0f)
+                        {
+                            continue;
+                        }
+                        if (mainMaskColors[count].r == 1f)
+                        {
+                            _paintColors[i][j] = PaintUpColor[(int) edge.EPaintType - 2];
+                        }
+                        else if (mainMaskColors[count].g == 1f)
+                        {
+                            _paintColors[i][j] = PaintRightColor[(int) edge.EPaintType - 2];
+                        }
+                        else if (mainMaskColors[count].b == 1f)
+                        {
+                            _paintColors[i][j] = PaintFrontColor[(int) edge.EPaintType - 2];
+                        }
+                        else
+                        {
+                            _paintColors[i][j] = PaintEdgeColor[(int) edge.EPaintType - 2];
+                        }
                     }
                 }
             }
-            _paintTexture.SetPixels(xmin, ymin, width, height, paintedColor);
+            _paintTexture.SetPixels(PaintMask.GetColors(_paintColors, PaintMask.CacheColors1, 0, 0, TextureSize, TextureSize));
             _paintTexture.Apply();
-            _maskTexture.SetPixels(xmin, ymin, width, height, maskedColor);
+            _maskTexture.SetPixels(PaintMask.GetColors(_maskColors, PaintMask.CacheColors2, 0, 0, TextureSize, TextureSize));
             _maskTexture.Apply();
             //LogHelper.Debug("{0} | {1} | {2} | {3} | {4}", xmin, ymin, width, height, offsetX);
         }
@@ -369,26 +377,29 @@ namespace GameA.Game
             if (_view != null)
             {
                 var sr = _view.Trans.GetComponent<SpriteRenderer>();
-                int textureWidth = (int)sr.sprite.rect.width / Ratio;
-                int textureHeight = (int)sr.sprite.rect.height / Ratio;
+                int textureWidth = (int) sr.sprite.rect.width / Ratio;
+                int textureHeight = (int) sr.sprite.rect.height / Ratio;
                 if (EmptyPixels == null)
                 {
                     var count = textureWidth * textureHeight;
-                    EmptyPixels = new Color32[count];
+                    EmptyPixels = new Color[count];
                     for (int i = 0; i < count; i++)
                     {
                         EmptyPixels[i] = CleanColor;
                     }
                 }
+                _paintColors = PaintMask.GetColors(EmptyPixels);
+                _maskColors = PaintMask.GetColors(EmptyPixels);
+
                 _paintTexture = new Texture2D(textureWidth, textureHeight);
                 _paintTexture.wrapMode = TextureWrapMode.Clamp;
                 _paintTexture.filterMode = FilterMode.Bilinear;
-                _paintTexture.SetPixels32(EmptyPixels);
+                _paintTexture.SetPixels(EmptyPixels);
                 _paintTexture.Apply();
 
                 _maskTexture = new Texture2D(textureWidth, textureHeight);
                 _maskTexture.filterMode = FilterMode.Bilinear;
-                _maskTexture.SetPixels32(EmptyPixels);
+                _maskTexture.SetPixels(EmptyPixels);
                 _maskTexture.Apply();
 
                 _paintObject = new GameObject("Paint");
@@ -396,7 +407,9 @@ namespace GameA.Game
                 _paintObject.transform.localPosition = Vector3.back * 0.01f;
                 var paintRenderer = _paintObject.AddComponent<SpriteRenderer>();
                 paintRenderer.sortingOrder = sr.sortingOrder;
-                paintRenderer.sprite = Sprite.Create(_paintTexture, new Rect(0f, 0f, _paintTexture.width, _paintTexture.height), new Vector2(0.5f, 0.5f), PixelsPerUnit, 0,
+                paintRenderer.sprite = Sprite.Create(_paintTexture,
+                    new Rect(0f, 0f, _paintTexture.width, _paintTexture.height), new Vector2(0.5f, 0.5f), PixelsPerUnit,
+                    0,
                     SpriteMeshType.FullRect);
             }
         }
@@ -418,7 +431,7 @@ namespace GameA.Game
 
         protected void OnEdgeHit(UnitBase other, Edge edge)
         {
-            //LogHelper.Debug("OnEdgeHit: {0}", edge);
+//LogHelper.Debug("OnEdgeHit: {0}", edge);
             switch (edge.EPaintType)
             {
                 case EPaintType.Fire:
@@ -436,104 +449,104 @@ namespace GameA.Game
             }
         }
 
-        //private void UpdateMesh()
-        //{
-        //    _combineInstances.Clear();
-        //    if (_paintMesh == null)
-        //    {
-        //        _paintMesh = new Mesh();
-        //    }
-        //    for (int i = 0; i < _edges.Count; i++)
-        //    {
-        //        var edge = _edges[i];
-        //        _combineInstances.Add(new CombineInstance { mesh = CreateMesh(ref edge), transform = Matrix4x4.identity });
-        //    }
-        //}
+//private void UpdateMesh()
+//{
+// _combineInstances.Clear();
+// if (_paintMesh == null)
+// {
+// _paintMesh = new Mesh();
+// }
+// for (int i = 0; i < _edges.Count; i++)
+// {
+// var edge = _edges[i];
+// _combineInstances.Add(new CombineInstance { mesh = CreateMesh(ref edge), transform = Matrix4x4.identity });
+// }
+//}
 
-        //private Mesh CreateMesh(ref Edge edge)
-        //{
-        //    var mesh = new Mesh();
-        //    Vector2 v1, v2, v3;
-        //    Vector2 v0 = v1 = v2 = v3 = Vector2.zero;
-        //    float start = (edge.Start - OffsetEdgeLength) * ConstDefineGM2D.ClientTileScale;
-        //    float end = (edge.End + OffsetEdgeLength) * ConstDefineGM2D.ClientTileScale;
-        //    switch (edge.Direction)
-        //    {
-        //        case EDirectionType.Up:
-        //            {
-        //                float y = _colliderGrid.YMax * ConstDefineGM2D.ClientTileScale;
-        //                v0 = new Vector2(start - 0.15f, y - 0.1f);
-        //                v1 = new Vector2(end - 0.15f, y - 0.1f);
-        //                v2 = new Vector2(start + 0.15f, y + 0.1f);
-        //                v3 = new Vector2(end + 0.15f, y + 0.1f);
-        //            }
-        //            break;
-        //        case EDirectionType.Down:
-        //            {
-        //                float y = _colliderGrid.YMin * ConstDefineGM2D.ClientTileScale;
-        //                v0 = new Vector2(start - 0.15f, y - 0.1f);
-        //                v1 = new Vector2(end - 0.15f, y - 0.1f);
-        //                v2 = new Vector2(start - 0.15f, y + 0.1f);
-        //                v3 = new Vector2(end - 0.15f, y + 0.1f);
-        //            }
-        //            break;
-        //        case EDirectionType.Left:
-        //            {
-        //                float x = _colliderGrid.XMin * ConstDefineGM2D.ClientTileScale;
-        //                v0 = new Vector2(x - 0.15f, start - 0.1f);
-        //                v1 = new Vector2(x + 0.15f, start - 0.1f);
-        //                v2 = new Vector2(x - 0.15f, end - 0.1f);
-        //                v3 = new Vector2(x + 0.15f, end - 0.1f);
-        //            }
-        //            break;
-        //        case EDirectionType.Right:
-        //            {
-        //                float x = _colliderGrid.XMax * ConstDefineGM2D.ClientTileScale;
-        //                v0 = new Vector2(x - 0.15f, start - 0.1f);
-        //                v1 = new Vector2(x + 0.15f, start + 0.1f);
-        //                v2 = new Vector2(x - 0.15f, end - 0.1f);
-        //                v3 = new Vector2(x + 0.15f, end + 0.1f);
-        //            }
-        //            break;
-        //    }
-        //    var vertices = new Vector3[4];
-        //    vertices[0] = v0;
-        //    vertices[1] = v1;
-        //    vertices[2] = v2;
-        //    vertices[3] = v3;
-        //    mesh.vertices = vertices;
+//private Mesh CreateMesh(ref Edge edge)
+//{
+// var mesh = new Mesh();
+// Vector2 v1, v2, v3;
+// Vector2 v0 = v1 = v2 = v3 = Vector2.zero;
+// float start = (edge.Start - OffsetEdgeLength) * ConstDefineGM2D.ClientTileScale;
+// float end = (edge.End + OffsetEdgeLength) * ConstDefineGM2D.ClientTileScale;
+// switch (edge.Direction)
+// {
+// case EDirectionType.Up:
+// {
+// float y = _colliderGrid.YMax * ConstDefineGM2D.ClientTileScale;
+// v0 = new Vector2(start - 0.15f, y - 0.1f);
+// v1 = new Vector2(end - 0.15f, y - 0.1f);
+// v2 = new Vector2(start + 0.15f, y + 0.1f);
+// v3 = new Vector2(end + 0.15f, y + 0.1f);
+// }
+// break;
+// case EDirectionType.Down:
+// {
+// float y = _colliderGrid.YMin * ConstDefineGM2D.ClientTileScale;
+// v0 = new Vector2(start - 0.15f, y - 0.1f);
+// v1 = new Vector2(end - 0.15f, y - 0.1f);
+// v2 = new Vector2(start - 0.15f, y + 0.1f);
+// v3 = new Vector2(end - 0.15f, y + 0.1f);
+// }
+// break;
+// case EDirectionType.Left:
+// {
+// float x = _colliderGrid.XMin * ConstDefineGM2D.ClientTileScale;
+// v0 = new Vector2(x - 0.15f, start - 0.1f);
+// v1 = new Vector2(x + 0.15f, start - 0.1f);
+// v2 = new Vector2(x - 0.15f, end - 0.1f);
+// v3 = new Vector2(x + 0.15f, end - 0.1f);
+// }
+// break;
+// case EDirectionType.Right:
+// {
+// float x = _colliderGrid.XMax * ConstDefineGM2D.ClientTileScale;
+// v0 = new Vector2(x - 0.15f, start - 0.1f);
+// v1 = new Vector2(x + 0.15f, start + 0.1f);
+// v2 = new Vector2(x - 0.15f, end - 0.1f);
+// v3 = new Vector2(x + 0.15f, end + 0.1f);
+// }
+// break;
+// }
+// var vertices = new Vector3[4];
+// vertices[0] = v0;
+// vertices[1] = v1;
+// vertices[2] = v2;
+// vertices[3] = v3;
+// mesh.vertices = vertices;
 
-        //    var colors32 = new Color32[4];
-        //    colors32[0] = Color.red;
-        //    colors32[1] = Color.red;
-        //    colors32[2] = Color.red;
-        //    colors32[3] = Color.red;
-        //    mesh.colors32 = colors32;
+// var colors32 = new Color32[4];
+// colors32[0] = Color.red;
+// colors32[1] = Color.red;
+// colors32[2] = Color.red;
+// colors32[3] = Color.red;
+// mesh.colors32 = colors32;
 
-        //    var tri = new int[6];
-        //    tri[0] = 0;
-        //    tri[1] = 2;
-        //    tri[2] = 1;
-        //    tri[3] = 2;
-        //    tri[4] = 3;
-        //    tri[5] = 1;
-        //    mesh.triangles = tri;
+// var tri = new int[6];
+// tri[0] = 0;
+// tri[1] = 2;
+// tri[2] = 1;
+// tri[3] = 2;
+// tri[4] = 3;
+// tri[5] = 1;
+// mesh.triangles = tri;
 
-        //    var normals = new Vector3[4];
-        //    normals[0] = Vector3.back;
-        //    normals[1] = Vector3.back;
-        //    normals[2] = Vector3.back;
-        //    normals[3] = Vector3.back;
-        //    mesh.normals = normals;
+// var normals = new Vector3[4];
+// normals[0] = Vector3.back;
+// normals[1] = Vector3.back;
+// normals[2] = Vector3.back;
+// normals[3] = Vector3.back;
+// mesh.normals = normals;
 
-        //    var uv = new Vector2[4];
-        //    uv[0] = new Vector2(0, 0);
-        //    uv[1] = new Vector2(1, 0);
-        //    uv[2] = new Vector2(0, 1);
-        //    uv[3] = new Vector2(1, 1);
-        //    mesh.uv = uv;
-        //    mesh.RecalculateBounds();
-        //    return mesh;
-        //}
+// var uv = new Vector2[4];
+// uv[0] = new Vector2(0, 0);
+// uv[1] = new Vector2(1, 0);
+// uv[2] = new Vector2(0, 1);
+// uv[3] = new Vector2(1, 1);
+// mesh.uv = uv;
+// mesh.RecalculateBounds();
+// return mesh;
+//}
     }
 }

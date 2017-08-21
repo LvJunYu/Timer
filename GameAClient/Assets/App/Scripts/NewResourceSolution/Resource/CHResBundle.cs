@@ -189,7 +189,7 @@ namespace NewResourceSolution
                             destFilePath
                         );
                     },
-                    true
+                    false
                 );
                 yield return new UnityEngine.WaitUntil (() => copyFile.IsDone);
                 if (!string.IsNullOrEmpty (copyFile.Error))
@@ -208,9 +208,12 @@ namespace NewResourceSolution
                             destFilePath
                         );
                     },
-                    true
+                    false
                 );
-                yield return new UnityEngine.WaitUntil (() => decompressFile.IsDone);
+                while (!decompressFile.IsDone)
+                {
+                    yield return null;
+                }
                 if (!string.IsNullOrEmpty (decompressFile.Error))
                 {
                     LogHelper.Error ("Decompress file error: {0}", decompressFile.Error);

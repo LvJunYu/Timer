@@ -73,9 +73,9 @@ namespace GameA
 			Camera gameUIRenderCamera = null;
 			gameUIRenderCamera = trans.gameObject.AddComponent<Camera>();
 			gameUIRenderCamera.orthographic = true;
-			gameUIRenderCamera.orthographicSize = 1;
-			gameUIRenderCamera.farClipPlane = 21;
-			gameUIRenderCamera.nearClipPlane = 19;
+			gameUIRenderCamera.orthographicSize = 5;
+			gameUIRenderCamera.farClipPlane = 1000;
+			gameUIRenderCamera.nearClipPlane = -1000;
 			gameUIRenderCamera.cullingMask = 1 << (int)ELayer.UI;
 			gameUIRenderCamera.clearFlags = CameraClearFlags.Depth;
 			gameUIRenderCamera.depth = (int)ECameraLayer.AppUICamera;

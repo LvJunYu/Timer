@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Web;
 using SoyEngine;
 using UnityEngine;
 
@@ -18,6 +19,7 @@ namespace GameA.Game
         protected int _timeScale;
         protected int _weaponId;
         protected UnityNativeParticleItem _efffectWeapon;
+        protected string _animationName;
 
         public override bool CanControlledBySwitch
         {
@@ -42,10 +44,20 @@ namespace GameA.Game
                 return false;
             }
             InitAssetRotation();
+            _animationName = ((EDirectionType) _unitDesc.Rotation).ToString();
             SetWeapon(_weaponId);
             return true;
         }
-        
+
+        protected override void Clear()
+        {
+            if (_skillCtrl != null)
+            {
+                _skillCtrl.Clear();
+            }
+            base.Clear();
+        }
+
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();
@@ -119,9 +131,9 @@ namespace GameA.Game
                 _skillCtrl.UpdateLogic();
                 if (_skillCtrl.Fire(0))
                 {
-                    if (_animation != null)
+                    if (_animation != null && !string.IsNullOrEmpty(_animationName))
                     {
-                        _animation.PlayOnce(((EDirectionType)_unitDesc.Rotation).ToString(), _timeScale);
+                        _animation.PlayOnce(_animationName, _timeScale);
                     }
                 }
             }

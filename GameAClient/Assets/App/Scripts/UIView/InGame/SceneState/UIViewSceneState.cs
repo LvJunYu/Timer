@@ -20,7 +20,6 @@ namespace GameA
         public Text NormalLevelText;
         public GameObject BonusLevelDock;
         public Text BonusLevelText;
-        public Button Home;
         public UIViewSceneStateItem HpItem;
         public UIViewSceneStateItem CollectionItem;
         public UIViewSceneStateItem EnemyItem;
@@ -39,6 +38,7 @@ namespace GameA
         public GameObject StarConditions;
         public Text[] StarConditionText;
         public Image[] StarConditionStar;
+        public Image[] StarConditionEmptyStar;
 
 
         // 临时引导界面

@@ -63,7 +63,7 @@ namespace GameA.Game
         }
     }
 
-    public struct Edge
+    public struct Edge : IEquatable<Edge>
     {
         public static Edge zero = new Edge();
         public int Start;
@@ -121,6 +121,29 @@ namespace GameA.Game
             if (End >= cutEnd + 1 + +PaintBlock.MinEdgeLength)
             {
                 edges.Add(new Edge(cutEnd + 1, End, Direction, EPaintType));
+            }
+        }
+
+        public bool Equals(Edge other)
+        {
+            return Start == other.Start && End == other.End && Direction == other.Direction && EPaintType == other.EPaintType;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is Edge && Equals((Edge) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Start;
+                hashCode = (hashCode * 397) ^ End;
+                hashCode = (hashCode * 397) ^ (int) Direction;
+                hashCode = (hashCode * 397) ^ (int) EPaintType;
+                return hashCode;
             }
         }
     }

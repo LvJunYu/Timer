@@ -14,13 +14,20 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    [Poolable(MinPoolSize = 10, PreferedPoolSize = 50, MaxPoolSize = ConstDefineGM2D.MaxTileCount)]
+    [Poolable(MinPoolSize = 5, PreferedPoolSize = 50, MaxPoolSize = ConstDefineGM2D.MaxTileCount)]
     public class SpineObject : IPoolableObject
     {
         [SerializeField]
         protected Transform _trans;
         protected SkeletonAnimation _skeletonAnimation;
         protected Renderer _renderer;
+        protected string _path;
+        protected bool _isPlaying;
+        
+        public string Path
+        {
+            get { return _path; }
+        }
 
         public Transform Trans
         {
@@ -39,11 +46,8 @@ namespace GameA.Game
 
         public virtual void OnFree()
         {
-            if (_skeletonAnimation != null)
-            {
-                _skeletonAnimation.Clear();
-                _skeletonAnimation.SetEnableEx(false);
-            }
+            _path = null;
+            Stop();
             if (UnitManager.Instance != null)
             {
                 _trans.parent = UnitManager.Instance.GetOriginParent();
@@ -71,6 +75,15 @@ namespace GameA.Game
 
         public bool Init(string path)
         {
+            if (string.IsNullOrEmpty(path))
+            {
+                return false;
+            }
+            if (_path == path)
+            {
+                return true;
+            }
+            _path = path;
             string skeletonDataAssetName = string.Format("{0}_SkeletonData", path);
             SkeletonDataAsset data = ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData,skeletonDataAssetName,0);
             if (data == null)
@@ -91,12 +104,31 @@ namespace GameA.Game
             }
         }
 
-        public void StopAnimation()
+        public void Play(bool loop)
         {
-            if (_skeletonAnimation != null && _skeletonAnimation.skeletonDataAsset != null)
+            if (_isPlaying)
             {
-                _skeletonAnimation.SetEnableEx(false);
+                return;
             }
+            if (_skeletonAnimation != null && _skeletonAnimation.state != null)
+            {
+                _skeletonAnimation.SetEnableEx(true);
+                _skeletonAnimation.state.SetAnimation(0, "Run", loop);
+                _isPlaying = true;
+            }
+            SetActive(true);
+        }
+
+        public void Stop()
+        {
+            if (!_isPlaying)
+            {
+                return;
+            }
+            _isPlaying = false;
+            SetActive(false);
+            _skeletonAnimation.Reset();
+            _skeletonAnimation.SetEnableEx(false);
         }
     }
 }

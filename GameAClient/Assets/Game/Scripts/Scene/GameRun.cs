@@ -67,7 +67,7 @@ namespace GameA.Game
             Clear();
 
             EnvManager.Instance.Dispose();
-            GameParticleManager.Instance.Dispose();
+//            GameParticleManager.Instance.Dispose();
             GameAudioManager.Instance.Dispose();
             DeadMarkManager.Instance.Dispose();
             InputManager.Instance.Dispose();
@@ -84,6 +84,8 @@ namespace GameA.Game
             PoolFactory<ProjectileWater>.Clear();
             PoolFactory<SpineObject>.Clear();
             PoolFactory<WingView>.Clear();
+            PoolFactory<Bullet>.Clear();
+            PoolManager<SpineObject>.Clear();
 
             CameraManager.Instance.Dispose();
             UnitManager.Instance.Dispose();
