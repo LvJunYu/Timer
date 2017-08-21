@@ -251,13 +251,13 @@ namespace GameA.Game
 
         protected void CreateProjectile(int projectileId, IntVec2 pos, int angle)
         {
-            if (_epaintType == EPaintType.Water || _epaintType == EPaintType.Jelly || _epaintType == EPaintType.Clay)
-            {
-                var bullet = PoolFactory<Bullet>.Get();
-                bullet.Init(this,pos, angle);
-                _bullets.Add(bullet);
-                return;
-            }
+//            if (_epaintType == EPaintType.Water || _epaintType == EPaintType.Jelly || _epaintType == EPaintType.Clay)
+//            {
+//                var bullet = PoolFactory<Bullet>.Get();
+//                bullet.Init(this,pos, angle);
+//                _bullets.Add(bullet);
+//                return;
+//            }
             {
                 var bullet = PlayMode.Instance.CreateRuntimeUnit(projectileId, pos) as ProjectileBase;
                 if (bullet != null)
