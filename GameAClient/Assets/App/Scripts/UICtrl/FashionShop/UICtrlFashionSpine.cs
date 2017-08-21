@@ -14,7 +14,19 @@ namespace GameA
     public class UICtrlFashionSpine : UICtrlGenericBase<UIViewFashionSpine>
     {
         private ChangePartsSpineView _avatarView;
-        public RenderTexture AvatarRenderTexture { get; set; }
+        private RenderCamera _renderCamera;
+
+        public Texture AvatarRenderTexture
+        {
+            get
+            {
+                if (_renderCamera != null)
+                {
+                    return _renderCamera.Texture;
+                }
+                return null;
+            }
+        }
 
         public void TryOnAvatar(Table_FashionUnit item)
         {
@@ -65,16 +77,15 @@ namespace GameA
             base.OnViewCreated();
             //_cachedView.AvatarBtn.enabled = SocialGUIManager.Instance.OpenUI<UICtrlTaskbar>().FashionShopAvailable; todo
             _cachedView.AvatarBtn.onClick.AddListener(OnAvatarBtn);
-            AvatarRenderTexture = new RenderTexture(768, 1536, 0);
-            _cachedView.AvatarRenderCamera.targetTexture = AvatarRenderTexture;
-
-            _cachedView.AvatarImage.texture = _cachedView.AvatarRenderCamera.targetTexture;
+            
 
             _cachedView.PlayerAvatarAnimation.skeletonDataAsset =
                 ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, "SMainBoy0_SkeletonData", 1);
             _cachedView.PlayerAvatarAnimation.Initialize(false);
             _avatarView = new ChangePartsSpineView();
             _avatarView.HomePlayerAvatarViewInit(_cachedView.PlayerAvatarAnimation);
+            _renderCamera = RenderCameraManager.Instance.GetCamera(1.4f, _cachedView.PlayerAvatarAnimation.transform, 200, 360);
+            _cachedView.AvatarImage.texture = AvatarRenderTexture;
             _cachedView.AvatarImage.SetActiveEx(false);
 
             LocalUser.Instance.UsingAvatarData.Request(
@@ -87,9 +98,7 @@ namespace GameA
         IEnumerator DoFunc()
         {
             _cachedView.AvatarImage.SetActiveEx(false);
-            _cachedView.AvatarRenderCamera.SetActiveEx(false);
-            yield return new WaitForSeconds(0.4f);
-            _cachedView.AvatarRenderCamera.SetActiveEx(true);
+            yield return null;
             _cachedView.AvatarImage.SetActiveEx(true);
         }
 
