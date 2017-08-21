@@ -14,9 +14,9 @@ namespace GameA
     {
         private Record _record;
         private int _index;
-        private string First= "icon_first";
-        private string Second= "icon_second";
-        private string Third= "icon_third";
+        private string First= "icon_crown_1";
+        private string Second= "icon_crown_2";
+        private string Third= "icon_crown_3";
         private bool _currentfollowstate =false;
         private UserInfoDetail _userInfoDetail;
 
@@ -108,6 +108,7 @@ namespace GameA
         {
             if (rank == 1)
             {
+                _cachedView.Rank.SetActiveEx(false);
                 Sprite fashion = null;
                 if (ResourcesManager.Instance.TryGetSprite(First, out fashion))
                 {
@@ -116,6 +117,7 @@ namespace GameA
             }
             else if (rank == 2)
             {
+                _cachedView.Rank.SetActiveEx(false);
                 Sprite fashion = null;
                 if (ResourcesManager.Instance.TryGetSprite(Second, out fashion))
                 {
@@ -124,6 +126,7 @@ namespace GameA
             }
             else if (rank == 3)
             {
+                _cachedView.Rank.SetActiveEx(false);
                 Sprite fashion = null;
                 if (ResourcesManager.Instance.TryGetSprite(Third, out fashion))
                 {
