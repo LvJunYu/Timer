@@ -22,7 +22,17 @@ namespace GameA.Game
             }
             for (int i = 0; i < allUnits.Count; i++)
             {
-                allUnits[i].UpdateLogic();
+                if (UnitDefine.IsSwitchTrigger(allUnits[i].Id))
+                {
+                    allUnits[i].UpdateLogic();
+                }
+            }
+            for (int i = 0; i < allUnits.Count; i++)
+            {
+                if (!UnitDefine.IsSwitchTrigger(allUnits[i].Id))
+                {
+                    allUnits[i].UpdateLogic();
+                }
             }
             for (int i = 0; i < allUnits.Count; i++)
             {
