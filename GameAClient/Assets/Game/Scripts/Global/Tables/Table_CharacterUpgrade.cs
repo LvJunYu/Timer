@@ -24,7 +24,7 @@ namespace GameA.Game
         /// 数值
         /// </summary>
 		[ColumnMapping("Value")]
-		public int Value;
+		public float Value;
 		/// <summary>
         /// 升级金币
         /// </summary>
