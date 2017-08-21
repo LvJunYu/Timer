@@ -122,7 +122,7 @@ namespace GameA
                 () => { SetRepresentativeWorks(); },
                 null
                 );
-            _cachedView.Name.text = LocalUser.Instance.UserLegacy.NickName;
+            _cachedView.Name.text = LocalUser.Instance.User.UserInfoSimple.NickName;
             _cachedView.Lvl.text = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel.ToString();
             _cachedView.CraftLvl.text = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorExp.ToString();
             _eMale = LocalUser.Instance.User.UserInfoSimple.Sex;

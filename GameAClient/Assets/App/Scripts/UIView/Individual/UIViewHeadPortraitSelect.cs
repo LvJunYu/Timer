@@ -13,6 +13,7 @@ namespace GameA
         public Button OKBtn;
         public Button CloseBtn;
         public UITagGroup TagGroup;
+        public RectTransform Dock;
 
         public USViewHeadPortraitSelect USViewShop;
         public Button HeadPortrait1;

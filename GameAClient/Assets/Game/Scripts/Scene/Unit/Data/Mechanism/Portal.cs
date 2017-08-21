@@ -78,9 +78,11 @@ namespace GameA.Game
                     break;
                 case EDirectionType.Left:
                     speed.x = -60;
+                    speed.y = 1;
                     break;
                 case EDirectionType.Right:
                     speed.x = 60;
+                    speed.y = 1;
                     break;
             }
             var targetMin = new IntVec2(checkGrid.XMin,checkGrid.YMin);

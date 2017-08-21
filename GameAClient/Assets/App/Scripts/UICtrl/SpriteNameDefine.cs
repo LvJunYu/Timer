@@ -40,7 +40,7 @@ namespace GameA
         }
 
         private static readonly string[] HeadImageSpriteName =
-            {"icon_life_240", "icon_time_240", "icon_master_240", "icon_magnet", "icon_Invincible", "icon_tooth_240"};
+            {"head_img_1", "head_img_2", "head_img_3", "head_img_4", "head_img_5", "head_img_6"};
         public static string GetHeadImage(int head)
         {
             return HeadImageSpriteName[Mathf.Clamp(head, 0, HeadImageSpriteName.Length - 1)];

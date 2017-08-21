@@ -15,7 +15,7 @@ using UnityEngine.EventSystems;
 namespace GameA
 {
     [Poolable(MinPoolSize = 1, PreferedPoolSize = 10, MaxPoolSize = 1000)]
-    public class UMCtrlItem : UMCtrlBase<UMViewItem>, IPoolableObject
+    public class UMCtrlItem : UMCtrlBase<UMViewItem>//, IPoolableObject
     {
         private Table_Unit _table;
         private bool _selected;
@@ -23,17 +23,19 @@ namespace GameA
         private static Vector2 _startPos;
         private static readonly Vector2 CheckDelta = new Vector2(5f, 20f);
 
-        public void OnGet()
+        public void Show()
         {
+            _cachedView.gameObject.SetActive(true);
             Messenger<ushort>.AddListener (EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
             Messenger<int>.AddListener (EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.AddListener (EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
         }
 
-        public void OnFree()
+        public void Hide()
         {
-            _cachedView.Trans.SetParent(SocialGUIManager.Instance.UIRoot.Trans, false);
-            _cachedView.Trans.localPosition = Vector3.one * 65535;
+//            _cachedView.Trans.SetParent(SocialGUIManager.Instance.UIRoot.Trans, false);
+//            _cachedView.Trans.localPosition = Vector3.one * 65535;
+            _cachedView.gameObject.SetActive(false);
             Messenger<ushort>.RemoveListener (EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
             Messenger<int>.RemoveListener (EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.RemoveListener (EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
@@ -265,5 +267,34 @@ namespace GameA
             Scroll,
             Drag,
         }
+        
+//        public void CustomInit(RectTransform scrollRectContent)
+//        {
+//            if (string.IsNullOrEmpty(this._prefabName))
+//            {
+//                LogHelper.Error("_prefabName is nullOrEmpty");
+//                return;
+//            }
+//            if ((UnityEngine.Object) scrollRectContent == (UnityEngine.Object) null)
+//            {
+//                LogHelper.Error("parent == null");
+//                return;
+//            }
+//            if (this._isViewCreated == false)
+//            {
+//                this._view = SocialGUIManager.Instance.UIRoot.InstanceItemView(this._prefabName);
+//                Debug.Log("??? " + this.GetHashCode());
+//                if ((UnityEngine.Object) this._view == (UnityEngine.Object) null)
+//                    return;
+//                if (!this._view.gameObject.activeSelf)
+//                    this._view.gameObject.SetActive(true);
+//                CommonTools.SetParent(this._view.transform, (Transform) scrollRectContent);
+//                this._view.Init();
+//                this._view.Trans.anchoredPosition = Vector2.zero;
+//                this._isViewCreated = true;
+//                this.OnViewCreated();
+//            }
+//            _cachedView.gameObject.SetActive(true);
+//        }
     }
 }

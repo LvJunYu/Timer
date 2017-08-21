@@ -77,7 +77,7 @@ namespace GameA
 
             _projectUploadParam.MapWidth = DataScene2D.Instance.Width;
             _projectUploadParam.MapHeight = DataScene2D.Instance.Height;
-            _projectUploadParam.TotalUnitCount = ColliderScene2D.Instance.AllUnits.Count;
+            _projectUploadParam.TotalUnitCount = ColliderScene2D.Instance.Units.Count;
             _projectUploadParam.AddCount = DataScene2D.Instance.AddedUnits.Count;
             _projectUploadParam.DeleteCount = DataScene2D.Instance.RemovedUnits.Count;
             _projectUploadParam.ModifyCount = DataScene2D.Instance.ModifiedUnits.Count;
@@ -85,7 +85,7 @@ namespace GameA
                                              (DataScene2D.Instance.AddedUnits.Count +
                                               DataScene2D.Instance.RemovedUnits.Count +
                                               DataScene2D.Instance.ModifiedUnits.Count) /
-                                             ColliderScene2D.Instance.AllUnits.Count;
+                                             ColliderScene2D.Instance.Units.Count;
             _projectUploadParam.RecordRestartCount = 0;
             _projectUploadParam.RecordUsedLifeCount = 0;
             _projectUploadParam.OperateCount = 0;

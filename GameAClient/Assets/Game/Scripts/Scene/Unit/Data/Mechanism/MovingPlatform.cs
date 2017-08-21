@@ -13,6 +13,9 @@ namespace GameA.Game
     [Unit(Id = 5006, Type = typeof(MovingPlatform))]
     public class MovingPlatform : BlockBase
     {
-
+        public override bool UseMagic()
+        {
+            return true;
+        }
     }
 }

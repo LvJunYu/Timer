@@ -54,7 +54,7 @@ namespace GameA.Game
             {
                 if (_switchTrigger != null)
                 {
-                    _switchTrigger.UpdateView(_deltaPos);
+                    _switchTrigger.UpdateSwitchPos(_deltaPos);
                 }
             }
         }

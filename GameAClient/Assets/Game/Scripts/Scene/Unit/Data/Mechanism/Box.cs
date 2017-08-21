@@ -25,6 +25,11 @@ namespace GameA.Game
             get { return _isHoldingByMain; }
             set { _isHoldingByMain = value; }
         }
+        
+        public override bool CanPortal
+        {
+            get { return true; }
+        }
 
         public EDirectionType DirectionRelativeMain
         {
