@@ -73,7 +73,10 @@ namespace GameA
 			Camera gameUIRenderCamera = null;
 			gameUIRenderCamera = trans.gameObject.AddComponent<Camera>();
 			gameUIRenderCamera.orthographic = true;
-			gameUIRenderCamera.orthographicSize = 5;
+			CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
+			{
+				gameUIRenderCamera.orthographicSize = _trans.GetHeight() * 0.5f;
+			}));
 			gameUIRenderCamera.farClipPlane = 1000;
 			gameUIRenderCamera.nearClipPlane = -1000;
 			gameUIRenderCamera.cullingMask = 1 << (int)ELayer.UI;

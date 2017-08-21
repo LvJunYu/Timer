@@ -214,11 +214,11 @@ namespace GameA.Game
 
         private IEnumerator GameFlow()
         {
-            UICtrlBoostItem uictrlBoostItem = SocialGUIManager.Instance.OpenUI<UICtrlBoostItem>();
-            yield return new WaitUntil(()=>uictrlBoostItem.SelectComplete);
-
-            List<int> useItems = uictrlBoostItem.SelectedItems;
-            PlayMode.Instance.OnBoostItemSelectFinish(useItems);
+//            UICtrlBoostItem uictrlBoostItem = SocialGUIManager.Instance.OpenUI<UICtrlBoostItem>();
+//            yield return new WaitUntil(()=>uictrlBoostItem.SelectComplete);
+//
+//            List<int> useItems = uictrlBoostItem.SelectedItems;
+//            PlayMode.Instance.OnBoostItemSelectFinish(useItems);
             UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
             yield return new WaitUntil(()=>uictrlCountDown.ShowComplete);
 	        
