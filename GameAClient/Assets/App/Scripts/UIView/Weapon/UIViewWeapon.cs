@@ -22,6 +22,7 @@ namespace GameA
         public Text UpGradeOrCompound;
         public Image OwnedUniversalFragmentsIcon;
         public Image OwnedWeaponFragmentsIcon;
+        public Image LockedImage;
         public Transform EffectShow;
         public Button LeftWeapon;
         public Button RightWeapon;
