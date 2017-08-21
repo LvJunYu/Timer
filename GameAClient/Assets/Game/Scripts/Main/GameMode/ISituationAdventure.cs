@@ -19,7 +19,7 @@ namespace GameA
         public Record Record;
         public Game.Table_StandaloneLevel Table {
             get {
-                return AppData.Instance.AdventureData.GetAdvLevelTable(Section, Level, ProjectType);
+                return AppData.Instance.AdventureData.GetAdvLevelTable(Section, ProjectType, Level);
             }
         }
     }

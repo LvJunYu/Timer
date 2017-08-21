@@ -25,6 +25,12 @@ namespace GameA
 	    private bool _hasTimeLimit;
 	    private int _lastShowSceonds = -100;
 
+        /// <summary>
+        /// 冒险模式
+        /// </summary>
+        private Table_StandaloneLevel _tableStandaloneLevel;
+        private int[] _starValueAry;
+        
         private float _showHelpTimer;
         public bool ShowHelpPage3SecondsComplete
         {
@@ -106,6 +112,20 @@ namespace GameA
                     }
                 }
             }
+
+	        if (GM2DGame.Instance.GameMode is GameModeAdventurePlay)
+	        {
+	            if (_tableStandaloneLevel != null && _starValueAry != null)
+	            {
+	                for (int i = 0; i < _tableStandaloneLevel.StarConditions.Length; i++)
+	                {
+	                    bool showStar = AppData.Instance.AdventureData.CheckStarRequire(
+	                        _tableStandaloneLevel.StarConditions[i], _starValueAry[i], PlayMode.Instance.Statistic);
+                        _cachedView.StarConditionStar[i].SetActiveEx(showStar);
+                        _cachedView.StarConditionEmptyStar[i].SetActiveEx(!showStar);
+	                }
+	            }
+	        }
 	    }
 
         public void ShowHelpPage3Seconds ()
@@ -175,7 +195,6 @@ namespace GameA
         {
             if (GM2DGame.Instance.GameMode.GameSituation == EGameSituation.Adventure)
             {
-                _cachedView.Home.SetActiveEx(true);
                 _cachedView.LevelInfoDock.SetActive(true);
                 _cachedView.SpaceDock.SetActive(true);
                 ISituationAdventure situation = GM2DGame.Instance.GameMode as ISituationAdventure;
@@ -191,28 +210,18 @@ namespace GameA
 
                         _cachedView.StarConditions.SetActive (true);
                         var table = param.Table;
-                        var tableStarRequire1 = TableManager.Instance.GetStarRequire (table.StarConditions [0]);
-                        if (null == tableStarRequire1) {
-                            LogHelper.Error ("Cant find table starrequire of id: {0}", table.StarConditions [0]);
-                        } else {
-                            _cachedView.StarConditionText [0].text = string.Format (tableStarRequire1.Desc, table.Star1Value);
-                            _cachedView.StarConditionStar [0].gameObject.SetActive (false);
+                        _tableStandaloneLevel = table;
+                        _starValueAry = new[]{table.Star1Value, table.Star2Value, table.Star3Value};
+                        for (int i = 0; i < table.StarConditions.Length; i++)
+                        {
+                            var tableStarRequire = TableManager.Instance.GetStarRequire (table.StarConditions [i]);
+                            if (null == tableStarRequire) {
+                                LogHelper.Error ("Cant find table starrequire of id: {0}", table.StarConditions [i]);
+                            } else {
+                                _cachedView.StarConditionText[i].text = string.Format(tableStarRequire.Desc, _starValueAry[i]);
+                                _cachedView.StarConditionStar[i].gameObject.SetActiveEx(false);
+                            }
                         }
-                        var tableStarRequire2 = TableManager.Instance.GetStarRequire (table.StarConditions [1]);
-                        if (null == tableStarRequire2) {
-                            LogHelper.Error ("Cant find table starrequire of id: {0}", table.StarConditions [1]);
-                        } else {
-                            _cachedView.StarConditionText [1].text = string.Format (tableStarRequire2.Desc, table.Star2Value);
-                            _cachedView.StarConditionStar [1].gameObject.SetActive (false);
-                        }
-                        var tableStarRequire3 = TableManager.Instance.GetStarRequire (table.StarConditions [2]);
-                        if (null == tableStarRequire3) {
-                            LogHelper.Error ("Cant find table starrequire of id: {0}", table.StarConditions [2]);
-                        } else {
-                            _cachedView.StarConditionText [2].text = string.Format (tableStarRequire3.Desc, table.Star3Value);
-                            _cachedView.StarConditionStar [2].gameObject.SetActive (false);
-                        }
-
                     }
                     else
                     {
@@ -220,8 +229,6 @@ namespace GameA
                         _cachedView.BonusLevelDock.SetActive(true);
                         _cachedView.BonusLevelText.text = param.Level.ToString();
                         _cachedView.StarConditions.SetActive (false);
-                        
-
                     }
                 }
             }
@@ -230,7 +237,6 @@ namespace GameA
                 _cachedView.SpaceDock.SetActive(true);
                 _cachedView.LevelInfoDock.SetActive(false);
                 _cachedView.StarConditions.SetActive (false);
-                _cachedView.Home.SetActiveEx(false);
             }
 
 		    UpdateLifeItemValue();
@@ -250,7 +256,6 @@ namespace GameA
             _cachedItem.Add(EWinCondition.TimeLimit, _cachedView.TimeLimitItem);
             _cachedItem.Add(EWinCondition.CollectTreasure, _cachedView.CollectionItem);
             _cachedItem.Add(EWinCondition.KillMonster, _cachedView.EnemyItem);
-            _cachedView.Home.onClick.AddListener (OnHomeBtn);
         }
 
         private void UpdateItemVisible()
@@ -342,12 +347,6 @@ namespace GameA
             _cachedView.SpeedUpCDText.text = string.Empty;
         }
 
-
-        private void OnHomeBtn ()
-        {
-            Messenger.Broadcast(EMessengerType.OpenGameSetting);
-            SocialGUIManager.Instance.GetUI<UICtrlGameSetting>().ChangeToSettingInGame();
-        }
 
         private void OnSpeedUpCDChanged (int currentCD, int maxCD)
         {

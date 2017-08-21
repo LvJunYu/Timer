@@ -53,6 +53,8 @@ namespace GameA.Game
         protected int _regenSpeed;
         protected int _currentEnergy;
         protected int _energyTimer;
+        
+        protected List<Bullet> _bullets = new List<Bullet>();
 
         public int Id
         {
@@ -135,6 +137,19 @@ namespace GameA.Game
             }
         }
 
+        public virtual void Clear()
+        {
+            for (int i = 0; i < _bullets.Count; i++)
+            {
+                var bullet = _bullets[i];
+                if (bullet != null)
+                {
+                    PoolFactory<Bullet>.Free(bullet);
+                }
+            }
+            _bullets.Clear();
+        }
+
         internal virtual void Exit()
         {
         }
@@ -157,6 +172,13 @@ namespace GameA.Game
                 if (_timerSing == 0)
                 {
                     OnSkillCast();
+                }
+            }
+            if (_bullets.Count > 0)
+            {
+                for (int i = 0; i < _bullets.Count; i++)
+                {
+                    _bullets[i].UpdateLogic();
                 }
             }
         }
@@ -229,10 +251,19 @@ namespace GameA.Game
 
         protected void CreateProjectile(int projectileId, IntVec2 pos, int angle)
         {
-            var bullet = PlayMode.Instance.CreateRuntimeUnit(projectileId, pos) as ProjectileBase;
-            if (bullet != null)
+//            if (_epaintType == EPaintType.Water || _epaintType == EPaintType.Jelly || _epaintType == EPaintType.Clay)
+//            {
+//                var bullet = PoolFactory<Bullet>.Get();
+//                bullet.Init(this,pos, angle);
+//                _bullets.Add(bullet);
+//                return;
+//            }
             {
-                bullet.Run(this, angle);
+                var bullet = PlayMode.Instance.CreateRuntimeUnit(projectileId, pos) as ProjectileBase;
+                if (bullet != null)
+                {
+                    bullet.Run(this, angle);
+                }
             }
         }
 
@@ -290,7 +321,33 @@ namespace GameA.Game
                     {
                         if (unit.IsActor)
                         {
-                            OnActorHit(unit, unit.CenterPos - centerDownPos);
+                            var dir = unit.CenterPos - centerDownPos;
+                            OnActorHit(unit, new Vector2(dir.x,dir.y));
+                        }
+                    }
+                }
+            }
+        }
+
+        public void OnBulletHit(Bullet bullet)
+        {
+            _bullets.Remove(bullet);
+            CreateTrap(bullet.CurPos);
+            var units = GetHitUnits(bullet.CurPos);
+            if (units != null && units.Count > 0)
+            {
+                for (int i = 0; i < units.Count; i++)
+                {
+                    var unit = units[i];
+                    if (unit.IsAlive)
+                    {
+                        if (unit.IsActor)
+                        {
+                            OnActorHit(unit, bullet.Direction);
+                        }
+                        else if(unit.CanPainted && _epaintType != EPaintType.None)
+                        {
+//                            OnPaintHit(unit, bullet);
                         }
                     }
                 }
@@ -310,7 +367,7 @@ namespace GameA.Game
                     {
                         if (unit.IsActor)
                         {
-                            OnActorHit(unit, GetShootDirection(projectile.Angle));
+                            OnActorHit(unit, projectile.Direction);
                         }
                         else if(unit.CanPainted && _epaintType != EPaintType.None)
                         {
@@ -321,40 +378,7 @@ namespace GameA.Game
             }
         }
 
-        private IntVec2 GetShootDirection(int angle)
-        {
-            IntVec2 direction = IntVec2.zero;
-            switch ((EShootDirectionType) angle)
-            {
-                case EShootDirectionType.Up:
-                    direction = IntVec2.up;
-                    break;
-                case EShootDirectionType.Down:
-                    direction = IntVec2.down;
-                    break;
-                case EShootDirectionType.Left:
-                    direction = IntVec2.left;
-                    break;
-                case EShootDirectionType.Right:
-                    direction = IntVec2.right;
-                    break;
-                case EShootDirectionType.RightUp:
-                    direction = new IntVec2(1, 1);
-                    break;
-                case EShootDirectionType.LeftUp:
-                    direction = new IntVec2(-1, 1);
-                    break;
-                case EShootDirectionType.RightDown:
-                    direction = new IntVec2(1, -1);
-                    break;
-                case EShootDirectionType.LeftDown:
-                    direction = new IntVec2(-1, -1);
-                    break;
-            }
-            return direction;
-        }
-
-        private void OnActorHit(UnitBase unit, IntVec2 direction)
+        private void OnActorHit(UnitBase unit, Vector2 direction)
         {
             if (!unit.IsAlive)
             {

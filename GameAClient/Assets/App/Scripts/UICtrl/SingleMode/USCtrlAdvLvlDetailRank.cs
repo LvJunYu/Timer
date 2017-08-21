@@ -5,78 +5,111 @@
 ** Summary : UICtrlSingleMode
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
-using UnityEngine.UI;
-using GameA.Game;
 
 namespace GameA
 {
     public class USCtrlAdvLvlDetailRank : USCtrlBase<USViewAdvLvlDetailRank>
     {
         #region 常量与字段
-        public List<UMCtrlRank> _cardList = new List<UMCtrlRank>();
+
+        private List<Record> _recordList;
+        private List<CardDataRendererWrapper<RecordRankHolder>> _contentList = new List<CardDataRendererWrapper<RecordRankHolder>>();
         #endregion
 
         #region 属性
 
-
         #endregion
 
         #region 方法
-        public override void Init (USViewAdvLvlDetailRank view)
+
+        #region private
+        #endregion private
+
+        public void Set(List<Record> recordList)
         {
-            base.Init (view);
+            _recordList = recordList;
+            RefreshView();
+        }
+        public void Open()
+        {
+            _cachedView.gameObject.SetActive(true);
+            RefreshView();
         }
 
-        protected override void OnViewCreated ()
+        public void Close()
         {
-            base.OnViewCreated ();
-//            _cachedView.SelectBtn.onClick.AddListener (OnSelectBtn);
+            _cachedView.gameObject.SetActive(false);
         }
-
-        public void Open ()
+        
+        private void RefreshView()
         {
-            _cachedView.gameObject.SetActive (true);
-        }
-        public void Close ()
-        {
-            _cachedView.gameObject.SetActive (false);
-        }
-        #endregion
-
-         public void Set(List<Record> RecordList)
-        {
-            if (_cardList.Count > 0)
+            if (_recordList == null)
             {
-                for (int i = 0; i < _cardList.Count; i++)
-                {
-                    _cardList[i].Destroy();
-                }
+                _cachedView.GridDataScroller.SetEmpty();
+                return;
             }
+            _contentList.Clear();
+            _contentList.Capacity = Mathf.Max(_contentList.Capacity, _recordList.Count);
+            for (int i = 0; i < _recordList.Count; i++)
+            {
+                RecordRankHolder r = new RecordRankHolder(_recordList[i], i);
+                CardDataRendererWrapper<RecordRankHolder> w = new CardDataRendererWrapper<RecordRankHolder>(r, OnItemClick);
+                _contentList.Add(w);
+            }
+            _cachedView.GridDataScroller.SetItemCount(_contentList.Count);
+        }
+
+        private void OnItemClick(CardDataRendererWrapper<RecordRankHolder> item)
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "请求播放录像");
             
-            _cardList.Clear();
-            for (int i = 0; i < LocalUser.Instance.AdventureLevelRankList.RecordList.Count; i++)
-            {
-                SetEachCard(RecordList[i],i+1);
-            }
-            //RefreshPage();
+            item.Content.Record.RequestPlay (() => {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                UICtrlAdvLvlDetail uictrlAdvLvlDetail = SocialGUIManager.Instance.GetUI<UICtrlAdvLvlDetail>();
+                SituationAdventureParam param = new SituationAdventureParam();
+                param.ProjectType = uictrlAdvLvlDetail.ProjectType;
+                param.Section = uictrlAdvLvlDetail.ChapterIdx;
+                param.Level = uictrlAdvLvlDetail.LevelIdx;
+                param.Record = item.Content.Record;
+                GameManager.Instance.RequestPlayAdvRecord (uictrlAdvLvlDetail.Project, param);
+                SocialGUIManager.Instance.ChangeToGameMode ();
+            }, (error) => {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                SocialGUIManager.ShowPopupDialog("进入录像失败");
+            });
         }
 
-        private void SetEachCard(Record record,int rank)
+        private void OnItemRefresh(IDataItemRenderer item, int inx)
         {
-            if (_cachedView != null)
+            if(inx >= _contentList.Count)
             {
-                var UM = new UMCtrlRank();
-                UM.Init(_cachedView.Dock as RectTransform);
-                UM.Set(record,rank);
-                _cardList.Add(UM);
+                LogHelper.Error("OnItemRefresh Error Inx > count");
+                return;
             }
+            item.Set(_contentList[inx]);
         }
 
+        private IDataItemRenderer GetItemRenderer(RectTransform parent)
+        {
+            var item = new UMCtrlRank();
+            item.Init(parent, Vector3.zero);
+            return item;
+        }
+        #region 接口
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _cachedView.GridDataScroller.SetCallback(OnItemRefresh, GetItemRenderer);
+        }
+
+        #endregion 接口
+
+
+
+        #endregion
 
     }
 }

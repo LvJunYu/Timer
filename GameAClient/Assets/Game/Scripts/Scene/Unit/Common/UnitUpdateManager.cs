@@ -15,47 +15,74 @@ namespace GameA.Game
     {
         public void UpdateLogic(float deltaTime)
         {
-            var allUnits = ColliderScene2D.Instance.AllUnits;
-            for (int i = 0; i < allUnits.Count; i++)
+            var allSwitchUnits = ColliderScene2D.Instance.AllSwitchUnits;
+            var allMagicUnits = ColliderScene2D.Instance.AllMagicUnits;
+            var allBulletUnits = ColliderScene2D.Instance.AllBulletUnits;
+            var allOtherUnits = ColliderScene2D.Instance.AllOtherUnits;
+            
+            for (int i = 0; i < allSwitchUnits.Count; i++)
             {
-                allUnits[i].CheckStart();
+                allSwitchUnits[i].UpdateLogic();
             }
-            for (int i = 0; i < allUnits.Count; i++)
+            for (int i = 0; i < allMagicUnits.Count; i++)
             {
-                allUnits[i].UpdateLogic();
-            }
-            for (int i = 0; i < allUnits.Count; i++)
-            {
-                allUnits[i].CalculateExtraDeltaPos();
+                allMagicUnits[i].UpdateLogic();
             }
             
+            for (int i = 0; i < allOtherUnits.Count; i++)
+            {
+                allOtherUnits[i].CheckStart();
+            }
+            for (int i = 0; i < allOtherUnits.Count; i++)
+            {
+                allOtherUnits[i].UpdateLogic();
+            }
+            for (int i = 0; i < allOtherUnits.Count; i++)
+            {
+                allOtherUnits[i].CalculateExtraDeltaPos();
+            }
+            
+            for (int i = 0; i < allBulletUnits.Count; i++)
+            {
+                allBulletUnits[i].UpdateLogic();
+            }
+
+            for (int i = 0; i < allMagicUnits.Count; i++)
+            {
+                allMagicUnits[i].UpdateView(deltaTime);
+            }
+
             var mainUnit = PlayMode.Instance.MainPlayer;
             var boxOperateType = mainUnit.GetBoxOperateType();
             switch (boxOperateType)
             {
                 case EBoxOperateType.None:
                 case EBoxOperateType.Push:
-                    for (int i = 0; i < allUnits.Count; i++)
+                    for (int i = 0; i < allOtherUnits.Count; i++)
                     {
-                        if (allUnits[i].IsMain)
+                        if (allOtherUnits[i].IsMain)
                         {
                             continue;
                         }
-                        allUnits[i].UpdateView(deltaTime);
+                        allOtherUnits[i].UpdateView(deltaTime);
                     }
                     mainUnit.UpdateView(deltaTime);
                     break;
                 case EBoxOperateType.Pull:
                     mainUnit.UpdateView(deltaTime);
-                    for (int i = 0; i < allUnits.Count; i++)
+                    for (int i = 0; i < allOtherUnits.Count; i++)
                     {
-                        if (allUnits[i].IsMain)
+                        if (allOtherUnits[i].IsMain)
                         {
                             continue;
                         }
-                        allUnits[i].UpdateView(deltaTime);
+                        allOtherUnits[i].UpdateView(deltaTime);
                     }
                     break;
+            }
+            for (int i = 0; i < allBulletUnits.Count; i++)
+            {
+                allBulletUnits[i].UpdateView(deltaTime);
             }
         }
     }

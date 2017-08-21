@@ -50,7 +50,7 @@ namespace GameA.Game
                 {
                     return deltaImpactPos;
                 }
-                return deltaImpactPos + Speed;
+                return deltaImpactPos + _deltaPos;
             }
             switch (_rollerDirection)
             {
@@ -61,7 +61,7 @@ namespace GameA.Game
                     deltaImpactPos.x = -50;
                     break;
             }
-            return deltaImpactPos + Speed;
+            return deltaImpactPos + _deltaPos;
         }
 
         internal override bool InstantiateView()

@@ -46,6 +46,7 @@ namespace GameA
             _fragment = fragment;
             _pictureFull = picFull;
             _umCtrlPuzzleDetailItem = umCtrlPuzzleDetailItem;
+            
             _cachedView.Rects[0].gameObject.SetActive(_pictureFull.PuzzleType == EPuzzleType.Half);
             _cachedView.Rects[1].gameObject.SetActive(_pictureFull.PuzzleType == EPuzzleType.Quarter);
             _cachedView.Rects[2].gameObject.SetActive(_pictureFull.PuzzleType == EPuzzleType.Sixth);
@@ -71,7 +72,7 @@ namespace GameA
             //设置拼图底图
             _curImageDisable.sprite = _curPicImg.sprite = _umCtrlPuzzleDetailItem.PicImage.sprite;
             _curImageDisable.color = _cachedView.disableColor;
-            //设置底图位置，根据PuzzleItem上大图中碎片底图的相对位置，计算当前碎片底图的相对位置
+            //设置底图位置和大小
             var rectTransform = _umCtrlPuzzleDetailItem.PicImage.transform as RectTransform;
             if (rectTransform != null)
             {
@@ -93,10 +94,10 @@ namespace GameA
             }
 
             _hasInited = true;
-            SetData();
+            RefreshView();
         }
 
-        public void SetData()
+        public void RefreshView()
         {
             if (!_hasInited) return;
             _curNumTxt.text = _fragment.TotalCount.ToString();

@@ -28,17 +28,15 @@ namespace GameA
 
         private GameTimer _projectInfoRequestTimer;
 
-        /// <summary>
-        /// 冒险模式的第几章，如果不是冒险模式关卡，则为0
-        /// </summary>
-        private int _sectionId;
-        /// <summary>
-        /// 冒险模式的第几关，如果不是冒险模式关卡，则为0
-        /// </summary>
-        private int _levelId;
+        private AdventureLevelRankList _adventureLevelRankList;
         #endregion 变量
 
         #region 属性
+
+        public AdventureLevelRankList AdventureLevelRankList
+        {
+            get { return _adventureLevelRankList ?? (_adventureLevelRankList = new AdventureLevelRankList()); }
+        }
 
         public int LikeCount
         {
@@ -129,15 +127,9 @@ namespace GameA
 
         public byte[] DeadPos
         {
-            get
-            {
-                return _deadPos;
-            }
+            get { return _deadPos; }
 
-            set
-            {
-                _deadPos = value;
-            }
+            set { _deadPos = value; }
         }
 
         public bool ExtendReady
@@ -194,23 +186,11 @@ namespace GameA
             }
         }
 
-        public int SectionId {
-            get {
-                return _sectionId;
-            }
-            set {
-                _sectionId = value;
-            }
-        }
+        public int SectionId { get; set; }
 
-        public int LevelId {
-            get {
-                return _levelId;
-            }
-            set {
-                _levelId = value;
-            }
-        }
+        public int LevelId { get; set; }
+
+        public EAdventureProjectType AdventureProjectType { get; set; }
 
         public WorldProjectRecentPlayedUserList RecentPlayedUserList
         {

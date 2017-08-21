@@ -34,7 +34,6 @@ namespace GameA.Game
         private int _gameSucceedTime;
         [SerializeField] private MainPlayer _mainPlayer;
 
-        private Texture2D _maskBaseTexture;
         private bool _pausing;
         [SerializeField] private bool _run;
         private GameStatistic _statistic;
@@ -44,11 +43,6 @@ namespace GameA.Game
         public static PlayMode Instance
         {
             get { return _instance ?? (_instance = new PlayMode()); }
-        }
-
-        public Texture2D MaskBaseTexture
-        {
-            get { return _maskBaseTexture; }
         }
 
         public IntVec2 FocusPos
@@ -98,14 +92,6 @@ namespace GameA.Game
             Messenger<EDieType>.AddListener(EMessengerType.OnMonsterDead, OnMonsterDead);
             _unitUpdateManager = new UnitUpdateManager();
             _statistic = new GameStatistic();
-
-            Texture t;
-            if (!ResourcesManager.Instance.TryGetTexture ("Mask", out t))
-            {
-                LogHelper.Error("GetMask Failed");
-                return false;
-            }
-            _maskBaseTexture = t as Texture2D;
             return true;
         }
 

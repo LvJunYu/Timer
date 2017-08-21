@@ -91,9 +91,6 @@ namespace GameA.Game
 
         [SerializeField] protected EMoveDirection _curMoveDirection;
 
-        protected IntVec2 _minPos;
-        protected IntVec2 _maxPos;
-
         /// <summary>
         /// 加速减速参数
         /// </summary>
@@ -240,19 +237,9 @@ namespace GameA.Game
             get { return _moveDirection; }
         }
 
-        public virtual Grid2D LastColliderGrid
-        {
-            get { return _lastColliderGrid; }
-        }
-
         public virtual Grid2D ColliderGrid
         {
             get { return _colliderGrid; }
-        }
-
-        public virtual Grid2D ColliderGridInnder
-        {
-            get { return _colliderGridInner; }
         }
 
         public bool IsAlive
@@ -508,7 +495,7 @@ namespace GameA.Game
             get { return _assetPath; }
         }
 
-        public bool UseMagic()
+        public virtual bool UseMagic()
         {
             return !IsActor && _curMoveDirection != EMoveDirection.None;
         }
@@ -667,6 +654,14 @@ namespace GameA.Game
                 _view.Reset();
             }
             _curPos = new IntVec2(_guid.x, _guid.y);
+            _colliderPos = GetColliderPos(_curPos);
+            _colliderGrid = _tableUnit.GetColliderGrid(ref _unitDesc);
+            if (_dynamicCollider != null && !_lastColliderGrid.Equals(_colliderGrid))
+            {
+                _dynamicCollider.Grid = _colliderGrid;
+                ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider, _lastColliderGrid);
+            }
+            _lastColliderGrid = _colliderGrid;
             Clear();
             UpdateTransPos();
             if (_dynamicCollider != null)
@@ -693,19 +688,13 @@ namespace GameA.Game
             _isAlive = true;
             _dieTime = 0;
             _deltaPos = IntVec2.zero;
-            _colliderPos = GetColliderPos(_curPos);
-            _colliderGrid = _tableUnit.GetColliderGrid(ref _unitDesc);
             _curMoveDirection = _moveDirection;
             if (IsMain)
             {
                 _curMoveDirection = _moveDirection = EMoveDirection.Right;
             }
-            if (_dynamicCollider != null && !_lastColliderGrid.Equals(_colliderGrid))
-            {
-                _dynamicCollider.Grid = _colliderGrid;
-                ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider, _lastColliderGrid);
-            }
-            _lastColliderGrid = _colliderGrid;
+            _colliderPos = GetColliderPos(_curPos);
+            _lastColliderGrid = _colliderGrid = _tableUnit.GetColliderGrid(ref _unitDesc);
             _colliderGridInner = _useCorner ? _colliderGrid.GetGridInner() : _colliderGrid;
 
             _downUnits.Clear();
@@ -716,7 +705,6 @@ namespace GameA.Game
             _ctrlBySwitch = false;
             if (_dynamicCollider != null)
             {
-                CalculateMinMax();
                 SetFacingDir(_curMoveDirection, true);
             }
         }
@@ -760,37 +748,6 @@ namespace GameA.Game
             {
                 _view.OnCancelSelect();
             }
-        }
-
-        protected void LimitPos()
-        {
-            if (_curPos.x <= _minPos.x)
-            {
-                _curPos.x = _minPos.x;
-                if (SpeedX < 0)
-                {
-                    SpeedX = 0;
-                }
-            }
-            if (_curPos.x >= _maxPos.x)
-            {
-                _curPos.x = _maxPos.x;
-                if (SpeedX > 0)
-                {
-                    SpeedX = 0;
-                }
-            }
-            _curPos.y = Mathf.Clamp(_curPos.y, _minPos.y - 1, _maxPos.y);
-        }
-
-        protected virtual bool CheckOutOfMap()
-        {
-            if (_curPos.y < _minPos.y)
-            {
-                OnDead();
-                return true;
-            }
-            return false;
         }
 
         /// <summary>
@@ -1364,24 +1321,6 @@ namespace GameA.Game
 
         #endregion
 
-        protected void CalculateMinMax()
-        {
-            var limit = DataScene2D.Instance.ValidMapRect;
-            var size = GetDataSize();
-            _minPos = new IntVec2(limit.Min.x - _tableUnit.Offset.x, limit.Min.y - size.y);
-            _maxPos = new IntVec2(limit.Max.x - size.x + _tableUnit.Offset.x, DataScene2D.Instance.Height - size.y);
-            //if (IsMain)
-            //{
-            //    _minPos = new IntVec2(limit.Min.x - _tableUnit.Offset.x, limit.Min.y - size.y);
-            //    _maxPos = new IntVec2(limit.Max.x - size.x + _tableUnit.Offset.x, DataScene2D.Instance.Height - size.y);
-            //}
-            //else
-            //{
-            //    _minPos = new IntVec2(limit.Min.x - size.x, limit.Min.y - size.y);
-            //    _maxPos = new IntVec2(limit.Max.x, DataScene2D.Instance.Height);
-            //}
-        }
-
         protected IntVec2 GetPos(IntVec2 colliderPos)
         {
             return _tableUnit.ColliderToRenderer(colliderPos, Rotation);
@@ -1465,31 +1404,6 @@ namespace GameA.Game
         public int GetRotation(byte rotation)
         {
             return -90 * rotation;
-        }
-
-        public Vector3 GetRotationPosOffset()
-        {
-            if (UnitDefine.IsBullet(Id))
-            {
-                Vector3 res = Vector3.zero;
-                Vector3 size = GM2DTools.TileToWorld(GetDataSize() * 0.5f);
-                switch ((EDirectionType) Rotation)
-                {
-                    case EDirectionType.Right:
-                        res.x = -size.x;
-                        res.y = size.y;
-                        break;
-                    case EDirectionType.Down:
-                        res.y = size.y * 2;
-                        break;
-                    case EDirectionType.Left:
-                        res.x = size.x;
-                        res.y = size.y;
-                        break;
-                }
-                return res;
-            }
-            return Vector3.zero;
         }
 
         internal virtual void OnObjectDestroy()

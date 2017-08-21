@@ -11,7 +11,7 @@ using SoyEngine;
 
 namespace GameA.Game
 {
-    [Poolable(MinPoolSize = 1, PreferedPoolSize = 5, MaxPoolSize = ConstDefineGM2D.MaxTileCount)]
+    [Poolable(MinPoolSize = 10, PreferedPoolSize = 20, MaxPoolSize = ConstDefineGM2D.MaxTileCount)]
     public class EmptyUnit : UnitView
     {
         protected override bool OnInit()

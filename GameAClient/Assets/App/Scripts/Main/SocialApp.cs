@@ -130,6 +130,8 @@ namespace GameA
             gameObject.AddComponent<TableManager>();
             TableManager.Instance.Init();
             LocalUser.Instance.Init();
+            //预加载单人模式UI
+            SocialGUIManager.Instance.CreateView<UICtrlSingleMode>();
             if (!string.IsNullOrEmpty(LocalUser.Instance.Account.Token))
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "自动登录中");

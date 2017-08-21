@@ -120,11 +120,9 @@ namespace GameA.Game
                     }
                 }
                 _curPos += _deltaPos;
-                LimitPos();
                 UpdateCollider(GetColliderPos(_curPos));
                 _curPos = GetPos(_colliderPos);
                 UpdateTransPos();
-                CheckOutOfMap();
             }
         }
     }

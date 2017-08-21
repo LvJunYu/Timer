@@ -6,17 +6,16 @@
 ***********************************************************************/
 
 using System;
-using SoyEngine;
-using UnityEngine;
-using UnityEngine.UI;
-using SoyEngine.Proto;
-//using SoyEngine;
+using System.Collections.Generic;
 using GameA.Game;
+using SoyEngine;
+using SoyEngine.Proto;
+using UnityEngine;
 
 namespace GameA
 {
 
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlTaskbar : UICtrlGenericBase<UIViewTaskbar>
     {
         #region 常量与字段
@@ -29,10 +28,7 @@ namespace GameA
         private bool _puzzleAvailable = false;
         private bool _mailBoxAvailable = true;
         private bool _friendsAvailable = true;
-
-
-        //private ChangePartsSpineView _avatarView;
-        //public RenderTexture AvatarRenderTexture { get;  set; }
+        private UIParticleItem _uiParticleItem;
 
         #endregion
 
@@ -49,23 +45,6 @@ namespace GameA
 
         #region 方法
 
-        public override void OnUpdate()
-        {
-            base.OnUpdate();
-            //if (_cachedView.PlayerAvatarAnimation != null) {
-            //	_cachedView.PlayerAvatarAnimation.Update (Time.deltaTime);
-            //}
-            //_cachedView.SingleModeParent.localPosition = Vector3.up * Mathf.Sin(Time.time * 0.75f) * 10;
-
-        }
-
-        protected override void OnDestroy()
-        {
-            //if (AvatarRenderTexture != null) {
-            //	AvatarRenderTexture.Release ();
-            //}
-            base.OnDestroy();
-        }
 
         protected override void InitGroupId()
         {
@@ -75,18 +54,23 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            //            RegisterEvent(SoyEngine.EMessengerType.OnMeNewMessageStateChanged, RefreshMeNewMessageState);
+            RegisterEvent(EMessengerType.OpenGameSetting, ShowPuzzleBtn);
+            RegisterEvent(EMessengerType.OnUserInfoChanged, OnChangeToUserInfo);
         }
+
+        private void OnChangeToUserInfo()
+        {
+
+            RefreshUserInfo();
+        }
+
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
 
-            //            #if UNITY_EDITOR
-            //_cachedView.SignUpBtn.onClick.AddListener(OnSignUpBtn);
             _cachedView.Account.onClick.AddListener(Account);
-            SocialGUIManager.Instance.OpenUI<UICtrlGMTool>();
-            //            #endif
+//            SocialGUIManager.Instance.OpenUI<UICtrlGMTool>();
 
             _cachedView.WorldButton.onClick.AddListener(OnWorldBtn);
             _cachedView.WorkshopButton.onClick.AddListener(OnCreateBtn);
@@ -106,36 +90,9 @@ namespace GameA
             SetLock(UIFunction.UI_SingleMode, _singleModeAvailable);
             SetLock(UIFunction.UI_Workshop, _workshopAvailable);
             SetLock(UIFunction.UI_World, _worldAvailable);
-            //_cachedView.DebugClearUserDataBtn.onClick.AddListener (OnDebugClearUserData);
-            // Debug.Log("______UICtrlTaskbar_______" + _cachedView.PlayerAvatarAnimation + "_______UICtrlTaskbar______" + _cachedView.PlayerAvatarAnimation.skeleton);
-            // todo player avatar at home
-            //         AvatarRenderTexture = new RenderTexture (256, 512, 0);
-            //_cachedView.AvatarRenderCamera.targetTexture = AvatarRenderTexture;
-            //         _cachedView.AvatarImage.texture = _cachedView.AvatarRenderCamera.targetTexture;
-            //AvatarRenderTexture;
-            // Debug.Log("_______UICtrlTaskbar______" + _cachedView.PlayerAvatarAnimation+ "____UICtrlTaskbar_________" + _cachedView.PlayerAvatarAnimation.skeleton);
-
-            //         _avatarView = new ChangePartsSpineView ();
-            //_avatarView.HomePlayerAvatarViewInit (_cachedView.PlayerAvatarAnimation);
-
-            //			var levels = TableManager.Instance.Table_StandaloneLevelDic;
-            //			foreach (var level in levels) {
-            //				Debug.Log (level.Value.Id + " " + level.Value.Name);
-            //			}
-            //_cachedView.AvatarImage.SetActiveEx(false);
-            //			LocalUser.Instance.UserLegacy.AvatarData.LoadUsingData(()=>{
-            //				RefreshAvatar();
-            //			}, (networkError) => {
-            //				LogHelper.Error("Network error when get avatarData, {0}", networkError);
-            //			});
-            //LocalUser.Instance.UsingAvatarData.Request(
-            //	LocalUser.Instance.UserGuid,
-            //	() => {
-            //		RefreshAvatar();
-            //	}, code => {
-            //		LogHelper.Error("Network error when get avatarData, {0}", code);
-            //	}
-            //);
+            _uiParticleItem = GameParticleManager.Instance.GetUIParticleItem(ParticleNameConstDefineGM2D.HomeBgEffect,
+                _cachedView.Trans, _groupId);
+            _uiParticleItem.Particle.Play();
         }
 
         protected override void OnOpen(object parameter)
@@ -143,11 +100,6 @@ namespace GameA
             base.OnOpen(parameter);
             SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamond);
             RefreshUserInfo();
-            //if (_lotteryAvailable)
-            //{
-            //    _cachedView.SpineCat.AnimationState.SetAnimation(0, "Run", true);
-            //}
-            //RefreshAvatar ();
             GameProcessManager.Instance.RefreshHomeUIUnlock();
         }
 
@@ -156,6 +108,8 @@ namespace GameA
             SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
             base.OnClose();
         }
+        
+        
 
         public void SetLock(UIFunction UI, bool ifunlock)
         {
@@ -336,9 +290,27 @@ namespace GameA
             }
         }
 
+        //拼图入口秘密通道
+        private int _puzzlePasswordCount;
+        private float _lastClickTime;
+        private void ShowPuzzleBtn()
+        {
+            if (Time.time - _lastClickTime < 0.5f)
+                _puzzlePasswordCount++;
+            else
+                _puzzlePasswordCount = 0;
+            _lastClickTime = Time.time;
+            if (_puzzlePasswordCount > 2)
+            {
+                _cachedView.PuzzleBtn.transform.parent.gameObject.SetActive(true);
+                _cachedView.PuzzleBtn.gameObject.SetActive(true);
+                _cachedView.PuzzleDisable.SetActive(false);
+                _puzzlePasswordCount = 0;
+            }
+        }
+
         private void RefreshUserInfo()
         {
-
             _cachedView.NickName.text = LocalUser.Instance.User.UserInfoSimple.NickName;
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHeadAvatar,
                 LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,
@@ -390,7 +362,7 @@ namespace GameA
                     //                        SocialGUIManager.ShowPopupDialog("网络错误");
                     //                    }
                     SocialGUIManager.ShowPopupDialog("执行成功，请重新启动程序", null,
-                        new System.Collections.Generic.KeyValuePair<string, Action>("OK", () => { Application.Quit(); }));
+                        new KeyValuePair<string, Action>("OK", () => { Application.Quit(); }));
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 },
                 code =>

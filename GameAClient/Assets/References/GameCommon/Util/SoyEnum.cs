@@ -12,6 +12,7 @@ namespace SoyEngine
 	{
 		Default = 0,
 		UI = 5,
+		RenderUI = 8,
 	}
 
 	public enum ECameraLayer

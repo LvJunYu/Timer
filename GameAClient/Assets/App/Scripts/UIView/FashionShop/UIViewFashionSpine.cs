@@ -1,23 +1,15 @@
-﻿using System;
-using System.Collections;
-using SoyEngine;
+﻿using SoyEngine;
+using Spine.Unity;
 using UnityEngine.UI;
-using UnityEngine;
 
 namespace GameA
 {
     public class UIViewFashionSpine : UIViewBase
     {
-
-
         /// <summary>
         /// 人物动画
         /// </summary>
-        public Spine.Unity.SkeletonAnimation PlayerAvatarAnimation;
-        /// <summary>
-        /// 人物摄像机
-        /// </summary>
-        public Camera AvatarRenderCamera;
+        public SkeletonAnimation PlayerAvatarAnimation;
         /// <summary>
         /// 人物
         /// </summary>

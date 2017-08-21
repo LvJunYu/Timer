@@ -114,18 +114,20 @@ namespace GameA
             }
 
             //武器碎片的图标
-             _weaponPartSpriteName = TableManager.Instance.GetEquipment(_weaponID).WeaponPartIcon;
+            _weaponPartSpriteName = TableManager.Instance.GetEquipment(_weaponID).WeaponPartIcon;
             ResourcesManager.Instance.TryGetSprite(_weaponPartSpriteName, out _weaponPartSprite);
             _cachedView.WeaponFragmentIcon.sprite = _weaponPartSprite;
 
             //万能碎片的图片
-
             ResourcesManager.Instance.TryGetSprite(_universalSpriteName, out _universalSprie);
             _cachedView.UniversalFragmentsIcon.sprite = _universalSprie;
+            
             //金币的数目
             _cachedView.CoinNum.text = _needGoldCoinNum.ToString();
+            
             //武器碎片的名字
             _cachedView.WeaponFragmentNum.text = _needWeaponPartNum.ToString();
+            
             //万能图标数量
             if (_needUniversalNum > 0)
             {

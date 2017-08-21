@@ -1,23 +1,32 @@
-﻿using System;
-using System.Collections;
-using SoyEngine;
-using UnityEngine;
-using UnityEngine.UI;
-using SoyEngine.Proto;
-//using SoyEngine;
+﻿using System.Collections;
 using GameA.Game;
 using NewResourceSolution;
-using Spine;
+using SoyEngine;
+using SoyEngine.Proto;
 using Spine.Unity;
+using UnityEngine;
+//using SoyEngine;
 
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlFashionSpine : UICtrlGenericBase<UIViewFashionSpine>
     {
         private ChangePartsSpineView _avatarView;
-        public RenderTexture AvatarRenderTexture { get; set; }
+        private RenderCamera _renderCamera;
+
+        public Texture AvatarRenderTexture
+        {
+            get
+            {
+                if (_renderCamera != null)
+                {
+                    return _renderCamera.Texture;
+                }
+                return null;
+            }
+        }
 
         public void TryOnAvatar(Table_FashionUnit item)
         {
@@ -40,7 +49,6 @@ namespace GameA
 
         public void ShowAllUsingAvatar()
         {
-            _cachedView.AvatarImage.SetActiveEx(true);
             if (LocalUser.Instance.UsingAvatarData.Head != null)
             {
                 _avatarView.SetParts((int) LocalUser.Instance.UsingAvatarData.Head.Id, SpinePartsHelper.ESpineParts.Head,
@@ -61,24 +69,23 @@ namespace GameA
                 _avatarView.SetParts((int) LocalUser.Instance.UsingAvatarData.Appendage.Id,
                     SpinePartsHelper.ESpineParts.Appendage, true);
             }
+            CoroutineProxy.Instance.StartCoroutine(DoFunc());
         }
 
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             //_cachedView.AvatarBtn.enabled = SocialGUIManager.Instance.OpenUI<UICtrlTaskbar>().FashionShopAvailable; todo
-            //_cachedView.AvatarBtn.onClick.AddListener(OnAvatarBtn);
-            AvatarRenderTexture = new RenderTexture(768, 1536, 0);
-            _cachedView.AvatarRenderCamera.targetTexture = AvatarRenderTexture;
-
-            CoroutineProxy.Instance.StartCoroutine(DoFunc());
-            _cachedView.AvatarImage.texture = _cachedView.AvatarRenderCamera.targetTexture;
+            _cachedView.AvatarBtn.onClick.AddListener(OnAvatarBtn);
+            
 
             _cachedView.PlayerAvatarAnimation.skeletonDataAsset =
                 ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, "SMainBoy0_SkeletonData", 1);
             _cachedView.PlayerAvatarAnimation.Initialize(false);
             _avatarView = new ChangePartsSpineView();
             _avatarView.HomePlayerAvatarViewInit(_cachedView.PlayerAvatarAnimation);
+            _renderCamera = RenderCameraManager.Instance.GetCamera(1.4f, _cachedView.PlayerAvatarAnimation.transform, 200, 360);
+            _cachedView.AvatarImage.texture = AvatarRenderTexture;
             _cachedView.AvatarImage.SetActiveEx(false);
 
             LocalUser.Instance.UsingAvatarData.Request(
@@ -90,9 +97,9 @@ namespace GameA
 
         IEnumerator DoFunc()
         {
-            _cachedView.AvatarRenderCamera.SetActiveEx(false);
-            yield return new WaitForSeconds(0.4f);
-            _cachedView.AvatarRenderCamera.SetActiveEx(true);
+            _cachedView.AvatarImage.SetActiveEx(false);
+            yield return null;
+            _cachedView.AvatarImage.SetActiveEx(true);
         }
 
         protected override void InitGroupId()
@@ -111,7 +118,7 @@ namespace GameA
 
         private void OnAvatarBtn()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
+//            SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
         }
 
         public void Set(bool ifUsable)

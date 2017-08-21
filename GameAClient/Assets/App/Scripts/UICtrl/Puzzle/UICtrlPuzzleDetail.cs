@@ -14,15 +14,12 @@ namespace GameA
     {
         //碎片间距
         private const float _halfSpacing = 160;
-
         private const float _quarterSpacing = 35;
         private const float _sixthSpacing = 40;
-
         private const float _ninthSpacing = 9;
 
         //按钮文字
         private const string _upgrateTxt = "升级";
-
         private const string _activeTxt = "合成";
         private const string _maxLvTxt = "等级MAX";
 
@@ -148,117 +145,13 @@ namespace GameA
             }
         }
 
-        private void OnEquipBtn()
-        {
-            SocialGUIManager.Instance.OpenUI<UICtrlPuzzleSlots>(_puzzle);
-        }
-
-        private void OnActiveBtn()
-        {
-            if (!GameATools.CheckGold(_puzzle.CostMoeny))
-                return;
-            //通知服务器
-            if (_puzzle.CurState == EPuzzleState.HasActived)
-                UpgradeCommand();
-            else
-                CompoundCommand();
-        }
-
-        private void CompoundCommand()
-        {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在合成拼图");
-            RemoteCommands.CompoundPictureFull(_puzzle.PictureId, res =>
-            {
-                if (res.ResultCode == (int) ECompoundPictureFullCode.CPF_Success)
-                {
-                    CompoundOrUpgrade();
-                    RequesUserPictureFull();
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                }
-                else
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    LogHelper.Debug("合成失败");
-                }
-            }, code =>
-            {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                //测试，服务器完成后删除
-                LogHelper.Debug("服务器请求失败，客服端合成测试");
-                CompoundOrUpgrade();
-                //LogHelper.Debug("合成失败");
-            });
-        }
-
-        private void UpgradeCommand()
-        {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在升级拼图");
-            RemoteCommands.UpgradePictureFull(_puzzle.PictureId, _puzzle.Level + 1, res =>
-            {
-                if (res.ResultCode == (int) ECompoundPictureFullCode.CPF_Success)
-                {
-                    CompoundOrUpgrade();
-                    RequesUserPictureFull();
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                }
-                else
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    LogHelper.Debug("升级失败");
-                }
-            }, code =>
-            {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                //测试，服务器完成后删除
-                LogHelper.Debug("服务器请求失败，客服端升级测试");
-                CompoundOrUpgrade();
-                //LogHelper.Debug("升级失败");
-            });
-        }
-
-        private void CompoundOrUpgrade()
-        {
-            //消耗金币
-            if (!GameATools.LocalUseGold(_puzzle.CostMoeny))
-            {
-                LogHelper.Debug("Don't have enough moeny !!");
-                return;
-            }
-            //消耗材料
-            for (int i = 0; i < _puzzleFragments.Length; i++)
-            {
-                _puzzleFragments[i].TotalCount--;
-            }
-            //升级
-            _puzzle.ActivatePuzzle();
-            //传递当前合成的拼图
-            SocialGUIManager.Instance.GetUI<UICtrlPuzzle>().CurActivePicFull = _puzzle;
-            Messenger.Broadcast(EMessengerType.OnPuzzleCompound);
-            LogHelper.Debug("合成/升级成功");
-        }
-
-        private void SetFragments()
-        {
-            for (int i = 0; i < _curUMFragments.Count; i++)
-            {
-                _curUMFragments[i].SetData();
-            }
-        }
-
-        private void RequesUserPictureFull()
-        {
-            LocalUser.Instance.UserPictureFull.Request(LocalUser.Instance.UserGuid, null,
-                code => { LogHelper.Error("Network error when get UserPictureFull, {0}", code); });
-            LocalUser.Instance.UserPicturePart.Request(LocalUser.Instance.UserGuid, null,
-                code => { LogHelper.Error("Network error when get UserPicturePart, {0}", code); });
-        }
-
-        private void SetUI()
+        private void RefreshView()
         {
             //拼图数据
             _curUMPuzzleItem.SetData(_puzzle);
 
             //创建拼图碎片Item
+            _puzzleFragments = _puzzle.NeededFragments;
             _curUMFragments.Clear();
             for (int i = 0; i < _puzzleFragments.Length; i++)
             {
@@ -272,9 +165,9 @@ namespace GameA
             _cachedView.PuzzleFragmentGrid.spacing = GetSpace(_puzzle.PuzzleType);
 
             //文字信息
-            SetTexts();
+            RefreshTexts();
             //按钮信息
-            SetButtons();
+            RefreshButtons();
         }
 
         private float GetSpace(EPuzzleType puzzleType)
@@ -294,14 +187,22 @@ namespace GameA
             }
         }
 
-        private void SetTexts()
+        private void RefreshFragments()
+        {
+            for (int i = 0; i < _curUMFragments.Count; i++)
+            {
+                _curUMFragments[i].RefreshView();
+            }
+        }
+        
+        private void RefreshTexts()
         {
             _cachedView.NameTxt.text = _puzzle.Name;
             _cachedView.LvTxt.text = _puzzle.Level.ToString();
             _cachedView.DescTxt.text = _puzzle.Desc;
         }
 
-        private void SetButtons()
+        private void RefreshButtons()
         {
             //设置按钮是否可用
             _cachedView.Unable_Active.SetActive(!CheckActivable());
@@ -345,26 +246,6 @@ namespace GameA
             return _puzzle.CurState == EPuzzleState.HasActived;
         }
 
-        private void OnPuzzleCompound()
-        {
-            //更新拼图
-            _curUMPuzzleItem.SetData();
-            //更新碎片
-            SetFragments();
-            SetTexts();
-            SetButtons();
-        }
-
-        private void OnPuzzleFragChanged()
-        {
-            //更新拼图
-            _curUMPuzzleItem.SetData();
-            //更新碎片
-            SetFragments();
-
-            SetButtons();
-        }
-
         private UMCtrlPuzzleFragmentItem CreatePuzzleFragment()
         {
             //查看缓存
@@ -383,15 +264,6 @@ namespace GameA
             _fragmentsCache.Add(puzzleFragment);
 
             return puzzleFragment;
-        }
-
-        protected override void OnOpen(object parameter)
-        {
-            base.OnOpen(parameter);
-            _puzzle = parameter as PictureFull;
-            if (_puzzle == null) return;
-            _puzzleFragments = _puzzle.NeededFragments;
-            SetUI();
         }
 
         protected override void OnViewCreated()
@@ -415,6 +287,14 @@ namespace GameA
             RegisterEvent(EMessengerType.OnPuzzleCompound, OnPuzzleCompound);
             RegisterEvent(EMessengerType.OnPuzzleFragChanged, OnPuzzleFragChanged);
         }
+        
+        protected override void OnOpen(object parameter)
+        {
+            base.OnOpen(parameter);
+            _puzzle = parameter as PictureFull;
+            if (_puzzle == null) return;
+            RefreshView();
+        }
 
         protected override void OnClose()
         {
@@ -427,14 +307,122 @@ namespace GameA
             }
         }
 
+        protected override void InitGroupId()
+        {
+            _groupId = (int) EUIGroupType.PopUpUI2;
+        }
+        
         private void OnCloseBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlPuzzleDetail>();
         }
-
-        protected override void InitGroupId()
+        
+        private void OnEquipBtn()
         {
-            _groupId = (int) EUIGroupType.PopUpUI2;
+            SocialGUIManager.Instance.OpenUI<UICtrlPuzzleSlots>(_puzzle);
+        }
+
+        private void OnActiveBtn()
+        {
+            if (!GameATools.CheckGold(_puzzle.CostMoeny))
+                return;
+            //通知服务器
+            if (_puzzle.CurState == EPuzzleState.HasActived)
+                UpgradeCommand();
+            else
+                CompoundCommand();
+        }
+
+        private void CompoundCommand()
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在合成拼图");
+            RemoteCommands.CompoundPictureFull(_puzzle.PictureId, res =>
+            {
+                if (res.ResultCode == (int) ECompoundPictureFullCode.CPF_Success)
+                {
+                    CompoundOrUpgrade();
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                }
+                else
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    LogHelper.Debug("合成失败");
+                }
+            }, code =>
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                //测试，服务器完成后删除
+                LogHelper.Debug("服务器请求失败，客服端合成测试");
+                CompoundOrUpgrade();
+                //LogHelper.Debug("合成失败");
+            });
+        }
+
+        private void UpgradeCommand()
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在升级拼图");
+            RemoteCommands.UpgradePictureFull(_puzzle.PictureId, _puzzle.Level + 1, res =>
+            {
+                if (res.ResultCode == (int) ECompoundPictureFullCode.CPF_Success)
+                {
+                    CompoundOrUpgrade();
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                }
+                else
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    LogHelper.Debug("升级失败");
+                }
+            }, code =>
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                //测试，服务器完成后删除
+                LogHelper.Debug("服务器请求失败，客服端升级测试");
+                CompoundOrUpgrade();
+                //LogHelper.Debug("升级失败");
+            });
+        }
+
+        private void CompoundOrUpgrade()
+        {
+            //消耗金币
+            if (!GameATools.LocalUseGold(_puzzle.CostMoeny))
+            {
+                LogHelper.Debug("Don't have enough moeny !!");
+                return;
+            }
+            //消耗材料
+            for (int i = 0; i < _puzzleFragments.Length; i++)
+            {
+                _puzzleFragments[i].TotalCount--;
+            }
+            //升级
+            _puzzle.ActivatePuzzle();
+            //传递当前合成的拼图
+            SocialGUIManager.Instance.GetUI<UICtrlPuzzle>().CurActivePicFull = _puzzle;
+            Messenger.Broadcast(EMessengerType.OnPuzzleCompound);
+            LogHelper.Debug("合成/升级成功");
+        }
+        
+        private void OnPuzzleCompound()
+        {
+            //更新拼图
+            _curUMPuzzleItem.RefreshView();
+            //更新碎片
+            RefreshFragments();
+            RefreshTexts();
+            RefreshButtons();
+        }
+
+        private void OnPuzzleFragChanged()
+        {
+            if(!_isOpen) return;
+            //更新拼图
+            _curUMPuzzleItem.RefreshView();
+            //更新碎片
+            RefreshFragments();
+
+            RefreshButtons();
         }
     }
 }

@@ -17,10 +17,7 @@ namespace GameA.Game
         protected override void OnRun()
         {
             base.OnRun();
-            if (_animation != null)
-            {
-                _animation.Init("Run", false);
-            }
+            _effectSpineBullet = GameParticleManager.Instance.EmitOnce(_tableUnit.Model, _trans);
         }
     }
 }

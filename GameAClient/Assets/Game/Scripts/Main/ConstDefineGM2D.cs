@@ -22,7 +22,7 @@ namespace GameA.Game
         public const float FixedDeltaTime = 0.02f;
 	    public const int FixedFrameCount = 50;
         public const int FixedDeltaTile = (int)(FixedDeltaTime * ServerTileScale);
-	    public const float CameraOrthoSizeOnPlay = 4.5f;
+	    public const float CameraOrthoSizeOnPlay = 5f;
 
         /// <summary>
         /// 8+16 = 24
@@ -42,7 +42,7 @@ namespace GameA.Game
         public const int MaxMapDistance = 300 * ServerTileScale;
 
 		public static IntVec2 MapStartPos = new IntVec2(100,100) * ServerTileScale;
-        public const int MaxHeightTileCount = 9;
+        public const int MaxHeightTileCount = 10;
 
         public const float AIMaxPositionError = 10;
 

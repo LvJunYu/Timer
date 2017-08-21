@@ -50,6 +50,8 @@ namespace GameA
 		/// 屏蔽玩家输入计时器
 		/// </summary>
 		private float _blockInputTimer;
+
+	    private UIParticleItem _uiParticleItem;
         #endregion
 
         #region 属性
@@ -73,6 +75,10 @@ namespace GameA
         {
             base.OnOpen (parameter);
 			_dragging = true;
+	        if (_currentChapter <= 0)
+	        {
+		        _currentChapter = AppData.Instance.AdventureData.UserData.AdventureUserProgress.SectionUnlockProgress;
+	        }
 
 			if (_currentChapter < 1) {
 				CurrentChapter = 1;
@@ -107,12 +113,22 @@ namespace GameA
             } else {
                 _cachedView.MatchBtn.gameObject.SetActive (false);
             }
+	        if (null == _uiParticleItem)
+	        {
+		        _uiParticleItem = GameParticleManager.Instance.GetUIParticleItem(
+			        ParticleNameConstDefineGM2D.SingleModeBgEffect, _cachedView.Trans, _groupId);
+	        }
+	        _uiParticleItem.Particle.Play();
         }
 
         protected override void OnClose()
         {
 	        SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
 			_dragging = false;
+	        if (null != _uiParticleItem)
+	        {
+		        _uiParticleItem.Particle.Stop();
+	        }
             base.OnClose();
         }
 
@@ -123,7 +139,8 @@ namespace GameA
 //            RegisterEvent(EMessengerType.OnAccountLoginStateChanged, OnEvent);
         }
 
-        protected override void OnViewCreated()
+
+	    protected override void OnViewCreated()
         {
             base.OnViewCreated();
 
@@ -151,16 +168,16 @@ namespace GameA
 			_dragging = false;
 			_blockInputTimer = 0f;
 			_cachedView.InputBlock.enabled = false;
-
-			_currentChapter = AppData.Instance.AdventureData.UserData.AdventureUserProgress.SectionUnlockProgress;
+	        
+	        _cachedView.MatchBtn.SetActiveEx(false);
+			
+	        _cachedView.SetActiveEx(false);
         }
 			
 		public override void OnUpdate ()
 		{
-		    if (_cachedView.NextSection.gameObject != null)
-		        _cachedView.NextSection.rectTransform.localPosition = new Vector2(3f, 0)*Mathf.Sin(Time.time*3f)+new Vector2(-70f, -16);
-            if (_cachedView.PREVSection.gameObject != null)
-                _cachedView.PREVSection.rectTransform.localPosition = -new Vector2(3f, 0) * Mathf.Sin(Time.time * 3f) ;
+			_cachedView.NextSection.rectTransform.localPosition = new Vector2(3f, 0)*Mathf.Sin(Time.time*3f)+new Vector2(-70f, -16);
+			_cachedView.PREVSection.rectTransform.localPosition = -new Vector2(3f, 0) * Mathf.Sin(Time.time * 3f) ;
             base.OnUpdate ();
 			if (_currentChapter < 1) {
 				CurrentChapter = 1;
@@ -312,7 +329,7 @@ namespace GameA
                 // 奖励关直接进去游戏 todo
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (
                     this, 
-                    string.Format ("请求进入冒险[{0}]关卡， 第{1}章，第{2}关...", isBonus ? "奖励" : "普通", chapterIdx, levelIdx));
+                    string.Format ("请求进入冒险[{0}]关卡， 第{1}章，第{2}关...", "奖励", chapterIdx, levelIdx));
 
                 AppData.Instance.AdventureData.PlayAdventureLevel (
                     chapterIdx,
@@ -390,7 +407,7 @@ namespace GameA
 			}
 
             if (GameProcessManager.Instance.IsGameSystemAvailable (EGameSystem.ModifyMatch)) {
-                _cachedView.MatchBtn.gameObject.SetActive (true);
+//                _cachedView.MatchBtn.gameObject.SetActive (true);
             } else {
                 _cachedView.MatchBtn.gameObject.SetActive (false);
             }
