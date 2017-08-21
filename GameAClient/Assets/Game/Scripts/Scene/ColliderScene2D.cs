@@ -20,7 +20,11 @@ namespace GameA.Game
     {
         private static ColliderScene2D _instance;
         private readonly Dictionary<IntVec3, UnitBase> _units = new Dictionary<IntVec3, UnitBase>();
-        [SerializeField] private readonly List<UnitBase> _allUnits = new List<UnitBase>();
+        
+        [SerializeField] private readonly List<UnitBase> _allSwitchUnits = new List<UnitBase>();
+        [SerializeField] private readonly List<UnitBase> _allMagicUnits = new List<UnitBase>();
+        [SerializeField] private readonly List<UnitBase> _allOtherUnits = new List<UnitBase>();
+
         [SerializeField] private readonly List<ColliderDesc> _allColliderDescs = new List<ColliderDesc>();
         private Comparison<UnitBase> _comparisonMoving = SortRectIndex;
         private InterestArea _interestArea;
@@ -36,15 +40,25 @@ namespace GameA.Game
             get { return _units; }
         }
 
-        public List<UnitBase> AllUnits
+        public List<UnitBase> AllOtherUnits
         {
-            get { return _allUnits; }
+            get { return _allOtherUnits; }
+        }
+
+        public List<UnitBase> AllSwitchUnits
+        {
+            get { return _allSwitchUnits; }
+        }
+
+        public List<UnitBase> AllMagicUnits
+        {
+            get { return _allMagicUnits; }
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            foreach (var unit in _allUnits)
+            foreach (var unit in _units.Values)
             {
                 if (unit != null)
                 {
@@ -57,7 +71,9 @@ namespace GameA.Game
                 }
             }
             _units.Clear();
-            _allUnits.Clear();
+            _allSwitchUnits.Clear();
+            _allMagicUnits.Clear();
+            _allOtherUnits.Clear();
             Messenger<NodeData[], Grid2D>.RemoveListener(EMessengerType.OnAOISubscribe, OnAOISubscribe);
             Messenger<NodeData[], Grid2D>.RemoveListener(EMessengerType.OnAOIUnsubscribe, OnAOIUnsubscribe);
             Messenger<SceneNode[], Grid2D>.RemoveListener(EMessengerType.OnDynamicSubscribe, OnDynamicSubscribe);
@@ -169,7 +185,18 @@ namespace GameA.Game
             {
                 _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 0;
             }
-            _allUnits.Add(unit);
+            if (UnitDefine.IsSwitchTrigger(unit.Id))
+            {
+                _allSwitchUnits.Add(unit);
+            }
+            else if (unit.UseMagic())
+            {
+                _allMagicUnits.Add(unit);
+            }
+            else
+            {
+                _allOtherUnits.Add(unit);
+            }
             return true;
         }
 
@@ -193,10 +220,21 @@ namespace GameA.Game
                 return false;
             }
             unit.OnDispose();
-            _allUnits.Remove(unit);
             if (UnitDefine.IsGround(tableUnit.Id))
             {
                 _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 1;
+            }
+            if (UnitDefine.IsSwitchTrigger(unit.Id))
+            {
+                _allSwitchUnits.Remove(unit);
+            }
+            else if (unit.UseMagic())
+            {
+                _allMagicUnits.Remove(unit);
+            }
+            else
+            {
+                _allOtherUnits.Remove(unit);
             }
             return _units.Remove(unitDesc.Guid);
         }
@@ -278,9 +316,17 @@ namespace GameA.Game
 
         public void Reset()
         {
-            for (int i = 0; i < _allUnits.Count; i++)
+            for (int i = 0; i < _allSwitchUnits.Count; i++)
             {
-                _allUnits[i].Reset();
+                _allSwitchUnits[i].Reset();
+            }
+            for (int i = 0; i < _allMagicUnits.Count; i++)
+            {
+                _allMagicUnits[i].Reset();
+            }
+            for (int i = 0; i < _allOtherUnits.Count; i++)
+            {
+                _allOtherUnits[i].Reset();
             }
             for (int i = 0; i < _allColliderDescs.Count; i++)
             {
@@ -293,7 +339,9 @@ namespace GameA.Game
 
         public void SortData()
         {
-            _allUnits.Sort(_comparisonMoving);
+            _allSwitchUnits.Sort(_comparisonMoving);
+            _allMagicUnits.Sort(_comparisonMoving);
+            _allOtherUnits.Sort(_comparisonMoving);
             Sort();
         }
 

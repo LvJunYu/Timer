@@ -237,19 +237,9 @@ namespace GameA.Game
             get { return _moveDirection; }
         }
 
-        public virtual Grid2D LastColliderGrid
-        {
-            get { return _lastColliderGrid; }
-        }
-
         public virtual Grid2D ColliderGrid
         {
             get { return _colliderGrid; }
-        }
-
-        public virtual Grid2D ColliderGridInnder
-        {
-            get { return _colliderGridInner; }
         }
 
         public bool IsAlive
@@ -505,7 +495,7 @@ namespace GameA.Game
             get { return _assetPath; }
         }
 
-        public bool UseMagic()
+        public virtual bool UseMagic()
         {
             return !IsActor && _curMoveDirection != EMoveDirection.None;
         }

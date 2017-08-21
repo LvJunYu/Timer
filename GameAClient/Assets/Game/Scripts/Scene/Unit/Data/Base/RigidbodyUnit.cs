@@ -72,7 +72,7 @@ namespace GameA.Game
             }
         }
 
-        protected override void UpdateCollider(IntVec2 min)
+        protected void UpdateCollider(IntVec2 min)
         {
             for (int i = 0; i < 4; i++)
             {

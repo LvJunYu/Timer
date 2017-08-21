@@ -91,7 +91,7 @@ namespace GameA.Game
             }
         }
 
-        public void UpdateView(IntVec2 deltaPos)
+        public void UpdateSwitchPos(IntVec2 deltaPos)
         {
             if (_isAlive)
             {
