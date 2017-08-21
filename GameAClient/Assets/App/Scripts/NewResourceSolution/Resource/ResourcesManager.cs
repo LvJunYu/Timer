@@ -1,7 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using GameA;
 using SoyEngine;
+using UnityEditor;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace NewResourceSolution
 {
@@ -45,14 +49,14 @@ namespace NewResourceSolution
 
 		#region public methods
 
-		public UnityEngine.Object GetPrefab(EResType resType, string name, int scenary = 0)
+		public Object GetPrefab(EResType resType, string name, int scenary = 0)
 		{
-            return GetAsset<UnityEngine.Object>(resType, name, scenary, true, true, LocalizationManager.Instance.CurrentLocale);
+            return GetAsset<Object>(resType, name, scenary, true, true, LocalizationManager.Instance.CurrentLocale);
 		}
 
-        public bool TryGetTexture(string name, out UnityEngine.Texture texture, int scenary = 0)
+        public bool TryGetTexture(string name, out Texture texture, int scenary = 0)
         {
-            texture = GetAsset<UnityEngine.Texture>(EResType.Texture, name, scenary, false, false);
+            texture = GetAsset<Texture>(EResType.Texture, name, scenary, false, false);
             if (null != texture)
             {
                 return true;
@@ -63,9 +67,9 @@ namespace NewResourceSolution
             }
         }
 
-        public bool TryGetSprite(string name, out UnityEngine.Sprite sprite, int scenary = 0)
+        public bool TryGetSprite(string name, out Sprite sprite, int scenary = 0)
         {
-            sprite = GetAsset<UnityEngine.Sprite>(EResType.Sprite, name, scenary, false, false);
+            sprite = GetAsset<Sprite>(EResType.Sprite, name, scenary, false, false);
             if (null != sprite)
             {
                 return true;
@@ -76,24 +80,24 @@ namespace NewResourceSolution
             }
         }
 
-        public UnityEngine.Texture GetTexture (string name, int scenary = 0)
+        public Texture GetTexture (string name, int scenary = 0)
         {
-            return GetAsset<UnityEngine.Texture>(EResType.Texture, name, scenary, true, false);
+            return GetAsset<Texture>(EResType.Texture, name, scenary, true, false);
         }
 
-        public UnityEngine.Sprite GetSprite (string name, int scenary = 0)
+        public Sprite GetSprite (string name, int scenary = 0)
         {
-            return GetAsset<UnityEngine.Sprite>(EResType.Sprite, name, scenary, true, false);
+            return GetAsset<Sprite>(EResType.Sprite, name, scenary, true, false);
         }
 
-        public UnityEngine.AudioClip GetAudio (string name, int scenary = 0)
+        public AudioClip GetAudio (string name, int scenary = 0)
         {
-            return GetAsset<UnityEngine.AudioClip>(EResType.AudioClip, name, scenary, true, false);
+            return GetAsset<AudioClip>(EResType.AudioClip, name, scenary, true, false);
         }
 
         public string GetJson (string name, int scenary = 0)
         {
-            var textAsset = GetAsset<UnityEngine.TextAsset>(EResType.Table, name, scenary, true, false);
+            var textAsset = GetAsset<TextAsset>(EResType.Table, name, scenary, true, false);
             if (null != textAsset)
             {
                 return textAsset.text;
@@ -108,7 +112,7 @@ namespace NewResourceSolution
             bool logWhenError = true,
             bool isLocaleRes = false,
             ELocale locale = ELocale.WW
-            ) where T : UnityEngine.Object
+            ) where T : Object
         {
             if (null == name) return null;
             #if UNITY_EDITOR
@@ -134,7 +138,7 @@ namespace NewResourceSolution
                 {
                     return null;
                 }
-                var obj = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(assetPath);
+                var obj = AssetDatabase.LoadAssetAtPath<T>(assetPath);
                 return obj;
             }
             #endif
@@ -216,7 +220,7 @@ namespace NewResourceSolution
                 EditorResType resType = editorResTypeList [i];
                 if (resType.IsLocaleRes)
                 {
-                    foreach (int j in System.Enum.GetValues(typeof(ELocale)))             
+                    foreach (int j in Enum.GetValues(typeof(ELocale)))             
                     {
                         ELocale targetLocale = (ELocale)j;
                         string localeName = LocaleDefine.LocaleNames[(int)targetLocale];
@@ -228,29 +232,29 @@ namespace NewResourceSolution
                         }
 
                         string rootPath = ResPathUtility.GetEditorDebugResFolderPath(resType.ResType, true, targetLocale);
-                        if (UnityEditor.AssetDatabase.IsValidFolder(rootPath))
+                        if (AssetDatabase.IsValidFolder(rootPath))
                         {
 //                            LogHelper.Info("{0} rootPath: {1}", resType.ResType, rootPath);
                             if (resType.IsFolderRes)
                             {
-                                System.IO.DirectoryInfo rootDirectoryInfo = new System.IO.DirectoryInfo (rootPath);
+                                DirectoryInfo rootDirectoryInfo = new DirectoryInfo (rootPath);
                                 var childDirectorys = rootDirectoryInfo.GetDirectories ();
                                 for (int k = 0; k < childDirectorys.Length; k++)
                                 {
-                                    var parts = childDirectorys [k].ToString ().Split (new[] {ResPath.Assets}, System.StringSplitOptions.None);
+                                    var parts = childDirectorys [k].ToString ().Split (new[] {ResPath.Assets}, StringSplitOptions.None);
                                     string childDirRelatedToUnityProject = 
                                         string.Format (
                                             "{0}{1}",
                                             ResPath.Assets,
                                             parts [parts.Length - 1]
                                         );
-                                    var assets = UnityEditor.AssetDatabase.FindAssets(resType.SearchFilter, new[] {childDirRelatedToUnityProject});
+                                    var assets = AssetDatabase.FindAssets(resType.SearchFilter, new[] {childDirRelatedToUnityProject});
                                     localeAssets.AddRange (assets);
                                 }
                             }
                             else
                             {
-                                var assets = UnityEditor.AssetDatabase.FindAssets(resType.SearchFilter, new[] {rootPath});
+                                var assets = AssetDatabase.FindAssets(resType.SearchFilter, new[] {rootPath});
                                 localeAssets.AddRange (assets);
                             }
                         }
@@ -259,29 +263,29 @@ namespace NewResourceSolution
                 else
                 {
                     string rootPath = ResPathUtility.GetEditorDebugResFolderPath(resType.ResType, false);
-                    if (UnityEditor.AssetDatabase.IsValidFolder(rootPath))
+                    if (AssetDatabase.IsValidFolder(rootPath))
                     {
 //                        LogHelper.Info("{0} rootPath: {1}", resType.ResType, rootPath);
                         if (resType.IsFolderRes)
                         {
-                            System.IO.DirectoryInfo rootDirectoryInfo = new System.IO.DirectoryInfo (rootPath);
+                            DirectoryInfo rootDirectoryInfo = new DirectoryInfo (rootPath);
                             var childDirectorys = rootDirectoryInfo.GetDirectories ();
                             for (int k = 0; k < childDirectorys.Length; k++)
                             {
-                                var parts = childDirectorys [k].ToString ().Split (new[] {ResPath.Assets}, System.StringSplitOptions.None);
+                                var parts = childDirectorys [k].ToString ().Split (new[] {ResPath.Assets}, StringSplitOptions.None);
                                 string childDirRelatedToUnityProject = 
                                     string.Format (
                                         "{0}{1}",
                                         ResPath.Assets,
                                         parts [parts.Length - 1]
                                     );
-                                var assets = UnityEditor.AssetDatabase.FindAssets(resType.SearchFilter, new[] {childDirRelatedToUnityProject});
+                                var assets = AssetDatabase.FindAssets(resType.SearchFilter, new[] {childDirRelatedToUnityProject});
                                 allNormalAssetGuids.AddRange (assets);
                             }
                         }
                         else
                         {
-                            var assets = UnityEditor.AssetDatabase.FindAssets(resType.SearchFilter, new[] {rootPath});
+                            var assets = AssetDatabase.FindAssets(resType.SearchFilter, new[] {rootPath});
                             allNormalAssetGuids.AddRange (assets);
                         }
                     }
@@ -293,8 +297,8 @@ namespace NewResourceSolution
             }
             for (int i = 0; i < allNormalAssetGuids.Count; i++)
             {
-                string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath (allNormalAssetGuids[i]);
-                string assetName = System.IO.Path.GetFileNameWithoutExtension (assetPath);
+                string assetPath = AssetDatabase.GUIDToAssetPath (allNormalAssetGuids[i]);
+                string assetName = Path.GetFileNameWithoutExtension (assetPath);
                 if (!_editorResPathDic.ContainsKey(assetName))
                 {
                     _editorResPathDic.Add (assetName, assetPath);
@@ -312,8 +316,8 @@ namespace NewResourceSolution
                 List<string> assets = itor.Current.Value;
                 for (int i = 0; i < assets.Count; i++)
                 {
-                    string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath (assets[i]);
-                    string assetName = System.IO.Path.GetFileNameWithoutExtension (assetPath);
+                    string assetPath = AssetDatabase.GUIDToAssetPath (assets[i]);
+                    string assetName = Path.GetFileNameWithoutExtension (assetPath);
                     assetName = string.Format (StringFormat.TwoLevelPath, localeName, assetName);
                     if (!_editorResPathDic.ContainsKey(assetName))
                     {
@@ -375,7 +379,8 @@ namespace NewResourceSolution
             #if UNITY_EDITOR
             if (!RuntimeConfig.Instance.UseAssetBundleRes)
             {
-                GameA.SocialApp.Instance.LoginAfterUpdateResComplete();
+                CoroutineProxy.Instance.StartCoroutine(
+                    CoroutineProxy.RunNextFrame(SocialApp.Instance.LoginAfterUpdateResComplete));
                 return;
             }
             #endif

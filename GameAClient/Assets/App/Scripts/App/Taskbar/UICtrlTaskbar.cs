@@ -55,24 +55,7 @@ namespace GameA
         {
             base.InitEventListener();
             RegisterEvent(EMessengerType.OpenGameSetting, ShowPuzzleBtn);
-            RegisterEvent(EMessengerType.OnChangeToGameMode, OnChangeToGameMode);
-            RegisterEvent(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
             RegisterEvent(EMessengerType.OnUserInfoChanged, OnChangeToUserInfo);
-        }
-
-        private void OnChangeToGameMode()
-        {
-            if (_uiParticleItem != null)
-            {
-                _uiParticleItem.Particle.Stop();
-            }
-        }
-        private void OnChangeToAppMode()
-        {
-            if (_uiParticleItem != null)
-            {
-                _uiParticleItem.Particle.Play();
-            }
         }
 
         private void OnChangeToUserInfo()
@@ -108,7 +91,7 @@ namespace GameA
             SetLock(UIFunction.UI_Workshop, _workshopAvailable);
             SetLock(UIFunction.UI_World, _worldAvailable);
             _uiParticleItem = GameParticleManager.Instance.GetUIParticleItem(ParticleNameConstDefineGM2D.HomeBgEffect,
-                SocialGUIManager.Instance.SceneUIRoot, _groupId);
+                _cachedView.Trans, _groupId);
             _uiParticleItem.Particle.Play();
         }
 
@@ -328,7 +311,6 @@ namespace GameA
 
         private void RefreshUserInfo()
         {
-
             _cachedView.NickName.text = LocalUser.Instance.User.UserInfoSimple.NickName;
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHeadAvatar,
                 LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,
