@@ -71,6 +71,15 @@ namespace GameA
             RefreshView(_selectedUnitType);
         }
 
+	    protected override void OnClose()
+	    {
+		    base.OnClose();
+		    for (int i = 0; i < _umItems.Count; i++)
+		    {
+			    _umItems[i].Hide();
+		    }
+	    }
+
 	    protected override void InitEventListener()
 	    {
 		    base.InitEventListener();
@@ -151,20 +160,32 @@ namespace GameA
             }
             for (int i = _umItems.Count - 1; i >= 0; i--)
             {
-                PoolFactory<UMCtrlItem>.Free(_umItems[i]);
+//                PoolFactory<UMCtrlItem>.Free(_umItems[i]);
 //                _umItems.RemoveAt(i);
+	            _umItems[i].Hide();
             }
-            _umItems.Clear ();
+//            _umItems.Clear ();
 		    _cachedView.ScrollRect.content.anchoredPosition = Vector2.zero;
             List<Table_Unit> items = UnitManager.Instance.GetSameTypeItems(_selectedUnitType);
             if (items != null)
             {
                 for (int i = 0; i < items.Count; i++)
                 {
-                    var umItem = PoolFactory<UMCtrlItem>.Get ();
-                    umItem.Init(_cachedView.ScrollRect.content);
+//                    var umItem = PoolFactory<UMCtrlItem>.Get ();
+//	                umItem.CustomInit(_cachedView.ScrollRect.content);
+//                    umItem.Init(_cachedView.ScrollRect.content);
+	                UMCtrlItem umItem;
+	                if (i < _umItems.Count)
+	                {
+		                umItem = _umItems[i];
+	                }
+	                else
+	                {
+		                umItem = CreateNewUMCtrlItem();
+		                _umItems.Add(umItem);
+	                }
                     umItem.Set(items[i], EditMode.Instance.BoardData.CurrentSelectedUnitId == items[i].Id);
-                    _umItems.Add(umItem);
+	                umItem.Show();
                 }
                 int itemCount = items.Count;
 
@@ -203,6 +224,14 @@ namespace GameA
                 }
             }
         }
+
+	    private UMCtrlItem CreateNewUMCtrlItem()
+	    {
+		    var umItem = new UMCtrlItem();
+		    umItem.Init(_cachedView.ScrollRect.content);
+		    return umItem;
+	    }
+	    
 
 		#endregion
 	}
