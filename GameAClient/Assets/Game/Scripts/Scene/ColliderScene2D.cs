@@ -23,6 +23,7 @@ namespace GameA.Game
         
         [SerializeField] private readonly List<UnitBase> _allSwitchUnits = new List<UnitBase>();
         [SerializeField] private readonly List<UnitBase> _allMagicUnits = new List<UnitBase>();
+        [SerializeField] private readonly List<UnitBase> _allBulletUnits = new List<UnitBase>();
         [SerializeField] private readonly List<UnitBase> _allOtherUnits = new List<UnitBase>();
 
         [SerializeField] private readonly List<ColliderDesc> _allColliderDescs = new List<ColliderDesc>();
@@ -55,6 +56,11 @@ namespace GameA.Game
             get { return _allMagicUnits; }
         }
 
+        public List<UnitBase> AllBulletUnits
+        {
+            get { return _allBulletUnits; }
+        }
+
         public override void Dispose()
         {
             base.Dispose();
@@ -73,6 +79,7 @@ namespace GameA.Game
             _units.Clear();
             _allSwitchUnits.Clear();
             _allMagicUnits.Clear();
+            _allBulletUnits.Clear();
             _allOtherUnits.Clear();
             Messenger<NodeData[], Grid2D>.RemoveListener(EMessengerType.OnAOISubscribe, OnAOISubscribe);
             Messenger<NodeData[], Grid2D>.RemoveListener(EMessengerType.OnAOIUnsubscribe, OnAOIUnsubscribe);
@@ -193,6 +200,10 @@ namespace GameA.Game
             {
                 _allMagicUnits.Add(unit);
             }
+            else if(UnitDefine.IsBullet(unit.Id))
+            {
+                _allBulletUnits.Add(unit);
+            }
             else
             {
                 _allOtherUnits.Add(unit);
@@ -231,6 +242,10 @@ namespace GameA.Game
             else if (unit.UseMagic())
             {
                 _allMagicUnits.Remove(unit);
+            }
+            else if(UnitDefine.IsBullet(unit.Id))
+            {
+                _allBulletUnits.Remove(unit);
             }
             else
             {

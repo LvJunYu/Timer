@@ -17,6 +17,7 @@ namespace GameA.Game
         {
             var allSwitchUnits = ColliderScene2D.Instance.AllSwitchUnits;
             var allMagicUnits = ColliderScene2D.Instance.AllMagicUnits;
+            var allBulletUnits = ColliderScene2D.Instance.AllBulletUnits;
             var allOtherUnits = ColliderScene2D.Instance.AllOtherUnits;
             
             for (int i = 0; i < allSwitchUnits.Count; i++)
@@ -41,11 +42,16 @@ namespace GameA.Game
                 allOtherUnits[i].CalculateExtraDeltaPos();
             }
             
+            for (int i = 0; i < allOtherUnits.Count; i++)
+            {
+                allBulletUnits[i].UpdateLogic();
+            }
+
             for (int i = 0; i < allMagicUnits.Count; i++)
             {
                 allMagicUnits[i].UpdateView(deltaTime);
             }
-            
+
             var mainUnit = PlayMode.Instance.MainPlayer;
             var boxOperateType = mainUnit.GetBoxOperateType();
             switch (boxOperateType)
@@ -73,6 +79,10 @@ namespace GameA.Game
                         allOtherUnits[i].UpdateView(deltaTime);
                     }
                     break;
+            }
+            for (int i = 0; i < allOtherUnits.Count; i++)
+            {
+                allBulletUnits[i].UpdateView(deltaTime);
             }
         }
     }
