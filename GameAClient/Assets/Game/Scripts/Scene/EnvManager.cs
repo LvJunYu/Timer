@@ -92,7 +92,6 @@ namespace GameA.Game
     public enum ESceneLayer
     {
         Default,
-        UI = 1,
         MainPlayer,
         RemotePlayer,
         Monster,
