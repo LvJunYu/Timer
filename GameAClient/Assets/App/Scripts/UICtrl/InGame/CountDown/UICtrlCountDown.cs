@@ -46,7 +46,7 @@ namespace GameA
             _showComplete = false;
             int winConditionCnt = 0;
             if (Game.PlayMode.Instance.SceneState.HasWinCondition (Game.EWinCondition.Arrived)) {
-                Sprite sprite = null;
+//                Sprite sprite = null;
                 //GameResourceManager.Instance.TryGetSpriteByName (_cachedView._spriteNames [0], out sprite);
                 //if (sprite != null) {
                 //    _cachedView._smallImages [winConditionCnt].sprite = sprite;
@@ -56,7 +56,7 @@ namespace GameA
             }
 
             if (Game.PlayMode.Instance.SceneState.HasWinCondition (Game.EWinCondition.CollectTreasure)) {
-                Sprite sprite = null;
+//                Sprite sprite = null;
                 //GameResourceManager.Instance.TryGetSpriteByName (_cachedView._spriteNames [1], out sprite);
                 //if (sprite != null) {
                 //    _cachedView._smallImages [winConditionCnt].sprite = sprite;
@@ -66,7 +66,7 @@ namespace GameA
             }
 
             if (Game.PlayMode.Instance.SceneState.HasWinCondition (Game.EWinCondition.KillMonster)) {
-                Sprite sprite = null;
+//                Sprite sprite = null;
                 //GameResourceManager.Instance.TryGetSpriteByName (_cachedView._spriteNames [2], out sprite);
                 //if (sprite != null) {
                 //    _cachedView._smallImages [winConditionCnt].sprite = sprite;
@@ -76,7 +76,7 @@ namespace GameA
             }
 
             if (Game.PlayMode.Instance.SceneState.HasWinCondition (Game.EWinCondition.TimeLimit)) {
-                Sprite sprite = null;
+//                Sprite sprite = null;
                 //GameResourceManager.Instance.TryGetSpriteByName (_cachedView._spriteNames [3], out sprite);
                 //if (sprite != null) {
                 //    _cachedView._smallImages [winConditionCnt].sprite = sprite;

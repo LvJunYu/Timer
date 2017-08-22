@@ -590,6 +590,8 @@ namespace GameA.Game
         #endregion
     }
 
+#pragma warning disable 0660 0661
+
     public struct UnitEditData : IEquatable<UnitEditData>
     {
         public UnitDesc UnitDesc;

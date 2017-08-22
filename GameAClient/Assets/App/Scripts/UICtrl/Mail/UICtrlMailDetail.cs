@@ -1,16 +1,11 @@
 ﻿using System;
-using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
-using System.IO;
-using GameA.Game;
-
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlMailDetail : UICtrlGenericBase<UIViewMailDetail>
     {
         private Mail _mail;
@@ -24,7 +19,7 @@ namespace GameA
             _mail = mail;
             _idList.Clear();
             _idList.Add(mail.Id);
-            _reward = mail.AttachItemList;
+            _reward = _mail.AttachItemList;
             _cachedView.MailSource.text = JudgeSource(mail);
             _cachedView.Title.text = mail.Title;
             _cachedView.MainBody.text = mail.Content;

@@ -3,6 +3,7 @@ using SoyEngine;
 using Spine.Unity;
 using UnityEngine;
 using AnimationState = Spine.AnimationState;
+using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
@@ -15,14 +16,14 @@ namespace GameA.Game
 
         protected Color _color = Color.white;
 
-        protected SkeletonAnimation _animation;
+        protected SkeletonAnimation _skeletonAnimation;
         protected EDirectionType DirectionType;
 
         protected int _deadFrameIdx;
         protected int _normalDeadFrameIdx;
 
         public AnimationState AnimationState {
-            get { return _animation.state; }
+            get { return _skeletonAnimation.state; }
         }
 
         public static ShadowUnit Instance {
@@ -53,7 +54,7 @@ namespace GameA.Game
         internal override void Reset ()
         {
             base.Reset ();
-            _animation.Reset ();
+            _skeletonAnimation.Reset ();
             _deadFrameIdx = -1;
             Speed = IntVec2.zero;
         }
@@ -77,12 +78,12 @@ namespace GameA.Game
 
         public void UpdateAnim (string animName, bool loop, float timeScale, int trackIdx, int frame)
         {
-            if (_animation == null) return;
+            if (_skeletonAnimation == null) return;
             if (string.IsNullOrEmpty (animName)) {
-                _animation.state.ClearTrack (trackIdx);
+                _skeletonAnimation.state.ClearTrack (trackIdx);
             } else {
-                _animation.state.TimeScale = timeScale;
-                _animation.state.SetAnimation (trackIdx, animName, loop);
+                _skeletonAnimation.state.TimeScale = timeScale;
+                _skeletonAnimation.state.SetAnimation (trackIdx, animName, loop);
                 _lastAnimName = animName;
                 if (animName == "Death") {
                     _deadFrameIdx = frame;
@@ -92,15 +93,15 @@ namespace GameA.Game
 
         // 编辑模式下试玩残影更新动画组件
         public void EditPlayRecordUpdateAnim (float deltaTime) {
-            if (_animation != null) {
-                _animation.Update(deltaTime);
+            if (_skeletonAnimation != null) {
+                _skeletonAnimation.Update(deltaTime);
             }
         }
 
         public void ShadowFinish ()
         {
             if (_lastAnimName != "Death") {
-                _animation.state.ClearTracks ();
+                _skeletonAnimation.state.ClearTracks ();
             }
         }
 
@@ -126,7 +127,7 @@ namespace GameA.Game
                             SpeedY = -160;
                         }
                         _curPos += Speed;
-                        UpdateRotation((GameRun.Instance.LogicFrameCnt - _deadFrameIdx - 20) * 0.3f);
+                        UpdateRot((GameRun.Instance.LogicFrameCnt - _deadFrameIdx - 20) * 0.3f);
                     }
                 }
                 if (_view != null)
@@ -165,7 +166,7 @@ namespace GameA.Game
         }
 
         public SkeletonAnimation CreateSnapShot () {
-            GameObject snap = GameObject.Instantiate(_trans.gameObject) as GameObject;
+            GameObject snap = Object.Instantiate(_trans.gameObject) as GameObject;
             if (snap != null) {
                 SkeletonAnimation anim = snap.GetComponent<SkeletonAnimation> ();
                 if (anim != null) {
@@ -175,7 +176,7 @@ namespace GameA.Game
             return null;
         }
 
-        protected void UpdateRotation (float rad)
+        protected void UpdateRot (float rad)
         {
             float y = DirectionType == EDirectionType.Right
                 ? 0

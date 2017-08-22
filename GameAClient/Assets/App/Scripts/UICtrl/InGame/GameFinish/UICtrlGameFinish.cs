@@ -38,18 +38,11 @@ namespace GameA
 
 		private int _curMarkStarValue;
 
-        private bool _rateRequest = false;
-
         private USCtrlGameFinishReward [] _rewardCtrl;
 
 		protected override void InitGroupId()
 		{
 			_groupId = (int)EUIGroupType.InGamePopup;
-		}
-
-		protected override void InitEventListener()
-		{
-			base.InitEventListener();
 		}
 
 		protected override void OnViewCreated()

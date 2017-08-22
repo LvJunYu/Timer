@@ -5,9 +5,6 @@
 ** Summary : SoyHttpApiPath
 ***********************************************************************/
 
-using System;
-using System.Collections.Generic;
-
 namespace SoyEngine
 {
     public static class SoyHttpApiPath

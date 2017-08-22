@@ -184,6 +184,27 @@ namespace GameA.Game
     /// </summary>
     public class AdvGameProcess : IComparable<AdvGameProcess>
     {
+        protected bool Equals(AdvGameProcess other)
+        {
+            return Chapter == other.Chapter && Level == other.Level;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((AdvGameProcess) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (Chapter * 397) ^ Level;
+            }
+        }
+
         public int Chapter;
         public int Level;
 
@@ -273,6 +294,11 @@ namespace GameA.Game
         public bool IsRunning
         {
             get { return _run; }
+        }
+
+        public UnlockItem UnlockItem
+        {
+            get { return _unlockItem; }
         }
 
         public UnlockProcess (UnlockItem item)

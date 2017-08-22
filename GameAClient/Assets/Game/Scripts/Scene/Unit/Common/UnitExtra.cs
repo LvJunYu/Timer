@@ -8,6 +8,8 @@
 using System;
 using System.Runtime.InteropServices;
 
+#pragma warning disable 0660 0661
+
 namespace GameA.Game
 {
     [Serializable]

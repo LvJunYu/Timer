@@ -15,7 +15,6 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 
-
 namespace SoyEngine.LitJson
 {
     internal enum Condition
@@ -255,7 +254,7 @@ namespace SoyEngine.LitJson
                     continue;
                 }
 
-                if ((int) str[i] >= 32 && (int) str[i] <= 126) {
+                if (str[i] >= 32 && (int) str[i] <= 126) {
                     writer.Write (str[i]);
                     continue;
                 }
@@ -365,7 +364,7 @@ namespace SoyEngine.LitJson
             context.ExpectingValue = false;
         }
 
-        [CLSCompliant(false)]
+//        [CLSCompliant(false)]
         public void Write (ulong number)
         {
             DoValidation (Condition.Value);

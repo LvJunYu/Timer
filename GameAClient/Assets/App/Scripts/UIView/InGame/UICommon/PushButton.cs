@@ -21,14 +21,7 @@ namespace SoyEngine
         public VoidDelegate OnPress;
         public VoidDelegate OnRelease;
 
-        private Transform _cachedTransform;
-
-        private bool _isPressed = false;
-
-        void Awake ()
-        {
-            _cachedTransform = transform;
-        }
+        private bool _isPressed;
 
         void Start ()
         {

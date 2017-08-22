@@ -14,38 +14,25 @@ using UnityEngine;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlLottery : UICtrlGenericBase<UIViewLottery>
     {
         #region 常量与字段
 
-        private int _selectedTicketNum = 0;
+        private int _selectedTicketNum;
         //初始旋转速度
-        private float _initSpeed = 0;
+        private float _initSpeed;
         private float _initialSpeed = 2000;
         //速度变化值
         private float _delta = 0f;
         //转盘是否暂停
         private bool _isPause = true;
-        private int _TurnsNumber = 3;
-        private float _stopTime = 5f;
-        private float _stopRotation = 0f;
-        private float _currentEulerAngles = 0f;
-        private bool _bright = false;
-        private float RotationEulerAngles = 0;
-        private int BrightNum = 0;
-        private string GlodImageName = "icon_coins_2";
-        private string DiamondImageName = "icon_diam";
-        private string ExpImageName = "icon_gift_1";
-        private string CreatorExpImageName = "icon_gift_3";
-        private string RaffleTicket = "icon_star";
-        private string FashionCoupon = "icon_star";
-        private string BoostItem = "icon_star";
-        private bool IfLight = true;
-        //键是抽奖券编号 值是编号对应的奖励列表
-        private Dictionary<int, List<RewardItem>> _rewardDict = new Dictionary<int, List<RewardItem>>();
-        //private string NoneImageName = "icon_star";
-        //private Reward[] _reward;
+        private float _stopRotation;
+        private float _currentEulerAngles;
+        private bool _bright;
+        private float RotationEulerAngles;
+        private int BrightNum;
+        private bool _ifLight = true;
 
         #endregion
 
@@ -199,13 +186,13 @@ namespace GameA
 
         private void LightRotateBright()
         {
-            if (IfLight)
+            if (_ifLight)
             {
                 _cachedView.BrightLamp[BrightNum].SetActiveEx(true);
                 if (BrightNum >= _cachedView.BrightLamp.Length - 1)
                 {
                     BrightNum = 0;
-                    IfLight = false;
+                    _ifLight = false;
                     //ShutDownLight();
                 }
                 else
@@ -219,7 +206,7 @@ namespace GameA
                 if (BrightNum >= _cachedView.BrightLamp.Length - 1)
                 {
                     BrightNum = 0;
-                    IfLight = true;
+                    _ifLight = true;
                     //ShutDownLight();
                 }
                 else
@@ -240,7 +227,7 @@ namespace GameA
         private void WhenShutDown()
         {
             BrightNum = 0;
-            IfLight = true;
+            _ifLight = true;
             _cachedView.Mask.SetEnableEx(false);
             ShutDownLight();
             _cachedView.BrightLamp[4].SetActiveEx(true);

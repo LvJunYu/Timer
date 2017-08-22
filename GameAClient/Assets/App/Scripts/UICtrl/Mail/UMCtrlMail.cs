@@ -36,10 +36,13 @@ namespace GameA
             if (mail.Type == EMailType.EMailT_System)
             {
 
-                return source = "系统邮件";
+                source = "系统邮件";
             }
             else
-                return mail.UserInfo.NickName;
+            {
+                source = mail.UserInfo.NickName;
+            }
+            return source;
         }
 
         private void OnButton()

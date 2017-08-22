@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 
+#pragma warning disable 0660 0661
+
 namespace GameA.Game
 {
     public enum EEnvState
