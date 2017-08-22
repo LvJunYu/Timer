@@ -46,7 +46,7 @@ namespace GameA.Game
             switch (editorLayer)
             {
                 case EEditorLayer.None:
-                    break;
+                    return ~0;
                 case EEditorLayer.Normal:
                     return EnvManager.UnitLayer;
                 case EEditorLayer.Decorate:

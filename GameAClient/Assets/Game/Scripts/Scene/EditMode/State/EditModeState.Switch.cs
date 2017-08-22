@@ -200,7 +200,7 @@ namespace GameA.Game
             private bool TrySelectUnit(Vector3 mousePos)
             {
                 UnitDesc outValue;
-                if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), GetBlackBoard().EditorLayer, out outValue))
+                if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), EEditorLayer.None, out outValue))
                 {
                     if (UnitDefine.IsSwitch(outValue.Id))
                     {

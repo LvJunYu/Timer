@@ -63,7 +63,6 @@ namespace GameA.Game
                     if (UnitDefine.IsBlueStone(stateData.CurrentMovingUnitBase.Id))
                     {
                         stateData.CurrentMode = Data.EMode.Magic;
-                        EditMode.Instance.ChangeEditorLayer(EEditorLayer.None);
                         OnEnterMagicMode();
                     }
                     else
@@ -176,6 +175,7 @@ namespace GameA.Game
                 if (stateData.CurrentMode == Data.EMode.Magic)
                 {
                     OnExitMagicMode();
+                    EditMode.Instance.ChangeEditorLayer(EEditorLayer.None);
                     EditMode.Instance.RevertEditorLayer();
                 }
                 stateData.CurrentMode = Data.EMode.None;
