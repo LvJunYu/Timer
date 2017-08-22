@@ -47,7 +47,7 @@ namespace J3Tech
                 window.maxSize = new Vector2(400, 251);
                 window.minSize = new Vector2(400, 250);
             }
-            window.title = "CodeEncipher";
+            window.titleContent.text = "CodeEncipher";
         }
 
         private static void Init()
@@ -345,14 +345,11 @@ namespace J3Tech
             try
             {
                 Assembly asm = Assembly.LoadFile(EditorApplication.applicationContentsPath + @"/PlaybackEngines/androidplayer/UnityEditor.Android.Extensions.dll");
-                Type postProcessAndroidPlayerType = asm.GetType("UnityEditor.Android.PostProcessAndroidPlayer");
                 Type androidSdkToolsType = asm.GetType("UnityEditor.Android.AndroidSDKTools");
 
-                System.Object postProcessAndroidPlayerInstance = Activator.CreateInstance(postProcessAndroidPlayerType, true);
                 MethodInfo androidSdkToolsGetInstance = androidSdkToolsType.GetMethod("GetInstance");
                 System.Object androidSdkToolsInstance = androidSdkToolsGetInstance.Invoke(androidSdkToolsType, new object[] { });
 
-                MethodInfo alignPackage = postProcessAndroidPlayerType.GetMethod("AlignPackage", BindingFlags.NonPublic | BindingFlags.Instance);
 
                 PropertyInfo aapt = androidSdkToolsType.GetProperty("AAPT");
                 PropertyInfo zipAlign = androidSdkToolsType.GetProperty("ZIPALIGN");
@@ -428,7 +425,10 @@ namespace J3Tech
                         
                         MethodInfo alignPackageMethod = buildApkType.GetMethod("AlignPackage", BindingFlags.NonPublic | BindingFlags.Instance);
                         alignPackageMethod.Invoke(buildApkInstance, new object[] { postProcessorContextInstance });                        
-#else
+#else                
+                        Type postProcessAndroidPlayerType = asm.GetType("UnityEditor.Android.PostProcessAndroidPlayer");
+                        System.Object postProcessAndroidPlayerInstance = Activator.CreateInstance(postProcessAndroidPlayerType, true);
+                        MethodInfo alignPackage = postProcessAndroidPlayerType.GetMethod("AlignPackage", BindingFlags.NonPublic | BindingFlags.Instance);
                         alignPackage.Invoke(postProcessAndroidPlayerInstance,
                             new object[] {_projPath + @"Temp/StagingArea"});
 #endif

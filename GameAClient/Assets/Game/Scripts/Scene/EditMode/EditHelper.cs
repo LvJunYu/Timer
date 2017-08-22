@@ -564,7 +564,6 @@ namespace GameA.Game
             {
                 processClickUnitOperationParam.UnitExtra.UnitValue = 0;
             }
-            processClickUnitOperationParam.UnitExtra.UnitValue = processClickUnitOperationParam.UnitExtra.UnitValue;
             DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
                 processClickUnitOperationParam.UnitExtra);
             return true;

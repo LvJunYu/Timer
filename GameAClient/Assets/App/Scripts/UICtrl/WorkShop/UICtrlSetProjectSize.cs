@@ -113,7 +113,7 @@ namespace GameA
             //                return;
             //            }
 
-            EMatrixProjectResState resState = EMatrixProjectResState.None;
+//            EMatrixProjectResState resState = EMatrixProjectResState.None;
             InternalCreate();
         }
         private void InternalCreate()

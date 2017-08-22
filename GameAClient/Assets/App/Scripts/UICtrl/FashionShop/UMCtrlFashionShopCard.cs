@@ -182,7 +182,7 @@ namespace GameA
             String strDay = "" + day; //天  
             String strHour = "" + hour; //小时  
             String strMinute = "" + minute; //分钟  
-            String strSecond = second < 10 ? "0" + second : "" + second; //秒  
+//            String strSecond = second < 10 ? "0" + second : "" + second; //秒  
             String strMilliSecond = milliSecond < 10 ? "0" + milliSecond : "" + milliSecond; //毫秒  
             strMilliSecond = milliSecond < 100 ? "0" + strMilliSecond : "" + strMilliSecond;
 

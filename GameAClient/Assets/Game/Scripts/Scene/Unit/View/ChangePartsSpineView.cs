@@ -159,7 +159,7 @@ namespace GameA.Game
             //}
 
 			if (_partsIds[(int)partsType] == partsId) return false;
-			string textureName = "";
+//			string textureName = "";
 			int[] slotsNameIdxList = null;
 			int skinId = 0;
 			if (partsType == SpinePartsHelper.ESpineParts.Head) {
@@ -168,7 +168,7 @@ namespace GameA.Game
 					LogHelper.Error ("Try to apply undefined part:{0} with id:{1}", partsType, partsId);
 					return false;
 				}
-				textureName = homeAvatar ? partData.BigTexture : partData.SmallTexture;
+//				textureName = homeAvatar ? partData.BigTexture : partData.SmallTexture;
 				skinId = partData.SkinId;
 				slotsNameIdxList = TableManager.Instance.GetAvatarStruct (_avatarId).HeadSlots;
 			} else if (partsType == SpinePartsHelper.ESpineParts.Upper) {
@@ -177,7 +177,7 @@ namespace GameA.Game
 					LogHelper.Error ("Try to apply undefined part:{0} with id:{1}", partsType, partsId);
 					return false;
 				}
-				textureName = homeAvatar ? partData.BigTexture : partData.SmallTexture;
+//				textureName = homeAvatar ? partData.BigTexture : partData.SmallTexture;
 				skinId = partData.SkinId;
 				slotsNameIdxList = TableManager.Instance.GetAvatarStruct (_avatarId).UpperSlots;
 			} else if (partsType == SpinePartsHelper.ESpineParts.Lower) {
@@ -186,7 +186,7 @@ namespace GameA.Game
 					LogHelper.Error ("Try to apply undefined part:{0} with id:{1}", partsType, partsId);
 					return false;
 				}
-				textureName = homeAvatar ? partData.BigTexture : partData.SmallTexture;
+//				textureName = homeAvatar ? partData.BigTexture : partData.SmallTexture;
 				skinId = partData.SkinId;
 				slotsNameIdxList = TableManager.Instance.GetAvatarStruct (_avatarId).LowerSlots;
 			} else if (partsType == SpinePartsHelper.ESpineParts.Appendage) {
@@ -195,7 +195,7 @@ namespace GameA.Game
 					LogHelper.Error ("Try to apply undefined part:{0} with id:{1}", partsType, partsId);
 					return false;
 				}
-				textureName = homeAvatar ? partData.BigTexture : partData.SmallTexture;
+//				textureName = homeAvatar ? partData.BigTexture : partData.SmallTexture;
 				skinId = partData.SkinId;
 				slotsNameIdxList = TableManager.Instance.GetAvatarStruct (_avatarId).AppendageSlots;
 			} else {

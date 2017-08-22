@@ -5,7 +5,7 @@ using UnityEngine;
 namespace GameA.Game
 {
 	public class Character2Guide : Guide {
-		UnitBase _sight;
+		UnitBase _sight = new ActorBase();
 		UnityNativeParticleItem _sightParticle;
 		public override void OnStart () {
 			MoveMainPlayer(PlayMode.Instance.MainPlayer.CenterDownPos + new IntVec2(160, 0));

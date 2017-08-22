@@ -13,10 +13,10 @@ using UnityEngine;
 namespace GameA.Game
 {
     [StructLayout(LayoutKind.Sequential)]
-    [System.Serializable]
-    public struct UnitDesc : IEquatable<UnitDesc>
+    [Serializable]
+    public struct UnitDesc
     {
-        public static UnitDesc zero = new UnitDesc();
+        public static UnitDesc zero;
 
         public int Id;
         public IntVec3 Guid;
@@ -86,6 +86,12 @@ namespace GameA.Game
                 hashCode = (hashCode * 397) ^ Scale.GetHashCode();
                 return hashCode;
             }
+        }
+        
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is UnitDesc && Equals((UnitDesc) obj);
         }
     }
     

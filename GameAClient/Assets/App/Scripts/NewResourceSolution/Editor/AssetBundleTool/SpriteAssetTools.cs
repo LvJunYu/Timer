@@ -76,7 +76,7 @@ namespace NewResourceSolution.EditorTool
 //				bundle.GroupId = ResDefine.ResGroupNecessary;
 //			}
 
-			List<string> assetNameList = new List<string>();
+//			List<string> assetNameList = new List<string>();
 
 			for (int i = 0; i < assetsGuid.Length; i++)
 			{

@@ -288,11 +288,11 @@ namespace GameA {
             int timezone = 8; // 时区  
             long totalSeconds = timeMillis/1000;
             totalSeconds += 60*60*timezone;
-            int second = (int) (totalSeconds%60); // 秒  
+//            int second = (int) (totalSeconds%60); // 秒  
             long totalMinutes = totalSeconds/60;
-            int minute = (int) (totalMinutes%60); // 分  
+//            int minute = (int) (totalMinutes%60); // 分  
             long totalHours = totalMinutes/60;
-            int hour = (int) (totalHours%24); // 时  
+//            int hour = (int) (totalHours%24); // 时  
             int totalDays = (int) (totalHours/24);
             int _year = 1970;
             int year = _year + totalDays/366;
@@ -351,7 +351,6 @@ namespace GameA {
         /// <returns></returns>
         public static string SecondToHour(float time)
         {
-            string str = "";
             int hour = 0;
             int minute = 0;
             float second = time;

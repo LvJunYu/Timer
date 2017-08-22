@@ -21,7 +21,7 @@ namespace GameA.Game
     }
 
     [Serializable]
-    public class UnitBase : ColliderBase, IEquatable<UnitBase>
+    public class UnitBase : ColliderBase
     {
         protected const int MaxFriction = 100;
 
@@ -1557,6 +1557,19 @@ namespace GameA.Game
         
         public virtual void SetStepOnIce()
         {
+        }
+        
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((UnitBase) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }

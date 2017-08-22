@@ -25,11 +25,8 @@ namespace GameA
         private string _signature;
         private string _returnName;
         private string _returnSignature;
-        private string _maleIcon = "icon_male";
-        private string _femaleIcon= "icon_famale";
         //private bool _isMale=true;
         private ESex _eMale;
-        private Project _representativeProjectle = null;
         private List<UMCtrlAchievement> _cardList = new List<UMCtrlAchievement>();
 
         #endregion
@@ -203,7 +200,6 @@ namespace GameA
             _cachedView.SelectMale.SetActiveEx(true);
             _cachedView.SelectFemale.SetActiveEx(false);
             _eMale = ESex.S_Male;
-            Sprite fashion = null;
             _cachedView.MSex.SetActiveEx(true);
             _cachedView.FSex.SetActiveEx(false);
         }
@@ -213,7 +209,6 @@ namespace GameA
             _cachedView.SelectMale.SetActiveEx(false);
             _cachedView.SelectFemale.SetActiveEx(true);
             _eMale = ESex.S_Female;
-            Sprite fashion = null;
             _cachedView.MSex.SetActiveEx(false);
             _cachedView.FSex.SetActiveEx(true);
         }
