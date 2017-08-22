@@ -25,9 +25,10 @@ namespace GameA
         private string _signature;
         private string _returnName;
         private string _returnSignature;
+        private int _seletctedHeadImage;
         private string _maleIcon = "icon_male";
         private string _femaleIcon= "icon_famale";
-        //private bool _isMale=true;
+        private int    _defaultHeadNum = 0;
         private ESex _eMale;
         private Project _representativeProjectle = null;
         private List<UMCtrlAchievement> _cardList = new List<UMCtrlAchievement>();
@@ -66,6 +67,7 @@ namespace GameA
 
         private void OnSubmit()
         {
+            //本地刷新最新信息
             LocalUser.Instance.User.RequestInfor(LocalUser.Instance.UserGuid,
                 () => { UpdateUserInfo(LocalUser.Instance.User.GetUserInfoDetail); },
                 null
@@ -74,18 +76,21 @@ namespace GameA
 
         private void UpdateUserInfo(Msg_SC_DAT_UserInfoDetail userInfo)
         {
+            //更改信息并上传
             userInfo.UserInfoSimple.Sex = (ESex) _eMale;
             userInfo.UserInfoSimple.NickName = _name;
+            userInfo.Profile = _signature;
             //userInfo.UserInfoSimple.HeadImgUrl = "";
             RemoteCommands.UpdateUserInfo(userInfo,
                 (ret) =>
                 {
                     if (ret.ResultCode == (int) EUpdateUserInfoCode.UUC_Success)
                     {
-                        //或者直接替换localuser.user
-                        LocalUser.Instance.LoadUserData(
-                            () => { Messenger.Broadcast(EMessengerType.OnUserInfoChanged); }
-                            , null);
+                        LocalUser.Instance.User.OnSync(ret.UserInfo);
+                        Messenger.Broadcast(EMessengerType.OnUserInfoChanged);
+                        //LocalUser.Instance.LoadUserData(
+                        //    () => {  }
+                        //    , null);
                     }
                     //_returnName=ret.UserInfo.
                     Debug.Log("SubmitNewName" + userInfo.UserInfoSimple.NickName);
@@ -98,10 +103,11 @@ namespace GameA
         {
         }
 
-        public void SetHead(string HeadName)
+        public void SetHead(int HeadNum)
         {
+            _seletctedHeadImage=HeadNum;
             Sprite fashion = null;
-            if (ResourcesManager.Instance.TryGetSprite(HeadName, out fashion))
+            if (ResourcesManager.Instance.TryGetSprite(SpriteNameDefine.GetHeadImage(HeadNum), out fashion))
             {
                 _cachedView.PhotoPortrait.sprite = fashion;
             }
@@ -114,15 +120,27 @@ namespace GameA
             Exp();
             SetAchievement();
             //加判断
-            LocalUser.Instance.UserPublishedWorldProjectList.Request(
-                LocalUser.Instance.UserGuid,
-                0, int.MaxValue,
-                EPublishedProjectOrderBy.PPOB_PublishTime,
-                EOrderType.OT_Asc,
-                () => { SetRepresentativeWorks(); },
-                null
-                );
+            //LocalUser.Instance.UserPublishedWorldProjectList.Request(
+            //    LocalUser.Instance.UserGuid,
+            //    0, int.MaxValue,
+            //    EPublishedProjectOrderBy.PPOB_PublishTime,
+            //    EOrderType.OT_Asc,
+            //    () => { SetRepresentativeWorks(); },
+            //    null
+            //    );
+            Sprite fashion = null;
+            if (ResourcesManager.Instance.TryGetSprite(LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,out fashion))
+            {
+                _cachedView.PhotoPortrait.sprite = fashion;
+            }
+            else
+            {
+                ResourcesManager.Instance.TryGetSprite(SpriteNameDefine.GetHeadImage(_defaultHeadNum),out fashion);
+                _cachedView.PhotoPortrait.sprite = fashion;
+            }
+
             _cachedView.Name.text = LocalUser.Instance.User.UserInfoSimple.NickName;
+            _cachedView.SignatureDesc.text = LocalUser.Instance.User.Profile;
             _cachedView.Lvl.text = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel.ToString();
             _cachedView.CraftLvl.text = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorExp.ToString();
             _eMale = LocalUser.Instance.User.UserInfoSimple.Sex;
@@ -235,7 +253,6 @@ namespace GameA
         {
             int playerLevel = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel;
             long currentPlayerExp = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerExp;
-
             long initialExp = currentPlayerExp - TableManager.Instance.Table_PlayerLvToExpDic[
                 playerLevel].AdvExp;
             //_cachedView.CurExp.text = initialExp.ToString();
@@ -243,7 +260,6 @@ namespace GameA
                 (TableManager.Instance.Table_PlayerLvToExpDic[playerLevel + 1].AdvExp -
                  TableManager.Instance.Table_PlayerLvToExpDic[playerLevel].AdvExp));
             _cachedView.ExpBar.fillAmount = CountExpRatio(initialExp, playerLevel);
-
             int playerCraftLevel = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorLevel;
             long currentPlayerCraftExp = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorExp;
             long initialCraftExp = currentPlayerCraftExp - TableManager.Instance.Table_PlayerLvToExpDic[
@@ -305,7 +321,6 @@ namespace GameA
             //    DictionaryTools.SetContentText(_cachedView.Title, "关卡标题");
             //    //DictionaryTools.SetContentText(_cachedView.Desc, "关卡简介");
             //}
-
         }
 
         #endregion 事件处理

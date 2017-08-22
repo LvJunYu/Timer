@@ -17,22 +17,14 @@ namespace GameA
 
         public int Index
         {
-            get
-            {
-                return _index;
-            }
-            set
-            {
-                _index = value;
-            }
+            get { return _index; }
+            set { _index = value; }
         }
 
         public RectTransform Transform
         {
             get { return _cachedView.Trans; }
         }
-
-
 
         protected override void OnViewCreated()
         {
@@ -47,10 +39,17 @@ namespace GameA
             base.OnDestroy();
         }
 
-        public void Set(string head)
+        public void Set(int i)
         {
-            SocialGUIManager.Instance.GetUI<UICtrlHeadPortraitSelect>().InitTagGroup(_cachedView.SeletctedHeadBtn, OnHeadSeleted);
+            _index = i;
+            var head = SpriteNameDefine.GetHeadImage(i);
+            SocialGUIManager.Instance.GetUI<UICtrlHeadPortraitSelect>()
+                .InitTagGroup(_cachedView.SeletctedHeadBtn, OnHeadSeleted);
             Sprite fashion = null;
+            //if (LocalUser.Instance.User.UserInfoSimple.HeadImgUrl == head)
+            //{
+            //    OnHeadSeleted(true);
+            //}
             if (ResourcesManager.Instance.TryGetSprite(head, out fashion))
             {
                 _cachedView.HeadImg.sprite = fashion;
@@ -60,18 +59,8 @@ namespace GameA
         public void OnHeadSeleted(bool open)
         {
             _cachedView.SeletctedHeadImage.SetActiveEx(open);
+            SocialGUIManager.Instance.GetUI<UICtrlHeadPortraitSelect>().SeletctedHeadImage = _index;
         }
-
     }
-
-    }
-
-
-
-    //private string JudgeTapName()
-    //{
-    //    string name=null;
-    //    return name;
-    //}
-
+}
    

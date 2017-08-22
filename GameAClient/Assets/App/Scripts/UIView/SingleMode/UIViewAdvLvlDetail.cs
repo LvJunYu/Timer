@@ -18,14 +18,9 @@ namespace GameA
         public Text FirstScore;
         public Text Title;
 
-
-
         public Texture DefaultCover;
-
         public Button PlayBtn;
-
         public Button CloseBtn;
-
         public USViewAdvLvlDetailInfo InfoPanel;
         public USViewAdvLvlDetailRecord RecordPanel;
         public USViewAdvLvlDetailRank RankPanel;

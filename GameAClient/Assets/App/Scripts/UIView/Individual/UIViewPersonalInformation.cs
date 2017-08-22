@@ -23,7 +23,7 @@ namespace GameA
         public Button SelectPhoto;
 
         public Image PhotoPortrait;
-        public Image Photo;
+        public Image DefaultUserHeadTexture;
         public Image ExpBar;
         public Image CraftExpBar;
         public Image MSex;

@@ -8,13 +8,18 @@ using UnityEngine.UI;
 
 namespace GameA
 {
-    [UIAutoSetup (EUIAutoSetupType.Add)]
+    [UIAutoSetup (EUIAutoSetupType.Add)] 
     public class UICtrlHeadPortraitSelect : UICtrlInGameBase<UIViewHeadPortraitSelect>
     {
         private int _seletctedHeadImage;
         private int _headMaxNumber=6;
         private List<UMCtrlHead> _cardList = new List<UMCtrlHead>();
 
+        public int SeletctedHeadImage
+        {
+            get { return _seletctedHeadImage; }
+            set { _seletctedHeadImage = value; }
+        }
 
         protected override void InitGroupId ()
         {
@@ -35,7 +40,7 @@ namespace GameA
 
         private void OnCloseBtn ()
         {
-            SocialGUIManager.Instance.CloseUI <UICtrlHeadPortraitSelect>();
+            SocialGUIManager.Instance.CloseUI<UICtrlHeadPortraitSelect>();
         }
 
         protected override void OnOpen(object parameter)
@@ -45,7 +50,7 @@ namespace GameA
 
         private void OnOKBtn()
         {
-            SocialGUIManager.Instance.GetUI<UICtrlPersonalInformation>().SetHead(SpriteNameDefine.GetHeadImage(_seletctedHeadImage));
+            SocialGUIManager.Instance.GetUI<UICtrlPersonalInformation>().SetHead(_seletctedHeadImage);
             SocialGUIManager.Instance.CloseUI<UICtrlHeadPortraitSelect>();
         }
 
@@ -55,53 +60,20 @@ namespace GameA
             {
                 var UM = new UMCtrlHead();
                 UM.Init(_cachedView.Dock as RectTransform);
-                UM.Set(SpriteNameDefine.GetHeadImage(i));
+                UM.Set(i);
                 _cardList.Add(UM);
             }
         }
-
-
 
         public void InitTagGroup(Button button,Action<bool>function)
         {
             _cachedView.TagGroup.AddButton(button, function);
             //_cachedView.TagGroup.AddButton(_cachedView.HeadPortrait2, OnHead2Seleted);
-            //_cachedView.TagGroup.AddButton(_cachedView.HeadPortrait3, OnHead3Seleted);
-            //_cachedView.TagGroup.AddButton(_cachedView.HeadPortrait4, OnHead4Seleted);
-            //_cachedView.TagGroup.AddButton(_cachedView.HeadPortrait5, OnHead5Seleted);
-            //_cachedView.TagGroup.AddButton(_cachedView.HeadPortrait6, OnHead6Seleted);
         }
-
-
-
         //private void OnHead2Seleted(bool open)
         //{
         //    _cachedView.SeletctedHead2Image.SetActiveEx(open);
         //    _seletctedHeadImage = 2;
-        //}
-
-        //private void OnHead3Seleted(bool open)
-        //{
-        //    _cachedView.SeletctedHead3Image.SetActiveEx(open);
-        //    _seletctedHeadImage = 3;
-        //}
-
-        //private void OnHead4Seleted(bool open)
-        //{
-        //    _cachedView.SeletctedHead4Image.SetActiveEx(open);
-        //    _seletctedHeadImage = 4;
-        //}
-
-        //private void OnHead5Seleted(bool open)
-        //{
-        //    _cachedView.SeletctedHead5Image.SetActiveEx(open);
-        //    _seletctedHeadImage = 5;
-        //}
-
-        //private void OnHead6Seleted(bool open)
-        //{
-        //    _cachedView.SeletctedHead6Image.SetActiveEx(open);
-        //    _seletctedHeadImage = 6;
         //}
     }
 }
