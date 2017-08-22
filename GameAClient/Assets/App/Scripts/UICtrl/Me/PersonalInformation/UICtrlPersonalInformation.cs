@@ -23,14 +23,12 @@ namespace GameA
         #region 常量与字段
         private string _name;
         private string _signature;
-        private string _returnName;
-        private string _returnSignature;
-        private int _seletctedHeadImage;
-        private string _maleIcon = "icon_male";
-        private string _femaleIcon= "icon_famale";
+        //private int _seletctedHeadImage;todo
+        //private string _maleIcon = "icon_male";
+        //private string _femaleIcon= "icon_famale";
         private int    _defaultHeadNum = 0;
         private ESex _eMale;
-        private Project _representativeProjectle = null;
+        //private Project _representativeProjectle = null;todo
         private List<UMCtrlAchievement> _cardList = new List<UMCtrlAchievement>();
 
         #endregion
@@ -105,7 +103,7 @@ namespace GameA
 
         public void SetHead(int HeadNum)
         {
-            _seletctedHeadImage=HeadNum;
+            //_seletctedHeadImage=HeadNum;todo
             Sprite fashion = null;
             if (ResourcesManager.Instance.TryGetSprite(SpriteNameDefine.GetHeadImage(HeadNum), out fashion))
             {
@@ -221,7 +219,6 @@ namespace GameA
             _cachedView.SelectMale.SetActiveEx(true);
             _cachedView.SelectFemale.SetActiveEx(false);
             _eMale = ESex.S_Male;
-            Sprite fashion = null;
             _cachedView.MSex.SetActiveEx(true);
             _cachedView.FSex.SetActiveEx(false);
         }
@@ -231,7 +228,6 @@ namespace GameA
             _cachedView.SelectMale.SetActiveEx(false);
             _cachedView.SelectFemale.SetActiveEx(true);
             _eMale = ESex.S_Female;
-            Sprite fashion = null;
             _cachedView.MSex.SetActiveEx(false);
             _cachedView.FSex.SetActiveEx(true);
         }

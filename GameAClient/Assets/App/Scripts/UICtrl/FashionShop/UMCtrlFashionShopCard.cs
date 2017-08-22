@@ -82,18 +82,6 @@ namespace GameA
                 {
                     _cachedView.SexBg.sprite = Bg;
                 }
-                if (ResourcesManager.Instance.TryGetSprite("img_pink", out Bg))
-                {
-                    _cachedView.Sexbottom.sprite = Bg;
-                }
-                if (ResourcesManager.Instance.TryGetSprite("light_pink", out Bg))
-                {
-                    _cachedView.SexLight.sprite = Bg;
-                }
-                if (ResourcesManager.Instance.TryGetSprite("name_bg_pink", out Bg))
-                {
-                    _cachedView.SexTitle.sprite = Bg;
-                }
             }
         }
 
