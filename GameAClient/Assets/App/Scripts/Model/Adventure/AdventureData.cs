@@ -108,7 +108,7 @@ namespace GameA
         public bool TryGetNextNormalLevel(int section, int level, out int nextLevel)
         {
             nextLevel = level;
-            if (level > 9)
+            if (level >= 9)
             {
                 return false;
             }
@@ -220,7 +220,7 @@ namespace GameA
         /// </summary>
         public void RetryAdvLevel(Action successCallback, Action<ENetResultCode> failedCallback)
         {
-            PlayAdventureLevel(_lastPlayedChapterIdx + 1, _lastPlayedLevelIdx + 1, _lastPlayedLevelType,
+            PlayAdventureLevel(_lastPlayedChapterIdx, _lastPlayedLevelIdx, _lastPlayedLevelType,
                 successCallback, failedCallback);
         }
 
@@ -318,7 +318,7 @@ namespace GameA
                 }
                 return;
             }
-            var table = GetAdvLevelTable(_lastPlayedChapterIdx + 1, _lastPlayedLevelType, _lastPlayedLevelIdx + 1);
+            var table = GetAdvLevelTable(_lastPlayedChapterIdx, _lastPlayedLevelType, _lastPlayedLevelIdx);
             if (null == table)
             {
                 if (null != failedCallback)
@@ -422,14 +422,14 @@ namespace GameA
             levelData.SimpleData.Star3Flag = star3Flag;
             if (success) levelData.SimpleData.SuccessCount++;
 
-            if (_userData.AdventureUserProgress.CompleteSection < (_lastPlayedChapterIdx + 1))
+            if (_userData.AdventureUserProgress.CompleteSection < _lastPlayedChapterIdx)
             {
-                _userData.AdventureUserProgress.CompleteSection = _lastPlayedChapterIdx + 1;
+                _userData.AdventureUserProgress.CompleteSection = _lastPlayedChapterIdx;
                 _userData.AdventureUserProgress.CompleteLevel = 1;
             }
-            else if (_userData.AdventureUserProgress.CompleteLevel < (_lastPlayedLevelIdx + 1))
+            else if (_userData.AdventureUserProgress.CompleteLevel < _lastPlayedLevelIdx)
             {
-                _userData.AdventureUserProgress.CompleteLevel = _lastPlayedLevelIdx + 1;
+                _userData.AdventureUserProgress.CompleteLevel = _lastPlayedLevelIdx;
             }
         }
 

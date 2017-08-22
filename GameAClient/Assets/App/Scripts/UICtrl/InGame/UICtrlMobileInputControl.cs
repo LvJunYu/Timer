@@ -63,16 +63,19 @@ namespace GameA
 
         public void SetSkillBtn2Visible(bool visible)
         {
+            if (null == _cachedView) return;
             _cachedView.SkillBtn2.gameObject.SetActive(visible);
         }
         
         public void SetSkillBtn3Visible(bool visible)
         {
+            if (null == _cachedView) return;
             _cachedView.SkillBtn3.gameObject.SetActive(visible);
         }
         
         public void SetAssistBtnVisible(bool visible)
         {
+            if (null == _cachedView) return;
             _cachedView.AssistBtn.gameObject.SetActive(visible);
         }
 
