@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 
+#pragma warning disable 0660 0661
+
 namespace GameA.Game
 {
     public enum EEnvState
@@ -21,7 +23,7 @@ namespace GameA.Game
     }
 
     [Serializable]
-    public class UnitBase : ColliderBase
+    public class UnitBase : ColliderBase, IEquatable<UnitBase>
     {
         protected const int MaxFriction = 100;
 
@@ -1557,19 +1559,6 @@ namespace GameA.Game
         
         public virtual void SetStepOnIce()
         {
-        }
-        
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((UnitBase) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
         }
     }
 }

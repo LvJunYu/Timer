@@ -10,11 +10,13 @@ using System.Runtime.InteropServices;
 using SoyEngine;
 using UnityEngine;
 
+#pragma warning disable 0660 0661
+
 namespace GameA.Game
 {
     [StructLayout(LayoutKind.Sequential)]
     [Serializable]
-    public struct UnitDesc
+    public struct UnitDesc : IEquatable<UnitDesc>
     {
         public static UnitDesc zero;
 
@@ -86,12 +88,6 @@ namespace GameA.Game
                 hashCode = (hashCode * 397) ^ Scale.GetHashCode();
                 return hashCode;
             }
-        }
-        
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            return obj is UnitDesc && Equals((UnitDesc) obj);
         }
     }
     

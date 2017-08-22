@@ -590,19 +590,10 @@ namespace GameA.Game
         #endregion
     }
 
+#pragma warning disable 0660 0661
+
     public struct UnitEditData : IEquatable<UnitEditData>
     {
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            return obj is UnitEditData && Equals((UnitEditData) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return (UnitDesc.GetHashCode() * 397) ^ UnitExtra.GetHashCode();
-        }
-
         public UnitDesc UnitDesc;
         public UnitExtra UnitExtra;
 

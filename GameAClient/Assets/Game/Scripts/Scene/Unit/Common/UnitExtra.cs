@@ -8,31 +8,14 @@
 using System;
 using System.Runtime.InteropServices;
 
+#pragma warning disable 0660 0661
+
 namespace GameA.Game
 {
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
-    public struct UnitExtra
+    public struct UnitExtra : IEquatable<UnitExtra>
     {
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            return obj is UnitExtra && Equals((UnitExtra) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = (int) MoveDirection;
-                hashCode = (hashCode * 397) ^ (int) RollerDirection;
-                hashCode = (hashCode * 397) ^ (Msg != null ? Msg.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ UnitValue.GetHashCode();
-                hashCode = (hashCode * 397) ^ Child.GetHashCode();
-                return hashCode;
-            }
-        }
-
         public static UnitExtra zero;
         public EMoveDirection MoveDirection;
         public EMoveDirection RollerDirection;
