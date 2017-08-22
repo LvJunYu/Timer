@@ -9,7 +9,7 @@ namespace GameA
     /// 
     /// </summary>
     [UIAutoSetup]
-    public class UICtrlPuzzle : UICtrlGenericBase<UIViewPuzzle>
+    public class UICtrlPuzzle : UICtrlAnimationBase<UIViewPuzzle>
     {
         private Dictionary<int, Table_PuzzleSlot> _slots; //装备栏数据
         private Dictionary<int, Table_Puzzle> _puzzles; //拼图表数据
