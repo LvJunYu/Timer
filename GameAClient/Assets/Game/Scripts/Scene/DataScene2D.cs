@@ -6,7 +6,6 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using SoyEngine;
@@ -79,19 +78,19 @@ namespace GameA.Game
 
 		public List<ModifyData> RemovedUnits {
 			get {
-				return this._removedUnits;
+				return _removedUnits;
 			}
 		}
 
 		public List<ModifyData> ModifiedUnits {
 			get {
-				return this._modifiedUnits;
+				return _modifiedUnits;
 			}
 		}
 
 		public List<ModifyData> AddedUnits {
 			get {
-				return this._addedUnits;
+				return _addedUnits;
 			}
 		}
         #endregion
@@ -110,7 +109,7 @@ namespace GameA.Game
         /// <summary>
         /// 这个方法只能被MapManager访问，只能是创建地图并设置初始大小时访问
         /// </summary>
-        /// <param name="rect">Rect.</param>
+        /// <param name="size"></param>
         public void SetDefaultMapSize (IntVec2 size)
         {
             _validMapRect = new IntRect(ConstDefineGM2D.MapStartPos, size + ConstDefineGM2D.MapStartPos - IntVec2.one);
@@ -669,11 +668,11 @@ namespace GameA.Game
         }
 
         public ModifyItemData ToModifyItemData () {
-            SoyEngine.Proto.ModifyItemData mid = new SoyEngine.Proto.ModifyItemData ();
-            mid.OrigData = new SoyEngine.Proto.MapRect2D ();
+            ModifyItemData mid = new ModifyItemData ();
+            mid.OrigData = new MapRect2D ();
             mid.OrigData.Id = OrigUnit.UnitDesc.Id;
-            mid.OrigData.Rotation = (int)OrigUnit.UnitDesc.Rotation;
-            mid.OrigData.Scale = new SoyEngine.Proto.Vec2Proto ();
+            mid.OrigData.Rotation = OrigUnit.UnitDesc.Rotation;
+            mid.OrigData.Scale = new Vec2Proto ();
             mid.OrigData.Scale.X = OrigUnit.UnitDesc.Scale.x;
             mid.OrigData.Scale.Y = OrigUnit.UnitDesc.Scale.y;
             mid.OrigData.XMin = OrigUnit.UnitDesc.Guid.x;
@@ -682,10 +681,10 @@ namespace GameA.Game
             mid.OrigData.YMax = OrigUnit.UnitDesc.Guid.y + ConstDefineGM2D.ServerTileScale;
             mid.OrigExtra = GM2DTools.ToProto (OrigUnit.UnitDesc.Guid, OrigUnit.UnitExtra);
 
-            mid.ModifiedData = new SoyEngine.Proto.MapRect2D ();
+            mid.ModifiedData = new MapRect2D ();
             mid.ModifiedData.Id = ModifiedUnit.UnitDesc.Id;
-            mid.ModifiedData.Rotation = (int)ModifiedUnit.UnitDesc.Rotation;
-            mid.ModifiedData.Scale = new SoyEngine.Proto.Vec2Proto ();
+            mid.ModifiedData.Rotation = ModifiedUnit.UnitDesc.Rotation;
+            mid.ModifiedData.Scale = new Vec2Proto ();
             mid.ModifiedData.Scale.X = ModifiedUnit.UnitDesc.Scale.x;
             mid.ModifiedData.Scale.Y = ModifiedUnit.UnitDesc.Scale.y;
             mid.ModifiedData.XMin = ModifiedUnit.UnitDesc.Guid.x;

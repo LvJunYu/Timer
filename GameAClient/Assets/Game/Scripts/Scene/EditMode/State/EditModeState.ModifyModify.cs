@@ -36,7 +36,7 @@ namespace GameA.Game
                 UnitDesc touchedUnitDesc;
                 Vector2 mousePos = gesture.startPosition;
                 var mouseWorldPos = GM2DTools.ScreenToWorldPoint(mousePos);
-                if (!EditHelper.TryGetUnitDesc(mouseWorldPos, out touchedUnitDesc))
+                if (!EditHelper.TryGetUnitDesc(mouseWorldPos, boardData.EditorLayer, out touchedUnitDesc))
                 {
                     return;
                 }
@@ -76,7 +76,7 @@ namespace GameA.Game
             public override void OnTap(Gesture gesture)
             {
                 UnitDesc touchedUnitDesc;
-                if (!EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(gesture.position), out touchedUnitDesc))
+                if (!EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(gesture.position), GetBlackBoard().EditorLayer, out touchedUnitDesc))
                 {
                     return;
                 }
@@ -179,7 +179,7 @@ namespace GameA.Game
                 }
                 target.Scale = stateData.CurrentMovingUnitBase.Scale;
                 target.Rotation = stateData.CurrentMovingUnitBase.Rotation;
-                int layerMask = EnvManager.UnitLayerWithoutEffect;
+                int layerMask = EditHelper.GetLayerMask(boardData.EditorLayer);
                 var coverUnits = DataScene2D.GridCastAllReturnUnits(target, layerMask);
                 if (coverUnits != null && coverUnits.Count > 0)
                 {

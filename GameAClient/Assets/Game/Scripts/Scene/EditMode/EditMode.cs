@@ -39,10 +39,13 @@ namespace GameA.Game
             /// 当前模式是否有拖拽进行
             /// </summary>
             public bool DragInCurrentState { get; set; }
+            public EEditorLayer EditorLayer { get; set; }
         }
 
         #region Field
 
+        private static readonly Color EdittingLayerColor = Color.white;
+        private static readonly Color NotEdittingLayerColor = new Color(1f, 1f, 1f, 0.5f);
         private bool _enable;
         private bool _inited;
         private HashSet<EditModeState.Base> _initedStateSet;
@@ -57,7 +60,7 @@ namespace GameA.Game
         private Gesture _lastDragGesture;
         private bool _pinchActive;
         private Gesture _lastPinchGesture;
-
+        private EEditorLayer _lastEditorLayer;
         #endregion
 
         #region Property
@@ -186,6 +189,10 @@ namespace GameA.Game
         {
             _enable = true;
             _cameraMask.Show();
+            if (_lastEditorLayer != EEditorLayer.None)
+            {
+                ChangeEditorLayer(_lastEditorLayer);
+            }
             InternalStartEdit();
         }
 
@@ -204,6 +211,7 @@ namespace GameA.Game
         public void StopEdit()
         {
             _stateMachine.ChangeState(EditModeState.None.Instance);
+            ChangeEditorLayer(EEditorLayer.None);
             _cameraMask.Hide();
             _enable = false;
         }
@@ -354,6 +362,136 @@ namespace GameA.Game
                         _stateMachine.ChangeState(EditModeState.Add.Instance);
                     }
                 }
+            }
+        }
+
+        public void ChangeSelectUnitUIType(EUIType euiType)
+        {
+            if (euiType == EUIType.Decoration)
+            {
+                ChangeEditorLayer(EEditorLayer.Decorate);
+            }
+            else if (euiType == EUIType.Effect)
+            {
+                ChangeEditorLayer(EEditorLayer.Effect);
+            }
+            else
+            {
+                ChangeEditorLayer(EEditorLayer.Normal);
+            }
+        }
+        
+        public void RevertEditorLayer()
+        {
+            ChangeEditorLayer(_lastEditorLayer);
+        }
+
+        public void ChangeEditorLayer(EEditorLayer editorLayer)
+        {
+            if (editorLayer == _boardData.EditorLayer)
+            {
+                return;
+            }
+            var oldLayer = _boardData.EditorLayer;
+            var newLayer = editorLayer;
+            if (_stateMachine.CurrentState != null)
+            {
+                _stateMachine.CurrentState.OnBeforeChangeEditorLayer(oldLayer, newLayer);
+            }
+            if (_stateMachine.GlobalState != null)
+            {
+                _stateMachine.GlobalState.OnBeforeChangeEditorLayer(oldLayer, newLayer);
+            }
+            switch (_boardData.EditorLayer)
+            {//退出模式
+                case EEditorLayer.None:
+                    break;
+                case EEditorLayer.Normal:
+                    break;
+                case EEditorLayer.Decorate:
+                    break;
+                case EEditorLayer.Effect:
+                    break;
+            }
+            _lastEditorLayer = oldLayer;
+            _boardData.EditorLayer = newLayer;
+//            LogHelper.Info("EditorLayer: {0} --> {1}", oldLayer, newLayer);
+            switch (_boardData.EditorLayer)
+            {//进入模式
+                case EEditorLayer.None:
+                    using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
+                    {
+                        while (itor.MoveNext())
+                        {
+                            var entry = itor.Current;
+                            if (null != entry.Value
+                                && null != entry.Value.View)
+                            {
+                                entry.Value.View.SetRendererColor(EdittingLayerColor);
+                            }
+                        }
+                    }
+                    break;
+                case EEditorLayer.Normal:
+                    using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
+                    {
+                        while (itor.MoveNext())
+                        {
+                            var entry = itor.Current;
+                            if (null != entry.Value
+                                && null != entry.Value.View)
+                            {
+                                if (entry.Key.z != (int) EUnitDepth.Decoration
+                                    && entry.Key.z != (int) EUnitDepth.Effect)
+                                {
+                                    entry.Value.View.SetRendererColor(EdittingLayerColor);
+                                }
+                                else
+                                {
+                                    entry.Value.View.SetRendererColor(NotEdittingLayerColor);
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case EEditorLayer.Decorate:
+                    using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
+                    {
+                        while (itor.MoveNext())
+                        {
+                            var entry = itor.Current;
+                            if (null != entry.Value
+                                && null != entry.Value.View)
+                            {
+                                entry.Value.View.SetRendererColor(entry.Key.z == (int) EUnitDepth.Decoration 
+                                    ? EdittingLayerColor : NotEdittingLayerColor);
+                            }
+                        }
+                    }
+                    break;
+                case EEditorLayer.Effect:
+                    using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
+                    {
+                        while (itor.MoveNext())
+                        {
+                            var entry = itor.Current;
+                            if (null != entry.Value
+                                && null != entry.Value.View)
+                            {
+                                entry.Value.View.SetRendererColor(entry.Key.z == (int) EUnitDepth.Effect 
+                                ? EdittingLayerColor : NotEdittingLayerColor);
+                            }
+                        }
+                    }
+                    break;
+            }
+            if (_stateMachine.CurrentState != null)
+            {
+                _stateMachine.CurrentState.OnAfterChangeEditorLayer(oldLayer, newLayer);
+            }
+            if (_stateMachine.GlobalState != null)
+            {
+                _stateMachine.GlobalState.OnAfterChangeEditorLayer(oldLayer, newLayer);
             }
         }
 
@@ -925,6 +1063,7 @@ namespace GameA.Game
         {
             _mapStatistics.AddFinishCount();
         }
+
         #endregion
         
         private enum EDragMode

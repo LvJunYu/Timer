@@ -16,7 +16,7 @@ namespace GameA.Game
             public override void OnTap(Gesture gesture)
             {
                 UnitDesc touchedUnitDesc;
-                if (!EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(gesture.position), out touchedUnitDesc))
+                if (!EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(gesture.position), GetBlackBoard().EditorLayer, out touchedUnitDesc))
                 {
                     return;
                 }

@@ -78,60 +78,66 @@ namespace GameA.Game
         Monster,
         Item,
         Bullet,
-		Effect,
+        Effect,
+        Decoration,
         Max
     }
 
-	//关联配表 不能从中间加入
+    //关联配表 不能从中间加入
     public enum ELayerType
     {
         MainPlayer = 0,
         RemotePlayer = 1,
         Monster = 2,
         Item = 3,
-		Effect = 4,
+        Effect = 4,
         RigidbodyItem = 5,
         Gun = 6,
-	    Bullet = 7,
-	    Decoration = 8,
+        Bullet = 7,
+        Decoration = 8,
         Max
     }
 
-	public enum EUnitLayerType
-	{
-		None            = 0,
-        ChildGroup1     = 1 << 0,
-        ChildGroup2     = 1 << 1,
-        ChildGroup3     = 1 << 2,
-        ChildGroup4     = 1 << 3,
-        ChildGroup5     = 1 << 4,
-        ChildGroup6     = 1 << 5,
-		ChildGroupMax   = (1 << 6) - 1,
-        ParentGroupMax  = 4032,
-	}
-	
-	/// <summary>
-	/// 改造类型
-	/// </summary>
-	public enum EModifyType {
-		None,
-		Add,
-		Erase,
-		Modify,
-		Max,
-	}
-	public enum ECompositeEditorState
-	{
-		None,
-		MultipleSelect,
-		Move,
-	}
+    public enum EUnitLayerType
+    {
+        None = 0,
+        ChildGroup1 = 1 << 0,
+        ChildGroup2 = 1 << 1,
+        ChildGroup3 = 1 << 2,
+        ChildGroup4 = 1 << 3,
+        ChildGroup5 = 1 << 4,
+        ChildGroup6 = 1 << 5,
+        ChildGroupMax = (1 << 6) - 1,
+        ParentGroupMax = 4032,
+    }
 
-	public enum EEditorLayer
-	{
-		None = 0,
-		Effect,
-	}
+    /// <summary>
+    /// 改造类型
+    /// </summary>
+    public enum EModifyType
+    {
+        None,
+        Add,
+        Erase,
+        Modify,
+        Max,
+    }
+
+    public enum ECompositeEditorState
+    {
+        None,
+        MultipleSelect,
+        Move,
+    }
+
+    public enum EEditorLayer
+    {
+        None = -1,
+        Normal,
+        Decorate,
+        Effect,
+        Max,
+    }
 
     public enum ECollisionType
     {
@@ -183,15 +189,16 @@ namespace GameA.Game
         Max
     }
 
-	public enum EUnitDepth
-	{
-		Earth = 0,
-		Dynamic,
-		Effect,
+    public enum EUnitDepth
+    {
+        Earth = 0,
+        Dynamic,
+        Effect,
+        Decoration,
         Gun,
-		RuntimeCreate =10,
-		Max,
-	}
+        RuntimeCreate = 10,
+        Max,
+    }
 
     public enum EUnitEffectType
     {
@@ -221,24 +228,24 @@ namespace GameA.Game
     public enum EAnchore
     {
         None,
-        Up          = 4,
-        Center      = 5,
-        Down        = 6,
-        Left        = 2,
-        Right       = 8,
-        UpLeft      = 1,
-        UpRight     = 7,
-        DownLeft    = 3,
-        DownRight   = 9,
+        Up = 4,
+        Center = 5,
+        Down = 6,
+        Left = 2,
+        Right = 8,
+        UpLeft = 1,
+        UpRight = 7,
+        DownLeft = 3,
+        DownRight = 9,
     }
 
-	public enum EUnitRotationType
-	{
-		None = 0,
-		MoveDir,
-		Rotation,
+    public enum EUnitRotationType
+    {
+        None = 0,
+        MoveDir,
+        Rotation,
         RotateDir,
-	}
+    }
 
     public enum EColliderType
     {
@@ -260,50 +267,58 @@ namespace GameA.Game
         Push,
         Pull,
     }
-	
-	public enum EJumpState
-	{
-		Land,
-		Jump1,
-		Jump2,
-		Fall
-	}
+
+    public enum EJumpState
+    {
+        Land,
+        Jump1,
+        Jump2,
+        Fall
+    }
 
     // 怪物类型
     public enum EAIType
     {
         // 马里奥 巡逻怪
-        Mario_Patrol0   = 10,
-        Mario_Patrol1   = 11,
-        Mario_Patrol2   = 12,
-        // 马里奥 跳跃怪
-        Mario_Jump0     = 20,
-        Mario_Jump1     = 21,
-        // 马里奥 攀墙怪
-        Mario_Climb0    = 30,
-        Mario_Climb1    = 31,
-        Mario_Climb2    = 32,
-        // 马里奥 远程攻击怪
-        Mario_Shoot0    = 40,
-        Mario_Shoot1    = 41,
-        Mario_Shoot2    = 42,
-        // 马里奥 装甲躲藏怪
-        Mario_Hide0     = 51,
+        Mario_Patrol0 = 10,
+        Mario_Patrol1 = 11,
+        Mario_Patrol2 = 12,
 
-        Mario_Boss0     = 90,
-        Mario_Boss1     = 91,
+        // 马里奥 跳跃怪
+        Mario_Jump0 = 20,
+        Mario_Jump1 = 21,
+
+        // 马里奥 攀墙怪
+        Mario_Climb0 = 30,
+        Mario_Climb1 = 31,
+        Mario_Climb2 = 32,
+
+        // 马里奥 远程攻击怪
+        Mario_Shoot0 = 40,
+        Mario_Shoot1 = 41,
+        Mario_Shoot2 = 42,
+
+        // 马里奥 装甲躲藏怪
+        Mario_Hide0 = 51,
+
+        Mario_Boss0 = 90,
+        Mario_Boss1 = 91,
+
         /// <summary>
         /// 近身攻击怪
         /// </summary>
         Broforce_Melee0 = 200,
+
         /// <summary>
         /// 远程攻击怪
         /// </summary>
         Broforce_Shoot0 = 210,
+
         /// <summary>
         /// 自爆怪
         /// </summary>
         Broforce_Bomb0 = 220,
+
         /// <summary>
         /// 举盾怪
         /// </summary>

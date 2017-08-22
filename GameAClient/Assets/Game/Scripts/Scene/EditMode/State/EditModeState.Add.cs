@@ -8,6 +8,12 @@ namespace GameA.Game
     {
         public class Add : GenericBase<Add>
         {
+            public override void Enter(EditMode owner)
+            {
+                base.Enter(owner);
+                GetBlackBoard().DragInCurrentState = false;
+            }
+
             public override void Exit(EditMode owner)
             {
                 OnDragEnd(null);
@@ -20,7 +26,7 @@ namespace GameA.Game
                 boardData.DragInCurrentState = false;
                 UnitDesc touchedUnitDesc;
                 Vector2 mousePos = gesture.startPosition;
-                if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), out touchedUnitDesc))
+                if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), boardData.EditorLayer, out touchedUnitDesc))
                 {//当前点击位置有地块，转换为移动模式
                     boardData.CurrentTouchUnitDesc = touchedUnitDesc;
                     var unitExtra = DataScene2D.Instance.GetUnitExtra(touchedUnitDesc.Guid);
@@ -86,7 +92,7 @@ namespace GameA.Game
             {
                 var boardData = GetBlackBoard();
                 UnitDesc touchedUnitDesc;
-                if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(Input.mousePosition), out touchedUnitDesc))
+                if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(Input.mousePosition), boardData.EditorLayer, out touchedUnitDesc))
                 {
                     var touchedUnitExtra = DataScene2D.Instance.GetUnitExtra(touchedUnitDesc.Guid);
                     if (EditHelper.ProcessClickUnitOperation(touchedUnitDesc))
@@ -148,9 +154,7 @@ namespace GameA.Game
                 var recordBatch = GetRecordBatch();
                 var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
                 var grid = tableUnit.GetBaseDataGrid(unitDesc.Guid.x, unitDesc.Guid.y);
-                int layerMask = tableUnit.UnitType == (int)EUnitType.Effect
-                    ? EnvManager.EffectLayer
-                    : EnvManager.UnitLayerWithoutEffect;
+                int layerMask = EditHelper.GetLayerMask(GetBlackBoard().EditorLayer);
                 var nodes = DataScene2D.GridCastAll(grid, layerMask);
                 for (int i = 0; i < nodes.Count; i++)
                 {

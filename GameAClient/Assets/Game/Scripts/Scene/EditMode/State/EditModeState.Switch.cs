@@ -49,6 +49,7 @@ namespace GameA.Game
             public override void Enter(EditMode owner)
             {
                 base.Enter(owner);
+                owner.ChangeEditorLayer(EEditorLayer.None);
                 OnEnterSwitchMode();
             }
 
@@ -58,6 +59,7 @@ namespace GameA.Game
                 var data = boardData.GetStateData<Data>();
                 OnDragEnd(null);
                 OnExitSwitchMode(boardData, data);
+                owner.RevertEditorLayer();
                 base.Exit(owner);
             }
 
@@ -139,7 +141,7 @@ namespace GameA.Game
                 tile.z = boardData.CurrentTouchUnitDesc.Guid.z;
                 var target = new UnitDesc(boardData.CurrentTouchUnitDesc.Id, tile,
                     boardData.CurrentTouchUnitDesc.Rotation, boardData.CurrentTouchUnitDesc.Scale);
-                int layerMask = EnvManager.UnitLayerWithoutEffect;
+                int layerMask = EditHelper.GetLayerMask(boardData.EditorLayer);
                 var coverUnits = DataScene2D.GridCastAllReturnUnits(target, layerMask);
 
                 if (coverUnits == null || coverUnits.Count == 0)
@@ -198,7 +200,7 @@ namespace GameA.Game
             private bool TrySelectUnit(Vector3 mousePos)
             {
                 UnitDesc outValue;
-                if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), out outValue))
+                if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), GetBlackBoard().EditorLayer, out outValue))
                 {
                     if (UnitDefine.IsSwitch(outValue.Id))
                     {

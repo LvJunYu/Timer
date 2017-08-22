@@ -18,7 +18,6 @@ namespace GameA.Game
                 public Vector2 MousePos;
                 public Vector2 MouseActualPos;
                 public Vector3 MouseObjectOffsetInWorld;
-
                 /// <summary>
                 /// 正在拖拽的地块的Extra
                 /// </summary>
@@ -64,6 +63,7 @@ namespace GameA.Game
                     if (UnitDefine.IsBlueStone(stateData.CurrentMovingUnitBase.Id))
                     {
                         stateData.CurrentMode = Data.EMode.Magic;
+                        EditMode.Instance.ChangeEditorLayer(EEditorLayer.None);
                         OnEnterMagicMode();
                     }
                     else
@@ -176,6 +176,7 @@ namespace GameA.Game
                 if (stateData.CurrentMode == Data.EMode.Magic)
                 {
                     OnExitMagicMode();
+                    EditMode.Instance.RevertEditorLayer();
                 }
                 stateData.CurrentMode = Data.EMode.None;
                 stateData.DragUnitExtra = UnitExtra.zero;
@@ -195,7 +196,7 @@ namespace GameA.Game
                 var recordBatch = GetRecordBatch();
                 unitDesc.Scale = stateData.CurrentMovingUnitBase.Scale;
                 unitDesc.Rotation = stateData.CurrentMovingUnitBase.Rotation;
-                int layerMask = EnvManager.UnitLayerWithoutEffect;
+                int layerMask = EditHelper.GetLayerMask(boardData.EditorLayer);
                 var coverUnits = DataScene2D.GridCastAllReturnUnits(unitDesc, layerMask);
                 if (coverUnits != null && coverUnits.Count > 0)
                 {

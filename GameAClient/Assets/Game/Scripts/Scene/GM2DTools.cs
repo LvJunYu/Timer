@@ -513,7 +513,7 @@ namespace GameA.Game
 			unitDesc = new UnitDesc();
 			var tile = WorldToTile(mouseWorldPos);
 			SceneNode targetNode;
-		    int layerMask = editorLayer == EEditorLayer.Effect ? EnvManager.MainPlayerAndEffectLayer : EnvManager.UnitLayerWithoutEffect;
+		    int layerMask = EditHelper.GetLayerMask(editorLayer);
 			if (!DataScene2D.PointCast(tile, out targetNode, layerMask))
 			{
 				return false;

@@ -19,13 +19,9 @@ namespace GameA
     {
         private EUIType _selectedUnitType;
         private EUIType _lastSelectUnitType;
+	    private Table_Unit[] _selectUnitIdAry = new Table_Unit[(int)EEditorLayer.Max];
 
-//        private 
-
-        private List<UMCtrlItem> _umItems = new List<UMCtrlItem>();
-
-//        public const string NormalButtonSpriteName = "ChoiceButton_2";
-//        public const string SelectButtonSpriteName = "ChoiceButton_1";
+        private readonly List<UMCtrlItem> _umItems = new List<UMCtrlItem>();
 
         private Dictionary<EUIType, Button> _cachedButtonDic;
 
@@ -38,12 +34,6 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-//            _cachedView.Actor.onClick.AddListener(OnActor);
-//            _cachedView.Earth.onClick.AddListener(OnEarth);
-//            _cachedView.Mechanism.onClick.AddListener(OnMechanism);
-//            _cachedView.Monster.onClick.AddListener(OnMonster);
-//            _cachedView.Collection.onClick.AddListener(OnCollection);
-//            _cachedView.Decoration.onClick.AddListener(OnDecoration);
             _cachedView.CategoryButtns [0].onClick.AddListener (OnActor);
             _cachedView.CategoryButtns [1].onClick.AddListener (OnEarth);
             _cachedView.CategoryButtns [2].onClick.AddListener (OnMechanism);
@@ -55,19 +45,6 @@ namespace GameA
 		protected override void OnOpen(object parameter)
 	    {
 		    base.OnOpen(parameter);
-//			UpdateTabbarState();
-//			if (EditMode.Instance.CurEditorLayer == EEditorLayer.Effect)
-//			{
-//                RefreshView(EUIType.Effect);
-//			}
-//			else
-//			{
-//                if (_selectedUnitType == EUIType.Effect)
-//				{
-//                    _selectedUnitType = EUIType.None;
-//				}
-//				RefreshView(_selectedUnitType);
-//			}
             RefreshView(_selectedUnitType);
         }
 
@@ -86,17 +63,20 @@ namespace GameA
 			RegisterEvent(EMessengerType.OnEditorLayerChanged, OnEditorLayerChanged);
 	    }
 
+	    public void SelectItem(Table_Unit tableUnit)
+	    {
+		    _selectUnitIdAry[(int) EditMode.Instance.BoardData.EditorLayer] = tableUnit;
+		    Messenger<ushort>.Broadcast(EMessengerType.OnSelectedItemChanged,
+			    (ushort) PairUnitManager.Instance.GetCurrentId(tableUnit.Id));
+		    EditMode.Instance.ChangeSelectUnit(PairUnitManager.Instance.GetCurrentId(tableUnit.Id));
+	    }
+
 	    #region ui event
 
 	    private void OnEditorLayerChanged()
 	    {
 		    if (IsOpen)
 		    {
-//				UpdateTabbarState();
-//                EUIType showType = EditMode.Instance.CurEditorLayer == EEditorLayer.Effect
-//                    ? EUIType.Effect
-//				    : _lastSelectUnitType;
-//				RefreshView(showType);
 				RefreshView(_lastSelectUnitType);
 			}
 	    }
@@ -104,11 +84,6 @@ namespace GameA
 		private void OnCollection()
         {
             RefreshView(EUIType.Collection);
-        }
-
-        private void OnMonster()
-        {
-            RefreshView(EUIType.Controller);
         }
 
         private void OnMechanism()
@@ -130,7 +105,7 @@ namespace GameA
         {
             RefreshView(EUIType.Decoration);
         }
-        private void OnControl ()
+        private void OnControl()
         {
             RefreshView(EUIType.Controller);
         }
@@ -148,10 +123,9 @@ namespace GameA
 		    {
                 eUnitType = EUIType.Controller;
             }
-//            if (_selectedUnitType == eUnitType)
-//            {
-//                return;
-//            }
+	        var editorLayerBefore = EditMode.Instance.BoardData.EditorLayer;
+	        EditMode.Instance.ChangeSelectUnitUIType(eUnitType);
+	        var editorLayerAfter = EditMode.Instance.BoardData.EditorLayer;
 			_lastSelectUnitType = _selectedUnitType;
 			_selectedUnitType = eUnitType;
             if (!_isViewCreated)
@@ -160,20 +134,23 @@ namespace GameA
             }
             for (int i = _umItems.Count - 1; i >= 0; i--)
             {
-//                PoolFactory<UMCtrlItem>.Free(_umItems[i]);
-//                _umItems.RemoveAt(i);
 	            _umItems[i].Hide();
             }
-//            _umItems.Clear ();
 		    _cachedView.ScrollRect.content.anchoredPosition = Vector2.zero;
             List<Table_Unit> items = UnitManager.Instance.GetSameTypeItems(_selectedUnitType);
             if (items != null)
             {
+	            if (editorLayerBefore != editorLayerAfter)
+	            {
+		            var item = _selectUnitIdAry[(int) editorLayerAfter];
+		            if (item == null && items.Count > 0)
+		            {
+			            item = items[0];
+			            SelectItem(item);
+		            }
+	            }
                 for (int i = 0; i < items.Count; i++)
                 {
-//                    var umItem = PoolFactory<UMCtrlItem>.Get ();
-//	                umItem.CustomInit(_cachedView.ScrollRect.content);
-//                    umItem.Init(_cachedView.ScrollRect.content);
 	                UMCtrlItem umItem;
 	                if (i < _umItems.Count)
 	                {
@@ -181,7 +158,7 @@ namespace GameA
 	                }
 	                else
 	                {
-		                umItem = CreateNewUMCtrlItem();
+		                umItem = CreateNewUmCtrlItem();
 		                _umItems.Add(umItem);
 	                }
                     umItem.Set(items[i], EditMode.Instance.BoardData.CurrentSelectedUnitId == items[i].Id);
@@ -189,26 +166,10 @@ namespace GameA
                 }
                 int itemCount = items.Count;
 
-                int totalWidth = (int)(itemCount * GM2DUIConstDefine.UICtrlItemWidthPreItem + (itemCount - 1)*_cachedView.LayoutGroup.spacing + _cachedView.LayoutGroup.padding.left * 2);
+	            int totalWidth = (int) (itemCount * GM2DUIConstDefine.UICtrlItemWidthPreItem +
+	                                    (itemCount - 1) * _cachedView.LayoutGroup.spacing +
+	                                    _cachedView.LayoutGroup.padding.left * 2);
 				_cachedView.ScrollRect.content.SetWidth(totalWidth);
-
-	   //         {
-				//	///显示测试特效
-				//	if (_selecetedUnitType == EUnitType.Monster)
-				//	{
-				//		List<Table_Unit> others = GameDataManager.Instance.GetSameTypeItems(EUnitType.Effect);
-				//		for (int i = 0; i < others.Count; i++)
-				//		{
-				//			var umItem = new UMCtrlItem();
-				//			umItem.Init(_cachedView.ScrollRect.content);
-				//			umItem.Set(others[i]);
-				//			_umItems.Add(umItem);
-				//		}
-				//		itemCount += others.Count;
-				//		totalWidth = (int)(itemCount * GM2DUIConstDefine.UICtrlItemWidthPreItem + (itemCount - 1) * _cachedView.LayoutGroup.spacing + _cachedView.LayoutGroup.padding.left * 2);
-				//		_cachedView.ScrollRect.content.SetWidth(totalWidth);
-				//	}
-				//}
 			}
 
 		    UpdateButtonShow();
@@ -225,7 +186,7 @@ namespace GameA
             }
         }
 
-	    private UMCtrlItem CreateNewUMCtrlItem()
+	    private UMCtrlItem CreateNewUmCtrlItem()
 	    {
 		    var umItem = new UMCtrlItem();
 		    umItem.Init(_cachedView.ScrollRect.content);

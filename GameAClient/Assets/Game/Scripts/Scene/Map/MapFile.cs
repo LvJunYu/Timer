@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using IntVec2 = SoyEngine.IntVec2;
 
 namespace GameA.Game
 {
@@ -28,7 +27,7 @@ namespace GameA.Game
 
         private void OnDestroy()
         {
-            StopCoroutine("ParseData");
+            StopAllCoroutines();
         }
 
         public void Read(GM2DMapData mapData, GameManager.EStartType startType)
@@ -48,7 +47,7 @@ namespace GameA.Game
         internal void Stop()
         {
             _run = false;
-            StopCoroutine("ParseData");
+            StopAllCoroutines();
         }
 
         private IEnumerator ParseData(GM2DMapData mapData, GameManager.EStartType startType)
@@ -221,20 +220,24 @@ namespace GameA.Game
 			for (int i = 0; i < nodes.Count; i++) {
 				gm2DMapData.Data.Add (GM2DTools.ToProto (nodes [i]));
 			}
-			var enumerator = DataScene2D.Instance.UnitExtras.GetEnumerator ();
-			while (enumerator.MoveNext ()) {
-				gm2DMapData.UnitExtraInfos.Add (GM2DTools.ToProto (enumerator.Current.Key, enumerator.Current.Value));
-			}
-			var pairUnitIter = PairUnitManager.Instance.PairUnits.Values.GetEnumerator ();
-			while (pairUnitIter.MoveNext ()) {
-				if (pairUnitIter.Current != null) {
-					for (int i = 0; i < pairUnitIter.Current.Length; i++) {
-						if (pairUnitIter.Current [i].UnitA.Guid != IntVec3.zero) {
-							gm2DMapData.PairUnitDatas.Add (GM2DTools.ToProto (pairUnitIter.Current [i]));
-						}
-					}
-				}
-			}
+		    using (var enumerator = DataScene2D.Instance.UnitExtras.GetEnumerator())
+		    {
+		        while (enumerator.MoveNext ()) {
+		            gm2DMapData.UnitExtraInfos.Add (GM2DTools.ToProto (enumerator.Current.Key, enumerator.Current.Value));
+		        }
+		    }
+		    using (var pairUnitIter = PairUnitManager.Instance.PairUnits.Values.GetEnumerator())
+		    {
+		        while (pairUnitIter.MoveNext ()) {
+		            if (pairUnitIter.Current != null) {
+		                for (int i = 0; i < pairUnitIter.Current.Length; i++) {
+		                    if (pairUnitIter.Current [i].UnitA.Guid != IntVec3.zero) {
+		                        gm2DMapData.PairUnitDatas.Add (GM2DTools.ToProto (pairUnitIter.Current [i]));
+		                    }
+		                }
+		            }
+		        }
+		    }
             
 		    DataScene2D.Instance.SaveSwitchUnitData(gm2DMapData.SwitchUnitDatas);
 

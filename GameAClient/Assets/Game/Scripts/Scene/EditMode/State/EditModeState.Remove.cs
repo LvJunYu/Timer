@@ -83,7 +83,7 @@ namespace GameA.Game
             private void TryRemove(Vector2 mousePos)
             {
                 UnitDesc unitDesc;
-                if(EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), out unitDesc))
+                if(EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(mousePos), GetBlackBoard().EditorLayer, out unitDesc))
                 {
                     var unitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
                     if (EditMode.Instance.DeleteUnitWithCheck(unitDesc))

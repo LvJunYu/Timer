@@ -6,12 +6,10 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using JoyEngine;
 using SoyEngine;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
@@ -70,7 +68,7 @@ namespace GameA.Game
                 {
                     if (unit.View != null)
                     {
-                        UnityEngine.Object.Destroy(unit.View.Trans.gameObject);
+                        Object.Destroy(unit.View.Trans.gameObject);
                     }
                     unit.OnObjectDestroy();
                     unit.OnDispose();
@@ -744,11 +742,6 @@ namespace GameA.Game
             }
             var size = unit.GetColliderSize() / ConstDefineGM2D.ServerTileScale;
             return FindPath(start / ConstDefineGM2D.ServerTileScale, end / ConstDefineGM2D.ServerTileScale, Math.Max(1, size.x), Math.Max(1, size.y), maxCharacterJumpHeight);
-        }
-
-        public override bool IsOnewayPlatform(int x, int y)
-        {
-            return base.IsOnewayPlatform(x, y);
         }
 
         public override bool IsGround(int x, int y)

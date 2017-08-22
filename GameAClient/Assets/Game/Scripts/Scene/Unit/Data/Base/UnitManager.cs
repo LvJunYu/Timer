@@ -147,6 +147,10 @@ namespace GameA.Game
             {
                 return (int) EUnitDepth.Effect;
             }
+            if (tableUnit.UnitType == (int) EUnitType.Decoration)
+            {
+                return (int) EUnitDepth.Decoration;
+            }
             return (int) (tableUnit.EColliderType == EColliderType.Dynamic ? EUnitDepth.Dynamic : EUnitDepth.Earth);
         }
 

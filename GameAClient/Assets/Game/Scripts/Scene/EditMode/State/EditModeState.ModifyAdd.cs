@@ -16,7 +16,7 @@ namespace GameA.Game
             {
                 var boardData = GetBlackBoard();
                 UnitDesc touchedUnitDesc;
-                if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(gesture.position), out touchedUnitDesc))
+                if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(gesture.position), boardData.EditorLayer, out touchedUnitDesc))
                 {
                     return;
                 }

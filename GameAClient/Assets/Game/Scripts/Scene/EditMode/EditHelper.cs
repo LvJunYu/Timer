@@ -5,9 +5,11 @@
 ** Summary : EditHelper
 ***********************************************************************/
 
+using System;
 using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace GameA.Game
 {
@@ -38,9 +40,24 @@ namespace GameA.Game
         {
             get { return _unitIndexCount; }
         }
+
+        public static int GetLayerMask(EEditorLayer editorLayer)
+        {
+            switch (editorLayer)
+            {
+                case EEditorLayer.None:
+                    break;
+                case EEditorLayer.Normal:
+                    return EnvManager.UnitLayer;
+                case EEditorLayer.Decorate:
+                    return EnvManager.DecorationLayer;
+                case EEditorLayer.Effect:
+                    return EnvManager.EffectLayer;
+            }
+            return 0;
+        }
         
-        
-        public static bool TryGetUnitDesc(Vector2 mouseWorldPos, out UnitDesc unitDesc)
+        public static bool TryGetUnitDesc(Vector2 mouseWorldPos, EEditorLayer editorLayer, out UnitDesc unitDesc)
         {
             unitDesc = new UnitDesc();
             IntVec2 mouseTile = GM2DTools.WorldToTile(mouseWorldPos);
@@ -48,7 +65,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (!GM2DTools.TryGetUnitObject(mouseWorldPos, EEditorLayer.None, out unitDesc))
+            if (!GM2DTools.TryGetUnitObject(mouseWorldPos, editorLayer, out unitDesc))
             {
                 return false;
             }

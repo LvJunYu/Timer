@@ -60,6 +60,9 @@ namespace GameA.Game
             {
                 return true;
             }
+
+            public virtual void OnBeforeChangeEditorLayer(EEditorLayer oldLayer, EEditorLayer newLayer) { }
+            public virtual void OnAfterChangeEditorLayer(EEditorLayer oldLayer, EEditorLayer newLayer) { }
             
             public virtual void OnPinch(Gesture gesture) { }
             public virtual void OnPinchEnd(Gesture gesture) { }
