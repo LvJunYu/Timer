@@ -183,26 +183,12 @@ namespace GameA.Game
 
         public int GetSortingOrder(Table_Unit tableUnit)
         {
-            //switch (tableUnit.EUnitType)
-            //{
-            //    case EUnitType.Earth:
-            //    case EUnitType.Collection:
-            //    case EUnitType.Decoration:
-            //        return (int)ESortingOrder.Item;
-            //    case EUnitType.Mechanism:
-            //        return (int)ESortingOrder.Mechanism;
-            //    case EUnitType.MainPlayer:
-            //        return (int) ESortingOrder.MainPlayer;
-            //    case EUnitType.Monster:
-            //        return (int)ESortingOrder.Monster;
-            //    case EUnitType.Bullet:
-            //        return (int)ESortingOrder.Bullet;
-            //    case EUnitType.Missle:
-            //        return (int)ESortingOrder.Missle;
-            //    case EUnitType.Effect:
-            //        return (int) ESortingOrder.EffectItem;
-            //}
-            //LogHelper.Error("GetSortingOrder Failed,EUnitType:{0}", tableUnit.EUnitType);
+            switch (tableUnit.EUnitType)
+            {
+                case EUnitType.Effect:
+                    return (int) ESortingOrder.EffectItem;
+            }
+//            LogHelper.Error("GetSortingOrder Failed,EUnitType:{0}", tableUnit.EUnitType);
             return (int) ESortingOrder.Item;
         }
 

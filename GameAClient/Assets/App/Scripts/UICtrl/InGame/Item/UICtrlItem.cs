@@ -19,7 +19,7 @@ namespace GameA
     {
         private EUIType _selectedUnitType;
         private EUIType _lastSelectUnitType;
-	    private Table_Unit[] _selectUnitIdAry = new Table_Unit[(int)EEditorLayer.Max];
+	    private readonly Table_Unit[] _selectUnitIdAry = new Table_Unit[(int)EEditorLayer.Max];
 
         private readonly List<UMCtrlItem> _umItems = new List<UMCtrlItem>();
 
@@ -34,12 +34,11 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.CategoryButtns [0].onClick.AddListener (OnActor);
-            _cachedView.CategoryButtns [1].onClick.AddListener (OnEarth);
-            _cachedView.CategoryButtns [2].onClick.AddListener (OnMechanism);
-            _cachedView.CategoryButtns [3].onClick.AddListener (OnCollection);
-            _cachedView.CategoryButtns [4].onClick.AddListener (OnDecoration);
-            _cachedView.CategoryButtns [5].onClick.AddListener (OnControl);
+	        for (int i = 0; i < _cachedView.CategoryButtns.Length; i++)
+	        {
+		        var inx = i;
+		        _cachedView.CategoryButtns[i].onClick.AddListener(()=>OnSelectTab(inx));
+	        }
         }
 
 		protected override void OnOpen(object parameter)
@@ -81,34 +80,10 @@ namespace GameA
 			}
 	    }
 
-		private void OnCollection()
-        {
-            RefreshView(EUIType.Collection);
-        }
-
-        private void OnMechanism()
-        {
-            RefreshView(EUIType.Mechanism);
-        }
-
-        private void OnEarth()
-        {
-            RefreshView(EUIType.Earth);
-        }
-
-        private void OnActor()
-        {
-            RefreshView(EUIType.Actor);
-        }
-
-        private void OnDecoration()
-        {
-            RefreshView(EUIType.Decoration);
-        }
-        private void OnControl()
-        {
-            RefreshView(EUIType.Controller);
-        }
+	    private void OnSelectTab(int inx)
+	    {
+		    RefreshView((EUIType) (inx + 1));
+	    }
 		#endregion
 
 		#region event
