@@ -55,6 +55,7 @@ namespace GameA.Game
         protected int _shootAngle;
 
         protected List<UnitBase> _switchPressUnits = new List<UnitBase>();
+        protected List<UnitBase> _switchRectUnits = new List<UnitBase>();
         protected bool _ctrlBySwitch;
 
         protected int _maxHp;
@@ -704,6 +705,7 @@ namespace GameA.Game
             _curBanInputTime = 0;
             _eUnitState = EUnitState.Normal;
             _switchPressUnits.Clear();
+            _switchRectUnits.Clear();
             _ctrlBySwitch = false;
             if (_dynamicCollider != null)
             {
@@ -1445,6 +1447,33 @@ namespace GameA.Game
                 return false;
             }
             if (_switchPressUnits.Count == 0)
+            {
+                OnCtrlBySwitch();
+            }
+            return true;
+        }
+        
+        internal bool OnSwitchRectStart(SwitchRect switchRect)
+        {
+            if (_switchRectUnits.Contains(switchRect))
+            {
+                return false;
+            }
+            _switchRectUnits.Add(switchRect);
+            if (_switchRectUnits.Count == 1)
+            {
+                OnCtrlBySwitch();
+            }
+            return true;
+        }
+
+        internal bool OnSwitchRectEnd(SwitchRect switchRect)
+        {
+            if (!_switchRectUnits.Remove(switchRect))
+            {
+                return false;
+            }
+            if (_switchRectUnits.Count == 0)
             {
                 OnCtrlBySwitch();
             }

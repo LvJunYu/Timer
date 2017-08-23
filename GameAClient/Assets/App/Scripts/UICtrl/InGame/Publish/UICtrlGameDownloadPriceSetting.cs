@@ -12,6 +12,7 @@ using UnityEngine;
 using SoyEngine.Proto;
 using UnityEngine.UI;
 using GameA.Game;
+using Text = UnityEngine.UI.Text;
 
 namespace GameA
 {

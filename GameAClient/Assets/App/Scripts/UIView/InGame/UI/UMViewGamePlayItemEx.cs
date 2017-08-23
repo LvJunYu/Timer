@@ -14,8 +14,8 @@ namespace GameA.Game
     {
         public Button MinusButton;
         public Button PlusButton;
-        public Text TimeShow;
+        public UnityEngine.UI.Text TimeShow;
 
-        public Text TimeUnit;
+        public UnityEngine.UI.Text TimeUnit;
     }
 }

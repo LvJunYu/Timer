@@ -78,7 +78,7 @@ namespace GameA.Game
                     var unit = _units[i];
                     if (unit != null && unit.IsAlive)
                     {
-                        unit.OnCtrlBySwitch();
+                        unit.OnSwitchRectStart(this);
                     }
                 }
             }
@@ -93,7 +93,7 @@ namespace GameA.Game
                     var unit = _units[i];
                     if (unit != null && unit.IsAlive)
                     {
-                        unit.OnCtrlBySwitch();
+                        unit.OnSwitchRectEnd(this);
                     }
                 }
             }
