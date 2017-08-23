@@ -45,7 +45,7 @@ namespace GameA.Game
         #region Field
 
         private static readonly Color EdittingLayerColor = Color.white;
-        private static readonly Color NotEdittingLayerColor = new Color(1f, 1f, 1f, 0.5f);
+        private static readonly Color NotEdittingLayerColor = new Color(1f, 1f, 1f, 0.3f);
         private bool _enable;
         private bool _inited;
         private HashSet<EditModeState.Base> _initedStateSet;
@@ -192,6 +192,10 @@ namespace GameA.Game
             if (_lastEditorLayer != EEditorLayer.None)
             {
                 ChangeEditorLayer(_lastEditorLayer);
+            }
+            if (_boardData.EditorLayer == EEditorLayer.None)
+            {
+                ChangeEditorLayer(EEditorLayer.Normal);
             }
             InternalStartEdit();
         }
@@ -367,11 +371,7 @@ namespace GameA.Game
 
         public void ChangeSelectUnitUIType(EUIType euiType)
         {
-            if (euiType == EUIType.Decoration)
-            {
-                ChangeEditorLayer(EEditorLayer.Decorate);
-            }
-            else if (euiType == EUIType.Effect)
+            if (euiType == EUIType.Effect)
             {
                 ChangeEditorLayer(EEditorLayer.Effect);
             }
@@ -408,8 +408,6 @@ namespace GameA.Game
                     break;
                 case EEditorLayer.Normal:
                     break;
-                case EEditorLayer.Decorate:
-                    break;
                 case EEditorLayer.Effect:
                     break;
             }
@@ -433,6 +431,7 @@ namespace GameA.Game
                     }
                     break;
                 case EEditorLayer.Normal:
+                    CameraMask.HideLayerMask();
                     using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
                     {
                         while (itor.MoveNext())
@@ -441,35 +440,16 @@ namespace GameA.Game
                             if (null != entry.Value
                                 && null != entry.Value.View)
                             {
-                                if (entry.Key.z != (int) EUnitDepth.Decoration
-                                    && entry.Key.z != (int) EUnitDepth.Effect)
-                                {
-                                    entry.Value.View.SetRendererColor(EdittingLayerColor);
-                                }
-                                else
-                                {
-                                    entry.Value.View.SetRendererColor(NotEdittingLayerColor);
-                                }
-                            }
-                        }
-                    }
-                    break;
-                case EEditorLayer.Decorate:
-                    using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
-                    {
-                        while (itor.MoveNext())
-                        {
-                            var entry = itor.Current;
-                            if (null != entry.Value
-                                && null != entry.Value.View)
-                            {
-                                entry.Value.View.SetRendererColor(entry.Key.z == (int) EUnitDepth.Decoration 
-                                    ? EdittingLayerColor : NotEdittingLayerColor);
+                                entry.Value.View.SetRendererColor(entry.Key.z != (int) EUnitDepth.Effect
+                                    ? EdittingLayerColor
+                                    : NotEdittingLayerColor);
                             }
                         }
                     }
                     break;
                 case EEditorLayer.Effect:
+                    _cameraMask.SetLayerMaskSortOrder((int) ESortingOrder.EffectEditorLayMask);
+                    CameraMask.ShowLayerMask();
                     using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
                     {
                         while (itor.MoveNext())
@@ -478,8 +458,7 @@ namespace GameA.Game
                             if (null != entry.Value
                                 && null != entry.Value.View)
                             {
-                                entry.Value.View.SetRendererColor(entry.Key.z == (int) EUnitDepth.Effect 
-                                ? EdittingLayerColor : NotEdittingLayerColor);
+                                entry.Value.View.SetRendererColor(EdittingLayerColor);
                             }
                         }
                     }
@@ -1042,7 +1021,7 @@ namespace GameA.Game
             // --------------------------
             
             _cameraMask = go.GetComponent<SlicedCameraMask>();
-            _cameraMask.SetSortOrdering((int) ESortingOrder.Mask);
+            _cameraMask.SetCameraMaskSortOrder((int) ESortingOrder.Mask);
         }
 
         private void OnBeforeStateChange(EditModeState.Base oldState, EditModeState.Base newState)

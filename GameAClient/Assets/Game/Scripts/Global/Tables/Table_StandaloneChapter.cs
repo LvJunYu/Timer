@@ -31,6 +31,11 @@ namespace GameA.Game
 		[ColumnMapping("BonusLevels")]
 		public int[] BonusLevels;
 		/// <summary>
+        /// 解锁等级
+        /// </summary>
+		[ColumnMapping("UnlockLevel")]
+		public int UnlockLevel;
+		/// <summary>
         /// 抽奖券产出概率
         /// </summary>
 		[ColumnMapping("TicketProbability")]
