@@ -55,7 +55,10 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            RefershWeaponShow();
+            if (_userWeaponData.IsDirty || _userWeaponPartData.IsDirty)
+            {
+                RefershWeaponShow();                
+            }
         }
 
         protected override void OnClose()
