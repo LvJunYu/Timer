@@ -23,8 +23,6 @@ namespace GameA
         /// </summary>
         public Dictionary<Table_FashionUnit, Msg_BuyAvatarPartItem> AvatarmsgDic = new Dictionary<Table_FashionUnit, Msg_BuyAvatarPartItem>();
         private List<Msg_BuyAvatarPartItem> _avatarmsg = new List<Msg_BuyAvatarPartItem>();
-        private int GoldCount = 0;
-        private int DiamondCount = 0;
 
         #endregion
         #region 属性
@@ -38,9 +36,7 @@ namespace GameA
         public void RefreshPage()
         {
             _cachedView.PriceGold.text = CalculateGoldCount().ToString();
-            GoldCount = CalculateGoldCount();
             _cachedView.PriceDiamond.text = CalculateDiamondCount().ToString();
-            DiamondCount = CalculateDiamondCount();
         }
 
         /// <summary>
