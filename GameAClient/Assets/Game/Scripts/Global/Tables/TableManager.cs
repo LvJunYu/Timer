@@ -12,16 +12,16 @@ namespace GameA.Game
 	{
 		#region 常量与字段
 		private static TableManager _instance;
-		public readonly Dictionary<int,Table_Equipment> Table_EquipmentDic = new Dictionary<int, Table_Equipment>();
 		public readonly Dictionary<int,Table_State> Table_StateDic = new Dictionary<int, Table_State>();
+		public readonly Dictionary<int,Table_Equipment> Table_EquipmentDic = new Dictionary<int, Table_Equipment>();
 		public readonly Dictionary<int,Table_Skill> Table_SkillDic = new Dictionary<int, Table_Skill>();
 		public readonly Dictionary<int,Table_Reward> Table_RewardDic = new Dictionary<int, Table_Reward>();
 		public readonly Dictionary<int,Table_EquipmentLevel> Table_EquipmentLevelDic = new Dictionary<int, Table_EquipmentLevel>();
 		public readonly Dictionary<int,Table_Trap> Table_TrapDic = new Dictionary<int, Table_Trap>();
 		public readonly Dictionary<int,Table_Unit> Table_UnitDic = new Dictionary<int, Table_Unit>();
-		public readonly Dictionary<int,Table_StandaloneLevel> Table_StandaloneLevelDic = new Dictionary<int, Table_StandaloneLevel>();
 		public readonly Dictionary<int,Table_CharacterUpgrade> Table_CharacterUpgradeDic = new Dictionary<int, Table_CharacterUpgrade>();
 		public readonly Dictionary<int,Table_StarRequire> Table_StarRequireDic = new Dictionary<int, Table_StarRequire>();
+		public readonly Dictionary<int,Table_StandaloneLevel> Table_StandaloneLevelDic = new Dictionary<int, Table_StandaloneLevel>();
 		public readonly Dictionary<int,Table_StandaloneChapter> Table_StandaloneChapterDic = new Dictionary<int, Table_StandaloneChapter>();
 		public readonly Dictionary<int,Table_FashionShop> Table_FashionShopDic = new Dictionary<int, Table_FashionShop>();
 		public readonly Dictionary<int,Table_FashionUnit> Table_FashionUnitDic = new Dictionary<int, Table_FashionUnit>();
@@ -43,16 +43,16 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_ModifyReward> Table_ModifyRewardDic = new Dictionary<int, Table_ModifyReward>();
 		public readonly Dictionary<int,Table_ProgressUnlock> Table_ProgressUnlockDic = new Dictionary<int, Table_ProgressUnlock>();
 		public readonly Dictionary<int,Table_BoostItem> Table_BoostItemDic = new Dictionary<int, Table_BoostItem>();
-		[UnityEngine.SerializeField] private Table_Equipment[] _tableEquipments;
 		[UnityEngine.SerializeField] private Table_State[] _tableStates;
+		[UnityEngine.SerializeField] private Table_Equipment[] _tableEquipments;
 		[UnityEngine.SerializeField] private Table_Skill[] _tableSkills;
 		[UnityEngine.SerializeField] private Table_Reward[] _tableRewards;
 		[UnityEngine.SerializeField] private Table_EquipmentLevel[] _tableEquipmentLevels;
 		[UnityEngine.SerializeField] private Table_Trap[] _tableTraps;
 		[UnityEngine.SerializeField] private Table_Unit[] _tableUnits;
-		[UnityEngine.SerializeField] private Table_StandaloneLevel[] _tableStandaloneLevels;
 		[UnityEngine.SerializeField] private Table_CharacterUpgrade[] _tableCharacterUpgrades;
 		[UnityEngine.SerializeField] private Table_StarRequire[] _tableStarRequires;
+		[UnityEngine.SerializeField] private Table_StandaloneLevel[] _tableStandaloneLevels;
 		[UnityEngine.SerializeField] private Table_StandaloneChapter[] _tableStandaloneChapters;
 		[UnityEngine.SerializeField] private Table_FashionShop[] _tableFashionShops;
 		[UnityEngine.SerializeField] private Table_FashionUnit[] _tableFashionUnits;
@@ -89,10 +89,10 @@ namespace GameA.Game
 		}
 		public void Init()
 		{
-			string EquipmentJsonStr = ResourceManager.Instance.GetJson ("Equipment", 31);
-            _tableEquipments = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Equipment[]>(EquipmentJsonStr);
 			string StateJsonStr = ResourceManager.Instance.GetJson ("State", 31);
             _tableStates = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_State[]>(StateJsonStr);
+			string EquipmentJsonStr = ResourceManager.Instance.GetJson ("Equipment", 31);
+            _tableEquipments = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Equipment[]>(EquipmentJsonStr);
 			string SkillJsonStr = ResourceManager.Instance.GetJson ("Skill", 31);
             _tableSkills = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Skill[]>(SkillJsonStr);
 			string RewardJsonStr = ResourceManager.Instance.GetJson ("Reward", 31);
@@ -103,12 +103,12 @@ namespace GameA.Game
             _tableTraps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Trap[]>(TrapJsonStr);
 			string UnitJsonStr = ResourceManager.Instance.GetJson ("Unit", 31);
             _tableUnits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Unit[]>(UnitJsonStr);
-			string StandaloneLevelJsonStr = ResourceManager.Instance.GetJson ("StandaloneLevel", 31);
-            _tableStandaloneLevels = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneLevel[]>(StandaloneLevelJsonStr);
 			string CharacterUpgradeJsonStr = ResourceManager.Instance.GetJson ("CharacterUpgrade", 31);
             _tableCharacterUpgrades = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_CharacterUpgrade[]>(CharacterUpgradeJsonStr);
 			string StarRequireJsonStr = ResourceManager.Instance.GetJson ("StarRequire", 31);
             _tableStarRequires = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StarRequire[]>(StarRequireJsonStr);
+			string StandaloneLevelJsonStr = ResourceManager.Instance.GetJson ("StandaloneLevel", 31);
+            _tableStandaloneLevels = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneLevel[]>(StandaloneLevelJsonStr);
 			string StandaloneChapterJsonStr = ResourceManager.Instance.GetJson ("StandaloneChapter", 31);
             _tableStandaloneChapters = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneChapter[]>(StandaloneChapterJsonStr);
 			string FashionShopJsonStr = ResourceManager.Instance.GetJson ("FashionShop", 31);
@@ -152,17 +152,6 @@ namespace GameA.Game
 			string BoostItemJsonStr = ResourceManager.Instance.GetJson ("BoostItem", 31);
             _tableBoostItems = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_BoostItem[]>(BoostItemJsonStr);
 			ResourceManager.Instance.UnloadScenary(31);
-			for (int i = 0; i < _tableEquipments.Length; i++)
-			{
-				if (!Table_EquipmentDic.ContainsKey(_tableEquipments[i].Id))
-				{
-					Table_EquipmentDic.Add(_tableEquipments[i].Id,_tableEquipments[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableEquipments table.Id {0} is duplicated!", _tableEquipments[i].Id);
-				}
-			}
 			for (int i = 0; i < _tableStates.Length; i++)
 			{
 				if (!Table_StateDic.ContainsKey(_tableStates[i].Id))
@@ -172,6 +161,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableStates table.Id {0} is duplicated!", _tableStates[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableEquipments.Length; i++)
+			{
+				if (!Table_EquipmentDic.ContainsKey(_tableEquipments[i].Id))
+				{
+					Table_EquipmentDic.Add(_tableEquipments[i].Id,_tableEquipments[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableEquipments table.Id {0} is duplicated!", _tableEquipments[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableSkills.Length; i++)
@@ -229,17 +229,6 @@ namespace GameA.Game
 					LogHelper.Warning("_tableUnits table.Id {0} is duplicated!", _tableUnits[i].Id);
 				}
 			}
-			for (int i = 0; i < _tableStandaloneLevels.Length; i++)
-			{
-				if (!Table_StandaloneLevelDic.ContainsKey(_tableStandaloneLevels[i].Id))
-				{
-					Table_StandaloneLevelDic.Add(_tableStandaloneLevels[i].Id,_tableStandaloneLevels[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableStandaloneLevels table.Id {0} is duplicated!", _tableStandaloneLevels[i].Id);
-				}
-			}
 			for (int i = 0; i < _tableCharacterUpgrades.Length; i++)
 			{
 				if (!Table_CharacterUpgradeDic.ContainsKey(_tableCharacterUpgrades[i].Id))
@@ -260,6 +249,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableStarRequires table.Id {0} is duplicated!", _tableStarRequires[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableStandaloneLevels.Length; i++)
+			{
+				if (!Table_StandaloneLevelDic.ContainsKey(_tableStandaloneLevels[i].Id))
+				{
+					Table_StandaloneLevelDic.Add(_tableStandaloneLevels[i].Id,_tableStandaloneLevels[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableStandaloneLevels table.Id {0} is duplicated!", _tableStandaloneLevels[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableStandaloneChapters.Length; i++)
@@ -497,19 +497,19 @@ namespace GameA.Game
 			Messenger.Broadcast(EMessengerType.OnTableInited);
 		}
 
-		public Table_Equipment GetEquipment(int key)
+		public Table_State GetState(int key)
 		{
-			Table_Equipment tmp;
-			if (Table_EquipmentDic.TryGetValue(key,out tmp))
+			Table_State tmp;
+			if (Table_StateDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
 			return null;
 		}
-		public Table_State GetState(int key)
+		public Table_Equipment GetEquipment(int key)
 		{
-			Table_State tmp;
-			if (Table_StateDic.TryGetValue(key,out tmp))
+			Table_Equipment tmp;
+			if (Table_EquipmentDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
@@ -560,15 +560,6 @@ namespace GameA.Game
 			}
 			return null;
 		}
-		public Table_StandaloneLevel GetStandaloneLevel(int key)
-		{
-			Table_StandaloneLevel tmp;
-			if (Table_StandaloneLevelDic.TryGetValue(key,out tmp))
-			{
-				return tmp;
-			}
-			return null;
-		}
 		public Table_CharacterUpgrade GetCharacterUpgrade(int key)
 		{
 			Table_CharacterUpgrade tmp;
@@ -582,6 +573,15 @@ namespace GameA.Game
 		{
 			Table_StarRequire tmp;
 			if (Table_StarRequireDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_StandaloneLevel GetStandaloneLevel(int key)
+		{
+			Table_StandaloneLevel tmp;
+			if (Table_StandaloneLevelDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

@@ -1,35 +1,22 @@
 ﻿/********************************************************************
-** Filename : FakeEarth
+** Filename : MaskEarth
 ** Author : Dong
 ** Date : 2017/1/5 星期四 下午 8:43:48
-** Summary : FakeEarth
+** Summary : MaskEarth
 ***********************************************************************/
 
-using System;
-using System.Collections;
+using System.ComponentModel;
 using DG.Tweening;
 using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 4002, Type = typeof(FakeEarth))]
-    public class FakeEarth : Earth
+    [Unit(Id = 9002, Type = typeof(MaskEarth))]
+    public class MaskEarth : Earth
     {
         protected bool _trigger;
         protected SpriteRenderer _spriteRenderer;
-        protected Sequence _editSequence;
-        private Coroutine _coroutine;
-
-        protected override bool OnInit()
-        {
-            if (!base.OnInit())
-            {
-                return false;
-            }
-            _useCorner = false;
-            return true;
-        }
 
         internal override bool InstantiateView()
         {
@@ -40,7 +27,7 @@ namespace GameA.Game
             _spriteRenderer = _view.Trans.GetComponent<SpriteRenderer>();
             if (GameRun.Instance.IsEdit)
             {
-                PlayAnimation();
+                _spriteRenderer.DOFade(0.5f, 0.5f);
             }
             return true;
         }
@@ -48,58 +35,18 @@ namespace GameA.Game
         internal override void OnPlay()
         {
             base.OnPlay();
-            if (_editSequence != null)
-            {
-                _editSequence.Rewind();
-                _editSequence.Pause();
-            }
+            _spriteRenderer.DOFade(1, 0f);
         }
 
         internal override void OnEdit()
         {
-            if (_editSequence != null)
-            {
-                _editSequence.Play();
-            }
-        }
-
-        private void PlayAnimation()
-        {
-            _coroutine = CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(2f - Time.realtimeSinceStartup % 2f,
-                () =>
-                {
-                    if (GameRun.Instance.IsEdit)
-                    {
-                        _editSequence = DOTween.Sequence();
-                        _editSequence.Append(_spriteRenderer.DOFade(0, 0.5f));
-                        _editSequence.Append(_spriteRenderer.DOFade(1, 0.8f));
-                        _editSequence.AppendInterval(0.7f);
-                        _editSequence.SetLoops(-1);
-                    }
-                    _coroutine = null;
-                }));
+            _spriteRenderer.DOFade(0.5f, 0.5f);
         }
 
         protected override void Clear()
         {
             _trigger = false;
             base.Clear();
-        }
-
-        internal override void OnObjectDestroy()
-        {
-            base.OnObjectDestroy();
-            if (_coroutine != null)
-            {
-                CoroutineProxy.Instance.StopCoroutine(_coroutine);
-                _coroutine = null;
-            }
-            if (_editSequence != null)
-            {
-                _editSequence.Rewind();
-                _editSequence.Kill();
-                _editSequence = null;
-            }
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
@@ -163,7 +110,7 @@ namespace GameA.Game
             _trigger = true;
             if (_spriteRenderer != null)
             {
-                _spriteRenderer.DOFade(0, 0.3f);
+                _spriteRenderer.DOFade(0, 0.5f);
             }
             SendMsgToAround();
         }
@@ -183,10 +130,10 @@ namespace GameA.Game
             {
                 if (unit != null && unit.Id == Id)
                 {
-                    var fakeEarth = unit as FakeEarth;
-                    if (fakeEarth != null)
+                    var maskEarth = unit as MaskEarth;
+                    if (maskEarth != null)
                     {
-                        fakeEarth.OnTrigger();
+                        maskEarth.OnTrigger();
                     }
                 }
             }
