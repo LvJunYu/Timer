@@ -16,8 +16,7 @@ namespace GameA.Game
     [Unit(Id = 4002, Type = typeof(FakeEarth))]
     public class FakeEarth : Earth
     {
-        protected bool _trigger = false;
-        protected UnitBase _unit;
+        protected bool _trigger;
         protected SpriteRenderer _spriteRenderer;
         protected Sequence _editSequence;
         private Coroutine _coroutine;
@@ -84,7 +83,6 @@ namespace GameA.Game
         protected override void Clear()
         {
             _trigger = false;
-            _unit = null;
             base.Clear();
         }
 
@@ -110,7 +108,7 @@ namespace GameA.Game
             {
                 if (!checkOnly)
                 {
-                    OnTrigger(other);
+                    OnTrigger();
                 }
                 return false;
             }
@@ -123,7 +121,7 @@ namespace GameA.Game
             {
                 if (!checkOnly)
                 {
-                    OnTrigger(other);
+                    OnTrigger();
                 }
                 return false;
             }
@@ -136,7 +134,7 @@ namespace GameA.Game
             {
                 if (!checkOnly)
                 {
-                    OnTrigger(other);
+                    OnTrigger();
                 }
                 return false;
             }
@@ -149,39 +147,46 @@ namespace GameA.Game
             {
                 if (!checkOnly)
                 {
-                    OnTrigger(other);
+                    OnTrigger();
                 }
                 return false;
             }
             return base.OnRightHit(other, ref x, checkOnly);
         }
 
-        private void OnTrigger(UnitBase other)
+        public void OnTrigger()
         {
             if (_trigger)
             {
                 return;
             }
             _trigger = true;
-            _unit = other;
             if (_spriteRenderer != null)
             {
                 _spriteRenderer.DOFade(0, 0.2f);
             }
+            SendMsgToAround();
         }
 
-        public override void UpdateLogic()
+        private void SendMsgToAround()
         {
-            base.UpdateLogic();
-            if (_trigger && _unit != null)
+            CheckPos(_unitDesc.GetUpPos(_unitDesc.Guid.z));
+            CheckPos(_unitDesc.GetDownPos(_unitDesc.Guid.z));
+            CheckPos(_unitDesc.GetLeftPos(_unitDesc.Guid.z));
+            CheckPos(_unitDesc.GetRightPos(_unitDesc.Guid.z));
+        }
+
+        private void CheckPos(IntVec3 pos)
+        {
+            UnitBase unit;
+            if (ColliderScene2D.Instance.TryGetUnit(pos, out unit))
             {
-                if (!_colliderGrid.Intersects(_unit.ColliderGrid))
+                if (unit != null && unit.Id == Id)
                 {
-                    _trigger = false;
-                    _unit = null;
-                    if (_spriteRenderer != null)
+                    var fakeEarth = unit as FakeEarth;
+                    if (fakeEarth != null)
                     {
-                        _spriteRenderer.DOFade(1, 0.5f);
+                        fakeEarth.OnTrigger();
                     }
                 }
             }

@@ -322,16 +322,16 @@ namespace GameA.Game
 		}
 
 		protected UnitBase CreateTrigger (IntVec2 pos, Callback cb) {
-			var guid = new IntVec3(pos.x, pos.y, GM2DTools.GetRuntimeCreatedUnitDepth());
-            var triggerObj = new UnitDesc(65400, guid, 0, Vector2.one);
-            var unit = PlayMode.Instance.CreateUnit(triggerObj);
-			if (unit != null) {
-				var triggerUnit = unit as Trigger;
-				if (triggerUnit != null) {
-					triggerUnit.SetCallback(cb);
-					return triggerUnit;
-				}
-			}
+//			var guid = new IntVec3(pos.x, pos.y, GM2DTools.GetRuntimeCreatedUnitDepth());
+//            var triggerObj = new UnitDesc(65400, guid, 0, Vector2.one);
+//            var unit = PlayMode.Instance.CreateUnit(triggerObj);
+//			if (unit != null) {
+//				var triggerUnit = unit as Trigger;
+//				if (triggerUnit != null) {
+//					triggerUnit.SetCallback(cb);
+//					return triggerUnit;
+//				}
+//			}
 			return null;
 		}
 
