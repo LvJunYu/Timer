@@ -78,7 +78,7 @@ namespace GameA
             Sprite Bg = null;
             if (listItem.Sex == 2)
             {
-                if (ResourcesManager.Instance.TryGetSprite("card_pink", out Bg))
+                if (ResourcesManager.Instance.TryGetSprite("img_store_card_pink", out Bg))
                 {
                     _cachedView.SexBg.sprite = Bg;
                 }
@@ -179,19 +179,27 @@ namespace GameA
             else if (day >= 31)
                 return "永久";
             else
-                return "有效期：" + "\n" + strDay + " 天  " + strHour + " 小时 " + strMinute + " 分钟 ";
+                return "  有效期：" + "\n" + "<color=#C15930FF>" + strDay + "</color>" + "天"
+                    + "<color=#C15930FF>" + strHour + "</color>" + "小时"
+                    +"<color=#C15930FF>" + strMinute + "</color>" + "分钟";
+            //"<color=#84684CFF><size=24>最高得分: </size></color>"
+            //+ "<color=#C15930FF>" + strDay + "</color>"
+            
+            //+ "<color=#C15930FF>" + strMinute + "</color>";
+
+            //C15930FF 5C807FFF
         }
 
         public void UpMove()
         {
             if (_cachedView != null)
-                _cachedView.GetComponent<RectTransform>().DOLocalMoveY(12, 0.4f, false);
+                _cachedView.GetComponent<RectTransform>().DOLocalMoveY(-80, 0.4f, false);
         }
 
         public void DownMove()
         {
             if (_cachedView != null)
-                _cachedView.GetComponent<RectTransform>().DOLocalMoveY(-1, 0.4f, false);
+                _cachedView.GetComponent<RectTransform>().DOLocalMoveY(-98, 0.4f, false);
         }
 
 

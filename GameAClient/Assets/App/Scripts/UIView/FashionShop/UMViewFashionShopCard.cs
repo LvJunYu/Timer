@@ -15,9 +15,6 @@ public class UMViewFashionShopCard : UMViewBase
     public Button BuyFashion;
     public Button PreviewBtn;
     public Image FashionPreview;
-    public Image SexTitle;
-    public Image Sexbottom;
-    public Image SexLight;
     public Image SexBg;
 
 }

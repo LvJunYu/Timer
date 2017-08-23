@@ -23,6 +23,8 @@ namespace GameA
         /// </summary>
         public Dictionary<Table_FashionUnit, Msg_BuyAvatarPartItem> AvatarmsgDic = new Dictionary<Table_FashionUnit, Msg_BuyAvatarPartItem>();
         private List<Msg_BuyAvatarPartItem> _avatarmsg = new List<Msg_BuyAvatarPartItem>();
+        private int GoldCount = 0;
+        private int DiamondCount = 0;
 
         #endregion
         #region 属性
@@ -36,7 +38,9 @@ namespace GameA
         public void RefreshPage()
         {
             _cachedView.PriceGold.text = CalculateGoldCount().ToString();
+            GoldCount = CalculateGoldCount();
             _cachedView.PriceDiamond.text = CalculateDiamondCount().ToString();
+            DiamondCount = CalculateDiamondCount();
         }
 
         /// <summary>
@@ -238,6 +242,26 @@ namespace GameA
             return ret;
         }
 
+        private bool LocalUseCurrency(ECurrencyType buyType)
+        {
+            bool ret = false;
+            if (buyType == ECurrencyType.CT_Gold)
+            {
+                if (GameATools.LocalUseGold(CalculateGoldCount()))
+                {
+                    return ret = true;
+                }
+            }
+            else if (buyType == ECurrencyType.CT_Diamond)
+            {
+                if (GameATools.LocalUseDiamond(CalculateDiamondCount()))
+                {
+                    return ret = true;
+                }
+            }
+            return ret;
+        }
+
         private void BuyFashion(ECurrencyType buyType)
         {
             SetAvatarMsgList();
@@ -260,6 +284,7 @@ namespace GameA
                         _avatarmsg,
                         () =>
                         {
+                            LocalUseCurrency(buyType);
                             SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().Close();
                             SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
                             SocialGUIManager.ShowPopupDialog("购买成功", null,
