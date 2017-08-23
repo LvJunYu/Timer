@@ -472,6 +472,7 @@ namespace GameA.Game
             {
                 _stateMachine.GlobalState.OnAfterChangeEditorLayer(oldLayer, newLayer);
             }
+            Messenger.Broadcast(EMessengerType.OnEditorLayerChanged);
         }
 
         /// <summary>

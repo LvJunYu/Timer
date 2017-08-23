@@ -18,7 +18,6 @@ namespace GameA
     public class UICtrlItem : UICtrlInGameBase<UIViewItem>
     {
         private EUIType _selectedUnitType;
-        private EUIType _lastSelectUnitType;
 	    private readonly Table_Unit[] _selectUnitIdAry = new Table_Unit[(int)EEditorLayer.Max];
 
         private readonly List<UMCtrlItem> _umItems = new List<UMCtrlItem>();
@@ -54,12 +53,10 @@ namespace GameA
 		    {
 			    _umItems[i].Hide();
 		    }
-	    }
-
-	    protected override void InitEventListener()
-	    {
-		    base.InitEventListener();
-			RegisterEvent(EMessengerType.OnEditorLayerChanged, OnEditorLayerChanged);
+		    for (int i = 0; i < _selectUnitIdAry.Length; i++)
+		    {
+			    _selectUnitIdAry[i] = null;
+		    }
 	    }
 
 	    public void SelectItem(Table_Unit tableUnit)
@@ -71,14 +68,6 @@ namespace GameA
 	    }
 
 	    #region ui event
-
-	    private void OnEditorLayerChanged()
-	    {
-		    if (IsOpen)
-		    {
-				RefreshView(_lastSelectUnitType);
-			}
-	    }
 
 	    private void OnSelectTab(int inx)
 	    {
@@ -101,7 +90,6 @@ namespace GameA
 	        var editorLayerBefore = EditMode.Instance.BoardData.EditorLayer;
 	        EditMode.Instance.ChangeSelectUnitUIType(eUnitType);
 	        var editorLayerAfter = EditMode.Instance.BoardData.EditorLayer;
-			_lastSelectUnitType = _selectedUnitType;
 			_selectedUnitType = eUnitType;
             if (!_isViewCreated)
             {
@@ -121,6 +109,9 @@ namespace GameA
 		            if (item == null && items.Count > 0)
 		            {
 			            item = items[0];
+		            }
+		            if (item != null)
+		            {
 			            SelectItem(item);
 		            }
 	            }
