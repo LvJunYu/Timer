@@ -61,5 +61,11 @@ namespace GameA.Game
 
         public const string HomeBgEffect = "M1EffectHome_1";
         public const string SingleModeBgEffect = "M1EffectStory_1";
+
+        public const string WinEffect = "Particle_GameFinish_Win1";
+        public const string LoseEffect = "Particle_GameFinish_Lose1";
+        public const string ShopTryHead = "Particle_ShopTry_Head";
+        public const string ShopTryUpper = "Particle_ShopTry_Upper";
+        public const string ShopTryLower = "Particle_ShopTry_Lower";
     }
 }
