@@ -1001,7 +1001,7 @@ namespace GameA.Game
                 return;
             }
             var go = UnityEngine.Object.Instantiate (ResourcesManager.Instance.GetPrefab(
-                EResType.ParticlePrefab, 
+                EResType.ModelPrefab, 
                 ConstDefineGM2D.CameraMaskPrefabName)
             ) as GameObject;
             if (go == null)

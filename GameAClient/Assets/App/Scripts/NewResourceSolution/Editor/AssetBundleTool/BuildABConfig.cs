@@ -155,6 +155,7 @@ namespace NewResourceSolution.EditorTool
             _allResLists.Add (new ResList (EResType.Table,          "",             false,  false));
             _allResLists.Add (new ResList (EResType.Texture,        "t:Texture",    false,  false));
             _allResLists.Add (new ResList (EResType.ParticlePrefab, "t:Prefab",     false,  true));
+            _allResLists.Add (new ResList (EResType.ModelPrefab, 			"t:Prefab",     false,  true));
             _allResLists.Add (new ResList (EResType.UIPrefab,       "t:Prefab",     false,  true));
         }
 

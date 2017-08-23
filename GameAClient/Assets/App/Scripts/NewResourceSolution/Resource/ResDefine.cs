@@ -101,7 +101,7 @@ namespace NewResourceSolution
         Animation,
 		ParticlePrefab,
 		UIPrefab,
-		Model,
+		ModelPrefab,
 		Max
 	}
 

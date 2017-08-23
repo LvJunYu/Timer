@@ -214,6 +214,7 @@ namespace NewResourceSolution
             editorResTypeList.Add(new EditorResType(EResType.Texture, "t:Texture", false, false));
             editorResTypeList.Add(new EditorResType(EResType.ParticlePrefab, "t:Prefab", false, true));
             editorResTypeList.Add(new EditorResType(EResType.UIPrefab, "t:Prefab", false, true));
+            editorResTypeList.Add(new EditorResType(EResType.ModelPrefab, "t:Prefab", false, true));
             _editorResPathDic.Clear ();
             List<string> allNormalAssetGuids = new List<string> ();
             Dictionary<string, List<string>> allLoaleAssetGuids = new Dictionary<string, List<string>> ();

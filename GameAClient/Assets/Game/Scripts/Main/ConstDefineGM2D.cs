@@ -64,7 +64,7 @@ namespace GameA.Game
 	    public const float CameraOrthoSizeFadeTime = 0.5f;
 
 	    public const string CameraMaskPrefabName = "CameraMask";
-	    public const string MapRectMaskPrefabName = "MapRectMask";
+	    public const string TextBillboardPrefabName = "TextBillboard";
 
 		public const float CameraMoveExceedUISizeX = 300f;
 		public const float CameraMoveExceedUISizeY = 300f;
