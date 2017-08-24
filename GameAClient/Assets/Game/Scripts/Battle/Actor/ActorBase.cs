@@ -106,6 +106,7 @@ namespace GameA.Game
         {
             if (_input != null && CanMove)
             {
+                CheckrInput();
                 UpdateInput();
             }
             if (_skillCtrl != null && CanAttack)
@@ -124,6 +125,10 @@ namespace GameA.Game
             {
                 _currentStates[i].UpdateLogic();
             }
+        }
+
+        protected virtual void CheckrInput()
+        {
         }
 
         public void UpdateInput()
@@ -162,7 +167,7 @@ namespace GameA.Game
             CheckAssist();
             CheckSkill();
         }
-
+        
         protected virtual void CheckJump()
         {
             _climbJump = false;

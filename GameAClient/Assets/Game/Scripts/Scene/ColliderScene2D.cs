@@ -512,12 +512,11 @@ namespace GameA.Game
             return SceneQuery2D.Raycast(new Vector2(origin.x, origin.y), direction, out hit, distance, layerMask, Instance, float.MinValue,float.MaxValue,excludeNode);
         }
         
-        internal static bool Raycast(Vector2 origin, Vector2 direction, out RayHit2D hit, float distance, int layerMask,SceneNode excludeNode = null)
+        internal static List<RayHit2D> RaycastAll(IntVec2 origin, Vector2 direction, float distance, int layerMask,SceneNode excludeNode = null)
         {
-            Debug.DrawRay(origin, direction * distance, Color.white);
-            return SceneQuery2D.Raycast(origin, direction, out hit, distance, layerMask, Instance, float.MinValue,float.MaxValue,excludeNode);
+            return SceneQuery2D.RaycastAll(new Vector2(origin.x, origin.y), direction, distance, layerMask, Instance, float.MinValue,float.MaxValue,excludeNode);
         }
-      
+
         internal static bool GridCast(Grid2D grid2D, out SceneNode node, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
@@ -726,10 +725,8 @@ namespace GameA.Game
             //不在空中的时候
             if (!target.Grounded)
             {
-                IntVec2 pointA = IntVec2.zero, pointB = IntVec2.zero;
-                GM2DTools.GetBorderPoint(target.ColliderGrid, EDirectionType.Down, ref pointA, ref pointB);
-                var distance = GM2DTools.GetDistanceToBorder(pointA, 2);
-                var hits = GridCastAll(pointA, pointB, 2, distance, EnvManager.UnitLayer, float.MinValue, float.MaxValue, unit.DynamicCollider);
+                var hits = RaycastAll(target.CenterDownPos, Vector2.down, GM2DTools.WorldToTile(30f),
+                    EnvManager.UnitLayer, unit.DynamicCollider);
                 for (int i = 0; i < hits.Count; i++)
                 {
                     var hit = hits[i];

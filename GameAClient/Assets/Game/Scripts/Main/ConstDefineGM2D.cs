@@ -44,8 +44,6 @@ namespace GameA.Game
 		public static IntVec2 MapStartPos = new IntVec2(100,100) * ServerTileScale;
         public const int MaxHeightTileCount = 10;
 
-        public const float AIMaxPositionError = 10;
-
         public const int MaxTileCount = 10000;
 
         public const int PercentOfScreenOperatorPixels = 2;
