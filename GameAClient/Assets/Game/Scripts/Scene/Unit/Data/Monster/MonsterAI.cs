@@ -36,6 +36,8 @@ namespace GameA.Game
 
         protected void FindPath()
         {
+            SetInput(EInputType.Left, false);
+            SetInput(EInputType.Right, false);
             _path.Clear();
             _stuckTimer = 0;
             _reSeekTimer = 0;

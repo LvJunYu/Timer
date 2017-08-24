@@ -15,8 +15,8 @@ namespace GameA.Game
 {
     public class MonsterBase : ActorBase
     {
-        protected IntVec2 SeekRange = new IntVec2(13, 4) * ConstDefineGM2D.ServerTileScale;
-        protected IntVec2 AttackRange = new IntVec2(1, 1) * ConstDefineGM2D.ServerTileScale;
+        protected static IntVec2 SeekRange = new IntVec2(13, 4) * ConstDefineGM2D.ServerTileScale;
+        protected static IntVec2 AttackRange = new IntVec2(ConstDefineGM2D.ServerTileScale, (int) (0.9f * ConstDefineGM2D.ServerTileScale));
         public static IntVec2 PathRange = new IntVec2(3, 2);
         protected const int MaxStuckFrames = 30;
         protected const int MaxReSeekFrames = 5;
@@ -119,13 +119,9 @@ namespace GameA.Game
             {
                 _thinkTimer--;
             }
-            SetInput(EInputType.Right, false);
-            SetInput(EInputType.Left, false);
-            SetInput(EInputType.Skill1, false);
             ChangeState(EMonsterState.Idle);
-            
             IntVec2 rel = CenterDownPos - PlayMode.Instance.MainPlayer.CenterDownPos;
-            if (PlayMode.Instance.MainPlayer.CanMove && Mathf.Abs(rel.x) <= SeekRange.x && Mathf.Abs(rel.y) <= SeekRange.y)
+            if (PlayMode.Instance.MainPlayer.CanMove)
             {
                 if (ConditionAttack(rel))
                 {
@@ -140,6 +136,13 @@ namespace GameA.Game
                     ChangeState(EMonsterState.Think);
                 }
             }
+            if (_eState != EMonsterState.Seek)
+            {
+                SetInput(EInputType.Right, false);
+                SetInput(EInputType.Left, false);
+            }
+            SetInput(EInputType.Skill1, false);
+            
             switch (_eState)
             {
                 case EMonsterState.Think:
@@ -310,6 +313,10 @@ namespace GameA.Game
                 return false;
             }
             _thinkTimer = 50;
+            if (Mathf.Abs(rel.x) > SeekRange.x || Mathf.Abs(rel.y) > SeekRange.y)
+            {
+                return false;
+            }
             return true;
         }
     }
