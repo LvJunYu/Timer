@@ -16,7 +16,7 @@ namespace GameA
         public void Set(Mail mail)
         {
             _mail = mail;
-            _cachedView.MailSource.text = JudgeSource(mail);
+            //_cachedView.MailSource.text = JudgeSource(mail);
             _cachedView.Title.text = mail.Title;
             _cachedView.MainBody.onClick.AddListener(OnButton);
             _cachedView.Date.text = GameATools.GetYearMonthDayHourMinuteSecondByMilli(mail.CreateTime, 1);
@@ -30,20 +30,20 @@ namespace GameA
 
         }
 
-        private String JudgeSource(Mail mail)
-        {
-            String source;
-            if (mail.Type == EMailType.EMailT_System)
-            {
+        //private String JudgeSource(Mail mail)
+        //{
+        //    String source;
+        //    if (mail.Type == EMailType.EMailT_System)
+        //    {
 
-                source = "系统邮件";
-            }
-            else
-            {
-                source = mail.UserInfo.NickName;
-            }
-            return source;
-        }
+        //        source = "系统邮件";
+        //    }
+        //    else
+        //    {
+        //        source = mail.UserInfo.NickName;
+        //    }
+        //    return source;
+        //}
 
         private void OnButton()
         {

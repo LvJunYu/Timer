@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class UMViewFashionShopCard : UMViewBase
 {
     public Text Name;
-    public Text PreviewTexture;
+    //public Text PreviewTexture;
     public Text PriceGoldDay;
     public Text PriceDiamondDay;
     public Text Message;

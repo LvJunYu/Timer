@@ -20,7 +20,7 @@ namespace GameA
             _idList.Clear();
             _idList.Add(mail.Id);
             _reward = _mail.AttachItemList;
-            _cachedView.MailSource.text = JudgeSource(mail);
+            //_cachedView.MailSource.text = JudgeSource(mail);
             _cachedView.Title.text = mail.Title;
             _cachedView.MainBody.text = mail.Content;
             if (mail.ReceiptedFlag)
@@ -30,7 +30,7 @@ namespace GameA
             else
                 _cachedView.RewardObj.SetActiveEx(true);
 
-            _cachedView.Date.text = GameATools.GetYearMonthDayHourMinuteSecondByMilli(mail.CreateTime, 1);
+            //_cachedView.Date.text = GameATools.GetYearMonthDayHourMinuteSecondByMilli(mail.CreateTime, 1);
             mail.ReadFlag = true;
             RemoteCommands.MarkMailRead(
                 EMarkMailReadTargetType.EMMRC_List,
@@ -38,7 +38,7 @@ namespace GameA
                 null, null
                 );
             _cachedView.Fetch.onClick.AddListener(Fentch);
-            _cachedView.Delete.onClick.AddListener(Delete);
+            //_cachedView.Delete.onClick.AddListener(Delete);
             _cachedView.Close.onClick.AddListener(Close);
 
             _rewardCtrl = new USCtrlGameFinishReward[_cachedView.Rewards.Length];
@@ -102,29 +102,29 @@ namespace GameA
 
         }
 
-        private void Delete()
-        {
-           RemoteCommands.DeleteMail(
-           EDeleteMailTargetType.EDMTT_List,
-           _idList,
-                (ret) =>
-                {
-                    Close();
-                    SocialGUIManager.Instance.GetUI<UICtrlMail>().LoadMyMailList();
-                }, null
-           );
-        }
+        //private void Delete()
+        //{
+        //   RemoteCommands.DeleteMail(
+        //   EDeleteMailTargetType.EDMTT_List,
+        //   _idList,
+        //        (ret) =>
+        //        {
+        //            Close();
+        //            SocialGUIManager.Instance.GetUI<UICtrlMail>().LoadMyMailList();
+        //        }, null
+        //   );
+        //}
 
-        private String JudgeSource(Mail mail)
-        {
-            if (mail.Type ==EMailType.EMailT_System)
-            {
+        //private String JudgeSource(Mail mail)
+        //{
+        //    if (mail.Type ==EMailType.EMailT_System)
+        //    {
 
-                return "系统邮件";
-            }
-            else
-                return mail.UserInfo.NickName;
-        }
+        //        return "系统邮件";
+        //    }
+        //    else
+        //        return mail.UserInfo.NickName;
+        //}
 
         protected override void InitGroupId()
         {

@@ -45,7 +45,7 @@ namespace GameA
             _cachedView.PriceGoldDay.text = listItem.PriceGoldDay.ToString();
             _cachedView.PriceDiamondDay.text = listItem.PriceDiamondDay.ToString();
             _itemInfo = listItem;
-            _cachedView.PreviewTexture.text = listItem.PreviewTexture;
+            //_cachedView.PreviewTexture.text = listItem.PreviewTexture;
             _cachedView.Message.text = GetTime(listItem);
             _cachedView.PreviewBtn.onClick.AddListener(() =>
             {
