@@ -15,7 +15,6 @@ namespace GameA
 
         public void Set(Mail mail)
         {
-            
             _mail = mail;
             _idList.Clear();
             _idList.Add(mail.Id);
@@ -49,7 +48,6 @@ namespace GameA
             }
 
             UpdateReward(_reward);
-
         }
 
         private void UpdateReward(Reward reward)
@@ -60,7 +58,7 @@ namespace GameA
                 for (; i < _rewardCtrl.Length && i < reward.ItemList.Count; i++)
                 {
                     _rewardCtrl[i].Set(reward.ItemList[i].GetSprite(), RewardInfo(reward.ItemList[i])
-                    );
+                        );
                 }
                 for (; i < _rewardCtrl.Length; i++)
                 {
@@ -81,20 +79,20 @@ namespace GameA
             switch (rewardItem.Type)
             {
                 //8E6F54FF F0954AFF
-                    //"<color=#8E6F54FF>" + "金币" + "</color>" + rewardItem.Count;
-                case (int)ERewardType.RT_Gold:
+                //"<color=#8E6F54FF>" + "金币" + "</color>" + rewardItem.Count;
+                case (int) ERewardType.RT_Gold:
                     return "<color=#8E6F54FF>" + "金币" + "</color>" + rewardItem.Count;
-                case (int)ERewardType.RT_Diamond:
+                case (int) ERewardType.RT_Diamond:
                     return "<color=#8E6F54FF>" + "钻石" + "</color>" + rewardItem.Count;
-                case (int)ERewardType.RT_PlayerExp:
+                case (int) ERewardType.RT_PlayerExp:
                     return "<color=#8E6F54FF>" + "冒险经验" + "</color>" + rewardItem.Count;
-                case (int)ERewardType.RT_CreatorExp:
+                case (int) ERewardType.RT_CreatorExp:
                     return "<color=#8E6F54FF>" + "工匠经验" + "</color>" + rewardItem.Count;
-                case (int)ERewardType.RT_FashionCoupon:
+                case (int) ERewardType.RT_FashionCoupon:
                     return "<color=#8E6F54FF>" + "时装券" + "</color>" + rewardItem.Count;
-                case (int)ERewardType.RT_RaffleTicket:
+                case (int) ERewardType.RT_RaffleTicket:
                     return "<color=#8E6F54FF>" + "抽奖券" + "</color>" + rewardItem.Count;
-                case (int)ERewardType.RT_RandomReformUnit:
+                case (int) ERewardType.RT_RandomReformUnit:
                     return "<color=#8E6F54FF>" + "地块" + "</color>" + rewardItem.Count;
                 //case (int)ERewardType.RT_RandomReformUnit:
                 //    return string.Format("地块{0}", rewardItem.Count);
@@ -103,30 +101,20 @@ namespace GameA
             }
         }
 
-
-        private void  CloseUI()
+        private void CloseUI()
         {
             SocialGUIManager.Instance.GetUI<UICtrlMail>().LoadMyMailList();
             SocialGUIManager.Instance.CloseUI<UICtrlMailDetail>();
-           
         }
-
-    
-
 
         private void Fentch()
         {
             RemoteCommands.ReceiptMailAttach(
-                 EReceiptMailAttachTargetType.ERMATT_List,
-                 _idList,
-                 (ret)=>
-                 {
-                     _cachedView.RewardObj.SetActiveEx(false);
-
-                 }
-        , null
-                 );
-
+                EReceiptMailAttachTargetType.ERMATT_List,
+                _idList,
+                (ret) => { _cachedView.RewardObj.SetActiveEx(false); }
+                , null
+                );
         }
 
         //private void Delete()
@@ -155,8 +143,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.MainUI;
+            _groupId = (int) EUIGroupType.MainUI;
         }
-
     }
 }
