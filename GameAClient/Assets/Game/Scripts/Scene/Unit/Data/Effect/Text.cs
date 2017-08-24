@@ -70,12 +70,15 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            if (_timer > 0)
+            if (!_ctrlBySwitch)
             {
-                _timer--;
-                if (_timer == 0)
+                if (_timer > 0)
                 {
-                    ShowHide(false);
+                    _timer--;
+                    if (_timer == 0)
+                    {
+                        ShowHide(false);
+                    }
                 }
             }
         }
