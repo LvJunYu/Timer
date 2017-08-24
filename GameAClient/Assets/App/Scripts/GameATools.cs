@@ -339,8 +339,32 @@ namespace GameA {
             {
                 case 1:
                     return year + "." + month + "." + day;
+                case 2:
+                    return year + "." + month + "." + day;
                 default:
                     return null;
+            }
+        }
+
+        public static string DateCount(long dateTime)
+        {
+            long difftime = DateTimeUtil.GetServerTimeNowTimestampMillis() - dateTime;
+            float days = difftime*1.0f / 1000 / 60 / 60 / 24;
+            if (days <= 1.0f)
+            {
+                return "今天";
+            }
+            else if(days <= 2.0f)
+            {
+                return "昨天";
+            }
+            else if (days <= 3.0f)
+            {
+                return "前天";
+            }
+            else
+            {
+                return string.Format("{0}天前", (int) days);
             }
         }
 

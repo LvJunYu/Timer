@@ -13,6 +13,7 @@ namespace GameA
 {
     public class UMCtrlFashionShopCard : UMCtrlBase<UMViewFashionShopCard>
     {
+        private UIParticleItem _uiParticleItem;
         private string _cardName;
         private Table_FashionUnit _itemInfo;
         private int _itemID;
@@ -51,6 +52,7 @@ namespace GameA
             {
                 UpMove();
                 FashionOnClick(listItem);
+                SetParticle(listItem);
             });
             Sprite fashion = null;
             if (ResourcesManager.Instance.TryGetSprite(listItem.PreviewTexture, out fashion))
@@ -82,6 +84,48 @@ namespace GameA
                 {
                     _cachedView.SexBg.sprite = Bg;
                 }
+            }
+        }
+
+        private void SetParticle(Table_FashionUnit listItem)
+        {
+            //var particle = SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().UiParticleItem;
+            //if (particle != null)
+            //{
+            //    particle.Particle.DestroySelf();
+            //}
+            switch ((EAvatarPart)listItem.Type)
+            {
+                case EAvatarPart.AP_Head:
+                {
+                        SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().UiParticleItem = GameParticleManager.Instance.GetUIParticleItem(ParticleNameConstDefineGM2D.ShopTryHead,
+                SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().Head, (int)EUIGroupType.MainUI);
+                        SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().UiParticleItem.Particle.Play();
+                    }
+                    break;
+                case EAvatarPart.AP_Lower:
+                    {
+                        SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().UiParticleItem = GameParticleManager.Instance.GetUIParticleItem(ParticleNameConstDefineGM2D.ShopTryLower,
+                    SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().Lowerpart, (int)EUIGroupType.MainUI);
+                        SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().UiParticleItem.Particle.Play();
+                    }
+                    break;
+                case EAvatarPart.AP_Upper:
+                    {
+                        SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().UiParticleItem = GameParticleManager.Instance.GetUIParticleItem(ParticleNameConstDefineGM2D.ShopTryUpper,
+                    SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().UpBody, (int)EUIGroupType.MainUI);
+                        SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().UiParticleItem.Particle.Play();
+                    }
+                    break;
+                case EAvatarPart.AP_Appendage:
+                    {
+                    //    particle = GameParticleManager.Instance.GetUIParticleItem(ParticleNameConstDefineGM2D.ShopTryHead,
+                    //SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().Head, (int)EUIGroupType.MainUI);
+                    //    particle.Particle.Play();
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 
