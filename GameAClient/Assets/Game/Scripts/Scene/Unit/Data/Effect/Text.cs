@@ -33,6 +33,24 @@ namespace GameA.Game
             return true;
         }
 
+        internal override void OnPlay()
+        {
+            base.OnPlay();
+            if (_view != null)
+            {
+                _view.SetRendererEnabled(false);
+            }
+        }
+
+        internal override void OnEdit()
+        {
+            base.OnEdit();
+            if (_view != null)
+            {
+                _view.SetRendererEnabled(true);
+            }
+        }
+
         protected override void Clear()
         {
             base.Clear();

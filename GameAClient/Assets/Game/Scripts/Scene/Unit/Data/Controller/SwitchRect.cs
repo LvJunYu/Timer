@@ -26,6 +26,19 @@ namespace GameA.Game
         {
             base.OnPlay();
             _units = DataScene2D.Instance.GetControlledUnits(_guid);
+            if (_view != null)
+            {
+                _view.SetRendererEnabled(false);
+            }
+        }
+
+        internal override void OnEdit()
+        {
+            base.OnEdit();
+            if (_view != null)
+            {
+                _view.SetRendererEnabled(true);
+            }
         }
 
         protected override void Clear()
@@ -33,6 +46,7 @@ namespace GameA.Game
             base.Clear();
             _mainUnit = null;
             _units = null;
+            _trigger = false;
         }
 
         public override void OnIntersect(UnitBase other)
