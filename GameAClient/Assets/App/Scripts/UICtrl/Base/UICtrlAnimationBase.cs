@@ -14,7 +14,6 @@ namespace GameA
         private float _width;
         private bool _animationStart;
         private Vector3 _startPos;
-        private Tweener _moveTween;
         protected EAnimationType _animationType;
 
         protected override void OnViewCreated()
@@ -52,7 +51,7 @@ namespace GameA
                 case EAnimationType.FromLeft:
                 case EAnimationType.FromRight:
                     _startPos = GetStartPos(animationType);
-                    _moveTween = _cachedView.Trans.DOBlendableMoveBy(_startPos, 0.6f).From().SetEase(Ease.OutQuad);
+                    _cachedView.Trans.DOBlendableMoveBy(_startPos, 0.6f).From().SetEase(Ease.OutQuad);
                     break;
             }
         }
@@ -66,7 +65,7 @@ namespace GameA
                 case EAnimationType.FromLeft:
                 case EAnimationType.FromRight:
                     _cachedView.gameObject.SetActive(true);
-                    _moveTween = _cachedView.Trans.DOBlendableMoveBy(_startPos * 1.2f, 0.6f)
+                    _cachedView.Trans.DOBlendableMoveBy(_startPos * 1.2f, 0.6f).SetEase(Ease.OutQuad)
                         .OnComplete(OnCloseAnimationComplete);
                     break;
             }
