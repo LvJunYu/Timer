@@ -409,6 +409,7 @@ namespace GameA.Game
                 case EEditorLayer.Normal:
                     break;
                 case EEditorLayer.Effect:
+                    CameraMask.HideLayerMask();
                     break;
             }
             _lastEditorLayer = oldLayer;
@@ -431,7 +432,6 @@ namespace GameA.Game
                     }
                     break;
                 case EEditorLayer.Normal:
-                    CameraMask.HideLayerMask();
                     using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
                     {
                         while (itor.MoveNext())

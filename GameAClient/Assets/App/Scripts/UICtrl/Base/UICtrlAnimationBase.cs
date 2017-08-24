@@ -1,4 +1,4 @@
-﻿using System;
+﻿using DG.Tweening;
 using SoyEngine;
 using UnityEngine;
 
@@ -14,6 +14,7 @@ namespace GameA
         private bool _animationStart;
         private Vector3 _startPos;
         private Vector3 _targetPos;
+        private Tweener _moveTween;
 
         protected override void OnViewCreated()
         {
@@ -26,27 +27,22 @@ namespace GameA
         {
             base.OnOpen(parameter);
             _startPos = GetStartPos(EAnimationType.FromDown);
-            _targetPos = _cachedView.Trans.localPosition;
-            _cachedView.Trans.localPosition = _startPos;
-            _animationStart = true;
+//            _targetPos = _cachedView.Trans.localPosition;
+//            _cachedView.Trans.localPosition = _startPos;
+            _moveTween = _cachedView.Trans.DOBlendableMoveBy(_startPos, 0.6f).From();
+            _moveTween.SetEase(Ease.OutQuad);
         }
 
-        public override void OnUpdate()
+        protected override void OnClose()
         {
-            base.OnUpdate();
-            if (_animationStart)
+            base.OnClose();
+            _cachedView.gameObject.SetActive(true);
+            _moveTween = _cachedView.Trans.DOBlendableMoveBy(_startPos * 1.2f, 0.6f);
+            _moveTween.OnComplete(() =>
             {
-                float distance = Vector3.Distance(_cachedView.Trans.localPosition, _targetPos);
-                if (distance > 0.1f)
-                {
-                    _cachedView.Trans.localPosition = Vector3.Lerp(_cachedView.Trans.localPosition, _targetPos, 0.2f);
-                }
-                else
-                {
-                    _cachedView.Trans.localPosition = _targetPos;
-                    _animationStart = false;
-                }
-            }
+                _cachedView.gameObject.SetActive(false);
+                _cachedView.Trans.localPosition = Vector3.zero;
+            });
         }
 
         private Vector3 GetStartPos(EAnimationType animationType)
