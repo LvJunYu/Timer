@@ -40,20 +40,7 @@ namespace GameA.Game
             _stuckTimer = 0;
             _reSeekTimer = 0;
             _currentNodeId = 1;
-
-//            //晕的时候就不找了
             var mainUnit = PlayMode.Instance.MainPlayer;
-//            if (!mainUnit.CanMove)
-//            {
-//                ChangeState(EMonsterState.Think);
-//                return;
-//            }
-//            //如果怪物就在人的脚下，直接改为攻击。
-//            if (mainUnit.DownUnits.Contains(this) && CanAttack)
-//            {
-//                ChangeState(EMonsterState.Attack);
-//                return;
-//            }
             var path = ColliderScene2D.Instance.FindPath(this, mainUnit, 3);
             if (path != null && path.Count > 1)
             {
@@ -125,9 +112,10 @@ namespace GameA.Game
                 }
                 return;
             }
-            var pathPos = GetColliderPos(_curPos);
             if (_curBanInputTime <= 0)
             {
+                var pathPos = GetColliderPos(_curPos);
+
                 if (!reachedX)
                 {
                     if (currentDest.x - pathPos.x >= _curMaxSpeedX)
