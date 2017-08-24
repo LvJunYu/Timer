@@ -45,6 +45,7 @@ namespace GameA.Game
         public const int RollerId = 5005;
         public const int LaserId = 5010;
         public const int BillboardId = 7001;
+        public const int TextId = 9001;
         
         public const int SwitchTriggerId = 8100;
         public const int SwitchTriggerPressId = 8101;

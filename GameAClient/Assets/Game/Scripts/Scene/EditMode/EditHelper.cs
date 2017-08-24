@@ -495,7 +495,7 @@ namespace GameA.Game
             {
                 return DoRotate(ref context);
             }
-            if (context.UnitDesc.Id == UnitDefine.BillboardId)
+            if (context.UnitDesc.Id == UnitDefine.BillboardId ||context.UnitDesc.Id == UnitDefine.TextId)
             {
                 return DoAddMsg(ref context);
             }

@@ -1,16 +1,6 @@
-﻿/********************************************************************
-** Filename : DecorationBase
-** Author : Dong
-** Date : 2017/5/3 星期三 上午 11:43:50
-** Summary : DecorationBase
-***********************************************************************/
-
-using System;
-using System.Collections;
-
-namespace GameA.Game
+﻿namespace GameA.Game
 {
-    public class DecorationBase : UnitBase
+    public class EffectBase : UnitBase
     {
         protected override bool OnInit()
         {
