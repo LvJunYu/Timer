@@ -1,4 +1,5 @@
 ﻿using SoyEngine;
+using UnityEngine;
 using UnityEngine.UI;
 /*主UI*/
 namespace GameA
@@ -28,5 +29,9 @@ namespace GameA
         public Image SeletctedPage2Image;
         public Image SeletctedPage3Image;
         public Image SeletctedPage4Image;
+
+        public RectTransform Head;
+        public RectTransform UpBody;
+        public RectTransform Lowerpart;
     }
 }
