@@ -15,6 +15,8 @@ namespace GameA.Game
     {
         public void UpdateLogic(float deltaTime)
         {
+            var mainUnit = PlayMode.Instance.MainPlayer;
+
             var allSwitchUnits = ColliderScene2D.Instance.AllSwitchUnits;
             var allMagicUnits = ColliderScene2D.Instance.AllMagicUnits;
             var allBulletUnits = ColliderScene2D.Instance.AllBulletUnits;
@@ -33,26 +35,30 @@ namespace GameA.Game
             {
                 allOtherUnits[i].CheckStart();
             }
+            //人先执行 AI怪物后执行
+            mainUnit.UpdateLogic();
             for (int i = 0; i < allOtherUnits.Count; i++)
             {
+                if (allOtherUnits[i].IsMain)
+                {
+                    continue;
+                }
                 allOtherUnits[i].UpdateLogic();
             }
             for (int i = 0; i < allOtherUnits.Count; i++)
             {
                 allOtherUnits[i].CalculateExtraDeltaPos();
             }
-            
+
             for (int i = 0; i < allBulletUnits.Count; i++)
             {
                 allBulletUnits[i].UpdateLogic();
             }
-
             for (int i = 0; i < allMagicUnits.Count; i++)
             {
                 allMagicUnits[i].UpdateView(deltaTime);
             }
 
-            var mainUnit = PlayMode.Instance.MainPlayer;
             var boxOperateType = mainUnit.GetBoxOperateType();
             switch (boxOperateType)
             {

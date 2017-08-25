@@ -575,7 +575,7 @@ namespace GameA.Game
                         continue;
                     }
                     _cachedUnits.Add(unit);
-                }
+                } 
                 else
                 {
                     var newGrid = GM2DTools.IntersectWith(one, node, tableUnit, false);

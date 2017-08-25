@@ -167,7 +167,10 @@ namespace GameA.Game
                 }
             }
 
-            var pathPos = GetColliderPos(CenterDownPos);
+            var pathPos = _curMoveDirection == EMoveDirection.Right
+                ? _curPos
+                : _curPos + new IntVec2(GetDataSize().x, 0);
+            
             IntVec2 currentDest, nextDest;
             bool destOnGround, reachedY, reachedX;
             GetContext(ref pathPos, out currentDest, out nextDest, out destOnGround, out reachedX, out reachedY);
@@ -372,11 +375,14 @@ namespace GameA.Game
         private void GetContext(ref IntVec2 pathPos, out IntVec2 currentDest, out IntVec2 nextDest,
        out bool destOnGround, out bool reachedX, out bool reachedY)
         {
-            currentDest = _path[_currentNodeId] * ConstDefineGM2D.ServerTileScale;
+            int halfSize = (int) (0.5f * ConstDefineGM2D.ServerTileScale);
+            currentDest = _path[_currentNodeId] * ConstDefineGM2D.ServerTileScale ;
+            currentDest.x += halfSize;
             nextDest = currentDest;
             if (_path.Count > _currentNodeId + 1)
             {
                 nextDest = _path[_currentNodeId + 1] * ConstDefineGM2D.ServerTileScale;
+                nextDest.x += halfSize;
             }
             destOnGround = false;
             for (int i = _path[_currentNodeId].x; i < _path[_currentNodeId].x + 1; ++i)
@@ -388,13 +394,13 @@ namespace GameA.Game
                 }
             }
             var lastDest = _path[_currentNodeId - 1] * ConstDefineGM2D.ServerTileScale;
+            lastDest.x += halfSize;
             reachedX = ReachedNodeOnXAxis(pathPos, lastDest, currentDest);
             reachedY = ReachedNodeOnYAxis(pathPos, lastDest, currentDest);
             if (destOnGround && !_grounded)
             {
                 reachedY = false;
             }
-
             if (!reachedX)
             {
                 if (_curMoveDirection == EMoveDirection.Left)
