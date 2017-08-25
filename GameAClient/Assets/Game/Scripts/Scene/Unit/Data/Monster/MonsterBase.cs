@@ -51,24 +51,18 @@ namespace GameA.Game
             _fireTimer = 0;
         }
 
-        protected override void CheckrInput()
+        protected override void CalculateSpeedRatio()
         {
-            
-        }
-
-        protected override void CalculateMotor()
-        {
-            base.CalculateMotor();
+            base.CalculateSpeedRatio();
             if (HasStateType(EStateType.Fire))
             {
                 _speedRatio *= SpeedFireRatio;
                 OnFire();
             }
-            else
-            {
-                _fireTimer = 0;
-                UpdateMonsterAI();
-            }
+        }
+
+        protected override void AfterCheckGround()
+        {
             if (_grounded)
             {
                 // 判断左右踩空
@@ -83,6 +77,15 @@ namespace GameA.Game
                         OnLeftStampedEmpty();
                     }
                 }
+            }
+            if (HasStateType(EStateType.Fire))
+            {
+                OnFire();
+            }
+            else
+            {
+                _fireTimer = 0;
+                UpdateMonsterAI();
             }
         }
 

@@ -125,8 +125,10 @@ namespace GameA.Game
                     air = true;
                 }
             }
-            CalculateMotor();
+            CalculateSpeedRatio();
             _curMaxSpeedX = (int)(_maxSpeedX * _speedRatio * _speedStateRatio);
+            AfterCheckGround();
+            CalculateMotor();
             if (IsCheckClimb())
             {
                 CheckClimb();
@@ -178,7 +180,7 @@ namespace GameA.Game
                 }
             }
         }
-
+        
         protected virtual void CheckClimb()
         {
             switch (_eClimbState)
@@ -343,6 +345,23 @@ namespace GameA.Game
             _jumpState = EJumpState.Land;
         }
 
+        protected virtual void CalculateSpeedRatio()
+        {
+            _speedRatio = 1;
+            if (IsHoldingBox())
+            {
+                _speedRatio *= SpeedHoldingBoxRatio;
+            }
+            if (_onClay)
+            {
+                _speedRatio *= SpeedClayRatio;
+            }
+        }
+        
+        protected virtual void AfterCheckGround()
+        {
+        }
+
         protected virtual void CalculateMotor()
         {
             _motorAcc = 0;
@@ -357,17 +376,8 @@ namespace GameA.Game
                     _motorAcc = _onIce ? -1 : -10;
                 }
             }
-            _speedRatio = 1;
-            if (IsHoldingBox())
-            {
-                _speedRatio *= SpeedHoldingBoxRatio;
-            }
-            if (_onClay)
-            {
-                _speedRatio *= SpeedClayRatio;
-            }
         }
-
+   
         public virtual bool IsHoldingBox()
         {
             return false;

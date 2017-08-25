@@ -73,7 +73,6 @@ namespace GameA.Game
         
         protected override void UpdateMonsterAI()
         {
-            _curMaxSpeedX = (int)(_maxSpeedX * _speedRatio * _speedStateRatio);
             if (_thinkTimer > 0)
             {
                 _thinkTimer--;

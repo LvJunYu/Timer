@@ -80,5 +80,10 @@ namespace GameA.Game
             }
             base.Hit(unit, eDirectionType);
         }
+
+        public override void UpdateLogic()
+        {
+            base.UpdateLogic();
+        }
     }
 }
