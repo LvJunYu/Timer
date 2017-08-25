@@ -26,6 +26,17 @@ namespace GameA.Game
     {
         protected int _currentNodeId;
         protected int _jumpSpeed;
+        
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            //AI 最大速度>=50. 碰撞高度<=520
+            _maxSpeedX = 50;
+            return true;
+        }
 
         protected override void Clear()
         {
@@ -36,6 +47,7 @@ namespace GameA.Game
 
         protected void FindPath()
         {
+            _lastPos = _curPos;
             SetInput(EInputType.Left, false);
             SetInput(EInputType.Right, false);
             _path.Clear();

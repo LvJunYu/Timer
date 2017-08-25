@@ -300,11 +300,11 @@ namespace GameA.Game
                     }
                     else
                     {
-                        if (_isMonster)
-                        {
-                            SpeedY = Util.ConstantLerp(SpeedY, -120, 6);
-                        }
-                        else
+//                        if (_isMonster)
+//                        {
+//                            SpeedY = Util.ConstantLerp(SpeedY, -120, 6);
+//                        }
+//                        else
                         {
                             SpeedY = Util.ConstantLerp(SpeedY, -120, 8);
                         }
