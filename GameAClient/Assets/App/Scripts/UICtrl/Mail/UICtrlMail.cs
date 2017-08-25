@@ -14,8 +14,8 @@ namespace GameA
     public class UICtrlMail : UICtrlGenericBase<UIViewMail>
     {
         public List<UMCtrlMail> _cardList = new List<UMCtrlMail>();
-        private int StartIndex = 0;
-        private int MaxCount = 10;
+        private int _startIndex = 0;
+        private int _maxCount = 50;
 
 
         public void OnCloseBtnClick()
@@ -33,7 +33,7 @@ namespace GameA
             //_cachedView.FollowerCount.text = LocalUser.Instance.User.RelationStatistic.FollowerCount.ToString();
             //InitTagGroup();
             
-            _cachedView.DeleteAll.onClick.AddListener(Delete);
+            //_cachedView.DeleteAll.onClick.AddListener(Delete);
             _cachedView.Close.onClick.AddListener(OnCloseBtnClick);
         }
 
@@ -45,24 +45,24 @@ namespace GameA
 
         }
 
-        private void Delete()
-        {
-         List<long> idList = new List<long>();
-         RemoteCommands.DeleteMail(
-         EDeleteMailTargetType.EDMTT_All,
-         idList,
-             (ret) =>
-             {
-                 SocialGUIManager.Instance.GetUI<UICtrlMail>().LoadMyMailList();
-             }
-             , null
-         );
+        //private void Delete()
+        //{
+        // List<long> idList = new List<long>();
+        // RemoteCommands.DeleteMail(
+        // EDeleteMailTargetType.EDMTT_All,
+        // idList,
+        //     (ret) =>
+        //     {
+        //         SocialGUIManager.Instance.GetUI<UICtrlMail>().LoadMyMailList();
+        //     }
+        //     , null
+        // );
 
-        }
+        //}
 
         public void LoadMyMailList()
         {
-            LocalUser.Instance.Mail.Request(StartIndex, MaxCount,
+            LocalUser.Instance.Mail.Request(_startIndex, _maxCount,
             ()=>
             {
                 Set(LocalUser.Instance.Mail.DataList);

@@ -49,8 +49,6 @@ namespace GameA.Game
                     return ~0;
                 case EEditorLayer.Normal:
                     return EnvManager.UnitLayer;
-                case EEditorLayer.Decorate:
-                    return EnvManager.DecorationLayer;
                 case EEditorLayer.Effect:
                     return EnvManager.EffectLayer;
             }
@@ -497,7 +495,7 @@ namespace GameA.Game
             {
                 return DoRotate(ref context);
             }
-            if (context.UnitDesc.Id == UnitDefine.BillboardId)
+            if (context.UnitDesc.Id == UnitDefine.BillboardId ||context.UnitDesc.Id == UnitDefine.TextId)
             {
                 return DoAddMsg(ref context);
             }

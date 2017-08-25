@@ -18,8 +18,7 @@ namespace GameA
     public class UICtrlItem : UICtrlInGameBase<UIViewItem>
     {
         private EUIType _selectedUnitType;
-        private EUIType _lastSelectUnitType;
-	    private Table_Unit[] _selectUnitIdAry = new Table_Unit[(int)EEditorLayer.Max];
+	    private readonly Table_Unit[] _selectUnitIdAry = new Table_Unit[(int)EEditorLayer.Max];
 
         private readonly List<UMCtrlItem> _umItems = new List<UMCtrlItem>();
 
@@ -34,12 +33,11 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.CategoryButtns [0].onClick.AddListener (OnActor);
-            _cachedView.CategoryButtns [1].onClick.AddListener (OnEarth);
-            _cachedView.CategoryButtns [2].onClick.AddListener (OnMechanism);
-            _cachedView.CategoryButtns [3].onClick.AddListener (OnCollection);
-            _cachedView.CategoryButtns [4].onClick.AddListener (OnDecoration);
-            _cachedView.CategoryButtns [5].onClick.AddListener (OnControl);
+	        for (int i = 0; i < _cachedView.CategoryButtns.Length; i++)
+	        {
+		        var inx = i;
+		        _cachedView.CategoryButtns[i].onClick.AddListener(()=>OnSelectTab(inx));
+	        }
         }
 
 		protected override void OnOpen(object parameter)
@@ -55,12 +53,10 @@ namespace GameA
 		    {
 			    _umItems[i].Hide();
 		    }
-	    }
-
-	    protected override void InitEventListener()
-	    {
-		    base.InitEventListener();
-			RegisterEvent(EMessengerType.OnEditorLayerChanged, OnEditorLayerChanged);
+		    for (int i = 0; i < _selectUnitIdAry.Length; i++)
+		    {
+			    _selectUnitIdAry[i] = null;
+		    }
 	    }
 
 	    public void SelectItem(Table_Unit tableUnit)
@@ -73,42 +69,10 @@ namespace GameA
 
 	    #region ui event
 
-	    private void OnEditorLayerChanged()
+	    private void OnSelectTab(int inx)
 	    {
-		    if (IsOpen)
-		    {
-				RefreshView(_lastSelectUnitType);
-			}
+		    RefreshView((EUIType) (inx + 1));
 	    }
-
-		private void OnCollection()
-        {
-            RefreshView(EUIType.Collection);
-        }
-
-        private void OnMechanism()
-        {
-            RefreshView(EUIType.Mechanism);
-        }
-
-        private void OnEarth()
-        {
-            RefreshView(EUIType.Earth);
-        }
-
-        private void OnActor()
-        {
-            RefreshView(EUIType.Actor);
-        }
-
-        private void OnDecoration()
-        {
-            RefreshView(EUIType.Decoration);
-        }
-        private void OnControl()
-        {
-            RefreshView(EUIType.Controller);
-        }
 		#endregion
 
 		#region event
@@ -126,7 +90,6 @@ namespace GameA
 	        var editorLayerBefore = EditMode.Instance.BoardData.EditorLayer;
 	        EditMode.Instance.ChangeSelectUnitUIType(eUnitType);
 	        var editorLayerAfter = EditMode.Instance.BoardData.EditorLayer;
-			_lastSelectUnitType = _selectedUnitType;
 			_selectedUnitType = eUnitType;
             if (!_isViewCreated)
             {
@@ -146,6 +109,9 @@ namespace GameA
 		            if (item == null && items.Count > 0)
 		            {
 			            item = items[0];
+		            }
+		            if (item != null)
+		            {
 			            SelectItem(item);
 		            }
 	            }

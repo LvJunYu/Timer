@@ -13,6 +13,7 @@ namespace GameA
 {
     public class UMCtrlFashionShopCard : UMCtrlBase<UMViewFashionShopCard>
     {
+        private UIParticleItem _uiParticleItem;
         private string _cardName;
         private Table_FashionUnit _itemInfo;
         private int _itemID;
@@ -45,12 +46,13 @@ namespace GameA
             _cachedView.PriceGoldDay.text = listItem.PriceGoldDay.ToString();
             _cachedView.PriceDiamondDay.text = listItem.PriceDiamondDay.ToString();
             _itemInfo = listItem;
-            _cachedView.PreviewTexture.text = listItem.PreviewTexture;
+            //_cachedView.PreviewTexture.text = listItem.PreviewTexture;
             _cachedView.Message.text = GetTime(listItem);
             _cachedView.PreviewBtn.onClick.AddListener(() =>
             {
                 UpMove();
                 FashionOnClick(listItem);
+                SetParticle(listItem);
             });
             Sprite fashion = null;
             if (ResourcesManager.Instance.TryGetSprite(listItem.PreviewTexture, out fashion))
@@ -78,10 +80,52 @@ namespace GameA
             Sprite Bg = null;
             if (listItem.Sex == 2)
             {
-                if (ResourcesManager.Instance.TryGetSprite("card_pink", out Bg))
+                if (ResourcesManager.Instance.TryGetSprite("img_store_card_pink", out Bg))
                 {
                     _cachedView.SexBg.sprite = Bg;
                 }
+            }
+        }
+
+        private void SetParticle(Table_FashionUnit listItem)
+        {
+            //var particle = SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().UiParticleItem;
+            //if (particle != null)
+            //{
+            //    particle.Particle.DestroySelf();
+            //}
+            switch ((EAvatarPart)listItem.Type)
+            {
+                case EAvatarPart.AP_Head:
+                {
+                        SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().UiParticleItem = GameParticleManager.Instance.GetUIParticleItem(ParticleNameConstDefineGM2D.ShopTryHead,
+                SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().Head, (int)EUIGroupType.MainUI);
+                        SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().UiParticleItem.Particle.Play();
+                    }
+                    break;
+                case EAvatarPart.AP_Lower:
+                    {
+                        SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().UiParticleItem = GameParticleManager.Instance.GetUIParticleItem(ParticleNameConstDefineGM2D.ShopTryLower,
+                    SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().Lowerpart, (int)EUIGroupType.MainUI);
+                        SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().UiParticleItem.Particle.Play();
+                    }
+                    break;
+                case EAvatarPart.AP_Upper:
+                    {
+                        SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().UiParticleItem = GameParticleManager.Instance.GetUIParticleItem(ParticleNameConstDefineGM2D.ShopTryUpper,
+                    SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().UpBody, (int)EUIGroupType.MainUI);
+                        SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().UiParticleItem.Particle.Play();
+                    }
+                    break;
+                case EAvatarPart.AP_Appendage:
+                    {
+                    //    particle = GameParticleManager.Instance.GetUIParticleItem(ParticleNameConstDefineGM2D.ShopTryHead,
+                    //SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().Head, (int)EUIGroupType.MainUI);
+                    //    particle.Particle.Play();
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -179,19 +223,27 @@ namespace GameA
             else if (day >= 31)
                 return "永久";
             else
-                return "有效期：" + "\n" + strDay + " 天  " + strHour + " 小时 " + strMinute + " 分钟 ";
+                return "  有效期：" + "\n" + "<color=#C15930FF>" + strDay + "</color>" + "天"
+                    + "<color=#C15930FF>" + strHour + "</color>" + "小时"
+                    +"<color=#C15930FF>" + strMinute + "</color>" + "分钟";
+            //"<color=#84684CFF><size=24>最高得分: </size></color>"
+            //+ "<color=#C15930FF>" + strDay + "</color>"
+            
+            //+ "<color=#C15930FF>" + strMinute + "</color>";
+
+            //C15930FF 5C807FFF
         }
 
         public void UpMove()
         {
             if (_cachedView != null)
-                _cachedView.GetComponent<RectTransform>().DOLocalMoveY(12, 0.4f, false);
+                _cachedView.GetComponent<RectTransform>().DOLocalMoveY(-80, 0.4f, false);
         }
 
         public void DownMove()
         {
             if (_cachedView != null)
-                _cachedView.GetComponent<RectTransform>().DOLocalMoveY(-1, 0.4f, false);
+                _cachedView.GetComponent<RectTransform>().DOLocalMoveY(-98, 0.4f, false);
         }
 
 

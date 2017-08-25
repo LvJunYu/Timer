@@ -55,6 +55,7 @@ namespace GameA.Game
         protected int _shootAngle;
 
         protected List<UnitBase> _switchPressUnits = new List<UnitBase>();
+        protected List<UnitBase> _switchRectUnits = new List<UnitBase>();
         protected bool _ctrlBySwitch;
 
         protected int _maxHp;
@@ -255,6 +256,11 @@ namespace GameA.Game
             get { return _downUnits; }
         }
 
+        public UnitBase DownUnit
+        {
+            get { return _downUnit; }
+        }
+
         public bool UseCorner
         {
             get { return _useCorner; }
@@ -438,6 +444,20 @@ namespace GameA.Game
             {
                 IntVec2 dataSize = GetDataSize();
                 _curPos = new IntVec2(value.x - dataSize.x / 2, value.y - dataSize.y / 2);
+            }
+        }
+        
+        public IntVec2 CenterUpPos
+        {
+            get
+            {
+                IntVec2 dataSize = GetDataSize();
+                return new IntVec2(_curPos.x + dataSize.x / 2, _curPos.y+ dataSize.y + 1);
+            }
+            set
+            {
+                IntVec2 dataSize = GetDataSize();
+                _curPos = new IntVec2(value.x - dataSize.x / 2, value.y - dataSize.y - 1);
             }
         }
 
@@ -704,6 +724,7 @@ namespace GameA.Game
             _curBanInputTime = 0;
             _eUnitState = EUnitState.Normal;
             _switchPressUnits.Clear();
+            _switchRectUnits.Clear();
             _ctrlBySwitch = false;
             if (_dynamicCollider != null)
             {
@@ -1445,6 +1466,33 @@ namespace GameA.Game
                 return false;
             }
             if (_switchPressUnits.Count == 0)
+            {
+                OnCtrlBySwitch();
+            }
+            return true;
+        }
+        
+        internal bool OnSwitchRectStart(SwitchRect switchRect)
+        {
+            if (_switchRectUnits.Contains(switchRect))
+            {
+                return false;
+            }
+            _switchRectUnits.Add(switchRect);
+            if (_switchRectUnits.Count == 1)
+            {
+                OnCtrlBySwitch();
+            }
+            return true;
+        }
+
+        internal bool OnSwitchRectEnd(SwitchRect switchRect)
+        {
+            if (!_switchRectUnits.Remove(switchRect))
+            {
+                return false;
+            }
+            if (_switchRectUnits.Count == 0)
             {
                 OnCtrlBySwitch();
             }

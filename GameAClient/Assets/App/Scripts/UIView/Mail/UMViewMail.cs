@@ -8,10 +8,11 @@ namespace GameA
 {
     public class UMViewMail : UMViewBase
     {
-        public Text MailSource;
+        //public Text MailSource;
         public Text Title;
         public Button MainBody;
         public Text Date;
         public Image ReadFlag;
+        public Image RewardFlag;
     }
 }

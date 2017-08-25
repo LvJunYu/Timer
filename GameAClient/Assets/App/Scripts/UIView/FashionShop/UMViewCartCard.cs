@@ -12,7 +12,7 @@ public class UMViewCartCard : UMViewBase
     public Image FashionPreview;
     public Text PriceGold;
     public Text PriceDiamond;
-    public Button Destory;
+    //public Button Destory;
     public Dropdown TimeElect;
     public Toggle PitchOn;
 

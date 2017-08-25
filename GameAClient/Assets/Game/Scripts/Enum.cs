@@ -67,8 +67,8 @@ namespace GameA.Game
         Collection = 4,
         Decoration = 5,
         Controller = 6,
+        Effect = 7,
         Max,
-        Effect,
     }
 
     public enum EUnitType
@@ -134,7 +134,6 @@ namespace GameA.Game
     {
         None = -1,
         Normal,
-        Decorate,
         Effect,
         Max,
     }

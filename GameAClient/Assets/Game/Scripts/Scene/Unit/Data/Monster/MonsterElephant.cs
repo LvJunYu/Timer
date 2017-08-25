@@ -25,15 +25,15 @@ namespace GameA.Game
             return true;
         }
 
-        protected override bool IsInAttackRange()
-        {
-            if (!base.IsInAttackRange())
-            {
-                return false;
-            }
-            //必须比主角位置低
-            return _curPos.y <= PlayMode.Instance.MainPlayer.CurPos.y;
-        }
+//        protected override bool IsInAttackRange()
+//        {
+//            if (!base.IsInAttackRange())
+//            {
+//                return false;
+//            }
+//            //必须比主角位置低
+//            return _curPos.y <= PlayMode.Instance.MainPlayer.CurPos.y;
+//        }
 
         protected override void Clear()
         {

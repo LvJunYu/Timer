@@ -44,8 +44,6 @@ namespace GameA.Game
 		public static IntVec2 MapStartPos = new IntVec2(100,100) * ServerTileScale;
         public const int MaxHeightTileCount = 10;
 
-        public const float AIMaxPositionError = 10;
-
         public const int MaxTileCount = 10000;
 
         public const int PercentOfScreenOperatorPixels = 2;
@@ -64,7 +62,7 @@ namespace GameA.Game
 	    public const float CameraOrthoSizeFadeTime = 0.5f;
 
 	    public const string CameraMaskPrefabName = "CameraMask";
-	    public const string MapRectMaskPrefabName = "MapRectMask";
+	    public const string TextBillboardPrefabName = "TextBillboard";
 
 		public const float CameraMoveExceedUISizeX = 300f;
 		public const float CameraMoveExceedUISizeY = 300f;

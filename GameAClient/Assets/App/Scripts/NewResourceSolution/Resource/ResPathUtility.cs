@@ -133,7 +133,7 @@ namespace NewResourceSolution
                     ResPath.Prefabs,
                     ResPath.Particles);
             }
-			else if (EResType.Model == resType)
+			else if (EResType.ModelPrefab == resType)
 			{
 				return StringUtil.Format(
 					StringFormat.SixLevelPath, 

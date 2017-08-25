@@ -40,7 +40,7 @@ namespace GameA.Game
             _canBridgeCross = true;
             _canFanCross = true;
             SetSortingOrderBack();
-            return false;
+            return true;
         }
 
         protected override void InitAssetPath()

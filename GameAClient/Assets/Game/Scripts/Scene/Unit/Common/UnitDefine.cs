@@ -45,6 +45,7 @@ namespace GameA.Game
         public const int RollerId = 5005;
         public const int LaserId = 5010;
         public const int BillboardId = 7001;
+        public const int TextId = 9001;
         
         public const int SwitchTriggerId = 8100;
         public const int SwitchTriggerPressId = 8101;
@@ -69,7 +70,7 @@ namespace GameA.Game
 
         public static bool IsMonster(int id)
         {
-            return id < 3000 && id > 2000;
+            return id > 2000 && id < 3000;
         }
 
         public static bool IsWeaponPool(int id)
@@ -185,7 +186,7 @@ namespace GameA.Game
         internal static bool IsGround(int id)
         {
             return !IsSwitchTrigger(id)&& id != LaserId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
-                   !IsBoard(id) && !IsCollection(id) && !IsMagicSwitch(id)&& !IsMain(id) && !IsBullet(id);
+                   !IsBoard(id) && !IsCollection(id) && !IsMagicSwitch(id) && !IsMain(id) && !IsBullet(id) && !IsMonster(id);
         }
 
         public static bool IsDownY(Table_Unit tableUnit)

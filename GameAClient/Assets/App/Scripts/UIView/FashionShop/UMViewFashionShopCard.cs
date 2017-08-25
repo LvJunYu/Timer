@@ -8,16 +8,13 @@ using UnityEngine.UI;
 public class UMViewFashionShopCard : UMViewBase
 {
     public Text Name;
-    public Text PreviewTexture;
+    //public Text PreviewTexture;
     public Text PriceGoldDay;
     public Text PriceDiamondDay;
     public Text Message;
     public Button BuyFashion;
     public Button PreviewBtn;
     public Image FashionPreview;
-    public Image SexTitle;
-    public Image Sexbottom;
-    public Image SexLight;
     public Image SexBg;
 
 }

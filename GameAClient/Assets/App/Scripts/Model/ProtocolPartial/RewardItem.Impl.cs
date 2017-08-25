@@ -18,7 +18,7 @@ namespace GameA
         private const string _defaultRaffleTicketName = "低级抽奖券";
         private const string _randomUnitName = "随机改造地块";
 
-        private const string _goldSprite = "icon_gold_240";
+        private const string _goldSprite = "icon_gold_1";
         private const string _diamondSprite = "icon_diam_1";
         private const string _playerExpSprite = "icon_exp_240";
         private const string _creatorExpSprite = "icon_exp_240";

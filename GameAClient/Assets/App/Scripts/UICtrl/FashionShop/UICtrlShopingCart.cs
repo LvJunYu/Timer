@@ -238,6 +238,26 @@ namespace GameA
             return ret;
         }
 
+        private bool LocalUseCurrency(ECurrencyType buyType)
+        {
+            bool ret = false;
+            if (buyType == ECurrencyType.CT_Gold)
+            {
+                if (GameATools.LocalUseGold(CalculateGoldCount()))
+                {
+                    return ret = true;
+                }
+            }
+            else if (buyType == ECurrencyType.CT_Diamond)
+            {
+                if (GameATools.LocalUseDiamond(CalculateDiamondCount()))
+                {
+                    return ret = true;
+                }
+            }
+            return ret;
+        }
+
         private void BuyFashion(ECurrencyType buyType)
         {
             SetAvatarMsgList();
@@ -260,6 +280,7 @@ namespace GameA
                         _avatarmsg,
                         () =>
                         {
+                            LocalUseCurrency(buyType);
                             SocialGUIManager.Instance.GetUI<UICtrlFashionShopMainMenu>().Close();
                             SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
                             SocialGUIManager.ShowPopupDialog("购买成功", null,

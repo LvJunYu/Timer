@@ -31,9 +31,50 @@ namespace GameA
         private UMCtrlFashionShopCard _upperSelectedFashionCard = null;
         private UMCtrlFashionShopCard _lowerSelectedFashionCard = null;
         private UMCtrlFashionShopCard _appendageSelectedFashionCard = null;
+        private RectTransform _head;
+        private RectTransform _upBody;
+        private RectTransform _lowerpart;
+        private UIParticleItem _uiParticleItem;
+
         #endregion
 
+
         #region 属性
+        public RectTransform Head
+        {
+            get { return _head; }
+            set { _head = value; }
+        }
+        public RectTransform UpBody
+        {
+            get { return _upBody; }
+            set { _upBody = value; }
+        }
+        public RectTransform Lowerpart
+        {
+            get { return _lowerpart; }
+            set { _lowerpart = value; }
+        }
+        public UIParticleItem UiParticleItem
+        {
+            get
+            {
+                //if (_uiParticleItem != null)
+                //{
+                //    _uiParticleItem.Particle.DestroySelf();
+                //}
+                return _uiParticleItem;
+            }
+            set
+            {
+                if (_uiParticleItem != null)
+                {
+                    _uiParticleItem.Particle.DestroySelf();
+                }
+                _uiParticleItem = value;
+            }
+        }
+
         public UMCtrlFashionShopCard SelectHead
         {
             get { return _headSelectedFashionCard; }
@@ -296,6 +337,9 @@ namespace GameA
         {
             base.OnOpen(parameter);
             RefreshFashionShopPanel();
+            Head = _cachedView.Head;
+            UpBody = _cachedView.UpBody;
+            Lowerpart = _cachedView.Lowerpart;
         }
 
         protected override void OnClose()
@@ -304,6 +348,7 @@ namespace GameA
             OnCloseChangeFashion();
             RefreshFashionShopPanel();
             SocialGUIManager.Instance.GetUI<UICtrlShopingCart>().OnCloseBtnClick();
+            _uiParticleItem.Particle.DestroySelf();
         }
 
         protected override void OnViewCreated()

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 
@@ -14,8 +15,20 @@ namespace GameA.Game
 {
     public class MonsterBase : ActorBase
     {
+        protected static IntVec2 SeekRange = new IntVec2(13, 4) * ConstDefineGM2D.ServerTileScale;
+        protected static IntVec2 AttackRange = new IntVec2(1, 1) * ConstDefineGM2D.ServerTileScale;
+        public static IntVec2 PathRange = new IntVec2(3, 2);
+        protected const int MaxStuckFrames = 30;
+        protected const int MaxReSeekFrames = 5;
+        protected List<IntVec2> _path = new List<IntVec2>();
+
         protected IntVec2 _lastPos;
         protected int _fireTimer;
+        protected EMonsterState _eState;
+        
+        protected int _thinkTimer;
+        protected int _stuckTimer;
+        protected int _reSeekTimer;
 
         protected override bool IsCheckClimb()
         {
@@ -29,7 +42,7 @@ namespace GameA.Game
                 return false;
             }
             _isMonster = true;
-            _maxSpeedX = 30;
+            _maxSpeedX = 50;
             return true;
         }
 
@@ -46,10 +59,20 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
-            _lastPos = _curPos;
             _input = _input ?? new InputBase();
             _input.Clear();
+            _lastPos = _curPos;
             _fireTimer = 0;
+            _eState = EMonsterState.Think;
+            _path.Clear();
+            _thinkTimer = 0;
+            _stuckTimer = 0;
+            _reSeekTimer = 0;
+        }
+
+        protected override void CheckrInput()
+        {
+            
         }
 
         protected override void CalculateMotor()
@@ -59,7 +82,7 @@ namespace GameA.Game
             {
                 _speedRatio *= SpeedFireRatio;
                 OnFire();
-                ChangeState(EMonsterState.None);
+                ChangeState(EMonsterState.Idle);
             }
             else
             {
@@ -85,11 +108,76 @@ namespace GameA.Game
 
         protected virtual void ChangeState(EMonsterState state)
         {
+            _eState = state;
             //LogHelper.Debug("ChangeState : {0}", _eState);
         }
 
         protected virtual void UpdateMonsterAI()
         {
+            _curMaxSpeedX = (int)(_maxSpeedX * _speedRatio * _speedStateRatio);
+            if (_thinkTimer > 0)
+            {
+                _thinkTimer--;
+            }
+            ChangeState(EMonsterState.Idle);
+            IntVec2 rel = CenterDownPos - PlayMode.Instance.MainPlayer.CenterDownPos;
+            if (PlayMode.Instance.MainPlayer.CanMove)
+            {
+                if (ConditionAttack(rel))
+                {
+                    ChangeState(EMonsterState.Attack);
+                }
+                else if(ConditionSeek(rel))
+                {
+                    ChangeState(EMonsterState.Seek);
+                }
+                else if(ConditionThink(rel))
+                {
+                    ChangeState(EMonsterState.Think);
+                }
+            }
+            if (_eState != EMonsterState.Seek)
+            {
+                SetInput(EInputType.Right, false);
+                SetInput(EInputType.Left, false);
+            }
+            SetInput(EInputType.Skill1, false);
+            
+            switch (_eState)
+            {
+                case EMonsterState.Think:
+                    OnThink();
+                    break;
+                case EMonsterState.Seek:
+                    OnSeek();
+                    break;
+                case EMonsterState.Attack:
+                    OnAttack();
+                    break;
+            }
+#if UNITY_EDITOR
+            if (_path != null)
+            {
+                for (int i = 0; i < _path.Count - 1; i++)
+                {
+                    Debug.DrawLine(new Vector3(_path[i].x + 0.5f, _path[i].y + 0.5f), new Vector3(_path[i + 1].x + 0.5f, _path[i + 1].y + 0.5f));
+                }
+            }
+#endif
+        }
+
+        protected virtual void OnThink()
+        {
+        }
+
+        protected virtual void OnSeek()
+        {
+            
+        }
+
+        protected virtual void OnAttack()
+        {
+            SetInput(EInputType.Skill1, true);
         }
 
         protected virtual void OnFire()
@@ -117,7 +205,6 @@ namespace GameA.Game
                     PlayMode.Instance.DestroyUnit(this);
                 }
             }
-            _lastPos = _curPos;
         }
 
         protected virtual void UpdateMonsterView(float deltaTime)
@@ -187,6 +274,50 @@ namespace GameA.Game
         protected void SetInput(EInputType eInputType, bool value)
         {
             _input.CurAppliedInputKeyAry[(int)eInputType] = value;
+        }
+        
+        protected virtual bool ConditionAttack(IntVec2 rel)
+        {
+            if (!CanAttack)
+            {
+                return false;
+            }
+            if (Mathf.Abs(rel.x) > AttackRange.x || Mathf.Abs(rel.y) > AttackRange.y)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        protected virtual bool ConditionSeek(IntVec2 rel)
+        {
+            if (!CanMove)
+            {
+                return false;
+            }
+            if (_path.Count <= 1)
+            {
+                return false;
+            }
+            return true;
+        }
+        
+        protected virtual bool ConditionThink(IntVec2 rel)
+        {
+            if (!CanMove)
+            {
+                return false;
+            }
+            if (_thinkTimer > 0)
+            {
+                return false;
+            }
+            _thinkTimer = 50;
+            if (Mathf.Abs(rel.x) > SeekRange.x || Mathf.Abs(rel.y) > SeekRange.y)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

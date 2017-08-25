@@ -10,12 +10,12 @@ namespace GameA
     {
 
 
-        public Text MailSource;
+        //public Text MailSource;
         public Text Title;
         public Button Close ;
         public Button Fetch ;
-        public Button Delete ;
-        public Text Date;
+        //public Button Delete ;
+        //public Text Date;
         public Text MainBody;
         public USViewGameFinishReward[] Rewards;
         public GameObject RewardObj;

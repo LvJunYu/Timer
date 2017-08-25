@@ -52,10 +52,20 @@ namespace GameA.Game
         {
             return new IntVec3(Guid.x - ConstDefineGM2D.ServerTileScale, Guid.y, z);
         }
+        
+        public IntVec2 GetLeftPos()
+        {
+            return new IntVec2(Guid.x - ConstDefineGM2D.ServerTileScale, Guid.y);
+        }
 
         public IntVec3 GetRightPos(int z)
         {
             return new IntVec3(Guid.x + ConstDefineGM2D.ServerTileScale, Guid.y , z);
+        }
+        
+        public IntVec2 GetRightPos()
+        {
+            return new IntVec2(Guid.x + ConstDefineGM2D.ServerTileScale, Guid.y);
         }
       
         public override string ToString()

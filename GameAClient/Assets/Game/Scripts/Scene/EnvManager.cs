@@ -24,7 +24,6 @@ namespace GameA.Game
         public const int ActorLayer = MonsterLayer | MainPlayerLayer | RemotePlayer;
 
 	    public const int EffectLayer = 1 << (int) ESceneLayer.Effect;
-	    public const int DecorationLayer = 1 << (int) ESceneLayer.Decoration;
 
 		public const int MaxLayer = 1 << (int)ESceneLayer.Max;
         public const int UnitLayer = ItemLayer | MonsterLayer | RemotePlayer;

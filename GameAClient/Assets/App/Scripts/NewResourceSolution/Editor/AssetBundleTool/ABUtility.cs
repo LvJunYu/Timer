@@ -105,7 +105,7 @@ namespace NewResourceSolution.EditorTool
 					if (string.Compare(parts[i - 1], ResPath.Prefabs) == 0 &&
 						string.Compare(extension, ResPath.PrefabExtension) == 0)
 					{
-						return EResType.Model;
+						return EResType.ModelPrefab;
 					}
 				}
                 if (i == 5 && string.Compare(parts[i], ResPath.Particles) == 0)

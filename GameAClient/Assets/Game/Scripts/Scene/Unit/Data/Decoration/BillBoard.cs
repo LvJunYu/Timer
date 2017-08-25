@@ -54,10 +54,6 @@ namespace GameA.Game
 
         protected override void OnTrigger(UnitBase other)
         {
-            if (!other.IsMain)
-            {
-                return;
-            }
             if (!_trigger)
             {
                 _trigger = true;

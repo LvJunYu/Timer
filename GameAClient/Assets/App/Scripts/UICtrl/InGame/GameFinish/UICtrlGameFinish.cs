@@ -35,7 +35,7 @@ namespace GameA
             ChallengeLose
         }
 
-        private EShowState _showState;
+        private UICtrlGameFinish.EShowState _showState;
         private bool _finishRes;
         private readonly List<UIParticleItem> _particleList = new List<UIParticleItem>();
         private int _curMarkStarValue;

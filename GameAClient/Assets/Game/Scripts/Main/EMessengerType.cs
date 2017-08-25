@@ -131,6 +131,8 @@ namespace GameA
 		public static int OnCurCompositeEditorStateChanged = SoyEngine.EMessengerType.NextId++;
 
 		public static int OnCancelSelectState = SoyEngine.EMessengerType.NextId++;
+	    
+		public static int OnTrigger = SoyEngine.EMessengerType.NextId++;
 
 	}
 }

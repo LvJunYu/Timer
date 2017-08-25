@@ -10,6 +10,7 @@ using GameA.Game;
 using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
+using Text = UnityEngine.UI.Text;
 
 namespace GameA
 {

@@ -13,6 +13,8 @@ namespace GameA.Game
 {
 	public class SlicedCameraMask:MonoBehaviour
 	{
+		public Transform CameraMaskTran;
+		public SpriteRenderer LayerMaskSprite;
 
 		public float ValidRectangleWidth = 1;
 		public float ValidRectangleHeight = 1;
@@ -107,6 +109,7 @@ namespace GameA.Game
 		{
 			InitMesh();
 			_trans = transform;
+			HideLayerMask();
 		}
 
 		void OnDestroy()
@@ -127,17 +130,32 @@ namespace GameA.Game
 			gameObject.SetActive(false);
 		}
 
-		public void SetSortOrdering(int value)
+		public void ShowLayerMask()
 		{
-			Renderer render = GetComponent<Renderer>();
+			LayerMaskSprite.SetActiveEx(true);
+		}
+
+		public void HideLayerMask()
+		{
+			LayerMaskSprite.SetActiveEx(false);
+		}
+
+		public void SetCameraMaskSortOrder(int value)
+		{
+			Renderer render = CameraMaskTran.GetComponent<Renderer>();
 			if (render != null)
 			{
 				render.sortingOrder = value;
 			}
 			else
 			{
-				LogHelper.Error("SetSortOrdering called but GetComponent<Renderer>() is null! value is {0}",value);
+				LogHelper.Error("SetCameraMaskSortOrder called but GetComponent<Renderer>() is null! value is {0}",value);
 			}
+		}
+
+		public void SetLayerMaskSortOrder(int value)
+		{
+			LayerMaskSprite.sortingOrder = value;
 		}
 
 		public void SetLocalScale(float x, float y)
@@ -187,7 +205,7 @@ namespace GameA.Game
 			_cachedMesh.vertices = _vertices;
 			_cachedMesh.colors = _colors;
 			_cachedMesh.triangles = _trangles;
-			_filter = GetComponent<MeshFilter>();
+			_filter = CameraMaskTran.GetComponent<MeshFilter>();
 			_filter.mesh = _cachedMesh;
 		}
 
@@ -343,7 +361,7 @@ namespace GameA.Game
 				SetTrangle(i++, ERectPoint.D2, ERectPoint.Dr2, ERectPoint.D3);
 				SetTrangle(i++, ERectPoint.D2, ERectPoint.D3, ERectPoint.Dl2);
 				SetTrangle(i++, ERectPoint.Dr2, ERectPoint.Al2, ERectPoint.A3);
-				SetTrangle(i++, ERectPoint.Dr2, ERectPoint.A3, ERectPoint.D3);
+				SetTrangle(i, ERectPoint.Dr2, ERectPoint.A3, ERectPoint.D3);
 			}
 		}
 
