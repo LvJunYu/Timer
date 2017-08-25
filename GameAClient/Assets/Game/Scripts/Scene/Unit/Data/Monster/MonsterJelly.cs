@@ -81,9 +81,9 @@ namespace GameA.Game
             base.Hit(unit, eDirectionType);
         }
 
-        public override void UpdateLogic()
+        protected override void AfterCheckGround()
         {
-            base.UpdateLogic();
+            base.AfterCheckGround();
         }
     }
 }

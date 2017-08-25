@@ -72,6 +72,11 @@ namespace GameA.Game
         {
             return id > 2000 && id < 3000;
         }
+        
+        public static bool IsAIMonster(int id)
+        {
+            return id == 2001 || id == 2002;
+        }
 
         public static bool IsWeaponPool(int id)
         {
@@ -186,7 +191,7 @@ namespace GameA.Game
         internal static bool IsGround(int id)
         {
             return !IsSwitchTrigger(id)&& id != LaserId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
-                   !IsBoard(id) && !IsCollection(id) && !IsMagicSwitch(id) && !IsMain(id) && !IsBullet(id) && !IsMonster(id);
+                   !IsBoard(id) && !IsCollection(id) && !IsMagicSwitch(id) && !IsMain(id) && !IsBullet(id) && !IsAIMonster(id);
         }
 
         public static bool IsDownY(Table_Unit tableUnit)

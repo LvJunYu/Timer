@@ -307,22 +307,25 @@ namespace GameA.Game
         protected void FindPath()
         {
             _lastPos = _curPos;
-            SetInput(EInputType.Left, false);
-            SetInput(EInputType.Right, false);
             _path.Clear();
             _stuckTimer = 0;
             _reSeekTimer = 0;
-            _currentNodeId = 1;
+            _currentNodeId = 0;
             var mainUnit = PlayMode.Instance.MainPlayer;
             var path = ColliderScene2D.Instance.FindPath(this, mainUnit, 3);
             if (path != null && path.Count > 1)
             {
+                _currentNodeId = 1;
                 for (int i = path.Count - 1; i >= 0; i--)
                 {
                     _path.Add(path[i]);
                 }
                 SpeedY = GetJumpSpeedForNode(0);
-                ChangeState(EMonsterState.Seek);
+            }
+            else
+            {
+                SetInput(EInputType.Left, false);
+                SetInput(EInputType.Right, false);
             }
             LogHelper.Debug("FindPath {0}", _path.Count);
         }
