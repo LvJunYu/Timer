@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 9002, Type = typeof(MaskEarth))]
+    [Unit(Id = 9010, Type = typeof(MaskEarth))]
     public class MaskEarth : Earth
     {
         protected bool _trigger;
