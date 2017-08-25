@@ -24,10 +24,7 @@ namespace GameA.Game
 
         protected override void CheckSkillHit(UnitBase other, Grid2D grid, EDirectionType eDirectionType)
         {
-//            if (_colliderGrid.Intersects(grid))
-            {
-                OnEffect(other, eDirectionType);
-            }
+            OnEffect(other, eDirectionType);
         }
 
         public static void OnEffect(UnitBase other, EDirectionType eDirectionType)
