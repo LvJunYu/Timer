@@ -46,6 +46,7 @@ namespace GameA.Game
         public const int LaserId = 5010;
         public const int BillboardId = 7001;
         public const int TextId = 9001;
+        public const int TriggerId = 9002;
         
         public const int SwitchTriggerId = 8100;
         public const int SwitchTriggerPressId = 8101;
@@ -56,6 +57,11 @@ namespace GameA.Game
         public static bool IsSpawn(int id)
         {
             return id == 1001;
+        }
+
+        public static bool IsHasText(int id)
+        {
+            return id == BillboardId || id == TextId || id == TriggerId;
         }
 
         public static bool IsMain(int id)
@@ -139,7 +145,7 @@ namespace GameA.Game
 
         public static bool IsBoard(int id)
         {
-            return id == BillboardId || id == 7101 || id == 7102 || id == 7103 || id == 7104;
+            return IsHasText(id) || id == 7101 || id == 7102 || id == 7103 || id == 7104;
         }
 
         public static bool IsBullet(int id)
@@ -154,7 +160,7 @@ namespace GameA.Game
 
         public static bool IsEditClick(int id)
         {
-            return id == BillboardId || IsWeaponPool(id) || IsJet(id);
+            return IsHasText(id) || IsWeaponPool(id) || IsJet(id);
         }
 
         public static bool IsSameDirectionSwitchTrigger(SceneNode node, byte rotation)

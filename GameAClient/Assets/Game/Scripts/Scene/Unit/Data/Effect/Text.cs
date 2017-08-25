@@ -30,6 +30,7 @@ namespace GameA.Game
                 _textMesh.text = DataScene2D.Instance.GetUnitExtra(_guid).Msg;
                 _textMesh.GetComponent<Renderer>().sortingOrder = (int) ESortingOrder.EffectItem;
             }
+            ShowHide(false);
             return true;
         }
 
