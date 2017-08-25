@@ -24,6 +24,20 @@ namespace GameA.Game
 
     public class MonsterAI : MonsterBase
     {
+        protected static IntVec2 SeekRange = new IntVec2(13, 4) * ConstDefineGM2D.ServerTileScale;
+        protected static IntVec2 AttackRange = new IntVec2(1, 1) * ConstDefineGM2D.ServerTileScale;
+        public static IntVec2 PathRange = new IntVec2(3, 2);
+        protected const int MaxStuckFrames = 30;
+        protected const int MaxReSeekFrames = 5;
+        protected List<IntVec2> _path = new List<IntVec2>();
+
+        protected IntVec2 _lastPos;
+        protected EMonsterState _eState;
+        
+        protected int _thinkTimer;
+        protected int _stuckTimer;
+        protected int _reSeekTimer;
+        
         protected int _currentNodeId;
         protected int _jumpSpeed;
         
@@ -40,40 +54,88 @@ namespace GameA.Game
 
         protected override void Clear()
         {
+            _lastPos = _curPos;
+            _eState = EMonsterState.Think;
+            _path.Clear();
+            _thinkTimer = 0;
+            _stuckTimer = 0;
+            _reSeekTimer = 0;
             _currentNodeId = 0;
             _jumpSpeed = 0;
             base.Clear();
         }
-
-        protected void FindPath()
+        
+        protected virtual void ChangeState(EMonsterState state)
         {
-            _lastPos = _curPos;
-            SetInput(EInputType.Left, false);
-            SetInput(EInputType.Right, false);
-            _path.Clear();
-            _stuckTimer = 0;
-            _reSeekTimer = 0;
-            _currentNodeId = 1;
-            var mainUnit = PlayMode.Instance.MainPlayer;
-            var path = ColliderScene2D.Instance.FindPath(this, mainUnit, 3);
-            if (path != null && path.Count > 1)
+            _eState = state;
+            //LogHelper.Debug("ChangeState : {0}", _eState);
+        }
+        
+        protected override void UpdateMonsterAI()
+        {
+            _curMaxSpeedX = (int)(_maxSpeedX * _speedRatio * _speedStateRatio);
+            if (_thinkTimer > 0)
             {
-                for (int i = path.Count - 1; i >= 0; i--)
-                {
-                    _path.Add(path[i]);
-                }
-                SpeedY = GetJumpSpeedForNode(0);
-                ChangeState(EMonsterState.Seek);
+                _thinkTimer--;
             }
-            LogHelper.Debug("FindPath {0}", _path.Count);
+            ChangeState(EMonsterState.Idle);
+            IntVec2 rel = CenterDownPos - PlayMode.Instance.MainPlayer.CenterDownPos;
+            if (PlayMode.Instance.MainPlayer.CanMove)
+            {
+                if (ConditionAttack(rel))
+                {
+                    ChangeState(EMonsterState.Attack);
+                }
+                else if(ConditionSeek(rel))
+                {
+                    ChangeState(EMonsterState.Seek);
+                }
+                else if(ConditionThink(rel))
+                {
+                    ChangeState(EMonsterState.Think);
+                }
+            }
+            if (_eState != EMonsterState.Seek)
+            {
+                SetInput(EInputType.Right, false);
+                SetInput(EInputType.Left, false);
+            }
+            SetInput(EInputType.Skill1, false);
+            
+            switch (_eState)
+            {
+                case EMonsterState.Think:
+                    OnThink();
+                    break;
+                case EMonsterState.Seek:
+                    OnSeek();
+                    break;
+                case EMonsterState.Attack:
+                    OnAttack();
+                    break;
+            }
+#if UNITY_EDITOR
+            if (_path != null)
+            {
+                for (int i = 0; i < _path.Count - 1; i++)
+                {
+                    Debug.DrawLine(new Vector3(_path[i].x + 0.5f, _path[i].y + 0.5f), new Vector3(_path[i + 1].x + 0.5f, _path[i + 1].y + 0.5f));
+                }
+            }
+#endif
         }
 
-        protected override void OnThink()
+        protected virtual void OnAttack()
+        {
+            SetInput(EInputType.Skill1, true);
+        }
+
+        protected virtual void OnThink()
         {
             FindPath();
         }
 
-        protected override void OnSeek()
+        protected virtual void OnSeek()
         {
             if (_curPos != _lastPos)
             {
@@ -197,6 +259,73 @@ namespace GameA.Game
                     }
                 }
             }
+        }
+        
+        protected virtual bool ConditionAttack(IntVec2 rel)
+        {
+            if (!CanAttack)
+            {
+                return false;
+            }
+            if (Mathf.Abs(rel.x) > AttackRange.x || Mathf.Abs(rel.y) > AttackRange.y)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        protected virtual bool ConditionSeek(IntVec2 rel)
+        {
+            if (!CanMove)
+            {
+                return false;
+            }
+            if (_path.Count <= 1)
+            {
+                return false;
+            }
+            return true;
+        }
+        
+        protected virtual bool ConditionThink(IntVec2 rel)
+        {
+            if (!CanMove)
+            {
+                return false;
+            }
+            if (_thinkTimer > 0)
+            {
+                return false;
+            }
+            _thinkTimer = 50;
+            if (Mathf.Abs(rel.x) > SeekRange.x || Mathf.Abs(rel.y) > SeekRange.y)
+            {
+                return false;
+            }
+            return true;
+        }
+        
+        protected void FindPath()
+        {
+            _lastPos = _curPos;
+            SetInput(EInputType.Left, false);
+            SetInput(EInputType.Right, false);
+            _path.Clear();
+            _stuckTimer = 0;
+            _reSeekTimer = 0;
+            _currentNodeId = 1;
+            var mainUnit = PlayMode.Instance.MainPlayer;
+            var path = ColliderScene2D.Instance.FindPath(this, mainUnit, 3);
+            if (path != null && path.Count > 1)
+            {
+                for (int i = path.Count - 1; i >= 0; i--)
+                {
+                    _path.Add(path[i]);
+                }
+                SpeedY = GetJumpSpeedForNode(0);
+                ChangeState(EMonsterState.Seek);
+            }
+            LogHelper.Debug("FindPath {0}", _path.Count);
         }
 
         private int GetJumpSpeedForNode(int lastNodeId)
