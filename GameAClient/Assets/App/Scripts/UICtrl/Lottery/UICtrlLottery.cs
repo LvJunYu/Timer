@@ -30,10 +30,10 @@ namespace GameA
         private float _stopRotation;
         private float _currentEulerAngles;
         private bool _bright;
-        private float RotationEulerAngles;
-        private int BrightNum;
+        private float _rotationEulerAngles;
+        private int _brightNum;
         private bool _ifLight = true;
-
+        private Color _outLineColor;
         #endregion
 
         #region 属性
@@ -188,30 +188,30 @@ namespace GameA
         {
             if (_ifLight)
             {
-                _cachedView.BrightLamp[BrightNum].SetActiveEx(true);
-                if (BrightNum >= _cachedView.BrightLamp.Length - 1)
+                _cachedView.BrightLamp[_brightNum].SetActiveEx(true);
+                if (_brightNum >= _cachedView.BrightLamp.Length - 1)
                 {
-                    BrightNum = 0;
+                    _brightNum = 0;
                     _ifLight = false;
                     //ShutDownLight();
                 }
                 else
                 {
-                    ++BrightNum;
+                    ++_brightNum;
                 }
             }
             else
             {
-                _cachedView.BrightLamp[BrightNum].SetActiveEx(false);
-                if (BrightNum >= _cachedView.BrightLamp.Length - 1)
+                _cachedView.BrightLamp[_brightNum].SetActiveEx(false);
+                if (_brightNum >= _cachedView.BrightLamp.Length - 1)
                 {
-                    BrightNum = 0;
+                    _brightNum = 0;
                     _ifLight = true;
                     //ShutDownLight();
                 }
                 else
                 {
-                    ++BrightNum;
+                    ++_brightNum;
                 }
             }
         }
@@ -226,7 +226,7 @@ namespace GameA
 
         private void WhenShutDown()
         {
-            BrightNum = 0;
+            _brightNum = 0;
             _ifLight = true;
             _cachedView.Mask.SetEnableEx(false);
             ShutDownLight();
@@ -241,11 +241,11 @@ namespace GameA
             {
                 //转动转盘(-1为顺时针,1为逆时针)
                 //_initSpeed = Mathf.MoveTowardsAngle((float)_cachedView.RoolPanel.rotation, 10, 0.1f*Time.deltaTime);
-                RotationEulerAngles += _initSpeed*Time.deltaTime;
+                _rotationEulerAngles += _initSpeed*Time.deltaTime;
                 _cachedView.RoolPanel.Rotate(new Vector3(0, 0, _initSpeed)*Time.deltaTime);
-                if (RotationEulerAngles >= 45)
+                if (_rotationEulerAngles >= 45)
                 {
-                    RotationEulerAngles = 0;
+                    _rotationEulerAngles = 0;
                     LightRotateBright();
                 }
                 //让转动的速度缓缓降低
@@ -355,11 +355,14 @@ namespace GameA
         {
             SocialGUIManager.Instance.CloseUI<UICtrlLottery>();
         }
-
+        
         private void OnSelectedRaffleBtn1()
         {
             this._selectedTicketNum = 1;
-            _cachedView.SelectedTicketType.text = "<color=#ffb400>壹</color>";
+            _cachedView.SelectedTicketType.text = "<color=#ffb766>壹</color>";
+            GetOutLineColor(1);
+            _cachedView.SelectedTicketTypeTexOutline.effectColor = _outLineColor;
+            _cachedView.SelectedTicketTypeShadow.effectColor = _outLineColor;
             SetRewardItemList(1);
             //RefreshReward(1);
         }
@@ -368,6 +371,9 @@ namespace GameA
         {
             this._selectedTicketNum = 2;
             _cachedView.SelectedTicketType.text = "<color=#ededeb>贰</color>";
+            GetOutLineColor(2);
+            _cachedView.SelectedTicketTypeTexOutline.effectColor = _outLineColor;
+            _cachedView.SelectedTicketTypeShadow.effectColor = _outLineColor;
             SetRewardItemList(2);
             //RefreshReward(2);
         }
@@ -376,6 +382,9 @@ namespace GameA
         {
             this._selectedTicketNum = 3;
             _cachedView.SelectedTicketType.text = "<color=#fbf11a>叁</color>";
+            GetOutLineColor(3);
+            _cachedView.SelectedTicketTypeTexOutline.effectColor = _outLineColor;
+            _cachedView.SelectedTicketTypeShadow.effectColor = _outLineColor;
             SetRewardItemList(3);
             //RefreshReward(3);
         }
@@ -384,6 +393,9 @@ namespace GameA
         {
             this._selectedTicketNum = 4;
             _cachedView.SelectedTicketType.text = "<color=#00ffff>匠</color>";
+            GetOutLineColor(4);
+            _cachedView.SelectedTicketTypeTexOutline.effectColor = _outLineColor;
+            _cachedView.SelectedTicketTypeShadow.effectColor = _outLineColor;
             SetRewardItemList(4);
             //RefreshReward(4);
         }
@@ -392,8 +404,33 @@ namespace GameA
         {
             this._selectedTicketNum = 5;
             _cachedView.SelectedTicketType.text = "<color=#f65656>亲</color>";
+            GetOutLineColor(5);
+            _cachedView.SelectedTicketTypeTexOutline.effectColor = _outLineColor;
+            _cachedView.SelectedTicketTypeShadow.effectColor = _outLineColor;
             SetRewardItemList(5);
             //RefreshReward(5);
+        }
+
+        private void  GetOutLineColor(int SeletIndex)
+        {
+            switch (SeletIndex)
+            {
+                  case 1 :
+                      ColorUtility.TryParseHtmlString("#6a3916", out _outLineColor);
+                      break;
+                  case 2 :
+                    ColorUtility.TryParseHtmlString("#52545d", out _outLineColor);
+                    break;
+                  case  3:
+                      ColorUtility.TryParseHtmlString("#625519", out _outLineColor);
+                      break;
+                  case  4:
+                    ColorUtility.TryParseHtmlString("#1d5f47", out _outLineColor);
+                    break;
+                  case  5:
+                    ColorUtility.TryParseHtmlString("#9c380c", out _outLineColor);
+                    break;
+            }
         }
 
         #endregion 接口

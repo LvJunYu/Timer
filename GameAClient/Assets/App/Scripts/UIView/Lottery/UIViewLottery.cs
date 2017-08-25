@@ -38,7 +38,8 @@ namespace GameA
         public Text NumberOfTicketlvl5;
 
         public Text SelectedTicketType;
-
+	    public Outline SelectedTicketTypeTexOutline;
+	    public Shadow SelectedTicketTypeShadow;
         public Text RewardExhibition;
 
 	    public Image[] BrightLamp;
