@@ -42,7 +42,7 @@ namespace GameA.Game
                 return false;
             }
             _isMonster = true;
-            _maxSpeedX = 40;
+            _maxSpeedX = 50;
             return true;
         }
 

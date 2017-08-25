@@ -21,8 +21,8 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_Unit> Table_UnitDic = new Dictionary<int, Table_Unit>();
 		public readonly Dictionary<int,Table_CharacterUpgrade> Table_CharacterUpgradeDic = new Dictionary<int, Table_CharacterUpgrade>();
 		public readonly Dictionary<int,Table_StarRequire> Table_StarRequireDic = new Dictionary<int, Table_StarRequire>();
-		public readonly Dictionary<int,Table_StandaloneLevel> Table_StandaloneLevelDic = new Dictionary<int, Table_StandaloneLevel>();
 		public readonly Dictionary<int,Table_StandaloneChapter> Table_StandaloneChapterDic = new Dictionary<int, Table_StandaloneChapter>();
+		public readonly Dictionary<int,Table_StandaloneLevel> Table_StandaloneLevelDic = new Dictionary<int, Table_StandaloneLevel>();
 		public readonly Dictionary<int,Table_FashionShop> Table_FashionShopDic = new Dictionary<int, Table_FashionShop>();
 		public readonly Dictionary<int,Table_FashionUnit> Table_FashionUnitDic = new Dictionary<int, Table_FashionUnit>();
 		public readonly Dictionary<int,Table_TreasureMap> Table_TreasureMapDic = new Dictionary<int, Table_TreasureMap>();
@@ -52,8 +52,8 @@ namespace GameA.Game
 		[UnityEngine.SerializeField] private Table_Unit[] _tableUnits;
 		[UnityEngine.SerializeField] private Table_CharacterUpgrade[] _tableCharacterUpgrades;
 		[UnityEngine.SerializeField] private Table_StarRequire[] _tableStarRequires;
-		[UnityEngine.SerializeField] private Table_StandaloneLevel[] _tableStandaloneLevels;
 		[UnityEngine.SerializeField] private Table_StandaloneChapter[] _tableStandaloneChapters;
+		[UnityEngine.SerializeField] private Table_StandaloneLevel[] _tableStandaloneLevels;
 		[UnityEngine.SerializeField] private Table_FashionShop[] _tableFashionShops;
 		[UnityEngine.SerializeField] private Table_FashionUnit[] _tableFashionUnits;
 		[UnityEngine.SerializeField] private Table_TreasureMap[] _tableTreasureMaps;
@@ -107,10 +107,10 @@ namespace GameA.Game
             _tableCharacterUpgrades = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_CharacterUpgrade[]>(CharacterUpgradeJsonStr);
 			string StarRequireJsonStr = ResourceManager.Instance.GetJson ("StarRequire", 31);
             _tableStarRequires = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StarRequire[]>(StarRequireJsonStr);
-			string StandaloneLevelJsonStr = ResourceManager.Instance.GetJson ("StandaloneLevel", 31);
-            _tableStandaloneLevels = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneLevel[]>(StandaloneLevelJsonStr);
 			string StandaloneChapterJsonStr = ResourceManager.Instance.GetJson ("StandaloneChapter", 31);
             _tableStandaloneChapters = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneChapter[]>(StandaloneChapterJsonStr);
+			string StandaloneLevelJsonStr = ResourceManager.Instance.GetJson ("StandaloneLevel", 31);
+            _tableStandaloneLevels = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneLevel[]>(StandaloneLevelJsonStr);
 			string FashionShopJsonStr = ResourceManager.Instance.GetJson ("FashionShop", 31);
             _tableFashionShops = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionShop[]>(FashionShopJsonStr);
 			string FashionUnitJsonStr = ResourceManager.Instance.GetJson ("FashionUnit", 31);
@@ -251,17 +251,6 @@ namespace GameA.Game
 					LogHelper.Warning("_tableStarRequires table.Id {0} is duplicated!", _tableStarRequires[i].Id);
 				}
 			}
-			for (int i = 0; i < _tableStandaloneLevels.Length; i++)
-			{
-				if (!Table_StandaloneLevelDic.ContainsKey(_tableStandaloneLevels[i].Id))
-				{
-					Table_StandaloneLevelDic.Add(_tableStandaloneLevels[i].Id,_tableStandaloneLevels[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableStandaloneLevels table.Id {0} is duplicated!", _tableStandaloneLevels[i].Id);
-				}
-			}
 			for (int i = 0; i < _tableStandaloneChapters.Length; i++)
 			{
 				if (!Table_StandaloneChapterDic.ContainsKey(_tableStandaloneChapters[i].Id))
@@ -271,6 +260,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableStandaloneChapters table.Id {0} is duplicated!", _tableStandaloneChapters[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableStandaloneLevels.Length; i++)
+			{
+				if (!Table_StandaloneLevelDic.ContainsKey(_tableStandaloneLevels[i].Id))
+				{
+					Table_StandaloneLevelDic.Add(_tableStandaloneLevels[i].Id,_tableStandaloneLevels[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableStandaloneLevels table.Id {0} is duplicated!", _tableStandaloneLevels[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableFashionShops.Length; i++)
@@ -578,19 +578,19 @@ namespace GameA.Game
 			}
 			return null;
 		}
-		public Table_StandaloneLevel GetStandaloneLevel(int key)
+		public Table_StandaloneChapter GetStandaloneChapter(int key)
 		{
-			Table_StandaloneLevel tmp;
-			if (Table_StandaloneLevelDic.TryGetValue(key,out tmp))
+			Table_StandaloneChapter tmp;
+			if (Table_StandaloneChapterDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
 			return null;
 		}
-		public Table_StandaloneChapter GetStandaloneChapter(int key)
+		public Table_StandaloneLevel GetStandaloneLevel(int key)
 		{
-			Table_StandaloneChapter tmp;
-			if (Table_StandaloneChapterDic.TryGetValue(key,out tmp))
+			Table_StandaloneLevel tmp;
+			if (Table_StandaloneLevelDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

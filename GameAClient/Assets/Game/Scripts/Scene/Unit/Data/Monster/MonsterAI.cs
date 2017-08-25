@@ -93,9 +93,15 @@ namespace GameA.Game
                     return;
                 }
             }
+            var pathPos = GetColliderPos(_curPos);
             IntVec2 currentDest, nextDest;
             bool destOnGround, reachedY, reachedX;
-            GetContext(out currentDest, out nextDest, out destOnGround, out reachedX, out reachedY);
+            GetContext(ref pathPos, out currentDest, out nextDest, out destOnGround, out reachedX, out reachedY);
+            if (reachedX && Mathf.Abs(pathPos.x - currentDest.x) >= 2 * ConstDefineGM2D.ServerTileScale)
+            {
+                FindPath();
+                return;
+            }
             //到达路径点
             if (reachedX && reachedY)
             {
@@ -120,18 +126,19 @@ namespace GameA.Game
             }
             else
             {
-                var pathPos = GetColliderPos(_curPos);
                 if (!reachedX)
                 {
                     if (currentDest.x - pathPos.x >= _curMaxSpeedX)
                     {
                         //向右
                         SetInput(EInputType.Right, true);
+                        SetInput(EInputType.Left, false);
                     }
                     else if (pathPos.x - currentDest.x >= _curMaxSpeedX)
                     {
                         //向左
                         SetInput(EInputType.Left, true);
+                        SetInput(EInputType.Right, false);
                     }
                 }
                 else if (_path.Count > _currentNodeId + 1 && !destOnGround)
@@ -160,11 +167,13 @@ namespace GameA.Game
                         {
                             //向右
                             SetInput(EInputType.Right, true);
+                            SetInput(EInputType.Left, false);
                         }
                         else if (pathPos.x - nextDest.x >= _curMaxSpeedX)
                         {
                             //向左
                             SetInput(EInputType.Left, true);
+                            SetInput(EInputType.Right, false);
                         }
 
                         if (ReachedNodeOnXAxis(pathPos, currentDest, nextDest) &&
@@ -211,12 +220,12 @@ namespace GameA.Game
                 case 2:
                     return 180;
                 case 3:
-                    return 230;
+                    return 220;
             }
             return 0;
         }
 
-        private void GetContext(out IntVec2 currentDest, out IntVec2 nextDest,
+        private void GetContext(ref IntVec2 pathPos, out IntVec2 currentDest, out IntVec2 nextDest,
        out bool destOnGround, out bool reachedX, out bool reachedY)
         {
             currentDest = _path[_currentNodeId] * ConstDefineGM2D.ServerTileScale;
@@ -235,7 +244,6 @@ namespace GameA.Game
                 }
             }
             var lastDest = _path[_currentNodeId - 1] * ConstDefineGM2D.ServerTileScale;
-            var pathPos = GetColliderPos(_curPos);
             reachedX = ReachedNodeOnXAxis(pathPos, lastDest, currentDest);
             reachedY = ReachedNodeOnYAxis(pathPos, lastDest, currentDest);
 //            if (reachedX && Mathf.Abs(pathPos.x - currentDest.x) >_curMaxSpeedX && Mathf.Abs(pathPos.x - currentDest.x) < _curMaxSpeedX * 3.0f)

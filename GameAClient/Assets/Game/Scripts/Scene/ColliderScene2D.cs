@@ -721,7 +721,7 @@ namespace GameA.Game
         public List<IntVec2> FindPath(UnitBase unit, UnitBase target, short maxCharacterJumpHeight)
         {
             var start = unit.CenterDownPos ;
-            var end = target.CenterDownPos;
+            var end = target.DownUnit == null ? target.CenterDownPos : target.DownUnit.CenterUpPos;
             //不在空中的时候
             if (!target.Grounded)
             {
