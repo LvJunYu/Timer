@@ -93,7 +93,8 @@ namespace GameA.Game
                     return;
                 }
             }
-            var pathPos = GetColliderPos(_curPos);
+
+            var pathPos = GetColliderPos(CenterDownPos);
             IntVec2 currentDest, nextDest;
             bool destOnGround, reachedY, reachedX;
             GetContext(ref pathPos, out currentDest, out nextDest, out destOnGround, out reachedX, out reachedY);
@@ -246,13 +247,29 @@ namespace GameA.Game
             var lastDest = _path[_currentNodeId - 1] * ConstDefineGM2D.ServerTileScale;
             reachedX = ReachedNodeOnXAxis(pathPos, lastDest, currentDest);
             reachedY = ReachedNodeOnYAxis(pathPos, lastDest, currentDest);
-//            if (reachedX && Mathf.Abs(pathPos.x - currentDest.x) >_curMaxSpeedX && Mathf.Abs(pathPos.x - currentDest.x) < _curMaxSpeedX * 3.0f)
-//            {
-//                _curPos.x = currentDest.x;
-//            }
             if (destOnGround && !_grounded)
             {
                 reachedY = false;
+            }
+
+            if (!reachedX)
+            {
+                if (_curMoveDirection == EMoveDirection.Left)
+                {
+                    if (ColliderScene2D.Instance.IsGround(_curPos.x / ConstDefineGM2D.ServerTileScale,
+                        _curPos.y / ConstDefineGM2D.ServerTileScale))
+                    {
+                        reachedX = true;
+                    }
+                }
+                else if (_curMoveDirection == EMoveDirection.Right)
+                {
+                    if (ColliderScene2D.Instance.IsGround(_curPos.x / ConstDefineGM2D.ServerTileScale + 1,
+                        _curPos.y / ConstDefineGM2D.ServerTileScale))
+                    {
+                        reachedX = true;
+                    }
+                }
             }
         }
 
