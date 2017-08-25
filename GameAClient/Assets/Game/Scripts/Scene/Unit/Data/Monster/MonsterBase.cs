@@ -16,7 +16,7 @@ namespace GameA.Game
     public class MonsterBase : ActorBase
     {
         protected static IntVec2 SeekRange = new IntVec2(13, 4) * ConstDefineGM2D.ServerTileScale;
-        protected static IntVec2 AttackRange = new IntVec2(ConstDefineGM2D.ServerTileScale, (int) (0.9f * ConstDefineGM2D.ServerTileScale));
+        protected static IntVec2 AttackRange = new IntVec2(1, 1) * ConstDefineGM2D.ServerTileScale;
         public static IntVec2 PathRange = new IntVec2(3, 2);
         protected const int MaxStuckFrames = 30;
         protected const int MaxReSeekFrames = 5;

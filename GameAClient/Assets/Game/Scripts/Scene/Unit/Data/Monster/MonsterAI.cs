@@ -93,7 +93,6 @@ namespace GameA.Game
                     return;
                 }
             }
-            
             IntVec2 currentDest, nextDest;
             bool destOnGround, reachedY, reachedX;
             GetContext(out currentDest, out nextDest, out destOnGround, out reachedX, out reachedY);
@@ -114,10 +113,14 @@ namespace GameA.Game
                 }
                 return;
             }
-            if (_curBanInputTime <= 0)
+            if (_curBanInputTime > 0)
+            {
+                SetInput(EInputType.Left, false);
+                SetInput(EInputType.Right, false);
+            }
+            else
             {
                 var pathPos = GetColliderPos(_curPos);
-
                 if (!reachedX)
                 {
                     if (currentDest.x - pathPos.x >= _curMaxSpeedX)
@@ -150,8 +153,8 @@ namespace GameA.Game
                     }
 
                     if (checkedX != 0 &&
-                        !ColliderScene2D.Instance.HasBlockInLine(checkedX/ConstDefineGM2D.ServerTileScale,
-                            pathPos.y/ConstDefineGM2D.ServerTileScale, _path[_currentNodeId + 1].y))
+                        !ColliderScene2D.Instance.HasBlockInLine(checkedX / ConstDefineGM2D.ServerTileScale,
+                            pathPos.y / ConstDefineGM2D.ServerTileScale, _path[_currentNodeId + 1].y))
                     {
                         if (nextDest.x - pathPos.x >= _curMaxSpeedX)
                         {
@@ -206,7 +209,7 @@ namespace GameA.Game
                 case 1:
                     return 140;
                 case 2:
-                    return 190;
+                    return 180;
                 case 3:
                     return 230;
             }
