@@ -235,21 +235,26 @@ namespace GameA.Game
 
         public virtual void OnPlay()
         {
+            SetEditAssistActive(false);
+        }
+
+        public virtual void SetEditAssistActive(bool active)
+        {
             if (_dirTrans != null)
             {
-                _dirTrans.SetActiveEx(false);
+                _dirTrans.SetActiveEx(active);
             }
             if (_dirTrans2 != null)
             {
-                _dirTrans2.SetActiveEx(false);
+                _dirTrans2.SetActiveEx(active);
             }
             if (_wingLeft != null)
             {
-                _wingLeft.Trans.SetActiveEx(false);
+                _wingLeft.Trans.SetActiveEx(active);
             }
             if (_wingRight != null)
             {
-                _wingRight.Trans.SetActiveEx(false);
+                _wingRight.Trans.SetActiveEx(active);
             }
         }
 
