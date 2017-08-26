@@ -11,7 +11,7 @@ namespace GameA
     /// 装备拼图
     /// </summary>
 	[UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlPuzzleSlots : UICtrlGenericBase<UIViewPuzzleSlots>
+    public class UICtrlPuzzleSlots : UICtrlAnimationBase<UIViewPuzzleSlots>
     {
         private Dictionary<int, Table_PuzzleSlot> _slots;//拼图装备栏
         private List<PictureFull> _usingPicFull;//装备的拼图
@@ -30,6 +30,7 @@ namespace GameA
         private void InitUI()
         {
             _slots = TableManager.Instance.Table_PuzzleSlotDic;
+//            RequestData();
             _usingPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;
             //测试用，实际应用服务器数据
             _usingPicFull = new List<PictureFull>(_slots.Count);
