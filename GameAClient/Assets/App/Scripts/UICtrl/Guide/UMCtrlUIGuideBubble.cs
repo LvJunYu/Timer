@@ -29,10 +29,12 @@ namespace GameA
             _cachedView.SetActiveEx(false);
         }
 
-        public void Set(RectTransform targeRectTransform, EDirectionType arrowDirection, string content,
+        public void Set(RectTransform targetRectTransform, EDirectionType arrowDirection, string content,
             bool mask = false)
         {
-            
+            var b = RectTransformUtility.CalculateRelativeRectTransformBounds(UITran.parent, targetRectTransform);
+            UITran.anchoredPosition = b.center;
+            DictionaryTools.SetContentText(_cachedView.Text, content);
         }
         #endregion
     }

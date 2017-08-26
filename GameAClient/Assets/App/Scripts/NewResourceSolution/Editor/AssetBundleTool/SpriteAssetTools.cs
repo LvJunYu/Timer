@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using Newtonsoft.Json;
 using SoyEngine;
 using UnityEngine;
 using UnityEditor;
@@ -102,14 +104,57 @@ namespace NewResourceSolution.EditorTool
 		
 		private static void SetTextureImporterSetting (TextureImporter textureImporter, string atlasName, ETextureCompressQuality quality)
 		{
-			textureImporter.textureType = TextureImporterType.Sprite;
-			textureImporter.spriteImportMode = SpriteImportMode.Single;
-			textureImporter.spritePackingTag = atlasName;
-			textureImporter.spritePixelsPerUnit = 128;
-			textureImporter.mipmapEnabled = false;
-			textureImporter.filterMode = FilterMode.Bilinear;
-			textureImporter.fadeout = false;
-			textureImporter.wrapMode = TextureWrapMode.Repeat;
+			bool isDirty = false;
+			
+			var textureImportertextureType = TextureImporterType.Sprite;
+			var textureImporterspriteImportMode = SpriteImportMode.Single;
+			var textureImporterspritePackingTag = atlasName;
+			var textureImporterspritePixelsPerUnit = 128;
+			var textureImportermipmapEnabled = false;
+			var textureImporterfilterMode = FilterMode.Bilinear;
+			var textureImporterfadeout = false;
+			var textureImporterwrapMode = TextureWrapMode.Repeat;
+
+			if (textureImporter.textureType != textureImportertextureType)
+			{
+				textureImporter.textureType = textureImportertextureType;
+				isDirty = true;
+			}
+			if (textureImporter.spriteImportMode != textureImporterspriteImportMode)
+			{
+				textureImporter.spriteImportMode = textureImporterspriteImportMode;
+				isDirty = true;
+			}
+			if (textureImporter.spritePackingTag != textureImporterspritePackingTag)
+			{
+				textureImporter.spritePackingTag = textureImporterspritePackingTag;
+				isDirty = true;
+			}
+			if (Math.Abs(textureImporter.spritePixelsPerUnit - textureImporterspritePixelsPerUnit) > float.Epsilon)
+			{
+				textureImporter.spritePixelsPerUnit = textureImporterspritePixelsPerUnit;
+				isDirty = true;
+			}
+			if (textureImporter.mipmapEnabled != textureImportermipmapEnabled)
+			{
+				textureImporter.mipmapEnabled = textureImportermipmapEnabled;
+				isDirty = true;
+			}
+			if (textureImporter.filterMode != textureImporterfilterMode)
+			{
+				textureImporter.filterMode = textureImporter.filterMode;
+				isDirty = true;
+			}
+			if (textureImporter.fadeout != textureImporterfadeout)
+			{
+				textureImporter.fadeout = textureImporterfadeout;
+				isDirty = true;
+			}
+			if (textureImporter.wrapMode != textureImporterwrapMode)
+			{
+				textureImporter.wrapMode = textureImporterwrapMode;
+				isDirty = true;
+			}
 
 			// default
 			TextureImporterPlatformSettings defaultSetting = new TextureImporterPlatformSettings();
@@ -117,7 +162,12 @@ namespace NewResourceSolution.EditorTool
 			defaultSetting.overridden = true;
 			defaultSetting.compressionQuality = (int)GetTextureImporterFormatByETextureCompressQuality(quality);
 			defaultSetting.maxTextureSize = 1024;
-			textureImporter.SetPlatformTextureSettings(defaultSetting);
+			var ds = textureImporter.GetPlatformTextureSettings(defaultSetting.name);
+			if (ds == null || JsonUtility.ToJson(ds) != JsonUtility.ToJson(defaultSetting))
+			{
+				textureImporter.SetPlatformTextureSettings(defaultSetting);
+				isDirty = true;
+			}
 			
 			// iOS
 			TextureImporterPlatformSettings iosSetting = new TextureImporterPlatformSettings();
@@ -126,7 +176,12 @@ namespace NewResourceSolution.EditorTool
 			iosSetting.compressionQuality = (int)GetTextureImporterFormatByETextureCompressQuality(quality);
 			iosSetting.maxTextureSize = 1024;
 			iosSetting.format = ETextureCompressQuality.NoCompress == quality ? TextureImporterFormat.RGBA32 : TextureImporterFormat.PVRTC_RGBA4;
-			textureImporter.SetPlatformTextureSettings(iosSetting);
+			var iOSs = textureImporter.GetPlatformTextureSettings(iosSetting.name);
+			if (iOSs == null || JsonUtility.ToJson(iOSs) != JsonUtility.ToJson(iosSetting))
+			{
+				textureImporter.SetPlatformTextureSettings(iosSetting);
+				isDirty = true;
+			}
 
 			// android
 			TextureImporterPlatformSettings androidSetting = new TextureImporterPlatformSettings();
@@ -135,9 +190,17 @@ namespace NewResourceSolution.EditorTool
 			androidSetting.compressionQuality = (int)GetTextureImporterFormatByETextureCompressQuality(quality);
 			androidSetting.maxTextureSize = 1024;
 			androidSetting.format = ETextureCompressQuality.NoCompress == quality ? TextureImporterFormat.RGBA32 : TextureImporterFormat.ETC2_RGBA8;
-			textureImporter.SetPlatformTextureSettings(androidSetting);
-			
-			textureImporter.SaveAndReimport();
+			var ands = textureImporter.GetPlatformTextureSettings(androidSetting.name);
+			if (ands == null || JsonUtility.ToJson(ands) != JsonUtility.ToJson(androidSetting))
+			{
+				textureImporter.SetPlatformTextureSettings(androidSetting);
+				isDirty = true;
+			}
+
+			if (isDirty)
+			{
+				textureImporter.SaveAndReimport();
+			}
 		}
 
 		private static TextureCompressionQuality GetTextureImporterFormatByETextureCompressQuality(ETextureCompressQuality quality)

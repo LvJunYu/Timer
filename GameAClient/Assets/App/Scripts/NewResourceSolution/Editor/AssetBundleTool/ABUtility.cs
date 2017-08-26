@@ -179,6 +179,8 @@ namespace NewResourceSolution.EditorTool
 		/// <param name="assetBundleName">Asset bundle name.</param>
 		public static string PathToAssetBundleName (string rootPath, string assetPath, out string assetBundleName)
 		{
+			rootPath = rootPath.Replace('\\', '/');
+			assetPath = assetPath.Replace('\\', '/');
 			assetBundleName = string.Empty;
 			// remove extension
 			int pointIdx = assetPath.LastIndexOf('.');
