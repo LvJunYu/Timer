@@ -333,6 +333,20 @@ namespace GameA.Game
 
         public void ChangeSelectUnitUIType(EUIType euiType)
         {
+            if (GM2DGame.Instance.GameMode.GameSituation == EGameSituation.Match)
+            {
+                if (!IsInState(EditModeState.ModifyAdd.Instance))
+                {
+                    _stateMachine.ChangeState(EditModeState.ModifyAdd.Instance);
+                }
+            }
+            else
+            {
+                if (!IsInState(EditModeState.Add.Instance))
+                {
+                    _stateMachine.ChangeState(EditModeState.Add.Instance);
+                }
+            }
             if (euiType == EUIType.Effect)
             {
                 ChangeEditorLayer(EEditorLayer.Effect);
@@ -388,6 +402,7 @@ namespace GameA.Game
                             if (null != entry.Value
                                 && null != entry.Value.View)
                             {
+                                entry.Value.View.SetEditAssistActive(false);
                                 entry.Value.View.SetRendererColor(EdittingLayerColor);
                             }
                         }
@@ -402,9 +417,11 @@ namespace GameA.Game
                             if (null != entry.Value
                                 && null != entry.Value.View)
                             {
-                                entry.Value.View.SetRendererColor(entry.Key.z != (int) EUnitDepth.Effect
+                                bool isEditing = entry.Key.z != (int) EUnitDepth.Effect;
+                                entry.Value.View.SetRendererColor(isEditing
                                     ? EdittingLayerColor
                                     : NotEdittingLayerColor);
+                                entry.Value.View.SetEditAssistActive(isEditing);
                             }
                         }
                     }
@@ -420,7 +437,9 @@ namespace GameA.Game
                             if (null != entry.Value
                                 && null != entry.Value.View)
                             {
+                                bool isEditing = entry.Key.z == (int) EUnitDepth.Effect;
                                 entry.Value.View.SetRendererColor(EdittingLayerColor);
+                                entry.Value.View.SetEditAssistActive(isEditing);
                             }
                         }
                     }
