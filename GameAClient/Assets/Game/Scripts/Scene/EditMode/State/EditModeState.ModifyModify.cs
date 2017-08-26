@@ -179,8 +179,9 @@ namespace GameA.Game
                 }
                 target.Scale = stateData.CurrentMovingUnitBase.Scale;
                 target.Rotation = stateData.CurrentMovingUnitBase.Rotation;
-                int layerMask = EditHelper.GetLayerMask(boardData.EditorLayer);
-                var coverUnits = DataScene2D.GridCastAllReturnUnits(target, layerMask);
+                float minDepth, maxDepth;
+                EditHelper.GetMinMaxDepth(boardData.EditorLayer, out minDepth, out maxDepth);
+                var coverUnits = DataScene2D.GridCastAllReturnUnits(target, JoyPhysics2D.LayMaskAll, minDepth, maxDepth);
                 if (coverUnits != null && coverUnits.Count > 0)
                 {
                     Messenger<string>.Broadcast(EMessengerType.GameLog, "只能移动或变换，不能覆盖");

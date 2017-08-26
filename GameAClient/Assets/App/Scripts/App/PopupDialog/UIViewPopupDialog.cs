@@ -6,10 +6,8 @@
   ***********************************************************************/
 
 
-using System;
-using UnityEngine;
 using SoyEngine;
-using UnityEngine.UI;
+using UnityEngine;
 
 namespace GameA
 {

@@ -402,7 +402,7 @@ namespace GameA.Game
         public static UnitExtraKeyValuePair ToProto(IntVec3 index, UnitExtra data)
         {
             var res = new UnitExtraKeyValuePair();
-            res.Guid = ToProto(index); ;
+            res.Guid = ToProto(index);
             res.MoveDirection = (byte)data.MoveDirection;
             res.RollerDirection = (byte)data.RollerDirection;
             res.Msg = data.Msg;
@@ -513,8 +513,9 @@ namespace GameA.Game
 			unitDesc = new UnitDesc();
 			var tile = WorldToTile(mouseWorldPos);
 			SceneNode targetNode;
-		    int layerMask = EditHelper.GetLayerMask(editorLayer);
-			if (!DataScene2D.PointCast(tile, out targetNode, layerMask))
+	        float minDepth, maxDepth;
+		    EditHelper.GetMinMaxDepth(editorLayer, out minDepth, out maxDepth);
+			if (!DataScene2D.PointCast(tile, out targetNode, JoyPhysics2D.LayMaskAll, minDepth, maxDepth))
 			{
 				return false;
 			}

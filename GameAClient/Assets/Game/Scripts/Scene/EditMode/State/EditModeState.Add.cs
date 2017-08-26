@@ -154,8 +154,9 @@ namespace GameA.Game
                 var recordBatch = GetRecordBatch();
                 var tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
                 var grid = tableUnit.GetBaseDataGrid(unitDesc.Guid.x, unitDesc.Guid.y);
-                int layerMask = EditHelper.GetLayerMask(GetBlackBoard().EditorLayer);
-                var nodes = DataScene2D.GridCastAll(grid, layerMask);
+                float minDepth, maxDepth;
+                EditHelper.GetMinMaxDepth(GetBlackBoard().EditorLayer, out minDepth, out maxDepth);
+                var nodes = DataScene2D.GridCastAll(grid, JoyPhysics2D.LayMaskAll, minDepth, maxDepth);
                 for (int i = 0; i < nodes.Count; i++)
                 {
                     var node = nodes[i];

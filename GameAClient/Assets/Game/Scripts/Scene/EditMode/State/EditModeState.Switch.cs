@@ -141,8 +141,9 @@ namespace GameA.Game
                 tile.z = boardData.CurrentTouchUnitDesc.Guid.z;
                 var target = new UnitDesc(boardData.CurrentTouchUnitDesc.Id, tile,
                     boardData.CurrentTouchUnitDesc.Rotation, boardData.CurrentTouchUnitDesc.Scale);
-                int layerMask = EditHelper.GetLayerMask(boardData.EditorLayer);
-                var coverUnits = DataScene2D.GridCastAllReturnUnits(target, layerMask);
+                float minDepth, maxDepth;
+                EditHelper.GetMinMaxDepth(boardData.EditorLayer, out minDepth, out maxDepth);
+                var coverUnits = DataScene2D.GridCastAllReturnUnits(target, JoyPhysics2D.LayMaskAll, minDepth, maxDepth);
 
                 if (coverUnits == null || coverUnits.Count == 0)
                 {

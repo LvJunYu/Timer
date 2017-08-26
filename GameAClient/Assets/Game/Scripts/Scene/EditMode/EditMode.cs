@@ -6,12 +6,11 @@
 ***********************************************************************/
 
 using System;
-using System.Collections.Generic;
-using HedgehogTeam.EasyTouch;
 using NewResourceSolution;
 using SoyEngine;
 using SoyEngine.FSM;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
@@ -48,18 +47,14 @@ namespace GameA.Game
         private static readonly Color NotEdittingLayerColor = new Color(1f, 1f, 1f, 0.3f);
         private bool _enable;
         private bool _inited;
-        private HashSet<EditModeState.Base> _initedStateSet;
         private StateMachine<EditMode, EditModeState.Base> _stateMachine;
+        private EditModeStateMachineHelper _stateMachineHelper;
         private BlackBoard _boardData;
         private EditRecordManager _editRecordManager;
         private readonly MapStatistics _mapStatistics = new MapStatistics();
         [SerializeField]
         private GameObject _backgroundObject;
         private SlicedCameraMask _cameraMask;
-        private EDragMode _dragMode;
-        private Gesture _lastDragGesture;
-        private bool _pinchActive;
-        private Gesture _lastPinchGesture;
         private EEditorLayer _lastEditorLayer;
         #endregion
 
@@ -85,6 +80,11 @@ namespace GameA.Game
             get { return _cameraMask; }
         }
 
+        public bool Enable
+        {
+            get { return _enable; }
+        }
+
         #endregion
 
         #region DefaultMethod
@@ -93,51 +93,30 @@ namespace GameA.Game
         {
             if (_inited)
             {
-                InputManager.Instance.OnTouchStart -= OnTouchStart;
-                InputManager.Instance.OnTouchUp -= OnTouchUp;
-                InputManager.Instance.OnPinch -= OnPinch;
-                InputManager.Instance.OnPinchEnd -= OnPinchEnd;
-                InputManager.Instance.OnDragStart -= OnDragStart;
-                InputManager.Instance.OnDrag -= OnDrag;
-                InputManager.Instance.OnDragEnd -= OnDragEnd;
-                InputManager.Instance.OnDragStartTwoFingers -= OnDragStartTwoFingers;
-                InputManager.Instance.OnDragTwoFingers -= OnDragTwoFingers;
-                InputManager.Instance.OnDragEndTwoFingers -= OnDragEndTwoFingers;
-                InputManager.Instance.OnTap -= OnTap;
-                InputManager.Instance.OnMouseWheelChange -= OnMouseWheelChange;
-                InputManager.Instance.OnMouseRightButtonDragStart -= OnMouseRightButtonDragStart;
-                InputManager.Instance.OnMouseRightButtonDrag -= OnMouseRightButtonDrag;
-                InputManager.Instance.OnMouseRightButtonDragEnd -= OnMouseRightButtonDragEnd;
+                _stateMachineHelper.Dispose();
                 if (_enable)
                 {
                     StopEdit();
                 }
+                _stateMachineHelper.Dispose();
+                _stateMachineHelper = null;
                 if (_backgroundObject != null)
                 {
-                    UnityEngine.Object.Destroy(_backgroundObject);
+                    Object.Destroy(_backgroundObject);
                 }
                 _backgroundObject = null;
                 if (_cameraMask != null)
                 {
-                    UnityEngine.Object.Destroy(_cameraMask.gameObject);
+                    Object.Destroy(_cameraMask.gameObject);
                     _cameraMask = null;
                 }
-                foreach (var state in _initedStateSet)
-                {
-                    state.Dispose();
-                }
                 EditHelper.Clear();
-                _initedStateSet.Clear();
-                _initedStateSet = null;
-                _stateMachine.AfterChangeStateCallback -= OnAfterStateChange;
-                _stateMachine.BeforeChangeStateCallback -= OnBeforeStateChange;
                 _stateMachine = null;
                 _boardData.Clear();
                 _boardData = null;
                 _editRecordManager.Clear();
                 _editRecordManager = null;
                 _enable = false;
-                _dragMode = EDragMode.None;
                 Messenger.RemoveListener(EMessengerType.GameFinishSuccess, OnSuccess);
             }
             _instance = null;
@@ -147,17 +126,15 @@ namespace GameA.Game
         public void Init()
         {
             _enable = false;
-            _initedStateSet = new HashSet<EditModeState.Base>();
             _stateMachine = new StateMachine<EditMode, EditModeState.Base>(this);
+            _stateMachineHelper = new EditModeStateMachineHelper(_stateMachine);
+            _stateMachineHelper.Init();
             _stateMachine.GlobalState = EditModeState.Global.Instance;
             _stateMachine.ChangeState(EditModeState.None.Instance);
-            _stateMachine.AfterChangeStateCallback += OnAfterStateChange;
-            _stateMachine.BeforeChangeStateCallback += OnBeforeStateChange;
             _boardData = new BlackBoard();
             _boardData.Init();
             _editRecordManager = new EditRecordManager();
             _editRecordManager.Init();
-            _dragMode = EDragMode.None;
             
             _backgroundObject = new GameObject("BackGround");
             var box = _backgroundObject.AddComponent<BoxCollider2D>();
@@ -166,21 +143,6 @@ namespace GameA.Game
             
             InitMask();
 
-            InputManager.Instance.OnTouchStart += OnTouchStart;
-            InputManager.Instance.OnTouchUp += OnTouchUp;
-            InputManager.Instance.OnPinch += OnPinch;
-            InputManager.Instance.OnPinchEnd += OnPinchEnd;
-            InputManager.Instance.OnDragStart += OnDragStart;
-            InputManager.Instance.OnDrag += OnDrag;
-            InputManager.Instance.OnDragEnd += OnDragEnd;
-            InputManager.Instance.OnDragStartTwoFingers += OnDragStartTwoFingers;
-            InputManager.Instance.OnDragTwoFingers += OnDragTwoFingers;
-            InputManager.Instance.OnDragEndTwoFingers += OnDragEndTwoFingers;
-            InputManager.Instance.OnTap += OnTap;
-            InputManager.Instance.OnMouseWheelChange += OnMouseWheelChange;
-            InputManager.Instance.OnMouseRightButtonDragStart += OnMouseRightButtonDragStart;
-            InputManager.Instance.OnMouseRightButtonDrag += OnMouseRightButtonDrag;
-            InputManager.Instance.OnMouseRightButtonDragEnd += OnMouseRightButtonDragEnd;
             Messenger.AddListener(EMessengerType.GameFinishSuccess, OnSuccess);
             _inited = true;
         }
@@ -493,7 +455,7 @@ namespace GameA.Game
             var data = _boardData.GetStateData<EditModeState.Move.Data>();
             if (data.MovingRoot != null)
             {
-                UnityEngine.Object.Destroy(data.MovingRoot.parent);
+                Object.Destroy(data.MovingRoot.parent);
             }
             UnitBase unitBase;
             var rootGo = EditHelper.CreateDragRoot(unitWorldPos, unitId, rotate, out unitBase);
@@ -640,353 +602,6 @@ namespace GameA.Game
         #endregion
 
 
-        #region InputEvent
-
-        private void OnTouchStart(Gesture gesture)
-        {
-            switch (_dragMode)
-            {
-                case EDragMode.None:
-                    break;
-                case EDragMode.DragOneFinger:
-                    if (gesture.touchCount != 1)
-                    {
-                        _lastDragGesture.deltaPosition = Vector2.zero;
-                        OnDragEnd(_lastDragGesture);
-                    }
-                    break;
-                case EDragMode.DragTwoFinger:
-                    if (gesture.touchCount != 2)
-                    {
-                        _lastDragGesture.deltaPosition = Vector2.zero;
-                        _lastDragGesture.deltaPinch = 0;
-                        OnDragEndTwoFingers(_lastDragGesture);
-                    }
-                    break;
-            }
-            if (_pinchActive)
-            {
-                if (gesture.touchCount != 2)
-                {
-                    _lastPinchGesture.deltaPinch = 0;
-                    OnPinchEnd(_lastPinchGesture);
-                }
-            }
-        }
-        
-        private void OnTouchUp(Gesture gesture)
-        {
-            switch (_dragMode)
-            {
-                case EDragMode.None:
-                    break;
-                case EDragMode.DragOneFinger:
-                    if (gesture.touchCount != 2)
-                    {
-                        _lastDragGesture.deltaPosition = Vector2.zero;
-                        OnDragEnd(_lastDragGesture);
-                    }
-                    break;
-                case EDragMode.DragTwoFinger:
-                    if (gesture.touchCount != 3)
-                    {
-                        _lastDragGesture.deltaPosition = Vector2.zero;
-                        _lastDragGesture.deltaPinch = 0;
-                        OnDragEndTwoFingers(_lastDragGesture);
-                    }
-                    break;
-            }
-            if (_pinchActive)
-            {
-                if (gesture.touchCount != 3)
-                {
-                    _lastPinchGesture.deltaPinch = 0;
-                    OnPinchEnd(_lastPinchGesture);
-                }
-            }
-        }
-        
-        private void OnPinch(Gesture gesture)
-        {
-            if (!_enable)
-            {
-                return;
-            }
-            _pinchActive = true;
-            _lastPinchGesture = gesture;
-            if (null != _stateMachine.GlobalState)
-            {
-                _stateMachine.GlobalState.OnPinch(gesture);
-            }
-            if (null != _stateMachine.CurrentState)
-            {
-                _stateMachine.CurrentState.OnPinch(gesture);
-            }
-        }
-
-        private void OnPinchEnd(Gesture gesture)
-        {
-            if (!_enable)
-            {
-                return;
-            }
-            if (!_pinchActive)
-            {
-                return;
-            }
-            _pinchActive = false;
-            _lastPinchGesture = null;
-            if (null != _stateMachine.GlobalState)
-            {
-                _stateMachine.GlobalState.OnPinchEnd(gesture);
-            }
-            if (null != _stateMachine.CurrentState)
-            {
-                _stateMachine.CurrentState.OnPinchEnd(gesture);
-            }
-        }
-
-        private void OnDragStart(Gesture gesture)
-        {
-            if (!_enable)
-            {
-                return;
-            }
-            if (gesture.touchCount > 1)
-            {
-                return;
-            }
-            if (_dragMode != EDragMode.None)
-            {
-                return;
-            }
-            _dragMode = EDragMode.DragOneFinger;
-            _lastDragGesture = gesture;
-            if (gesture.isOverGui)
-            {
-                return;
-            }
-            if (null != _stateMachine.GlobalState)
-            {
-                _stateMachine.GlobalState.OnDragStart(gesture);
-            }
-            if (null != _stateMachine.CurrentState)
-            {
-                _stateMachine.CurrentState.OnDragStart(gesture);
-            }
-        }
-
-        private void OnDrag(Gesture gesture)
-        {
-            if (!_enable)
-            {
-                return;
-            }
-            if (_dragMode != EDragMode.DragOneFinger)
-            {
-                return;
-            }
-            if (gesture.fingerIndex != _lastDragGesture.fingerIndex)
-            {
-                return;
-            }
-            _lastDragGesture = gesture;
-            if (null != _stateMachine.GlobalState)
-            {
-                _stateMachine.GlobalState.OnDrag(gesture);
-            }
-            if (null != _stateMachine.CurrentState)
-            {
-                _stateMachine.CurrentState.OnDrag(gesture);
-            }
-        }
-
-        private void OnDragEnd(Gesture gesture)
-        {
-            if (!_enable)
-            {
-                return;
-            }
-            if (_dragMode != EDragMode.DragOneFinger)
-            {
-                return;
-            }
-            if (gesture.fingerIndex != _lastDragGesture.fingerIndex)
-            {
-                return;
-            }
-            _dragMode = EDragMode.None;
-            _lastDragGesture = null;
-            if (null != _stateMachine.GlobalState)
-            {
-                _stateMachine.GlobalState.OnDragEnd(gesture);
-            }
-            if (null != _stateMachine.CurrentState)
-            {
-                _stateMachine.CurrentState.OnDragEnd(gesture);
-            }
-        }
-
-        private void OnDragStartTwoFingers(Gesture gesture)
-        {
-            if (!_enable)
-            {
-                return;
-            }
-            if (_dragMode != EDragMode.None)
-            {
-                return;
-            }
-            _dragMode = EDragMode.DragTwoFinger;
-            _lastDragGesture = gesture;
-
-            if (gesture.isOverGui)
-            {
-                return;
-            }
-            if (null != _stateMachine.GlobalState)
-            {
-                _stateMachine.GlobalState.OnDragStartTwoFingers(gesture);
-            }
-            if (null != _stateMachine.CurrentState)
-            {
-                _stateMachine.CurrentState.OnDragStartTwoFingers(gesture);
-            }
-        }
-
-        private void OnDragTwoFingers(Gesture gesture)
-        {
-            if (!_enable)
-            {
-                return;
-            }
-            if (_dragMode != EDragMode.DragTwoFinger)
-            {
-                return;
-            }
-            _lastDragGesture = gesture;
-            if (null != _stateMachine.GlobalState)
-            {
-                _stateMachine.GlobalState.OnDragTwoFingers(gesture);
-            }
-            if (null != _stateMachine.CurrentState)
-            {
-                _stateMachine.CurrentState.OnDragTwoFingers(gesture);
-            }
-        }
-
-        private void OnDragEndTwoFingers(Gesture gesture)
-        {
-            if (!_enable)
-            {
-                return;
-            }
-            if (_dragMode != EDragMode.DragTwoFinger)
-            {
-                return;
-            }
-            _dragMode = EDragMode.None;
-            _lastDragGesture = null;
-            if (null != _stateMachine.GlobalState)
-            {
-                _stateMachine.GlobalState.OnDragEndTwoFingers(gesture);
-            }
-            if (null != _stateMachine.CurrentState)
-            {
-                _stateMachine.CurrentState.OnDragEndTwoFingers(gesture);
-            }
-        }
-
-        private void OnTap(Gesture gesture)
-        {
-            if (!_enable)
-            {
-                return;
-            }
-            if (gesture.touchCount > 1)
-            {
-                return;
-            }
-            if (gesture.isOverGui)
-            {
-                return;
-            }
-            if (null != _stateMachine.GlobalState)
-            {
-                _stateMachine.GlobalState.OnTap(gesture);
-            }
-            if (null != _stateMachine.CurrentState)
-            {
-                _stateMachine.CurrentState.OnTap(gesture);
-            }
-        }
-
-        private void OnMouseWheelChange(Vector3 arg1, Vector2 arg2)
-        {
-            if (!_enable)
-            {
-                return;
-            }
-            if (null != _stateMachine.GlobalState)
-            {
-                _stateMachine.GlobalState.OnMouseWheelChange(arg1, arg2);
-            }
-            if (null != _stateMachine.CurrentState)
-            {
-                _stateMachine.CurrentState.OnMouseWheelChange(arg1, arg2);
-            }
-        }
-
-        private void OnMouseRightButtonDragStart(Vector3 obj)
-        {
-            if (!_enable)
-            {
-                return;
-            }
-            if (null != _stateMachine.GlobalState)
-            {
-                _stateMachine.GlobalState.OnMouseRightButtonDragStart(obj);
-            }
-            if (null != _stateMachine.CurrentState)
-            {
-                _stateMachine.CurrentState.OnMouseRightButtonDragStart(obj);
-            }
-        }
-
-        private void OnMouseRightButtonDrag(Vector3 arg1, Vector2 arg2)
-        {
-            if (!_enable)
-            {
-                return;
-            }
-            if (null != _stateMachine.GlobalState)
-            {
-                _stateMachine.GlobalState.OnMouseRightButtonDrag(arg1, arg2);
-            }
-            if (null != _stateMachine.CurrentState)
-            {
-                _stateMachine.CurrentState.OnMouseRightButtonDrag(arg1, arg2);
-            }
-        }
-
-        private void OnMouseRightButtonDragEnd(Vector3 arg1, Vector2 arg2)
-        {
-            if (!_enable)
-            {
-                return;
-            }
-            if (null != _stateMachine.GlobalState)
-            {
-                _stateMachine.GlobalState.OnMouseRightButtonDragEnd(arg1, arg2);
-            }
-            if (null != _stateMachine.CurrentState)
-            {
-                _stateMachine.CurrentState.OnMouseRightButtonDragEnd(arg1, arg2);
-            }
-        }
-
-        #endregion
-
         #region PrivateMethod
 
         
@@ -1000,7 +615,7 @@ namespace GameA.Game
                 LogHelper.Error("InitMask called but _cameraMask != null");
                 return;
             }
-            var go = UnityEngine.Object.Instantiate (ResourcesManager.Instance.GetPrefab(
+            var go = Object.Instantiate (ResourcesManager.Instance.GetPrefab(
                 EResType.ModelPrefab, 
                 ConstDefineGM2D.CameraMaskPrefabName)
             ) as GameObject;
@@ -1025,19 +640,6 @@ namespace GameA.Game
             _cameraMask.SetCameraMaskSortOrder((int) ESortingOrder.Mask);
         }
 
-        private void OnBeforeStateChange(EditModeState.Base oldState, EditModeState.Base newState)
-        {
-            if (!_initedStateSet.Contains(newState))
-            {
-                newState.Init();
-                _initedStateSet.Add(newState);
-            }
-        }
-        
-        private void OnAfterStateChange(EditModeState.Base oldState, EditModeState.Base newState)
-        {
-            Messenger.Broadcast(EMessengerType.AfterEditModeStateChange);
-        }
         
         private void OnSuccess()
         {
@@ -1045,13 +647,6 @@ namespace GameA.Game
         }
 
         #endregion
-        
-        private enum EDragMode
-        {
-            None,
-            DragOneFinger,
-            DragTwoFinger,
-        }
     }
 }
 
