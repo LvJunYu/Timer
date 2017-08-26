@@ -196,8 +196,9 @@ namespace GameA.Game
                 var recordBatch = GetRecordBatch();
                 unitDesc.Scale = stateData.CurrentMovingUnitBase.Scale;
                 unitDesc.Rotation = stateData.CurrentMovingUnitBase.Rotation;
-                int layerMask = EditHelper.GetLayerMask(boardData.EditorLayer);
-                var coverUnits = DataScene2D.GridCastAllReturnUnits(unitDesc, layerMask);
+                float minDepth, maxDepth;
+                EditHelper.GetMinMaxDepth(boardData.EditorLayer, out minDepth, out maxDepth);
+                var coverUnits = DataScene2D.GridCastAllReturnUnits(unitDesc, JoyPhysics2D.LayMaskAll, minDepth, maxDepth);
                 if (coverUnits != null && coverUnits.Count > 0)
                 {
                     bool effectFlag = false;

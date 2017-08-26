@@ -67,5 +67,13 @@ namespace GameA.Game
         public const string ShopTryHead = "Particle_ShopTry_Head";
         public const string ShopTryUpper = "Particle_ShopTry_Upper";
         public const string ShopTryLower = "Particle_ShopTry_Lower";
+
+        //TODO 单人模式关卡完成特效动画
+        public const string SingleModeGetStar = "Particle_Get_Star";
+        public const string SingleModeNormalLevelUnlock = "Particle_NormalLevel_Unlock";
+        public const string SingleModeNormalLevelComplete = "Particle_NormalLevel_Complete";
+        public const string SingleModeBonusLevelUnlock = "Particle_BonusLevel_Unlock";
+        public const string SingleModeBonusLevelComplete = "Particle_BonusLevel_Complete";
+        public const string SingleModeNormalLevelBall = "Particle_NormalLevel_Ball";
     }
 }

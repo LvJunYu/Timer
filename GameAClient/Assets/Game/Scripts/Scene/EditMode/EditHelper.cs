@@ -41,18 +41,21 @@ namespace GameA.Game
             get { return _unitIndexCount; }
         }
 
-        public static int GetLayerMask(EEditorLayer editorLayer)
+        public static void GetMinMaxDepth(EEditorLayer editorLayer, out float minDepth, out float maxDepth)
         {
+            minDepth = float.MinValue;
+            maxDepth = float.MaxValue;
             switch (editorLayer)
             {
-                case EEditorLayer.None:
-                    return ~0;
                 case EEditorLayer.Normal:
-                    return EnvManager.UnitLayer;
+                    minDepth = (int) EUnitDepth.Earth;
+                    maxDepth = (int) EUnitDepth.Earth;
+                    break;
                 case EEditorLayer.Effect:
-                    return EnvManager.EffectLayer;
+                    minDepth = (int) EUnitDepth.Effect;
+                    maxDepth = (int) EUnitDepth.Effect;
+                    break;
             }
-            return 0;
         }
         
         public static bool TryGetUnitDesc(Vector2 mouseWorldPos, EEditorLayer editorLayer, out UnitDesc unitDesc)

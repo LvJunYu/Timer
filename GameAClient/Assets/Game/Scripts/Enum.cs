@@ -193,7 +193,6 @@ namespace GameA.Game
         Earth = 0,
         Dynamic,
         Effect,
-        Decoration,
         Gun,
         RuntimeCreate = 10,
         Max,

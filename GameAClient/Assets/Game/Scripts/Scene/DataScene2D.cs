@@ -527,7 +527,7 @@ namespace GameA.Game
             return SceneQuery2D.GridCastAll(ref grid2D, layerMask, Instance, minDepth, maxDepth, excludeNode);
         }
 
-        internal static List<UnitDesc> GridCastAllReturnUnits(UnitDesc unitDesc, int layerMask = JoyPhysics2D.LayMaskAll)
+        internal static List<UnitDesc> GridCastAllReturnUnits(UnitDesc unitDesc, int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue)
         {
             Grid2D outValue;
             if (!TryGetGridByUnitObject(unitDesc, out outValue))
@@ -535,7 +535,7 @@ namespace GameA.Game
                 LogHelper.Error("TryGetGridByUnitObject falied! UnitDesc is {0}", unitDesc);
                 return null;
             }
-            return GridCastAllReturnUnits(outValue, layerMask);
+            return GridCastAllReturnUnits(outValue, layerMask, minDepth, maxDepth);
         }
 
         internal static bool TryGetGridByUnitObject(UnitDesc unitDesc, out Grid2D outValue)

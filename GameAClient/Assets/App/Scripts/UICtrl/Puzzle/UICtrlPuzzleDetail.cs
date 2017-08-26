@@ -10,7 +10,7 @@ namespace GameA
     /// 
     /// </summary>
     [UIAutoSetup]
-    public class UICtrlPuzzleDetail : UICtrlGenericBase<UIViewPuzzleDetail>
+    public class UICtrlPuzzleDetail : UICtrlAnimationBase<UIViewPuzzleDetail>
     {
         //碎片间距
         private const float _halfSpacing = 160;
