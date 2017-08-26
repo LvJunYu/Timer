@@ -1,5 +1,4 @@
-﻿using System;
-using DG.Tweening;
+﻿using DG.Tweening;
 using SoyEngine;
 using UnityEngine;
 
@@ -27,45 +26,53 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            OpenAnimation(_animationType);
+            OpenAnimation();
         }
 
         protected override void OnClose()
         {
-            CloseAnimation(_animationType);
+            CloseAnimation();
             base.OnClose();
         }
 
         // 设置动画类型
         protected virtual void InitAnimationType()
         {
-            _animationType = EAnimationType.FromDown;
+            _animationType = EAnimationType.Popup;
         }
 
-        protected virtual void OpenAnimation(EAnimationType animationType)
+        private void OpenAnimation()
         {
-            switch (animationType)
+            switch (_animationType)
             {
                 case EAnimationType.FromDown:
                 case EAnimationType.FromUp:
                 case EAnimationType.FromLeft:
                 case EAnimationType.FromRight:
-                    _startPos = GetStartPos(animationType);
-                    _cachedView.Trans.DOBlendableMoveBy(_startPos, 0.6f).From().SetEase(Ease.OutQuad);
+                    _startPos = GetStartPos(_animationType);
+                    _cachedView.Trans.DOBlendableMoveBy(_startPos, 0.4f).From().SetEase(Ease.OutQuad);
+                    break;
+                case EAnimationType.Popup:
+                    _cachedView.Trans.DOScale(Vector3.zero, 0.4f).From().SetEase(Ease.OutBack);
                     break;
             }
         }
 
-        protected virtual void CloseAnimation(EAnimationType animationType)
+        private void CloseAnimation()
         {
-            switch (animationType)
+            switch (_animationType)
             {
                 case EAnimationType.FromDown:
                 case EAnimationType.FromUp:
                 case EAnimationType.FromLeft:
                 case EAnimationType.FromRight:
                     _cachedView.gameObject.SetActive(true);
-                    _cachedView.Trans.DOBlendableMoveBy(_startPos * 1.2f, 0.6f).SetEase(Ease.OutQuad)
+                    _cachedView.Trans.DOBlendableMoveBy(_startPos * 1.2f, 0.4f).SetEase(Ease.OutQuad)
+                        .OnComplete(OnCloseAnimationComplete);
+                    break;
+                case EAnimationType.Popup:
+                    _cachedView.gameObject.SetActive(true);
+                    _cachedView.Trans.DOScale(Vector3.zero, 0.2f).SetEase(Ease.Linear)
                         .OnComplete(OnCloseAnimationComplete);
                     break;
             }
@@ -76,6 +83,7 @@ namespace GameA
         {
             _cachedView.gameObject.SetActive(false);
             _cachedView.Trans.localPosition = Vector3.zero;
+            _cachedView.Trans.localScale = Vector3.one;
         }
 
         private Vector3 GetStartPos(EAnimationType animationType)
@@ -101,6 +109,7 @@ namespace GameA
         FromDown,
         FromUp,
         FromLeft,
-        FromRight
+        FromRight,
+        Popup
     }
 }
