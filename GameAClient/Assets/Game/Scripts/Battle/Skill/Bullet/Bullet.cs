@@ -58,6 +58,10 @@ namespace GameA.Game
 
         public void OnDestroyObject()
         {
+            if (_trans != null)
+            {
+                UnityEngine.Object.Destroy(_trans.gameObject);
+            }
         }
 
         public Bullet()
@@ -114,11 +118,44 @@ namespace GameA.Game
                 _curPos = _originPos + new IntVec2((int)(_skill.CastRange * _direction.x), (int)(_skill.CastRange * _direction.y));
                 _destroy = 1;
             }
-            RayHit2D hit;
-            if (ColliderScene2D.Raycast(_curPos, _direction, out hit, _skill.ProjectileSpeed, EnvManager.PaintBulletHitLayer))
+            //MagicSwith Brick Cloud
+            var hits = ColliderScene2D.RaycastAll(_curPos, _direction, _skill.ProjectileSpeed, EnvManager.PaintBulletHitLayer);
+            if (hits.Count > 0)
             {
-                _curPos = GM2DTools.WorldToTile(hit.point);
-                _destroy = 1;
+                for (int i = 0; i < hits.Count; i++)
+                {
+                    var hit = hits[i];
+                    if (UnitDefine.IsBulletBlock(hit.node.Id))
+                    {
+                        _curPos = hit.point;
+                        _destroy = 1;
+                        var units = ColliderScene2D.GetUnits(hit);
+                        for (int j = 0; j < units.Count; j++)
+                        {
+                            var unit = units[j];
+                            if (unit.IsAlive)
+                            {
+                                if (UnitDefine.IsMagicSwitch(unit.Id))
+                                {
+                                    var switchMagic = unit as SwitchMagic;
+                                    if (switchMagic != null)
+                                    {
+                                        switchMagic.OnTrigger();
+                                    }
+                                }
+                                else if (UnitDefine.BrickId == unit.Id)
+                                {
+                                    var brick = unit as Brick;
+                                    if (brick != null)
+                                    {
+                                        brick.DestroyBrick();
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
             }
             UpdateTransPos();
             if (_destroy > 0)
@@ -127,21 +164,16 @@ namespace GameA.Game
             }
         }
 
-        protected void OnHit(ref RayHit2D hit)
-        {
-            //MagicSwith Brick Cloud
-        }
-
         protected void OnDestroy()
         {
             _run = false;
-            _skill.OnBulletHit(this);
-            PoolFactory<Bullet>.Free(this);
             if (_trans != null)
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
                 GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position, new Vector3(0, 0, _angle), Vector3.one, 1f);
             }
+            _skill.OnBulletHit(this);
+            PoolFactory<Bullet>.Free(this);
         }
     }
 }

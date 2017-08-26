@@ -601,10 +601,20 @@ namespace GameA.Game
             return _cachedUnits;
         }
 
+        public static List<UnitBase> GetUnits(RayHit2D hit)
+        {
+            var tile = hit.point - new IntVec2(hit.normal.x > 0 ? 1 : hit.normal.x < 0 ? -1 : 0, hit.normal.y > 0 ? 1 : hit.normal.y < 0 ? -1 : 0);
+            return GetUnits(hit.node, new Grid2D(tile.x, tile.y, tile.x, tile.y));
+        }
+
         public static List<UnitBase> GetUnits(GridHit2D hit, Grid2D one)
         {
+            return GetUnits(hit.node, one);
+        }
+
+        public static List<UnitBase> GetUnits(SceneNode node, Grid2D one)
+        {
             _cachedUnits.Clear();
-            SceneNode node = hit.node;
             Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(node.Id);
             if (tableUnit == null)
             {
@@ -644,7 +654,7 @@ namespace GameA.Game
             }
             return _cachedUnits;
         }
-
+        
         public static List<SceneNode> CircleCastAll(IntVec2 center, int radius, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue,
             SceneNode excludeNode = null)

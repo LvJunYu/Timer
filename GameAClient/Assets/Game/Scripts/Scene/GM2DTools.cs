@@ -562,42 +562,6 @@ namespace GameA.Game
             unitDesc.Guid = new IntVec3(grid.XMin, grid.YMin, targetNode.Depth);
             return true;
         }
-
-        /// <summary>
-        ///     运行时候调用
-        /// </summary>
-        /// <param name="hit"></param>
-        /// <param name="unitDesc"></param>
-        /// <returns></returns>
-        internal static bool TryGetUnitObject(RayHit2D hit, out UnitDesc unitDesc)
-        {
-            unitDesc = new UnitDesc();
-            if (hit.node == null)
-            {
-                LogHelper.Error("TryGetUnitObject failed,{0}", hit);
-                return false;
-            }
-            Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(hit.node.Id);
-            if (tableUnit == null)
-            {
-                LogHelper.Error("TryGetUnitObject failed,{0}", hit);
-                return false;
-            }
-            unitDesc.Id = hit.node.Id;
-            unitDesc.Rotation = hit.node.Rotation;
-            unitDesc.Scale = hit.node.Scale;
-            if (hit.node.IsDynamic())
-            {
-                unitDesc.Guid = tableUnit.ColliderToRenderer(hit.node.Guid, hit.node.Rotation);
-            }
-            else
-            {
-                var tile = WorldToTile(hit.point - hit.normal * ConstDefineGM2D.ClientTileScale * 0.5f);
-                var grid = IntersectWith(tile, hit.node, tableUnit, false);
-                unitDesc.Guid = tableUnit.ColliderToRenderer(new IntVec3(grid.XMin, grid.YMin, hit.node.Depth), hit.node.Rotation);
-            }
-            return true;
-        }
         
         internal static bool TryGetUnitObject(IntVec2 tile, SceneNode colliderNode, out UnitDesc unitDesc)
         {

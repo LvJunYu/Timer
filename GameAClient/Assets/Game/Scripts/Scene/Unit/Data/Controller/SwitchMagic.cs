@@ -113,7 +113,7 @@ namespace GameA.Game
             return false;
         }
 
-        protected void OnTrigger()
+        public void OnTrigger()
         {
             if (_effectStart != null && !_effectStart.IsPlaying)
             {

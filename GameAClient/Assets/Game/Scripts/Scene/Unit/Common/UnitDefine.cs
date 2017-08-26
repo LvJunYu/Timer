@@ -35,8 +35,10 @@ namespace GameA.Game
         
         public const int PlayerTableId = 1001;
         public const int TransparentEarthId = 4004;
+        public const int BrickId = 4006;
         public const int ClayId = 4011;
         public const int ScorchedEarthId = 4013;
+        public const int CloudId = 4015;
         public const int BlueStoneId = 8002;
         public const int BlueStoneBanId = 8003;
         public const int BlueStoneRotateId = 8004;
@@ -47,7 +49,6 @@ namespace GameA.Game
         public const int BillboardId = 7001;
         public const int TextId = 9001;
         public const int TriggerId = 9002;
-        
         public const int SwitchTriggerId = 8100;
         public const int SwitchTriggerPressId = 8101;
         public const int MagicSwitchId = 8102;
@@ -185,13 +186,19 @@ namespace GameA.Game
         {
             ushort id = node.Id;
             return  id != LaserId && id != TransparentEarthId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
-                   !IsBoard(id) && !IsCollection(id) && !IsMagicSwitch(id)&& !IsBullet(id) && !IsSwitchTrigger(id);
+                   !IsBoard(id) && !IsCollection(id) && !IsMagicSwitch(id) && !IsBullet(id) && !IsSwitchTrigger(id);
         }
         
         public static bool IsFanEffect(int layer, int id)
         {
             return (((1 << layer) & (EnvManager.MonsterLayer | EnvManager.MainPlayerLayer | EnvManager.RemotePlayer)) != 0) 
                    || id == BulletIceId;
+        }
+        
+        public static bool IsBulletBlock( int id)
+        {
+            return  id != LaserId && id != CloudId&& id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
+                    !IsBoard(id) && !IsCollection(id) && !IsSwitchTrigger(id)  && !IsJet(id);
         }
 
         internal static bool IsGround(int id)

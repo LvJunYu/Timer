@@ -53,7 +53,7 @@ namespace GameA.Game
             }
         }
 
-        private void DestroyBrick()
+        public void DestroyBrick()
         {
             PlayMode.Instance.DestroyUnit(this);
             OnDead();
