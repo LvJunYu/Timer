@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    [Poolable(MinPoolSize = 5, PreferedPoolSize = 100, MaxPoolSize = ConstDefineGM2D.MaxTileCount)]
+    [Poolable(MinPoolSize = 5, PreferedPoolSize = 200, MaxPoolSize = ConstDefineGM2D.MaxTileCount)]
     public class SpineObject : IPoolableObject
     {
         [SerializeField]
