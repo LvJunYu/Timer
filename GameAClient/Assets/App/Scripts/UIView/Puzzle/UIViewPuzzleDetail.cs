@@ -23,5 +23,6 @@ namespace GameA
         public Text NameTxt;
         public Text DescTxt;
         public Text CostNumTxt;
+        public ScrollRect FragsScrollRect;
     }
 }

@@ -85,6 +85,7 @@ namespace GameA
             //创建拼图
             _allUMPuzzleItem = new List<UMCtrlPuzzleItem>(_puzzles.Count);
             if (!_cachedView.PuzzleItemGridDataScroller.enabled)
+            {
                 for (int i = 0; i < _allPictureFull.Count; i++)
                 {
                     var puzzle = new UMCtrlPuzzleItem(_allPictureFull[i]);
@@ -92,6 +93,8 @@ namespace GameA
                     puzzle.Init(_cachedView.PuzzleItemGrid);
                     puzzle.RefreshView();
                 }
+                _cachedView.PuzzleItemSrollRect.horizontal = false;
+            }
             else
                 _cachedView.PuzzleItemGridDataScroller.SetItemCount(_allPictureFull.Count);
         }
@@ -243,6 +246,12 @@ namespace GameA
             base.OnOpen(parameter);
             RefreshPuzzleItems();
             RefreshSlots();
+        }
+
+        protected override void OnOpenAnimationComplete()
+        {
+            base.OnOpenAnimationComplete();
+            _cachedView.PuzzleItemSrollRect.horizontal = true;
         }
 
         private void OnFuncToggle(bool arg0)
