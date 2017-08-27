@@ -14,7 +14,7 @@ using UnityEngine.EventSystems;
 namespace GameA
 {
     [UIAutoSetup]
-    public class UICtrlSingleMode : UICtrlGenericBase<UIViewSingleMode>
+    public class UICtrlSingleMode : UICtrlAnimationBase<UIViewSingleMode>
     {
         #region 常量与字段
 		/// <summary>
