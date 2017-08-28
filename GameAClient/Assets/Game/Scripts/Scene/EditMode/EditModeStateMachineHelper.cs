@@ -9,7 +9,7 @@ namespace GameA.Game
     public class EditModeStateMachineHelper
     {
         private readonly StateMachine<EditMode, EditModeState.Base> _stateMachine;
-        private HashSet<EditModeState.Base> _initedStateSet;
+        private readonly HashSet<EditModeState.Base> _initedStateSet = new HashSet<EditModeState.Base>();
         private EDragMode _dragMode;
         private Gesture _lastDragGesture;
         private bool _pinchActive;
@@ -22,7 +22,6 @@ namespace GameA.Game
 
         public void Init()
         {
-            _initedStateSet = new HashSet<EditModeState.Base>();
             _dragMode = EDragMode.None;
             InputManager.Instance.OnTouchStart += OnTouchStart;
             InputManager.Instance.OnTouchUp += OnTouchUp;
@@ -69,7 +68,6 @@ namespace GameA.Game
                 state.Dispose();
             }
             _initedStateSet.Clear();
-            _initedStateSet = null;
             _dragMode = EDragMode.None;
         }
         
