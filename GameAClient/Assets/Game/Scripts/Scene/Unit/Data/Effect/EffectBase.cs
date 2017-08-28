@@ -8,10 +8,7 @@
             {
                 return false;
             }
-            _canLazerCross = true;
-            _canMagicCross = true;
-            _canBridgeCross = true;
-            _canFanCross = true;
+            SetAllCross(true);
             SetSortingOrderFrontest();
             return true;
         }

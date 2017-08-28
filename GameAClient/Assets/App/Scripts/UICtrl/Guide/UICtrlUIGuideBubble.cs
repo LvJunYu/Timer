@@ -27,6 +27,10 @@ namespace GameA
         public UMCtrlUIGuideBubble ShowBubble(RectTransform targeRectTransform, EDirectionType arrowDirection,
             string content, bool mask = false)
         {
+            if (!_isOpen)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlUIGuideBubble>();
+            }
             var item = GetBubble();
             item.Set(targeRectTransform, arrowDirection, content, mask);
             _openedBubbleSet.Add(item);
@@ -35,6 +39,10 @@ namespace GameA
 
         public void CloseBubble(UMCtrlUIGuideBubble umCtrlUIGuideBubble)
         {
+            if (umCtrlUIGuideBubble == null)
+            {
+                return;
+            }
             if (!_openedBubbleSet.Contains(umCtrlUIGuideBubble))
             {
                 LogHelper.Error("CloseBubble Error");

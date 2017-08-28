@@ -31,8 +31,8 @@ namespace GameA.Game
         private Color[][] _maskColors;
 
         private static Color[] EmptyPixels;
-        public const int Ratio = 4;
-        public const int TextureSize = 64;
+        public const int Ratio = 2;
+        public const int TextureSize = 256 / Ratio;
         private const int PixelsPerUnit = 256 / (Ratio * 2);
         
         private const float StandardPixelsPerTile = 256f / (640 * 2) ;
@@ -393,12 +393,12 @@ namespace GameA.Game
 
                 _paintTexture = new Texture2D(textureWidth, textureHeight);
                 _paintTexture.wrapMode = TextureWrapMode.Clamp;
-                _paintTexture.filterMode = FilterMode.Point;
+                _paintTexture.filterMode = FilterMode.Bilinear;
                 _paintTexture.SetPixels(EmptyPixels);
                 _paintTexture.Apply();
 
                 _maskTexture = new Texture2D(textureWidth, textureHeight);
-                _maskTexture.filterMode = FilterMode.Point;
+                _maskTexture.filterMode = FilterMode.Bilinear;
                 _maskTexture.SetPixels(EmptyPixels);
                 _maskTexture.Apply();
 

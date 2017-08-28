@@ -46,6 +46,7 @@ namespace GameA.Game
         protected bool _canMagicCross;
         protected bool _canBridgeCross;
         protected bool _canFanCross;
+        protected bool _canBulletCross;
 
         protected List<UnitBase> _downUnits = new List<UnitBase>();
         protected UnitBase _downUnit;
@@ -195,6 +196,11 @@ namespace GameA.Game
         public bool CanFanCross
         {
             get { return _canFanCross; }
+        }
+
+        public bool CanBulletCross
+        {
+            get { return _canBulletCross; }
         }
 
         /// <summary>
@@ -1607,6 +1613,15 @@ namespace GameA.Game
         
         public virtual void SetStepOnIce()
         {
+        }
+        
+        protected void SetAllCross(bool value)
+        {
+            _canLazerCross = value;
+            _canMagicCross = value;
+            _canBridgeCross = value;
+            _canFanCross = value;
+            _canBulletCross = value;
         }
     }
 }

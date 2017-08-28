@@ -35,10 +35,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            _canLazerCross = true;
-            _canMagicCross = true;
-            _canBridgeCross = true;
-            _canFanCross = true;
+            SetAllCross(true);
             SetSortingOrderBack();
             return true;
         }

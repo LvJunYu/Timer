@@ -36,10 +36,7 @@ namespace GameA.Game
                 {
                     _effect.SetActive(_currentCtrlBySwitch);
                 }
-                _canLazerCross = _currentCtrlBySwitch;
-                _canMagicCross = _currentCtrlBySwitch;
-                _canBridgeCross = _currentCtrlBySwitch;
-                _canFanCross = _currentCtrlBySwitch;
+                SetAllCross(_currentCtrlBySwitch);
             }
         }
 
@@ -51,11 +48,8 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
-            _canLazerCross = false;
-            _canMagicCross = false;
-            _canBridgeCross = false;
-            _canFanCross = false;
             _currentCtrlBySwitch = false;
+            SetAllCross(_currentCtrlBySwitch);
             if (_view != null)
             {
                 _view.SetRendererEnabled(!_currentCtrlBySwitch);

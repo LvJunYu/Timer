@@ -8,6 +8,14 @@ namespace GameA.Game
 {
     public class GameModeWorkshopEdit : GameModeEdit
     {
+	    #if WORKSHOPGUIDE
+	    private AdventureGuideBase _guideBase;
+	    private int _section = 1;
+	    private EAdventureProjectType _projectType = EAdventureProjectType.APT_Normal;
+	    private int _level = 1;
+		#endif
+	    
+	    
         public override bool Init(Project project, object param, GameManager.EStartType startType, MonoBehaviour corountineProxy)
         {
             if (!base.Init(project, param, startType, corountineProxy))
@@ -129,7 +137,44 @@ namespace GameA.Game
 				}, failedCallback);
         }
 
-        private byte[] GetRecord()
+	    public override void ChangeMode(EMode mode)
+	    {
+		    base.ChangeMode(mode);
+		    
+#if WORKSHOPGUIDE
+		    if (_guideBase != null)
+		    {
+			    _guideBase.Dispose();
+			    _guideBase = null;
+		    }
+		    if (mode == EMode.EditTest)
+		    {
+			    SocialGUIManager.Instance.OpenUI<UICtrlMobileInputControl>();
+			    AdventureGuideManager.Instance.TryGetGuide(_section, _projectType, _level, out _guideBase);
+			    if (_guideBase != null)
+			    {
+				    _guideBase.Init();
+			    }
+		    }
+#endif
+	    }
+
+	    public override void UpdateLogic()
+	    {
+		    base.UpdateLogic();
+		    
+#if WORKSHOPGUIDE
+		    if (_mode == EMode.EditTest)
+		    {
+			    if (_guideBase != null)
+			    {
+				    _guideBase.UpdateLogic();
+			    }
+		    }
+#endif
+	    }
+
+	    private byte[] GetRecord()
         {
             GM2DRecordData recordData = new GM2DRecordData();
             recordData.Version = GM2DGame.Version;

@@ -172,13 +172,23 @@ namespace GameA.Game
             Messenger<Table_Skill,int>.Broadcast(EMessengerType.OnSkillSlotChanged, tableSkill, slot);
             CalculateMaxHp();
             OnHpChanged(_maxHp);
+            ChangeGunView(slot);
             if (tableSkill.CostType == (int) ECostType.Magic)
             {
-                _gun.ChangeView(tableEquipment.Model);
+                _view.StatusBar.SetMPGrids(1000/tableSkill.Cost);
             }
             return true;
         }
-        
+
+        public override void ChangeGunView(int slot)
+        {
+            var tableEquip = _tableEquipments[slot];
+            if (_gun != null && tableEquip != null)
+            {
+                _gun.ChangeView(tableEquip.Model);
+            }
+        }
+
         private void CalculateMaxHp()
         {
             _maxHp = _tableUnit.Hp;

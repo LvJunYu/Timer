@@ -288,16 +288,14 @@ namespace GameA
             //Debug.Log("_________________________OnPuzzleBtn");
             if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.Puzzle))
             {
+//                SocialGUIManager.Instance.OpenUI<UICtrlCharacterUpgrade>();
                 SocialGUIManager.Instance.OpenUI<UICtrlPuzzle>();
             }
         }
+
         private void OnWeapon()
         {
             //Debug.Log("_________________________OnWeaponBtn");
-//            if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.Puzzle))
-//            {
-//                SocialGUIManager.Instance.OpenUI<UICtrlWeapon>();
-//            }
             SocialGUIManager.Instance.OpenUI<UICtrlWeapon>();
             
         }
@@ -317,6 +315,15 @@ namespace GameA
                 _cachedView.PuzzleBtn.gameObject.SetActive(true);
                 _cachedView.PuzzleDisable.SetActive(false);
                 _puzzlePasswordCount = 0;
+            }
+        }
+        
+        private void OnCharacterUpgradePuzzleBtn()
+        {
+            //Debug.Log("_________________________OnCharacterUpgradeBtn");
+            if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.CharacterUpgrade))
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlCharacterUpgrade>();
             }
         }
 
