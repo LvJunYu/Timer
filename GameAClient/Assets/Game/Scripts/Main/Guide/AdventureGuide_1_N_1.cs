@@ -1,5 +1,4 @@
-﻿using SoyEngine;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace GameA.Game
 {
@@ -28,7 +27,6 @@ namespace GameA.Game
             }
             if (flag)
             {
-                _moveGuideFinish = true;
                 var inputUI = SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
                 _moveGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
                     inputUI.CachedView.JoyStickEx.RightArrowNormal.GetComponent<RectTransform>(), EDirectionType.Down,
@@ -38,6 +36,7 @@ namespace GameA.Game
             {
                 if (_moveGuideBubble != null)
                 {
+                    _moveGuideFinish = true;
                     _uiCtrlUIGuideBubble.CloseBubble(_moveGuideBubble);
                     _moveGuideBubble = null;
                 }
@@ -46,8 +45,9 @@ namespace GameA.Game
 
         public override void Dispose()
         {
-            base.Dispose();
+            TriggerUnitEventManager.Instance.ClearAllTriggerState();
             _eventRegister.UnregisterAllEvent();
+            base.Dispose();
         }
     }
 }

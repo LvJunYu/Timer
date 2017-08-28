@@ -142,6 +142,11 @@ namespace GameA.Game
 		    base.ChangeMode(mode);
 		    
 #if WORKSHOPGUIDE
+		    if (_guideBase != null)
+		    {
+			    _guideBase.Dispose();
+			    _guideBase = null;
+		    }
 		    if (mode == EMode.EditTest)
 		    {
 			    SocialGUIManager.Instance.OpenUI<UICtrlMobileInputControl>();
@@ -149,14 +154,6 @@ namespace GameA.Game
 			    if (_guideBase != null)
 			    {
 				    _guideBase.Init();
-			    }
-		    }
-		    else
-		    {
-			    if (_guideBase != null)
-			    {
-				    _guideBase.Dispose();
-				    _guideBase = null;
 			    }
 		    }
 #endif

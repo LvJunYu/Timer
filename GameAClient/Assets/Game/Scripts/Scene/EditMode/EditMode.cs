@@ -55,7 +55,7 @@ namespace GameA.Game
         [SerializeField]
         private GameObject _backgroundObject;
         private SlicedCameraMask _cameraMask;
-        private EEditorLayer _lastEditorLayer;
+        private EEditorLayer _lastEditorLayer = EEditorLayer.None;
         #endregion
 
         #region Property
@@ -151,15 +151,16 @@ namespace GameA.Game
         {
             _enable = true;
             _cameraMask.Show();
+            InternalStartEdit();
             if (_lastEditorLayer != EEditorLayer.None)
             {
                 ChangeEditorLayer(_lastEditorLayer);
             }
-            if (_boardData.EditorLayer == EEditorLayer.None)
+            else
             {
+                ChangeEditorLayer(EEditorLayer.None);
                 ChangeEditorLayer(EEditorLayer.Normal);
             }
-            InternalStartEdit();
         }
 
         private void InternalStartEdit()
@@ -390,7 +391,7 @@ namespace GameA.Game
             }
             _lastEditorLayer = oldLayer;
             _boardData.EditorLayer = newLayer;
-//            LogHelper.Info("EditorLayer: {0} --> {1}", oldLayer, newLayer);
+            LogHelper.Info("EditorLayer: {0} --> {1}", oldLayer, newLayer);
             switch (_boardData.EditorLayer)
             {//进入模式
                 case EEditorLayer.None:
