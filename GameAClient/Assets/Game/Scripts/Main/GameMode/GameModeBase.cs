@@ -65,9 +65,14 @@ namespace GameA.Game
                         }
                         localPlayerInput.ApplyInputData(inputChangeList);
                     }
+                    UpdateLogic();
                 }
-                GameRun.Instance.UpdateLogic(ConstDefineGM2D.FixedDeltaTime);
             }
+        }
+
+        public virtual void UpdateLogic()
+        {
+            GameRun.Instance.UpdateLogic(ConstDefineGM2D.FixedDeltaTime);
         }
 
         public virtual bool Pause()

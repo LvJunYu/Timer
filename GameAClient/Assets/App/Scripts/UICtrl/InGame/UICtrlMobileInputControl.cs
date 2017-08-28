@@ -1,14 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using GameA.Game;
+﻿using GameA.Game;
 using NewResourceSolution;
-using UnityEngine;
 using SoyEngine;
+using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIAutoSetup]
     public class UICtrlMobileInputControl : UICtrlGenericBase<UIViewMobileInputControl>
     {
         #region fields
@@ -17,6 +15,10 @@ namespace GameA
 
         #region properties
 
+        public UIViewMobileInputControl CachedView
+        {
+            get { return _cachedView; }
+        }
         #endregion
 
         #region methods
