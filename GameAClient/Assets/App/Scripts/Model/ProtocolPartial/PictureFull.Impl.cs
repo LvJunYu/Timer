@@ -89,7 +89,7 @@ namespace GameA
             }
 
             //等级信息字典
-            _lvTableDic = new Dictionary<int, Table_PuzzleUpgrade>();
+            _lvTableDic = new Dictionary<int, Table_PuzzleUpgrade>(_puzzleTable.MaxLevel);
             var table = TableManager.Instance.Table_PuzzleUpgradeDic;
             foreach (int key in table.Keys)
             {
