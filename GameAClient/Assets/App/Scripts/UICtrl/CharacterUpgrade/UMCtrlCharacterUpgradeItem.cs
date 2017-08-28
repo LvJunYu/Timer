@@ -8,7 +8,6 @@ namespace GameA
     /// <summary>
     /// 阶层养成
     /// </summary>
-    [UIAutoSetup]
     public class UMCtrlCharacterUpgradeItem : UMCtrlBase<UMViewCharacterUpgradeItem>
     {
         private TrainProperty _trainProperty;

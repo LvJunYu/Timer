@@ -285,10 +285,11 @@ namespace GameA
             //Debug.Log("_________________________OnPuzzleBtn");
             if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.Puzzle))
             {
+//                SocialGUIManager.Instance.OpenUI<UICtrlCharacterUpgrade>();
                 SocialGUIManager.Instance.OpenUI<UICtrlPuzzle>();
             }
         }
-
+        
         //拼图入口秘密通道
         private int _puzzlePasswordCount;
         private float _lastClickTime;
@@ -305,6 +306,15 @@ namespace GameA
                 _cachedView.PuzzleBtn.gameObject.SetActive(true);
                 _cachedView.PuzzleDisable.SetActive(false);
                 _puzzlePasswordCount = 0;
+            }
+        }
+        
+        private void OnCharacterUpgradePuzzleBtn()
+        {
+            //Debug.Log("_________________________OnCharacterUpgradeBtn");
+            if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.CharacterUpgrade))
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlCharacterUpgrade>();
             }
         }
 
