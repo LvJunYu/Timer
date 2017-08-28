@@ -29,6 +29,7 @@ namespace GameA
                 _trainProperties[i] = new TrainProperty(i + 1, 1, _curGrade);
                 _propertyItems[i] = new UMCtrlCharacterUpgradeItem(_trainProperties[i]);
                 _propertyItems[i].Init(_cachedView.PropertyListRTF);
+                _propertyItems[i].InitView();
             }
         }
 

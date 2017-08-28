@@ -10,7 +10,7 @@ namespace GameA
     /// <summary>
     /// 训练的属性
     /// </summary>
-    public class TrainProperty : MonoBehaviour
+    public class TrainProperty : SyncronisticData
     {
         private int[] _gradeMaxLv =
         {
@@ -47,7 +47,7 @@ namespace GameA
             get { return _gradeMaxLv[_curGrade]; }
         }
 
-        public TrainProperty(int property, int level,int curGrade)
+        public TrainProperty(int property, int level, int curGrade)
         {
             _property = property;
             _curLv = level;
