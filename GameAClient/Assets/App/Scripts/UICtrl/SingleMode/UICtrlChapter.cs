@@ -5,24 +5,20 @@
 ** Summary : UICtrlSingleMode
 ***********************************************************************/
 
-using System;
-using System.Collections;
+using GameA.Game;
 using SoyEngine;
-using SoyEngine.Proto;
 using UnityEngine;
-using UnityEngine.UI;
-using System.Collections.Generic;
 
 namespace GameA
 {
 	public class UICtrlChapter : MonoBehaviour
     {
         #region 常量与字段
-		public Transform[] NormalLevelPos;
-		public Transform[] BonusLevelPos;
+		public RectTransform[] NormalLevelPos;
+		public RectTransform[] BonusLevelPos;
 		public UICtrlLevelPoint[] NormalLevels;
 		public UICtrlLevelPoint[] BonusLevels;
-		public Transform LevelRoot;
+		public RectTransform LevelRoot;
 		public GameObject[] BonusLevelBlockImages;
 		public GameObject BackgroundImage;
 		public GameObject ForgroundImage;
@@ -39,23 +35,25 @@ namespace GameA
 
         #region 方法
 
-		public void RefreshInfo (Game.Table_StandaloneChapter table) {
+		public void RefreshInfo (Table_StandaloneChapter table) {
 			if (NormalLevels.Length == 0) {
 				NormalLevels = new UICtrlLevelPoint[9];
 				for (int i = 0; i < 9; i++) {
-					GameObject levelObj = GameObject.Instantiate (NormalLevelPrefab, this.LevelRoot);
-					levelObj.transform.position = NormalLevelPos [i].position;
-					levelObj.transform.localScale = Vector3.one;
+					GameObject levelObj = Instantiate (NormalLevelPrefab, LevelRoot);
 					NormalLevels[i] = levelObj.GetComponent<UICtrlLevelPoint> ();
+					var rectTransform = levelObj.GetComponent<RectTransform>();
+					rectTransform.anchoredPosition = NormalLevelPos[i].anchoredPosition;
+					rectTransform.localScale = Vector3.one;
 				}
 			}
 			if (BonusLevels.Length == 0) {
 				BonusLevels = new UICtrlLevelPoint[3];
 				for (int i = 0; i < 3; i++) {
-					GameObject levelObj = GameObject.Instantiate (BonusLevelPrefab, this.LevelRoot);
-					levelObj.transform.position = BonusLevelPos [i].position;
-					levelObj.transform.localScale = Vector3.one;
+					GameObject levelObj = Instantiate (BonusLevelPrefab, LevelRoot);
 					BonusLevels[i] = levelObj.GetComponent<UICtrlLevelPoint> ();
+					var rectTransform = levelObj.GetComponent<RectTransform>();
+					rectTransform.anchoredPosition = BonusLevelPos[i].anchoredPosition;
+					rectTransform.localScale = Vector3.one;
 				}
 			}
 
@@ -65,14 +63,14 @@ namespace GameA
             {
 //				LockImage.SetActive(false);
 				for (int i = 0, n = NormalLevels.Length; i < n; i++) {
-					var tableLevel = Game.TableManager.Instance.GetStandaloneLevel(table.NormalLevels [i]);
+					var tableLevel = TableManager.Instance.GetStandaloneLevel(table.NormalLevels [i]);
 					if (tableLevel == null) {
 						LogHelper.Error ("Can't find tableLevel when refresh ui, chapter: {0}, level: {1}", table.Id, i);
 					}
 					NormalLevels [i].RefreshInfo (table.Id, i+1, tableLevel);
 				}
 				for (int i = 0, n = BonusLevels.Length; i < n; i++) {
-					var tableLevel = Game.TableManager.Instance.GetStandaloneLevel(table.BonusLevels [i]);
+					var tableLevel = TableManager.Instance.GetStandaloneLevel(table.BonusLevels [i]);
 					if (tableLevel == null) {
 						LogHelper.Error ("Can't find tableLevel when refresh ui, chapter: {0}, level: {1}", table.Id, i);
 					}
