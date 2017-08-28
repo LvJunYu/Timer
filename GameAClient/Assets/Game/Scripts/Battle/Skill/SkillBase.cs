@@ -509,7 +509,7 @@ namespace GameA.Game
             int length = ConstDefineGM2D.ServerTileScale;
             var guid = target.Guid;
             UnitBase neighborUnit;
-            if (centerPos.y < target.ColliderGrid.YMin)
+            if (centerPos.y <= target.ColliderGrid.YMin)
             {
                 if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y - length, guid.z), out neighborUnit)
                 || !UnitDefine.IsBulletBlock(neighborUnit.Id))
@@ -525,7 +525,7 @@ namespace GameA.Game
                     DoPaint(centerPos, maskRandom, target, EDirectionType.Up);
                 }
             }
-            if (centerPos.x < target.ColliderGrid.XMin)
+            if (centerPos.x <= target.ColliderGrid.XMin)
             {
                 if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x - length, guid.y, guid.z), out neighborUnit)
                 || !UnitDefine.IsBulletBlock(neighborUnit.Id))

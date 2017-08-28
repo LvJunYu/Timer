@@ -117,12 +117,17 @@ namespace GameA.Game
 
         public static bool IsEarth(int id)
         {
-            return id == 4001 || id == 4002;
+            return id == 4001 || id == 9010;
         }
 
         public static bool IsPlant(int id)
         {
             return id == 7002 || id == 7003 || id == 7004;
+        }
+        
+        public static bool IsEffect(int id)
+        {
+            return id == 9001 || id == 9002;
         }
         
         public static bool IsRevive(int id)
@@ -174,7 +179,7 @@ namespace GameA.Game
         {
             ushort id = node.Id;
             return id != TransparentEarthId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
-                   !IsBoard(id) && !IsCollection(id) && !IsMagicSwitch(id)&& (((1 << node.Layer) & EnvManager.LazerBlockLayer) != 0);
+                   !IsBoard(id) && !IsCollection(id) && !IsMagicSwitch(id) && !IsEffect(id)&& (((1 << node.Layer) & EnvManager.LazerBlockLayer) != 0);
         }
         
         public static bool IsLaserDamage(int layer)
@@ -186,7 +191,7 @@ namespace GameA.Game
         {
             ushort id = node.Id;
             return  id != LaserId && id != TransparentEarthId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
-                   !IsBoard(id) && !IsCollection(id) && !IsMagicSwitch(id) && !IsBullet(id) && !IsSwitchTrigger(id);
+                   !IsBoard(id) && !IsCollection(id) && !IsMagicSwitch(id) && !IsBullet(id) && !IsSwitchTrigger(id)&& !IsEffect(id);
         }
         
         public static bool IsFanEffect(int layer, int id)
@@ -198,13 +203,13 @@ namespace GameA.Game
         public static bool IsBulletBlock( int id)
         {
             return  id != LaserId && id != CloudId&& id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
-                    !IsBoard(id) && !IsCollection(id) && !IsSwitchTrigger(id)  && !IsJet(id);
+                    !IsBoard(id) && !IsCollection(id) && !IsSwitchTrigger(id)  && !IsJet(id) && !IsMain(id) && !IsEffect(id);
         }
 
         internal static bool IsGround(int id)
         {
             return !IsSwitchTrigger(id)&& id != LaserId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
-                   !IsBoard(id) && !IsCollection(id) && !IsMagicSwitch(id) && !IsMain(id) && !IsBullet(id) && !IsAIMonster(id);
+                   !IsBoard(id) && !IsCollection(id) && !IsMagicSwitch(id) && !IsMain(id) && !IsBullet(id) && !IsAIMonster(id) && !IsEffect(id);
         }
 
         public static bool IsDownY(Table_Unit tableUnit)

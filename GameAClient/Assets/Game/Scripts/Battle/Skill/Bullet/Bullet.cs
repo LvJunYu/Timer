@@ -39,6 +39,7 @@ namespace GameA.Game
 
         public void OnGet()
         {
+            _maskRandom = UnityEngine.Random.Range(0, 2);
         }
 
         public void OnFree()
@@ -76,7 +77,6 @@ namespace GameA.Game
         public void Init(SkillBase skill, IntVec2 pos, int angle)
         {
             _tableUnit = UnitManager.Instance.GetTableUnit(skill.TableSkill.ProjectileId);
-            _maskRandom = UnityEngine.Random.Range(0, 2);
             _skill = skill;
             _curPos = _originPos = pos;
             
@@ -110,13 +110,6 @@ namespace GameA.Game
             if (!_run)
             {
                 return;
-            }
-            _curPos += _speed;
-            //超出最大射击距离
-            if ((_curPos - _originPos).SqrMagnitude() >= _skill.CastRange * _skill.CastRange)
-            {
-                _curPos = _originPos + new IntVec2((int)(_skill.CastRange * _direction.x), (int)(_skill.CastRange * _direction.y));
-                _destroy = 1;
             }
             //MagicSwith Brick Cloud
             var hits = ColliderScene2D.RaycastAll(_curPos, _direction, _skill.ProjectileSpeed, EnvManager.PaintBulletHitLayer);
@@ -161,6 +154,16 @@ namespace GameA.Game
             if (_destroy > 0)
             {
                 OnDestroy();
+            }
+            else
+            {
+                _curPos += _speed;
+                //超出最大射击距离
+                if ((_curPos - _originPos).SqrMagnitude() >= _skill.CastRange * _skill.CastRange)
+                {
+                    _curPos = _originPos + new IntVec2((int)(_skill.CastRange * _direction.x), (int)(_skill.CastRange * _direction.y));
+                    _destroy = 1;
+                }
             }
         }
 
