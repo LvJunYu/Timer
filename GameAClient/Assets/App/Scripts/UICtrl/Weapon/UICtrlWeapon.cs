@@ -172,11 +172,16 @@ namespace GameA
             {
                 GameParticleManager.FreeParticleItem(_weaponModelEffect.Particle);
             }
+            if (_renderCamera != null)
+            {
+                RenderCameraManager.Instance.FreeCamera(_renderCamera);         
+            }
             _weaponModel = TableManager.Instance.GetEquipment(_weaponID).Model;
             _weaponModelEffect = GameParticleManager.Instance.GetUIParticleItem(_weaponModel, _cachedView.EffectShow.transform,_groupId);
             _weaponModelEffect.Particle.Play();
-            _renderCamera =RenderCameraManager.Instance.GetCamera(1f, _weaponModelEffect.Particle.Trans, 300, 300);
+            _renderCamera = RenderCameraManager.Instance.GetCamera(1f, _weaponModelEffect.Particle.Trans, 300, 300);
             _cachedView.EffectImage.texture = _renderCamera.Texture;
+          
 
             //技能显示
             _skillID = TableManager.Instance.GetEquipment(_weaponID).SkillId;
