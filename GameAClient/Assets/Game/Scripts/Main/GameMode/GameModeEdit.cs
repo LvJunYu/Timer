@@ -295,8 +295,8 @@ namespace GameA.Game
             }
             else if (mode == EMode.Edit)
             {
-                EditMode.Instance.StartEdit();
                 GameRun.Instance.ChangeState(ESceneState.Edit);
+	            EditMode.Instance.StartEdit();
                 SocialGUIManager.Instance.OpenUI<UICtrlItem>();
 //                SocialGUIManager.Instance.OpenUI<UICtrlScreenOperator>();
                 SocialGUIManager.Instance.OpenUI<UICtrlEdit>();

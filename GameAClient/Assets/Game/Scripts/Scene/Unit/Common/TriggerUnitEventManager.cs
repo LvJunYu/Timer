@@ -36,8 +36,22 @@ namespace GameA.Game
             _currentEventRegister = new EventRegister();
             return _currentEventRegister;
         }
-        
 
+        public void ClearAllTriggerState()
+        {
+            using (var itr = _triggerStateDict.GetEnumerator())
+            {
+                while (itr.MoveNext())
+                {
+                    if (itr.Current.Value)
+                    {
+                        BroadcastEvent(itr.Current.Key, false);
+                    }
+                }
+            }
+            _triggerStateDict.Clear();
+        }
+        
         private void Handler(string s, bool b)
         {
             bool state;
@@ -134,6 +148,7 @@ namespace GameA.Game
                 }
                 _unRegisterActionAry = TempUnregisterActionList.ToArray();
                 TempUnregisterActionList.Clear();
+                _currentEventRegister = null;
                 return this;
             }
 

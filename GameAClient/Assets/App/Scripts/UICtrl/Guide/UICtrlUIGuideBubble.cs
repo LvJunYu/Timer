@@ -39,6 +39,10 @@ namespace GameA
 
         public void CloseBubble(UMCtrlUIGuideBubble umCtrlUIGuideBubble)
         {
+            if (umCtrlUIGuideBubble == null)
+            {
+                return;
+            }
             if (!_openedBubbleSet.Contains(umCtrlUIGuideBubble))
             {
                 LogHelper.Error("CloseBubble Error");
