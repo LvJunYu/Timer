@@ -186,7 +186,7 @@ namespace GameA.Game
                 _currentNodeId++;
                 if (_currentNodeId >= _path.Count)
                 {
-                    LogHelper.Debug("Reach Final!");
+//                    LogHelper.Debug("Reach Final!");
                     _path.Clear();
                     return;
                 }
@@ -330,7 +330,7 @@ namespace GameA.Game
                 SetInput(EInputType.Left, false);
                 SetInput(EInputType.Right, false);
             }
-            LogHelper.Debug("FindPath {0}", _path.Count);
+//            LogHelper.Debug("FindPath {0}", _path.Count);
         }
 
         private int GetJumpSpeedForNode(int lastNodeId)

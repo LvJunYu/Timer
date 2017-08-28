@@ -19,6 +19,7 @@ namespace GameA.Game
         protected UnityNativeParticleItem _shooterEffect;
         protected PlayerBase _player;
         protected IntVec2 _curPos;
+        protected string _lastModelName;
 
         public Gun(PlayerBase player)
         {
@@ -35,6 +36,11 @@ namespace GameA.Game
 
         public void ChangeView(string model)
         {
+            if (_lastModelName == model)
+            {
+                return;
+            }
+            _lastModelName = model;
             if (_shooterEffect != null)
             {
                 GameParticleManager.FreeParticleItem(_shooterEffect);

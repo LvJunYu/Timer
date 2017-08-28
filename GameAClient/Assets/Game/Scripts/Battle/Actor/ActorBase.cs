@@ -309,7 +309,10 @@ namespace GameA.Game
                             case ECostType.Paint:
                                 if (_input.GetKeyApplied(_skillInputs[i]))
                                 {
-                                    _skillCtrl.Fire(i);
+                                    if (_skillCtrl.Fire(i))
+                                    {
+                                        ChangeGunView(i);
+                                    }
                                     return;
                                 }
                                 break;
@@ -319,20 +322,31 @@ namespace GameA.Game
                                 {
                                     if (_input.GetKeyUpApplied(_skillInputs[i]))
                                     {
-                                        _skillCtrl.Fire(i);
+                                        if (_skillCtrl.Fire(i))
+                                        {
+                                            ChangeGunView(i);
+                                        }
                                     }
                                 }
                                 else
                                 {
                                     if (_input.GetKeyApplied(_skillInputs[i]))
                                     {
-                                        _skillCtrl.Fire(i);
+                                        if (_skillCtrl.Fire(i))
+                                        {
+                                            ChangeGunView(i);
+                                        }
                                     }
                                 }
                                 break;
                     }
                 }
             }
+        }
+        
+        public virtual void ChangeGunView(int slot)
+        {
+
         }
 
         private bool IsCharacterAbilityAvailable(ECharacterAbility eCharacterAbility)

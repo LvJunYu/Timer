@@ -347,7 +347,7 @@ namespace GameA.Game
                         }
                         else if(unit.CanPainted && _epaintType != EPaintType.None)
                         {
-//                            OnPaintHit(unit, bullet);
+                            OnPaintHit(unit, bullet.CurPos, bullet.MaskRandom);
                         }
                     }
                 }
@@ -371,7 +371,7 @@ namespace GameA.Game
                         }
                         else if(unit.CanPainted && _epaintType != EPaintType.None)
                         {
-                            OnPaintHit(unit, projectile);
+                            OnPaintHit(unit, projectile.CenterPos, projectile.MaskRandom);
                         }
                     }
                 }
@@ -504,53 +504,48 @@ namespace GameA.Game
             return ((1<<(int) eTargetType) & _tableSkill.TargetType) != 0;
         }
         
-        protected void OnPaintHit(UnitBase target,ProjectileBase projectile)
+        protected void OnPaintHit(UnitBase target, IntVec2 centerPos, int maskRandom)
         {
             int length = ConstDefineGM2D.ServerTileScale;
             var guid = target.Guid;
             UnitBase neighborUnit;
-            int v = 0;
-            var curPos = projectile.CenterPos;
-            if (curPos.y < target.ColliderGrid.YMin)
+            if (centerPos.y < target.ColliderGrid.YMin)
             {
                 if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y - length, guid.z), out neighborUnit)
-                || !neighborUnit.OnDownHit(projectile,ref v, true))
+                || !UnitDefine.IsBulletBlock(neighborUnit.Id))
                 {
-                    DoPaint(projectile, target, EDirectionType.Down);
+                    DoPaint(centerPos, maskRandom, target, EDirectionType.Down);
                 }
             }
-            else if (curPos.y > target.ColliderGrid.YMax)
+            else if (centerPos.y > target.ColliderGrid.YMax)
             {
                 if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y + length, guid.z), out neighborUnit)
-                || !neighborUnit.OnUpHit(projectile,ref v, true))
-
+                || !UnitDefine.IsBulletBlock(neighborUnit.Id))
                 {
-                    DoPaint(projectile, target, EDirectionType.Up);
+                    DoPaint(centerPos, maskRandom, target, EDirectionType.Up);
                 }
             }
-            if (curPos.x < target.ColliderGrid.XMin)
+            if (centerPos.x < target.ColliderGrid.XMin)
             {
                 if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x - length, guid.y, guid.z), out neighborUnit)
-                || !neighborUnit.OnLeftHit(projectile,ref v, true))
+                || !UnitDefine.IsBulletBlock(neighborUnit.Id))
                 {
-                    DoPaint(projectile, target, EDirectionType.Left);
+                    DoPaint(centerPos, maskRandom, target, EDirectionType.Left);
                 }
             }
-            else if (curPos.x > target.ColliderGrid.XMax)
+            else if (centerPos.x > target.ColliderGrid.XMax)
             {
                 if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x + length, guid.y, guid.z), out neighborUnit)
-                || !neighborUnit.OnRightHit(projectile,ref v, true))
+                || !UnitDefine.IsBulletBlock(neighborUnit.Id))
                 {
-                    DoPaint(projectile, target, EDirectionType.Right);
+                    DoPaint(centerPos, maskRandom, target, EDirectionType.Right);
                 }
             }
         }
 
-        protected virtual void DoPaint(ProjectileBase projectile, UnitBase target, EDirectionType eDirectionType)
+        protected virtual void DoPaint(IntVec2 centerPos, int maskRandom, UnitBase target, EDirectionType eDirectionType)
         {
             var paintDepth = PaintBlock.TileOffsetHeight;
-            var centerPos = projectile.CenterPos;
-            var maskRandom = projectile.MaskRandom;
             switch (eDirectionType)
             {
                 case EDirectionType.Down:
