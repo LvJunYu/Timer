@@ -5,9 +5,6 @@ using UnityEngine;
 
 namespace GameA
 {
-    /// <summary>
-    /// 阶层养成
-    /// </summary>
     public class UMCtrlCharacterUpgradeItem : UMCtrlBase<UMViewCharacterUpgradeItem>
     {
         private TrainProperty _trainProperty;
@@ -33,6 +30,10 @@ namespace GameA
         public UMCtrlCharacterUpgradeItem(TrainProperty trainProperty)
         {
             _trainProperty = trainProperty;
+        }
+
+        public void InitView()
+        {
             _cachedView.Icon.sprite = ResourcesManager.Instance.GetSprite(_spriteNames[_trainProperty.Property - 1]);
             _cachedView.NameTxt.text = _propertyNames[_trainProperty.Property - 1];
         }
