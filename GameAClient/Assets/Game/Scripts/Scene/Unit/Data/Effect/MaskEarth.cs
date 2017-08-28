@@ -46,11 +46,16 @@ namespace GameA.Game
         protected override void Clear()
         {
             _trigger = false;
+            SetAllCross(_trigger);
             base.Clear();
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
+            if (_trigger)
+            {
+                return false;
+            }
             if (other.IsMain)
             {
                 if (!checkOnly)
@@ -64,6 +69,10 @@ namespace GameA.Game
 
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {
+            if (_trigger)
+            {
+                return false;
+            }
             if (other.IsMain)
             {
                 if (!checkOnly)
@@ -77,6 +86,10 @@ namespace GameA.Game
 
         public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
         {
+            if (_trigger)
+            {
+                return false;
+            }
             if (other.IsMain)
             {
                 if (!checkOnly)
@@ -90,6 +103,10 @@ namespace GameA.Game
 
         public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
         {
+            if (_trigger)
+            {
+                return false;
+            }
             if (other.IsMain)
             {
                 if (!checkOnly)
@@ -108,6 +125,7 @@ namespace GameA.Game
                 return;
             }
             _trigger = true;
+            SetAllCross(_trigger);
             if (_spriteRenderer != null)
             {
                 _spriteRenderer.DOFade(0, 0.5f);

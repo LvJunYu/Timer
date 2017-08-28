@@ -120,14 +120,14 @@ namespace GameA.Game
                     var hit = hits[i];
                     if (UnitDefine.IsBulletBlock(hit.node.Id))
                     {
-                        _curPos = hit.point;
-                        _destroy = 1;
-                        var units = ColliderScene2D.GetUnits(hit);
-                        for (int j = 0; j < units.Count; j++)
+                       var units = ColliderScene2D.GetUnits(hit);
+                        for (var j = 0; j < units.Count; j++)
                         {
                             var unit = units[j];
-                            if (unit.IsAlive)
+                            if (unit.IsAlive && !unit.CanBulletCross)
                             {
+                                _curPos = hit.point;
+                                _destroy = 1;
                                 if (UnitDefine.IsMagicSwitch(unit.Id))
                                 {
                                     var switchMagic = unit as SwitchMagic;
@@ -144,9 +144,9 @@ namespace GameA.Game
                                         brick.DestroyBrick();
                                     }
                                 }
+                                break;
                             }
                         }
-                        break;
                     }
                 }
             }

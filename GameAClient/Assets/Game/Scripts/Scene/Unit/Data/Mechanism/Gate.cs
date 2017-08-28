@@ -18,10 +18,7 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
-            _canLazerCross = false;
-            _canMagicCross = false;
-            _canBridgeCross = false;
-            _canFanCross = false;
+            SetAllCross(false);
             //if (_opened)
             {
                 if (_view != null)
@@ -84,10 +81,7 @@ namespace GameA.Game
                         SetEnabled(false);
                         if (_view != null)
                         {
-                            _canLazerCross = true;
-                            _canMagicCross = true;
-                            _canBridgeCross = true;
-                            _canFanCross = true;
+                            SetAllCross(true);
                             _view.ChangeView(_tableUnit.Model + "_1");
                             SetSortingOrderBack();
                             UpdateTransPos();
