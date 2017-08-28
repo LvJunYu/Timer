@@ -23,6 +23,7 @@ namespace GameA
         public Image OwnedUniversalFragmentsIcon;
         public Image OwnedWeaponFragmentsIcon;
         public Image LockedImage;
+        public RawImage EffectImage;
         public Transform EffectShow;
         public Button LeftWeapon;
         public Button RightWeapon;

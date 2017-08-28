@@ -19,8 +19,8 @@ namespace GameA
         private string _weaponPartSpriteName;
         private Sprite _universalSprie;
         private string _universalSpriteName = "universalpart";
-        private string _compoud = "合成";
-        private string _upGrade = "升级";
+        private const string _compoud = "合成";
+        private const string _upGrade = "升级";
         private int _weaponTotalNum = 12;
         private int _weaponID = 101;
         private int _skillID;
@@ -39,6 +39,7 @@ namespace GameA
         private int _userOwnWeaponPart;
         private string _weaponModel;
         private UIParticleItem _weaponModelEffect;
+        private RenderCamera _renderCamera;
         private UserWeaponData _userWeaponData = new UserWeaponData();
         private UserWeaponPartData _userWeaponPartData = new UserWeaponPartData();
         private Dictionary<long, int> _userWeaponPartDataDic = new Dictionary<long, int>();
@@ -172,10 +173,10 @@ namespace GameA
                 GameParticleManager.FreeParticleItem(_weaponModelEffect.Particle);
             }
             _weaponModel = TableManager.Instance.GetEquipment(_weaponID).Model;
-            _weaponModelEffect =
-                GameParticleManager.Instance.GetUIParticleItem(_weaponModel, _cachedView.EffectShow.transform,
-                    _groupId);
+            _weaponModelEffect = GameParticleManager.Instance.GetUIParticleItem(_weaponModel, _cachedView.EffectShow.transform,_groupId);
             _weaponModelEffect.Particle.Play();
+            _renderCamera =RenderCameraManager.Instance.GetCamera(1f, _weaponModelEffect.Particle.Trans, 300, 300);
+            _cachedView.EffectImage.texture = _renderCamera.Texture;
 
             //技能显示
             _skillID = TableManager.Instance.GetEquipment(_weaponID).SkillId;

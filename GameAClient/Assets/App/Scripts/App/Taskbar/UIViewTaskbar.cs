@@ -129,5 +129,7 @@ namespace GameA
         /// 武器按钮
         /// </summary>
         public Button Weapon;
+
+	    public GameObject WeaponObject;
     }
 }

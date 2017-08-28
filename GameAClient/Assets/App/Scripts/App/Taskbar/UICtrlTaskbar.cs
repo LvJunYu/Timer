@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
+using UnityEditor;
 using UnityEngine;
 
 namespace GameA
@@ -94,6 +95,7 @@ namespace GameA
             _uiParticleItem = GameParticleManager.Instance.GetUIParticleItem(ParticleNameConstDefineGM2D.HomeBgEffect,
                 _cachedView.Trans, _groupId);
             _uiParticleItem.Particle.Play();
+            OpenTaskBtn();
         }
 
         protected override void OnOpen(object parameter)
@@ -102,6 +104,7 @@ namespace GameA
             SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamond);
             RefreshUserInfo();
             GameProcessManager.Instance.RefreshHomeUIUnlock();
+           
         }
 
         protected override void OnClose()
@@ -288,7 +291,16 @@ namespace GameA
                 SocialGUIManager.Instance.OpenUI<UICtrlPuzzle>();
             }
         }
-
+        private void OnWeapon()
+        {
+            //Debug.Log("_________________________OnWeaponBtn");
+//            if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.Puzzle))
+//            {
+//                SocialGUIManager.Instance.OpenUI<UICtrlWeapon>();
+//            }
+            SocialGUIManager.Instance.OpenUI<UICtrlWeapon>();
+            
+        }
         //拼图入口秘密通道
         private int _puzzlePasswordCount;
         private float _lastClickTime;
@@ -372,10 +384,13 @@ namespace GameA
             );
         }
 
-        private void OnWeapon()
+        private void OpenTaskBtn()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlWeapon>();
+          #if UNITY_EDITOR
+          _cachedView.WeaponObject.SetActive(true);
+          #endif
         }
+
         #endregion
     }
 }
