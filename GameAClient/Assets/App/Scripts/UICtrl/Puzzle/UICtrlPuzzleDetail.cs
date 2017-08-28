@@ -14,12 +14,14 @@ namespace GameA
     {
         //碎片间距
         private const float _halfSpacing = 160;
+
         private const float _quarterSpacing = 35;
         private const float _sixthSpacing = 40;
         private const float _ninthSpacing = 9;
 
         //按钮文字
         private const string _upgrateTxt = "升级";
+
         private const string _activeTxt = "合成";
         private const string _maxLvTxt = "等级MAX";
 
@@ -163,7 +165,8 @@ namespace GameA
             }
             //设置碎片间距
             _cachedView.PuzzleFragmentGrid.spacing = GetSpace(_puzzle.PuzzleType);
-
+            //锁住拖拽
+            _cachedView.FragsScrollRect.horizontal = false;
             //文字信息
             RefreshTexts();
             //按钮信息
@@ -194,7 +197,7 @@ namespace GameA
                 _curUMFragments[i].RefreshView();
             }
         }
-        
+
         private void RefreshTexts()
         {
             _cachedView.NameTxt.text = _puzzle.Name;
@@ -287,13 +290,21 @@ namespace GameA
             RegisterEvent(EMessengerType.OnPuzzleCompound, OnPuzzleCompound);
             RegisterEvent(EMessengerType.OnPuzzleFragChanged, OnPuzzleFragChanged);
         }
-        
+
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
             _puzzle = parameter as PictureFull;
             if (_puzzle == null) return;
             RefreshView();
+        }
+
+        protected override void OnOpenAnimationComplete()
+        {
+            base.OnOpenAnimationComplete();
+            //6、9拼图才打开水平拖动
+            if (_puzzle.PuzzleType > EPuzzleType.Quarter)
+                _cachedView.FragsScrollRect.horizontal = true;
         }
 
         protected override void OnClose()
@@ -311,12 +322,12 @@ namespace GameA
         {
             _groupId = (int) EUIGroupType.PopUpUI2;
         }
-        
+
         private void OnCloseBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlPuzzleDetail>();
         }
-        
+
         private void OnEquipBtn()
         {
             SocialGUIManager.Instance.OpenUI<UICtrlPuzzleSlots>(_puzzle);
@@ -403,7 +414,7 @@ namespace GameA
             Messenger.Broadcast(EMessengerType.OnPuzzleCompound);
             LogHelper.Debug("合成/升级成功");
         }
-        
+
         private void OnPuzzleCompound()
         {
             //更新拼图
@@ -416,7 +427,7 @@ namespace GameA
 
         private void OnPuzzleFragChanged()
         {
-            if(!_isOpen) return;
+            if (!_isOpen) return;
             //更新拼图
             _curUMPuzzleItem.RefreshView();
             //更新碎片

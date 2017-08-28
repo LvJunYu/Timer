@@ -19,5 +19,6 @@ namespace GameA
         public Toggle Level;
         public Toggle Func;
         public GridDataScroller PuzzleItemGridDataScroller;
+        public ScrollRect PuzzleItemSrollRect;
     }
 }

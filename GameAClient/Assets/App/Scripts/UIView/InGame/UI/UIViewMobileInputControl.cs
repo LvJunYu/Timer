@@ -10,6 +10,7 @@ namespace GameA
 {
     public class UIViewMobileInputControl : UIViewBase
     {
+        public JoyStickEx JoyStickEx;
         // radial的cd
         public Image Btn1CD1;
         public Image Btn2CD1;

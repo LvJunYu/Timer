@@ -10,6 +10,7 @@ namespace GameA.Game
     public class GameModeAdventurePlay : GameModePlay, ISituationAdventure
     {
         private SituationAdventureParam _adventureLevelInfo;
+        private AdventureGuideBase _guideBase;
 
 
         public SituationAdventureParam GetLevelInfo()
@@ -26,7 +27,35 @@ namespace GameA.Game
             }
             _gameSituation = EGameSituation.Adventure;
             _adventureLevelInfo = param as SituationAdventureParam;
+            if (_adventureLevelInfo == null)
+            {
+                return false;
+            }
+            AdventureGuideManager.Instance.TryGetGuide(_adventureLevelInfo.Section, _adventureLevelInfo.ProjectType,
+                _adventureLevelInfo.Level, out _guideBase);
+            if (_guideBase != null)
+            {
+                _guideBase.Init();
+            }
             return true;
+        }
+
+        public override void UpdateLogic()
+        {
+            if (_guideBase != null)
+            {
+                _guideBase.UpdateLogic();
+            }
+        }
+
+        public override bool Stop()
+        {
+            if (_guideBase != null)
+            {
+                _guideBase.Dispose();
+                _guideBase = null;
+            }
+            return base.Stop();
         }
 
         public override void OnGameStart()

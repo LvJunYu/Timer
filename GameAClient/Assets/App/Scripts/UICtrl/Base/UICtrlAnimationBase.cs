@@ -12,72 +12,96 @@ namespace GameA
     public abstract class UICtrlAnimationBase<T> : UICtrlGenericBase<T> where T : UIViewBase
     {
         protected EAnimationType _animationType;
-
+        protected Vector3 _startPos;
+        private const string _maskSprite = "CommonWhite";
         private float _screenHeight;
         private float _screenWidth;
-        private Vector3 _startPos;
         private Mask _mask;
         private Image _image;
-        private const string _maskSprite = "CommonWhite";
+        private Sequence _openSequence;
+        private Sequence _closeSequence;
 
-        private void OpenAnimation()
+        private void CreateSequences()
         {
-            _image.enabled = _mask.enabled = true;
+            _openSequence = DOTween.Sequence();
+            _closeSequence = DOTween.Sequence();
             switch (_animationType)
             {
                 case EAnimationType.MoveFromDown:
                 case EAnimationType.MoveFromUp:
                 case EAnimationType.MoveFromLeft:
                 case EAnimationType.MoveFromRight:
-                    _startPos = GetStartPos();
-                    _cachedView.Trans.DOBlendableMoveBy(_startPos, 0.25f).From().SetEase(Ease.OutQuad)
-                        .OnComplete(OnOpenAnimationComplete);
+                    //开始动画
+                    _openSequence.Append(
+                        _cachedView.Trans.DOBlendableMoveBy(_startPos, 0.25f).From()
+                            .SetEase(Ease.OutQuad)
+                    );
+                    //结束动画
+                    _closeSequence.Append(
+                        _cachedView.Trans.DOBlendableMoveBy(_startPos, 0.15f)
+                            .SetEase(Ease.Linear)
+                    );
                     break;
                 case EAnimationType.PopupFromCenter:
-                    _cachedView.Trans.DOScale(Vector3.zero, 0.25f).From().SetEase(Ease.OutBack)
-                        .OnComplete(OnOpenAnimationComplete);
+                    //开始动画
+                    _openSequence.Append(
+                        _cachedView.Trans.DOScale(Vector3.zero, 0.25f).From()
+                            .SetEase(Ease.OutBack)
+                    );
+                    //结束动画
+                    _closeSequence.Append(
+                        _cachedView.Trans.DOScale(Vector3.zero, 0.15f)
+                            .SetEase(Ease.Linear)
+                    );
                     break;
                 case EAnimationType.PopupFromDown:
                 case EAnimationType.PopupFromUp:
                 case EAnimationType.PopupFromLeft:
                 case EAnimationType.PopupFromRight:
-                    _startPos = GetStartPos();
-                    _cachedView.Trans.DOBlendableMoveBy(_startPos * 0.5f, 0.25f).From().SetEase(Ease.OutBack);
-                    _cachedView.Trans.DOScale(Vector3.zero, 0.25f).From().SetEase(Ease.OutBack)
-                        .OnComplete(OnOpenAnimationComplete);
+                    //开始动画
+                    _openSequence.Append(
+                        _cachedView.Trans.DOBlendableMoveBy(_startPos * 0.5f, 0.25f).From()
+                            .SetEase(Ease.OutBack)
+                    );
+                    _openSequence.Join(
+                        _cachedView.Trans.DOScale(Vector3.zero, 0.25f).From()
+                            .SetEase(Ease.OutBack)
+                    );
+                    //结束动画
+                    _closeSequence.Append(
+                        _cachedView.Trans.DOBlendableMoveBy(_startPos * 0.5f, 0.15f)
+                            .SetEase(Ease.Linear)
+                    );
+                    _closeSequence.Join(
+                        _cachedView.Trans.DOScale(Vector3.zero, 0.15f)
+                            .SetEase(Ease.Linear)
+                    );
                     break;
             }
+            _openSequence.OnComplete(OnOpenAnimationComplete).SetAutoKill(false).Pause();
+            _closeSequence.OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause()
+                .PrependCallback(() => _cachedView.Trans.localPosition = Vector3.zero);
+        }
+
+        private void OpenAnimation()
+        {
+            _image.enabled = _mask.enabled = true;
+            if (null == _openSequence)
+            {
+                CreateSequences();
+                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() => _openSequence.Restart()));
+            }
+            else
+                _openSequence.Restart();
         }
 
         private void CloseAnimation()
         {
             _image.enabled = _mask.enabled = true;
             _cachedView.gameObject.SetActive(true);
-            switch (_animationType)
-            {
-                case EAnimationType.MoveFromDown:
-                case EAnimationType.MoveFromUp:
-                case EAnimationType.MoveFromLeft:
-                case EAnimationType.MoveFromRight:
-                    _cachedView.Trans.DOBlendableMoveBy(_startPos, 0.2f).SetEase(Ease.Linear)
-                        .OnComplete(OnCloseAnimationComplete);
-                    break;
-                case EAnimationType.PopupFromCenter:
-                    _cachedView.Trans.DOScale(Vector3.zero, 0.2f).SetEase(Ease.Linear)
-                        .OnComplete(OnCloseAnimationComplete);
-                    break;
-                case EAnimationType.PopupFromDown:
-                case EAnimationType.PopupFromUp:
-                case EAnimationType.PopupFromLeft:
-                case EAnimationType.PopupFromRight:
-                    _cachedView.Trans.DOBlendableMoveBy(_startPos * 0.5f, 0.2f).SetEase(Ease.Linear);
-                    _cachedView.Trans.DOScale(Vector3.zero, 0.2f).SetEase(Ease.Linear)
-                        .OnComplete(OnCloseAnimationComplete);
-                    break;
-                default:
-                    OnCloseAnimationComplete();
-                    break;
-            }
+            if (null == _closeSequence)
+                CreateSequences();
+            _closeSequence.Restart();
         }
 
         private Vector3 GetStartPos()
@@ -104,7 +128,7 @@ namespace GameA
         /// <summary>
         /// 设置动画类型
         /// </summary>
-        protected virtual void InitAnimationType()
+        protected virtual void SetAnimationType()
         {
             _animationType = EAnimationType.PopupFromDown;
         }
@@ -114,7 +138,7 @@ namespace GameA
         /// </summary> 
         protected virtual void OnOpenAnimationComplete()
         {
-            _image.enabled = _mask.enabled = false;
+//            _image.enabled = _mask.enabled = false;
         }
 
         /// <summary>
@@ -132,8 +156,9 @@ namespace GameA
             base.OnViewCreated();
             _screenHeight = _cachedView.Trans.rect.height;
             _screenWidth = _cachedView.Trans.rect.width;
-            InitAnimationType();
-            //由于部分UI超出屏幕范围（例如单人模式）,影响移动效果，用Mask遮住超出的部分
+            SetAnimationType();
+            _startPos = GetStartPos();
+            //由于部分UI超出屏幕范围（例如单人模式）,影响动画效果，用Mask遮住超出的部分
             _mask = _cachedView.GetComponent<Mask>();
             _image = _cachedView.GetComponent<Image>();
             if (null == _mask)
@@ -171,6 +196,7 @@ namespace GameA
         PopupFromDown,
         PopupFromUp,
         PopupFromLeft,
-        PopupFromRight
+        PopupFromRight,
+        PopupFromClickPoint
     }
 }
