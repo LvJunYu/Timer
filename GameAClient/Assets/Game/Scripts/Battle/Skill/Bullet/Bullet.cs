@@ -39,6 +39,7 @@ namespace GameA.Game
 
         public void OnGet()
         {
+            _maskRandom = UnityEngine.Random.Range(0, 2);
         }
 
         public void OnFree()
@@ -76,7 +77,6 @@ namespace GameA.Game
         public void Init(SkillBase skill, IntVec2 pos, int angle)
         {
             _tableUnit = UnitManager.Instance.GetTableUnit(skill.TableSkill.ProjectileId);
-            _maskRandom = UnityEngine.Random.Range(0, 2);
             _skill = skill;
             _curPos = _originPos = pos;
             

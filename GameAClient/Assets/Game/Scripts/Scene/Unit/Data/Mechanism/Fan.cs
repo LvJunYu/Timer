@@ -115,7 +115,7 @@ namespace GameA.Game
             {
                 Calculate();
             }
-            var hits = ColliderScene2D.GridCastAll(_checkGrid, Rotation, EnvManager.FanCheckLayer);
+            var hits = ColliderScene2D.GridCastAll(_checkGrid, Rotation, EnvManager.FanBlockLayer);
             if (hits.Count > 0)
             {
                 for (int i = 0; i < hits.Count; i++)
