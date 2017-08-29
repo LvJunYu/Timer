@@ -172,9 +172,14 @@ namespace GameA
                     _cachedView.Arrow.SetActive(true);
                     RefreshArrowRotation();
                 }
+                else
+                {
+                    _cachedView.Arrow.SetActive(false);
+                }
             }
             else
             {
+                _cachedView.Arrow.SetActive(false);
                 _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.zero;
             }
 
