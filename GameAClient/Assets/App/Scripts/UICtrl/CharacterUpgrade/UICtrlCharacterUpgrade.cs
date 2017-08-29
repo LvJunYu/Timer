@@ -38,6 +38,8 @@ namespace GameA
 
         private void CreateUMItems()
         {
+            List<TrainProperty> _userTrainProperty = LocalUser.Instance.UserTrainProperty.ItemDataList;
+            _curGrade = LocalUser.Instance.UserTrainProperty.Grade;
             //临时数据
             _curGrade = 1;
             //创建属性UMItem
@@ -46,8 +48,11 @@ namespace GameA
             _trainProperties = new TrainProperty[_maxPropertyCount];
             for (int i = 0; i < _maxPropertyCount; i++)
             {
-                //初始化属性数据，todo获取服务器数据
-                _trainProperties[i] = new TrainProperty(i + 1, 1, _curGrade);
+                //初始化属性数据
+//                int level = _userTrainProperty[i].Level;
+                //临时数据
+                int level = Random.Range(1, 4);
+                _trainProperties[i] = new TrainProperty(i + 1, level, _curGrade);
                 _propertyItems[i] = new UMCtrlCharacterUpgradeItem(_trainProperties[i]);
                 _propertyItems[i].Init(_cachedView.PropertyListRTF);
                 _propertyInfos[i] = new UMCtrlCharacterUpgradeInfo(_trainProperties[i]);
@@ -63,6 +68,7 @@ namespace GameA
             for (int i = 0; i < _trainProperties.Length; i++)
             {
                 _propertyItems[i].Refresh();
+                _propertyInfos[i].Refresh();
             }
         }
 
@@ -70,6 +76,18 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
+//            LocalUser.Instance.UserTrainProperty.Request(LocalUser.Instance.UserGuid,
+//                () =>
+//                {
+//                    CreateUMItems();
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                },
+//                code =>
+//                {
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                    LogHelper.Error("Network error when get UserTrainProperty, {0}", code);
+//                });
             CreateUMItems();
         }
 

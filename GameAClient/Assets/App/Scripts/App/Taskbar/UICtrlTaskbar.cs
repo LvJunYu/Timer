@@ -27,6 +27,7 @@ namespace GameA
         private bool _lotteryAvailable = true;
         private bool _fashionShopAvailable = true;
         private bool _puzzleAvailable = false;
+        private bool _trainAvailable = false;
         private bool _mailBoxAvailable = true;
         private bool _friendsAvailable = true;
         private UIParticleItem _uiParticleItem;
@@ -84,11 +85,13 @@ namespace GameA
             _cachedView.MailBoxBtn.onClick.AddListener(OnMailBtn);
             _cachedView.PuzzleBtn.onClick.AddListener(OnPuzzleBtn);
             _cachedView.Weapon.onClick.AddListener(OnWeapon);
+            _cachedView.TrainBtn.onClick.AddListener(OnTrainBtn);
             SetLock(UIFunction.UI_FashionShop, _fashionShopAvailable);
             SetLock(UIFunction.UI_Friends, _friendsAvailable);
             SetLock(UIFunction.UI_Lottery, _lotteryAvailable);
             SetLock(UIFunction.UI_MailBox, _mailBoxAvailable);
             SetLock(UIFunction.UI_Puzzle, _puzzleAvailable);
+            SetLock(UIFunction.UI_Train, _trainAvailable);
             SetLock(UIFunction.UI_SingleMode, _singleModeAvailable);
             SetLock(UIFunction.UI_Workshop, _workshopAvailable);
             SetLock(UIFunction.UI_World, _worldAvailable);
@@ -150,6 +153,13 @@ namespace GameA
                         _puzzleAvailable = ifunlock;
                     }
                     break;
+                case UIFunction.UI_Train:
+                {
+                    _cachedView.Train.SetActiveEx(ifunlock);
+                    _cachedView.TrainDisable.SetActiveEx(!ifunlock);
+                    _puzzleAvailable = ifunlock;
+                }
+                    break;
                 case UIFunction.UI_Workshop:
                     {
                         _cachedView.Workshop.SetActiveEx(ifunlock);
@@ -197,7 +207,7 @@ namespace GameA
             UI_Puzzle = 5,
             UI_MailBox = 6,
             UI_Friends = 7,
-
+            UI_Train = 8,
         }
 
 
@@ -288,8 +298,8 @@ namespace GameA
             //Debug.Log("_________________________OnPuzzleBtn");
             if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.Puzzle))
             {
-                SocialGUIManager.Instance.OpenUI<UICtrlCharacterUpgrade>();
-//                SocialGUIManager.Instance.OpenUI<UICtrlPuzzle>();
+//                SocialGUIManager.Instance.OpenUI<UICtrlCharacterUpgrade>();
+                SocialGUIManager.Instance.OpenUI<UICtrlPuzzle>();
             }
         }
 
@@ -311,14 +321,15 @@ namespace GameA
             _lastClickTime = Time.time;
             if (_puzzlePasswordCount > 2)
             {
-                _cachedView.PuzzleBtn.transform.parent.gameObject.SetActive(true);
-                _cachedView.PuzzleBtn.gameObject.SetActive(true);
-                _cachedView.PuzzleDisable.SetActive(false);
+//                _cachedView.PuzzleBtn.transform.parent.gameObject.SetActive(true);
+//                _cachedView.PuzzleBtn.gameObject.SetActive(true);
+//                _cachedView.PuzzleDisable.SetActive(false);
+                SetLock(UIFunction.UI_Puzzle, true);
                 _puzzlePasswordCount = 0;
             }
         }
         
-        private void OnCharacterUpgradePuzzleBtn()
+        private void OnTrainBtn()
         {
             //Debug.Log("_________________________OnCharacterUpgradeBtn");
             if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.CharacterUpgrade))
@@ -395,6 +406,7 @@ namespace GameA
         {
           #if UNITY_EDITOR
           _cachedView.WeaponObject.SetActive(true);
+          SetLock(UIFunction.UI_Train, true);
           #endif
         }
 

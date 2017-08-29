@@ -14,5 +14,6 @@ namespace GameA
         public Button CloseBtn;
         public RectTransform PropertyListRTF;
         public RectTransform InfoListRTF;
+        public Text OwnedTrainPointTxt;
     }
 }

@@ -9,24 +9,6 @@ namespace GameA
     {
         private TrainProperty _trainProperty;
 
-        private string[] _spriteNames =
-        {
-            "icon_train_heart",
-            "icon_train_run",
-            "icon_train_jump",
-            "icon_train_nutrition",
-            "icon_train_magnet"
-        };
-
-        private string[] _propertyNames =
-        {
-            "冥想训练",
-            "长跑训练",
-            "跳远训练",
-            "拳击训练",
-            "摩擦训练"
-        };
-
         public UMCtrlCharacterUpgradeItem(TrainProperty trainProperty)
         {
             _trainProperty = trainProperty;
@@ -35,6 +17,7 @@ namespace GameA
         public void InitView(Sprite icon,string name)
         {
             _cachedView.Icon.sprite = icon;
+            _cachedView.Icon.SetNativeSize();
             _cachedView.NameTxt.text = name;
         }
 
@@ -43,13 +26,13 @@ namespace GameA
             _cachedView.CostTxt.text = _trainProperty.Cost.ToString();
             _cachedView.TimeTxt.text = GetTimeContent(_trainProperty.Time);
             _cachedView.MaxLvTxt.text = GameATools.GetLevelString(_trainProperty.MaxLv);
-            _cachedView.CurLvTxt.text = GameATools.GetLevelString(_trainProperty.CurLv);
-            _cachedView.NextLvTxt.text = GameATools.GetLevelString(_trainProperty.CurLv + 1);
-            _cachedView.DisableObj.SetActive(_trainProperty.MaxLv == _trainProperty.CurLv);
-            _cachedView.MaxLvTxt.gameObject.SetActive(_trainProperty.MaxLv == _trainProperty.CurLv);
-            _cachedView.CurLvTxt.gameObject.SetActive(_trainProperty.MaxLv > _trainProperty.CurLv);
-            _cachedView.CostTxt.gameObject.SetActive(_trainProperty.MaxLv > _trainProperty.CurLv);
-            _cachedView.TimeTxt.gameObject.SetActive(_trainProperty.MaxLv > _trainProperty.CurLv);
+            _cachedView.CurLvTxt.text = GameATools.GetLevelString(_trainProperty.Level);
+            _cachedView.NextLvTxt.text = GameATools.GetLevelString(_trainProperty.Level + 1);
+            _cachedView.DisableObj.SetActive(_trainProperty.MaxLv == _trainProperty.Level);
+            _cachedView.MaxLvTxt.gameObject.SetActive(_trainProperty.MaxLv == _trainProperty.Level);
+            _cachedView.CurLvTxt.gameObject.SetActive(_trainProperty.MaxLv > _trainProperty.Level);
+            _cachedView.CostTxt.gameObject.SetActive(_trainProperty.MaxLv > _trainProperty.Level);
+            _cachedView.TimeTxt.gameObject.SetActive(_trainProperty.MaxLv > _trainProperty.Level);
         }
 
         private string GetTimeContent(int second)

@@ -11,6 +11,5 @@ namespace GameA
         public Image Icon;
         public Text CurLvTxt;
         public Text ValueTxt;
-       
     }
 }
