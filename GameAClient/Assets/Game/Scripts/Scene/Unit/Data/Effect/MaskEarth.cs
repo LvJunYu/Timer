@@ -17,6 +17,8 @@ namespace GameA.Game
     {
         protected bool _trigger;
         protected SpriteRenderer _spriteRenderer;
+        protected int _edgeValue;
+        protected bool _intersect;
 
         internal override bool InstantiateView()
         {
@@ -29,25 +31,51 @@ namespace GameA.Game
             {
                 _spriteRenderer.DOFade(0.5f, 0.5f);
             }
+            CalculateEdge(true);
             return true;
+        }
+
+        internal override void OnObjectDestroy()
+        {
+            base.OnObjectDestroy();
+            CalculateEdge(false);
+            if (_spriteRenderer != null)
+            {
+                DOTween.Kill(_spriteRenderer);
+            }
         }
 
         internal override void OnPlay()
         {
             base.OnPlay();
-            _spriteRenderer.DOFade(1, 0f);
+            if (_spriteRenderer != null)
+            {
+                _spriteRenderer.DOFade(1, 0f);
+            }
         }
 
         internal override void OnEdit()
         {
-            _spriteRenderer.DOFade(0.5f, 0.5f);
+            if (_spriteRenderer != null)
+            {
+                _spriteRenderer.DOFade(0.5f, 0.5f);
+            }
         }
 
         protected override void Clear()
         {
+            _intersect = false;
             _trigger = false;
             SetAllCross(_trigger);
             base.Clear();
+        }
+
+        public override void OnIntersect(UnitBase other)
+        {
+            if (other.IsMain)
+            {
+                _intersect = true;
+            }
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
@@ -60,7 +88,7 @@ namespace GameA.Game
             {
                 if (!checkOnly)
                 {
-                    OnTrigger();
+                    OnTrigger(true);
                 }
                 return false;
             }
@@ -77,7 +105,7 @@ namespace GameA.Game
             {
                 if (!checkOnly)
                 {
-                    OnTrigger();
+                    OnTrigger(true);
                 }
                 return false;
             }
@@ -94,7 +122,7 @@ namespace GameA.Game
             {
                 if (!checkOnly)
                 {
-                    OnTrigger();
+                    OnTrigger(true);
                 }
                 return false;
             }
@@ -111,34 +139,98 @@ namespace GameA.Game
             {
                 if (!checkOnly)
                 {
-                    OnTrigger();
+                    OnTrigger(true);
                 }
                 return false;
             }
             return base.OnRightHit(other, ref x, checkOnly);
         }
 
-        public void OnTrigger()
+        public void OnTrigger(bool value)
         {
-            if (_trigger)
+            if (_trigger == value)
             {
                 return;
             }
-            _trigger = true;
+            _trigger = value;
             SetAllCross(_trigger);
             if (_spriteRenderer != null)
             {
-                _spriteRenderer.DOFade(0, 0.5f);
+                _spriteRenderer.DOFade(_trigger ? 0 : 1, 0.5f);
             }
             SendMsgToAround();
+//            LogHelper.Debug("OnTrigger {0} {1}", value, this);
+        }
+        
+        public override void UpdateLogic()
+        {
+            if (_trigger && _intersect)
+            {
+                if (_edgeValue == 15)
+                {
+                    return;
+                }
+                var mainPlayer = PlayMode.Instance.MainPlayer;
+                if (mainPlayer != null)
+                {
+                    if (!_colliderGrid.Intersects(mainPlayer.ColliderGrid))
+                    {
+                        _intersect = false;
+                        if (IsEdgeEmpty(EDirectionType.Up))
+                        {
+                            if (mainPlayer.ColliderGrid.YMin > _colliderGrid.YMax)
+                            {
+                                OnTrigger(false);
+                            }
+                        }
+                        if (IsEdgeEmpty(EDirectionType.Down))
+                        {
+                            if (mainPlayer.ColliderGrid.YMax < _colliderGrid.YMin)
+                            {
+                                OnTrigger(false);
+                            }
+                        }
+                        if (IsEdgeEmpty(EDirectionType.Left))
+                        {
+                            if (mainPlayer.ColliderGrid.XMax < _colliderGrid.XMin)
+                            {
+                                OnTrigger(false);
+                            }
+                        }
+                        if (IsEdgeEmpty(EDirectionType.Right))
+                        {
+                            if (mainPlayer.ColliderGrid.XMin > _colliderGrid.XMax)
+                            {
+                                OnTrigger(false);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private void SendMsgToAround()
         {
-            CheckPos(_unitDesc.GetUpPos(_unitDesc.Guid.z));
-            CheckPos(_unitDesc.GetDownPos(_unitDesc.Guid.z));
-            CheckPos(_unitDesc.GetLeftPos(_unitDesc.Guid.z));
-            CheckPos(_unitDesc.GetRightPos(_unitDesc.Guid.z));
+            if (_edgeValue == 0)
+            {
+                return;
+            }
+            if (!IsEdgeEmpty(EDirectionType.Up))
+            {
+                CheckPos(_unitDesc.GetUpPos(_unitDesc.Guid.z));
+            }
+            if (!IsEdgeEmpty(EDirectionType.Down))
+            {
+                CheckPos(_unitDesc.GetDownPos(_unitDesc.Guid.z));
+            }
+            if (!IsEdgeEmpty(EDirectionType.Left))
+            {
+                CheckPos(_unitDesc.GetLeftPos(_unitDesc.Guid.z));
+            }
+            if (!IsEdgeEmpty(EDirectionType.Right))
+            {
+                CheckPos(_unitDesc.GetRightPos(_unitDesc.Guid.z));
+            }
         }
 
         private void CheckPos(IntVec3 pos)
@@ -151,10 +243,71 @@ namespace GameA.Game
                     var maskEarth = unit as MaskEarth;
                     if (maskEarth != null)
                     {
-                        maskEarth.OnTrigger();
+                        maskEarth.OnTrigger(_trigger);
                     }
                 }
             }
+        }
+        
+        private bool IsEdgeEmpty(EDirectionType eDirectionType)
+        {
+            return (_edgeValue & (1 << (int) eDirectionType)) != 0;
+        }
+        
+        private void CalculateEdge(bool add)
+        {
+            _edgeValue = 15;
+            IntVec3 up=_unitDesc.GetUpPos(_unitDesc.Guid.z);
+            IntVec3 down=_unitDesc.GetDownPos(_unitDesc.Guid.z);
+            IntVec3 left=_unitDesc.GetLeftPos(_unitDesc.Guid.z);
+            IntVec3 right=_unitDesc.GetRightPos(_unitDesc.Guid.z);
+            if (CheckMaskEarth(up, EDirectionType.Down, add))
+            {
+                OnEdge(EDirectionType.Up, add);
+            }
+            if (CheckMaskEarth(down, EDirectionType.Up, add))
+            {
+                OnEdge(EDirectionType.Down, add);
+            }
+            if (CheckMaskEarth(left, EDirectionType.Right, add))
+            {
+                OnEdge(EDirectionType.Left, add);
+            }
+            if (CheckMaskEarth(right, EDirectionType.Left, add))
+            {
+                OnEdge(EDirectionType.Right, add);
+            }
+        }
+
+        public void OnEdge(EDirectionType eDirectionType, bool add)
+        {
+            if (!add)
+            {
+                _edgeValue = (byte) (_edgeValue | (1 << (byte) eDirectionType));
+            }
+            else
+            {
+                _edgeValue = (byte) (_edgeValue & ~(1 << (byte) eDirectionType));
+            }
+            LogHelper.Debug("{0} {1}", _edgeValue, this);
+        }
+
+        private bool CheckMaskEarth(IntVec3 pos, EDirectionType eDirectionType, bool add)
+        {
+            UnitBase unit;
+            if (ColliderScene2D.Instance.TryGetUnit(pos, out unit))
+            {
+                if (unit != null && unit.Id == Id)
+                {
+                    var maskEarth = unit as MaskEarth;
+                    if (maskEarth != null)
+                    {
+                        maskEarth.OnEdge(eDirectionType, add);
+                    }
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
