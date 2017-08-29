@@ -243,6 +243,8 @@ namespace GameA
             //    code => { LogHelper.Error("Network error when get UserWeaponPartData, {0}" ,code); });
             //_userWeaponData = LocalUser.Instance.UserWeaponData;
             //_userWeaponPartData = LocalUser.Instance.UserWeaponPartData;
+            _userWeaponDataDic.Clear();
+            _userWeaponPartDataDic.Clear();
             foreach (var item in _userWeaponData.ItemDataList)
             {
                 _userWeaponDataDic.Add(item.Id, item);
