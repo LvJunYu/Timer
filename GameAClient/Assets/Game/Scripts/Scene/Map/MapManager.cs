@@ -244,7 +244,7 @@ namespace GameA.Game
                 unitObject.Id = MapConfig.SpawnId;
                 unitObject.Scale = Vector2.one;
                 unitObject.Guid = new IntVec3((2 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x),ConstDefineGM2D.MapStartPos.y+ConstDefineGM2D.ServerTileScale,
-                    (int) EUnitDepth.Dynamic);
+                    (int) EUnitDepth.Earth);
                 EditMode.Instance.AddUnitWithCheck(unitObject);
             }
             //生成胜利之门
