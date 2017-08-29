@@ -25,26 +25,9 @@ namespace GameA
         public void Refresh()
         {
             _cachedView.CurLvTxt.text = GameATools.GetLevelString(_trainProperty.Level);
-            _cachedView.ValueTxt.text = GetValueString(_trainProperty.Value);
+            _cachedView.ValueTxt.text = _trainProperty.ValueDesc;
         }
 
-        private string GetValueString(float value)
-        {
-            switch (_trainProperty.Property)
-            {
-                case ETrainPropertyType.TPT_HPRegeneration:
-                    return string.Format("{0}HP/s",value);
-                case ETrainPropertyType.TPT_RunSpeed:
-                    return string.Format("{0}m/s",value);
-                case ETrainPropertyType.TPT_JumpHeight:
-                    return string.Format("{0}m",value);
-                case ETrainPropertyType.TPT_AntiStrike:
-                    return value.ToString();
-                case ETrainPropertyType.TPT_Magnet:
-                    return string.Format("{0}m",value);
-                default:
-                    return null;
-            }
-        }
+        
     }
 }

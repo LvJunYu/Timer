@@ -14,6 +14,10 @@ namespace GameA
         /// </summary>
         private long _userId;
         /// <summary>
+        /// 培养点数
+        /// </summary>
+        private int _trainPoint;
+        /// <summary>
         /// 训练属性列表
         /// </summary>
         private List<TrainProperty> _itemDataList;
@@ -38,6 +42,16 @@ namespace GameA
             get { return _userId; }
             set { if (_userId != value) {
                 _userId = value;
+                SetDirty();
+            }}
+        }
+        /// <summary>
+        /// 培养点数
+        /// </summary>
+        public int TrainPoint { 
+            get { return _trainPoint; }
+            set { if (_trainPoint != value) {
+                _trainPoint = value;
                 SetDirty();
             }}
         }
@@ -121,6 +135,7 @@ namespace GameA
         {
             if (null == msg) return false;
             _userId = msg.UserId;           
+            _trainPoint = msg.TrainPoint;           
             _itemDataList = new List<TrainProperty>();
             for (int i = 0; i < msg.ItemDataList.Count; i++) {
                 _itemDataList.Add(new TrainProperty(msg.ItemDataList[i]));

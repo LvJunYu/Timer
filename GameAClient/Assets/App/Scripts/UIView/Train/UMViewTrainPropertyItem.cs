@@ -19,6 +19,7 @@ namespace GameA
         public Text MaxLvTxt;
         public Text TimeTxt;
         public Text CostTxt;
+        public Text CostGoldTxt;
         public GameObject DisableObj;
         public GameObject AbleObj;
     }
