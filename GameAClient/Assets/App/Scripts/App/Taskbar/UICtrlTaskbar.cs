@@ -288,8 +288,8 @@ namespace GameA
             //Debug.Log("_________________________OnPuzzleBtn");
             if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.Puzzle))
             {
-//                SocialGUIManager.Instance.OpenUI<UICtrlCharacterUpgrade>();
-                SocialGUIManager.Instance.OpenUI<UICtrlPuzzle>();
+                SocialGUIManager.Instance.OpenUI<UICtrlCharacterUpgrade>();
+//                SocialGUIManager.Instance.OpenUI<UICtrlPuzzle>();
             }
         }
 

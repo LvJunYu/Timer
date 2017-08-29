@@ -32,10 +32,10 @@ namespace GameA
             _trainProperty = trainProperty;
         }
 
-        public void InitView()
+        public void InitView(Sprite icon,string name)
         {
-            _cachedView.Icon.sprite = ResourcesManager.Instance.GetSprite(_spriteNames[_trainProperty.Property - 1]);
-            _cachedView.NameTxt.text = _propertyNames[_trainProperty.Property - 1];
+            _cachedView.Icon.sprite = icon;
+            _cachedView.NameTxt.text = name;
         }
 
         public void Refresh()
@@ -45,8 +45,11 @@ namespace GameA
             _cachedView.MaxLvTxt.text = GameATools.GetLevelString(_trainProperty.MaxLv);
             _cachedView.CurLvTxt.text = GameATools.GetLevelString(_trainProperty.CurLv);
             _cachedView.NextLvTxt.text = GameATools.GetLevelString(_trainProperty.CurLv + 1);
+            _cachedView.DisableObj.SetActive(_trainProperty.MaxLv == _trainProperty.CurLv);
             _cachedView.MaxLvTxt.gameObject.SetActive(_trainProperty.MaxLv == _trainProperty.CurLv);
             _cachedView.CurLvTxt.gameObject.SetActive(_trainProperty.MaxLv > _trainProperty.CurLv);
+            _cachedView.CostTxt.gameObject.SetActive(_trainProperty.MaxLv > _trainProperty.CurLv);
+            _cachedView.TimeTxt.gameObject.SetActive(_trainProperty.MaxLv > _trainProperty.CurLv);
         }
 
         private string GetTimeContent(int second)

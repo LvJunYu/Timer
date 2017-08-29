@@ -13,5 +13,6 @@ namespace GameA
     {
         public Button CloseBtn;
         public RectTransform PropertyListRTF;
+        public RectTransform InfoListRTF;
     }
 }

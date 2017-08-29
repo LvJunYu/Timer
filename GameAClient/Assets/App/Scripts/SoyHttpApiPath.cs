@@ -5,6 +5,9 @@
 ** Summary : SoyHttpApiPath
 ***********************************************************************/
 
+using System;
+using System.Collections.Generic;
+
 namespace SoyEngine
 {
     public static class SoyHttpApiPath
@@ -141,6 +144,14 @@ namespace SoyEngine
         public const string CompoundWeapon = "/home/compoundWeapon";
         // 升级武器
         public const string UpgradeWeapon = "/home/upgradeWeapon";
+        // 角色训练数据
+        public const string UserTrainProperty = "/home/getUserTrainPropertyData";
+        // 升级训练属性
+        public const string UpgradeTrainProperty = "/home/upgradeTrainProperty";
+        // 升级训练阶层
+        public const string CompleteUpgradeTrainProperty = "/home/completeUpgradeTrainProperty";
+        // 升级训练阶层
+        public const string UpgradeTrainGrade = "/home/upgradeTrainGrade";
         // 冒险模式关卡列表
         public const string AdventureProjectList = "/adventure/getProjectList";
         // 冒险模式进度

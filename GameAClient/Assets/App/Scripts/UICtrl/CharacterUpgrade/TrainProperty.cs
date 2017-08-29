@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using GameA.Game;
+using SoyEngine.Proto;
 using UnityEngine;
 using Text = UnityEngine.UI.Text;
 
@@ -10,22 +11,16 @@ namespace GameA
     /// <summary>
     /// 训练的属性
     /// </summary>
-    public class TrainProperty : SyncronisticData
+    public partial class TrainProperty : SyncronisticData
     {
         private int[] _gradeMaxLv =
         {
-            2, 5, 9, 14
+            3, 6, 10, 15
         };
 
-        private int _property;
         private int _curLv;
         private int _curGrade;
         private Dictionary<int, Table_CharacterUpgrade> _lvDic;
-
-        public int Property
-        {
-            get { return _property; }
-        }
 
         public int CurLv
         {
@@ -44,34 +39,21 @@ namespace GameA
 
         public int MaxLv
         {
-            get { return _gradeMaxLv[_curGrade]; }
+            get { return _gradeMaxLv[_curGrade - 1]; }
         }
 
-        public TrainProperty(int property, int level, int curGrade)
+        public TrainProperty(int propertyId, int level, int curGrade)
         {
-            _property = property;
+            _property = (ETrainPropertyType) propertyId;
             _curLv = level;
             _curGrade = curGrade;
             var table_CharacterUpgradeDic = TableManager.Instance.Table_CharacterUpgradeDic;
             _lvDic = new Dictionary<int, Table_CharacterUpgrade>(14);
             foreach (Table_CharacterUpgrade value in table_CharacterUpgradeDic.Values)
             {
-                if (value.Property == _property)
+                if (value.Property == (int) _property)
                     _lvDic.Add(value.Level, value);
             }
-        }
-
-        private int GetGrade(int lv)
-        {
-            int grade = 0;
-            for (int i = 0; i < _gradeMaxLv.Length; i++)
-            {
-                if (_gradeMaxLv[i] > lv)
-                    grade = i;
-                else
-                    break;
-            }
-            return grade;
         }
     }
 }

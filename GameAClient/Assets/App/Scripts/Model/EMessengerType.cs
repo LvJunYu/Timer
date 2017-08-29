@@ -123,6 +123,11 @@ namespace GameA
         public static int OnWeaponDataChange = SoyEngine.EMessengerType.NextId++;
         //设置变化
         public static int OnGameSettingChanged = SoyEngine.EMessengerType.NextId++;
+        
+        //训练
+        public static int OnCharacterUpgradeProperty = SoyEngine.EMessengerType.NextId++;
+        public static int OnCharacterUpgradeGrade = SoyEngine.EMessengerType.NextId++;
+
     }
 }
 
