@@ -9,7 +9,7 @@ namespace GameA
     /// <summary>
     /// 
     /// </summary>
-    public class UMViewCharacterUpgradeItem : UMViewBase
+    public class UMViewTrainPropertyItem : UMViewBase
     {
         public Image Icon;
         public Button StartBtn;
@@ -19,5 +19,7 @@ namespace GameA
         public Text MaxLvTxt;
         public Text TimeTxt;
         public Text CostTxt;
+        public GameObject DisableObj;
+        public GameObject AbleObj;
     }
 }

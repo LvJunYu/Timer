@@ -41,6 +41,9 @@ namespace GameA
         //武器数据
         private readonly UserWeaponData _userWeaponData = new UserWeaponData();
         private readonly UserWeaponPartData _userWeaponPartData = new UserWeaponPartData();
+        //训练数据
+        private readonly UserTrainProperty _userTrainProperty = new UserTrainProperty();
+
         #endregion
         #region 属性
 
@@ -170,6 +173,12 @@ namespace GameA
         public UserWeaponPartData UserWeaponPartData
         {
             get { return _userWeaponPartData; }
+        }
+        
+        //训练数据
+        public UserTrainProperty UserTrainProperty
+        {
+            get { return _userTrainProperty; }
         }
         #endregion
 

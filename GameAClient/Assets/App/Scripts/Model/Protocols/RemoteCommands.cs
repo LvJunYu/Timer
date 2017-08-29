@@ -1442,6 +1442,126 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingUpgradeTrainProperty {
+            get { return _isRequstingUpgradeTrainProperty; }
+        }
+        private static bool _isRequstingUpgradeTrainProperty = false;
+        /// <summary>
+		/// 升级训练属性
+		/// </summary>
+		/// <param name="property">属性ID</param>
+		/// <param name="targetLevel">目标等级</param>
+        public static void UpgradeTrainProperty (
+            ETrainPropertyType property,
+            int targetLevel,
+            Action<Msg_SC_CMD_UpgradeTrainProperty> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpgradeTrainProperty) {
+                return;
+            }
+            _isRequstingUpgradeTrainProperty = true;
+            Msg_CS_CMD_UpgradeTrainProperty msg = new Msg_CS_CMD_UpgradeTrainProperty();
+            // 升级训练属性
+            msg.Property = property;
+            msg.TargetLevel = targetLevel;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpgradeTrainProperty>(
+                SoyHttpApiPath.UpgradeTrainProperty, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpgradeTrainProperty = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpgradeTrainProperty", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpgradeTrainProperty = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingCompleteUpgradeTrainProperty {
+            get { return _isRequstingCompleteUpgradeTrainProperty; }
+        }
+        private static bool _isRequstingCompleteUpgradeTrainProperty = false;
+        /// <summary>
+		/// 升级训练阶层
+		/// </summary>
+		/// <param name="property">属性ID</param>
+		/// <param name="targetGrade">目标阶层</param>
+		/// <param name="remainTime">剩余时间</param>
+        public static void CompleteUpgradeTrainProperty (
+            ETrainPropertyType property,
+            int targetGrade,
+            long remainTime,
+            Action<Msg_SC_CMD_CompleteUpgradeTrainProperty> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingCompleteUpgradeTrainProperty) {
+                return;
+            }
+            _isRequstingCompleteUpgradeTrainProperty = true;
+            Msg_CS_CMD_CompleteUpgradeTrainProperty msg = new Msg_CS_CMD_CompleteUpgradeTrainProperty();
+            // 升级训练阶层
+            msg.Property = property;
+            msg.TargetGrade = targetGrade;
+            msg.RemainTime = remainTime;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CompleteUpgradeTrainProperty>(
+                SoyHttpApiPath.CompleteUpgradeTrainProperty, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingCompleteUpgradeTrainProperty = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "CompleteUpgradeTrainProperty", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingCompleteUpgradeTrainProperty = false;
+                },
+                form
+            );
+        }
+
+        public static bool IsRequstingUpgradeTrainGrade {
+            get { return _isRequstingUpgradeTrainGrade; }
+        }
+        private static bool _isRequstingUpgradeTrainGrade = false;
+        /// <summary>
+		/// 升级训练阶层
+		/// </summary>
+		/// <param name="targetGrade">目标阶层</param>
+        public static void UpgradeTrainGrade (
+            int targetGrade,
+            Action<Msg_SC_CMD_UpgradeTrainGrade> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingUpgradeTrainGrade) {
+                return;
+            }
+            _isRequstingUpgradeTrainGrade = true;
+            Msg_CS_CMD_UpgradeTrainGrade msg = new Msg_CS_CMD_UpgradeTrainGrade();
+            // 升级训练阶层
+            msg.TargetGrade = targetGrade;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_UpgradeTrainGrade>(
+                SoyHttpApiPath.UpgradeTrainGrade, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingUpgradeTrainGrade = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "UpgradeTrainGrade", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingUpgradeTrainGrade = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingBuyEnergy {
             get { return _isRequstingBuyEnergy; }
         }

@@ -9,9 +9,11 @@ namespace GameA
     /// <summary>
     /// 
     /// </summary>
-    public class UIViewCharacterUpgrade : UIViewBase
+    public class UIViewTrain : UIViewBase
     {
         public Button CloseBtn;
         public RectTransform PropertyListRTF;
+        public RectTransform InfoListRTF;
+        public Text OwnedTrainPointTxt;
     }
 }
