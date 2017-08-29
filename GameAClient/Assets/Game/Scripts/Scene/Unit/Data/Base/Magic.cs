@@ -90,14 +90,6 @@ namespace GameA.Game
                 {
                     GM2DTools.GetBorderPoint(_colliderGrid, _curMoveDirection, ref _pointACheck, ref _pointBCheck);
                     var checkGrid = SceneQuery2D.GetGrid(_pointACheck, _pointBCheck, (byte)(_curMoveDirection - 1), _velocity);
-                    if (!DataScene2D.Instance.IsInTileMap(checkGrid))
-                    {
-                        _timerMagic = 0;
-                        Speed = IntVec2.zero;
-                        ChangeMoveDirection();
-                        _magicRotate = null;
-                        return;
-                    }
                     var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.MovingEarthBlockLayer, float.MinValue, float.MaxValue, _dynamicCollider);
                     for (int i = 0; i < units.Count; i++)
                     {
