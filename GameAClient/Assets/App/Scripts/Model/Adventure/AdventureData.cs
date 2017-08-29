@@ -77,6 +77,21 @@ namespace GameA
             get { return _lastAdvSuccess; }
         }
 
+        public EAdventureProjectType LastPlayedLevelType
+        {
+            get { return _lastPlayedLevelType; }
+        }
+
+        public int LastPlayedChapterIdx
+        {
+            get { return _lastPlayedChapterIdx; }
+        }
+
+        public int LastPlayedLevelIdx
+        {
+            get { return _lastPlayedLevelIdx; }
+        }
+
         #endregion 属性
 
         #region 方法
@@ -215,6 +230,29 @@ namespace GameA
             });
         }
 
+        public void TestPlayAdventureLevel(
+            int sectionId,
+            int levelIdx,
+            EAdventureProjectType type,
+            Action successCallback, Action<ENetResultCode> failedCallback)
+        {
+            _lastPlayedLevelType = type;
+            _lastPlayedChapterIdx = sectionId;
+            _lastPlayedLevelIdx = levelIdx;
+            _lastAdvSuccess = true;
+            var levelDetail = GetAdventureUserLevelDataDetail(sectionId, type, levelIdx);
+            levelDetail.SimpleData.Star1Flag = true;
+            levelDetail.SimpleData.Star2Flag = false;
+            levelDetail.SimpleData.Star3Flag = true;
+            levelDetail.SimpleData.SuccessCount++;
+            levelDetail.SimpleData.LastPlayTime = DateTimeUtil.GetNowUnixTimestampMillis();
+            _userData.AdventureUserProgress.CompleteLevel++;
+            if (successCallback != null)
+            {
+                successCallback.Invoke();
+            }
+        }
+        
         /// <summary>
         /// 重新尝试冒险关卡
         /// </summary>
@@ -514,6 +552,19 @@ namespace GameA
                 return currentHPPercentage > starValue * 0.01f;
             }
             return false;
+        }
+
+        
+        public static int GetNormalProgress(int section, int level) {
+            return Mathf.Max(0, (section-1) * 9 + level);
+        }
+
+        public static int GetNormalSectionByProgress(int val) {
+            return (val - 1) / 9 + 1;
+        }
+
+        public static int GetNormalLevelByProgress(int val) {
+            return (val - 1) % 9 + 1;
         }
 
         #endregion 方法
