@@ -59,13 +59,14 @@ namespace GameA
 		/// 当前显示章节
 		/// </summary>
 		/// <value>The current chapter.</value>
-		private int CurrentChapter {
-			set {
+		public int CurrentChapter {
+			private set {
 				if (_currentChapter != value) {
 					_currentChapter = value;
 					RefreshChapterInfo ();
 				}
 			}
+			get { return _currentChapter; }
 		}
 
         #endregion
@@ -230,7 +231,7 @@ namespace GameA
 
 		
 
-		private void RefreshChapterInfo () {
+		private void RefreshChapterInfo (bool doPassAnimate = false) {
 			if (_currentChapter < 1) {
 				_currentChapter = 1;
 			}
@@ -253,7 +254,7 @@ namespace GameA
 			}
 
 			if (_cachedView.Chapters [_currentChapter - 1] != null) {
-				_cachedView.Chapters [_currentChapter - 1].RefreshInfo (tableChapter);
+				_cachedView.Chapters [_currentChapter - 1].RefreshInfo (tableChapter, doPassAnimate);
 			}
 
             if (_currentChapter == 1) {
@@ -393,10 +394,11 @@ namespace GameA
             if (!_isOpen)
                 return;
 //            _cachedView.ChapterScrollRect.horizontalNormalizedPosition = _chapterRightNormalizedHorizontalPos[_currentChapter - 1];
-			RefreshChapterInfo ();
-			if (_currentChapter <= AppData.Instance.AdventureData.UserData.SectionList.Count) {
-				if (AppData.Instance.AdventureData.UserData.SectionList [_currentChapter - 1].IsDirty) {
-					AppData.Instance.AdventureData.UserData.SectionList [_currentChapter - 1].Request (
+			var advData = AppData.Instance.AdventureData;
+			RefreshChapterInfo(advData.LastAdvSuccess);
+			if (_currentChapter <= advData.UserData.SectionList.Count) {
+				if (advData.UserData.SectionList [_currentChapter - 1].IsDirty) {
+					advData.UserData.SectionList [_currentChapter - 1].Request (
 						LocalUser.Instance.UserGuid,
 						_currentChapter,
 						() => {
