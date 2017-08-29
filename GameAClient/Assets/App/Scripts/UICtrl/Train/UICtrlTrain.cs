@@ -46,7 +46,7 @@ namespace GameA
 
         private void CreateUMItems()
         {
-            List<TrainProperty> _userTrainProperty = LocalUser.Instance.UserTrainProperty.ItemDataList;
+//            List<TrainProperty> userTrainProperty = LocalUser.Instance.UserTrainProperty.ItemDataList;
             _curGrade = LocalUser.Instance.UserTrainProperty.Grade;
             _curTrainPoint = LocalUser.Instance.UserTrainProperty.TrainPoint;
             //临时数据
@@ -60,7 +60,7 @@ namespace GameA
             for (int i = 0; i < _maxPropertyCount; i++)
             {
                 //初始化属性数据
-//                int level = _userTrainProperty[i].Level;
+//                int level = userTrainProperty[i].Level;
                 //临时数据
                 int level = Random.Range(1, 4);
 
@@ -93,6 +93,11 @@ namespace GameA
             }
             if (_isTraining)
             {
+                if (null == _curTrainingProperty )
+                {
+                    LogHelper.Error("_isTraining==ture, but _curTrainingProperty==null");
+                    return;
+                }
                 _cachedView.TrainingTxt.text =
                     string.Format("{0}中", _propertyNames[(int) (_curTrainingProperty.Property) - 1]);
                 _cachedView.ValueDescTxt.text = string.Format("{0}→{1}", _curTrainingProperty.ValueDesc,
@@ -128,11 +133,9 @@ namespace GameA
                 else
                 {
                     float checkInterval = Mathf.Ceil(Time.time) - Time.time;
-                    if (0 == checkInterval)
+                    if (checkInterval < 0.01f)
                         checkInterval = 1;
                     _checkTime = (Time.time + checkInterval);
-                    Debug.Log("Time.time = " + Time.time);
-                    Debug.Log("checkInterval = " + checkInterval);
                 }
                 _cachedView.RemainTimeTxt.text = _curTrainingProperty.RemainTrainingTimeDesc;
                 _cachedView.FinishCostTxt.text = _curTrainingProperty.FinishCost.ToString();
