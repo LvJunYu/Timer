@@ -67,6 +67,10 @@ namespace GameA.Game
             }
             else
             {
+                if (!DataScene2D.Instance.IsInTileMap(_checkGrid))
+                {
+                    return;
+                }
                 bool blocked = false;
                 var units = ColliderScene2D.GridCastAllReturnUnits(_checkGrid, EnvManager.BridgeBlockLayer);
                 for (int i = 0; i < units.Count; i++)

@@ -264,11 +264,11 @@ namespace GameA.Game
                 {
                     EditMode.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one));
                 }
-                //up
-                for (int j = validMapRect.Max.y + 1 - ConstDefineGM2D.ServerTileScale; j < validMapRect.Max.y + ConstDefineGM2D.ServerTileScale; j += ConstDefineGM2D.ServerTileScale)
-                {
-                    EditMode.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one));
-                }
+//                //up
+//                for (int j = validMapRect.Max.y + 1 - ConstDefineGM2D.ServerTileScale; j < validMapRect.Max.y + ConstDefineGM2D.ServerTileScale; j += ConstDefineGM2D.ServerTileScale)
+//                {
+//                    EditMode.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one));
+//                }
             }
             for (int i = validMapRect.Min.y + ConstDefineGM2D.ServerTileScale; i < validMapRect.Max.y - ConstDefineGM2D.ServerTileScale; i += ConstDefineGM2D.ServerTileScale)
             {
