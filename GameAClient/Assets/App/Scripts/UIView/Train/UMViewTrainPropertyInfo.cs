@@ -6,7 +6,7 @@ namespace GameA
     /// <summary>
     /// 
     /// </summary>
-    public class UMViewCharacterUpgradeInfo : UMViewBase
+    public class UMViewTrainPropertyInfo : UMViewBase
     {
         public Image Icon;
         public Text CurLvTxt;

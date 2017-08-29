@@ -7,11 +7,11 @@ using UnityEngine;
 
 namespace GameA
 {
-    public class UMCtrlCharacterUpgradeInfo : UMCtrlBase<UMViewCharacterUpgradeInfo>
+    public class UMCtrlTrainPropertyInfo : UMCtrlBase<UMViewTrainPropertyInfo>
     {
         private TrainProperty _trainProperty;
 
-        public UMCtrlCharacterUpgradeInfo(TrainProperty trainProperty)
+        public UMCtrlTrainPropertyInfo(TrainProperty trainProperty)
         {
             _trainProperty = trainProperty;
         }

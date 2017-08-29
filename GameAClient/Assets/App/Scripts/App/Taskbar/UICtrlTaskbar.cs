@@ -334,7 +334,7 @@ namespace GameA
             //Debug.Log("_________________________OnCharacterUpgradeBtn");
             if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.CharacterUpgrade))
             {
-                SocialGUIManager.Instance.OpenUI<UICtrlCharacterUpgrade>();
+                SocialGUIManager.Instance.OpenUI<UICtrlTrain>();
             }
         }
 

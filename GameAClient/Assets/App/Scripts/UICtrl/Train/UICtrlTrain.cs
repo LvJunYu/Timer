@@ -9,14 +9,14 @@ namespace GameA
     /// 阶层养成
     /// </summary>
     [UIAutoSetup]
-    public class UICtrlCharacterUpgrade : UICtrlAnimationBase<UIViewCharacterUpgrade>
+    public class UICtrlTrain : UICtrlAnimationBase<UIViewTrain>
     {
         private string[] _spriteNames =
         {
             "icon_train_heart",
             "icon_train_run",
             "icon_train_jump",
-            "icon_train_nutrition",
+            "icon_train_shield",
             "icon_train_magnet"
         };
 
@@ -31,8 +31,8 @@ namespace GameA
 
         private const int _maxPropertyCount = 5;
         private int[] _gradeMaxLv;
-        private UMCtrlCharacterUpgradeItem[] _propertyItems;
-        private UMCtrlCharacterUpgradeInfo[] _propertyInfos;
+        private UMCtrlTrainPropertyItem[] _propertyItems;
+        private UMCtrlTrainPropertyInfo[] _propertyInfos;
         private TrainProperty[] _trainProperties;
         private int _curGrade;
 
@@ -43,8 +43,8 @@ namespace GameA
             //临时数据
             _curGrade = 1;
             //创建属性UMItem
-            _propertyItems = new UMCtrlCharacterUpgradeItem[_maxPropertyCount];
-            _propertyInfos = new UMCtrlCharacterUpgradeInfo[_maxPropertyCount];
+            _propertyItems = new UMCtrlTrainPropertyItem[_maxPropertyCount];
+            _propertyInfos = new UMCtrlTrainPropertyInfo[_maxPropertyCount];
             _trainProperties = new TrainProperty[_maxPropertyCount];
             for (int i = 0; i < _maxPropertyCount; i++)
             {
@@ -53,9 +53,9 @@ namespace GameA
                 //临时数据
                 int level = Random.Range(1, 4);
                 _trainProperties[i] = new TrainProperty(i + 1, level, _curGrade);
-                _propertyItems[i] = new UMCtrlCharacterUpgradeItem(_trainProperties[i]);
+                _propertyItems[i] = new UMCtrlTrainPropertyItem(_trainProperties[i]);
                 _propertyItems[i].Init(_cachedView.PropertyListRTF);
-                _propertyInfos[i] = new UMCtrlCharacterUpgradeInfo(_trainProperties[i]);
+                _propertyInfos[i] = new UMCtrlTrainPropertyInfo(_trainProperties[i]);
                 _propertyInfos[i].Init(_cachedView.InfoListRTF);
                 Sprite sprite = ResourcesManager.Instance.GetSprite(_spriteNames[i]);
                 _propertyItems[i].InitView(sprite, _propertyNames[i]);
@@ -93,7 +93,7 @@ namespace GameA
 
         private void OnCloseBtn()
         {
-            SocialGUIManager.Instance.CloseUI<UICtrlCharacterUpgrade>();
+            SocialGUIManager.Instance.CloseUI<UICtrlTrain>();
         }
 
         protected override void InitEventListener()

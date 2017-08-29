@@ -1,15 +1,12 @@
-﻿using SoyEngine;
-using System.Collections.Generic;
-using NewResourceSolution;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace GameA
 {
-    public class UMCtrlCharacterUpgradeItem : UMCtrlBase<UMViewCharacterUpgradeItem>
+    public class UMCtrlTrainPropertyItem : UMCtrlBase<UMViewTrainPropertyItem>
     {
         private TrainProperty _trainProperty;
 
-        public UMCtrlCharacterUpgradeItem(TrainProperty trainProperty)
+        public UMCtrlTrainPropertyItem(TrainProperty trainProperty)
         {
             _trainProperty = trainProperty;
         }
@@ -29,10 +26,12 @@ namespace GameA
             _cachedView.CurLvTxt.text = GameATools.GetLevelString(_trainProperty.Level);
             _cachedView.NextLvTxt.text = GameATools.GetLevelString(_trainProperty.Level + 1);
             _cachedView.DisableObj.SetActive(_trainProperty.MaxLv == _trainProperty.Level);
+            
             _cachedView.MaxLvTxt.gameObject.SetActive(_trainProperty.MaxLv == _trainProperty.Level);
             _cachedView.CurLvTxt.gameObject.SetActive(_trainProperty.MaxLv > _trainProperty.Level);
             _cachedView.CostTxt.gameObject.SetActive(_trainProperty.MaxLv > _trainProperty.Level);
             _cachedView.TimeTxt.gameObject.SetActive(_trainProperty.MaxLv > _trainProperty.Level);
+            _cachedView.StartBtn.gameObject.SetActive(_trainProperty.MaxLv > _trainProperty.Level);
         }
 
         private string GetTimeContent(int second)
