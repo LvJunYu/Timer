@@ -30,7 +30,7 @@ namespace GameA
             _cachedView.TimeTxt.text = _trainProperty.TimeDesc;
             _cachedView.MaxLvTxt.text = GameATools.GetLevelString(_trainProperty.MaxLv);
             _cachedView.CurLvTxt.text = GameATools.GetLevelString(_trainProperty.Level);
-            _cachedView.NextLvTxt.text = GameATools.GetLevelString(_trainProperty.Level + 1);
+            _cachedView.NextLvTxt.text = GameATools.GetLevelString(_trainProperty.NextLevel);
             _cachedView.DisableObj.SetActive(_trainProperty.MaxLv == _trainProperty.Level);
             _cachedView.AbleObj.SetActive(_trainProperty.MaxLv > _trainProperty.Level);
         }
