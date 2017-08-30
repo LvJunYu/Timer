@@ -78,7 +78,7 @@ namespace GameA
                     );
                     break;
             }
-            _openSequence.OnComplete(OnOpenAnimationComplete).SetAutoKill(false).Pause();
+            _openSequence.OnComplete(OnOpenAnimationComplete).SetAutoKill(false).Pause().OnUpdate(OnOpenUpdate);
             _closeSequence.OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause()
                 .PrependCallback(() => _cachedView.Trans.localPosition = Vector3.zero);
         }
@@ -132,7 +132,14 @@ namespace GameA
         {
             _animationType = EAnimationType.PopupFromDown;
         }
-
+        
+        /// <summary>
+        /// 打开动画每帧的回调
+        /// </summary>
+        protected virtual void OnOpenUpdate()
+        {
+        }
+        
         /// <summary>
         /// 打开动画结束后的回调
         /// </summary> 
