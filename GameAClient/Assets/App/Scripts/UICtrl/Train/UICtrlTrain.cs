@@ -62,19 +62,19 @@ namespace GameA
         private Sprite _lineSprite;
         private Sprite _pointSprite;
         private Dictionary<int, List<Vector3>> _propertyPosDic;
-        private int _maxLv;
-        private int _minLv;
+        private int _curMaxLv;
+        private int _curMinLv;
         private int _count;
         private float _angel;
-
-        private void CreateUMItems()
+        
+        private void CreateUmItems()
         {
             _angel = 90 - (180 - 360 / 5) / (float) 2;
 //            List<TrainProperty> userTrainProperty = LocalUser.Instance.UserTrainProperty.ItemDataList;
             _curGrade = LocalUser.Instance.UserTrainProperty.Grade;
             _curTrainPoint = LocalUser.Instance.UserTrainProperty.TrainPoint;
             //临时数据
-            _curGrade = 2;
+            _curGrade = 1;
             _curTrainPoint = 250;
             //创建属性UMItem和UMInfo
             _isTraining = false;
@@ -86,10 +86,10 @@ namespace GameA
                 //初始化属性数据
 //                int level = userTrainProperty[i].Level;
                 //临时数据
-                int level = Random.Range(3, 7);
+                int level = Random.Range(1, 4);
 
                 _trainProperties[i] = new TrainProperty(i + 1, level, _curGrade);
-                _propertyItems[i] = new UMCtrlTrainPropertyItem(_trainProperties[i]);
+                _propertyItems[i] = new UMCtrlTrainPropertyItem(_trainProperties[i],this);
                 _propertyItems[i].Init(_cachedView.PropertyListRTF);
                 _propertyInfos[i] = new UMCtrlTrainPropertyInfo(_trainProperties[i]);
                 _propertyInfos[i].Init(_cachedView.InfoListRTF);
@@ -141,47 +141,6 @@ namespace GameA
 //            RefreshMap();
         }
 
-        private void OnFinishImmediatelyBtn()
-        {
-            SocialGUIManager.ShowPopupDialog(
-                string.Format("是否使用{0}钻石立即完成训练。", _curTrainingProperty.FinishCost),
-                null,
-                new KeyValuePair<string, Action>("确定", () => { RequestFinishUpgradeTrainProperty(); }),
-                new KeyValuePair<string, Action>("取消", () => { }));
-        }
-
-        private void RequestFinishUpgradeTrainProperty()
-        {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "完成训练");
-            RemoteCommands.CompleteUpgradeTrainProperty(_curTrainingProperty.Property, _curTrainingProperty.Level + 1,
-                _curTrainingProperty.RemainTrainingTimeMill, res =>
-                {
-                    if (res.ResultCode == (int) ECompleteUpgradeTrainPropertyCode.CUTPC_Success)
-                    {
-                        FinishUpgradeTrainProperty();
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    }
-                    else
-                    {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                        LogHelper.Debug("立即完成训练失败");
-                    }
-                }, code =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    //测试，服务器完成后删除
-                    LogHelper.Debug("服务器请求失败，客服端进行测试");
-                    FinishUpgradeTrainProperty();
-                });
-        }
-
-        private void FinishUpgradeTrainProperty()
-        {
-            _curTrainingProperty.FinishUpgrade();
-            _curTrainingProperty = null;
-            _isTraining = false;
-        }
-
         private void RefreshMap()
         {
             RefreshPointAndLine();
@@ -191,12 +150,12 @@ namespace GameA
                     _uiCamera = SocialGUIManager.Instance.UIRoot.Canvas.worldCamera;
                 //计算属性位置点
                 Vector3 targetPos;
-                if (_trainProperties[i].Level == _maxLv)
+                if (_trainProperties[i].Level == _curMaxLv)
                     targetPos = _cachedView.MapOutPoints[i].position;
-                else if (_trainProperties[i].Level == _minLv)
+                else if (_trainProperties[i].Level == _curMinLv)
                     targetPos = _cachedView.MapInPoints[i].position;
                 else
-                    targetPos = _propertyPosDic[i][_trainProperties[i].Level - _minLv - 1];
+                    targetPos = _propertyPosDic[i][_trainProperties[i].Level - _curMinLv - 1];
                 _mapScreenPos[i] = _uiCamera.WorldToScreenPoint(targetPos);
             }
             _map[0] = new Vector4(_mapScreenPos[0].x, Screen.height - _mapScreenPos[0].y, _mapScreenPos[0].z, 0);
@@ -206,12 +165,14 @@ namespace GameA
             _map[4] = new Vector4(_mapScreenPos[2].x, Screen.height - _mapScreenPos[2].y, _mapScreenPos[2].z, 0);
             _cachedView.MapMaterial.SetVectorArray("Value", _map); //传递顶点屏幕位置信息给shader 
             _cachedView.MapMaterial.SetInt("PointNum", 5); //传递顶点数量给shader 
+            //检查能否升阶
+            _cachedView.UpgradeGradeBtn.gameObject.SetActive(CheckUpgradeGrade());
         }
 
         private void RefreshPointAndLine()
         {
-            Collect();
-            //清除属性字典
+            ClearPointAndLine();
+            //清除属性位置字典
             if (null == _propertyPosDic)
             {
                 _propertyPosDic = new Dictionary<int, List<Vector3>>(_maxPropertyCount);
@@ -225,9 +186,17 @@ namespace GameA
             {
                 _propertyPosDic[i].Clear();
             }
-            _maxLv = _gradeMaxLv[_curGrade - 1];
-            _minLv = _curGrade == 1 ? 1 : _gradeMaxLv[_curGrade - 2];
-            _count = _maxLv - _minLv - 1;
+            //若已打最大阶层，不产生点和线
+            if (_curGrade > _gradeMaxLv.Length)
+            {
+                _curMaxLv = _gradeMaxLv[_gradeMaxLv.Length - 1];
+                _curMinLv = _gradeMaxLv[_gradeMaxLv.Length - 1];
+                _count = 0;
+                return;
+            }
+            _curMaxLv = _gradeMaxLv[_curGrade - 1];
+            _curMinLv = _curGrade == 1 ? 1 : _gradeMaxLv[_curGrade - 2];
+            _count = _curMaxLv - _curMinLv - 1;
             //设置等级分割点
             for (int i = 0; i < _count; i++)
             {
@@ -256,6 +225,112 @@ namespace GameA
                     line.rectTransform().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, distance);
                 }
             }
+        }
+
+        private void OnUpgradeGradeBtn()
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在升阶");
+            RemoteCommands.UpgradeTrainGrade(_curGrade + 1, res =>
+            {
+                if (res.ResultCode == (int) EUpgradeTrainGradeCode.UTPG_Success)
+                {
+                    UpgradeGrade();
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                }
+                else
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    LogHelper.Debug("训练升阶失败");
+                }
+            }, code =>
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                //测试，服务器完成后删除
+                LogHelper.Debug("服务器请求失败，客服端进行测试");
+                UpgradeGrade();
+            });
+        }
+
+        private void OnFinishImmediatelyBtn()
+        {
+            SocialGUIManager.ShowPopupDialog(
+                string.Format("是否使用{0}钻石立即完成训练。", _curTrainingProperty.FinishCostDiamond),
+                null,
+                new KeyValuePair<string, Action>("确定", () =>
+                {
+                    if (_isTraining)
+                        RequestFinishUpgradeTrainProperty();
+                }),
+                new KeyValuePair<string, Action>("取消", () => { }));
+        }
+
+        private void RequestFinishUpgradeTrainProperty()
+        {
+            if(!GameATools.CheckDiamond(_curTrainingProperty.FinishCostDiamond))return;
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "完成训练");
+            RemoteCommands.CompleteUpgradeTrainProperty(_curTrainingProperty.Property, _curTrainingProperty.Level + 1,
+                _curTrainingProperty.RemainTrainingTimeMill, res =>
+                {
+                    if (res.ResultCode == (int) ECompleteUpgradeTrainPropertyCode.CUTPC_Success)
+                    {
+                        FinishUpgradeTrainProperty();
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    }
+                    else
+                    {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                        LogHelper.Debug("立即完成训练失败");
+                    }
+                }, code =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    //测试，服务器完成后删除
+                    LogHelper.Debug("服务器请求失败，客服端进行测试");
+                    FinishUpgradeTrainProperty();
+                });
+        }
+
+        private void FinishUpgradeTrainProperty()
+        {
+            if (!_isTraining) return;
+            if(!GameATools.CheckDiamond(_curTrainingProperty.FinishCostDiamond))return;
+            if (GameATools.LocalUseDiamond(_curTrainingProperty.FinishCostDiamond))
+            {
+                _curTrainingProperty.FinishUpgrade();
+                _curTrainingProperty = null;
+                _isTraining = false;
+                _checkTime = 0;
+                SocialGUIManager.ShowPopupDialog("恭喜您完成训练！",
+                    null,
+                    new KeyValuePair<string, Action>("确定", () => { }));
+            }
+        }
+
+        private void UpgradeGrade()
+        {
+            if(!CheckUpgradeGrade()) return;
+            _curGrade++;
+            for (int i = 0; i < _trainProperties.Length; i++)
+            {
+                _trainProperties[i].SetGrade(_curGrade);
+            }
+            Messenger.Broadcast(EMessengerType.OnUpgradeTrainGrade);
+            //弹窗
+            SocialGUIManager.ShowPopupDialog("恭喜您完成升阶！",
+                null,
+                new KeyValuePair<string, Action>("确定", () => { }));
+        }
+        
+        private bool CheckUpgradeGrade()
+        {
+            if (_curGrade > _gradeMaxLv.Length)
+                return false;
+            for (int i = 0; i < _trainProperties.Length; i++)
+            {
+                if (_trainProperties[i].Level < _curMaxLv)
+                    return false;
+            }
+            return true;
         }
 
         private void OnCloseBtn()
@@ -317,7 +392,7 @@ namespace GameA
             return tf;
         }
 
-        private void Collect()
+        private void ClearPointAndLine()
         {
             if (null == _lineCach)
                 _lineCach = new List<Transform>(20);
@@ -332,10 +407,16 @@ namespace GameA
         public override void OnUpdate()
         {
             base.OnUpdate();
+            if (!_isOpen) return;
             if (!_isTraining) return;
             if (Time.time > _checkTime)
             {
                 int curRemainTime = _curTrainingProperty.RemainTrainingTime;
+                if (curRemainTime <= 0)
+                {
+                    FinishUpgradeTrainProperty();
+                    return;
+                }
                 //若超过1小时，每分钟刷新
                 if (curRemainTime > 3600)
                 {
@@ -353,7 +434,7 @@ namespace GameA
                     _checkTime = (Time.time + checkInterval);
                 }
                 _cachedView.RemainTimeTxt.text = _curTrainingProperty.RemainTrainingTimeDesc;
-                _cachedView.FinishCostTxt.text = _curTrainingProperty.FinishCost.ToString();
+                _cachedView.FinishCostTxt.text = _curTrainingProperty.FinishCostDiamond.ToString();
                 _cachedView.TrainingSlider.value =
                     _curTrainingProperty.RemainTrainingTime / (float) _curTrainingProperty.Time;
             }
@@ -363,6 +444,7 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            _cachedView.UpgradeGradeBtn.onClick.AddListener(OnUpgradeGradeBtn);
             _cachedView.FinishImmediatelyBtn.onClick.AddListener(OnFinishImmediatelyBtn);
 //            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
 //            LocalUser.Instance.UserTrainProperty.Request(LocalUser.Instance.UserGuid,
@@ -376,7 +458,7 @@ namespace GameA
 //                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
 //                    LogHelper.Error("Network error when get UserTrainProperty, {0}", code);
 //                });
-            CreateUMItems();
+            CreateUmItems();
         }
 
         protected override void OnOpen(object parameter)
@@ -391,16 +473,42 @@ namespace GameA
             RefreshMap();
         }
 
+        protected override void SetAnimationType()
+        {
+            _animationType = EAnimationType.PopupFromDown;
+        }
+
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            RegisterEvent(EMessengerType.OnCharacterUpgradeProperty, OnCharacterUpgradeProperty);
-            RegisterEvent(EMessengerType.OnCharacterUpgradeGrade, OnCharacterUpgradeGrade);
+            RegisterEvent(EMessengerType.OnUpgradeTrainProperty, OnCharacterUpgradeProperty);
+            RegisterEvent(EMessengerType.OnUpgradeTrainGrade, OnCharacterUpgradeGrade);
         }
 
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.PopUpUI;
         }
+        
+        public bool CheckTrainPoint(int num)
+        {
+            if (_curTrainPoint < num)
+            {
+                SocialGUIManager.ShowPopupDialog("训练点数不够啦，还让不让玩啦！",
+                    null,
+                    new KeyValuePair<string, Action>("确定", () => { }));
+                return false;
+            }
+            return true;
+        }
+
+        public bool UseTrainPoint(int num)
+        {
+            if (_curTrainPoint < num)
+                return false;
+            _curTrainPoint -= num;
+            return true;
+        }
+
     }
 }

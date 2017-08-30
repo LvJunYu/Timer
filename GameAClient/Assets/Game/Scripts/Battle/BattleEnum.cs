@@ -108,4 +108,14 @@ namespace GameA.Game
         Magic,
         Rage
     }
+    
+    public enum EMonsterState
+    {
+        Idle,
+        Run,
+        Dialog,
+        Bang,
+        Chase,
+        Attack,
+    }
 }

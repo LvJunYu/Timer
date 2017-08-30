@@ -21,17 +21,17 @@ namespace GameA
 
         public int CostTrainPoint
         {
-            get { return _lvDic[_level + 1].DevelopPoint; }
+            get { return _lvDic[NextLevel].DevelopPoint; }
         }
 
         public int CostGold
         {
-            get { return _lvDic[_level + 1].TrainingPrice; }
+            get { return _lvDic[NextLevel].TrainingPrice; }
         }
 
         public int Time
         {
-            get { return _lvDic[_level + 1].TrainingTime; }
+            get { return _lvDic[NextLevel].TrainingTime; }
         }
 
         public string TimeDesc
@@ -39,9 +39,25 @@ namespace GameA
             get { return GetTimeString(Time); }
         }
 
+        public int NextLevel
+        {
+            get
+            {
+                int maxLv = _gradeMaxLv[_gradeMaxLv.Length - 1];
+                if (_level < maxLv)
+                    return _level + 1;
+                return maxLv;
+            }
+        }
+
         public int MaxLv
         {
-            get { return _gradeMaxLv[_curGrade - 1]; }
+            get
+            {
+                if (_curGrade > _gradeMaxLv.Length)
+                    return _gradeMaxLv[_gradeMaxLv.Length - 1];
+                return _gradeMaxLv[_curGrade - 1];
+            }
         }
 
         public float Value
@@ -51,12 +67,12 @@ namespace GameA
 
         public string ValueDesc
         {
-            get { return GetValueString(_lvDic[_level].Value); }
+            get { return GetValueString(Value); }
         }
 
         public string NextValueDesc
         {
-            get { return GetValueString(_lvDic[_level + 1].Value); }
+            get { return GetValueString(_lvDic[NextLevel].Value); }
         }
 
         public int RemainTrainingTime
@@ -79,9 +95,9 @@ namespace GameA
             get { return GetTimeString(RemainTrainingTime); }
         }
 
-        public int FinishCost
+        public int FinishCostDiamond
         {
-            get { return (int) Math.Ceiling(RemainTrainingTime / (double) _lvDic[_level + 1].SecondsPerDiamond); }
+            get { return (int) Math.Ceiling(RemainTrainingTime / (double) _lvDic[NextLevel].SecondsPerDiamond); }
         }
 
         public TrainProperty(int propertyId, int level, int curGrade)
@@ -97,19 +113,24 @@ namespace GameA
                     _lvDic.Add(value.Level, value);
             }
         }
-        
+
         public void FinishUpgrade()
         {
             _level++;
             _isTraining = false;
-            Messenger.Broadcast(EMessengerType.OnCharacterUpgradeProperty);
+            Messenger.Broadcast(EMessengerType.OnUpgradeTrainProperty);
         }
 
         public void StartUpgrade()
         {
             _isTraining = true;
             _trainStartTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
-            Messenger.Broadcast(EMessengerType.OnCharacterUpgradeProperty);
+            Messenger.Broadcast(EMessengerType.OnUpgradeTrainProperty);
+        }
+
+        public void SetGrade(int grade)
+        {
+            _curGrade = grade;
         }
 
         private string GetValueString(float value)

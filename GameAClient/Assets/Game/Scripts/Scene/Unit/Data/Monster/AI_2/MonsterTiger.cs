@@ -1,7 +1,7 @@
 ﻿namespace GameA.Game
 {
     [Unit(Id = 2005, Type = typeof(MonsterTiger))]
-    public class MonsterTiger : MonsterBase
+    public class MonsterTiger : MonsterAI_2
     {
         protected override bool OnInit()
         {

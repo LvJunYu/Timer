@@ -204,6 +204,6 @@ namespace GameA
         PopupFromUp,
         PopupFromLeft,
         PopupFromRight,
-        PopupFromClickPoint
+//        PopupFromClickPoint
     }
 }

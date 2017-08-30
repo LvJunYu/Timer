@@ -18,7 +18,7 @@ namespace GameA.Game
     }
 
     [Unit(Id = 2001, Type = typeof(MonsterTree))]
-    public class MonsterTree : MonsterAI
+    public class MonsterTree : MonsterAI_1
     {
         protected override void Clear()
         {
