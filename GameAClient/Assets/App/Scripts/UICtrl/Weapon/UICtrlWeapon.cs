@@ -125,15 +125,12 @@ namespace GameA
                 SocialGUIManager.Instance.OpenUI<UICtrlGetWeaponPart>();
                 return;
             }
-            if (_needPart <= _userOwnWeaponPart + _universalCount && _needCoin < _userGoldCoin)
-            {
                 int[] _weaponIDlv = new int[]
                 {
                     _weaponID, _weaponLv, _weaponlevelID, _isCompoudAddNum, _needCoin,
                     Math.Min(_userOwnWeaponPart, _needPart), Math.Max(0, _needPart - _userOwnWeaponPart)
                 };
                 SocialGUIManager.Instance.OpenUI<UICtrlWeaponUpgrade>(_weaponIDlv);
-            }
         }
 
         private void OnCloseBtn()
