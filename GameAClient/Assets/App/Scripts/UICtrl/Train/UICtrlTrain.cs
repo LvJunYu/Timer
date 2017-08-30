@@ -44,6 +44,8 @@ namespace GameA
         private int _curRemainTime;
         private float _checkTime;
         private Vector4[] _map = new Vector4[_maxPropertyCount];
+        private Vector3[] _mapScreenPos = new Vector3[_maxPropertyCount];
+        private Camera _uiCamera;
 
         private void CreateUMItems()
         {
@@ -79,6 +81,7 @@ namespace GameA
         private void RefreshView()
         {
             if (!_isOpen) return;
+//            _cachedView.MapImg.SetActive(false);
             _isTraining = false;
             _curTrainingProperty = null;
             //刷新属性
@@ -114,7 +117,78 @@ namespace GameA
                 _cachedView.GradeImgs[i].SetActive(_curGrade == i + 1);
             }
             //刷新Map
-//            RefreshMap();
+            RefreshMap();
+        }
+
+        private void OnFinishImmediatelyBtn()
+        {
+            SocialGUIManager.ShowPopupDialog(
+                string.Format("是否使用{0}钻石立即完成训练。", _curTrainingProperty.FinishCost),
+                null,
+                new KeyValuePair<string, Action>("确定", () => { RequestFinishUpgradeTrainProperty(); }),
+                new KeyValuePair<string, Action>("取消", () => { }));
+        }
+
+        private void RequestFinishUpgradeTrainProperty()
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "完成训练");
+            RemoteCommands.CompleteUpgradeTrainProperty(_curTrainingProperty.Property, _curTrainingProperty.Level + 1,
+                _curTrainingProperty.RemainTrainingTimeMill, res =>
+                {
+                    if (res.ResultCode == (int) ECompleteUpgradeTrainPropertyCode.CUTPC_Success)
+                    {
+                        FinishUpgradeTrainProperty();
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    }
+                    else
+                    {
+                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                        LogHelper.Debug("立即完成训练失败");
+                    }
+                }, code =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    //测试，服务器完成后删除
+                    LogHelper.Debug("服务器请求失败，客服端进行测试");
+                    FinishUpgradeTrainProperty();
+                });
+        }
+
+        private void FinishUpgradeTrainProperty()
+        {
+            _curTrainingProperty.FinishUpgrade();
+        }
+
+        private void RefreshMap()
+        {
+            for (int i = 0; i < _maxPropertyCount; i++)
+            {
+                if (null == _uiCamera)
+                    _uiCamera = SocialGUIManager.Instance.UIRoot.Canvas.worldCamera;
+                _mapScreenPos[i] = _uiCamera.WorldToScreenPoint(_cachedView.MapOutPoints[i].position);
+            }
+            _map[0] = new Vector4(_mapScreenPos[0].x, Screen.height - _mapScreenPos[0].y, _mapScreenPos[0].z, 0);
+            _map[1] = new Vector4(_mapScreenPos[1].x, Screen.height - _mapScreenPos[1].y, _mapScreenPos[1].z, 0);
+            _map[2] = new Vector4(_mapScreenPos[3].x, Screen.height - _mapScreenPos[3].y, _mapScreenPos[3].z, 0);
+            _map[3] = new Vector4(_mapScreenPos[4].x, Screen.height - _mapScreenPos[4].y, _mapScreenPos[4].z, 0);
+            _map[4] = new Vector4(_mapScreenPos[2].x, Screen.height - _mapScreenPos[2].y, _mapScreenPos[2].z, 0);
+            _cachedView.MapMaterial.SetVectorArray("Value", _map); //传递顶点屏幕位置信息给shader 
+            _cachedView.MapMaterial.SetInt("PointNum", 5); //传递顶点数量给shader 
+        }
+
+        private void OnCloseBtn()
+        {
+            SocialGUIManager.Instance.CloseUI<UICtrlTrain>();
+        }
+
+        private void OnCharacterUpgradeProperty()
+        {
+            RefreshView();
+        }
+
+        private void OnCharacterUpgradeGrade()
+        {
+            RefreshView();
         }
 
         public override void OnUpdate()
@@ -167,70 +241,16 @@ namespace GameA
             CreateUMItems();
         }
 
-        private void OnFinishImmediatelyBtn()
+        protected override void OnOpen(object parameter)
         {
-            SocialGUIManager.ShowPopupDialog(
-                string.Format("是否使用{0}钻石立即完成训练。", _curTrainingProperty.FinishCost),
-                null,
-                new KeyValuePair<string, Action>("确定", () => { RequestFinishUpgradeTrainProperty(); }),
-                new KeyValuePair<string, Action>("取消", () => { }));
+            base.OnOpen(parameter);
+            RefreshView();
         }
 
-        private void RequestFinishUpgradeTrainProperty()
+        protected override void OnOpenUpdate()
         {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "完成训练");
-            RemoteCommands.CompleteUpgradeTrainProperty(_curTrainingProperty.Property, _curTrainingProperty.Level + 1,
-                _curTrainingProperty.RemainTrainingTimeMill, res =>
-                {
-                    if (res.ResultCode == (int) ECompleteUpgradeTrainPropertyCode.CUTPC_Success)
-                    {
-                        FinishUpgradeTrainProperty();
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    }
-                    else
-                    {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                        LogHelper.Debug("立即完成训练失败");
-                    }
-                }, code =>
-                {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    //测试，服务器完成后删除
-                    LogHelper.Debug("服务器请求失败，客服端进行测试");
-                    FinishUpgradeTrainProperty();
-                });
-        }
-
-        private void FinishUpgradeTrainProperty()
-        {
-            _curTrainingProperty.FinishUpgrade();
-        }
-
-        private Vector3[] _pos = new Vector3[5];
-
-        private void RefreshMap()
-        {
-            for (int i = 0; i < _maxPropertyCount; i++)
-            {
-                _pos[i] = _cachedView.MapOutPoints[i].position;
-                Camera camera = SocialGUIManager.Instance.UIRoot.Canvas.worldCamera;
-//                _pos[i] = 
-                Debug.Log(_cachedView.MapOutPoints[i].name +_cachedView.MapOutPoints[i].position);
-                _map[i] = new Vector4(_pos[i].x, Screen.height - _pos[i].y, _pos[i].z, 0);
-            }
-            _cachedView.MapMaterial.SetVectorArray("Value", _map); //传递顶点屏幕位置信息给shader 
-            _cachedView.MapMaterial.SetInt("PointNum", 5); //传递顶点数量给shader 
-        }
-
-        protected override void OnOpenAnimationComplete()
-        {
-            base.OnOpenAnimationComplete();
+            base.OnOpenUpdate();
             RefreshMap();
-        }
-
-        private void OnCloseBtn()
-        {
-            SocialGUIManager.Instance.CloseUI<UICtrlTrain>();
         }
 
         protected override void InitEventListener()
@@ -238,22 +258,6 @@ namespace GameA
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnCharacterUpgradeProperty, OnCharacterUpgradeProperty);
             RegisterEvent(EMessengerType.OnCharacterUpgradeGrade, OnCharacterUpgradeGrade);
-        }
-
-        private void OnCharacterUpgradeProperty()
-        {
-            RefreshView();
-        }
-
-        private void OnCharacterUpgradeGrade()
-        {
-            RefreshView();
-        }
-
-        protected override void OnOpen(object parameter)
-        {
-            base.OnOpen(parameter);
-            RefreshView();
         }
 
         protected override void InitGroupId()
