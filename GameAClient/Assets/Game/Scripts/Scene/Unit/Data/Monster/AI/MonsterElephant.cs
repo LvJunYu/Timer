@@ -15,16 +15,6 @@ namespace GameA.Game
     [Unit(Id = 2002, Type = typeof(MonsterElephant))]
     public class MonsterElephant : MonsterAI
     {
-        protected override bool OnInit()
-        {
-            if (!base.OnInit())
-            {
-                return false;
-            }
-            _maxSpeedX = 50;
-            return true;
-        }
-
 //        protected override bool IsInAttackRange()
 //        {
 //            if (!base.IsInAttackRange())

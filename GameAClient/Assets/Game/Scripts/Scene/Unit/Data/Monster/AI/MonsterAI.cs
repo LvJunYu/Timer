@@ -14,16 +14,16 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    public enum EMonsterState
-    {
-        Idle,
-        Think,
-        Seek,
-        Attack,
-    }
-
     public class MonsterAI : MonsterBase
     {
+        public enum EAIState
+        {
+            Idle,
+            Think,
+            Seek,
+            Attack,
+        }
+        
         protected static IntVec2 SeekRange = new IntVec2(13, 4) * ConstDefineGM2D.ServerTileScale;
         protected static IntVec2 AttackRange = new IntVec2(1, 1) * ConstDefineGM2D.ServerTileScale;
         public static IntVec2 PathRange = new IntVec2(3, 2);
@@ -32,7 +32,7 @@ namespace GameA.Game
         protected List<IntVec2> _path = new List<IntVec2>();
 
         protected IntVec2 _lastPos;
-        protected EMonsterState _eState;
+        protected EAIState _eState;
         
         protected int _thinkTimer;
         protected int _stuckTimer;
@@ -55,7 +55,7 @@ namespace GameA.Game
         protected override void Clear()
         {
             _lastPos = _curPos;
-            _eState = EMonsterState.Think;
+            _eState = EAIState.Think;
             _path.Clear();
             _thinkTimer = 0;
             _stuckTimer = 0;
@@ -65,7 +65,7 @@ namespace GameA.Game
             base.Clear();
         }
         
-        protected virtual void ChangeState(EMonsterState state)
+        protected virtual void ChangeState(EAIState state)
         {
             _eState = state;
             //LogHelper.Debug("ChangeState : {0}", _eState);
@@ -77,24 +77,24 @@ namespace GameA.Game
             {
                 _thinkTimer--;
             }
-            ChangeState(EMonsterState.Idle);
+            ChangeState(EAIState.Idle);
             IntVec2 rel = CenterDownPos - PlayMode.Instance.MainPlayer.CenterDownPos;
             if (PlayMode.Instance.MainPlayer.CanMove)
             {
                 if (ConditionAttack(rel))
                 {
-                    ChangeState(EMonsterState.Attack);
+                    ChangeState(EAIState.Attack);
                 }
                 else if(ConditionSeek(rel))
                 {
-                    ChangeState(EMonsterState.Seek);
+                    ChangeState(EAIState.Seek);
                 }
                 else if(ConditionThink(rel))
                 {
-                    ChangeState(EMonsterState.Think);
+                    ChangeState(EAIState.Think);
                 }
             }
-            if (_eState != EMonsterState.Seek)
+            if (_eState != EAIState.Seek)
             {
                 SetInput(EInputType.Right, false);
                 SetInput(EInputType.Left, false);
@@ -103,13 +103,13 @@ namespace GameA.Game
             
             switch (_eState)
             {
-                case EMonsterState.Think:
+                case EAIState.Think:
                     OnThink();
                     break;
-                case EMonsterState.Seek:
+                case EAIState.Seek:
                     OnSeek();
                     break;
-                case EMonsterState.Attack:
+                case EAIState.Attack:
                     OnAttack();
                     break;
             }

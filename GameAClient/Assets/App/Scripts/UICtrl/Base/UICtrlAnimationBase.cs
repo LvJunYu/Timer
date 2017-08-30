@@ -18,10 +18,10 @@ namespace GameA
         private float _screenWidth;
         private Mask _mask;
         private Image _image;
-        private Sequence _openSequence;
-        private Sequence _closeSequence;
+        protected Sequence _openSequence;
+        protected Sequence _closeSequence;
 
-        private void CreateSequences()
+        protected void CreateSequences()
         {
             _openSequence = DOTween.Sequence();
             _closeSequence = DOTween.Sequence();
@@ -130,7 +130,7 @@ namespace GameA
         /// </summary>
         protected virtual void SetAnimationType()
         {
-            _animationType = EAnimationType.PopupFromDown;
+            _animationType = EAnimationType.None;
         }
         
         /// <summary>

@@ -49,7 +49,7 @@ namespace GameA.Game
             {
                 case EEditorLayer.Normal:
                     minDepth = (int) EUnitDepth.Earth;
-                    maxDepth = (int) EUnitDepth.Earth;
+                    maxDepth = (int) EUnitDepth.Dynamic;
                     break;
                 case EEditorLayer.Effect:
                     minDepth = (int) EUnitDepth.Effect;
