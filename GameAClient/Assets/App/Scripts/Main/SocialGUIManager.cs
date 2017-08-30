@@ -67,7 +67,7 @@ namespace GameA
         /// 小loading
         /// </summary>
         LittleLoading,
-        Max,
+        Max
     }
     
     public class SocialGUIManager : GUIManager
@@ -100,9 +100,9 @@ namespace GameA
         }
 
 	    public void ShowAppView()
-		{
-//			JoyNativeTool.Instance.SetStatusBarShow (true);
-			OpenUI<UICtrlTaskbar>();//.ShowDefaultPage();
+	    {
+	        OpenUI<UICtrlStory>();
+			OpenUI<UICtrlTaskbar>();
             OpenUI<UICtrlFashionSpine>();
 		    ChangeToAppMode();
             Messenger.AddListener(EMessengerType.OnEscapeClick, OnEscapeClick);
@@ -231,7 +231,7 @@ namespace GameA
         public enum EMode
         {
             App,
-            Game,
+            Game
         }
     }
 }

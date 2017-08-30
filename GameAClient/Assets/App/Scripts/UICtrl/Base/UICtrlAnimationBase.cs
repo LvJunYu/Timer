@@ -21,7 +21,7 @@ namespace GameA
         protected Sequence _openSequence;
         protected Sequence _closeSequence;
 
-        protected void CreateSequences()
+        protected virtual void CreateSequences()
         {
             _openSequence = DOTween.Sequence();
             _closeSequence = DOTween.Sequence();
