@@ -34,6 +34,7 @@ namespace GameA.Game
         protected const float SpeedClayRatio = 0.2f;
         protected const float SpeedFireRatio = 1.8f;
         protected const float SpeedHoldingBoxRatio = 0.3f;
+        protected const float SpeedChaseRatio = 2f;
 
         protected abstract bool IsCheckGround();
         protected abstract bool IsCheckClimb();

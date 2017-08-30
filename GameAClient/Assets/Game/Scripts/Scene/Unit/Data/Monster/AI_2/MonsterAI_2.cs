@@ -8,6 +8,7 @@ namespace GameA.Game
         protected EMoveDirection _nextMoveDirection;
         protected int _timerBang;
         protected int _timerDialog;
+        protected int _timerDetectStay;
 
         protected override void Clear()
         {
@@ -16,6 +17,7 @@ namespace GameA.Game
             _nextMoveDirection = _moveDirection;
             _timerBang = 0;
             _timerDialog = 0;
+            _timerDetectStay = 0;
         }
 
         internal override void OnPlay()
@@ -44,6 +46,10 @@ namespace GameA.Game
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
+            if (eDirectionType == EDirectionType.Up || eDirectionType == EDirectionType.Down)
+            {
+                return;
+            }
             if (unit.IsMonster)
             {
                 ChangeState(EMonsterState.Dialog);
@@ -67,6 +73,7 @@ namespace GameA.Game
         protected virtual void SetNextMoveDirection(EMoveDirection eMoveDirection)
         {
             _nextMoveDirection = eMoveDirection;
+//            LogHelper.Debug(_nextMoveDirection+"~~~~");
         }
 
         protected virtual void ChangeState(EMonsterState eMonsterState)
@@ -91,6 +98,7 @@ namespace GameA.Game
                         ESortingOrder.EffectItem);
                     break;
             }
+//            LogHelper.Debug(_eMonsterState+"~");
         }
 
         protected override void UpdateMonsterAI()
@@ -102,6 +110,10 @@ namespace GameA.Game
             if (_timerDialog > 0)
             {
                 _timerDialog--;
+            }
+            if (_timerDetectStay > 0)
+            {
+                _timerDetectStay--;
             }
             switch (_eMonsterState)
             {
@@ -117,8 +129,15 @@ namespace GameA.Game
                     SetInput(EInputType.Left, false);
                     if (_timerBang == 0)
                     {
-                        ChangeState(EMonsterState.Run);
-                        ChangeWay(_nextMoveDirection);
+                        if (_timerDetectStay > 0)
+                        {
+                            ChangeState(EMonsterState.Chase);
+                        }
+                        else
+                        {
+                            ChangeState(EMonsterState.Run);
+                            ChangeWay(_nextMoveDirection);
+                        }
                     }
                     break;
                 case EMonsterState.Dialog:

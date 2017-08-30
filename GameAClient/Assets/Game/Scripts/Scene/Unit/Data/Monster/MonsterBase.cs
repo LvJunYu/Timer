@@ -133,10 +133,7 @@ namespace GameA.Game
                 }
                 else
                 {
-                    float speed = (int)(SpeedX * 1f);
-                    speed = Math.Abs(speed);
-                    speed = Mathf.Clamp(speed, 30, 100) * deltaTime;
-                    _animation.PlayLoop("Run", speed);
+                    _animation.PlayLoop("Run", Mathf.Clamp(Math.Abs(SpeedX), 30, 200) * deltaTime);
                 }
             }
         }
