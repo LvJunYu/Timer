@@ -78,7 +78,7 @@ namespace GameA
                     );
                     break;
             }
-            _openSequence.OnComplete(OnOpenAnimationComplete).SetAutoKill(false).Pause().OnUpdate(OnOpenUpdate);
+            _openSequence.OnComplete(OnOpenAnimationComplete).SetAutoKill(false).Pause().OnUpdate(OnOpenAnimationUpdate);
             _closeSequence.OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause()
                 .PrependCallback(() => _cachedView.Trans.localPosition = Vector3.zero);
         }
@@ -136,7 +136,7 @@ namespace GameA
         /// <summary>
         /// 打开动画每帧的回调
         /// </summary>
-        protected virtual void OnOpenUpdate()
+        protected virtual void OnOpenAnimationUpdate()
         {
         }
         

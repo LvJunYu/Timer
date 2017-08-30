@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using NewResourceSolution;
 using SoyEngine.Proto;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 namespace GameA
@@ -32,8 +33,19 @@ namespace GameA
             "摩擦训练"
         };
 
+        private int[] _gradeMaxLv =
+        {
+            3, 6, 10, 15
+        };
+
+        private int[] _indexOrder =
+        {
+            0, 1, 3, 4, 2
+        };
+
+        private const string _lineName = "img_train_net_line";
+        private const string _pointName = "img_train_net_point";
         private const int _maxPropertyCount = 5;
-        private int[] _gradeMaxLv;
         private UMCtrlTrainPropertyItem[] _propertyItems;
         private UMCtrlTrainPropertyInfo[] _propertyInfos;
         private TrainProperty[] _trainProperties;
@@ -41,19 +53,28 @@ namespace GameA
         private int _curTrainPoint;
         private bool _isTraining;
         private TrainProperty _curTrainingProperty;
-        private int _curRemainTime;
         private float _checkTime;
         private Vector4[] _map = new Vector4[_maxPropertyCount];
         private Vector3[] _mapScreenPos = new Vector3[_maxPropertyCount];
         private Camera _uiCamera;
+        private List<Transform> _lineCach;
+        private List<Transform> _pointCach;
+        private Sprite _lineSprite;
+        private Sprite _pointSprite;
+        private Dictionary<int, List<Vector3>> _propertyPosDic;
+        private int _maxLv;
+        private int _minLv;
+        private int _count;
+        private float _angel;
 
         private void CreateUMItems()
         {
+            _angel = 90 - (180 - 360 / 5) / (float) 2;
 //            List<TrainProperty> userTrainProperty = LocalUser.Instance.UserTrainProperty.ItemDataList;
             _curGrade = LocalUser.Instance.UserTrainProperty.Grade;
             _curTrainPoint = LocalUser.Instance.UserTrainProperty.TrainPoint;
             //临时数据
-            _curGrade = 1;
+            _curGrade = 2;
             _curTrainPoint = 250;
             //创建属性UMItem和UMInfo
             _isTraining = false;
@@ -65,7 +86,7 @@ namespace GameA
                 //初始化属性数据
 //                int level = userTrainProperty[i].Level;
                 //临时数据
-                int level = Random.Range(1, 4);
+                int level = Random.Range(3, 7);
 
                 _trainProperties[i] = new TrainProperty(i + 1, level, _curGrade);
                 _propertyItems[i] = new UMCtrlTrainPropertyItem(_trainProperties[i]);
@@ -117,7 +138,7 @@ namespace GameA
                 _cachedView.GradeImgs[i].SetActive(_curGrade == i + 1);
             }
             //刷新Map
-            RefreshMap();
+//            RefreshMap();
         }
 
         private void OnFinishImmediatelyBtn()
@@ -157,15 +178,26 @@ namespace GameA
         private void FinishUpgradeTrainProperty()
         {
             _curTrainingProperty.FinishUpgrade();
+            _curTrainingProperty = null;
+            _isTraining = false;
         }
 
         private void RefreshMap()
         {
+            RefreshPointAndLine();
             for (int i = 0; i < _maxPropertyCount; i++)
             {
                 if (null == _uiCamera)
                     _uiCamera = SocialGUIManager.Instance.UIRoot.Canvas.worldCamera;
-                _mapScreenPos[i] = _uiCamera.WorldToScreenPoint(_cachedView.MapOutPoints[i].position);
+                //计算属性位置点
+                Vector3 targetPos;
+                if (_trainProperties[i].Level == _maxLv)
+                    targetPos = _cachedView.MapOutPoints[i].position;
+                else if (_trainProperties[i].Level == _minLv)
+                    targetPos = _cachedView.MapInPoints[i].position;
+                else
+                    targetPos = _propertyPosDic[i][_trainProperties[i].Level - _minLv - 1];
+                _mapScreenPos[i] = _uiCamera.WorldToScreenPoint(targetPos);
             }
             _map[0] = new Vector4(_mapScreenPos[0].x, Screen.height - _mapScreenPos[0].y, _mapScreenPos[0].z, 0);
             _map[1] = new Vector4(_mapScreenPos[1].x, Screen.height - _mapScreenPos[1].y, _mapScreenPos[1].z, 0);
@@ -176,6 +208,56 @@ namespace GameA
             _cachedView.MapMaterial.SetInt("PointNum", 5); //传递顶点数量给shader 
         }
 
+        private void RefreshPointAndLine()
+        {
+            Collect();
+            //清除属性字典
+            if (null == _propertyPosDic)
+            {
+                _propertyPosDic = new Dictionary<int, List<Vector3>>(_maxPropertyCount);
+                _propertyPosDic.Add(0, new List<Vector3>(5));
+                _propertyPosDic.Add(1, new List<Vector3>(5));
+                _propertyPosDic.Add(2, new List<Vector3>(5));
+                _propertyPosDic.Add(3, new List<Vector3>(5));
+                _propertyPosDic.Add(4, new List<Vector3>(5));
+            }
+            for (int i = 0; i < _maxPropertyCount; i++)
+            {
+                _propertyPosDic[i].Clear();
+            }
+            _maxLv = _gradeMaxLv[_curGrade - 1];
+            _minLv = _curGrade == 1 ? 1 : _gradeMaxLv[_curGrade - 2];
+            _count = _maxLv - _minLv - 1;
+            //设置等级分割点
+            for (int i = 0; i < _count; i++)
+            {
+                for (int j = 0; j < _maxPropertyCount; j++)
+                {
+                    Transform point = GetPoint();
+                    Vector3 delta = _cachedView.MapOutPoints[j].position - _cachedView.MapInPoints[j].position;
+                    point.position = _cachedView.MapInPoints[j].position +
+                                     delta * (i + 1) / (_count + 1);
+                    _propertyPosDic[j].Add(point.position);
+                }
+            }
+            //设置分割线
+            for (int i = 0; i < _count; i++)
+            {
+                for (int j = 0; j < _maxPropertyCount; j++)
+                {
+                    int curIndex = _indexOrder[j];
+                    int nextIndex = _indexOrder[(j + 1) % _maxPropertyCount];
+                    Vector3 center = 1 / (float) 2 * (_propertyPosDic[curIndex][i] + _propertyPosDic[nextIndex][i]);
+                    float distance = Vector3.Distance(_propertyPosDic[curIndex][i], _propertyPosDic[nextIndex][i]);
+                    float angel = 360 / (float) _maxPropertyCount * j + _angel;
+                    Transform line = GetLine();
+                    line.position = center;
+                    line.eulerAngles = new Vector3(0, 0, angel);
+                    line.rectTransform().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, distance);
+                }
+            }
+        }
+
         private void OnCloseBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlTrain>();
@@ -183,12 +265,68 @@ namespace GameA
 
         private void OnCharacterUpgradeProperty()
         {
+            RefreshMap();
             RefreshView();
         }
 
         private void OnCharacterUpgradeGrade()
         {
+            RefreshMap();
             RefreshView();
+        }
+
+        private Transform GetPoint()
+        {
+            if (null == _pointCach)
+                _pointCach = new List<Transform>(20);
+            Transform tf = _pointCach.Find(p => p.gameObject.activeSelf == false);
+            if (tf != null)
+            {
+                tf.gameObject.SetActive(true);
+                return tf;
+            }
+            Image img = new GameObject("Point").AddComponent<Image>();
+            if (null == _pointSprite)
+                _pointSprite = ResourcesManager.Instance.GetSprite(_pointName);
+            img.sprite = _pointSprite;
+            tf = img.GetComponent<Transform>();
+            tf.SetParent(_cachedView.MapImg);
+            img.SetNativeSize();
+            _pointCach.Add(tf);
+            return tf;
+        }
+
+        private Transform GetLine()
+        {
+            if (null == _lineCach)
+                _lineCach = new List<Transform>(20);
+            Transform tf = _lineCach.Find(p => p.gameObject.activeSelf == false);
+            if (tf != null)
+            {
+                tf.gameObject.SetActive(true);
+                return tf;
+            }
+            Image img = new GameObject("Line").AddComponent<Image>();
+            if (null == _lineSprite)
+                _lineSprite = ResourcesManager.Instance.GetSprite(_lineName);
+            img.sprite = _lineSprite;
+            tf = img.GetComponent<Transform>();
+            tf.SetParent(_cachedView.MapImg);
+            img.SetNativeSize();
+            _lineCach.Add(tf);
+            return tf;
+        }
+
+        private void Collect()
+        {
+            if (null == _lineCach)
+                _lineCach = new List<Transform>(20);
+            if (null == _pointCach)
+                _pointCach = new List<Transform>(20);
+            for (int i = 0; i < _lineCach.Count; i++)
+                _lineCach[i].gameObject.SetActive(false);
+            for (int i = 0; i < _pointCach.Count; i++)
+                _pointCach[i].gameObject.SetActive(false);
         }
 
         public override void OnUpdate()
@@ -197,11 +335,11 @@ namespace GameA
             if (!_isTraining) return;
             if (Time.time > _checkTime)
             {
-                _curRemainTime = _curTrainingProperty.RemainTrainingTime;
+                int curRemainTime = _curTrainingProperty.RemainTrainingTime;
                 //若超过1小时，每分钟刷新
-                if (_curRemainTime > 3600)
+                if (curRemainTime > 3600)
                 {
-                    int checkInterval = _curRemainTime % 60;
+                    int checkInterval = curRemainTime % 60;
                     if (0 == checkInterval)
                         checkInterval = 60;
                     _checkTime = Time.time + checkInterval;
@@ -247,9 +385,9 @@ namespace GameA
             RefreshView();
         }
 
-        protected override void OnOpenUpdate()
+        protected override void OnOpenAnimationUpdate()
         {
-            base.OnOpenUpdate();
+            base.OnOpenAnimationUpdate();
             RefreshMap();
         }
 
