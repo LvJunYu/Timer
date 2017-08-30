@@ -3,7 +3,7 @@
 namespace GameA
 {
     [UIAutoSetup]
-    public class UICtrlInGameUnitHandbook : UICtrlInGameBase<UIViewInGameUnitHandbook>
+    public class UICtrlInGameUnitHandbook : UICtrlAnimationBase<UIViewInGameUnitHandbook>
     {
         #region 常量与字段
         #endregion

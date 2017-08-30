@@ -3,7 +3,7 @@
 namespace GameA
 {
     [UIAutoSetup]
-    public class UICtrlStory : UICtrlInGameBase<UIViewInGameUnitHandbook>
+    public class UICtrlStory : UICtrlInGameBase<UIViewStory>
     {
         #region 常量与字段
         #endregion
@@ -16,7 +16,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.InGameMainUI;
+            _groupId = (int) EUIGroupType.MainUI;
         }        
         #endregion
     }
