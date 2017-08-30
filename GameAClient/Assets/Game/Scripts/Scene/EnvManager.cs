@@ -41,6 +41,8 @@ namespace GameA.Game
         public const int MovingEarthBlockLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
 
         public const int PaintBulletHitLayer = MonsterLayer | ItemLayer;
+	    
+        public const int MonsterViewLayer = MainPlayerLayer | ItemLayer;
 
 		public static EnvManager Instance
         {

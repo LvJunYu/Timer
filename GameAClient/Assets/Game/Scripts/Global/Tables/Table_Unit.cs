@@ -160,6 +160,11 @@ namespace GameA.Game
         /// </summary>
 		[ColumnMapping("DestroyEffectName")]
 		public string DestroyEffectName;
+		/// <summary>
+        /// 描述
+        /// </summary>
+		[ColumnMapping("Summary")]
+		public string Summary;
 	}
 
     public class TableUnitAsset:BaseTableAsset
