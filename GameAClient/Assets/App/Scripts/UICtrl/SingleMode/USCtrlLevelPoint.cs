@@ -10,28 +10,12 @@ using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using UnityEngine.UI;
-using Text = UnityEngine.UI.Text;
 
 namespace GameA
 {
-	public class UICtrlLevelPoint : MonoBehaviour
+	public class USCtrlLevelPoint : USCtrlBase<USViewLevelPoint>
     {
         #region 常量与字段
-		public GameObject Active;
-		public GameObject Disactive;
-        public Button Current;
-		public Button LevelBtn;
-		public RectTransform[] StarLightAry;
-        public RectTransform[] StarDarkAry;
-	    
-
-
-		public Text LevelTitle;
-
-        public Text StartText;
-        public Text StartText2;
-
 		/// <summary>
 		/// 章节id
 		/// </summary>
@@ -44,6 +28,7 @@ namespace GameA
 	    private Table_StandaloneLevel _tableLevel;
 	    private int _lastStarCount;
 	    private EState _state = EState.None;
+	    
         #endregion
 
         #region 属性
@@ -51,10 +36,12 @@ namespace GameA
         #endregion
 
         #region 方法
-		void Start () {
-			LevelBtn.onClick.AddListener (OnClick);
-            if (null != Current) {
-                Current.onClick.AddListener (OnClick);
+
+	    protected override void OnViewCreated()
+	    {
+			_cachedView.LevelBtn.onClick.AddListener (OnClick);
+            if (null != _cachedView.Current) {
+	            _cachedView.Current.onClick.AddListener (OnClick);
             }
 		}
 
@@ -68,7 +55,7 @@ namespace GameA
 	    }
 		public void RefreshInfo (bool playAnimation = false)
 		{
-            LevelTitle.text = _tableLevel.Name;
+			_cachedView.LevelTitle.text = _tableLevel.Name;
 			CoroutineProxy.Instance.StartCoroutine(RefreshView(playAnimation));
 		}
 
@@ -81,17 +68,17 @@ namespace GameA
 			if (!_isBonus) {
 				if (state == EState.Lock)
 				{
-					Current.gameObject.SetActive (false);
-					Active.SetActive (false);
-					Disactive.SetActive (true);
+					_cachedView.Current.gameObject.SetActive (false);
+					_cachedView.Active.SetActive (false);
+					_cachedView.Disactive.SetActive (true);
 					_lastStarCount = 0;
-					for (int i = 0; i < StarLightAry.Length; i++)
+					for (int i = 0; i < _cachedView.StarLightAry.Length; i++)
 					{
-						StarLightAry[i].SetActiveEx(false);
+						_cachedView.StarLightAry[i].SetActiveEx(false);
 					}
-					for (int i = 0; i < StarDarkAry.Length; i++)
+					for (int i = 0; i < _cachedView.StarDarkAry.Length; i++)
 					{
-						StarDarkAry[i].SetActiveEx(false);
+						_cachedView.StarDarkAry[i].SetActiveEx(false);
 					}
 				}
 				else if (state == EState.Unlock)
@@ -100,22 +87,22 @@ namespace GameA
 					{
 						var item = GameParticleManager.Instance.GetUIParticleItem(
 							ParticleNameConstDefineGM2D.SingleModeNormalLevelUnlock,
-							Disactive.transform, groupId);
+							_cachedView.Disactive.transform, groupId);
 						item.Particle.Play(4f);
 						CoroutineProxy.Instance.StartCoroutine(
 							CoroutineProxy.RunWaitForSeconds(1f, () => GameParticleManager.FreeParticleItem(item.Particle)));
 						yield return new WaitForSeconds(0.2f);
 					}
-					Current.gameObject.SetActive (true);
-					Active.SetActive (false);
-					Disactive.SetActive (false);
-					for (int i = 0; i < StarLightAry.Length; i++)
+					_cachedView.Current.gameObject.SetActive (true);
+					_cachedView.Active.SetActive (false);
+					_cachedView.Disactive.SetActive (false);
+					for (int i = 0; i < _cachedView.StarLightAry.Length; i++)
 					{
-						StarLightAry[i].SetActiveEx(false);
+						_cachedView.StarLightAry[i].SetActiveEx(false);
 					}
-					for (int i = 0; i < StarDarkAry.Length; i++)
+					for (int i = 0; i < _cachedView.StarDarkAry.Length; i++)
 					{
-						StarDarkAry[i].SetActiveEx(true);
+						_cachedView.StarDarkAry[i].SetActiveEx(true);
 					}
 					_lastStarCount = 0;
 				}
@@ -131,14 +118,14 @@ namespace GameA
 						{
 							var item = GameParticleManager.Instance.GetUIParticleItem(
 								ParticleNameConstDefineGM2D.SingleModeGetStar,
-								StarDarkAry[i], groupId);
+								_cachedView.StarDarkAry[i], groupId);
 							item.Particle.Play(4f);
 							var inx = i;
 							CoroutineProxy.Instance.StartCoroutine(
 								CoroutineProxy.RunWaitForSeconds(0.2f, () =>
 									{
-										StarLightAry[inx].SetActiveEx(true);
-										StarDarkAry[inx].SetActiveEx(false);
+										_cachedView.StarLightAry[inx].SetActiveEx(true);
+										_cachedView.StarDarkAry[inx].SetActiveEx(false);
 										GameParticleManager.FreeParticleItem(item.Particle);
 									}
 								));
@@ -147,57 +134,57 @@ namespace GameA
 					}
 					else
 					{
-						for (int i = 0; i < StarLightAry.Length; i++)
+						for (int i = 0; i < _cachedView.StarLightAry.Length; i++)
 						{
-							StarLightAry[i].SetActiveEx(i<starCnt);
-							StarDarkAry[i].SetActiveEx(i>=starCnt);
+							_cachedView.StarLightAry[i].SetActiveEx(i<starCnt);
+							_cachedView.StarDarkAry[i].SetActiveEx(i>=starCnt);
 						}
 					}
 					if (playAnimation && _state != state)
 					{
 						var item = GameParticleManager.Instance.GetUIParticleItem(
 							ParticleNameConstDefineGM2D.SingleModeNormalLevelComplete,
-							Active.transform, groupId);
+							_cachedView.Active.transform, groupId);
 						item.Particle.Play(4f);
 						CoroutineProxy.Instance.StartCoroutine(
 							CoroutineProxy.RunWaitForSeconds(1, () => GameParticleManager.FreeParticleItem(item.Particle)));
 						yield return new WaitForSeconds(0.2f);
 					}
-					Current.gameObject.SetActive (false);
-					Active.SetActive (true);
-					Disactive.SetActive (false);
+					_cachedView.Current.gameObject.SetActive (false);
+					_cachedView.Active.SetActive (true);
+					_cachedView.Disactive.SetActive (false);
 					_lastStarCount = starCnt;
 				}
 			} else {
 				if (state == EState.Lock)
 				{
-					Active.SetActive (false);
-					Disactive.SetActive (true);
-					StarLightAry[0].SetActiveEx(false);
+					_cachedView.Active.SetActive (false);
+					_cachedView.Disactive.SetActive (true);
+					_cachedView.StarLightAry[0].SetActiveEx(false);
 				}
 				else if (state == EState.Unlock)
 				{
-					Active.SetActive (true);
-					Disactive.SetActive (false);
-					StarLightAry[0].SetActiveEx(false);
+					_cachedView.Active.SetActive (true);
+					_cachedView.Disactive.SetActive (false);
+					_cachedView.StarLightAry[0].SetActiveEx(false);
 				}
 				else
 				{
-					Active.SetActive (true);
-					Disactive.SetActive (false);
-					StarLightAry[0].SetActiveEx(true);
+					_cachedView.Active.SetActive (true);
+					_cachedView.Disactive.SetActive (false);
+					_cachedView.StarLightAry[0].SetActiveEx(true);
 				}
                 if (AppData.Instance.AdventureData.UserData.SectionList.Count > (_chapterId - 1)) {
-                    StartText.text = string.Format ("{0}",
+	                _cachedView.StartText.text = string.Format ("{0}",
                         Mathf.Clamp (AppData.Instance.AdventureData.UserData.SectionList [_chapterId - 1].GotStarCnt, 0, 9 * _tableLevel.Type)
                     );
-                    StartText2.text = string.Format("/{0}",
+	                _cachedView.StartText2.text = string.Format("/{0}",
                         9 * _tableLevel.Type
                     );
                 } else
                 {
-                    StartText.text = "0";
-                    StartText2.text = string.Format("/{0}",
+	                _cachedView.StartText.text = "0";
+	                _cachedView.StartText2.text = string.Format("/{0}",
                        9 * _tableLevel.Type
                    );
                 }
@@ -247,8 +234,10 @@ namespace GameA
 	        }
         }
         
-		private void OnClick () {
-			SendMessageUpwards ("OnLevelClicked", new IntVec3(_chapterId, _levelIdx, _isBonus ? 1 : 0), SendMessageOptions.RequireReceiver);
+		private void OnClick ()
+		{
+			SocialGUIManager.Instance.GetUI<UICtrlSingleMode>()
+				.OnLevelClicked(new IntVec3(_chapterId, _levelIdx, _isBonus ? 1 : 0));
 		}
         #region 接口
 

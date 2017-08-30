@@ -51,6 +51,8 @@ namespace GameA
 		/// </summary>
 		private float _blockInputTimer;
 
+	    private USCtrlChapter[] _chapterAry;
+
 	    private UIParticleItem _uiParticleItem;
         #endregion
 
@@ -169,7 +171,6 @@ namespace GameA
 			_cachedView.ChapterScrollRect.OnBeginDragEvent.AddListener (OnBeginDrag);
 			_cachedView.ChapterScrollRect.OnEndDragEvent.AddListener (OnEndDrag);
 			_cachedView.ChapterScrollRect.onValueChanged.AddListener (OnValueChanged);
-			_cachedView.LevelClickedCB = OnLevelClicked;
 
 			_dragging = false;
 			_blockInputTimer = 0f;
@@ -178,6 +179,12 @@ namespace GameA
 	        _cachedView.MatchBtn.SetActiveEx(false);
 			
 	        _cachedView.SetActiveEx(false);
+	        _chapterAry = new USCtrlChapter[_cachedView.Chapters.Length];
+	        for (int i = 0; i < _chapterAry.Length; i++)
+	        {
+		        _chapterAry[i] = new USCtrlChapter();
+		        _chapterAry[i].Init(_cachedView.Chapters[i]);
+	        }
         }
 			
 		public override void OnUpdate ()
@@ -258,8 +265,8 @@ namespace GameA
 				);
 			}
 
-			if (_cachedView.Chapters [_currentChapter - 1] != null) {
-				_cachedView.Chapters [_currentChapter - 1].RefreshInfo (tableChapter, doPassAnimate);
+			if (_chapterAry[_currentChapter - 1] != null) {
+				_chapterAry[_currentChapter - 1].RefreshInfo (tableChapter, doPassAnimate);
 			}
 
             if (_currentChapter == 1) {
@@ -323,7 +330,7 @@ namespace GameA
 		/// 关卡被点击，从关卡图标按钮发出的消息调用
 		/// </summary>
 		/// <param name="param">Parameter.</param>
-		private void OnLevelClicked (object param) {
+		public void OnLevelClicked (object param) {
             IntVec3 intVec3Param = (IntVec3)param;
             var chapterIdx = intVec3Param.x;
             var levelIdx = intVec3Param.y;

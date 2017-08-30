@@ -6,7 +6,6 @@
 ***********************************************************************/
 
 using System.Collections;
-using System.Runtime.Remoting.Messaging;
 using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
@@ -14,21 +13,11 @@ using UnityEngine;
 
 namespace GameA
 {
-	public class UICtrlChapter : MonoBehaviour
+	public class USCtrlChapter : USCtrlBase<USViewChapter>
     {
         #region 常量与字段
-		public RectTransform[] NormalLevelPos;
-		public RectTransform[] BonusLevelPos;
-		public UICtrlLevelPoint[] NormalLevels;
-		public UICtrlLevelPoint[] BonusLevels;
-		public RectTransform LevelRoot;
-		public GameObject[] BonusLevelBlockImages;
-		public GameObject BackgroundImage;
-		public GameObject ForgroundImage;
-		public GameObject LockImage;
-
-		public GameObject NormalLevelPrefab;
-		public GameObject BonusLevelPrefab;
+	    private USCtrlLevelPoint[] _normalLevels;
+	    private USCtrlLevelPoint[] _bonusLevels;
 
 	    private UIParticleItem _travelEffect;
 	    private bool _isDoingAnimation;
@@ -48,13 +37,14 @@ namespace GameA
 				return;
 			}
 			_tableStandaloneChapter = table;
-			if (NormalLevels.Length == 0) {
-				NormalLevels = new UICtrlLevelPoint[9];
+			if (_normalLevels == null) {
+				_normalLevels = new USCtrlLevelPoint[9];
 				for (int i = 0; i < 9; i++) {
-					GameObject levelObj = Instantiate (NormalLevelPrefab, LevelRoot);
-					NormalLevels[i] = levelObj.GetComponent<UICtrlLevelPoint> ();
+					GameObject levelObj = Object.Instantiate (_cachedView.NormalLevelPrefab, _cachedView.LevelRoot);
+					_normalLevels[i] = new USCtrlLevelPoint();
+					_normalLevels[i].Init(levelObj.GetComponent<USViewLevelPoint>());
 					var rectTransform = levelObj.GetComponent<RectTransform>();
-					rectTransform.anchoredPosition = NormalLevelPos[i].anchoredPosition;
+					rectTransform.anchoredPosition = _cachedView.NormalLevelPos[i].anchoredPosition;
 					rectTransform.localScale = Vector3.one;
 					var tableLevel = TableManager.Instance.GetStandaloneLevel(_tableStandaloneChapter.NormalLevels [i]);
 					if (tableLevel == null) {
@@ -62,17 +52,18 @@ namespace GameA
 					}
 					else
 					{
-						NormalLevels[i].SetData(_tableStandaloneChapter.Id, i+1, tableLevel);
+						_normalLevels[i].SetData(_tableStandaloneChapter.Id, i+1, tableLevel);
 					}
 				}
 			}
-			if (BonusLevels.Length == 0) {
-				BonusLevels = new UICtrlLevelPoint[3];
+			if (_bonusLevels == null) {
+				_bonusLevels = new USCtrlLevelPoint[3];
 				for (int i = 0; i < 3; i++) {
-					GameObject levelObj = Instantiate (BonusLevelPrefab, LevelRoot);
-					BonusLevels[i] = levelObj.GetComponent<UICtrlLevelPoint> ();
+					GameObject levelObj = Object.Instantiate (_cachedView.BonusLevelPrefab, _cachedView.LevelRoot);
+					_bonusLevels[i] = new USCtrlLevelPoint();
+					_bonusLevels[i].Init(levelObj.GetComponent<USViewLevelPoint>());
 					var rectTransform = levelObj.GetComponent<RectTransform>();
-					rectTransform.anchoredPosition = BonusLevelPos[i].anchoredPosition;
+					rectTransform.anchoredPosition = _cachedView.BonusLevelPos[i].anchoredPosition;
 					rectTransform.localScale = Vector3.one;
 					var tableLevel = TableManager.Instance.GetStandaloneLevel(table.BonusLevels [i]);
 					if (tableLevel == null) {
@@ -80,7 +71,7 @@ namespace GameA
 					}
 					else
 					{
-						BonusLevels[i].SetData(table.Id, i+1, tableLevel);
+						_bonusLevels[i].SetData(table.Id, i+1, tableLevel);
 					}
 				}
 			}
@@ -93,29 +84,29 @@ namespace GameA
 	            if (doPassAnimate)
 	            {
 		            _isDoingAnimation = true;
-		            StartCoroutine(AnimationFlow());
+		            CoroutineProxy.Instance.StartCoroutine(AnimationFlow());
 	            }
 	            else
 	            {
-		            for (int i = 0, n = NormalLevels.Length; i < n; i++) {
-			            NormalLevels [i].RefreshInfo ();
+		            for (int i = 0, n = _normalLevels.Length; i < n; i++) {
+			            _normalLevels [i].RefreshInfo ();
 		            }
-		            for (int i = 0, n = BonusLevels.Length; i < n; i++) {
+		            for (int i = 0, n = _bonusLevels.Length; i < n; i++) {
 			            var tableLevel = TableManager.Instance.GetStandaloneLevel(table.BonusLevels [i]);
 			            if (tableLevel == null) {
 				            LogHelper.Error ("Can't find tableLevel when refresh ui, chapter: {0}, level: {1}", table.Id, i);
 			            }
-			            BonusLevels [i].RefreshInfo ();
+			            _bonusLevels [i].RefreshInfo ();
 			            // refresh block imgs state
 			            if (AppData.Instance.AdventureData.UserData.SectionList.Count > (table.Id - 1) &&
 			                AppData.Instance.AdventureData.UserData.SectionList [table.Id - 1].BonusLevelUserDataList.Count > i) {
 				            if (AppData.Instance.AdventureData.UserData.SectionList [table.Id - 1].BonusLevelUserDataList [i].SimpleData.SuccessCount > 0) {
-					            BonusLevelBlockImages [i].SetActive (false);
+					            _cachedView.BonusLevelBlockImages [i].SetActive (false);
 				            } else {
-					            BonusLevelBlockImages [i].SetActive (true);
+					            _cachedView.BonusLevelBlockImages [i].SetActive (true);
 				            }
 			            } else {
-				            BonusLevelBlockImages [i].SetActive (true);
+				            _cachedView.BonusLevelBlockImages [i].SetActive (true);
 			            }
 		            }
 	            }
@@ -127,16 +118,16 @@ namespace GameA
 		    var advData = AppData.Instance.AdventureData;
 		    if (advData.LastPlayedLevelType == EAdventureProjectType.APT_Bonus)
 		    {
-			    BonusLevels[advData.LastPlayedLevelIdx - 1].RefreshInfo(true);
+			    _bonusLevels[advData.LastPlayedLevelIdx - 1].RefreshInfo(true);
 		    }
 		    else
 		    {
-			    NormalLevels[advData.LastPlayedLevelIdx - 1].RefreshInfo(true);
+			    _normalLevels[advData.LastPlayedLevelIdx - 1].RefreshInfo(true);
 			    int nextLevel;
 			    if (advData.TryGetNextNormalLevel(advData.LastPlayedChapterIdx, advData.LastPlayedLevelIdx, out nextLevel))
 			    {
 				    yield return new WaitForSeconds(1f);
-				    NormalLevels[nextLevel - 1].RefreshInfo(true);
+				    _normalLevels[nextLevel - 1].RefreshInfo(true);
 //				    yield return new WaitForSeconds(0.5f);
 //				    var uiMain = SocialGUIManager.Instance.GetUI<UICtrlSingleMode>();
 //				    if (uiMain.IsOpen
