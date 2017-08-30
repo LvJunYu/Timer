@@ -2,7 +2,7 @@
 
 namespace GameA.Game
 {
-    [Unit(Id = 2003, Type = typeof(MonsterJelly))]
+    [Unit(Id = 2004, Type = typeof(MonsterJelly))]
     public class MonsterJelly : MonsterBase
     {
         protected override bool OnInit()

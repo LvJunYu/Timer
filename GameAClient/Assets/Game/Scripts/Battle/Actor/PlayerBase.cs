@@ -528,7 +528,7 @@ namespace GameA.Game
                 {
                     if (CanMove && (IsInputSideValid() || IsClimbingSide()))
                     {
-                        var speed = Math.Abs(SpeedX);
+                        var speed = Math.Abs(_curMaxSpeedX);
                         if (IsClimbingSide())
                         {
                             speed = Math.Abs(SpeedY);
