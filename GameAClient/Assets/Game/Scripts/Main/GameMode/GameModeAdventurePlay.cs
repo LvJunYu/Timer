@@ -42,6 +42,7 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
+            base.UpdateLogic();
             if (_guideBase != null)
             {
                 _guideBase.UpdateLogic();

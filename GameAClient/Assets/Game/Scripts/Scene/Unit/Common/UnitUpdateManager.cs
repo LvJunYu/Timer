@@ -45,11 +45,6 @@ namespace GameA.Game
                 }
                 allOtherUnits[i].UpdateLogic();
             }
-            for (int i = 0; i < allOtherUnits.Count; i++)
-            {
-                allOtherUnits[i].CalculateExtraDeltaPos();
-            }
-
             for (int i = 0; i < allBulletUnits.Count; i++)
             {
                 allBulletUnits[i].UpdateLogic();
@@ -58,7 +53,10 @@ namespace GameA.Game
             {
                 allMagicUnits[i].UpdateView(deltaTime);
             }
-
+            for (int i = 0; i < allOtherUnits.Count; i++)
+            {
+                allOtherUnits[i].CalculateExtraDeltaPos();
+            }
             var boxOperateType = mainUnit.GetBoxOperateType();
             switch (boxOperateType)
             {

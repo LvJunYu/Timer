@@ -5,8 +5,11 @@
 ** Summary : UICtrlSingleMode
 ***********************************************************************/
 
+using System.Collections;
+using System.Runtime.Remoting.Messaging;
 using GameA.Game;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 
 namespace GameA
@@ -27,6 +30,10 @@ namespace GameA
 		public GameObject NormalLevelPrefab;
 		public GameObject BonusLevelPrefab;
 
+	    private UIParticleItem _travelEffect;
+	    private bool _isDoingAnimation;
+	    private Table_StandaloneChapter _tableStandaloneChapter;
+
         #endregion
 
         #region 属性
@@ -35,7 +42,12 @@ namespace GameA
 
         #region 方法
 
-		public void RefreshInfo (Table_StandaloneChapter table) {
+		public void RefreshInfo (Table_StandaloneChapter table, bool doPassAnimate = false) {
+			if (_isDoingAnimation)
+			{
+				return;
+			}
+			_tableStandaloneChapter = table;
 			if (NormalLevels.Length == 0) {
 				NormalLevels = new UICtrlLevelPoint[9];
 				for (int i = 0; i < 9; i++) {
@@ -44,6 +56,14 @@ namespace GameA
 					var rectTransform = levelObj.GetComponent<RectTransform>();
 					rectTransform.anchoredPosition = NormalLevelPos[i].anchoredPosition;
 					rectTransform.localScale = Vector3.one;
+					var tableLevel = TableManager.Instance.GetStandaloneLevel(_tableStandaloneChapter.NormalLevels [i]);
+					if (tableLevel == null) {
+						LogHelper.Error ("Can't find tableLevel when refresh ui, chapter: {0}, level: {1}", table.Id, i);
+					}
+					else
+					{
+						NormalLevels[i].SetData(_tableStandaloneChapter.Id, i+1, tableLevel);
+					}
 				}
 			}
 			if (BonusLevels.Length == 0) {
@@ -54,6 +74,14 @@ namespace GameA
 					var rectTransform = levelObj.GetComponent<RectTransform>();
 					rectTransform.anchoredPosition = BonusLevelPos[i].anchoredPosition;
 					rectTransform.localScale = Vector3.one;
+					var tableLevel = TableManager.Instance.GetStandaloneLevel(table.BonusLevels [i]);
+					if (tableLevel == null) {
+						LogHelper.Error ("Can't find tableLevel when refresh ui, chapter: {0}, level: {1}", table.Id, i);
+					}
+					else
+					{
+						BonusLevels[i].SetData(table.Id, i+1, tableLevel);
+					}
 				}
 			}
 
@@ -62,33 +90,70 @@ namespace GameA
 //			} else 
             {
 //				LockImage.SetActive(false);
-				for (int i = 0, n = NormalLevels.Length; i < n; i++) {
-					var tableLevel = TableManager.Instance.GetStandaloneLevel(table.NormalLevels [i]);
-					if (tableLevel == null) {
-						LogHelper.Error ("Can't find tableLevel when refresh ui, chapter: {0}, level: {1}", table.Id, i);
-					}
-					NormalLevels [i].RefreshInfo (table.Id, i+1, tableLevel);
-				}
-				for (int i = 0, n = BonusLevels.Length; i < n; i++) {
-					var tableLevel = TableManager.Instance.GetStandaloneLevel(table.BonusLevels [i]);
-					if (tableLevel == null) {
-						LogHelper.Error ("Can't find tableLevel when refresh ui, chapter: {0}, level: {1}", table.Id, i);
-					}
-					BonusLevels [i].RefreshInfo (table.Id, i+1, tableLevel);
-					// refresh block imgs state
-					if (AppData.Instance.AdventureData.UserData.SectionList.Count > (table.Id - 1) &&
-						AppData.Instance.AdventureData.UserData.SectionList [table.Id - 1].BonusLevelUserDataList.Count > i) {
-						if (AppData.Instance.AdventureData.UserData.SectionList [table.Id - 1].BonusLevelUserDataList [i].SimpleData.SuccessCount > 0) {
-							BonusLevelBlockImages [i].SetActive (false);
-						} else {
-							BonusLevelBlockImages [i].SetActive (true);
-						}
-					} else {
-						BonusLevelBlockImages [i].SetActive (true);
-					}
-				}
+	            if (doPassAnimate)
+	            {
+		            _isDoingAnimation = true;
+		            StartCoroutine(AnimationFlow());
+	            }
+	            else
+	            {
+		            for (int i = 0, n = NormalLevels.Length; i < n; i++) {
+			            NormalLevels [i].RefreshInfo ();
+		            }
+		            for (int i = 0, n = BonusLevels.Length; i < n; i++) {
+			            var tableLevel = TableManager.Instance.GetStandaloneLevel(table.BonusLevels [i]);
+			            if (tableLevel == null) {
+				            LogHelper.Error ("Can't find tableLevel when refresh ui, chapter: {0}, level: {1}", table.Id, i);
+			            }
+			            BonusLevels [i].RefreshInfo ();
+			            // refresh block imgs state
+			            if (AppData.Instance.AdventureData.UserData.SectionList.Count > (table.Id - 1) &&
+			                AppData.Instance.AdventureData.UserData.SectionList [table.Id - 1].BonusLevelUserDataList.Count > i) {
+				            if (AppData.Instance.AdventureData.UserData.SectionList [table.Id - 1].BonusLevelUserDataList [i].SimpleData.SuccessCount > 0) {
+					            BonusLevelBlockImages [i].SetActive (false);
+				            } else {
+					            BonusLevelBlockImages [i].SetActive (true);
+				            }
+			            } else {
+				            BonusLevelBlockImages [i].SetActive (true);
+			            }
+		            }
+	            }
 			}
 		}
+
+	    private IEnumerator AnimationFlow()
+	    {
+		    var advData = AppData.Instance.AdventureData;
+		    if (advData.LastPlayedLevelType == EAdventureProjectType.APT_Bonus)
+		    {
+			    BonusLevels[advData.LastPlayedLevelIdx - 1].RefreshInfo(true);
+		    }
+		    else
+		    {
+			    NormalLevels[advData.LastPlayedLevelIdx - 1].RefreshInfo(true);
+			    int nextLevel;
+			    if (advData.TryGetNextNormalLevel(advData.LastPlayedChapterIdx, advData.LastPlayedLevelIdx, out nextLevel))
+			    {
+				    yield return new WaitForSeconds(1f);
+				    NormalLevels[nextLevel - 1].RefreshInfo(true);
+//				    yield return new WaitForSeconds(0.5f);
+//				    var uiMain = SocialGUIManager.Instance.GetUI<UICtrlSingleMode>();
+//				    if (uiMain.IsOpen
+//				        && uiMain.CurrentChapter == _tableStandaloneChapter.Id
+//				        && !SocialGUIManager.Instance.GetUI<UICtrlAdvLvlDetail>().IsOpen)
+//				    {
+//					    IntVec3 intVec3 = new IntVec3();
+//                        intVec3.x = _tableStandaloneChapter.Id;
+//                        intVec3.y = nextLevel;
+//                        intVec3.z = 0;
+//						SocialGUIManager.Instance.OpenUI<UICtrlAdvLvlDetail>(intVec3);
+//				    }
+			    }
+			    _isDoingAnimation = false;
+		    }
+		    yield return null;
+	    }
         
         #region 接口
 

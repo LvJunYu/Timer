@@ -1,12 +1,11 @@
 ﻿// 获取冒险章节用户数据 | 获取冒险章节用户数据
-using System;
-using System.Collections.Generic;
+
 using SoyEngine.Proto;
-using SoyEngine;
 
 namespace GameA
 {
-	public partial class AdventureUserSection : SyncronisticData {
+	public partial class AdventureUserSection
+	{
 		public int GotStarCnt {
 			get {
 				int cnt = 0;

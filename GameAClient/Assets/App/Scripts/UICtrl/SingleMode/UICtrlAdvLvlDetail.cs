@@ -98,6 +98,7 @@ namespace GameA
 
             _cachedView.CloseBtn.onClick.AddListener (OnCloseBtn);
             _cachedView.PlayBtn.onClick.AddListener (OnPlayBtn);
+//            _cachedView.PlayBtn.onClick.AddListener (TestPlayBtn);
             _cachedView.InfoBtn1.onClick.AddListener (OnInfoBtn1);
             _cachedView.RecordBtn1.onClick.AddListener (OnRecordBtn1);
             _cachedView.RankBtn1.onClick.AddListener (OnRankBtn1);
@@ -264,12 +265,36 @@ namespace GameA
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
                     // set local energy data
                     GameATools.LocalUseEnergy (_table.EnergyCost);
+                    SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
                 },
                 error => {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
                 }
             );
         }
+
+        private void TestPlayBtn()
+        {
+            EAdventureProjectType eAPType = _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal;SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (
+                this, 
+                string.Format ("请求进入冒险[{0}]关卡， 第{1}章，第{2}关...", _isBonus ? "奖励" : "普通", _chapterIdx, _levelIdx));
+
+            AppData.Instance.AdventureData.TestPlayAdventureLevel(
+                _chapterIdx,
+                _levelIdx,
+                eAPType,
+                () => {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                    // set local energy data
+                    SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
+                    Messenger.Broadcast(EMessengerType.OnChangeToAppMode);
+                },
+                error => {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+                }
+            );
+        }
+
         private void OnInfoBtn1 () {
             OpenInfoPanel ();
         }
@@ -280,49 +305,6 @@ namespace GameA
         private void OnRankBtn1 ()
         {
             OpenRankPanel ();
-        }
-
-        protected override void InitEventListener()
-        {
-            base.InitEventListener();
-            RegisterEvent(EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
-        }
-
-        private void OnChangeToAppMode()
-        {
-            if (_isOpen)
-            {
-                if (!AppData.Instance.AdventureData.LastAdvSuccess)
-                {
-                    OpenInfoPanel ();
-                    InitPanel();
-                    return;
-                }
-                if (_isBonus)
-                {
-                    SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
-                }
-                else
-                {
-                    
-                    int nextLevel;
-                    if (!AppData.Instance.AdventureData.TryGetNextNormalLevel(_chapterIdx, _levelIdx, out nextLevel))
-                    {
-                        SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
-                    }
-                    else
-                    {
-                        IntVec3 intVec3 = new IntVec3();
-                        intVec3.x = _chapterIdx;
-                        intVec3.y = nextLevel;
-                        intVec3.z = 0;
-                        SocialGUIManager.Instance.CloseUI<UICtrlAdvLvlDetail>();
-                        CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() =>
-                            SocialGUIManager.Instance.OpenUI<UICtrlAdvLvlDetail>(intVec3)));
-
-                    }
-                }
-            }
         }
 
         #endregion

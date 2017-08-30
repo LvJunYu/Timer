@@ -20,7 +20,7 @@ namespace SoyEngine
 			get { return _poolName; }
 		}
 		/// <summary>
-		/// ×î´óÏĞÖÃ»ØÊÕÊÂ¼ş
+		/// æœ€å¤§é—²ç½®å›æ”¶äº‹ä»¶
 		/// </summary>
 		public const float MaxUnusedRecoveryDelay = 10;
 
