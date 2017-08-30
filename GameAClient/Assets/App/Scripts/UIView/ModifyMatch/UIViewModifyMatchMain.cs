@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Net.Mime;
 using SoyEngine;
 using UnityEngine.UI;
 
@@ -16,9 +17,14 @@ namespace GameA
         public Text ModifyChanceReady;
         public GameObject [] ModifyLightSmall;
         public GameObject [] ModifyLightBig;
+        public Image ModifyRedPoint;
 
+	    public Text ModifyDoneText;
         // match
         public Button MatchBtn;
+	    public Image MatchRedPoint;
+
+	    public Text MatchDoneText;
         //public Image MatchCDImage;
         public Text matchCDText;
         public Text MatchPoint;
@@ -32,6 +38,7 @@ namespace GameA
         public Text CanAddNum;
 
         // published
+	    public Image PubshedRedPoint;
         public RawImage PublishedProjectSnapShoot;
         public Text PassingRate;
         public Text ValidTime;

@@ -160,11 +160,15 @@ namespace GameA
                 _cachedView.matchCDText.gameObject.SetActive (true);
                 SetLightImageProgress (1f - getMatchPointLeftTimeInPercentage, _cachedView.MatchLightSmall, _cachedView.MatchLightBig);
                 _cachedView.MatchBtn.gameObject.SetActive (false);
+                _cachedView.MatchRedPoint.gameObject.SetActive(false);
+                _cachedView.MatchDoneText.gameObject.SetActive(false);
             } else {
                 _cachedView.MatchPoint.gameObject.SetActive (true);
                 _cachedView.matchCDText.gameObject.SetActive (false);
                 SetLightImageProgress (1, _cachedView.MatchLightSmall, _cachedView.MatchLightBig);
                 _cachedView.MatchBtn.gameObject.SetActive (true);
+                _cachedView.MatchRedPoint.gameObject.SetActive(true);
+                _cachedView.MatchDoneText.gameObject.SetActive(true);
             }
 
         }
@@ -185,14 +189,18 @@ namespace GameA
                     _cachedView.ModifyLightSmall, _cachedView.ModifyLightBig);
                 _cachedView.ModifyBtn.gameObject.SetActive (false);
                 _cachedView.ModifyChanceReady.gameObject.SetActive (false);
+                _cachedView.ModifyRedPoint.gameObject.SetActive(false);
                 //_cachedView.ModifyCDImage.fillAmount = (float)modifyCDInSecond / LocalUser.Instance.MatchUserData.ReformIntervalSeconds;
             } else if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_ChanceReady) {
                 //_cachedView.ModifyCDImage.fillAmount = 0;
                 _cachedView.ModifyCDText.text = string.Empty;
                 _cachedView.ModifyCDText.gameObject.SetActive (false);
                 SetLightImageProgress (1, _cachedView.ModifyLightSmall, _cachedView.ModifyLightBig);
+             SetLightImageProgress (1, _cachedView.ModifyLightSmall, _cachedView.ModifyLightBig);
                 _cachedView.ModifyBtn.gameObject.SetActive (true);
                 _cachedView.ModifyChanceReady.gameObject.SetActive (true);
+                _cachedView.ModifyRedPoint.gameObject.SetActive(true);
+                _cachedView.ModifyDoneText.gameObject.SetActive(true);
             } else if (LocalUser.Instance.MatchUserData.CurReformState == (int)EReformState.RS_Editing) {
                 //_cachedView.ModifyCDImage.fillAmount = 0;
                 _cachedView.ModifyCDText.text = string.Empty;
@@ -200,6 +208,8 @@ namespace GameA
                 SetLightImageProgress (1, _cachedView.ModifyLightSmall, _cachedView.ModifyLightBig);
                 _cachedView.ModifyBtn.gameObject.SetActive (true);
                 _cachedView.ModifyChanceReady.gameObject.SetActive (true);
+                _cachedView.ModifyRedPoint.gameObject.SetActive(true);
+                _cachedView.ModifyDoneText.gameObject.SetActive(true);
             }
         }
 

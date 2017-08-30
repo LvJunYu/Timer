@@ -120,6 +120,11 @@ namespace GameA
 			        ParticleNameConstDefineGM2D.SingleModeBgEffect, _cachedView.Trans, _groupId);
 	        }
 	        _uiParticleItem.Particle.Play();
+	        //打开匹配挑战
+            #if UNITY_EDITOR
+	        _cachedView.MatchBtn.SetActiveEx(true);      
+             #endif
+	       
         }
 
         protected override void OnClose()
