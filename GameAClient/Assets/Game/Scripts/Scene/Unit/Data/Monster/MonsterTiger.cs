@@ -13,11 +13,6 @@
             return true;
         }
 
-        internal override bool InstantiateView()
-        {
-            return base.InstantiateView();
-        }
-
         protected override void UpdateMonsterAI()
         {
             

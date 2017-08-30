@@ -1,10 +1,25 @@
 ﻿using System.Security.Permissions;
+using SoyEngine;
 
 namespace GameA.Game
 {
     [Unit(Id = 2004, Type = typeof(MonsterJelly))]
     public class MonsterJelly : MonsterBase
     {
+        public enum EMonsterState
+        {
+            Idle,
+            Run,
+            Dialog,
+            Bang,
+            Chase,
+            Attack,
+        }
+
+        protected EMonsterState _eMonsterState;
+        protected EMoveDirection _nextMoveDirection;
+        protected int _timer;
+        
         protected override bool OnInit()
         {
             if (!base.OnInit())
@@ -15,22 +30,20 @@ namespace GameA.Game
             return true;
         }
 
+        protected override void Clear()
+        {
+            base.Clear();
+            _timer = 0;
+            _eMonsterState = EMonsterState.Idle;
+            _nextMoveDirection = _moveDirection;
+        }
+
         internal override void OnPlay()
         {
             base.OnPlay();
-            SetInput(_curMoveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
+            ChangeState(EMonsterState.Run);
         }
-
-        protected override void OnRightStampedEmpty()
-        {
-            ChangeWay(EMoveDirection.Left);
-        }
-
-        protected override void OnLeftStampedEmpty()
-        {
-            ChangeWay(EMoveDirection.Right);
-        }
-
+   
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
             if (!checkOnly && other.IsPlayer)
@@ -66,24 +79,87 @@ namespace GameA.Game
             }
             return base.OnRightHit(other, ref x, checkOnly);
         }
+        
+        protected override void OnRightStampedEmpty()
+        {
+            ChangeState(EMonsterState.Bang);
+            SetNextMoveDirection(EMoveDirection.Left);
+        }
+
+        protected override void OnLeftStampedEmpty()
+        {
+            ChangeState(EMonsterState.Bang);
+            SetNextMoveDirection(EMoveDirection.Right);
+        }
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
+            ChangeState(EMonsterState.Dialog);
             switch (eDirectionType)
             {
                 case EDirectionType.Left:
-                    ChangeWay(EMoveDirection.Right);
+                    SetNextMoveDirection(EMoveDirection.Right);
                     break;
                 case EDirectionType.Right:
-                    ChangeWay(EMoveDirection.Left);
+                    SetNextMoveDirection(EMoveDirection.Left);
                     break;
             }
             base.Hit(unit, eDirectionType);
         }
-
-        protected override void AfterCheckGround()
+        
+        protected virtual void SetNextMoveDirection(EMoveDirection eMoveDirection)
         {
-            base.AfterCheckGround();
+            _nextMoveDirection = eMoveDirection;
+        }
+
+        protected virtual void ChangeState(EMonsterState eMonsterState)
+        {
+            if (_eMonsterState == eMonsterState)
+            {
+                return;
+            }
+            _eMonsterState = eMonsterState;
+            _timer = 50;
+            LogHelper.Debug("ChangeState {0}", eMonsterState);
+        }
+
+        protected override void UpdateMonsterAI()
+        {
+            if (_timer > 0)
+            {
+                _timer--;
+            }
+            switch (_eMonsterState)
+            {
+                case EMonsterState.Idle:
+                    SetInput(EInputType.Right, false);
+                    SetInput(EInputType.Left, false);
+                    break;
+                case EMonsterState.Run:
+                    SetInput(_curMoveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
+                    break;
+                case EMonsterState.Bang:
+                    SetInput(EInputType.Right, false);
+                    SetInput(EInputType.Left, false);
+                    if (_timer==0)
+                    {
+                        ChangeWay(_nextMoveDirection);
+                    }
+                    break;
+                case EMonsterState.Dialog:
+                    SetInput(EInputType.Right, false);
+                    SetInput(EInputType.Left, false);
+                    if (_timer==0)
+                    {
+                        ChangeWay(_nextMoveDirection);
+                    }
+                    break;
+                case EMonsterState.Chase:
+                    SetInput(_curMoveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
+                    break;
+                case EMonsterState.Attack:
+                    break;
+            }
         }
     }
 }
