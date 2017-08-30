@@ -13,7 +13,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     [Unit(Id = 2002, Type = typeof(MonsterElephant))]
-    public class MonsterElephant : MonsterAI
+    public class MonsterElephant : MonsterAI_1
     {
 //        protected override bool IsInAttackRange()
 //        {

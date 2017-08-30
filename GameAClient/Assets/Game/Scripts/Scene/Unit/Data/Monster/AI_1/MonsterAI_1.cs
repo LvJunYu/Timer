@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    public class MonsterAI : MonsterBase
+    public class MonsterAI_1 : MonsterBase
     {
         public enum EAIState
         {
