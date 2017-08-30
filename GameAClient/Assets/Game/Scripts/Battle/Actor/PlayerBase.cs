@@ -439,11 +439,6 @@ namespace GameA.Game
 
         #region View
 
-        /// <summary>
-        /// 跑步声音间隔
-        /// </summary>
-        protected int _walkAudioTimer = 12;
-
         internal override bool InstantiateView()
         {
             if (!base.InstantiateView())
@@ -538,30 +533,15 @@ namespace GameA.Game
                         {
                             speed = Math.Abs(SpeedY);
                         }
-                        speed = Mathf.Clamp(speed, 20, 100);
+                        if (_onClay)
+                        {
+                            speed = 30;
+                        }
                         if (IsHoldingBox())
                         {
                             speed = 50;
                         }
                         _animation.PlayLoop(RunAnimName(speed), speed * deltaTime);
-                        _walkAudioTimer--;
-                        if (_walkAudioTimer <= 0 && _grounded)
-                        {
-                            int randomValue = Random.Range(0, 3);
-                            switch (randomValue)
-                            {
-                                case 0:
-                                    GameAudioManager.Instance.PlaySoundsEffects("AudioWalkWood01");
-                                    break;
-                                case 1:
-                                    GameAudioManager.Instance.PlaySoundsEffects("AudioWalkWood02");
-                                    break;
-                                case 2:
-                                    GameAudioManager.Instance.PlaySoundsEffects("AudioWalkWood03");
-                                    break;
-                            }
-                            _walkAudioTimer = 12;
-                        }
                     }
                     else
                     {
@@ -607,19 +587,18 @@ namespace GameA.Game
             }
         }
 
-//        protected override void OnLand()
-//        {
-//            // 新手引导需要知道主角落地了
-//            GuideManager.Instance.OnSpecialOperate(2);
-//            if (_downUnit == null || _view == null)
-//            {
-//                return;
-//            }
-//            if (_downUnit.Id == UnitDefine.ClayId)
-//            {
-//                GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Land, _trans.position);
-//            }
-//        }
+        protected override void OnLand()
+        {
+            base.OnLand();
+            if (_downUnit == null || _view == null)
+            {
+                return;
+            }
+            if (_downUnit.Id == UnitDefine.ClayId)
+            {
+                GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Land, _trans.position);
+            }
+        }
 
         /// <summary>
         /// 播放跑步烟尘
@@ -634,6 +613,19 @@ namespace GameA.Game
             if (_downUnit.Id == UnitDefine.ClayId)
             {
                 GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.RunOnMud, _trans.position + Vector3.up * 0.2f, scale, 1);
+            }
+            int randomValue = Random.Range(0, 3);
+            switch (randomValue)
+            {
+                case 0:
+                    GameAudioManager.Instance.PlaySoundsEffects("AudioWalkWood01");
+                    break;
+                case 1:
+                    GameAudioManager.Instance.PlaySoundsEffects("AudioWalkWood02");
+                    break;
+                case 2:
+                    GameAudioManager.Instance.PlaySoundsEffects("AudioWalkWood03");
+                    break;
             }
         }
 

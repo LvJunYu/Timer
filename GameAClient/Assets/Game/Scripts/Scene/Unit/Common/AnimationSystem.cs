@@ -114,12 +114,14 @@ namespace GameA.Game
 		/// <param name="state">State.</param>
 		/// <param name="trackIndx">Track indx.</param>
 		/// <param name="e">E.</param>
-		void OnEvent (AnimationState state, int trackIndx, Event e) {
+		void OnEvent(AnimationState state, int trackIndx, Event e)
+		{
 //			UnityEngine.Debug.Log ("____________________________onSpineEvent " + e.Data.name);
-			Action handle = null;
-			if (_eventHandles.TryGetValue (e.Data.name, out handle)) {
-				handle.Invoke ();
-			}
+		    Action handle = null;
+		    if (_eventHandles.TryGetValue(e.Data.name, out handle))
+		    {
+		        handle.Invoke();
+		    }
 		}
 
         public TrackEntry PlayOnce(string aniName, float timeScale = 1, int trackIndex = 0)

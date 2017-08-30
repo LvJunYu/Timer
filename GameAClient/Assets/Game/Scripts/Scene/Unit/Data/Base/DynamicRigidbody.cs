@@ -163,6 +163,11 @@ namespace GameA.Game
                     else
                     {
                         SpeedX -= _fanForce.x;
+                        //落地瞬间，如果相反 立即摆正。
+                        if (!_lastGrounded && _grounded && (SpeedX * speedAcc < 0))
+                        {
+                            speedAcc = speedAcc > 0 ? MaxFriction : -MaxFriction;
+                        }
                     }
                     SpeedX = Util.ConstantLerp(SpeedX, speedAcc > 0 ? _curMaxSpeedX : -_curMaxSpeedX, Mathf.Abs(speedAcc));
                 }
@@ -302,14 +307,7 @@ namespace GameA.Game
                     }
                     else
                     {
-//                        if (_isMonster)
-//                        {
-//                            SpeedY = Util.ConstantLerp(SpeedY, -120, 6);
-//                        }
-//                        else
-                        {
-                            SpeedY = Util.ConstantLerp(SpeedY, -120, 8);
-                        }
+                        SpeedY = Util.ConstantLerp(SpeedY, -120, 8);
                     }
                 }
             }
