@@ -95,7 +95,7 @@ namespace GameA
             get { return GetTimeString(RemainTrainingTime); }
         }
 
-        public int FinishCost
+        public int FinishCostDiamond
         {
             get { return (int) Math.Ceiling(RemainTrainingTime / (double) _lvDic[NextLevel].SecondsPerDiamond); }
         }

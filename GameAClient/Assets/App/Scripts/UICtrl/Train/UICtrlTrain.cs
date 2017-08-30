@@ -66,7 +66,7 @@ namespace GameA
         private int _curMinLv;
         private int _count;
         private float _angel;
-
+        
         private void CreateUmItems()
         {
             _angel = 90 - (180 - 360 / 5) / (float) 2;
@@ -89,7 +89,7 @@ namespace GameA
                 int level = Random.Range(1, 4);
 
                 _trainProperties[i] = new TrainProperty(i + 1, level, _curGrade);
-                _propertyItems[i] = new UMCtrlTrainPropertyItem(_trainProperties[i]);
+                _propertyItems[i] = new UMCtrlTrainPropertyItem(_trainProperties[i],this);
                 _propertyItems[i].Init(_cachedView.PropertyListRTF);
                 _propertyInfos[i] = new UMCtrlTrainPropertyInfo(_trainProperties[i]);
                 _propertyInfos[i].Init(_cachedView.InfoListRTF);
@@ -227,18 +227,6 @@ namespace GameA
             }
         }
 
-        private bool CheckUpgradeGrade()
-        {
-            if (_curGrade > _gradeMaxLv.Length)
-                return false;
-            for (int i = 0; i < _trainProperties.Length; i++)
-            {
-                if (_trainProperties[i].Level < _curMaxLv)
-                    return false;
-            }
-            return true;
-        }
-
         private void OnUpgradeGradeBtn()
         {
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在升阶");
@@ -266,7 +254,7 @@ namespace GameA
         private void OnFinishImmediatelyBtn()
         {
             SocialGUIManager.ShowPopupDialog(
-                string.Format("是否使用{0}钻石立即完成训练。", _curTrainingProperty.FinishCost),
+                string.Format("是否使用{0}钻石立即完成训练。", _curTrainingProperty.FinishCostDiamond),
                 null,
                 new KeyValuePair<string, Action>("确定", () =>
                 {
@@ -278,6 +266,7 @@ namespace GameA
 
         private void RequestFinishUpgradeTrainProperty()
         {
+            if(!GameATools.CheckDiamond(_curTrainingProperty.FinishCostDiamond))return;
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "完成训练");
             RemoteCommands.CompleteUpgradeTrainProperty(_curTrainingProperty.Property, _curTrainingProperty.Level + 1,
                 _curTrainingProperty.RemainTrainingTimeMill, res =>
@@ -303,21 +292,45 @@ namespace GameA
 
         private void FinishUpgradeTrainProperty()
         {
-            if(!_isTraining) return;
-            _curTrainingProperty.FinishUpgrade();
-            _curTrainingProperty = null;
-            _isTraining = false;
-            _checkTime = 0;
+            if (!_isTraining) return;
+            if(!GameATools.CheckDiamond(_curTrainingProperty.FinishCostDiamond))return;
+            if (GameATools.LocalUseDiamond(_curTrainingProperty.FinishCostDiamond))
+            {
+                _curTrainingProperty.FinishUpgrade();
+                _curTrainingProperty = null;
+                _isTraining = false;
+                _checkTime = 0;
+                SocialGUIManager.ShowPopupDialog("恭喜您完成训练！",
+                    null,
+                    new KeyValuePair<string, Action>("确定", () => { }));
+            }
         }
 
         private void UpgradeGrade()
         {
+            if(!CheckUpgradeGrade()) return;
             _curGrade++;
             for (int i = 0; i < _trainProperties.Length; i++)
             {
                 _trainProperties[i].SetGrade(_curGrade);
             }
             Messenger.Broadcast(EMessengerType.OnUpgradeTrainGrade);
+            //弹窗
+            SocialGUIManager.ShowPopupDialog("恭喜您完成升阶！",
+                null,
+                new KeyValuePair<string, Action>("确定", () => { }));
+        }
+        
+        private bool CheckUpgradeGrade()
+        {
+            if (_curGrade > _gradeMaxLv.Length)
+                return false;
+            for (int i = 0; i < _trainProperties.Length; i++)
+            {
+                if (_trainProperties[i].Level < _curMaxLv)
+                    return false;
+            }
+            return true;
         }
 
         private void OnCloseBtn()
@@ -394,6 +407,7 @@ namespace GameA
         public override void OnUpdate()
         {
             base.OnUpdate();
+            if (!_isOpen) return;
             if (!_isTraining) return;
             if (Time.time > _checkTime)
             {
@@ -420,7 +434,7 @@ namespace GameA
                     _checkTime = (Time.time + checkInterval);
                 }
                 _cachedView.RemainTimeTxt.text = _curTrainingProperty.RemainTrainingTimeDesc;
-                _cachedView.FinishCostTxt.text = _curTrainingProperty.FinishCost.ToString();
+                _cachedView.FinishCostTxt.text = _curTrainingProperty.FinishCostDiamond.ToString();
                 _cachedView.TrainingSlider.value =
                     _curTrainingProperty.RemainTrainingTime / (float) _curTrainingProperty.Time;
             }
@@ -459,6 +473,11 @@ namespace GameA
             RefreshMap();
         }
 
+        protected override void SetAnimationType()
+        {
+            _animationType = EAnimationType.PopupFromDown;
+        }
+
         protected override void InitEventListener()
         {
             base.InitEventListener();
@@ -470,5 +489,26 @@ namespace GameA
         {
             _groupId = (int) EUIGroupType.PopUpUI;
         }
+        
+        public bool CheckTrainPoint(int num)
+        {
+            if (_curTrainPoint < num)
+            {
+                SocialGUIManager.ShowPopupDialog("训练点数不够啦，还让不让玩啦！",
+                    null,
+                    new KeyValuePair<string, Action>("确定", () => { }));
+                return false;
+            }
+            return true;
+        }
+
+        public bool UseTrainPoint(int num)
+        {
+            if (_curTrainPoint < num)
+                return false;
+            _curTrainPoint -= num;
+            return true;
+        }
+
     }
 }

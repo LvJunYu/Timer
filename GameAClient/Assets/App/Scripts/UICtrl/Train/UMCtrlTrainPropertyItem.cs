@@ -9,10 +9,12 @@ namespace GameA
     public class UMCtrlTrainPropertyItem : UMCtrlBase<UMViewTrainPropertyItem>
     {
         private TrainProperty _trainProperty;
+        private UICtrlTrain _uiCtrlTrain;
 
-        public UMCtrlTrainPropertyItem(TrainProperty trainProperty)
+        public UMCtrlTrainPropertyItem(TrainProperty trainProperty, UICtrlTrain uiCtrlTrain)
         {
             _trainProperty = trainProperty;
+            _uiCtrlTrain = uiCtrlTrain;
         }
 
         public void InitView(Sprite icon, string name)
@@ -47,31 +49,37 @@ namespace GameA
 
         private void RequestUpgradeProperty()
         {
+            if (!_uiCtrlTrain.CheckTrainPoint(_trainProperty.CostTrainPoint)) return;
+            if (!GameATools.CheckGold(_trainProperty.CostGold)) return;
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "开始训练");
             RemoteCommands.UpgradeTrainProperty(_trainProperty.Property, _trainProperty.Level + 1, res =>
+            {
+                if (res.ResultCode == (int) EUpgradeTrainPropertyCode.UTPC_Success)
                 {
-                    if (res.ResultCode == (int) EUpgradeTrainPropertyCode.UTPC_Success)
-                    {
-                        UpgradeProperty();
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    }
-                    else
-                    {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                        LogHelper.Debug("开始训练失败");
-                    }
-                }, code =>
+                    UpgradeProperty();
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                }
+                else
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    //测试，服务器完成后删除
-                    LogHelper.Debug("服务器请求失败，客服端进行测试");
-                    UpgradeProperty();
-                });
+                    LogHelper.Debug("开始训练失败");
+                }
+            }, code =>
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                //测试，服务器完成后删除
+                LogHelper.Debug("服务器请求失败，客服端进行测试");
+                UpgradeProperty();
+            });
         }
-        
+
         private void UpgradeProperty()
         {
-            _trainProperty.StartUpgrade();
+            if (!_uiCtrlTrain.CheckTrainPoint(_trainProperty.CostTrainPoint)) return;
+            if (!GameATools.CheckGold(_trainProperty.CostGold)) return;
+            if (GameATools.LocalUseGold(_trainProperty.CostGold) &&
+                _uiCtrlTrain.UseTrainPoint(_trainProperty.CostTrainPoint))
+                _trainProperty.StartUpgrade();
         }
     }
 }
