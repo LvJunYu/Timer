@@ -2081,7 +2081,7 @@ MonoBehaviour:
   Modification: {fileID: 794084005}
   SelectPhoto: {fileID: 1659645363}
   PhotoPortrait: {fileID: 1659645364}
-  Photo: {fileID: 1659645364}
+  DefaultUserHeadTexture: {fileID: 0}
   ExpBar: {fileID: 310167732}
   CraftExpBar: {fileID: 257584589}
   MSex: {fileID: 1488571066}
@@ -4175,6 +4175,7 @@ MonoBehaviour:
     _trans: {fileID: 0}
   _run: 0
   Language: 0
+  _isMaster: 1
   _env: 1
   _clearCache: 0
   _roomServerAddress: 192.168.1.91

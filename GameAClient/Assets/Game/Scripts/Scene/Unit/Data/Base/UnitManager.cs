@@ -88,7 +88,7 @@ namespace GameA.Game
                 Table_Unit tableUnit = pair.Value;
                 tableUnit.Init();
                 _units.Add(pair.Key, tableUnit);
-                if (tableUnit.Use == 1)
+                if (tableUnit.Use == 1 || (SocialApp.Instance.IsMaster && tableUnit.Use == 2))
                 {
                     var unitType = (EUIType) tableUnit.UIType;
                     if (!_typeUnits.ContainsKey(unitType))
