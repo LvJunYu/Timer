@@ -43,6 +43,7 @@ namespace GameA
         private TrainProperty _curTrainingProperty;
         private int _curRemainTime;
         private float _checkTime;
+        private Vector4[] _map = new Vector4[_maxPropertyCount];
 
         private void CreateUMItems()
         {
@@ -93,7 +94,7 @@ namespace GameA
             }
             if (_isTraining)
             {
-                if (null == _curTrainingProperty )
+                if (null == _curTrainingProperty)
                 {
                     LogHelper.Error("_isTraining==ture, but _curTrainingProperty==null");
                     return;
@@ -112,6 +113,8 @@ namespace GameA
             {
                 _cachedView.GradeImgs[i].SetActive(_curGrade == i + 1);
             }
+            //刷新Map
+//            RefreshMap();
         }
 
         public override void OnUpdate()
@@ -201,6 +204,28 @@ namespace GameA
         private void FinishUpgradeTrainProperty()
         {
             _curTrainingProperty.FinishUpgrade();
+        }
+
+        private Vector3[] _pos = new Vector3[5];
+
+        private void RefreshMap()
+        {
+            for (int i = 0; i < _maxPropertyCount; i++)
+            {
+                _pos[i] = _cachedView.MapOutPoints[i].position;
+                Camera camera = SocialGUIManager.Instance.UIRoot.Canvas.worldCamera;
+//                _pos[i] = 
+                Debug.Log(_cachedView.MapOutPoints[i].name +_cachedView.MapOutPoints[i].position);
+                _map[i] = new Vector4(_pos[i].x, Screen.height - _pos[i].y, _pos[i].z, 0);
+            }
+            _cachedView.MapMaterial.SetVectorArray("Value", _map); //传递顶点屏幕位置信息给shader 
+            _cachedView.MapMaterial.SetInt("PointNum", 5); //传递顶点数量给shader 
+        }
+
+        protected override void OnOpenAnimationComplete()
+        {
+            base.OnOpenAnimationComplete();
+            RefreshMap();
         }
 
         private void OnCloseBtn()

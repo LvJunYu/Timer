@@ -21,5 +21,8 @@ namespace GameA
         public Text FinishCostTxt;
         public Slider TrainingSlider;
         public Button FinishImmediatelyBtn;
+        public Material MapMaterial;
+        public Transform[] MapOutPoints;
+        public Transform[] MapInPoints;
     }
 }
