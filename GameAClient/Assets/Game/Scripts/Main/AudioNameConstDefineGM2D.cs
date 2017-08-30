@@ -53,6 +53,9 @@ namespace GameA.Game
         public const string Shooter = "M1EffectShooter";
 
         public const string Invincible = "M1OrbitBuff";
+        
+        public const string Dialog = "M1EffectDialog";
+        public const string Bang = "M1EffectBang";
 
         public const string RedMask = "RedMaskEffect";
         public const string YellowMask = "YellowMaskEffect";

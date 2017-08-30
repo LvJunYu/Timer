@@ -18,7 +18,8 @@ namespace GameA.Game
 
         protected EMonsterState _eMonsterState;
         protected EMoveDirection _nextMoveDirection;
-        protected int _timer;
+        protected int _timerBang;
+        protected int _timerDialog;
         
         protected override bool OnInit()
         {
@@ -33,7 +34,8 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
-            _timer = 0;
+            _timerBang = 0;
+            _timerDialog = 0;
             _eMonsterState = EMonsterState.Idle;
             _nextMoveDirection = _moveDirection;
         }
@@ -94,7 +96,14 @@ namespace GameA.Game
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
-            ChangeState(EMonsterState.Dialog);
+            if (unit.IsMonster)
+            {
+                ChangeState(EMonsterState.Dialog);
+            }
+            else
+            {
+                ChangeState(EMonsterState.Bang);
+            }
             switch (eDirectionType)
             {
                 case EDirectionType.Left:
@@ -119,15 +128,30 @@ namespace GameA.Game
                 return;
             }
             _eMonsterState = eMonsterState;
-            _timer = 50;
-            LogHelper.Debug("ChangeState {0}", eMonsterState);
+            var pos =GM2DTools.TileToWorld(new IntVec2(_curMoveDirection == EMoveDirection.Right ? _colliderGrid.XMin : _colliderGrid.XMax,
+                _colliderGrid.YMax)) ;
+            switch (_eMonsterState)
+            {
+                case EMonsterState.Bang:
+                    _timerBang = 75;
+                    GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Bang, pos, 2, ESortingOrder.EffectItem);
+                    break;
+                case EMonsterState.Dialog:
+                    _timerDialog = 125;
+                    GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Dialog, pos, 3, ESortingOrder.EffectItem);
+                    break;
+            }
         }
 
         protected override void UpdateMonsterAI()
         {
-            if (_timer > 0)
+            if (_timerBang > 0)
             {
-                _timer--;
+                _timerBang--;
+            }
+            if (_timerDialog > 0)
+            {
+                _timerDialog--;
             }
             switch (_eMonsterState)
             {
@@ -141,16 +165,18 @@ namespace GameA.Game
                 case EMonsterState.Bang:
                     SetInput(EInputType.Right, false);
                     SetInput(EInputType.Left, false);
-                    if (_timer==0)
+                    if (_timerBang==0)
                     {
+                        ChangeState(EMonsterState.Run);
                         ChangeWay(_nextMoveDirection);
                     }
                     break;
                 case EMonsterState.Dialog:
                     SetInput(EInputType.Right, false);
                     SetInput(EInputType.Left, false);
-                    if (_timer==0)
+                    if (_timerDialog==0)
                     {
+                        ChangeState(EMonsterState.Run);
                         ChangeWay(_nextMoveDirection);
                     }
                     break;
