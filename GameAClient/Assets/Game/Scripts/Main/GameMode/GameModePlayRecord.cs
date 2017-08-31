@@ -103,6 +103,7 @@ namespace GameA.Game
 //            SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
 //            SocialGUIManager.Instance.CloseUI<UICtrlScreenOperator>();
             SocialGUIManager.Instance.OpenUI<UICtrlSceneState>();
+            SocialGUIManager.Instance.OpenUI<UICtrlGameScreenEffect>();
             InputManager.Instance.HideGameInput();
         }
 

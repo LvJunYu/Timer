@@ -288,6 +288,7 @@ namespace GameA.Game
                 }
 	            _inputDatas.Clear();
                 SocialGUIManager.Instance.CloseUI<UICtrlItem>();
+                SocialGUIManager.Instance.OpenUI<UICtrlGameScreenEffect>();
 //                SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
                 SocialGUIManager.Instance.OpenUI<UICtrlEdit>();
                 SocialGUIManager.Instance.GetUI<UICtrlEdit>().ChangeToEditTestMode();
@@ -301,6 +302,7 @@ namespace GameA.Game
             {
                 GameRun.Instance.ChangeState(ESceneState.Edit);
 	            EditMode.Instance.StartEdit();
+	            SocialGUIManager.Instance.CloseUI<UICtrlGameScreenEffect>();
                 SocialGUIManager.Instance.OpenUI<UICtrlItem>();
 //                SocialGUIManager.Instance.OpenUI<UICtrlScreenOperator>();
                 SocialGUIManager.Instance.OpenUI<UICtrlEdit>();

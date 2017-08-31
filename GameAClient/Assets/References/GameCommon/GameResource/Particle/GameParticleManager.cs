@@ -100,6 +100,31 @@ namespace SoyEngine
             return item;
         }
 
+        public UIParticleItem EmitUIParticle(string itemName, Transform parent, int groupId, Vector3 pos = default(Vector3))
+        {
+            var uiparticle = GetUIParticleItem(itemName, parent, groupId);
+            if (uiparticle == null)
+            {
+                return null;
+            }
+            uiparticle.Particle.Trans.localPosition = pos;
+            uiparticle.Particle.Play();
+            return uiparticle;
+        }
+
+        public UIParticleItem EmitUIParticle(string itemName, Transform parent, int groupId, float lifeTime, Vector3 pos = default(Vector3))
+        {
+            var uiparticle = GetUIParticleItem(itemName, parent, groupId);
+            if (uiparticle == null)
+            {
+                return null;
+            }
+            uiparticle.Particle.SetData(true, lifeTime);
+            uiparticle.Particle.Trans.localPosition = pos;
+            uiparticle.Particle.Play();
+            return uiparticle;
+        }
+
         public bool Emit(string itemName, Vector3 pos, Vector3 rotation, Vector3 scale,
             float lifeTime = ConstDefineGM2D.DefaultParticlePlayTime, ESortingOrder sortingOrder = ESortingOrder.Item)
         {

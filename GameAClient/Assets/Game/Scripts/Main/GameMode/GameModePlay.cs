@@ -82,6 +82,7 @@ namespace GameA.Game
 		{
 			SocialGUIManager.Instance.OpenUI<UICtrlEdit>().ChangeToPlayMode();
 			SocialGUIManager.Instance.OpenUI<UICtrlSceneState>();
+			SocialGUIManager.Instance.OpenUI<UICtrlGameScreenEffect>();
 			InputManager.Instance.ShowGameInput();
         }
 
