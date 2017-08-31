@@ -268,15 +268,27 @@ namespace NewResourceSolution
                     AssetDic.Add (AssetNames [j], asset);
                 }
             }
-            ScenaryMask &= scenary;
+            ScenaryMask |= 1 << scenary;
             return true;
         }
 
+        public bool UncacheMask(int mask)
+        {
+            if ((ScenaryMask & mask) == 0)
+                return false;
+            ScenaryMask &= ~mask;
+            if (0 == ScenaryMask)
+            {
+                UncacheAll ();
+            }
+            return true;
+        }
+        
         public bool Uncache (int scenary)
         {
-            if ((ScenaryMask & scenary) == 0)
+            if ((ScenaryMask & (1 << scenary)) == 0)
                 return false;
-            ScenaryMask &= ~scenary;
+            ScenaryMask &= ~(1 << scenary);
             if (0 == ScenaryMask)
             {
                 UncacheAll ();
