@@ -63,8 +63,9 @@ namespace GameA
             }
         }
 
-        private void InitView()
+        private void CreateUMs()
         {
+            InitData();
             //创建装备栏
             _allUMEquipLocs = new List<UMCtrlPuzzleEquipLoc>(_slots.Count);
             int index = 0;
@@ -91,6 +92,7 @@ namespace GameA
                     var puzzle = new UMCtrlPuzzleItem(_allPictureFull[i]);
                     _allUMPuzzleItem.Add(puzzle);
                     puzzle.Init(_cachedView.PuzzleItemGrid);
+                    puzzle.InitView();
                     puzzle.RefreshView();
                 }
                 _cachedView.PuzzleItemSrollRect.horizontal = false;
@@ -109,7 +111,7 @@ namespace GameA
             item.Set(_allPictureFull[inx]);
         }
 
-        private IDataItemRenderer CreateUMPuzzleItem(RectTransform parent)
+        private IDataItemRenderer CreateUmPuzzleItem(RectTransform parent)
         {
             //var puzzle = new UMCtrlPuzzleItem(_allPictureFull[i]);
             var puzzle = new UMCtrlPuzzleItem();
@@ -202,7 +204,7 @@ namespace GameA
             _cachedView.Qulity.onValueChanged.AddListener(OnQulityToggle);
             _cachedView.Level.onValueChanged.AddListener(OnLevelToggle);
             _cachedView.Func.onValueChanged.AddListener(OnFuncToggle);
-            _cachedView.PuzzleItemGridDataScroller.SetCallback(OnPuzzleItemRefresh, CreateUMPuzzleItem);
+            _cachedView.PuzzleItemGridDataScroller.SetCallback(OnPuzzleItemRefresh, CreateUmPuzzleItem);
 //            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
 //            LocalUser.Instance.UserPictureFull.Request(LocalUser.Instance.UserGuid,
 //                () =>
@@ -230,8 +232,7 @@ namespace GameA
 //                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
 //                    LogHelper.Error("Network error when get UserUsingPictureFullData, {0}", code);
 //                });
-            InitData();
-            InitView();
+            CreateUMs();
         }
 
         protected override void InitEventListener()

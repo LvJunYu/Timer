@@ -91,6 +91,8 @@ namespace GameA
             _cachedView.RectTFs[2].gameObject.SetActive(_puzzle.PuzzleType == EPuzzleType.Sixth);
             _cachedView.RectTFs[3].gameObject.SetActive(_puzzle.PuzzleType == EPuzzleType.Ninth);
             _curTF = _cachedView.RectTFs.Find(p => p.gameObject.activeSelf);
+            //大图图片
+            _cachedView.Puzzle_Active.sprite = ResourcesManager.Instance.GetSprite(_puzzle.PuzzleTable.Icon);
             //碎片遮罩集合
             _masks.Clear();
             _masks.AddRange(_curTF.GetComponentsInChildren<Mask>());
@@ -134,9 +136,5 @@ namespace GameA
             }
         }
 
-        protected override void OnViewCreated()
-        {
-            base.OnViewCreated();
-        }
     }
 }

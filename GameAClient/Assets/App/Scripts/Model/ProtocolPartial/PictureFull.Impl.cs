@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System;
-using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using GameA.Game;
 
 namespace GameA
@@ -9,7 +6,7 @@ namespace GameA
     /// <summary>
     /// 拼图
     /// </summary>
-    public partial class PictureFull : SyncronisticData
+    public partial class PictureFull
     {
         //字段
         private bool _hasInited;
@@ -71,7 +68,7 @@ namespace GameA
 
         public void InitData()
         {
-            if (_hasInited == true)
+            if (_hasInited)
                 return;
             InitData((int)_pictureId);
         }
@@ -85,7 +82,7 @@ namespace GameA
             _neededFragments = new PicturePart[FragNum];
             for (int i = 0; i < _neededFragments.Length; i++)
             {
-                _neededFragments[i] = PicturePart.GetPicturePart((int)this._pictureId, i + 1);
+                _neededFragments[i] = PicturePart.GetPicturePart((int)_pictureId, i + 1);
             }
 
             //等级信息字典
@@ -94,7 +91,7 @@ namespace GameA
             foreach (int key in table.Keys)
             {
                 Table_PuzzleUpgrade value = table[key];
-                if (value.PuzzleID == this._pictureId)
+                if (value.PuzzleID == _pictureId)
                     _lvTableDic.Add(value.Level, value);
             }
             _hasInited = true;
