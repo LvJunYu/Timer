@@ -239,6 +239,10 @@ namespace GameA.Game
 
 	    public override void Update()
 	    {
+		    if (!_run)
+		    {
+			    return;
+		    }
 		    GameRun.Instance.Update();
 		    if (_mode == EMode.Edit)
 		    {
@@ -272,7 +276,7 @@ namespace GameA.Game
                 return;
             }
             _mode = mode;
-
+	        _run = true;
             if (mode == EMode.EditTest)
             {
                 EditMode.Instance.StopEdit();

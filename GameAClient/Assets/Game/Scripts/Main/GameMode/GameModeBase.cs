@@ -14,6 +14,7 @@ namespace GameA.Game
         protected GameManager.EStartType _startType;
         protected MonoBehaviour _coroutineProxy;
         protected List<int> _inputDatas = new List<int>(1024);
+        protected bool _run;
 
         public EGameSituation GameSituation
         {
@@ -35,6 +36,7 @@ namespace GameA.Game
             _project = project;
             _startType = startType;
             _coroutineProxy = coroutineProxy;
+            _run = true;
             return true;
         }
 
@@ -48,6 +50,10 @@ namespace GameA.Game
 
         public virtual void Update()
         {
+            if (!_run)
+            {
+                return;
+            }
             GameRun.Instance.Update();
             if (GameRun.Instance.LogicTimeSinceGameStarted < GameRun.Instance.GameTimeSinceGameStarted)
             {
@@ -72,18 +78,24 @@ namespace GameA.Game
 
         public virtual void UpdateLogic()
         {
+            if (!_run)
+            {
+                return;
+            }
             GameRun.Instance.UpdateLogic(ConstDefineGM2D.FixedDeltaTime);
         }
 
         public virtual bool Pause()
         {
             GameRun.Instance.Pause();
+            _run = false;
             return true;
         }
 
         public virtual bool Continue()
         {
             GameRun.Instance.Continue();
+            _run = true;
             return true;
         }
 

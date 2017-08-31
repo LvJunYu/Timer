@@ -34,6 +34,7 @@ namespace GameA.Game
         public const int FanForce = 20;
 
         public const int PlayerTableId = 1002;
+        public const int MonsterJellyId = 2004;
         public const int TransparentEarthId = 4004;
         public const int BrickId = 4006;
         public const int ClayId = 4011;

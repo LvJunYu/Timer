@@ -48,6 +48,15 @@ namespace GameA.Game
                 _guideBase.UpdateLogic();
             }
         }
+        
+        public override void Update()
+        {
+            base.Update();
+            if (_guideBase != null)
+            {
+                _guideBase.Update();
+            }
+        }
 
         public override bool Stop()
         {

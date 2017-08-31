@@ -96,9 +96,19 @@ namespace GameA.Game
 				}
 				return;
 			}
+			if (_mode == EMode.EditTest)
+			{
+				ChangeMode(EMode.Edit);
+			}
+			if (EditMode.Instance.IsInState(EditModeState.Add.Instance))
+			{
+				EditMode.Instance.StartAdd();
+			}
+			EditMode.Instance.ChangeEditorLayer(EEditorLayer.Capture);
 			byte[] mapDataBytes = MapManager.Instance.SaveMapData();
 			mapDataBytes = MatrixProjectTools.CompressLZMA(mapDataBytes);
 			IconBytes = CaptureLevel();
+			EditMode.Instance.RevertEditorLayer();
 			if (mapDataBytes == null
 				|| mapDataBytes.Length == 0)
 			{
@@ -169,6 +179,21 @@ namespace GameA.Game
 			    if (_guideBase != null)
 			    {
 				    _guideBase.UpdateLogic();
+			    }
+		    }
+#endif
+	    }
+	    
+	    public override void Update()
+	    {
+		    base.Update();
+		    
+#if WORKSHOPGUIDE
+		    if (_mode == EMode.EditTest)
+		    {
+			    if (_guideBase != null)
+			    {
+				    _guideBase.Update();
 			    }
 		    }
 #endif

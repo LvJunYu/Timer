@@ -66,7 +66,7 @@ namespace GameA.Game
             if (_grounded)
             {
                 // 判断左右踩空
-                if (_downUnits.Count == 1)
+                if (_downUnits.Count == 1 && !_downUnits[0].IsActor)
                 {
                     if (SpeedX > 0 && _downUnits[0].ColliderGrid.XMax < _colliderGrid.XMax)
                     {

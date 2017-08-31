@@ -136,6 +136,7 @@ namespace GameA.Game
         Normal,
         Effect,
         Max,
+        Capture,
     }
 
     public enum ECollisionType
