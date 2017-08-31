@@ -26,11 +26,6 @@ namespace GameA.Game
 		[ColumnMapping("Damage")]
 		public int Damage;
 		/// <summary>
-        /// 触发类别
-        /// </summary>
-		[ColumnMapping("CostType")]
-		public int CostType;
-		/// <summary>
         /// 消耗
         /// </summary>
 		[ColumnMapping("Cost")]

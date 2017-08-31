@@ -304,7 +304,7 @@ namespace GameA.Game
                     {
                         continue;
                     }
-                    switch ((ECostType)skill.TableSkill.CostType)
+                    switch (skill.ECostType)
                     {
                             case ECostType.Paint:
                                 if (_input.GetKeyApplied(_skillInputs[i]))

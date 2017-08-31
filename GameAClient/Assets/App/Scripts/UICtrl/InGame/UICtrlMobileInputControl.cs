@@ -30,7 +30,7 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            RegisterEvent<Table_Skill, int>(EMessengerType.OnSkillSlotChanged, OnSkillSlotChanged);
+            RegisterEvent<Table_Equipment, int>(EMessengerType.OnSkillSlotChanged, OnSkillSlotChanged);
             RegisterEvent<float, float>(EMessengerType.OnSkill1CDChanged, OnSkill1CDChanged);
             RegisterEvent<float, float>(EMessengerType.OnSkill2CDChanged, OnSkill2CDChanged);
             RegisterEvent<float, float>(EMessengerType.OnSkill3CDChanged, OnSkill3CDChanged);
@@ -81,7 +81,7 @@ namespace GameA
             _cachedView.AssistBtn.gameObject.SetActive(visible);
         }
 
-        private void OnSkillSlotChanged(Table_Skill tableSkill, int slot)
+        private void OnSkillSlotChanged(Table_Equipment tableSkill, int slot)
         {
             if (null == _cachedView) return;
             if (null == tableSkill) return;
