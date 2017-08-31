@@ -177,6 +177,17 @@ namespace GameA.Game
             {
                 _view.StatusBar.SetMPGrids(1000/tableSkill.Cost);
             }
+            bool showMp = false;
+            for (int i = 0; i < _skillCtrl.CurrentSkills.Length; i++)
+            {
+                var skill = _skillCtrl.CurrentSkills[i];
+                if (skill != null && skill.TableSkill.CostType == (int)ECostType.Magic)
+                {
+                    showMp = true;
+                    break;
+                }
+            }
+            _view.StatusBar.SetMPActive(showMp);
             return true;
         }
 
@@ -452,8 +463,7 @@ namespace GameA.Game
             }
             _reviveEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null, ESortingOrder.LazerEffect));
             _portalEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null, ESortingOrder.LazerEffect));
-            _view.StatusBar.ShowHP();
-            _view.StatusBar.ShowMP();
+            _view.StatusBar.SetHPActive(true);
             return true;
         }
 

@@ -23,8 +23,8 @@ namespace GameA.Game
             {
                 srs[i].sortingOrder = (int) ESortingOrder.DragingItem;
             }
-            HideHP();
-            HideMP();
+            SetHPActive(false);
+            SetMPActive(false);
         }
 
         void Update()
@@ -145,25 +145,15 @@ namespace GameA.Game
         #endregion
         
         #region methods
-
-        public void ShowHP()
+        
+        public void SetHPActive(bool value)
         {
-            HPRoot.SetActive(true);
+            HPRoot.SetActive(value);
         }
         
-        public void HideHP()
+        public void SetMPActive(bool value)
         {
-            HPRoot.SetActive(false);
-        }
-        
-        public void ShowMP()
-        {
-            MPRoot.SetActive(true);
-        }
-        
-        public void HideMP()
-        {
-            MPRoot.SetActive(false);
+            MPRoot.SetActive(value);
         }
 
         public void SetHP (EHPModifyCase modifyCase, int current, int max)

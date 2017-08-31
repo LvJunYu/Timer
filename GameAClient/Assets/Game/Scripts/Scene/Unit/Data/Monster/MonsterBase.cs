@@ -39,7 +39,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            _view.StatusBar.ShowHP();
+            _view.StatusBar.SetHPActive(true);
             return true;
         }
 
