@@ -237,8 +237,11 @@ namespace GameA.Game
         /// </summary>
         private void OnGameFinishSuccess()
         {
-            if (!PlayMode.Instance.SceneState.GameSucceed) return;
-            PlayMode.Instance.GameFinishSuccess();
+            if (!PlayMode.Instance.SceneState.GameSucceed)
+            {
+                return;
+            }
+            GameRun.Instance.OnGameFinishSuccess();
             _gameMode.OnGameSuccess();
         }
 
@@ -247,8 +250,11 @@ namespace GameA.Game
         /// </summary>
         private void OnGameFinishFailed()
         {
-            if (!PlayMode.Instance.SceneState.GameFailed) return;
-            PlayMode.Instance.GameFinishFailed();
+            if (!PlayMode.Instance.SceneState.GameFailed)
+            {
+                return;
+            }
+            GameRun.Instance.OnGameFinishFailed();
             _gameMode.OnGameFailed();
         }
 

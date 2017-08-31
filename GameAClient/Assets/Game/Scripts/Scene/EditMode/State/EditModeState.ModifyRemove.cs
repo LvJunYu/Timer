@@ -24,7 +24,7 @@ namespace GameA.Game
                 {
                     return;
                 }
-                GameAudioManager.Instance.PlaySoundsEffects (AudioNameConstDefineGM2D.GameAudioEditorLayItem);
+                GameAudioManager.Instance.PlaySoundsEffects (AudioNameConstDefineGM2D.EditLayItem);
                 
                 UnitExtra unitExtra = DataScene2D.Instance.GetUnitExtra(touchedUnitDesc.Guid);
                 if (EditMode.Instance.DeleteUnitWithCheck(touchedUnitDesc))

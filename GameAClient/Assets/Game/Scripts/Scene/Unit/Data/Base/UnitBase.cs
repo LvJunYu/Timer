@@ -671,7 +671,8 @@ namespace GameA.Game
             if (_view != null)
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
-                GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, _trans.position);
+                GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName,
+                    GM2DTools.TileToWorld(CenterPos, _trans.position.z));
             }
         }
 

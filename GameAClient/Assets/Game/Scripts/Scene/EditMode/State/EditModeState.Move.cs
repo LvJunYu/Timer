@@ -276,7 +276,7 @@ namespace GameA.Game
                 var tableUnit = stateData.CurrentMovingUnitBase.TableUnit;
                 if (EditMode.Instance.AddUnitWithCheck(unitDesc))
                 {
-                    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioEditorLayItem);
+                    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.EditLayItem);
                     UnitExtra extra = stateData.DragUnitExtra;
                     if (extra != UnitExtra.zero)
                     {

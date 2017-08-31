@@ -195,7 +195,7 @@ namespace NewResourceSolution
 			{
 				if (bundle.AssetDic.TryGetValue(assetName, out asset))
 				{
-					bundle.ScenaryMask &= scenary;
+					bundle.Cache(scenary, logWhenError);
 					return asset;
 				}
 			}
@@ -255,7 +255,7 @@ namespace NewResourceSolution
 				CHResBundle bundle = itor.Current.Value;
 				if (0 != scenaryMask2Unload)
 				{
-                    bundle.Uncache (scenaryMask2Unload);
+                    bundle.UncacheMask (scenaryMask2Unload);
 				}
 				if (0 == bundle.ScenaryMask)
 				{
@@ -331,7 +331,7 @@ namespace NewResourceSolution
 				CHResBundle dependenceBundle = null;
 				if (_cachedBundleDic.TryGetValue(_bundleToCache[i], out dependenceBundle))
 				{
-					if ((dependenceBundle.ScenaryMask & scenary) == 0)
+					if ((dependenceBundle.ScenaryMask & (1 << scenary)) == 0)
 					{
 						if (!dependenceBundle.Cache (scenary, logWhenError))
 						{

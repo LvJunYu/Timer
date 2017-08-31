@@ -51,13 +51,13 @@ namespace GameA
             EditMode.Instance.MapStatistics.TimeLimit = _curCondition.TimeLimit;
 			EditMode.Instance.MapStatistics.LifeCount = _curCondition.LifeCount;
             SocialGUIManager.Instance.CloseUI<UICtrlGamePlay>();
-			GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioWindowClosed);
+			GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.WindowClosed);
         }
 
         private void OnButtonCancleClick()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlGamePlay>();
-			GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioWindowClosed);
+			GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.WindowClosed);
 		}
 
 		private void OnLifeItemButtonClick(int lifeId)

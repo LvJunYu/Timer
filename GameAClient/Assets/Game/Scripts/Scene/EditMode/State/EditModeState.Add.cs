@@ -191,7 +191,7 @@ namespace GameA.Game
                 }
                 if (EditMode.Instance.AddUnitWithCheck(unitDesc))
                 {
-                    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioEditorLayItem);
+                    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.EditLayItem);
                     UnitExtra extra = new UnitExtra();
                     if (tableUnit.CanMove)
                     {

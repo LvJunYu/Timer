@@ -354,8 +354,6 @@ namespace GameA.Game
         {
             _run = false;
             _gameSucceedTime = GameRun.Instance.LogicFrameCnt;
-            GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.GameAudioBgm01);
-            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
             _mainPlayer.OnSucceed();
             GuideManager.Instance.OnGameSuccess();
             if (null != _statistic)
@@ -372,7 +370,6 @@ namespace GameA.Game
             {
                 _statistic.OnGameFinishFailed();
             }
-            GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.GameAudioBgm01);
         }
 
         public void OnBoostItemSelectFinish(List<int> items)
