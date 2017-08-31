@@ -45,7 +45,7 @@ namespace GameA.Game
                 if (CheckCanModifyAdd(createUnitDesc))
                 {
                     if (EditMode.Instance.AddUnitWithCheck(createUnitDesc)) {
-                        GameAudioManager.Instance.PlaySoundsEffects (AudioNameConstDefineGM2D.GameAudioEditorLayItem);
+                        GameAudioManager.Instance.PlaySoundsEffects (AudioNameConstDefineGM2D.EditLayItem);
                         var unitEditData = new UnitEditData(createUnitDesc,
                             DataScene2D.Instance.GetUnitExtra(createUnitDesc.Guid));
                         OnModifyAdd(unitEditData);

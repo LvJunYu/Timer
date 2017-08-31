@@ -135,6 +135,8 @@ namespace GameA
             gameObject.AddComponent<TableManager>();
             TableManager.Instance.Init();
             LocalUser.Instance.Init();
+            GameParticleManager.Instance.Init();
+            GameAudioManager.Instance.Init();
             //预加载单人模式UI
             SocialGUIManager.Instance.CreateView<UICtrlSingleMode>();
             if (!string.IsNullOrEmpty(LocalUser.Instance.Account.Token))

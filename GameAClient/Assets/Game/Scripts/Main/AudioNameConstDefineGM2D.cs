@@ -6,39 +6,23 @@
 ***********************************************************************/
 
 
+using UnityEngine;
+
 namespace GameA.Game
 {
     public class AudioNameConstDefineGM2D
     {
-        public const string GameAudioSpingEffect = "AudioSpring";
-        public const string GameAudioStartGame = "AudioStartGame";
-
-        public const string GameAudioSuccess = "AudioSuccess";
-        public const string GameAudioFailed = "AudioFail";
-
-        public const string GameAudioEditorLayItem = "AudioEditLayItem";
-
-        public const string GameAudioButtonClick = "AudioButtonClick";
-        public const string GameAudioWindowClosed = "AudioWindowClosed";
-
-        public const string GameAudioMainPlayerDead = "AudioPlayerDead";
-        public const string GameAudioMonsterDead = "AudioMonsterDead";
-        public const string GameAudioMonsterDeadTread= "AudioMonsterDeadTread";
-        public const string GameAudioMonsterDeadCrash = "M2AudioShotgunFire1";
-
-        public const string GameAudioTransform = "AudioTransform";
-
-        public const string GameAudioBgm01 = "MusicHappy";
-
-        public const string GameAudioLightingJump = "AudioLightingJump";
-
-        public const string M2Jump1 = "M2AudioPandaJump1";
-        public const string M2Jump2 = "M2AudioPandaJump2";
-
-        public const string M2PlayerDeath = "M2AudioHeroDeath";
-        public const string M2Reborn = "M2AudioReborn";
-
-        public const string M2Explosion = "M2AudioExplosion";
+        public const string Sping = "AudioSpring";
+        public const string Jump = "AudioJump";
+        public const string StartGame = "AudioStartGame";
+        public const string Success = "AudioSuccess";
+        public const string Failed = "AudioFail";
+        public const string EditLayItem = "AudioEditLayItem";
+        public const string WindowClosed = "AudioWindowClosed";
+        public const string ButtonClick = "AudioButtonClick";
+        public const string Reborn = "AudioReborn";
+        public const string LevelNormalBgm = "MusicLevelNormal";
+        public const string LevelBonusBgm = "MusicLevelBunus";
     }
 
     public class ParticleNameConstDefineGM2D

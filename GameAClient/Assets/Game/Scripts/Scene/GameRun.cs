@@ -65,10 +65,9 @@ namespace GameA.Game
         public void Dispose()
         {
             Clear();
+            GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.LevelNormalBgm);
 
             EnvManager.Instance.Dispose();
-//            GameParticleManager.Instance.Dispose();
-            GameAudioManager.Instance.Dispose();
             DeadMarkManager.Instance.Dispose();
             InputManager.Instance.Dispose();
             PlayMode.Instance.Dispose();
@@ -101,8 +100,6 @@ namespace GameA.Game
             UnitManager.Instance.Init();
             CameraManager.Instance.Init();
             EnvManager.Instance.Init();
-            GameParticleManager.Instance.Init();
-            GameAudioManager.Instance.Init();
             DeadMarkManager.Instance.Init();
             InputManager.Instance.Init();
             PlayMode.Instance.Init();
@@ -259,7 +256,7 @@ namespace GameA.Game
             Messenger.Broadcast(EMessengerType.OnGameRestart);
             return true;
         }
-
+        
         public bool Playing()
         {
             LogHelper.Debug("Playing");
@@ -271,10 +268,29 @@ namespace GameA.Game
             _gameTimeSinceGameStarted = 0;
             _logicFrameCnt = 0;
             _isPlaying = true;
-            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioStartGame);
-            GameAudioManager.Instance.PlayMusic(AudioNameConstDefineGM2D.GameAudioBgm01);
+            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.StartGame);
+            GameAudioManager.Instance.PlayMusic(AudioNameConstDefineGM2D.LevelNormalBgm);
             Messenger.Broadcast(EMessengerType.OnPlay);
             return true;
+        }
+        
+        /// <summary>
+        /// 游戏以胜利结束
+        /// </summary>
+        public void OnGameFinishSuccess()
+        {
+            PlayMode.Instance.GameFinishSuccess();
+            GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.LevelNormalBgm);
+            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Success);
+        }
+
+        /// <summary>
+        /// 游戏以失败结束
+        /// </summary>
+        public void OnGameFinishFailed()
+        {
+            PlayMode.Instance.GameFinishFailed();
+            GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.LevelNormalBgm);
         }
 
         #endregion

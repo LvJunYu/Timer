@@ -95,7 +95,7 @@ namespace GameA.Game
                         {
                             PlayMode.Instance.MainPlayer.Step(0);
                             other.ExtraSpeed.y = ExtraSpeedY;
-                            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
+                            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Sping);
                         }
                         else if (other.IsMonster)
                         {
@@ -110,7 +110,7 @@ namespace GameA.Game
                         if (other.IsMain)
                         {
                             other.ExtraSpeed.y = -ExtraSpeedY;
-                            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
+                            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Sping);
                         }
                         else if (other.IsMonster)
                         {
@@ -125,7 +125,7 @@ namespace GameA.Game
                     if (other.IsMain)
                     {
                         PlayMode.Instance.MainPlayer.Step(0);
-                        GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
+                        GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Sping);
                     }
                     break;
                 case EDirectionType.Right:
@@ -135,7 +135,7 @@ namespace GameA.Game
                     if (other.IsMain)
                     {
                         PlayMode.Instance.MainPlayer.Step(0);
-                        GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSpingEffect);
+                        GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Sping);
                     }
                     break;
             }

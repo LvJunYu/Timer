@@ -385,7 +385,7 @@ namespace GameA.Game
                                     }
                                     _animation.Reset();
                                     _animation.PlayLoop(IdleAnimName());
-                                    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.M2Reborn);
+                                    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Reborn);
                                     Messenger.Broadcast(EMessengerType.OnMainPlayerRevive);
                                 });
         }
@@ -412,7 +412,7 @@ namespace GameA.Game
                     PlayMode.Instance.UpdateWorldRegion(_curPos);
                     _animation.Reset();
                     _animation.PlayLoop(IdleAnimName());
-                    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.M2Reborn);
+                    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Reborn);
                 }));
         }
 
@@ -583,9 +583,9 @@ namespace GameA.Game
         
         protected override void OnJump()
         {
-            if (!GameAudioManager.Instance.IsPlaying(AudioNameConstDefineGM2D.GameAudioSpingEffect))
+            if (!GameAudioManager.Instance.IsPlaying(AudioNameConstDefineGM2D.Sping))
             {
-                GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioLightingJump);
+                GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Jump);
             }
             if (_downUnit == null || _view == null)
             {

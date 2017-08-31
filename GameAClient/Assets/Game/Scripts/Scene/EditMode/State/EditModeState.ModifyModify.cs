@@ -194,7 +194,7 @@ namespace GameA.Game
                 if (EditMode.Instance.AddUnitWithCheck(target))
                 {
                     DataScene2D.Instance.ProcessUnitExtra(target, stateData.DragUnitExtra);
-                    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioEditorLayItem);
+                    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.EditLayItem);
                     OnModifyModify(new UnitEditData(boardData.CurrentTouchUnitDesc, stateData.DragUnitExtra),
                         new UnitEditData(target, stateData.DragUnitExtra));
                 }

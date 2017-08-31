@@ -45,7 +45,7 @@ namespace GameA.Game
 			    LogHelper.Info("游戏成绩提交成功");
 			    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
 			    if (!PlayMode.Instance.SceneState.GameFailed) return;
-			    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioFailed);
+			    GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Failed);
                 SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Lose);
 			}, (errCode)=>{
 			    LogHelper.Info("游戏成绩提交失败");
@@ -81,7 +81,7 @@ namespace GameA.Game
                 LogHelper.Info("游戏成绩提交成功");
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                 if (!PlayMode.Instance.SceneState.GameSucceed) return;
-                GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.GameAudioSuccess);
+                GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Success);
                 SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.Win);
             }, (errCode)=>{
                 LogHelper.Info("游戏成绩提交失败");
