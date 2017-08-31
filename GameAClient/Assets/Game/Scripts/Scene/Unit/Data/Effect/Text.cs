@@ -5,7 +5,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     [Unit(Id = 9001, Type = typeof(Text))]
-    public class Text : EffectBase
+    public class Text : UnitBase
     {
         private int _timer;
         private TextMesh _textMesh;
@@ -13,6 +13,17 @@ namespace GameA.Game
         public override bool CanControlledBySwitch
         {
             get { return true; }
+        }
+        
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            SetAllCross(true);
+            SetSortingOrderFrontest();
+            return true;
         }
         
         internal override bool InstantiateView()

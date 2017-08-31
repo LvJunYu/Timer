@@ -5,7 +5,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     [Unit(Id = 9002, Type = typeof(Trigger))]
-    public class Trigger : EffectBase
+    public class Trigger : UnitBase
     {
         private string _triggerName;
 

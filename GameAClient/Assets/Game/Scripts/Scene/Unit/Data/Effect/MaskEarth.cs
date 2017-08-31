@@ -51,6 +51,7 @@ namespace GameA.Game
             if (_spriteRenderer != null)
             {
                 _spriteRenderer.DOFade(1, 0f);
+                _view.SetSortingOrder((int)ESortingOrder.Item);
             }
         }
 
@@ -59,6 +60,7 @@ namespace GameA.Game
             if (_spriteRenderer != null)
             {
                 _spriteRenderer.DOFade(0.5f, 0.5f);
+                _view.SetSortingOrder((int)ESortingOrder.EffectItem);
             }
         }
 

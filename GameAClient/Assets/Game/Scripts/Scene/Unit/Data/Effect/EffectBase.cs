@@ -24,6 +24,24 @@ namespace GameA.Game
             _trigger = false;
             _unit = null;
         }
+        
+        internal override void OnPlay()
+        {
+            base.OnPlay();
+            if (_view != null)
+            {
+                _view.SetRendererEnabled(false);
+            }
+        }
+
+        internal override void OnEdit()
+        {
+            base.OnEdit();
+            if (_view != null)
+            {
+                _view.SetRendererEnabled(true);
+            }
+        }
 
         public override void OnIntersect(UnitBase other)
         {
@@ -41,10 +59,9 @@ namespace GameA.Game
 
         protected virtual void OnTrigger()
         {
-            GameParticleManager.Instance.Emit(_tableUnit.Model, _trans);
         }
-        
-        public virtual void UpdateLogic(float deltaTime)
+
+        public override void UpdateLogic()
         {
             if (_trigger && _unit != null)
             {
