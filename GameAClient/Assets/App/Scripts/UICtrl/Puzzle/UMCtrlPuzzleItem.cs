@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using System;
+﻿using System;
 using UnityEngine;
-using System.Collections.Generic;
+using NewResourceSolution;
 using SoyEngine;
 
 namespace GameA
@@ -9,7 +8,7 @@ namespace GameA
     /// <summary>
     /// 
     /// </summary>
-    public partial class UMCtrlPuzzleItem : UMCtrlBase<UMViewPuzzleItem>, IDataItemRenderer
+    public class UMCtrlPuzzleItem : UMCtrlBase<UMViewPuzzleItem>, IDataItemRenderer
     {
         private PictureFull _puzzle;
 
@@ -18,33 +17,43 @@ namespace GameA
             _puzzle = puzzle;
         }
 
-        public UMCtrlPuzzleItem() { }
+        public UMCtrlPuzzleItem()
+        {
+        }
 
         public object Data
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
         }
 
         private int _index;
+
         public int Index
         {
             get { return _index; }
             set { _index = value; }
         }
 
-        public RectTransform Transform { get { return _cachedView.Trans; } }
+        public RectTransform Transform
+        {
+            get { return _cachedView.Trans; }
+        }
 
         public void Set(object data)
         {
             _puzzle = data as PictureFull;
+            InitView();
             RefreshView();
         }
 
         public void Unload()
         {
+        }
+
+        public void InitView()
+        {
+            _cachedView.DisActiveImg.sprite =
+                _cachedView.Img.sprite = ResourcesManager.Instance.GetSprite(_puzzle.PuzzleTable.Icon);
         }
 
         public void RefreshView()
