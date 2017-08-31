@@ -26,6 +26,11 @@ namespace GameA.Game
 		[ColumnMapping("Model")]
 		public string Model;
 		/// <summary>
+        /// 触发类别
+        /// </summary>
+		[ColumnMapping("CostType")]
+		public int CostType;
+		/// <summary>
         /// 生命值
         /// </summary>
 		[ColumnMapping("HpAdd")]

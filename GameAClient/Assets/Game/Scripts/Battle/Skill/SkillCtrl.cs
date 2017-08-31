@@ -56,7 +56,7 @@ namespace GameA.Game
             return false;
         }
 
-        public virtual bool SetSkill(int id, int slot = 0)
+        public virtual bool SetSkill(int id, ECostType eCostType = ECostType.None, int slot = 0)
         {
             if (!CheckValid(slot))
             {
@@ -71,7 +71,7 @@ namespace GameA.Game
                 _currentSkills[slot].Exit();
                 _currentSkills[slot] = null;
             }
-            _currentSkills[slot] = new SkillBase(id, _owner);
+            _currentSkills[slot] = new SkillBase(id, _owner, eCostType);
             return true;
         }
 

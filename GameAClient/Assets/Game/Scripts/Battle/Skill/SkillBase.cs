@@ -18,7 +18,8 @@ namespace GameA.Game
     {
         [SerializeField]
         protected EPaintType _epaintType;
-        
+
+        protected ECostType _eCostType;
         [SerializeField]
         protected UnitBase _owner;
         protected Table_Skill _tableSkill;
@@ -86,8 +87,14 @@ namespace GameA.Game
             get { return _tableSkill; }
         }
 
-        public SkillBase(int id, UnitBase ower)
+        public ECostType ECostType
         {
+            get { return _eCostType; }
+        }
+
+        public SkillBase(int id, UnitBase ower, ECostType eCostType)
+        {
+            _eCostType = eCostType;
             _owner = ower;
             _tableSkill = TableManager.Instance.GetSkill(id);
             if (_tableSkill == null)
@@ -217,7 +224,7 @@ namespace GameA.Game
                 _currentEnergy = mp;
                 if (_owner != null)
                 {
-                    switch ((ECostType)_tableSkill.CostType)
+                    switch (_eCostType)
                     {
                         case ECostType.Magic:
                             if (_owner.View != null)
@@ -243,7 +250,7 @@ namespace GameA.Game
                 return;
             }
             _timerCD = value;
-            if (_owner.IsMain && _tableSkill.CostType == (int)ECostType.Magic)
+            if (_owner.IsMain && _eCostType == ECostType.Magic)
             {
                 Messenger<float, float>.Broadcast(EMessengerType.OnSkill2CDChanged, _timerCD, _cdTime);
             }

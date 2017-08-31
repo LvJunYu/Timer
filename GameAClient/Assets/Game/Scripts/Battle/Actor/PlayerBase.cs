@@ -124,18 +124,18 @@ namespace GameA.Game
             }
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
             int slot = 0;
-            switch ((ECostType) tableSkill.CostType)
+            switch ((ECostType) tableEquipment.CostType)
             {
                 case ECostType.None:
                 case ECostType.Paint:
                     _skillCtrl.RemoveSkill(skillId);
                     if (!_skillCtrl.HasEmptySlot(out slot))
                     {
-                        if (_skillCtrl.CurrentSkills[1].TableSkill.CostType != (int) ECostType.Paint)
+                        if (_skillCtrl.CurrentSkills[1].ECostType != ECostType.Paint)
                         {
                             slot = 1;
                         }
-                        else if (_skillCtrl.CurrentSkills[2].TableSkill.CostType != (int) ECostType.Paint)
+                        else if (_skillCtrl.CurrentSkills[2].ECostType != ECostType.Paint)
                         {
                             slot = 2;
                         }
@@ -148,7 +148,7 @@ namespace GameA.Game
                     slot = 2;
                     break;
             }
-            if (!_skillCtrl.SetSkill(tableSkill.Id, slot))
+            if (!_skillCtrl.SetSkill(tableSkill.Id, (ECostType)tableEquipment.CostType, slot))
             {
                 return false;
             }
@@ -169,11 +169,11 @@ namespace GameA.Game
             }
             _tableEquipments[slot] = tableEquipment;
             //发送事件
-            Messenger<Table_Skill,int>.Broadcast(EMessengerType.OnSkillSlotChanged, tableSkill, slot);
+            Messenger<Table_Equipment,int>.Broadcast(EMessengerType.OnSkillSlotChanged, tableEquipment, slot);
             CalculateMaxHp();
             OnHpChanged(_maxHp);
             ChangeGunView(slot);
-            if (tableSkill.CostType == (int) ECostType.Magic)
+            if (tableEquipment.CostType == (int) ECostType.Magic)
             {
                 _view.StatusBar.SetMPGrids(1000/tableSkill.Cost);
             }
@@ -181,7 +181,7 @@ namespace GameA.Game
             for (int i = 0; i < _skillCtrl.CurrentSkills.Length; i++)
             {
                 var skill = _skillCtrl.CurrentSkills[i];
-                if (skill != null && skill.TableSkill.CostType == (int)ECostType.Magic)
+                if (skill != null && skill.ECostType == ECostType.Magic)
                 {
                     showMp = true;
                     break;
