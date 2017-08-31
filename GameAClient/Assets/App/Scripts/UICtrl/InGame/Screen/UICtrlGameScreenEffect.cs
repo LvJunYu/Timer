@@ -4,7 +4,7 @@ using UnityEngine;
 namespace GameA
 {
     [UIAutoSetup]
-    public class UICtrlGameScreenEffect : UICtrlInGameBase<UIViewUIGuideBubble>
+    public class UICtrlGameScreenEffect : UICtrlInGameBase<UIViewGameScreenEffect>
     {
         protected override void InitGroupId()
         {
@@ -21,14 +21,14 @@ namespace GameA
             return uiparticle;
         }
 
-        public UIParticleItem EmitUIParticle(string itemName, Transform parent, int groupId, float lifeTime, Vector3 pos = default(Vector3))
+        public UIParticleItem EmitUIParticle(string itemName, float lifeTime, Vector3 pos = default(Vector3))
         {
             if (!_isOpen)
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlGameScreenEffect>();
             }
             var uiparticle =
-                GameParticleManager.Instance.EmitUIParticle(itemName, _cachedView.Trans, _groupId, groupId, pos);
+                GameParticleManager.Instance.EmitUIParticle(itemName, _cachedView.Trans, _groupId, lifeTime, pos);
             return uiparticle;
         }
     }

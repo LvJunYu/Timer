@@ -7,12 +7,7 @@ namespace GameA.Game
     {
         protected override void OnTrigger()
         {
-            LogHelper.Debug("FlowerEffect");
-            var effect = GameParticleManager.Instance.GetUIParticleItem("M1EffectHuaBan", SocialGUIManager.Instance.UIRoot.Trans, (int) EUIGroupType.InGameStart);
-            if (effect != null)
-            {
-                effect.Particle.Play();
-            }
+            SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().EmitUIParticle("M1EffectHuaBan",5f);
         }
     }
 }

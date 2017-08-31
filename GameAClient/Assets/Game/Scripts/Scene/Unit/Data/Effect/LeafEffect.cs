@@ -7,8 +7,7 @@ namespace GameA.Game
     {
         protected override void OnTrigger()
         {
-            LogHelper.Debug("Leaf");
-            GameParticleManager.Instance.Emit("M1EffectLuoYe", _trans);
+            SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().EmitUIParticle("M1EffectLuoYe",5f);
         }
     }
 }
