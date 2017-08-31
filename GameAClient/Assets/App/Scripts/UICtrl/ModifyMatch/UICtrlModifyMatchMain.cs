@@ -196,7 +196,6 @@ namespace GameA
                 _cachedView.ModifyCDText.text = string.Empty;
                 _cachedView.ModifyCDText.gameObject.SetActive (false);
                 SetLightImageProgress (1, _cachedView.ModifyLightSmall, _cachedView.ModifyLightBig);
-             SetLightImageProgress (1, _cachedView.ModifyLightSmall, _cachedView.ModifyLightBig);
                 _cachedView.ModifyBtn.gameObject.SetActive (true);
                 _cachedView.ModifyChanceReady.gameObject.SetActive (true);
                 _cachedView.ModifyRedPoint.gameObject.SetActive(true);
@@ -208,7 +207,7 @@ namespace GameA
                 SetLightImageProgress (1, _cachedView.ModifyLightSmall, _cachedView.ModifyLightBig);
                 _cachedView.ModifyBtn.gameObject.SetActive (true);
                 _cachedView.ModifyChanceReady.gameObject.SetActive (true);
-                _cachedView.ModifyRedPoint.gameObject.SetActive(true);
+//                _cachedView.ModifyRedPoint.gameObject.SetActive(true);
                 _cachedView.ModifyDoneText.gameObject.SetActive(true);
             }
         }
