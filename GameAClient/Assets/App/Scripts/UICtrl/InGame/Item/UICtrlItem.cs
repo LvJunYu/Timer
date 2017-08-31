@@ -61,6 +61,10 @@ namespace GameA
 
 	    public void SelectItem(Table_Unit tableUnit)
 	    {
+		    if (EditMode.Instance.IsInState(EditModeState.Switch.Instance))
+		    {
+			    EditMode.Instance.StopSwitch();
+		    }
 		    _selectUnitIdAry[(int) EditMode.Instance.BoardData.EditorLayer] = tableUnit;
 		    Messenger<ushort>.Broadcast(EMessengerType.OnSelectedItemChanged,
 			    (ushort) PairUnitManager.Instance.GetCurrentId(tableUnit.Id));

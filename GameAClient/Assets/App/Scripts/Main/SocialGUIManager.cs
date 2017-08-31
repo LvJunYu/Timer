@@ -51,10 +51,10 @@ namespace GameA
         /// </summary>
         RecordFullScreen,
         InGameBackgroud,
+        InputCtrl,
         InGameMainUI,
         InGamePopup,
         InGameTip,
-        InputCtrl,
         InGameEnd,
         
         AppGameUI,
