@@ -183,9 +183,20 @@ namespace GameA.Game
             _enable = false;
         }
 
+        public void StartAdd()
+        {
+            if (!_stateMachine.IsInState(EditModeState.Add.Instance))
+            {
+                _stateMachine.ChangeState(EditModeState.Add.Instance);
+            }
+        }
+
         public void StartRemove()
         {
-            _stateMachine.ChangeState(EditModeState.Remove.Instance);
+            if (!_stateMachine.IsInState(EditModeState.Remove.Instance))
+            {
+                _stateMachine.ChangeState(EditModeState.Remove.Instance);
+            }
         }
 
         public void StopRemove()
@@ -391,7 +402,7 @@ namespace GameA.Game
             }
             _lastEditorLayer = oldLayer;
             _boardData.EditorLayer = newLayer;
-            LogHelper.Info("EditorLayer: {0} --> {1}", oldLayer, newLayer);
+//            LogHelper.Info("EditorLayer: {0} --> {1}", oldLayer, newLayer);
             switch (_boardData.EditorLayer)
             {//进入模式
                 case EEditorLayer.None:
@@ -441,6 +452,22 @@ namespace GameA.Game
                                 bool isEditing = entry.Key.z == (int) EUnitDepth.Effect;
                                 entry.Value.View.SetRendererColor(EdittingLayerColor);
                                 entry.Value.View.SetEditAssistActive(isEditing);
+                            }
+                        }
+                    }
+                    break;
+                case EEditorLayer.Capture:
+                    using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
+                    {
+                        while (itor.MoveNext())
+                        {
+                            var entry = itor.Current;
+                            if (null != entry.Value
+                                && null != entry.Value.View)
+                            {
+                                bool isEditing = entry.Key.z != (int) EUnitDepth.Effect;
+                                entry.Value.View.SetRendererColor(isEditing ? EdittingLayerColor : Color.clear);
+                                entry.Value.View.SetEditAssistActive(false);
                             }
                         }
                     }
