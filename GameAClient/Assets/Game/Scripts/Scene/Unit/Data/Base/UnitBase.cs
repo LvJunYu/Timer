@@ -444,7 +444,7 @@ namespace GameA.Game
             get
             {
                 IntVec2 dataSize = GetDataSize();
-                return new IntVec2(_curPos.x + dataSize.x / 2, _curPos.y+ dataSize.y / 2);
+                return new IntVec2(_curPos.x + dataSize.x / 2 , _curPos.y+ dataSize.y / 2 );
             }
             set
             {
@@ -453,7 +453,7 @@ namespace GameA.Game
             }
         }
         
-        public IntVec2 CenterUpPos
+        public IntVec2 CenterUpFloorPos
         {
             get
             {

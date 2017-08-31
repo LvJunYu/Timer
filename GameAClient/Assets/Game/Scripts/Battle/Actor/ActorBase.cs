@@ -579,16 +579,16 @@ namespace GameA.Game
                         _animation.PlayOnce("Death");
                         break;
                     case EDieType.Lazer:
-                        _animation.PlayOnce("DeathLazer");
+                        _animation.PlayOnce(_animation.HasAnimation("DeathLazer") ? "DeathLazer" : "Death");
                         break;
                     case EDieType.Water:
-                        _animation.PlayOnce("DeathWater");
+                        _animation.PlayOnce(_animation.HasAnimation("DeathWater") ? "DeathWater" : "Death");
                         break;
                     case EDieType.Fire:
-                        _animation.PlayOnce("DeathFire");
+                        _animation.PlayOnce(_animation.HasAnimation("DeathFire") ? "DeathFire" : "Death");
                         break;
                     case EDieType.Saw:
-                        _animation.PlayOnce(IsPlayer ? "OnSawStart" : "Death");
+                        _animation.PlayOnce(_animation.HasAnimation("OnSawStart") ? "OnSawStart" : "Death");
                         break;
                 }
             }
