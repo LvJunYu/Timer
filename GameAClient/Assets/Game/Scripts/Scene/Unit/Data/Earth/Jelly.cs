@@ -93,7 +93,7 @@ namespace GameA.Game
                         other.SpeedY = 0;
                         if (other.IsMain)
                         {
-                            PlayMode.Instance.MainPlayer.Step(0);
+                            PlayMode.Instance.MainPlayer.Step();
                             other.ExtraSpeed.y = ExtraSpeedY;
                             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Sping);
                         }
@@ -124,7 +124,7 @@ namespace GameA.Game
                     other.ExtraSpeed.y = ExtraSpeedX;
                     if (other.IsMain)
                     {
-                        PlayMode.Instance.MainPlayer.Step(0);
+                        PlayMode.Instance.MainPlayer.Step();
                         GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Sping);
                     }
                     break;
@@ -134,7 +134,7 @@ namespace GameA.Game
                     other.ExtraSpeed.y = ExtraSpeedX;
                     if (other.IsMain)
                     {
-                        PlayMode.Instance.MainPlayer.Step(0);
+                        PlayMode.Instance.MainPlayer.Step();
                         GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Sping);
                     }
                     break;

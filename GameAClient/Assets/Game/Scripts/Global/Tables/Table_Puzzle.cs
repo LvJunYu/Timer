@@ -50,6 +50,11 @@ namespace GameA.Game
         /// </summary>
 		[ColumnMapping("FragNum")]
 		public int FragNum;
+		/// <summary>
+        /// 图片名
+        /// </summary>
+		[ColumnMapping("Icon")]
+		public string Icon;
 	}
 
     public class TablePuzzleAsset:BaseTableAsset

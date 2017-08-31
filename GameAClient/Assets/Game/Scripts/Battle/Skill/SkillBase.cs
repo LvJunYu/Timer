@@ -318,7 +318,7 @@ namespace GameA.Game
             var centerDownPos = _owner.CenterDownPos;
             CreateTrap(centerDownPos);
             //临时写 TODO
-            var units = GetHitUnits(centerDownPos);
+            var units = GetHitUnits(_owner.CenterPos);
             if (units != null && units.Count > 0)
             {
                 for (int i = 0; i < units.Count; i++)

@@ -231,8 +231,12 @@ namespace GameA.Game
                 }
                 if (unit.IsAlive)
                 {
+                    CheckIntersect(unit);
                     int ymin = 0;
-                    unit.OnUpHit(this, ref ymin);
+                    if (unit.OnUpHit(this, ref ymin))
+                    {
+                        CheckHit(unit, EDirectionType.Down);
+                    }
                 }
             }
         }
