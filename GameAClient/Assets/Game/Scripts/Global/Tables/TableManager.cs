@@ -34,8 +34,8 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_Puzzle> Table_PuzzleDic = new Dictionary<int, Table_Puzzle>();
 		public readonly Dictionary<int,Table_PuzzleUpgrade> Table_PuzzleUpgradeDic = new Dictionary<int, Table_PuzzleUpgrade>();
 		public readonly Dictionary<int,Table_PuzzleSlot> Table_PuzzleSlotDic = new Dictionary<int, Table_PuzzleSlot>();
-		public readonly Dictionary<int,Table_AvatarStruct> Table_AvatarStructDic = new Dictionary<int, Table_AvatarStruct>();
 		public readonly Dictionary<int,Table_AvatarSlotName> Table_AvatarSlotNameDic = new Dictionary<int, Table_AvatarSlotName>();
+		public readonly Dictionary<int,Table_AvatarStruct> Table_AvatarStructDic = new Dictionary<int, Table_AvatarStruct>();
 		public readonly Dictionary<int,Table_Matrix> Table_MatrixDic = new Dictionary<int, Table_Matrix>();
 		public readonly Dictionary<int,Table_Morph> Table_MorphDic = new Dictionary<int, Table_Morph>();
 		public readonly Dictionary<int,Table_PlayerLvToModifyLimit> Table_PlayerLvToModifyLimitDic = new Dictionary<int, Table_PlayerLvToModifyLimit>();
@@ -65,8 +65,8 @@ namespace GameA.Game
 		[UnityEngine.SerializeField] private Table_Puzzle[] _tablePuzzles;
 		[UnityEngine.SerializeField] private Table_PuzzleUpgrade[] _tablePuzzleUpgrades;
 		[UnityEngine.SerializeField] private Table_PuzzleSlot[] _tablePuzzleSlots;
-		[UnityEngine.SerializeField] private Table_AvatarStruct[] _tableAvatarStructs;
 		[UnityEngine.SerializeField] private Table_AvatarSlotName[] _tableAvatarSlotNames;
+		[UnityEngine.SerializeField] private Table_AvatarStruct[] _tableAvatarStructs;
 		[UnityEngine.SerializeField] private Table_Matrix[] _tableMatrixs;
 		[UnityEngine.SerializeField] private Table_Morph[] _tableMorphs;
 		[UnityEngine.SerializeField] private Table_PlayerLvToModifyLimit[] _tablePlayerLvToModifyLimits;
@@ -133,10 +133,10 @@ namespace GameA.Game
             _tablePuzzleUpgrades = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleUpgrade[]>(PuzzleUpgradeJsonStr);
 			string PuzzleSlotJsonStr = ResourceManager.Instance.GetJson ("PuzzleSlot", 31);
             _tablePuzzleSlots = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_PuzzleSlot[]>(PuzzleSlotJsonStr);
-			string AvatarStructJsonStr = ResourceManager.Instance.GetJson ("AvatarStruct", 31);
-            _tableAvatarStructs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarStruct[]>(AvatarStructJsonStr);
 			string AvatarSlotNameJsonStr = ResourceManager.Instance.GetJson ("AvatarSlotName", 31);
             _tableAvatarSlotNames = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarSlotName[]>(AvatarSlotNameJsonStr);
+			string AvatarStructJsonStr = ResourceManager.Instance.GetJson ("AvatarStruct", 31);
+            _tableAvatarStructs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_AvatarStruct[]>(AvatarStructJsonStr);
 			string MatrixJsonStr = ResourceManager.Instance.GetJson ("Matrix", 31);
             _tableMatrixs = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Matrix[]>(MatrixJsonStr);
 			string MorphJsonStr = ResourceManager.Instance.GetJson ("Morph", 31);
@@ -394,17 +394,6 @@ namespace GameA.Game
 					LogHelper.Warning("_tablePuzzleSlots table.Id {0} is duplicated!", _tablePuzzleSlots[i].Id);
 				}
 			}
-			for (int i = 0; i < _tableAvatarStructs.Length; i++)
-			{
-				if (!Table_AvatarStructDic.ContainsKey(_tableAvatarStructs[i].Id))
-				{
-					Table_AvatarStructDic.Add(_tableAvatarStructs[i].Id,_tableAvatarStructs[i]);
-				}
-				else
-				{
-					LogHelper.Warning("_tableAvatarStructs table.Id {0} is duplicated!", _tableAvatarStructs[i].Id);
-				}
-			}
 			for (int i = 0; i < _tableAvatarSlotNames.Length; i++)
 			{
 				if (!Table_AvatarSlotNameDic.ContainsKey(_tableAvatarSlotNames[i].Id))
@@ -414,6 +403,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableAvatarSlotNames table.Id {0} is duplicated!", _tableAvatarSlotNames[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableAvatarStructs.Length; i++)
+			{
+				if (!Table_AvatarStructDic.ContainsKey(_tableAvatarStructs[i].Id))
+				{
+					Table_AvatarStructDic.Add(_tableAvatarStructs[i].Id,_tableAvatarStructs[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableAvatarStructs table.Id {0} is duplicated!", _tableAvatarStructs[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableMatrixs.Length; i++)
@@ -695,19 +695,19 @@ namespace GameA.Game
 			}
 			return null;
 		}
-		public Table_AvatarStruct GetAvatarStruct(int key)
+		public Table_AvatarSlotName GetAvatarSlotName(int key)
 		{
-			Table_AvatarStruct tmp;
-			if (Table_AvatarStructDic.TryGetValue(key,out tmp))
+			Table_AvatarSlotName tmp;
+			if (Table_AvatarSlotNameDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
 			return null;
 		}
-		public Table_AvatarSlotName GetAvatarSlotName(int key)
+		public Table_AvatarStruct GetAvatarStruct(int key)
 		{
-			Table_AvatarSlotName tmp;
-			if (Table_AvatarSlotNameDic.TryGetValue(key,out tmp))
+			Table_AvatarStruct tmp;
+			if (Table_AvatarStructDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}

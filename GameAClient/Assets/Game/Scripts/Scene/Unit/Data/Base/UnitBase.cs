@@ -1397,7 +1397,7 @@ namespace GameA.Game
                 return;
             }
             _curMoveDirection = eMoveDirection;
-            if (_trans != null && _curMoveDirection != EMoveDirection.None && IsActor)
+            if (_trans != null && _curMoveDirection != EMoveDirection.None && IsActor && Id != UnitDefine.MonsterJellyId)
             {
                 Vector3 euler = _trans.eulerAngles;
                 _trans.eulerAngles = _curMoveDirection != EMoveDirection.Right
