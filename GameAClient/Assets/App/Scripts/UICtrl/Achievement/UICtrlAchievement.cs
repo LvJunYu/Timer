@@ -1,6 +1,6 @@
-﻿using System;
-using SoyEngine;
+﻿using SoyEngine;
 using System.Collections.Generic;
+using GameA.Game;
 
 namespace GameA
 {
@@ -10,26 +10,113 @@ namespace GameA
     [UIAutoSetup]
     public class UICtrlAchievement : UICtrlAnimationBase<UIViewAchievement>
     {
-        
+        private const int _maxAchievementNum = 40;
+        private List<UMCtrlAchievementItem> _unFinishUMs;
+        private List<UMCtrlAchievementItem> _finishUMs;
+        private List<AchievementItem> _achievementItems;
+        private List<UMCtrlAchievementItem> _umCtrlAchievementItemCache;
+
+        private void InitView()
+        {
+            _achievementItems = new List<AchievementItem>(_maxAchievementNum);
+            var achievements = TableManager.Instance.Table_AchievementDic;
+            int achievementType;
+            foreach (Table_Achievement value in achievements.Values)
+            {
+                AchievementItem achievementItem = _achievementItems.Find(p => p.Type == value.Type);
+                if (null == achievementItem)
+                {
+                    achievementItem = new AchievementItem(value.Type, 1);
+                    _achievementItems.Add(achievementItem);
+                }
+                achievementItem.AddLvDic(value.Level, value);
+            }
+        }
+
+        private void RefreshView()
+        {
+            if(null == _unFinishUMs)
+                _unFinishUMs = new List<UMCtrlAchievementItem>(_maxAchievementNum);
+            if(null == _finishUMs)
+                _finishUMs = new List<UMCtrlAchievementItem>(_maxAchievementNum);
+            _unFinishUMs.Clear();
+            _finishUMs.Clear();
+            //生成未完成成就
+            for (int i = 0; i < _achievementItems.Count; i++)
+            {
+                if (_achievementItems[i].NextLevel != null)
+                {
+                    UMCtrlAchievementItem umCtrlAchievementItem = createAchievementItem();
+                    umCtrlAchievementItem.SetDate(_achievementItems[i],false);
+                    _unFinishUMs.Add(umCtrlAchievementItem);
+                }
+            }
+            //生成已完成成就
+            for (int i = 0; i < _achievementItems.Count; i++)
+            {
+                if (_achievementItems[i].FinishLevel != 0)
+                {
+                    UMCtrlAchievementItem umCtrlAchievementItem = createAchievementItem();
+                    umCtrlAchievementItem.SetDate(_achievementItems[i],true);
+                    _finishUMs.Add(umCtrlAchievementItem);
+                }
+            }
+        }
+
+        private UMCtrlAchievementItem createAchievementItem()
+        {
+            if (null == _umCtrlAchievementItemCache)
+                _umCtrlAchievementItemCache = new List<UMCtrlAchievementItem>(_maxAchievementNum * 2);
+            var umCtrlAchievementItem = _umCtrlAchievementItemCache.Find(p => !p.IsShow);
+            if (umCtrlAchievementItem != null)
+            {
+                umCtrlAchievementItem.Show();
+                return umCtrlAchievementItem;
+            }
+            umCtrlAchievementItem = new UMCtrlAchievementItem();
+            umCtrlAchievementItem.Init(_cachedView.UMItemRTF);
+            _umCtrlAchievementItemCache.Add(umCtrlAchievementItem);
+            return umCtrlAchievementItem;
+        }
+
+        private void OnAchieve()
+        {
+            RefreshView();
+        }
+
         private void OnCloseBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlAchievement>();
         }
-        
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            InitView();
         }
 
         protected override void OnOpen(object parameter)
         {
+            RefreshView();
             base.OnOpen(parameter);
+        }
+
+        protected override void OnClose()
+        {
+            base.OnClose();
+            _cachedView.AchievementScrollRect.vertical = false;
+            _cachedView.Scrollbar.value = 1;
+            for (int i = 0; i < _umCtrlAchievementItemCache.Count; i++)
+            {
+                _umCtrlAchievementItemCache[i].Collect();
+            }
         }
 
         protected override void InitEventListener()
         {
             base.InitEventListener();
+            RegisterEvent(EMessengerType.OnAchieve, OnAchieve);
         }
 
         protected override void SetAnimationType()
@@ -38,61 +125,16 @@ namespace GameA
             _animationType = EAnimationType.PopupFromDown;
         }
 
+        protected override void OnOpenAnimationComplete()
+        {
+            base.OnOpenAnimationComplete();
+            _cachedView.AchievementScrollRect.vertical = true;
+            _cachedView.Scrollbar.value = 1;
+        }
+
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.PopUpUI;
         }
-    }
-
-    public class AchievemrntRecord
-    {
-        //a、App使用相关
-        //打开过游戏的天数总和
-        //连续登陆天数
-        //App打开时长总和
-        
-        //b、养成积累相关
-        //获得的金币总和
-        //冒险家等级
-        //匠人等级
-        //获得的拼图碎片数量总和
-        //拼好的拼图数量
-        //装备过的时装种类总数
-        
-        //c、社交相关
-        //关注的好友总数
-        //粉丝总数
-        //访问好友家园的次数
-        //观看录像的次数
-        
-        //d、游戏行为相关
-        //单人模式通关的最高关卡
-        //单人模式获得星数总和
-        //单人模式通关成功次数
-        //单人模式通关失败次数
-        //世界关卡通关成功次数
-        //世界关卡通关失败次数
-        //挑战改造关卡成功的次数
-        //发布改造关卡中新增地块的总和
-        
-        //e、创作相关
-        //发布自制关卡的次数
-        //自制关卡被玩的总次数
-        //自制关卡被玩但闯关失败的总次数
-        //自制关卡收到的点赞数总和
-        
-        //f、游戏内记录相关
-        //关卡中走过的总路程
-        //杀死的怪物总数
-        //拾取的钻石总数
-        //死掉总次数
-        //坠亡次数
-        //被机关杀死次数
-        //被怪物杀死次数
-        //顶碎的砖块总数
-        //踩掉的云朵总数
-        //顶出的隐形方块总数
-        //拾取地块／机关的总数
-        //经过传送门的次数
     }
 }
