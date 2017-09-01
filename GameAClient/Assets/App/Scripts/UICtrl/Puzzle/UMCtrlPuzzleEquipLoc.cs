@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System;
-using UnityEngine;
-using System.Collections.Generic;
-using SoyEngine.Proto;
+﻿using SoyEngine.Proto;
 using SoyEngine;
 
 namespace GameA
@@ -10,7 +6,7 @@ namespace GameA
     /// <summary>
     /// 拼图装格栏位
     /// </summary>
-    public partial class UMCtrlPuzzleEquipLoc : UMCtrlBase<UMViewPuzzleEquipLoc>
+    public class UMCtrlPuzzleEquipLoc : UMCtrlBase<UMViewPuzzleEquipLoc>
     {
         private int _slotID;
         public int _unlockLv;
@@ -22,14 +18,14 @@ namespace GameA
             {
                 if (_curPicFull == null)
                     return 0;
-                return (int)_curPicFull.PictureId;
+                return (int) _curPicFull.PictureId;
             }
         }
 
         public UMCtrlPuzzleEquipLoc(int slotID, int unlockLv)
         {
-            this._slotID = slotID;
-            this._unlockLv = unlockLv;
+            _slotID = slotID;
+            _unlockLv = unlockLv;
         }
 
         public void SetPic(PictureFull picture)
@@ -40,7 +36,13 @@ namespace GameA
 
         public void RefreshView()
         {
-            _cachedView.PuzzleItem.SetActive(_curPicFull != null);
+            if (_curPicFull != null)
+            {
+                _cachedView.PuzzleImg.sprite = _curPicFull.Icon;
+                _cachedView.PuzzleImg.gameObject.SetActive(true);
+            }
+            else
+                _cachedView.PuzzleImg.gameObject.SetActive(false);
             //测试用，应取实际等级
             bool unlock = _unlockLv > 2;
             //bool unlock = _unlockLv > LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel;
@@ -66,26 +68,26 @@ namespace GameA
             var picture = SocialGUIManager.Instance.GetUI<UICtrlPuzzleSlots>().CurPicture;
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在装备拼图");
             RemoteCommands.ChangePictureFull(_slotID, picture.PictureId, CurPicID, res =>
-              {
-                  if (res.ResultCode == (int)EChangePictureFullCode.CPFC_Success)
-                  {
-                      Equip();
-                      SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                      LogHelper.Debug("装备成功");
-                  }
-                  else
-                  {
-                      SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                      LogHelper.Debug("装备失败");
-                  }
-              }, code =>
-              {
-                  SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                  //测试，服务器完成后删除
-                  LogHelper.Debug("服务器请求失败，进行装备测试");
-                  Equip();
-                  //LogHelper.Debug("装备失败");
-              });
+            {
+                if (res.ResultCode == (int) EChangePictureFullCode.CPFC_Success)
+                {
+                    Equip();
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    LogHelper.Debug("装备成功");
+                }
+                else
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    LogHelper.Debug("装备失败");
+                }
+            }, code =>
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                //测试，服务器完成后删除
+                LogHelper.Debug("服务器请求失败，进行装备测试");
+                Equip();
+                //LogHelper.Debug("装备失败");
+            });
         }
 
         private void Equip()
@@ -95,7 +97,7 @@ namespace GameA
             //替换当前
             _curPicFull = SocialGUIManager.Instance.GetUI<UICtrlPuzzleSlots>().CurPicture;
             //若已经装备，则删除之前槽位数据
-            if (_curPicFull.IsUsing == true)
+            if (_curPicFull.IsUsing)
             {
                 SetSlotData(_curPicFull.Slot, false);
                 _curPicFull.Unload();
@@ -114,7 +116,6 @@ namespace GameA
             //测试用
             SocialGUIManager.Instance.GetUI<UICtrlPuzzle>().UsingPicFull[slotID - 1] = value ? _curPicFull : null;
             SocialGUIManager.Instance.GetUI<UICtrlPuzzleSlots>().UsingPicFull[slotID - 1] = value ? _curPicFull : null;
-
         }
     }
 }

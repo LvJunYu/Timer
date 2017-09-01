@@ -52,7 +52,7 @@ namespace GameA
         public void RefreshView()
         {
             _cachedView.DisActiveImg.sprite = _cachedView.Img.sprite = _puzzle.Icon;
-            _cachedView.DisActiveImg.enabled = !(_puzzle.CurState == EPuzzleState.HasActived);
+            _cachedView.DisActiveImg.gameObject.SetActive(!(_puzzle.CurState == EPuzzleState.HasActived));
         }
 
         public void ResetData(PictureFull puzzle)
