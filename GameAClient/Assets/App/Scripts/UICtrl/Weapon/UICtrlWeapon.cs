@@ -18,7 +18,6 @@ namespace GameA
         private Sprite _weaponPartSprite;
         private string _weaponPartSpriteName;
         private Sprite _universalSprie;
-        private string _universalSpriteName = "universalpart";
         private const string _compoud = "合成";
         private const string _upGrade = "升级";
         private int _weaponTotalNum = 12;
@@ -190,10 +189,9 @@ namespace GameA
             _cachedView.AttackAddNum.text =
                 "+" + TableManager.Instance.GetEquipmentLevel(_weaponlevelID).AttackAdd.ToString(); //攻击力增加
             _cachedView.WeaponName.text = TableManager.Instance.GetEquipment(_weaponID).Name; //武器的名字
-
-            //_colorName = TableManager.Instance.GetRarity(TableManager.Instance.GetEquipment(_weaponID).Rarity).Color;
-            //ColorUtility.TryParseHtmlString(_colorName, out _weaponColor);
-            _cachedView.WeaponName.color = GetRarityColor(TableManager.Instance.GetEquipment(_weaponID).Rarity); //颜色
+            _colorName = GetRarityColor(TableManager.Instance.GetEquipment(_weaponID).Rarity);
+            ColorUtility.TryParseHtmlString(_colorName, out _weaponColor);
+            _cachedView.WeaponName.color = _weaponColor; //武器名字颜色
             _cachedView.WeaponLv.text = "Lv." + _weaponLv.ToString(); //武器的等级
             _cachedView.UnlockedWeaponNum.text =
                 _userWeaponData.ItemDataList.Count.ToString() + "/" + _weaponTotalNum.ToString(); //解锁的武器数目
@@ -203,16 +201,11 @@ namespace GameA
             _cachedView.CostGolCoinNum.text = _needCoin.ToString();
             _needPart = TableManager.Instance.GetEquipmentLevel(_weaponlevelID + _isCompoudAddNum).WeaponFragment;
             _cachedView.CostWeaponFragmentsNum.text = _needPart.ToString() + "/" + _userOwnWeaponPart.ToString();
-            ;
-
             //武器碎片图片
-            _weaponPartSpriteName = TableManager.Instance.GetEquipment(_weaponID).WeaponPartIcon;
+            _weaponPartSpriteName = TableManager.Instance.GetSkill(_skillID).Icon;
             ResourcesManager.Instance.TryGetSprite(_weaponPartSpriteName, out _weaponPartSprite);
             _cachedView.OwnedWeaponFragmentsIcon.sprite = _weaponPartSprite;
-
-            //万能碎片的图片
-            ResourcesManager.Instance.TryGetSprite(_universalSpriteName, out _universalSprie);
-            _cachedView.OwnedUniversalFragmentsIcon.sprite = _universalSprie;
+            _cachedView.CostPartIcons.sprite = _weaponPartSprite;
             //武器碎片的数目
             _cachedView.OwnedWeaponFragmentsNum.text = _userOwnWeaponPart.ToString();
         }
@@ -295,22 +288,22 @@ namespace GameA
             _userWeaponPartData.ItemDataList.Add(weaponpart4);
         }
 
-        public Color GetRarityColor(int Rarity)
+        public  string   GetRarityColor(int Rarity)
         {
-            Color _color = new Color();
+            string _color = null;
             switch (Rarity)
             {
                 case 1:
-                    _color = Color.red;
+                    _color = "#64bd4c";
                     break;
                 case 2:
-                    _color = Color.yellow;
+                    _color = "#208fce";
                     break;
                 case 3:
-                    _color = Color.green;
+                    _color = "#934fd8";
                     break;
                 case 4:
-                    _color = Color.blue;
+                    _color = "#c58d40";
                     break;
             }
             return _color;

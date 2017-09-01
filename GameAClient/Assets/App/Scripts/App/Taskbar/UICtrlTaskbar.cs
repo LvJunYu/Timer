@@ -306,8 +306,10 @@ namespace GameA
         private void OnWeapon()
         {
             //Debug.Log("_________________________OnWeaponBtn");
-            SocialGUIManager.Instance.OpenUI<UICtrlWeapon>();
-            
+            if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.Weapon))
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlWeapon>();
+            }
         }
         //拼图入口秘密通道
         private int _puzzlePasswordCount;
