@@ -26,16 +26,20 @@ namespace GameA
             _cachedView.ProgressText.text = string.Empty;
         }
 
+        public void ShowInfo(string info)
+        {
+            DictionaryTools.SetContentText(_cachedView.ProgressText, info);
+        }
+        
         private void OnResourcesCheckStart ()
         {
-            if (!_isOpen)
-            {
-                SocialGUIManager.Instance.OpenUI<UICtrlUpdateResource>();
-            }
+            DictionaryTools.SetContentText(_cachedView.ProgressText, string.Empty);
+            _cachedView.ProgressBar.fillAmount = 0f;
         }
         private void OnResourcesCheckFinish ()
         {
-            SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource>();
+            DictionaryTools.SetContentText(_cachedView.ProgressText, string.Empty);
+            _cachedView.ProgressBar.fillAmount = 1f;
         }
         private void OnVersionUpdateStateChange (string state)
         {

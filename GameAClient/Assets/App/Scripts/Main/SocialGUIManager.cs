@@ -101,7 +101,10 @@ namespace GameA
 
 	    public void ShowAppView()
 	    {
-	        OpenUI<UICtrlStory>();
+	        if (LocalUser.Instance.User.LoginCount == 1)
+	        {
+	            OpenUI<UICtrlStory>();
+	        }
 			OpenUI<UICtrlTaskbar>();
             OpenUI<UICtrlFashionSpine>();
 		    ChangeToAppMode();

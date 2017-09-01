@@ -127,6 +127,9 @@ namespace GameA
         //训练
         public static int OnUpgradeTrainProperty = SoyEngine.EMessengerType.NextId++;
         public static int OnUpgradeTrainGrade = SoyEngine.EMessengerType.NextId++;
+        
+        //成就
+        public static int OnAchieve = SoyEngine.EMessengerType.NextId++;
 
     }
 }
