@@ -4,6 +4,7 @@ using System.IO;
 using GameA;
 using SoyEngine;
 using UnityEngine;
+using EMessengerType = GameA.EMessengerType;
 using Object = UnityEngine.Object;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -29,12 +30,7 @@ namespace NewResourceSolution
 
 //        private AssetCache _assetCache;
 
-        /// <summary>
-        /// 目前正在使用的资源应用情景蒙版
-        /// </summary>
-        private int _inUseScenaryMask;
-
-        /// <summary>
+	    /// <summary>
         /// 上次进行unload操作的时间
         /// </summary>
 //        private long _lastUnloadActionTime;
@@ -58,48 +54,42 @@ namespace NewResourceSolution
 
         public bool TryGetTexture(string name, out Texture texture, int scenary = 0)
         {
-            texture = GetAsset<Texture>(EResType.Texture, name, scenary, false, false);
+            texture = GetAsset<Texture>(EResType.Texture, name, scenary, false);
             if (null != texture)
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         public bool TryGetSprite(string name, out Sprite sprite, int scenary = 0)
         {
-            sprite = GetAsset<Sprite>(EResType.Sprite, name, scenary, false, false);
+            sprite = GetAsset<Sprite>(EResType.Sprite, name, scenary, false);
             if (null != sprite)
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         public Texture GetTexture (string name, int scenary = 0)
         {
-            return GetAsset<Texture>(EResType.Texture, name, scenary, true, false);
+            return GetAsset<Texture>(EResType.Texture, name, scenary);
         }
 
         public Sprite GetSprite (string name, int scenary = 0)
         {
-            return GetAsset<Sprite>(EResType.Sprite, name, scenary, true, false);
+            return GetAsset<Sprite>(EResType.Sprite, name, scenary);
         }
 
         public AudioClip GetAudio (string name, int scenary = 0)
         {
-            return GetAsset<AudioClip>(EResType.AudioClip, name, scenary, true, false);
+            return GetAsset<AudioClip>(EResType.AudioClip, name, scenary);
         }
 
         public string GetJson (string name, int scenary = 0)
         {
-            var textAsset = GetAsset<TextAsset>(EResType.Table, name, scenary, true, false);
+            var textAsset = GetAsset<TextAsset>(EResType.Table, name, scenary);
             if (null != textAsset)
             {
                 return textAsset.text;
@@ -149,7 +139,6 @@ namespace NewResourceSolution
 
 		public void Init ()
 		{
-			_inUseScenaryMask = 0;
 //			_lastUnloadActionTime = 0;
             #if UNITY_EDITOR
             if (!RuntimeConfig.Instance.UseAssetBundleRes)
@@ -165,7 +154,7 @@ namespace NewResourceSolution
             }
 
             // 读取本地版本
-			if (UnityTools.TryGetObjectFromLocal<CHRuntimeResManifest> (ResDefine.CHResManifestFileName, out _manifest))
+			if (UnityTools.TryGetObjectFromLocal (ResDefine.CHResManifestFileName, out _manifest))
             {
 				_manifest.FileLocation = EFileLocation.Persistent;
 				LogHelper.Info ("Res in pesistant, ver: {0}", _manifest.Ver);
@@ -173,7 +162,7 @@ namespace NewResourceSolution
 			else
 			{
 				// 不存在则读取包内版本
-				UnityTools.TryGetObjectFromStreamingAssets<CHRuntimeResManifest> (ResDefine.CHResManifestFileName, out _manifest);
+				UnityTools.TryGetObjectFromStreamingAssets (ResDefine.CHResManifestFileName, out _manifest);
 				if (null != _manifest)
 				{
 					_manifest.FileLocation = EFileLocation.StreamingAsset;
@@ -187,14 +176,12 @@ namespace NewResourceSolution
 				if (!_manifest.Init())
 				{
 					// 这里出错，游戏将无法正常运行
-					return;
 				}
             }
 			else
 			{
 				LogHelper.Error ("Init resourcesManager failed, can't find any manifest.");
 				// todo 通知玩家，退出程序
-				return;
 			}
 		}
 
@@ -265,7 +252,7 @@ namespace NewResourceSolution
                 }
                 else
                 {
-                    string rootPath = ResPathUtility.GetEditorDebugResFolderPath(resType.ResType, false);
+                    string rootPath = ResPathUtility.GetEditorDebugResFolderPath(resType.ResType);
                     if (AssetDatabase.IsValidFolder(rootPath))
                     {
 //                        LogHelper.Info("{0} rootPath: {1}", resType.ResType, rootPath);
@@ -302,34 +289,26 @@ namespace NewResourceSolution
             {
                 string assetPath = AssetDatabase.GUIDToAssetPath (allNormalAssetGuids[i]);
                 string assetName = Path.GetFileNameWithoutExtension (assetPath);
-                if (!_editorResPathDic.ContainsKey(assetName))
+                if (assetName != null && !_editorResPathDic.ContainsKey(assetName))
                 {
                     _editorResPathDic.Add (assetName, assetPath);
                 }
-                else
-                {
-//                    string existPath = _editorResPathDic [assetName];
-//                    LogHelper.Error("Asset name dumplicate, name: {0}, path1: {1}, path2: {2}", assetName, existPath, assetPath);
-                }
             }
-            var itor = allLoaleAssetGuids.GetEnumerator ();
-            while (itor.MoveNext ())
+            using (var itor = allLoaleAssetGuids.GetEnumerator())
             {
-                string localeName = itor.Current.Key;
-                List<string> assets = itor.Current.Value;
-                for (int i = 0; i < assets.Count; i++)
+                while (itor.MoveNext ())
                 {
-                    string assetPath = AssetDatabase.GUIDToAssetPath (assets[i]);
-                    string assetName = Path.GetFileNameWithoutExtension (assetPath);
-                    assetName = string.Format (StringFormat.TwoLevelPath, localeName, assetName);
-                    if (!_editorResPathDic.ContainsKey(assetName))
+                    string localeName = itor.Current.Key;
+                    List<string> assets = itor.Current.Value;
+                    for (int i = 0; i < assets.Count; i++)
                     {
-                        _editorResPathDic.Add (assetName, assetPath);
-                    }
-                    else
-                    {
-//                        string existPath = _editorResPathDic [assetName];
-//                        LogHelper.Error("Asset name dumplicate, name: {0}, path1: {1}, path2: {2}", assetName, existPath, assetPath);
+                        string assetPath = AssetDatabase.GUIDToAssetPath (assets[i]);
+                        string assetName = Path.GetFileNameWithoutExtension (assetPath);
+                        assetName = string.Format (StringFormat.TwoLevelPath, localeName, assetName);
+                        if (!_editorResPathDic.ContainsKey(assetName))
+                        {
+                            _editorResPathDic.Add (assetName, assetPath);
+                        }
                     }
                 }
             }
@@ -360,7 +339,6 @@ namespace NewResourceSolution
             #endif
 
 			int maskToUnload = 1 << scenary;
-			_inUseScenaryMask &= ~maskToUnload;
             _manifest.UnloadUnusedAssets (maskToUnload);
         }
 
@@ -382,8 +360,13 @@ namespace NewResourceSolution
             #if UNITY_EDITOR
             if (!RuntimeConfig.Instance.UseAssetBundleRes)
             {
+                Messenger.Broadcast(EMessengerType.OnResourcesCheckStart);
                 CoroutineProxy.Instance.StartCoroutine(
-                    CoroutineProxy.RunNextFrame(SocialApp.Instance.LoginAfterUpdateResComplete));
+                    CoroutineProxy.RunNextFrame(() =>
+                    {
+                        Messenger.Broadcast(EMessengerType.OnResourcesCheckFinish);
+                        SocialApp.Instance.LoginAfterUpdateResComplete();
+                    }));
                 return;
             }
             #endif
@@ -394,7 +377,7 @@ namespace NewResourceSolution
 		    else
 		    {
 		        CHRuntimeResManifest buildInManifest;
-		        UnityTools.TryGetObjectFromStreamingAssets<CHRuntimeResManifest> (ResDefine.CHResManifestFileName, out buildInManifest);
+		        UnityTools.TryGetObjectFromStreamingAssets (ResDefine.CHResManifestFileName, out buildInManifest);
 		        CoroutineManager.StartCoroutine(VersionUpdater.CheckVerInternal(_manifest, buildInManifest));
 		    }
 		}

@@ -86,6 +86,10 @@ namespace GameA
         {
             _isPlaying = false;
             SocialGUIManager.Instance.CloseUI<UICtrlStory>();
+            if (LocalUser.Instance.User.LoginCount == 1)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlSingleMode>();
+            }
         }
 
         private void OnNextClick()

@@ -52,48 +52,45 @@ namespace GameA
         {
             if(GlobalVar.Instance.Env == EEnvironment.Production)
             {
-                return new AddressConfig()
+                return new AddressConfig
                 {
                     Enable = true,
                     AppServerApiRoot = "https://app.joy-you.com/gameaapi",
                     GameResoureRoot = "http://res.joy-you.com"
                 };
             }
-            else if (GlobalVar.Instance.Env == EEnvironment.Staging)
+            if (GlobalVar.Instance.Env == EEnvironment.Staging)
             {
-                return new AddressConfig()
+                return new AddressConfig
                 {
                     Enable = true,
                     AppServerApiRoot = "http://dev.joy-you.com/gameaapi",
                     GameResoureRoot = "http://dev.joy-you.com/res"
                 };
             }
-            else if (GlobalVar.Instance.Env == EEnvironment.Test)
+            if (GlobalVar.Instance.Env == EEnvironment.Test)
             {
-                return new AddressConfig()
+                return new AddressConfig
                 {
                     Enable = true,
                     AppServerApiRoot = "http://dev.joy-you.com/gameaapi",
                     GameResoureRoot = "http://dev.joy-you.com/res"
                 };
             }
-            else if(GlobalVar.Instance.Env == EEnvironment.Development)
+            if(GlobalVar.Instance.Env == EEnvironment.Development)
             {
-                return new AddressConfig()
+                return new AddressConfig
                 {
                     Enable = true,
                     AppServerApiRoot = "http://dev.joy-you.com/gameaapi",
                     GameResoureRoot = "http://dev.joy-you.com/res"
                 };
             }
-            else
+            for (int i = 0; i < Instance._appServerAddress.Length; i++)
             {
-                for (int i = 0; i < Instance._appServerAddress.Length; i++)
+                if (Instance._appServerAddress[i].Enable)
                 {
-                    if (Instance._appServerAddress[i].Enable)
-                    {
-                        return Instance._appServerAddress[i];
-                    }
+                    return Instance._appServerAddress[i];
                 }
             }
             Debug.LogError("AddressConfig not found");
@@ -126,12 +123,12 @@ namespace GameA
             CoroutineManager.Instance.Init(this);
             ResourcesManager.Instance.Init ();
             LocalizationManager.Instance.Init();
+            SocialGUIManager.Instance.OpenUI<UICtrlUpdateResource>();
             ResourcesManager.Instance.CheckApplicationAndResourcesVersion();
         }
 
         public void LoginAfterUpdateResComplete()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
             gameObject.AddComponent<TableManager>();
             TableManager.Instance.Init();
             LocalUser.Instance.Init();
@@ -141,16 +138,20 @@ namespace GameA
             SocialGUIManager.Instance.CreateView<UICtrlSingleMode>();
             if (!string.IsNullOrEmpty(LocalUser.Instance.Account.Token))
             {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "自动登录中");
+                SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().ShowInfo("正在加载用户数据");
                 LocalUser.Instance.Account.LoginByToken(()=>
                 {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     LoginSucceed();
                 }, code =>
                 {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource>();
                     SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
                 });
+            }
+            else
+            {
+                SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource>();
+                SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
             }
 		}
 
@@ -165,14 +166,36 @@ namespace GameA
 
         private void GetUserData ()
         {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在加载用户数据");
+            if (SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().IsOpen)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().ShowInfo("正在加载用户数据");
+            }
+            else
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在加载用户数据");
+            }
             ParallelTaskHelper<ENetResultCode> helper = new ParallelTaskHelper<ENetResultCode>(()=>{
                 GameProcessManager.Instance.Init ();
-                SocialGUIManager.Instance.CloseUI<UICtrlLogin>();
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                if (SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().IsOpen)
+                {
+                    SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource>();
+                }
+                else
+                {
+                    SocialGUIManager.Instance.CloseUI<UICtrlLogin>();
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                }
                 SocialGUIManager.Instance.ShowAppView ();
             }, code=>{
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                if (SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().IsOpen)
+                {
+                    SocialGUIManager.Instance.OpenUI<UICtrlLogin>();
+                    SocialGUIManager.Instance.CloseUI<UICtrlUpdateResource>();
+                }
+                else
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                }
                 SocialGUIManager.ShowPopupDialog("服务器连接失败，请检查网络后重试，错误代码："+code.ToString(), null,
                     new KeyValuePair<string, Action>("重试", ()=>{
                         CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(GetUserData));

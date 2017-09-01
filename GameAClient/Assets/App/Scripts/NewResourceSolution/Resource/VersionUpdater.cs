@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using SoyEngine;
 using GameA;
+using SoyEngine;
+using UnityEngine;
 using EMessengerType = GameA.EMessengerType;
 
 namespace NewResourceSolution
@@ -22,7 +22,7 @@ namespace NewResourceSolution
             // todo 按程序版本拼地址
 			string serverVersionConfigPath = StringUtil.Format (
 				StringFormat.TwoLevelPath,
-                GameA.SocialApp.GetAppServerAddress().GameResoureRoot, ResDefine.ServerVersionConfigFileName
+                SocialApp.GetAppServerAddress().GameResoureRoot, ResDefine.ServerVersionConfigFileName
             );
             ServerVersionConfig serverVersionConfig = null;
 
@@ -59,7 +59,7 @@ namespace NewResourceSolution
 //							false
 //						);
 //						Messenger<CommonDialogMessageData>.Broadcast(EMessengerType.ShowCommonDialog, dialogData);
-						yield return new UnityEngine.WaitForSeconds(float.MaxValue);
+						yield return new WaitForSeconds(float.MaxValue);
 	                }
 	                if (applicationVersion < serverVersionConfig.LatestAppVersion)
 	                {
@@ -377,7 +377,7 @@ namespace NewResourceSolution
 				if (!updateFinish)
 				{
                     Messenger<string>.Broadcast(EMessengerType.OnVersionUpdateStateChange, "正在检查资源...");
-					yield return new UnityEngine.WaitForSeconds(1);
+					yield return new WaitForSeconds(1);
 				}
 			}
 			while (!updateFinish);
