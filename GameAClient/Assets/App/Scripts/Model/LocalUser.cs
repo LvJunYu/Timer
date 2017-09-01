@@ -43,6 +43,8 @@ namespace GameA
         private readonly UserWeaponPartData _userWeaponPartData = new UserWeaponPartData();
         //训练数据
         private readonly UserTrainProperty _userTrainProperty = new UserTrainProperty();
+        //成就数据
+        private readonly Achievement _achievement = new Achievement();
 
         #endregion
         #region 属性
@@ -179,6 +181,12 @@ namespace GameA
         public UserTrainProperty UserTrainProperty
         {
             get { return _userTrainProperty; }
+        }
+        
+        //成就数据
+        public Achievement Achievement
+        {
+            get { return _achievement; }
         }
         #endregion
 

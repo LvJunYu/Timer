@@ -92,7 +92,6 @@ namespace GameA
                     var puzzle = new UMCtrlPuzzleItem(_allPictureFull[i]);
                     _allUMPuzzleItem.Add(puzzle);
                     puzzle.Init(_cachedView.PuzzleItemGrid);
-                    puzzle.InitView();
                     puzzle.RefreshView();
                 }
                 _cachedView.PuzzleItemSrollRect.horizontal = false;

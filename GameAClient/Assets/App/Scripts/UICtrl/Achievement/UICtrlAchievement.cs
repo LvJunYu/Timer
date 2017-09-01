@@ -1,6 +1,7 @@
 ﻿using SoyEngine;
 using System.Collections.Generic;
 using GameA.Game;
+using Random = UnityEngine.Random;
 
 namespace GameA
 {
@@ -13,20 +14,25 @@ namespace GameA
         private const int _maxAchievementNum = 40;
         private List<UMCtrlAchievementItem> _unFinishUMs;
         private List<UMCtrlAchievementItem> _finishUMs;
-        private List<AchievementItem> _achievementItems;
+        private List<AchievementStatisticItem> _achievementItems;
         private List<UMCtrlAchievementItem> _umCtrlAchievementItemCache;
 
         private void InitView()
         {
-            _achievementItems = new List<AchievementItem>(_maxAchievementNum);
+            //服务器成就数据
+            _achievementItems = LocalUser.Instance.Achievement.StatisticList;
+            if (null == _achievementItems)
+                _achievementItems = new List<AchievementStatisticItem>(_maxAchievementNum);
             var achievements = TableManager.Instance.Table_AchievementDic;
             int achievementType;
             foreach (Table_Achievement value in achievements.Values)
             {
-                AchievementItem achievementItem = _achievementItems.Find(p => p.Type == value.Type);
+                AchievementStatisticItem achievementItem = _achievementItems.Find(p => p.Type == value.Type);
                 if (null == achievementItem)
                 {
-                    achievementItem = new AchievementItem(value.Type, 1);
+                    //测试数据
+                    int count = Random.Range(1, 10);
+                    achievementItem = new AchievementStatisticItem(value.Type, count);
                     _achievementItems.Add(achievementItem);
                 }
                 achievementItem.AddLvDic(value.Level, value);
@@ -35,9 +41,9 @@ namespace GameA
 
         private void RefreshView()
         {
-            if(null == _unFinishUMs)
+            if (null == _unFinishUMs)
                 _unFinishUMs = new List<UMCtrlAchievementItem>(_maxAchievementNum);
-            if(null == _finishUMs)
+            if (null == _finishUMs)
                 _finishUMs = new List<UMCtrlAchievementItem>(_maxAchievementNum);
             _unFinishUMs.Clear();
             _finishUMs.Clear();
@@ -47,7 +53,7 @@ namespace GameA
                 if (_achievementItems[i].NextLevel != null)
                 {
                     UMCtrlAchievementItem umCtrlAchievementItem = createAchievementItem();
-                    umCtrlAchievementItem.SetDate(_achievementItems[i],false);
+                    umCtrlAchievementItem.SetDate(_achievementItems[i], false);
                     _unFinishUMs.Add(umCtrlAchievementItem);
                 }
             }
@@ -57,7 +63,7 @@ namespace GameA
                 if (_achievementItems[i].FinishLevel != 0)
                 {
                     UMCtrlAchievementItem umCtrlAchievementItem = createAchievementItem();
-                    umCtrlAchievementItem.SetDate(_achievementItems[i],true);
+                    umCtrlAchievementItem.SetDate(_achievementItems[i], true);
                     _finishUMs.Add(umCtrlAchievementItem);
                 }
             }
@@ -93,6 +99,18 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
+//            LocalUser.Instance.Achievement.Request(LocalUser.Instance.UserGuid,
+//                () =>
+//                {
+//                    InitView();
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                },
+//                code =>
+//                {
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//                    LogHelper.Error("Network error when get Achievement, {0}", code);
+//                });
             InitView();
         }
 

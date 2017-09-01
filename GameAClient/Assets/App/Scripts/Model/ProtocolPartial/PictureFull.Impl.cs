@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using GameA.Game;
+using NewResourceSolution;
+using UnityEngine;
 
 namespace GameA
 {
@@ -10,16 +12,34 @@ namespace GameA
     {
         //字段
         private bool _hasInited;
+
+        private Sprite _icon;
         private EPuzzleState _curState;
         private Table_Puzzle _puzzleTable;
         private PicturePart[] _neededFragments;
-        private Dictionary<int, Table_PuzzleUpgrade> _lvTableDic;//键是等级，值是当前等级对应的信息
+        private Dictionary<int, Table_PuzzleUpgrade> _lvTableDic; //键是等级，值是当前等级对应的信息
 
         //属性
-        public EPuzzleState CurState { get { return _curState; } }
-        public Table_Puzzle PuzzleTable { get { return _puzzleTable; } }
-        public int Quality { get { return _puzzleTable.Quality; } }
-        public string Name { get { return _puzzleTable.Name; } }
+        public EPuzzleState CurState
+        {
+            get { return _curState; }
+        }
+
+        public Table_Puzzle PuzzleTable
+        {
+            get { return _puzzleTable; }
+        }
+
+        public int Quality
+        {
+            get { return _puzzleTable.Quality; }
+        }
+
+        public string Name
+        {
+            get { return _puzzleTable.Name; }
+        }
+
         public string Desc
         {
             get
@@ -30,6 +50,7 @@ namespace GameA
                     return _puzzleTable.Description;
             }
         }
+
         public int CostMoeny
         {
             get
@@ -40,6 +61,7 @@ namespace GameA
                     return _puzzleTable.MergeCost;
             }
         }
+
         public int AttriBonus
         {
             get
@@ -50,10 +72,37 @@ namespace GameA
                     return _puzzleTable.AttriBonus;
             }
         }
-        public int FragNum { get { return _puzzleTable.FragNum; } }
-        public EPuzzleType PuzzleType { get { return (EPuzzleType)_puzzleTable.FragNum; } }
-        public Dictionary<int, Table_PuzzleUpgrade> LvTableDic { get { return _lvTableDic; } }
-        public PicturePart[] NeededFragments { get { return _neededFragments; } }
+
+        public int FragNum
+        {
+            get { return _puzzleTable.FragNum; }
+        }
+
+        public EPuzzleType PuzzleType
+        {
+            get { return (EPuzzleType) _puzzleTable.FragNum; }
+        }
+
+        public Dictionary<int, Table_PuzzleUpgrade> LvTableDic
+        {
+            get { return _lvTableDic; }
+        }
+
+        public PicturePart[] NeededFragments
+        {
+            get { return _neededFragments; }
+        }
+
+        public Sprite Icon
+        {
+            get
+            {
+                if (null == _icon)
+                    _icon = ResourcesManager.Instance.GetSprite(_puzzleTable.Icon);
+                return _icon;
+            }
+        }
+
         //方法
         public PictureFull(int puzzleID)
         {
@@ -70,7 +119,7 @@ namespace GameA
         {
             if (_hasInited)
                 return;
-            InitData((int)_pictureId);
+            InitData((int) _pictureId);
         }
 
         public void InitData(int puzzleID)
@@ -82,7 +131,7 @@ namespace GameA
             _neededFragments = new PicturePart[FragNum];
             for (int i = 0; i < _neededFragments.Length; i++)
             {
-                _neededFragments[i] = PicturePart.GetPicturePart((int)_pictureId, i + 1);
+                _neededFragments[i] = PicturePart.GetPicturePart((int) _pictureId, i + 1);
             }
 
             //等级信息字典
@@ -142,9 +191,9 @@ namespace GameA
     public enum EPuzzleState
     {
         None,
-        CantActive,//不可激活
-        CanActive,//可激活
-        HasActived,//已激活
+        CantActive, //不可激活
+        CanActive, //可激活
+        HasActived, //已激活
         //HasEquiped//已装备
     }
 

@@ -1,24 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using SoyEngine;
-using SoyEngine.Proto;
-using UnityEngine;
-
+﻿
 namespace GameA
 {
     public class UMCtrlAchievementItem : UMCtrlBase<UMViewAchievementItem>
     {
-        private AchievementItem _achievementItem;
+        private AchievementStatisticItem _achievementItem;
         private int _showLv;
         private bool _finished;
         private int _curValue;
         public bool IsShow;
 
-        public void SetDate(AchievementItem achievementItem, bool finished)
+        public void SetDate(AchievementStatisticItem achievementItem, bool finished)
         {
             _achievementItem = achievementItem;
             _finished = finished;
-            _curValue = achievementItem.CurValue;
+            _curValue = (int)achievementItem.Count;
             Refresh();
         }
 

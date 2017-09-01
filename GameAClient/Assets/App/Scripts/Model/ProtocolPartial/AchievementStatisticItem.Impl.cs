@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using GameA.Game;
-using SoyEngine;
-using SoyEngine.Proto;
 
 namespace GameA
 {
     /// <summary>
     /// 成就条目
     /// </summary>
-    public partial class AchievementItem
+    public partial class AchievementStatisticItem
     {
         private Dictionary<int, Table_Achievement> _lvDic;
-        private int _curLevel = -1;
-        public int Type;
-        public int CurValue;
+        private int _curLevel;
 
         public Dictionary<int, Table_Achievement> LvDic
         {
@@ -24,23 +19,29 @@ namespace GameA
 
         public int FinishLevel
         {
+            get { return CurLevel - 1; }
+        }
+
+        public int CurLevel
+        {
             get
             {
-                if (-1 == _curLevel)
+                if (0 == _curLevel)
                 {
-                    _curLevel = 0;
-                    for (int i = 1; i < LvDic.Count; i++)
+                    _curLevel = 1;
+                    for (int level = 1; level <= LvDic.Count; level++)
                     {
-                        if (LvDic[i].Condition <= CurValue)
-                            _curLevel = i;
+                        if (_count >= LvDic[level].Condition)
+                            _curLevel = level + 1;
                         else
                             break;
                     }
                 }
                 return _curLevel;
             }
+            set { _curLevel = value; }
         }
-        
+
         public int MaxLevel
         {
             get { return _lvDic.Keys.Max(); }
@@ -50,16 +51,16 @@ namespace GameA
         {
             get
             {
-                if (FinishLevel + 1 > MaxLevel)
+                if (CurLevel > MaxLevel)
                     return null;
-                return FinishLevel + 1;
+                return CurLevel;
             }
         }
 
-        public AchievementItem(int type, int value)
+        public AchievementStatisticItem(int type, int count)
         {
             Type = type;
-            CurValue = value;
+            Count = count;
         }
 
         public void AddLvDic(int lv, Table_Achievement achievement)

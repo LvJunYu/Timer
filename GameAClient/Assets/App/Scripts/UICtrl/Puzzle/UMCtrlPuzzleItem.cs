@@ -42,7 +42,6 @@ namespace GameA
         public void Set(object data)
         {
             _puzzle = data as PictureFull;
-            InitView();
             RefreshView();
         }
 
@@ -50,14 +49,9 @@ namespace GameA
         {
         }
 
-        public void InitView()
-        {
-            _cachedView.DisActiveImg.sprite =
-                _cachedView.Img.sprite = ResourcesManager.Instance.GetSprite(_puzzle.PuzzleTable.Icon);
-        }
-
         public void RefreshView()
         {
+            _cachedView.DisActiveImg.sprite = _cachedView.Img.sprite = _puzzle.Icon;
             _cachedView.DisActiveImg.enabled = !(_puzzle.CurState == EPuzzleState.HasActived);
         }
 
