@@ -25,6 +25,7 @@ namespace GameA.Game
 		public readonly Dictionary<int,Table_StandaloneChapter> Table_StandaloneChapterDic = new Dictionary<int, Table_StandaloneChapter>();
 		public readonly Dictionary<int,Table_StandaloneLevel> Table_StandaloneLevelDic = new Dictionary<int, Table_StandaloneLevel>();
 		public readonly Dictionary<int,Table_FashionUnit> Table_FashionUnitDic = new Dictionary<int, Table_FashionUnit>();
+		public readonly Dictionary<int,Table_Achievement> Table_AchievementDic = new Dictionary<int, Table_Achievement>();
 		public readonly Dictionary<int,Table_TreasureMap> Table_TreasureMapDic = new Dictionary<int, Table_TreasureMap>();
 		public readonly Dictionary<int,Table_Turntable> Table_TurntableDic = new Dictionary<int, Table_Turntable>();
 		public readonly Dictionary<int,Table_FashionCoupon> Table_FashionCouponDic = new Dictionary<int, Table_FashionCoupon>();
@@ -56,6 +57,7 @@ namespace GameA.Game
 		[UnityEngine.SerializeField] private Table_StandaloneChapter[] _tableStandaloneChapters;
 		[UnityEngine.SerializeField] private Table_StandaloneLevel[] _tableStandaloneLevels;
 		[UnityEngine.SerializeField] private Table_FashionUnit[] _tableFashionUnits;
+		[UnityEngine.SerializeField] private Table_Achievement[] _tableAchievements;
 		[UnityEngine.SerializeField] private Table_TreasureMap[] _tableTreasureMaps;
 		[UnityEngine.SerializeField] private Table_Turntable[] _tableTurntables;
 		[UnityEngine.SerializeField] private Table_FashionCoupon[] _tableFashionCoupons;
@@ -115,6 +117,8 @@ namespace GameA.Game
             _tableStandaloneLevels = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_StandaloneLevel[]>(StandaloneLevelJsonStr);
 			string FashionUnitJsonStr = ResourceManager.Instance.GetJson ("FashionUnit", 31);
             _tableFashionUnits = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_FashionUnit[]>(FashionUnitJsonStr);
+			string AchievementJsonStr = ResourceManager.Instance.GetJson ("Achievement", 31);
+            _tableAchievements = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_Achievement[]>(AchievementJsonStr);
 			string TreasureMapJsonStr = ResourceManager.Instance.GetJson ("TreasureMap", 31);
             _tableTreasureMaps = Newtonsoft.Json.JsonConvert.DeserializeObject<Table_TreasureMap[]>(TreasureMapJsonStr);
 			string TurntableJsonStr = ResourceManager.Instance.GetJson ("Turntable", 31);
@@ -293,6 +297,17 @@ namespace GameA.Game
 				else
 				{
 					LogHelper.Warning("_tableFashionUnits table.Id {0} is duplicated!", _tableFashionUnits[i].Id);
+				}
+			}
+			for (int i = 0; i < _tableAchievements.Length; i++)
+			{
+				if (!Table_AchievementDic.ContainsKey(_tableAchievements[i].Id))
+				{
+					Table_AchievementDic.Add(_tableAchievements[i].Id,_tableAchievements[i]);
+				}
+				else
+				{
+					LogHelper.Warning("_tableAchievements table.Id {0} is duplicated!", _tableAchievements[i].Id);
 				}
 			}
 			for (int i = 0; i < _tableTreasureMaps.Length; i++)
@@ -609,6 +624,15 @@ namespace GameA.Game
 		{
 			Table_FashionUnit tmp;
 			if (Table_FashionUnitDic.TryGetValue(key,out tmp))
+			{
+				return tmp;
+			}
+			return null;
+		}
+		public Table_Achievement GetAchievement(int key)
+		{
+			Table_Achievement tmp;
+			if (Table_AchievementDic.TryGetValue(key,out tmp))
 			{
 				return tmp;
 			}
