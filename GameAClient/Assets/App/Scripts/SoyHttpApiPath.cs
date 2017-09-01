@@ -152,6 +152,8 @@ namespace SoyEngine
         public const string CompleteUpgradeTrainProperty = "/home/completeUpgradeTrainProperty";
         // 升级训练阶层
         public const string UpgradeTrainGrade = "/home/upgradeTrainGrade";
+        // 获取成就数据
+        public const string Achievement = "/home/getAchievementData";
         // 冒险模式关卡列表
         public const string AdventureProjectList = "/adventure/getProjectList";
         // 冒险模式进度

@@ -1490,11 +1490,11 @@ namespace GameA
 		/// 升级训练阶层
 		/// </summary>
 		/// <param name="property">属性ID</param>
-		/// <param name="targetGrade">目标阶层</param>
+		/// <param name="targetLevel">目标等级</param>
 		/// <param name="remainTime">剩余时间</param>
         public static void CompleteUpgradeTrainProperty (
             ETrainPropertyType property,
-            int targetGrade,
+            int targetLevel,
             long remainTime,
             Action<Msg_SC_CMD_CompleteUpgradeTrainProperty> successCallback, Action<ENetResultCode> failedCallback,
             UnityEngine.WWWForm form = null) {
@@ -1506,7 +1506,7 @@ namespace GameA
             Msg_CS_CMD_CompleteUpgradeTrainProperty msg = new Msg_CS_CMD_CompleteUpgradeTrainProperty();
             // 升级训练阶层
             msg.Property = property;
-            msg.TargetGrade = targetGrade;
+            msg.TargetLevel = targetLevel;
             msg.RemainTime = remainTime;
             NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_CompleteUpgradeTrainProperty>(
                 SoyHttpApiPath.CompleteUpgradeTrainProperty, msg, ret => {
