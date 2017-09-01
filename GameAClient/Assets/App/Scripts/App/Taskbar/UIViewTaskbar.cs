@@ -75,6 +75,10 @@ namespace GameA
 	    public Button TrainBtn;
 	    public GameObject Train;
 	    public GameObject TrainDisable;
+	    
+	    public Button AchievementBtn;
+	    public GameObject Achievement;
+	    public GameObject AchievementDisable;
         /// <summary>
         /// 人物动画
         /// </summary>

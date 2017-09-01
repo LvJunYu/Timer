@@ -418,6 +418,7 @@ namespace GameA.Game
         SocialReLationShip,
         Mail,
         Puzzle,
-        CharacterUpgrade
+        Train,
+        Achievement
     }
 }

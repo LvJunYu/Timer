@@ -10,10 +10,16 @@ namespace GameA
     [UIAutoSetup]
     public class UICtrlAchievement : UICtrlAnimationBase<UIViewAchievement>
     {
-
+        
+        private void OnCloseBtn()
+        {
+            SocialGUIManager.Instance.CloseUI<UICtrlAchievement>();
+        }
+        
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
+            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
         }
 
         protected override void OnOpen(object parameter)
@@ -24,6 +30,12 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
+        }
+
+        protected override void SetAnimationType()
+        {
+            base.SetAnimationType();
+            _animationType = EAnimationType.PopupFromDown;
         }
 
         protected override void InitGroupId()
