@@ -102,8 +102,8 @@ namespace GameA
 
         public TrainProperty(int propertyId, int level, int curGrade)
         {
-            _property = (ETrainPropertyType) propertyId;
-            _level = level;
+            Property = (ETrainPropertyType) propertyId;
+            Level = level;
             _curGrade = curGrade;
             var table_CharacterUpgradeDic = TableManager.Instance.Table_CharacterUpgradeDic;
             _lvDic = new Dictionary<int, Table_CharacterUpgrade>(14);

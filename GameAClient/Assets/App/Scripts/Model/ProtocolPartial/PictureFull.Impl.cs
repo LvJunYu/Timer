@@ -18,6 +18,7 @@ namespace GameA
         private EPuzzleState _curState;
         private Table_Puzzle _puzzleTable;
         private PicturePart[] _neededFragments;
+
         private Dictionary<int, Table_PuzzleUpgrade> _lvTableDic; //键是等级，值是当前等级对应的信息
 
         //属性
@@ -129,7 +130,7 @@ namespace GameA
                     case EPuzzleType.Ninth:
                         return "img_puzzle_board_purple";
                     default:
-                        return null; 
+                        return null;
                 }
             }
         }
@@ -138,10 +139,10 @@ namespace GameA
         public PictureFull(int puzzleID)
         {
             //初始化信息
-            _pictureId = puzzleID;
-            _level = 0;
-            _isUsing = false;
-            _slot = -1;
+            PictureId = puzzleID;
+            Level = 0;
+            IsUsing = false;
+            Slot = -1;
 
             InitData(puzzleID);
         }

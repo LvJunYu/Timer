@@ -14,33 +14,41 @@ namespace GameA
         private const int _maxAchievementNum = 40;
         private List<UMCtrlAchievementItem> _unFinishUMs;
         private List<UMCtrlAchievementItem> _finishUMs;
-        private List<AchievementStatisticItem> _achievementItems;
+        private Dictionary<int, AchievementStatisticItem> _allAchievements;
         private List<UMCtrlAchievementItem> _umCtrlAchievementItemCache;
-
+        private bool _hasInited;
+        
         private void InitView()
         {
             //服务器成就数据
-            _achievementItems = LocalUser.Instance.Achievement.StatisticList;
-            if (null == _achievementItems)
-                _achievementItems = new List<AchievementStatisticItem>(_maxAchievementNum);
+            var achievementList = LocalUser.Instance.Achievement.StatisticList;
+            if (null == _allAchievements)
+                _allAchievements = new Dictionary<int, AchievementStatisticItem>(_maxAchievementNum);
             var achievements = TableManager.Instance.Table_AchievementDic;
-            int achievementType;
             foreach (Table_Achievement value in achievements.Values)
             {
-                AchievementStatisticItem achievementItem = _achievementItems.Find(p => p.Type == value.Type);
-                if (null == achievementItem)
+                AchievementStatisticItem achievementItem;
+                if (!_allAchievements.ContainsKey(value.Type))
                 {
-                    //测试数据
-                    int count = Random.Range(1, 10);
-                    achievementItem = new AchievementStatisticItem(value.Type, count);
-                    _achievementItems.Add(achievementItem);
+                    achievementItem = achievementList.Find(p => p.Type == value.Type);
+                    if(null==achievementItem)
+                    {
+                        //测试数据
+//                        long count = Random.Range(1, 10);
+                        achievementItem = new AchievementStatisticItem(value.Type, 1);
+                    }
+                    _allAchievements.Add(value.Type, achievementItem);
                 }
-                achievementItem.AddLvDic(value.Level, value);
+                else
+                    achievementItem = _allAchievements[value.Type];
+                achievementItem.BuildLvDic(value.Level, value);
             }
+            _hasInited = true;
         }
 
         private void RefreshView()
         {
+            if (!_isOpen) return;
             if (null == _unFinishUMs)
                 _unFinishUMs = new List<UMCtrlAchievementItem>(_maxAchievementNum);
             if (null == _finishUMs)
@@ -48,22 +56,22 @@ namespace GameA
             _unFinishUMs.Clear();
             _finishUMs.Clear();
             //生成未完成成就
-            for (int i = 0; i < _achievementItems.Count; i++)
+            foreach(AchievementStatisticItem achievementStatisticItem in _allAchievements.Values)
             {
-                if (_achievementItems[i].NextLevel != null)
+                if (achievementStatisticItem.NextLevel != null)
                 {
                     UMCtrlAchievementItem umCtrlAchievementItem = createAchievementItem();
-                    umCtrlAchievementItem.SetDate(_achievementItems[i], false);
+                    umCtrlAchievementItem.SetDate(achievementStatisticItem, false);
                     _unFinishUMs.Add(umCtrlAchievementItem);
                 }
             }
             //生成已完成成就
-            for (int i = 0; i < _achievementItems.Count; i++)
+            foreach(AchievementStatisticItem achievementStatisticItem in _allAchievements.Values)
             {
-                if (_achievementItems[i].FinishLevel != 0)
+                if (achievementStatisticItem.FinishLevel != 0)
                 {
                     UMCtrlAchievementItem umCtrlAchievementItem = createAchievementItem();
-                    umCtrlAchievementItem.SetDate(_achievementItems[i], true);
+                    umCtrlAchievementItem.SetDate(achievementStatisticItem, true);
                     _finishUMs.Add(umCtrlAchievementItem);
                 }
             }
@@ -85,11 +93,22 @@ namespace GameA
             return umCtrlAchievementItem;
         }
 
-        private void OnAchieve()
+        private void AddAchievementCount(int type, int addCount)
         {
-            RefreshView();
+            if (!_hasInited)
+                InitView();
+            if (!_allAchievements.ContainsKey(type))
+            {
+                LogHelper.Error("Add achievement count but _allAchievements.ContainsKey(type) is false!");
+                return;
+            }
+            if (_allAchievements.ContainsKey(type))
+            {
+                _allAchievements[type].AddAchievementCount(addCount);
+                RefreshView();
+            }
         }
-
+        
         private void OnCloseBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlAchievement>();
@@ -134,7 +153,7 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            RegisterEvent(EMessengerType.OnAchieve, OnAchieve);
+            RegisterEvent<int, int>(EMessengerType.OnAddAchievementCount, AddAchievementCount);
         }
 
         protected override void SetAnimationType()

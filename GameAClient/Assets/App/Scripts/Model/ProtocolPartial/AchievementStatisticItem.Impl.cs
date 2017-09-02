@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using GameA.Game;
+using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
@@ -10,7 +12,7 @@ namespace GameA
     public partial class AchievementStatisticItem
     {
         private Dictionary<int, Table_Achievement> _lvDic;
-        private int _curLevel;
+        private int _curLv;
 
         public Dictionary<int, Table_Achievement> LvDic
         {
@@ -19,27 +21,24 @@ namespace GameA
 
         public int FinishLevel
         {
-            get { return CurLevel - 1; }
+            get { return CurLv - 1; }
         }
 
-        public int CurLevel
+        public int CurLv
         {
             get
             {
-                if (0 == _curLevel)
+                _curLv = 1;
+                for (int level = 1; level <= LvDic.Count; level++)
                 {
-                    _curLevel = 1;
-                    for (int level = 1; level <= LvDic.Count; level++)
-                    {
-                        if (_count >= LvDic[level].Condition)
-                            _curLevel = level + 1;
-                        else
-                            break;
-                    }
+                    if (_count >= LvDic[level].Condition)
+                        _curLv = level + 1;
+                    else
+                        break;
                 }
-                return _curLevel;
+                return _curLv;
             }
-            set { _curLevel = value; }
+            set { _curLv = value; }
         }
 
         public int MaxLevel
@@ -51,25 +50,38 @@ namespace GameA
         {
             get
             {
-                if (CurLevel > MaxLevel)
+                if (CurLv > MaxLevel)
                     return null;
-                return CurLevel;
+                return CurLv;
             }
         }
 
-        public AchievementStatisticItem(int type, int count)
+        public AchievementStatisticItem(int type, long count)
         {
             Type = type;
             Count = count;
         }
 
-        public void AddLvDic(int lv, Table_Achievement achievement)
+        public void BuildLvDic(int lv, Table_Achievement achievement)
         {
             if (null == _lvDic)
                 _lvDic = new Dictionary<int, Table_Achievement>(10);
             if (_lvDic.ContainsKey(lv))
                 return;
             _lvDic.Add(lv, achievement);
+        }
+
+        public void AddAchievementCount(int addCount)
+        {
+            int level = CurLv;
+            Count += addCount;
+            if (null == _lvDic) return;
+            while (_lvDic.ContainsKey(level) && Count >= _lvDic[level].Condition)
+            {
+                Debug.Log(_lvDic[level].Name + "+" + addCount);
+                Messenger<Table_Achievement>.Broadcast(EMessengerType.OnAchieve, _lvDic[level]);
+                level++;
+            }
         }
     }
 }

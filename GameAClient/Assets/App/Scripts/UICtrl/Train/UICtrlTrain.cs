@@ -465,6 +465,7 @@ namespace GameA
         {
             base.OnOpen(parameter);
             RefreshView();
+            SocialGUIManager.AddAchievementCount(1,1);
         }
 
         protected override void OnOpenAnimationUpdate()

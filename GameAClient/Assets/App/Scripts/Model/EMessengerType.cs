@@ -130,7 +130,7 @@ namespace GameA
         
         //成就
         public static int OnAchieve = SoyEngine.EMessengerType.NextId++;
-
+        public static int OnAddAchievementCount = SoyEngine.EMessengerType.NextId++;
     }
 }
 

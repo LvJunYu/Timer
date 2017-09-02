@@ -21,9 +21,9 @@ namespace GameA
 
         public PicturePart(int pictureId, int index)
         {
-            _pictureId = pictureId;
-            _pictureInx = index;
-            _totalCount = 0;
+            PictureId = pictureId;
+            PictureInx = index;
+            TotalCount = 0;
             InitData();
         }
 
