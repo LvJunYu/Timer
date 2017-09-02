@@ -18,7 +18,7 @@ namespace GameA
             {
                 if (_curPicFull == null)
                     return 0;
-                return (int) _curPicFull.PictureId;
+                return (int)_curPicFull.PictureId;
             }
         }
 
@@ -39,10 +39,24 @@ namespace GameA
             if (_curPicFull != null)
             {
                 _cachedView.PuzzleImg.sprite = _curPicFull.PicSprite;
+                _cachedView.BoardImg.sprite = _curPicFull.BoardSprite;
+                _cachedView.BoardImg.SetNativeSize();
+                //设置外框大小
+                var rtf = _cachedView.BoardImg.rectTransform();
+                float smallPicWidth = _cachedView.PuzzleImg.rectTransform().rect.width;
+                float bigPicWidth = _cachedView.PuzzleImg.preferredWidth;
+                float width = rtf.rect.width * smallPicWidth / bigPicWidth;
+                float height = rtf.rect.height * smallPicWidth / bigPicWidth;
+                rtf.SetSizeWithCurrentAnchors(UnityEngine.RectTransform.Axis.Horizontal, width);
+                rtf.SetSizeWithCurrentAnchors(UnityEngine.RectTransform.Axis.Vertical, height);
                 _cachedView.PuzzleImg.gameObject.SetActive(true);
+                _cachedView.BG.SetActive(false);
             }
             else
+            {
                 _cachedView.PuzzleImg.gameObject.SetActive(false);
+                _cachedView.BG.SetActive(true);
+            }
             //测试用，应取实际等级
             bool unlock = _unlockLv > 2;
             //bool unlock = _unlockLv > LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel;
@@ -69,7 +83,7 @@ namespace GameA
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在装备拼图");
             RemoteCommands.ChangePictureFull(_slotID, picture.PictureId, CurPicID, res =>
             {
-                if (res.ResultCode == (int) EChangePictureFullCode.CPFC_Success)
+                if (res.ResultCode == (int)EChangePictureFullCode.CPFC_Success)
                 {
                     Equip();
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
