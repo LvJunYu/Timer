@@ -20,16 +20,6 @@ namespace GameA.Game
             }
         }
 
-        protected override void OnRun()
-        {
-            base.OnRun();
-            _effectBullet = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.Model, _trans);
-            if (_effectBullet != null)
-            {
-                _effectBullet.Play();
-            }
-        }
-
         public override void UpdateView(float deltaTime)
         {
             if (_timer > 0)

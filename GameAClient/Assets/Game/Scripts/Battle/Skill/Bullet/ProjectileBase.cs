@@ -37,7 +37,6 @@ namespace GameA.Game
         protected int _maskRandom;
         
         protected UnityNativeParticleItem _effectBullet;
-        protected SpineObject _effectSpineBullet;
 
         protected IntVec2 _newSpeed;
         
@@ -84,8 +83,6 @@ namespace GameA.Game
             _newSpeed = IntVec2.zero;
             FreeEffect(_effectBullet);
             _effectBullet = null;
-            GameParticleManager.FreeSpineObject(_effectSpineBullet);
-            _effectSpineBullet = null;
             _targetUnit = null;
             base.Clear();
         }
@@ -96,6 +93,11 @@ namespace GameA.Game
             _maskRandom = UnityEngine.Random.Range(0, 2);
             _originPos = CenterPos;
             SetAngle(angle);
+            _effectBullet = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.Model, _trans);
+            if (_effectBullet != null)
+            {
+                _effectBullet.Play();
+            }
             OnRun();
         }
 
@@ -115,6 +117,12 @@ namespace GameA.Game
         protected virtual void UpdateAngle(int angle, EDirectionType eDirectionType)
         {
             SetAngle(angle);
+        }
+        
+        public override void UpdateLogic()
+        {
+            Speed += _fanForce;
+            _fanForce = IntVec2.zero;
         }
         
         public override void UpdateView(float deltaTime)

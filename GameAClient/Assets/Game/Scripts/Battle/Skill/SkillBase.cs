@@ -196,6 +196,7 @@ namespace GameA.Game
         {
             if (_energyCost > 0 && _currentEnergy < _energyCost)
             {
+                Messenger<string>.Broadcast(EMessengerType.GameLog, "魔法值不足");
                 LogHelper.Debug("Energy is not enough! {0} | {1}", _currentEnergy, _energyCost);
                 return false;
             }

@@ -54,8 +54,6 @@ namespace GameA.Game
         public const int SwitchTriggerPressId = 8101;
         public const int MagicSwitchId = 8102;
 
-        public const int BulletIceId = 10003;
-
         public static bool IsSpawn(int id)
         {
             return id == 1001;
@@ -159,6 +157,11 @@ namespace GameA.Game
         {
             return id >= 10001 && id <= 10010;
         }
+        
+        public static bool IsPaintBullet(int id)
+        {
+            return id == 10001 || id == 10004 || id == 10005;
+        }
 
         public static bool IsCollection(int id)
         {
@@ -199,7 +202,7 @@ namespace GameA.Game
         public static bool IsFanEffect(int layer, int id)
         {
             return (((1 << layer) & (EnvManager.MonsterLayer | EnvManager.MainPlayerLayer | EnvManager.RemotePlayer)) !=0)
-                   || id == BulletIceId;
+                   || IsBullet(id);
         }
 
         /// <summary>
