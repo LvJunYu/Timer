@@ -16,6 +16,15 @@ namespace GameA.Game
     [Unit(Id = 4002, Type = typeof(OneWayEarth))]
     public class OneWayEarth : BlockBase
     {
+        public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
+        {
+            if (UnitDefine.BoxId == other.Id)
+            {
+                return false;
+            }
+            return base.OnUpHit(other, ref y, checkOnly);
+        }
+
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {
             return false;

@@ -40,10 +40,17 @@ namespace GameA.Game
         protected SpineObject _effectSpineBullet;
 
         protected IntVec2 _newSpeed;
+        
+        protected UnitBase _targetUnit;
 
         public Vector2 Direction
         {
             get { return _direction; }
+        }
+
+        public UnitBase TargetUnit
+        {
+            get { return _targetUnit; }
         }
 
         public int MaskRandom
@@ -79,6 +86,7 @@ namespace GameA.Game
             _effectBullet = null;
             GameParticleManager.FreeSpineObject(_effectSpineBullet);
             _effectSpineBullet = null;
+            _targetUnit = null;
             base.Clear();
         }
 
@@ -133,6 +141,7 @@ namespace GameA.Game
         
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
+            _targetUnit = unit;
             _destroy = 1;
         }
 

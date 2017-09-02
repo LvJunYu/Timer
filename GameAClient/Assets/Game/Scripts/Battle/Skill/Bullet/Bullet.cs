@@ -21,6 +21,8 @@ namespace GameA.Game
      
         protected int _maskRandom;
         protected int _destroy;
+
+        protected UnitBase _targetUnit;
         
         public Vector2 Direction
         {
@@ -35,6 +37,11 @@ namespace GameA.Game
         public IntVec2 CurPos
         {
             get { return _curPos; }
+        }
+
+        public UnitBase TargetUnit
+        {
+            get { return _targetUnit; }
         }
 
         public void OnGet()
@@ -86,7 +93,7 @@ namespace GameA.Game
             _speed = new IntVec2((int) (_skill.ProjectileSpeed * _direction.x),
                 (int) (_skill.ProjectileSpeed * _direction.y));
             
-            _effectBullet = GameParticleManager.Instance.EmitOnce("M1BulletWater", _trans);
+            _effectBullet = GameParticleManager.Instance.EmitOnce(_tableUnit.Model, _trans);
             _trans.eulerAngles = new Vector3(0, 0, -angle);
             UpdateTransPos();
             _run = true;
@@ -126,6 +133,7 @@ namespace GameA.Game
                             var unit = units[j];
                             if (unit.IsAlive && !unit.CanBulletCross)
                             {
+                                _targetUnit = unit;
                                 _curPos = hit.point;
                                 _destroy = 1;
                                 if (UnitDefine.IsMagicSwitch(unit.Id))

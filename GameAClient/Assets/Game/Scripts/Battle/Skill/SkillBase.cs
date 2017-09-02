@@ -16,6 +16,8 @@ namespace GameA.Game
     [Serializable]
     public class SkillBase
     {
+        private static List<UnitBase> _cacheUnits = new List<UnitBase>(1);
+
         [SerializeField]
         protected EPaintType _epaintType;
 
@@ -258,7 +260,7 @@ namespace GameA.Game
 
         protected void CreateProjectile(int projectileId, IntVec2 pos, int angle)
         {
-            if (_epaintType == EPaintType.Water || _epaintType == EPaintType.Jelly || _epaintType == EPaintType.Clay)
+            if (_epaintType == EPaintType.Water || _epaintType == EPaintType.Jelly || _epaintType == EPaintType.Clay || projectileId == 10006)
             {
                 var bullet = PoolFactory<Bullet>.Get();
                 bullet.Init(this,pos, angle);
@@ -318,7 +320,7 @@ namespace GameA.Game
             var centerDownPos = _owner.CenterDownPos;
             CreateTrap(centerDownPos);
             //临时写 TODO
-            var units = GetHitUnits(_owner.CenterPos);
+            var units = GetHitUnits(_owner.CenterPos, null);
             if (units != null && units.Count > 0)
             {
                 for (int i = 0; i < units.Count; i++)
@@ -340,7 +342,7 @@ namespace GameA.Game
         {
             _bullets.Remove(bullet);
             CreateTrap(bullet.CurPos);
-            var units = GetHitUnits(bullet.CurPos);
+            var units = GetHitUnits(bullet.CurPos, bullet.TargetUnit);
             if (units != null && units.Count > 0)
             {
                 for (int i = 0; i < units.Count; i++)
@@ -364,7 +366,7 @@ namespace GameA.Game
         public virtual void OnProjectileHit(ProjectileBase projectile)
         {
             CreateTrap(projectile.CenterPos);
-            var units = GetHitUnits(projectile.CenterPos);
+            var units = GetHitUnits(projectile.CenterPos, projectile.TargetUnit);
             if (units != null && units.Count > 0)
             {
                 for (int i = 0; i < units.Count; i++)
@@ -422,12 +424,18 @@ namespace GameA.Game
             unit.OnHpChanged(-_damage);
         }
 
-        protected List<UnitBase> GetHitUnits(IntVec2 centerPos)
+        protected List<UnitBase> GetHitUnits(IntVec2 centerPos, UnitBase hitUnit)
         {
             var hitLayerMask = GetTargetType();
             switch ((EEffcetMode) _tableSkill.EffectMode)
             {
                 case EEffcetMode.Single:
+                    if (hitUnit != null)
+                    {
+                        _cacheUnits.Clear();
+                        _cacheUnits.Add(hitUnit);
+                        return _cacheUnits;
+                    }
                     break;
                 case EEffcetMode.TargetCircle:
                 {

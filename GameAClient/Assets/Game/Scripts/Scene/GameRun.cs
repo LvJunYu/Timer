@@ -80,7 +80,9 @@ namespace GameA.Game
             PoolFactory<MorphUnit>.Clear();
             PoolFactory<EmptyUnit>.Clear();
             PoolFactory<BgItem>.Clear();
-            PoolFactory<ProjectileWater>.Clear();
+            PoolFactory<ProjectileFire>.Clear();
+            PoolFactory<ProjectileIce>.Clear();
+            PoolFactory<ProjectileIceSword>.Clear();
             PoolFactory<SpineObject>.Clear();
             PoolFactory<WingView>.Clear();
             PoolFactory<Bullet>.Clear();
