@@ -13,11 +13,10 @@ namespace GameA
     public class UICtrlPuzzleDetail : UICtrlAnimationBase<UIViewPuzzleDetail>
     {
         //碎片间距
-        private const float _halfSpacing = 160;
-
-        private const float _quarterSpacing = 35;
-        private const float _sixthSpacing = 40;
-        private const float _ninthSpacing = 9;
+        private const float _halfSpacing = 90;
+        private const float _quarterSpacing = -35;
+        private const float _sixthSpacing = -30;
+        private const float _ninthSpacing =-60;
 
         //按钮文字
         private const string _upgrateTxt = "升级";
@@ -164,7 +163,8 @@ namespace GameA
                 puzzleFragment.SetData(_puzzleFragments[i], _puzzle, _curUMPuzzleItem);
             }
             //设置碎片间距
-            _cachedView.PuzzleFragmentGrid.spacing = GetSpace(_puzzle.PuzzleType);
+            _cachedView.PuzzleFragmentGrid.spacing = GetGridSpace(_puzzle.PuzzleType);
+            _cachedView.PuzzleFragmentGrid.rectTransform().anchoredPosition = Vector2.zero;
             //锁住拖拽
             _cachedView.FragsScrollRect.horizontal = false;
             //文字信息
@@ -173,7 +173,7 @@ namespace GameA
             RefreshButtons();
         }
 
-        private float GetSpace(EPuzzleType puzzleType)
+        private float GetGridSpace(EPuzzleType puzzleType)
         {
             switch (puzzleType)
             {
@@ -249,80 +249,6 @@ namespace GameA
             return _puzzle.CurState == EPuzzleState.HasActived;
         }
 
-        private UMCtrlPuzzleFragmentItem CreatePuzzleFragment()
-        {
-            //查看缓存
-            foreach (var item in _fragmentsCache)
-            {
-                if (!item.IsShow)
-                {
-                    item.Show();
-                    return item;
-                }
-            }
-            //缓存没有，则创建新的
-            var puzzleFragment = new UMCtrlPuzzleFragmentItem();
-            puzzleFragment.Init(_cachedView.PuzzleFragmentGrid.transform as RectTransform);
-            //新的添加到缓存
-            _fragmentsCache.Add(puzzleFragment);
-
-            return puzzleFragment;
-        }
-
-        protected override void OnViewCreated()
-        {
-            base.OnViewCreated();
-            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-            _cachedView.ActiveBtn.onClick.AddListener(OnActiveBtn);
-            _cachedView.EquipBtn.onClick.AddListener(OnEquipBtn);
-            //碎片Item缓存
-            _fragmentsCache = new List<UMCtrlPuzzleFragmentItem>(9);
-            //当前拼图所需碎片
-            _curUMFragments = new List<UMCtrlPuzzleFragmentItem>(9);
-            //创建拼图
-            _curUMPuzzleItem = new UMCtrlPuzzleDetailItem();
-            _curUMPuzzleItem.Init(_cachedView.PuzzleItemPos);
-        }
-
-        protected override void InitEventListener()
-        {
-            base.InitEventListener();
-            RegisterEvent(EMessengerType.OnPuzzleCompound, OnPuzzleCompound);
-            RegisterEvent(EMessengerType.OnPuzzleFragChanged, OnPuzzleFragChanged);
-        }
-
-        protected override void OnOpen(object parameter)
-        {
-            base.OnOpen(parameter);
-            _puzzle = parameter as PictureFull;
-            if (_puzzle == null) return;
-            RefreshView();
-        }
-
-        protected override void OnOpenAnimationComplete()
-        {
-            base.OnOpenAnimationComplete();
-            //6、9拼图才打开水平拖动
-            if (_puzzle.PuzzleType > EPuzzleType.Quarter)
-                _cachedView.FragsScrollRect.horizontal = true;
-        }
-
-        protected override void OnClose()
-        {
-            base.OnClose();
-            //全部缓存起来
-            foreach (var item in _fragmentsCache)
-            {
-                if (item.IsShow)
-                    item.Collect();
-            }
-        }
-
-        protected override void InitGroupId()
-        {
-            _groupId = (int) EUIGroupType.PopUpUI2;
-        }
-
         private void OnCloseBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlPuzzleDetail>();
@@ -349,7 +275,7 @@ namespace GameA
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在合成拼图");
             RemoteCommands.CompoundPictureFull(_puzzle.PictureId, res =>
             {
-                if (res.ResultCode == (int) ECompoundPictureFullCode.CPF_Success)
+                if (res.ResultCode == (int)ECompoundPictureFullCode.CPF_Success)
                 {
                     CompoundOrUpgrade();
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
@@ -374,7 +300,7 @@ namespace GameA
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在升级拼图");
             RemoteCommands.UpgradePictureFull(_puzzle.PictureId, _puzzle.Level + 1, res =>
             {
-                if (res.ResultCode == (int) ECompoundPictureFullCode.CPF_Success)
+                if (res.ResultCode == (int)ECompoundPictureFullCode.CPF_Success)
                 {
                     CompoundOrUpgrade();
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
@@ -434,6 +360,85 @@ namespace GameA
             RefreshFragments();
 
             RefreshButtons();
+        }
+
+        private UMCtrlPuzzleFragmentItem CreatePuzzleFragment()
+        {
+            //查看缓存
+            foreach (var item in _fragmentsCache)
+            {
+                if (!item.IsShow)
+                {
+                    item.Show();
+                    return item;
+                }
+            }
+            //缓存没有，则创建新的
+            var puzzleFragment = new UMCtrlPuzzleFragmentItem();
+            puzzleFragment.Init(_cachedView.PuzzleFragmentGrid.transform as RectTransform);
+            //新的添加到缓存
+            _fragmentsCache.Add(puzzleFragment);
+
+            return puzzleFragment;
+        }
+
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
+            _cachedView.ActiveBtn.onClick.AddListener(OnActiveBtn);
+            _cachedView.EquipBtn.onClick.AddListener(OnEquipBtn);
+            //碎片Item缓存
+            _fragmentsCache = new List<UMCtrlPuzzleFragmentItem>(9);
+            //当前拼图所需碎片
+            _curUMFragments = new List<UMCtrlPuzzleFragmentItem>(9);
+            //创建拼图
+            _curUMPuzzleItem = new UMCtrlPuzzleDetailItem();
+            _curUMPuzzleItem.Init(_cachedView.PuzzleItemPos);
+        }
+
+        protected override void InitEventListener()
+        {
+            base.InitEventListener();
+            RegisterEvent(EMessengerType.OnPuzzleCompound, OnPuzzleCompound);
+            RegisterEvent(EMessengerType.OnPuzzleFragChanged, OnPuzzleFragChanged);
+        }
+
+        protected override void OnOpen(object parameter)
+        {
+            base.OnOpen(parameter);
+            _puzzle = parameter as PictureFull;
+            if (_puzzle == null)
+            {
+                LogHelper.Error("parameter as PictureFul is null");
+                OnClose();
+                return;
+            }
+            RefreshView();
+        }
+
+        protected override void OnOpenAnimationComplete()
+        {
+            base.OnOpenAnimationComplete();
+            //6、9拼图才打开水平拖动
+            if (_puzzle.PuzzleType > EPuzzleType.Quarter)
+                _cachedView.FragsScrollRect.horizontal = true;
+        }
+
+        protected override void OnClose()
+        {
+            base.OnClose();
+            //全部缓存起来
+            foreach (var item in _fragmentsCache)
+            {
+                if (item.IsShow)
+                    item.Collect();
+            }
+        }
+
+        protected override void InitGroupId()
+        {
+            _groupId = (int)EUIGroupType.PopUpUI2;
         }
     }
 }

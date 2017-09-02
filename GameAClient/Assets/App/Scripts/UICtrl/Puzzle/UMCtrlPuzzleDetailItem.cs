@@ -30,7 +30,7 @@ namespace GameA
         private const string _sixthSmallSprite = "img_puzzle_sixth_11";
         private const string _ninthBigSprite = "img_puzzle_ninth_1";
         private const string _ninthSmallSprite = "img_puzzle_ninth_11";
-        
+
         public Dictionary<int, Image> ImageDic
         {
             get { return _imageDic; }
@@ -80,7 +80,7 @@ namespace GameA
                 default:
                     return 0;
             }
-   
+
         }
 
         public void SetData(PictureFull puzzle)
@@ -91,8 +91,6 @@ namespace GameA
             _cachedView.RectTFs[2].gameObject.SetActive(_puzzle.PuzzleType == EPuzzleType.Sixth);
             _cachedView.RectTFs[3].gameObject.SetActive(_puzzle.PuzzleType == EPuzzleType.Ninth);
             _curTF = _cachedView.RectTFs.Find(p => p.gameObject.activeSelf);
-            //大图图片
-            _cachedView.Puzzle_Active.sprite = ResourcesManager.Instance.GetSprite(_puzzle.PuzzleTable.Icon);
             //碎片遮罩集合
             _masks.Clear();
             _masks.AddRange(_curTF.GetComponentsInChildren<Mask>());
@@ -104,19 +102,18 @@ namespace GameA
             //初始化碎片遮罩图片，构建索引字典
             _disableImgDic.Clear();
             _imageDic.Clear();
+            //边框
+            _cachedView.Puzzle_Board.sprite = _puzzle.BoardSprite;
+            _cachedView.Puzzle_Board.SetNativeSize();
+            //底图
             for (int i = 0; i < _masks.Count; i++)
             {
-                Transform picTF = _masks[i].transform.GetChild(0);
-                picTF.localPosition = -_masks[i].transform.localPosition;
-                //设置碎片外框
-                //Image outlime = _curTF.GetChild(_masks[i].transform.GetSiblingIndex() + 1).GetComponent<Image>();
-                //outlime.sprite = _masks[i].GetComponent<Image>().sprite;
-                //设置底图
-                Image image = picTF.GetComponent<Image>();
+                Image image = _masks[i].transform.GetChild(0).GetComponent<Image>();
                 _imageDic.Add(i + 1, image);
-                Image disableImg = picTF.GetChild(0).GetComponent<Image>();
+                image.transform.localPosition = -_masks[i].transform.localPosition;
+                Image disableImg = image.transform.GetChild(0).GetComponent<Image>();
                 _disableImgDic.Add(i + 1, disableImg);
-                disableImg.sprite = image.sprite = _cachedView.Puzzle_Active.sprite;
+                disableImg.sprite = image.sprite = _cachedView.Puzzle_Active.sprite = _puzzle.PicSprite;
                 disableImg.color = _cachedView.DisableColor;
             }
             _hasInited = true;
@@ -126,8 +123,7 @@ namespace GameA
         public void RefreshView()
         {
             if (!_hasInited) return;
-            _cachedView.Puzzle_Active.enabled = _puzzle.CurState == EPuzzleState.HasActived;
-            //
+            _cachedView.Puzzle_Active.gameObject.SetActive(_puzzle.CurState == EPuzzleState.HasActived);
             for (int i = 0; i < _puzzle.FragNum; i++)
             {
                 var frag = _puzzle.NeededFragments[i];

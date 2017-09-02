@@ -38,7 +38,7 @@ namespace GameA
         {
             if (_curPicFull != null)
             {
-                _cachedView.PuzzleImg.sprite = _curPicFull.Icon;
+                _cachedView.PuzzleImg.sprite = _curPicFull.PicSprite;
                 _cachedView.PuzzleImg.gameObject.SetActive(true);
             }
             else

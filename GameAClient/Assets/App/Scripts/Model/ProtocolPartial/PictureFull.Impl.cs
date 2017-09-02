@@ -13,7 +13,8 @@ namespace GameA
         //字段
         private bool _hasInited;
 
-        private Sprite _icon;
+        private Sprite _picSprite;
+        private Sprite _boardSprite;
         private EPuzzleState _curState;
         private Table_Puzzle _puzzleTable;
         private PicturePart[] _neededFragments;
@@ -93,13 +94,43 @@ namespace GameA
             get { return _neededFragments; }
         }
 
-        public Sprite Icon
+        public Sprite PicSprite
         {
             get
             {
-                if (null == _icon)
-                    _icon = ResourcesManager.Instance.GetSprite(_puzzleTable.Icon);
-                return _icon;
+                if (null == _picSprite)
+                    _picSprite = ResourcesManager.Instance.GetSprite(_puzzleTable.Icon);
+                return _picSprite;
+            }
+        }
+
+        public Sprite BoardSprite
+        {
+            get
+            {
+                if (null == _boardSprite)
+                    _boardSprite = ResourcesManager.Instance.GetSprite(BoardSpriteName);
+                return _boardSprite;
+            }
+        }
+
+        public string BoardSpriteName
+        {
+            get
+            {
+                switch (PuzzleType)
+                {
+                    case EPuzzleType.Half:
+                        return "img_puzzle_board_orange";
+                    case EPuzzleType.Quarter:
+                        return "img_puzzle_board_green";
+                    case EPuzzleType.Sixth:
+                        return "img_puzzle_board_blue";
+                    case EPuzzleType.Ninth:
+                        return "img_puzzle_board_purple";
+                    default:
+                        return null; 
+                }
             }
         }
 

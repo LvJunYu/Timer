@@ -11,11 +11,10 @@ namespace GameA
     public class UMCtrlPuzzleItem : UMCtrlBase<UMViewPuzzleItem>, IDataItemRenderer
     {
         private PictureFull _puzzle;
-
-        public UMCtrlPuzzleItem(PictureFull puzzle)
-        {
-            _puzzle = puzzle;
-        }
+        //public UMCtrlPuzzleItem(PictureFull puzzle)
+        //{
+        //    _puzzle = puzzle;
+        //}
 
         public UMCtrlPuzzleItem()
         {
@@ -51,11 +50,20 @@ namespace GameA
 
         public void RefreshView()
         {
-            _cachedView.DisActiveImg.sprite = _cachedView.Img.sprite = _puzzle.Icon;
+            _cachedView.DisActiveImg.sprite = _cachedView.Img.sprite = _puzzle.PicSprite;
             _cachedView.DisActiveImg.gameObject.SetActive(!(_puzzle.CurState == EPuzzleState.HasActived));
+            _cachedView.BoardImg.sprite = _puzzle.BoardSprite;
+            _cachedView.BoardImg.SetNativeSize();
+            var rtf = _cachedView.BoardImg.rectTransform();
+            float smallPicWidth = _cachedView.Img.rectTransform().rect.width;
+            float bigPicWidth = _cachedView.Img.preferredWidth;
+            float width = rtf.rect.width * smallPicWidth / bigPicWidth;
+            float height = rtf.rect.height * smallPicWidth / bigPicWidth;
+            rtf.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+            rtf.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
         }
 
-        public void ResetData(PictureFull puzzle)
+        public void SetData(PictureFull puzzle)
         {
             _puzzle = puzzle;
             RefreshView();

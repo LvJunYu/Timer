@@ -429,6 +429,7 @@ namespace GameA
         {
           #if UNITY_EDITOR
           _cachedView.WeaponObject.SetActive(true);
+          SetLock(UIFunction.UI_Puzzle, true);
           SetLock(UIFunction.UI_Train, true);
           SetLock(UIFunction.UI_Achievement, true);
           #endif

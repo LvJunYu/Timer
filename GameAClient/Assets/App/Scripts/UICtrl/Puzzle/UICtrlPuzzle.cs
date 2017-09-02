@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using GameA.Game;
+using System;
 
 namespace GameA
 {
     /// <summary>
-    /// 
+    /// 拼图页面
     /// </summary>
     [UIAutoSetup]
     public class UICtrlPuzzle : UICtrlAnimationBase<UIViewPuzzle>
@@ -63,7 +64,7 @@ namespace GameA
             }
         }
 
-        private void CreateUMs()
+        private void InitView()
         {
             InitData();
             //创建装备栏
@@ -89,10 +90,10 @@ namespace GameA
             {
                 for (int i = 0; i < _allPictureFull.Count; i++)
                 {
-                    var puzzle = new UMCtrlPuzzleItem(_allPictureFull[i]);
+                    var puzzle = new UMCtrlPuzzleItem();
                     _allUMPuzzleItem.Add(puzzle);
                     puzzle.Init(_cachedView.PuzzleItemGrid);
-                    puzzle.RefreshView();
+                    //puzzle.RefreshView();
                 }
                 _cachedView.PuzzleItemSrollRect.horizontal = false;
             }
@@ -133,9 +134,9 @@ namespace GameA
         private void RefreshData()
         {
             //同步数据
-//            if (!LocalUser.Instance.UserPictureFull.IsInited)
-//                LocalUser.Instance.UserPictureFull.Request(LocalUser.Instance.UserGuid, null,
-//                    code => { LogHelper.Error("Network error when get UserPictureFull, {0}", code); });
+            //            if (!LocalUser.Instance.UserPictureFull.IsInited)
+            //                LocalUser.Instance.UserPictureFull.Request(LocalUser.Instance.UserGuid, null,
+            //                    code => { LogHelper.Error("Network error when get UserPictureFull, {0}", code); });
             _userPictureFull = LocalUser.Instance.UserPictureFull.ItemDataList;
             for (int i = 0; i < _userPictureFull.Count; i++)
             {
@@ -162,7 +163,7 @@ namespace GameA
             //更新排序后的拼图信息
             for (int i = 0; i < _allUMPuzzleItem.Count; i++)
             {
-                _allUMPuzzleItem[i].ResetData(_allPictureFull[i]);
+                _allUMPuzzleItem[i].SetData(_allPictureFull[i]);
             }
         }
 
@@ -180,16 +181,22 @@ namespace GameA
             switch (_curOrderType)
             {
                 case EPuzzleOrderType.Qulity:
-                    _userPictureFull.Sort((p, q) => p.Quality.CompareTo(q.Quality));
-                    _otherPictureFull.Sort((p, q) => p.Quality.CompareTo(q.Quality));
+                    _userPictureFull.Sort((p, q)
+                        => 100 * p.Quality.CompareTo(q.Quality) - 10 * p.Level.CompareTo(q.Level) + p.AttriBonus.CompareTo(q.AttriBonus));
+                    _otherPictureFull.Sort((p, q)
+                        => 100 * p.Quality.CompareTo(q.Quality) - 10 * p.Level.CompareTo(q.Level) + p.AttriBonus.CompareTo(q.AttriBonus));
                     break;
                 case EPuzzleOrderType.Level:
-                    _userPictureFull.Sort((p, q) => p.Level.CompareTo(q.Level));
-                    _otherPictureFull.Sort((p, q) => p.Level.CompareTo(q.Level));
+                    _userPictureFull.Sort((p, q)
+                        => -100 * p.Level.CompareTo(q.Level) + 10 * p.Quality.CompareTo(q.Quality) + p.AttriBonus.CompareTo(q.AttriBonus));
+                    _otherPictureFull.Sort((p, q)
+                        => -100 * p.Level.CompareTo(q.Level) + 10 * p.Quality.CompareTo(q.Quality) + p.AttriBonus.CompareTo(q.AttriBonus));
                     break;
                 case EPuzzleOrderType.Func:
-                    _userPictureFull.Sort((p, q) => p.AttriBonus.CompareTo(q.AttriBonus));
-                    _otherPictureFull.Sort((p, q) => p.AttriBonus.CompareTo(q.AttriBonus));
+                    _userPictureFull.Sort((p, q)
+                        => 100 * p.AttriBonus.CompareTo(q.AttriBonus) + 10 * p.Quality.CompareTo(q.Quality) - p.Level.CompareTo(q.Level));
+                    _otherPictureFull.Sort((p, q)
+                        => 100 * p.AttriBonus.CompareTo(q.AttriBonus) + 10 * p.Quality.CompareTo(q.Quality) - p.Level.CompareTo(q.Level));
                     break;
             }
             _allPictureFull.AddRange(_userPictureFull);
@@ -204,34 +211,34 @@ namespace GameA
             _cachedView.Level.onValueChanged.AddListener(OnLevelToggle);
             _cachedView.Func.onValueChanged.AddListener(OnFuncToggle);
             _cachedView.PuzzleItemGridDataScroller.SetCallback(OnPuzzleItemRefresh, CreateUmPuzzleItem);
-//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
-//            LocalUser.Instance.UserPictureFull.Request(LocalUser.Instance.UserGuid,
-//                () =>
-//                {
-//                    InitData();
-//                    InitView();
-//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//                },
-//                code =>
-//                {
-//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//                    LogHelper.Error("Network error when get UserPictureFull, {0}", code);
-//                });
+            //            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
+            //            LocalUser.Instance.UserPictureFull.Request(LocalUser.Instance.UserGuid,
+            //                () =>
+            //                {
+            //                    InitData();
+            //                    InitView();
+            //                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+            //                },
+            //                code =>
+            //                {
+            //                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+            //                    LogHelper.Error("Network error when get UserPictureFull, {0}", code);
+            //                });
 
-//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
-//            LocalUser.Instance.UserUsingPictureFullData.Request(LocalUser.Instance.UserGuid,
-//                () =>
-//                {
-//                    InitData();
-//                    InitView();
-//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//                },
-//                code =>
-//                {
-//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//                    LogHelper.Error("Network error when get UserUsingPictureFullData, {0}", code);
-//                });
-            CreateUMs();
+            //            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
+            //            LocalUser.Instance.UserUsingPictureFullData.Request(LocalUser.Instance.UserGuid,
+            //                () =>
+            //                {
+            //                    InitData();
+            //                    InitView();
+            //                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+            //                },
+            //                code =>
+            //                {
+            //                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+            //                    LogHelper.Error("Network error when get UserUsingPictureFullData, {0}", code);
+            //                });
+            InitView();
         }
 
         protected override void InitEventListener()
@@ -288,7 +295,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.PopUpUI;
+            _groupId = (int)EUIGroupType.PopUpUI;
         }
     }
 
