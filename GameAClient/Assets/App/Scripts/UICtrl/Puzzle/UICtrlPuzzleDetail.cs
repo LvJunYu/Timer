@@ -425,6 +425,12 @@ namespace GameA
                 _cachedView.FragsScrollRect.horizontal = true;
         }
 
+        protected override void SetAnimationType()
+        {
+            base.SetAnimationType();
+            _animationType = EAnimationType.PopupFromDown;
+        }
+
         protected override void OnClose()
         {
             base.OnClose();

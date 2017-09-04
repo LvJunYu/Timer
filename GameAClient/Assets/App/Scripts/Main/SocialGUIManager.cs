@@ -246,16 +246,6 @@ namespace GameA
             Instance.GetUI<UICtrlReward>().SetAbility(title, icon, closeCb);
         }
 
-        /// <summary>
-        /// 增加type类型成就的完成数
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="addCount"></param>
-        public static void AddAchievementCount(int type, int addCount)
-        {
-            Messenger<int, int>.Broadcast(EMessengerType.OnAddAchievementCount, type, addCount);
-        }
-
         public enum EMode
         {
             App,
