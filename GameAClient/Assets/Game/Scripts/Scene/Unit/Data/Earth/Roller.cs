@@ -22,11 +22,11 @@ namespace GameA.Game
 
         public override void UpdateExtraData()
         {
-            _rollerDirection = DataScene2D.Instance.GetUnitExtra(_guid).RollerDirection;
-            if (_animation != null)
-            {
-                _animation.Init(_rollerDirection == EMoveDirection.Left ? "LeftRun" : "RightRun");
-            }
+//            _rollerDirection = DataScene2D.Instance.GetUnitExtra(_guid).RollerDirection;
+//            if (_animation != null)
+//            {
+//                _animation.Init(_rollerDirection == EMoveDirection.Left ? "LeftRun" : "RightRun");
+//            }
             base.UpdateExtraData();
         }
 

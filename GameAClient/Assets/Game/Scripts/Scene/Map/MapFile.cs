@@ -274,13 +274,14 @@ namespace GameA.Game
         {
             var unitExtra = new UnitExtra();
             unitExtra.MoveDirection = (EMoveDirection)unitExtraInfo.MoveDirection;
-            unitExtra.RollerDirection = (EMoveDirection) unitExtraInfo.RollerDirection;
+            unitExtra.Active = (byte) unitExtraInfo.Active;
+            unitExtra.ChildId = (ushort) unitExtraInfo.ChildId;
+            unitExtra.ChildRotation = (byte) unitExtraInfo.ChildRotation;
+            unitExtra.RotateMode = (byte) unitExtraInfo.RotateMode;
+            unitExtra.RotateValue = (byte) unitExtraInfo.RotateValue;
+            unitExtra.TimeDelay =  (ushort) unitExtraInfo.TimeDelay;
+            unitExtra.TimeInterval = (ushort) unitExtraInfo.TimeInterval;
             unitExtra.Msg = unitExtraInfo.Msg;
-            unitExtra.UnitValue = (byte) unitExtraInfo.EnergyType;
-            if (unitExtraInfo.UnitChild != null)
-            {
-                unitExtra.Child = new UnitChild((ushort)unitExtraInfo.UnitChild.Id, (byte)unitExtraInfo.UnitChild.Rotation, (EMoveDirection)unitExtraInfo.UnitChild.MoveDirection);
-            }
             var unitDesc = new UnitDesc {Guid = index};
             DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
         }

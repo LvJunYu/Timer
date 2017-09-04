@@ -67,7 +67,7 @@ namespace GameA.Game
 
         public override void UpdateExtraData()
         {
-            _weaponId = DataScene2D.Instance.GetUnitExtra(_guid).UnitValue;
+            _weaponId = DataScene2D.Instance.GetUnitExtra(_guid).ChildId;
             SetWeapon(_weaponId);
             base.UpdateExtraData();
         }

@@ -179,22 +179,6 @@ namespace GameA.Game
                     bool effectFlag = false;
                     var oldUnitDesc = coverUnits[0];
                     var oldUnitExtra = DataScene2D.Instance.GetUnitExtra(oldUnitDesc.Guid);
-                    {
-                        if (EditHelper.CheckCanAddChild(stateData.CurrentMovingUnitBase.TableUnit, oldUnitDesc))
-                        {
-                            DataScene2D.Instance.ProcessUnitChild(oldUnitDesc,
-                                new UnitChild((ushort) stateData.CurrentMovingUnitBase.Id,
-                                    stateData.CurrentMovingUnitBase.Rotation,
-                                    stateData.CurrentMovingUnitBase.MoveDirection));
-                            var newUnitExtra = DataScene2D.Instance.GetUnitExtra(oldUnitDesc.Guid);
-                            recordBatch.RecordUpdateExtra(ref oldUnitDesc, ref oldUnitExtra, ref oldUnitDesc, ref newUnitExtra);
-                            if (boardData.CurrentTouchUnitDesc != UnitDesc.zero)
-                            {
-                                DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(boardData.CurrentTouchUnitDesc, recordBatch);
-                            }
-                            effectFlag = true;
-                        }
-                    }
                     if (!effectFlag)
                     {
                         for (int i = 0; i < coverUnits.Count; i++)
@@ -238,11 +222,6 @@ namespace GameA.Game
                         if (tableUnit.CanEdit(EEditType.MoveDirection))
                         {
                             extra.MoveDirection = (EMoveDirection)EditHelper.GetUnitOrigDirOrRot(tableUnit);
-                            DataScene2D.Instance.ProcessUnitExtra(unitDesc, extra);
-                        }
-                        else if (tableUnit.Id == UnitDefine.RollerId)
-                        {
-                            extra.RollerDirection = (EMoveDirection)EditHelper.GetUnitOrigDirOrRot(tableUnit);
                             DataScene2D.Instance.ProcessUnitExtra(unitDesc, extra);
                         }
                     }

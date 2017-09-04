@@ -61,6 +61,8 @@ namespace GameA.Game
 	                return TimeState.Length > 0;
 	            case EEditType.Text:
 	                return TextState > 0;
+	            case EEditType.Style:
+	                return Id == 4001;
 	        }
 	        return false;
 	    }

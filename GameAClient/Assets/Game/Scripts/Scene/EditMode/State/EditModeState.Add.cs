@@ -198,11 +198,6 @@ namespace GameA.Game
                         extra.MoveDirection = (EMoveDirection)EditHelper.GetUnitOrigDirOrRot(tableUnit);
                         DataScene2D.Instance.ProcessUnitExtra(unitDesc, extra);
                     }
-                    else if (tableUnit.Id == UnitDefine.RollerId)
-                    {
-                        extra.RollerDirection = (EMoveDirection)EditHelper.GetUnitOrigDirOrRot(tableUnit);
-                        DataScene2D.Instance.ProcessUnitExtra(unitDesc, extra);
-                    }
                     extra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
                     recordBatch.RecordAddUnit(ref unitDesc, ref extra);
                 }

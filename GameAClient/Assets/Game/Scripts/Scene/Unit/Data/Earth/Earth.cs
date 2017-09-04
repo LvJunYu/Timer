@@ -19,7 +19,7 @@ namespace GameA.Game
     {
         public override void UpdateExtraData()
         {
-            var v = DataScene2D.Instance.GetUnitExtra(_guid).UnitValue;
+            var v = DataScene2D.Instance.GetUnitExtra(_guid).ChildId;
             v = (byte) Mathf.Clamp(v, 1, 2);
             _assetPath = string.Format("{0}_{1}", _tableUnit.Model, v);
             if (_view != null)
