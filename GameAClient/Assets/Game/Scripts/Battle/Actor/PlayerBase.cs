@@ -123,28 +123,9 @@ namespace GameA.Game
                 return false;
             }
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
-            int slot = 0;
-            switch ((EWeaponInputType) tableEquipment.InputType)
-            {
-                case EWeaponInputType.None:
-                case EWeaponInputType.GetKey:
-                    _skillCtrl.RemoveSkill(skillId);
-                    if (!_skillCtrl.HasEmptySlot(out slot))
-                    {
-                        if (_skillCtrl.CurrentSkills[1].EWeaponInputType != EWeaponInputType.GetKey)
-                        {
-                            slot = 1;
-                        }
-                        else if (_skillCtrl.CurrentSkills[2].EWeaponInputType != EWeaponInputType.GetKey)
-                        {
-                            slot = 2;
-                        }
-                    }
-                    break;
-                case EWeaponInputType.GetKeyUp:
-                    slot = 1;
-                    break;
-            }
+            _skillCtrl.RemoveSkill(skillId);
+            int slot;
+            _skillCtrl.HasEmptySlot(out slot);
             if (!_skillCtrl.SetSkill(tableSkill.Id, (EWeaponInputType)tableEquipment.InputType, slot))
             {
                 return false;
@@ -154,14 +135,7 @@ namespace GameA.Game
                 var inputControl =  SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
                 if (inputControl != null)
                 {
-                    if (slot == 1)
-                    {
-                        inputControl.SetSkillBtn2Visible(true);
-                    }
-                    if (slot == 2)
-                    {
-                        inputControl.SetSkillBtn3Visible(true);
-                    }
+                    inputControl.SetSkillBtnVisible(slot, true);
                 }
             }
             _tableEquipments[slot] = tableEquipment;

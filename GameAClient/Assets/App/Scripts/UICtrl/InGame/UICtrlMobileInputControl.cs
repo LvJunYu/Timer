@@ -58,21 +58,30 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+            _cachedView.SkillBtn1.gameObject.SetActive(false);
             _cachedView.SkillBtn2.gameObject.SetActive(false);
             _cachedView.SkillBtn3.gameObject.SetActive(false);
             _cachedView.AssistBtn.gameObject.SetActive(false);
         }
-
-        public void SetSkillBtn2Visible(bool visible)
-        {
-            if (null == _cachedView) return;
-            _cachedView.SkillBtn2.gameObject.SetActive(visible);
-        }
         
-        public void SetSkillBtn3Visible(bool visible)
+        public void SetSkillBtnVisible(int slot , bool visible)
         {
-            if (null == _cachedView) return;
-            _cachedView.SkillBtn3.gameObject.SetActive(visible);
+            if (null == _cachedView)
+            {
+                return;
+            }
+            switch (slot)
+            {
+                case 0:
+                    _cachedView.SkillBtn1.gameObject.SetActive(visible);
+                    break;
+                case 1:
+                    _cachedView.SkillBtn2.gameObject.SetActive(visible);
+                    break;
+                case 2:
+                    _cachedView.SkillBtn3.gameObject.SetActive(visible);
+                    break;
+            }
         }
         
         public void SetAssistBtnVisible(bool visible)
@@ -103,7 +112,6 @@ namespace GameA
 //                bgIdx = 2;
 //                cdType = 1;
 //            }
-
             if (slot == 0)
             {
                 SetSkill1Type(bgIdx, cdType, tableSkill.Icon);
