@@ -11,7 +11,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlMail : UICtrlGenericBase<UIViewMail>
+    public class UICtrlMail : UICtrlAnimationBase<UIViewMail>
     {
         public List<UMCtrlMail> _cardList = new List<UMCtrlMail>();
         private int _startIndex = 0;
@@ -105,7 +105,10 @@ namespace GameA
             _groupId = (int)EUIGroupType.MainUI;
         }
 
-       
-
+        protected override void SetAnimationType()
+        {
+            base.SetAnimationType();
+            _animationType = EAnimationType.PopupFromUp;
+        }
     }
 }

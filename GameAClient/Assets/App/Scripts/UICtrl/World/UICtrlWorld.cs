@@ -11,7 +11,7 @@ using SoyEngine;
 namespace GameA
 {
     [UIAutoSetup]
-    public class UICtrlWorld : UICtrlGenericBase<UIViewWorld>
+    public class UICtrlWorld : UICtrlAnimationBase<UIViewWorld>
     {
         #region 常量与字段
         private EMenu _curMenu = EMenu.None;

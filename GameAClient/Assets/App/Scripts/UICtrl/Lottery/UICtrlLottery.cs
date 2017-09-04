@@ -15,7 +15,7 @@ using UnityEngine;
 namespace GameA
 {
     [UIAutoSetup]
-    public class UICtrlLottery : UICtrlGenericBase<UIViewLottery>
+    public class UICtrlLottery : UICtrlAnimationBase<UIViewLottery>
     {
         #region 常量与字段
 

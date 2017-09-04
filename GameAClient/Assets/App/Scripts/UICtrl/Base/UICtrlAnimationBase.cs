@@ -1,8 +1,6 @@
 ﻿using DG.Tweening;
-using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace GameA
 {
@@ -11,16 +9,18 @@ namespace GameA
     /// </summary>
     public abstract class UICtrlAnimationBase<T> : UICtrlGenericBase<T> where T : UIViewBase
     {
+//        private const string _maskSprite = "CommonWhite";
+//        private Mask _mask;
+//        private Image _maskImg;
+//        private bool _maskInitialState;
+//        private bool _maskImgInitialState;
         protected EAnimationType _animationType;
-        protected Vector3 _startPos;
-        private const string _maskSprite = "CommonWhite";
-        private float _screenHeight;
-        private float _screenWidth;
-        private Mask _mask;
-        private Image _image;
         protected Sequence _openSequence;
         protected Sequence _closeSequence;
-
+        protected Vector3 _startPos;
+        private float _screenHeight;
+        private float _screenWidth;
+        
         protected virtual void CreateSequences()
         {
             _openSequence = DOTween.Sequence();
@@ -85,11 +85,11 @@ namespace GameA
 
         private void OpenAnimation()
         {
-            _image.enabled = _mask.enabled = true;
+//            _maskImg.enabled = _mask.enabled = true;
             if (null == _openSequence)
             {
                 CreateSequences();
-                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(() => _openSequence.Restart()));
+                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(4,() => _openSequence.Restart()));
             }
             else
                 _openSequence.Restart();
@@ -97,7 +97,7 @@ namespace GameA
 
         private void CloseAnimation()
         {
-            _image.enabled = _mask.enabled = true;
+//            _maskImg.enabled = _mask.enabled = true;
             _cachedView.gameObject.SetActive(true);
             if (null == _closeSequence)
                 CreateSequences();
@@ -145,7 +145,8 @@ namespace GameA
         /// </summary> 
         protected virtual void OnOpenAnimationComplete()
         {
-//            _image.enabled = _mask.enabled = false;
+//            _mask.enabled = _maskInitialState;
+//            _maskImg.enabled = _maskImgInitialState;
         }
 
         /// <summary>
@@ -166,17 +167,29 @@ namespace GameA
             SetAnimationType();
             _startPos = GetStartPos();
             //由于部分UI超出屏幕范围（例如单人模式）,影响动画效果，用Mask遮住超出的部分
-            _mask = _cachedView.GetComponent<Mask>();
-            _image = _cachedView.GetComponent<Image>();
-            if (null == _mask)
-                _mask = _cachedView.gameObject.AddComponent<Mask>();
-            if (null == _image)
-            {
-                _image = _cachedView.gameObject.AddComponent<Image>();
-                _image.sprite = ResourcesManager.Instance.GetSprite(_maskSprite);
-                _image.raycastTarget = false;
-                _mask.showMaskGraphic = false;
-            }
+//            _mask = _cachedView.GetComponent<Mask>();
+//            _maskImg = _cachedView.GetComponent<Image>();
+//            if (null == _mask)
+//            {
+//                _maskInitialState = false;
+//                _mask = _cachedView.gameObject.AddComponent<Mask>();
+//            }
+//            else
+//            {
+//                _maskInitialState = _mask.enabled;
+//            }
+//            if (null == _maskImg)
+//            {
+//                _maskImgInitialState = false;
+//                _maskImg = _cachedView.gameObject.AddComponent<Image>();
+//                _maskImg.sprite = ResourcesManager.Instance.GetSprite(_maskSprite);
+//                _maskImg.raycastTarget = false;
+//                _mask.showMaskGraphic = false;
+//            }
+//            else
+//            {
+//                _maskImgInitialState = _maskImg.enabled;
+//            }
         }
 
         protected override void OnOpen(object parameter)
