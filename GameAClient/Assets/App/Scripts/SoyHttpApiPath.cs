@@ -98,6 +98,8 @@ namespace SoyEngine
         public const string WorldNewestProjectList = "/world/getNewestProjectList";
         // 推荐关卡
         public const string WorldRecommendProjectList = "/world/getRecommendProjectList";
+        // 下载关卡
+        public const string DownloadProject = "/world/downloadProject";
         // 录像
         public const string Record = "/record/get";
         // 用户道具数据
