@@ -54,6 +54,18 @@ namespace GameA
             SetMode(EWorkShopState.PersonalProject);
         }
 
+        protected override void SetAnimationType()
+        {
+            base.SetAnimationType();
+            _firstDelayFrames = 4;
+        }
+        
+        protected override void OnOpenAnimationUpdate()
+        {
+            base.OnOpenAnimationUpdate();
+            _cachedView.PrivateProjectsContent.anchoredPosition = Vector2.zero;
+        }
+
         protected override void InitEventListener()
         {
             base.InitEventListener();

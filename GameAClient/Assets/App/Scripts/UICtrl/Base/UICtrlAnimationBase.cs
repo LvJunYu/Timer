@@ -18,6 +18,7 @@ namespace GameA
         protected Sequence _openSequence;
         protected Sequence _closeSequence;
         protected Vector3 _startPos;
+        protected int _firstDelayFrames;//首次延迟帧数
         private float _screenHeight;
         private float _screenWidth;
         
@@ -89,7 +90,7 @@ namespace GameA
             if (null == _openSequence)
             {
                 CreateSequences();
-                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(4,() => _openSequence.Restart()));
+                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(_firstDelayFrames,() => _openSequence.Restart()));
             }
             else
                 _openSequence.Restart();
@@ -131,6 +132,7 @@ namespace GameA
         protected virtual void SetAnimationType()
         {
             _animationType = EAnimationType.PopupFromDown;
+            _firstDelayFrames = 1;
         }
         
         /// <summary>
