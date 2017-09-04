@@ -14,7 +14,7 @@ using SoyEngine;
 namespace GameA
 {
 	[UIAutoSetup]
-	public class UICtrlGameSetting:UICtrlGenericBase<UIViewGameSetting>
+	public class UICtrlGameSetting:UICtrlAnimationBase<UIViewGameSetting>
 	{
 
         private USCtrlGameSettingItem _showShadow;
@@ -78,7 +78,13 @@ namespace GameA
 			base.OnClose();
 		}
 
-        private void LoginOut()
+		protected override void SetAnimationType()
+		{
+			base.SetAnimationType();
+			_animationType = EAnimationType.PopupFromUp;
+		}
+
+		private void LoginOut()
         {
             RemoteCommands.Logout(1,
                 (ret) =>

@@ -130,7 +130,7 @@ namespace GameA
         /// </summary>
         protected virtual void SetAnimationType()
         {
-            _animationType = EAnimationType.None;
+            _animationType = EAnimationType.PopupFromDown;
         }
         
         /// <summary>

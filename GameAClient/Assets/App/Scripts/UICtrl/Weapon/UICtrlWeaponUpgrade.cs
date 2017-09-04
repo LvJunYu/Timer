@@ -11,7 +11,7 @@ using NewResourceSolution;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlWeaponUpgrade : UICtrlGenericBase<UIViewWeaponUpgrade>
+    public class UICtrlWeaponUpgrade : UICtrlAnimationBase<UIViewWeaponUpgrade>
     {
 
         #region Fields
