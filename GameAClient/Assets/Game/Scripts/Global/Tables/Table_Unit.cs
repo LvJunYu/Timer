@@ -101,35 +101,45 @@ namespace GameA.Game
 		[ColumnMapping("ModelAnchore")]
 		public int ModelAnchore;
 		/// <summary>
-        /// 父亲类别
+        /// 朝向
         /// </summary>
-		[ColumnMapping("ParentType")]
-		public int ParentType;
+		[ColumnMapping("Direction")]
+		public int Direction;
 		/// <summary>
-        /// 孩子类别
+        /// 朝向集合
         /// </summary>
-		[ColumnMapping("ChildType")]
-		public int ChildType;
+		[ColumnMapping("DirectionMask")]
+		public int DirectionMask;
 		/// <summary>
-        /// 初始移动方向
+        /// 移动
         /// </summary>
-		[ColumnMapping("OriginMoveDirection")]
-		public int OriginMoveDirection;
+		[ColumnMapping("MoveDirection")]
+		public int MoveDirection;
 		/// <summary>
-        /// 初始蓝石移动方向
+        /// 激活
         /// </summary>
-		[ColumnMapping("OriginMagicDirection")]
-		public int OriginMagicDirection;
+		[ColumnMapping("ActiveState")]
+		public int ActiveState;
 		/// <summary>
-        /// 移动方向集合
+        /// 装载
         /// </summary>
-		[ColumnMapping("MoveDirectionMask")]
-		public int MoveDirectionMask;
+		[ColumnMapping("ChildState")]
+		public int[] ChildState;
 		/// <summary>
-        /// 旋转方向集合
+        /// 旋转
         /// </summary>
-		[ColumnMapping("RotationMask")]
-		public int RotationMask;
+		[ColumnMapping("RotateState")]
+		public int RotateState;
+		/// <summary>
+        /// 时间状态
+        /// </summary>
+		[ColumnMapping("TimeState")]
+		public float[] TimeState;
+		/// <summary>
+        /// 文字
+        /// </summary>
+		[ColumnMapping("TextState")]
+		public int TextState;
 		/// <summary>
         /// 成对类别
         /// </summary>
@@ -140,16 +150,6 @@ namespace GameA.Game
         /// </summary>
 		[ColumnMapping("PairUnitIds")]
 		public int[] PairUnitIds;
-		/// <summary>
-        /// 行走音效
-        /// </summary>
-		[ColumnMapping("WalkAudioNames")]
-		public string[] WalkAudioNames;
-		/// <summary>
-        /// 行走特效
-        /// </summary>
-		[ColumnMapping("WalkEffectName")]
-		public string WalkEffectName;
 		/// <summary>
         /// 破坏音效
         /// </summary>
