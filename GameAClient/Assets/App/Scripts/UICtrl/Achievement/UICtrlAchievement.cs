@@ -88,7 +88,6 @@ namespace GameA
         {
             base.OnOpen(parameter);
             RefreshView();
-            _cachedView.Scrollbar.value = 1;
         }
 
         protected override void InitEventListener()
@@ -105,6 +104,12 @@ namespace GameA
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.PopUpUI;
+        }
+
+        protected override void OnOpenAnimationUpdate()
+        {
+            base.OnOpenAnimationUpdate();
+            _cachedView.Scrollbar.value = 1;
         }
     }
 }
