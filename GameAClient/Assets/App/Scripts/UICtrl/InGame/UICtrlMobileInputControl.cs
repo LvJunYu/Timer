@@ -88,21 +88,21 @@ namespace GameA
             if (0 > slot || slot > 2) return;
             int bgIdx = 0;
             int cdType = -1;
-            if (tableSkill.CostType == (int) ECostType.Magic)
+            if (tableSkill.InputType == (int) EWeaponInputType.GetKeyUp)
             {
                 bgIdx = 0;
                 cdType = 0;
             }
-            else if (tableSkill.CostType == (int) ECostType.Paint)
+            else if (tableSkill.InputType == (int) EWeaponInputType.GetKey)
             {
                 bgIdx = 1;
                 cdType = -1;
             }
-            else if (tableSkill.CostType == (int) ECostType.Rage)
-            {
-                bgIdx = 2;
-                cdType = 1;
-            }
+//            else if (tableSkill.InputType == (int) EWeaponInputType.Rage)
+//            {
+//                bgIdx = 2;
+//                cdType = 1;
+//            }
 
             if (slot == 0)
             {

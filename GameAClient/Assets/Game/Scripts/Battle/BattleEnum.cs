@@ -101,12 +101,11 @@ namespace GameA.Game
         End,
     }
 
-    public enum ECostType
+    public enum EWeaponInputType
     {
         None,
-        Paint,
-        Magic,
-        Rage
+        GetKey,
+        GetKeyUp,
     }
     
     public enum EMonsterState

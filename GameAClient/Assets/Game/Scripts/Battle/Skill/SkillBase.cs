@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using SoyEngine;
 using Spine.Unity.MeshGeneration;
 using UnityEngine;
@@ -21,11 +22,13 @@ namespace GameA.Game
         [SerializeField]
         protected EPaintType _epaintType;
 
-        protected ECostType _eCostType;
+        protected EWeaponInputType _eWeaponInputType;
         [SerializeField]
         protected UnitBase _owner;
         protected Table_Skill _tableSkill;
-        
+
+        protected int _totalBulletCount;
+        protected int _currentBulletCount;
         protected int _cdTime;
         protected int _chargeTime;
         protected int _singTime;
@@ -47,17 +50,14 @@ namespace GameA.Game
         [SerializeField]
         protected int _timerCD;
         protected int _timerCharge;
+        protected bool _startCharge;
         protected int _timerSing;
 
         protected int _damage;
 
-        protected int _energyTotal = 1000;
-        protected int _energyCost;
-        protected int _regenSpeed;
-        protected int _currentEnergy;
-        protected int _energyTimer;
-        
         protected List<Bullet> _bullets = new List<Bullet>();
+
+        protected int _fireTimer;
 
         public int Id
         {
@@ -89,14 +89,14 @@ namespace GameA.Game
             get { return _tableSkill; }
         }
 
-        public ECostType ECostType
+        public EWeaponInputType EWeaponInputType
         {
-            get { return _eCostType; }
+            get { return _eWeaponInputType; }
         }
 
-        public SkillBase(int id, UnitBase ower, ECostType eCostType)
+        public SkillBase(int id, UnitBase ower, EWeaponInputType eWeaponInputType)
         {
-            _eCostType = eCostType;
+            _eWeaponInputType = eWeaponInputType;
             _owner = ower;
             _tableSkill = TableManager.Instance.GetSkill(id);
             if (_tableSkill == null)
@@ -124,15 +124,17 @@ namespace GameA.Game
             }
             SetTimerCD(0);
             _cdTime = TableConvert.GetTime(_tableSkill.CDTime);
+            _chargeTime = TableConvert.GetTime(_tableSkill.ChargeTime);
             _singTime = TableConvert.GetTime(_tableSkill.SingTime);
             _castRange = TableConvert.GetRange(_tableSkill.CastRange);
             _projectileSpeed = TableConvert.GetSpeed(_tableSkill.ProjectileSpeed);
             _damage = _tableSkill.Damage;
-            _energyCost = _tableSkill.Cost;
-            _regenSpeed = _tableSkill.RegenSpeed;
-            SetEnergy(_energyTotal);
-            _timerSing = 0;
+            _totalBulletCount = _tableSkill.BulletCount;
+            _currentBulletCount = _totalBulletCount;
+            SetBullet(_totalBulletCount);
+            _timerCD = 0;
             _timerCharge = 0;
+            _timerSing = 0;
         }
 
         internal void SetValue(int cdTime, int castRange, int singTime = 0)
@@ -165,15 +167,22 @@ namespace GameA.Game
 
         public virtual void UpdateLogic()
         {
-            _energyTimer++;
-            if (_energyTimer == ConstDefineGM2D.FixedFrameCount)
+            if (_startCharge)
             {
-                SetEnergy(_currentEnergy + _regenSpeed);
-                _energyTimer = 0;
+                if (_timerCharge > 0)
+                {
+                    SetTimerCharge(_timerCharge - 1);
+                }
             }
             if (_timerCD > 0)
             {
                 SetTimerCD(_timerCD - 1);
+                if (_timerCD == 0 && !_startCharge)
+                {
+                    _startCharge = true;
+                    SetTimerCharge(_chargeTime);
+                    LogHelper.Debug("Start Charge..." + _startCharge);
+                }
             }
             if (_timerSing > 0)
             {
@@ -194,10 +203,9 @@ namespace GameA.Game
         
         public bool Fire()
         {
-            if (_energyCost > 0 && _currentEnergy < _energyCost)
+            if (_currentBulletCount <= 0)
             {
-                Messenger<string>.Broadcast(EMessengerType.GameLog, "魔法值不足");
-                LogHelper.Debug("Energy is not enough! {0} | {1}", _currentEnergy, _energyCost);
+                Messenger<string>.Broadcast(EMessengerType.GameLog, "弹药不足");
                 return false;
             }
             if (_timerCD > 0)
@@ -215,33 +223,21 @@ namespace GameA.Game
             {
                 OnSkillCast();
             }
-            SetEnergy(_currentEnergy - _energyCost);
+            SetBullet(_currentBulletCount - 1);
             return true;
         }
         
-        private void SetEnergy(int value)
+        private void SetBullet(int bulletCount)
         {
-            var mp = Mathf.Clamp(value, 0, _energyTotal);
-            if (_currentEnergy != mp)
+            var mp = Mathf.Clamp(bulletCount, 0, _totalBulletCount);
+            if (_currentBulletCount != mp)
             {
-                _currentEnergy = mp;
+                _currentBulletCount = mp;
+                _startCharge = _currentBulletCount == 0;
+                LogHelper.Debug("Start Charge..." + _startCharge);
+                SetTimerCharge(_chargeTime);
                 if (_owner != null)
                 {
-                    switch (_eCostType)
-                    {
-                        case ECostType.Magic:
-                            if (_owner.View != null)
-                            {
-                                _owner.View.StatusBar.SetMP(_currentEnergy, _energyTotal);
-                            }
-                            break;
-                        case ECostType.Rage:
-                            if (_owner.IsMain)
-                            {
-                                Messenger<float, float>.Broadcast(EMessengerType.OnSkill2CDChanged, _currentEnergy, _energyTotal);
-                            }
-                            break;
-                    }
                 }
             }
         }
@@ -253,9 +249,29 @@ namespace GameA.Game
                 return;
             }
             _timerCD = value;
-            if (_owner.IsMain && _eCostType == ECostType.Magic)
+            if (_owner.IsMain && _eWeaponInputType == EWeaponInputType.GetKeyUp)
             {
                 Messenger<float, float>.Broadcast(EMessengerType.OnSkill2CDChanged, _timerCD, _cdTime);
+            }
+        }
+        
+        private void SetTimerCharge(int value)
+        {
+            if (_timerCharge == value)
+            {
+                return;
+            }
+            _timerCharge = value;
+            if (_timerCharge == 0)
+            {
+                _currentBulletCount = _totalBulletCount;
+                _startCharge = false;
+                _timerCharge = _chargeTime;
+                LogHelper.Debug("Full");
+            }
+            if (_owner.IsMain && _eWeaponInputType == EWeaponInputType.GetKeyUp)
+            {
+                Messenger<float, float>.Broadcast(EMessengerType.OnSkill2CDChanged, _timerCharge, _chargeTime);
             }
         }
 

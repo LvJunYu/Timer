@@ -28,8 +28,8 @@ namespace GameA.Game
 		/// <summary>
         /// 触发类别
         /// </summary>
-		[ColumnMapping("CostType")]
-		public int CostType;
+		[ColumnMapping("InputType")]
+		public int InputType;
 		/// <summary>
         /// 生命值
         /// </summary>

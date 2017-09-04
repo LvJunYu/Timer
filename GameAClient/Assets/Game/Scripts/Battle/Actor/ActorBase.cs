@@ -304,9 +304,9 @@ namespace GameA.Game
                     {
                         continue;
                     }
-                    switch (skill.ECostType)
+                    switch (skill.EWeaponInputType)
                     {
-                            case ECostType.Paint:
+                            case EWeaponInputType.GetKey:
                                 if (_input.GetKeyApplied(_skillInputs[i]))
                                 {
                                     if (_skillCtrl.Fire(i))
@@ -316,8 +316,7 @@ namespace GameA.Game
                                     return;
                                 }
                                 break;
-                            case ECostType.Magic:
-                            case ECostType.Rage:
+                            case EWeaponInputType.GetKeyUp:
                                 if (IsPlayer)
                                 {
                                     if (_input.GetKeyUpApplied(_skillInputs[i]))

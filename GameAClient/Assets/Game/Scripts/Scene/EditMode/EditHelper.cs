@@ -375,7 +375,7 @@ namespace GameA.Game
 //                    DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
 //                }
 //            }
-            if (tableUnit.ChildState.Length > 0)
+            if (tableUnit.CanEdit(EEditType.Child))
             {
                 UnitExtra unitExtra;
                 if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))

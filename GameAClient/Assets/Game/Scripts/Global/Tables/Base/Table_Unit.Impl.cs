@@ -54,11 +54,11 @@ namespace GameA.Game
 	            case EEditType.Active:
 	                return ActiveState > 0;
 	            case EEditType.Child:
-	                return ChildState.Length > 0;
+	                return ChildState != null;
 	            case EEditType.Rotate:
 	                return RotateState > 0;
 	            case EEditType.Time:
-	                return TimeState.Length > 0;
+	                return TimeState != null;
 	            case EEditType.Text:
 	                return TextState > 0;
 	            case EEditType.Style:

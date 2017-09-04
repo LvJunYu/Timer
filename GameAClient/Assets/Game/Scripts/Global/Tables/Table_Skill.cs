@@ -26,20 +26,20 @@ namespace GameA.Game
 		[ColumnMapping("Damage")]
 		public int Damage;
 		/// <summary>
-        /// 消耗
+        /// 子弹数量
         /// </summary>
-		[ColumnMapping("Cost")]
-		public int Cost;
-		/// <summary>
-        /// 消耗品回复速度
-        /// </summary>
-		[ColumnMapping("RegenSpeed")]
-		public int RegenSpeed;
+		[ColumnMapping("BulletCount")]
+		public int BulletCount;
 		/// <summary>
         /// CD时间
         /// </summary>
 		[ColumnMapping("CDTime")]
 		public int CDTime;
+		/// <summary>
+        /// 充能时间
+        /// </summary>
+		[ColumnMapping("ChargeTime")]
+		public int ChargeTime;
 		/// <summary>
         /// 吟唱时间
         /// </summary>

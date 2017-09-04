@@ -124,31 +124,28 @@ namespace GameA.Game
             }
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
             int slot = 0;
-            switch ((ECostType) tableEquipment.CostType)
+            switch ((EWeaponInputType) tableEquipment.InputType)
             {
-                case ECostType.None:
-                case ECostType.Paint:
+                case EWeaponInputType.None:
+                case EWeaponInputType.GetKey:
                     _skillCtrl.RemoveSkill(skillId);
                     if (!_skillCtrl.HasEmptySlot(out slot))
                     {
-                        if (_skillCtrl.CurrentSkills[1].ECostType != ECostType.Paint)
+                        if (_skillCtrl.CurrentSkills[1].EWeaponInputType != EWeaponInputType.GetKey)
                         {
                             slot = 1;
                         }
-                        else if (_skillCtrl.CurrentSkills[2].ECostType != ECostType.Paint)
+                        else if (_skillCtrl.CurrentSkills[2].EWeaponInputType != EWeaponInputType.GetKey)
                         {
                             slot = 2;
                         }
                     }
                     break;
-                case ECostType.Magic:
+                case EWeaponInputType.GetKeyUp:
                     slot = 1;
                     break;
-                case ECostType.Rage:
-                    slot = 2;
-                    break;
             }
-            if (!_skillCtrl.SetSkill(tableSkill.Id, (ECostType)tableEquipment.CostType, slot))
+            if (!_skillCtrl.SetSkill(tableSkill.Id, (EWeaponInputType)tableEquipment.InputType, slot))
             {
                 return false;
             }
@@ -173,21 +170,6 @@ namespace GameA.Game
             CalculateMaxHp();
             OnHpChanged(_maxHp);
             ChangeGunView(slot);
-            if (tableEquipment.CostType == (int) ECostType.Magic)
-            {
-                _view.StatusBar.SetMPGrids(1000/tableSkill.Cost);
-            }
-            bool showMp = false;
-            for (int i = 0; i < _skillCtrl.CurrentSkills.Length; i++)
-            {
-                var skill = _skillCtrl.CurrentSkills[i];
-                if (skill != null && skill.ECostType == ECostType.Magic)
-                {
-                    showMp = true;
-                    break;
-                }
-            }
-            _view.StatusBar.SetMPActive(showMp);
             return true;
         }
 

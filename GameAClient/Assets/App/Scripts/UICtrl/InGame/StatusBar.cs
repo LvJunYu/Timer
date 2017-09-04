@@ -24,7 +24,6 @@ namespace GameA.Game
                 srs[i].sortingOrder = (int) ESortingOrder.DragingItem;
             }
             SetHPActive(false);
-            SetMPActive(false);
         }
 
         void Update()
@@ -84,15 +83,10 @@ namespace GameA.Game
         /// </summary>
         private static float s_healingTime = 0.3f;
 
-        private static int s_maxMPGridNum = 10;
-        private static int s_minMPGridNum = 1;
-
         private Transform _trans;
         public GameObject HPRoot;
-        public GameObject MPRoot;
         
         public Transform CurrentHPTrans;
-        public Transform CurrentMPTrans;
         public Transform HPBeforeHitTrans;
         public SpriteRenderer HPBeforeHitRenderer;
         public Transform HPAfterHealTrans;
@@ -132,16 +126,6 @@ namespace GameA.Game
             }
         }
 
-        private float MpPercentage
-        {
-//            get { return _mpPercentage; }
-            set
-            {
-                _mpPercentage = value;
-
-                CurrentMPTrans.localScale = new Vector3(_mpPercentage, 1);
-            }
-        }
         #endregion
         
         #region methods
@@ -149,11 +133,6 @@ namespace GameA.Game
         public void SetHPActive(bool value)
         {
             HPRoot.SetActive(value);
-        }
-        
-        public void SetMPActive(bool value)
-        {
-            MPRoot.SetActive(value);
         }
 
         public void SetHP (EHPModifyCase modifyCase, int current, int max)
@@ -191,52 +170,6 @@ namespace GameA.Game
             }
             HpPerccentage = current / (float)max;
         }
-
-        public void SetMP(int current, int max)
-        {
-            MpPercentage = current / (float)max;
-        }
-
-        public void SetMPGrids(int GridNum)
-        {
-            GridNum = Mathf.Clamp(GridNum, s_minMPGridNum, s_maxMPGridNum);
-            SeparatesRoot.localScale = new Vector3(10f / GridNum, 1f, 1f);
-            for (int i = 0; i < SeparatesGameObjects.Length; i++)
-            {
-                if (i < (GridNum - 1))
-                {
-                    SeparatesGameObjects[i].SetActive(true);
-                }
-                else
-                {
-                    SeparatesGameObjects[i].SetActive(false);
-                }
-            }
-        }
-
-//        /// <summary>
-//        ///能量条闪烁 
-//        /// </summary>
-//        public void EnergyFlash()
-//        {
-//            
-//        }
-
-//        /// <summary>
-//        ///能量减少 
-//        /// </summary>
-//        public void UseEnergy(int consumptionBySkill)
-//        {
-//
-//        }
-//
-//        /// <summary>
-//        ///能量回复 
-//        /// </summary>
-//        public void EnergyRecover(float percentagePerFrame)
-//        {
-//
-//        }
 
         #endregion
     }
