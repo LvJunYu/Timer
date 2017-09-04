@@ -1042,6 +1042,43 @@ namespace GameA
             );
         }
 
+        public static bool IsRequstingDownloadProject {
+            get { return _isRequstingDownloadProject; }
+        }
+        private static bool _isRequstingDownloadProject = false;
+        /// <summary>
+		/// 下载关卡
+		/// </summary>
+		/// <param name="projectId">关卡Id</param>
+        public static void DownloadProject (
+            long projectId,
+            Action<Msg_SC_CMD_DownloadProject> successCallback, Action<ENetResultCode> failedCallback,
+            UnityEngine.WWWForm form = null) {
+
+            if (_isRequstingDownloadProject) {
+                return;
+            }
+            _isRequstingDownloadProject = true;
+            Msg_CS_CMD_DownloadProject msg = new Msg_CS_CMD_DownloadProject();
+            // 下载关卡
+            msg.ProjectId = projectId;
+            NetworkManager.AppHttpClient.SendWithCb<Msg_SC_CMD_DownloadProject>(
+                SoyHttpApiPath.DownloadProject, msg, ret => {
+                    if (successCallback != null) {
+                        successCallback.Invoke(ret);
+                    }
+                    _isRequstingDownloadProject = false;
+                }, (failedCode, failedMsg) => {
+                    LogHelper.Error("Remote command error, msg: {0}, code: {1}, info: {2}", "DownloadProject", failedCode, failedMsg);
+                    if (failedCallback != null) {
+                        failedCallback.Invoke(failedCode);
+                    }
+                    _isRequstingDownloadProject = false;
+                },
+                form
+            );
+        }
+
         public static bool IsRequstingUseProps {
             get { return _isRequstingUseProps; }
         }

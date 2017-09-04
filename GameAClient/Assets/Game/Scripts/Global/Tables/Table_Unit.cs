@@ -123,8 +123,8 @@ namespace GameA.Game
 		/// <summary>
         /// 装载
         /// </summary>
-		[ColumnMapping("LoadState")]
-		public int[] LoadState;
+		[ColumnMapping("ChildState")]
+		public int[] ChildState;
 		/// <summary>
         /// 旋转
         /// </summary>
