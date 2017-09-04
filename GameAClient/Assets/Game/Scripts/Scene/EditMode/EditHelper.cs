@@ -366,24 +366,6 @@ namespace GameA.Game
         
         public static void InitUnitExtraEdit(UnitDesc unitDesc, Table_Unit tableUnit)
         {
-//            if (tableUnit.CanMove)
-//            {
-//                UnitExtra unitExtra;
-//                if (!TryGetUnitExtra(unitDesc.Guid, out unitExtra))
-//                {
-//                    unitExtra.MoveDirection = (EMoveDirection)tableUnit.OriginMoveDirection;
-//                    ProcessUnitExtra(unitDesc.Guid, unitExtra);
-//                }
-//            }
-//            if (tableUnit.Id == UnitDefine.RollerId)
-//            {
-//                UnitExtra unitExtra;
-//                if (!TryGetUnitExtra(unitDesc.Guid, out unitExtra))
-//                {
-//                    unitExtra.RollerDirection = EMoveDirection.Right;
-//                    ProcessUnitExtra(unitDesc.Guid, unitExtra);
-//                }
-//            }
 //            if (UnitDefine.IsEarth(tableUnit.Id))
 //            {
 //                UnitExtra unitExtra;
@@ -393,21 +375,12 @@ namespace GameA.Game
 //                    DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
 //                }
 //            }
-            if (tableUnit.LoadState.Length > 0)
+            if (tableUnit.ChildState.Length > 0)
             {
                 UnitExtra unitExtra;
                 if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
                 {
-                    unitExtra.UnitValue = _weaponTypes[0];
-                    DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
-                }
-            }
-            else if (UnitDefine.IsJet(tableUnit.Id))
-            {
-                UnitExtra unitExtra;
-                if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
-                {
-                    unitExtra.UnitValue = _weaponJetTypes[0];
+                    unitExtra.ChildId = (ushort) tableUnit.ChildState[0];
                     DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
                 }
             }
@@ -424,114 +397,106 @@ namespace GameA.Game
         {
             var context = new ProcessClickUnitOperationParam();
             context.UnitDesc = unitDesc;
-            context.TableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+            var tableUnit = context.TableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
             context.UnitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
-            if (context.TableUnit.CanEdit(EEditType.MoveDirection))
-            {
-                if (context.UnitExtra.MoveDirection != 0)
-                {
-                    return DoMove(ref context);
-                }
-            }
-            if (UnitDefine.IsWeaponPool(context.TableUnit.Id))
-            {
-                return DoWeapon(ref context);
-            }
-            if (UnitDefine.IsJet(context.TableUnit.Id))
-            {
-                return DoJet(ref context);
-            }
-            if (context.TableUnit.CanEdit(EEditType.Direction))
-            {
-                return DoRotate(ref context);
-            }
-            if (UnitDefine.IsHasText(context.UnitDesc.Id))
-            {
-                return DoAddMsg(ref context);
-            }
-            if (context.UnitDesc.Id == UnitDefine.RollerId)
-            {
-                return DoRoller(ref context);
-            }
-            if (UnitDefine.IsEarth(context.UnitDesc.Id))
-            {
-                return DoEarth(ref context);
-            }
+//            if (tableUnit.CanEdit(EEditType.MoveDirection))
+//            {
+//                if (context.UnitExtra.MoveDirection != EMoveDirection.None &&context.UnitExtra.MoveDirection != EMoveDirection.Static)
+//                {
+//                    return DoMove(ref context);
+//                }
+//            }
+//            if (tableUnit.CanEdit(EEditType.Child))
+//            {
+//                return DoWeapon(ref context);
+//            }
+//            if (tableUnit.CanEdit(EEditType.Direction))
+//            {
+//                return DoRotate(ref context);
+//            }
+//            if (tableUnit.CanEdit(EEditType.Text))
+//            {
+//                return DoAddMsg(ref context);
+//            }
+//            if (UnitDefine.IsEarth(context.UnitDesc.Id))
+//            {
+//                return DoEarth(ref context);
+//            }
             return false;
         }
         
-        private static bool DoWeapon(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
-        {
-            FindNextWeapon(ref processClickUnitOperationParam.UnitExtra.UnitValue, _weaponTypes);
-            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc, processClickUnitOperationParam.UnitExtra);
-            return true;
-        }
-
-        private static bool DoJet(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
-        {
-            FindNextWeapon(ref processClickUnitOperationParam.UnitExtra.UnitValue, _weaponJetTypes);
-            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc, processClickUnitOperationParam.UnitExtra);
-            return true;
-        }
-
-        private static bool DoAddMsg(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
-        {
-            SocialGUIManager.Instance.OpenUI<UICtrlGameItemAddMessage>(processClickUnitOperationParam.UnitDesc);
-            return false;
-        }
-
-        private static bool DoRotate(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
-        {
-            byte dir;
-            if (!CalculateNextDir(processClickUnitOperationParam.UnitDesc.Rotation,
-                processClickUnitOperationParam.TableUnit.DirectionMask, out dir))
-            {
-                return false;
-            }
-            processClickUnitOperationParam.UnitDesc.Rotation = dir;
-            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
-                processClickUnitOperationParam.UnitExtra);
-            return false;
-        }
-
-        private static bool DoRoller(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
-        {
-            byte dir;
-            if (!CalculateNextDir((byte) (processClickUnitOperationParam.UnitExtra.RollerDirection - 1), 10,
-                out dir))
-            {
-                return false;
-            }
-            processClickUnitOperationParam.UnitExtra.RollerDirection = (EMoveDirection) (dir + 1);
-            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
-                processClickUnitOperationParam.UnitExtra);
-            return true;
-        }
-
-        private static bool DoMove(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
-        {
-            byte dir;
-            if (!CalculateNextDir((byte) (processClickUnitOperationParam.UnitExtra.MoveDirection - 1),15, out dir))
-            {
-                return false;
-            }
-            processClickUnitOperationParam.UnitExtra.MoveDirection = (EMoveDirection) (dir + 1);
-            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
-                processClickUnitOperationParam.UnitExtra);
-            return true;
-        }
-
-        private static bool DoEarth(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
-        {
-            processClickUnitOperationParam.UnitExtra.UnitValue++;
-            if (processClickUnitOperationParam.UnitExtra.UnitValue > 2)
-            {
-                processClickUnitOperationParam.UnitExtra.UnitValue = 0;
-            }
-            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
-                processClickUnitOperationParam.UnitExtra);
-            return true;
-        }
+//        private static bool DoWeapon(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
+//        {
+//            FindNextWeapon(ref processClickUnitOperationParam.UnitExtra.UnitValue, _weaponTypes);
+//            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc, processClickUnitOperationParam.UnitExtra);
+//            return true;
+//        }
+//
+//        private static bool DoJet(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
+//        {
+//            FindNextWeapon(ref processClickUnitOperationParam.UnitExtra.UnitValue, _weaponJetTypes);
+//            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc, processClickUnitOperationParam.UnitExtra);
+//            return true;
+//        }
+//
+//        private static bool DoAddMsg(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
+//        {
+//            SocialGUIManager.Instance.OpenUI<UICtrlGameItemAddMessage>(processClickUnitOperationParam.UnitDesc);
+//            return false;
+//        }
+//
+//        private static bool DoRotate(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
+//        {
+//            byte dir;
+//            if (!CalculateNextDir(processClickUnitOperationParam.UnitDesc.Rotation,
+//                processClickUnitOperationParam.TableUnit.DirectionMask, out dir))
+//            {
+//                return false;
+//            }
+//            processClickUnitOperationParam.UnitDesc.Rotation = dir;
+//            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
+//                processClickUnitOperationParam.UnitExtra);
+//            return false;
+//        }
+//
+//        private static bool DoRoller(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
+//        {
+//            byte dir;
+//            if (!CalculateNextDir((byte) (processClickUnitOperationParam.UnitExtra.RollerDirection - 1), 10,
+//                out dir))
+//            {
+//                return false;
+//            }
+//            processClickUnitOperationParam.UnitExtra.RollerDirection = (EMoveDirection) (dir + 1);
+//            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
+//                processClickUnitOperationParam.UnitExtra);
+//            return true;
+//        }
+//
+//        private static bool DoMove(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
+//        {
+//            byte dir;
+//            if (!CalculateNextDir((byte) (processClickUnitOperationParam.UnitExtra.MoveDirection - 1), 15, out dir))
+//            {
+//                return false;
+//            }
+//            processClickUnitOperationParam.UnitExtra.MoveDirection = (EMoveDirection) (dir + 1);
+//            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
+//                processClickUnitOperationParam.UnitExtra);
+//            return true;
+//        }
+//
+//        private static bool DoEarth(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
+//        {
+//            processClickUnitOperationParam.UnitExtra.UnitValue++;
+//            if (processClickUnitOperationParam.UnitExtra.UnitValue > 2)
+//            {
+//                processClickUnitOperationParam.UnitExtra.UnitValue = 0;
+//            }
+//            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
+//                processClickUnitOperationParam.UnitExtra);
+//            return true;
+//        }
         
         private static void FindNextWeapon(ref ushort id, ushort[] weapons)
         {

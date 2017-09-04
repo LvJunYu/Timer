@@ -34,6 +34,7 @@ namespace GameA.Game
         Right = 2,
         Down = 3,
         Left = 4,
+        Static = 5,
     }
 
     public enum EAnimationType

@@ -48,19 +48,19 @@ namespace GameA.Game
 	        switch (editType)
 	        {
 	            case EEditType.Direction:
-	                return Direction > -1;
+	                return Direction > 0;
 	            case EEditType.MoveDirection:
-	                return MoveDirection > -1;
+	                return MoveDirection > 0;
 	            case EEditType.Active:
-	                return ActiveState > -1;
+	                return ActiveState > 0;
 	            case EEditType.Child:
-	                return LoadState[0] > -1;
+	                return ChildState.Length > 0;
 	            case EEditType.Rotate:
-	                return RotateState > -1;
+	                return RotateState > 0;
 	            case EEditType.Time:
-	                return TimeState[0] > -1;
+	                return TimeState.Length > 0;
 	            case EEditType.Text:
-	                return TextState > -1;
+	                return TextState > 0;
 	        }
 	        return false;
 	    }
