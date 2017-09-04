@@ -3,7 +3,6 @@ using SoyEngine;
 using System.Collections.Generic;
 using GameA.Game;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace GameA
 {

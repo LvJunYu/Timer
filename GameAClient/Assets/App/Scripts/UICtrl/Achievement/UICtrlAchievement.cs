@@ -1,7 +1,5 @@
 ﻿using SoyEngine;
 using System.Collections.Generic;
-using GameA.Game;
-using Random = UnityEngine.Random;
 
 namespace GameA
 {
@@ -14,41 +12,13 @@ namespace GameA
         private const int _maxAchievementNum = 40;
         private List<UMCtrlAchievementItem> _unFinishUMs;
         private List<UMCtrlAchievementItem> _finishUMs;
-        private Dictionary<int, AchievementStatisticItem> _allAchievements;
         private List<UMCtrlAchievementItem> _umCtrlAchievementItemCache;
-        private bool _hasInited;
-        
-        private void InitView()
-        {
-            //服务器成就数据
-            var achievementList = LocalUser.Instance.Achievement.StatisticList;
-            if (null == _allAchievements)
-                _allAchievements = new Dictionary<int, AchievementStatisticItem>(_maxAchievementNum);
-            var achievements = TableManager.Instance.Table_AchievementDic;
-            foreach (Table_Achievement value in achievements.Values)
-            {
-                AchievementStatisticItem achievementItem;
-                if (!_allAchievements.ContainsKey(value.Type))
-                {
-                    achievementItem = achievementList.Find(p => p.Type == value.Type);
-                    if(null==achievementItem)
-                    {
-                        //测试数据
-//                        long count = Random.Range(1, 10);
-                        achievementItem = new AchievementStatisticItem(value.Type, 1);
-                    }
-                    _allAchievements.Add(value.Type, achievementItem);
-                }
-                else
-                    achievementItem = _allAchievements[value.Type];
-                achievementItem.BuildLvDic(value.Level, value);
-            }
-            _hasInited = true;
-        }
+        private Dictionary<int, AchievementStatisticItem> _allAchievements;
 
         private void RefreshView()
         {
             if (!_isOpen) return;
+            _allAchievements = LocalUser.Instance.Achievement.AllAchievements;
             if (null == _unFinishUMs)
                 _unFinishUMs = new List<UMCtrlAchievementItem>(_maxAchievementNum);
             if (null == _finishUMs)
@@ -92,22 +62,6 @@ namespace GameA
             _umCtrlAchievementItemCache.Add(umCtrlAchievementItem);
             return umCtrlAchievementItem;
         }
-
-        private void AddAchievementCount(int type, int addCount)
-        {
-            if (!_hasInited)
-                InitView();
-            if (!_allAchievements.ContainsKey(type))
-            {
-                LogHelper.Error("Add achievement count but _allAchievements.ContainsKey(type) is false!");
-                return;
-            }
-            if (_allAchievements.ContainsKey(type))
-            {
-                _allAchievements[type].AddAchievementCount(addCount);
-                RefreshView();
-            }
-        }
         
         private void OnCloseBtn()
         {
@@ -118,19 +72,6 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
-//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
-//            LocalUser.Instance.Achievement.Request(LocalUser.Instance.UserGuid,
-//                () =>
-//                {
-//                    InitView();
-//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//                },
-//                code =>
-//                {
-//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//                    LogHelper.Error("Network error when get Achievement, {0}", code);
-//                });
-            InitView();
         }
 
         protected override void OnOpen(object parameter)
@@ -153,7 +94,12 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            RegisterEvent<int, int>(EMessengerType.OnAddAchievementCount, AddAchievementCount);
+            RegisterEvent(EMessengerType.OnAddAchievementCount, OnAddAchievementCount);
+        }
+
+        private void OnAddAchievementCount()
+        {
+            RefreshView();
         }
 
         protected override void SetAnimationType()

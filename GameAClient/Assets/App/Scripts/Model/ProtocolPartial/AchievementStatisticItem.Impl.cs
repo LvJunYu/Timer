@@ -2,7 +2,6 @@
 using System.Linq;
 using GameA.Game;
 using SoyEngine;
-using UnityEngine;
 
 namespace GameA
 {
@@ -78,7 +77,6 @@ namespace GameA
             if (null == _lvDic) return;
             while (_lvDic.ContainsKey(level) && Count >= _lvDic[level].Condition)
             {
-                Debug.Log(_lvDic[level].Name + "+" + addCount);
                 Messenger<Table_Achievement>.Broadcast(EMessengerType.OnAchieve, _lvDic[level]);
                 level++;
             }

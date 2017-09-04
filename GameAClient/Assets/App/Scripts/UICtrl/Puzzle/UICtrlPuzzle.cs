@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using GameA.Game;
-using System;
 
 namespace GameA
 {
@@ -259,6 +258,12 @@ namespace GameA
         {
             base.OnOpenAnimationComplete();
             _cachedView.PuzzleItemSrollRect.horizontal = true;
+        }
+
+        protected override void SetAnimationType()
+        {
+            base.SetAnimationType();
+            _animationType = EAnimationType.PopupFromDown;
         }
 
         private void OnFuncToggle(bool arg0)
