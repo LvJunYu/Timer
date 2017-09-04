@@ -7,6 +7,18 @@
 
 namespace GameA.Game
 {
+    public enum EEditType
+    {
+        None,
+        Direction,
+        MoveDirection,
+        Active,
+        Load,
+        Rotate,
+        Time,
+        Text
+    }
+    
     public enum EDirectionType : byte
     {
         Up,

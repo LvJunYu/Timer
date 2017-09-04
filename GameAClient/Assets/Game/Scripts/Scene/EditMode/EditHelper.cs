@@ -89,7 +89,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (tableUnit.CanRotate)
+            if (tableUnit.CanEdit(EEditType.Direction))
             {
                 unitDesc.Rotation = (byte)GetUnitOrigDirOrRot(tableUnit);
             }
@@ -119,13 +119,13 @@ namespace GameA.Game
             {
                 return (int)EMoveDirection.Right;
             }
-            if (table.CanMove)
+            if (table.CanEdit(EEditType.MoveDirection))
             {
-                return table.OriginMoveDirection;
+                return table.MoveDirection;
             }
-            if (table.CanRotate)
+            if (table.CanEdit(EEditType.Direction))
             {
-                return (int)EDirectionType.Right;
+                return table.Direction - 1;
             }
             return 0;
         }
@@ -135,17 +135,13 @@ namespace GameA.Game
             int current;
             if (!_unitOrigDirOrRot.TryGetValue(table.Id, out current))
             {
-                if (table.CanMove)
+                if (table.MoveDirection != -1)
                 {
-                    _unitOrigDirOrRot[table.Id] = table.OriginMoveDirection;
+                    _unitOrigDirOrRot[table.Id] = table.MoveDirection;
                 }
-                else if (table.CanRotate)
+                else if (table.Direction != -1)
                 {
-                    _unitOrigDirOrRot[table.Id] = (int)EDirectionType.Right;
-                }
-                else if (table.Id == UnitDefine.RollerId)
-                {
-                    _unitOrigDirOrRot[table.Id] = (int)EMoveDirection.Right;
+                    _unitOrigDirOrRot[table.Id] = table.Direction;
                 }
                 else
                 {
@@ -154,27 +150,18 @@ namespace GameA.Game
                 current = _unitOrigDirOrRot[table.Id];
             }
             byte newDir;
-            if (table.CanMove)
+            if (table.MoveDirection != -1)
             {
-                if (CalculateNextDir((byte) (current - 1), table.MoveDirectionMask, out newDir))
+                if (CalculateNextDir((byte) (current - 1), 15, out newDir))
                 {
                     _unitOrigDirOrRot[table.Id] = newDir + 1;
                 }
-                return;
             }
-            if (table.CanRotate)
+            else if (table.Direction != -1)
             {
-                if (CalculateNextDir((byte) (current), table.RotationMask, out newDir))
+                if (CalculateNextDir((byte) (current), table.DirectionMask, out newDir))
                 {
                     _unitOrigDirOrRot[table.Id] = newDir;
-                }
-                return;
-            }
-            if (table.Id == UnitDefine.RollerId)
-            {
-                if (CalculateNextDir((byte) (current - 1), 10, out newDir))
-                {
-                    _unitOrigDirOrRot[table.Id] = newDir + 1;
                 }
             }
         }
@@ -242,32 +229,9 @@ namespace GameA.Game
             {
                 return false;
             }
-            // check if parent and child in same group
-            if ((child.ChildType & tableParent.ParentType) == 0)
-            {
-                return false;
-            }
             return true;
         }
 
-        public static bool CheckCanBindMagic(Table_Unit child, UnitDesc parent)
-        {
-            if (child == null || parent == UnitDesc.zero)
-            {
-                return false;
-            }
-            Table_Unit tableParent = UnitManager.Instance.GetTableUnit(parent.Id);
-            if (tableParent == null)
-            {
-                return false;
-            }
-            if (child.Id == UnitDefine.BlueStoneId && tableParent.OriginMagicDirection != 0)
-            {
-                return true;
-            }
-            return false;
-        }
-        
         public static bool CheckMask(byte rotation,int mask)
         {
             return (mask & (byte)(1 << rotation)) != 0;
@@ -479,7 +443,7 @@ namespace GameA.Game
             context.UnitDesc = unitDesc;
             context.TableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
             context.UnitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
-            if (context.TableUnit.CanMove || context.TableUnit.OriginMagicDirection != 0)
+            if (context.TableUnit.CanEdit(EEditType.MoveDirection))
             {
                 if (context.UnitExtra.MoveDirection != 0)
                 {
@@ -494,7 +458,7 @@ namespace GameA.Game
             {
                 return DoJet(ref context);
             }
-            if (context.TableUnit.CanRotate)
+            if (context.TableUnit.CanEdit(EEditType.Direction))
             {
                 return DoRotate(ref context);
             }
@@ -537,7 +501,7 @@ namespace GameA.Game
         {
             byte dir;
             if (!CalculateNextDir(processClickUnitOperationParam.UnitDesc.Rotation,
-                processClickUnitOperationParam.TableUnit.RotationMask, out dir))
+                processClickUnitOperationParam.TableUnit.DirectionMask, out dir))
             {
                 return false;
             }
@@ -564,8 +528,7 @@ namespace GameA.Game
         private static bool DoMove(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
         {
             byte dir;
-            if (!CalculateNextDir((byte) (processClickUnitOperationParam.UnitExtra.MoveDirection - 1),
-                processClickUnitOperationParam.TableUnit.MoveDirectionMask, out dir))
+            if (!CalculateNextDir((byte) (processClickUnitOperationParam.UnitExtra.MoveDirection - 1),15, out dir))
             {
                 return false;
             }

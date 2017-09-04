@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-	public partial class Table_Unit
+    public partial class Table_Unit
 	{
         public virtual EColliderType EColliderType
         {
@@ -38,27 +38,31 @@ namespace GameA.Game
 			get { return (EUnitType) UnitType; }
 		}
 
-	    public bool CanRotate
-	    {
-	        get { return RotationMask != 0; }
-	    }
-
-        public bool CanMove
-        {
-            get { return OriginMoveDirection != 0; }
-        }
-
-	    /// <summary>
-	    /// 能否被蓝石控制
-	    /// </summary>
-	    public bool CanAddMagic
-	    {
-	        get { return OriginMagicDirection != 0; }
-	    }
-
 	    public EPairType EPairType
 	    {
 	        get { return (EPairType) PairType; }
+	    }
+
+	    public bool CanEdit(EEditType editType)
+	    {
+	        switch (editType)
+	        {
+	            case EEditType.Direction:
+	                return Direction > -1;
+	            case EEditType.MoveDirection:
+	                return MoveDirection > -1;
+	            case EEditType.Active:
+	                return ActiveState > -1;
+	            case EEditType.Load:
+	                return LoadState[0] > -1;
+	            case EEditType.Rotate:
+	                return RotateState > -1;
+	            case EEditType.Time:
+	                return TimeState[0] > -1;
+	            case EEditType.Text:
+	                return TextState > -1;
+	        }
+	        return false;
 	    }
 
 	    // 碰撞体偏移

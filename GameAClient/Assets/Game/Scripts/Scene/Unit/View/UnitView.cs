@@ -324,7 +324,7 @@ namespace GameA.Game
                     {
                         CreateDirTrans("M1Click");
                     }
-                    else if (tableUnit.CanRotate || tableUnit.Id == UnitDefine.RollerId)
+                    else if (tableUnit.CanEdit(EEditType.Direction) || tableUnit.Id == UnitDefine.RollerId)
                     {
                         CreateDirTrans("M1Move");
                     }
@@ -336,7 +336,7 @@ namespace GameA.Game
             }
             if (_dirTrans != null)
             {
-                if (tableUnit.CanRotate)
+                if (tableUnit.CanEdit(EEditType.Direction))
                 {
                     //Vector3 offset = GetRotationPosOffset();
                     _dirTrans.localEulerAngles = new Vector3(0, 0, GetRotation(_unit.UnitDesc.Rotation));

@@ -193,7 +193,7 @@ namespace GameA.Game
                 {
                     GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.EditLayItem);
                     UnitExtra extra = new UnitExtra();
-                    if (tableUnit.CanMove)
+                    if (tableUnit.CanEdit(EEditType.MoveDirection))
                     {
                         extra.MoveDirection = (EMoveDirection)EditHelper.GetUnitOrigDirOrRot(tableUnit);
                         DataScene2D.Instance.ProcessUnitExtra(unitDesc, extra);

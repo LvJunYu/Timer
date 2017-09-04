@@ -235,11 +235,6 @@ namespace GameA.Game
                     !IsBullet(tableUnit.Id)) || IsWeaponPool(tableUnit.Id) || tableUnit.Id == FinalDoorId;
         }
 
-        public static bool IsBlueStone(int id)
-        {
-            return BlueStoneId == id;
-        }
-
         public static bool IsRoller(int id)
         {
             return RollerId == id;

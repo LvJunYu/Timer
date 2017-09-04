@@ -12,7 +12,6 @@ namespace GameA.Game
 
             public class Data
             {
-                public EMode CurrentMode;
                 public UnitBase CurrentMovingUnitBase;
                 public Transform MovingRoot;
                 public Vector2 MousePos;
@@ -22,13 +21,6 @@ namespace GameA.Game
                 /// 正在拖拽的地块的Extra
                 /// </summary>
                 public UnitExtra DragUnitExtra;
-                
-                public enum EMode
-                {
-                    None,
-                    Normal,
-                    Magic,
-                }
             }
             
             public override bool CanRevertTo()
@@ -44,7 +36,6 @@ namespace GameA.Game
                     || null == stateData.CurrentMovingUnitBase)
                 {
                     boardData.DragInCurrentState = false;
-                    stateData.CurrentMode = Data.EMode.None;
                 }
                 else
                 {
@@ -60,15 +51,6 @@ namespace GameA.Game
                     }
                     stateData.MousePos = Input.mousePosition;
                     stateData.MouseActualPos = Input.mousePosition;
-                    if (UnitDefine.IsBlueStone(stateData.CurrentMovingUnitBase.Id))
-                    {
-                        stateData.CurrentMode = Data.EMode.Magic;
-                        OnEnterMagicMode();
-                    }
-                    else
-                    {
-                        stateData.CurrentMode = Data.EMode.Normal;
-                    }
                 }
             }
 
@@ -172,13 +154,6 @@ namespace GameA.Game
                     stateData.MovingRoot = null;
                 }
                 boardData.CurrentTouchUnitDesc = UnitDesc.zero;
-                if (stateData.CurrentMode == Data.EMode.Magic)
-                {
-                    OnExitMagicMode();
-                    EditMode.Instance.ChangeEditorLayer(EEditorLayer.None);
-                    EditMode.Instance.RevertEditorLayer();
-                }
-                stateData.CurrentMode = Data.EMode.None;
                 stateData.DragUnitExtra = UnitExtra.zero;
                 EditMode.Instance.StateMachine.RevertToPreviousState();
             }
@@ -204,30 +179,6 @@ namespace GameA.Game
                     bool effectFlag = false;
                     var oldUnitDesc = coverUnits[0];
                     var oldUnitExtra = DataScene2D.Instance.GetUnitExtra(oldUnitDesc.Guid);
-                    if (stateData.CurrentMode == Data.EMode.Magic)
-                    {
-                        if (EditHelper.CheckCanBindMagic(stateData.CurrentMovingUnitBase.TableUnit, coverUnits[0]))
-                        {
-                            Table_Unit tableTarget = UnitManager.Instance.GetTableUnit(oldUnitDesc.Id);
-                            var dragUnitExtra = stateData.DragUnitExtra;
-                            var newUnitExtra = oldUnitExtra;
-                            //绑定蓝石 如果方向允许就用蓝石方向，否则用默认初始方向。
-                            newUnitExtra.MoveDirection = EditHelper.CheckMask(
-                                (byte) (stateData.DragUnitExtra.MoveDirection - 1), 
-                                tableTarget.MoveDirectionMask)
-                                ? dragUnitExtra.MoveDirection
-                                : (EMoveDirection) tableTarget.OriginMagicDirection;
-                            //从而变成了蓝石控制的物体
-                            DataScene2D.Instance.ProcessUnitExtra(oldUnitDesc, newUnitExtra);
-                            recordBatch.RecordUpdateExtra(ref oldUnitDesc, ref oldUnitExtra, ref oldUnitDesc, ref newUnitExtra);
-                            if (boardData.CurrentTouchUnitDesc != UnitDesc.zero)
-                            {
-                                DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(boardData.CurrentTouchUnitDesc, recordBatch);
-                            }
-                            effectFlag = true;
-                        }
-                    }
-                    else
                     {
                         if (EditHelper.CheckCanAddChild(stateData.CurrentMovingUnitBase.TableUnit, oldUnitDesc))
                         {
@@ -284,7 +235,7 @@ namespace GameA.Game
                     }
                     else
                     {
-                        if (tableUnit.CanMove)
+                        if (tableUnit.CanEdit(EEditType.MoveDirection))
                         {
                             extra.MoveDirection = (EMoveDirection)EditHelper.GetUnitOrigDirOrRot(tableUnit);
                             DataScene2D.Instance.ProcessUnitExtra(unitDesc, extra);
@@ -310,44 +261,6 @@ namespace GameA.Game
                     }
                 }
                 CommitRecordBatch();
-            }
-
-            private void OnEnterMagicMode()
-            {
-                using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
-                {
-                    while (itor.MoveNext())
-                    {
-                        if (null != itor.Current.Value && null != itor.Current.Value.View)
-                        {
-                            if (!itor.Current.Value.TableUnit.CanAddMagic)
-                            {
-                                itor.Current.Value.View.SetRendererColor(MagicModeUnitMaskColor);
-                            }
-                            else
-                            {
-                                itor.Current.Value.View.SetRendererColor(Color.white);
-                            }
-                        }
-                    }
-                }
-            }
-
-            private void OnExitMagicMode()
-            {
-                using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
-                {
-                    while (itor.MoveNext())
-                    {
-                        if (null != itor.Current.Value && null != itor.Current.Value.View)
-                        {
-                            if (null != itor.Current.Value && null != itor.Current.Value.View)
-                            {
-                                itor.Current.Value.View.SetRendererColor(Color.white);
-                            }
-                        }
-                    }
-                }
             }
         }
     }

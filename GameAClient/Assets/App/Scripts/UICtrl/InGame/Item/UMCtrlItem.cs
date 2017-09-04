@@ -84,7 +84,7 @@ namespace GameA
                     var current = EditHelper.GetUnitOrigDirOrRot(_table);
                     EDirectionType rotate = EDirectionType.Up;
                     UnitExtra unitExtra = UnitExtra.zero;
-                    if (_table.CanRotate)
+                    if (_table.CanEdit(EEditType.Direction))
                     {
                         rotate = (EDirectionType) current;
                     }
@@ -131,7 +131,7 @@ namespace GameA
 
         private void OnItem()
         {
-            if (_table.CanRotate || _table.CanMove || _table.Id == UnitDefine.RollerId)
+            if (_table.CanEdit(EEditType.Direction) || _table.CanEdit(EEditType.MoveDirection))
             {
                 if (_selected)
                 {
@@ -167,7 +167,7 @@ namespace GameA
                 _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up*15;
 
                 // 除了主角，所有能旋转，能移动，还有传送带 都需要显示箭头
-                if (_table.CanRotate || _table.CanMove || _table.Id == UnitDefine.RollerId)
+                if (_table.CanEdit(EEditType.Direction) || _table.CanEdit(EEditType.MoveDirection))
                 {
                     _cachedView.Arrow.SetActive(true);
                     RefreshArrowRotation();
@@ -212,7 +212,7 @@ namespace GameA
                 _cachedView.ShadowTrans.localScale = Vector3.one * 0.7f;
 
                 // 除了主角，所有能旋转，能移动，还有传送带 都需要显示箭头
-                if (_table.CanRotate || _table.CanMove || _table.Id == UnitDefine.RollerId)
+                if (_table.CanEdit(EEditType.Direction) || _table.CanEdit(EEditType.MoveDirection))
                 {
                     _cachedView.Arrow.SetActive(true);
                     RefreshArrowRotation();
@@ -252,11 +252,11 @@ namespace GameA
         private void RefreshArrowRotation()
         {
             var current = EditHelper.GetUnitOrigDirOrRot(_table);
-            if (_table.CanMove || _table.Id == UnitDefine.RollerId)
+            if (_table.CanEdit(EEditType.MoveDirection))
             {
                 _cachedView.Arrow.transform.localEulerAngles = new Vector3(0, 0, -90 * (byte)(current - 1));
             }
-            else if (_table.CanRotate)
+            else if (_table.CanEdit(EEditType.Direction))
             {
                 _cachedView.Arrow.transform.localEulerAngles = new Vector3(0, 0, -90 * (byte)(current));
             }

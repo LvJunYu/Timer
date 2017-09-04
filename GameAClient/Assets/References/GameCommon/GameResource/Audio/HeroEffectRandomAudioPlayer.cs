@@ -25,7 +25,7 @@ namespace SoyEngine
 				return;
 			}
 		    var tableUnit = UnitManager.Instance.GetTableUnit(id);
-		    SetRandomAudioNameArray(tableUnit == null ? null : tableUnit.WalkAudioNames);
+//		    SetRandomAudioNameArray(tableUnit == null ? null : tableUnit.WalkAudioNames);
 		    _lastDownId = id;
 		}
 	}
