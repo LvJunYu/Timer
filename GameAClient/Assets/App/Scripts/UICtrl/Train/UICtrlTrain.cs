@@ -5,7 +5,6 @@ using NewResourceSolution;
 using SoyEngine.Proto;
 using UnityEngine;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
 
 namespace GameA
 {
@@ -46,12 +45,12 @@ namespace GameA
         private const string _lineName = "img_train_net_line";
         private const string _pointName = "img_train_net_point";
         private const int _maxPropertyCount = 5;
+        private UserTrainProperty _userTrainProperty;
         private UMCtrlTrainPropertyItem[] _propertyItems;
         private UMCtrlTrainPropertyInfo[] _propertyInfos;
         private TrainProperty[] _trainProperties;
-        private int _curGrade;
-        private int _curTrainPoint;
         private bool _isTraining;
+
         private TrainProperty _curTrainingProperty;
         private float _checkTime;
         private Vector4[] _map = new Vector4[_maxPropertyCount];
@@ -66,30 +65,18 @@ namespace GameA
         private int _curMinLv;
         private int _count;
         private float _angel;
-        
+
         private void CreateUmItems()
         {
             _angel = 90 - (180 - 360 / 5) / (float) 2;
-//            List<TrainProperty> userTrainProperty = LocalUser.Instance.UserTrainProperty.ItemDataList;
-            _curGrade = LocalUser.Instance.UserTrainProperty.Grade;
-            _curTrainPoint = LocalUser.Instance.UserTrainProperty.TrainPoint;
-            //临时数据
-            _curGrade = 1;
-            _curTrainPoint = 250;
+            _userTrainProperty = LocalUser.Instance.UserTrainProperty;
+            _trainProperties = _userTrainProperty.TrainProperties;
             //创建属性UMItem和UMInfo
-            _isTraining = false;
             _propertyItems = new UMCtrlTrainPropertyItem[_maxPropertyCount];
             _propertyInfos = new UMCtrlTrainPropertyInfo[_maxPropertyCount];
-            _trainProperties = new TrainProperty[_maxPropertyCount];
-            for (int i = 0; i < _maxPropertyCount; i++)
+            for (int i = 0; i < _trainProperties.Length; i++)
             {
-                //初始化属性数据
-//                int level = userTrainProperty[i].Level;
-                //临时数据
-                int level = Random.Range(1, 4);
-
-                _trainProperties[i] = new TrainProperty(i + 1, level, _curGrade);
-                _propertyItems[i] = new UMCtrlTrainPropertyItem(_trainProperties[i],this);
+                _propertyItems[i] = new UMCtrlTrainPropertyItem(_trainProperties[i]);
                 _propertyItems[i].Init(_cachedView.PropertyListRTF);
                 _propertyInfos[i] = new UMCtrlTrainPropertyInfo(_trainProperties[i]);
                 _propertyInfos[i].Init(_cachedView.InfoListRTF);
@@ -102,10 +89,11 @@ namespace GameA
         private void RefreshView()
         {
             if (!_isOpen) return;
-//            _cachedView.MapImg.SetActive(false);
+            _userTrainProperty = LocalUser.Instance.UserTrainProperty;
+            _trainProperties = _userTrainProperty.TrainProperties;
+            //判断是否在训练
             _isTraining = false;
             _curTrainingProperty = null;
-            //刷新属性
             for (int i = 0; i < _trainProperties.Length; i++)
             {
                 if (_trainProperties[i].IsTraining)
@@ -131,11 +119,12 @@ namespace GameA
             _cachedView.IsTraining.SetActive(_isTraining);
             _cachedView.PropertyListRTF.gameObject.SetActive(!_isTraining);
             //刷新拥有的培养点
-            _cachedView.OwnedTrainPointTxt.text = _curTrainPoint.ToString();
+            int grade = _userTrainProperty.Grade;
+            _cachedView.OwnedTrainPointTxt.text = grade.ToString();
             //刷新阶层Image
             for (int i = 0; i < _cachedView.GradeImgs.Length; i++)
             {
-                _cachedView.GradeImgs[i].SetActive(_curGrade == i + 1);
+                _cachedView.GradeImgs[i].SetActive(grade == i + 1);
             }
             //刷新Map
 //            RefreshMap();
@@ -187,15 +176,16 @@ namespace GameA
                 _propertyPosDic[i].Clear();
             }
             //若已打最大阶层，不产生点和线
-            if (_curGrade > _gradeMaxLv.Length)
+            int grade = _userTrainProperty.Grade;
+            if (grade > _gradeMaxLv.Length)
             {
                 _curMaxLv = _gradeMaxLv[_gradeMaxLv.Length - 1];
                 _curMinLv = _gradeMaxLv[_gradeMaxLv.Length - 1];
                 _count = 0;
                 return;
             }
-            _curMaxLv = _gradeMaxLv[_curGrade - 1];
-            _curMinLv = _curGrade == 1 ? 1 : _gradeMaxLv[_curGrade - 2];
+            _curMaxLv = _gradeMaxLv[grade - 1];
+            _curMinLv = grade == 1 ? 1 : _gradeMaxLv[grade - 2];
             _count = _curMaxLv - _curMinLv - 1;
             //设置等级分割点
             for (int i = 0; i < _count; i++)
@@ -230,7 +220,7 @@ namespace GameA
         private void OnUpgradeGradeBtn()
         {
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在升阶");
-            RemoteCommands.UpgradeTrainGrade(_curGrade + 1, res =>
+            RemoteCommands.UpgradeTrainGrade(_userTrainProperty.Grade + 1, res =>
             {
                 if (res.ResultCode == (int) EUpgradeTrainGradeCode.UTPG_Success)
                 {
@@ -266,7 +256,7 @@ namespace GameA
 
         private void RequestFinishUpgradeTrainProperty()
         {
-            if(!GameATools.CheckDiamond(_curTrainingProperty.FinishCostDiamond))return;
+            if (!GameATools.CheckDiamond(_curTrainingProperty.FinishCostDiamond)) return;
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "完成训练");
             RemoteCommands.CompleteUpgradeTrainProperty(_curTrainingProperty.Property, _curTrainingProperty.Level + 1,
                 _curTrainingProperty.RemainTrainingTimeMill, res =>
@@ -293,7 +283,7 @@ namespace GameA
         private void FinishUpgradeTrainProperty()
         {
             if (!_isTraining) return;
-            if(!GameATools.CheckDiamond(_curTrainingProperty.FinishCostDiamond))return;
+            if (!GameATools.CheckDiamond(_curTrainingProperty.FinishCostDiamond)) return;
             if (GameATools.LocalUseDiamond(_curTrainingProperty.FinishCostDiamond))
             {
                 _curTrainingProperty.FinishUpgrade();
@@ -308,22 +298,17 @@ namespace GameA
 
         private void UpgradeGrade()
         {
-            if(!CheckUpgradeGrade()) return;
-            _curGrade++;
-            for (int i = 0; i < _trainProperties.Length; i++)
-            {
-                _trainProperties[i].SetGrade(_curGrade);
-            }
-            Messenger.Broadcast(EMessengerType.OnUpgradeTrainGrade);
+            if (!CheckUpgradeGrade()) return;
+            _userTrainProperty.UpgradeGrade();
             //弹窗
             SocialGUIManager.ShowPopupDialog("恭喜您完成升阶！",
                 null,
                 new KeyValuePair<string, Action>("确定", () => { }));
         }
-        
+
         private bool CheckUpgradeGrade()
         {
-            if (_curGrade > _gradeMaxLv.Length)
+            if (_userTrainProperty.Grade > _gradeMaxLv.Length)
                 return false;
             for (int i = 0; i < _trainProperties.Length; i++)
             {
@@ -446,18 +431,6 @@ namespace GameA
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtn);
             _cachedView.UpgradeGradeBtn.onClick.AddListener(OnUpgradeGradeBtn);
             _cachedView.FinishImmediatelyBtn.onClick.AddListener(OnFinishImmediatelyBtn);
-//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
-//            LocalUser.Instance.UserTrainProperty.Request(LocalUser.Instance.UserGuid,
-//                () =>
-//                {
-//                    CreateUMItems();
-//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//                },
-//                code =>
-//                {
-//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-//                    LogHelper.Error("Network error when get UserTrainProperty, {0}", code);
-//                });
             CreateUmItems();
         }
 
@@ -465,7 +438,7 @@ namespace GameA
         {
             base.OnOpen(parameter);
             RefreshView();
-            LocalUser.Instance.Achievement.AddAchievementCount(1,1);
+            LocalUser.Instance.Achievement.AddAchievementCount(1, 1);
         }
 
         protected override void OnOpenAnimationUpdate()
@@ -490,26 +463,5 @@ namespace GameA
         {
             _groupId = (int) EUIGroupType.PopUpUI;
         }
-        
-        public bool CheckTrainPoint(int num)
-        {
-            if (_curTrainPoint < num)
-            {
-                SocialGUIManager.ShowPopupDialog("训练点数不够啦，还让不让玩啦！",
-                    null,
-                    new KeyValuePair<string, Action>("确定", () => { }));
-                return false;
-            }
-            return true;
-        }
-
-        public bool UseTrainPoint(int num)
-        {
-            if (_curTrainPoint < num)
-                return false;
-            _curTrainPoint -= num;
-            return true;
-        }
-
     }
 }

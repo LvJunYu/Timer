@@ -9,12 +9,12 @@ namespace GameA
     public class UMCtrlTrainPropertyItem : UMCtrlBase<UMViewTrainPropertyItem>
     {
         private TrainProperty _trainProperty;
-        private UICtrlTrain _uiCtrlTrain;
+        private UserTrainProperty _userTrainProperty;
 
-        public UMCtrlTrainPropertyItem(TrainProperty trainProperty, UICtrlTrain uiCtrlTrain)
+        public UMCtrlTrainPropertyItem(TrainProperty trainProperty)
         {
             _trainProperty = trainProperty;
-            _uiCtrlTrain = uiCtrlTrain;
+            _userTrainProperty = LocalUser.Instance.UserTrainProperty;
         }
 
         public void InitView(Sprite icon, string name)
@@ -49,7 +49,7 @@ namespace GameA
 
         private void RequestUpgradeProperty()
         {
-            if (!_uiCtrlTrain.CheckTrainPoint(_trainProperty.CostTrainPoint)) return;
+            if (!_userTrainProperty.CheckTrainPoint(_trainProperty.CostTrainPoint)) return;
             if (!GameATools.CheckGold(_trainProperty.CostGold)) return;
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "开始训练");
             RemoteCommands.UpgradeTrainProperty(_trainProperty.Property, _trainProperty.Level + 1, res =>
@@ -75,10 +75,10 @@ namespace GameA
 
         private void UpgradeProperty()
         {
-            if (!_uiCtrlTrain.CheckTrainPoint(_trainProperty.CostTrainPoint)) return;
+            if (!_userTrainProperty.CheckTrainPoint(_trainProperty.CostTrainPoint)) return;
             if (!GameATools.CheckGold(_trainProperty.CostGold)) return;
             if (GameATools.LocalUseGold(_trainProperty.CostGold) &&
-                _uiCtrlTrain.UseTrainPoint(_trainProperty.CostTrainPoint))
+                _userTrainProperty.UseTrainPoint(_trainProperty.CostTrainPoint))
                 _trainProperty.StartUpgrade();
         }
     }

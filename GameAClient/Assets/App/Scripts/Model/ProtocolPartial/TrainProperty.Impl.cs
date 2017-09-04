@@ -16,22 +16,41 @@ namespace GameA
             3, 6, 10, 15
         };
 
-        private int _curGrade;
+        private const int _maxLv = 15;
+        private UserTrainProperty _userTrainProperty;
         private Dictionary<int, Table_CharacterUpgrade> _lvDic;
+
+        private Dictionary<int, Table_CharacterUpgrade> LvDic
+        {
+            get
+            {
+                if (null == _lvDic)
+                {
+                    var table_CharacterUpgradeDic = TableManager.Instance.Table_CharacterUpgradeDic;
+                    _lvDic = new Dictionary<int, Table_CharacterUpgrade>(_maxLv);
+                    foreach (Table_CharacterUpgrade value in table_CharacterUpgradeDic.Values)
+                    {
+                        if (value.Property == (int) _property)
+                            _lvDic.Add(value.Level, value);
+                    }
+                }
+                return _lvDic;
+            }
+        }
 
         public int CostTrainPoint
         {
-            get { return _lvDic[NextLevel].DevelopPoint; }
+            get { return LvDic[NextLevel].DevelopPoint; }
         }
 
         public int CostGold
         {
-            get { return _lvDic[NextLevel].TrainingPrice; }
+            get { return LvDic[NextLevel].TrainingPrice; }
         }
 
         public int Time
         {
-            get { return _lvDic[NextLevel].TrainingTime; }
+            get { return LvDic[NextLevel].TrainingTime; }
         }
 
         public string TimeDesc
@@ -54,15 +73,18 @@ namespace GameA
         {
             get
             {
-                if (_curGrade > _gradeMaxLv.Length)
+                if (null == _userTrainProperty)
+                    _userTrainProperty = LocalUser.Instance.UserTrainProperty;
+                int grade = _userTrainProperty.Grade;
+                if (grade > _gradeMaxLv.Length)
                     return _gradeMaxLv[_gradeMaxLv.Length - 1];
-                return _gradeMaxLv[_curGrade - 1];
+                return _gradeMaxLv[grade - 1];
             }
         }
 
         public float Value
         {
-            get { return _lvDic[_level].Value; }
+            get { return LvDic[_level].Value; }
         }
 
         public string ValueDesc
@@ -72,7 +94,7 @@ namespace GameA
 
         public string NextValueDesc
         {
-            get { return GetValueString(_lvDic[NextLevel].Value); }
+            get { return GetValueString(LvDic[NextLevel].Value); }
         }
 
         public int RemainTrainingTime
@@ -97,21 +119,13 @@ namespace GameA
 
         public int FinishCostDiamond
         {
-            get { return (int) Math.Ceiling(RemainTrainingTime / (double) _lvDic[NextLevel].SecondsPerDiamond); }
+            get { return (int) Math.Ceiling(RemainTrainingTime / (double) LvDic[NextLevel].SecondsPerDiamond); }
         }
 
-        public TrainProperty(int propertyId, int level, int curGrade)
+        public TrainProperty(int propertyId, int level)
         {
             Property = (ETrainPropertyType) propertyId;
             Level = level;
-            _curGrade = curGrade;
-            var table_CharacterUpgradeDic = TableManager.Instance.Table_CharacterUpgradeDic;
-            _lvDic = new Dictionary<int, Table_CharacterUpgrade>(14);
-            foreach (Table_CharacterUpgrade value in table_CharacterUpgradeDic.Values)
-            {
-                if (value.Property == (int) _property)
-                    _lvDic.Add(value.Level, value);
-            }
         }
 
         public void FinishUpgrade()
@@ -126,11 +140,6 @@ namespace GameA
             _isTraining = true;
             _trainStartTime = DateTimeUtil.GetServerTimeNowTimestampMillis();
             Messenger.Broadcast(EMessengerType.OnUpgradeTrainProperty);
-        }
-
-        public void SetGrade(int grade)
-        {
-            _curGrade = grade;
         }
 
         private string GetValueString(float value)

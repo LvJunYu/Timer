@@ -25,8 +25,9 @@ namespace GameA
                 _finishUMs = new List<UMCtrlAchievementItem>(_maxAchievementNum);
             _unFinishUMs.Clear();
             _finishUMs.Clear();
+            CollectAllUMItems();
             //生成未完成成就
-            foreach(AchievementStatisticItem achievementStatisticItem in _allAchievements.Values)
+            foreach (AchievementStatisticItem achievementStatisticItem in _allAchievements.Values)
             {
                 if (achievementStatisticItem.NextLevel != null)
                 {
@@ -36,7 +37,7 @@ namespace GameA
                 }
             }
             //生成已完成成就
-            foreach(AchievementStatisticItem achievementStatisticItem in _allAchievements.Values)
+            foreach (AchievementStatisticItem achievementStatisticItem in _allAchievements.Values)
             {
                 if (achievementStatisticItem.FinishLevel != 0)
                 {
@@ -62,7 +63,16 @@ namespace GameA
             _umCtrlAchievementItemCache.Add(umCtrlAchievementItem);
             return umCtrlAchievementItem;
         }
-        
+
+        private void CollectAllUMItems()
+        {
+            if (null == _umCtrlAchievementItemCache) return;
+            for (int i = 0; i < _umCtrlAchievementItemCache.Count; i++)
+            {
+                _umCtrlAchievementItemCache[i].Collect();
+            }
+        }
+
         private void OnCloseBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlAchievement>();
@@ -76,19 +86,9 @@ namespace GameA
 
         protected override void OnOpen(object parameter)
         {
-            RefreshView();
             base.OnOpen(parameter);
-        }
-
-        protected override void OnClose()
-        {
-            base.OnClose();
-            _cachedView.AchievementScrollRect.vertical = false;
+            RefreshView();
             _cachedView.Scrollbar.value = 1;
-            for (int i = 0; i < _umCtrlAchievementItemCache.Count; i++)
-            {
-                _umCtrlAchievementItemCache[i].Collect();
-            }
         }
 
         protected override void InitEventListener()
@@ -100,19 +100,6 @@ namespace GameA
         private void OnAddAchievementCount()
         {
             RefreshView();
-        }
-
-        protected override void SetAnimationType()
-        {
-            base.SetAnimationType();
-            _animationType = EAnimationType.PopupFromDown;
-        }
-
-        protected override void OnOpenAnimationComplete()
-        {
-            base.OnOpenAnimationComplete();
-            _cachedView.AchievementScrollRect.vertical = true;
-            _cachedView.Scrollbar.value = 1;
         }
 
         protected override void InitGroupId()
