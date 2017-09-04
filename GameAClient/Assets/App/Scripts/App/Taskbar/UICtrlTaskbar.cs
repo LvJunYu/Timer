@@ -129,7 +129,7 @@ namespace GameA
                 case UIFunction.UI_SingleMode:
                     {
                         _cachedView.SingleMode.SetActiveEx(ifunlock);
-                        _cachedView.SingleModeDisable.SetActiveEx(!ifunlock);
+//                        _cachedView.SingleModeDisable.SetActiveEx(!ifunlock);
                         _singleModeAvailable = ifunlock;
 
                     }
@@ -138,7 +138,7 @@ namespace GameA
                 case UIFunction.UI_Friends:
                     {
                         _cachedView.Friends.SetActiveEx(ifunlock);
-                        _cachedView.FriendsDisable.SetActiveEx(!ifunlock);
+//                        _cachedView.FriendsDisable.SetActiveEx(!ifunlock);
                         _friendsAvailable = ifunlock;
 
                     }
@@ -146,42 +146,42 @@ namespace GameA
                 case UIFunction.UI_MailBox:
                     {
                         _cachedView.MailBox.SetActiveEx(ifunlock);
-                        _cachedView.MailBoxDisable.SetActiveEx(!ifunlock);
+//                        _cachedView.MailBoxDisable.SetActiveEx(!ifunlock);
                         _mailBoxAvailable = ifunlock;
                     }
                     break;
                 case UIFunction.UI_Puzzle:
                     {
                         _cachedView.Puzzle.SetActiveEx(ifunlock);
-                        _cachedView.PuzzleDisable.SetActiveEx(!ifunlock);
+//                        _cachedView.PuzzleDisable.SetActiveEx(!ifunlock);
                         _puzzleAvailable = ifunlock;
                     }
                     break;
                 case UIFunction.UI_Train:
                 {
                     _cachedView.Train.SetActiveEx(ifunlock);
-                    _cachedView.TrainDisable.SetActiveEx(!ifunlock);
+//                    _cachedView.TrainDisable.SetActiveEx(!ifunlock);
                     _puzzleAvailable = ifunlock;
                 }
                     break;
                 case UIFunction.UI_Achievement:
                 {
                     _cachedView.Achievement.SetActiveEx(ifunlock);
-                    _cachedView.AchievementDisable.SetActiveEx(!ifunlock);
+//                    _cachedView.AchievementDisable.SetActiveEx(!ifunlock);
                     _achievementAvailable = ifunlock;
                 }
                     break;
                 case UIFunction.UI_Workshop:
                     {
                         _cachedView.Workshop.SetActiveEx(ifunlock);
-                        _cachedView.WorkshopDisable.SetActiveEx(!ifunlock);
+//                        _cachedView.WorkshopDisable.SetActiveEx(!ifunlock);
                         _workshopAvailable = ifunlock;
                     }
                     break;
                 case UIFunction.UI_World:
                     {
                         _cachedView.World.SetActiveEx(ifunlock);
-                        _cachedView.WorldDisable.SetActiveEx(!ifunlock);
+//                        _cachedView.WorldDisable.SetActiveEx(!ifunlock);
                         _worldAvailable = ifunlock;
 
                     }
@@ -189,7 +189,7 @@ namespace GameA
                 case UIFunction.UI_Lottery:
                     {
                         _cachedView.Lottery.SetActiveEx(ifunlock);
-                        _cachedView.LotteryDisable.SetActiveEx(!ifunlock);
+//                        _cachedView.LotteryDisable.SetActiveEx(!ifunlock);
                         _lotteryAvailable = ifunlock;
                     }
                     break;

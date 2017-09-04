@@ -5,12 +5,10 @@
 ** Summary : UIViewTaskbar
 ***********************************************************************/
 
-using System;
-using System.Collections;
 using SoyEngine;
-using UnityEngine.UI;
-using UnityEngine;
 using Spine.Unity;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameA
 {
@@ -30,19 +28,19 @@ namespace GameA
         /// </summary>
 		public Button WorkshopButton;
 		public GameObject Workshop;
-		public GameObject WorkshopDisable;
+	//	public GameObject WorkshopDisable;
         /// <summary>
         /// 世界切换按钮
         /// </summary>
 		public Button WorldButton;
 		public GameObject World;
-		public GameObject WorldDisable;
+//		public GameObject WorldDisable;
         /// <summary>
         ///单人游戏按钮
         /// </summary>
 		public Button SingleModeButton;
 		public GameObject SingleMode;
-		public GameObject SingleModeDisable;
+//		public GameObject SingleModeDisable;
         /// <summary>
         /// 单人模式父物体，做动画用
         /// </summary>
@@ -58,27 +56,27 @@ namespace GameA
         /// </summary>
         public Button LotteryBtn;
         public GameObject Lottery;
-        public GameObject LotteryDisable;
+//        public GameObject LotteryDisable;
 
         public Button MailBoxBtn;
         public GameObject MailBox;
-        public GameObject MailBoxDisable;
+//        public GameObject MailBoxDisable;
 
         public Button FriendsBtn;
         public GameObject Friends;
-        public GameObject FriendsDisable;
+//        public GameObject FriendsDisable;
 
         public Button PuzzleBtn;
         public GameObject Puzzle;
-        public GameObject PuzzleDisable;
+//        public GameObject PuzzleDisable;
 
 	    public Button TrainBtn;
 	    public GameObject Train;
-	    public GameObject TrainDisable;
+//	    public GameObject TrainDisable;
 	    
 	    public Button AchievementBtn;
 	    public GameObject Achievement;
-	    public GameObject AchievementDisable;
+//	    public GameObject AchievementDisable;
         /// <summary>
         /// 人物动画
         /// </summary>
