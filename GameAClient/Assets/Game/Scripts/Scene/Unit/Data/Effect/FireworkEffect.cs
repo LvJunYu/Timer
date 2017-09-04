@@ -7,8 +7,7 @@ namespace GameA.Game
     {
         protected override void OnTrigger()
         {
-            LogHelper.Debug("FireworkEffect");
-            GameParticleManager.Instance.Emit("M1EffectYanHua", _trans);
+            SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().EmitUIParticle("M1EffectYanHua",5f, _trans.position);
         }
     }
 }

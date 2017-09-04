@@ -24,7 +24,7 @@ namespace GameA
                 SocialGUIManager.Instance.OpenUI<UICtrlGameScreenEffect>();
             }
             var uiparticle = GameParticleManager.Instance.EmitUIParticle(itemName, _cachedView.Trans, _groupId,
-                pos - (Vector3) _cachedView.Trans.anchoredPosition);
+               - pos - (Vector3) _cachedView.Trans.anchoredPosition);
             return uiparticle;
         }
 
@@ -35,7 +35,7 @@ namespace GameA
                 SocialGUIManager.Instance.OpenUI<UICtrlGameScreenEffect>();
             }
             var uiparticle = GameParticleManager.Instance.EmitUIParticle(itemName, _cachedView.Trans, _groupId,
-                lifeTime, pos - (Vector3) _cachedView.Trans.anchoredPosition);
+                lifeTime, - pos - (Vector3) _cachedView.Trans.anchoredPosition);
             return uiparticle;
         }
         
