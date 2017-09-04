@@ -293,13 +293,6 @@ namespace GameA.Game
             }
         }
 
-        public void ProcessUnitChild(UnitDesc unitDesc, UnitChild unitChild)
-        {
-            UnitExtra unitExtra = GetUnitExtra(unitDesc.Guid);
-            unitExtra.Child = unitChild;
-            ProcessUnitExtra(unitDesc, unitExtra);
-        }
-
         public void DeleteUnitExtra(IntVec3 guid)
         {
             if (_unitExtras.ContainsKey(guid))
@@ -647,20 +640,22 @@ namespace GameA.Game
                     modifyItemData.OrigData.Scale==null ? 1 : modifyItemData.OrigData.Scale.Y)
             );
             UnitExtra origExtra = new UnitExtra ();
-            origExtra.Child = new UnitChild (
-                (ushort)modifyItemData.OrigExtra.UnitChild.Id,
-                (byte)modifyItemData.OrigExtra.UnitChild.Rotation,
-                (EMoveDirection)modifyItemData.OrigExtra.UnitChild.MoveDirection
-            );
             origExtra.MoveDirection = (EMoveDirection)modifyItemData.OrigExtra.MoveDirection;
-            origExtra.RollerDirection = (EMoveDirection)modifyItemData.OrigExtra.RollerDirection;
-            OrigUnit = new UnitEditData (origDesc, origExtra);
-            UnitDesc modifiedDesc = new UnitDesc (
+            origExtra.Active = (byte) modifyItemData.OrigExtra.Active;
+            origExtra.ChildId = (ushort) modifyItemData.OrigExtra.ChildId;
+            origExtra.ChildRotation = (byte) modifyItemData.OrigExtra.ChildRotation;
+            origExtra.RotateMode = (byte) modifyItemData.OrigExtra.RotateMode;
+            origExtra.RotateValue = (byte) modifyItemData.OrigExtra.RotateValue;
+            origExtra.TimeDelay =  (ushort) modifyItemData.OrigExtra.TimeDelay;
+            origExtra.TimeInterval = (ushort) modifyItemData.OrigExtra.TimeInterval;
+
+            OrigUnit = new UnitEditData(origDesc, origExtra);
+            UnitDesc modifiedDesc = new UnitDesc(
                 modifyItemData.ModifiedData.Id,
                 new IntVec3(modifyItemData.ModifiedData.XMin, modifyItemData.ModifiedData.YMin, depth),
-                (byte)modifyItemData.ModifiedData.Rotation,
-                new Vector2(modifyItemData.ModifiedData.Scale== null ? 1 : modifyItemData.ModifiedData.Scale.X,
-                    modifyItemData.ModifiedData.Scale==null ? 1 : modifyItemData.ModifiedData.Scale.Y)
+                (byte) modifyItemData.ModifiedData.Rotation,
+                new Vector2(modifyItemData.ModifiedData.Scale == null ? 1 : modifyItemData.ModifiedData.Scale.X,
+                    modifyItemData.ModifiedData.Scale == null ? 1 : modifyItemData.ModifiedData.Scale.Y)
             );
             UnitExtra modifiedExtra;
             DataScene2D.Instance.TryGetUnitExtra (modifiedDesc.Guid, out modifiedExtra);

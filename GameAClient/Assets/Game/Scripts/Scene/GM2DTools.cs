@@ -404,10 +404,14 @@ namespace GameA.Game
             var res = new UnitExtraKeyValuePair();
             res.Guid = ToProto(index);
             res.MoveDirection = (byte)data.MoveDirection;
-            res.RollerDirection = (byte)data.RollerDirection;
+            res.Active = data.Active;
+            res.ChildId = data.ChildId;
+            res.ChildRotation = data.ChildRotation;
+            res.RotateMode = data.RotateMode;
+            res.RotateValue = data.RotateValue;
+            res.TimeDelay = data.TimeDelay;
+            res.TimeInterval = data.TimeInterval;
             res.Msg = data.Msg;
-            res.UnitChild = ToProto(data.Child);
-            res.EnergyType = data.UnitValue;
             return res;
         }
 
@@ -418,15 +422,6 @@ namespace GameA.Game
             guid.Y = value.y;
             guid.Z = value.z;
             return guid;
-        }
-
-        public static UnitChildProto ToProto(UnitChild value)
-        {
-            var unitChild = new UnitChildProto();
-            unitChild.Id = value.Id;
-            unitChild.Rotation = value.Rotation;
-            unitChild.MoveDirection = (byte)value.MoveDirection;
-            return unitChild;
         }
 
         public static PairUnitData ToProto(PairUnit pairUnit)

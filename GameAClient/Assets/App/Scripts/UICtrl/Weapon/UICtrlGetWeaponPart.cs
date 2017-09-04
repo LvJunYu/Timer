@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace GameA
 {
     [UIAutoSetup (EUIAutoSetupType.Add)]
-    public class UICtrlGetWeaponPart : UICtrlGenericBase<UIViewGetWeaponPart>
+    public class UICtrlGetWeaponPart : UICtrlAnimationBase<UIViewGetWeaponPart>
     {
 
         #region Fields

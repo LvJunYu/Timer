@@ -28,9 +28,6 @@ namespace GameA.Game
             (byte)EDirectionType.Left
         };
         
-        private static readonly ushort[] _weaponTypes = {101, 102, 103, 201, 202, 203};
-        private static readonly ushort[] _weaponJetTypes = {101, 102, 103};
-        
         /// <summary>
         /// 每个物体的初始旋转/移动方向，编辑状态下点击物品栏里的物体可以改变初始旋转/移动方向
         /// </summary>
@@ -218,20 +215,6 @@ namespace GameA.Game
             return _directionList[realIndex];
         }
         
-        public static bool CheckCanAddChild(Table_Unit child, UnitDesc parent)
-        {
-            if (child == null || parent == UnitDesc.zero)
-            {
-                return false;
-            }
-            Table_Unit tableParent = UnitManager.Instance.GetTableUnit(parent.Id);
-            if (tableParent == null)
-            {
-                return false;
-            }
-            return true;
-        }
-
         public static bool CheckMask(byte rotation,int mask)
         {
             return (mask & (byte)(1 << rotation)) != 0;
@@ -401,16 +384,16 @@ namespace GameA.Game
 //                    ProcessUnitExtra(unitDesc.Guid, unitExtra);
 //                }
 //            }
-            if (UnitDefine.IsEarth(tableUnit.Id))
-            {
-                UnitExtra unitExtra;
-                if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
-                {
-                    unitExtra.UnitValue = (byte) Random.Range(1, 3);
-                    DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
-                }
-            }
-            else if (UnitDefine.IsWeaponPool(tableUnit.Id))
+//            if (UnitDefine.IsEarth(tableUnit.Id))
+//            {
+//                UnitExtra unitExtra;
+//                if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
+//                {
+//                    unitExtra.UnitValue = (byte) Random.Range(1, 3);
+//                    DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
+//                }
+//            }
+            if (tableUnit.LoadState.Length > 0)
             {
                 UnitExtra unitExtra;
                 if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))

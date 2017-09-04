@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlSetProjectSize : UICtrlGenericBase<UIViewSetProjectSize>
+    public class UICtrlSetProjectSize : UICtrlAnimationBase<UIViewSetProjectSize>
     {
         #region Fields
         private static IntVec2 DefaultSelectedIdx = new IntVec2(2, 1);

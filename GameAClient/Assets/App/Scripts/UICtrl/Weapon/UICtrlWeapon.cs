@@ -11,7 +11,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlWeapon : UICtrlGenericBase<UIViewWeapon>
+    public class UICtrlWeapon : UICtrlAnimationBase<UIViewWeapon>
     {
         #region Fields
 

@@ -14,7 +14,7 @@ using UnityEngine.EventSystems;
 namespace GameA
 {
     [UIAutoSetup]
-    public class UICtrlWorkShop : UICtrlGenericBase<UIViewWorkShop>
+    public class UICtrlWorkShop : UICtrlAnimationBase<UIViewWorkShop>
     {
         #region 常量与字段
         /// <summary>

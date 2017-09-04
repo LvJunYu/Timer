@@ -4,7 +4,7 @@ using SoyEngine.Proto;
 namespace GameA
 {
     [UIAutoSetup]
-    public class UICtrlPublishProject : UICtrlGenericBase<UIViewPublishProject>
+    public class UICtrlPublishProject : UICtrlAnimationBase<UIViewPublishProject>
     {
         #region Fields
         private Project _project;

@@ -53,7 +53,7 @@ namespace GameA.Game
 	                return MoveDirection > -1;
 	            case EEditType.Active:
 	                return ActiveState > -1;
-	            case EEditType.Load:
+	            case EEditType.Child:
 	                return LoadState[0] > -1;
 	            case EEditType.Rotate:
 	                return RotateState > -1;

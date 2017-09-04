@@ -6,7 +6,7 @@ using SoyEngine.Proto;
 namespace GameA
 {
     [UIAutoSetup]
-    public class UICtrlAdvLvlDetail : UICtrlGenericBase<UIViewAdvLvlDetail>
+    public class UICtrlAdvLvlDetail : UICtrlAnimationBase<UIViewAdvLvlDetail>
     {
         #region Fields
         private USCtrlAdvLvlDetailInfo _infoPanel;

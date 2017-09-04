@@ -3,7 +3,7 @@
 namespace GameA
 {
     [UIAutoSetup]
-    public class UICtrlProjectDetail : UICtrlGenericBase<UIViewProjectDetail>
+    public class UICtrlProjectDetail : UICtrlAnimationBase<UIViewProjectDetail>
     {
         #region Fields
         private Project _project;
