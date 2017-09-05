@@ -230,10 +230,10 @@ namespace GameA.Game
         
         private void SetBullet(int bulletCount)
         {
-            var mp = Mathf.Clamp(bulletCount, 0, _totalBulletCount);
-            if (_currentBulletCount != mp)
+            var count = Mathf.Clamp(bulletCount, 0, _totalBulletCount);
+            if (_currentBulletCount != count)
             {
-                _currentBulletCount = mp;
+                _currentBulletCount = count;
                 _startCharge = _currentBulletCount == 0;
                 LogHelper.Debug("Start Charge..." + _startCharge);
                 SetTimerCharge(_chargeTime);
