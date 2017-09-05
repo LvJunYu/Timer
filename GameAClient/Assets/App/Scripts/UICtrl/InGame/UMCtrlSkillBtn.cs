@@ -1,12 +1,15 @@
 ﻿using GameA.Game;
 using NewResourceSolution;
+using SoyEngine;
 
 namespace GameA
 {
     public class UMCtrlSkillBtn : UMCtrlBase<UMViewSkillBtn>
     {
         private int _curBulletCount;
-        private int _totalBulletCount;
+        private UIParticleItem _fullParticleItem;
+        private bool _press;
+        private Table_Equipment _curTableEquipment;
 
         public UMViewSkillBtn CachedView
         {
@@ -16,6 +19,7 @@ namespace GameA
         public void SetData(Table_Equipment tableSkill)
         {
             if (null == _cachedView) return;
+            _curTableEquipment = tableSkill;
             int bgIndex = tableSkill.InputType - 1;
             for (int i = 0; i < _cachedView.BtnColorBgs.Length; i++)
             {
@@ -23,12 +27,16 @@ namespace GameA
             }
             _cachedView.BtnIcon.sprite = ResourcesManager.Instance.GetSprite(tableSkill.Icon);
             _cachedView.BtnIcon.gameObject.SetActive(true);
+            if (_curTableEquipment.InputType == (int) EWeaponInputType.GetKeyUp)
+                PlayFullParticle(true);
         }
 
         public void OnSkillCDTime(float leftTime, float totalTime)
         {
             _cachedView.BtnCD1.fillAmount = leftTime / totalTime;
             _cachedView.TimeTxt.text = GetTimeString(leftTime);
+            if (_press)
+                _press = false;
         }
 
         public void OnSkillChargeTime(float leftTime, float totalTime)
@@ -45,20 +53,52 @@ namespace GameA
                 _cachedView.TimeTxt.text = "";
                 _cachedView.BtnCD2.fillAmount = 1 - leftTime / totalTime;
             }
+            if (_press)
+                _press = false;
         }
 
         private string GetTimeString(float value)
         {
-            value = value * ConstDefineGM2D.FixedDeltaTime; 
+            value = value * ConstDefineGM2D.FixedDeltaTime;
             if (value < 0.1f)
                 return "";
-            return string.Format("{0:f1}",value);
+            return string.Format("{0:f1}", value);
+        }
+
+        private void PlayClickParticle()
+        {
+            GameParticleManager.Instance.EmitUIParticle("UIEffectClickSmall",
+                _cachedView.SkillBtn.transform, (int) EUIGroupType.InputCtrl, 0.5f);
+        }
+
+        private void PlayFullParticle(bool play)
+        {
+            if (play)
+            {
+                if (null == _fullParticleItem)
+                    _fullParticleItem = GameParticleManager.Instance.EmitUIParticle("UIEffectSkillFull",
+                        _cachedView.SkillBtn.transform, (int) EUIGroupType.InputCtrl);
+                else
+                    _fullParticleItem.Particle.Play();
+            }
+            else
+            {
+                if (_fullParticleItem != null && _fullParticleItem.Particle.IsPlaying)
+                    _fullParticleItem.Particle.Stop();
+            }
         }
 
         public void OnSkillBulletChanged(int leftCount, int totalCount)
         {
             _curBulletCount = leftCount;
-            _totalBulletCount = totalCount;
+            //连射不会触发点击特效
+            if (!_press && leftCount < totalCount)
+            {
+                PlayClickParticle();
+                _press = true;
+            }
+            if (_curTableEquipment.InputType == (int) EWeaponInputType.GetKeyUp)
+                PlayFullParticle(leftCount == totalCount);
         }
     }
 }
