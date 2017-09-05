@@ -11,7 +11,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlShopingCart : UICtrlGenericBase<UIViewShopingCart>
+    public class UICtrlShopingCart : UICtrlAnimationBase<UIViewShopingCart>
     {
         #region 常量与字段
         /// <summary>

@@ -47,7 +47,8 @@ namespace GameA
         protected override void OnOpen (object parameter)
         {
             base.OnOpen (parameter);
-            if (!LocalUser.Instance.PersonalProjectList.IsInited)
+            if (!LocalUser.Instance.PersonalProjectList.IsInited
+                || LocalUser.Instance.PersonalProjectList.IsDirty)
             {
                 LocalUser.Instance.PersonalProjectList.Request();
             }

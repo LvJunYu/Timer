@@ -20,7 +20,7 @@ using GameA.Game;
 namespace GameA
 {
     [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlFashionShopMainMenu : UICtrlGenericBase<UIViewFashionShopMainMenu>
+    public class UICtrlFashionShopMainMenu : UICtrlAnimationBase<UIViewFashionShopMainMenu>
     {
         #region 常量与字段
         private USCtrlFashionShop _usctrlFashionPage1;

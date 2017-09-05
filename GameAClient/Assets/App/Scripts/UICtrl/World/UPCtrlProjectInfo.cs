@@ -14,6 +14,7 @@ namespace GameA
         #region 常量与字段
         private Project _content;
         private bool _isRequestFavorite;
+        private bool _isRequestDownload;
         private UserInfoDetail _userInfoDetail;
         #endregion
 
@@ -51,8 +52,8 @@ namespace GameA
             DictionaryTools.SetContentText(_cachedView.Desc, "-");
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.UserIcon, _cachedView.DefaultCoverTexture);
             ImageResourceManager.Instance.SetDynamicImageDefault(_cachedView.Cover, _cachedView.DefaultCoverTexture);
-            _cachedView.FavoriteBtn.gameObject.SetActive(false);
-            _cachedView.UnfavoriteBtn.gameObject.SetActive(false);
+            _cachedView.FavoriteBtnDock.SetActiveEx(false);
+            _cachedView.DownloadBtnDock.SetActiveEx(false);
         }
 
         private void RefreshView()
@@ -71,15 +72,23 @@ namespace GameA
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserIcon, u.HeadImgUrl, _cachedView.DefaultCoverTexture);
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, p.IconPath, _cachedView.DefaultCoverTexture);
             RefreshFavoriteBtnView();
-            
+            RefreshDownloadBtnView();
         }
 
         private void RefreshFavoriteBtnView()
         {
+            _cachedView.FavoriteBtnDock.SetActiveEx(true);
             bool favorite = _content.ProjectUserData != null && _content.ProjectUserData.Favorite;
             _cachedView.FavoriteBtn.SetActiveEx(!favorite);
             _cachedView.UnfavoriteBtn.SetActiveEx(favorite);
             DictionaryTools.SetContentText(_cachedView.FavoriteCount, _content.FavoriteCount.ToString());
+        }
+
+        private void RefreshDownloadBtnView()
+        {
+            _cachedView.DownloadBtnDock.SetActiveEx(true);
+            DictionaryTools.SetContentText(_cachedView.DownloadCount,
+                _content.ExtendReady ? _content.ExtendData.DownloadCount.ToString() : "0");
         }
 
         public void OnChangeToApp()
@@ -107,6 +116,7 @@ namespace GameA
             {
                 return;
             }
+            _isRequestFavorite = true;
             Project requestP = _content;
             requestP.UpdateFavorite(favorite, () => {
                 if (_content != null && _content.ProjectId == requestP.ProjectId) {
@@ -116,6 +126,36 @@ namespace GameA
             }, code=>{
                 if (_content != null && _content.ProjectId == requestP.ProjectId) {
                     _isRequestFavorite = false;
+                    RefreshFavoriteBtnView();
+                }
+            });
+        }
+
+        private void RequestDownloadProject()
+        {
+            if (_content == null)
+            {
+                return;
+            }
+            if (_isRequestDownload)
+            {
+                return;
+            }
+            _isRequestDownload = true;
+            Project requestP = _content;
+            _content.DownloadProject(() =>
+            {
+                if (_content != null && _content.ProjectId == requestP.ProjectId)
+                {
+                    _isRequestDownload = false;
+                    RefreshDownloadBtnView();
+                    SocialGUIManager.ShowPopupDialog("关卡下载成功，请到工坊查看");
+                }
+            }, code =>
+            {
+                if (_content != null && _content.ProjectId == requestP.ProjectId)
+                {
+                    _isRequestDownload = false;
                     RefreshFavoriteBtnView();
                 }
             });
@@ -147,6 +187,12 @@ namespace GameA
             _cachedView.FavoriteBtn.onClick.AddListener(OnFavoriteBtnClick);
             _cachedView.UnfavoriteBtn.onClick.AddListener(OnUnFavoriteBtnClick);
             _cachedView.PlayBtn.onClick.AddListener(OnPlayBtnClick);
+            _cachedView.DownloadBtn.onClick.AddListener(OnDownloadBtnClick);
+        }
+
+        private void OnDownloadBtnClick()
+        {
+            RequestDownloadProject();
         }
 
         private void OnFavoriteBtnClick()
