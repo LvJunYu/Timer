@@ -239,7 +239,7 @@ namespace GameA.Game
                 SetTimerCharge(_chargeTime);
                 if (_owner.IsMain)
                 {
-                    Messenger<int, float, float>.Broadcast(EMessengerType.OnSkillBulletChanged, _slot, _currentBulletCount, _totalBulletCount);
+                    Messenger<int, int, int>.Broadcast(EMessengerType.OnSkillBulletChanged, _slot, _currentBulletCount, _totalBulletCount);
                 }
             }
         }
