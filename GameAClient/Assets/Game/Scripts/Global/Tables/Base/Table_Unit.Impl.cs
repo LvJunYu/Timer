@@ -43,6 +43,46 @@ namespace GameA.Game
 	        get { return (EPairType) PairType; }
 	    }
 
+	    public EDirectionType DefaultDirection
+	    {
+	        get
+	        {
+	            return (EDirectionType) (Direction - 1);
+	        }
+	    }
+
+	    public EMoveDirection DefaultMoveDirection
+	    {
+	        get
+	        {
+	            if (MoveDirection == 5)
+	            {
+	                return EMoveDirection.None;
+	            }
+	            return (EMoveDirection) (MoveDirection - 1);
+	        }
+	    }
+
+	    public EActiveState DefaultActiveState
+	    {
+	        get
+	        {
+	            return (EActiveState) (ActiveState - 1);
+	        }
+	    }
+
+	    public ERotateType DefaultRotateType
+	    {
+	        get
+	        {
+	            if (RotateState == 3)
+	            {
+	                return ERotateType.None;
+	            }
+		        return (ERotateType) (RotateState - 1);
+	        }
+	    }
+
 	    public bool CanEdit(EEditType editType)
 	    {
 	        switch (editType)
