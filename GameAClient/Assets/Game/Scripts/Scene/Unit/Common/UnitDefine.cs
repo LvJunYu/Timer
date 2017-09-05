@@ -239,5 +239,10 @@ namespace GameA.Game
         {
             return RollerId == id;
         }
+
+        public static bool UseRayBullet(int id)
+        {
+            return IsPaintBullet(id) || id == 10006;
+        }
     }
 }

@@ -22,7 +22,6 @@ namespace GameA.Game
         protected UnityNativeParticleItem _lazerEffect;
         protected UnityNativeParticleItem _lazerEffectEnd;
         
-        protected int _angle;
         protected Vector2 _direction;
         protected int _distance;
         protected IntVec2 _borderCenterPoint;
@@ -52,7 +51,6 @@ namespace GameA.Game
         private void Calculate()
         {
             _distance = ConstDefineGM2D.MaxMapDistance;
-            _angle = GetAngle();
             _direction = GM2DTools.GetDirection(_angle);
 //            _borderCenterPoint = (_pointA + _pointB) / 2;
         }

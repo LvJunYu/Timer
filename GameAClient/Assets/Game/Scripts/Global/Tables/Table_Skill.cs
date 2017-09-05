@@ -106,6 +106,16 @@ namespace GameA.Game
 		[ColumnMapping("TrapId")]
 		public int TrapId;
 		/// <summary>
+        /// 召唤物Id
+        /// </summary>
+		[ColumnMapping("CreateUnitId")]
+		public int CreateUnitId;
+		/// <summary>
+        /// 召唤物存在时间
+        /// </summary>
+		[ColumnMapping("CreateUnitLifeTime")]
+		public int CreateUnitLifeTime;
+		/// <summary>
         /// 说明
         /// </summary>
 		[ColumnMapping("Summary")]

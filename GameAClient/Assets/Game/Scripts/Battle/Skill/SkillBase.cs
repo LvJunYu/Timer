@@ -266,10 +266,9 @@ namespace GameA.Game
             _timerCharge = value;
             if (_timerCharge == 0)
             {
-                _currentBulletCount = _totalBulletCount;
+                SetBullet(_totalBulletCount);
                 _startCharge = false;
                 _timerCharge = _chargeTime;
-                Messenger<int, int, int>.Broadcast(EMessengerType.OnSkillBulletChanged, _slot, _currentBulletCount, _totalBulletCount);
                 LogHelper.Debug("Full");
             }
             if (_owner.IsMain)
@@ -280,7 +279,7 @@ namespace GameA.Game
 
         protected void CreateProjectile(int projectileId, IntVec2 pos, int angle)
         {
-            if (_epaintType == EPaintType.Water || _epaintType == EPaintType.Jelly || _epaintType == EPaintType.Clay || projectileId == 10006)
+            if (UnitDefine.UseRayBullet(projectileId))
             {
                 var bullet = PoolFactory<Bullet>.Get();
                 bullet.Init(this,pos, angle);
@@ -298,6 +297,10 @@ namespace GameA.Game
 
         protected IntVec2 GetProjectilePos(int bulletId)
         {
+            if (UnitDefine.UseRayBullet(bulletId))
+            {
+                return _owner.FirePos;
+            }
             var tableUnit = UnitManager.Instance.GetTableUnit(bulletId);
             if (tableUnit == null)
             {
@@ -316,21 +319,21 @@ namespace GameA.Game
                     OnHit();
                     break;
                 case EBehaviorType.RangeShoot:
-                    CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.ShootAngle);
+                    CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.Angle);
                     break;
                 case EBehaviorType.ContinueShoot:
 //                    var count = _tableSkill.BehaviorValues[0];
 //                    var delay = TableConvert.GetTime(_tableSkill.BehaviorValues[1]);
 //                    for (int i = 0; i < count; i++)
                     {
-                        CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.ShootAngle);
+                        CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.Angle);
                     }
                     break;
                 case EBehaviorType.SectorShoot:
                 case EBehaviorType.Summon:
                 case EBehaviorType.Teleport:
                 case EBehaviorType.HitDivide:
-                    CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.ShootAngle);
+                    CreateProjectile(_tableSkill.ProjectileId, GetProjectilePos(_tableSkill.ProjectileId), _owner.Angle);
                     break;
             }
         }
@@ -338,7 +341,7 @@ namespace GameA.Game
         protected void OnHit()
         {
             var centerDownPos = _owner.CenterDownPos;
-            CreateTrap(centerDownPos);
+            CreateTrapUnit(centerDownPos, _owner.Angle);
             //临时写 TODO
             var units = GetHitUnits(_owner.CenterPos, null);
             if (units != null && units.Count > 0)
@@ -361,7 +364,7 @@ namespace GameA.Game
         public void OnBulletHit(Bullet bullet)
         {
             _bullets.Remove(bullet);
-            CreateTrap(bullet.CurPos);
+            CreateTrapUnit(bullet.CurPos, bullet.Angle);
             var units = GetHitUnits(bullet.CurPos, bullet.TargetUnit);
             if (units != null && units.Count > 0)
             {
@@ -385,7 +388,7 @@ namespace GameA.Game
 
         public virtual void OnProjectileHit(ProjectileBase projectile)
         {
-            CreateTrap(projectile.CenterPos);
+            CreateTrapUnit(projectile.CenterPos, projectile.Angle);
             var units = GetHitUnits(projectile.CenterPos, projectile.TargetUnit);
             if (units != null && units.Count > 0)
             {
@@ -499,12 +502,48 @@ namespace GameA.Game
         /// <summary>
         /// 生成陷阱
         /// </summary>
-        protected void CreateTrap(IntVec2 centerPos)
+        protected void CreateTrapUnit(IntVec2 hitPos, int angle)
         {
             if (_tableSkill.TrapId > 0)
             {
                 LogHelper.Debug("AddTrap {0}", _tableSkill.TrapId);
-                PlayMode.Instance.AddTrap(_tableSkill.TrapId, centerPos);
+                PlayMode.Instance.AddTrap(_tableSkill.TrapId, hitPos);
+            }
+            byte rotation;
+            if (!GM2DTools.GetRotation4(angle, out rotation))
+            {
+                return;
+            }
+            if (_tableSkill.CreateUnitId > 0)
+            {
+                var tableUnit = UnitManager.Instance.GetTableUnit(_tableSkill.CreateUnitId);
+                if (tableUnit == null)
+                {
+                    return;
+                }
+                IntVec2 pos = IntVec2.zero;
+                var size = tableUnit.GetDataSize(rotation, Vector2.one);
+                switch ((EDirectionType)rotation)
+                {
+                    case EDirectionType.Up:
+                        pos = new IntVec2(hitPos.x - size.x / 2, hitPos.y - size.y);
+                        break;
+                    case EDirectionType.Down:
+                        pos = new IntVec2(hitPos.x - size.x / 2, hitPos.y);
+                        break;
+                    case EDirectionType.Left:
+                        pos = new IntVec2(hitPos.x, hitPos.y - size.y / 2);
+                        break;
+                    case EDirectionType.Right:
+                        pos = new IntVec2(hitPos.x - size.x, hitPos.y - size.y / 2);
+                        break;
+                }
+                var unit = PlayMode.Instance.CreateRuntimeUnit(_tableSkill.CreateUnitId, pos, rotation);
+                LogHelper.Debug("AddUnit {0}", _tableSkill.CreateUnitId);
+                if (unit != null)
+                {
+                    unit.SetLifeTime(TableConvert.GetTime(_tableSkill.CreateUnitLifeTime));
+                }
             }
         }
         

@@ -53,7 +53,7 @@ namespace GameA.Game
         protected bool _useCorner;
         protected bool _isDisposed = false;
 
-        protected int _shootAngle;
+        protected int _angle;
 
         protected List<UnitBase> _switchPressUnits = new List<UnitBase>();
         protected List<UnitBase> _switchRectUnits = new List<UnitBase>();
@@ -503,10 +503,10 @@ namespace GameA.Game
             get { return (ELayerType) _tableUnit.Layer; }
         }
 
-        public int ShootAngle
+        public int Angle
         {
-            get { return _shootAngle; }
-            set { _shootAngle = value; }
+            get { return _angle; }
+            set { _angle = value; }
         }
 
         public virtual IntVec2 FirePos
@@ -580,6 +580,7 @@ namespace GameA.Game
                 _dynamicCollider = dynamicCollider;
             }
             _viewZOffset = 0;
+            _angle = GM2DTools.GetAngle(Rotation);
             InitAssetPath();
             UpdateExtraData();
             OnInit();
@@ -609,15 +610,6 @@ namespace GameA.Game
             }
         }
 
-        protected int GetAngle()
-        {
-            if (Rotation >= (int) EDirectionType.RightUp)
-            {
-                return (Rotation - 3) * -45;
-            }
-            return Rotation * -90;
-        }
-        
         protected Vector2 GetDirection()
         {
             switch ((EDirectionType) Rotation)
@@ -1661,6 +1653,10 @@ namespace GameA.Game
             _canBridgeCross = value;
             _canFanCross = value;
             _canBulletCross = value;
+        }
+
+        public virtual void SetLifeTime(int lifeTime)
+        {
         }
     }
 }

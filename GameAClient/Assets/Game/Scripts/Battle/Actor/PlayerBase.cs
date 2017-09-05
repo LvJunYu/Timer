@@ -173,7 +173,7 @@ namespace GameA.Game
         {
             base.OnPlay();
             LogHelper.Debug("{0}, OnPlay", GetType().Name);
-            SetWeapon(201);
+            SetWeapon(203);
             _gun.Play();
             AddStates(61);
             _revivePos = _curPos;
