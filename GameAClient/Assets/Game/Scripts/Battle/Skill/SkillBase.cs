@@ -498,12 +498,12 @@ namespace GameA.Game
         /// <summary>
         /// 生成陷阱
         /// </summary>
-        protected void CreateTrapUnit(IntVec2 centerPos, int angle)
+        protected void CreateTrapUnit(IntVec2 hitPos, int angle)
         {
             if (_tableSkill.TrapId > 0)
             {
                 LogHelper.Debug("AddTrap {0}", _tableSkill.TrapId);
-                PlayMode.Instance.AddTrap(_tableSkill.TrapId, centerPos);
+                PlayMode.Instance.AddTrap(_tableSkill.TrapId, hitPos);
             }
             byte rotation;
             if (!GM2DTools.GetRotation4(angle, out rotation))
@@ -517,8 +517,24 @@ namespace GameA.Game
                 {
                     return;
                 }
-                var halfSize = tableUnit.GetDataSize(rotation, Vector2.one) / 2;
-                var unit = PlayMode.Instance.CreateRuntimeUnit(_tableSkill.CreateUnitId, centerPos - halfSize, rotation);
+                IntVec2 pos = IntVec2.zero;
+                var size = tableUnit.GetDataSize(rotation, Vector2.one);
+                switch ((EDirectionType)rotation)
+                {
+                    case EDirectionType.Up:
+                        pos = new IntVec2(hitPos.x - size.x / 2, hitPos.y - size.y);
+                        break;
+                    case EDirectionType.Down:
+                        pos = new IntVec2(hitPos.x - size.x / 2, hitPos.y);
+                        break;
+                    case EDirectionType.Left:
+                        pos = new IntVec2(hitPos.x, hitPos.y - size.y / 2);
+                        break;
+                    case EDirectionType.Right:
+                        pos = new IntVec2(hitPos.x - size.x, hitPos.y - size.y / 2);
+                        break;
+                }
+                var unit = PlayMode.Instance.CreateRuntimeUnit(_tableSkill.CreateUnitId, pos, rotation);
                 LogHelper.Debug("AddUnit {0}", _tableSkill.CreateUnitId);
                 if (unit != null)
                 {
