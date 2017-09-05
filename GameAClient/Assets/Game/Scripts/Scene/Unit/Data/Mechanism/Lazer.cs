@@ -17,16 +17,15 @@ namespace GameA.Game
     public class Lazer : Magic
     {
         protected GridCheck _gridCheck;
-        protected Grid2D _checkGrid;
-        protected int _distance;
-        protected IntVec2 _borderCenterPoint;
 
         protected UnityNativeParticleItem _effect;
         protected UnityNativeParticleItem _lazerEffect;
         protected UnityNativeParticleItem _lazerEffectEnd;
-
-        protected IntVec2 _pointA;
-        protected IntVec2 _pointB;
+        
+        protected int _angle;
+        protected Vector2 _direction;
+        protected int _distance;
+        protected IntVec2 _borderCenterPoint;
 
         public override bool CanControlledBySwitch
         {
@@ -52,10 +51,10 @@ namespace GameA.Game
 
         private void Calculate()
         {
-            GM2DTools.GetBorderPoint(_colliderGrid, (EDirectionType)Rotation, ref _pointA, ref _pointB, -240);
-            _distance = GM2DTools.GetDistanceToBorder(_pointA, Rotation);
-            _checkGrid = SceneQuery2D.GetGrid(_pointA, _pointB, Rotation, _distance);
-            _borderCenterPoint = (_pointA + _pointB) / 2;
+            _distance = ConstDefineGM2D.MaxMapDistance;
+            _angle = GetAngle();
+            _direction = GM2DTools.GetDirection(_angle);
+//            _borderCenterPoint = (_pointA + _pointB) / 2;
         }
 
         internal override bool InstantiateView()
@@ -64,7 +63,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            var euler = new Vector3(0, 0, Rotation*-90);
+            var euler = new Vector3(0, 0, _angle);
             _effect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazerRun", _trans);
             if (_effect != null)
             {
@@ -138,12 +137,11 @@ namespace GameA.Game
                 return;
             }
             _gridCheck.Before();
-            _distance = GM2DTools.GetDistanceToBorder(_pointA, Rotation);
             if (_dynamicCollider != null)
             {
                 Calculate();
             }
-            var hits = ColliderScene2D.GridCastAll(_checkGrid, Rotation, EnvManager.LazerShootLayer);
+            var hits = ColliderScene2D.RaycastAll(_curPos, _direction, _distance, EnvManager.LazerShootLayer);
             if (hits.Count > 0)
             {
                 for (int i = 0; i < hits.Count; i++)
@@ -162,7 +160,7 @@ namespace GameA.Game
                             }
                         }
                         bool flag = false;
-                        var units = ColliderScene2D.GetUnits(hit, SceneQuery2D.GetGrid(_pointA, _pointB, Rotation, hit.distance + 1));
+                        var units = ColliderScene2D.GetUnits(hit);
                         for (int j = 0; j < units.Count; j++)
                         {
                             if (units[j].IsAlive && !units[j].CanLazerCross)

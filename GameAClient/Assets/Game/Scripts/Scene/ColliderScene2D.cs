@@ -507,21 +507,21 @@ namespace GameA.Game
             return SceneQuery2D.PointCast(point, out sceneNode, layerMask, _instance, minDepth, maxDepth);
         }
 
-        internal static bool Raycast(IntVec2 origin, Vector2 direction, out RayHit2D hit, float distance,
+        internal static bool Raycast(IntVec2 origin, Vector2 direction, out RayHit2D hit, float distance = ConstDefineGM2D.MaxMapDistance,
             int layerMask = JoyPhysics2D.LayMaskAll, SceneNode excludeNode = null)
         {
             return SceneQuery2D.Raycast(new Vector2(origin.x, origin.y), direction, out hit, distance, layerMask,
                 Instance, float.MinValue, float.MaxValue, excludeNode);
         }
 
-        internal static List<RayHit2D> RaycastAll(IntVec2 origin, Vector2 direction, float distance,
+        internal static List<RayHit2D> RaycastAll(IntVec2 origin, Vector2 direction, float distance = ConstDefineGM2D.MaxMapDistance,
             int layerMask = JoyPhysics2D.LayMaskAll, float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
             return SceneQuery2D.RaycastAll(new Vector2(origin.x, origin.y), direction, distance, layerMask, Instance,
                 float.MinValue, float.MaxValue, excludeNode);
         }
         
-        public static List<UnitBase>  RaycastAllReturnUnits(IntVec2 origin, Vector2 direction, float distance, int layerMask = JoyPhysics2D.LayMaskAll,
+        public static List<UnitBase>  RaycastAllReturnUnits(IntVec2 origin, Vector2 direction, float distance = ConstDefineGM2D.MaxMapDistance, int layerMask = JoyPhysics2D.LayMaskAll,
             float minDepth = float.MinValue, float maxDepth = float.MaxValue, SceneNode excludeNode = null)
         {
             _cachedUnits.Clear();
