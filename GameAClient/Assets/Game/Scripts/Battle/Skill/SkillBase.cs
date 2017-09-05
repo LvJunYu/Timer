@@ -297,6 +297,10 @@ namespace GameA.Game
 
         protected IntVec2 GetProjectilePos(int bulletId)
         {
+            if (UnitDefine.UseRayBullet(bulletId))
+            {
+                return _owner.FirePos;
+            }
             var tableUnit = UnitManager.Instance.GetTableUnit(bulletId);
             if (tableUnit == null)
             {
