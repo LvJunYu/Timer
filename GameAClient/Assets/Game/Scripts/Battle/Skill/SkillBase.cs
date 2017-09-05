@@ -237,8 +237,9 @@ namespace GameA.Game
                 _startCharge = _currentBulletCount == 0;
                 LogHelper.Debug("Start Charge..." + _startCharge);
                 SetTimerCharge(_chargeTime);
-                if (_owner != null)
+                if (_owner.IsMain)
                 {
+                    Messenger<int, float, float>.Broadcast(EMessengerType.OnSkillBulletChanged, _slot, _currentBulletCount, _totalBulletCount);
                 }
             }
         }

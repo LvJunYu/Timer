@@ -80,6 +80,7 @@ namespace GameA
 	    public static int OnSkillSlotChanged = SoyEngine.EMessengerType.NextId++;
 	    public static int OnSkillCDTime = SoyEngine.EMessengerType.NextId++;
 	    public static int OnSkillChargeTime = SoyEngine.EMessengerType.NextId++;
+	    public static int OnSkillBulletChanged = SoyEngine.EMessengerType.NextId++;
 
         // 主角加速跑技能cd发生变化
         public static int OnSpeedUpCDChanged = SoyEngine.EMessengerType.NextId++;
