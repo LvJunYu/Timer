@@ -97,7 +97,7 @@ namespace GameA
                 PlayClickParticle();
                 _press = true;
             }
-            if (_curTableEquipment.InputType == (int) EWeaponInputType.GetKeyUp)
+            if (_curTableEquipment != null && _curTableEquipment.InputType == (int) EWeaponInputType.GetKeyUp)
                 PlayFullParticle(leftCount == totalCount);
         }
     }
