@@ -720,43 +720,35 @@ namespace GameA
 
         public void DownloadProject(Action successCallback, Action<EProjectOperateResult> failedCallback)
         {
-//            Msg_CA_RequestDownloadProject msg = new Msg_CA_RequestDownloadProject();
-//            msg.ProjectId = _guid;
-//            User user = LocalUser.Instance.User;
-//            NetworkManager.AppHttpClient.SendWithCb<Msg_AC_OperateProjectRet>(SoyHttpApiPath.DownloadProject, msg, (ret) =>
-//            {
-//                if (ret.Result == (int)EProjectOperateResult.POR_Success)
-//                {
-//                    _downloadCount = _downloadCount + 1;
-//                    Project p = new Project();
-//                    p._projectStatus = EProjectStatus.PS_Private;
-//                    user.OnProjectCreated(ret.ProjectData, p);
-//                    user.GetSavedPrjectRequestTimer().Zero();
-//                    if (_user.UserGuid != user.UserGuid)
-//                    {
-//                        user.OnGoldCoinChange(-_downloadPrice);
-//                    }
-//                    user.UserInfoRequestGameTimer.Zero();
-//                    if (successCallback != null)
-//                    {
-//                        successCallback.Invoke();
-//                    }
-//                }
-//                else
-//                {
-//                    if (failedCallback != null)
-//                    {
-//                        failedCallback.Invoke((EProjectOperateResult)ret.Result);
-//                    }
-//                }
-//            }, (errCode, errMsg) =>
-//            {
-//                SoyHttpClient.ShowErrorTip(errCode);
-//                if (failedCallback != null)
-//                {
-//                    failedCallback.Invoke(EProjectOperateResult.POR_None);
-//                }
-//            });
+            RemoteCommands.DownloadProject(_projectId, (ret) =>
+            {
+                if (ret.ResultCode == (int)EProjectOperateResult.POR_Success)
+                {
+                    _extendData.DownloadCount ++;
+                    Project p = new Project();
+                    p._projectStatus = EProjectStatus.PS_Private;
+                    p.OnSync(ret.ProjectData);
+                    LocalUser.Instance.PersonalProjectList.LocalAdd(p);
+                    if (successCallback != null)
+                    {
+                        successCallback.Invoke();
+                    }
+                }
+                else
+                {
+                    if (failedCallback != null)
+                    {
+                        failedCallback.Invoke((EProjectOperateResult)ret.ResultCode);
+                    }
+                }
+            }, errCode =>
+            {
+                SoyHttpClient.ShowErrorTip(errCode);
+                if (failedCallback != null)
+                {
+                    failedCallback.Invoke(EProjectOperateResult.POR_None);
+                }
+            });
         }
 
         public static Project CreateWorkShopProject()

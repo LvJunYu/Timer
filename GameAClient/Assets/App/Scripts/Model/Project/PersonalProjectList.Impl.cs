@@ -33,6 +33,13 @@ namespace GameA
             Sort();
         }
 
+        public void LocalAdd(Project project)
+        {
+            _projectList.Add(project);
+            _dirty = true;
+            Sort();
+        }
+
         public void Sort()
         {
             _projectList.Sort((p1, p2) => -p1.UpdateTime.CompareTo(p2.UpdateTime));
