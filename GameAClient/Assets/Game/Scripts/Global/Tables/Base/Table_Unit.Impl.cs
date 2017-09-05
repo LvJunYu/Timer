@@ -59,7 +59,7 @@ namespace GameA.Game
 	            {
 	                return EMoveDirection.None;
 	            }
-	            return (EMoveDirection) (MoveDirection - 1);
+	            return (EMoveDirection) MoveDirection;
 	        }
 	    }
 
