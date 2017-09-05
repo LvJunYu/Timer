@@ -29,6 +29,9 @@ namespace GameA
             _cachedView.BtnIcon.gameObject.SetActive(true);
             if (_curTableEquipment.InputType == (int) EWeaponInputType.GetKeyUp)
                 PlayFullParticle(true);
+            _cachedView.BtnCD1.fillAmount = 0;
+            _cachedView.BtnCD2.fillAmount = 0;
+            _cachedView.TimeTxt.text = "";
         }
 
         public void OnSkillCDTime(float leftTime, float totalTime)
