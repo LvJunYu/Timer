@@ -83,7 +83,12 @@ namespace GameA.Game
 	        }
 	    }
 
-	    public bool CanEdit(EEditType editType)
+		public bool HasDirection8
+		{
+			get { return DirectionMask == 127; }
+		}
+
+		public bool CanEdit(EEditType editType)
 	    {
 	        switch (editType)
 	        {

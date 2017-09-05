@@ -594,6 +594,11 @@ namespace GameA.Game
 
         protected void InitAssetRotation(bool loop = false)
         {
+            if (_tableUnit.HasDirection8)
+            {
+                _assetPath = _tableUnit.Model;
+                return;
+            }
             if (_animation == null)
             {
                 _assetPath = string.Format("{0}_{1}", _tableUnit.Model, _unitDesc.Rotation);
@@ -602,6 +607,39 @@ namespace GameA.Game
             {
                 _animation.Init(((EDirectionType) Rotation).ToString(), loop);
             }
+        }
+
+        protected int GetAngle()
+        {
+            if (Rotation >= (int) EDirectionType.RightUp)
+            {
+                return (Rotation - 3) * -45;
+            }
+            return Rotation * -90;
+        }
+        
+        protected Vector2 GetDirection()
+        {
+            switch ((EDirectionType) Rotation)
+            {
+                case EDirectionType.Up:
+                    return Vector2.up;
+                case EDirectionType.Right:
+                    return Vector2.right;
+                case EDirectionType.Down:
+                    return Vector2.down;
+                case EDirectionType.Left:
+                    return Vector2.left;
+                case EDirectionType.RightUp:
+                    return new Vector2(1, 1);
+                case EDirectionType.RightDown:
+                    return new Vector2(1, -1);
+                case EDirectionType.LeftDown:
+                    return new Vector2(-1, -1);
+                case EDirectionType.LeftUp:
+                    return new Vector2(-1, 1);
+            }
+            return Vector2.zero;
         }
 
         protected virtual bool OnInit()
