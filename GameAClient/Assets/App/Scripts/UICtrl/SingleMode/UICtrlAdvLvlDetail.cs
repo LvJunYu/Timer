@@ -104,6 +104,12 @@ namespace GameA
             _cachedView.RankBtn1.onClick.AddListener (OnRankBtn1);
         }
 
+        protected override void SetAnimationType()
+        {
+            base.SetAnimationType();
+            _firstDelayFrames = 3;
+        }
+
         public void RefreshAdventureUserLevelDataDetail()
         {
             _userLevelDataDetail.Request(
