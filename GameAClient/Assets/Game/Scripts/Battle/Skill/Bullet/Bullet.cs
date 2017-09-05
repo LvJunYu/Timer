@@ -29,6 +29,11 @@ namespace GameA.Game
             get { return _direction; }
         }
 
+        public int Angle
+        {
+            get { return _angle; }
+        }
+
         public int MaskRandom
         {
             get { return _maskRandom; }

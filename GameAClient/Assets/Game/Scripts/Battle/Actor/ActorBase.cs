@@ -294,7 +294,7 @@ namespace GameA.Game
             {
                 eShootDir = EShootDirectionType.Up;
             }
-            _shootAngle = (int)eShootDir;
+            _angle = (int)eShootDir;
             if (IsCharacterAbilityAvailable(ECharacterAbility.Shoot) && _skillCtrl != null)
             {
                 for (int i = 0; i < _skillCtrl.CurrentSkills.Length; i++)

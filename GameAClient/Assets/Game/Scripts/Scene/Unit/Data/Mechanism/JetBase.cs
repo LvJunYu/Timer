@@ -32,7 +32,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            _shootAngle = (_unitDesc.Rotation) * 90;
+            _angle = (_unitDesc.Rotation) * 90;
             _timeScale = 1;
             return true;
         }
