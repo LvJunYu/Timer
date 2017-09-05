@@ -399,6 +399,13 @@ namespace GameA.Game
             context.UnitDesc = unitDesc;
             var tableUnit = context.TableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
             context.UnitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
+            UnitEditData unitEditData = new UnitEditData()
+            {
+                UnitDesc = unitDesc,
+                UnitExtra = context.UnitExtra
+            };
+            SocialGUIManager.Instance.OpenUI<UICtrlUnitPropertyEdit>(unitEditData);
+            
 //            if (tableUnit.CanEdit(EEditType.MoveDirection))
 //            {
 //                if (context.UnitExtra.MoveDirection != EMoveDirection.None &&context.UnitExtra.MoveDirection != EMoveDirection.Static)

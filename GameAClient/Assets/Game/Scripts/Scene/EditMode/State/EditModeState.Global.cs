@@ -30,6 +30,13 @@ namespace GameA.Game
                 GetRecordBatch().RecordUpdateExtra(ref unitDesc, ref unitExtra, ref unitDesc, ref newUnitExtra);
                 CommitRecordBatch();
             }
+            
+            public void ModifyUnitData(UnitDesc unitDesc, UnitExtra unitExtra, UnitDesc newUnitDesc, UnitExtra newUnitExtra)
+            {
+                DataScene2D.Instance.ProcessUnitExtra(newUnitDesc, newUnitExtra);
+                GetRecordBatch().RecordUpdateExtra(ref unitDesc, ref unitExtra, ref newUnitDesc, ref newUnitExtra);
+                CommitRecordBatch();
+            }
 
             public override void OnMouseRightButtonDrag(Vector3 arg1, Vector2 delta)
             {

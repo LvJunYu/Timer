@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    [Unit(Id = 9001, Type = typeof(Text))]
-    public class Text : UnitBase
+    [Unit(Id = 9001, Type = typeof(TextUnit))]
+    public class TextUnit : UnitBase
     {
         private int _timer;
         private TextMesh _textMesh;
