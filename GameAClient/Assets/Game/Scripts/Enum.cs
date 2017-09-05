@@ -40,6 +40,19 @@ namespace GameA.Game
         Left = 4,
     }
 
+    public enum EActiveState : byte
+    {
+        Active = 0,
+        Deactive = 1,
+    }
+
+    public enum ERotateType : byte
+    {
+        None,
+        Clockwise,
+        Anticlockwise
+    }
+
     public enum EAnimationType
     {
         None = -1,
