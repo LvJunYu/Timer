@@ -266,10 +266,9 @@ namespace GameA.Game
             _timerCharge = value;
             if (_timerCharge == 0)
             {
-                _currentBulletCount = _totalBulletCount;
+                SetBullet(_totalBulletCount);
                 _startCharge = false;
                 _timerCharge = _chargeTime;
-                Messenger<int, int, int>.Broadcast(EMessengerType.OnSkillBulletChanged, _slot, _currentBulletCount, _totalBulletCount);
                 LogHelper.Debug("Full");
             }
             if (_owner.IsMain)
