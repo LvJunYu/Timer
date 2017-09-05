@@ -10,6 +10,7 @@ namespace GameA
         #region fields
 
         private UMCtrlSkillBtn[] _umSkillBtns;
+        private bool[] _hasSetWeapon = new bool[3];
 
         #endregion
 
@@ -44,6 +45,7 @@ namespace GameA
             if (null == _umSkillBtns)
                 CreateUMSkillBtns();
             _cachedView.JumpBtn.OnPress += OnJumpButtonDown;
+            _cachedView.JumpBtn.OnPress += PlayClickParticle;
             _cachedView.JumpBtn.OnRelease += OnJumpButtonUp;
 
             _umSkillBtns[0].CachedView.SkillBtn.OnPress += OnSkill1ButtonDown;
@@ -62,15 +64,11 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-//            for (int i = 0; i < _cachedView.SkillRTFs.Length; i++)
-//            {
-//                _cachedView.SkillRTFs[i].gameObject.SetActive(false);
-//            }
+            for (int i = 0; i < _cachedView.SkillRTFs.Length; i++)
+            {
+                _cachedView.SkillRTFs[i].gameObject.SetActive(_hasSetWeapon[i]);
+            }
             _cachedView.AssistBtn.gameObject.SetActive(false);
-            OnSkillSlotChanged(TableManager.Instance.Table_EquipmentDic[101], 0);
-            OnSkillSlotChanged(TableManager.Instance.Table_EquipmentDic[201], 1);
-            OnSkillSlotChanged(TableManager.Instance.Table_EquipmentDic[203], 2);
-
         }
 
         public void SetSkillBtnVisible(int slot, bool visible)
@@ -98,6 +96,12 @@ namespace GameA
             _cachedView.AssistBtn.gameObject.SetActive(visible);
         }
 
+        private void PlayClickParticle()
+        {
+            GameParticleManager.Instance.EmitUIParticle("UIEffectClickBig", _cachedView.JumpBtn.transform, _groupId,
+                0.5f);
+        }
+
         private void OnSkillSlotChanged(Table_Equipment tableSkill, int slot)
         {
             if (null == _cachedView) return;
@@ -106,6 +110,7 @@ namespace GameA
                 CreateUMSkillBtns();
             if (0 > slot || slot > _umSkillBtns.Length - 1) return;
             _umSkillBtns[slot].SetData(tableSkill);
+            _hasSetWeapon[slot] = true;
         }
 
         private void OnSkillChargeTime(int slot, float leftTime, float totalTime)
