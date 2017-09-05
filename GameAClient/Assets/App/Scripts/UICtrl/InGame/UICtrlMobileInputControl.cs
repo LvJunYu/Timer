@@ -31,9 +31,9 @@ namespace GameA
         {
             base.InitEventListener();
             RegisterEvent<Table_Equipment, int>(EMessengerType.OnSkillSlotChanged, OnSkillSlotChanged);
-            RegisterEvent<float, float>(EMessengerType.OnSkill1CDChanged, OnSkill1CDChanged);
-            RegisterEvent<float, float>(EMessengerType.OnSkill2CDChanged, OnSkill2CDChanged);
-            RegisterEvent<float, float>(EMessengerType.OnSkill3CDChanged, OnSkill3CDChanged);
+//            RegisterEvent<float, float>(EMessengerType.OnSkill1CDChanged, OnSkill1CDChanged);
+//            RegisterEvent<float, float>(EMessengerType.OnSkill2CDChanged, OnSkill2CDChanged);
+//            RegisterEvent<float, float>(EMessengerType.OnSkill3CDChanged, OnSkill3CDChanged);
         }
 
         protected override void OnViewCreated()

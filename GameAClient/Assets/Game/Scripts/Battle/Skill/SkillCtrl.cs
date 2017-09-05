@@ -71,7 +71,7 @@ namespace GameA.Game
                 _currentSkills[slot].Exit();
                 _currentSkills[slot] = null;
             }
-            _currentSkills[slot] = new SkillBase(id, _owner, eWeaponInputType);
+            _currentSkills[slot] = new SkillBase(id, slot, _owner, eWeaponInputType);
             return true;
         }
 

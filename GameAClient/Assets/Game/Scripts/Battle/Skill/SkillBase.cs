@@ -18,7 +18,7 @@ namespace GameA.Game
     public class SkillBase
     {
         private static List<UnitBase> _cacheUnits = new List<UnitBase>(1);
-
+        protected int _slot;
         [SerializeField]
         protected EPaintType _epaintType;
 
@@ -94,11 +94,12 @@ namespace GameA.Game
             get { return _eWeaponInputType; }
         }
 
-        public SkillBase(int id, UnitBase ower, EWeaponInputType eWeaponInputType)
+        public SkillBase(int id, int slot, UnitBase ower, EWeaponInputType eWeaponInputType)
         {
             _eWeaponInputType = eWeaponInputType;
             _owner = ower;
             _tableSkill = TableManager.Instance.GetSkill(id);
+            _slot = slot;
             if (_tableSkill == null)
             {
                 LogHelper.Error("GetSkill Failed, {0}", id);
@@ -251,7 +252,7 @@ namespace GameA.Game
             _timerCD = value;
             if (_owner.IsMain && _eWeaponInputType == EWeaponInputType.GetKeyUp)
             {
-                Messenger<float, float>.Broadcast(EMessengerType.OnSkill2CDChanged, _timerCD, _cdTime);
+                Messenger<int, float, float>.Broadcast(EMessengerType.OnSkillCDTime, _slot, _timerCD, _cdTime);
             }
         }
         
@@ -269,9 +270,9 @@ namespace GameA.Game
                 _timerCharge = _chargeTime;
                 LogHelper.Debug("Full");
             }
-            if (_owner.IsMain && _eWeaponInputType == EWeaponInputType.GetKeyUp)
+            if (_owner.IsMain)
             {
-                Messenger<float, float>.Broadcast(EMessengerType.OnSkill2CDChanged, _timerCharge, _chargeTime);
+                Messenger<int, float, float>.Broadcast(EMessengerType.OnSkillChargeTime, _slot , _timerCharge, _chargeTime);
             }
         }
 
