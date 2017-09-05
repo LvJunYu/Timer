@@ -18,7 +18,7 @@ using UnityEngine;
 namespace GameA
 {
     [UIAutoSetup]
-    public class UICtrlPersonalInformation : UICtrlGenericBase<UIViewPersonalInformation>
+    public class UICtrlPersonalInformation : UICtrlAnimationBase<UIViewPersonalInformation>
     {
         #region 常量与字段
         private string _name;
