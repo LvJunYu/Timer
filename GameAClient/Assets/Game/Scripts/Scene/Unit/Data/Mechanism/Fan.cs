@@ -58,7 +58,7 @@ namespace GameA.Game
             _fanEffectUnits.Clear();
             if (_switchTrigger != null)
             {
-                _switchTrigger.Trigger = true;
+                _switchTrigger.Trigger = _activeState;
             }
         }
 
