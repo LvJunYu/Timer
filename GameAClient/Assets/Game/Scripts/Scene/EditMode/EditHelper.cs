@@ -5,11 +5,9 @@
 ** Summary : EditHelper
 ***********************************************************************/
 
-using System;
 using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace GameA.Game
 {
@@ -386,23 +384,23 @@ namespace GameA.Game
             }
         }
 
-        private struct ProcessClickUnitOperationParam
-        {
-            public UnitDesc UnitDesc;
-            public Table_Unit TableUnit;
-            public UnitExtra UnitExtra;
-        }
+//        private struct ProcessClickUnitOperationParam
+//        {
+//            public UnitDesc UnitDesc;
+//            public Table_Unit TableUnit;
+//            public UnitExtra UnitExtra;
+//        }
 
         public static bool ProcessClickUnitOperation(UnitDesc unitDesc)
         {
-            var context = new ProcessClickUnitOperationParam();
-            context.UnitDesc = unitDesc;
-            var tableUnit = context.TableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-            context.UnitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
+//            var context = new ProcessClickUnitOperationParam();
+//            context.UnitDesc = unitDesc;
+//            var tableUnit = context.TableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+//            context.UnitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
             UnitEditData unitEditData = new UnitEditData()
             {
                 UnitDesc = unitDesc,
-                UnitExtra = context.UnitExtra
+                UnitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid)
             };
             SocialGUIManager.Instance.OpenUI<UICtrlUnitPropertyEdit>(unitEditData);
             
@@ -504,24 +502,24 @@ namespace GameA.Game
 //                processClickUnitOperationParam.UnitExtra);
 //            return true;
 //        }
-        
-        private static void FindNextWeapon(ref ushort id, ushort[] weapons)
-        {
-            for (int i = 0; i < weapons.Length; i++)
-            {
-                if (weapons[i] == id)
-                {
-                    if (i + 1 < weapons.Length)
-                    {
-                        id = weapons[i + 1];
-                        return;
-                    }
-                    id = weapons[0];
-                    return;
-                }
-            }
-            LogHelper.Error("FindNextWeapon Failed, {0}", id);
-        }
+//        
+//        private static void FindNextWeapon(ref ushort id, ushort[] weapons)
+//        {
+//            for (int i = 0; i < weapons.Length; i++)
+//            {
+//                if (weapons[i] == id)
+//                {
+//                    if (i + 1 < weapons.Length)
+//                    {
+//                        id = weapons[i + 1];
+//                        return;
+//                    }
+//                    id = weapons[0];
+//                    return;
+//                }
+//            }
+//            LogHelper.Error("FindNextWeapon Failed, {0}", id);
+//        }
         
         public static GameObject CreateDragRoot(Vector3 pos, int unitId, EDirectionType rotate, out UnitBase unitBase)
         {

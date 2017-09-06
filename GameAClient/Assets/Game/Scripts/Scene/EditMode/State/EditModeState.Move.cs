@@ -8,8 +8,6 @@ namespace GameA.Game
     {
         public class Move : GenericBase<Move>
         {
-            private static readonly Color MagicModeUnitMaskColor = new Color(0.3f, 0.3f, 0.3f, 1f);
-
             public class Data
             {
                 public UnitBase CurrentMovingUnitBase;
@@ -176,26 +174,15 @@ namespace GameA.Game
                 var coverUnits = DataScene2D.GridCastAllReturnUnits(unitDesc, JoyPhysics2D.LayMaskAll, minDepth, maxDepth);
                 if (coverUnits != null && coverUnits.Count > 0)
                 {
-                    bool effectFlag = false;
-                    var oldUnitDesc = coverUnits[0];
-                    var oldUnitExtra = DataScene2D.Instance.GetUnitExtra(oldUnitDesc.Guid);
-                    if (!effectFlag)
+                    for (int i = 0; i < coverUnits.Count; i++)
                     {
-                        for (int i = 0; i < coverUnits.Count; i++)
+                        var deleteUnitDesc = coverUnits[i];
+                        var deleteUnitExtra = DataScene2D.Instance.GetUnitExtra(deleteUnitDesc.Guid);
+                        if (EditMode.Instance.DeleteUnitWithCheck(deleteUnitDesc))
                         {
-                            var deleteUnitDesc = coverUnits[i];
-                            var deleteUnitExtra = DataScene2D.Instance.GetUnitExtra(deleteUnitDesc.Guid);
-                            if (EditMode.Instance.DeleteUnitWithCheck(deleteUnitDesc))
-                            {
-                                recordBatch.RecordRemoveUnit(ref deleteUnitDesc, ref deleteUnitExtra);
-                                DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(coverUnits[i], recordBatch);
-                            }
+                            recordBatch.RecordRemoveUnit(ref deleteUnitDesc, ref deleteUnitExtra);
+                            DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(coverUnits[i], recordBatch);
                         }
-                    }
-                    else
-                    {
-                        CommitRecordBatch();
-                        return;
                     }
                 }
                 UnitDesc needReplaceUnitDesc;

@@ -1,12 +1,7 @@
 ﻿
-using System;
-using System.Collections;
+using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
-using System.Collections.Generic;
-using GameA;
-using SoyEngine.Proto;
-using NewResourceSolution;
 
 namespace GameA
 {
