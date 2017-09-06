@@ -50,9 +50,7 @@ namespace GameA.Game
         protected UnitBase _downUnit;
         protected bool _useCorner;
         protected bool _isDisposed = false;
-
-        protected int _angle;
-
+        
         protected List<UnitBase> _switchPressUnits = new List<UnitBase>();
         protected List<UnitBase> _switchRectUnits = new List<UnitBase>();
 
@@ -92,6 +90,7 @@ namespace GameA.Game
 
         [SerializeField] protected EMoveDirection _moveDirection;
         [SerializeField] protected bool _activeState;
+        protected float _angle;
 
         /// <summary>
         /// 加速减速参数
@@ -496,10 +495,9 @@ namespace GameA.Game
             get { return (ELayerType) _tableUnit.Layer; }
         }
 
-        public int Angle
+        public virtual float Angle
         {
             get { return _angle; }
-            set { _angle = value; }
         }
 
         public virtual IntVec2 FirePos

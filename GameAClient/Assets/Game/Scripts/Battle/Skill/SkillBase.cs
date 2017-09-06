@@ -277,7 +277,7 @@ namespace GameA.Game
             }
         }
 
-        protected void CreateProjectile(int projectileId, IntVec2 pos, int angle)
+        protected void CreateProjectile(int projectileId, IntVec2 pos, float angle)
         {
             if (UnitDefine.UseRayBullet(projectileId))
             {
@@ -502,7 +502,7 @@ namespace GameA.Game
         /// <summary>
         /// 生成陷阱
         /// </summary>
-        protected void CreateTrapUnit(IntVec2 hitPos, int angle)
+        protected void CreateTrapUnit(IntVec2 hitPos, float angle)
         {
             if (_tableSkill.TrapId > 0)
             {
@@ -510,7 +510,7 @@ namespace GameA.Game
                 PlayMode.Instance.AddTrap(_tableSkill.TrapId, hitPos);
             }
             byte rotation;
-            if (!GM2DTools.GetRotation4(angle, out rotation))
+            if (!GM2DTools.GetRotation4((int)angle, out rotation))
             {
                 return;
             }

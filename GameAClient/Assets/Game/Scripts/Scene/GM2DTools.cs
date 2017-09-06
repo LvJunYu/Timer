@@ -688,19 +688,16 @@ namespace GameA.Game
             return new Grid2D(rect.Min.x, rect.Min.y, rect.Max.x, rect.Max.y);
         }
         
-        public static Vector2 GetDirection(int angle)
+        public static Vector2 GetDirection(float angle)
         {
             var rad = angle * Mathf.Deg2Rad;
             return new Vector2((float) Math.Sin(rad), (float) Math.Cos(rad));
         }
         
-        public static int GetAngle(int rotation)
+        public static float GetAngle(int rotation)
         {
-            if (rotation >= (int) EDirectionType.RightUp)
-            {
-                return (rotation - 3) * 45;
-            }
-            return rotation * 90;
+            float euler = rotation >= (int) EDirectionType.RightUp ? (rotation - 3) * 90 - 45 : rotation * 90;
+            return euler;
         }
         
         public static bool GetRotation8(int angle, out byte rotation)

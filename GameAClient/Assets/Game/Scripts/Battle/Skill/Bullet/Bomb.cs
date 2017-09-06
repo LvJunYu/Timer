@@ -134,7 +134,7 @@ namespace GameA.Game
             }
         }
 
-        protected override void UpdateAngle(int angle, EDirectionType eDirectionType)
+        protected override void UpdateAngle(float angle, EDirectionType eDirectionType)
         {
             _angle = angle;
             var rad = _angle * Mathf.Deg2Rad;
