@@ -182,7 +182,6 @@ namespace GameA.Game
                 {
                     _startCharge = true;
                     SetTimerCharge(_chargeTime);
-                    LogHelper.Debug("Start Charge..." + _startCharge);
                 }
             }
             if (_timerSing > 0)
@@ -230,6 +229,11 @@ namespace GameA.Game
         
         private void SetBullet(int bulletCount)
         {
+            //代表无限
+            if (_totalBulletCount == 0)
+            {
+                return;
+            }
             var count = Mathf.Clamp(bulletCount, 0, _totalBulletCount);
             if (_currentBulletCount != count)
             {
