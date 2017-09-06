@@ -586,11 +586,6 @@ namespace GameA.Game
 
         protected void InitAssetRotation(bool loop = false)
         {
-            if (_tableUnit.HasDirection8)
-            {
-                _assetPath = _tableUnit.Model;
-                return;
-            }
             if (_animation == null)
             {
                 _assetPath = string.Format("{0}_{1}", _tableUnit.Model, _unitDesc.Rotation);
@@ -847,7 +842,6 @@ namespace GameA.Game
             {
                 _moveDirection = EMoveDirection.Right;
             }
-            _activeState = DataScene2D.Instance.GetUnitExtra(_guid).Active == (int)EActiveState.Active;
         }
 
         public bool Equals(UnitBase other)
