@@ -10,7 +10,7 @@ namespace GameA
         #region fields
 
         private UMCtrlSkillBtn[] _umSkillBtns;
-        private bool[] _hasSetWeapon = new bool[3];
+        private Table_Equipment[] _equipments = new Table_Equipment[3];
 
         #endregion
 
@@ -66,7 +66,16 @@ namespace GameA
             base.OnOpen(parameter);
             for (int i = 0; i < _cachedView.SkillRTFs.Length; i++)
             {
-                _cachedView.SkillRTFs[i].gameObject.SetActive(_hasSetWeapon[i]);
+                if (_equipments[i] != null)
+                {
+                    _cachedView.SkillRTFs[i].gameObject.SetActive(true);
+                    _umSkillBtns[i].SetData(_equipments[i]);
+                }
+                else
+                {
+                    _cachedView.SkillRTFs[i].gameObject.SetActive(false);
+
+                }
             }
             _cachedView.AssistBtn.gameObject.SetActive(false);
         }
@@ -104,13 +113,13 @@ namespace GameA
 
         private void OnSkillSlotChanged(Table_Equipment tableSkill, int slot)
         {
-            if (null == _cachedView) return;
             if (null == tableSkill) return;
+            if (0 > slot || slot > _equipments.Length - 1) return;
+            _equipments[slot] = tableSkill;
+            if (null == _cachedView) return;
             if (null == _umSkillBtns)
                 CreateUMSkillBtns();
-            if (0 > slot || slot > _umSkillBtns.Length - 1) return;
             _umSkillBtns[slot].SetData(tableSkill);
-            _hasSetWeapon[slot] = true;
         }
 
         private void OnSkillChargeTime(int slot, float leftTime, float totalTime)
