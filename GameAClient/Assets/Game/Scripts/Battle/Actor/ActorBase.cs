@@ -38,6 +38,8 @@ namespace GameA.Game
         
         protected SkillCtrl _skillCtrl;
         
+        private int _damageFrame;
+        
         public override EDieType EDieType
         {
             get { return _eDieType; }
@@ -72,6 +74,7 @@ namespace GameA.Game
             {
                 _skillCtrl.Clear();
             }
+            _damageFrame = 0;
             base.Clear();
         }
 
@@ -124,6 +127,7 @@ namespace GameA.Game
             {
                 _currentStates[i].UpdateLogic();
             }
+            CheckShowDamage();
         }
 
         public void UpdateInput()
@@ -601,6 +605,47 @@ namespace GameA.Game
                 if (TryGetState(EStateType.Fire, out state))
                 {
                     unit.AddStates(state.TableState.Id);
+                }
+            }
+        }
+
+        public override void OnHpChanged(int hpChanged)
+        {
+            if (!_isAlive || !PlayMode.Instance.SceneState.GameRunning)
+            {
+                return;
+            }
+            if (hpChanged < 0)
+            {
+                //无敌时候不管用
+                if (IsInvincible)
+                {
+                    return;
+                }
+                _damageFrame = BattleDefine.DamageDurationFrame;
+            }
+            _hp += hpChanged;
+            _hp = Mathf.Clamp(_hp, 0, _maxHp);
+            if (_hp == 0)
+            {
+                OnDead();
+            }
+            if (_view != null)
+            {
+                _view.StatusBar.SetHP(hpChanged > 0 ? EHPModifyCase.Heal : EHPModifyCase.Hit, _hp, _maxHp);
+            }
+        }
+        
+        protected void CheckShowDamage()
+        {
+            if (_damageFrame > 0)
+            {
+                _damageFrame--;
+                if (_view != null)
+                {
+                    _view.SetRendererColor(_damageFrame == 0
+                        ? Color.white
+                        : Color.Lerp(Color.red, Color.white, (float) _damageFrame / BattleDefine.DamageDurationFrame));
                 }
             }
         }
