@@ -27,12 +27,6 @@ namespace GameA.Game
         protected bool _run = true;
         protected bool _enabled = true;
 
-        public override void UpdateExtraData()
-        {
-            base.UpdateExtraData();
-            InitSpeed();
-        }
-
         protected override void Clear()
         {
             base.Clear();

@@ -55,7 +55,6 @@ namespace GameA.Game
 
         protected List<UnitBase> _switchPressUnits = new List<UnitBase>();
         protected List<UnitBase> _switchRectUnits = new List<UnitBase>();
-        protected bool _ctrlBySwitch;
 
         protected int _maxHp;
         protected int _hp;
@@ -529,8 +528,8 @@ namespace GameA.Game
         {
             _unitDesc = unitDesc;
             _tableUnit = tableUnit;
-            InitAssetPath();
             UpdateExtraData();
+            InitAssetPath();
             if (!InstantiateView())
             {
                 LogHelper.Error("InstantiateView Failed, {0}", tableUnit.Id);
@@ -551,8 +550,8 @@ namespace GameA.Game
             _tableUnit = tableUnit;
             _unitDesc = unitDesc;
             _curPos = new IntVec2(_guid.x, _guid.y);
-            InitAssetPath();
             UpdateExtraData();
+            InitAssetPath();
             if (!UnitManager.Instance.TryGetUnitView(this, false, out _view))
             {
                 LogHelper.Error("TryGetUnitView Failed, {0}", tableUnit.Id);
@@ -575,8 +574,9 @@ namespace GameA.Game
             }
             _viewZOffset = 0;
             _angle = GM2DTools.GetAngle(Rotation);
-            InitAssetPath();
+            UpdateExtraData();
             OnInit();
+            InitAssetPath();
             _colliderGridInner = _useCorner ? _colliderGrid.GetGridInner() : _colliderGrid;
             return true;
         }
@@ -672,6 +672,10 @@ namespace GameA.Game
             }
             UpdateTransPos();
             SetFacingDir(_moveDirection, true);
+            if (GameRun.Instance.IsEdit)
+            {
+                _view.UpdateSign();
+            }
             return true;
         }
 
@@ -701,6 +705,7 @@ namespace GameA.Game
 
         internal virtual void Reset()
         {
+            UpdateExtraData();
             if (_view != null)
             {
                 _view.Reset();
@@ -728,7 +733,6 @@ namespace GameA.Game
 
         protected virtual void Clear()
         {
-            UpdateExtraData();
             _envState = 0;
             ClearRunTime();
             if (_tableUnit.Hp > 0)
@@ -752,7 +756,6 @@ namespace GameA.Game
             _eUnitState = EUnitState.Normal;
             _switchPressUnits.Clear();
             _switchRectUnits.Clear();
-            _ctrlBySwitch = false;
             if (_dynamicCollider != null)
             {
                 SetFacingDir(_moveDirection, true);
@@ -839,20 +842,14 @@ namespace GameA.Game
         /// </summary>
         public virtual void UpdateExtraData()
         {
-            _moveDirection = DataScene2D.Instance.GetUnitExtra(_guid).MoveDirection;
+            var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
+            _moveDirection = unitExtra.MoveDirection;
+            _activeState = unitExtra.Active == (int) EActiveState.Active;
             if (IsMain)
             {
                 _moveDirection = EMoveDirection.Right;
             }
             _activeState = DataScene2D.Instance.GetUnitExtra(_guid).Active == (int)EActiveState.Active;
-            if (_view != null)
-            {
-                if (IsActor)
-                {
-                    SetFacingDir(_moveDirection, true);
-                }
-                _view.UpdateSign();
-            }
         }
 
         public bool Equals(UnitBase other)
@@ -1511,7 +1508,7 @@ namespace GameA.Game
 
         internal virtual void OnCtrlBySwitch()
         {
-            _ctrlBySwitch = !_ctrlBySwitch;
+            _activeState = !_activeState;
 //            LogHelper.Debug("OnCtrlBySwitch: {0}",_ctrlBySwitch);
         }
 

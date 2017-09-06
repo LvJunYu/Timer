@@ -26,7 +26,7 @@ namespace GameA.Game
             //发送事件
             if (!string.IsNullOrEmpty(_triggerName))
             {
-                Messenger<string, bool>.Broadcast(EMessengerType.OnTrigger, _triggerName, _ctrlBySwitch);
+                Messenger<string, bool>.Broadcast(EMessengerType.OnTrigger, _triggerName, _activeState);
             }
         }
     }

@@ -36,6 +36,12 @@ namespace GameA.Game
             _timeScale = 1;
             return true;
         }
+        
+        public override void UpdateExtraData()
+        {
+            _weaponId = DataScene2D.Instance.GetUnitExtra(_guid).ChildId;
+            base.UpdateExtraData();
+        }
 
         internal override bool InstantiateView()
         {
@@ -63,13 +69,6 @@ namespace GameA.Game
             base.OnObjectDestroy();
             FreeEffect(_efffectWeapon);
             _efffectWeapon = null;
-        }
-
-        public override void UpdateExtraData()
-        {
-            _weaponId = DataScene2D.Instance.GetUnitExtra(_guid).ChildId;
-            SetWeapon(_weaponId);
-            base.UpdateExtraData();
         }
         
         public override bool SetWeapon(int id)
@@ -122,7 +121,7 @@ namespace GameA.Game
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            if (_ctrlBySwitch)
+            if (!_activeState)
             {
                 return;
             }

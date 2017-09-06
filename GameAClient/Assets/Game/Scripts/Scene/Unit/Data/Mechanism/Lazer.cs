@@ -25,8 +25,6 @@ namespace GameA.Game
         protected Vector2 _direction;
         protected int _distance;
         protected IntVec2 _borderCenterPoint;
-        
-        protected bool _activeState;
 
         public override bool CanControlledBySwitch
         {
@@ -48,6 +46,12 @@ namespace GameA.Game
             SetSortingOrderBack();
             Calculate();
             return true;
+        }
+        
+        public override void UpdateExtraData()
+        {
+            _activeState = DataScene2D.Instance.GetUnitExtra(_guid).Active == (int) EActiveState.Active;
+            base.UpdateExtraData();
         }
 
         private void Calculate()
@@ -131,7 +135,7 @@ namespace GameA.Game
         {
             base.UpdateLogic();
             //停止
-            if (_ctrlBySwitch)
+            if (!_activeState)
             {
                 Pause();
                 return;

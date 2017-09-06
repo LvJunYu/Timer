@@ -20,16 +20,6 @@ namespace GameA.Game
             get { return _rollerDirection; }
         }
 
-        public override void UpdateExtraData()
-        {
-//            _rollerDirection = DataScene2D.Instance.GetUnitExtra(_guid).RollerDirection;
-//            if (_animation != null)
-//            {
-//                _animation.Init(_rollerDirection == EMoveDirection.Left ? "LeftRun" : "RightRun");
-//            }
-            base.UpdateExtraData();
-        }
-
         public override IntVec2 GetDeltaImpactPos(UnitBase unit)
         {
             IntVec2 deltaImpactPos = IntVec2.zero;

@@ -146,7 +146,7 @@ namespace GameA.Game
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            if (_ctrlBySwitch)
+            if (!_activeState)
             {
                 Pause();
                 return;

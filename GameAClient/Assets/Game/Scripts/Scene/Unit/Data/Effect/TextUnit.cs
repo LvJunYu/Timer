@@ -79,19 +79,10 @@ namespace GameA.Game
             }
         }
 
-        public override void UpdateExtraData()
-        {
-            base.UpdateExtraData();
-            if (_textMesh != null)
-            {
-                _textMesh.text = DataScene2D.Instance.GetUnitExtra(_guid).Msg;
-            }
-        }
-
         internal override void OnCtrlBySwitch()
         {
             base.OnCtrlBySwitch();
-            if (_ctrlBySwitch)
+            if (_activeState)
             {
                 _timer = 10 * ConstDefineGM2D.FixedFrameCount;
                 ShowHide(true);
@@ -100,7 +91,7 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            if (!_ctrlBySwitch)
+            if (!_activeState)
             {
                 if (_timer > 0)
                 {
