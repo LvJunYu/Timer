@@ -18,6 +18,7 @@ namespace GameA
         private readonly List<EEditType> _validEditPropertyList = new List<EEditType>();
         private Button[] _activeMenuList;
         private Button[] _forwardMenuList;
+        private Button[] _payloadMenuList;
         private Button[] _moveDirectionMenuList;
         private Button[] _rotateMenuList;
         private Button[] _rotateEndMenuList;
@@ -51,6 +52,12 @@ namespace GameA
             {
                 var inx = i;
                 _forwardMenuList[i].onClick.AddListener(()=>OnForwardMenuClick(inx));
+            }
+            _payloadMenuList = _cachedView.PayloadDock.GetComponentsInChildren<Button>();
+            for (int i = 0; i < _payloadMenuList.Length; i++)
+            {
+                var inx = i;
+                _payloadMenuList[i].onClick.AddListener(()=>OnPayloadMenuClick(inx));
             }
             _moveDirectionMenuList = _cachedView.MoveDirectionDock.GetComponentsInChildren<Button>();
             for (int i = 0; i < _moveDirectionMenuList.Length; i++)
@@ -103,6 +110,10 @@ namespace GameA
             _originData = (UnitEditData) parameter;
             _editData = _originData;
             _tableUnit = TableManager.Instance.GetUnit(_originData.UnitDesc.Id);
+            if (UnitDefine.IsMonster(_tableUnit.Id))
+            {
+                _editData.UnitDesc.Rotation = (byte) (_editData.UnitExtra.MoveDirection - 1);
+            }
             RefreshView();
         }
 
@@ -122,6 +133,12 @@ namespace GameA
             if (_tableUnit.CanEdit(EEditType.Child))
             {
                 _validEditPropertyList.Add(EEditType.Child);
+                _cachedView.PayloadDock.SetActiveEx(true);
+                RefreshPayloadMenu();
+            }
+            else
+            {
+                _cachedView.PayloadDock.SetActiveEx(false);
             }
             if (_tableUnit.CanEdit(EEditType.Direction))
             {
@@ -193,6 +210,21 @@ namespace GameA
                 _forwardMenuList[i].interactable = i != _editData.UnitDesc.Rotation;
             }
         }
+        private void RefreshPayloadMenu()
+        {
+            for (int i = 0; i < _payloadMenuList.Length; i++)
+            {
+                if (i < _tableUnit.ChildState.Length)
+                {
+                    _payloadMenuList[i].SetActiveEx(true);
+                    _payloadMenuList[i].interactable = _tableUnit.ChildState[i] != _editData.UnitExtra.ChildId;
+                }
+                else
+                {
+                    _payloadMenuList[i].SetActiveEx(false);
+                }
+            }
+        }
         private void RefreshMoveDirectionMenu()
         {
             for (int i = 0; i < _moveDirectionMenuList.Length; i++)
@@ -242,6 +274,12 @@ namespace GameA
         {
             _editData.UnitDesc.Rotation = (byte) inx;
             RefreshForwardMenu();
+        }
+
+        private void OnPayloadMenuClick(int inx)
+        {
+            _editData.UnitExtra.ChildId = (ushort) _tableUnit.ChildState[inx];
+            RefreshPayloadMenu();
         }
 
         private void OnMoveDirectionMenuClick(int inx)
