@@ -24,13 +24,11 @@ namespace GameA.Game
         protected IntVec2 _pointACheck;
         protected IntVec2 _pointBCheck;
         protected UnitBase _magicRotate;
-        protected bool _run = true;
         protected bool _enabled = true;
 
         protected override void Clear()
         {
             base.Clear();
-            _run = true;
             _enabled = true;
             _magicRotate = null;
             InitSpeed();
@@ -61,12 +59,6 @@ namespace GameA.Game
             }
         }
 
-        internal override void OnCtrlBySwitch()
-        {
-            base.OnCtrlBySwitch();
-            _run = !_run;
-        }
-
         internal void SetEnabled(bool value)
         {
             _enabled = value;
@@ -75,7 +67,7 @@ namespace GameA.Game
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            if (!_enabled || !_run || !UseMagic())
+            if (!_enabled || !_activeState || !UseMagic())
             {
                 return;
             }
@@ -194,7 +186,7 @@ namespace GameA.Game
 
         public override void UpdateView(float deltaTime)
         {
-            if (!_run || !UseMagic())
+            if (!_activeState || !UseMagic())
             {
                 return;
             }
@@ -226,7 +218,7 @@ namespace GameA.Game
 
         public override IntVec2 GetDeltaImpactPos(UnitBase unit)
         {
-            if (!_run || !UseMagic())
+            if (!_activeState || !UseMagic())
             {
                 return IntVec2.zero;
             }

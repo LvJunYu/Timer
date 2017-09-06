@@ -45,7 +45,7 @@ namespace GameA.Game
 
         public override void UpdateView(float deltaTime)
         {
-            if (!_run || !UseMagic())
+            if (!_activeState || !UseMagic())
             {
                 return;
             }

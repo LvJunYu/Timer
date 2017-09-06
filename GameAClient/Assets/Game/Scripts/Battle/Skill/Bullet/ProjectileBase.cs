@@ -42,6 +42,8 @@ namespace GameA.Game
         
         protected UnitBase _targetUnit;
 
+        protected bool _run;
+
         public Vector2 Direction
         {
             get { return _direction; }
@@ -89,6 +91,7 @@ namespace GameA.Game
 
         public virtual void Run(SkillBase skill, int angle)
         {
+            _run = true;
             _skill = skill;
             _maskRandom = UnityEngine.Random.Range(0, 2);
             _originPos = CenterPos;

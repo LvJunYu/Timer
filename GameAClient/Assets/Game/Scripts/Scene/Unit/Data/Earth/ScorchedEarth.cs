@@ -96,7 +96,7 @@ namespace GameA.Game
                 _state = 1;
                 if (UseMagic())
                 {
-                    _run = false;
+                    SetEnabled(false);
                 }
             }
         }
@@ -140,7 +140,7 @@ namespace GameA.Game
                     SetAllCross(false);
                     if (UseMagic())
                     {
-                        _run = true;
+                        SetEnabled(true);
                     }
                     _timer = 0;
                     if (_view != null)

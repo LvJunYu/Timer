@@ -36,7 +36,7 @@ namespace GameA.Game
                         deltaImpactPos.x = (int) (-player.CurMaxSpeedX * 0.8f);
                         break;
                 }
-                if (!_run || !UseMagic())
+                if (!_activeState || !UseMagic())
                 {
                     return deltaImpactPos;
                 }
