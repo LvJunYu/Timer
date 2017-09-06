@@ -231,37 +231,11 @@ namespace GameA.Game
             if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
             {
                 EditMode.Instance.MapStatistics.NeedSave = true;
-                bool needRecreate = false;
                 if (ColliderScene2D.Instance.TryGetUnit(unitDesc.Guid, out unit))
                 {
                     oldUnitDesc = unit.UnitDesc;
-                    if (oldUnitDesc.Rotation != unitDesc.Rotation)
-                    {
-                        needRecreate = true;
-                    }
-                    UnitExtra oldUnitExtra = GetUnitExtra(unitDesc.Guid);
-                    if (unitExtra.MoveDirection != oldUnitExtra.MoveDirection)
-                    {
-                        if (unit.DynamicCollider != null && unit.DynamicCollider.IsDynamic() )
-                        {
-                            if (unitExtra.MoveDirection == EMoveDirection.None)
-                            {
-                                needRecreate = true;
-                            }
-                        }
-                        else
-                        {
-                            if (unitExtra.MoveDirection != EMoveDirection.None)
-                            {
-                                needRecreate = true;
-                            }
-                        }
-                    }
                 }
-                if (needRecreate)
-                {
-                    EditMode.Instance.DeleteUnit(oldUnitDesc);
-                }
+                EditMode.Instance.DeleteUnit(oldUnitDesc);
                 if (unitExtra.Equals(UnitExtra.zero))
                 {
                     DeleteUnitExtra(unitDesc.Guid);
@@ -270,17 +244,7 @@ namespace GameA.Game
                 {
                     _unitExtras.AddOrReplace(unitDesc.Guid, unitExtra);
                 }
-                if (needRecreate)
-                {
-                    EditMode.Instance.AddUnit(unitDesc);
-                }
-                else
-                {
-                    if (unit != null)
-                    {
-                        unit.UpdateExtraData ();
-                    }
-                }
+                EditMode.Instance.AddUnit(unitDesc);
             }
             else
             {
