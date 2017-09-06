@@ -706,6 +706,32 @@ namespace GameA.Game
             }
         }
 
+        protected virtual void OnDamage()
+        {
+            _damageFrame = 0;
+            _showDamage = true;
+        }
+
+        private bool _showDamage;
+        private int _damageFrame;
+        protected void CheckShowDamage()
+        {
+            if (!_showDamage) return;
+            if (_view == null) return;
+            const float duration = 0.15f;
+            float durationFrame = duration / ConstDefineGM2D.FixedDeltaTime;
+            if (_damageFrame < durationFrame)
+            {
+                _view.SetRendererColor(Color.Lerp(Color.red, Color.white, _damageFrame / durationFrame));
+            }
+            else
+            {
+                _showDamage = false;
+                _view.SetRendererColor(Color.white);
+            }
+            _damageFrame++;
+        }
+
         internal virtual void Reset()
         {
             if (_view != null)
@@ -786,6 +812,8 @@ namespace GameA.Game
 
         public virtual void UpdateLogic()
         {
+            if(_isAlive)
+                CheckShowDamage();
         }
 
         public virtual void UpdateView(float deltaTime)
@@ -853,6 +881,7 @@ namespace GameA.Game
                 {
                     return;
                 }
+                OnDamage();
             }
             _hp += hpChanged;
             _hp = Mathf.Clamp(_hp, 0, _maxHp);
