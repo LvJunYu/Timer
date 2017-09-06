@@ -97,7 +97,7 @@ namespace GameA.Game
         
         private IntVec2 GetDestPos()
         {
-            return _player.CurMoveDirection == EMoveDirection.Right
+            return _player.MoveDirection == EMoveDirection.Right
                 ? _player.CenterDownPos + new IntVec2(-_shooterEffectOffset.x, _shooterEffectOffset.y)
                 : _player.CenterDownPos + new IntVec2(_shooterEffectOffset.x, _shooterEffectOffset.y);
         }

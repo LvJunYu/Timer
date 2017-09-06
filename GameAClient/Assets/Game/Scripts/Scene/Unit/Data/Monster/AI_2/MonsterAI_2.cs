@@ -83,7 +83,7 @@ namespace GameA.Game
                 return;
             }
             _eMonsterState = eMonsterState;
-            var pos = GM2DTools.TileToWorld(new IntVec2(_curMoveDirection == EMoveDirection.Right ? _colliderGrid.XMin : _colliderGrid.XMax,
+            var pos = GM2DTools.TileToWorld(new IntVec2(_moveDirection == EMoveDirection.Right ? _colliderGrid.XMin : _colliderGrid.XMax,
                 _colliderGrid.YMax));
             switch (_eMonsterState)
             {
@@ -122,7 +122,7 @@ namespace GameA.Game
                     SetInput(EInputType.Left, false);
                     break;
                 case EMonsterState.Run:
-                    SetInput(_curMoveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
+                    SetInput(_moveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
                     break;
                 case EMonsterState.Bang:
                     SetInput(EInputType.Right, false);
@@ -150,7 +150,7 @@ namespace GameA.Game
                     }
                     break;
                 case EMonsterState.Chase:
-                    SetInput(_curMoveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
+                    SetInput(_moveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
                     break;
                 case EMonsterState.Attack:
                     SetInput(EInputType.Right, false);

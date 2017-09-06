@@ -167,7 +167,7 @@ namespace GameA.Game
                 }
             }
 
-            var pathPos = _curMoveDirection == EMoveDirection.Right
+            var pathPos = _moveDirection == EMoveDirection.Right
                 ? _curPos
                 : _curPos + new IntVec2(GetDataSize().x, 0);
             
@@ -403,7 +403,7 @@ namespace GameA.Game
             }
             if (!reachedX)
             {
-                if (_curMoveDirection == EMoveDirection.Left)
+                if (_moveDirection == EMoveDirection.Left)
                 {
                     if (ColliderScene2D.Instance.IsGround(_curPos.x / ConstDefineGM2D.ServerTileScale,
                         _curPos.y / ConstDefineGM2D.ServerTileScale))
@@ -411,7 +411,7 @@ namespace GameA.Game
                         reachedX = true;
                     }
                 }
-                else if (_curMoveDirection == EMoveDirection.Right)
+                else if (_moveDirection == EMoveDirection.Right)
                 {
                     if (ColliderScene2D.Instance.IsGround(_curPos.x / ConstDefineGM2D.ServerTileScale + 1,
                         _curPos.y / ConstDefineGM2D.ServerTileScale))

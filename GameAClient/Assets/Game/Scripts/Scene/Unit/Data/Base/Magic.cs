@@ -44,12 +44,12 @@ namespace GameA.Game
 
         protected void InitSpeed()
         {
-            if (!IsActor && _curMoveDirection != EMoveDirection.None)
+            if (!IsActor && _moveDirection != EMoveDirection.None)
             {
                 Speed = IntVec2.zero;
                 _timerMagic = 0;
                 _velocity = 20;
-                switch (_curMoveDirection)
+                switch (_moveDirection)
                 {
                     case EMoveDirection.Up:
                         SpeedY = _velocity;
@@ -89,8 +89,8 @@ namespace GameA.Game
             {
                 if (Speed != IntVec2.zero)
                 {
-                    GM2DTools.GetBorderPoint(_colliderGrid, _curMoveDirection, ref _pointACheck, ref _pointBCheck);
-                    var checkGrid = SceneQuery2D.GetGrid(_pointACheck, _pointBCheck, (byte)(_curMoveDirection - 1), _velocity);
+                    GM2DTools.GetBorderPoint(_colliderGrid, _moveDirection, ref _pointACheck, ref _pointBCheck);
+                    var checkGrid = SceneQuery2D.GetGrid(_pointACheck, _pointBCheck, (byte)(_moveDirection - 1), _velocity);
                     var units = ColliderScene2D.GridCastAllReturnUnits(checkGrid, EnvManager.MovingEarthBlockLayer, float.MinValue, float.MaxValue, _dynamicCollider);
                     for (int i = 0; i < units.Count; i++)
                     {
@@ -98,7 +98,7 @@ namespace GameA.Game
                         if (unit.IsAlive)
                         {
                             //朝上运动时，如果是角色或者箱子。
-                            if (_curMoveDirection == EMoveDirection.Up)
+                            if (_moveDirection == EMoveDirection.Up)
                             {
                                 if (unit.IsActor || unit.Id == UnitDefine.BoxId)
                                 {
@@ -149,7 +149,7 @@ namespace GameA.Game
                         {
                             _timerMagic = 0;
                             Speed = IntVec2.zero;
-                            _curMoveDirection = (EMoveDirection) (_magicRotate.Rotation + 1);
+                            _moveDirection = (EMoveDirection) (_magicRotate.Rotation + 1);
                             _magicRotate = null;
                         }
                     }
@@ -159,7 +159,7 @@ namespace GameA.Game
                     _timerMagic++;
                     if (_timerMagic == 25)
                     {
-                        switch (_curMoveDirection)
+                        switch (_moveDirection)
                         {
                             case EMoveDirection.Up:
                                 SpeedY = _velocity;
@@ -181,19 +181,19 @@ namespace GameA.Game
 
         private void ChangeMoveDirection()
         {
-            switch (_curMoveDirection)
+            switch (_moveDirection)
             {
                 case EMoveDirection.Up:
-                    _curMoveDirection = EMoveDirection.Down;
+                    _moveDirection = EMoveDirection.Down;
                     break;
                 case EMoveDirection.Down:
-                    _curMoveDirection = EMoveDirection.Up;
+                    _moveDirection = EMoveDirection.Up;
                     break;
                 case EMoveDirection.Left:
-                    _curMoveDirection = EMoveDirection.Right;
+                    _moveDirection = EMoveDirection.Right;
                     break;
                 case EMoveDirection.Right:
-                    _curMoveDirection = EMoveDirection.Left;
+                    _moveDirection = EMoveDirection.Left;
                     break;
             }
         }

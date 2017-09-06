@@ -98,7 +98,7 @@ namespace GameA.Game
             _fireTimer++;
             if (_fireTimer % 80 == 0)
             {
-                ChangeWay(_curMoveDirection == EMoveDirection.Left ? EMoveDirection.Right : EMoveDirection.Left);
+                ChangeWay(_moveDirection == EMoveDirection.Left ? EMoveDirection.Right : EMoveDirection.Left);
             }
             CheckWay();
         }
@@ -150,12 +150,12 @@ namespace GameA.Game
         {
             if (_hitUnits != null)
             {
-                if (_curMoveDirection == EMoveDirection.Left && _hitUnits[(int)EDirectionType.Left] != null)
+                if (_moveDirection == EMoveDirection.Left && _hitUnits[(int)EDirectionType.Left] != null)
                 {
                     _fireTimer = 0;
                     return ChangeWay(EMoveDirection.Right);
                 }
-                else if (_curMoveDirection == EMoveDirection.Right && _hitUnits[(int)EDirectionType.Right] != null)
+                else if (_moveDirection == EMoveDirection.Right && _hitUnits[(int)EDirectionType.Right] != null)
                 {
                     _fireTimer = 0;
                     return ChangeWay(EMoveDirection.Left);

@@ -35,7 +35,7 @@ namespace GameA.Game
             {
                 _effectBullet.Play();
             }
-            _angle = _skill.Owner.CurMoveDirection == EMoveDirection.Right
+            _angle = _skill.Owner.MoveDirection == EMoveDirection.Right
                 ? (int) EShootDirectionType.RightUp
                 : (int) EShootDirectionType.LeftUp;
             var rad = _angle * Mathf.Deg2Rad;

@@ -480,8 +480,8 @@ namespace GameA.Game
                     {
                         var unit = units[i];
                         var rel = _owner.CenterDownPos - unit.CenterDownPos;
-                        if ((rel.x >= 0 && _owner.CurMoveDirection == EMoveDirection.Left) ||
-                            (rel.x <= 0 && _owner.CurMoveDirection == EMoveDirection.Right))
+                        if ((rel.x >= 0 && _owner.MoveDirection == EMoveDirection.Left) ||
+                            (rel.x <= 0 && _owner.MoveDirection == EMoveDirection.Right))
                         {
                         }
                         else

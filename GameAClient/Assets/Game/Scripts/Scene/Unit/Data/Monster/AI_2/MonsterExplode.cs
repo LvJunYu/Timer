@@ -54,7 +54,7 @@ namespace GameA.Game
         {
             if (GameRun.Instance.LogicFrameCnt % 5 == 0)
             {
-                var units = ColliderScene2D.RaycastAllReturnUnits(CenterPos, _curMoveDirection == EMoveDirection.Right ? Vector2.right : Vector2.left, _viewDistance,EnvManager.MonsterViewLayer);
+                var units = ColliderScene2D.RaycastAllReturnUnits(CenterPos, _moveDirection == EMoveDirection.Right ? Vector2.right : Vector2.left, _viewDistance,EnvManager.MonsterViewLayer);
                 bool isMain = false;
                 for (int i = 0; i < units.Count; i++)
                 {

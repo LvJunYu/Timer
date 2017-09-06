@@ -25,6 +25,8 @@ namespace GameA.Game
         protected Vector2 _direction;
         protected int _distance;
         protected IntVec2 _borderCenterPoint;
+        
+        protected bool _activeState;
 
         public override bool CanControlledBySwitch
         {
@@ -35,7 +37,7 @@ namespace GameA.Game
         {
             InitAssetRotation();
         }
-
+        
         protected override bool OnInit()
         {
             if (!base.OnInit())

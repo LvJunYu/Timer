@@ -477,7 +477,7 @@ namespace GameA.Game
                         if (_climbJump)
                         {
                             Vector3 effectPos = _trans.position;
-                            effectPos += _curMoveDirection == EMoveDirection.Left ? Vector3.right * 0.25f + Vector3.forward * 0.6f : Vector3.left * 0.25f + Vector3.forward * 0.6f;
+                            effectPos += _moveDirection == EMoveDirection.Left ? Vector3.right * 0.25f + Vector3.forward * 0.6f : Vector3.left * 0.25f + Vector3.forward * 0.6f;
                             GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.WallJump, effectPos);
                         }
                         if (_jumpState == EJumpState.Jump1 || _jumpState == EJumpState.Jump2)
@@ -575,7 +575,7 @@ namespace GameA.Game
             {
                 return;
             }
-            Vector3 scale = _curMoveDirection == EMoveDirection.Right ? Vector3.one : new Vector3(-1, 1, 1);
+            Vector3 scale = _moveDirection == EMoveDirection.Right ? Vector3.one : new Vector3(-1, 1, 1);
             if (_downUnit.Id == UnitDefine.ClayId)
             {
                 GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.RunOnMud, _trans.position + Vector3.up * 0.2f, scale, 1);

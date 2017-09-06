@@ -261,10 +261,10 @@ namespace GameA.Game
         
         protected void CheckSkill()
         {
-            var eShootDir = _curMoveDirection == EMoveDirection.Left ? EShootDirectionType.Left : EShootDirectionType.Right;
+            var eShootDir = _moveDirection == EMoveDirection.Left ? EShootDirectionType.Left : EShootDirectionType.Right;
             if (_eClimbState == EClimbState.Up)
             {
-                eShootDir = _curMoveDirection == EMoveDirection.Left ? EShootDirectionType.Right : EShootDirectionType.Left;
+                eShootDir = _moveDirection == EMoveDirection.Left ? EShootDirectionType.Right : EShootDirectionType.Left;
             }
             if (_input.GetKeyApplied(EInputType.Left))
             {

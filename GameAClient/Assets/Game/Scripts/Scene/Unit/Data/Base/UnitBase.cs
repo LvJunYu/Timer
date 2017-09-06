@@ -37,8 +37,6 @@ namespace GameA.Game
 
         protected UnitDesc _unitDesc;
 
-        protected EMoveDirection _moveDirection;
-
         [SerializeField] protected IntVec2 _curPos;
 
         [SerializeField] protected bool _isAlive;
@@ -93,7 +91,8 @@ namespace GameA.Game
 
         protected EUnitState _eUnitState;
 
-        [SerializeField] protected EMoveDirection _curMoveDirection;
+        [SerializeField] protected EMoveDirection _moveDirection;
+        [SerializeField] protected bool _activeState;
 
         /// <summary>
         /// 加速减速参数
@@ -241,11 +240,6 @@ namespace GameA.Game
             get { return _unitDesc; }
         }
 
-        public EMoveDirection MoveDirection
-        {
-            get { return _moveDirection; }
-        }
-
         public virtual Grid2D ColliderGrid
         {
             get { return _colliderGrid; }
@@ -367,9 +361,9 @@ namespace GameA.Game
             get { return _eUnitState; }
         }
 
-        public EMoveDirection CurMoveDirection
+        public EMoveDirection MoveDirection
         {
-            get { return _curMoveDirection; }
+            get { return _moveDirection; }
         }
 
         public UnitView View
@@ -525,7 +519,7 @@ namespace GameA.Game
 
         public virtual bool UseMagic()
         {
-            return !IsActor && _curMoveDirection != EMoveDirection.None;
+            return !IsActor && _moveDirection != EMoveDirection.None;
         }
 
         /// <summary>
@@ -542,7 +536,7 @@ namespace GameA.Game
                 LogHelper.Error("InstantiateView Failed, {0}", tableUnit.Id);
                 return;
             }
-            SetFacingDir(_curMoveDirection, true);
+            SetFacingDir(_moveDirection, true);
             _view.SetSortingOrder((int) ESortingOrder.DragingItem);
         }
 
@@ -565,7 +559,7 @@ namespace GameA.Game
                 return true;
             }
             _view.OnIsChild();
-            SetFacingDir(_curMoveDirection, true);
+            SetFacingDir(_moveDirection, true);
             return true;
         }
 
@@ -582,7 +576,6 @@ namespace GameA.Game
             _viewZOffset = 0;
             _angle = GM2DTools.GetAngle(Rotation);
             InitAssetPath();
-            UpdateExtraData();
             OnInit();
             _colliderGridInner = _useCorner ? _colliderGrid.GetGridInner() : _colliderGrid;
             return true;
@@ -678,7 +671,7 @@ namespace GameA.Game
                 }
             }
             UpdateTransPos();
-            SetFacingDir(_curMoveDirection, true);
+            SetFacingDir(_moveDirection, true);
             return true;
         }
 
@@ -735,6 +728,7 @@ namespace GameA.Game
 
         protected virtual void Clear()
         {
+            UpdateExtraData();
             _envState = 0;
             ClearRunTime();
             if (_tableUnit.Hp > 0)
@@ -747,11 +741,7 @@ namespace GameA.Game
             _isAlive = true;
             _dieTime = 0;
             _deltaPos = IntVec2.zero;
-            _curMoveDirection = _moveDirection;
-            if (IsMain)
-            {
-                _curMoveDirection = _moveDirection = EMoveDirection.Right;
-            }
+
             _colliderPos = GetColliderPos(_curPos);
             _lastColliderGrid = _colliderGrid = _tableUnit.GetColliderGrid(ref _unitDesc);
             _colliderGridInner = _useCorner ? _colliderGrid.GetGridInner() : _colliderGrid;
@@ -765,7 +755,7 @@ namespace GameA.Game
             _ctrlBySwitch = false;
             if (_dynamicCollider != null)
             {
-                SetFacingDir(_curMoveDirection, true);
+                SetFacingDir(_moveDirection, true);
             }
         }
 
@@ -849,12 +839,17 @@ namespace GameA.Game
         /// </summary>
         public virtual void UpdateExtraData()
         {
-            _curMoveDirection = _moveDirection = DataScene2D.Instance.GetUnitExtra(_guid).MoveDirection;
+            _moveDirection = DataScene2D.Instance.GetUnitExtra(_guid).MoveDirection;
+            if (IsMain)
+            {
+                _moveDirection = EMoveDirection.Right;
+            }
+            _activeState = DataScene2D.Instance.GetUnitExtra(_guid).Active == (int)EActiveState.Active;
             if (_view != null)
             {
                 if (IsActor)
                 {
-                    SetFacingDir(_curMoveDirection, true);
+                    SetFacingDir(_moveDirection, true);
                 }
                 _view.UpdateSign();
             }
@@ -1215,7 +1210,7 @@ namespace GameA.Game
 
         protected void UpdateRotation(float rad)
         {
-            float y = _curMoveDirection != EMoveDirection.Right ? 180 : 0;
+            float y = _moveDirection != EMoveDirection.Right ? 180 : 0;
             _trans.rotation = Quaternion.Euler(0, y, rad * Mathf.Rad2Deg);
             IntVec2 size = GetDataSize();
             var up = new Vector2(0, 0.5f * size.y / ConstDefineGM2D.ServerTileScale);
@@ -1400,15 +1395,15 @@ namespace GameA.Game
 
         public virtual void SetFacingDir(EMoveDirection eMoveDirection, bool initView = false)
         {
-            if (_dynamicCollider == null && !initView && _curMoveDirection == eMoveDirection)
+            if (_dynamicCollider == null && !initView && _moveDirection == eMoveDirection)
             {
                 return;
             }
-            _curMoveDirection = eMoveDirection;
-            if (_trans != null && _curMoveDirection != EMoveDirection.None && IsActor && Id != UnitDefine.MonsterJellyId)
+            _moveDirection = eMoveDirection;
+            if (_trans != null && _moveDirection != EMoveDirection.None && IsActor && Id != UnitDefine.MonsterJellyId)
             {
                 Vector3 euler = _trans.eulerAngles;
-                _trans.eulerAngles = _curMoveDirection != EMoveDirection.Right
+                _trans.eulerAngles = _moveDirection != EMoveDirection.Right
                     ? new Vector3(euler.x, 180, euler.z)
                     : new Vector3(euler.x, 0, euler.z);
             }

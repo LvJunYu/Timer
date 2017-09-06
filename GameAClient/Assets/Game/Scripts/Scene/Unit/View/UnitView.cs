@@ -152,7 +152,7 @@ namespace GameA.Game
         
         private void GenerateWing()
         {
-            if (_unit.CurMoveDirection != EMoveDirection.None && !_unit.IsActor)
+            if (_unit.MoveDirection != EMoveDirection.None && !_unit.IsActor)
             {
                 if (_wingLeft == null)
                 {

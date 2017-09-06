@@ -266,7 +266,7 @@ namespace GameA.Game
             //利用相对位置设置Effect的层级
             if (_effect != null)
             {
-                _effect.Trans.localPosition = Vector3.forward * (_target.CurMoveDirection == EMoveDirection.Left ? 0.01f : -0.01f);
+                _effect.Trans.localPosition = Vector3.forward * (_target.MoveDirection == EMoveDirection.Left ? 0.01f : -0.01f);
                 _effect.Trans.rotation = Quaternion.identity;
             }
             if (_tableState.Id == 61)
