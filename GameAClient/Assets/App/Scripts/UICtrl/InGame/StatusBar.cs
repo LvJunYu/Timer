@@ -8,8 +8,7 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-
-    public class StatusBar: MonoBehaviour
+    public class StatusBar : MonoBehaviour
     {
 //        public int TestCurrent = 100;
 //        public int TestMax = 100;
@@ -71,13 +70,14 @@ namespace GameA.Game
                     break;
             }
         }
+
         #region fields
 
         /// <summary>
         /// 被攻击状态显示持续时间
         /// </summary>
         private static float s_hittingTime = 0.5f;
-        
+
         /// <summary>
         /// 被治疗状态显示持续时间
         /// </summary>
@@ -85,22 +85,18 @@ namespace GameA.Game
 
         private Transform _trans;
         public GameObject HPRoot;
-        
+
         public Transform CurrentHPTrans;
         public Transform HPBeforeHitTrans;
         public SpriteRenderer HPBeforeHitRenderer;
         public Transform HPAfterHealTrans;
         public SpriteRenderer HPAfterHealRenderer;
 
-        public Transform SeparatesRoot;
-        public GameObject[] SeparatesGameObjects;
-        
-        
         /// <summary>
         ///目标物体的高度 
         /// </summary>
         private float _targetHeight;
-        
+
         private float _hpPerccentage = 1;
         private float _mpPercentage = 1;
 
@@ -110,32 +106,30 @@ namespace GameA.Game
         [SerializeField] private EHPShowState _hpState;
 
         [SerializeField] private float _stateTimer;
-        
+
         #endregion
-        
+
         #region properties
-        
+
         private float HpPerccentage
         {
-//            get { return _hpPerccentage; }
             set
             {
                 _hpPerccentage = value;
-
                 CurrentHPTrans.localScale = new Vector3(_hpPerccentage, 1, 1);
             }
         }
 
         #endregion
-        
+
         #region methods
-        
+
         public void SetHPActive(bool value)
         {
             HPRoot.SetActive(value);
         }
 
-        public void SetHP (EHPModifyCase modifyCase, int current, int max)
+        public void SetHP(EHPModifyCase modifyCase, int current, int max)
         {
             current = Mathf.Clamp(current, 0, max);
             switch (modifyCase)
@@ -165,10 +159,10 @@ namespace GameA.Game
                     }
                     float healingPercentage = current / (float) max - _hpPerccentage;
                     // 因为healing是放在current下的子物体，所以缩放要除以父物体的缩放
-                    HPAfterHealTrans.localScale = new Vector3(healingPercentage * max / (float)current, 1, 1);
+                    HPAfterHealTrans.localScale = new Vector3(healingPercentage * max / (float) current, 1, 1);
                     break;
             }
-            HpPerccentage = current / (float)max;
+            HpPerccentage = current / (float) max;
         }
 
         #endregion
@@ -179,9 +173,9 @@ namespace GameA.Game
     /// </summary>
     public enum EHPShowState
     {
-        Normal,     // 正常
-        BeingHit,   // 被攻击中
-        beingHeal,  // 被治疗中
+        Normal, // 正常
+        BeingHit, // 被攻击中
+        beingHeal, // 被治疗中
     }
 
     /// <summary>
@@ -189,9 +183,8 @@ namespace GameA.Game
     /// </summary>
     public enum EHPModifyCase
     {
-        Set,    // 指定
-        Hit,    // 被攻击
-        Heal,   // 被治疗
+        Set, // 指定
+        Hit, // 被攻击
+        Heal, // 被治疗
     }
-
 }

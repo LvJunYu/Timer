@@ -281,7 +281,7 @@ namespace GameA
                 if (UnitDefine.IsMonster(_tableUnit.Id))
                 {
                     _editData.UnitExtra.MoveDirection = (EMoveDirection) (_editData.UnitDesc.Rotation + 1);
-                    _editData.UnitDesc.Rotation = _originData.UnitDesc.Rotation;
+                    _editData.UnitDesc.Rotation = 0;
                 }
                 EditModeState.Global.Instance.ModifyUnitData(_originData.UnitDesc, _originData.UnitExtra,
                     _editData.UnitDesc, _editData.UnitExtra);

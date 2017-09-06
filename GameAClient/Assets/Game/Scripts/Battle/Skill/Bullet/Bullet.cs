@@ -9,7 +9,7 @@ namespace GameA.Game
     {
         protected bool _run;
         protected Transform _trans;
-        protected SpineObject _effectBullet;
+        protected UnityNativeParticleItem _effectBullet;
         protected Table_Unit _tableUnit;
 
         protected SkillBase _skill;
@@ -65,7 +65,7 @@ namespace GameA.Game
             _maskRandom = 0;
             _destroy = 0;
 
-            GameParticleManager.FreeSpineObject(_effectBullet);
+            GameParticleManager.FreeParticleItem(_effectBullet);
             _effectBullet = null;
         }
 
@@ -98,7 +98,11 @@ namespace GameA.Game
             _speed = new IntVec2((int) (_skill.ProjectileSpeed * _direction.x),
                 (int) (_skill.ProjectileSpeed * _direction.y));
             
-            _effectBullet = GameParticleManager.Instance.EmitOnce(_tableUnit.Model, _trans);
+            _effectBullet = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.Model, _trans);
+            if (_effectBullet != null)
+            {
+                _effectBullet.Play();
+            }
             _trans.eulerAngles = new Vector3(0, 0, -angle);
             UpdateTransPos();
             _run = true;

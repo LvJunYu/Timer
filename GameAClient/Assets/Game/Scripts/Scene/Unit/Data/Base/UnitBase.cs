@@ -812,8 +812,6 @@ namespace GameA.Game
 
         public virtual void UpdateLogic()
         {
-            if(_isAlive)
-                CheckShowDamage();
         }
 
         public virtual void UpdateView(float deltaTime)

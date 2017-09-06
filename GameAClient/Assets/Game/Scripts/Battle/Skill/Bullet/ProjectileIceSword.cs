@@ -1,5 +1,6 @@
 ﻿using System;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -7,11 +8,36 @@ namespace GameA.Game
     public class ProjectileIceSword : BlockBase
     {
         protected int _timer;
+        protected UnityNativeParticleItem _effectBullet;
 
         protected override void Clear()
         {
             base.Clear();
             _timer = 0;
+            GameParticleManager.FreeParticleItem(_effectBullet);
+            _effectBullet = null;
+        }
+
+        internal override void OnObjectDestroy()
+        {
+            base.OnObjectDestroy();
+            GameParticleManager.FreeParticleItem(_effectBullet);
+            _effectBullet = null;
+        }
+
+        internal override bool InstantiateView()
+        {
+            if(!base.InstantiateView())
+            {
+                return false;
+            }
+            _effectBullet = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.Model, _trans);
+            if (_effectBullet != null)
+            {
+                _effectBullet.Play();
+                _effectBullet.Trans.localEulerAngles = new Vector3(0, 0, -GM2DTools.GetAngle(Rotation));
+            }
+            return true;
         }
 
         public override void SetLifeTime(int lifeTime)
