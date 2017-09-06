@@ -5,10 +5,12 @@
 ** Summary : SpineUnit
 ***********************************************************************/
 
+using System;
 using SoyEngine;
 using Spine.Unity;
 using UnityEngine;
 using NewResourceSolution;
+using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
@@ -16,7 +18,8 @@ namespace GameA.Game
     public class SpineUnit : UnitView
     {
         protected SkeletonAnimation _skeletonAnimation;
-		protected Renderer _renderer;
+        protected Renderer _renderer;
+        private bool _hasSetShader;
 
         public SpineUnit()
         {
@@ -27,8 +30,9 @@ namespace GameA.Game
 
         protected override bool OnInit()
         {
-            string skeletonDataAssetName = string.Format ("{0}_SkeletonData", _unit.AssetPath);
-            SkeletonDataAsset data = ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData,skeletonDataAssetName,0);
+            string skeletonDataAssetName = string.Format("{0}_SkeletonData", _unit.AssetPath);
+            SkeletonDataAsset data =
+                ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, skeletonDataAssetName, 0);
             if (null == data)
             {
                 LogHelper.Error("TryGetSpineDataByName Failed! {0}", _unit.AssetPath);
@@ -51,12 +55,24 @@ namespace GameA.Game
             }
         }
 
-        public override void SetRendererColor (Color color)
+        public override void SetRendererColor(Color color)
         {
-			if (_skeletonAnimation != null && _skeletonAnimation.skeleton != null) {
-                _skeletonAnimation.skeleton.SetColor (color);
+            if (_skeletonAnimation != null && _skeletonAnimation.skeleton != null)
+            {
+                _skeletonAnimation.skeleton.SetColor(color);
             }
         }
+
+        public override void SetMatShader(Shader shader, string name = null, float value = 1)
+        {
+            if (_renderer != null)
+            {
+                _renderer.material.shader = shader;
+                if (name != null)
+                    _renderer.material.SetFloat(name, value);
+            }
+        }
+
 
         public override void SetSortingOrder(int sortingOrder)
         {
