@@ -24,7 +24,8 @@ namespace GameA.Game
 
     public class ActorBase : DynamicRigidbody
     {
-        private static EInputType[] _skillInputs = new EInputType[3]{EInputType.Skill1, EInputType.Skill2, EInputType.Skill3};
+        private static EInputType[] _skillInputs = new EInputType[3]
+            {EInputType.Skill1, EInputType.Skill2, EInputType.Skill3};
 
         protected List<State> _currentStates = new List<State>();
         private Comparison<State> _comparisonState = SortState;
@@ -35,11 +36,12 @@ namespace GameA.Game
         /// 每一帧只检查一个水块
         /// </summary>
         protected bool _hasWaterCheckedInFrame;
-        
+
         protected SkillCtrl _skillCtrl;
-        
+
         private int _damageFrame;
-        
+        private Shader _damageShader;
+
         public override EDieType EDieType
         {
             get { return _eDieType; }
@@ -49,7 +51,7 @@ namespace GameA.Game
         {
             get { return true; }
         }
-        
+
         protected override bool IsCheckGround()
         {
             return true;
@@ -105,6 +107,13 @@ namespace GameA.Game
             _hasWaterCheckedInFrame = false;
         }
 
+        public override void UpdateLogic()
+        {
+            base.UpdateLogic();
+            //死亡时也要变色
+            CheckShowDamage();
+        }
+
         protected override void UpdateData()
         {
             if (_input != null && CanMove)
@@ -127,7 +136,6 @@ namespace GameA.Game
             {
                 _currentStates[i].UpdateLogic();
             }
-            CheckShowDamage();
         }
 
         public void UpdateInput()
@@ -150,7 +158,7 @@ namespace GameA.Game
                             SetFacingDir(EMoveDirection.Right);
                         }
                         break;
-                    case EClimbState.Up://翻转
+                    case EClimbState.Up: //翻转
                         if (_input.GetKeyApplied(EInputType.Left))
                         {
                             SetFacingDir(EMoveDirection.Right);
@@ -166,14 +174,14 @@ namespace GameA.Game
             CheckAssist();
             CheckSkill();
         }
-        
+
         protected virtual void CheckJump()
         {
             _climbJump = false;
             if (_input.GetKeyDownApplied(EInputType.Jump))
             {
                 //攀墙跳
-                if (_eClimbState > EClimbState.None )
+                if (_eClimbState > EClimbState.None)
                 {
                     _climbJump = true;
                     ExtraSpeed.y = 0;
@@ -250,7 +258,7 @@ namespace GameA.Game
                 }
             }
         }
-        
+
         protected void CheckAssist()
         {
             if (_input.GetKeyUpApplied(EInputType.Assist))
@@ -258,13 +266,17 @@ namespace GameA.Game
                 OnBoxHoldingChanged();
             }
         }
-        
+
         protected void CheckSkill()
         {
-            var eShootDir = _moveDirection == EMoveDirection.Left ? EShootDirectionType.Left : EShootDirectionType.Right;
+            var eShootDir = _moveDirection == EMoveDirection.Left
+                ? EShootDirectionType.Left
+                : EShootDirectionType.Right;
             if (_eClimbState == EClimbState.Up)
             {
-                eShootDir = _moveDirection == EMoveDirection.Left ? EShootDirectionType.Right : EShootDirectionType.Left;
+                eShootDir = _moveDirection == EMoveDirection.Left
+                    ? EShootDirectionType.Right
+                    : EShootDirectionType.Left;
             }
             if (_input.GetKeyApplied(EInputType.Left))
             {
@@ -298,7 +310,7 @@ namespace GameA.Game
             {
                 eShootDir = EShootDirectionType.Up;
             }
-            _angle = (int)eShootDir;
+            _angle = (int) eShootDir;
             if (IsCharacterAbilityAvailable(ECharacterAbility.Shoot) && _skillCtrl != null)
             {
                 for (int i = 0; i < _skillCtrl.CurrentSkills.Length; i++)
@@ -310,46 +322,45 @@ namespace GameA.Game
                     }
                     switch (skill.EWeaponInputType)
                     {
-                            case EWeaponInputType.GetKey:
+                        case EWeaponInputType.GetKey:
+                            if (_input.GetKeyApplied(_skillInputs[i]))
+                            {
+                                if (_skillCtrl.Fire(i))
+                                {
+                                    ChangeGunView(i);
+                                }
+                                return;
+                            }
+                            break;
+                        case EWeaponInputType.GetKeyUp:
+                            if (IsPlayer)
+                            {
+                                if (_input.GetKeyUpApplied(_skillInputs[i]))
+                                {
+                                    if (_skillCtrl.Fire(i))
+                                    {
+                                        ChangeGunView(i);
+                                    }
+                                }
+                            }
+                            else
+                            {
                                 if (_input.GetKeyApplied(_skillInputs[i]))
                                 {
                                     if (_skillCtrl.Fire(i))
                                     {
                                         ChangeGunView(i);
                                     }
-                                    return;
                                 }
-                                break;
-                            case EWeaponInputType.GetKeyUp:
-                                if (IsPlayer)
-                                {
-                                    if (_input.GetKeyUpApplied(_skillInputs[i]))
-                                    {
-                                        if (_skillCtrl.Fire(i))
-                                        {
-                                            ChangeGunView(i);
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    if (_input.GetKeyApplied(_skillInputs[i]))
-                                    {
-                                        if (_skillCtrl.Fire(i))
-                                        {
-                                            ChangeGunView(i);
-                                        }
-                                    }
-                                }
-                                break;
+                            }
+                            break;
                     }
                 }
             }
         }
-        
+
         public virtual void ChangeGunView(int slot)
         {
-
         }
 
         private bool IsCharacterAbilityAvailable(ECharacterAbility eCharacterAbility)
@@ -394,7 +405,7 @@ namespace GameA.Game
                 //如果不存在，判断是否同类替换
                 if (tableState.IsReplace == 1)
                 {
-                    RemoveStateByType((EStateType)tableState.StateType);
+                    RemoveStateByType((EStateType) tableState.StateType);
                 }
                 state = PoolFactory<State>.Get();
                 if (state.OnAttached(tableState, this))
@@ -410,7 +421,6 @@ namespace GameA.Game
 
         protected virtual void OnAddState(State state)
         {
-   
         }
 
         public override void RemoveStates(params int[] ids)
@@ -455,18 +465,18 @@ namespace GameA.Game
         {
             for (int i = _currentStates.Count - 1; i >= 0; i--)
             {
-                if (_currentStates[i].TableState.StateType == (int)stateType)
+                if (_currentStates[i].TableState.StateType == (int) stateType)
                 {
                     RemoveState(_currentStates[i]);
                 }
             }
         }
-        
+
         public override bool TryGetState(EStateType stateType, out State state)
         {
             for (int i = _currentStates.Count - 1; i >= 0; i--)
             {
-                if (_currentStates[i].TableState.StateType == (int)stateType)
+                if (_currentStates[i].TableState.StateType == (int) stateType)
                 {
                     state = _currentStates[i];
                     return true;
@@ -530,7 +540,7 @@ namespace GameA.Game
             _eDieType = EDieType.Lazer;
             OnDead();
         }
-        
+
         internal override void InSaw()
         {
             if (!_isAlive || IsInvincible)
@@ -540,7 +550,7 @@ namespace GameA.Game
             _eDieType = EDieType.Saw;
             OnDead();
         }
-   
+
         internal override void InWater()
         {
             //每一帧只检测一个水。
@@ -565,9 +575,9 @@ namespace GameA.Game
             OnDead();
         }
 
-        protected override void OnDead ()
+        protected override void OnDead()
         {
-            base.OnDead ();
+            base.OnDead();
             if (HasStateType(EStateType.Fire))
             {
                 _eDieType = EDieType.Fire;
@@ -635,7 +645,7 @@ namespace GameA.Game
                 _view.StatusBar.SetHP(hpChanged > 0 ? EHPModifyCase.Heal : EHPModifyCase.Hit, _hp, _maxHp);
             }
         }
-        
+
         protected void CheckShowDamage()
         {
             if (_damageFrame > 0)
@@ -643,9 +653,13 @@ namespace GameA.Game
                 _damageFrame--;
                 if (_view != null)
                 {
-                    _view.SetRendererColor(_damageFrame == 0
-                        ? Color.white
-                        : Color.Lerp(Color.red, Color.white, (float) _damageFrame / BattleDefine.DamageDurationFrame));
+                    //替换Shader
+                    if (null == _damageShader)
+                        _damageShader = Shader.Find("Spine/SkeletonWhite");
+                    _view.SetMatShader(_damageShader, "Value", _damageFrame / (float) BattleDefine.DamageDurationFrame);
+//                    _view.SetRendererColor(_damageFrame == 0
+//                        ? Color.white
+//                        : Color.Lerp(Color.red, Color.white, (float) _damageFrame / BattleDefine.DamageDurationFrame));
                 }
             }
         }
