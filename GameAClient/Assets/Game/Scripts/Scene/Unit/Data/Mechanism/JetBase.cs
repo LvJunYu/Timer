@@ -28,7 +28,12 @@ namespace GameA.Game
         {
             get { return true; }
         }
-        
+
+        public override float Angle
+        {
+            get { return _curAngle; }
+        }
+
         protected override bool OnInit()
         {
             if (!base.OnInit())
@@ -54,7 +59,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            InitAssetRotation();
             _animationName = ((EDirectionType) _unitDesc.Rotation).ToString();
             SetWeapon(_weaponId);
             return true;
@@ -131,19 +135,26 @@ namespace GameA.Game
             {
                 return;
             }
-            switch (_eRotateType)
+            if (_eRotateType != ERotateType.None)
             {
-                case ERotateType.Clockwise:
-                    _curAngle += 1;
-                    break;
-                case ERotateType.Anticlockwise:
-                    _curAngle += -1;
-                    break;
-            }
-            Util.CorrectAngle360(ref _curAngle);
-            if (Util.IsFloatEqual(_curAngle, _angle) || Util.IsFloatEqual(_curAngle, _endAngle))
-            {
-                _eRotateType = _eRotateType == ERotateType.Clockwise ? ERotateType.Anticlockwise : ERotateType.Clockwise;
+                switch (_eRotateType)
+                {
+                    case ERotateType.Clockwise:
+                        _curAngle += 1;
+                        break;
+                    case ERotateType.Anticlockwise:
+                        _curAngle += -1;
+                        break;
+                }
+                Util.CorrectAngle360(ref _curAngle);
+                if (Util.IsFloatEqual(_curAngle, _angle) || Util.IsFloatEqual(_curAngle, _endAngle))
+                {
+                    _eRotateType = _eRotateType == ERotateType.Clockwise ? ERotateType.Anticlockwise : ERotateType.Clockwise;
+                }
+                if (_trans != null)
+                {
+                    _trans.localEulerAngles = new Vector3(0, 0, -_curAngle);
+                }
             }
             if (_skillCtrl != null)
             {

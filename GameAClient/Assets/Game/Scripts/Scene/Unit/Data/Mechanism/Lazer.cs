@@ -58,10 +58,6 @@ namespace GameA.Game
         {
             _distance = ConstDefineGM2D.MaxMapDistance;
             _direction = GM2DTools.GetDirection(_curAngle);
-            if (_trans != null)
-            {
-                _trans.localEulerAngles = new Vector3(0, 0, -_curAngle);
-            }
         }
 
         internal override bool InstantiateView()
@@ -154,6 +150,10 @@ namespace GameA.Game
                 if (Util.IsFloatEqual(_curAngle, _angle) || Util.IsFloatEqual(_curAngle, _endAngle))
                 {
                     _eRotateType = _eRotateType == ERotateType.Clockwise ? ERotateType.Anticlockwise : ERotateType.Clockwise;
+                }
+                if (_trans != null)
+                {
+                    _trans.localEulerAngles = new Vector3(0, 0, -_curAngle);
                 }
             }
             _gridCheck.Before();

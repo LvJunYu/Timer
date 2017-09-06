@@ -64,11 +64,6 @@ namespace GameA.Game
             }
         }
 
-        public override IntVec2 FirePos
-        {
-            get { return CenterPos; }
-        }
-
         public IntVec2 CameraFollowPos
         {
             get

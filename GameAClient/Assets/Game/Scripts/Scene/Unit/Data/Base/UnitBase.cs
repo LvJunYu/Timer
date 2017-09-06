@@ -430,7 +430,7 @@ namespace GameA.Game
                 _curPos = new IntVec2(value.x - dataSize.x / 2, value.y);
             }
         }
-
+        
         public IntVec2 CenterPos
         {
             get
@@ -498,15 +498,6 @@ namespace GameA.Game
         public virtual float Angle
         {
             get { return _angle; }
-        }
-
-        public virtual IntVec2 FirePos
-        {
-            get
-            {
-                var halfSize = GetDataSize() / 2;
-                return new IntVec2(_curPos.x + halfSize.x, _curPos.y + halfSize.y);
-            }
         }
 
         public string AssetPath

@@ -235,7 +235,6 @@ namespace GameA.Game
             {
                 _currentBulletCount = count;
                 _startCharge = _currentBulletCount == 0;
-                LogHelper.Debug("Start Charge..." + _startCharge);
                 SetTimerCharge(_chargeTime);
                 if (_owner.IsMain)
                 {
@@ -269,7 +268,6 @@ namespace GameA.Game
                 SetBullet(_totalBulletCount);
                 _startCharge = false;
                 _timerCharge = _chargeTime;
-                LogHelper.Debug("Full");
             }
             if (_owner.IsMain)
             {
@@ -299,7 +297,7 @@ namespace GameA.Game
         {
             if (UnitDefine.UseRayBullet(bulletId))
             {
-                return _owner.FirePos;
+                return _owner.CenterPos;
             }
             var tableUnit = UnitManager.Instance.GetTableUnit(bulletId);
             if (tableUnit == null)
@@ -307,7 +305,7 @@ namespace GameA.Game
                 return IntVec2.zero;
             }
             var dataSize = tableUnit.GetDataSize(0, Vector2.one);
-            return _owner.FirePos - dataSize * 0.5f;
+            return _owner.CenterPos - dataSize * 0.5f;
         }
         
         protected virtual void OnSkillCast()
