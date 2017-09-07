@@ -151,6 +151,11 @@ namespace GameA.Game
 		[ColumnMapping("PairUnitIds")]
 		public int[] PairUnitIds;
 		/// <summary>
+        /// 伴随特效
+        /// </summary>
+		[ColumnMapping("WithEffctName")]
+		public string WithEffctName;
+		/// <summary>
         /// 破坏音效
         /// </summary>
 		[ColumnMapping("DestroyAudioName")]
