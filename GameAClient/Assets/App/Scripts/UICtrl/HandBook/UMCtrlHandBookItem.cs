@@ -12,8 +12,6 @@ namespace GameA
     {
        
         #region 变量
-        private string _unitName = null;
-        private string _unitDesc = null;
         private string _unitIconName = null;
         private int _unitId;
         private Color _colorMask = new Color(0.125f,0.125f,0.125f,1);
@@ -31,13 +29,7 @@ namespace GameA
             base.OnViewCreated();
          
         }
-        /// <summary>
-        /// Init表示的是初始化
-        /// </summary>
-        /// <param name="parent"></param>
-        /// <param name="localpos"></param>
-        /// <returns></returns>
-        public bool Init(RectTransform parent,Vector3 localpos = new Vector3())
+        public  bool Set(RectTransform parent,Vector3 localpos = new Vector3())
         { 
             return base.Init(parent, localpos, SocialGUIManager.Instance.UIRoot);
         }

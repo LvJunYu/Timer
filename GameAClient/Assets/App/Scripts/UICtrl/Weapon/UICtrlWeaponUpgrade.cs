@@ -22,7 +22,6 @@ namespace GameA
         private int _needGoldCoinNum;
         private int _needWeaponPartNum;
         private int _needUniversalNum;
-        private string _universalSpriteName = "universalpart";
         private Sprite _universalSprie;
         private string _weaponPartSpriteName;
         private Sprite _weaponPartSprite;
