@@ -13,13 +13,6 @@ namespace GameA.Game
     [Unit(Id = 5005, Type = typeof (Roller))]
     public class Roller : BlockBase
     {
-        private EMoveDirection _rollerDirection;
-
-        public EMoveDirection RollerDirection
-        {
-            get { return _rollerDirection; }
-        }
-
         public override IntVec2 GetDeltaImpactPos(UnitBase unit)
         {
             IntVec2 deltaImpactPos = IntVec2.zero;
@@ -27,12 +20,12 @@ namespace GameA.Game
             //推箱子的时候额外处理
             if (player != null && player.IsHoldingBox())
             {
-                switch (_rollerDirection)
+                switch ((EDirectionType)Rotation)
                 {
-                    case EMoveDirection.Right:
+                    case EDirectionType.Right:
                         deltaImpactPos.x = (int) (player.CurMaxSpeedX * 0.8f);
                         break;
-                    case EMoveDirection.Left:
+                    case EDirectionType.Left:
                         deltaImpactPos.x = (int) (-player.CurMaxSpeedX * 0.8f);
                         break;
                 }
@@ -42,12 +35,12 @@ namespace GameA.Game
                 }
                 return deltaImpactPos + _deltaPos;
             }
-            switch (_rollerDirection)
+            switch ((EDirectionType)Rotation)
             {
-                case EMoveDirection.Right:
+                case EDirectionType.Right:
                     deltaImpactPos.x = 50;
                     break;
-                case EMoveDirection.Left:
+                case EDirectionType.Left:
                     deltaImpactPos.x = -50;
                     break;
             }
@@ -60,7 +53,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            _animation.Init(_rollerDirection == EMoveDirection.Left ? "LeftRun" : "RightRun");
+            _animation.Init(Rotation == (int)EDirectionType.Left ? "LeftRun" : "RightRun");
             return true;
         }
     }
