@@ -77,6 +77,8 @@ namespace GameA.Game
                 _skillCtrl.Clear();
             }
             _damageFrame = 0;
+            if (_damageShader != null)
+                _view.SetMatShader(_damageShader, "Value", _damageFrame / (float) BattleDefine.DamageDurationFrame);
             base.Clear();
         }
 
@@ -653,7 +655,6 @@ namespace GameA.Game
                 _damageFrame--;
                 if (_view != null)
                 {
-                    //替换Shader
                     if (null == _damageShader)
                         _damageShader = Shader.Find("Spine/SkeletonWhite");
                     _view.SetMatShader(_damageShader, "Value", _damageFrame / (float) BattleDefine.DamageDurationFrame);

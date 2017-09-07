@@ -65,11 +65,21 @@ namespace GameA.Game
 
         public override void SetMatShader(Shader shader, string name = null, float value = 1)
         {
-            if (_renderer != null)
+            if (_renderer == null) return;
+            var sharedMaterials = _renderer.sharedMaterials;
+            if (!_hasSetShader)
             {
-                _renderer.material.shader = shader;
+                for (int i = 0; i < sharedMaterials.Length; i++)
+                {
+                    if (sharedMaterials[i].shader.name == "Spine/Skeleton")
+                        sharedMaterials[i].shader = shader;
+                }
+                _hasSetShader = true;
+            }
+            for (int i = 0; i < sharedMaterials.Length; i++)
+            {
                 if (name != null)
-                    _renderer.material.SetFloat(name, value);
+                    sharedMaterials[i].SetFloat(name, value);
             }
         }
 
