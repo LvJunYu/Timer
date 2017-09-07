@@ -21,13 +21,17 @@ namespace GameA
     public class UICtrlSceneState : UICtrlInGameBase<UIViewSceneState>
     {
         private Dictionary<EWinCondition, GameObject> _cachedItem;
-        protected Sequence _finalCountDownSequence;
-        private const int _finalTimeMax = 30;
+
         private readonly Dictionary<EWinCondition, UMCtrlGameWinConditionItem> _winConditionItemDict =
             new Dictionary<EWinCondition, UMCtrlGameWinConditionItem>();
+
         private bool _hasTimeLimit;
         private int _lastShowSceonds = -100;
         private readonly List<UMCtrlGameStarItem> _starConditionList = new List<UMCtrlGameStarItem>(3);
+
+        private const int _finalTimeMax = 30;
+        private List<UMCtrlCollectionItem> _umCtrlCollectionItemCache;
+        protected Sequence _finalCountDownSequence;
 
         /// <summary>
         /// 冒险模式
@@ -59,6 +63,16 @@ namespace GameA
             base.OnOpen(parameter);
             UpdateItemVisible();
             UpdateAll();
+            if (null == _umCtrlCollectionItemCache)
+            {
+                _umCtrlCollectionItemCache = new List<UMCtrlCollectionItem>(12);
+                for (int i = 0; i < _umCtrlCollectionItemCache.Count; i++)
+                {
+                    _umCtrlCollectionItemCache[i] = new UMCtrlCollectionItem();
+                    _umCtrlCollectionItemCache[i].Init(_cachedView.Trans);
+                    _umCtrlCollectionItemCache[i].Hide();
+                }
+            }
         }
 
         protected override void OnClose()
@@ -76,6 +90,7 @@ namespace GameA
             RegisterEvent(EMessengerType.OnGameRestart, OnGameRestart);
             RegisterEvent(EMessengerType.OnKeyChanged, OnKeyCountChanged);
             RegisterEvent(EMessengerType.OnScoreChanged, OnScoreChanged);
+            RegisterEvent<Vector3>(EMessengerType.OnGemCollect, ShowCollectionAnimation);
         }
 
         protected override void ExitGame()
@@ -262,32 +277,6 @@ namespace GameA
             }
         }
 
-        private void CreateFinalCountDownSequence()
-        {
-            _finalCountDownSequence = DOTween.Sequence();
-            _finalCountDownSequence.Append(
-                _cachedView.LeftTimeText.rectTransform().DOScale(Vector3.one * _cachedView.SmallSize, _cachedView.SmallTime));
-            _finalCountDownSequence.Append(
-                _cachedView.LeftTimeText.rectTransform().DOScale(Vector3.one * _cachedView.BigSize, _cachedView.BigTime)
-                    .SetEase(Ease.OutBack));
-            _finalCountDownSequence.SetAutoKill(false).Pause();
-        }
-
-        private void ShowFinalCountDown()
-        {
-            if (null == _finalCountDownSequence)
-                CreateFinalCountDownSequence();
-            _cachedView.LeftTimeText.rectTransform().localScale = Vector3.one * _cachedView.BigSize;
-            _cachedView.LeftTimeText.color = _cachedView.Color;
-            _finalCountDownSequence.Restart();
-        }
-
-        private void Clear()
-        {
-            _cachedView.LeftTimeText.rectTransform().localScale = Vector3.one;
-            _cachedView.LeftTimeText.color = Color.white;
-        }
-
         private void UpdateTimeLimit()
         {
             int curValue = PlayMode.Instance.SceneState.SecondLeft;
@@ -455,6 +444,56 @@ namespace GameA
                     return "杀死所有怪物";
             }
             return string.Empty;
+        }
+
+        private void ShowFinalCountDown()
+        {
+            if (null == _finalCountDownSequence)
+                CreateFinalCountDownSequence();
+            _cachedView.LeftTimeText.rectTransform().localScale = Vector3.one * 1.3f;
+            _cachedView.LeftTimeText.color = _cachedView.Color;
+            _finalCountDownSequence.Restart();
+        }
+
+        private void CreateFinalCountDownSequence()
+        {
+            _finalCountDownSequence = DOTween.Sequence();
+            _finalCountDownSequence.Append(
+                _cachedView.LeftTimeText.rectTransform().DOScale(Vector3.one * 0.8f, 0.05f));
+            _finalCountDownSequence.Append(
+                _cachedView.LeftTimeText.rectTransform().DOScale(Vector3.one * 1.3f, 0.2f)
+                    .SetEase(Ease.OutBack));
+            _finalCountDownSequence.SetAutoKill(false).Pause();
+        }
+
+        private void Clear()
+        {
+            _cachedView.LeftTimeText.rectTransform().localScale = Vector3.one;
+            _cachedView.LeftTimeText.color = Color.white;
+        }
+
+        public void ShowCollectionAnimation(Vector3 InitialPos)
+        {
+            UMCtrlCollectionItem umCtrlCollectionItem = CreateUmCtrlCollectionItem();
+            umCtrlCollectionItem.CollectAnimation(InitialPos, _cachedView.CollectionIconRTF.position);
+        }
+
+        private UMCtrlCollectionItem CreateUmCtrlCollectionItem()
+        {
+            if (null == _umCtrlCollectionItemCache)
+                _umCtrlCollectionItemCache = new List<UMCtrlCollectionItem>(12);
+            UMCtrlCollectionItem umCtrlCollectionItem = _umCtrlCollectionItemCache.Find(p => !p.IsShow);
+            if (umCtrlCollectionItem != null)
+            {
+                umCtrlCollectionItem.Show();
+            }
+            else
+            {
+                umCtrlCollectionItem = new UMCtrlCollectionItem();
+                umCtrlCollectionItem.Init(_cachedView.Trans);
+                _umCtrlCollectionItemCache.Add(umCtrlCollectionItem);
+            }
+            return umCtrlCollectionItem;
         }
 
         #endregion
