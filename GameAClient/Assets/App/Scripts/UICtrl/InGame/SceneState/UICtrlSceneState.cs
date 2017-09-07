@@ -7,6 +7,7 @@
 
 
 using System.Collections.Generic;
+using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
@@ -20,7 +21,8 @@ namespace GameA
     public class UICtrlSceneState : UICtrlInGameBase<UIViewSceneState>
     {
         private Dictionary<EWinCondition, GameObject> _cachedItem;
-
+        protected Sequence _finalCountDownSequence;
+        private const int _finalTimeMax = 30;
         private readonly Dictionary<EWinCondition, UMCtrlGameWinConditionItem> _winConditionItemDict =
             new Dictionary<EWinCondition, UMCtrlGameWinConditionItem>();
         private bool _hasTimeLimit;
@@ -57,6 +59,12 @@ namespace GameA
             base.OnOpen(parameter);
             UpdateItemVisible();
             UpdateAll();
+        }
+
+        protected override void OnClose()
+        {
+            base.OnClose();
+            Clear();
         }
 
         protected override void InitEventListener()
@@ -254,6 +262,32 @@ namespace GameA
             }
         }
 
+        private void CreateFinalCountDownSequence()
+        {
+            _finalCountDownSequence = DOTween.Sequence();
+            _finalCountDownSequence.Append(
+                _cachedView.LeftTimeText.rectTransform().DOScale(Vector3.one * _cachedView.SmallSize, _cachedView.SmallTime));
+            _finalCountDownSequence.Append(
+                _cachedView.LeftTimeText.rectTransform().DOScale(Vector3.one * _cachedView.BigSize, _cachedView.BigTime)
+                    .SetEase(Ease.OutBack));
+            _finalCountDownSequence.SetAutoKill(false).Pause();
+        }
+
+        private void ShowFinalCountDown()
+        {
+            if (null == _finalCountDownSequence)
+                CreateFinalCountDownSequence();
+            _cachedView.LeftTimeText.rectTransform().localScale = Vector3.one * _cachedView.BigSize;
+            _cachedView.LeftTimeText.color = _cachedView.Color;
+            _finalCountDownSequence.Restart();
+        }
+
+        private void Clear()
+        {
+            _cachedView.LeftTimeText.rectTransform().localScale = Vector3.one;
+            _cachedView.LeftTimeText.color = Color.white;
+        }
+
         private void UpdateTimeLimit()
         {
             int curValue = PlayMode.Instance.SceneState.SecondLeft;
@@ -261,10 +295,13 @@ namespace GameA
             {
                 int minutes = curValue / 60;
                 int seconds = curValue % 60;
-
                 _cachedView.LeftTimeText.text =
                     string.Format(GM2DUIConstDefine.WinDataTimeShowFormat, minutes, seconds);
                 _lastShowSceonds = curValue;
+                if (curValue < _finalTimeMax)
+                {
+                    ShowFinalCountDown();
+                }
                 if (_hasTimeLimit)
                 {
                     if (_winConditionItemDict.Count > 1)
@@ -318,7 +355,7 @@ namespace GameA
                             {
                                 item = new UMCtrlGameStarItem();
                                 item.Init(_cachedView.ConditionsItemRoot);
-                               _starConditionList.Add(item);
+                                _starConditionList.Add(item);
                             }
                             else
                             {
@@ -348,7 +385,6 @@ namespace GameA
             else
             {
                 _cachedView.LevelInfoDock.SetActive(false);
-                
             }
         }
 

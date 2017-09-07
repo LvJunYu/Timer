@@ -71,17 +71,28 @@ namespace GameA.Game
 	        }
 	    }
 
-	    public ERotateType DefaultRotateType
-	    {
-	        get
-	        {
-	            if (RotateState == 3)
-	            {
-	                return ERotateType.None;
-	            }
-		        return (ERotateType) (RotateState - 1);
-	        }
-	    }
+		public ERotateType DefaultRotateMode
+		{
+			get
+			{
+				if (RotateState == 3)
+				{
+					return ERotateType.None;
+				}
+				return (ERotateType) (RotateState - 1);
+			}
+		}
+
+		public EDirectionType DefaultRotateEnd
+		{
+			get
+			{
+				var forward = (int) DefaultDirection;
+				int v = forward / 4;
+				var opposite = (forward + 2) % 4 + v * 4;
+				return (EDirectionType) opposite;
+			}
+		}
 
 		public bool HasDirection8
 		{

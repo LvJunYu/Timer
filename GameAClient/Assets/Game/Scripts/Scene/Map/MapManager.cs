@@ -245,7 +245,7 @@ namespace GameA.Game
                 unitObject.Scale = Vector2.one;
                 unitObject.Guid = new IntVec3((2 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x),ConstDefineGM2D.MapStartPos.y+ConstDefineGM2D.ServerTileScale,
                     (int) EUnitDepth.Earth);
-                EditMode.Instance.AddUnitWithCheck(unitObject);
+                EditMode.Instance.AddUnitWithCheck(unitObject, EditHelper.GetUnitDefaultData(unitObject.Id).UnitExtra);
             }
             //生成胜利之门
             {
@@ -253,7 +253,7 @@ namespace GameA.Game
                 unitObject.Id = MapConfig.FinalItemId;
                 unitObject.Scale = Vector2.one;
                 unitObject.Guid = new IntVec3(12 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x,ConstDefineGM2D.MapStartPos.y+ConstDefineGM2D.ServerTileScale, 0);
-                EditMode.Instance.AddUnitWithCheck(unitObject);
+                EditMode.Instance.AddUnitWithCheck(unitObject, EditHelper.GetUnitDefaultData(unitObject.Id).UnitExtra);
             }
             //生成地形
             var validMapRect = DataScene2D.Instance.ValidMapRect;
@@ -262,12 +262,12 @@ namespace GameA.Game
                 //down
                 for (int j = validMapRect.Min.y - ConstDefineGM2D.ServerTileScale; j < validMapRect.Min.y +ConstDefineGM2D.ServerTileScale ; j += ConstDefineGM2D.ServerTileScale)
                 {
-                    EditMode.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one));
+                    EditMode.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one), EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
                 }
                 //up
                 for (int j = validMapRect.Max.y + 1 - ConstDefineGM2D.ServerTileScale; j < validMapRect.Max.y + ConstDefineGM2D.ServerTileScale; j += ConstDefineGM2D.ServerTileScale)
                 {
-                    EditMode.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one));
+                    EditMode.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(i, j, 0), 0, Vector2.one), EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
                 }
             }
             for (int i = validMapRect.Min.y + ConstDefineGM2D.ServerTileScale; i < validMapRect.Max.y - ConstDefineGM2D.ServerTileScale; i += ConstDefineGM2D.ServerTileScale)
@@ -275,12 +275,12 @@ namespace GameA.Game
                 //left
                 for (int j = validMapRect.Min.x - ConstDefineGM2D.ServerTileScale; j < validMapRect.Min.x + ConstDefineGM2D.ServerTileScale; j += ConstDefineGM2D.ServerTileScale)
                 {
-                    EditMode.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(j, i, 0), 0, Vector2.one));
+                    EditMode.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(j, i, 0), 0, Vector2.one), EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
                 }
                 //right
                 for (int j = validMapRect.Max.x + 1 - ConstDefineGM2D.ServerTileScale; j < validMapRect.Max.x + ConstDefineGM2D.ServerTileScale; j += ConstDefineGM2D.ServerTileScale)
                 {
-                    EditMode.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(j, i, 0), 0, Vector2.one));
+                    EditMode.Instance.AddUnitWithCheck(new UnitDesc(MapConfig.TerrainItemId, new IntVec3(j, i, 0), 0, Vector2.one), EditHelper.GetUnitDefaultData(MapConfig.TerrainItemId).UnitExtra);
                 }
             }
         }

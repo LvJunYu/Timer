@@ -196,23 +196,10 @@ namespace GameA.Game
                     }
                 }
                 var tableUnit = stateData.CurrentMovingUnitBase.TableUnit;
-                if (EditMode.Instance.AddUnitWithCheck(unitDesc))
+                if (EditMode.Instance.AddUnitWithCheck(unitDesc, stateData.DragUnitExtra))
                 {
                     GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.EditLayItem);
-                    UnitExtra extra = stateData.DragUnitExtra;
-                    if (extra != UnitExtra.zero)
-                    {
-                        DataScene2D.Instance.ProcessUnitExtra(unitDesc, stateData.DragUnitExtra);
-                    }
-                    else
-                    {
-                        if (tableUnit.CanEdit(EEditType.MoveDirection))
-                        {
-                            extra.MoveDirection = (EMoveDirection)EditHelper.GetUnitOrigDirOrRot(tableUnit);
-                            DataScene2D.Instance.ProcessUnitExtra(unitDesc, extra);
-                        }
-                    }
-                    extra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
+                    var extra = stateData.DragUnitExtra;
                     recordBatch.RecordAddUnit(ref unitDesc, ref extra);
                     if (boardData.CurrentTouchUnitDesc != UnitDesc.zero)
                     {

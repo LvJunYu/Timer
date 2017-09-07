@@ -46,7 +46,7 @@ namespace GameA.Game
                 }
                 ModifyData data = RemovedUnits[idx];
                 RemovedUnits.RemoveAt(idx);
-                if (!EditMode.Instance.AddUnitWithCheck(data.OrigUnit.UnitDesc))
+                if (!EditMode.Instance.AddUnitWithCheck(data.OrigUnit.UnitDesc, data.OrigUnit.UnitExtra))
                 {
                     RemovedUnits.Insert(idx, data);
                     LogHelper.Error("Can't undo the {0}'s erase action when add unit, unitdesc: {1}", idx,

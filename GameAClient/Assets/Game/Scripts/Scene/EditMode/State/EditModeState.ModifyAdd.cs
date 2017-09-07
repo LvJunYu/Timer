@@ -44,10 +44,10 @@ namespace GameA.Game
                 }
                 if (CheckCanModifyAdd(createUnitDesc))
                 {
-                    if (EditMode.Instance.AddUnitWithCheck(createUnitDesc)) {
+                    var unitExtra = EditHelper.GetUnitDefaultData(createUnitDesc.Id).UnitExtra;
+                    if (EditMode.Instance.AddUnitWithCheck(createUnitDesc, unitExtra)) {
                         GameAudioManager.Instance.PlaySoundsEffects (AudioNameConstDefineGM2D.EditLayItem);
-                        var unitEditData = new UnitEditData(createUnitDesc,
-                            DataScene2D.Instance.GetUnitExtra(createUnitDesc.Guid));
+                        var unitEditData = new UnitEditData(createUnitDesc, unitExtra);
                         OnModifyAdd(unitEditData);
                     }
                 }

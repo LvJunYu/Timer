@@ -95,7 +95,7 @@ namespace GameA.Game
                 if (EditHelper.TryGetUnitDesc(GM2DTools.ScreenToWorldPoint(Input.mousePosition), boardData.EditorLayer, out touchedUnitDesc))
                 {
                     var touchedUnitExtra = DataScene2D.Instance.GetUnitExtra(touchedUnitDesc.Guid);
-                    if (EditHelper.ProcessClickUnitOperation(touchedUnitDesc))
+                    if (EditHelper.TryEditUnitData(touchedUnitDesc))
                     {
                         UnitBase unit;
                         if (ColliderScene2D.Instance.TryGetUnit(touchedUnitDesc.Guid, out unit))
@@ -189,17 +189,11 @@ namespace GameA.Game
                         DataScene2D.Instance.OnUnitDeleteUpdateSwitchData(needReplaceUnitDesc, recordBatch);
                     }
                 }
-                if (EditMode.Instance.AddUnitWithCheck(unitDesc))
+                var unitExtra = EditHelper.GetUnitDefaultData(unitDesc.Id).UnitExtra;
+                if (EditMode.Instance.AddUnitWithCheck(unitDesc, unitExtra))
                 {
                     GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.EditLayItem);
-                    UnitExtra extra = new UnitExtra();
-                    if (tableUnit.CanEdit(EEditType.MoveDirection))
-                    {
-                        extra.MoveDirection = (EMoveDirection)EditHelper.GetUnitOrigDirOrRot(tableUnit);
-                        DataScene2D.Instance.ProcessUnitExtra(unitDesc, extra);
-                    }
-                    extra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
-                    recordBatch.RecordAddUnit(ref unitDesc, ref extra);
+                    recordBatch.RecordAddUnit(ref unitDesc, ref unitExtra);
                 }
             }
         }

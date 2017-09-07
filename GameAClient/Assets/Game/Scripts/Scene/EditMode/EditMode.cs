@@ -522,13 +522,14 @@ namespace GameA.Game
                 EditModeState.Switch.Instance.DeleteSwitchConnection(idx);
             }
         }
-        
+
         /// <summary>
         /// 生成地块并执行附加逻辑比如检查数量，生成草坪
         /// </summary>
         /// <param name="unitDesc"></param>
+        /// <param name="unitExtra"></param>
         /// <returns></returns>
-        public bool AddUnitWithCheck(UnitDesc unitDesc)
+        public bool AddUnitWithCheck(UnitDesc unitDesc, UnitExtra unitExtra)
         {
             Table_Unit tableUnit;
             if (!EditHelper.CheckCanAdd(unitDesc, out tableUnit))
@@ -536,8 +537,11 @@ namespace GameA.Game
                 return false;
             }
             EditHelper.BeforeAddUnit(tableUnit);
+            UnitExtra oldExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
+            DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
             if (!AddUnit(unitDesc))
             {
+                DataScene2D.Instance.ProcessUnitExtra(unitDesc, oldExtra);
                 return false;
             }
             EditHelper.AfterAddUnit(unitDesc, tableUnit);

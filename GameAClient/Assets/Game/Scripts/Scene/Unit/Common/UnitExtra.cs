@@ -25,7 +25,8 @@ namespace GameA.Game
         Rotate,
         Time,
         Text,
-        Style
+        Style,
+        Max,
     }
     
     [Serializable]

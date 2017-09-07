@@ -81,12 +81,12 @@ namespace GameA
                 if (delta.y > CheckDelta.y)
                 {
                     _checkBehaviour = ECheckBehaviour.Drag;
-                    var current = EditHelper.GetUnitOrigDirOrRot(_table);
+                    var current = EditHelper.GetUnitDefaultData(_table.Id);
                     EDirectionType rotate = EDirectionType.Up;
-                    UnitExtra unitExtra = UnitExtra.zero;
+                    UnitExtra unitExtra = current.UnitExtra;
                     if (_table.CanEdit(EEditType.Direction))
                     {
-                        rotate = (EDirectionType) current;
+                        rotate = (EDirectionType) current.UnitDesc.Rotation;
                     }
                     var mouseWorldPos = GM2DTools.ScreenToWorldPoint(pointerEventData.position);
                     EditMode.Instance.StartDragUnit(mouseWorldPos, mouseWorldPos, _table.Id, rotate, ref unitExtra);
@@ -135,8 +135,8 @@ namespace GameA
             {
                 if (_selected)
                 {
-                    EditHelper.ChangeUnitOrigDirOrRot(_table);
-                    RefreshArrowRotation();
+                    UnitDesc unitDesc = EditHelper.GetUnitDefaultData(_table.Id).UnitDesc;
+                    EditHelper.TryEditUnitData(unitDesc);
                 }
             }
             SocialGUIManager.Instance.GetUI<UICtrlItem>().SelectItem(_table);
@@ -251,14 +251,14 @@ namespace GameA
 
         private void RefreshArrowRotation()
         {
-            var current = EditHelper.GetUnitOrigDirOrRot(_table);
+            var current = EditHelper.GetUnitDefaultData(_table.Id);
             if (_table.CanEdit(EEditType.MoveDirection))
             {
-                _cachedView.Arrow.transform.localEulerAngles = new Vector3(0, 0, -90 * (byte)(current - 1));
+                _cachedView.Arrow.transform.localEulerAngles = new Vector3(0, 0, -90 * (byte)(current.UnitExtra.MoveDirection - 1));
             }
             else if (_table.CanEdit(EEditType.Direction))
             {
-                _cachedView.Arrow.transform.localEulerAngles = new Vector3(0, 0, -90 * (byte)(current));
+                _cachedView.Arrow.transform.localEulerAngles = new Vector3(0, 0, -90 * current.UnitDesc.Rotation);
             }
         }
 
@@ -266,7 +266,7 @@ namespace GameA
         {
             None,
             Scroll,
-            Drag,
+            Drag
         }
     }
 }
