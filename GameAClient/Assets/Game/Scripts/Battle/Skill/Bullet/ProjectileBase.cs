@@ -23,10 +23,6 @@ namespace GameA.Game
         /// 是否被阻挡
         /// </summary>
         protected byte _destroy;
-        /// <summary>
-        /// 角度
-        /// </summary>
-        protected float _angle;
 
         protected Vector2 _direction;
         /// <summary>

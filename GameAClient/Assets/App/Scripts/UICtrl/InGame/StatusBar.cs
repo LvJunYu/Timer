@@ -98,7 +98,6 @@ namespace GameA.Game
         private float _targetHeight;
 
         private float _hpPerccentage = 1;
-        private float _mpPercentage = 1;
 
         /// <summary>
         /// 当前hp显示状态
