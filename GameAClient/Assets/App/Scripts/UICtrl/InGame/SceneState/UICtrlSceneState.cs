@@ -20,7 +20,6 @@ namespace GameA
     [UIAutoSetup]
     public class UICtrlSceneState : UICtrlInGameBase<UIViewSceneState>
     {
-        private Dictionary<EWinCondition, GameObject> _cachedItem;
         protected Sequence _finalCountDownSequence;
         private const int _finalTimeMax = 30;
         private readonly Dictionary<EWinCondition, UMCtrlGameWinConditionItem> _winConditionItemDict =
@@ -46,12 +45,6 @@ namespace GameA
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.InGameBackgroud;
-        }
-
-        protected override void OnViewCreated()
-        {
-            base.OnViewCreated();
-            InitUI();
         }
 
         protected override void OnOpen(object parameter)
@@ -179,14 +172,6 @@ namespace GameA
             UpdateScore();
         }
 
-        private void InitUI()
-        {
-            _cachedItem = new Dictionary<EWinCondition, GameObject>();
-            _cachedItem.Add(EWinCondition.TimeLimit, _cachedView.LeftTimeRoot);
-            _cachedItem.Add(EWinCondition.CollectTreasure, _cachedView.CollectionRoot);
-            _cachedItem.Add(EWinCondition.KillMonster, _cachedView.EnemyRoot);
-        }
-
         private void UpdateItemVisible()
         {
             foreach (var entry in _winConditionItemDict)
@@ -194,15 +179,14 @@ namespace GameA
                 entry.Value.Destroy();
             }
             _winConditionItemDict.Clear();
+            _cachedView.CollectionRoot.SetActiveEx(PlayMode.Instance.SceneState.TotalGem > 0);
+            _cachedView.EnemyRoot.SetActiveEx(PlayMode.Instance.SceneState.MonsterCount > 0);
+            _cachedView.KeyRoot.SetActiveEx(PlayMode.Instance.SceneState.HasKey);
+            
             _hasTimeLimit = false;
             for (EWinCondition i = 0; i < EWinCondition.Max; i++)
             {
                 bool hasCondition = PlayMode.Instance.SceneState.HasWinCondition(i);
-                GameObject item;
-                if (_cachedItem.TryGetValue(i, out item))
-                {
-                    item.SetActiveEx(hasCondition);
-                }
                 if (i == EWinCondition.TimeLimit)
                 {
                     _hasTimeLimit = hasCondition;
@@ -225,6 +209,7 @@ namespace GameA
             UpdateTimeLimit();
             _cachedView.LifeRoot.SetActiveEx(PlayMode.Instance.SceneState.IsMainPlayerCreated);
             _cachedView.KeyRoot.SetActiveEx(PlayMode.Instance.SceneState.HasKey);
+            _cachedView.EditModeSpace.SetActiveEx(GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit);
         }
 
         private void UpdateLifeItemValue()
