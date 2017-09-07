@@ -17,7 +17,7 @@ namespace GameA.Game
     {
         protected override void SetValue()
         {
-            _skillCtrl.CurrentSkills[0].SetValue(2000, 600);
+            _skillCtrl.CurrentSkills[0].SetValue(_timeInterval, 600);
         }
     }
 }

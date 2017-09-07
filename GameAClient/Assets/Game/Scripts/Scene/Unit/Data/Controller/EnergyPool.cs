@@ -19,7 +19,6 @@ namespace GameA.Game
         protected int _weaponId;
         protected EnergyPoolCtrl _energyPoolCtrl;
         
-        protected UnityNativeParticleItem _efffect;
         protected UnityNativeParticleItem _efffectWeapon;
 
         internal override bool InstantiateView()
@@ -28,13 +27,11 @@ namespace GameA.Game
             {
                 return false;
             }
-            _efffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectEnergy", _trans);
-            if (_efffect == null)
+            if (_withEffect == null)
             {
                 return false;
             }
-            _efffect.Play();
-            _energyPoolCtrl = _efffect.Trans.GetComponent<EnergyPoolCtrl>();
+            _energyPoolCtrl = _withEffect.Trans.GetComponent<EnergyPoolCtrl>();
             _energyPoolCtrl.LiquidVolume = 0;
             UpdateEnergyEffect();
             return true;
@@ -53,8 +50,6 @@ namespace GameA.Game
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();
-            FreeEffect(_efffect);
-            _efffect = null;
             FreeEffect(_efffectWeapon);
             _efffectWeapon = null;
         }

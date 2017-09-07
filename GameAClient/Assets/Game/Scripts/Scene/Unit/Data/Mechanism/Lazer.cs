@@ -18,7 +18,6 @@ namespace GameA.Game
     {
         protected GridCheck _gridCheck;
 
-        protected UnityNativeParticleItem _effect;
         protected UnityNativeParticleItem _lazerEffect;
         protected UnityNativeParticleItem _lazerEffectEnd;
         
@@ -68,11 +67,9 @@ namespace GameA.Game
             }
             var euler = new Vector3(0, 0, -_angle);
             _trans.localEulerAngles = euler;
-            _effect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazerRun", _trans);
-            if (_effect != null)
+            if (_withEffect != null)
             {
-                _effect.Trans.position += Vector3.back * 0.1f;
-                _effect.Play();
+                _withEffect.Trans.position += Vector3.back * 0.1f;
             }
             _lazerEffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazer", _trans);
             if (_lazerEffect != null)
@@ -105,8 +102,6 @@ namespace GameA.Game
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();
-            FreeEffect(_effect);
-            _effect = null;
             FreeEffect(_lazerEffect);
             _lazerEffect = null;
             FreeEffect(_lazerEffectEnd);
