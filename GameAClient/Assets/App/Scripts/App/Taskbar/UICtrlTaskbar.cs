@@ -85,9 +85,10 @@ namespace GameA
             _cachedView.FriendsBtn.onClick.AddListener(OnFriendBtn);
             _cachedView.MailBoxBtn.onClick.AddListener(OnMailBtn);
             _cachedView.PuzzleBtn.onClick.AddListener(OnPuzzleBtn);
-            _cachedView.Weapon.onClick.AddListener(OnWeapon);
+            _cachedView.Weapon.onClick.AddListener(OnWeaponBtn);
             _cachedView.TrainBtn.onClick.AddListener(OnTrainBtn);
             _cachedView.AchievementBtn.onClick.AddListener(OnAchievementBtn);
+            _cachedView.HandBook.onClick.AddListener(OnHandBookBtn);
             SetLock(UIFunction.UI_FashionShop, _fashionShopAvailable);
             SetLock(UIFunction.UI_Friends, _friendsAvailable);
             SetLock(UIFunction.UI_Lottery, _lotteryAvailable);
@@ -315,7 +316,7 @@ namespace GameA
             }
         }
 
-        private void OnWeapon()
+        private void OnWeaponBtn()
         {
             //Debug.Log("_________________________OnWeaponBtn");
             if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.Weapon))
@@ -323,6 +324,12 @@ namespace GameA
                 SocialGUIManager.Instance.OpenUI<UICtrlWeapon>();
             }
         }
+
+        private void OnHandBookBtn()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlHandBook>();
+        }
+
         //拼图入口秘密通道
         private int _puzzlePasswordCount;
         private float _lastClickTime;
@@ -429,6 +436,7 @@ namespace GameA
         {
           #if UNITY_EDITOR
           _cachedView.WeaponObject.SetActive(true);
+          _cachedView.HandBookObject.SetActive(true);
           SetLock(UIFunction.UI_Puzzle, true);
           SetLock(UIFunction.UI_Train, true);
           SetLock(UIFunction.UI_Achievement, true);
