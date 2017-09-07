@@ -662,10 +662,13 @@ namespace GameA.Game
             {
                 _view.UpdateSign();
             }
-            _withEffect = GameParticleManager.Instance.GetUnityNativeParticleItem("", _trans);
-            if (_withEffect != null)
+            if (!string.IsNullOrEmpty(_tableUnit.WithEffctName))
             {
-                _withEffect.Play();
+                _withEffect = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.WithEffctName , _trans);
+                if (_withEffect != null)
+                {
+                    _withEffect.Play();
+                }
             }
             return true;
         }
