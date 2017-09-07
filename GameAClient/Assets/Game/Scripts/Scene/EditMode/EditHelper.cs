@@ -192,7 +192,7 @@ namespace GameA.Game
                 unitEditData.UnitExtra.RotateMode = (byte) table.DefaultRotateMode;
                 unitEditData.UnitExtra.RotateValue = (byte) table.DefaultRotateEnd;
             }
-            if (table.CanEdit(EEditType.Time))
+            if (table.CanEdit(EEditType.TimeDelay))
             {
                 unitEditData.UnitExtra.TimeDelay = (ushort) table.TimeState[0];
                 unitEditData.UnitExtra.TimeInterval = (ushort) table.TimeState[1];

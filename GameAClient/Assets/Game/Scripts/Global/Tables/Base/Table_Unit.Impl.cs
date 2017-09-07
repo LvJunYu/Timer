@@ -113,7 +113,8 @@ namespace GameA.Game
 	                return ChildState != null;
 	            case EEditType.Rotate:
 	                return RotateState > 0;
-	            case EEditType.Time:
+	            case EEditType.TimeDelay:
+	            case EEditType.TimeInterval:
 	                return TimeState != null;
 	            case EEditType.Text:
 	                return TextState > 0;

@@ -14,7 +14,7 @@ namespace GameA.Game
 {
     public enum EEditType
     {
-        None,
+        None = -1,
         /// <summary>
         /// 存在Node里面。
         /// </summary>
@@ -23,7 +23,8 @@ namespace GameA.Game
         Active,
         Child,
         Rotate,
-        Time,
+        TimeDelay,
+        TimeInterval,
         Text,
         Style,
         Max,
