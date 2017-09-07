@@ -175,7 +175,7 @@ namespace GameA.Game
 				LogHelper.Error("AddUnit failed,{0}", unitDesc.ToString());
 				return false;
 			}
-		    if (!DataScene2D.Instance.AddData(unitDesc, tableUnit, true))
+		    if (!DataScene2D.Instance.AddData(unitDesc, tableUnit))
 			{
 				return false;
 			}

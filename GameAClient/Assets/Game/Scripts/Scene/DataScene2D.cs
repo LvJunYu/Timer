@@ -169,7 +169,7 @@ namespace GameA.Game
 
         #endregion
 
-        public bool AddData(UnitDesc unitDesc, Table_Unit tableUnit, bool isInitAdd = false)
+        public bool AddData(UnitDesc unitDesc, Table_Unit tableUnit)
         {
             var grid = tableUnit.GetBaseDataGrid(unitDesc.Guid);
             SceneNode hit;
@@ -183,10 +183,6 @@ namespace GameA.Game
             if (!AddNode(dataNode))
             {
                 return false;
-            }
-            if (!isInitAdd)
-            {
-                EditHelper.InitUnitExtraEdit(unitDesc, tableUnit);
             }
             if (UnitDefine.IsSpawn(tableUnit.Id))
             {
@@ -226,16 +222,17 @@ namespace GameA.Game
 
         public void ProcessUnitExtra(UnitDesc unitDesc, UnitExtra unitExtra)
         {
-            UnitDesc oldUnitDesc = unitDesc;
             UnitBase unit;
             if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
             {
                 EditMode.Instance.MapStatistics.NeedSave = true;
+                bool needCreate = false;
                 if (ColliderScene2D.Instance.TryGetUnit(unitDesc.Guid, out unit))
                 {
-                    oldUnitDesc = unit.UnitDesc;
+                    var oldUnitDesc = unit.UnitDesc;
+                    EditMode.Instance.DeleteUnit(oldUnitDesc);
+                    needCreate = true;
                 }
-                EditMode.Instance.DeleteUnit(oldUnitDesc);
                 if (unitExtra.Equals(UnitExtra.zero))
                 {
                     DeleteUnitExtra(unitDesc.Guid);
@@ -244,7 +241,10 @@ namespace GameA.Game
                 {
                     _unitExtras.AddOrReplace(unitDesc.Guid, unitExtra);
                 }
-                EditMode.Instance.AddUnit(unitDesc);
+                if (needCreate)
+                {
+                    EditMode.Instance.AddUnit(unitDesc);
+                }
             }
             else
             {

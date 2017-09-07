@@ -85,7 +85,7 @@ namespace GameA.Game
                     return;
                 }
                 UnitExtra touchedUnitExtra = DataScene2D.Instance.GetUnitExtra(touchedUnitDesc.Guid);
-                if (EditHelper.ProcessClickUnitOperation(touchedUnitDesc))
+                if (EditHelper.TryEditUnitData(touchedUnitDesc))
                 {
                     UnitBase unit;
                     if (ColliderScene2D.Instance.TryGetUnit(touchedUnitDesc.Guid, out unit))
@@ -191,9 +191,8 @@ namespace GameA.Game
                 {
                     return;
                 }
-                if (EditMode.Instance.AddUnitWithCheck(target))
+                if (EditMode.Instance.AddUnitWithCheck(target, stateData.DragUnitExtra))
                 {
-                    DataScene2D.Instance.ProcessUnitExtra(target, stateData.DragUnitExtra);
                     GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.EditLayItem);
                     OnModifyModify(new UnitEditData(boardData.CurrentTouchUnitDesc, stateData.DragUnitExtra),
                         new UnitEditData(target, stateData.DragUnitExtra));
@@ -310,7 +309,7 @@ namespace GameA.Game
                 {
                     //                DataScene2D.Instance.ProcessUnitExtra(data.OrigUnit.UnitDesc.Guid, UnitExtra.zero);
                 }
-                if (!EditMode.Instance.AddUnitWithCheck(data.OrigUnit.UnitDesc))
+                if (!EditMode.Instance.AddUnitWithCheck(data.OrigUnit.UnitDesc, data.OrigUnit.UnitExtra))
                 {
                     ModifiedUnits.Insert(idx, data);
                     LogHelper.Error("Can't undo the {0}'s modify action when add unit, unitdesc: {1}", idx,

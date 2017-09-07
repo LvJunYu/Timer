@@ -18,18 +18,9 @@ namespace GameA.Game
         /// </summary>
         private static readonly Dictionary<int, UnitDesc> _replaceUnits = new Dictionary<int, UnitDesc>();
         private static readonly Dictionary<int, int> _unitIndexCount = new Dictionary<int, int>();
-        private static readonly List<byte> _directionList = new List<byte>
-        {
-            (byte)EDirectionType.Up,
-            (byte)EDirectionType.Right,
-            (byte)EDirectionType.Down,
-            (byte)EDirectionType.Left
-        };
         
-        /// <summary>
-        /// 每个物体的初始旋转/移动方向，编辑状态下点击物品栏里的物体可以改变初始旋转/移动方向
-        /// </summary>
-        private static readonly Dictionary<int, int> _unitOrigDirOrRot = new Dictionary<int, int>();
+        private static readonly Dictionary<int, UnitEditData> _unitDefaultDataDict = new Dictionary<int, UnitEditData>();
+        private static readonly IntVec3 DefaultUnitGuid = new IntVec3(-1, -1, -1);
 
         public static Dictionary<int, int> UnitIndexCount
         {
@@ -70,23 +61,18 @@ namespace GameA.Game
         
         public static bool TryGetCreateKey(Vector2 mouseWorldPos, int unitId, out UnitDesc unitDesc)
         {
-            unitDesc = new UnitDesc();
+            unitDesc = GetUnitDefaultData(unitId).UnitDesc;
             IntVec2 mouseTile = GM2DTools.WorldToTile(mouseWorldPos);
             if (!DataScene2D.Instance.IsInTileMap(mouseTile))
             {
                 return false;
             }
             IntVec3 tileIndex = DataScene2D.Instance.GetTileIndex(mouseWorldPos, unitId);
-            unitDesc.Id = (ushort)unitId;
             unitDesc.Guid = tileIndex;
             var tableUnit = UnitManager.Instance.GetTableUnit(unitId);
             if (tableUnit == null)
             {
                 return false;
-            }
-            if (tableUnit.CanEdit(EEditType.Direction))
-            {
-                unitDesc.Rotation = (byte)GetUnitOrigDirOrRot(tableUnit);
             }
             unitDesc.Scale = Vector2.one;
             return true;
@@ -103,116 +89,123 @@ namespace GameA.Game
             return 0;
         }
 
-        public static int GetUnitOrigDirOrRot(Table_Unit table)
+        public static IntVec3 GetDefaultUnitGuid()
         {
-            int origDirOrRot;
-            if (_unitOrigDirOrRot.TryGetValue(table.Id, out origDirOrRot))
+            return DefaultUnitGuid;
+        }
+
+        public static bool TryEditUnitData(UnitDesc unitDesc)
+        {
+            if (!CheckCanEdit(unitDesc.Id))
             {
-                return origDirOrRot;
+                return false;
             }
-            if (table.Id == UnitDefine.RollerId)
+            UnitEditData unitEditData;
+            if (unitDesc.Guid == DefaultUnitGuid)
             {
-                return (int)EMoveDirection.Right;
+                unitEditData = GetUnitDefaultData(unitDesc.Id);
             }
-            if (table.CanEdit(EEditType.MoveDirection))
+            else
             {
-                return table.MoveDirection;
+                unitEditData = new UnitEditData(unitDesc, DataScene2D.Instance.GetUnitExtra(unitDesc.Guid));
+            }
+            SocialGUIManager.Instance.OpenUI<UICtrlUnitPropertyEdit>(unitEditData);
+            return false;
+        }
+
+        public static void CompleteEditUnitData(UnitEditData origin, UnitEditData editData)
+        {
+            if (origin.UnitDesc.Guid == DefaultUnitGuid)
+            {
+                UpdateUnitDefaultData(editData);
+            }
+            else
+            {
+                EditModeState.Global.Instance.ModifyUnitData(origin.UnitDesc, origin.UnitExtra, editData.UnitDesc,
+                    editData.UnitExtra);
+            }
+        }
+
+        public static bool CheckCanEdit(int id)
+        {
+            var table = TableManager.Instance.GetUnit(id);
+            if (null == table)
+            {
+                return false;
+            }
+            for (var type = EEditType.None + 1; type < EEditType.Max; type++)
+            {
+                if (table.CanEdit(type))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static void UpdateUnitDefaultData(UnitEditData unitEditData)
+        {
+            _unitDefaultDataDict.AddOrReplace(unitEditData.UnitDesc.Id, unitEditData);
+        }
+        
+        public static UnitEditData GetUnitDefaultData(int id)
+        {
+            UnitEditData data;
+            if (!_unitDefaultDataDict.TryGetValue(id, out data))
+            {
+                data = InternalGetUnitDefaultData(id);
+                _unitDefaultDataDict.Add(id, data);
+            }
+            return data;
+        }
+
+        private static UnitEditData InternalGetUnitDefaultData(int id)
+        {
+            UnitEditData unitEditData = new UnitEditData();
+            unitEditData.UnitDesc.Guid = DefaultUnitGuid;
+            unitEditData.UnitDesc.Id = id;
+            unitEditData.UnitDesc.Scale = Vector2.one;
+            var table = TableManager.Instance.GetUnit(id);
+            if (null == table)
+            {
+                LogHelper.Error("InternalGetUnitDefaultData TableUnit is null, id: " + id);
+                return unitEditData;
+            }
+            if (table.CanEdit(EEditType.Active))
+            {
+                unitEditData.UnitExtra.Active = (byte) table.DefaultActiveState;
+            }
+            if (table.CanEdit(EEditType.Child))
+            {
+                unitEditData.UnitExtra.ChildId = (ushort) table.ChildState[0];
             }
             if (table.CanEdit(EEditType.Direction))
             {
-                return table.Direction - 1;
+                unitEditData.UnitDesc.Rotation = (byte) table.DefaultDirection;
             }
-            return 0;
+            if (table.CanEdit(EEditType.MoveDirection))
+            {
+                unitEditData.UnitExtra.MoveDirection = table.DefaultMoveDirection;
+            }
+            if (table.CanEdit(EEditType.Rotate))
+            {
+                unitEditData.UnitExtra.RotateMode = (byte) table.DefaultRotateMode;
+                unitEditData.UnitExtra.RotateValue = (byte) table.DefaultRotateEnd;
+            }
+            if (table.CanEdit(EEditType.Time))
+            {
+                unitEditData.UnitExtra.TimeDelay = (ushort) table.TimeState[0];
+                unitEditData.UnitExtra.TimeInterval = (ushort) table.TimeState[1];
+            }
+        
+            if (UnitDefine.IsMonster(table.Id))
+            {
+                unitEditData.UnitExtra.MoveDirection = (EMoveDirection) (unitEditData.UnitDesc.Rotation + 1);
+                unitEditData.UnitDesc.Rotation = 0;
+            }
+            return unitEditData;
         }
 
-        public static void ChangeUnitOrigDirOrRot(Table_Unit table)
-        {
-            int current;
-            if (!_unitOrigDirOrRot.TryGetValue(table.Id, out current))
-            {
-                if (table.MoveDirection != -1)
-                {
-                    _unitOrigDirOrRot[table.Id] = table.MoveDirection;
-                }
-                else if (table.Direction != -1)
-                {
-                    _unitOrigDirOrRot[table.Id] = table.Direction;
-                }
-                else
-                {
-                    return;
-                }
-                current = _unitOrigDirOrRot[table.Id];
-            }
-            byte newDir;
-            if (table.MoveDirection != -1)
-            {
-                if (CalculateNextDir((byte) (current - 1), 15, out newDir))
-                {
-                    _unitOrigDirOrRot[table.Id] = newDir + 1;
-                }
-            }
-            else if (table.Direction != -1)
-            {
-                if (CalculateNextDir((byte) (current), table.DirectionMask, out newDir))
-                {
-                    _unitOrigDirOrRot[table.Id] = newDir;
-                }
-            }
-        }
-        
-        public static bool CalculateNextDir(byte curValue, int mask, out byte dir)
-        {
-            if (!CheckDirectionValid(curValue))
-            {
-                dir = 0;
-                return false;
-            }
-            dir = 0;
-            int index = 0;
-            bool hasFind = false;
-            bool res = false;
-            while (index < 8)
-            {
-                dir = GetRepeatDirByIndex(index);
-                if (hasFind)
-                {
-                    if (dir == curValue)
-                    {
-                        break;
-                    }
-                    if (CheckMask(dir, mask))
-                    {
-                        res = true;
-                        break;
-                    }
-                }
-                else
-                {
-                    if (dir == curValue)
-                    {
-                        hasFind = true;
-                    }
-                }
-                index++;
-            }
-            return res;
-        }
-        
-        protected static bool CheckDirectionValid(byte value)
-        {
-            return value == (byte)EDirectionType.Up ||
-                   value == (byte)EDirectionType.Right ||
-                   value == (byte)EDirectionType.Down ||
-                   value == (byte)EDirectionType.Left;
-        }
-        
-        protected static byte GetRepeatDirByIndex(int index)
-        {
-            int realIndex = index % 4;
-            return _directionList[realIndex];
-        }
-        
         public static bool CheckMask(byte rotation,int mask)
         {
             return (mask & (byte)(1 << rotation)) != 0;
@@ -222,6 +215,7 @@ namespace GameA.Game
         {
             _replaceUnits.Clear();
             _unitIndexCount.Clear();
+            _unitDefaultDataDict.Clear();
         }
 
         public static bool CheckCanAdd(UnitDesc unitDesc, out Table_Unit tableUnit)
@@ -361,165 +355,6 @@ namespace GameA.Game
             UnitBase unit;
             return !ColliderScene2D.Instance.TryGetUnit(pos, out unit);
         }
-        
-        public static void InitUnitExtraEdit(UnitDesc unitDesc, Table_Unit tableUnit)
-        {
-//            if (UnitDefine.IsEarth(tableUnit.Id))
-//            {
-//                UnitExtra unitExtra;
-//                if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
-//                {
-//                    unitExtra.UnitValue = (byte) Random.Range(1, 3);
-//                    DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
-//                }
-//            }
-            if (tableUnit.CanEdit(EEditType.Child))
-            {
-                UnitExtra unitExtra;
-                if (!DataScene2D.Instance.TryGetUnitExtra(unitDesc.Guid, out unitExtra))
-                {
-                    unitExtra.ChildId = (ushort) tableUnit.ChildState[0];
-                    DataScene2D.Instance.ProcessUnitExtra(unitDesc, unitExtra);
-                }
-            }
-        }
-
-//        private struct ProcessClickUnitOperationParam
-//        {
-//            public UnitDesc UnitDesc;
-//            public Table_Unit TableUnit;
-//            public UnitExtra UnitExtra;
-//        }
-
-        public static bool ProcessClickUnitOperation(UnitDesc unitDesc)
-        {
-//            var context = new ProcessClickUnitOperationParam();
-//            context.UnitDesc = unitDesc;
-//            var tableUnit = context.TableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-//            context.UnitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
-            UnitEditData unitEditData = new UnitEditData()
-            {
-                UnitDesc = unitDesc,
-                UnitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid)
-            };
-            SocialGUIManager.Instance.OpenUI<UICtrlUnitPropertyEdit>(unitEditData);
-            
-//            if (tableUnit.CanEdit(EEditType.MoveDirection))
-//            {
-//                if (context.UnitExtra.MoveDirection != EMoveDirection.None &&context.UnitExtra.MoveDirection != EMoveDirection.Static)
-//                {
-//                    return DoMove(ref context);
-//                }
-//            }
-//            if (tableUnit.CanEdit(EEditType.Child))
-//            {
-//                return DoWeapon(ref context);
-//            }
-//            if (tableUnit.CanEdit(EEditType.Direction))
-//            {
-//                return DoRotate(ref context);
-//            }
-//            if (tableUnit.CanEdit(EEditType.Text))
-//            {
-//                return DoAddMsg(ref context);
-//            }
-//            if (UnitDefine.IsEarth(context.UnitDesc.Id))
-//            {
-//                return DoEarth(ref context);
-//            }
-            return false;
-        }
-        
-//        private static bool DoWeapon(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
-//        {
-//            FindNextWeapon(ref processClickUnitOperationParam.UnitExtra.UnitValue, _weaponTypes);
-//            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc, processClickUnitOperationParam.UnitExtra);
-//            return true;
-//        }
-//
-//        private static bool DoJet(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
-//        {
-//            FindNextWeapon(ref processClickUnitOperationParam.UnitExtra.UnitValue, _weaponJetTypes);
-//            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc, processClickUnitOperationParam.UnitExtra);
-//            return true;
-//        }
-//
-//        private static bool DoAddMsg(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
-//        {
-//            SocialGUIManager.Instance.OpenUI<UICtrlGameItemAddMessage>(processClickUnitOperationParam.UnitDesc);
-//            return false;
-//        }
-//
-//        private static bool DoRotate(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
-//        {
-//            byte dir;
-//            if (!CalculateNextDir(processClickUnitOperationParam.UnitDesc.Rotation,
-//                processClickUnitOperationParam.TableUnit.DirectionMask, out dir))
-//            {
-//                return false;
-//            }
-//            processClickUnitOperationParam.UnitDesc.Rotation = dir;
-//            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
-//                processClickUnitOperationParam.UnitExtra);
-//            return false;
-//        }
-//
-//        private static bool DoRoller(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
-//        {
-//            byte dir;
-//            if (!CalculateNextDir((byte) (processClickUnitOperationParam.UnitExtra.RollerDirection - 1), 10,
-//                out dir))
-//            {
-//                return false;
-//            }
-//            processClickUnitOperationParam.UnitExtra.RollerDirection = (EMoveDirection) (dir + 1);
-//            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
-//                processClickUnitOperationParam.UnitExtra);
-//            return true;
-//        }
-//
-//        private static bool DoMove(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
-//        {
-//            byte dir;
-//            if (!CalculateNextDir((byte) (processClickUnitOperationParam.UnitExtra.MoveDirection - 1), 15, out dir))
-//            {
-//                return false;
-//            }
-//            processClickUnitOperationParam.UnitExtra.MoveDirection = (EMoveDirection) (dir + 1);
-//            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
-//                processClickUnitOperationParam.UnitExtra);
-//            return true;
-//        }
-//
-//        private static bool DoEarth(ref ProcessClickUnitOperationParam processClickUnitOperationParam)
-//        {
-//            processClickUnitOperationParam.UnitExtra.UnitValue++;
-//            if (processClickUnitOperationParam.UnitExtra.UnitValue > 2)
-//            {
-//                processClickUnitOperationParam.UnitExtra.UnitValue = 0;
-//            }
-//            DataScene2D.Instance.ProcessUnitExtra(processClickUnitOperationParam.UnitDesc,
-//                processClickUnitOperationParam.UnitExtra);
-//            return true;
-//        }
-//        
-//        private static void FindNextWeapon(ref ushort id, ushort[] weapons)
-//        {
-//            for (int i = 0; i < weapons.Length; i++)
-//            {
-//                if (weapons[i] == id)
-//                {
-//                    if (i + 1 < weapons.Length)
-//                    {
-//                        id = weapons[i + 1];
-//                        return;
-//                    }
-//                    id = weapons[0];
-//                    return;
-//                }
-//            }
-//            LogHelper.Error("FindNextWeapon Failed, {0}", id);
-//        }
         
         public static GameObject CreateDragRoot(Vector3 pos, int unitId, EDirectionType rotate, out UnitBase unitBase)
         {

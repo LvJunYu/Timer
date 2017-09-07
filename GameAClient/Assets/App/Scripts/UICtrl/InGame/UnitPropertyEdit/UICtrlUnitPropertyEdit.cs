@@ -97,8 +97,8 @@ namespace GameA
         {
             _openSequence = DOTween.Sequence();
             _closeSequence = DOTween.Sequence();
-            _openSequence.Append(_cachedView.ContentDock.DOSizeDelta(new Vector2(500f, 100f), 0.5f).From());
-            _closeSequence.Append(_cachedView.ContentDock.DOSizeDelta(new Vector2(500f, 100f), 0.5f));
+            _openSequence.Append(_cachedView.ContentDock.DOScale(Vector3.zero, 0.3f).From());
+            _closeSequence.Append(_cachedView.ContentDock.DOScale(Vector3.zero, 0.3f));
             _openSequence.OnComplete(OnOpenAnimationComplete).SetAutoKill(false).Pause().OnUpdate(OnOpenAnimationUpdate);
             _closeSequence.OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause()
                 .PrependCallback(() => _cachedView.Trans.localPosition = Vector3.zero);
@@ -205,9 +205,17 @@ namespace GameA
         }
         private void RefreshForwardMenu()
         {
-            for (int i = 0; i < _forwardMenuList.Length; i++)
+            for (byte i = 0; i < _forwardMenuList.Length; i++)
             {
-                _forwardMenuList[i].interactable = i != _editData.UnitDesc.Rotation;
+                if (EditHelper.CheckMask(i, _tableUnit.DirectionMask))
+                {
+                    _forwardMenuList[i].SetActiveEx(true);
+                    _forwardMenuList[i].interactable = i != _editData.UnitDesc.Rotation;
+                }
+                else
+                {
+                    _forwardMenuList[i].SetActiveEx(false);
+                }
             }
         }
         private void RefreshPayloadMenu()
@@ -321,8 +329,7 @@ namespace GameA
                     _editData.UnitExtra.MoveDirection = (EMoveDirection) (_editData.UnitDesc.Rotation + 1);
                     _editData.UnitDesc.Rotation = 0;
                 }
-                EditModeState.Global.Instance.ModifyUnitData(_originData.UnitDesc, _originData.UnitExtra,
-                    _editData.UnitDesc, _editData.UnitExtra);
+                EditHelper.CompleteEditUnitData(_originData, _editData);
             }
             SocialGUIManager.Instance.CloseUI<UICtrlUnitPropertyEdit>();
         }
