@@ -23,6 +23,8 @@ namespace GameA.Game
         protected ERotateType _eRotateType;
         protected float _endAngle;
         protected float _curAngle;
+        protected int _timeDelay;
+        protected int _timeInterval;
         
         public override bool CanControlledBySwitch
         {
@@ -50,6 +52,8 @@ namespace GameA.Game
             _weaponId = unitExtra.ChildId;
             _eRotateType = (ERotateType) unitExtra.RotateMode;
             _endAngle = GM2DTools.GetAngle(unitExtra.RotateValue);
+            _timeDelay = TableConvert.GetTime(unitExtra.TimeDelay);
+            _timeInterval = TableConvert.GetTime(unitExtra.TimeInterval);
             base.UpdateExtraData();
         }
 
@@ -130,11 +134,19 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            base.UpdateLogic();
             if (!_activeState)
             {
                 return;
             }
+            //timeDelay
+            if (_timeDelay > 0)
+            {
+                _timeDelay--;
+                return;
+            }
+            //MoveDirection
+            base.UpdateLogic();
+            //Rotate
             if (_eRotateType != ERotateType.None)
             {
                 switch (_eRotateType)

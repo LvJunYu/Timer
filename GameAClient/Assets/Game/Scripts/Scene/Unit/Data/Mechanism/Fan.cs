@@ -11,7 +11,6 @@ namespace GameA.Game
         protected IntVec2 _pointA;
         protected IntVec2 _pointB;
         protected List<UnitBase> _fanEffectUnits = new List<UnitBase>();
-        protected UnityNativeParticleItem _effect;
         
         public override int SwitchTriggerId
         {
@@ -36,20 +35,11 @@ namespace GameA.Game
                 return false;
             }
             InitAssetRotation(true);
-            _effect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectFan", _trans);
-            if (_effect != null)
+            if (_withEffect != null)
             {
-                _effect.Play();
-                SetRelativeEffectPos(_effect.Trans, (EDirectionType)Rotation);
+                SetRelativeEffectPos(_withEffect.Trans, (EDirectionType)Rotation);
             }
             return true;
-        }
-        
-        internal override void OnObjectDestroy()
-        {
-            base.OnObjectDestroy();
-            FreeEffect(_effect);
-            _effect = null;
         }
 
         protected override void Clear()
@@ -65,9 +55,9 @@ namespace GameA.Game
         public override void OnTriggerStart(UnitBase other)
         {
             base.OnTriggerStart(other);
-            if (_effect != null)
+            if (_withEffect != null)
             {
-                _effect.Play();
+                _withEffect.Play();
             }
 //            if (_animation != null)
 //            {
@@ -78,12 +68,9 @@ namespace GameA.Game
         public override void OnTriggerEnd()
         {
             base.OnTriggerEnd();
-            if (_effect != null)
+            if (_withEffect != null)
             {
-                _effect.Stop();
-            }
-            if (_animation != null)
-            {
+                _withEffect.Stop();
             }
         }
         

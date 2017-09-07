@@ -18,7 +18,6 @@ namespace GameA.Game
     {
         protected List<UnitBase> _units;
         protected UnityNativeParticleItem _effectStart;
-        protected UnityNativeParticleItem _effectRun;
 
         internal override bool InstantiateView()
         {
@@ -26,18 +25,8 @@ namespace GameA.Game
             {
                 return false;
             }
-            CreateParticle();
-            return true;
-        }
-
-        protected virtual void CreateParticle()
-        {
             _effectStart = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectSwitchStart", _trans);
-            _effectRun = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectSwitchRun", _trans);
-            if (_effectRun != null)
-            {
-                _effectRun.Play();
-            }
+            return true;
         }
 
         internal override void OnObjectDestroy()
@@ -45,8 +34,6 @@ namespace GameA.Game
             base.OnObjectDestroy();
             FreeEffect(_effectStart);
             _effectStart = null;
-            FreeEffect(_effectRun);
-            _effectRun = null;
         }
 
         protected override void Clear()

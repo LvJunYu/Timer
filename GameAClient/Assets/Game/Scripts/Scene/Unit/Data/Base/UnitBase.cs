@@ -110,6 +110,8 @@ namespace GameA.Game
 
         protected UnitView[] _viewExtras;
 
+        protected UnityNativeParticleItem _withEffect;
+
         protected string _assetPath;
 
         /// <summary>
@@ -659,6 +661,11 @@ namespace GameA.Game
             if (GameRun.Instance.IsEdit)
             {
                 _view.UpdateSign();
+            }
+            _withEffect = GameParticleManager.Instance.GetUnityNativeParticleItem("", _trans);
+            if (_withEffect != null)
+            {
+                _withEffect.Play();
             }
             return true;
         }
@@ -1423,6 +1430,8 @@ namespace GameA.Game
         {
             _view = null;
             _viewExtras = null;
+            FreeEffect(_withEffect);
+            _withEffect = null;
         }
 
         internal virtual void OnDispose()

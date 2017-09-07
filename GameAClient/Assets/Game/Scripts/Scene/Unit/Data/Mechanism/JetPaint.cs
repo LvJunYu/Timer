@@ -10,8 +10,8 @@ using System.Collections;
 
 namespace GameA.Game
 {
-    [Unit(Id = 5016, Type = typeof(JetRed))]
-    public class JetRed : JetBase
+    [Unit(Id = 5016, Type = typeof(JetPaint))]
+    public class JetPaint : JetBase
     {
         protected override void SetValue()
         {

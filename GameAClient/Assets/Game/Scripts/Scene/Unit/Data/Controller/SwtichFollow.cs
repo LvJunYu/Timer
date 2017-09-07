@@ -14,14 +14,6 @@ namespace GameA.Game
     [Unit(Id = 8103, Type = typeof(SwtichFollow))]
     public class SwtichFollow : SwitchMagic
     {
-        protected override void CreateParticle()
-        {
-            _effectStart = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectSwitchStart", _trans);
-            _effectRun = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectSwitchFollowRun", _trans);
-            if (_effectRun != null)
-            {
-                _effectRun.Play();
-            }
-        }
+
     }
 }
