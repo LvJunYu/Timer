@@ -43,13 +43,6 @@ namespace GameA
             _cachedView.PlayBtn.onClick.AddListener(OnPlayBtn);
         }
 
-        protected override void OnDestroy()
-        {
-            //_cachedView.PlayBtn.onClick.RemoveAllListeners();
-            base.OnDestroy();
-        }
-
-
         private void OnPlayBtn()
         {
             if (_record == null)

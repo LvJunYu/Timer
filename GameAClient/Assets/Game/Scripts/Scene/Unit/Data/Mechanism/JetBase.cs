@@ -20,10 +20,18 @@ namespace GameA.Game
         protected int _weaponId;
         protected UnityNativeParticleItem _efffectWeapon;
         protected string _animationName;
-
+        protected ERotateType _eRotateType;
+        protected float _endAngle;
+        protected float _curAngle;
+        
         public override bool CanControlledBySwitch
         {
             get { return true; }
+        }
+
+        public override float Angle
+        {
+            get { return _curAngle; }
         }
 
         protected override bool OnInit()
@@ -32,14 +40,16 @@ namespace GameA.Game
             {
                 return false;
             }
-            _angle = (_unitDesc.Rotation) * 90;
             _timeScale = 1;
             return true;
         }
         
         public override void UpdateExtraData()
         {
-            _weaponId = DataScene2D.Instance.GetUnitExtra(_guid).ChildId;
+            var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
+            _weaponId = unitExtra.ChildId;
+            _eRotateType = (ERotateType) unitExtra.RotateMode;
+            _endAngle = GM2DTools.GetAngle(unitExtra.RotateValue);
             base.UpdateExtraData();
         }
 
@@ -49,7 +59,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            InitAssetRotation();
             _animationName = ((EDirectionType) _unitDesc.Rotation).ToString();
             SetWeapon(_weaponId);
             return true;
@@ -61,6 +70,7 @@ namespace GameA.Game
             {
                 _skillCtrl.Clear();
             }
+            _curAngle = _angle;
             base.Clear();
         }
 
@@ -124,6 +134,27 @@ namespace GameA.Game
             if (!_activeState)
             {
                 return;
+            }
+            if (_eRotateType != ERotateType.None)
+            {
+                switch (_eRotateType)
+                {
+                    case ERotateType.Clockwise:
+                        _curAngle += 1;
+                        break;
+                    case ERotateType.Anticlockwise:
+                        _curAngle += -1;
+                        break;
+                }
+                Util.CorrectAngle360(ref _curAngle);
+                if (Util.IsFloatEqual(_curAngle, _angle) || Util.IsFloatEqual(_curAngle, _endAngle))
+                {
+                    _eRotateType = _eRotateType == ERotateType.Clockwise ? ERotateType.Anticlockwise : ERotateType.Clockwise;
+                }
+                if (_trans != null)
+                {
+                    _trans.localEulerAngles = new Vector3(0, 0, -_curAngle);
+                }
             }
             if (_skillCtrl != null)
             {

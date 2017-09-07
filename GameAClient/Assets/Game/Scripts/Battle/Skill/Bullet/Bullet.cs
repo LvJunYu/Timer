@@ -14,7 +14,7 @@ namespace GameA.Game
 
         protected SkillBase _skill;
         protected Vector2 _direction;
-        protected int _angle;
+        protected float _angle;
         protected IntVec2 _speed;
         protected IntVec2 _originPos;
         protected IntVec2 _curPos;
@@ -29,7 +29,7 @@ namespace GameA.Game
             get { return _direction; }
         }
 
-        public int Angle
+        public float Angle
         {
             get { return _angle; }
         }
@@ -86,7 +86,7 @@ namespace GameA.Game
             }
         }
 
-        public void Init(SkillBase skill, IntVec2 pos, int angle)
+        public void Init(SkillBase skill, IntVec2 pos, float angle)
         {
             _tableUnit = UnitManager.Instance.GetTableUnit(skill.TableSkill.ProjectileId);
             _skill = skill;

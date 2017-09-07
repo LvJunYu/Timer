@@ -26,7 +26,7 @@ namespace GameA.Game
         /// <summary>
         /// 角度
         /// </summary>
-        protected int _angle;
+        protected float _angle;
 
         protected Vector2 _direction;
         /// <summary>
@@ -89,7 +89,7 @@ namespace GameA.Game
             base.Clear();
         }
 
-        public virtual void Run(SkillBase skill, int angle)
+        public virtual void Run(SkillBase skill, float angle)
         {
             _run = true;
             _skill = skill;
@@ -104,7 +104,7 @@ namespace GameA.Game
             OnRun();
         }
 
-        protected void SetAngle(int angle)
+        protected void SetAngle(float angle)
         {
             _angle = angle;
             _direction = GM2DTools.GetDirection(_angle);
@@ -117,7 +117,7 @@ namespace GameA.Game
         {
         }
 
-        protected virtual void UpdateAngle(int angle, EDirectionType eDirectionType)
+        protected virtual void UpdateAngle(float angle, EDirectionType eDirectionType)
         {
             SetAngle(angle);
         }

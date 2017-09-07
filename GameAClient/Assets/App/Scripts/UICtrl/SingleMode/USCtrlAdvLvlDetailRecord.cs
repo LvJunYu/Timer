@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using SoyEngine;
-using UnityEngine;
 
 namespace GameA
 {
@@ -99,9 +98,6 @@ namespace GameA
                         _cardList.Add(um);
                     }
                 }
-
-
-
             }
         }
 

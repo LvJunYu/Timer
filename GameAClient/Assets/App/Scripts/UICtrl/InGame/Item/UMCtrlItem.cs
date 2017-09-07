@@ -208,7 +208,7 @@ namespace GameA
         {
             if (id == _table.Id) {
                 _selected = true;
-                _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up * 15;
+                _cachedView.SpriteIcon.transform.localPosition = Vector3.up * 15;
                 _cachedView.ShadowTrans.localScale = Vector3.one * 0.7f;
 
                 // 除了主角，所有能旋转，能移动，还有传送带 都需要显示箭头
@@ -219,7 +219,7 @@ namespace GameA
                 }
             } else {
                 _selected = false;
-                _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.zero;
+                _cachedView.SpriteIcon.transform.localPosition = Vector3.zero;
                 _cachedView.ShadowTrans.localScale = Vector3.one;
                 
                 _cachedView.Arrow.SetActive(false);

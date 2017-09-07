@@ -50,9 +50,7 @@ namespace GameA.Game
         protected UnitBase _downUnit;
         protected bool _useCorner;
         protected bool _isDisposed = false;
-
-        protected int _angle;
-
+        
         protected List<UnitBase> _switchPressUnits = new List<UnitBase>();
         protected List<UnitBase> _switchRectUnits = new List<UnitBase>();
 
@@ -92,6 +90,7 @@ namespace GameA.Game
 
         [SerializeField] protected EMoveDirection _moveDirection;
         [SerializeField] protected bool _activeState;
+        protected float _angle;
 
         /// <summary>
         /// 加速减速参数
@@ -431,7 +430,7 @@ namespace GameA.Game
                 _curPos = new IntVec2(value.x - dataSize.x / 2, value.y);
             }
         }
-
+        
         public IntVec2 CenterPos
         {
             get
@@ -496,19 +495,9 @@ namespace GameA.Game
             get { return (ELayerType) _tableUnit.Layer; }
         }
 
-        public int Angle
+        public virtual float Angle
         {
             get { return _angle; }
-            set { _angle = value; }
-        }
-
-        public virtual IntVec2 FirePos
-        {
-            get
-            {
-                var halfSize = GetDataSize() / 2;
-                return new IntVec2(_curPos.x + halfSize.x, _curPos.y + halfSize.y);
-            }
         }
 
         public string AssetPath
@@ -588,11 +577,6 @@ namespace GameA.Game
 
         protected void InitAssetRotation(bool loop = false)
         {
-            if (_tableUnit.HasDirection8)
-            {
-                _assetPath = _tableUnit.Model;
-                return;
-            }
             if (_animation == null)
             {
                 _assetPath = string.Format("{0}_{1}", _tableUnit.Model, _unitDesc.Rotation);
@@ -849,7 +833,6 @@ namespace GameA.Game
             {
                 _moveDirection = EMoveDirection.Right;
             }
-            _activeState = DataScene2D.Instance.GetUnitExtra(_guid).Active == (int)EActiveState.Active;
         }
 
         public bool Equals(UnitBase other)

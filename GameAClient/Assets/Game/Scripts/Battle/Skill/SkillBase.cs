@@ -182,7 +182,6 @@ namespace GameA.Game
                 {
                     _startCharge = true;
                     SetTimerCharge(_chargeTime);
-                    LogHelper.Debug("Start Charge..." + _startCharge);
                 }
             }
             if (_timerSing > 0)
@@ -230,12 +229,16 @@ namespace GameA.Game
         
         private void SetBullet(int bulletCount)
         {
+            //代表无限
+            if (_totalBulletCount == 0)
+            {
+                return;
+            }
             var count = Mathf.Clamp(bulletCount, 0, _totalBulletCount);
             if (_currentBulletCount != count)
             {
                 _currentBulletCount = count;
                 _startCharge = _currentBulletCount == 0;
-                LogHelper.Debug("Start Charge..." + _startCharge);
                 SetTimerCharge(_chargeTime);
                 if (_owner.IsMain)
                 {
@@ -269,7 +272,6 @@ namespace GameA.Game
                 SetBullet(_totalBulletCount);
                 _startCharge = false;
                 _timerCharge = _chargeTime;
-                LogHelper.Debug("Full");
             }
             if (_owner.IsMain)
             {
@@ -277,7 +279,7 @@ namespace GameA.Game
             }
         }
 
-        protected void CreateProjectile(int projectileId, IntVec2 pos, int angle)
+        protected void CreateProjectile(int projectileId, IntVec2 pos, float angle)
         {
             if (UnitDefine.UseRayBullet(projectileId))
             {
@@ -299,7 +301,7 @@ namespace GameA.Game
         {
             if (UnitDefine.UseRayBullet(bulletId))
             {
-                return _owner.FirePos;
+                return _owner.CenterPos;
             }
             var tableUnit = UnitManager.Instance.GetTableUnit(bulletId);
             if (tableUnit == null)
@@ -307,7 +309,7 @@ namespace GameA.Game
                 return IntVec2.zero;
             }
             var dataSize = tableUnit.GetDataSize(0, Vector2.one);
-            return _owner.FirePos - dataSize * 0.5f;
+            return _owner.CenterPos - dataSize * 0.5f;
         }
         
         protected virtual void OnSkillCast()
@@ -502,7 +504,7 @@ namespace GameA.Game
         /// <summary>
         /// 生成陷阱
         /// </summary>
-        protected void CreateTrapUnit(IntVec2 hitPos, int angle)
+        protected void CreateTrapUnit(IntVec2 hitPos, float angle)
         {
             if (_tableSkill.TrapId > 0)
             {
@@ -510,7 +512,7 @@ namespace GameA.Game
                 PlayMode.Instance.AddTrap(_tableSkill.TrapId, hitPos);
             }
             byte rotation;
-            if (!GM2DTools.GetRotation4(angle, out rotation))
+            if (!GM2DTools.GetRotation4((int)angle, out rotation))
             {
                 return;
             }
