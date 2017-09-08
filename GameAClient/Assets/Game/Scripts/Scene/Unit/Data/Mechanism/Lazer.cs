@@ -24,7 +24,7 @@ namespace GameA.Game
         protected Vector3 _direction;
         protected int _distance;
         
-        protected ERotateType _eRotateType;
+        protected ERotateMode _eRotateType;
         protected float _endAngle;
         protected float _curAngle;
 
@@ -48,7 +48,7 @@ namespace GameA.Game
         public override void UpdateExtraData()
         {
             var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
-            _eRotateType = (ERotateType) unitExtra.RotateMode;
+            _eRotateType = (ERotateMode) unitExtra.RotateMode;
             _endAngle = GM2DTools.GetAngle(unitExtra.RotateValue);
             base.UpdateExtraData();
         }
@@ -130,21 +130,21 @@ namespace GameA.Game
                 Pause();
                 return;
             }
-            if (_eRotateType != ERotateType.None)
+            if (_eRotateType != ERotateMode.None)
             {
                 switch (_eRotateType)
                 {
-                    case ERotateType.Clockwise:
+                    case ERotateMode.Clockwise:
                         _curAngle += 1;
                         break;
-                    case ERotateType.Anticlockwise:
+                    case ERotateMode.Anticlockwise:
                         _curAngle += -1;
                         break;
                 }
                 Util.CorrectAngle360(ref _curAngle);
                 if (Util.IsFloatEqual(_curAngle, _angle) || Util.IsFloatEqual(_curAngle, _endAngle))
                 {
-                    _eRotateType = _eRotateType == ERotateType.Clockwise ? ERotateType.Anticlockwise : ERotateType.Clockwise;
+                    _eRotateType = _eRotateType == ERotateMode.Clockwise ? ERotateMode.Anticlockwise : ERotateMode.Clockwise;
                 }
                 if (_trans != null)
                 {

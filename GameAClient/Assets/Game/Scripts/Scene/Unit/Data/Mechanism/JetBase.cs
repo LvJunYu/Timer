@@ -19,7 +19,7 @@ namespace GameA.Game
         protected int _timeScale;
         protected int _weaponId;
         protected UnityNativeParticleItem _efffectWeapon;
-        protected ERotateType _eRotateType;
+        protected ERotateMode _eRotateType;
         protected float _endAngle;
         protected float _curAngle;
         protected int _timeDelay;
@@ -49,7 +49,7 @@ namespace GameA.Game
         {
             var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
             _weaponId = unitExtra.ChildId;
-            _eRotateType = (ERotateType) unitExtra.RotateMode;
+            _eRotateType = (ERotateMode) unitExtra.RotateMode;
             _endAngle = GM2DTools.GetAngle(unitExtra.RotateValue);
             _timeDelay = TableConvert.GetTime(unitExtra.TimeDelay);
             _timeInterval = TableConvert.GetTime(unitExtra.TimeInterval);
@@ -132,21 +132,21 @@ namespace GameA.Game
             //MoveDirection
             base.UpdateLogic();
             //Rotate
-            if (_eRotateType != ERotateType.None)
+            if (_eRotateType != ERotateMode.None)
             {
                 switch (_eRotateType)
                 {
-                    case ERotateType.Clockwise:
+                    case ERotateMode.Clockwise:
                         _curAngle += 1;
                         break;
-                    case ERotateType.Anticlockwise:
+                    case ERotateMode.Anticlockwise:
                         _curAngle += -1;
                         break;
                 }
                 Util.CorrectAngle360(ref _curAngle);
                 if (Util.IsFloatEqual(_curAngle, _angle) || Util.IsFloatEqual(_curAngle, _endAngle))
                 {
-                    _eRotateType = _eRotateType == ERotateType.Clockwise ? ERotateType.Anticlockwise : ERotateType.Clockwise;
+                    _eRotateType = _eRotateType == ERotateMode.Clockwise ? ERotateMode.Anticlockwise : ERotateMode.Clockwise;
                 }
                 if (_trans != null)
                 {
