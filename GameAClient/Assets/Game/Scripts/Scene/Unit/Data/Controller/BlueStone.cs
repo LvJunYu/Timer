@@ -14,6 +14,16 @@ namespace GameA.Game
     [Unit(Id = 8002, Type = typeof(BlueStone))]
     public class BlueStone : CollectionBase
     {
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            _animation.Init("Run");
+            return true;
+        }
+        
         protected override void OnTrigger(UnitBase other)
         {
             if (other.IsActor)

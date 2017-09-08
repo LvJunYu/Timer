@@ -19,7 +19,6 @@ namespace GameA.Game
         protected int _timeScale;
         protected int _weaponId;
         protected UnityNativeParticleItem _efffectWeapon;
-        protected string _animationName;
         protected ERotateType _eRotateType;
         protected float _endAngle;
         protected float _curAngle;
@@ -54,6 +53,7 @@ namespace GameA.Game
             _endAngle = GM2DTools.GetAngle(unitExtra.RotateValue);
             _timeDelay = TableConvert.GetTime(unitExtra.TimeDelay);
             _timeInterval = TableConvert.GetTime(unitExtra.TimeInterval);
+            _timeInterval = Math.Max(25, _timeInterval);
             base.UpdateExtraData();
         }
 
@@ -63,7 +63,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            _animationName = ((EDirectionType) _unitDesc.Rotation).ToString();
             SetWeapon(_weaponId);
             return true;
         }
@@ -104,21 +103,7 @@ namespace GameA.Game
                 _efffectWeapon = GameParticleManager.Instance.GetUnityNativeParticleItem(tableEquipment.Model, _trans);
                 if (_efffectWeapon != null)
                 {
-                    switch ((EDirectionType) Rotation)
-                    {
-                        case EDirectionType.Up:
-                            _efffectWeapon.Trans.localPosition = new Vector3(0f,0.4f,-10f);
-                            break;
-                        case EDirectionType.Down:
-                            _efffectWeapon.Trans.localPosition = new Vector3(0f,0.8f,-10f);
-                            break;
-                        case EDirectionType.Left:
-                            _efffectWeapon.Trans.localPosition = new Vector3(0.23f,0.6f,-10f);
-                            break;
-                        case EDirectionType.Right:
-                            _efffectWeapon.Trans.localPosition = new Vector3(-0.23f,0.6f,-10f);
-                            break;
-                    }
+                    _efffectWeapon.Trans.localPosition = new Vector3(0f,0.4f,-10f);
                     _efffectWeapon.Play();
                 }
             }
@@ -173,9 +158,9 @@ namespace GameA.Game
                 _skillCtrl.UpdateLogic();
                 if (_skillCtrl.Fire(0))
                 {
-                    if (_animation != null && !string.IsNullOrEmpty(_animationName))
+                    if (_animation != null)
                     {
-                        _animation.PlayOnce(_animationName, _timeScale);
+                        _animation.PlayOnce("Start", _timeScale);
                     }
                 }
             }
