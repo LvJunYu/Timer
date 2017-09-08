@@ -104,10 +104,11 @@ namespace GameA
         public void SetHead(int HeadNum)
         {
             //_seletctedHeadImage=HeadNum;todo
-            Sprite fashion = null;
-            if (ResourcesManager.Instance.TryGetSprite(SpriteNameDefine.GetHeadImage(HeadNum), out fashion))
+            var head = SpriteNameDefine.GetHeadImage(HeadNum);
+            Texture fashion = null;
+            if (ResourcesManager.Instance.TryGetTexture(head, out fashion))
             {
-                _cachedView.PhotoPortrait.sprite = fashion;
+                _cachedView.PhotoPortrait.texture = fashion;
             }
         }
 
@@ -126,15 +127,15 @@ namespace GameA
             //    () => { SetRepresentativeWorks(); },
             //    null
             //    );
-            Sprite fashion = null;
-            if (ResourcesManager.Instance.TryGetSprite(LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,out fashion))
+            Texture fashion = null;
+            if (ResourcesManager.Instance.TryGetTexture(LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,out fashion))
             {
-                _cachedView.PhotoPortrait.sprite = fashion;
+                _cachedView.PhotoPortrait.texture = fashion;
             }
             else
             {
-                ResourcesManager.Instance.TryGetSprite(SpriteNameDefine.GetHeadImage(_defaultHeadNum),out fashion);
-                _cachedView.PhotoPortrait.sprite = fashion;
+                ResourcesManager.Instance.TryGetTexture(SpriteNameDefine.GetHeadImage(_defaultHeadNum),out fashion);
+                _cachedView.PhotoPortrait.texture = fashion;
             }
 
             _cachedView.Name.text = LocalUser.Instance.User.UserInfoSimple.NickName;
@@ -142,8 +143,9 @@ namespace GameA
             _cachedView.Lvl.text = LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel.ToString();
             _cachedView.CraftLvl.text = LocalUser.Instance.User.UserInfoSimple.LevelData.CreatorExp.ToString();
             _eMale = LocalUser.Instance.User.UserInfoSimple.Sex;
-            _cachedView.Editing.gameObject.SetActiveEx(false);
-            _cachedView.Editable.gameObject.SetActiveEx(true);
+
+            ChangeEditMode();
+
             if (_eMale == ESex.S_Male)
             {
                 _cachedView.MSex.SetActiveEx(true);
@@ -170,15 +172,28 @@ namespace GameA
 
         }
 
+        private void ChangeEditMode(bool IfEdit=false)
+        {
+            _cachedView.ShowSex.gameObject.SetActiveEx(!IfEdit);
+            _cachedView.Name.gameObject.SetActiveEx(!IfEdit);
+            _cachedView.SignatureDesc.gameObject.SetActiveEx(!IfEdit);
+            _cachedView.EditDescBtn.gameObject.SetActiveEx(!IfEdit); 
+            _cachedView.NameDescInput.gameObject.SetActiveEx(IfEdit);
+            _cachedView.SignatureDescInput.gameObject.SetActiveEx(IfEdit);
+            _cachedView.EditSex.gameObject.SetActiveEx(IfEdit);
+            _cachedView.ConfirmDescBtn.gameObject.SetActiveEx(IfEdit);
+
+        }
+
         private void OnEditBtn()
         {
-            _cachedView.Editing.gameObject.SetActiveEx(true);
-            _cachedView.Editable.gameObject.SetActiveEx(false);
+            //sex name sig btn
+            ChangeEditMode(true);
             _cachedView.NameDescInput.text = _name;
             _cachedView.SignatureDescInput.text = _signature;
             _cachedView.SelectMale.SetActiveEx(false);
             _cachedView.SelectFemale.SetActiveEx(false);
-        }
+    }
 
         private void OnPhoto()
         {
@@ -209,8 +224,7 @@ namespace GameA
                 _signature = newSignature;
                 //Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, _curSelectedPrivateProject.Content);
             }
-            _cachedView.Editing.gameObject.SetActiveEx(false);
-            _cachedView.Editable.gameObject.SetActiveEx(true);
+            ChangeEditMode();
         }
 
 

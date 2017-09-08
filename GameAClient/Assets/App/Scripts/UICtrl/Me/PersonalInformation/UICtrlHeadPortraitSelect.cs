@@ -12,7 +12,7 @@ namespace GameA
     public class UICtrlHeadPortraitSelect : UICtrlInGameBase<UIViewHeadPortraitSelect>
     {
         private int _seletctedHeadImage;
-        private int _headMaxNumber=6;
+        private int _headMaxNumber= 12;
         private List<UMCtrlHead> _cardList = new List<UMCtrlHead>();
 
         public int SeletctedHeadImage
@@ -56,6 +56,14 @@ namespace GameA
 
         public void SetHead()
         {
+            if (_cardList.Count > 0)
+            {
+                for (int i = 0; i < _cardList.Count; i++)
+                {
+                    _cardList[i].Destroy();
+                }
+            }
+            _cardList.Clear();
             for (int i = 0; i < _headMaxNumber; i++)
             {
                 var UM = new UMCtrlHead();
