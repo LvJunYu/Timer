@@ -6,7 +6,6 @@
 ***********************************************************************/
 
 
-using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using GameA.Game;
@@ -26,10 +25,15 @@ namespace GameA
 
         private bool _hasTimeLimit;
         private int _lastShowSceonds = -100;
+        private int _lastFrame;
+        private Tweener _scoreTweener;
+        private int _lastValue;
+        private int _showValue;
         private readonly List<UMCtrlGameStarItem> _starConditionList = new List<UMCtrlGameStarItem>(3);
-
+        
         private const int _finalTimeMax = 10;
         private const int _HeartbeatTimeMax = 30;
+        private const float _collectDelayTime = 1f;
         private List<UMCtrlCollectionItem> _umCtrlCollectionItemCache;
         protected Sequence _finalCountDownSequence;
 
@@ -57,6 +61,7 @@ namespace GameA
             base.OnOpen(parameter);
             UpdateItemVisible();
             UpdateAll();
+            UpdateCollectText(0);
             if (null == _umCtrlCollectionItemCache)
             {
                 _umCtrlCollectionItemCache = new List<UMCtrlCollectionItem>(12);
@@ -104,8 +109,6 @@ namespace GameA
             {
                 UpdateTimeLimit();
             }
-            UpdateShowHelper();
-
             if (GM2DGame.Instance.GameMode is GameModeAdventurePlay)
             {
                 UpdateAdventurePlay();
@@ -242,25 +245,32 @@ namespace GameA
 
         private void UpdateWinDataWithOutTimeLimit()
         {
+            int curScore = PlayMode.Instance.SceneState.GemGain;
+            int totalScore = PlayMode.Instance.SceneState.TotalGem;
+            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(_collectDelayTime,
+                () => UpdateCollectText(curScore)));
             if (_winConditionItemDict.ContainsKey(EWinCondition.CollectTreasure))
             {
-                int curScore = PlayMode.Instance.SceneState.GemGain;
-                int totalScore = PlayMode.Instance.SceneState.TotalGem;
-                _cachedView.CollectionText.text =
-                    string.Format(GM2DUIConstDefine.WinDataValueFormat, curScore, totalScore);
                 _winConditionItemDict[EWinCondition.CollectTreasure].SetComplete(curScore == totalScore);
             }
+            int killCount = PlayMode.Instance.SceneState.MonsterKilled;
+            int totalCount = PlayMode.Instance.SceneState.MonsterCount;
+            _cachedView.EnemyText.text = string.Format(GM2DUIConstDefine.WinDataValueFormat, killCount, totalCount);
             if (_winConditionItemDict.ContainsKey(EWinCondition.KillMonster))
             {
-                int killCount = PlayMode.Instance.SceneState.MonsterKilled;
-                int totalCount = PlayMode.Instance.SceneState.MonsterCount;
-                _cachedView.EnemyText.text = string.Format(GM2DUIConstDefine.WinDataValueFormat, killCount, totalCount);
                 _winConditionItemDict[EWinCondition.KillMonster].SetComplete(killCount == totalCount);
             }
             if (_winConditionItemDict.ContainsKey(EWinCondition.Arrived))
             {
                 _winConditionItemDict[EWinCondition.Arrived].SetComplete(PlayMode.Instance.SceneState.Arrived);
             }
+        }
+
+        private void UpdateCollectText(int curScore)
+        {
+            int totalScore = PlayMode.Instance.SceneState.TotalGem;
+            _cachedView.CollectionText.text =
+                string.Format(GM2DUIConstDefine.WinDataValueFormat, curScore, totalScore);
         }
 
         private void UpdateTimeLimit()
@@ -282,7 +292,6 @@ namespace GameA
                     int seconds = curValue % 60;
                     _cachedView.LeftTimeText.text =
                         string.Format(GM2DUIConstDefine.WinDataTimeShowFormat, minutes, seconds);
-                    
                 }
                 if (curValue < _HeartbeatTimeMax)
                 {
@@ -312,7 +321,20 @@ namespace GameA
         private void UpdateScore()
         {
             int curValue = PlayMode.Instance.SceneState.CurScore;
-            _cachedView.ScoreText.text = string.Format(GM2DUIConstDefine.WinDataScoreFormat, curValue);
+            if (null == _scoreTweener)
+            {
+                _scoreTweener = DOTween.To(() => _showValue, x => _showValue = x, curValue, 1f)
+                    .OnUpdate(UpdateScoreText).SetAutoKill(false).Pause();
+            }
+            _scoreTweener.ChangeStartValue(_lastValue);
+            _scoreTweener.ChangeEndValue(curValue);
+            _scoreTweener.Restart();
+            _lastValue = curValue;
+        }
+        
+        private void UpdateScoreText()
+        {
+            _cachedView.ScoreText.text = string.Format(GM2DUIConstDefine.WinDataScoreFormat, _showValue);
         }
 
         private void InitConditionView()
@@ -464,8 +486,6 @@ namespace GameA
             _finalCountDownSequence.SetAutoKill(false).Pause();
         }
 
-        private float _lastFrame;
-
         private void ShowFinalCountDown02(int curValue)
         {
             int seconds = curValue % 60;
@@ -479,6 +499,15 @@ namespace GameA
         {
             _cachedView.LeftTimeText.rectTransform().localScale = Vector3.one;
             _cachedView.LeftTimeText.color = Color.white;
+            UpdateCollectText(0);
+            if (_scoreTweener != null)
+                _scoreTweener.Pause();
+            if (_umCtrlCollectionItemCache != null)
+                _umCtrlCollectionItemCache.ForEach(p => p.Hide());
+            CoroutineProxy.Instance.StopAllCoroutines();
+            _lastFrame = 0;
+            _lastValue = 0;
+            _showValue = 0;
         }
 
         public void ShowCollectionAnimation(Vector3 InitialPos)

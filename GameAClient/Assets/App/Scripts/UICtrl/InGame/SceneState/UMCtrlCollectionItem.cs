@@ -9,6 +9,7 @@ namespace GameA
         public bool IsShow;
         private Camera _uiCamera;
         private Tweener _doMove;
+        private const float _collectDelayTime = 1f;
 
         public void Show()
         {
@@ -24,7 +25,7 @@ namespace GameA
 
         private void CreateTweener(Vector3 targetPos)
         {
-            _doMove = _cachedView.Trans.DOMove(targetPos, 1f).OnComplete(Hide).SetAutoKill(false).Pause();
+            _doMove = _cachedView.Trans.DOMove(targetPos, _collectDelayTime).OnComplete(Hide).SetAutoKill(false).Pause();
         }
 
         public void CollectAnimation(Vector3 initialPos, Vector3 targetPos)
