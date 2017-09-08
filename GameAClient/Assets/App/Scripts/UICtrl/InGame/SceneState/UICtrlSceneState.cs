@@ -6,6 +6,7 @@
 ***********************************************************************/
 
 
+using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using GameA.Game;
@@ -27,7 +28,8 @@ namespace GameA
         private int _lastShowSceonds = -100;
         private readonly List<UMCtrlGameStarItem> _starConditionList = new List<UMCtrlGameStarItem>(3);
 
-        private const int _finalTimeMax = 30;
+        private const int _finalTimeMax = 10;
+        private const int _HeartbeatTimeMax = 30;
         private List<UMCtrlCollectionItem> _umCtrlCollectionItemCache;
         protected Sequence _finalCountDownSequence;
 
@@ -196,7 +198,7 @@ namespace GameA
             _cachedView.CollectionRoot.SetActiveEx(PlayMode.Instance.SceneState.TotalGem > 0);
             _cachedView.EnemyRoot.SetActiveEx(PlayMode.Instance.SceneState.MonsterCount > 0);
             _cachedView.KeyRoot.SetActiveEx(PlayMode.Instance.SceneState.HasKey);
-            
+
             _hasTimeLimit = false;
             for (EWinCondition i = 0; i < EWinCondition.Max; i++)
             {
@@ -264,17 +266,29 @@ namespace GameA
         private void UpdateTimeLimit()
         {
             int curValue = PlayMode.Instance.SceneState.SecondLeft;
+            if (curValue < _finalTimeMax)
+                ShowFinalCountDown02(curValue);
             if (curValue != _lastShowSceonds)
             {
-                int minutes = curValue / 60;
-                int seconds = curValue % 60;
-                _cachedView.LeftTimeText.text =
-                    string.Format(GM2DUIConstDefine.WinDataTimeShowFormat, minutes, seconds);
-                _lastShowSceonds = curValue;
+                _lastFrame = GameRun.Instance.LogicFrameCnt;
                 if (curValue < _finalTimeMax)
+                {
+                    _cachedView.LeftTimeText.color = Color.red;
+                    _cachedView.LeftTimeText.rectTransform().localScale = Vector3.one * 1.15f;
+                }
+                else
+                {
+                    int minutes = curValue / 60;
+                    int seconds = curValue % 60;
+                    _cachedView.LeftTimeText.text =
+                        string.Format(GM2DUIConstDefine.WinDataTimeShowFormat, minutes, seconds);
+                    
+                }
+                if (curValue < _HeartbeatTimeMax)
                 {
                     ShowFinalCountDown();
                 }
+                _lastShowSceonds = curValue;
                 if (_hasTimeLimit)
                 {
                     if (_winConditionItemDict.Count > 1)
@@ -434,8 +448,8 @@ namespace GameA
         {
             if (null == _finalCountDownSequence)
                 CreateFinalCountDownSequence();
-            _cachedView.LeftTimeText.rectTransform().localScale = Vector3.one * 1.3f;
-            _cachedView.LeftTimeText.color = _cachedView.Color;
+            _cachedView.LeftTimeText.rectTransform().localScale = Vector3.one * 1.15f;
+            _cachedView.LeftTimeText.color = Color.red;
             _finalCountDownSequence.Restart();
         }
 
@@ -443,11 +457,22 @@ namespace GameA
         {
             _finalCountDownSequence = DOTween.Sequence();
             _finalCountDownSequence.Append(
-                _cachedView.LeftTimeText.rectTransform().DOScale(Vector3.one * 0.8f, 0.05f));
+                _cachedView.LeftTimeText.rectTransform().DOScale(Vector3.one * 0.7f, 0.1f));
             _finalCountDownSequence.Append(
-                _cachedView.LeftTimeText.rectTransform().DOScale(Vector3.one * 1.3f, 0.2f)
+                _cachedView.LeftTimeText.rectTransform().DOScale(Vector3.one * 1.15f, 0.15f)
                     .SetEase(Ease.OutBack));
             _finalCountDownSequence.SetAutoKill(false).Pause();
+        }
+
+        private float _lastFrame;
+
+        private void ShowFinalCountDown02(int curValue)
+        {
+            int seconds = curValue % 60;
+            int frameCount =
+                100 - (int) ((GameRun.Instance.LogicFrameCnt - _lastFrame) * ConstDefineGM2D.FixedDeltaTime * 100);
+            frameCount = Mathf.Clamp(frameCount, 0, 99);
+            _cachedView.LeftTimeText.text = string.Format(GM2DUIConstDefine.WinDataTimeShowFormat, seconds, frameCount);
         }
 
         private void Clear()
