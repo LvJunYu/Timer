@@ -74,7 +74,6 @@ namespace GameA
             _cachedView.Save.onClick.AddListener(OnSave);
         }
 
-
         protected override void InitEventListener()
         {
             base.InitEventListener();
@@ -294,8 +293,7 @@ namespace GameA
 
         private void OnClickHome()
         {
-            Messenger.Broadcast(EMessengerType.OpenGameSetting);
-            SocialGUIManager.Instance.GetUI<UICtrlGameSetting>().ChangeToSettingInGame();
+            SocialGUIManager.Instance.OpenUI<UICtrlWorkShopSetting>();
         }
 
         private void OnEnterErase()
@@ -317,7 +315,6 @@ namespace GameA
         {
             EditMode.Instance.StopCamera();
         }
-
 
         private void UpdateEditModeBtnView()
         {
