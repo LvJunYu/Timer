@@ -313,40 +313,43 @@ namespace GameA
             }
         }
 
-        private void OnClaimBtn () {
-            //if (!CheckPublishedProjectValid ()) {
-            //    return;
-            //}
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "正在收取奖励");
-            int rewardLevel = (int)((float)LocalUser.Instance.MatchUserData.PlayCountForReward / LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity / 0.25f);
-            if (rewardLevel < 1) return;
-            rewardLevel = Mathf.Clamp (rewardLevel, 1, 3);
-            Debug.Log ("________________________________________ rewardlevel: " + rewardLevel);
-            RemoteCommands.GetReformReward (
-                rewardLevel,
-                msg => {
-                    if ((int)EGetReformRewardCode.GRRC_Success == msg.ResultCode) {
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                        var reward = new Reward (msg.Reward);
-                        for (int i = 0; i < reward.ItemList.Count; i++)
-                        {
-                            reward.ItemList[i].AddToLocal();
-                        }
-                        SocialGUIManager.ShowReward (reward);
-                        LocalUser.Instance.MatchUserData.PlayCountForReward = 0;
-                        RefreshPublishedProject ();
+        private void OnClaimBtn ()
+        {
 
-                    } else
-                    {
-                        // TODO error handle    
-                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                    }
-                },
-                code => {
-                    // TODO error handle
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                }
-            );
+            SocialGUIManager.Instance.OpenUI<UICtrlMatchGetReward>();
+//            //if (!CheckPublishedProjectValid ()) {
+//            //    return;
+//            //}
+//            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "正在收取奖励");
+//            int rewardLevel = (int)((float)LocalUser.Instance.MatchUserData.PlayCountForReward / LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity / 0.25f);
+//            if (rewardLevel < 1) return;
+//            rewardLevel = Mathf.Clamp (rewardLevel, 1, 3);
+//            Debug.Log ("________________________________________ rewardlevel: " + rewardLevel);
+//            RemoteCommands.GetReformReward (
+//                rewardLevel,
+//                msg => {
+//                    if ((int)EGetReformRewardCode.GRRC_Success == msg.ResultCode) {
+//                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+//                        var reward = new Reward (msg.Reward);
+//                        for (int i = 0; i < reward.ItemList.Count; i++)
+//                        {
+//                            reward.ItemList[i].AddToLocal();
+//                        }
+//                        SocialGUIManager.ShowReward (reward);
+//                        LocalUser.Instance.MatchUserData.PlayCountForReward = 0;
+//                        RefreshPublishedProject ();
+//
+//                    } else
+//                    {
+//                        // TODO error handle    
+//                        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+//                    }
+//                },
+//                code => {
+//                    // TODO error handle
+//                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
+//                }
+//            );
 
         }
 
