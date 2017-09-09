@@ -62,6 +62,8 @@ namespace GameA
 		public static int ForceUpdateCameraMaskSize = SoyEngine.EMessengerType.NextId++;
         // 拾取了宝石
         public static int OnGemCollect = SoyEngine.EMessengerType.NextId++;
+	    // 拾取了一条命
+	    public static int OnLifeCollect = SoyEngine.EMessengerType.NextId++;
         // 怪物死了
         public static int OnMonsterDead = SoyEngine.EMessengerType.NextId++;
         // 玩家跳跃
