@@ -341,7 +341,7 @@ namespace GameA.Game
         protected void OnHit()
         {
             var centerDownPos = _owner.CenterDownPos;
-            CreateTrapUnit(centerDownPos, _owner.Angle);
+            CreateTrapUnit(centerDownPos, _owner.Angle, null);
             //临时写 TODO
             var units = GetHitUnits(_owner.CenterPos, null);
             if (units != null && units.Count > 0)
@@ -364,7 +364,7 @@ namespace GameA.Game
         public void OnBulletHit(Bullet bullet)
         {
             _bullets.Remove(bullet);
-            CreateTrapUnit(bullet.CurPos, bullet.Angle);
+            CreateTrapUnit(bullet.CurPos, bullet.Angle, bullet.TargetUnit);
             var units = GetHitUnits(bullet.CurPos, bullet.TargetUnit);
             if (units != null && units.Count > 0)
             {
@@ -388,7 +388,7 @@ namespace GameA.Game
 
         public virtual void OnProjectileHit(ProjectileBase projectile)
         {
-            CreateTrapUnit(projectile.CenterPos, projectile.Angle);
+            CreateTrapUnit(projectile.CenterPos, projectile.Angle, projectile.TargetUnit);
             var units = GetHitUnits(projectile.CenterPos, projectile.TargetUnit);
             if (units != null && units.Count > 0)
             {
@@ -502,12 +502,16 @@ namespace GameA.Game
         /// <summary>
         /// 生成陷阱
         /// </summary>
-        protected void CreateTrapUnit(IntVec2 hitPos, float angle)
+        protected void CreateTrapUnit(IntVec2 hitPos, float angle, UnitBase hitUnit)
         {
             if (_tableSkill.TrapId > 0)
             {
                 LogHelper.Debug("AddTrap {0}", _tableSkill.TrapId);
                 PlayMode.Instance.AddTrap(_tableSkill.TrapId, hitPos);
+            }
+            if (hitUnit == null || hitUnit.DynamicCollider != null)
+            {
+                return;
             }
             byte rotation;
             if (!GM2DTools.GetRotation4((int)angle, out rotation))

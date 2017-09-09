@@ -16,10 +16,10 @@ namespace GameA.Game
     [Unit(Id = 4003, Type = typeof(SwitchEarth))]
     public class SwitchEarth : BlockBase
     {
-        protected bool _curActiveState;
+        protected EActiveState _curActiveState;
         protected SpineObject _effect;
 
-        public bool CurActiveState
+        public EActiveState CurActiveState
         {
             set
             {
@@ -40,7 +40,7 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
-            _curActiveState = _activeState;
+            _curActiveState = _eActiveState;
             UpdateActiveState();
         }
 
@@ -73,22 +73,22 @@ namespace GameA.Game
         {
             if (_view != null)
             {
-                _view.SetRendererEnabled(_curActiveState);
+                _view.SetRendererEnabled(_curActiveState == EActiveState.Active);
             }
             if (_effect != null)
             {
-                _effect.SetActive(!_curActiveState);
+                _effect.SetActive(_curActiveState == EActiveState.Active);
             }
-            SetAllCross(!_curActiveState);
+            SetAllCross(_curActiveState == EActiveState.Deactive);
         }
 
-        private void SetActiveState(bool value)
+        private void SetCurrentActiveState(EActiveState value)
         {
             if (_curActiveState == value)
             {
                 return;
             }
-            if (!_curActiveState && _activeState)
+            if (_curActiveState != EActiveState.Active && _eActiveState == EActiveState.Active)
             {
                 var units = ColliderScene2D.GridCastAllReturnUnits(_colliderGrid);
                 for (int i = 0; i < units.Count; i++)
@@ -110,12 +110,12 @@ namespace GameA.Game
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            SetActiveState(_activeState);
+            SetCurrentActiveState(_eActiveState);
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (!_curActiveState)
+            if (_curActiveState != EActiveState.Active)
             {
                 return false;
             }
@@ -124,7 +124,7 @@ namespace GameA.Game
 
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {
-            if (!_curActiveState)
+            if (_curActiveState != EActiveState.Active)
             {
                 return false;
             }
@@ -133,7 +133,7 @@ namespace GameA.Game
 
         public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (!_curActiveState)
+            if (_curActiveState != EActiveState.Active)
             {
                 return false;
             }
@@ -142,7 +142,7 @@ namespace GameA.Game
 
         public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
         {
-            if (!_curActiveState)
+            if (_curActiveState != EActiveState.Active)
             {
                 return false;
             }

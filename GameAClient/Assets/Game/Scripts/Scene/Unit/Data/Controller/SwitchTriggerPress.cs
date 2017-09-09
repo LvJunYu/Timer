@@ -15,13 +15,11 @@ namespace GameA.Game
     [Unit(Id = 8101, Type = typeof(SwitchTriggerPress))]
     public class SwitchTriggerPress : SwitchTrigger
     {
-        protected bool _gridCheckTrigger;
         protected List<UnitBase> _gridCheckUnits = new List<UnitBase>();
         
         protected override void Clear()
         {
             base.Clear();
-            _gridCheckTrigger = false;
             _gridCheckUnits.Clear();
         }
 
@@ -32,24 +30,15 @@ namespace GameA.Game
                 return;
             }
             _gridCheckUnits.Add(other);
-            if (_gridCheckTrigger)
-            {
-                return;
-            }
-            _gridCheckTrigger = true;
-            OnTriggerStart(other);
+            SetActiveState(EActiveState.Active);
         }
 
         public void OnGridCheckExit(UnitBase other)
         {
             _gridCheckUnits.Remove(other);
-            if (_gridCheckUnits.Count == 0)
+            if (_gridCheckUnits.Count == 0 && _units.Count == 0)
             {
-                _gridCheckTrigger = false;
-                if (!_trigger && !_gridCheckTrigger)
-                {
-                    OnTriggerEnd();
-                }
+                SetActiveState(EActiveState.Deactive);
             }
         }
 
@@ -60,17 +49,12 @@ namespace GameA.Game
                 return;
             }
             _units.Add(other);
-            if (_trigger)
-            {
-                return;
-            }
-            _trigger = true;
-            OnTriggerStart(other);
+            SetActiveState(EActiveState.Active);
         }
 
         public override void UpdateLogic()
         {
-            if (_trigger)
+            if (_eActiveState == EActiveState.Active)
             {
                 if (_units.Count > 0)
                 {
@@ -82,22 +66,18 @@ namespace GameA.Game
                         }
                     }
                 }
-                if (_units.Count == 0)
+                if (_gridCheckUnits.Count == 0 && _units.Count == 0)
                 {
-                    _trigger = false;
-                    if (!_trigger && !_gridCheckTrigger)
-                    {
-                        OnTriggerEnd();
-                    }
+                    SetActiveState(EActiveState.Deactive);
                 }
             }
         }
 
-        protected override void ChangView(bool on)
+        protected override void ChangView()
         {
             if (_view != null)
             {
-                if (on)
+                if (_eActiveState == EActiveState.Active)
                 {
                     _view.ChangeView("M1SwitchTriggerOn_" + _unitDesc.Rotation);
                 }

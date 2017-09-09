@@ -42,8 +42,9 @@ namespace GameA.Game
 
     public enum EActiveState : byte
     {
-        Active = 0,
-        Deactive = 1,
+        None = 0,
+        Active = 1,
+        Deactive = 2,
     }
 
     public enum ERotateMode : byte

@@ -24,9 +24,9 @@ namespace GameA.Game
             _units = DataScene2D.Instance.GetControlledUnits(_guid);
         }
 
-        public override void OnTriggerStart(UnitBase other)
+        protected override void OnActiveStateChanged()
         {
-            //LogHelper.Debug("OnTriggerStart {0}", ToString() + "~" + _trans.GetInstanceID());
+            base.OnActiveStateChanged();
             if (_units != null)
             {
                 for (int i = 0; i < _units.Count; i++)
@@ -34,23 +34,14 @@ namespace GameA.Game
                     var unit = _units[i];
                     if (unit != null && unit.IsAlive)
                     {
-                        unit.OnSwitchPressStart(this);
-                    }
-                }
-            }
-        }
-
-        public override void OnTriggerEnd()
-        {
-            //LogHelper.Debug("OnTriggerEnd {0}", ToString());
-            if (_units != null)
-            {
-                for (int i = 0; i < _units.Count; i++)
-                {
-                    var unit = _units[i];
-                    if (unit != null && unit.IsAlive)
-                    {
-                        unit.OnSwitchPressEnd(this);
+                        if (_eActiveState == EActiveState.Active)
+                        {
+                            unit.OnSwitchPressStart(this);
+                        }
+                        else if (_eActiveState == EActiveState.Deactive)
+                        {
+                            unit.OnSwitchPressEnd(this);
+                        }
                     }
                 }
             }

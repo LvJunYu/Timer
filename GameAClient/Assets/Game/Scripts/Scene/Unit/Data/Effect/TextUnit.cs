@@ -79,10 +79,10 @@ namespace GameA.Game
             }
         }
 
-        internal override void OnCtrlBySwitch()
+        protected override void OnActiveStateChanged()
         {
-            base.OnCtrlBySwitch();
-            if (_activeState)
+            base.OnActiveStateChanged();
+            if (_eActiveState == EActiveState.Active)
             {
                 _timer = 10 * ConstDefineGM2D.FixedFrameCount;
                 ShowHide(true);
@@ -91,7 +91,7 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            if (!_activeState)
+            if (_eActiveState == EActiveState.Deactive)
             {
                 if (_timer > 0)
                 {

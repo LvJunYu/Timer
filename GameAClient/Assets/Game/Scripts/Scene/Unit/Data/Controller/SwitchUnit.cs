@@ -27,25 +27,11 @@ namespace GameA.Game
         {
             base.Clear();
             CreateSwitchTrigger();
-            if (_switchTrigger != null)
-            {
-                _switchTrigger.Trigger = false;
-            }
-        }
-
-        public virtual void OnTriggerStart(UnitBase other)
-        {
-//            LogHelper.Debug("OnTriggerStart {0}", ToString());
-        }
-
-        public virtual void OnTriggerEnd()
-        {
-//            LogHelper.Debug("OnTriggerEnd {0}", ToString());
         }
 
         public override void UpdateView(float deltaTime)
         {
-            if (!_activeState || !UseMagic())
+            if (_eActiveState != EActiveState.Active || !UseMagic())
             {
                 return;
             }

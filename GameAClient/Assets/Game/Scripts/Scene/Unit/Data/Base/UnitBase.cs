@@ -89,7 +89,7 @@ namespace GameA.Game
         protected EUnitState _eUnitState;
 
         [SerializeField] protected EMoveDirection _moveDirection;
-        [SerializeField] protected bool _activeState;
+        [SerializeField] protected EActiveState _eActiveState;
         protected float _angle;
 
         /// <summary>
@@ -147,6 +147,11 @@ namespace GameA.Game
         protected virtual bool IsClimbing
         {
             get { return false; }
+        }
+
+        public EActiveState EActiveState
+        {
+            get { return _eActiveState; }
         }
 
         protected AnimationSystem _animation
@@ -665,9 +670,9 @@ namespace GameA.Game
             if (!string.IsNullOrEmpty(_tableUnit.WithEffctName))
             {
                 _withEffect = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.WithEffctName , _trans);
-                if (_withEffect != null)
+                if (_eActiveState != EActiveState.None)
                 {
-                    _withEffect.Play();
+                    OnActiveStateChanged();
                 }
             }
             return true;
@@ -692,8 +697,7 @@ namespace GameA.Game
             if (_view != null)
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableUnit.DestroyAudioName);
-                GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName,
-                    GM2DTools.TileToWorld(CenterPos, _trans.position.z));
+                GameParticleManager.Instance.Emit(_tableUnit.DestroyEffectName, GM2DTools.TileToWorld(CenterPos, _trans.position.z));
             }
         }
 
@@ -703,6 +707,10 @@ namespace GameA.Game
             if (_view != null)
             {
                 _view.Reset();
+            }
+            if (_eActiveState != EActiveState.None)
+            {
+                OnActiveStateChanged();
             }
             _curPos = new IntVec2(_guid.x, _guid.y);
             _colliderPos = GetColliderPos(_curPos);
@@ -838,7 +846,7 @@ namespace GameA.Game
         {
             var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
             _moveDirection = unitExtra.MoveDirection;
-            _activeState = unitExtra.Active == (int) EActiveState.Active;
+            _eActiveState = (EActiveState)unitExtra.Active;
             if (IsMain)
             {
                 _moveDirection = EMoveDirection.Right;
@@ -1515,10 +1523,24 @@ namespace GameA.Game
             return true;
         }
 
-        internal virtual void OnCtrlBySwitch()
+        internal void OnCtrlBySwitch()
         {
-            _activeState = !_activeState;
-//            LogHelper.Debug("OnCtrlBySwitch: {0}",_ctrlBySwitch);
+            SetActiveState(_eActiveState == EActiveState.Deactive ? EActiveState.Active : EActiveState.Deactive);
+        }
+
+        public virtual void SetActiveState(EActiveState value)
+        {
+            if (_eActiveState != value)
+            {
+                _eActiveState = value;
+                OnActiveStateChanged();
+            }
+        }
+        
+        protected virtual void OnActiveStateChanged()
+        {
+            LogHelper.Debug(_eActiveState+"~"+ToString());
+            _withEffect.SetActiveStateEx(_eActiveState == EActiveState.Active);
         }
 
         public bool IsBlockedBy(UnitBase unit)

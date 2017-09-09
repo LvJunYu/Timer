@@ -45,10 +45,13 @@ namespace GameA.Game
             s_freeQueues.Clear();
         }
 
-        public override void OnTriggerStart(UnitBase other)
+        protected override void OnActiveStateChanged()
         {
-            base.OnTriggerStart(other);
-            _checkGrid = GM2DTools.CalculateFireColliderGrid(BridgeUnitId, _colliderGrid, _unitDesc.Rotation);
+            base.OnActiveStateChanged();
+            if (_eActiveState == EActiveState.Active)
+            {
+                _checkGrid = GM2DTools.CalculateFireColliderGrid(BridgeUnitId, _colliderGrid, _unitDesc.Rotation);
+            }
         }
 
         public override void UpdateLogic()
@@ -57,7 +60,7 @@ namespace GameA.Game
             {
                 return;
             }
-            if (_switchTrigger==null || !_switchTrigger.Trigger)
+            if (_switchTrigger==null || _switchTrigger.EActiveState != EActiveState.Active)
             {
                 if (_curCreatingQueue != null)
                 {

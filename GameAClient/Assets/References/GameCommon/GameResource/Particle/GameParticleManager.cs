@@ -160,7 +160,7 @@ namespace SoyEngine
         {
             return Emit(itemName, pos, Vector3.zero, Vector3.one, lifeTime, sortingOrder);
         }
-
+        
         public UnityNativeParticleItem Emit(string itemName, Transform parent,
             float lifeTime = ConstDefineGM2D.DefaultParticlePlayTime)
         {

@@ -66,7 +66,7 @@ namespace GameA.Game
 	    {
 	        get
 	        {
-	            return (EActiveState) (ActiveState - 1);
+	            return (EActiveState) ActiveState;
 	        }
 	    }
 

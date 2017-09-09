@@ -29,7 +29,7 @@ namespace GameA.Game
                         deltaImpactPos.x = (int) (-player.CurMaxSpeedX * 0.8f);
                         break;
                 }
-                if (!_activeState || !UseMagic())
+                if (_eActiveState != EActiveState.Active || !UseMagic())
                 {
                     return deltaImpactPos;
                 }

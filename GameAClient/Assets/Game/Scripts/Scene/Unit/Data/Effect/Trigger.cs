@@ -20,13 +20,13 @@ namespace GameA.Game
             _triggerName = DataScene2D.Instance.GetUnitExtra(_guid).Msg;
         }
 
-        internal override void OnCtrlBySwitch()
+        protected override void OnActiveStateChanged()
         {
-            base.OnCtrlBySwitch();
+            base.OnActiveStateChanged();
             //发送事件
             if (!string.IsNullOrEmpty(_triggerName))
             {
-                Messenger<string, bool>.Broadcast(EMessengerType.OnTrigger, _triggerName, _activeState);
+                Messenger<string, bool>.Broadcast(EMessengerType.OnTrigger, _triggerName, _eActiveState == EActiveState.Active);
             }
         }
     }

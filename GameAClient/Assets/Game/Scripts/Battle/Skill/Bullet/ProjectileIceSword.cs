@@ -59,6 +59,15 @@ namespace GameA.Game
             }
         }
 
+        public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
+        {
+            if (Rotation == (int)EDirectionType.Left || Rotation == (int)EDirectionType.Right)
+            {
+                return base.OnUpHit(other, ref y, checkOnly);
+            }
+            return false;
+        }
+
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)
         {
             return false;
