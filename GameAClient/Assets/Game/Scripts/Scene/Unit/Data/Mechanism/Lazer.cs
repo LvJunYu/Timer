@@ -14,7 +14,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     [Unit(Id = 5010, Type = typeof(Lazer))]
-    public class Lazer : Magic
+    public class Lazer : BlockBase
     {
         protected GridCheck _gridCheck;
 
@@ -41,7 +41,6 @@ namespace GameA.Game
             }
             _gridCheck = new GridCheck(this);
             SetSortingOrderBack();
-            Calculate();
             return true;
         }
         
@@ -51,12 +50,6 @@ namespace GameA.Game
             _eRotateType = (ERotateMode) unitExtra.RotateMode;
             _endAngle = GM2DTools.GetAngle(unitExtra.RotateValue);
             base.UpdateExtraData();
-        }
-
-        private void Calculate()
-        {
-            _distance = ConstDefineGM2D.MaxMapDistance;
-            _direction = GM2DTools.GetDirection(_curAngle);
         }
 
         internal override bool InstantiateView()
@@ -87,6 +80,7 @@ namespace GameA.Game
         {
             base.Clear();
             _curAngle = _angle;
+            _direction = GM2DTools.GetDirection(_curAngle);
             if (_trans != null)
             {
                 _trans.localEulerAngles = new Vector3(0, 0, -_angle);
@@ -133,6 +127,7 @@ namespace GameA.Game
                 Pause();
                 return;
             }
+            _distance = ConstDefineGM2D.MaxMapDistance;
             if (_eRotateType != ERotateMode.None)
             {
                 switch (_eRotateType)
@@ -149,16 +144,13 @@ namespace GameA.Game
                 {
                     _eRotateType = _eRotateType == ERotateMode.Clockwise ? ERotateMode.Anticlockwise : ERotateMode.Clockwise;
                 }
+                _direction = GM2DTools.GetDirection(_curAngle);
                 if (_trans != null)
                 {
                     _trans.localEulerAngles = new Vector3(0, 0, -_curAngle);
                 }
             }
             _gridCheck.Before();
-            if (_dynamicCollider != null)
-            {
-                Calculate();
-            }
             var hits = ColliderScene2D.RaycastAll(CenterPos, _direction, _distance, EnvManager.LazerShootLayer);
             if (hits.Count > 0)
             {
