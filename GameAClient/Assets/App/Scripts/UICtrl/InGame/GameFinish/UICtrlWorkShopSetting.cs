@@ -1,5 +1,6 @@
 using GameA.Game;
 using SoyEngine;
+using UnityEngine.UI;
 
 namespace GameA
 {
@@ -8,6 +9,8 @@ namespace GameA
     {
         private UPCtrlWorkShopBasicSetting _upCtrlWorkShopBasicSetting;
         private UPCtrlWorkShopWinConditionSetting _upCtrlWorkShopWinConditionSetting;
+        private UPCtrlBase<UICtrlWorkShopSetting, UIViewWorkShopSetting> _curCtrl;
+        private UICtrlEdit.EMode _curMode;
 
         private void WinConditionToggleOnValueChanged(bool arg0)
         {
@@ -15,6 +18,7 @@ namespace GameA
             {
                 _upCtrlWorkShopBasicSetting.Close();
                 _upCtrlWorkShopWinConditionSetting.Open();
+                _curCtrl = _upCtrlWorkShopWinConditionSetting;
             }
         }
 
@@ -24,6 +28,7 @@ namespace GameA
             {
                 _upCtrlWorkShopWinConditionSetting.Close();
                 _upCtrlWorkShopBasicSetting.Open();
+                _curCtrl = _upCtrlWorkShopBasicSetting;
             }
         }
 
@@ -31,23 +36,26 @@ namespace GameA
         {
             SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
         }
-        
+
         private void OnExitBtn()
         {
+            //如果在测试状态，则先退出测试状态
+            if (_curMode == UICtrlEdit.EMode.EditTest)
+            {
+                GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+                if (null != gameModeEdit)
+                    gameModeEdit.ChangeMode(GameModeEdit.EMode.Edit);
+            }
             SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
             //SocialApp.Instance.ReturnToApp();
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "...");
-            GM2DGame.Instance.QuitGame (
-                () => {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                },
-                code => {
-                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-                },
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
+            GM2DGame.Instance.QuitGame(
+                () => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
+                code => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
                 true
             );
         }
-        
+
         private void OnSureBtn()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
@@ -75,8 +83,10 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            _upCtrlWorkShopWinConditionSetting.Close();
-            _upCtrlWorkShopBasicSetting.Open();
+            _curMode = (UICtrlEdit.EMode)parameter;
+            if (_curCtrl == null)
+                _curCtrl = _upCtrlWorkShopBasicSetting;
+            _curCtrl.Open();
             GameRun.Instance.Pause();
         }
 

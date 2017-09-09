@@ -7,7 +7,10 @@ namespace GameA
     {
         private USCtrlGameSettingItem _playBGMusic;
         private USCtrlGameSettingItem _playSoundsEffects;
-        private GameModeWorkshopEdit _gameModeWorkshopEdit;
+        private GameModeEdit _gameModeWorkshopEdit;
+        private Project _curProject;
+        private string _originalTitle;
+        private string _originalDesc;
 
         protected override void OnViewCreated()
         {
@@ -15,31 +18,58 @@ namespace GameA
             _cachedView.SaveBtn.onClick.AddListener(OnSaveBtn);
             _cachedView.TestBtn.onClick.AddListener(OnTestBtn);
             _cachedView.PublishBtn.onClick.AddListener(OnPublishBtn);
+            _cachedView.TitleInputField.onEndEdit.AddListener(OnTitleEndEdit);
+            _cachedView.DescInputField.onEndEdit.AddListener(OnDescEndEdit);
             _playBGMusic = new USCtrlGameSettingItem();
             _playBGMusic.Init(_cachedView.PlayBackGroundMusic);
             _playSoundsEffects = new USCtrlGameSettingItem();
             _playSoundsEffects.Init(_cachedView.PlaySoundsEffects);
         }
 
+        private void OnDescEndEdit(string arg0)
+        {
+            if (arg0 != _originalDesc && _curProject != null)
+            {
+                _originalDesc = _curProject.Summary = arg0;
+                if (_gameModeWorkshopEdit != null)
+                    _gameModeWorkshopEdit.NeedSave = true;
+                Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, _curProject);
+            }
+        }
+
+        private void OnTitleEndEdit(string arg0)
+        {
+            if (arg0 != _originalTitle && _curProject != null)
+            {
+                _originalTitle = _curProject.Name = arg0;
+                if (_gameModeWorkshopEdit != null)
+                    _gameModeWorkshopEdit.NeedSave = true;
+                Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, _curProject);
+            }
+        }
+
         private void OnPublishBtn()
         {
+            if (null == _curProject) return;
+            SocialGUIManager.Instance.OpenUI<UICtrlPublishProject>(_curProject);
         }
 
         private void OnTestBtn()
         {
-            if (null == _gameModeWorkshopEdit)
-                _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeWorkshopEdit;
             if (null != _gameModeWorkshopEdit)
             {
                 SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
-                _gameModeWorkshopEdit.ChangeMode(GameModeEdit.EMode.EditTest);
+                GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+                if (null != gameModeEdit)
+                {
+                    gameModeEdit.ChangeMode(GameModeEdit.EMode.EditTest);
+                }
+//                _gameModeWorkshopEdit.ChangeMode(GameModeEdit.EMode.EditTest);
             }
         }
 
         private void OnSaveBtn()
         {
-            if (null == _gameModeWorkshopEdit)
-                _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeWorkshopEdit;
             if (null != _gameModeWorkshopEdit)
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存");
@@ -59,9 +89,21 @@ namespace GameA
         public override void Open()
         {
             base.Open();
+            if (null == _gameModeWorkshopEdit)
+                _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+            if (_gameModeWorkshopEdit != null)
+                _curProject = _gameModeWorkshopEdit.Project;
             _cachedView.SettingPannel.SetActive(true);
+            UpdateAll();
+        }
+
+        public void UpdateAll()
+        {
             UpdateSettingItem();
             UpdateBtns();
+            UpdateInfo();
+            _originalTitle = _curProject.Name;
+            _originalDesc = _curProject.Summary;
         }
 
         public override void Close()
@@ -88,16 +130,24 @@ namespace GameA
 
         private void UpdateBtns()
         {
-            if (null == _gameModeWorkshopEdit)
-                _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeWorkshopEdit;
             if (_gameModeWorkshopEdit != null)
             {
-                _cachedView.SaveBtn.gameObject.SetActive(_gameModeWorkshopEdit.MapDirty);
-                _cachedView.SaveBtnDiable.SetActive(!_gameModeWorkshopEdit.MapDirty);
-                bool canPublish = _gameModeWorkshopEdit.CheckCanPublish();
-                _cachedView.TestBtn.gameObject.SetActive(!canPublish);
-                _cachedView.TestBtnDiable.SetActive(canPublish);
+                bool needSave = _gameModeWorkshopEdit.MapDirty;
+                _cachedView.SaveBtn.gameObject.SetActive(needSave);
+                _cachedView.SaveBtnFinished.SetActive(!needSave);
+                bool needTest = !_gameModeWorkshopEdit.CheckCanPublish();
+                _cachedView.TestBtn.gameObject.SetActive(needTest && !needSave);
+                _cachedView.TestBtnDiable.SetActive(needSave);
+                _cachedView.TestBtnFinished.SetActive(!needTest && !needSave);
+                _cachedView.PublishBtn.gameObject.SetActive(!needSave && !needTest);
+                _cachedView.PublishBtnDisable.SetActive(needSave || needTest);
             }
+        }
+
+        private void UpdateInfo()
+        {
+            _cachedView.TitleInputField.text = _curProject.Name;
+            _cachedView.DescInputField.text = _curProject.Summary;
         }
     }
 }
