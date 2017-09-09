@@ -184,10 +184,10 @@ namespace GameA
                  LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity/ 3 * 4
                  * (1 - passRate) * TableManager.Instance.GetModifyReward(_rewardLevel).DifficultyRewardFactor);
             _rewardItemMoney.Count = _extraGold;
-//            _cachedView.RewardLv1.SetItem(_rewarditem1);  
-//            _cachedView.RewardLv2.SetItem(_rewarditem2);
-//            _cachedView.RewardLv3.SetItem(_rewarditem3);
-//            _cachedView.ExtraMoney.SetItem(_rewardItemMoney);
+            _cachedView.RewardLv1.SetItem(_rewarditem1);  
+            _cachedView.RewardLv2.SetItem(_rewarditem2);
+            _cachedView.RewardLv3.SetItem(_rewarditem3);
+            _cachedView.ExtraMoney.SetItem(_rewardItemMoney);
         }
 
         #endregion 接口

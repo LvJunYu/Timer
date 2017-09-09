@@ -266,7 +266,7 @@ namespace GameA
 			}
 
 			if (_chapterAry[_currentChapter - 1] != null) {
-				_chapterAry[_currentChapter - 1].RefreshInfo (tableChapter, doPassAnimate);
+				_chapterAry[_currentChapter - 1].RefreshInfo (tableChapter, _currentChapter, doPassAnimate);
 			}
 
             if (_currentChapter == 1) {

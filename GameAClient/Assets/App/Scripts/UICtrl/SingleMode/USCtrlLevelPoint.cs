@@ -6,11 +6,11 @@
 ***********************************************************************/
 
 using System.Collections;
+using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-
 namespace GameA
 {
 	public class USCtrlLevelPoint : USCtrlBase<USViewLevelPoint>
@@ -28,7 +28,9 @@ namespace GameA
 	    private Table_StandaloneLevel _tableLevel;
 	    private int _lastStarCount;
 	    private EState _state = EState.None;
-	    
+	    private Vector2 _startPos;
+	    private Vector2 _moVector2 = new Vector2(0.0f,15.0f);
+	    private Tweener _tweener;
         #endregion
 
         #region 属性
@@ -43,8 +45,9 @@ namespace GameA
             if (null != _cachedView.Current) {
 	            _cachedView.Current.onClick.AddListener (OnClick);
             }
-		}
-
+//		    SetTween();
+	    }
+         
 	    public void SetData(int chapterId, int levelIdx, Table_StandaloneLevel tableLevel)
 	    {
 		    _chapterId = chapterId;
@@ -239,7 +242,34 @@ namespace GameA
 			SocialGUIManager.Instance.GetUI<UICtrlSingleMode>()
 				.OnLevelClicked(new IntVec3(_chapterId, _levelIdx, _isBonus ? 1 : 0));
 		}
-        #region 接口
+
+	    public void SetTween(bool isDown ,Vector2 offset)
+	    {
+		    if (isDown)
+		    {
+			    _moVector2 = -_moVector2;
+		    }
+		    _startPos = _cachedView.rectTransform().anchoredPosition;
+		    _cachedView.rectTransform().anchoredPosition += offset;
+		    _tweener = _cachedView.rectTransform().DOAnchorPosY((_startPos + _moVector2).y, 2.0f);
+		    _tweener.SetDelay(offset.y*0.1f);
+		    _tweener.OnComplete(SetOnComplete);
+	    }
+
+	    public void SetIslandImage(Sprite isLandImageSprite)
+	    {
+		    _cachedView.IslandImage.sprite = isLandImageSprite;
+	    }
+
+	    private void SetOnComplete()
+	    {
+		    _moVector2 = -_moVector2;
+		    _tweener = _cachedView.rectTransform().DOAnchorPosY((_startPos + _moVector2).y, 2.0f);
+		    _tweener.OnComplete(SetOnComplete);
+	    }
+	    
+
+	    #region 接口
 
 
 
