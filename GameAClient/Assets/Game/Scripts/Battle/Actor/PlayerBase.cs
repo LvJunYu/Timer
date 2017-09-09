@@ -480,7 +480,9 @@ namespace GameA.Game
                             Messenger.Broadcast(EMessengerType.OnPlayerJump);
                             _animation.PlayOnce(JumpAnimName(_jumpLevel));
                         }
-                        else if (_jumpState == EJumpState.Fall)
+                        else if (_jumpState == EJumpState.Fall &&
+                                 (!_animation.IsPlaying("Jump") && !_animation.IsPlaying("Jump2") &&
+                                  !_animation.IsPlaying("Fly") && !_animation.IsPlaying("StunStart")))
                         {
                             _animation.PlayLoop(FallAnimName());
                         }
