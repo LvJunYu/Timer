@@ -670,6 +670,10 @@ namespace GameA.Game
             if (!string.IsNullOrEmpty(_tableUnit.WithEffctName))
             {
                 _withEffect = GameParticleManager.Instance.GetUnityNativeParticleItem(_tableUnit.WithEffctName , _trans);
+                if (_withEffect != null)
+                {
+                    _withEffect.Play();
+                }
                 if (_eActiveState != EActiveState.None)
                 {
                     OnActiveStateChanged();
