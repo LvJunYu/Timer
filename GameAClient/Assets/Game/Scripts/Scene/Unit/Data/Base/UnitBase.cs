@@ -1427,6 +1427,11 @@ namespace GameA.Game
         {
             _viewZOffset = UnitDefine.ZOffsetBack;
         }
+        
+        protected void SetSortingOrderNormal()
+        {
+            _viewZOffset = 0;
+        }
 
         public int GetRotation(byte rotation)
         {

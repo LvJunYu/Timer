@@ -14,19 +14,16 @@ namespace GameA.Game
     public class Gate : BlockBase
     {
         private bool _opened;
+        protected int _timer;
 
         protected override void Clear()
         {
             base.Clear();
+            _timer = 0;
+            _opened = false;
             SetAllCross(false);
-            //if (_opened)
-            {
-                if (_view != null)
-                {
-                    _view.ChangeView(_tableUnit.Model);
-                }
-                _opened = false;
-            }
+            SetSortingOrderNormal();
+            UpdateTransPos();
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
@@ -77,16 +74,29 @@ namespace GameA.Game
                 {
                     if (_opened == false && PlayMode.Instance.SceneState.UseKey())
                     {
-                        _opened = true;
                         SetEnabled(false);
-                        if (_view != null)
+                        _timer = 50;
+                        if (_animation != null)
                         {
-                            SetAllCross(true);
-                            _view.ChangeView(_tableUnit.Model + "_1");
-                            SetSortingOrderBack();
-                            UpdateTransPos();
+                            _animation.PlayOnce("Open");
                         }
                     }
+                }
+            }
+        }
+
+        public override void UpdateLogic()
+        {
+            base.UpdateLogic();
+            if (_timer > 0)
+            {
+                _timer--;
+                if (_timer == 0)
+                {
+                    _opened = true;
+                    SetAllCross(true);
+                    SetSortingOrderBackground();
+                    UpdateTransPos();
                 }
             }
         }
