@@ -42,18 +42,23 @@ namespace GameA
         public void Set(int i)
         {
             _index = i;
+            if (i == 0)
+            {
+                _cachedView.SeletctedHeadImage.SetActiveEx(true);
+            }
             var head = SpriteNameDefine.GetHeadImage(i);
             SocialGUIManager.Instance.GetUI<UICtrlHeadPortraitSelect>()
                 .InitTagGroup(_cachedView.SeletctedHeadBtn, OnHeadSeleted);
-            Sprite fashion = null;
             //if (LocalUser.Instance.User.UserInfoSimple.HeadImgUrl == head)
             //{
             //    OnHeadSeleted(true);
             //}
-            if (ResourcesManager.Instance.TryGetSprite(head, out fashion))
+            Texture fashion=null;
+            if (ResourcesManager.Instance.TryGetTexture(head, out fashion))
             {
-                _cachedView.HeadImg.sprite = fashion;
+                _cachedView.HeadImg.texture = fashion;
             }
+
         }
 
         public void OnHeadSeleted(bool open)

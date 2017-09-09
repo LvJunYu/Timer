@@ -19,8 +19,7 @@ namespace GameA.Game
         protected int _timeScale;
         protected int _weaponId;
         protected UnityNativeParticleItem _efffectWeapon;
-        protected string _animationName;
-        protected ERotateType _eRotateType;
+        protected ERotateMode _eRotateType;
         protected float _endAngle;
         protected float _curAngle;
         protected int _timeDelay;
@@ -50,10 +49,11 @@ namespace GameA.Game
         {
             var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
             _weaponId = unitExtra.ChildId;
-            _eRotateType = (ERotateType) unitExtra.RotateMode;
+            _eRotateType = (ERotateMode) unitExtra.RotateMode;
             _endAngle = GM2DTools.GetAngle(unitExtra.RotateValue);
             _timeDelay = TableConvert.GetTime(unitExtra.TimeDelay);
             _timeInterval = TableConvert.GetTime(unitExtra.TimeInterval);
+            _timeInterval = Math.Max(25, _timeInterval);
             base.UpdateExtraData();
         }
 
@@ -63,8 +63,8 @@ namespace GameA.Game
             {
                 return false;
             }
-            _animationName = ((EDirectionType) _unitDesc.Rotation).ToString();
             SetWeapon(_weaponId);
+            _trans.localEulerAngles = new Vector3(0, 0, -_angle);
             return true;
         }
 
@@ -75,6 +75,10 @@ namespace GameA.Game
                 _skillCtrl.Clear();
             }
             _curAngle = _angle;
+            if (_trans != null)
+            {
+                _trans.localEulerAngles = new Vector3(0, 0, -_angle);
+            }
             base.Clear();
         }
 
@@ -104,21 +108,7 @@ namespace GameA.Game
                 _efffectWeapon = GameParticleManager.Instance.GetUnityNativeParticleItem(tableEquipment.Model, _trans);
                 if (_efffectWeapon != null)
                 {
-                    switch ((EDirectionType) Rotation)
-                    {
-                        case EDirectionType.Up:
-                            _efffectWeapon.Trans.localPosition = new Vector3(0f,0.4f,-10f);
-                            break;
-                        case EDirectionType.Down:
-                            _efffectWeapon.Trans.localPosition = new Vector3(0f,0.8f,-10f);
-                            break;
-                        case EDirectionType.Left:
-                            _efffectWeapon.Trans.localPosition = new Vector3(0.23f,0.6f,-10f);
-                            break;
-                        case EDirectionType.Right:
-                            _efffectWeapon.Trans.localPosition = new Vector3(-0.23f,0.6f,-10f);
-                            break;
-                    }
+                    _efffectWeapon.Trans.localPosition = new Vector3(0f, -0.22f, -10f);
                     _efffectWeapon.Play();
                 }
             }
@@ -147,21 +137,21 @@ namespace GameA.Game
             //MoveDirection
             base.UpdateLogic();
             //Rotate
-            if (_eRotateType != ERotateType.None)
+            if (_eRotateType != ERotateMode.None)
             {
                 switch (_eRotateType)
                 {
-                    case ERotateType.Clockwise:
+                    case ERotateMode.Clockwise:
                         _curAngle += 1;
                         break;
-                    case ERotateType.Anticlockwise:
+                    case ERotateMode.Anticlockwise:
                         _curAngle += -1;
                         break;
                 }
                 Util.CorrectAngle360(ref _curAngle);
                 if (Util.IsFloatEqual(_curAngle, _angle) || Util.IsFloatEqual(_curAngle, _endAngle))
                 {
-                    _eRotateType = _eRotateType == ERotateType.Clockwise ? ERotateType.Anticlockwise : ERotateType.Clockwise;
+                    _eRotateType = _eRotateType == ERotateMode.Clockwise ? ERotateMode.Anticlockwise : ERotateMode.Clockwise;
                 }
                 if (_trans != null)
                 {
@@ -173,9 +163,9 @@ namespace GameA.Game
                 _skillCtrl.UpdateLogic();
                 if (_skillCtrl.Fire(0))
                 {
-                    if (_animation != null && !string.IsNullOrEmpty(_animationName))
+                    if (_animation != null)
                     {
-                        _animation.PlayOnce(_animationName, _timeScale);
+                        _animation.PlayOnce("Start", _timeScale);
                     }
                 }
             }

@@ -129,6 +129,8 @@ namespace GameA
         private void OnOKBtn ()
         {
             SocialGUIManager.Instance.CloseUI<UICtrlPublishProject> ();
+            if(SocialGUIManager.Instance.GetUI<UICtrlWorkShopSetting>().IsOpen)
+                SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
             if (null == _project)
             {
                 return;

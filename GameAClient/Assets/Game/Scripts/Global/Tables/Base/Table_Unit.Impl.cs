@@ -6,7 +6,6 @@
 ***********************************************************************/
 
 using SoyEngine;
-using Spine.Unity;
 using UnityEngine;
 
 namespace GameA.Game
@@ -71,15 +70,15 @@ namespace GameA.Game
 	        }
 	    }
 
-		public ERotateType DefaultRotateMode
+		public ERotateMode DefaultRotateMode
 		{
 			get
 			{
 				if (RotateState == 3)
 				{
-					return ERotateType.None;
+					return ERotateMode.None;
 				}
-				return (ERotateType) (RotateState - 1);
+				return (ERotateMode) (RotateState - 1);
 			}
 		}
 

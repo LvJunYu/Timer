@@ -40,7 +40,9 @@ namespace GameA
         }
 
         private static readonly string[] HeadImageSpriteName =
-            {"head_img_1", "head_img_2", "head_img_3", "head_img_4", "head_img_5", "head_img_6"};
+            {"head_aries", "head_taurus", "head_gemini", "head_cancer",
+            "head_leo", "head_virgo", "head_libra", "head_scorpio",
+            "head_sagittarius", "head_capricornus", "head_aquarius", "head_pisces"};
         public static string GetHeadImage(int head)
         {
             return HeadImageSpriteName[Mathf.Clamp(head, 0, HeadImageSpriteName.Length - 1)];

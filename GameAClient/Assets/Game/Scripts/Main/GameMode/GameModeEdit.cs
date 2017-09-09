@@ -274,32 +274,33 @@ namespace GameA.Game
             if (mode == _mode)
             {
                 return;
-            }
-            _mode = mode;
+            }            
 	        _run = true;
             if (mode == EMode.EditTest)
             {
-                EditMode.Instance.StopEdit();
-	            PlayMode.Instance.SceneState.Init(EditMode.Instance.MapStatistics);
-                if (!GameRun.Instance.ChangeState(ESceneState.Play))
-                {
-                    ChangeMode(EMode.Edit);
-                    return;
-                }
-	            _inputDatas.Clear();
-                SocialGUIManager.Instance.CloseUI<UICtrlItem>();
-                SocialGUIManager.Instance.OpenUI<UICtrlGameScreenEffect>();
-//                SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
-                SocialGUIManager.Instance.OpenUI<UICtrlEdit>();
-                SocialGUIManager.Instance.GetUI<UICtrlEdit>().ChangeToEditTestMode();
-//                SocialGUIManager.Instance.CloseUI<UICtrlScreenOperator>();
-                SocialGUIManager.Instance.OpenUI<UICtrlSceneState>();
-                SocialGUIManager.Instance.CloseUI<UICtrlModifyEdit>();
-                InputManager.Instance.ShowGameInput();
-	            GameRun.Instance.Playing();
+	            if (MapDirty)
+	            {
+		            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存编辑的关卡");
+		            Save(() =>
+		            {
+			            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+			            EnterEditTest();
+		            }, result =>
+		            {
+			            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+			            SocialGUIManager.ShowPopupDialog("关卡保存失败");
+			            EnterEditTest();
+		            });
+	            }
+	            else
+	            {
+		            EnterEditTest();
+	            }
+                
             }
             else if (mode == EMode.Edit)
             {
+	            _mode = EMode.Edit;
                 GameRun.Instance.ChangeState(ESceneState.Edit);
 	            EditMode.Instance.StartEdit();
 	            SocialGUIManager.Instance.CloseUI<UICtrlGameScreenEffect>();
@@ -311,6 +312,29 @@ namespace GameA.Game
                 InputManager.Instance.HideGameInput();
             }
         }
+
+	    private void EnterEditTest()
+	    {
+		    _mode = EMode.EditTest;
+		    EditMode.Instance.StopEdit();
+		    PlayMode.Instance.SceneState.Init(EditMode.Instance.MapStatistics);
+		    if (!GameRun.Instance.ChangeState(ESceneState.Play))
+		    {
+			    ChangeMode(EMode.Edit);
+			    return;
+		    }
+		    _inputDatas.Clear();
+		    SocialGUIManager.Instance.CloseUI<UICtrlItem>();
+		    SocialGUIManager.Instance.OpenUI<UICtrlGameScreenEffect>();
+//                SocialGUIManager.Instance.CloseUI<UICtrlCreate>();
+		    SocialGUIManager.Instance.OpenUI<UICtrlEdit>();
+		    SocialGUIManager.Instance.GetUI<UICtrlEdit>().ChangeToEditTestMode();
+//                SocialGUIManager.Instance.CloseUI<UICtrlScreenOperator>();
+		    SocialGUIManager.Instance.OpenUI<UICtrlSceneState>();
+		    SocialGUIManager.Instance.CloseUI<UICtrlModifyEdit>();
+		    InputManager.Instance.ShowGameInput();
+		    GameRun.Instance.Playing();
+	    }
 
 		public byte[] CaptureLevel()
 		{

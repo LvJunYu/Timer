@@ -46,7 +46,6 @@ namespace GameA.Game
         public const int FinalDoorId = 5001;
         public const int BoxId = 5004;
         public const int RollerId = 5005;
-        public const int LaserId = 5010;
         public const int BillboardId = 7001;
         public const int TextId = 9001;
         public const int TriggerId = 9002;
@@ -195,7 +194,7 @@ namespace GameA.Game
         public static bool IsFanBlock(SceneNode node)
         {
             ushort id = node.Id;
-            return id != LaserId && id != TransparentEarthId && id != BlueStoneBanId && id != BlueStoneRotateId &&
+            return id != BlueStoneBanId && id != BlueStoneRotateId &&
                    !IsCollection(id) && !IsMagicSwitch(id) && !IsBullet(id) && !IsSwitchTrigger(id);
         }
 
@@ -212,14 +211,14 @@ namespace GameA.Game
         /// <returns></returns>
         public static bool IsBulletBlock(int id)
         {
-            return id != LaserId && id != CloudId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
+            return id != CloudId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
                    !IsBoard(id) && !IsCollection(id) && !IsSwitchTrigger(id) && !IsJet(id) && !IsMain(id) &&
                    !IsEffect(id);
         }
 
         internal static bool IsGround(int id)
         {
-            return !IsSwitchTrigger(id) && id != LaserId && id != BlueStoneBanId && id != BlueStoneRotateId &&
+            return !IsSwitchTrigger(id) && id != BlueStoneBanId && id != BlueStoneRotateId &&
                    !IsPlant(id) &&
                    !IsBoard(id) && !IsCollection(id) && !IsMagicSwitch(id) && !IsMain(id) && !IsBullet(id) &&
                    !IsAIMonster(id) && !IsEffect(id);

@@ -174,7 +174,7 @@ namespace NewResourceSolution.EditorTool
 			iosSetting.name = "iPhone";
 			iosSetting.overridden = true;
 			iosSetting.compressionQuality = (int)GetTextureImporterFormatByETextureCompressQuality(quality);
-			iosSetting.maxTextureSize = 1024;
+			iosSetting.maxTextureSize = 2048;
 			iosSetting.format = ETextureCompressQuality.NoCompress == quality ? TextureImporterFormat.RGBA32 : TextureImporterFormat.PVRTC_RGBA4;
 			var iOSs = textureImporter.GetPlatformTextureSettings(iosSetting.name);
 			if (iOSs == null || JsonUtility.ToJson(iOSs) != JsonUtility.ToJson(iosSetting))
@@ -188,7 +188,7 @@ namespace NewResourceSolution.EditorTool
 			androidSetting.name = "Android";
 			androidSetting.overridden = true;
 			androidSetting.compressionQuality = (int)GetTextureImporterFormatByETextureCompressQuality(quality);
-			androidSetting.maxTextureSize = 1024;
+			androidSetting.maxTextureSize = 2048;
 			androidSetting.format = ETextureCompressQuality.NoCompress == quality ? TextureImporterFormat.RGBA32 : TextureImporterFormat.ETC2_RGBA8;
 			var ands = textureImporter.GetPlatformTextureSettings(androidSetting.name);
 			if (ands == null || JsonUtility.ToJson(ands) != JsonUtility.ToJson(androidSetting))

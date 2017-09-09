@@ -14,7 +14,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     [Unit(Id = 5010, Type = typeof(Lazer))]
-    public class Lazer : Magic
+    public class Lazer : BlockBase
     {
         protected GridCheck _gridCheck;
 
@@ -24,7 +24,7 @@ namespace GameA.Game
         protected Vector3 _direction;
         protected int _distance;
         
-        protected ERotateType _eRotateType;
+        protected ERotateMode _eRotateType;
         protected float _endAngle;
         protected float _curAngle;
 
@@ -41,22 +41,15 @@ namespace GameA.Game
             }
             _gridCheck = new GridCheck(this);
             SetSortingOrderBack();
-            Calculate();
             return true;
         }
         
         public override void UpdateExtraData()
         {
             var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
-            _eRotateType = (ERotateType) unitExtra.RotateMode;
+            _eRotateType = (ERotateMode) unitExtra.RotateMode;
             _endAngle = GM2DTools.GetAngle(unitExtra.RotateValue);
             base.UpdateExtraData();
-        }
-
-        private void Calculate()
-        {
-            _distance = ConstDefineGM2D.MaxMapDistance;
-            _direction = GM2DTools.GetDirection(_curAngle);
         }
 
         internal override bool InstantiateView()
@@ -65,8 +58,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            var euler = new Vector3(0, 0, -_angle);
-            _trans.localEulerAngles = euler;
+            _trans.localEulerAngles = new Vector3(0, 0, -_angle);
             if (_withEffect != null)
             {
                 _withEffect.Trans.position += Vector3.back * 0.1f;
@@ -88,6 +80,11 @@ namespace GameA.Game
         {
             base.Clear();
             _curAngle = _angle;
+            _direction = GM2DTools.GetDirection(_curAngle);
+            if (_trans != null)
+            {
+                _trans.localEulerAngles = new Vector3(0, 0, -_angle);
+            }
             _gridCheck.Clear();
             if (_lazerEffect != null)
             {
@@ -130,32 +127,30 @@ namespace GameA.Game
                 Pause();
                 return;
             }
-            if (_eRotateType != ERotateType.None)
+            _distance = ConstDefineGM2D.MaxMapDistance;
+            if (_eRotateType != ERotateMode.None)
             {
                 switch (_eRotateType)
                 {
-                    case ERotateType.Clockwise:
+                    case ERotateMode.Clockwise:
                         _curAngle += 1;
                         break;
-                    case ERotateType.Anticlockwise:
+                    case ERotateMode.Anticlockwise:
                         _curAngle += -1;
                         break;
                 }
                 Util.CorrectAngle360(ref _curAngle);
                 if (Util.IsFloatEqual(_curAngle, _angle) || Util.IsFloatEqual(_curAngle, _endAngle))
                 {
-                    _eRotateType = _eRotateType == ERotateType.Clockwise ? ERotateType.Anticlockwise : ERotateType.Clockwise;
+                    _eRotateType = _eRotateType == ERotateMode.Clockwise ? ERotateMode.Anticlockwise : ERotateMode.Clockwise;
                 }
+                _direction = GM2DTools.GetDirection(_curAngle);
                 if (_trans != null)
                 {
                     _trans.localEulerAngles = new Vector3(0, 0, -_curAngle);
                 }
             }
             _gridCheck.Before();
-            if (_dynamicCollider != null)
-            {
-                Calculate();
-            }
             var hits = ColliderScene2D.RaycastAll(CenterPos, _direction, _distance, EnvManager.LazerShootLayer);
             if (hits.Count > 0)
             {

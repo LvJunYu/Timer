@@ -5,7 +5,6 @@
 ** Summary : UICtrlSceneState  
 ***********************************************************************/
 
-
 using System.Collections.Generic;
 using DG.Tweening;
 using GameA.Game;
@@ -247,7 +246,7 @@ namespace GameA
         {
             int curScore = PlayMode.Instance.SceneState.GemGain;
             int totalScore = PlayMode.Instance.SceneState.TotalGem;
-            CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(_collectDelayTime,
+            _cachedView.StartCoroutine(CoroutineProxy.RunWaitForSeconds(_collectDelayTime,
                 () => UpdateCollectText(curScore)));
             if (_winConditionItemDict.ContainsKey(EWinCondition.CollectTreasure))
             {
@@ -504,7 +503,6 @@ namespace GameA
                 _scoreTweener.Pause();
             if (_umCtrlCollectionItemCache != null)
                 _umCtrlCollectionItemCache.ForEach(p => p.Hide());
-            CoroutineProxy.Instance.StopAllCoroutines();
             _lastFrame = 0;
             _lastValue = 0;
             _showValue = 0;

@@ -46,7 +46,7 @@ namespace GameA.Game
         Deactive = 1,
     }
 
-    public enum ERotateType : byte
+    public enum ERotateMode : byte
     {
         None,
         Clockwise,

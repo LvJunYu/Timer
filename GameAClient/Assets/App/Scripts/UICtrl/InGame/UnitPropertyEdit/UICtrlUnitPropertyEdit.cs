@@ -14,6 +14,7 @@ namespace GameA
 
         private const float MenuPosRadius = 290;
         private const float MenuOptionsPosRadius = 170;
+        public const int MessageStringCountMax = 45;
         private UnitEditData _originData;
         private Table_Unit _tableUnit;
         private UnitEditData _editData;
@@ -45,6 +46,7 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.CloseBtn.onClick.AddListener(OnCloseBtnClick);
+            
             _rootArray[(int) EEditType.Active] = _cachedView.ActiveDock;
             _rootArray[(int) EEditType.Direction] = _cachedView.ForwardDock;
             _rootArray[(int) EEditType.Child] = _cachedView.PayloadDock;
@@ -52,6 +54,7 @@ namespace GameA
             _rootArray[(int) EEditType.Rotate] = _cachedView.RotateDock;
             _rootArray[(int) EEditType.TimeDelay] = _cachedView.TriggerDelayDock;
             _rootArray[(int) EEditType.TimeInterval] = _cachedView.TriggerIntervalDock;
+            _rootArray[(int) EEditType.Text] = _cachedView.TextDock;
 
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -64,6 +67,7 @@ namespace GameA
             _menuButtonArray[(int) EEditType.Rotate].Init(_cachedView.RotateStateMenu);
             _menuButtonArray[(int) EEditType.TimeDelay].Init(_cachedView.TimeDelayMenu);
             _menuButtonArray[(int) EEditType.TimeInterval].Init(_cachedView.TimeIntervalMenu);
+            _menuButtonArray[(int) EEditType.Text].Init(_cachedView.TextMenu);
             
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
@@ -228,19 +232,16 @@ namespace GameA
             if (_tableUnit.CanEdit(EEditType.Active))
             {
                 _validEditPropertyList.Add(EEditType.Active);
-                _cachedView.ActiveDock.SetActiveEx(true);
                 _menuButtonArray[(int) EEditType.Active].SetEnable(true);
                 RefreshAcitveMenu();
             }
             else
             {
-                _cachedView.ActiveDock.SetActiveEx(false);
                 _menuButtonArray[(int) EEditType.Active].SetEnable(false);
             }
             if (_tableUnit.CanEdit(EEditType.Child))
             {
                 _validEditPropertyList.Add(EEditType.Child);
-                _cachedView.PayloadDock.SetActiveEx(true);
                 _menuButtonArray[(int) EEditType.Child].SetEnable(true);
                 var da = 360f / _tableUnit.ChildState.Length;
                 for (int i = 0; i < _tableUnit.ChildState.Length; i++)
@@ -254,84 +255,76 @@ namespace GameA
             }
             else
             {
-                _cachedView.PayloadDock.SetActiveEx(false);
                 _menuButtonArray[(int) EEditType.Child].SetEnable(false);
             }
             if (_tableUnit.CanEdit(EEditType.Direction))
             {
                 _validEditPropertyList.Add(EEditType.Direction);
-                _cachedView.ForwardDock.SetActiveEx(true);
                 _menuButtonArray[(int) EEditType.Direction].SetEnable(true);
                 RefreshForwardMenu();
             }
             else
             {
-                _cachedView.ForwardDock.SetActiveEx(false);
                 _menuButtonArray[(int) EEditType.Direction].SetEnable(false);
             }
             if (_tableUnit.CanEdit(EEditType.MoveDirection))
             {
                 _validEditPropertyList.Add(EEditType.MoveDirection);
-                _cachedView.MoveDirectionDock.SetActiveEx(true);
                 _menuButtonArray[(int) EEditType.MoveDirection].SetEnable(true);
                 RefreshMoveDirectionMenu();
             }
             else
             {
-                _cachedView.MoveDirectionDock.SetActiveEx(false);
                 _menuButtonArray[(int) EEditType.MoveDirection].SetEnable(false);
             }
             if (_tableUnit.CanEdit(EEditType.Rotate))
             {
                 _validEditPropertyList.Add(EEditType.Rotate);
-                _cachedView.RotateModeDock.SetActiveEx(true);
-                _cachedView.RotateEndDock.SetActiveEx(true);
                 _menuButtonArray[(int) EEditType.Rotate].SetEnable(true);
-                RefreshRotateMenu();
+                RefreshRotateModeMenu();
                 RefreshRotateEndMenu();
             }
             else
             {
-                _cachedView.RotateModeDock.SetActiveEx(false);
-                _cachedView.RotateEndDock.SetActiveEx(false);
                 _menuButtonArray[(int) EEditType.Rotate].SetEnable(false);
-            }
-            if (_tableUnit.CanEdit(EEditType.Style))
-            {
-                _validEditPropertyList.Add(EEditType.Style);
             }
             if (_tableUnit.CanEdit(EEditType.Text))
             {
                 _validEditPropertyList.Add(EEditType.Text);
+                _menuButtonArray[(int) EEditType.Text].SetEnable(true);
+                RefreshTextDock();
+            }
+            else
+            {
+                _menuButtonArray[(int) EEditType.Text].SetEnable(false);
             }
             if (_tableUnit.CanEdit(EEditType.TimeDelay))
             {
                 _validEditPropertyList.Add(EEditType.TimeDelay);
-                _cachedView.TriggerDelayDock.SetActiveEx(true);
                 _menuButtonArray[(int) EEditType.TimeDelay].SetEnable(true);
                 RefreshTriggerDelayMenu();
             }
             else
             {
-                _cachedView.TriggerDelayDock.SetActiveEx(false);
                 _menuButtonArray[(int) EEditType.TimeDelay].SetEnable(false);
             }
             if (_tableUnit.CanEdit(EEditType.TimeInterval))
             {
                 _validEditPropertyList.Add(EEditType.TimeInterval);
-                _cachedView.TriggerIntervalDock.SetActiveEx(true);
                 _menuButtonArray[(int) EEditType.TimeInterval].SetEnable(true);
                 RefreshTriggerIntervalMenu();
             }
             else
             {
-                _cachedView.TriggerIntervalDock.SetActiveEx(false);
                 _menuButtonArray[(int) EEditType.TimeInterval].SetEnable(false);
             }
-            var deltaAngle = 360f / _validEditPropertyList.Count;
+            const int menuAngle = 20;
+            var totalAngle = menuAngle * _validEditPropertyList.Count;
+            var baseAngle = 180 + totalAngle / 2 - menuAngle / 2;
             for (int i = 0; i < _validEditPropertyList.Count; i++)
             {
-                _menuButtonArray[(int) _validEditPropertyList[i]].SetPosAngle(deltaAngle*i, MenuPosRadius);
+                var angle = baseAngle - i * menuAngle;
+                _menuButtonArray[(int) _validEditPropertyList[i]].SetPosAngle(angle, MenuPosRadius);
             }
             OnEditTypeMenuClick(_validEditPropertyList[0]);
         }
@@ -380,12 +373,13 @@ namespace GameA
                 _moveDirectionMenuList[i].SetSelected(i == (int) _editData.UnitExtra.MoveDirection);
             }
         }
-        private void RefreshRotateMenu()
+        private void RefreshRotateModeMenu()
         {
             for (int i = 0; i < _rotateMenuList.Length; i++)
             {
                 _rotateMenuList[i].SetSelected(i == _editData.UnitExtra.RotateMode);
             }
+            _cachedView.RotateEndDock.SetActiveEx(_editData.UnitExtra.RotateMode != (int) ERotateMode.None);
         }
         private void RefreshRotateEndMenu()
         {
@@ -408,9 +402,12 @@ namespace GameA
                 _triggerIntervalMenuList[i].SetSelected(i == _editData.UnitExtra.TimeInterval);
             }
         }
+        private void RefreshTextDock()
+        {
+            _cachedView.TextInput.text = _originData.UnitExtra.Msg;
+            _cachedView.TextInput.characterLimit = MessageStringCountMax;
+        }
         
-        
-
 
         private void OnActiveMenuClick(int inx)
         {
@@ -439,7 +436,7 @@ namespace GameA
         private void OnRotateMenuClick(int inx)
         {
             _editData.UnitExtra.RotateMode = (byte) inx;
-            RefreshRotateMenu();
+            RefreshRotateModeMenu();
         }
 
         private void OnRotateEndMenuClick(int inx)
@@ -468,6 +465,13 @@ namespace GameA
                 {
                     _editData.UnitExtra.MoveDirection = (EMoveDirection) (_editData.UnitDesc.Rotation + 1);
                     _editData.UnitDesc.Rotation = 0;
+                }
+                if (_tableUnit.CanEdit(EEditType.Text))
+                {
+                    if (_cachedView.TextInput.text != _editData.UnitExtra.Msg)
+                    {
+                        _editData.UnitExtra.Msg = _cachedView.TextInput.text;
+                    }
                 }
                 EditHelper.CompleteEditUnitData(_originData, _editData);
             }
