@@ -93,7 +93,6 @@ namespace GameA
 
         public void ChangeToEditMode()
         {
-            _editMode = EMode.Edit;
             SetButtonState(EMode.Edit);
             AfterEditModeStateChange();
         }
@@ -105,7 +104,6 @@ namespace GameA
 
         public void ChangeToModifyMode()
         {
-            _editMode = EMode.ModifyEdit;
             SetButtonState(EMode.ModifyEdit);
         }
 
@@ -116,6 +114,7 @@ namespace GameA
 
         private void SetButtonState(EMode mode)
         {
+            _editMode = mode;
             switch (mode)
             {
                 case EMode.Edit:
@@ -123,7 +122,7 @@ namespace GameA
                     _cachedView.EraseSelected.gameObject.SetActive(false);
                     _cachedView.Redo.gameObject.SetActive(true);
                     _cachedView.Undo.gameObject.SetActive(true);
-                    _cachedView.ButtonFinishCondition.SetActiveEx(true);
+                    _cachedView.ButtonFinishCondition.SetActiveEx(false);
 
                     _cachedView.EnterEffectMode.SetActiveEx(false);
                     _cachedView.ExitEffectMode.SetActiveEx(false);
@@ -268,7 +267,7 @@ namespace GameA
             {
                 return;
             }
-            SocialGUIManager.Instance.OpenUI<UICtrlGamePlay>();
+            SocialGUIManager.Instance.OpenUI<UICtrlWorkShopSetting>(_editMode);
         }
 
         private void OnClickEnterSwitchModeBtn()
@@ -293,7 +292,7 @@ namespace GameA
 
         private void OnClickHome()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlWorkShopSetting>();
+            SocialGUIManager.Instance.OpenUI<UICtrlWorkShopSetting>(_editMode);
         }
 
         private void OnEnterErase()

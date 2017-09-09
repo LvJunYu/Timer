@@ -15,6 +15,11 @@ namespace GameA.Game
         protected MonoBehaviour _coroutineProxy;
         protected List<int> _inputDatas = new List<int>(1024);
         protected bool _run;
+        
+        public Project Project
+        {
+            get { return _project; }
+        }
 
         public EGameSituation GameSituation
         {

@@ -78,7 +78,7 @@ namespace GameA.Game
             }
             _damageFrame = 0;
             if (_damageShader != null)
-                _view.SetMatShader(_damageShader, "Value", _damageFrame / (float) BattleDefine.DamageDurationFrame);
+                _view.SetMatShader(_damageShader, "Value", 0);
             base.Clear();
         }
 
