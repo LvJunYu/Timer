@@ -30,7 +30,7 @@ namespace GameA.Game
                 return;
             }
             _gridCheckUnits.Add(other);
-            SetActiveState(EActiveState.Active);
+            SetTrigger(EActiveState.Active);
         }
 
         public void OnGridCheckExit(UnitBase other)
@@ -38,7 +38,7 @@ namespace GameA.Game
             _gridCheckUnits.Remove(other);
             if (_gridCheckUnits.Count == 0 && _units.Count == 0)
             {
-                SetActiveState(EActiveState.Deactive);
+                SetTrigger(EActiveState.Deactive);
             }
         }
 
@@ -49,12 +49,12 @@ namespace GameA.Game
                 return;
             }
             _units.Add(other);
-            SetActiveState(EActiveState.Active);
+            SetTrigger(EActiveState.Active);
         }
 
         public override void UpdateLogic()
         {
-            if (_eActiveState == EActiveState.Active)
+            if (_trigger == EActiveState.Active)
             {
                 if (_units.Count > 0)
                 {
@@ -68,7 +68,7 @@ namespace GameA.Game
                 }
                 if (_gridCheckUnits.Count == 0 && _units.Count == 0)
                 {
-                    SetActiveState(EActiveState.Deactive);
+                    SetTrigger(EActiveState.Deactive);
                 }
             }
         }
@@ -77,7 +77,7 @@ namespace GameA.Game
         {
             if (_view != null)
             {
-                if (_eActiveState == EActiveState.Active)
+                if (_trigger == EActiveState.Active)
                 {
                     _view.ChangeView("M1SwitchTriggerOn_" + _unitDesc.Rotation);
                 }

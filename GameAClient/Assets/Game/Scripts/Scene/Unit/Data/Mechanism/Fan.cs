@@ -18,9 +18,13 @@ namespace GameA.Game
             get { return UnitDefine.SwitchTriggerId; }
         }
         
+        protected override bool TriggerReverse
+        {
+            get { return true; }
+        }
+        
         protected override bool OnInit()
         {
-            _triggerReverse = true;
             if (!base.OnInit())
             {
                 return false;
@@ -56,6 +60,17 @@ namespace GameA.Game
             _checkGrid = SceneQuery2D.GetGrid(_pointA, _pointB, Rotation, distance);
         }
 
+        protected override void OnActiveStateChanged()
+        {
+        }
+
+        public override void OnTriggerChanged(EActiveState value)
+        {
+            base.OnTriggerChanged(value);
+            _withEffect.SetActiveStateEx(value == EActiveState.Active);
+            LogHelper.Debug(value+" Fan ");
+        }
+
         public override void UpdateLogic()
         {
             for (int i = _fanEffectUnits.Count - 1; i >= 0; i--)
@@ -69,7 +84,7 @@ namespace GameA.Game
             }
             base.UpdateLogic();
             //停止
-            if (_eActiveState != EActiveState.Active)
+            if (_switchTrigger.Trigger != EActiveState.Active)
             {
                 return;
             }

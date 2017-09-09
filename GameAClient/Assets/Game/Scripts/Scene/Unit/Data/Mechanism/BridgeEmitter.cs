@@ -22,14 +22,9 @@ namespace GameA.Game
         protected List<Queue<UnitBase>> _waitingDestroyQueues = new List<Queue<UnitBase>>();
         private static List<Queue<UnitBase>> s_freeQueues = new List<Queue<UnitBase>>();
 
-        protected override bool OnInit()
+        protected override bool TriggerReverse
         {
-            _triggerReverse = true;
-            if (!base.OnInit())
-            {
-                return false;
-            }
-            return true;
+            get { return true; }
         }
 
         protected override void InitAssetPath()
