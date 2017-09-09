@@ -12,6 +12,9 @@ namespace GameA
 {
     public class SpriteNameDefine
     {
+        public const string UnitEditRotateEndBgForward = "icon_edit_rotate_begin";
+        public const string UnitEditRotateEndBgNormal = "icon_edit_rotate_point";
+        
         public const string DefaultImageName = "CommonWhite";
         public const string MaleIcon = "Male_0";
         public const string FemaleIcon = "Female_0";
