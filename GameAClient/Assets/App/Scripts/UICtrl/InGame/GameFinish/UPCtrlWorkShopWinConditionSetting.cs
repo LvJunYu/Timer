@@ -68,7 +68,7 @@ namespace GameA
         private void InitData()
         {
             _curCondition = new FinishCondition();
-            _curCondition.SettingValue = new bool[(int) Game.EWinCondition.Max];
+            _curCondition.SettingValue = new bool[(int) EWinCondition.Max];
             _curCondition.TimeLimit = 0;
         }
 
