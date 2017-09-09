@@ -31,6 +31,7 @@ namespace GameA
             if (arg0 != _originalDesc && _curProject != null)
             {
                 _originalDesc = _curProject.Summary = arg0;
+                _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
                 if (_gameModeWorkshopEdit != null)
                     _gameModeWorkshopEdit.NeedSave = true;
                 Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, _curProject);
@@ -42,6 +43,7 @@ namespace GameA
             if (arg0 != _originalTitle && _curProject != null)
             {
                 _originalTitle = _curProject.Name = arg0;
+                _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
                 if (_gameModeWorkshopEdit != null)
                     _gameModeWorkshopEdit.NeedSave = true;
                 Messenger<Project>.Broadcast(EMessengerType.OnWorkShopProjectDataChanged, _curProject);
@@ -51,11 +53,25 @@ namespace GameA
         private void OnPublishBtn()
         {
             if (null == _curProject) return;
-            SocialGUIManager.Instance.OpenUI<UICtrlPublishProject>(_curProject);
+            _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+            if (null != _gameModeWorkshopEdit && _gameModeWorkshopEdit.NeedSave)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存编辑的关卡");
+                _gameModeWorkshopEdit.Save(() =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.Instance.OpenUI<UICtrlPublishProject>(_curProject);
+                }, result =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    SocialGUIManager.ShowPopupDialog("关卡保存失败");
+                });
+            }
         }
 
         private void OnTestBtn()
         {
+            _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
             if (null != _gameModeWorkshopEdit)
             {
                 SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
@@ -70,6 +86,7 @@ namespace GameA
 
         private void OnSaveBtn()
         {
+            _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
             if (null != _gameModeWorkshopEdit)
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存");
@@ -89,8 +106,7 @@ namespace GameA
         public override void Open()
         {
             base.Open();
-            if (null == _gameModeWorkshopEdit)
-                _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+            _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
             if (_gameModeWorkshopEdit != null)
                 _curProject = _gameModeWorkshopEdit.Project;
             _cachedView.SettingPannel.SetActive(true);
@@ -130,6 +146,7 @@ namespace GameA
 
         private void UpdateBtns()
         {
+            _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
             if (_gameModeWorkshopEdit != null)
             {
                 bool needSave = _gameModeWorkshopEdit.MapDirty;

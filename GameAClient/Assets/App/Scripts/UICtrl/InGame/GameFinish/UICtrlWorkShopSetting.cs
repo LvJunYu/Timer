@@ -1,6 +1,5 @@
 using GameA.Game;
 using SoyEngine;
-using UnityEngine.UI;
 
 namespace GameA
 {
@@ -47,7 +46,6 @@ namespace GameA
                     gameModeEdit.ChangeMode(GameModeEdit.EMode.Edit);
             }
             SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
-            //SocialApp.Instance.ReturnToApp();
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
             GM2DGame.Instance.QuitGame(
                 () => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
