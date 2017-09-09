@@ -35,7 +35,8 @@ namespace GameA.Game
             if (_effectBullet != null)
             {
                 _effectBullet.Play();
-                _effectBullet.Trans.localEulerAngles = new Vector3(0, 0, -GM2DTools.GetAngle(Rotation));
+                _effectBullet.Trans.localEulerAngles = new Vector3(0, 0, -_angle);
+//                _effectBullet.Trans.RotateAround(_trans.position,Vector3.forward, -_angle);
             }
             return true;
         }

@@ -643,6 +643,10 @@ namespace GameA.Game
             {
                 return "Jump2";
             }
+            if (jumpLevel == 2)
+            {
+                return "Fly";
+            }
             return "Jump";
         }
 

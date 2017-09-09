@@ -56,7 +56,7 @@ namespace GameA.Game
             return false;
         }
 
-        public virtual bool SetSkill(int id, EWeaponInputType eWeaponInputType = EWeaponInputType.None, int slot = 0)
+        public virtual bool SetSkill(int id, EWeaponInputType eWeaponInputType = EWeaponInputType.GetKey, int slot = 0)
         {
             if (!CheckValid(slot))
             {

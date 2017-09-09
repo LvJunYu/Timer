@@ -539,7 +539,6 @@ namespace GameA.Game
                         break;
                 }
                 var unit = PlayMode.Instance.CreateRuntimeUnit(_tableSkill.CreateUnitId, pos, rotation);
-                LogHelper.Debug("AddUnit {0}", _tableSkill.CreateUnitId);
                 if (unit != null)
                 {
                     unit.SetLifeTime(TableConvert.GetTime(_tableSkill.CreateUnitLifeTime));
