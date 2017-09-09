@@ -140,9 +140,9 @@ namespace GameA.Game
 
         internal void SetValue(int cdTime, int castRange, int singTime = 0)
         {
-            _cdTime = TableConvert.GetTime(cdTime);
-            _castRange = TableConvert.GetRange(castRange);
-            _singTime = TableConvert.GetTime(singTime);
+            _cdTime = cdTime;
+            _castRange = castRange;
+            _singTime = singTime;
             if (_singTime > _cdTime)
             {
                 LogHelper.Error("Error: _singTime{0} > _cdTime{1}", _singTime, _cdTime);
@@ -203,7 +203,7 @@ namespace GameA.Game
         
         public bool Fire()
         {
-            if (_currentBulletCount <= 0)
+            if (_owner.IsMain && _currentBulletCount <= 0)
             {
                 Messenger<string>.Broadcast(EMessengerType.GameLog, "弹药不足");
                 return false;
@@ -223,17 +223,15 @@ namespace GameA.Game
             {
                 OnSkillCast();
             }
-            SetBullet(_currentBulletCount - 1);
+            if (_owner.IsPlayer)
+            {
+                SetBullet(_currentBulletCount - 1);
+            }
             return true;
         }
         
         private void SetBullet(int bulletCount)
         {
-            //代表无限
-            if (_totalBulletCount == 0)
-            {
-                return;
-            }
             var count = Mathf.Clamp(bulletCount, 0, _totalBulletCount);
             if (_currentBulletCount != count)
             {

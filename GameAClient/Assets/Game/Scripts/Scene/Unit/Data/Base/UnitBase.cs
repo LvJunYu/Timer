@@ -916,6 +916,10 @@ namespace GameA.Game
                 }
             }
             float z = GetZ(_curPos);
+            if (UnitDefine.IsJet(Id))
+            {
+                return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, 0.5f, z);
+            }
             if (UnitDefine.IsDownY(_tableUnit))
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, -0.1f, z);

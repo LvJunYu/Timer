@@ -64,6 +64,7 @@ namespace GameA.Game
                 return false;
             }
             SetWeapon(_weaponId);
+            _trans.localEulerAngles = new Vector3(0, 0, -_angle);
             return true;
         }
 
@@ -74,6 +75,10 @@ namespace GameA.Game
                 _skillCtrl.Clear();
             }
             _curAngle = _angle;
+            if (_trans != null)
+            {
+                _trans.localEulerAngles = new Vector3(0, 0, -_angle);
+            }
             base.Clear();
         }
 
@@ -103,7 +108,7 @@ namespace GameA.Game
                 _efffectWeapon = GameParticleManager.Instance.GetUnityNativeParticleItem(tableEquipment.Model, _trans);
                 if (_efffectWeapon != null)
                 {
-                    _efffectWeapon.Trans.localPosition = new Vector3(0f,0.4f,-10f);
+                    _efffectWeapon.Trans.localPosition = new Vector3(0f, -0.22f, -10f);
                     _efffectWeapon.Play();
                 }
             }

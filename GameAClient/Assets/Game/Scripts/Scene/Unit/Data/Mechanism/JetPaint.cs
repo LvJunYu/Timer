@@ -16,7 +16,7 @@ namespace GameA.Game
         protected override void SetValue()
         {
             _timeScale = 3;
-            _skillCtrl.CurrentSkills[0].SetValue(200, 600);
+            _skillCtrl.CurrentSkills[0].SetValue(TableConvert.GetTime(200),  TableConvert.GetRange(600));
         }
     }
 }

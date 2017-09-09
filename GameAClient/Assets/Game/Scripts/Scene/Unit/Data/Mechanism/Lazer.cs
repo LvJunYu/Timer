@@ -65,8 +65,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            var euler = new Vector3(0, 0, -_angle);
-            _trans.localEulerAngles = euler;
+            _trans.localEulerAngles = new Vector3(0, 0, -_angle);
             if (_withEffect != null)
             {
                 _withEffect.Trans.position += Vector3.back * 0.1f;
@@ -88,6 +87,10 @@ namespace GameA.Game
         {
             base.Clear();
             _curAngle = _angle;
+            if (_trans != null)
+            {
+                _trans.localEulerAngles = new Vector3(0, 0, -_angle);
+            }
             _gridCheck.Clear();
             if (_lazerEffect != null)
             {
