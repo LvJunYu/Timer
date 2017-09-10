@@ -35,6 +35,7 @@ namespace GameA
         private USCtrlUnitPropertyEditButton[] _triggerIntervalMenuList;
         private Image[] _optionRotateArrowList;
         private Image[] _menuRotateArrowList;
+        private float _posTweenFactor;
         #endregion
         
         #region 属性
@@ -46,6 +47,37 @@ namespace GameA
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.InGamePopup;
+        }
+
+        protected override void CreateSequences()
+        {
+            const float tweenTime = 0.2f;
+
+            var openTweenerPos = DOTween.To(()=> _posTweenFactor, v =>
+            {
+                _posTweenFactor = v;
+                _cachedView.ContentDock.anchoredPosition = Vector2.Lerp(_startPos, Vector2.zero, v);
+            }, 1f, tweenTime).SetEase(Ease.OutBack);
+            var closeTweenerPos = DOTween.To(()=> _posTweenFactor, v =>
+            {
+                _posTweenFactor = v;
+                _cachedView.ContentDock.anchoredPosition = Vector2.Lerp(_startPos, Vector2.zero, v);
+            }, 0f, tweenTime);
+            _openSequence = DOTween.Sequence();
+            _closeSequence = DOTween.Sequence();
+            _openSequence.Append(_cachedView.ContentDock.DOScale(Vector3.zero, tweenTime).From().SetEase(Ease.OutBack))
+                .Join(_cachedView.CloseBtn.targetGraphic.DOFade(0, tweenTime).From())
+                .Join(openTweenerPos)
+                .OnComplete(OnOpenAnimationComplete)
+                .SetAutoKill(false)
+                .Pause()
+                .OnUpdate(OnOpenAnimationUpdate);
+            _closeSequence.Append(_cachedView.ContentDock.DOScale(Vector3.zero, tweenTime))
+                .Join(_cachedView.CloseBtn.targetGraphic.DOFade(0, tweenTime))
+                .Join(closeTweenerPos)
+                .OnComplete(OnCloseAnimationComplete)
+                .SetAutoKill(false)
+                .Pause();
         }
 
         protected override void OnViewCreated()
@@ -228,25 +260,10 @@ namespace GameA
             }
         }
 
-        protected override void CreateSequences()
-        {
-            _openSequence = DOTween.Sequence();
-            _closeSequence = DOTween.Sequence();
-            _openSequence.Append(_cachedView.ContentDock.DOScale(Vector3.zero, 0.3f).From())
-                .Join(_cachedView.CloseBtn.targetGraphic.DOFade(0, 0.3f).From())
-                .OnComplete(OnOpenAnimationComplete)
-                .SetAutoKill(false)
-                .Pause()
-                .OnUpdate(OnOpenAnimationUpdate);
-            _closeSequence.Append(_cachedView.ContentDock.DOScale(Vector3.zero, 0.3f))
-                .Join(_cachedView.CloseBtn.targetGraphic.DOFade(0, 0.3f))
-                .OnComplete(OnCloseAnimationComplete)
-                .SetAutoKill(false)
-                .Pause();
-        }
-
         protected override void OnOpen(object parameter)
         {
+            var pos = Input.mousePosition;
+            _startPos = SocialGUIManager.ScreenToRectLocal(pos, _cachedView.Trans);
             base.OnOpen(parameter);
             _originData = (UnitEditData) parameter;
             _editData = _originData;
@@ -559,6 +576,10 @@ namespace GameA
 
         private void OnCloseBtnClick()
         {
+            if (_openSequence.IsPlaying() || _closeSequence.IsPlaying())
+            {
+                return;
+            }
             if (_originData != _editData)
             {
                 if (UnitDefine.IsMonster(_tableUnit.Id))
