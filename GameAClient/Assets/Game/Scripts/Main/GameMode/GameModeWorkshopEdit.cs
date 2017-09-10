@@ -35,7 +35,7 @@ namespace GameA.Game
 
         public override void OnGameFailed()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.EditorLose);
+            SocialGUIManager.Instance.OpenUI<UICtrlEditTestFinish>(UICtrlEditTestFinish.EShowState.Lose);
         }
 
         public override void OnGameSuccess()
@@ -43,7 +43,7 @@ namespace GameA.Game
             byte[] record = GetRecord();
             RecordBytes = record;
 
-            SocialGUIManager.Instance.OpenUI<UICtrlGameFinish>(UICtrlGameFinish.EShowState.EditorWin);
+            SocialGUIManager.Instance.OpenUI<UICtrlEditTestFinish>(UICtrlEditTestFinish.EShowState.Win);
         }
 
         public override void QuitGame(Action successCB, Action<int> failureCB, bool forceQuitWhenFailed = false)

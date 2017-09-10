@@ -8,7 +8,7 @@ namespace GameA
     {
         private UPCtrlWorkShopBasicSetting _upCtrlWorkShopBasicSetting;
         private UPCtrlWorkShopWinConditionSetting _upCtrlWorkShopWinConditionSetting;
-        private UPCtrlBase<UICtrlWorkShopSetting, UIViewWorkShopSetting> _curCtrl;
+//        private UPCtrlBase<UICtrlWorkShopSetting, UIViewWorkShopSetting> _curCtrl;
         private UICtrlEdit.EMode _curMode;
 
         private void WinConditionToggleOnValueChanged(bool arg0)
@@ -17,7 +17,7 @@ namespace GameA
             {
                 _upCtrlWorkShopBasicSetting.Close();
                 _upCtrlWorkShopWinConditionSetting.Open();
-                _curCtrl = _upCtrlWorkShopWinConditionSetting;
+//                _curCtrl = _upCtrlWorkShopWinConditionSetting;
             }
         }
 
@@ -27,7 +27,7 @@ namespace GameA
             {
                 _upCtrlWorkShopWinConditionSetting.Close();
                 _upCtrlWorkShopBasicSetting.Open();
-                _curCtrl = _upCtrlWorkShopBasicSetting;
+//                _curCtrl = _upCtrlWorkShopBasicSetting;
             }
         }
 

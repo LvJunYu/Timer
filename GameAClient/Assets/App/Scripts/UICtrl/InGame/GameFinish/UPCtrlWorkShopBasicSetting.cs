@@ -54,7 +54,8 @@ namespace GameA
         {
             if (null == _curProject) return;
             _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
-            if (null != _gameModeWorkshopEdit && _gameModeWorkshopEdit.NeedSave)
+            if(null == _gameModeWorkshopEdit) return;
+            if (_gameModeWorkshopEdit.NeedSave)
             {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存编辑的关卡");
                 _gameModeWorkshopEdit.Save(() =>
@@ -66,6 +67,10 @@ namespace GameA
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     SocialGUIManager.ShowPopupDialog("关卡保存失败");
                 });
+            }
+            else
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlPublishProject>(_curProject);
             }
         }
 
