@@ -61,9 +61,9 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+            Clear();
             UpdateItemVisible();
             UpdateAll();
-            UpdateCollectText(0);
             //初始化收集物体缓存
             if (null == _umCtrlCollectionItemCache)
             {
@@ -85,12 +85,6 @@ namespace GameA
                     _umCtrlCollectionLifeItemCache[i].Hide();
                 }
             }
-        }
-
-        protected override void OnClose()
-        {
-            base.OnClose();
-            Clear();
         }
 
         protected override void InitEventListener()
@@ -254,6 +248,12 @@ namespace GameA
             }
             _cachedView.LifeRoot.SetActiveEx(true);
             int lifeCount = PlayMode.Instance.MainPlayer.Life;
+            _cachedView.StartCoroutine(CoroutineProxy.RunWaitForSeconds(_collectDelayTime,
+                () => UpdateLifeItemValueText(lifeCount)));
+        }
+
+        private void UpdateLifeItemValueText(int lifeCount)
+        {
             _cachedView.LifeText.text = string.Format(GM2DUIConstDefine.WinDataLifeFormat, lifeCount);
         }
 
@@ -513,11 +513,12 @@ namespace GameA
         {
             _cachedView.LeftTimeText.rectTransform().localScale = Vector3.one;
             _cachedView.LeftTimeText.color = Color.white;
-            UpdateCollectText(0);
             if (_scoreTweener != null)
                 _scoreTweener.Pause();
             if (_umCtrlCollectionItemCache != null)
                 _umCtrlCollectionItemCache.ForEach(p => p.Hide());
+            UpdateLifeItemValueText(PlayMode.Instance.MainPlayer.Life);
+            UpdateCollectText(0);
             _lastFrame = 0;
             _lastValue = 0;
             _showValue = 0;

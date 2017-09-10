@@ -81,10 +81,10 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            _curMode = (UICtrlEdit.EMode)parameter;
-            if (_curCtrl == null)
-                _curCtrl = _upCtrlWorkShopBasicSetting;
-            _curCtrl.Open();
+            _curMode = (UICtrlEdit.EMode) parameter;
+            //默认显示设置页面
+            _cachedView.BasicSettingToggle.isOn = true;
+            BasicSettingToggleOnValueChanged(true);
             GameRun.Instance.Pause();
         }
 

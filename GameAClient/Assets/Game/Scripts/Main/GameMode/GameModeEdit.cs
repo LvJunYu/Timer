@@ -313,7 +313,7 @@ namespace GameA.Game
             }
         }
 
-	    private void EnterEditTest()
+	    protected virtual void EnterEditTest()
 	    {
 		    _mode = EMode.EditTest;
 		    EditMode.Instance.StopEdit();

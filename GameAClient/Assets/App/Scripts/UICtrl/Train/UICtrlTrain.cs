@@ -438,7 +438,7 @@ namespace GameA
         {
             base.OnOpen(parameter);
             RefreshView();
-            LocalUser.Instance.Achievement.AddAchievementCount(1, 1);
+//            LocalUser.Instance.Achievement.AddAchievementCount(1, 1);
         }
 
         protected override void OnOpenAnimationUpdate()
