@@ -14,7 +14,7 @@ namespace GameA
 	public partial class UMViewGameRatingBarItem: UMViewBase
 	{
 		/// <summary>
-		/// ´Ó1¿ªÊ¼
+		/// ä»Ž1å¼€å§‹
 		/// </summary>
 		private int _itemId;
 

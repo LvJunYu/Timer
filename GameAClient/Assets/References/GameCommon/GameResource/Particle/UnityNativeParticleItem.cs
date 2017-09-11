@@ -79,9 +79,7 @@ namespace SoyEngine
                 _isPlaying = true;
             }
 		}
-
-
-
+		
 		public override void Stop()
 		{
 		    if (_isPlaying)
@@ -91,7 +89,19 @@ namespace SoyEngine
 		    }
 		}
 
-        public void Pause()
+		public void SetActiveState(bool active)
+		{
+			if (active)
+			{
+				Play();
+			}
+			else
+			{
+				Pause();
+			}
+		}
+
+		public void Pause()
         {
             if (_isPlaying)
             {

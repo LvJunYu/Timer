@@ -335,24 +335,11 @@ namespace GameA.Game
                             }
                             break;
                         case EWeaponInputType.GetKeyUp:
-                            if (IsPlayer)
+                            if (_input.GetKeyUpApplied(_skillInputs[i]))
                             {
-                                if (_input.GetKeyUpApplied(_skillInputs[i]))
+                                if (_skillCtrl.Fire(i))
                                 {
-                                    if (_skillCtrl.Fire(i))
-                                    {
-                                        ChangeGunView(i);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (_input.GetKeyApplied(_skillInputs[i]))
-                                {
-                                    if (_skillCtrl.Fire(i))
-                                    {
-                                        ChangeGunView(i);
-                                    }
+                                    ChangeGunView(i);
                                 }
                             }
                             break;

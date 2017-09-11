@@ -35,7 +35,8 @@ namespace GameA.Game
             if (_effectBullet != null)
             {
                 _effectBullet.Play();
-                _effectBullet.Trans.localEulerAngles = new Vector3(0, 0, -GM2DTools.GetAngle(Rotation));
+                _effectBullet.Trans.localEulerAngles = new Vector3(0, 0, -_angle);
+//                _effectBullet.Trans.RotateAround(_trans.position,Vector3.forward, -_angle);
             }
             return true;
         }
@@ -56,6 +57,15 @@ namespace GameA.Game
                     PlayMode.Instance.DestroyUnit(this);
                 }
             }
+        }
+
+        public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
+        {
+            if (Rotation == (int)EDirectionType.Left || Rotation == (int)EDirectionType.Right)
+            {
+                return base.OnUpHit(other, ref y, checkOnly);
+            }
+            return false;
         }
 
         public override bool OnDownHit(UnitBase other, ref int y, bool checkOnly = false)

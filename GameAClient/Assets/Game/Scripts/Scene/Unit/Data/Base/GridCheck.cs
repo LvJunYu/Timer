@@ -25,6 +25,7 @@ namespace GameA.Game
 
         public void Clear()
         {
+            After();
             _hit = null;
             _isStay = false;
         }

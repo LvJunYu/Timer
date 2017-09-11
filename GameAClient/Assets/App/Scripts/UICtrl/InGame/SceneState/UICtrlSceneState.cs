@@ -29,11 +29,14 @@ namespace GameA
         private int _lastValue;
         private int _showValue;
         private readonly List<UMCtrlGameStarItem> _starConditionList = new List<UMCtrlGameStarItem>(3);
-        
+
         private const int _finalTimeMax = 10;
         private const int _HeartbeatTimeMax = 30;
         private const float _collectDelayTime = 1f;
+        private const int _initUMCollectionItemNum = 10;
+        private const int _initUMCollectionLifeNum = 3;
         private List<UMCtrlCollectionItem> _umCtrlCollectionItemCache;
+        private List<UMCtrlCollectionLifeItem> _umCtrlCollectionLifeItemCache;
         protected Sequence _finalCountDownSequence;
 
         /// <summary>
@@ -58,25 +61,30 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+            Clear();
             UpdateItemVisible();
             UpdateAll();
-            UpdateCollectText(0);
+            //初始化收集物体缓存
             if (null == _umCtrlCollectionItemCache)
             {
-                _umCtrlCollectionItemCache = new List<UMCtrlCollectionItem>(12);
-                for (int i = 0; i < _umCtrlCollectionItemCache.Count; i++)
+                _umCtrlCollectionItemCache = new List<UMCtrlCollectionItem>(_initUMCollectionItemNum);
+                for (int i = 0; i < _initUMCollectionItemNum; i++)
                 {
-                    _umCtrlCollectionItemCache[i] = new UMCtrlCollectionItem();
+                    _umCtrlCollectionItemCache.Add(new UMCtrlCollectionItem());
                     _umCtrlCollectionItemCache[i].Init(_cachedView.Trans);
                     _umCtrlCollectionItemCache[i].Hide();
                 }
             }
-        }
-
-        protected override void OnClose()
-        {
-            base.OnClose();
-            Clear();
+            if (null == _umCtrlCollectionLifeItemCache)
+            {
+                _umCtrlCollectionLifeItemCache = new List<UMCtrlCollectionLifeItem>(_initUMCollectionLifeNum);
+                for (int i = 0; i < _initUMCollectionLifeNum; i++)
+                {
+                    _umCtrlCollectionLifeItemCache.Add(new UMCtrlCollectionLifeItem());
+                    _umCtrlCollectionLifeItemCache[i].Init(_cachedView.Trans);
+                    _umCtrlCollectionLifeItemCache[i].Hide();
+                }
+            }
         }
 
         protected override void InitEventListener()
@@ -89,6 +97,7 @@ namespace GameA
             RegisterEvent(EMessengerType.OnKeyChanged, OnKeyCountChanged);
             RegisterEvent(EMessengerType.OnScoreChanged, OnScoreChanged);
             RegisterEvent<Vector3>(EMessengerType.OnGemCollect, ShowCollectionAnimation);
+            RegisterEvent<Vector3>(EMessengerType.OnLifeCollect, ShowCollectionLifeAnimation);
         }
 
         protected override void ExitGame()
@@ -239,6 +248,12 @@ namespace GameA
             }
             _cachedView.LifeRoot.SetActiveEx(true);
             int lifeCount = PlayMode.Instance.MainPlayer.Life;
+            _cachedView.StartCoroutine(CoroutineProxy.RunWaitForSeconds(_collectDelayTime,
+                () => UpdateLifeItemValueText(lifeCount)));
+        }
+
+        private void UpdateLifeItemValueText(int lifeCount)
+        {
             _cachedView.LifeText.text = string.Format(GM2DUIConstDefine.WinDataLifeFormat, lifeCount);
         }
 
@@ -330,7 +345,7 @@ namespace GameA
             _scoreTweener.Restart();
             _lastValue = curValue;
         }
-        
+
         private void UpdateScoreText()
         {
             _cachedView.ScoreText.text = string.Format(GM2DUIConstDefine.WinDataScoreFormat, _showValue);
@@ -498,26 +513,31 @@ namespace GameA
         {
             _cachedView.LeftTimeText.rectTransform().localScale = Vector3.one;
             _cachedView.LeftTimeText.color = Color.white;
-            UpdateCollectText(0);
             if (_scoreTweener != null)
                 _scoreTweener.Pause();
             if (_umCtrlCollectionItemCache != null)
                 _umCtrlCollectionItemCache.ForEach(p => p.Hide());
+            UpdateLifeItemValueText(PlayMode.Instance.MainPlayer.Life);
+            UpdateCollectText(0);
             _lastFrame = 0;
             _lastValue = 0;
             _showValue = 0;
         }
 
-        public void ShowCollectionAnimation(Vector3 InitialPos)
+        private void ShowCollectionAnimation(Vector3 InitialPos)
         {
-            UMCtrlCollectionItem umCtrlCollectionItem = CreateUmCtrlCollectionItem();
-            umCtrlCollectionItem.CollectAnimation(InitialPos, _cachedView.CollectionIconRTF.position);
+            CreateUmCtrlCollectionItem().CollectAnimation(InitialPos, _cachedView.CollectionIconRtf);
+        }
+
+        private void ShowCollectionLifeAnimation(Vector3 InitialPos)
+        {
+            CreateUmCtrlCollectionLifeItem().CollectAnimation(InitialPos, _cachedView.CollectionLifeIconRtf);
         }
 
         private UMCtrlCollectionItem CreateUmCtrlCollectionItem()
         {
             if (null == _umCtrlCollectionItemCache)
-                _umCtrlCollectionItemCache = new List<UMCtrlCollectionItem>(12);
+                _umCtrlCollectionItemCache = new List<UMCtrlCollectionItem>(_initUMCollectionItemNum);
             UMCtrlCollectionItem umCtrlCollectionItem = _umCtrlCollectionItemCache.Find(p => !p.IsShow);
             if (umCtrlCollectionItem != null)
             {
@@ -530,6 +550,24 @@ namespace GameA
                 _umCtrlCollectionItemCache.Add(umCtrlCollectionItem);
             }
             return umCtrlCollectionItem;
+        }
+
+        private UMCtrlCollectionLifeItem CreateUmCtrlCollectionLifeItem()
+        {
+            if (null == _umCtrlCollectionLifeItemCache)
+                _umCtrlCollectionLifeItemCache = new List<UMCtrlCollectionLifeItem>(_initUMCollectionLifeNum);
+            UMCtrlCollectionLifeItem umCtrlCollectionLifeItem = _umCtrlCollectionLifeItemCache.Find(p => !p.IsShow);
+            if (umCtrlCollectionLifeItem != null)
+            {
+                umCtrlCollectionLifeItem.Show();
+            }
+            else
+            {
+                umCtrlCollectionLifeItem = new UMCtrlCollectionLifeItem();
+                umCtrlCollectionLifeItem.Init(_cachedView.Trans);
+                _umCtrlCollectionLifeItemCache.Add(umCtrlCollectionLifeItem);
+            }
+            return umCtrlCollectionLifeItem;
         }
 
         #endregion

@@ -24,33 +24,24 @@ namespace GameA.Game
             _units = DataScene2D.Instance.GetControlledUnits(_guid);
         }
 
-        public override void OnTriggerStart(UnitBase other)
+        public override void OnTriggerChanged(EActiveState value)
         {
-            //LogHelper.Debug("OnTriggerStart {0}", ToString() + "~" + _trans.GetInstanceID());
-            if (_units != null)
+            base.OnTriggerChanged(value);
+            if (_units != null && _switchTrigger != null)
             {
                 for (int i = 0; i < _units.Count; i++)
                 {
                     var unit = _units[i];
                     if (unit != null && unit.IsAlive)
                     {
-                        unit.OnSwitchPressStart(this);
-                    }
-                }
-            }
-        }
-
-        public override void OnTriggerEnd()
-        {
-            //LogHelper.Debug("OnTriggerEnd {0}", ToString());
-            if (_units != null)
-            {
-                for (int i = 0; i < _units.Count; i++)
-                {
-                    var unit = _units[i];
-                    if (unit != null && unit.IsAlive)
-                    {
-                        unit.OnSwitchPressEnd(this);
+                        if (_switchTrigger.Trigger == EActiveState.Active)
+                        {
+                            unit.OnSwitchPressStart(this);
+                        }
+                        else if (_switchTrigger.Trigger == EActiveState.Deactive)
+                        {
+                            unit.OnSwitchPressEnd(this);
+                        }
                     }
                 }
             }

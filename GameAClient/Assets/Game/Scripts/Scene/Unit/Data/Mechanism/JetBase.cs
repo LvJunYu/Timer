@@ -124,7 +124,7 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
-            if (!_activeState)
+            if (_eActiveState != EActiveState.Active)
             {
                 return;
             }

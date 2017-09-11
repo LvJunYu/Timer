@@ -1,6 +1,5 @@
 using GameA.Game;
 using SoyEngine;
-using UnityEngine.UI;
 
 namespace GameA
 {
@@ -9,7 +8,7 @@ namespace GameA
     {
         private UPCtrlWorkShopBasicSetting _upCtrlWorkShopBasicSetting;
         private UPCtrlWorkShopWinConditionSetting _upCtrlWorkShopWinConditionSetting;
-        private UPCtrlBase<UICtrlWorkShopSetting, UIViewWorkShopSetting> _curCtrl;
+//        private UPCtrlBase<UICtrlWorkShopSetting, UIViewWorkShopSetting> _curCtrl;
         private UICtrlEdit.EMode _curMode;
 
         private void WinConditionToggleOnValueChanged(bool arg0)
@@ -18,7 +17,7 @@ namespace GameA
             {
                 _upCtrlWorkShopBasicSetting.Close();
                 _upCtrlWorkShopWinConditionSetting.Open();
-                _curCtrl = _upCtrlWorkShopWinConditionSetting;
+//                _curCtrl = _upCtrlWorkShopWinConditionSetting;
             }
         }
 
@@ -28,7 +27,7 @@ namespace GameA
             {
                 _upCtrlWorkShopWinConditionSetting.Close();
                 _upCtrlWorkShopBasicSetting.Open();
-                _curCtrl = _upCtrlWorkShopBasicSetting;
+//                _curCtrl = _upCtrlWorkShopBasicSetting;
             }
         }
 
@@ -47,7 +46,6 @@ namespace GameA
                     gameModeEdit.ChangeMode(GameModeEdit.EMode.Edit);
             }
             SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
-            //SocialApp.Instance.ReturnToApp();
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
             GM2DGame.Instance.QuitGame(
                 () => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },
@@ -83,10 +81,10 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            _curMode = (UICtrlEdit.EMode)parameter;
-            if (_curCtrl == null)
-                _curCtrl = _upCtrlWorkShopBasicSetting;
-            _curCtrl.Open();
+            _curMode = (UICtrlEdit.EMode) parameter;
+            //默认显示设置页面
+            _cachedView.BasicSettingToggle.isOn = true;
+            BasicSettingToggleOnValueChanged(true);
             GameRun.Instance.Pause();
         }
 

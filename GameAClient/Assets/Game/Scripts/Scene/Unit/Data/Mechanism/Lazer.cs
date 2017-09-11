@@ -105,26 +105,21 @@ namespace GameA.Game
             _lazerEffectEnd = null;
         }
 
-        private void Pause()
+        protected override void OnActiveStateChanged()
         {
-            _gridCheck.Clear();
-            if (_lazerEffect != null)
-            {
-                _lazerEffect.Pause();
-            }
-            if (_lazerEffectEnd != null)
-            {
-                _lazerEffectEnd.Pause();
-            }
+            base.OnActiveStateChanged();
+            _lazerEffect.SetActiveStateEx(_eActiveState == EActiveState.Active);
+            _lazerEffectEnd.SetActiveStateEx(_eActiveState == EActiveState.Active);
         }
 
         public override void UpdateLogic()
         {
             base.UpdateLogic();
+            _gridCheck.Before();
             //停止
-            if (!_activeState)
+            if (_eActiveState != EActiveState.Active)
             {
-                Pause();
+                _gridCheck.Clear();
                 return;
             }
             _distance = ConstDefineGM2D.MaxMapDistance;
@@ -150,7 +145,6 @@ namespace GameA.Game
                     _trans.localEulerAngles = new Vector3(0, 0, -_curAngle);
                 }
             }
-            _gridCheck.Before();
             var hits = ColliderScene2D.RaycastAll(CenterPos, _direction, _distance, EnvManager.LazerShootLayer);
             if (hits.Count > 0)
             {

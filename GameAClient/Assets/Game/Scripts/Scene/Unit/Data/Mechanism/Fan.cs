@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SoyEngine;
+using UnityEditor;
 using UnityEngine;
 
 namespace GameA.Game
@@ -17,9 +18,13 @@ namespace GameA.Game
             get { return UnitDefine.SwitchTriggerId; }
         }
         
+        protected override bool TriggerReverse
+        {
+            get { return true; }
+        }
+        
         protected override bool OnInit()
         {
-            _triggerReverse = true;
             if (!base.OnInit())
             {
                 return false;
@@ -46,41 +51,26 @@ namespace GameA.Game
         {
             base.Clear();
             _fanEffectUnits.Clear();
-            if (_switchTrigger != null)
-            {
-                _switchTrigger.Trigger = _activeState;
-            }
         }
 
-        public override void OnTriggerStart(UnitBase other)
-        {
-            base.OnTriggerStart(other);
-            if (_withEffect != null)
-            {
-                _withEffect.Play();
-            }
-//            if (_animation != null)
-//            {
-//                _animation.Init(((EDirectionType) Rotation).ToString());
-//            }
-        }
-
-        public override void OnTriggerEnd()
-        {
-            base.OnTriggerEnd();
-            if (_withEffect != null)
-            {
-                _withEffect.Stop();
-            }
-        }
-        
         private void Calculate()
         {
             GM2DTools.GetBorderPoint(_colliderGrid, (EDirectionType)Rotation, ref _pointA, ref _pointB);
             var distance = TableConvert.GetRange(UnitDefine.FanRange);
             _checkGrid = SceneQuery2D.GetGrid(_pointA, _pointB, Rotation, distance);
         }
-        
+
+        protected override void OnActiveStateChanged()
+        {
+        }
+
+        public override void OnTriggerChanged(EActiveState value)
+        {
+            base.OnTriggerChanged(value);
+            _withEffect.SetActiveStateEx(value == EActiveState.Active);
+            LogHelper.Debug(value+" Fan ");
+        }
+
         public override void UpdateLogic()
         {
             for (int i = _fanEffectUnits.Count - 1; i >= 0; i--)
@@ -94,7 +84,7 @@ namespace GameA.Game
             }
             base.UpdateLogic();
             //停止
-            if (_switchTrigger==null || !_switchTrigger.Trigger)
+            if (_switchTrigger.Trigger != EActiveState.Active)
             {
                 return;
             }

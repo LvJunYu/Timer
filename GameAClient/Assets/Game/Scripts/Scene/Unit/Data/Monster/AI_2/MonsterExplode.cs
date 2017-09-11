@@ -23,7 +23,10 @@ namespace GameA.Game
                 OnDead();
                 return;
             }
-            _timerDetectStay = 0;
+            if (eDirectionType == EDirectionType.Left || eDirectionType == EDirectionType.Right)
+            {
+                _timerDetectStay = 0;
+            }
             base.Hit(unit, eDirectionType);
         }
 

@@ -7,26 +7,23 @@ namespace GameA.Game
     public class SwitchTrigger : Magic
     {
         protected SwitchUnit _switchUnit;
-        protected bool _trigger;
         protected List<UnitBase> _units = new List<UnitBase>();
+        protected EActiveState _trigger;
 
         public SwitchUnit SwitchUnit
         {
             get { return _switchUnit; }
-            set { _switchUnit = value; }
-        }
-        
-        public bool Trigger
-        {
-            get { return _trigger; }
             set
             {
-                _trigger = value;
-                if (_trigger)
-                {
-                    OnTriggerStart(this);
-                }
+                _switchUnit = value;
+                _trigger = _switchUnit.EActiveState;
+                SetTrigger(_trigger);
             }
+        }
+
+        public EActiveState Trigger
+        {
+            get { return _trigger; }
         }
 
         protected override bool OnInit()
@@ -58,20 +55,12 @@ namespace GameA.Game
 
         protected virtual void OnTrigger(UnitBase other)
         {
-            if (_units.Contains(other))
+            if (_units.Contains(other) || other == _switchUnit)
             {
                 return;
             }
             _units.Add(other);
-            _trigger = !_trigger;
-            if (_trigger)
-            {
-                OnTriggerStart(other);
-            }
-            else
-            {
-                OnTriggerEnd();
-            }
+            SetTrigger(_trigger == EActiveState.Active ? EActiveState.Deactive : EActiveState.Active);
         }
 
         public override void UpdateLogic()
@@ -100,32 +89,30 @@ namespace GameA.Game
             }
         }
 
-        protected void OnTriggerStart(UnitBase other)
+        protected virtual void SetTrigger(EActiveState value)
         {
-            ChangView(true);
+            if (_trigger != value)
+            {
+                _trigger = value;
+                OnTriggerChanged();
+            }
+        }
+
+        protected virtual void OnTriggerChanged()
+        {
             if (_switchUnit != null)
             {
-                _switchUnit.OnTriggerStart(other);
+                _switchUnit.OnTriggerChanged(_trigger);
             }
+            ChangView();
+            LogHelper.Debug("OnTriggerChanged {0}", _trigger);
         }
 
-        protected void OnTriggerEnd()
-        {
-            if (!_trigger)
-            {
-                ChangView(false);
-                if (_switchUnit != null)
-                {
-                    _switchUnit.OnTriggerEnd();
-                }
-            }
-        }
-
-        protected virtual void ChangView(bool on)
+        protected virtual void ChangView()
         {
             if (_view != null)
             {
-                if (on)
+                if (_trigger == EActiveState.Active)
                 {
                     _view.ChangeView("M1SwitchTriggerPressOn_" + _unitDesc.Rotation);
                 }

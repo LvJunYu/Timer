@@ -146,13 +146,14 @@ namespace GameA.Game
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-            if (!_activeState)
+            _gridCheck.Before();
+            if (_eActiveState != EActiveState.Active)
             {
+                _gridCheck.After();
                 Pause();
                 return;
             }
             _timer++;
-            _gridCheck.Before();
             if (_shoot)
             {
                 _distance = GM2DTools.GetDistanceToBorder(_pointA, Rotation);
