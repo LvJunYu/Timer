@@ -114,14 +114,12 @@ namespace GameA
 
         public static int OnUnitEditChanged = SoyEngine.EMessengerType.NextId++;
 
-		/// <summary>
-		/// 改编特效时调用 
-		/// </summary>
-		public static int OnCurCompositeEditorStateChanged = SoyEngine.EMessengerType.NextId++;
-
 		public static int OnCancelSelectState = SoyEngine.EMessengerType.NextId++;
 	    
 		public static int OnTrigger = SoyEngine.EMessengerType.NextId++;
 
-	}
+	    public static int OnEditUnitDefaultDataChange = SoyEngine.EMessengerType.NextId++;
+	    public static int OnEditUnitDataChange = SoyEngine.EMessengerType.NextId++;
+
+    }
 }

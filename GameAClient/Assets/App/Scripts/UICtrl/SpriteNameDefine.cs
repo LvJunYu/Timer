@@ -5,6 +5,8 @@
 //  ** Summary : SpriteNameDefine.cs
 //  ***********************************************************************/
 
+using System;
+using GameA.Game;
 using SoyEngine.Proto;
 using UnityEngine;
 
@@ -14,6 +16,8 @@ namespace GameA
     {
         public const string UnitEditRotateEndBgForward = "icon_edit_rotate_begin";
         public const string UnitEditRotateEndBgNormal = "icon_edit_rotate_point";
+        public const string UnitEditMoveDirectionNone = "icon_edit_nothing";
+        public const string UnitEditMoveDirectionUp = "icon_edit_orientation_move";
         
         public const string DefaultImageName = "CommonWhite";
         public const string MaleIcon = "Male_0";
@@ -49,6 +53,30 @@ namespace GameA
         public static string GetHeadImage(int head)
         {
             return HeadImageSpriteName[Mathf.Clamp(head, 0, HeadImageSpriteName.Length - 1)];
+        }
+
+        private static readonly string[] UnitEditRotateModeSpriteName =
+            {"icon_edit_not-rotate", "icon_edit_clockwise", "icon_edit_anti-clockwise"};
+        public static string GetUnitEditRotateModeImage(ERotateMode rotateMode)
+        {
+            return UnitEditRotateModeSpriteName[(int) rotateMode];
+        }
+        
+        public static string GetUnitEditActiveStateImage(EActiveState activeState)
+        {
+            string name = string.Empty;
+            switch (activeState)
+            {
+                case EActiveState.None:
+                    break;
+                case EActiveState.Active:
+                    name = "icon_edit_on";
+                    break;
+                case EActiveState.Deactive:
+                    name = "icon_edit_off";
+                    break;
+            }
+            return name;
         }
     }
 }

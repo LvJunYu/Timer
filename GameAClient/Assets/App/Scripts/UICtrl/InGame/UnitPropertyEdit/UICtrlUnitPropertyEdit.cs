@@ -419,6 +419,8 @@ namespace GameA
                 if (i < _tableUnit.ChildState.Length)
                 {
                     _payloadMenuList[i].SetEnable(true);
+                    _payloadMenuList[i].SetFgImage(ResourcesManager.Instance.GetSprite(
+                        TableManager.Instance.GetEquipment(_editData.UnitExtra.ChildId).Icon));
                     _payloadMenuList[i].SetSelected(_tableUnit.ChildState[i] == _editData.UnitExtra.ChildId);
                     _payloadMenuList[i].SetBgImageAngle(da * i);
                 }
@@ -470,16 +472,16 @@ namespace GameA
             int start, end;
             if (rotateMode == ERotateMode.Clockwise)
             {
-                start = CalcDirectionVal(_editData.UnitDesc.Rotation);
-                end = CalcDirectionVal(_editData.UnitExtra.RotateValue);
+                start = EditHelper.CalcDirectionVal(_editData.UnitDesc.Rotation);
+                end = EditHelper.CalcDirectionVal(_editData.UnitExtra.RotateValue);
                 _cachedView.RotateArrowDock.transform.localEulerAngles = Vector3.zero;
                 _menuButtonArray[(int) EEditType.Rotate].RotateMenuView.RotateArrows.transform.localEulerAngles =
                     Vector3.zero;
             }
             else
             {
-                end = CalcDirectionVal(_editData.UnitDesc.Rotation);
-                start = CalcDirectionVal(_editData.UnitExtra.RotateValue);
+                end = EditHelper.CalcDirectionVal(_editData.UnitDesc.Rotation);
+                start = EditHelper.CalcDirectionVal(_editData.UnitExtra.RotateValue);
                 _cachedView.RotateArrowDock.transform.localEulerAngles = new Vector3(0, 180, 0);
                 _menuButtonArray[(int) EEditType.Rotate].RotateMenuView.RotateArrows.transform.localEulerAngles =
                     new Vector3(0, 180, 0);
@@ -609,18 +611,6 @@ namespace GameA
                 }
                 _menuButtonArray[(int) type].SetSelected(type == editType);
                 _rootArray[(int) type].SetActiveEx(type == editType);
-            }
-        }
-
-        private int CalcDirectionVal(byte dir)
-        {
-            if (dir < 4)
-            {
-                return dir * 2;
-            }
-            else
-            {
-                return (dir - 4) * 2 + 1;
             }
         }
         #endregion

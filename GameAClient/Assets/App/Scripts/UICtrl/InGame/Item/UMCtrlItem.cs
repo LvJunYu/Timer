@@ -22,6 +22,7 @@ namespace GameA
         private static ECheckBehaviour _checkBehaviour;
         private static Vector2 _startPos;
         private static readonly Vector2 CheckDelta = new Vector2(5f, 20f);
+        private UMCtrlUnitProperty _umCtrlUnitProperty;
 
         public void Show()
         {
@@ -29,6 +30,7 @@ namespace GameA
             Messenger<ushort>.AddListener (EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
             Messenger<int>.AddListener (EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.AddListener (EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
+            Messenger<int>.AddListener (EMessengerType.OnEditUnitDefaultDataChange, OnEditUnitDefaultDataChange);
         }
 
         public void Hide()
@@ -37,7 +39,9 @@ namespace GameA
             Messenger<ushort>.RemoveListener (EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
             Messenger<int>.RemoveListener (EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.RemoveListener (EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
+            Messenger<int>.RemoveListener(EMessengerType.OnEditUnitDefaultDataChange, OnEditUnitDefaultDataChange);
         }
+
 
         public void OnDestroyObject()
         {
@@ -165,23 +169,14 @@ namespace GameA
             if (_selected)
             {
                 _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up*15;
-
-                // 除了主角，所有能旋转，能移动，还有传送带 都需要显示箭头
-                if (_table.CanEdit(EEditType.Direction) || _table.CanEdit(EEditType.MoveDirection))
-                {
-                    _cachedView.Arrow.SetActive(true);
-                    RefreshArrowRotation();
-                }
-                else
-                {
-                    _cachedView.Arrow.SetActive(false);
-                }
+                _cachedView.ShadowTrans.localScale = Vector3.one * 0.7f;
             }
             else
             {
-                _cachedView.Arrow.SetActive(false);
                 _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.zero;
+                _cachedView.ShadowTrans.localScale = Vector3.one;
             }
+            RefreshUnitProperty();
 
             int currentCnt = EditHelper.GetUnitCnt(_table.Id);
             int limit = LocalUser.Instance.UserWorkshopUnitData.GetUnitLimt(_table.Id);
@@ -207,23 +202,35 @@ namespace GameA
         private void OnSelectedItemChanged (ushort id)
         {
             if (id == _table.Id) {
-                _selected = true;
-                _cachedView.SpriteIcon.transform.localPosition = Vector3.up * 15;
-                _cachedView.ShadowTrans.localScale = Vector3.one * 0.7f;
-
-                // 除了主角，所有能旋转，能移动，还有传送带 都需要显示箭头
-                if (_table.CanEdit(EEditType.Direction) || _table.CanEdit(EEditType.MoveDirection))
-                {
-                    _cachedView.Arrow.SetActive(true);
-                    RefreshArrowRotation();
-                }
+                Set(_table, true);
             } else {
-                _selected = false;
-                _cachedView.SpriteIcon.transform.localPosition = Vector3.zero;
-                _cachedView.ShadowTrans.localScale = Vector3.one;
-                
-                _cachedView.Arrow.SetActive(false);
+                if (_selected)
+                {
+                    Set(_table, false);
+                }
             }
+        }
+        
+        private void OnEditUnitDefaultDataChange(int id)
+        {
+            if (id == _table.Id) {
+                RefreshUnitProperty();
+            }
+        }
+
+        private void RefreshUnitProperty()
+        {
+            if (!_selected || !EditHelper.CheckCanEdit(_table.Id))
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlItem>().ReturnUmCtrlUnitProperty(_cachedView.Trans, _umCtrlUnitProperty);
+                return;
+            }
+            _umCtrlUnitProperty = SocialGUIManager.Instance.GetUI<UICtrlItem>().GetUmCtrlUnitProperty();
+            _umCtrlUnitProperty.UITran.SetParent(_cachedView.Trans, false);
+            _umCtrlUnitProperty.UITran.localPosition = Vector3.up * 15;
+            _umCtrlUnitProperty.UITran.localScale = Vector3.one * 0.47f;
+            var unitDefaultData = EditHelper.GetUnitDefaultData(_table.Id);
+            _umCtrlUnitProperty.SetData(unitDefaultData.UnitDesc, unitDefaultData.UnitExtra);
         }
 
         private void OnUnitAddedInEditMode(int id)
@@ -246,19 +253,6 @@ namespace GameA
                     _cachedView.Number.text = number.ToString();
                 }
                 _cachedView.Number.gameObject.SetActive(true);
-            }
-        }
-
-        private void RefreshArrowRotation()
-        {
-            var current = EditHelper.GetUnitDefaultData(_table.Id);
-            if (_table.CanEdit(EEditType.MoveDirection))
-            {
-                _cachedView.Arrow.transform.localEulerAngles = new Vector3(0, 0, -90 * (byte)(current.UnitExtra.MoveDirection - 1));
-            }
-            else if (_table.CanEdit(EEditType.Direction))
-            {
-                _cachedView.Arrow.transform.localEulerAngles = new Vector3(0, 0, -90 * current.UnitDesc.Rotation);
             }
         }
 
