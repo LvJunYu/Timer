@@ -5,6 +5,8 @@
 ** Summary : UICtrlSingleMode
 ***********************************************************************/
 
+using System.Collections;
+using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
@@ -185,6 +187,7 @@ namespace GameA
 		        _chapterAry[i] = new USCtrlChapter();
 		        _chapterAry[i].Init(_cachedView.Chapters[i]);
 	        }
+	        _cachedView.ChapterBg[_currentChapter-1].gameObject.SetActive(true);
         }
 			
 		public override void OnUpdate ()
@@ -310,7 +313,9 @@ namespace GameA
                 _currentChapter = ChapterCnt;
                 return;
             }
+	        FadeOutChanterBg(_cachedView.ChapterBg[_currentChapter-1]);
             _currentChapter += 1;
+	        FadeInChanterBg(_cachedView.ChapterBg[_currentChapter -1]);
             RefreshChapterInfo ();
             BeginChangeChapter ();
             _dragging = false;
@@ -320,7 +325,9 @@ namespace GameA
                 _currentChapter = 1;
                 return;
             }
+	        FadeOutChanterBg(_cachedView.ChapterBg[_currentChapter-1]);
             _currentChapter -= 1;
+	        FadeInChanterBg(_cachedView.ChapterBg[_currentChapter -1]);
             RefreshChapterInfo ();
             BeginChangeChapter ();
             _dragging = false;
@@ -426,7 +433,23 @@ namespace GameA
                 _cachedView.MatchBtn.gameObject.SetActive (false);
             }
 		}
-        #endregion 接口
+
+	    private void FadeOutChanterBg(CanvasGroup chapterBg)
+	    {
+		  
+		    chapterBg.alpha = 1.0f;
+		    chapterBg.DOFade(0,1);
+		    chapterBg.gameObject.SetActive(false);
+	    }
+
+	    private void FadeInChanterBg(CanvasGroup chapterBg)
+	    {
+		    chapterBg.gameObject.SetActive(true);
+		    chapterBg.alpha = 0.0f;
+		    chapterBg.DOFade(1,1);
+	    }
+
+	    #endregion 接口
         #endregion
 
     }
