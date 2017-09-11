@@ -851,6 +851,10 @@ namespace GameA.Game
             var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
             _moveDirection = unitExtra.MoveDirection;
             _eActiveState = (EActiveState)unitExtra.Active;
+            if (_eActiveState == EActiveState.None)
+            {
+                _eActiveState = EActiveState.Active;
+            }
             if (IsMain)
             {
                 _moveDirection = EMoveDirection.Right;
@@ -942,7 +946,7 @@ namespace GameA.Game
         protected float GetZ(IntVec2 pos)
         {
             var size = Mathf.Clamp(_tableUnit.Width, 0, ConstDefineGM2D.ServerTileScale);
-            return -(pos.x + pos.y * 2 + size) * UnitDefine.UnitSorttingLayerRatio + _viewZOffset;
+            return -(pos.x + pos.y * 1.5f + size) * UnitDefine.UnitSorttingLayerRatio + _viewZOffset;
         }
 
         protected void SetRelativeEffectPos(Transform trans, EDirectionType eDirectionType, float viewZOffset = 0)
