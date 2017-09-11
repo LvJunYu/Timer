@@ -150,40 +150,45 @@ namespace GameA.Game
             }
             if (_curBanInputTime <= 0)
             {
-                int speedAcc = _motorAcc + _fanForce.x;
-                if (speedAcc != 0)
+                CaculateSpeedX(air);
+            }
+        }
+
+        protected virtual void CaculateSpeedX(bool air)
+        {
+            int speedAcc = _motorAcc + _fanForce.x;
+            if (speedAcc != 0)
+            {
+                //在空中和冰上 同方向的时候
+                if (_onIce || air)
                 {
-                    //在空中和冰上 同方向的时候
-                    if (_onIce || air)
+                    if ((speedAcc > 0 && _fanForce.x > 0) || (speedAcc < 0 && _fanForce.x < 0))
                     {
-                        if ((speedAcc > 0 && _fanForce.x > 0) || (speedAcc < 0 && _fanForce.x < 0))
-                        {
-                            speedAcc = 1;
-                        }
+                        speedAcc = 1;
                     }
-                    else
-                    {
-                        SpeedX -= _fanForce.x;
-                        //落地瞬间，如果相反 立即摆正。
-                        if (!_lastGrounded && _grounded && (SpeedX * speedAcc < 0))
-                        {
-                            speedAcc = speedAcc > 0 ? MaxFriction : -MaxFriction;
-                        }
-                    }
-                    SpeedX = Util.ConstantLerp(SpeedX, speedAcc > 0 ? _curMaxSpeedX : -_curMaxSpeedX, Mathf.Abs(speedAcc));
                 }
-                else if (_grounded || _fanForce.y != 0 || _eClimbState == EClimbState.Up)
+                else
                 {
-                    var friction = MaxFriction;
-                    if (_fanForce.x == 0)
+                    SpeedX -= _fanForce.x;
+                    //落地瞬间，如果相反 立即摆正。
+                    if (!_lastGrounded && _grounded && (SpeedX * speedAcc < 0))
                     {
-                        if (_onIce)
-                        {
-                            friction = 1;
-                        }
+                        speedAcc = speedAcc > 0 ? MaxFriction : -MaxFriction;
                     }
-                    SpeedX = Util.ConstantLerp(SpeedX, 0, friction);
                 }
+                SpeedX = Util.ConstantLerp(SpeedX, speedAcc > 0 ? _curMaxSpeedX : -_curMaxSpeedX, Mathf.Abs(speedAcc));
+            }
+            else if (_grounded || _fanForce.y != 0 || _eClimbState == EClimbState.Up)
+            {
+                var friction = MaxFriction;
+                if (_fanForce.x == 0)
+                {
+                    if (_onIce)
+                    {
+                        friction = 1;
+                    }
+                }
+                SpeedX = Util.ConstantLerp(SpeedX, 0, friction);
             }
         }
         

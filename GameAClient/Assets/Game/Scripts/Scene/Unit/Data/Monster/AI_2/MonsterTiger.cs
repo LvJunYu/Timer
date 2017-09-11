@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using SoyEngine;
+using UnityEngine;
 
 namespace GameA.Game
 {
@@ -6,7 +7,7 @@ namespace GameA.Game
     public class MonsterTiger : MonsterAI_2
     {
         private float _viewDistance = 10 * ConstDefineGM2D.ServerTileScale;
-
+        private const int _brakeDec = 2;//刹车减速度
         protected override bool OnInit()
         {
             if (!base.OnInit())
@@ -43,7 +44,7 @@ namespace GameA.Game
 
         protected override void UpdateMonsterAI()
         {
-//            Debug.Log(_speed.x);
+            //每5帧检测一次
             if (GameRun.Instance.LogicFrameCnt % 5 == 0)
             {
                 var units = ColliderScene2D.RaycastAllReturnUnits(CenterPos,
@@ -69,28 +70,34 @@ namespace GameA.Game
                 }
                 if ((units.Count == 0 || !isMain) && _eMonsterState == EMonsterState.Chase && _timerDetectStay == 0)
                 {
-//                    ChangeState(EMonsterState.Brake);
-                    ChangeState(EMonsterState.Run);
+                    //todo判断目标在相反方向才刹车
+                    ChangeState(EMonsterState.Brake);
+//                    ChangeState(EMonsterState.Run);
                 }
             }
             if (_eMonsterState == EMonsterState.Brake)
             {
                 if (Mathf.Abs(SpeedX) == 0)
                 {
-                    //变向
-                    if (_moveDirection == EMoveDirection.Left)
-                        _moveDirection = EMoveDirection.Right;
-                    else if (_moveDirection == EMoveDirection.Right)
-                        _moveDirection = EMoveDirection.Left;
                     ChangeState(EMonsterState.Run);
-                }
-                else
-                {
-                    int speedAcc = _moveDirection == EMoveDirection.Right ? -10 : 10;
-                    SpeedX += speedAcc;
                 }
             }
             base.UpdateMonsterAI();
+        }
+
+        protected override void CaculateSpeedX(bool air)
+        {
+            //刹车时减速
+            if (_eMonsterState == EMonsterState.Brake)
+            {
+                //若在空中或冰上不减速
+                if (!_onIce && !air)
+                {
+                    SpeedX = Util.ConstantLerp(SpeedX, 0, _brakeDec);
+                }
+            }
+            else
+                base.CaculateSpeedX(air);
         }
 
         protected override void ChangeState(EMonsterState eMonsterState)
@@ -98,7 +105,12 @@ namespace GameA.Game
             base.ChangeState(eMonsterState);
             if (eMonsterState == EMonsterState.Brake)
             {
-                _animation.PlayOnce("Brake");
+                //变向
+                if (_moveDirection == EMoveDirection.Left)
+                    ChangeWay(EMoveDirection.Right);
+                else if (_moveDirection == EMoveDirection.Right)
+                    ChangeWay(EMoveDirection.Left);
+                _animation.PlayOnce("Brake2",1,1);
             }
         }
 
