@@ -6,17 +6,19 @@ using UnityEngine.UI;
 using SoyEngine;
 using GameA;
 using GameA.Game;
+
 namespace GameA
 {
-    public class UMCtrlHandBookItem: UMCtrlBase<UMViewHandBookItem>
+    public class UMCtrlHandBookItem : UMCtrlBase<UMViewHandBookItem>
     {
-       
         #region 变量
+
         private string _unitIconName = null;
         private int _unitId;
-        private Color _colorMask = new Color(0.125f,0.125f,0.125f,1);
+        private Color _colorMask = new Color(0.125f, 0.125f, 0.125f, 1);
         private Sprite _unitIcon;
         private Table_Unit _uint;
+
         #endregion
 
         #region 属性
@@ -24,40 +26,35 @@ namespace GameA
         #endregion
 
         #region 方法
+
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-         
-        }
-        public  bool Set(RectTransform parent,Vector3 localpos = new Vector3())
-        { 
-            return base.Init(parent, localpos, SocialGUIManager.Instance.UIRoot);
         }
 
-        public void IintItem(int unitID ,bool isunlock )
+        public void IintItem(int unitID, bool isUnlock)
         {
             _unitId = unitID;
             _uint = TableManager.Instance.GetUnit(unitID);
             _unitIconName = _uint.Icon;
-            if (ResourcesManager.Instance.TryGetSprite(_unitIconName,out _unitIcon))
+            if (ResourcesManager.Instance.TryGetSprite(_unitIconName, out _unitIcon))
             {
                 _cachedView.Icon.sprite = _unitIcon;
             }
             _cachedView.ExplantionBtn.onClick.AddListener(OnBtn);
-            if (!isunlock)
+            if (!isUnlock)
             {
                 _cachedView.Icon.color = _colorMask;
             }
-            _cachedView.IsLock.gameObject.SetActive(!isunlock);
-        }
-        
-        public void OnBtn()
-        {
-            SocialGUIManager.Instance.GetUI<UICtrlHandBook>().UpdateDesc(_unitId,this);
-            _cachedView.Select.gameObject.SetActive(true);
+            _cachedView.IsLock.gameObject.SetActive(!isUnlock);
         }
 
-        public void OnSelect(  )
+        public void OnBtn()
+        {
+            SocialGUIManager.Instance.GetUI<UICtrlHandBook>().UpdateDesc(_unitId, this);
+        }
+
+        public void OnSelect()
         {
             _cachedView.Select.gameObject.SetActive(true);
         }
@@ -68,9 +65,5 @@ namespace GameA
         }
 
         #endregion
-      
-
-      
     }
-
 }
