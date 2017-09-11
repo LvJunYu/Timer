@@ -33,7 +33,7 @@ namespace GameA.Game
             
             public void ModifyUnitData(UnitDesc unitDesc, UnitExtra unitExtra, UnitDesc newUnitDesc, UnitExtra newUnitExtra)
             {
-                DataScene2D.Instance.ProcessUnitExtra(newUnitDesc, newUnitExtra);
+                DataScene2D.Instance.ProcessUnitExtra(newUnitDesc, newUnitExtra, GetRecordBatch());
                 GetRecordBatch().RecordUpdateExtra(ref unitDesc, ref unitExtra, ref newUnitDesc, ref newUnitExtra);
                 CommitRecordBatch();
             }
