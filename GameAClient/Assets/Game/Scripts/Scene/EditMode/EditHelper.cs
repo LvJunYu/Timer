@@ -109,7 +109,18 @@ namespace GameA.Game
             {
                 unitEditData = new UnitEditData(unitDesc, DataScene2D.Instance.GetUnitExtra(unitDesc.Guid));
             }
-            SocialGUIManager.Instance.OpenUI<UICtrlUnitPropertyEdit>(unitEditData);
+            //地块特殊处理一下
+            if (UnitDefine.IsEarth(unitDesc.Id))
+            {
+                var origin = unitEditData;
+                unitEditData.UnitExtra.ChildId = (ushort) (Mathf.Clamp(unitEditData.UnitExtra.ChildId, 1, 2) % 2 + 1);
+                EditModeState.Global.Instance.ModifyUnitData(origin.UnitDesc, origin.UnitExtra, unitEditData.UnitDesc,
+                    unitEditData.UnitExtra);
+            }
+            else
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlUnitPropertyEdit>(unitEditData);
+            }
             return false;
         }
 
@@ -155,6 +166,11 @@ namespace GameA.Game
             {
                 data = InternalGetUnitDefaultData(id);
                 _unitDefaultDataDict.Add(id, data);
+            }
+            //地块特殊处理
+            if (UnitDefine.IsEarth(id))
+            {
+                data.UnitExtra.ChildId = (ushort) Random.Range(1, 3);
             }
             return data;
         }

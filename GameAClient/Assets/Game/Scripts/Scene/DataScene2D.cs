@@ -220,9 +220,10 @@ namespace GameA.Game
             return unitExtra;
         }
 
-        public void ProcessUnitExtra(UnitDesc unitDesc, UnitExtra unitExtra)
+        public void ProcessUnitExtra(UnitDesc unitDesc, UnitExtra unitExtra, EditRecordBatch editRecordBatch = null)
         {
             UnitBase unit;
+            bool canSwitch = false;
             if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
             {
                 EditMode.Instance.MapStatistics.NeedSave = true;
@@ -231,6 +232,7 @@ namespace GameA.Game
                 {
                     var oldUnitDesc = unit.UnitDesc;
                     EditMode.Instance.DeleteUnit(oldUnitDesc);
+                    canSwitch = unit.CanControlledBySwitch;
                     needCreate = true;
                 }
                 if (unitExtra.Equals(UnitExtra.zero))
@@ -244,6 +246,21 @@ namespace GameA.Game
                 if (needCreate)
                 {
                     EditMode.Instance.AddUnit(unitDesc);
+                }
+                if (canSwitch)
+                {
+                    if (ColliderScene2D.Instance.TryGetUnit(unitDesc.Guid, out unit))
+                    {
+                        if (!unit.CanControlledBySwitch)
+                        {
+                            OnUnitDeleteUpdateSwitchData(unitDesc, editRecordBatch);
+                        }
+                    }
+                    else
+                    {
+                        OnUnitDeleteUpdateSwitchData(unitDesc, editRecordBatch);
+                        LogHelper.Error("ProcessUnitExtra UnitBase missing");
+                    }
                 }
             }
             else
