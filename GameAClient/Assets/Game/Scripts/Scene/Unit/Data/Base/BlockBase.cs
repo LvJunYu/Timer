@@ -12,16 +12,6 @@ namespace GameA.Game
 {
     public class BlockBase : Magic
     {
-        protected override bool OnInit()
-        {
-            if (!base.OnInit())
-            {
-                return false;
-            }
-            _useCorner = true;
-            return true;
-        }
-
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
         {
             if (!checkOnly)

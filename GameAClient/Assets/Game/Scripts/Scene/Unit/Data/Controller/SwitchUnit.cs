@@ -26,10 +26,10 @@ namespace GameA.Game
                 _switchTrigger = null;
             }
         }
-        
-        public override void UpdateExtraData()
+
+        protected override void Clear()
         {
-            base.UpdateExtraData();
+            base.Clear();
             CreateSwitchTrigger();
         }
 
