@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace GameA
 {
@@ -64,7 +65,7 @@ namespace GameA
         protected override void OnOpenAnimationUpdate()
         {
             base.OnOpenAnimationUpdate();
-            _cachedView.PrivateProjectsContent.anchoredPosition = Vector2.zero;
+            _cachedView.PrivateProjectsScrollbar.value = 1;
         }
 
         protected override void InitEventListener()
