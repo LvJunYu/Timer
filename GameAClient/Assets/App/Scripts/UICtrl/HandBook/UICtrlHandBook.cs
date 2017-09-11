@@ -140,44 +140,44 @@ namespace GameA
         {
             for (int i = 0; i < _RoleList.Count; i++)
             {
-                var ExplationItem = new UMCtrlHandBookItem();
-                ExplationItem.Set(_cachedView.RoleRectGroup, Vector3.zero);
-                ExplationItem.IintItem(_RoleList[i], false);
+                var explationItem = new UMCtrlHandBookItem();
+                explationItem.Init(_cachedView.RoleRectGroup, Vector3.zero);
+                explationItem.IintItem(_RoleList[i], false);
                 if (_curSeleCtrlHandBookItem == null)
                 {
-                    _curSeleCtrlHandBookItem = ExplationItem;
+                    _curSeleCtrlHandBookItem = explationItem;
                     _curSeleCtrlHandBookItem.OnBtn();
                 }
             }
             for (int i = 0; i < _EarthList.Count; i++)
             {
-                var ExplationItem = new UMCtrlHandBookItem();
-                ExplationItem.Set(_cachedView.EarthRectGroup, Vector3.zero);
-                ExplationItem.IintItem(_EarthList[i], true);
+                var explationItem = new UMCtrlHandBookItem();
+                explationItem.Init(_cachedView.EarthRectGroup, Vector3.zero);
+                explationItem.IintItem(_EarthList[i], true);
             }
             for (int i = 0; i < _MechanismList.Count; i++)
             {
-                var ExplationItem = new UMCtrlHandBookItem();
-                ExplationItem.Set(_cachedView.TrickRectGroup, Vector3.zero);
-                ExplationItem.IintItem(_MechanismList[i], true);
+                var explationItem = new UMCtrlHandBookItem();
+                explationItem.Init(_cachedView.TrickRectGroup, Vector3.zero);
+                explationItem.IintItem(_MechanismList[i], true);
             }
             for (int i = 0; i < _ColletionList.Count; i++)
             {
-                var ExplationItem = new UMCtrlHandBookItem();
-                ExplationItem.Set(_cachedView.CollitionRectGroup, Vector3.zero);
-                ExplationItem.IintItem(_ColletionList[i], true);
+                var explationItem = new UMCtrlHandBookItem();
+                explationItem.Init(_cachedView.CollitionRectGroup, Vector3.zero);
+                explationItem.IintItem(_ColletionList[i], true);
             }
             for (int i = 0; i < _DecorationList.Count; i++)
             {
-                var ExplationItem = new UMCtrlHandBookItem();
-                ExplationItem.Set(_cachedView.DecorationRectGroup, Vector3.zero);
-                ExplationItem.IintItem(_DecorationList[i], true);
+                var explationItem = new UMCtrlHandBookItem();
+                explationItem.Init(_cachedView.DecorationRectGroup, Vector3.zero);
+                explationItem.IintItem(_DecorationList[i], true);
             }
             for (int i = 0; i < _ControllerList.Count; i++)
             {
-                var ExplationItem = new UMCtrlHandBookItem();
-                ExplationItem.Set(_cachedView.CtrlRectGroup, Vector3.zero);
-                ExplationItem.IintItem(_ControllerList[i], true);
+                var explationItem = new UMCtrlHandBookItem();
+                explationItem.Init(_cachedView.CtrlRectGroup, Vector3.zero);
+                explationItem.IintItem(_ControllerList[i], true);
             }
         }
 
@@ -234,13 +234,13 @@ namespace GameA
             JudgeMove(_cachedView.CtrlRect.anchoredPosition.y);
         }
 
-        public void JudgeMove( float PosY )
+        public void JudgeMove( float posY )
         {
             if (_contenTween != null)
             {
                 _contenTween.Pause();
             }
-            _contenTween =  _cachedView.ContenTransform.DOAnchorPosY(-(PosY),_TweenTime,true);
+            _contenTween =  _cachedView.ContenTransform.DOAnchorPosY(-(posY),_TweenTime,true);
         }
 
         #endregion
