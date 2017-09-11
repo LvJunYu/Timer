@@ -420,7 +420,7 @@ namespace GameA
                 {
                     _payloadMenuList[i].SetEnable(true);
                     _payloadMenuList[i].SetFgImage(ResourcesManager.Instance.GetSprite(
-                        TableManager.Instance.GetEquipment(_editData.UnitExtra.ChildId).Icon));
+                        TableManager.Instance.GetEquipment(_tableUnit.ChildState[i]).Icon));
                     _payloadMenuList[i].SetSelected(_tableUnit.ChildState[i] == _editData.UnitExtra.ChildId);
                     _payloadMenuList[i].SetBgImageAngle(da * i);
                 }
@@ -582,19 +582,19 @@ namespace GameA
             {
                 return;
             }
+            if (_tableUnit.CanEdit(EEditType.Text))
+            {
+                if (_cachedView.TextInput.text != _editData.UnitExtra.Msg)
+                {
+                    _editData.UnitExtra.Msg = _cachedView.TextInput.text;
+                }
+            }
             if (_originData != _editData)
             {
                 if (UnitDefine.IsMonster(_tableUnit.Id))
                 {
                     _editData.UnitExtra.MoveDirection = (EMoveDirection) (_editData.UnitDesc.Rotation + 1);
                     _editData.UnitDesc.Rotation = 0;
-                }
-                if (_tableUnit.CanEdit(EEditType.Text))
-                {
-                    if (_cachedView.TextInput.text != _editData.UnitExtra.Msg)
-                    {
-                        _editData.UnitExtra.Msg = _cachedView.TextInput.text;
-                    }
                 }
                 EditHelper.CompleteEditUnitData(_originData, _editData);
             }

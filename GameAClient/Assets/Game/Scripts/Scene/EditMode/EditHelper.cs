@@ -148,7 +148,7 @@ namespace GameA.Game
             }
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
-                if (table.CanEdit(type))
+                if (type != EEditType.Style && table.CanEdit(type))
                 {
                     return true;
                 }

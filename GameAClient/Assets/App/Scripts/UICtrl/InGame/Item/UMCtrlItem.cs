@@ -27,18 +27,18 @@ namespace GameA
         public void Show()
         {
             _cachedView.gameObject.SetActive(true);
-            Messenger<ushort>.AddListener (EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
-            Messenger<int>.AddListener (EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
-            Messenger<int>.AddListener (EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
-            Messenger<int>.AddListener (EMessengerType.OnEditUnitDefaultDataChange, OnEditUnitDefaultDataChange);
+            Messenger<ushort>.AddListener(EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
+            Messenger<int>.AddListener(EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
+            Messenger<int>.AddListener(EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
+            Messenger<int>.AddListener(EMessengerType.OnEditUnitDefaultDataChange, OnEditUnitDefaultDataChange);
         }
 
         public void Hide()
         {
             _cachedView.gameObject.SetActive(false);
-            Messenger<ushort>.RemoveListener (EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
-            Messenger<int>.RemoveListener (EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
-            Messenger<int>.RemoveListener (EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
+            Messenger<ushort>.RemoveListener(EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
+            Messenger<int>.RemoveListener(EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
+            Messenger<int>.RemoveListener(EMessengerType.OnUnitDeletedInEditMode, OnUnitAddedInEditMode);
             Messenger<int>.RemoveListener(EMessengerType.OnEditUnitDefaultDataChange, OnEditUnitDefaultDataChange);
         }
 
@@ -50,12 +50,11 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            
+
             _cachedView.EventTrigger.AddListener(EventTriggerType.PointerClick, OnClick);
             _cachedView.EventTrigger.AddListener(EventTriggerType.BeginDrag, OnBeginDrag);
             _cachedView.EventTrigger.AddListener(EventTriggerType.Drag, OnDrag);
             _cachedView.EventTrigger.AddListener(EventTriggerType.EndDrag, OnEndDrag);
-            
         }
 
         private void OnBeginDrag(BaseEventData eventData)
@@ -135,15 +134,15 @@ namespace GameA
 
         private void OnItem()
         {
-            if (_table.CanEdit(EEditType.Direction) || _table.CanEdit(EEditType.MoveDirection))
+            if (_selected)
             {
-                if (_selected)
-                {
-                    UnitDesc unitDesc = EditHelper.GetUnitDefaultData(_table.Id).UnitDesc;
-                    EditHelper.TryEditUnitData(unitDesc);
-                }
+                UnitDesc unitDesc = EditHelper.GetUnitDefaultData(_table.Id).UnitDesc;
+                EditHelper.TryEditUnitData(unitDesc);
             }
-            SocialGUIManager.Instance.GetUI<UICtrlItem>().SelectItem(_table);
+            else
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlItem>().SelectItem(_table);
+            }
         }
 
         internal void Set(Table_Unit tableUnit, bool selected)
@@ -168,7 +167,7 @@ namespace GameA
             }
             if (_selected)
             {
-                _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up*15;
+                _cachedView.SpriteIcon.transform.transform.localPosition = Vector3.up * 15;
                 _cachedView.ShadowTrans.localScale = Vector3.one * 0.7f;
             }
             else
@@ -199,21 +198,25 @@ namespace GameA
         }
 
 
-        private void OnSelectedItemChanged (ushort id)
+        private void OnSelectedItemChanged(ushort id)
         {
-            if (id == _table.Id) {
+            if (id == _table.Id)
+            {
                 Set(_table, true);
-            } else {
+            }
+            else
+            {
                 if (_selected)
                 {
                     Set(_table, false);
                 }
             }
         }
-        
+
         private void OnEditUnitDefaultDataChange(int id)
         {
-            if (id == _table.Id) {
+            if (id == _table.Id)
+            {
                 RefreshUnitProperty();
             }
         }
@@ -222,7 +225,8 @@ namespace GameA
         {
             if (!_selected || !EditHelper.CheckCanEdit(_table.Id))
             {
-                SocialGUIManager.Instance.GetUI<UICtrlItem>().ReturnUmCtrlUnitProperty(_cachedView.Trans, _umCtrlUnitProperty);
+                SocialGUIManager.Instance.GetUI<UICtrlItem>()
+                    .ReturnUmCtrlUnitProperty(_cachedView.Trans, _umCtrlUnitProperty);
                 return;
             }
             _umCtrlUnitProperty = SocialGUIManager.Instance.GetUI<UICtrlItem>().GetUmCtrlUnitProperty();
@@ -230,7 +234,7 @@ namespace GameA
             _umCtrlUnitProperty.UITran.localPosition = Vector3.up * 15;
             _umCtrlUnitProperty.UITran.localScale = Vector3.one * 0.47f;
             var unitDefaultData = EditHelper.GetUnitDefaultData(_table.Id);
-            _umCtrlUnitProperty.SetData(unitDefaultData.UnitDesc, unitDefaultData.UnitExtra);
+            _umCtrlUnitProperty.SetData(ref unitDefaultData.UnitDesc, ref unitDefaultData.UnitExtra);
         }
 
         private void OnUnitAddedInEditMode(int id)

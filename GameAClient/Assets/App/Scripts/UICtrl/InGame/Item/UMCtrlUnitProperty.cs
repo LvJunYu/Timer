@@ -12,7 +12,7 @@ namespace GameA
             get { return _cachedView.Trans; }
         }
         
-        public void SetData(UnitDesc unitDesc, UnitExtra unitExtra)
+        public void SetData(ref UnitDesc unitDesc, ref UnitExtra unitExtra)
         {
             var table = TableManager.Instance.GetUnit(unitDesc.Id);
             if (table == null)
@@ -82,6 +82,10 @@ namespace GameA
                     break;
                 case EEditType.MoveDirection:
                     var md = unitExtra.MoveDirection;
+                    if (UnitDefine.IsMonster(unitDesc.Id))
+                    {
+                        md = (EMoveDirection) (unitDesc.Rotation + 1);
+                    }
                     var mdFg = _cachedView.MoveDirectionFg;
                     if (md == EMoveDirection.None)
                     {
@@ -94,7 +98,7 @@ namespace GameA
                         mdFg.sprite = ResourcesManager.Instance.GetSprite(SpriteNameDefine.UnitEditMoveDirectionUp);
                         mdFg.SetNativeSize();
                         mdFg.rectTransform.localEulerAngles = 
-                            new Vector3(0, 0, -45) * EditHelper.CalcDirectionVal((byte) unitExtra.MoveDirection);
+                            new Vector3(0, 0, -45) * EditHelper.CalcDirectionVal((byte) (unitExtra.MoveDirection - 1));
                     }
                     break;
                 case EEditType.Active:
