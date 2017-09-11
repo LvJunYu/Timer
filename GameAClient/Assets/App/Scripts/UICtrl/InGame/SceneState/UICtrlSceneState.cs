@@ -517,7 +517,7 @@ namespace GameA
                 _scoreTweener.Pause();
             if (_umCtrlCollectionItemCache != null)
                 _umCtrlCollectionItemCache.ForEach(p => p.Hide());
-            UpdateLifeItemValueText(PlayMode.Instance.MainPlayer.Life);
+            UpdateLifeItemValueText(EditMode.Instance.MapStatistics.LifeCount);
             UpdateCollectText(0);
             _lastFrame = 0;
             _lastValue = 0;
