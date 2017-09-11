@@ -278,24 +278,24 @@ namespace GameA.Game
 	        _run = true;
             if (mode == EMode.EditTest)
             {
-	            if (MapDirty)
-	            {
-		            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存编辑的关卡");
-		            Save(() =>
-		            {
-			            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-			            EnterEditTest();
-		            }, result =>
-		            {
-			            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-			            SocialGUIManager.ShowPopupDialog("关卡保存失败");
-			            EnterEditTest();
-		            });
-	            }
-	            else
-	            {
-		            EnterEditTest();
-	            }
+//	            if (MapDirty)
+//	            {
+//		            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在保存编辑的关卡");
+//		            Save(() =>
+//		            {
+//			            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//			            EnterEditTest();
+//		            }, result =>
+//		            {
+//			            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+//			            SocialGUIManager.ShowPopupDialog("关卡保存失败");
+//			            EnterEditTest();
+//		            });
+//	            }
+//	            else
+//	            {
+		        EnterEditTest();
+//	            }
                 
             }
             else if (mode == EMode.Edit)

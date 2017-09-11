@@ -154,15 +154,15 @@ namespace GameA
             _gameModeWorkshopEdit = GM2DGame.Instance.GameMode as GameModeEdit;
             if (_gameModeWorkshopEdit != null)
             {
-                bool needSave = _gameModeWorkshopEdit.MapDirty;
-                _cachedView.SaveBtn.gameObject.SetActive(needSave);
-                _cachedView.SaveBtnFinished.SetActive(!needSave);
-                bool needTest = !_gameModeWorkshopEdit.CheckCanPublish();
-                _cachedView.TestBtn.gameObject.SetActive(needTest && !needSave);
-                _cachedView.TestBtnDiable.SetActive(needSave);
-                _cachedView.TestBtnFinished.SetActive(!needTest && !needSave);
-                _cachedView.PublishBtn.gameObject.SetActive(!needSave && !needTest);
-                _cachedView.PublishBtnDisable.SetActive(needSave || needTest);
+//                bool needSave = _gameModeWorkshopEdit.MapDirty;
+//                _cachedView.SaveBtn.gameObject.SetActive(needSave);
+//                _cachedView.SaveBtnFinished.SetActive(!needSave);
+                bool canPublish = _gameModeWorkshopEdit.CheckCanPublish();
+                _cachedView.TestBtn.gameObject.SetActive(!canPublish);
+//                _cachedView.TestBtnDiable.SetActive(needSave);
+                _cachedView.TestBtnFinished.SetActive(canPublish);
+                _cachedView.PublishBtn.gameObject.SetActive(canPublish);
+                _cachedView.PublishBtnDisable.SetActive(!canPublish);
             }
         }
 
