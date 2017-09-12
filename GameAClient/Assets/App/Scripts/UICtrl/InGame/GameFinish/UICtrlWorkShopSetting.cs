@@ -85,7 +85,10 @@ namespace GameA
             //默认显示设置页面
             _cachedView.BasicSettingToggle.isOn = true;
             BasicSettingToggleOnValueChanged(true);
-            GameRun.Instance.Pause();
+            if (GM2DGame.Instance != null)
+            {
+                GM2DGame.Instance.Pause();
+            }
         }
 
         protected override void OnClose()
@@ -95,7 +98,10 @@ namespace GameA
             {
                 return;
             }
-            GameRun.Instance.Continue();
+            if (GM2DGame.Instance != null)
+            {
+                GM2DGame.Instance.Continue();
+            }
             Messenger.Broadcast(EMessengerType.OnCloseGameSetting);
             base.OnClose();
         }
