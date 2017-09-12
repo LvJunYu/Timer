@@ -45,7 +45,6 @@ namespace GameA
             if (null != _cachedView.Current) {
 	            _cachedView.Current.onClick.AddListener (OnClick);
             }
-//		    SetTween();
 	    }
          
 	    public void SetData(int chapterId, int levelIdx, Table_StandaloneLevel tableLevel)
@@ -71,6 +70,7 @@ namespace GameA
 			if (!_isBonus) {
 				if (state == EState.Lock)
 				{
+				
 					_cachedView.Current.gameObject.SetActive (false);
 					_cachedView.Active.SetActive (false);
 					_cachedView.Disactive.SetActive (true);
@@ -86,6 +86,7 @@ namespace GameA
 				}
 				else if (state == EState.Unlock)
 				{
+					
 					if (playAnimation && _state != state)
 					{
 						var item = GameParticleManager.Instance.GetUIParticleItem(
@@ -108,9 +109,11 @@ namespace GameA
 						_cachedView.StarDarkAry[i].SetActiveEx(true);
 					}
 					_lastStarCount = 0;
+					SetTween(true,_moVector2);
 				}
 				else
 				{
+				
 					
 					var levelData = advData.GetAdventureUserLevelDataDetail(_chapterId, EAdventureProjectType.APT_Normal, _levelIdx);
 					int starCnt = levelData.SimpleData.GotStarCnt;
@@ -137,6 +140,7 @@ namespace GameA
 					}
 					else
 					{
+						
 						for (int i = 0; i < _cachedView.StarLightAry.Length; i++)
 						{
 							_cachedView.StarLightAry[i].SetActiveEx(i<starCnt);
@@ -158,24 +162,31 @@ namespace GameA
 					_cachedView.Disactive.SetActive (false);
 					_lastStarCount = starCnt;
 				}
-			} else {
+			}
+			else {
 				if (state == EState.Lock)
 				{
 					_cachedView.Active.SetActive (false);
 					_cachedView.Disactive.SetActive (true);
 					_cachedView.StarLightAry[0].SetActiveEx(false);
+					_cachedView.LightImage.gameObject.SetActive(false);
 				}
 				else if (state == EState.Unlock)
 				{
+					
 					_cachedView.Active.SetActive (true);
 					_cachedView.Disactive.SetActive (false);
 					_cachedView.StarLightAry[0].SetActiveEx(false);
+					_cachedView.LightImage.gameObject.SetActive(true);
+					SetTween(true,_moVector2);
+					
 				}
 				else
 				{
 					_cachedView.Active.SetActive (true);
 					_cachedView.Disactive.SetActive (false);
 					_cachedView.StarLightAry[0].SetActiveEx(true);
+					_cachedView.LightImage.gameObject.SetActive(false);
 				}
                 if (AppData.Instance.AdventureData.UserData.SectionList.Count > (_chapterId - 1)) {
 	                _cachedView.StartText.text = string.Format ("{0}",
