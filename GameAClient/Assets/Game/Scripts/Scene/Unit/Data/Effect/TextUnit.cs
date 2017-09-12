@@ -68,6 +68,7 @@ namespace GameA.Game
             base.Clear();
             _timer = 0;
             ShowHide(false);
+            _eActiveState = EActiveState.Deactive;
         }
 
         internal override void OnObjectDestroy()

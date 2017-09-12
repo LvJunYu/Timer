@@ -14,6 +14,12 @@ namespace GameA.Game
             get { return true; }
         }
 
+        protected override void Clear()
+        {
+            base.Clear();
+            _eActiveState = EActiveState.Deactive;
+        }
+
         public override void UpdateExtraData()
         {
             base.UpdateExtraData();
