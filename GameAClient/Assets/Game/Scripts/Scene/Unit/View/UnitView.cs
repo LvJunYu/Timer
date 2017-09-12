@@ -227,6 +227,10 @@ namespace GameA.Game
             {
                 return;
             }
+            if (_unit.Guid == IntVec3.zero)
+            {
+                return;
+            }
             var tableUnit = _unit.TableUnit;
             if (tableUnit.EUnitType != EUnitType.Bullet)
             {

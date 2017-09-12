@@ -77,15 +77,16 @@ namespace GameA
                 case EEditType.None:
                     break;
                 case EEditType.Direction:
+                    var fd = unitDesc.Rotation;
+                    if (UnitDefine.IsMonster(unitDesc.Id))
+                    {
+                        fd = (byte) (unitExtra.MoveDirection -1);
+                    }
                     _cachedView.ForwardDirectionFg.rectTransform.localEulerAngles =
-                        new Vector3(0, 0, -45) * EditHelper.CalcDirectionVal(unitDesc.Rotation);
+                        new Vector3(0, 0, -45) * EditHelper.CalcDirectionVal(fd);
                     break;
                 case EEditType.MoveDirection:
                     var md = unitExtra.MoveDirection;
-                    if (UnitDefine.IsMonster(unitDesc.Id))
-                    {
-                        md = (EMoveDirection) (unitDesc.Rotation + 1);
-                    }
                     var mdFg = _cachedView.MoveDirectionFg;
                     if (md == EMoveDirection.None)
                     {
@@ -98,7 +99,7 @@ namespace GameA
                         mdFg.sprite = ResourcesManager.Instance.GetSprite(SpriteNameDefine.UnitEditMoveDirectionUp);
                         mdFg.SetNativeSize();
                         mdFg.rectTransform.localEulerAngles = 
-                            new Vector3(0, 0, -45) * EditHelper.CalcDirectionVal((byte) (unitExtra.MoveDirection - 1));
+                            new Vector3(0, 0, -45) * EditHelper.CalcDirectionVal((byte) (md - 1));
                     }
                     break;
                 case EEditType.Active:
