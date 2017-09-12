@@ -9,7 +9,6 @@ namespace GameA
     public class UICtrlGameUnitPropertyContainer : UICtrlInGameBase<UIViewGameUnitPropertyContainer>
     {
         private const int ItemSize = 116;
-        private CameraManager _cameraManager;
         private Vector2 _canvasSize;
         
         private Stack<UMCtrlUnitProperty> _itemPoolStack = new Stack<UMCtrlUnitProperty>(128);
@@ -56,14 +55,13 @@ namespace GameA
         private void InitParameter()
         {
             _canvasSize = SocialGUIManager.GetUIResolution();
-            _cameraManager = CameraManager.Instance;
             UpateContainer();
         }
 
         private void UpateContainer()
         {
-            Vector2 cameraPos = _cameraManager.MainCameraPos;
-            float orthoSize = _cameraManager.RendererCamera.orthographicSize;
+            Vector2 cameraPos = CameraManager.Instance.MainCameraPos;
+            float orthoSize = CameraManager.Instance.RendererCamera.orthographicSize;
             float unitPixel = _canvasSize.y * 0.5f / orthoSize;
             _cachedView.Trans.localScale = Vector3.one * (unitPixel / ItemSize);
             _cachedView.Trans.anchoredPosition = - cameraPos * unitPixel;

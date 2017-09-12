@@ -7,7 +7,6 @@ namespace GameA
     [UIAutoSetup]
     public class UICtrlGameScreenEffect : UICtrlInGameBase<UIViewGameScreenEffect>
     {
-        private CameraManager _cameraManager;
         private float _coordinateScalefactor;
         private Vector2 _coordinateOffset;
         
@@ -58,13 +57,12 @@ namespace GameA
             var canvasSize = SocialGUIManager.GetUIResolution();
             _coordinateOffset = validMapRect.center;
             _coordinateScalefactor = canvasSize.y / ConstDefineGM2D.CameraOrthoSizeOnPlay / 2;
-            _cameraManager = CameraManager.Instance;
             UpateContainerPos();
         }
 
         private void UpateContainerPos()
         {
-            Vector2 cameraPos = _cameraManager.MainCameraPos;
+            Vector2 cameraPos = CameraManager.Instance.MainCameraPos;
             _cachedView.Trans.anchoredPosition = - (cameraPos - _coordinateOffset) * _coordinateScalefactor;
         }
     }
