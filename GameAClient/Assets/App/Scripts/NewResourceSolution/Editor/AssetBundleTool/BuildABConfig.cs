@@ -1,8 +1,8 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor;
 using SoyEngine;
+using UnityEditor;
+using UnityEngine;
 
 namespace NewResourceSolution.EditorTool
 {
@@ -30,7 +30,7 @@ namespace NewResourceSolution.EditorTool
         /// <summary>
         /// 所有打包资源种类
         /// </summary>
-        [SerializeField] private List<ResList> _allResLists = new List<ResList>();
+        private readonly List<ResList> _allResLists = new List<ResList>();
 		/// <summary>
 		/// 资源版本
 		/// </summary>
@@ -222,12 +222,14 @@ namespace NewResourceSolution.EditorTool
             }
             return false;
 		}
-		/// <summary>
-		/// Adds asset to list, return guid
-		/// </summary>
-		/// <returns>The in package asset.</returns>
-		/// <param name="path">Path.</param>
-		public string AddInPackageAsset (EResType type, string path)
+
+	    /// <summary>
+	    /// Adds asset to list, return guid
+	    /// </summary>
+	    /// <returns>The in package asset.</returns>
+	    /// <param name="type"></param>
+	    /// <param name="path">Path.</param>
+	    public string AddInPackageAsset (EResType type, string path)
 		{
 			string guid = AssetDatabase.AssetPathToGUID(path);
 			if (string.IsNullOrEmpty(guid))
@@ -300,7 +302,7 @@ namespace NewResourceSolution.EditorTool
 		#endregion
     }
 
-    [System.Serializable]
+    [Serializable]
     public class ResList
     {
         public EResType ResType;
@@ -379,11 +381,13 @@ namespace NewResourceSolution.EditorTool
                 
                 // sort
                 _pathList.Clear();
-                var itor = _pathToGuid.GetEnumerator();
-                while (itor.MoveNext())
-                {
-                    _pathList.Add(itor.Current.Key);
-                }
+	            using (var itor = _pathToGuid.GetEnumerator())
+	            {
+		            while (itor.MoveNext())
+		            {
+			            _pathList.Add(itor.Current.Key);
+		            }
+	            }
                 _pathList.Sort();
                 
                 // remove deleted asset path
