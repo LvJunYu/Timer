@@ -39,18 +39,19 @@ GraphicsSettings:
   - {fileID: 10, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 10703, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 10721, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 4800000, guid: 7c8b74b6cf03e9348aa2c545e6a2387f, type: 3}
   m_PreloadedShaders: []
   m_SpritesDefaultMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000,
     type: 0}
   m_TierSettings_Tier1:
     renderingPath: 1
-    useCascadedShadowMaps: 1
+    useCascadedShadowMaps: 0
   m_TierSettings_Tier2:
     renderingPath: 1
-    useCascadedShadowMaps: 1
+    useCascadedShadowMaps: 0
   m_TierSettings_Tier3:
     renderingPath: 1
-    useCascadedShadowMaps: 1
+    useCascadedShadowMaps: 0
   m_DefaultRenderingPath: 1
   m_DefaultMobileRenderingPath: 1
   m_TierSettings: []

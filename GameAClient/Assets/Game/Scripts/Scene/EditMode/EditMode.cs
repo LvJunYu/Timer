@@ -151,6 +151,10 @@ namespace GameA.Game
         {
             _enable = true;
             _cameraMask.Show();
+            if (!SocialGUIManager.Instance.GetUI<UICtrlGameUnitPropertyContainer>().IsOpen)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlGameUnitPropertyContainer>();
+            }
             InternalStartEdit();
             if (_lastEditorLayer != EEditorLayer.None)
             {
@@ -180,6 +184,10 @@ namespace GameA.Game
             _stateMachine.ChangeState(EditModeState.None.Instance);
             ChangeEditorLayer(EEditorLayer.None);
             _cameraMask.Hide();
+            if (SocialGUIManager.Instance.GetUI<UICtrlGameUnitPropertyContainer>().IsOpen)
+            {
+                SocialGUIManager.Instance.CloseUI<UICtrlGameUnitPropertyContainer>();
+            }
             _enable = false;
         }
 

@@ -653,11 +653,11 @@ namespace GameA.Game
                     }
                     else if (UnitDefine.IsRevive(Id))
                     {
-                        _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsetsRevive[i] - _viewZOffset);
+                        _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsetBackground - _viewZOffset);
                     }
                     else
                     {
-                        _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsets[i] - _viewZOffset);
+                        _viewExtras[i].Trans.localPosition = new Vector3(0, 0, UnitDefine.ZOffsetFront - _viewZOffset);
                     }
                 }
             }
@@ -851,6 +851,10 @@ namespace GameA.Game
             var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
             _moveDirection = unitExtra.MoveDirection;
             _eActiveState = (EActiveState)unitExtra.Active;
+            if (_eActiveState == EActiveState.None)
+            {
+                _eActiveState = EActiveState.Active;
+            }
             if (IsMain)
             {
                 _moveDirection = EMoveDirection.Right;
@@ -942,7 +946,7 @@ namespace GameA.Game
         protected float GetZ(IntVec2 pos)
         {
             var size = Mathf.Clamp(_tableUnit.Width, 0, ConstDefineGM2D.ServerTileScale);
-            return -(pos.x + pos.y + size) * UnitDefine.UnitSorttingLayerRatio + _viewZOffset;
+            return -(pos.x + pos.y * 1.5f + size) * UnitDefine.UnitSorttingLayerRatio + _viewZOffset;
         }
 
         protected void SetRelativeEffectPos(Transform trans, EDirectionType eDirectionType, float viewZOffset = 0)
@@ -1543,7 +1547,6 @@ namespace GameA.Game
         
         protected virtual void OnActiveStateChanged()
         {
-            LogHelper.Debug(_eActiveState+"~"+ToString());
             _withEffect.SetActiveStateEx(_eActiveState == EActiveState.Active);
         }
 

@@ -5,15 +5,9 @@
 ** Summary : UnitView
 ***********************************************************************/
 
-using System;
-using System.Collections;
-using System.Security.Cryptography.X509Certificates;
-using System.Xml.Serialization;
-using DG.Tweening;
+using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
-using NewResourceSolution;
-using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
@@ -29,6 +23,7 @@ namespace GameA.Game
         protected UnitBase _unit;
         protected AnimationSystem _animation;
 
+        protected UnitPropertyViewWrapper _propertyViewWrapper;
         protected StatusBar _statusBar;
 
         protected bool _isPart;
@@ -130,6 +125,11 @@ namespace GameA.Game
                 Object.Destroy(_pairTrans.gameObject);
                 _pairTrans = null;
             }
+            if (_propertyViewWrapper != null)
+            {
+                _propertyViewWrapper.Hide();
+                _propertyViewWrapper = null;
+            }
         }
 
         public virtual void OnSelect()
@@ -166,6 +166,10 @@ namespace GameA.Game
             {
                 _pairTrans.SetActiveEx(true);
             }
+            if (_propertyViewWrapper != null)
+            {
+                _propertyViewWrapper.Hide();
+            }
             if (_statusBar != null)
             {
                 Object.Destroy(_statusBar.gameObject);
@@ -184,6 +188,19 @@ namespace GameA.Game
             if (_pairTrans != null)
             {
                 _pairTrans.SetActiveEx(active);
+            }
+            if (_propertyViewWrapper != null)
+            {
+                if (active)
+                {
+                    var unitDesc = _unit.UnitDesc;
+                    var unitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
+                    _propertyViewWrapper.Show(ref unitDesc, ref unitExtra);
+                }
+                else
+                {
+                    _propertyViewWrapper.Hide();
+                }
             }
         }
 
@@ -210,24 +227,25 @@ namespace GameA.Game
             {
                 return;
             }
+            if (_unit.Guid == IntVec3.zero)
+            {
+                return;
+            }
             var tableUnit = _unit.TableUnit;
             if (tableUnit.EUnitType != EUnitType.Bullet)
             {
                 if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
                 {
-//                    if (_unit.MoveDirection != EMoveDirection.None)
-//                    {
-//                        GenerateWing();
-//                        CreateDirTrans("M1Move");
-//                    }
-//                    else if (UnitDefine.IsEditClick(tableUnit.Id))
-//                    {
-//                        CreateDirTrans("M1Click");
-//                    }
-//                    else if (tableUnit.CanEdit(EEditType.Direction) || tableUnit.Id == UnitDefine.RollerId)
-//                    {
-//                        CreateDirTrans("M1Move");
-//                    }
+                    if (EditHelper.CheckCanEdit(tableUnit.Id))
+                    {
+                        if (_propertyViewWrapper == null)
+                        {
+                            _propertyViewWrapper = new UnitPropertyViewWrapper();
+                        }
+                        var unitDesc = _unit.UnitDesc;
+                        var unitExtra = DataScene2D.Instance.GetUnitExtra(unitDesc.Guid);
+                        _propertyViewWrapper.Show(ref unitDesc, ref unitExtra);
+                    }
                 }
             }
             if (tableUnit.EPairType != EPairType.None)
@@ -289,11 +307,6 @@ namespace GameA.Game
                     break;
             }
             return res;
-        }
-
-        private int GetRotation(byte rotation)
-        {
-            return -90 * rotation;
         }
         
         private void InitStatusBar()

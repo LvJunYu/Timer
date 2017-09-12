@@ -386,7 +386,6 @@ namespace NewResourceSolution
             {
                 ResourcesManager.Instance.Init ();
             }
-			ResourcesManager.Instance.UnloadScenary(0);
             Messenger.Broadcast(EMessengerType.OnResourcesCheckFinish);
             SocialApp.Instance.LoginAfterUpdateResComplete ();
         }

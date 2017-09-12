@@ -129,11 +129,13 @@ namespace GameA.Game
             if (origin.UnitDesc.Guid == DefaultUnitGuid)
             {
                 UpdateUnitDefaultData(editData);
+                Messenger<int>.Broadcast(EMessengerType.OnEditUnitDefaultDataChange, origin.UnitDesc.Id);
             }
             else
             {
                 EditModeState.Global.Instance.ModifyUnitData(origin.UnitDesc, origin.UnitExtra, editData.UnitDesc,
                     editData.UnitExtra);
+                Messenger<IntVec3>.Broadcast(EMessengerType.OnEditUnitDataChange, origin.UnitDesc.Guid);
             }
         }
 
@@ -146,7 +148,7 @@ namespace GameA.Game
             }
             for (var type = EEditType.None + 1; type < EEditType.Max; type++)
             {
-                if (table.CanEdit(type))
+                if (type != EEditType.Style && table.CanEdit(type))
                 {
                     return true;
                 }
@@ -370,6 +372,18 @@ namespace GameA.Game
         {
             UnitBase unit;
             return !ColliderScene2D.Instance.TryGetUnit(pos, out unit);
+        }
+
+        public static int CalcDirectionVal(byte dir)
+        {
+            if (dir < 4)
+            {
+                return dir * 2;
+            }
+            else
+            {
+                return (dir - 4) * 2 + 1;
+            }
         }
         
         public static GameObject CreateDragRoot(Vector3 pos, int unitId, EDirectionType rotate, out UnitBase unitBase)

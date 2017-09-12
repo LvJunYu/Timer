@@ -77,7 +77,7 @@ namespace GameA.Game
             }
             if (_effect != null)
             {
-                _effect.SetActive(_curActiveState == EActiveState.Active);
+                _effect.SetActive(_curActiveState == EActiveState.Deactive);
             }
             SetAllCross(_curActiveState == EActiveState.Deactive);
         }

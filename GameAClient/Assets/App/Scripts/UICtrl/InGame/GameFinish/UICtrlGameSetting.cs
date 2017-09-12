@@ -63,7 +63,6 @@ namespace GameA
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHeadAvatar,
             LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,
             _cachedView.DefaultUserHeadTexture);
-            GameRun.Instance.Pause ();
 		}
 
 		protected override void OnClose()
@@ -73,7 +72,10 @@ namespace GameA
 			{
 				return;
 			}
-            GameRun.Instance.Continue();
+			if (GM2DGame.Instance != null)
+			{
+				GM2DGame.Instance.Continue();
+			}
 			Messenger.Broadcast(EMessengerType.OnCloseGameSetting);
 			base.OnClose();
 		}

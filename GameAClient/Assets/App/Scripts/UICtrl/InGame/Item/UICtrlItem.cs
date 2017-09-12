@@ -23,6 +23,7 @@ namespace GameA
         private readonly List<UMCtrlItem> _umItems = new List<UMCtrlItem>();
 
         private Dictionary<EUIType, Button> _cachedButtonDic;
+	    private UMCtrlUnitProperty _umCtrlUnitProperty;
 
 
         protected override void InitGroupId()
@@ -71,8 +72,32 @@ namespace GameA
 		    EditMode.Instance.ChangeSelectUnit(PairUnitManager.Instance.GetCurrentId(tableUnit.Id));
 	    }
 
-	    #region ui event
+	    public UMCtrlUnitProperty GetUmCtrlUnitProperty()
+	    {
+		    if (_umCtrlUnitProperty == null)
+		    {
+			    _umCtrlUnitProperty = new UMCtrlUnitProperty();
+			    _umCtrlUnitProperty.Init(_cachedView.Trans, Vector3.up * 10000);
+		    }
+		    return _umCtrlUnitProperty;
+	    }
 
+	    public void ReturnUmCtrlUnitProperty(RectTransform rectTransform, UMCtrlUnitProperty umCtrlUnitProperty)
+	    {
+		    if (umCtrlUnitProperty == null)
+		    {
+			    return;
+		    }
+		    if (umCtrlUnitProperty.UITran.parent != rectTransform)
+		    {
+			    return;
+		    }
+		    umCtrlUnitProperty.UITran.SetParent(_cachedView.transform, false);
+		    umCtrlUnitProperty.UITran.localPosition = Vector3.up * 10000;
+	    }
+
+	    #region ui event
+	    
 	    private void OnSelectTab(int inx)
 	    {
 		    RefreshView((EUIType) (inx + 1));

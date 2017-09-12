@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using SoyEngine;
-using UnityEditor;
-using UnityEngine;
 
 namespace GameA.Game
 {
@@ -43,6 +41,7 @@ namespace GameA.Game
             if (_withEffect != null)
             {
                 SetRelativeEffectPos(_withEffect.Trans, (EDirectionType)Rotation);
+                _withEffect.SetActiveStateEx(_switchTrigger.Trigger == EActiveState.Active);
             }
             return true;
         }
@@ -62,11 +61,11 @@ namespace GameA.Game
 
         protected override void OnActiveStateChanged()
         {
+            //风扇自己控制
         }
 
         public override void OnTriggerChanged(EActiveState value)
         {
-            base.OnTriggerChanged(value);
             _withEffect.SetActiveStateEx(value == EActiveState.Active);
             LogHelper.Debug(value+" Fan ");
         }

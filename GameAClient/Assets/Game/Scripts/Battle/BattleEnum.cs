@@ -116,5 +116,6 @@ namespace GameA.Game
         Bang,
         Chase,
         Attack,
+        Brake//刹车
     }
 }

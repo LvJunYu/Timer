@@ -16,8 +16,7 @@ namespace GameA.Game
             set
             {
                 _switchUnit = value;
-                _trigger = _switchUnit.EActiveState;
-                SetTrigger(_trigger);
+                SetTrigger(_switchUnit.EActiveState);
             }
         }
 
@@ -55,7 +54,7 @@ namespace GameA.Game
 
         protected virtual void OnTrigger(UnitBase other)
         {
-            if (_units.Contains(other) || other == _switchUnit)
+            if (!UnitDefine.CanTrigger(other.Id) || _units.Contains(other))
             {
                 return;
             }
@@ -105,7 +104,7 @@ namespace GameA.Game
                 _switchUnit.OnTriggerChanged(_trigger);
             }
             ChangView();
-            LogHelper.Debug("OnTriggerChanged {0}", _trigger);
+//            LogHelper.Debug("OnTriggerChanged {0}", _trigger);
         }
 
         protected virtual void ChangView()

@@ -287,7 +287,7 @@ namespace GameA
             }
             if (string.IsNullOrEmpty(name))
             {
-                name = "我的大作";
+                name = DateTimeUtil.GetServerTimeNow().ToString("yyyyMMddHHmmss");
             }
             Name = name;
             Summary = summary;

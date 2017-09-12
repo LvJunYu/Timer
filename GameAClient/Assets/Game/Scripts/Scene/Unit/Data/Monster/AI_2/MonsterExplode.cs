@@ -7,7 +7,7 @@ namespace GameA.Game
     [Unit(Id = 2003, Type = typeof(MonsterExplode))]
     public class MonsterExplode : MonsterAI_2
     {
-        private float _viewDistance = 10*ConstDefineGM2D.ServerTileScale;
+        private float _viewDistance = 10 * ConstDefineGM2D.ServerTileScale;
 
         protected override void Clear()
         {
@@ -57,7 +57,9 @@ namespace GameA.Game
         {
             if (GameRun.Instance.LogicFrameCnt % 5 == 0)
             {
-                var units = ColliderScene2D.RaycastAllReturnUnits(CenterPos, _moveDirection == EMoveDirection.Right ? Vector2.right : Vector2.left, _viewDistance,EnvManager.MonsterViewLayer);
+                var units = ColliderScene2D.RaycastAllReturnUnits(CenterPos,
+                    _moveDirection == EMoveDirection.Right ? Vector2.right : Vector2.left, _viewDistance,
+                    EnvManager.MonsterViewLayer);
                 bool isMain = false;
                 for (int i = 0; i < units.Count; i++)
                 {
@@ -97,7 +99,8 @@ namespace GameA.Game
                 }
                 else
                 {
-                    _animation.PlayLoop(_eMonsterState == EMonsterState.Chase ? "Attack" : "Run", Mathf.Clamp(Math.Abs(SpeedX), 30, 200) * deltaTime);
+                    _animation.PlayLoop(_eMonsterState == EMonsterState.Chase ? "Attack" : "Run",
+                        Mathf.Clamp(Math.Abs(SpeedX), 30, 200) * deltaTime);
                 }
             }
         }
