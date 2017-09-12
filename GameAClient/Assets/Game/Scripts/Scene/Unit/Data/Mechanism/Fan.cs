@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using SoyEngine;
-using UnityEditor;
-using UnityEngine;
 
 namespace GameA.Game
 {

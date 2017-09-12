@@ -6,18 +6,6 @@ namespace NewResourceSolution
 {
 	public static class ResPathUtility
 	{
-		public static string GetResPath (EResType resType, string name)
-		{
-			if (EResType.Txt == resType)
-			{
-			}
-			else if (EResType.UIPrefab == resType)
-			{
-				return string.Format("{0}/{1}/{2}{3}", Application.dataPath, ResPath.Prefabs, ResPath.UIPrefabs, name);
-			}
-			return null;
-		}	
-
 		/// <summary>
 		/// 得到特定资源的原始文件所在文件夹
 		/// </summary>
