@@ -168,7 +168,7 @@ namespace GameA.Game
         {
             base.OnPlay();
             LogHelper.Debug("{0}, OnPlay", GetType().Name);
-            SetWeapon(201);
+//            SetWeapon(201);
             _gun.Play();
             AddStates(61);
             _revivePos = _curPos;
@@ -481,7 +481,7 @@ namespace GameA.Game
                             _animation.PlayOnce(JumpAnimName(_jumpLevel));
                         }
                         else if (_jumpState == EJumpState.Fall &&
-                                 (!_animation.IsPlaying("Jump") && !_animation.IsPlaying("Jump2") &&
+                                 (!_animation.IsPlaying("JumpStart") && !_animation.IsPlaying("Jump2") &&
                                   !_animation.IsPlaying("Fly") && !_animation.IsPlaying("StunStart")))
                         {
                             _animation.PlayLoop(FallAnimName());
@@ -639,7 +639,7 @@ namespace GameA.Game
             }
             if (jumpLevel == 0)
             {
-                return "Jump";
+                return "JumpStart";
             }
             if (jumpLevel == 1)
             {
@@ -649,7 +649,7 @@ namespace GameA.Game
             {
                 return "Fly";
             }
-            return "Jump";
+            return "JumpStart";
         }
 
         protected virtual string IdleAnimName()
@@ -687,6 +687,10 @@ namespace GameA.Game
             if (_jumpLevel == 2)
             {
                 return "Fly";
+            }
+            if (SpeedY > 0)
+            {
+                return "Jump";
             }
             return "Fall";
         }
