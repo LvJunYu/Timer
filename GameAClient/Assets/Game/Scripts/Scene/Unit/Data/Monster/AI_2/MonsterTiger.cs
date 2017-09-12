@@ -1,4 +1,5 @@
-﻿using SoyEngine;
+﻿using System.Security.Cryptography.X509Certificates;
+using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -6,8 +7,10 @@ namespace GameA.Game
     [Unit(Id = 2005, Type = typeof(MonsterTiger))]
     public class MonsterTiger : MonsterAI_2
     {
-        private float _viewDistance = 10 * ConstDefineGM2D.ServerTileScale;
         private const int _brakeDec = 2; //刹车减速度
+        private float _viewDistance = 10 * ConstDefineGM2D.ServerTileScale;
+        private bool _hasTurnBack;
+        private IntVec2 AttackRange = new IntVec2(1, 1) * ConstDefineGM2D.ServerTileScale;
 
         protected override bool OnInit()
         {
@@ -21,11 +24,11 @@ namespace GameA.Game
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
-            if (unit.IsMain)
-            {
-                ChangeState(EMonsterState.Attack);
-                return;
-            }
+//            if (unit.IsMain)
+//            {
+//                ChangeState(EMonsterState.Attack);
+//                return;
+//            }
             if (eDirectionType == EDirectionType.Left || eDirectionType == EDirectionType.Right)
             {
                 _timerDetectStay = 0;
@@ -49,19 +52,60 @@ namespace GameA.Game
             base.Clear();
         }
 
-
         public override void StartSkill()
         {
             if (_animation != null && !_animation.IsPlaying("Attack", 1))
             {
                 _animation.PlayOnce("Attack", 1, 1);
+                SpeedX = 0;
+                _timerAttack = 70;
             }
         }
 
         protected override void UpdateMonsterAI()
         {
-            if (_eMonsterState != EMonsterState.Attack)
+            IntVec2 rel = CenterDownPos - PlayMode.Instance.MainPlayer.CenterDownPos;
+            if (ConditionAttack(rel))
+            {
+                if (_eMonsterState != EMonsterState.Attack)
+                {
+                    SpeedX = 0;
+                    //面向玩家
+                    if (rel.x > 0)
+                    {
+                        _nextMoveDirection = EMoveDirection.Left;
+                    }
+                    else
+                    {
+                        _nextMoveDirection = EMoveDirection.Right;
+                    }
+                    ChangeWay(_nextMoveDirection);
+                    if (_trans != null)
+                    {
+                        Vector3 euler = _trans.eulerAngles;
+                        _trans.eulerAngles = _nextMoveDirection != EMoveDirection.Right
+                            ? new Vector3(euler.x, 180, euler.z)
+                            : new Vector3(euler.x, 0, euler.z);
+                    }
+                    ChangeState(EMonsterState.Attack);
+                }
+            }
+            else
+            {
+                //不在攻击范围内，并且已经结束攻击动作
+                if (_eMonsterState == EMonsterState.Attack && _timerAttack <= 0)
+                {
+                    ChangeState(EMonsterState.Run);
+                }
+            }
+            if (_eMonsterState == EMonsterState.Attack)
+            {
+                SetInput(EInputType.Skill1, true);
+            }
+            else
+            {
                 SetInput(EInputType.Skill1, false);
+            }
             if (_eMonsterState == EMonsterState.Brake)
             {
                 if (Mathf.Abs(SpeedX) == 0)
@@ -95,38 +139,38 @@ namespace GameA.Game
                 }
                 if ((units.Count == 0 || !isMain) && _eMonsterState == EMonsterState.Chase && _timerDetectStay == 0)
                 {
-                    ChangeState(EMonsterState.Brake);
-//                    ChangeState(EMonsterState.Run);
+                    if (_timerBrake > 0)
+                    {
+                        _timerBrake--;
+                    }
+                    else
+                    {
+                        ChangeState(EMonsterState.Brake);
+                    }
+                }
+                else
+                {
+                    _timerBrake = 3;
                 }
             }
-
             base.UpdateMonsterAI();
         }
 
-        private void OnAttack()
+        protected virtual bool ConditionAttack(IntVec2 rel)
         {
-            SpeedX = 0;
-            SetInput(EInputType.Skill1, true);
-            //攻击完成后切换为跑
-            _animation.PlayOnce("Attack", 1, 1).Complete +=
-                (state, index, count) => { ChangeState(EMonsterState.Run); };
-        }
-
-        private void OnBrake()
-        {
-            //刹车完成后转身
-            _animation.PlayOnce("Brake", 2.5f).Complete +=
-                (state, index, count) =>
-                {
-                    if (_animation != null)
-                    {
-                        _animation.Reset();
-                    }
-                    if (_moveDirection == EMoveDirection.Left)
-                        ChangeWay(EMoveDirection.Right);
-                    else if (_moveDirection == EMoveDirection.Right)
-                        ChangeWay(EMoveDirection.Left);
-                };
+            if (!CanAttack || !PlayMode.Instance.MainPlayer.IsAlive)
+            {
+                return false;
+            }
+            if (Mathf.Abs(rel.x) > AttackRange.x || Mathf.Abs(rel.y) > AttackRange.y)
+            {
+                return false;
+            }
+            if (_eMonsterState == EMonsterState.Brake)
+            {
+                return false;
+            }
+            return true;
         }
 
         protected override void CaculateSpeedX(bool air)
@@ -141,11 +185,17 @@ namespace GameA.Game
                 }
             }
             else if (_eMonsterState != EMonsterState.Attack)
+            {
                 base.CaculateSpeedX(air);
+            }
         }
 
         protected override void ChangeState(EMonsterState eMonsterState)
         {
+            if (_eMonsterState == eMonsterState)
+            {
+                return;
+            }
             base.ChangeState(eMonsterState);
             if (_lastEMonsterState == EMonsterState.Brake && _animation != null)
             {
@@ -153,11 +203,20 @@ namespace GameA.Game
             }
             if (eMonsterState == EMonsterState.Brake)
             {
-                OnBrake();
-            }
-            else if (eMonsterState == EMonsterState.Attack)
-            {
-                OnAttack();
+                //玩家在左边
+                if (CenterDownPos.x >= PlayMode.Instance.MainPlayer.CenterDownPos.x)
+                {
+                    ChangeWay(EMoveDirection.Left);
+                }
+                else
+                {
+                    ChangeWay(EMoveDirection.Right);
+                }
+//                if (_moveDirection == EMoveDirection.Left)
+//                    ChangeWay(EMoveDirection.Right);
+//                else if (_moveDirection == EMoveDirection.Right)
+//                    ChangeWay(EMoveDirection.Left);
+                _animation.PlayOnce("Brake3");
             }
         }
 
@@ -171,7 +230,7 @@ namespace GameA.Game
                 }
                 else
                 {
-                    if (CanMove && !_animation.IsPlaying("Brake") && _eMonsterState != EMonsterState.Attack)
+                    if (CanMove && !_animation.IsPlaying("Brake3") && _eMonsterState != EMonsterState.Attack)
                     {
                         if (_eMonsterState == EMonsterState.Brake)
                             _animation.PlayLoop("Run", 100 * deltaTime);

@@ -10,6 +10,8 @@ namespace GameA.Game
         protected int _timerBang;
         protected int _timerDialog;
         protected int _timerDetectStay;
+        protected int _timerAttack;
+        protected int _timerBrake;
 
         protected override void Clear()
         {
@@ -85,7 +87,8 @@ namespace GameA.Game
             }
             _lastEMonsterState = _eMonsterState;
             _eMonsterState = eMonsterState;
-            var pos = GM2DTools.TileToWorld(new IntVec2(_moveDirection == EMoveDirection.Right ? _colliderGrid.XMin : _colliderGrid.XMax,
+            var pos = GM2DTools.TileToWorld(new IntVec2(
+                _moveDirection == EMoveDirection.Right ? _colliderGrid.XMin : _colliderGrid.XMax,
                 _colliderGrid.YMax));
             switch (_eMonsterState)
             {
@@ -116,6 +119,10 @@ namespace GameA.Game
             if (_timerDetectStay > 0)
             {
                 _timerDetectStay--;
+            }
+            if (_timerAttack > 0)
+            {
+                _timerAttack--;
             }
             switch (_eMonsterState)
             {
