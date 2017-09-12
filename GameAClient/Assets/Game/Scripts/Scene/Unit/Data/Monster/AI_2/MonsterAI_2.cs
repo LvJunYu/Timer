@@ -4,6 +4,7 @@ namespace GameA.Game
 {
     public class MonsterAI_2 : MonsterBase
     {
+        protected EMonsterState _lastEMonsterState;
         protected EMonsterState _eMonsterState;
         protected EMoveDirection _nextMoveDirection;
         protected int _timerBang;
@@ -82,6 +83,7 @@ namespace GameA.Game
             {
                 return;
             }
+            _lastEMonsterState = _eMonsterState;
             _eMonsterState = eMonsterState;
             var pos = GM2DTools.TileToWorld(new IntVec2(_moveDirection == EMoveDirection.Right ? _colliderGrid.XMin : _colliderGrid.XMax,
                 _colliderGrid.YMax));

@@ -7,7 +7,8 @@ namespace GameA.Game
     public class MonsterTiger : MonsterAI_2
     {
         private float _viewDistance = 10 * ConstDefineGM2D.ServerTileScale;
-        private const int _brakeDec = 2;//刹车减速度
+        private const int _brakeDec = 2; //刹车减速度
+
         protected override bool OnInit()
         {
             if (!base.OnInit())
@@ -16,6 +17,20 @@ namespace GameA.Game
             }
             _maxSpeedX = 50;
             return true;
+        }
+
+        protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
+        {
+            if (unit.IsMain)
+            {
+                ChangeState(EMonsterState.Attack);
+                return;
+            }
+            if (eDirectionType == EDirectionType.Left || eDirectionType == EDirectionType.Right)
+            {
+                _timerDetectStay = 0;
+            }
+            base.Hit(unit, eDirectionType);
         }
 
         protected override void CalculateSpeedRatio()
@@ -30,9 +45,10 @@ namespace GameA.Game
         protected override void Clear()
         {
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this);
-            _skillCtrl.SetSkill(103);
+            _skillCtrl.SetSkill(104);
             base.Clear();
         }
+
 
         public override void StartSkill()
         {
@@ -44,8 +60,17 @@ namespace GameA.Game
 
         protected override void UpdateMonsterAI()
         {
+            if (_eMonsterState != EMonsterState.Attack)
+                SetInput(EInputType.Skill1, false);
+            if (_eMonsterState == EMonsterState.Brake)
+            {
+                if (Mathf.Abs(SpeedX) == 0)
+                {
+                    ChangeState(EMonsterState.Run);
+                }
+            }
             //每5帧检测一次
-            if (GameRun.Instance.LogicFrameCnt % 5 == 0)
+            else if (GameRun.Instance.LogicFrameCnt % 5 == 0)
             {
                 var units = ColliderScene2D.RaycastAllReturnUnits(CenterPos,
                     _moveDirection == EMoveDirection.Right ? Vector2.right : Vector2.left, _viewDistance,
@@ -62,7 +87,7 @@ namespace GameA.Game
                             if (_eMonsterState != EMonsterState.Chase)
                             {
                                 ChangeState(EMonsterState.Bang);
-                                _timerDetectStay = 20 + _timerBang;
+                                _timerDetectStay = 30 + _timerBang;
                             }
                         }
                         break;
@@ -70,19 +95,38 @@ namespace GameA.Game
                 }
                 if ((units.Count == 0 || !isMain) && _eMonsterState == EMonsterState.Chase && _timerDetectStay == 0)
                 {
-                    //todo判断目标在相反方向才刹车
                     ChangeState(EMonsterState.Brake);
 //                    ChangeState(EMonsterState.Run);
                 }
             }
-            if (_eMonsterState == EMonsterState.Brake)
-            {
-                if (Mathf.Abs(SpeedX) == 0)
-                {
-                    ChangeState(EMonsterState.Run);
-                }
-            }
+
             base.UpdateMonsterAI();
+        }
+
+        private void OnAttack()
+        {
+            SpeedX = 0;
+            SetInput(EInputType.Skill1, true);
+            //攻击完成后切换为跑
+            _animation.PlayOnce("Attack", 1, 1).Complete +=
+                (state, index, count) => { ChangeState(EMonsterState.Run); };
+        }
+
+        private void OnBrake()
+        {
+            //刹车完成后转身
+            _animation.PlayOnce("Brake", 2.5f).Complete +=
+                (state, index, count) =>
+                {
+                    if (_animation != null)
+                    {
+                        _animation.Reset();
+                    }
+                    if (_moveDirection == EMoveDirection.Left)
+                        ChangeWay(EMoveDirection.Right);
+                    else if (_moveDirection == EMoveDirection.Right)
+                        ChangeWay(EMoveDirection.Left);
+                };
         }
 
         protected override void CaculateSpeedX(bool air)
@@ -96,21 +140,24 @@ namespace GameA.Game
                     SpeedX = Util.ConstantLerp(SpeedX, 0, _brakeDec);
                 }
             }
-            else
+            else if (_eMonsterState != EMonsterState.Attack)
                 base.CaculateSpeedX(air);
         }
 
         protected override void ChangeState(EMonsterState eMonsterState)
         {
             base.ChangeState(eMonsterState);
+            if (_lastEMonsterState == EMonsterState.Brake && _animation != null)
+            {
+                _animation.Reset();
+            }
             if (eMonsterState == EMonsterState.Brake)
             {
-                //变向
-                if (_moveDirection == EMoveDirection.Left)
-                    ChangeWay(EMoveDirection.Right);
-                else if (_moveDirection == EMoveDirection.Right)
-                    ChangeWay(EMoveDirection.Left);
-                _animation.PlayOnce("Brake2",1,1);
+                OnBrake();
+            }
+            else if (eMonsterState == EMonsterState.Attack)
+            {
+                OnAttack();
             }
         }
 
@@ -120,15 +167,17 @@ namespace GameA.Game
             {
                 if (_speed.x == 0)
                 {
-                    if (CanMove)
-                    {
-                        _animation.PlayLoop("Idle");
-                    }
+                    _animation.PlayLoop("Idle");
                 }
                 else
                 {
-                    if (_eMonsterState != EMonsterState.Brake)
-                        _animation.PlayLoop("Run", Mathf.Clamp(Mathf.Abs(SpeedX), 30, 200) * deltaTime);
+                    if (CanMove && !_animation.IsPlaying("Brake") && _eMonsterState != EMonsterState.Attack)
+                    {
+                        if (_eMonsterState == EMonsterState.Brake)
+                            _animation.PlayLoop("Run", 100 * deltaTime);
+                        else
+                            _animation.PlayLoop("Run", Mathf.Clamp(Mathf.Abs(SpeedX), 30, 200) * deltaTime);
+                    }
                 }
             }
         }
