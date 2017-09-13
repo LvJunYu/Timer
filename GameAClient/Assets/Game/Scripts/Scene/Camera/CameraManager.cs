@@ -98,7 +98,10 @@ namespace GameA.Game
         public void OnMapReady()
         {
             _cameraCtrlPlay.OnMapReady();
-            _cameraCtrlEdit.OnMapReady();
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+            {
+                _cameraCtrlEdit.OnMapReady();
+            }
         }
         
         /// <summary>
