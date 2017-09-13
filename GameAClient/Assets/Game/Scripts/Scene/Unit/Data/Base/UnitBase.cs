@@ -712,10 +712,6 @@ namespace GameA.Game
             {
                 _view.Reset();
             }
-            if (_eActiveState != EActiveState.None)
-            {
-                OnActiveStateChanged();
-            }
             _curPos = new IntVec2(_guid.x, _guid.y);
             _colliderPos = GetColliderPos(_curPos);
             _colliderGrid = _tableUnit.GetColliderGrid(ref _unitDesc);
@@ -734,6 +730,10 @@ namespace GameA.Game
             if (_animation != null)
             {
                 _animation.Reset();
+            }
+            if (_eActiveState != EActiveState.None)
+            {
+                OnActiveStateChanged();
             }
         }
 
