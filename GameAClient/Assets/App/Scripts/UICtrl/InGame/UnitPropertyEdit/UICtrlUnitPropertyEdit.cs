@@ -386,7 +386,8 @@ namespace GameA
             {
                 _activeMenuList[i].SetSelected(i == _editData.UnitExtra.Active - 1);
             }
-            _menuButtonArray[(int) EEditType.Active].SetFgImage(_activeMenuList[_editData.UnitExtra.Active - 1].View.FgImage.sprite);
+            _menuButtonArray[(int) EEditType.Active]
+                .SetFgImage(_activeMenuList[Mathf.Clamp(_editData.UnitExtra.Active - 1, 0, 1)].View.FgImage.sprite);
         }
         private void RefreshForwardMenu()
         {
