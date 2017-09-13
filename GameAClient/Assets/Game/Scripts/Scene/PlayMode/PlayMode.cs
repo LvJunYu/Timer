@@ -226,24 +226,24 @@ namespace GameA.Game
             _nextActions.Add(action);
         }
         
-        public UnitBase CreateUnitView(UnitDesc unitDesc)
-        {
-            UnitBase unit = UnitManager.Instance.GetUnit(unitDesc.Id);
-            if (unit != null)
-            {
-                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-                if (tableUnit == null)
-                {
-                    LogHelper.Error("CreateUnitView Failed,{0}", unitDesc);
-                    return null;
-                }
-                if (!unit.Init(tableUnit, unitDesc))
-                {
-                    return null;
-                }
-            }
-            return unit;
-        }
+//        public UnitBase CreateUnitView(UnitDesc unitDesc)
+//        {
+//            UnitBase unit = UnitManager.Instance.GetUnit(unitDesc.Id);
+//            if (unit != null)
+//            {
+//                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+//                if (tableUnit == null)
+//                {
+//                    LogHelper.Error("CreateUnitView Failed,{0}", unitDesc);
+//                    return null;
+//                }
+//                if (!unit.Init(tableUnit, unitDesc))
+//                {
+//                    return null;
+//                }
+//            }
+//            return unit;
+//        }
 
         public UnitBase CreateRuntimeUnit(int id, IntVec2 pos, byte rotation = 0)
         {

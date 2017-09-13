@@ -118,7 +118,7 @@ namespace GameA.Game
         
         protected float GetZ()
         {
-            return -(_curPos.x + _curPos.y * 1.5f) * UnitDefine.UnitSorttingLayerRatio;
+            return -(_curPos.x + _curPos.y) * UnitDefine.UnitSorttingLayerRatio;
         }
 
         public void UpdateLogic()

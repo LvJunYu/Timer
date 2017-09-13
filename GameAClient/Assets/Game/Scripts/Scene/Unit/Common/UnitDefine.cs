@@ -242,9 +242,9 @@ namespace GameA.Game
             return IsPaintBullet(id) || id == 10006;
         }
 
-        public static bool CanTrigger(int id)
+        public static bool CanTrigger(UnitBase unit)
         {
-            return IsMain(id) || IsMonster(id) || id == BoxId;
+            return !IsBullet(unit.Id);
         }
     }
 }
