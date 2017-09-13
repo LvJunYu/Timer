@@ -9,6 +9,7 @@ namespace GameA
         protected override void InitEventListener ()
         {
             base.InitEventListener ();
+            RegisterEvent (EMessengerType.OnGameRestart, OnGameRestart);
             RegisterEvent (EMessengerType.OnChangeToAppMode, OnChangeToAppMode);
         }
 
@@ -35,8 +36,21 @@ namespace GameA
         private void OnChangeToAppMode ()
         {
             ExitGame();
-            SocialGUIManager.Instance.CloseUI (GetType ());
             _reEnterGame = true;
+            if (_isOpen)
+            {
+                SocialGUIManager.Instance.CloseUI (GetType ());
+            }
+        }
+        
+        private void OnGameRestart ()
+        {
+            ExitGame();
+            _reEnterGame = true;
+            if (_isOpen)
+            {
+                SocialGUIManager.Instance.CloseUI(GetType ());
+            }
         }
     }
 }
