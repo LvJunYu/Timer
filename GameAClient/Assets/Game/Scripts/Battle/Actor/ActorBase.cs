@@ -40,7 +40,6 @@ namespace GameA.Game
         protected SkillCtrl _skillCtrl;
 
         private int _damageFrame;
-        private Shader _damageShader;
 
         public override EDieType EDieType
         {
@@ -77,8 +76,10 @@ namespace GameA.Game
                 _skillCtrl.Clear();
             }
             _damageFrame = 0;
-            if (_damageShader != null)
-                _view.SetMatShader(_damageShader, "Value", 0);
+            if (_view != null)
+            {
+                _view.SetDamageShaderValue("Value", 0);
+            }
             base.Clear();
         }
 
@@ -642,9 +643,7 @@ namespace GameA.Game
                 _damageFrame--;
                 if (_view != null)
                 {
-                    if (null == _damageShader)
-                        _damageShader = Shader.Find("Spine/SkeletonWhite");
-                    _view.SetMatShader(_damageShader, "Value", _damageFrame / (float) BattleDefine.DamageDurationFrame);
+                    _view.SetDamageShaderValue("Value", _damageFrame / (float) BattleDefine.DamageDurationFrame);
 //                    _view.SetRendererColor(_damageFrame == 0
 //                        ? Color.white
 //                        : Color.Lerp(Color.red, Color.white, (float) _damageFrame / BattleDefine.DamageDurationFrame));

@@ -19,6 +19,7 @@ namespace GameA.Game
     {
         protected SkeletonAnimation _skeletonAnimation;
         protected Renderer _renderer;
+        protected Shader _damageShader;
         private bool _hasSetShader;
 
         public SpineUnit()
@@ -63,23 +64,26 @@ namespace GameA.Game
             }
         }
 
-        public override void SetMatShader(Shader shader, string name = null, float value = 1)
+        public override void SetDamageShaderValue(string name, float value)
         {
             if (_renderer == null) return;
             var sharedMaterials = _renderer.sharedMaterials;
             if (!_hasSetShader)
             {
+                if (_damageShader == null){_damageShader = Shader.Find("Spine/SkeletonWhite");}
                 for (int i = 0; i < sharedMaterials.Length; i++)
                 {
-                    if (sharedMaterials[i].shader.name == "Spine/Skeleton")
-                        sharedMaterials[i].shader = shader;
+                    if (sharedMaterials[i] != null && sharedMaterials[i].shader.name == "Spine/Skeleton")
+                        sharedMaterials[i].shader = _damageShader;
                 }
                 _hasSetShader = true;
             }
             for (int i = 0; i < sharedMaterials.Length; i++)
             {
-                if (name != null)
+                if (name != null && sharedMaterials[i] != null)
+                {
                     sharedMaterials[i].SetFloat(name, value);
+                }
             }
         }
 
@@ -91,6 +95,9 @@ namespace GameA.Game
 
         public override void OnFree()
         {
+            //重置ShaderValue
+            SetDamageShaderValue("Value", 0);
+			
             if (_animation != null)
             {
                 _animation.OnFree();

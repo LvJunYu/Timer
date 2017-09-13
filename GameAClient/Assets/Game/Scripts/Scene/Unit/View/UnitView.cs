@@ -101,7 +101,7 @@ namespace GameA.Game
             
         }
 
-        public virtual void SetMatShader(Shader shader,string name = null,float value = 1)
+        public virtual void SetDamageShaderValue(string name = null,float value = 1)
         {
             
         }
