@@ -150,24 +150,14 @@ namespace GameA.Game
 
         public override void ChangeMode(EMode mode)
         {
-            base.ChangeMode(mode);
-
 #if WORKSHOPGUIDE
             if (_guideBase != null)
             {
                 _guideBase.Dispose();
                 _guideBase = null;
             }
-//            if (mode == EMode.EditTest)
-//            {
-//                SocialGUIManager.Instance.OpenUI<UICtrlMobileInputControl>();
-//                AdventureGuideManager.Instance.TryGetGuide(_section, _projectType, _level, out _guideBase);
-//                if (_guideBase != null)
-//                {
-//                    _guideBase.Init();
-//                }
-//            }
 #endif
+            base.ChangeMode(mode);
         }
 
         protected override void EnterEditTest()
