@@ -301,7 +301,6 @@ namespace GameA.Game
                         Messenger.Broadcast(EMessengerType.GameFinishFailed);
                     }
                     //_secondLeft = 0;
-                    return;
                 }
                 //_secondLeft = (int) (_mapStatistics.TimeLimit*10 - _gameTimer);
             }

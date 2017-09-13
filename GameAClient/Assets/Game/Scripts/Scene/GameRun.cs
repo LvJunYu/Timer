@@ -290,6 +290,7 @@ namespace GameA.Game
         /// </summary>
         public void OnGameFinishSuccess()
         {
+            _isPlaying = false;
             PlayMode.Instance.GameFinishSuccess();
             GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.LevelNormalBgm);
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Success);
@@ -300,6 +301,7 @@ namespace GameA.Game
         /// </summary>
         public void OnGameFinishFailed()
         {
+            _isPlaying = false;
             PlayMode.Instance.GameFinishFailed();
             GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.LevelNormalBgm);
         }
