@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NewResourceSolution;
 using SoyEngine;
+using SoyEngine.Proto;
 using Spine.Unity;
 using UnityEngine;
 
@@ -26,6 +27,7 @@ namespace GameA.Game
         private float _gameTimeSinceGameStarted;
         private bool _isPlaying;
         private ESceneState _eSceneState;
+        protected string _bgmMusic;
 
         public static GameRun Instance
         {
@@ -65,7 +67,7 @@ namespace GameA.Game
         public void Dispose()
         {
             Clear();
-            GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.LevelNormalBgm);
+            GameAudioManager.Instance.Stop(_bgmMusic);
 
             EnvManager.Instance.Dispose();
             DeadMarkManager.Instance.Dispose();
@@ -269,7 +271,8 @@ namespace GameA.Game
             _logicFrameCnt = 0;
             _isPlaying = true;
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.StartGame);
-            GameAudioManager.Instance.PlayMusic(AudioNameConstDefineGM2D.LevelNormalBgm);
+            _bgmMusic = GM2DGame.Instance.Project.AdventureProjectType == EAdventureProjectType.APT_Bonus ? AudioNameConstDefineGM2D.LevelBonusBgm : AudioNameConstDefineGM2D.LevelNormalBgm;
+            GameAudioManager.Instance.PlayMusic(_bgmMusic);
             Messenger.Broadcast(EMessengerType.OnPlay);
             if (Application.isMobilePlatform)
             {
@@ -292,7 +295,7 @@ namespace GameA.Game
         {
             _isPlaying = false;
             PlayMode.Instance.GameFinishSuccess();
-            GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.LevelNormalBgm);
+            GameAudioManager.Instance.Stop(_bgmMusic);
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Success);
         }
 
@@ -303,7 +306,7 @@ namespace GameA.Game
         {
             _isPlaying = false;
             PlayMode.Instance.GameFinishFailed();
-            GameAudioManager.Instance.Stop(AudioNameConstDefineGM2D.LevelNormalBgm);
+            GameAudioManager.Instance.Stop(_bgmMusic);
         }
 
         #endregion

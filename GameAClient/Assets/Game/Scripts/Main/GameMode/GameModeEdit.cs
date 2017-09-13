@@ -142,8 +142,6 @@ namespace GameA.Game
 					yield return null;
 				}
 			}
-			//预加载背景音乐
-			ResourcesManager.Instance.GetAudio(AudioNameConstDefineGM2D.LevelNormalBgm);
 		}
 
         public abstract void Save(Action successCallback = null,
