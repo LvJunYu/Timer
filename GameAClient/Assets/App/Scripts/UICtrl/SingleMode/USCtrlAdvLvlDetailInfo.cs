@@ -68,7 +68,7 @@ namespace GameA
                             }
                             else
                             {
-                                winCondition = string.Format("{0} 秒内过关", GameATools.SecondToHour(table.TimeLimit, true));
+                                winCondition = string.Format("{0} 内过关", GameATools.SecondToHour(table.TimeLimit, true));
                             }
                             break;
                         case EWinCondition.Arrived:
