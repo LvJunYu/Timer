@@ -19,7 +19,8 @@ namespace GameA.Game
             _eventRegister = TriggerUnitEventManager.Instance.BeginRegistEvent()
                 .RegistEvent("MoveGuide", MoveGuide)
                 .RegistEvent("JumpGuide", JumpGuide)
-                .RegistEvent("JumpGuide2", JumpGuide2)
+                .RegistEvent("JumpMoveGuide", JumpMoveGuide)
+                .RegistEvent("JumpDoubleGuide", JumpDoubleGuide)
                 .RegistEvent("GoalGuide", GoalGuide)
                 .End();
             _uiCtrlUIGuideBubble = SocialGUIManager.Instance.GetUI<UICtrlUIGuideBubble>();
@@ -57,6 +58,25 @@ namespace GameA.Game
                 _jumpGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
                     inputUI.CachedView.JumpBtn.rectTransform(), EDirectionType.Down,
                     "长按这里跳跃");
+            }
+            else
+            {
+                if (_jumpGuideBubble != null)
+                {
+                    _uiCtrlUIGuideBubble.CloseBubble(_jumpGuideBubble);
+                    _jumpGuideBubble = null;
+                }
+            }
+        }
+        
+        private void JumpMoveGuide(bool flag)
+        {
+            if (flag)
+            {
+                var inputUI = SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
+                _jumpGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
+                    inputUI.CachedView.JumpBtn.rectTransform(), EDirectionType.Down,
+                    "长按这里跳跃");
                 _moveGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
                     inputUI.CachedView.JoyStickEx.RightArrowNormal.GetComponent<RectTransform>(), EDirectionType.Down,
                     "长按这里向前");
@@ -76,14 +96,14 @@ namespace GameA.Game
             }
         }
         
-        private void JumpGuide2(bool flag)
+        private void JumpDoubleGuide(bool flag)
         {
             if (flag)
             {
                 var inputUI = SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
                 _jumpGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
                     inputUI.CachedView.JumpBtn.rectTransform(), EDirectionType.Down,
-                    "按这里跳跃");
+                    "按两下跳跃");
                 _moveGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
                     inputUI.CachedView.JoyStickEx.RightArrowNormal.GetComponent<RectTransform>(), EDirectionType.Down,
                     "长按这里向前");
