@@ -54,8 +54,11 @@ namespace GameA.Game
         {
             _mapProcess = 0f;
             var timer = new GameTimer();
-            //初始化地图胜利条件
-            EditMode.Instance.MapStatistics.InitWithMapData(mapData);
+            if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+            {
+                //初始化地图胜利条件
+                EditMode.Instance.MapStatistics.InitWithMapData(mapData);
+            }
             var rectData = mapData.Data;
 
             var childList = mapData.UnitExtraInfos;

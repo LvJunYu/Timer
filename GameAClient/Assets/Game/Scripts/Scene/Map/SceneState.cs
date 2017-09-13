@@ -264,7 +264,7 @@ namespace GameA.Game
 
         private void RemoveCondition(EWinCondition eWinCondition)
         {
-            _mapStatistics.RemoveCondition(eWinCondition);
+            _mapStatistics.SetWinCondition(eWinCondition, false);
         }
 
         public void UpdateLogic(float deltaTime)
