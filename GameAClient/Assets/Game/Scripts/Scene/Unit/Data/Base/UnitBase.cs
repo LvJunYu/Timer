@@ -708,6 +708,10 @@ namespace GameA.Game
         internal virtual void Reset()
         {
             UpdateExtraData();
+            if (_eActiveState != EActiveState.None)
+            {
+                OnActiveStateChanged();
+            }
             if (_view != null)
             {
                 _view.Reset();
@@ -730,10 +734,6 @@ namespace GameA.Game
             if (_animation != null)
             {
                 _animation.Reset();
-            }
-            if (_eActiveState != EActiveState.None)
-            {
-                OnActiveStateChanged();
             }
         }
 

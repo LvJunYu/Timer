@@ -14,18 +14,13 @@ namespace GameA.Game
             get { return true; }
         }
 
-        protected override void Clear()
-        {
-            base.Clear();
-            _eActiveState = EActiveState.Deactive;
-        }
-
         public override void UpdateExtraData()
         {
             base.UpdateExtraData();
+            _eActiveState = EActiveState.Deactive;
             _triggerName = DataScene2D.Instance.GetUnitExtra(_guid).Msg;
         }
-
+        
         protected override void OnActiveStateChanged()
         {
             base.OnActiveStateChanged();
