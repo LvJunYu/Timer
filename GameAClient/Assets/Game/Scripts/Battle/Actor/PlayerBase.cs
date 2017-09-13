@@ -464,7 +464,10 @@ namespace GameA.Game
                     {
                         OnRevive();
                     }
-                    Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
+                    else
+                    {
+                        Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
+                    }
                 }
                 if (_life <= 0 && _dieTime == 100)
                 {

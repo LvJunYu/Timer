@@ -11,6 +11,8 @@ namespace GameA
 //        private UPCtrlBase<UICtrlWorkShopSetting, UIViewWorkShopSetting> _curCtrl;
         private UICtrlEdit.EMode _curMode;
 
+        private bool _openGamePlaying;
+
         private void WinConditionToggleOnValueChanged(bool arg0)
         {
             if (arg0)
@@ -85,9 +87,14 @@ namespace GameA
             //默认显示设置页面
             _cachedView.BasicSettingToggle.isOn = true;
             BasicSettingToggleOnValueChanged(true);
+            _openGamePlaying = false;
             if (GM2DGame.Instance != null)
             {
-                GM2DGame.Instance.Pause();
+                if (GameRun.Instance.IsPlaying)
+                {
+                    GM2DGame.Instance.Pause();
+                    _openGamePlaying = true;
+                }
             }
         }
 
@@ -98,9 +105,10 @@ namespace GameA
             {
                 return;
             }
-            if (GM2DGame.Instance != null)
+            if (GM2DGame.Instance != null && _openGamePlaying)
             {
                 GM2DGame.Instance.Continue();
+                _openGamePlaying = false;
             }
             Messenger.Broadcast(EMessengerType.OnCloseGameSetting);
             base.OnClose();
