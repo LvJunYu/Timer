@@ -70,10 +70,6 @@ namespace GameA.Game
 
         protected override void Clear()
         {
-            if (_skillCtrl != null)
-            {
-                _skillCtrl.Clear();
-            }
             _curAngle = _angle;
             if (_trans != null)
             {

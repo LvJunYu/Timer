@@ -27,21 +27,6 @@ namespace GameA.Game
             get { return _currentSkills; }
         }
 
-        public void Clear()
-        {
-            if (_currentSkills != null)
-            {
-                for (int i = 0; i < _currentSkills.Length; i++)
-                {
-                    var skill = _currentSkills[i];
-                    if (skill != null)
-                    {
-                        skill.Clear();
-                    }
-                }
-            }
-        }
-
         public bool HasEmptySlot(out int slot)
         {
             for (int i = 0; i < _currentSkills.Length; i++)

@@ -39,6 +39,7 @@ namespace GameA.Game
         private GameStatistic _statistic;
         private UnitUpdateManager _unitUpdateManager;
         private List<Trap> _traps = new List<Trap>();
+        protected List<Bullet> _bullets = new List<Bullet>();
 
         public static PlayMode Instance
         {
@@ -135,6 +136,16 @@ namespace GameA.Game
                 DeleteTrap(_traps[i].Guid);
             }
             _traps.Clear();
+            
+            for (int i = 0; i < _bullets.Count; i++)
+            {
+                var bullet = _bullets[i];
+                if (bullet != null)
+                {
+                    PoolFactory<Bullet>.Free(bullet);
+                }
+            }
+            _bullets.Clear();
         }
 
         public void Pause()
@@ -180,6 +191,13 @@ namespace GameA.Game
             for (int i = 0; i < _traps.Count; i++)
             {
                 _traps[i].UpdateLogic();
+            }
+            if (_bullets.Count > 0)
+            {
+                for (int i = 0; i < _bullets.Count; i++)
+                {
+                    _bullets[i].UpdateLogic();
+                }
             }
         }
 
@@ -598,6 +616,30 @@ namespace GameA.Game
                 }
             }
             return true;
+        }
+        
+        public void AddBullet(Bullet bullet)
+        {
+            _bullets.Add(bullet);
+        }
+
+        public void DeleteBullet(Bullet bullet)
+        {
+            _bullets.Remove(bullet);
+            PoolFactory<Bullet>.Free(bullet);
+        }
+
+        public void Clear()
+        {
+            for (int i = 0; i < _bullets.Count; i++)
+            {
+                var bullet = _bullets[i];
+                if (bullet != null)
+                {
+                    PoolFactory<Bullet>.Free(bullet);
+                }
+            }
+            _bullets.Clear();
         }
     }
 }

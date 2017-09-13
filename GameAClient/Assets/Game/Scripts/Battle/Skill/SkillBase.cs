@@ -55,7 +55,6 @@ namespace GameA.Game
 
         protected int _damage;
 
-        protected List<Bullet> _bullets = new List<Bullet>();
 
         protected int _fireTimer;
 
@@ -149,19 +148,6 @@ namespace GameA.Game
             }
         }
 
-        public virtual void Clear()
-        {
-            for (int i = 0; i < _bullets.Count; i++)
-            {
-                var bullet = _bullets[i];
-                if (bullet != null)
-                {
-                    PoolFactory<Bullet>.Free(bullet);
-                }
-            }
-            _bullets.Clear();
-        }
-
         internal virtual void Exit()
         {
         }
@@ -190,13 +176,6 @@ namespace GameA.Game
                 if (_timerSing == 0)
                 {
                     OnSkillCast();
-                }
-            }
-            if (_bullets.Count > 0)
-            {
-                for (int i = 0; i < _bullets.Count; i++)
-                {
-                    _bullets[i].UpdateLogic();
                 }
             }
         }
@@ -283,7 +262,7 @@ namespace GameA.Game
             {
                 var bullet = PoolFactory<Bullet>.Get();
                 bullet.Init(this,pos, angle);
-                _bullets.Add(bullet);
+                PlayMode.Instance.AddBullet(bullet);
                 return;
             }
             {
@@ -363,7 +342,6 @@ namespace GameA.Game
 
         public void OnBulletHit(Bullet bullet)
         {
-            _bullets.Remove(bullet);
             CreateTrapUnit(bullet.CurPos, bullet.Angle, bullet.TargetUnit);
             var units = GetHitUnits(bullet.CurPos, bullet.TargetUnit);
             if (units != null && units.Count > 0)
@@ -384,6 +362,7 @@ namespace GameA.Game
                     }
                 }
             }
+            PlayMode.Instance.DeleteBullet(bullet);
         }
 
         public virtual void OnProjectileHit(ProjectileBase projectile)

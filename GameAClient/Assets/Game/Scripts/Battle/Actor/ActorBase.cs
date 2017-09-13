@@ -71,10 +71,6 @@ namespace GameA.Game
             RemoveAllStates();
             _canFanCross = true;
             _eDieType = EDieType.None;
-            if (_skillCtrl != null)
-            {
-                _skillCtrl.Clear();
-            }
             _damageFrame = 0;
             if (_view != null)
             {
@@ -95,11 +91,6 @@ namespace GameA.Game
 
         internal override void OnObjectDestroy()
         {
-            //有特效
-            if (_skillCtrl != null)
-            {
-                _skillCtrl.Clear();
-            }
             RemoveAllStates();
             base.OnObjectDestroy();
         }
