@@ -26,7 +26,7 @@ namespace GameA
 		private USCtrlLevelPoint[] _bonusLevels;
 		private UIParticleItem _travelEffect;
 		private string[] _islandSpriteName = new string[4]
-		{"img_island", "img_island_ice", "img_island_ice", "img_island_ice"};
+		{"img_island", "img_island_ice", "img_island_three", "img_island_four"};
 		private Sprite _islandSprite;
 	    private bool _isDoingAnimation;
 	    private Table_StandaloneChapter _tableStandaloneChapter;
