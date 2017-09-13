@@ -129,27 +129,6 @@ namespace GameA
                                 i);
                         }
                         _bonusLevels[i].RefreshInfo();
-                        // refresh block imgs state
-                        if (AppData.Instance.AdventureData.UserData.SectionList.Count > (table.Id - 1) &&
-                            AppData.Instance.AdventureData.UserData.SectionList[table.Id - 1].BonusLevelUserDataList
-                                .Count > i)
-                        {
-                            if (AppData.Instance.AdventureData.UserData.SectionList[table.Id - 1]
-                                    .BonusLevelUserDataList[i].SimpleData.SuccessCount > 0)
-                            {
-                                _cachedView.BonusLevelBlockGroup[i].SetActive(false);
-                            }
-                            else
-                            {
-                                _cachedView.BonusLevelBlockGroup[i].SetActive(true);
-                                SelectRoadFall(i);
-                            }
-                        }
-                        else
-                        {
-                            _cachedView.BonusLevelBlockGroup[i].SetActive(true);
-                            SelectRoadFall(i);
-                        }
                     }
                 }
             }
@@ -165,6 +144,11 @@ namespace GameA
             else
             {
                 _normalLevels[advData.LastPlayedLevelIdx - 1].RefreshInfo(true);
+                for (int i = 0; i < _bonusLevels.Length; i++)
+                {
+                    var bl = _bonusLevels[i];
+                    bl.RefreshInfo(true);
+                }
                 int nextLevel;
                 if (advData.TryGetNextNormalLevel(advData.LastPlayedChapterIdx, advData.LastPlayedLevelIdx,
                     out nextLevel))
@@ -187,6 +171,15 @@ namespace GameA
                 _isDoingAnimation = false;
             }
             yield return null;
+        }
+
+        public void SetBonusLevelLockState(int level, bool isLock, bool playAnimation)
+        {
+            _cachedView.BonusLevelBlockGroup[level - 1].SetActiveEx(!isLock);
+            if (!isLock && playAnimation)
+            {
+                SelectRoadFall(level - 1);
+            }
         }
 
         private void SelectRoadFall(int AdventureIndex)

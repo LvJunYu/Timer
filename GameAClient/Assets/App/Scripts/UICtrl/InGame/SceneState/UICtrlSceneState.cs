@@ -100,16 +100,6 @@ namespace GameA
             RegisterEvent<Vector3>(EMessengerType.OnLifeCollect, ShowCollectionLifeAnimation);
         }
 
-        protected override void ExitGame()
-        {
-            base.ExitGame();
-            for (int i = 0; i < _starConditionList.Count; i++)
-            {
-                _starConditionList[i].Destroy();
-            }
-            _starConditionList.Clear();
-        }
-
         public override void OnUpdate()
         {
             base.OnUpdate();
@@ -226,6 +216,14 @@ namespace GameA
                     _winConditionItemDict.Add(i, winConditionItem);
                     winConditionItem.SetComplete(false);
                     winConditionItem.SetText(GetWinConditionString(i));
+                    if (GM2DGame.Instance.GameMode.GameSituation == EGameSituation.Adventure)
+                    {
+                        winConditionItem.Hide();
+                    }
+                    else
+                    {
+                        winConditionItem.Show();
+                    }
                 }
             }
             if (_hasTimeLimit)
@@ -354,6 +352,11 @@ namespace GameA
 
         private void InitConditionView()
         {
+            for (int i = 0; i < _starConditionList.Count; i++)
+            {
+                _starConditionList[i].Destroy();
+            }
+            _starConditionList.Clear();
             if (GM2DGame.Instance.GameMode.GameSituation == EGameSituation.Adventure)
             {
                 _cachedView.LevelInfoDock.SetActive(true);

@@ -70,7 +70,6 @@ namespace GameA
 			if (!_isBonus) {
 				if (state == EState.Lock)
 				{
-				
 					_cachedView.Current.gameObject.SetActive (false);
 					_cachedView.Active.SetActive (false);
 					_cachedView.Disactive.SetActive (true);
@@ -93,8 +92,6 @@ namespace GameA
 							ParticleNameConstDefineGM2D.SingleModeNormalLevelUnlock,
 							_cachedView.Disactive.transform, groupId);
 						item.Particle.Play(4f);
-						CoroutineProxy.Instance.StartCoroutine(
-							CoroutineProxy.RunWaitForSeconds(1f, () => GameParticleManager.FreeParticleItem(item.Particle)));
 						yield return new WaitForSeconds(0.2f);
 					}
 					_cachedView.Current.gameObject.SetActive (true);
@@ -113,8 +110,6 @@ namespace GameA
 				}
 				else
 				{
-				
-					
 					var levelData = advData.GetAdventureUserLevelDataDetail(_chapterId, EAdventureProjectType.APT_Normal, _levelIdx);
 					int starCnt = levelData.SimpleData.GotStarCnt;
 
@@ -132,7 +127,6 @@ namespace GameA
 									{
 										_cachedView.StarLightAry[inx].SetActiveEx(true);
 										_cachedView.StarDarkAry[inx].SetActiveEx(false);
-										GameParticleManager.FreeParticleItem(item.Particle);
 									}
 								));
 							yield return new WaitForSeconds(0.2f);
@@ -153,8 +147,6 @@ namespace GameA
 							ParticleNameConstDefineGM2D.SingleModeNormalLevelComplete,
 							_cachedView.Active.transform, groupId);
 						item.Particle.Play(4f);
-						CoroutineProxy.Instance.StartCoroutine(
-							CoroutineProxy.RunWaitForSeconds(1, () => GameParticleManager.FreeParticleItem(item.Particle)));
 						yield return new WaitForSeconds(0.2f);
 					}
 					_cachedView.Current.gameObject.SetActive (false);
@@ -170,6 +162,7 @@ namespace GameA
 					_cachedView.Disactive.SetActive (true);
 					_cachedView.StarLightAry[0].SetActiveEx(false);
 					_cachedView.LightImage.gameObject.SetActive(false);
+					SocialGUIManager.Instance.GetUI<UICtrlSingleMode>().SetChapterBonusLevelLockState(_chapterId, _levelIdx, true);
 				}
 				else if (state == EState.Unlock)
 				{
@@ -179,7 +172,9 @@ namespace GameA
 					_cachedView.StarLightAry[0].SetActiveEx(false);
 					_cachedView.LightImage.gameObject.SetActive(true);
 					SetTween(true,_moVector2);
-					
+					var needAnimation = playAnimation && _state != state;
+					SocialGUIManager.Instance.GetUI<UICtrlSingleMode>()
+						.SetChapterBonusLevelLockState(_chapterId, _levelIdx, false, needAnimation);
 				}
 				else
 				{

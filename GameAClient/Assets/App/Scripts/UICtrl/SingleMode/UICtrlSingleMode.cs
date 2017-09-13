@@ -75,6 +75,14 @@ namespace GameA
         #endregion
 
         #region 方法
+
+	    public void SetChapterBonusLevelLockState(int chapter, int levelInx, bool isLock, bool playAnimation = false)
+	    {
+		    _chapterAry[chapter-1].SetBonusLevelLockState(levelInx, isLock, playAnimation);
+	    }
+	    
+	    
+	    
         protected override void OnOpen (object parameter)
         {
             base.OnOpen (parameter);
