@@ -299,6 +299,7 @@ namespace GameA
             else
             {
                 Messenger.Broadcast(EMessengerType.OpenGameSetting);
+                SocialGUIManager.Instance.GetUI<UICtrlGameSetting>().ChangeToSettingInGame();
             }
         }
 

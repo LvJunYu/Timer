@@ -312,7 +312,6 @@ namespace GameA.Game
             if (_life <= 0)
             {
                 LogHelper.Debug("GameOver!");
-                GameRun.Instance.Pause();
             }
             Messenger.Broadcast(EMessengerType.OnMainPlayerDead);
         }
