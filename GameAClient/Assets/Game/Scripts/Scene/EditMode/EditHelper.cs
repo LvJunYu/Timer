@@ -96,7 +96,7 @@ namespace GameA.Game
 
         public static bool TryEditUnitData(UnitDesc unitDesc)
         {
-            if (!CheckCanEdit(unitDesc.Id))
+            if (!UnitDefine.IsEarth(unitDesc.Id) && !CheckCanEdit(unitDesc.Id))
             {
                 return false;
             }
