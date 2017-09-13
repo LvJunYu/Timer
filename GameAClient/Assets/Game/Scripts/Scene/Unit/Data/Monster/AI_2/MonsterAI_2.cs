@@ -11,7 +11,6 @@ namespace GameA.Game
         protected int _timerDialog;
         protected int _timerDetectStay;
         protected int _timerAttack;
-        protected int _timerBrake;
 
         protected override void Clear()
         {
@@ -55,6 +54,7 @@ namespace GameA.Game
             }
             if (unit.IsMonster)
             {
+                
                 ChangeState(EMonsterState.Dialog);
             }
             else

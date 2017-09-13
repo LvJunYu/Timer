@@ -292,7 +292,14 @@ namespace GameA
 
         private void OnClickHome()
         {
-            SocialGUIManager.Instance.OpenUI<UICtrlWorkShopSetting>(_editMode);
+            if (_editMode == EMode.Edit || _editMode == EMode.EditTest)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlWorkShopSetting>(_editMode);
+            }
+            else
+            {
+                Messenger.Broadcast(EMessengerType.OpenGameSetting);
+            }
         }
 
         private void OnEnterErase()
