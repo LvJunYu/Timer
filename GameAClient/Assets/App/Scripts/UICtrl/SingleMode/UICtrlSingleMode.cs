@@ -5,7 +5,6 @@
 ** Summary : UICtrlSingleMode
 ***********************************************************************/
 
-using System.Collections;
 using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
@@ -55,7 +54,7 @@ namespace GameA
 
 	    private USCtrlChapter[] _chapterAry;
 
-	    private UIParticleItem _uiParticleItem;
+	    private UIParticleItem[] _uiParticleItemAry;
         #endregion
 
         #region 属性
@@ -118,15 +117,9 @@ namespace GameA
             } else {
                 _cachedView.MatchBtn.gameObject.SetActive (false);
             }
-	        if (null == _uiParticleItem)
-	        {
-		        _uiParticleItem = GameParticleManager.Instance.GetUIParticleItem(
-			        ParticleNameConstDefineGM2D.SingleModeBgEffect, _cachedView.Trans, _groupId);
-	        }
-	        _uiParticleItem.Particle.Play();
 	        //打开匹配挑战
             #if UNITY_EDITOR
-	        _cachedView.MatchBtn.SetActiveEx(true);      
+//	        _cachedView.MatchBtn.SetActiveEx(true);
              #endif
 	       
         }
@@ -135,9 +128,16 @@ namespace GameA
         {
 	        SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
 			_dragging = false;
-	        if (null != _uiParticleItem)
+	        if (null != _uiParticleItemAry)
 	        {
-		        _uiParticleItem.Particle.Stop();
+		        for (int i = 0; i < _uiParticleItemAry.Length; i++)
+		        {
+			        var particle = _uiParticleItemAry[i];
+			        if (particle != null)
+			        {
+				        particle.Particle.Stop();
+			        }
+		        }
 	        }
             base.OnClose();
         }
@@ -188,6 +188,7 @@ namespace GameA
 		        _chapterAry[i].Init(_cachedView.Chapters[i]);
 	        }
 	        _cachedView.ChapterBg[_currentChapter-1].gameObject.SetActive(true);
+	        _uiParticleItemAry = new UIParticleItem[_cachedView.Chapters.Length];
         }
 			
 		public override void OnUpdate ()
@@ -270,6 +271,37 @@ namespace GameA
 
 			if (_chapterAry[_currentChapter - 1] != null) {
 				_chapterAry[_currentChapter - 1].RefreshInfo (tableChapter, _currentChapter, doPassAnimate);
+				
+				if (null != _uiParticleItemAry)
+				{
+					for (int i = 0; i < _uiParticleItemAry.Length; i++)
+					{
+						var uiParticle = _uiParticleItemAry[i];
+						if (_currentChapter - 1 == i)
+						{
+							if (uiParticle != null)
+							{
+								uiParticle.Particle.Play();
+							}
+							else
+							{
+								uiParticle = GameParticleManager.Instance.GetUIParticleItem(
+									ParticleNameConstDefineGM2D.SingleModeBgEffect + (i + 1),
+									_chapterAry[_currentChapter - 1].UITran, _groupId);
+								uiParticle.Particle.Trans.localPosition = new Vector3(ChapterDistance/2f, 0, 0);
+								_uiParticleItemAry[i] = uiParticle;
+								uiParticle.Particle.Play();
+							}
+						}
+						else
+						{
+							if (uiParticle != null)
+							{
+								uiParticle.Particle.Stop();
+							}
+						}
+					}
+				}
 			}
 
             if (_currentChapter == 1) {
