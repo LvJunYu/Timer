@@ -20,6 +20,7 @@ namespace GameA.Game
         Water,
         Fire,
         Saw,
+        TigerEat//老虎吃掉
     }
 
     public class ActorBase : DynamicRigidbody
@@ -563,6 +564,12 @@ namespace GameA.Game
             {
                 _eDieType = EDieType.Fire;
             }
+            State state;
+            if (TryGetState(73, out state))
+            {
+                _eDieType = EDieType.TigerEat;
+                LogHelper.Debug("被老虎咬死了");
+            }
             if (_animation != null)
             {
                 RemoveAllStates(true);
@@ -583,6 +590,9 @@ namespace GameA.Game
                         break;
                     case EDieType.Saw:
                         _animation.PlayOnce(_animation.HasAnimation("OnSawStart") ? "OnSawStart" : "Death");
+                        break;
+                    case EDieType.TigerEat:
+                        _view.SetRendererColor(Color.clear);
                         break;
                 }
             }

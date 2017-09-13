@@ -24,11 +24,6 @@ namespace GameA.Game
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
-//            if (unit.IsMain)
-//            {
-//                ChangeState(EMonsterState.Attack);
-//                return;
-//            }
             if (eDirectionType == EDirectionType.Left || eDirectionType == EDirectionType.Right)
             {
                 _timerDetectStay = 0;
@@ -73,13 +68,12 @@ namespace GameA.Game
                     //面向玩家
                     if (rel.x > 0)
                     {
-                        _nextMoveDirection = EMoveDirection.Left;
+                        SetNextMoveDirection(EMoveDirection.Left);
                     }
                     else
                     {
-                        _nextMoveDirection = EMoveDirection.Right;
+                        SetNextMoveDirection(EMoveDirection.Right);
                     }
-                    ChangeWay(_nextMoveDirection);
                     if (_trans != null)
                     {
                         Vector3 euler = _trans.eulerAngles;
@@ -95,6 +89,7 @@ namespace GameA.Game
                 //不在攻击范围内，并且已经结束攻击动作
                 if (_eMonsterState == EMonsterState.Attack && _timerAttack <= 0)
                 {
+                    ChangeWay(_nextMoveDirection);
                     ChangeState(EMonsterState.Run);
                 }
             }
@@ -215,10 +210,14 @@ namespace GameA.Game
 //                else if (_moveDirection == EMoveDirection.Right)
 //                    ChangeWay(EMoveDirection.Left);
                 if (_animation != null && !_animation.IsPlaying("Brake3"))
+                {
                     _animation.PlayOnce("Brake3");
+//                    _justPlayBrakeAnim = true;
+                }
             }
         }
 
+//        private bool _justPlayBrakeAnim;
         protected override void UpdateMonsterView(float deltaTime)
         {
             if (_animation != null)
@@ -237,7 +236,25 @@ namespace GameA.Game
                             _animation.PlayLoop("Run", Mathf.Clamp(Mathf.Abs(SpeedX), 30, 200) * deltaTime);
                     }
                 }
+//                if (_animation.IsPlaying("Brake3"))
+//                {
+//                    if (_justPlayBrakeAnim)
+//                    {
+//                        _justPlayBrakeAnim = false;
+//                    }
+//                    else
+//                    {
+//                        if (_trans != null)
+//                        {
+//                            Vector3 euler = _trans.eulerAngles;
+//                            _trans.eulerAngles = euler.y == 0
+//                                ? new Vector3(euler.x, 180, euler.z)
+//                                : new Vector3(euler.x, 0, euler.z);
+//                        }
+//                    }
+//                }
             }
         }
     }
 }
+
