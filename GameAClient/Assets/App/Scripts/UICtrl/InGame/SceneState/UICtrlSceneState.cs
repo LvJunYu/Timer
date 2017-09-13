@@ -464,11 +464,13 @@ namespace GameA
                 case EWinCondition.TimeLimit:
                     if (!special)
                     {
-                        return string.Format("坚持存活 {0} 秒", PlayMode.Instance.SceneState.RunTimeTimeLimit * 10);
+                        return string.Format("坚持存活 {0} 秒",
+                            GameATools.SecondToHour(PlayMode.Instance.SceneState.RunTimeTimeLimit));
                     }
                     else
                     {
-                        return string.Format("{0} 秒内过关", PlayMode.Instance.SceneState.RunTimeTimeLimit * 10);
+                        return string.Format("{0} 秒内过关",
+                            GameATools.SecondToHour(PlayMode.Instance.SceneState.RunTimeTimeLimit));
                     }
                 case EWinCondition.Arrived:
                     return "到达终点";

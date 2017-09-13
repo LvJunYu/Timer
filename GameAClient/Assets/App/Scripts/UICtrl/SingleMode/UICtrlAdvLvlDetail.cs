@@ -279,6 +279,7 @@ namespace GameA
             );
         }
 
+        //TEST
         private void TestPlayBtn()
         {
             EAdventureProjectType eAPType = _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal;SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (
