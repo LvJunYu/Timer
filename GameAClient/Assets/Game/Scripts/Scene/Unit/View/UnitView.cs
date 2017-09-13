@@ -117,6 +117,7 @@ namespace GameA.Game
             _trans.position = UnitDefine.HidePos;
             _trans.localScale = Vector3.one;
             _trans.localRotation = Quaternion.identity;
+            _trans.rotation = Quaternion.identity;
             _trans.parent = UnitManager.Instance.GetOriginParent();
             SetRendererEnabled(true);
             SetRendererColor(Color.white);

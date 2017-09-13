@@ -30,6 +30,7 @@ namespace GameA.Game
         protected ReviveEffect _portalEffect = new ReviveEffect();
 
         protected Table_Equipment[] _tableEquipments = new Table_Equipment[3];
+        private int _lastSlot;
 
         public long PlayerId
         {
@@ -100,6 +101,7 @@ namespace GameA.Game
             _box = null;
             ClearView();
             _maxSpeedX = BattleDefine.MaxSpeedX;
+            _lastSlot = -1;
         }
         
         public override bool SetWeapon(int weaponId)
@@ -120,7 +122,15 @@ namespace GameA.Game
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
             _skillCtrl.RemoveSkill(skillId);
             int slot;
-            _skillCtrl.HasEmptySlot(out slot);
+            if (!_skillCtrl.HasEmptySlot(out slot))
+            {
+                slot = _lastSlot + 1;
+                _lastSlot = slot;
+                if (_lastSlot == 2)
+                {
+                    _lastSlot = -1;
+                }
+            }
             if (!_skillCtrl.SetSkill(tableSkill.Id, (EWeaponInputType)tableEquipment.InputType, slot))
             {
                 return false;
