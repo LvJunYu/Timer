@@ -66,12 +66,12 @@ namespace GameA.Game
             {
                 _withEffect.Trans.position += Vector3.back * 0.1f;
             }
-            _lazerEffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazer", _trans);
+            _lazerEffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectAlertLazer", _trans);
             if (_lazerEffect != null)
             {
                 _lazerEffect.Trans.localEulerAngles = new Vector3(0, 0, -_angle);
             }
-            _lazerEffectEnd = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazerStart", _trans);
+            _lazerEffectEnd = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectAlertLazerStart", _trans);
             return true;
         }
 
@@ -98,7 +98,6 @@ namespace GameA.Game
             var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
             _timeDelay = TableConvert.GetTime(unitExtra.TimeDelay);
             _timeInterval = TableConvert.GetTime(unitExtra.TimeInterval);
-            LogHelper.Debug(_timeInterval+"~~~~~~~~~~~~~~~");
         }
 
         internal override void OnObjectDestroy()

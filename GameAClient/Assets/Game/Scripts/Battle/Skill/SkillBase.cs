@@ -258,6 +258,10 @@ namespace GameA.Game
 
         protected void CreateProjectile(int projectileId, IntVec2 pos, float angle)
         {
+            if (!string.IsNullOrEmpty(_tableSkill.AudioFire))
+            {
+                GameAudioManager.Instance.PlaySoundsEffects(_tableSkill.AudioFire);
+            }
             if (UnitDefine.UseRayBullet(projectileId))
             {
                 var bullet = PoolFactory<Bullet>.Get();
@@ -320,7 +324,7 @@ namespace GameA.Game
         protected void OnHit()
         {
             var centerDownPos = _owner.CenterDownPos;
-            CreateTrapUnit(centerDownPos, _owner.Angle, null);
+            OnBulletOver(centerDownPos, _owner.Angle, null);
             //临时写 TODO
             var units = GetHitUnits(_owner.CenterPos, null);
             if (units != null && units.Count > 0)
@@ -342,7 +346,7 @@ namespace GameA.Game
 
         public void OnBulletHit(Bullet bullet)
         {
-            CreateTrapUnit(bullet.CurPos, bullet.Angle, bullet.TargetUnit);
+            OnBulletOver(bullet.CurPos, bullet.Angle, bullet.TargetUnit);
             var units = GetHitUnits(bullet.CurPos, bullet.TargetUnit);
             if (units != null && units.Count > 0)
             {
@@ -367,7 +371,7 @@ namespace GameA.Game
 
         public virtual void OnProjectileHit(ProjectileBase projectile)
         {
-            CreateTrapUnit(projectile.CenterPos, projectile.Angle, projectile.TargetUnit);
+            OnBulletOver(projectile.CenterPos, projectile.Angle, projectile.TargetUnit);
             var units = GetHitUnits(projectile.CenterPos, projectile.TargetUnit);
             if (units != null && units.Count > 0)
             {
@@ -481,8 +485,12 @@ namespace GameA.Game
         /// <summary>
         /// 生成陷阱
         /// </summary>
-        protected void CreateTrapUnit(IntVec2 hitPos, float angle, UnitBase hitUnit)
+        protected void OnBulletOver(IntVec2 hitPos, float angle, UnitBase hitUnit)
         {
+            if (!string.IsNullOrEmpty(_tableSkill.AudioDestroy))
+            {
+                GameAudioManager.Instance.PlaySoundsEffects(_tableSkill.AudioDestroy);
+            }
             if (_tableSkill.TrapId > 0)
             {
                 LogHelper.Debug("AddTrap {0}", _tableSkill.TrapId);
