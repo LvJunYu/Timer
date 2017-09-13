@@ -107,7 +107,7 @@ namespace GameA
 
         public void ShowAppView()
         {
-            if (LocalUser.Instance.User.LoginCount == 1)
+            if (LocalUser.Instance.User.LoginCount <= 1)
             {
                 OpenUI<UICtrlStory>();
             }
