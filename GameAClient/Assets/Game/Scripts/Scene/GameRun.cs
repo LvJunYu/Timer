@@ -271,6 +271,17 @@ namespace GameA.Game
             GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.StartGame);
             GameAudioManager.Instance.PlayMusic(AudioNameConstDefineGM2D.LevelNormalBgm);
             Messenger.Broadcast(EMessengerType.OnPlay);
+            if (Application.isMobilePlatform)
+            {
+                var inputControl =  SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
+                if (inputControl != null)
+                {
+                    for (int i = 0; i < 3; i++)
+                    {
+                        inputControl.SetSkillBtnVisible(i, false);
+                    }
+                }
+            }
             return true;
         }
         

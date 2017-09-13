@@ -53,11 +53,15 @@ namespace GameA.Game
                 }
                 _trigger = true;
                 _unit = other;
-                OnTrigger();
+                OnTriggerEnter();
             }
         }
 
-        protected virtual void OnTrigger()
+        protected virtual void OnTriggerEnter()
+        {
+        }
+
+        protected virtual void OnTriggerExit()
         {
         }
 
@@ -69,6 +73,7 @@ namespace GameA.Game
                 {
                     _trigger = false;
                     _unit = null;
+                    OnTriggerExit();
                 }
             }
         }

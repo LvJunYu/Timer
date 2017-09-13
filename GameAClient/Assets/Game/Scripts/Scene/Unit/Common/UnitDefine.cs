@@ -123,7 +123,7 @@ namespace GameA.Game
 
         public static bool IsEffect(int id)
         {
-            return id == 9001 || id == 9002 || (id >= 9100 && id < 9200);
+            return id >= 9000 && id < 9200;
         }
 
         public static bool IsRevive(int id)
