@@ -39,7 +39,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            _view.StatusBar.SetHPActive(true);
+            CreateStatusBar();
             return true;
         }
 
@@ -49,6 +49,10 @@ namespace GameA.Game
             _input = _input ?? new InputBase();
             _input.Clear();
             _fireTimer = 0;
+            if (_statusBar != null)
+            {
+                _statusBar.SetHPActive(false);
+            }
         }
 
         protected override void CalculateSpeedRatio()

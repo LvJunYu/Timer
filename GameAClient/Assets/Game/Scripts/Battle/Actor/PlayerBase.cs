@@ -307,6 +307,10 @@ namespace GameA.Game
             {
                 _gun.Stop();
             }
+            if (_statusBar != null)
+            {
+                _statusBar.SetHPActive(false);
+            }
             _input.Clear();
             base.OnDead();
             if (_life <= 0)
@@ -342,6 +346,10 @@ namespace GameA.Game
                                     if (_gun != null)
                                     {
                                         _gun.Play();
+                                    }
+                                    if (_statusBar != null)
+                                    {
+                                        _statusBar.SetHPActive(true);
                                     }
                                     _animation.Reset();
                                     _animation.PlayLoop(IdleAnimName());
@@ -423,7 +431,8 @@ namespace GameA.Game
             }
             _reviveEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null, ESortingOrder.LazerEffect));
             _portalEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null, ESortingOrder.LazerEffect));
-            _view.StatusBar.SetHPActive(true);
+            CreateStatusBar();
+            _statusBar.SetHPActive(true);
             return true;
         }
 

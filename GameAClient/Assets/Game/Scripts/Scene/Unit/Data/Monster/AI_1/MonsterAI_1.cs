@@ -401,25 +401,25 @@ namespace GameA.Game
             {
                 reachedY = false;
             }
-            if (!reachedX)
-            {
-                if (_moveDirection == EMoveDirection.Left)
-                {
-                    if (ColliderScene2D.Instance.IsGround(_curPos.x / ConstDefineGM2D.ServerTileScale,
-                        _curPos.y / ConstDefineGM2D.ServerTileScale))
-                    {
-                        reachedX = true;
-                    }
-                }
-                else if (_moveDirection == EMoveDirection.Right)
-                {
-                    if (ColliderScene2D.Instance.IsGround(_curPos.x / ConstDefineGM2D.ServerTileScale + 1,
-                        _curPos.y / ConstDefineGM2D.ServerTileScale))
-                    {
-                        reachedX = true;
-                    }
-                }
-            }
+//            if (!reachedX)
+//            {
+//                if (_moveDirection == EMoveDirection.Left)
+//                {
+//                    if (ColliderScene2D.Instance.IsGround(_curPos.x / ConstDefineGM2D.ServerTileScale,
+//                        _curPos.y / ConstDefineGM2D.ServerTileScale))
+//                    {
+//                        reachedX = true;
+//                    }
+//                }
+//                else if (_moveDirection == EMoveDirection.Right)
+//                {
+//                    if (ColliderScene2D.Instance.IsGround(_curPos.x / ConstDefineGM2D.ServerTileScale + 1,
+//                        _curPos.y / ConstDefineGM2D.ServerTileScale))
+//                    {
+//                        reachedX = true;
+//                    }
+//                }
+//            }
         }
 
         private bool ReachedNodeOnXAxis(IntVec2 pathPos, IntVec2 lastDest, IntVec2 currentDest)
