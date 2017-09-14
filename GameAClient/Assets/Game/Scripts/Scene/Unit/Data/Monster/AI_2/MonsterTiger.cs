@@ -74,13 +74,7 @@ namespace GameA.Game
                     {
                         SetNextMoveDirection(EMoveDirection.Right);
                     }
-                    if (_trans != null)
-                    {
-                        Vector3 euler = _trans.eulerAngles;
-                        _trans.eulerAngles = _nextMoveDirection != EMoveDirection.Right
-                            ? new Vector3(euler.x, 180, euler.z)
-                            : new Vector3(euler.x, 0, euler.z);
-                    }
+                    SetFacingDir(_nextMoveDirection);
                     ChangeState(EMonsterState.Attack);
                 }
             }
@@ -89,18 +83,11 @@ namespace GameA.Game
                 //不在攻击范围内，并且已经结束攻击动作
                 if (_eMonsterState == EMonsterState.Attack && _timerAttack <= 0)
                 {
-                    ChangeWay(_nextMoveDirection);
                     ChangeState(EMonsterState.Run);
+                    ChangeWay(_nextMoveDirection);
                 }
             }
-            if (_eMonsterState == EMonsterState.Attack)
-            {
-                SetInput(EInputType.Skill1, true);
-            }
-            else
-            {
-                SetInput(EInputType.Skill1, false);
-            }
+            
             if (_eMonsterState == EMonsterState.Brake)
             {
                 if (Mathf.Abs(SpeedX) == 0)
@@ -133,7 +120,6 @@ namespace GameA.Game
                     }
                 }
 //                if ((units.Count == 0 || !isMain) && _eMonsterState == EMonsterState.Chase && _timerDetectStay == 0)
-
                 //若玩家位置与老虎追逐方向相反，则刹车
                 if (_eMonsterState == EMonsterState.Chase)
                 {
@@ -240,7 +226,7 @@ namespace GameA.Game
 //                {
 //                    if (_justPlayBrakeAnim)
 //                    {
-//                        _justPlayBrakeAnim = false;
+//                        _justPlayBrakeAnim = false;//第一帧不翻转
 //                    }
 //                    else
 //                    {

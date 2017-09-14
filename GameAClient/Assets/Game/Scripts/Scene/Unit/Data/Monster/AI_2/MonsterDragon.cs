@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-
+﻿
 namespace GameA.Game
 {
     [Unit(Id = 2007, Type = typeof(MonsterDragon))]
@@ -11,6 +10,7 @@ namespace GameA.Game
             {
                 return false;
             }
+            _intelligenc = 2;
             return true;
         }
     }

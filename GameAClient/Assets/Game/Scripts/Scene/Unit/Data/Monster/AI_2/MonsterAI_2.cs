@@ -1,4 +1,6 @@
 ﻿using SoyEngine;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace GameA.Game
 {
@@ -11,6 +13,10 @@ namespace GameA.Game
         protected int _timerDialog;
         protected int _timerDetectStay;
         protected int _timerAttack;
+        protected int _timerRun;
+        protected int _timerStupid;
+        protected int _intelligenc = 10; //智商，最高10，决定出问号概率
+        protected const int _maxIntelligenc = 10;
 
         protected override void Clear()
         {
@@ -54,7 +60,6 @@ namespace GameA.Game
             }
             if (unit.IsMonster)
             {
-                
                 ChangeState(EMonsterState.Dialog);
             }
             else
@@ -102,6 +107,14 @@ namespace GameA.Game
                     GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Dialog, pos, 3,
                         ESortingOrder.EffectItem);
                     break;
+                case EMonsterState.Stupid:
+                    _timerStupid = Random.Range(0, 2) == 0 ? 150 : 225;
+                    GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Question, pos, 2,
+                        ESortingOrder.EffectItem);
+                    break;
+                case EMonsterState.Run:
+                    _timerRun = Random.Range(90, 140);
+                    break;
             }
 //            LogHelper.Debug(_eMonsterState+"~");
         }
@@ -124,6 +137,14 @@ namespace GameA.Game
             {
                 _timerAttack--;
             }
+            if (_timerRun > 0)
+            {
+                _timerRun--;
+            }
+            if (_timerStupid > 0)
+            {
+                _timerStupid--;
+            }
             switch (_eMonsterState)
             {
                 case EMonsterState.Idle:
@@ -132,6 +153,33 @@ namespace GameA.Game
                     break;
                 case EMonsterState.Run:
                     SetInput(_moveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
+                    if (_timerRun == 0)
+                    {
+                        int value = Random.Range(0, _maxIntelligenc);
+                        if (_intelligenc <= value)
+                        {
+                            ChangeState(EMonsterState.Stupid);
+                        }
+                    }
+                    break;
+                case EMonsterState.Stupid:
+                    SetInput(EInputType.Right, false);
+                    SetInput(EInputType.Left, false);
+                    if (_timerStupid == 0)
+                    {
+                        ChangeState(EMonsterState.Run);
+                    }
+                    else if (_timerStupid % 75 == 0)
+                    {
+                        SetFacingDir(_moveDirection == EMoveDirection.Left
+                            ? EMoveDirection.Right
+                            : EMoveDirection.Left);
+                        var pos = GM2DTools.TileToWorld(new IntVec2(
+                            _moveDirection == EMoveDirection.Right ? _colliderGrid.XMin : _colliderGrid.XMax,
+                            _colliderGrid.YMax));
+                        GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Question, pos, 2,
+                            ESortingOrder.EffectItem);
+                    }
                     break;
                 case EMonsterState.Bang:
                     SetInput(EInputType.Right, false);
@@ -164,7 +212,12 @@ namespace GameA.Game
                 case EMonsterState.Attack:
                     SetInput(EInputType.Right, false);
                     SetInput(EInputType.Left, false);
+                    SetInput(EInputType.Skill1, true);
                     break;
+            }
+            if (_eMonsterState != EMonsterState.Attack)
+            {
+                SetInput(EInputType.Skill1, false);
             }
         }
     }

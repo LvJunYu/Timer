@@ -579,7 +579,7 @@ namespace GameA.Game
             if (TryGetState(73, out state))
             {
                 _eDieType = EDieType.TigerEat;
-                LogHelper.Debug("被老虎咬死了");
+//                LogHelper.Debug("被老虎咬死了");
             }
             if (_animation != null)
             {

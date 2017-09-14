@@ -9,6 +9,16 @@ namespace GameA.Game
     {
         private float _viewDistance = 10 * ConstDefineGM2D.ServerTileScale;
 
+        protected override bool OnInit()
+        {
+            if (!base.OnInit())
+            {
+                return false;
+            }
+            _intelligenc = 2;
+            return true;
+        }
+
         protected override void Clear()
         {
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this);

@@ -40,6 +40,7 @@ namespace GameA.Game
         
         public const string Dialog = "M1EffectDialog";
         public const string Bang = "M1EffectBang";
+        public const string Question = "M1EffectQuestion";
 
         public const string RedMask = "RedMaskEffect";
         public const string YellowMask = "YellowMaskEffect";
