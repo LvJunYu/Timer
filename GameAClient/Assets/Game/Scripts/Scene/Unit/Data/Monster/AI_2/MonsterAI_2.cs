@@ -161,7 +161,7 @@ namespace GameA.Game
                         }
                         else
                         {
-                            _timerRun = 50;
+                            _timerRun = 30;
                         }
                     }
                     break;
@@ -217,10 +217,6 @@ namespace GameA.Game
                     SetInput(EInputType.Left, false);
                     SetInput(EInputType.Skill1, true);
                     break;
-            }
-            if (_eMonsterState != EMonsterState.Attack)
-            {
-                SetInput(EInputType.Skill1, false);
             }
         }
     }

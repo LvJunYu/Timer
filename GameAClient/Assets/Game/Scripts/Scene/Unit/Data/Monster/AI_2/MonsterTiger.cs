@@ -133,6 +133,10 @@ namespace GameA.Game
                 }
             }
             base.UpdateMonsterAI();
+            if (_eMonsterState != EMonsterState.Attack)
+            {
+                SetInput(EInputType.Skill1, false);
+            }
         }
 
         protected virtual bool ConditionAttack(IntVec2 rel)
