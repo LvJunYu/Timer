@@ -396,7 +396,12 @@ namespace GameA.Game
                     {
                         var switchGuid = itor.Current.Key;
                         List<IntVec3> units = itor.Current.Value;
-                        units.Remove(unitDesc.Guid);
+                        int unitInx = units.IndexOf(unitDesc.Guid);
+                        if (unitInx < 0)
+                        {
+                            continue;
+                        }
+                        units.RemoveAt(unitInx);
                         Messenger<IntVec3, IntVec3, bool>.Broadcast(EMessengerType.OnSwitchConnectionChanged,
                             switchGuid, unitDesc.Guid, true);
                         if (null != recordBatch)
