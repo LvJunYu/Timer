@@ -228,9 +228,7 @@ namespace GameA.Game
                 if (_lazerEffectEnd != null)
                 {
                     _lazerEffectEnd.Play();
-                    var d = _distance * _direction;
-                    var z = GetZ(CenterPos + new IntVec2((int) d.x, (int) d.y));
-                    _lazerEffectEnd.Trans.position = GM2DTools.TileToWorld(CenterPos, z) + distanceWorld * _direction;
+                    _lazerEffectEnd.Trans.position = GM2DTools.TileToWorld(CenterPos, _lazerEffect.Trans.position.z - 0.1f) + distanceWorld * _direction;
                 }
             }
         }
