@@ -104,7 +104,7 @@ namespace GameA
         protected override void SetAnimationType()
         {
             base.SetAnimationType();
-            _firstDelayFrames = 4;
+            _firstDelayFrames = 6;
         }
 
         private void ClickMenu(int selectInx, bool open)

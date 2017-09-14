@@ -4,7 +4,7 @@ using SoyEngine;
 namespace GameA
 {
     [UIAutoSetup]
-    public class UICtrlWorkShopSetting : UICtrlAnimationBase<UIViewWorkShopSetting>
+    public class UICtrlWorkShopSetting : UICtrlGenericBase<UIViewWorkShopSetting>
     {
         private UPCtrlWorkShopBasicSetting _upCtrlWorkShopBasicSetting;
         private UPCtrlWorkShopWinConditionSetting _upCtrlWorkShopWinConditionSetting;
@@ -114,10 +114,11 @@ namespace GameA
             base.OnClose();
         }
 
-        protected override void SetAnimationType()
-        {
-            base.SetAnimationType();
-            _animationType = EAnimationType.PopupFromUp;
-        }
+//        protected override void SetAnimationType()
+//        {
+//            base.SetAnimationType();
+//            _animationType = EAnimationType.PopupFromUp;
+//            _closeDelayFrames = 3;
+//        }
     }
 }
