@@ -15,8 +15,7 @@ namespace GameA.Game
         protected int _timerAttack;
         protected int _timerRun;
         protected int _timerStupid;
-        protected int _intelligenc = 10; //智商，最高10，决定出问号概率
-        protected const int _maxIntelligenc = 10;
+        protected int _intelligenc = 10; //智商，决定出问号概率，0每走几步就会出问好，10不会出问号
 
         protected override void Clear()
         {
@@ -155,10 +154,14 @@ namespace GameA.Game
                     SetInput(_moveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
                     if (_timerRun == 0)
                     {
-                        int value = Random.Range(0, _maxIntelligenc);
+                        int value = Random.Range(0, 10);
                         if (_intelligenc <= value)
                         {
                             ChangeState(EMonsterState.Stupid);
+                        }
+                        else
+                        {
+                            _timerRun = 50;
                         }
                     }
                     break;

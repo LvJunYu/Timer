@@ -15,7 +15,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            _intelligenc = 2;
+            _intelligenc = 3;
             return true;
         }
 

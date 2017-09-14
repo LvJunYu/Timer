@@ -42,7 +42,8 @@ PlayerSettings:
     duration: 2
   m_SplashScreenBackgroundLandscape: {fileID: 0}
   m_SplashScreenBackgroundPortrait: {fileID: 0}
-  m_VirtualRealitySplashScreen: {fileID: 0}
+  m_VirtualRealitySplashScreen: {fileID: 2800000, guid: b9b54847faf844f7a80a199f5e0505c4,
+    type: 3}
   m_HolographicTrackingLossScreen: {fileID: 0}
   defaultScreenWidth: 1280
   defaultScreenHeight: 720
@@ -198,8 +199,8 @@ PlayerSettings:
   tvOSManualSigningProvisioningProfileID: 
   appleEnableAutomaticSigning: 0
   AndroidTargetDevice: 3
-  AndroidSplashScreenScale: 2
-  androidSplashScreen: {fileID: 2800000, guid: 69bed87f973ceae46b3f80699b0d4da5, type: 3}
+  AndroidSplashScreenScale: 0
+  androidSplashScreen: {fileID: 2800000, guid: b9b54847faf844f7a80a199f5e0505c4, type: 3}
   AndroidKeystoreName: KeyChain/Android/JoyYouAndroidDis.keystore
   AndroidKeyaliasName: joyyoudis
   AndroidTVCompatibility: 0
@@ -218,32 +219,6 @@ PlayerSettings:
       m_Icon: {fileID: 2800000, guid: ad73120d1b82c40f3958e456c936db8a, type: 3}
       m_Width: 128
       m_Height: 128
-  - m_BuildTarget: Android
-    m_Icons:
-    - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: f61f1b7ca4c064e488984f64f553c79f, type: 3}
-      m_Width: 192
-      m_Height: 192
-    - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: 6a194756d04f1344ab256eb08be77f71, type: 3}
-      m_Width: 144
-      m_Height: 144
-    - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: 7cc6e830db4069a40b54fc268ea0ae0b, type: 3}
-      m_Width: 96
-      m_Height: 96
-    - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: 814ef6363f7da254ea5ef549eb858c70, type: 3}
-      m_Width: 72
-      m_Height: 72
-    - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: fbbf82b9478d3d74f9ec671fdc3698ff, type: 3}
-      m_Width: 48
-      m_Height: 48
-    - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: 70f95806ebcd6e346a4b6d11dd70d4fc, type: 3}
-      m_Width: 36
-      m_Height: 36
   - m_BuildTarget: Standalone
     m_Icons:
     - serializedVersion: 2
@@ -461,7 +436,7 @@ PlayerSettings:
   platformArchitecture:
     iOS: 1
   scriptingBackend:
-    Android: 0
+    Android: 1
     Metro: 2
     Standalone: 0
     WP8: 2
