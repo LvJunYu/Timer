@@ -27,6 +27,13 @@ namespace GameA
         {
             if (arg0)
             {
+                //如果在测试状态，则先退出测试状态
+                if (_curMode == UICtrlEdit.EMode.EditTest)
+                {
+                    GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+                    if (null != gameModeEdit)
+                        gameModeEdit.ChangeMode(GameModeEdit.EMode.Edit);
+                }
                 _upCtrlWorkShopWinConditionSetting.Close();
                 _upCtrlWorkShopBasicSetting.Open();
 //                _curCtrl = _upCtrlWorkShopBasicSetting;
