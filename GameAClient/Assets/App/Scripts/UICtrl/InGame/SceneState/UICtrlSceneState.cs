@@ -108,9 +108,18 @@ namespace GameA
             {
                 UpdateTimeLimit();
             }
-            if (GM2DGame.Instance.GameMode is GameModeAdventurePlay)
+
+            if (GM2DGame.Instance.GameMode.GameSituation == EGameSituation.Adventure)
             {
-                UpdateAdventurePlay();
+                ISituationAdventure situation = GM2DGame.Instance.GameMode as ISituationAdventure;
+                if (situation != null && situation.GetLevelInfo() != null)
+                {
+                    var param = situation.GetLevelInfo();
+                    if (param.ProjectType == EAdventureProjectType.APT_Normal)
+                    {
+                        UpdateAdventurePlay();
+                    }
+                }
             }
         }
 
@@ -216,7 +225,8 @@ namespace GameA
                     _winConditionItemDict.Add(i, winConditionItem);
                     winConditionItem.SetComplete(false);
                     winConditionItem.SetText(GetWinConditionString(i));
-                    if (GM2DGame.Instance.GameMode.GameSituation == EGameSituation.Adventure)
+                    if (GM2DGame.Instance.GameMode.GameSituation == EGameSituation.Adventure
+                        && ((ISituationAdventure)GM2DGame.Instance.GameMode).GetLevelInfo().ProjectType == EAdventureProjectType.APT_Normal)
                     {
                         winConditionItem.Hide();
                     }
