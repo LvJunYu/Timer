@@ -38,6 +38,7 @@ namespace GameA
         private List<UMCtrlCollectionItem> _umCtrlCollectionItemCache;
         private List<UMCtrlCollectionLifeItem> _umCtrlCollectionLifeItemCache;
         protected Sequence _finalCountDownSequence;
+        private bool _showStar;
 
         /// <summary>
         /// 冒险模式
@@ -62,8 +63,8 @@ namespace GameA
         {
             base.OnOpen(parameter);
             Clear();
-            UpdateItemVisible();
             UpdateAll();
+            UpdateItemVisible();
             //初始化收集物体缓存
             if (null == _umCtrlCollectionItemCache)
             {
@@ -109,17 +110,9 @@ namespace GameA
                 UpdateTimeLimit();
             }
 
-            if (GM2DGame.Instance.GameMode.GameSituation == EGameSituation.Adventure)
+            if (_showStar)
             {
-                ISituationAdventure situation = GM2DGame.Instance.GameMode as ISituationAdventure;
-                if (situation != null && situation.GetLevelInfo() != null)
-                {
-                    var param = situation.GetLevelInfo();
-                    if (param.ProjectType == EAdventureProjectType.APT_Normal)
-                    {
-                        UpdateAdventurePlay();
-                    }
-                }
+                UpdateAdventurePlay();
             }
         }
 
@@ -163,8 +156,8 @@ namespace GameA
             {
                 return;
             }
-            UpdateItemVisible();
             UpdateAll();
+            UpdateItemVisible();
         }
 
         private void OnKeyCountChanged()
@@ -225,8 +218,7 @@ namespace GameA
                     _winConditionItemDict.Add(i, winConditionItem);
                     winConditionItem.SetComplete(false);
                     winConditionItem.SetText(GetWinConditionString(i));
-                    if (GM2DGame.Instance.GameMode.GameSituation == EGameSituation.Adventure
-                        && ((ISituationAdventure)GM2DGame.Instance.GameMode).GetLevelInfo().ProjectType == EAdventureProjectType.APT_Normal)
+                    if (_showStar)
                     {
                         winConditionItem.Hide();
                     }
@@ -362,11 +354,13 @@ namespace GameA
 
         private void InitConditionView()
         {
+            _cachedView.ConditionsRoot.SetActive(true);
             for (int i = 0; i < _starConditionList.Count; i++)
             {
                 _starConditionList[i].Destroy();
             }
             _starConditionList.Clear();
+            _showStar = false;
             if (GM2DGame.Instance.GameMode.GameSituation == EGameSituation.Adventure)
             {
                 _cachedView.LevelInfoDock.SetActive(true);
@@ -377,11 +371,11 @@ namespace GameA
                     _cachedView.SectionText.text = "第" + param.Section.ToCNLowerCase() + "章";
                     if (param.ProjectType == EAdventureProjectType.APT_Normal)
                     {
+                        _showStar = true;
                         _cachedView.NormalLevelDock.SetActive(true);
                         _cachedView.BonusLevelDock.SetActive(false);
                         _cachedView.NormalLevelText.text = param.Level.ToString();
 
-                        _cachedView.ConditionsRoot.SetActive(true);
                         var table = param.Table;
                         _tableStandaloneLevel = table;
                         _starValueAry = new[] {table.Star1Value, table.Star2Value, table.Star3Value};
@@ -415,7 +409,6 @@ namespace GameA
                         _cachedView.NormalLevelDock.SetActive(false);
                         _cachedView.BonusLevelDock.SetActive(true);
                         _cachedView.BonusLevelText.text = param.Level.ToString();
-                        _cachedView.ConditionsRoot.SetActive(false);
                     }
                 }
             }

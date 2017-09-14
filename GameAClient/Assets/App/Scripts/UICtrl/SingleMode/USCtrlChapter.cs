@@ -57,11 +57,11 @@ namespace GameA
                 _normalLevels = new USCtrlLevelPoint[9];
                 for (int i = 0; i < 9; i++)
                 {
-                    GameObject levelObj = Object.Instantiate(_cachedView.NormalLevelPrefab, _cachedView.LevelRoot);
+                    GameObject levelObj = Object.Instantiate(_cachedView.NormalLevelPrefab, _cachedView.NormalLevelPos[i]);
                     _normalLevels[i] = new USCtrlLevelPoint();
                     _normalLevels[i].Init(levelObj.GetComponent<USViewLevelPoint>());
                     var rectTransform = levelObj.GetComponent<RectTransform>();
-                    rectTransform.anchoredPosition = _cachedView.NormalLevelPos[i].anchoredPosition;
+                    rectTransform.anchoredPosition = Vector2.zero;
                     rectTransform.localScale = Vector3.one;
                     _normalLevels[i].SetIslandImage(_islandSprite);
 //					bool isDown = false;
@@ -83,11 +83,11 @@ namespace GameA
                 _bonusLevels = new USCtrlLevelPoint[3];
                 for (int i = 0; i < 3; i++)
                 {
-                    GameObject levelObj = Object.Instantiate(_cachedView.BonusLevelPrefab, _cachedView.LevelRoot);
+                    GameObject levelObj = Object.Instantiate(_cachedView.BonusLevelPrefab, _cachedView.BonusLevelPos[i]);
                     _bonusLevels[i] = new USCtrlLevelPoint();
                     _bonusLevels[i].Init(levelObj.GetComponent<USViewLevelPoint>());
                     var rectTransform = levelObj.GetComponent<RectTransform>();
-                    rectTransform.anchoredPosition = _cachedView.BonusLevelPos[i].anchoredPosition;
+                    rectTransform.anchoredPosition = Vector2.zero;
                     rectTransform.localScale = Vector3.one;
 //					bool isDown = false;
 //					if (i%2 == 0){isDown = true;}
@@ -168,8 +168,8 @@ namespace GameA
 //						SocialGUIManager.Instance.OpenUI<UICtrlAdvLvlDetail>(intVec3);
 //				    }
                 }
-                _isDoingAnimation = false;
             }
+            _isDoingAnimation = false;
             yield return null;
         }
 
