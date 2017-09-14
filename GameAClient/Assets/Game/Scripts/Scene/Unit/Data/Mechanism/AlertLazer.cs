@@ -24,6 +24,7 @@ namespace GameA.Game
     {
         protected GridCheck _gridCheck;
         
+        protected UnityNativeParticleItem _lazerEffectWarning;
         protected UnityNativeParticleItem _lazerEffect;
         protected UnityNativeParticleItem _lazerEffectEnd;
         
@@ -66,7 +67,12 @@ namespace GameA.Game
             {
                 _withEffect.Trans.position += Vector3.back * 0.1f;
             }
-            _lazerEffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectAlertLazer", _trans);
+            _lazerEffectWarning = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectAlertLazer", _trans);
+            if (_lazerEffectWarning != null)
+            {
+                _lazerEffectWarning.Trans.localEulerAngles = new Vector3(0, 0, -_angle);
+            }
+            _lazerEffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazer", _trans);
             if (_lazerEffect != null)
             {
                 _lazerEffect.Trans.localEulerAngles = new Vector3(0, 0, -_angle);
@@ -90,6 +96,10 @@ namespace GameA.Game
             {
                 _lazerEffect.Stop();
             }
+            if (_lazerEffectWarning != null)
+            {
+                _lazerEffectWarning.Stop();
+            }
         }
 
         public override void UpdateExtraData()
@@ -103,6 +113,8 @@ namespace GameA.Game
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();
+            FreeEffect(_lazerEffectWarning);
+            _lazerEffectWarning = null;
             FreeEffect(_lazerEffect);
             _lazerEffect = null;
             FreeEffect(_lazerEffectEnd);
@@ -112,6 +124,7 @@ namespace GameA.Game
         protected override void OnActiveStateChanged()
         {
             base.OnActiveStateChanged();
+            _lazerEffectWarning.SetActiveStateEx(_eActiveState == EActiveState.Active);
             _lazerEffect.SetActiveStateEx(_eActiveState == EActiveState.Active);
             _lazerEffectEnd.SetActiveStateEx(_eActiveState == EActiveState.Active);
         }
@@ -174,9 +187,9 @@ namespace GameA.Game
                 //显示警告
                 if (_timer < 100)
                 {
-                    if (_timer >= 30)
+                    UpdateEffect();
+                    if (_timer >= 40)
                     {
-                        UpdateEffect();
                         if (hits.Count > 0)
                         {
                             for (int i = 0; i < hits.Count; i++)
@@ -220,17 +233,30 @@ namespace GameA.Game
         
         private void UpdateEffect()
         {
-            if (_lazerEffect != null)
+            var distanceWorld = _distance * ConstDefineGM2D.ClientTileScale;
+            if (_timer < 40)
             {
-                _lazerEffect.Play();
-                var distanceWorld = _distance * ConstDefineGM2D.ClientTileScale;
-                _lazerEffect.Trans.localScale = new Vector3(1, distanceWorld, 1);
-                if (_lazerEffectEnd != null)
+                if (_lazerEffectWarning != null)
                 {
-                    _lazerEffectEnd.Play();
-                    var d = _distance * _direction;
-                    var z = GetZ(CenterPos + new IntVec2((int) d.x, (int) d.y));
-                    _lazerEffectEnd.Trans.position = GM2DTools.TileToWorld(CenterPos, z) + distanceWorld * _direction;
+                    _lazerEffectWarning.Play();
+                    _lazerEffectWarning.Trans.localScale = new Vector3(1, distanceWorld, 1);
+                }
+            }
+            else
+            {
+                if (_lazerEffectWarning != null)
+                {
+                    _lazerEffectWarning.Stop();
+                }
+                if (_lazerEffect != null)
+                {
+                    _lazerEffect.Play();
+                    _lazerEffect.Trans.localScale = new Vector3(1, distanceWorld, 1);
+                    if (_lazerEffectEnd != null)
+                    {
+                        _lazerEffectEnd.Play();
+                        _lazerEffectEnd.Trans.position = GM2DTools.TileToWorld(CenterPos, _lazerEffect.Trans.position.z - 0.1f) + distanceWorld * _direction;
+                    }
                 }
             }
         }

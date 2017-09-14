@@ -261,15 +261,16 @@ namespace GameA.Game
 //
 //            List<int> useItems = uictrlBoostItem.SelectedItems;
 //            PlayMode.Instance.OnBoostItemSelectFinish(useItems);
-            UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
-            yield return new WaitUntil(() => uictrlCountDown.ShowComplete);
+//            UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
+//            yield return new WaitUntil(() => uictrlCountDown.ShowComplete);
 
-            if (!Application.isMobilePlatform)
-            {
-                UICtrlSceneState uictrlSceneState = SocialGUIManager.Instance.GetUI<UICtrlSceneState>();
-                uictrlSceneState.ShowHelpPage3Seconds();
-                yield return new WaitUntil(() => uictrlSceneState.ShowHelpPage3SecondsComplete);
-            }
+//            if (!Application.isMobilePlatform)
+//            {
+//                UICtrlSceneState uictrlSceneState = SocialGUIManager.Instance.GetUI<UICtrlSceneState>();
+//                uictrlSceneState.ShowHelpPage3Seconds();
+//                yield return new WaitUntil(() => uictrlSceneState.ShowHelpPage3SecondsComplete);
+//            }
+            yield return null;
 
             GameRun.Instance.Playing();
         }

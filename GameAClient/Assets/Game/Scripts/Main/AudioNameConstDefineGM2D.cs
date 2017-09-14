@@ -22,7 +22,7 @@ namespace GameA.Game
         public const string ButtonClick = "AudioButtonClick";
         public const string Reborn = "AudioReborn";
         public const string LevelNormalBgm = "MusicLevelNormal";
-        public const string LevelBonusBgm = "MusicLevelBunus";
+        public const string LevelBonusBgm = "MusicLevelBonus";
     }
 
     public class ParticleNameConstDefineGM2D
