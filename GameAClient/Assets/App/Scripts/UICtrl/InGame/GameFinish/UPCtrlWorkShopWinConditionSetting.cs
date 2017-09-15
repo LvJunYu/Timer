@@ -13,6 +13,7 @@ namespace GameA
             base.OnViewCreated();
             InitData();
             InitUI();
+            UpdateData();
             _cachedView.SureBtn.onClick.AddListener(OnButtonEnsureClick);
             _cachedView.CloseBtn.onClick.AddListener(OnButtonCancleClick);
         }
