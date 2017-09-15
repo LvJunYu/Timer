@@ -1,5 +1,4 @@
 ﻿using SoyEngine;
-using UnityEngine;
 
 namespace GameA.Game
 {
@@ -24,7 +23,7 @@ namespace GameA.Game
             SetWeapon(201);
         }
 
-        public bool SetWeapon(int id)
+        public override bool SetWeapon(int id)
         {
             if (id == 0)
             {

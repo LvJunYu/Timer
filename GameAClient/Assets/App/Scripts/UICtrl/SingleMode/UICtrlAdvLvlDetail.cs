@@ -107,7 +107,7 @@ namespace GameA
         protected override void SetAnimationType()
         {
             base.SetAnimationType();
-            _firstDelayFrames = 3;
+            _firstDelayFrames = 4;
         }
 
         public void RefreshAdventureUserLevelDataDetail()
