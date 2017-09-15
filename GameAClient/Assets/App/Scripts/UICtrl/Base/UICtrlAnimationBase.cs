@@ -217,7 +217,8 @@ namespace GameA
         /// <param name="tf"></param>
         /// <param name="animationType"></param>
         /// <param name="sequenceIndex"></param>
-        protected void SetPart(Transform tf, EAnimationType animationType, int sequenceIndex)
+        protected void SetPart(Transform tf, EAnimationType animationType, int sequenceIndex, float delay = 0,
+            Ease openEase = Ease.OutQuad, Ease closeEase = Ease.Linear)
         {
             if (sequenceIndex > _openPartSequences.Count - 1)
             {
@@ -231,16 +232,21 @@ namespace GameA
             _initialPos[sequenceIndex] = tf.localPosition;
             if (null == _openPartSequences[sequenceIndex])
             {
-                CreateSequences(tf, animationType, sequenceIndex);
+                CreateSequences(tf, animationType, sequenceIndex, delay, openEase, closeEase);
             }
         }
 
-        private void CreateSequences(Transform tf, EAnimationType animationType, int sequenceIndex)
+        private void CreateSequences(Transform tf, EAnimationType animationType, int sequenceIndex, float delay,
+            Ease openEase, Ease closeEase)
         {
             if (null == _openPartSequences[sequenceIndex])
                 _openPartSequences[sequenceIndex] = DOTween.Sequence();
             if (null == _closePartSequences[sequenceIndex])
                 _closePartSequences[sequenceIndex] = DOTween.Sequence();
+            if (delay > 0)
+            {
+                _openPartSequences[sequenceIndex].AppendInterval(delay);
+            }
             Vector3 targetPos = GetStartPos(animationType);
             switch (animationType)
             {
@@ -250,11 +256,11 @@ namespace GameA
                 case EAnimationType.MoveFromRight:
                     //开始动画
                     _openPartSequences[sequenceIndex].Append(
-                        tf.DOBlendableMoveBy(targetPos, 0.25f).From().SetEase(Ease.OutQuad)
+                        tf.DOBlendableMoveBy(targetPos, 0.25f).From().SetEase(openEase)
                     );
                     //结束动画
                     _closePartSequences[sequenceIndex].Append(
-                        tf.DOBlendableMoveBy(targetPos, 0.15f).SetEase(Ease.Linear)
+                        tf.DOBlendableMoveBy(targetPos, 0.15f).SetEase(closeEase)
                     );
                     break;
                 case EAnimationType.PopupFromCenter:
@@ -264,7 +270,7 @@ namespace GameA
                     );
                     //结束动画
                     _closePartSequences[sequenceIndex].Append(
-                        tf.DOScale(Vector3.zero, 0.15f).SetEase(Ease.Linear)
+                        tf.DOScale(Vector3.zero, 0.15f).SetEase(closeEase)
                     );
                     break;
                 case EAnimationType.PopupFromDown:
@@ -280,20 +286,20 @@ namespace GameA
                     );
                     //结束动画
                     _closePartSequences[sequenceIndex].Append(
-                        tf.DOBlendableMoveBy(targetPos * 0.5f, 0.15f).SetEase(Ease.Linear)
+                        tf.DOBlendableMoveBy(targetPos * 0.5f, 0.15f).SetEase(closeEase)
                     );
                     _closePartSequences[sequenceIndex].Join(
-                        tf.DOScale(Vector3.zero, 0.15f).SetEase(Ease.Linear)
+                        tf.DOScale(Vector3.zero, 0.15f).SetEase(closeEase)
                     );
                     break;
                 case EAnimationType.Fade:
                     //开始动画
                     _openPartSequences[sequenceIndex].Append(
-                        tf.GetComponent<Image>().DOFade(0,0.25f).From().SetEase(Ease.OutBack)
+                        tf.GetComponent<Image>().DOFade(0, 0.25f).From().SetEase(openEase)
                     );
                     //结束动画
                     _closePartSequences[sequenceIndex].Append(
-                        tf.GetComponent<Image>().DOFade(0,0.15f).SetEase(Ease.Linear)
+                        tf.GetComponent<Image>().DOFade(0, 0.15f).SetEase(closeEase)
                     );
                     break;
             }

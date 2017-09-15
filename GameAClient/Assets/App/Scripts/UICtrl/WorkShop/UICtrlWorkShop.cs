@@ -54,6 +54,13 @@ namespace GameA
                 LocalUser.Instance.PersonalProjectList.Request();
             }
             SetMode(EWorkShopState.PersonalProject);
+            SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamond);
+        }
+
+        protected override void OnClose()
+        {
+            base.OnClose();
+            SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
         }
 
         protected override void SetAnimationType()
