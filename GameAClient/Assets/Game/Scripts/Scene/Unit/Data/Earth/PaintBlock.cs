@@ -393,12 +393,12 @@ namespace GameA.Game
 
                 _paintTexture = new Texture2D(textureWidth, textureHeight);
                 _paintTexture.wrapMode = TextureWrapMode.Clamp;
-                _paintTexture.filterMode = FilterMode.Bilinear;
+                _paintTexture.filterMode = FilterMode.Point;
                 _paintTexture.SetPixels(EmptyPixels);
                 _paintTexture.Apply();
 
                 _maskTexture = new Texture2D(textureWidth, textureHeight);
-                _maskTexture.filterMode = FilterMode.Bilinear;
+                _maskTexture.filterMode = FilterMode.Point;
                 _maskTexture.SetPixels(EmptyPixels);
                 _maskTexture.Apply();
 

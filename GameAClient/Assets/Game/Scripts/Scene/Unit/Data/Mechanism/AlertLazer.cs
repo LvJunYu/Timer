@@ -195,7 +195,7 @@ namespace GameA.Game
                             for (int i = 0; i < hits.Count; i++)
                             {
                                 var hit = hits[i];
-                                if (UnitDefine.IsLaserDamage(hit.node.Layer))
+                                if (hit.distance <= _distance && UnitDefine.IsLaserDamage(hit.node.Layer))
                                 {
                                     UnitBase unit;
                                     if (ColliderScene2D.Instance.TryGetUnit(hit.node, out unit))
