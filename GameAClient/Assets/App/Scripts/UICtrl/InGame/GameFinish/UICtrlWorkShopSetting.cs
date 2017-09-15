@@ -91,6 +91,8 @@ namespace GameA
             //默认显示设置页面
             _cachedView.BasicSettingToggle.isOn = true;
             BasicSettingToggleOnValueChanged(true);
+            //每次打开时更新胜利条件
+            _upCtrlWorkShopWinConditionSetting.UpdateData();
             _openGamePlaying = false;
             if (GM2DGame.Instance != null)
             {

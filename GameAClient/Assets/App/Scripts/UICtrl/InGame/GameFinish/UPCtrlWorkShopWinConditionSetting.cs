@@ -13,7 +13,6 @@ namespace GameA
             base.OnViewCreated();
             InitData();
             InitUI();
-            UpdateData();
             _cachedView.SureBtn.onClick.AddListener(OnButtonEnsureClick);
             _cachedView.CloseBtn.onClick.AddListener(OnButtonCancleClick);
         }
@@ -89,7 +88,7 @@ namespace GameA
             _cachedView.LifeShowText.text = "初始生命";
         }
 
-        private void UpdateData()
+        public void UpdateData()
         {
             for (EWinCondition i = 0; i < EWinCondition.Max; i++)
             {
