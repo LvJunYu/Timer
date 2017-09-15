@@ -64,7 +64,7 @@ namespace GameA.Game
             _curPos = _originPos = IntVec2.zero;
             _maskRandom = 0;
             _destroy = 0;
-
+            _targetUnit = null;
             GameParticleManager.FreeParticleItem(_effectBullet);
             _effectBullet = null;
         }
