@@ -8,7 +8,6 @@ namespace GameA
     {
         private UPCtrlWorkShopBasicSetting _upCtrlWorkShopBasicSetting;
         private UPCtrlWorkShopWinConditionSetting _upCtrlWorkShopWinConditionSetting;
-//        private UPCtrlBase<UICtrlWorkShopSetting, UIViewWorkShopSetting> _curCtrl;
         private UICtrlEdit.EMode _curMode;
 
         private bool _openGamePlaying;
@@ -19,7 +18,6 @@ namespace GameA
             {
                 _upCtrlWorkShopBasicSetting.Close();
                 _upCtrlWorkShopWinConditionSetting.Open();
-//                _curCtrl = _upCtrlWorkShopWinConditionSetting;
             }
         }
 
@@ -36,7 +34,6 @@ namespace GameA
                 }
                 _upCtrlWorkShopWinConditionSetting.Close();
                 _upCtrlWorkShopBasicSetting.Open();
-//                _curCtrl = _upCtrlWorkShopBasicSetting;
             }
         }
 

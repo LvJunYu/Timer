@@ -81,8 +81,6 @@ namespace GameA
 		    _chapterAry[chapter-1].SetBonusLevelLockState(levelInx, isLock, playAnimation);
 	    }
 	    
-	    
-	    
         protected override void OnOpen (object parameter)
         {
             base.OnOpen (parameter);
@@ -258,8 +256,6 @@ namespace GameA
 			_cachedView.ChapterScrollRect.ForceReleaseAndDisableDrag();
 			_cachedView.InputBlock.enabled = true;
 		}
-
-		
 
 		private void RefreshChapterInfo (bool doPassAnimate = false) {
 			if (_currentChapter < 1) {
