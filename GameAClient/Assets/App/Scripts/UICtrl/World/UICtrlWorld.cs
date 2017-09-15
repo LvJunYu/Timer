@@ -104,7 +104,17 @@ namespace GameA
         protected override void SetAnimationType()
         {
             base.SetAnimationType();
-            _firstDelayFrames = 7;
+            _animationType = EAnimationType.None;
+            _firstDelayFrames = 5;
+        }
+
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.TitleRtf,EAnimationType.MoveFromUp, 0);
+            SetPart(_cachedView.TabGroup.transform,EAnimationType.MoveFromLeft, 1);
+            SetPart(_cachedView.ContentPanelDockRtf,EAnimationType.MoveFromRight, 2);
+            SetPart(_cachedView.BGRtf,EAnimationType.Fade, 3);
         }
 
         private void ClickMenu(int selectInx, bool open)

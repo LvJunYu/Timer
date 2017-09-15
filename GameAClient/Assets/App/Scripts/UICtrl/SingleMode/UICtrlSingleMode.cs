@@ -160,6 +160,7 @@ namespace GameA
 	    protected override void SetAnimationType()
 	    {
 		    base.SetAnimationType();
+		    _animationType = EAnimationType.None;
 		    _firstDelayFrames = 3;
 	    }
 

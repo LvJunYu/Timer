@@ -59,9 +59,19 @@ namespace GameA
         protected override void SetAnimationType()
         {
             base.SetAnimationType();
+            _animationType = EAnimationType.None;
             _firstDelayFrames = 5;
         }
-        
+
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.TitleRtf,EAnimationType.MoveFromUp, 0);
+            SetPart(_cachedView.LeftPartRtf, EAnimationType.MoveFromLeft, 1);
+            SetPart(_cachedView.RightPartRtf, EAnimationType.MoveFromRight, 2);
+            SetPart(_cachedView.BGRtf,EAnimationType.Fade, 3);
+        }
+
         protected override void OnOpenAnimationUpdate()
         {
             base.OnOpenAnimationUpdate();
