@@ -160,7 +160,7 @@ namespace GameA
 	    protected override void SetAnimationType()
 	    {
 		    base.SetAnimationType();
-		    _firstDelayFrames = 2;
+		    _firstDelayFrames = 3;
 	    }
 
 	    protected override void OnViewCreated()
