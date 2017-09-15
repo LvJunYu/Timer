@@ -395,8 +395,11 @@ namespace GameA
 				}
 				return;
 			}
-			if (Mathf.Abs (x - _chapterRightNormalizedHorizontalPos [_currentChapter - 1]) > (200 / _cachedView.ChapterScrollRect.content.GetWidth ())) {
+			if (Mathf.Abs (x - _chapterRightNormalizedHorizontalPos [_currentChapter - 1]) > (200 / _cachedView.ChapterScrollRect.content.GetWidth ())) 
+			{
+				FadeOutChanterBg(_cachedView.ChapterBg[_currentChapter-1]);
 				_currentChapter += x > _chapterRightNormalizedHorizontalPos [_currentChapter - 1] ? 1 : -1;
+				FadeInChanterBg(_cachedView.ChapterBg[_currentChapter -1]);
 				RefreshChapterInfo ();
 				BeginChangeChapter ();
 				_dragging = false;
