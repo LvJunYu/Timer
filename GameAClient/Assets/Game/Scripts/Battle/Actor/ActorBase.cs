@@ -8,8 +8,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace GameA.Game
 {
@@ -20,6 +22,7 @@ namespace GameA.Game
         Water,
         Fire,
         Saw,
+        TigerEat//老虎吃掉
     }
 
     public class ActorBase : DynamicRigidbody
@@ -40,7 +43,9 @@ namespace GameA.Game
         protected SkillCtrl _skillCtrl;
 
         private int _damageFrame;
-        private Shader _damageShader;
+        private int _hpStayTimer;
+        
+        protected StatusBar _statusBar;
 
         public override EDieType EDieType
         {
@@ -72,13 +77,12 @@ namespace GameA.Game
             RemoveAllStates();
             _canFanCross = true;
             _eDieType = EDieType.None;
-            if (_skillCtrl != null)
-            {
-                _skillCtrl.Clear();
-            }
             _damageFrame = 0;
-            if (_damageShader != null)
-                _view.SetMatShader(_damageShader, "Value", 0);
+            if (_view != null)
+            {
+                _view.SetDamageShaderValue("Value", 0);
+            }
+            _hpStayTimer = 0;
             base.Clear();
         }
 
@@ -94,10 +98,10 @@ namespace GameA.Game
 
         internal override void OnObjectDestroy()
         {
-            //有特效
-            if (_skillCtrl != null)
+            if (_statusBar != null)
             {
-                _skillCtrl.Clear();
+                Object.Destroy(_statusBar.gameObject);
+                _statusBar = null;
             }
             RemoveAllStates();
             base.OnObjectDestroy();
@@ -571,6 +575,12 @@ namespace GameA.Game
             {
                 _eDieType = EDieType.Fire;
             }
+            State state;
+            if (TryGetState(73, out state))
+            {
+                _eDieType = EDieType.TigerEat;
+//                LogHelper.Debug("被老虎咬死了");
+            }
             if (_animation != null)
             {
                 RemoveAllStates(true);
@@ -591,6 +601,9 @@ namespace GameA.Game
                         break;
                     case EDieType.Saw:
                         _animation.PlayOnce(_animation.HasAnimation("OnSawStart") ? "OnSawStart" : "Death");
+                        break;
+                    case EDieType.TigerEat:
+                        _view.SetRendererColor(Color.clear);
                         break;
                 }
             }
@@ -622,6 +635,14 @@ namespace GameA.Game
                     return;
                 }
                 _damageFrame = BattleDefine.DamageDurationFrame;
+                if (_isMonster)
+                {
+                    _hpStayTimer = BattleDefine.HpStayTime;
+                    if (_statusBar != null)
+                    {
+                        _statusBar.SetHPActive(true);
+                    }
+                }
             }
             _hp += hpChanged;
             _hp = Mathf.Clamp(_hp, 0, _maxHp);
@@ -629,9 +650,9 @@ namespace GameA.Game
             {
                 OnDead();
             }
-            if (_view != null)
+            if (_statusBar != null)
             {
-                _view.StatusBar.SetHP(hpChanged > 0 ? EHPModifyCase.Heal : EHPModifyCase.Hit, _hp, _maxHp);
+                _statusBar.SetHP(hpChanged > 0 ? EHPModifyCase.Heal : EHPModifyCase.Hit, _hp, _maxHp);
             }
         }
 
@@ -642,13 +663,32 @@ namespace GameA.Game
                 _damageFrame--;
                 if (_view != null)
                 {
-                    if (null == _damageShader)
-                        _damageShader = Shader.Find("Spine/SkeletonWhite");
-                    _view.SetMatShader(_damageShader, "Value", _damageFrame / (float) BattleDefine.DamageDurationFrame);
-//                    _view.SetRendererColor(_damageFrame == 0
-//                        ? Color.white
-//                        : Color.Lerp(Color.red, Color.white, (float) _damageFrame / BattleDefine.DamageDurationFrame));
+                    _view.SetDamageShaderValue("Value", _damageFrame / (float) BattleDefine.DamageDurationFrame);
                 }
+            }
+            if (_hpStayTimer > 0)
+            {
+                _hpStayTimer--;
+                if (_hpStayTimer == 0 && _statusBar != null)
+                {
+                    _statusBar.SetHPActive(false);
+                }
+            }
+        }
+        
+        public void CreateStatusBar()
+        {
+            if (null != _statusBar)
+            {
+                return;
+            }
+            GameObject statusBarObj =
+                Object.Instantiate(ResourcesManager.Instance.GetPrefab(EResType.ParticlePrefab, "StatusBar", 1)) as
+                    GameObject;
+            if (null != statusBarObj)
+            {
+                _statusBar = statusBarObj.GetComponent<StatusBar>();
+                CommonTools.SetParent(statusBarObj.transform, _trans);
             }
         }
     }

@@ -27,8 +27,7 @@ namespace GameA
             }
             _cachedView.BtnIcon.sprite = ResourcesManager.Instance.GetSprite(tableSkill.Icon);
             _cachedView.BtnIcon.gameObject.SetActive(true);
-            if (_curTableEquipment.InputType == (int) EWeaponInputType.GetKeyUp)
-                PlayFullParticle(true);
+            PlayFullParticle(_curTableEquipment.InputType == (int) EWeaponInputType.GetKeyUp);
             _cachedView.BtnCD1.fillAmount = 0;
             _cachedView.BtnCD2.fillAmount = 0;
             _cachedView.TimeTxt.text = "";

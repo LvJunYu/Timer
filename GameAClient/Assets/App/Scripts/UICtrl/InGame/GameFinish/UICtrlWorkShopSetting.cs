@@ -4,12 +4,14 @@ using SoyEngine;
 namespace GameA
 {
     [UIAutoSetup]
-    public class UICtrlWorkShopSetting : UICtrlAnimationBase<UIViewWorkShopSetting>
+    public class UICtrlWorkShopSetting : UICtrlGenericBase<UIViewWorkShopSetting>
     {
         private UPCtrlWorkShopBasicSetting _upCtrlWorkShopBasicSetting;
         private UPCtrlWorkShopWinConditionSetting _upCtrlWorkShopWinConditionSetting;
 //        private UPCtrlBase<UICtrlWorkShopSetting, UIViewWorkShopSetting> _curCtrl;
         private UICtrlEdit.EMode _curMode;
+
+        private bool _openGamePlaying;
 
         private void WinConditionToggleOnValueChanged(bool arg0)
         {
@@ -25,6 +27,13 @@ namespace GameA
         {
             if (arg0)
             {
+                //如果在测试状态，则先退出测试状态
+                if (_curMode == UICtrlEdit.EMode.EditTest)
+                {
+                    GameModeEdit gameModeEdit = GM2DGame.Instance.GameMode as GameModeEdit;
+                    if (null != gameModeEdit)
+                        gameModeEdit.ChangeMode(GameModeEdit.EMode.Edit);
+                }
                 _upCtrlWorkShopWinConditionSetting.Close();
                 _upCtrlWorkShopBasicSetting.Open();
 //                _curCtrl = _upCtrlWorkShopBasicSetting;
@@ -85,9 +94,14 @@ namespace GameA
             //默认显示设置页面
             _cachedView.BasicSettingToggle.isOn = true;
             BasicSettingToggleOnValueChanged(true);
+            _openGamePlaying = false;
             if (GM2DGame.Instance != null)
             {
-                GM2DGame.Instance.Pause();
+                if (GameRun.Instance.IsPlaying)
+                {
+                    GM2DGame.Instance.Pause();
+                    _openGamePlaying = true;
+                }
             }
         }
 
@@ -98,18 +112,20 @@ namespace GameA
             {
                 return;
             }
-            if (GM2DGame.Instance != null)
+            if (GM2DGame.Instance != null && _openGamePlaying)
             {
                 GM2DGame.Instance.Continue();
+                _openGamePlaying = false;
             }
             Messenger.Broadcast(EMessengerType.OnCloseGameSetting);
             base.OnClose();
         }
 
-        protected override void SetAnimationType()
-        {
-            base.SetAnimationType();
-            _animationType = EAnimationType.PopupFromUp;
-        }
+//        protected override void SetAnimationType()
+//        {
+//            base.SetAnimationType();
+//            _animationType = EAnimationType.PopupFromUp;
+//            _closeDelayFrames = 3;
+//        }
     }
 }

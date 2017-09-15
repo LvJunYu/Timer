@@ -541,22 +541,22 @@ namespace GameA.Game
         /// <param name="tableUnit"></param>
         /// <param name="unitDesc"></param>
         /// <returns></returns>
-        internal bool Init(Table_Unit tableUnit, UnitDesc unitDesc)
-        {
-            _tableUnit = tableUnit;
-            _unitDesc = unitDesc;
-            _curPos = new IntVec2(_guid.x, _guid.y);
-            UpdateExtraData();
-            InitAssetPath();
-            if (!UnitManager.Instance.TryGetUnitView(this, false, out _view))
-            {
-                LogHelper.Error("TryGetUnitView Failed, {0}", tableUnit.Id);
-                return true;
-            }
-            _view.OnIsChild();
-            SetFacingDir(_moveDirection, true);
-            return true;
-        }
+//        internal bool Init(Table_Unit tableUnit, UnitDesc unitDesc)
+//        {
+//            _tableUnit = tableUnit;
+//            _unitDesc = unitDesc;
+//            _curPos = new IntVec2(_guid.x, _guid.y);
+//            UpdateExtraData();
+//            InitAssetPath();
+//            if (!UnitManager.Instance.TryGetUnitView(this, false, out _view))
+//            {
+//                LogHelper.Error("TryGetUnitView Failed, {0}", tableUnit.Id);
+//                return true;
+//            }
+//            _view.OnIsChild();
+//            SetFacingDir(_moveDirection, true);
+//            return true;
+//        }
 
         internal bool Init(Table_Unit tableUnit, UnitDesc unitDesc, SceneNode dynamicCollider)
         {
@@ -708,13 +708,13 @@ namespace GameA.Game
         internal virtual void Reset()
         {
             UpdateExtraData();
-            if (_view != null)
-            {
-                _view.Reset();
-            }
             if (_eActiveState != EActiveState.None)
             {
                 OnActiveStateChanged();
+            }
+            if (_view != null)
+            {
+                _view.Reset();
             }
             _curPos = new IntVec2(_guid.x, _guid.y);
             _colliderPos = GetColliderPos(_curPos);
@@ -832,13 +832,6 @@ namespace GameA.Game
         {
         }
 
-        /// <summary>
-        /// 压死
-        /// </summary>
-        public virtual void OnCrushHit(UnitBase other)
-        {
-        }
-
         public virtual void OnHpChanged(int hpChanged)
         {
         }
@@ -946,7 +939,7 @@ namespace GameA.Game
         protected float GetZ(IntVec2 pos)
         {
             var size = Mathf.Clamp(_tableUnit.Width, 0, ConstDefineGM2D.ServerTileScale);
-            return -(pos.x + pos.y * 1.5f + size) * UnitDefine.UnitSorttingLayerRatio + _viewZOffset;
+            return -(pos.x + pos.y+ size) * UnitDefine.UnitSorttingLayerRatio + _viewZOffset;
         }
 
         protected void SetRelativeEffectPos(Transform trans, EDirectionType eDirectionType, float viewZOffset = 0)

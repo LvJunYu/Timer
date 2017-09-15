@@ -68,6 +68,11 @@ namespace GameA.Game
             base.Clear();
             _timer = 0;
             ShowHide(false);
+        }
+
+        public override void UpdateExtraData()
+        {
+            base.UpdateExtraData();
             _eActiveState = EActiveState.Deactive;
         }
 

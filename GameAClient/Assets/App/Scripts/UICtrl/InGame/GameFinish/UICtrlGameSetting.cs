@@ -14,13 +14,14 @@ using SoyEngine;
 namespace GameA
 {
 	[UIAutoSetup]
-	public class UICtrlGameSetting:UICtrlAnimationBase<UIViewGameSetting>
+	public class UICtrlGameSetting:UICtrlGenericBase<UIViewGameSetting>
 	{
 
         private USCtrlGameSettingItem _showShadow;
         private USCtrlGameSettingItem _showRoute;
         private USCtrlGameSettingItem _playBGMusic;
         private USCtrlGameSettingItem _playSoundsEffects;
+		private bool _openGamePlaying;
 		protected override void InitGroupId()
 		{
 			_groupId = (int)EUIGroupType.AppGameUI;
@@ -63,6 +64,15 @@ namespace GameA
             ImageResourceManager.Instance.SetDynamicImage(_cachedView.UserHeadAvatar,
             LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,
             _cachedView.DefaultUserHeadTexture);
+			_openGamePlaying = false;
+			if (GM2DGame.Instance != null)
+			{
+				if (GameRun.Instance.IsPlaying)
+				{
+					GM2DGame.Instance.Pause();
+					_openGamePlaying = true;
+				}
+			}
 		}
 
 		protected override void OnClose()
@@ -72,19 +82,20 @@ namespace GameA
 			{
 				return;
 			}
-			if (GM2DGame.Instance != null)
+			if (GM2DGame.Instance != null && _openGamePlaying)
 			{
 				GM2DGame.Instance.Continue();
+				_openGamePlaying = false;
 			}
 			Messenger.Broadcast(EMessengerType.OnCloseGameSetting);
 			base.OnClose();
 		}
 
-		protected override void SetAnimationType()
-		{
-			base.SetAnimationType();
-			_animationType = EAnimationType.PopupFromUp;
-		}
+//		protected override void SetAnimationType()
+//		{
+//			base.SetAnimationType();
+//			_animationType = EAnimationType.None;
+//		}
 
 		private void LoginOut()
         {

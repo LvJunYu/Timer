@@ -24,7 +24,6 @@ namespace GameA.Game
         protected AnimationSystem _animation;
 
         protected UnitPropertyViewWrapper _propertyViewWrapper;
-        protected StatusBar _statusBar;
 
         protected bool _isPart;
 
@@ -36,18 +35,6 @@ namespace GameA.Game
         public AnimationSystem Animation
         {
             get { return _animation; }
-        }
-
-        public StatusBar StatusBar
-        {
-            get
-            {
-                if (null == _statusBar)
-                {
-                    InitStatusBar();
-                }
-                return _statusBar;
-            }
         }
 
         public UnitView()
@@ -101,7 +88,7 @@ namespace GameA.Game
             
         }
 
-        public virtual void SetMatShader(Shader shader,string name = null,float value = 1)
+        public virtual void SetDamageShaderValue(string name = null,float value = 1)
         {
             
         }
@@ -117,6 +104,7 @@ namespace GameA.Game
             _trans.position = UnitDefine.HidePos;
             _trans.localScale = Vector3.one;
             _trans.localRotation = Quaternion.identity;
+            _trans.rotation = Quaternion.identity;
             _trans.parent = UnitManager.Instance.GetOriginParent();
             SetRendererEnabled(true);
             SetRendererColor(Color.white);
@@ -170,14 +158,9 @@ namespace GameA.Game
             {
                 _propertyViewWrapper.Hide();
             }
-            if (_statusBar != null)
-            {
-                Object.Destroy(_statusBar.gameObject);
-                _statusBar = null;
-            }
             UpdateSign();
         }
-
+        
         public virtual void OnPlay()
         {
             SetEditAssistActive(false);
@@ -307,17 +290,6 @@ namespace GameA.Game
                     break;
             }
             return res;
-        }
-        
-        private void InitStatusBar()
-        {
-            if (null != _statusBar) return;
-            GameObject statusBarObj = Object.Instantiate(ResourcesManager.Instance.GetPrefab(EResType.ParticlePrefab, "StatusBar", 1)) as GameObject;
-            if (null != statusBarObj)
-            {
-                _statusBar = statusBarObj.GetComponent<StatusBar>();
-                CommonTools.SetParent(statusBarObj.transform, _trans);
-            }
         }
     }
 }

@@ -136,8 +136,16 @@ namespace GameA
         {
             if (_selected)
             {
-                UnitDesc unitDesc = EditHelper.GetUnitDefaultData(_table.Id).UnitDesc;
-                EditHelper.TryEditUnitData(unitDesc);
+                if (EditMode.Instance.IsInState(EditModeState.Add.Instance)
+                    || EditMode.Instance.IsInState(EditModeState.ModifyAdd.Instance))
+                {
+                    UnitDesc unitDesc = EditHelper.GetUnitDefaultData(_table.Id).UnitDesc;
+                    EditHelper.TryEditUnitData(unitDesc);
+                }
+                else
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlItem>().SelectItem(_table);
+                }
             }
             else
             {

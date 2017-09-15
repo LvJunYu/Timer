@@ -64,15 +64,7 @@ namespace GameA.Game
                 _withEffect.Trans.position += Vector3.back * 0.1f;
             }
             _lazerEffect = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazer", _trans);
-            if (_lazerEffect != null)
-            {
-                _lazerEffect.Trans.position = GM2DTools.TileToWorld(CenterPos, _trans.position.z);
-            }
             _lazerEffectEnd = GameParticleManager.Instance.GetUnityNativeParticleItem("M1EffectLazerStart", _trans);
-            if (_lazerEffectEnd != null)
-            {
-                _lazerEffectEnd.Trans.position = GM2DTools.TileToWorld(CenterPos, _trans.position.z - 0.1f);
-            }
             return true;
         }
 
@@ -206,9 +198,9 @@ namespace GameA.Game
                 if (_lazerEffectEnd != null)
                 {
                     _lazerEffectEnd.Play();
-                    var d = _distance * _direction;
-                    var z = GetZ(CenterPos + new IntVec2((int) d.x, (int) d.y));
-                    _lazerEffectEnd.Trans.position = GM2DTools.TileToWorld(CenterPos, z) + distanceWorld * _direction;
+                    _lazerEffectEnd.Trans.position =
+                        GM2DTools.TileToWorld(CenterPos, _lazerEffect.Trans.position.z - 0.1f) +
+                        distanceWorld * _direction;
                 }
             }
         }

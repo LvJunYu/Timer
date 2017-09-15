@@ -64,11 +64,11 @@ namespace GameA
                         case EWinCondition.TimeLimit:
                             if (table.WinConditions.Length == 1)
                             {
-                                winCondition = string.Format("坚持存活 {0} 秒", table.TimeLimit);
+                                winCondition = string.Format("坚持存活 {0}", GameATools.SecondToHour(table.TimeLimit, true));
                             }
                             else
                             {
-                                winCondition = string.Format("{0} 秒内过关", table.TimeLimit);
+                                winCondition = string.Format("{0} 内过关", GameATools.SecondToHour(table.TimeLimit, true));
                             }
                             break;
                         case EWinCondition.Arrived:

@@ -22,7 +22,6 @@ namespace GameA.Game
         public override IEnumerator InitByStep()
 		{
             GameRun.Instance.ChangeState(ESceneState.Play);
-			InitUI();
 			InitGame();
 			yield return null;
 		}
@@ -147,6 +146,7 @@ namespace GameA.Game
 	    {
 		    base.OnGameStart();
 		    _inputDatas.Clear();
+		    InitUI();
 	    }
     }
 }

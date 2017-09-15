@@ -39,6 +39,7 @@ namespace GameA.Game
         private GameStatistic _statistic;
         private UnitUpdateManager _unitUpdateManager;
         private List<Trap> _traps = new List<Trap>();
+        protected List<Bullet> _bullets = new List<Bullet>();
 
         public static PlayMode Instance
         {
@@ -135,6 +136,16 @@ namespace GameA.Game
                 DeleteTrap(_traps[i].Guid);
             }
             _traps.Clear();
+            
+            for (int i = 0; i < _bullets.Count; i++)
+            {
+                var bullet = _bullets[i];
+                if (bullet != null)
+                {
+                    PoolFactory<Bullet>.Free(bullet);
+                }
+            }
+            _bullets.Clear();
         }
 
         public void Pause()
@@ -181,6 +192,13 @@ namespace GameA.Game
             {
                 _traps[i].UpdateLogic();
             }
+            if (_bullets.Count > 0)
+            {
+                for (int i = 0; i < _bullets.Count; i++)
+                {
+                    _bullets[i].UpdateLogic();
+                }
+            }
         }
 
         private void BeforeUpdateLogic()
@@ -208,24 +226,24 @@ namespace GameA.Game
             _nextActions.Add(action);
         }
         
-        public UnitBase CreateUnitView(UnitDesc unitDesc)
-        {
-            UnitBase unit = UnitManager.Instance.GetUnit(unitDesc.Id);
-            if (unit != null)
-            {
-                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
-                if (tableUnit == null)
-                {
-                    LogHelper.Error("CreateUnitView Failed,{0}", unitDesc);
-                    return null;
-                }
-                if (!unit.Init(tableUnit, unitDesc))
-                {
-                    return null;
-                }
-            }
-            return unit;
-        }
+//        public UnitBase CreateUnitView(UnitDesc unitDesc)
+//        {
+//            UnitBase unit = UnitManager.Instance.GetUnit(unitDesc.Id);
+//            if (unit != null)
+//            {
+//                Table_Unit tableUnit = UnitManager.Instance.GetTableUnit(unitDesc.Id);
+//                if (tableUnit == null)
+//                {
+//                    LogHelper.Error("CreateUnitView Failed,{0}", unitDesc);
+//                    return null;
+//                }
+//                if (!unit.Init(tableUnit, unitDesc))
+//                {
+//                    return null;
+//                }
+//            }
+//            return unit;
+//        }
 
         public UnitBase CreateRuntimeUnit(int id, IntVec2 pos, byte rotation = 0)
         {
@@ -598,6 +616,30 @@ namespace GameA.Game
                 }
             }
             return true;
+        }
+        
+        public void AddBullet(Bullet bullet)
+        {
+            _bullets.Add(bullet);
+        }
+
+        public void DeleteBullet(Bullet bullet)
+        {
+            _bullets.Remove(bullet);
+            PoolFactory<Bullet>.Free(bullet);
+        }
+
+        public void Clear()
+        {
+            for (int i = 0; i < _bullets.Count; i++)
+            {
+                var bullet = _bullets[i];
+                if (bullet != null)
+                {
+                    PoolFactory<Bullet>.Free(bullet);
+                }
+            }
+            _bullets.Clear();
         }
     }
 }

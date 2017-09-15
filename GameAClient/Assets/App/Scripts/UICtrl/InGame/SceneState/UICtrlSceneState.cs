@@ -38,6 +38,7 @@ namespace GameA
         private List<UMCtrlCollectionItem> _umCtrlCollectionItemCache;
         private List<UMCtrlCollectionLifeItem> _umCtrlCollectionLifeItemCache;
         protected Sequence _finalCountDownSequence;
+        private bool _showStar;
 
         /// <summary>
         /// 冒险模式
@@ -62,8 +63,8 @@ namespace GameA
         {
             base.OnOpen(parameter);
             Clear();
-            UpdateItemVisible();
             UpdateAll();
+            UpdateItemVisible();
             //初始化收集物体缓存
             if (null == _umCtrlCollectionItemCache)
             {
@@ -100,24 +101,16 @@ namespace GameA
             RegisterEvent<Vector3>(EMessengerType.OnLifeCollect, ShowCollectionLifeAnimation);
         }
 
-        protected override void ExitGame()
-        {
-            base.ExitGame();
-            for (int i = 0; i < _starConditionList.Count; i++)
-            {
-                _starConditionList[i].Destroy();
-            }
-            _starConditionList.Clear();
-        }
-
         public override void OnUpdate()
         {
             base.OnUpdate();
+            UpdateShowHelper();
             if (_hasTimeLimit)
             {
                 UpdateTimeLimit();
             }
-            if (GM2DGame.Instance.GameMode is GameModeAdventurePlay)
+
+            if (_showStar)
             {
                 UpdateAdventurePlay();
             }
@@ -163,8 +156,8 @@ namespace GameA
             {
                 return;
             }
-            UpdateItemVisible();
             UpdateAll();
+            UpdateItemVisible();
         }
 
         private void OnKeyCountChanged()
@@ -225,6 +218,14 @@ namespace GameA
                     _winConditionItemDict.Add(i, winConditionItem);
                     winConditionItem.SetComplete(false);
                     winConditionItem.SetText(GetWinConditionString(i));
+                    if (_showStar)
+                    {
+                        winConditionItem.Hide();
+                    }
+                    else
+                    {
+                        winConditionItem.Show();
+                    }
                 }
             }
             if (_hasTimeLimit)
@@ -353,6 +354,13 @@ namespace GameA
 
         private void InitConditionView()
         {
+            _cachedView.ConditionsRoot.SetActive(true);
+            for (int i = 0; i < _starConditionList.Count; i++)
+            {
+                _starConditionList[i].Destroy();
+            }
+            _starConditionList.Clear();
+            _showStar = false;
             if (GM2DGame.Instance.GameMode.GameSituation == EGameSituation.Adventure)
             {
                 _cachedView.LevelInfoDock.SetActive(true);
@@ -363,11 +371,11 @@ namespace GameA
                     _cachedView.SectionText.text = "第" + param.Section.ToCNLowerCase() + "章";
                     if (param.ProjectType == EAdventureProjectType.APT_Normal)
                     {
+                        _showStar = true;
                         _cachedView.NormalLevelDock.SetActive(true);
                         _cachedView.BonusLevelDock.SetActive(false);
                         _cachedView.NormalLevelText.text = param.Level.ToString();
 
-                        _cachedView.ConditionsRoot.SetActive(true);
                         var table = param.Table;
                         _tableStandaloneLevel = table;
                         _starValueAry = new[] {table.Star1Value, table.Star2Value, table.Star3Value};
@@ -401,7 +409,6 @@ namespace GameA
                         _cachedView.NormalLevelDock.SetActive(false);
                         _cachedView.BonusLevelDock.SetActive(true);
                         _cachedView.BonusLevelText.text = param.Level.ToString();
-                        _cachedView.ConditionsRoot.SetActive(false);
                     }
                 }
             }
@@ -464,11 +471,13 @@ namespace GameA
                 case EWinCondition.TimeLimit:
                     if (!special)
                     {
-                        return string.Format("坚持存活 {0} 秒", PlayMode.Instance.SceneState.RunTimeTimeLimit * 10);
+                        return string.Format("坚持存活 {0}",
+                            GameATools.SecondToHour(PlayMode.Instance.SceneState.RunTimeTimeLimit, true));
                     }
                     else
                     {
-                        return string.Format("{0} 秒内过关", PlayMode.Instance.SceneState.RunTimeTimeLimit * 10);
+                        return string.Format("{0} 内过关",
+                            GameATools.SecondToHour(PlayMode.Instance.SceneState.RunTimeTimeLimit, true));
                     }
                 case EWinCondition.Arrived:
                     return "到达终点";

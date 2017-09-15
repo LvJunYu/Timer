@@ -3,27 +3,35 @@ using GameA.Game;
 using SoyEngine;
 using UnityEngine;
 
-namespace GameA {
+namespace GameA
+{
     /// <summary>
     /// 提供了一些常用的工具
     /// </summary>
-    public static class GameATools {
+    public static class GameATools
+    {
         /// <summary>
         /// 刷新本地脏数据（金币、钻石、体力）的最小间隔时间
         /// </summary>
         private static long _updateLocalDirtyValueInterval = 30000;
 
         #region check gde
+
         /// <summary>
         /// 检查是否有num金币，没有则弹出购买金币对话框
         /// </summary>
         /// <returns><c>true</c>, if gold was checked, <c>false</c> otherwise.</returns>
         /// <param name="num">Number.</param>
-        public static bool CheckGold (int num, bool showBuy = true) {
-            if (LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin >= num) {
+        public static bool CheckGold(int num, bool showBuy = true)
+        {
+            if (LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin >= num)
+            {
                 return true;
-            } else {
-                if (showBuy) {
+            }
+            else
+            {
+                if (showBuy)
+                {
                     // todo buy gold ui
 //                    SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
                     SocialGUIManager.ShowPopupDialog("金币花完啦，快去挣钱吧~");
@@ -31,16 +39,22 @@ namespace GameA {
                 return false;
             }
         }
+
         /// <summary>
         /// 检查是否有num钻石，没有则弹出购买钻石对话框
         /// </summary>
         /// <returns><c>true</c>, if gold was checked, <c>false</c> otherwise.</returns>
         /// <param name="num">Number.</param>
-        public static bool CheckDiamond (int num, bool showBuy = true) {
-            if (LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond >= num) {
+        public static bool CheckDiamond(int num, bool showBuy = true)
+        {
+            if (LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond >= num)
+            {
                 return true;
-            } else {
-                if (showBuy) {
+            }
+            else
+            {
+                if (showBuy)
+                {
                     // todo buy gold ui
 //                    SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
                     SocialGUIManager.ShowPopupDialog("钻石花完啦，快去氪金吧~");
@@ -48,135 +62,177 @@ namespace GameA {
                 return false;
             }
         }
+
         /// <summary>
         /// 检查是否有num体力，没有则弹出购买体力对话框
         /// </summary>
         /// <returns><c>true</c>, if energy was checked, <c>false</c> otherwise.</returns>
         /// <param name="num">Number.</param>
         /// <param name="showBuyEnergy">If set to <c>true</c> show buy energy.</param>
-        public static bool CheckEnergy (int num, bool showBuy = true) {
-            AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh ();
-            if (num > AppData.Instance.AdventureData.UserData.UserEnergyData.Energy) {
-                if (showBuy) {
-                    SocialGUIManager.Instance.OpenUI <UICtrlBuyEnergy> (num - AppData.Instance.AdventureData.UserData.UserEnergyData.Energy);
+        public static bool CheckEnergy(int num, bool showBuy = true)
+        {
+            AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh();
+            if (num > AppData.Instance.AdventureData.UserData.UserEnergyData.Energy)
+            {
+                if (showBuy)
+                {
+                    SocialGUIManager.Instance.OpenUI<UICtrlBuyEnergy>(
+                        num - AppData.Instance.AdventureData.UserData.UserEnergyData.Energy);
                 }
                 return false;
-            } else {
+            }
+            else
+            {
                 return true;
             }
         }
+
         #endregion
 
         #region use gde
-        public static bool LocalUseEnergy (int num) {
-            if (num > AppData.Instance.AdventureData.UserData.UserEnergyData.Energy) {
+
+        public static bool LocalUseEnergy(int num)
+        {
+            if (num > AppData.Instance.AdventureData.UserData.UserEnergyData.Energy)
+            {
                 return false;
-            } else {
+            }
+            else
+            {
                 AppData.Instance.AdventureData.UserData.UserEnergyData.Energy -= num;
                 if (DateTimeUtil.GetServerTimeNowTimestampMillis() -
                     AppData.Instance.AdventureData.UserData.UserEnergyData.FirstDirtyTime >
-                    _updateLocalDirtyValueInterval) {
-                    AppData.Instance.AdventureData.UserData.UserEnergyData.Request (
+                    _updateLocalDirtyValueInterval)
+                {
+                    AppData.Instance.AdventureData.UserData.UserEnergyData.Request(
                         LocalUser.Instance.UserGuid,
                         null,
-                        code => {
+                        code =>
+                        {
                             // todo error handle
                         }
                     );
                 }
                 //Messenger.Broadcast (EMessengerType.OnEnergyChanged);
-                AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh ();
+                AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh();
                 return true;
             }
         }
-        public static bool LocalUseGold (int num) {
-            if (num > LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin) {
+
+        public static bool LocalUseGold(int num)
+        {
+            if (num > LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin)
+            {
                 return false;
-            } else {
+            }
+            else
+            {
                 LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin -= num;
                 if (DateTimeUtil.GetServerTimeNowTimestampMillis() -
                     LocalUser.Instance.User.UserInfoSimple.LevelData.FirstDirtyTime >
-                    _updateLocalDirtyValueInterval) {
-                    LocalUser.Instance.User.UserInfoSimple.LevelData.Request (
+                    _updateLocalDirtyValueInterval)
+                {
+                    LocalUser.Instance.User.UserInfoSimple.LevelData.Request(
                         LocalUser.Instance.UserGuid,
                         null,
-                        code => {
+                        code =>
+                        {
                             // todo error handle
                         }
                     );
                 }
-                Messenger.Broadcast (EMessengerType.OnGoldChanged);
+                Messenger.Broadcast(EMessengerType.OnGoldChanged);
                 return true;
             }
         }
-        public static bool LocalUseDiamond (int num) {
-            if (num > LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond) {
+
+        public static bool LocalUseDiamond(int num)
+        {
+            if (num > LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond)
+            {
                 return false;
-            } else {
+            }
+            else
+            {
                 LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond -= num;
                 if (DateTimeUtil.GetServerTimeNowTimestampMillis() -
                     LocalUser.Instance.User.UserInfoSimple.LevelData.FirstDirtyTime >
-                    _updateLocalDirtyValueInterval) {
-                    LocalUser.Instance.User.UserInfoSimple.LevelData.Request (
+                    _updateLocalDirtyValueInterval)
+                {
+                    LocalUser.Instance.User.UserInfoSimple.LevelData.Request(
                         LocalUser.Instance.UserGuid,
                         null,
-                        code => {
+                        code =>
+                        {
                             // todo error handle
                         }
                     );
                 }
-                Messenger.Broadcast (EMessengerType.OnDiamondChanged);
+                Messenger.Broadcast(EMessengerType.OnDiamondChanged);
                 return true;
             }
         }
+
         #endregion
 
         #region add gde
-        public static void LocalAddEnergy (int num) {
+
+        public static void LocalAddEnergy(int num)
+        {
             AppData.Instance.AdventureData.UserData.UserEnergyData.Energy += num;
             if (DateTimeUtil.GetServerTimeNowTimestampMillis() -
                 AppData.Instance.AdventureData.UserData.UserEnergyData.FirstDirtyTime >
-                _updateLocalDirtyValueInterval) {
-                AppData.Instance.AdventureData.UserData.UserEnergyData.Request (
+                _updateLocalDirtyValueInterval)
+            {
+                AppData.Instance.AdventureData.UserData.UserEnergyData.Request(
                     LocalUser.Instance.UserGuid,
                     null,
-                    code => {
+                    code =>
+                    {
                         // todo error handle
                     }
                 );
             }
             //Messenger.Broadcast (EMessengerType.OnEnergyChanged);
-            AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh ();
+            AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh();
         }
-        public static void LocalAddGold (int num) {
+
+        public static void LocalAddGold(int num)
+        {
             LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin += num;
             if (DateTimeUtil.GetServerTimeNowTimestampMillis() -
                 LocalUser.Instance.User.UserInfoSimple.LevelData.FirstDirtyTime >
-                _updateLocalDirtyValueInterval) {
-                LocalUser.Instance.User.UserInfoSimple.LevelData.Request (
+                _updateLocalDirtyValueInterval)
+            {
+                LocalUser.Instance.User.UserInfoSimple.LevelData.Request(
                     LocalUser.Instance.UserGuid,
                     null,
-                    code => {
+                    code =>
+                    {
                         // todo error handle
                     }
                 );
             }
-            Messenger.Broadcast (EMessengerType.OnGoldChanged);
+            Messenger.Broadcast(EMessengerType.OnGoldChanged);
         }
-        public static void LocalAddDiamond (int num) {
+
+        public static void LocalAddDiamond(int num)
+        {
             LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond += num;
             if (DateTimeUtil.GetServerTimeNowTimestampMillis() -
                 LocalUser.Instance.User.UserInfoSimple.LevelData.FirstDirtyTime >
-                _updateLocalDirtyValueInterval) {
-                LocalUser.Instance.User.UserInfoSimple.LevelData.Request (
+                _updateLocalDirtyValueInterval)
+            {
+                LocalUser.Instance.User.UserInfoSimple.LevelData.Request(
                     LocalUser.Instance.UserGuid,
                     null,
-                    code => {
+                    code =>
+                    {
                         // todo error handle
                     }
                 );
             }
-            Messenger.Broadcast (EMessengerType.OnDiamondChanged);
+            Messenger.Broadcast(EMessengerType.OnDiamondChanged);
         }
 
         public static void LocalAddPlayerExp(int num)
@@ -196,13 +252,15 @@ namespace GameA {
             {
                 LocalUser.Instance.User.UserInfoSimple.LevelData.Request(
                     LocalUser.Instance.UserGuid,
-                    () => {
+                    () =>
+                    {
                         // todo error handle
-                       // Debug.Log("LevelData3:" + LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel);
+                        // Debug.Log("LevelData3:" + LocalUser.Instance.User.UserInfoSimple.LevelData.PlayerLevel);
                     },
-                    code => {
+                    code =>
+                    {
                         // todo error handle
-                                //Debug.Log("LevelData:" + LocalUser.Instance.User.UserInfoSimple.LevelData);
+                        //Debug.Log("LevelData:" + LocalUser.Instance.User.UserInfoSimple.LevelData);
                     }
                 );
             }
@@ -219,62 +277,77 @@ namespace GameA {
                 LocalUser.Instance.User.UserInfoSimple.LevelData.Request(
                     LocalUser.Instance.UserGuid,
                     null,
-                    code => {
+                    code =>
+                    {
                         // todo error handle
                     }
                 );
             }
             //Messenger.Broadcast(EMessengerType.OnDiamondChanged);
         }
+
         #endregion
 
         #region set gde
-        public static void LocalSetEnergy (int num) {
+
+        public static void LocalSetEnergy(int num)
+        {
             AppData.Instance.AdventureData.UserData.UserEnergyData.Energy = num;
             if (DateTimeUtil.GetServerTimeNowTimestampMillis() -
                 AppData.Instance.AdventureData.UserData.UserEnergyData.FirstDirtyTime >
-                _updateLocalDirtyValueInterval) {
-                AppData.Instance.AdventureData.UserData.UserEnergyData.Request (
+                _updateLocalDirtyValueInterval)
+            {
+                AppData.Instance.AdventureData.UserData.UserEnergyData.Request(
                     LocalUser.Instance.UserGuid,
                     null,
-                    code => {
+                    code =>
+                    {
                         // todo error handle
                     }
                 );
             }
             //Messenger.Broadcast (EMessengerType.OnEnergyChanged);
-            AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh ();
+            AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh();
         }
-        public static void LocalSetGold (int num) {
+
+        public static void LocalSetGold(int num)
+        {
             LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin = num;
             if (DateTimeUtil.GetServerTimeNowTimestampMillis() -
                 LocalUser.Instance.User.UserInfoSimple.LevelData.FirstDirtyTime >
-                _updateLocalDirtyValueInterval) {
-                LocalUser.Instance.User.UserInfoSimple.LevelData.Request (
+                _updateLocalDirtyValueInterval)
+            {
+                LocalUser.Instance.User.UserInfoSimple.LevelData.Request(
                     LocalUser.Instance.UserGuid,
                     null,
-                    code => {
+                    code =>
+                    {
                         // todo error handle
                     }
                 );
             }
-            Messenger.Broadcast (EMessengerType.OnGoldChanged);
+            Messenger.Broadcast(EMessengerType.OnGoldChanged);
         }
-        public static void LocalSetDiamond (int num) {
+
+        public static void LocalSetDiamond(int num)
+        {
             LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond = num;
             if (DateTimeUtil.GetServerTimeNowTimestampMillis() -
                 LocalUser.Instance.User.UserInfoSimple.LevelData.FirstDirtyTime >
-                _updateLocalDirtyValueInterval) {
-                LocalUser.Instance.User.UserInfoSimple.LevelData.Request (
+                _updateLocalDirtyValueInterval)
+            {
+                LocalUser.Instance.User.UserInfoSimple.LevelData.Request(
                     LocalUser.Instance.UserGuid,
                     null,
-                    code => {
+                    code =>
+                    {
                         // todo error handle
                     }
                 );
             }
-            Messenger.Broadcast (EMessengerType.OnDiamondChanged);
+            Messenger.Broadcast(EMessengerType.OnDiamondChanged);
         }
+
         #endregion
 
         /// <summary>
@@ -286,28 +359,28 @@ namespace GameA {
         public static string GetYearMonthDayHourMinuteSecondByMilli(long timeMillis, int DateType)
         {
             int timezone = 8; // 时区  
-            long totalSeconds = timeMillis/1000;
-            totalSeconds += 60*60*timezone;
+            long totalSeconds = timeMillis / 1000;
+            totalSeconds += 60 * 60 * timezone;
 //            int second = (int) (totalSeconds%60); // 秒  
-            long totalMinutes = totalSeconds/60;
+            long totalMinutes = totalSeconds / 60;
 //            int minute = (int) (totalMinutes%60); // 分  
-            long totalHours = totalMinutes/60;
+            long totalHours = totalMinutes / 60;
 //            int hour = (int) (totalHours%24); // 时  
-            int totalDays = (int) (totalHours/24);
+            int totalDays = (int) (totalHours / 24);
             int _year = 1970;
-            int year = _year + totalDays/366;
+            int year = _year + totalDays / 366;
             int month = 1;
             int day = 1;
             int diffDays;
             bool leapYear;
             while (true)
             {
-                int diff = (year - _year)*365;
-                diff += (year - 1)/4 - (_year - 1)/4;
-                diff -= ((year - 1)/100 - (_year - 1)/100);
-                diff += (year - 1)/400 - (_year - 1)/400;
+                int diff = (year - _year) * 365;
+                diff += (year - 1) / 4 - (_year - 1) / 4;
+                diff -= ((year - 1) / 100 - (_year - 1) / 100);
+                diff += (year - 1) / 400 - (_year - 1) / 400;
                 diffDays = totalDays - diff;
-                leapYear = (year%4 == 0) && (year%100 != 0) || (year%400 == 0);
+                leapYear = (year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0);
                 if (!leapYear && diffDays < 365 || leapYear && diffDays < 366)
                 {
                     break;
@@ -349,12 +422,12 @@ namespace GameA {
         public static string DateCount(long dateTime)
         {
             long difftime = DateTimeUtil.GetServerTimeNowTimestampMillis() - dateTime;
-            float days = difftime*1.0f / 1000 / 60 / 60 / 24;
+            float days = difftime * 1.0f / 1000 / 60 / 60 / 24;
             if (days <= 1.0f)
             {
                 return "今天";
             }
-            else if(days <= 2.0f)
+            else if (days <= 2.0f)
             {
                 return "昨天";
             }
@@ -372,43 +445,39 @@ namespace GameA {
         /// 输入秒 输出时分秒 时为0则不显示时 时分为0则不显示时分
         /// </summary>
         /// <param name="time"></param>
+        /// <param name="zh"></param>
         /// <returns></returns>
-        public static string SecondToHour(float time)
+        public static string SecondToHour(float time, bool zh = false)
         {
             int hour = 0;
             int minute = 0;
-            float second = time;
-            //second = Convert.ToInt32(time);
-            //float second1 = (float) Math.Round(time*100);
-            //Debug.Log("____second1" + second1);
-            //second =
-            //Debug.Log("____second1" + second);
+            int second = Mathf.RoundToInt(time);
+            string hourStr = zh ? "时" : ":";
+            string minuteStr = zh ? "分" : "′";
+            string secondStr = zh ? "秒" : "″";
 
-
-            if (second > 60)
+            minute = second / 60;
+            second = second % 60;
+            hour = minute / 60;
+            minute = minute % 60;
+            using (var sbh = PoolFactory<PooledStringBuilderHolder>.Get())
             {
-                minute = (int) second/60;
-                second = second%60;
-            }
-            if (minute > 60)
-            {
-                hour = minute/60;
-                minute = minute%60;
-            }
-
-            if (hour > 1)
-            {
-                return (minute + "′"
-                        + (float) (Math.Round(second*100)/100) + "″");
-            }
-            else if (minute > 1)
-            {
-                return (minute + "′"
-                        + (float) (Math.Round(second*100)/100) + "″");
-            }
-            else
-            {
-                return ((float) (Math.Round(second*100)/100) + "″");
+                bool start = false;
+                if (hour > 0)
+                {
+                    sbh.S.Append(hour);
+                    sbh.S.Append(hourStr);
+                    start = true;
+                }
+                if (start || minute > 0)
+                {
+                    sbh.S.Append(minute);
+                    sbh.S.Append(minuteStr);
+                    start = true;
+                }
+                sbh.S.Append(second);
+                sbh.S.Append(secondStr);
+                return sbh.ToString();
             }
         }
 
@@ -419,9 +488,9 @@ namespace GameA {
 
         public static string GetCompleteRateString(float rate)
         {
-            return "" + Mathf.CeilToInt(rate*1000)/10f + " %";
+            return "" + Mathf.CeilToInt(rate * 1000) / 10f + " %";
         }
-        
+
         public static string FormatServerDateString(long timestamp, string format = null)
         {
             if (format == null)
@@ -431,14 +500,14 @@ namespace GameA {
             DateTime localDateTime = DateTimeUtil.UnixTimestampMillisToLocalDateTime(timestamp);
             return localDateTime.ToString(format);
         }
-        
+
         public static string FormatNumberString(long num)
         {
-            if(num > 100000000)
+            if (num > 100000000)
             {
                 return "" + (num / 100000000) + "亿";
             }
-            else if(num > 10000)
+            else if (num > 10000)
             {
                 return "" + (num / 10000) + "万";
             }
@@ -457,8 +526,8 @@ namespace GameA {
             int tintRemainder, tintDigitPosIndex = 0;
             int tintLoopX = 0;
 
-            string[] tastrNumCNChar = new string[] { "零", "一", "二", "三", "四", "五", "六", "七", "八", "九" };
-            string[] tastrDigitPosCNChar = new string[] { "", "十", "百", "千", "万", "亿" };
+            string[] tastrNumCNChar = new string[] {"零", "一", "二", "三", "四", "五", "六", "七", "八", "九"};
+            string[] tastrDigitPosCNChar = new string[] {"", "十", "百", "千", "万", "亿"};
 
             tintInput = ni_intInput;
             tintLoopX = 0;
@@ -466,15 +535,15 @@ namespace GameA {
             while (tintInput / 10 > 0 || tintInput > 0)
             {
                 tintRemainder = (tintInput % 10);
-                if (tintLoopX == 5)//十万
+                if (tintLoopX == 5) //十万
                 {
                     tintDigitPosIndex = 1;
                 }
-                else if (tintLoopX == 8)//亿
+                else if (tintLoopX == 8) //亿
                 {
                     tintDigitPosIndex = 5;
                 }
-                else if (tintLoopX == 9)//十亿
+                else if (tintLoopX == 9) //十亿
                 {
                     tintDigitPosIndex = 1;
                 }
@@ -482,20 +551,20 @@ namespace GameA {
                 if (tintRemainder > 0)
                 {
                     tstrRet
-                    = tastrNumCNChar[tintRemainder] + tastrDigitPosCNChar[tintDigitPosIndex] + tstrRet;
+                        = tastrNumCNChar[tintRemainder] + tastrDigitPosCNChar[tintDigitPosIndex] + tstrRet;
                 }
                 else
                 {
                     tstrRet
-                    = tastrNumCNChar[tintRemainder] + tstrRet;
+                        = tastrNumCNChar[tintRemainder] + tstrRet;
                 }
                 //end if
                 tintDigitPosIndex += 1;
                 tintLoopX += 1;
                 tintInput /= 10;
-            }//end while
+            } //end while
             tstrRet = System.Text.RegularExpressions.Regex.Replace(tstrRet, "零零*零*", "零");
             return tstrRet;
-        }//end
+        } //end
     }
 }

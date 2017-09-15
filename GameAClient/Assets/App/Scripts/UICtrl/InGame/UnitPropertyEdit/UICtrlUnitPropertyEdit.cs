@@ -382,20 +382,23 @@ namespace GameA
 
         private void RefreshAcitveMenu()
         {
+            var val = Mathf.Clamp(_editData.UnitExtra.Active - 1, 0, 1);
             for (int i = 0; i < _activeMenuList.Length; i++)
             {
-                _activeMenuList[i].SetSelected(i == _editData.UnitExtra.Active - 1);
+                _activeMenuList[i].SetSelected(i == val);
             }
-            _menuButtonArray[(int) EEditType.Active].SetFgImage(_activeMenuList[_editData.UnitExtra.Active - 1].View.FgImage.sprite);
+            _menuButtonArray[(int) EEditType.Active]
+                .SetFgImage(_activeMenuList[val].View.FgImage.sprite);
         }
         private void RefreshForwardMenu()
         {
+            var val = Mathf.Clamp(_editData.UnitDesc.Rotation, 0, _forwardMenuList.Length - 1);
             for (byte i = 0; i < _forwardMenuList.Length; i++)
             {
                 if (EditHelper.CheckMask(i, _tableUnit.DirectionMask))
                 {
                     _forwardMenuList[i].SetEnable(true);
-                    _forwardMenuList[i].SetSelected(i == _editData.UnitDesc.Rotation);
+                    _forwardMenuList[i].SetSelected(i == val);
                 }
                 else
                 {
@@ -403,7 +406,7 @@ namespace GameA
                 }
             }
             _menuButtonArray[(int) EEditType.Direction].View.FgImage.rectTransform.localEulerAngles =
-                _forwardMenuList[_editData.UnitDesc.Rotation].View.FgImage.rectTransform.localEulerAngles;
+                _forwardMenuList[val].View.FgImage.rectTransform.localEulerAngles;
             
             if (_tableUnit.CanEdit(EEditType.Rotate))
             {
@@ -412,6 +415,16 @@ namespace GameA
         }
         private void RefreshPayloadMenu()
         {
+            var table = TableManager.Instance.GetEquipment(_editData.UnitExtra.ChildId);
+            if (table != null)
+            {
+                _menuButtonArray[(int) EEditType.Child].SetFgImage(
+                    ResourcesManager.Instance.GetSprite(table.Icon));
+            }
+            else
+            {
+                _editData.UnitExtra.ChildId = (ushort) _tableUnit.ChildState[0];
+            }
             var totalCount =_tableUnit.ChildState.Length;
             var da = 360f / totalCount; 
             for (int i = 0; i < _payloadMenuList.Length; i++)
@@ -429,18 +442,16 @@ namespace GameA
                     _payloadMenuList[i].SetEnable(false);
                 }
             }
-            _menuButtonArray[(int) EEditType.Child].SetFgImage(
-                ResourcesManager.Instance.GetSprite(
-                    TableManager.Instance.GetEquipment(_editData.UnitExtra.ChildId).Icon));
         }
         private void RefreshMoveDirectionMenu()
         {
+            var val = Mathf.Clamp((int) _editData.UnitExtra.MoveDirection, 0, _moveDirectionMenuList.Length - 1);
             for (int i = 0; i < _moveDirectionMenuList.Length; i++)
             {
-                _moveDirectionMenuList[i].SetSelected(i == (int) _editData.UnitExtra.MoveDirection);
+                _moveDirectionMenuList[i].SetSelected(i == val);
             }
             var menuBtn = _menuButtonArray[(int) EEditType.MoveDirection];
-            var optionBtn = _moveDirectionMenuList[(int) _editData.UnitExtra.MoveDirection];
+            var optionBtn = _moveDirectionMenuList[val];
             
             menuBtn.SetFgImage(optionBtn.View.FgImage.sprite);
             menuBtn.View.FgImage.SetNativeSize();
@@ -448,9 +459,10 @@ namespace GameA
         }
         private void RefreshRotateModeMenu()
         {
+            var val = Mathf.Clamp(_editData.UnitExtra.RotateMode, 0, _rotateMenuList.Length - 1);
             for (int i = 0; i < _rotateMenuList.Length; i++)
             {
-                _rotateMenuList[i].SetSelected(i == _editData.UnitExtra.RotateMode);
+                _rotateMenuList[i].SetSelected(i == val);
             }
             RefreshRotateEndMenu();
         }

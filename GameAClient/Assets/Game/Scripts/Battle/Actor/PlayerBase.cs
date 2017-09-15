@@ -30,6 +30,7 @@ namespace GameA.Game
         protected ReviveEffect _portalEffect = new ReviveEffect();
 
         protected Table_Equipment[] _tableEquipments = new Table_Equipment[3];
+        private int _lastSlot;
 
         public long PlayerId
         {
@@ -100,6 +101,7 @@ namespace GameA.Game
             _box = null;
             ClearView();
             _maxSpeedX = BattleDefine.MaxSpeedX;
+            _lastSlot = -1;
         }
         
         public override bool SetWeapon(int weaponId)
@@ -120,7 +122,15 @@ namespace GameA.Game
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this, 3);
             _skillCtrl.RemoveSkill(skillId);
             int slot;
-            _skillCtrl.HasEmptySlot(out slot);
+            if (!_skillCtrl.HasEmptySlot(out slot))
+            {
+                slot = _lastSlot + 1;
+                _lastSlot = slot;
+                if (_lastSlot == 2)
+                {
+                    _lastSlot = -1;
+                }
+            }
             if (!_skillCtrl.SetSkill(tableSkill.Id, (EWeaponInputType)tableEquipment.InputType, slot))
             {
                 return false;
@@ -297,12 +307,15 @@ namespace GameA.Game
             {
                 _gun.Stop();
             }
+            if (_statusBar != null)
+            {
+                _statusBar.SetHPActive(false);
+            }
             _input.Clear();
             base.OnDead();
             if (_life <= 0)
             {
                 LogHelper.Debug("GameOver!");
-                GameRun.Instance.Pause();
             }
             Messenger.Broadcast(EMessengerType.OnMainPlayerDead);
         }
@@ -333,6 +346,10 @@ namespace GameA.Game
                                     if (_gun != null)
                                     {
                                         _gun.Play();
+                                    }
+                                    if (_statusBar != null)
+                                    {
+                                        _statusBar.SetHPActive(true);
                                     }
                                     _animation.Reset();
                                     _animation.PlayLoop(IdleAnimName());
@@ -414,7 +431,8 @@ namespace GameA.Game
             }
             _reviveEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.M1EffectSoul, null, ESortingOrder.LazerEffect));
             _portalEffect.Set(GameParticleManager.Instance.GetUnityNativeParticleItem(ConstDefineGM2D.PortalingEffect, null, ESortingOrder.LazerEffect));
-            _view.StatusBar.SetHPActive(true);
+            CreateStatusBar();
+            _statusBar.SetHPActive(true);
             return true;
         }
 
@@ -455,7 +473,10 @@ namespace GameA.Game
                     {
                         OnRevive();
                     }
-                    Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
+                    else
+                    {
+                        Messenger.Broadcast(EMessengerType.GameFailedDeadMark);
+                    }
                 }
                 if (_life <= 0 && _dieTime == 100)
                 {

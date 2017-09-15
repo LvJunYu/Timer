@@ -1,4 +1,5 @@
-﻿using GameA.Game;
+﻿using System;
+using GameA.Game;
 using SoyEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
@@ -7,23 +8,13 @@ namespace GameA
     [UIAutoSetup]
     public class UICtrlMobileInputControl : UICtrlGenericBase<UIViewMobileInputControl>
     {
-        #region fields
-
         private UMCtrlSkillBtn[] _umSkillBtns;
         private Table_Equipment[] _equipments = new Table_Equipment[3];
-
-        #endregion
-
-        #region properties
 
         public UIViewMobileInputControl CachedView
         {
             get { return _cachedView; }
         }
-
-        #endregion
-
-        #region methods
 
         protected override void InitGroupId()
         {
@@ -64,20 +55,17 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            for (int i = 0; i < _cachedView.SkillRTFs.Length; i++)
-            {
-                if (_equipments[i] != null)
-                {
-                    _cachedView.SkillRTFs[i].gameObject.SetActive(true);
-                    _umSkillBtns[i].SetData(_equipments[i]);
-                }
-                else
-                {
-                    _cachedView.SkillRTFs[i].gameObject.SetActive(false);
-
-                }
-            }
+            RefreshSkillBtns();
             _cachedView.AssistBtn.gameObject.SetActive(false);
+        }
+
+        protected override void OnClose()
+        {
+            base.OnClose();
+            for (int i = 0; i < _equipments.Length; i++)
+            {
+                _equipments[i] = null;
+            }
         }
 
         public void SetSkillBtnVisible(int slot, bool visible)
@@ -105,6 +93,23 @@ namespace GameA
             _cachedView.AssistBtn.gameObject.SetActive(visible);
         }
 
+        private void RefreshSkillBtns()
+        {
+            for (int i = 0; i < _cachedView.SkillRTFs.Length; i++)
+            {
+                if (_equipments[i] != null)
+                {
+                    _cachedView.SkillRTFs[i].gameObject.SetActive(true);
+                    _umSkillBtns[i].SetData(_equipments[i]);
+                }
+                else
+                {
+                    _cachedView.SkillRTFs[i].gameObject.SetActive(false);
+
+                }
+            }
+        }
+
         private void PlayClickParticle()
         {
             GameParticleManager.Instance.EmitUIParticle("UIEffectClickBig", _cachedView.JumpBtn.transform, _groupId,
@@ -120,6 +125,7 @@ namespace GameA
             if (null == _umSkillBtns)
                 CreateUMSkillBtns();
             _umSkillBtns[slot].SetData(tableSkill);
+            RefreshSkillBtns();
         }
 
         private void OnSkillChargeTime(int slot, float leftTime, float totalTime)
@@ -201,7 +207,5 @@ namespace GameA
         {
             CrossPlatformInputManager.SetButtonDown(InputManager.TagAssist);
         }
-
-        #endregion
     }
 }

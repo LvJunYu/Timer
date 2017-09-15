@@ -14,7 +14,6 @@ using UnityEngine;
 
 namespace GameA
 {
-
     [UIAutoSetup]
     public class UICtrlTaskbar : UICtrlGenericBase<UIViewTaskbar>
     {
@@ -24,6 +23,7 @@ namespace GameA
         private bool _worldAvailable = true;
         private bool _workshopAvailable = true;
         private bool _lotteryAvailable = true;
+        private bool _weaponAvailable = true;
         private bool _fashionShopAvailable = true;
         private bool _puzzleAvailable = false;
         private bool _trainAvailable = false;
@@ -39,18 +39,15 @@ namespace GameA
         public bool FashionShopAvailable
         {
             get { return _fashionShopAvailable; }
-
         }
-
 
         #endregion
 
         #region 方法
 
-
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.MainFrame;
+            _groupId = (int) EUIGroupType.MainFrame;
         }
 
         protected override void InitEventListener()
@@ -62,7 +59,6 @@ namespace GameA
 
         private void OnChangeToUserInfo()
         {
-
             RefreshUserInfo();
         }
 
@@ -98,20 +94,20 @@ namespace GameA
             SetLock(UIFunction.UI_SingleMode, _singleModeAvailable);
             SetLock(UIFunction.UI_Workshop, _workshopAvailable);
             SetLock(UIFunction.UI_World, _worldAvailable);
+            SetLock(UIFunction.UI_Weapon, _weaponAvailable);
             _uiParticleItem = GameParticleManager.Instance.GetUIParticleItem(ParticleNameConstDefineGM2D.HomeBgEffect,
                 _cachedView.Trans, _groupId);
             _uiParticleItem.Particle.Play();
             OpenTaskBtn();
         }
 
-       
+
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
             SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamond);
             RefreshUserInfo();
             GameProcessManager.Instance.RefreshHomeUIUnlock();
-           
         }
 
         protected override void OnClose()
@@ -119,43 +115,40 @@ namespace GameA
             SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
             base.OnClose();
         }
-        
-        
+
 
         public void SetLock(UIFunction UI, bool ifunlock)
         {
             switch (UI)
             {
                 case UIFunction.UI_SingleMode:
-                    {
-                        _cachedView.SingleMode.SetActiveEx(ifunlock);
+                {
+                    _cachedView.SingleMode.SetActiveEx(ifunlock);
 //                        _cachedView.SingleModeDisable.SetActiveEx(!ifunlock);
-                        _singleModeAvailable = ifunlock;
-
-                    }
+                    _singleModeAvailable = ifunlock;
+                }
                     break;
 
                 case UIFunction.UI_Friends:
-                    {
-                        _cachedView.Friends.SetActiveEx(ifunlock);
+                {
+                    _cachedView.Friends.SetActiveEx(ifunlock);
 //                        _cachedView.FriendsDisable.SetActiveEx(!ifunlock);
-                        _friendsAvailable = ifunlock;
-
-                    }
+                    _friendsAvailable = ifunlock;
+                }
                     break;
                 case UIFunction.UI_MailBox:
-                    {
-                        _cachedView.MailBox.SetActiveEx(ifunlock);
+                {
+                    _cachedView.MailBox.SetActiveEx(ifunlock);
 //                        _cachedView.MailBoxDisable.SetActiveEx(!ifunlock);
-                        _mailBoxAvailable = ifunlock;
-                    }
+                    _mailBoxAvailable = ifunlock;
+                }
                     break;
                 case UIFunction.UI_Puzzle:
-                    {
-                        _cachedView.Puzzle.SetActiveEx(ifunlock);
+                {
+                    _cachedView.Puzzle.SetActiveEx(ifunlock);
 //                        _cachedView.PuzzleDisable.SetActiveEx(!ifunlock);
-                        _puzzleAvailable = ifunlock;
-                    }
+                    _puzzleAvailable = ifunlock;
+                }
                     break;
                 case UIFunction.UI_Train:
                 {
@@ -172,37 +165,42 @@ namespace GameA
                 }
                     break;
                 case UIFunction.UI_Workshop:
-                    {
-                        _cachedView.Workshop.SetActiveEx(ifunlock);
+                {
+                    _cachedView.Workshop.SetActiveEx(ifunlock);
 //                        _cachedView.WorkshopDisable.SetActiveEx(!ifunlock);
-                        _workshopAvailable = ifunlock;
-                    }
+                    _workshopAvailable = ifunlock;
+                }
                     break;
                 case UIFunction.UI_World:
-                    {
-                        _cachedView.World.SetActiveEx(ifunlock);
+                {
+                    _cachedView.World.SetActiveEx(ifunlock);
 //                        _cachedView.WorldDisable.SetActiveEx(!ifunlock);
-                        _worldAvailable = ifunlock;
-
-                    }
+                    _worldAvailable = ifunlock;
+                }
                     break;
                 case UIFunction.UI_Lottery:
-                    {
-                        _cachedView.Lottery.SetActiveEx(ifunlock);
+                {
+                    _cachedView.Lottery.SetActiveEx(ifunlock);
 //                        _cachedView.LotteryDisable.SetActiveEx(!ifunlock);
-                        _lotteryAvailable = ifunlock;
-                    }
+                    _lotteryAvailable = ifunlock;
+                }
+                    break;
+                case UIFunction.UI_Weapon:
+                {
+                    _cachedView.Weapon.SetActiveEx(ifunlock);
+                    _weaponAvailable = ifunlock;
+                }
                     break;
                 case UIFunction.UI_FashionShop:
+                {
+                    _cachedView.AvatarText.SetActiveEx(ifunlock);
+                    _cachedView.AvatarBtn.enabled = ifunlock;
+                    _fashionShopAvailable = ifunlock;
+                    if (SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().IsOpen)
                     {
-                        _cachedView.AvatarText.SetActiveEx(ifunlock);
-                        _cachedView.AvatarBtn.enabled = ifunlock;
-                        _fashionShopAvailable = ifunlock;
-                        if (SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().IsOpen)
-                        {
-                            SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().Set(ifunlock);
-                        }
+                        SocialGUIManager.Instance.GetUI<UICtrlFashionSpine>().Set(ifunlock);
                     }
+                }
                     break;
             }
         }
@@ -219,7 +217,8 @@ namespace GameA
             UI_MailBox = 6,
             UI_Friends = 7,
             UI_Train = 8,
-            UI_Achievement =9,
+            UI_Achievement = 9,
+            UI_Weapon,
         }
 
 
@@ -264,7 +263,6 @@ namespace GameA
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlMail>();
             }
-
         }
 
         private void OnSingleGameBtn()
@@ -276,10 +274,6 @@ namespace GameA
         /// <summary>
         /// 家园角色被点击
         /// </summary>
-
-
-
-
         private void OnAvatarBtn()
         {
             if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.Fashion))
@@ -287,6 +281,7 @@ namespace GameA
                 SocialGUIManager.Instance.OpenUI<UICtrlFashionShopMainMenu>();
             }
         }
+
         private void OnLotteryBtn()
         {
             //Debug.Log("_________________________OnLotteryBtn");
@@ -331,7 +326,9 @@ namespace GameA
 
         //拼图入口秘密通道
         private int _puzzlePasswordCount;
+
         private float _lastClickTime;
+
         private void ShowPuzzleBtn()
         {
             if (Time.time - _lastClickTime < 0.5f)
@@ -348,7 +345,7 @@ namespace GameA
                 _puzzlePasswordCount = 0;
             }
         }
-        
+
         private void OnTrainBtn()
         {
             //Debug.Log("_________________________OnTrainBtn");
@@ -357,7 +354,7 @@ namespace GameA
                 SocialGUIManager.Instance.OpenUI<UICtrlTrain>();
             }
         }
-        
+
         private void OnAchievementBtn()
         {
             //Debug.Log("_________________________OnAchievementBtn");
@@ -390,10 +387,7 @@ namespace GameA
                 _cachedView.MaleIcon.gameObject.SetActive(true);
                 _cachedView.FemaleIcon.gameObject.SetActive(false);
             }
-
         }
-
-
 
 
         private void OnUnlockAll()
@@ -433,13 +427,24 @@ namespace GameA
 
         private void OpenTaskBtn()
         {
-          #if UNITY_EDITOR
-          _cachedView.WeaponObject.SetActive(true);
-          _cachedView.HandBookObject.SetActive(true);
-          SetLock(UIFunction.UI_Puzzle, true);
-          SetLock(UIFunction.UI_Train, true);
-          SetLock(UIFunction.UI_Achievement, true);
-          #endif
+//            if (Application.isEditor)
+//            {
+//                _cachedView.WeaponObject.SetActive(true);
+//                _cachedView.HandBookObject.SetActive(true);
+//                SetLock(UIFunction.UI_Puzzle, true);
+//                SetLock(UIFunction.UI_Train, true);
+//                SetLock(UIFunction.UI_Achievement, true);
+//            }
+//            else
+            {
+                _cachedView.WeaponObject.SetActive(false);
+                _cachedView.HandBookObject.SetActive(false);
+                SetLock(UIFunction.UI_Puzzle, false);
+                SetLock(UIFunction.UI_Train, false);
+                SetLock(UIFunction.UI_Achievement, false);
+                SetLock(UIFunction.UI_Lottery, false);
+                SetLock(UIFunction.UI_Weapon, false);
+            }
         }
 
         #endregion

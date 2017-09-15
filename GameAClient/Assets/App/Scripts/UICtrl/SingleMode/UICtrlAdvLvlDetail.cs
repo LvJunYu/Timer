@@ -107,7 +107,7 @@ namespace GameA
         protected override void SetAnimationType()
         {
             base.SetAnimationType();
-            _firstDelayFrames = 3;
+            _firstDelayFrames = 4;
         }
 
         public void RefreshAdventureUserLevelDataDetail()
@@ -279,6 +279,7 @@ namespace GameA
             );
         }
 
+        //TEST
         private void TestPlayBtn()
         {
             EAdventureProjectType eAPType = _isBonus ? EAdventureProjectType.APT_Bonus : EAdventureProjectType.APT_Normal;SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (

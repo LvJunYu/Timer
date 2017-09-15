@@ -15,13 +15,16 @@ namespace GameA
 //        private bool _maskInitialState;
 //        private bool _maskImgInitialState;
         protected EAnimationType _animationType;
+
         protected Sequence _openSequence;
         protected Sequence _closeSequence;
         protected Vector3 _startPos;
-        protected int _firstDelayFrames;//首次延迟帧数
+        protected int _firstDelayFrames; //首次延迟帧数
+        protected int _openDelayFrames;
+        protected int _closeDelayFrames;
         private float _screenHeight;
         private float _screenWidth;
-        
+
         protected virtual void CreateSequences()
         {
             _openSequence = DOTween.Sequence();
@@ -79,7 +82,8 @@ namespace GameA
                     );
                     break;
             }
-            _openSequence.OnComplete(OnOpenAnimationComplete).SetAutoKill(false).Pause().OnUpdate(OnOpenAnimationUpdate);
+            _openSequence.OnComplete(OnOpenAnimationComplete).SetAutoKill(false).Pause()
+                .OnUpdate(OnOpenAnimationUpdate);
             _closeSequence.OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause()
                 .PrependCallback(() => _cachedView.Trans.localPosition = Vector3.zero);
         }
@@ -90,10 +94,21 @@ namespace GameA
             if (null == _openSequence)
             {
                 CreateSequences();
-                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(_firstDelayFrames,() => _openSequence.Restart()));
+                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(_firstDelayFrames,
+                    () => _openSequence.Restart()));
             }
             else
-                _openSequence.Restart();
+            {
+                if (_openDelayFrames > 0)
+                {
+                    CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(_openDelayFrames,
+                        () => _openSequence.Restart()));
+                }
+                else
+                {
+                    _openSequence.Restart();
+                }
+            }
         }
 
         private void CloseAnimation()
@@ -101,8 +116,18 @@ namespace GameA
 //            _maskImg.enabled = _mask.enabled = true;
             _cachedView.gameObject.SetActive(true);
             if (null == _closeSequence)
+            {
                 CreateSequences();
-            _closeSequence.Restart();
+            }
+            if (_closeDelayFrames > 0)
+            {
+                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(_closeDelayFrames,
+                    () => _closeSequence.Restart()));
+            }
+            else
+            {
+                _closeSequence.Restart();
+            }
         }
 
         private Vector3 GetStartPos()
@@ -134,14 +159,14 @@ namespace GameA
             _animationType = EAnimationType.PopupFromDown;
             _firstDelayFrames = 1;
         }
-        
+
         /// <summary>
         /// 打开动画每帧的回调
         /// </summary>
         protected virtual void OnOpenAnimationUpdate()
         {
         }
-        
+
         /// <summary>
         /// 打开动画结束后的回调
         /// </summary> 

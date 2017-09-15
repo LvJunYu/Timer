@@ -6,6 +6,16 @@ namespace GameA
     public class UMCtrlGameWinConditionItem : UMCtrlBase<UMViewGameWinConditionItem>
     {
         public EWinCondition WinCondition { get; set; }
+
+        public void Show()
+        {
+            _cachedView.SetActiveEx(true);
+        }
+
+        public void Hide()
+        {
+            _cachedView.SetActiveEx(false);
+        }
         
         public void SetText(string str)
         {

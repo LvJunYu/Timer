@@ -37,13 +37,6 @@ namespace GameA.Game
             get { return true; }
         }
 
-        protected override void Clear()
-        {
-            base.Clear();
-            _curActiveState = _eActiveState;
-            UpdateActiveState();
-        }
-
         internal override void OnObjectDestroy()
         {
             base.OnObjectDestroy();
@@ -52,6 +45,13 @@ namespace GameA.Game
                 GameParticleManager.FreeSpineObject(_effect);
                 _effect = null;
             }
+        }
+
+        public override void UpdateExtraData()
+        {
+            base.UpdateExtraData();
+            _curActiveState = _eActiveState;
+            UpdateActiveState();
         }
 
         internal override bool InstantiateView()

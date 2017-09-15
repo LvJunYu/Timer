@@ -116,6 +116,7 @@ namespace GameA.Game
         Bang,
         Chase,
         Attack,
-        Brake//刹车
+        Brake,//刹车
+        Stupid//发呆
     }
 }

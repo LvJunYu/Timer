@@ -166,12 +166,11 @@ namespace GameA.Game
 
         public bool HasWinCondition(EWinCondition eWinCondition)
         {
+            if (eWinCondition == EWinCondition.TimeLimit)
+            {
+                return true;
+            }
             return (_winCondition & (1 << (int) eWinCondition)) != 0;
-        }
-
-        public void RemoveCondition(EWinCondition eWinCondition)
-        {
-            _winCondition = (byte)(_winCondition & ~(1 << (int)eWinCondition));
         }
 
         public void AddFinishCount()

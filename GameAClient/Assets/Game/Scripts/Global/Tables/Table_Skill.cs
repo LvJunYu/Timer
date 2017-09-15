@@ -76,6 +76,16 @@ namespace GameA.Game
 		[ColumnMapping("ProjectileSpeed")]
 		public int ProjectileSpeed;
 		/// <summary>
+        /// 发射音效
+        /// </summary>
+		[ColumnMapping("AudioFire")]
+		public string AudioFire;
+		/// <summary>
+        /// 爆炸音效
+        /// </summary>
+		[ColumnMapping("AudioDestroy")]
+		public string AudioDestroy;
+		/// <summary>
         /// 击退力
         /// </summary>
 		[ColumnMapping("KnockbackForces")]

@@ -10,7 +10,7 @@ namespace GameA.Game
         private const int _brakeDec = 2; //刹车减速度
         private float _viewDistance = 10 * ConstDefineGM2D.ServerTileScale;
         private bool _hasTurnBack;
-        private IntVec2 AttackRange = new IntVec2(1, 1) * ConstDefineGM2D.ServerTileScale;
+        private IntVec2 _attackRange = new IntVec2(1, 1) * ConstDefineGM2D.ServerTileScale;
 
         protected override bool OnInit()
         {
@@ -24,11 +24,6 @@ namespace GameA.Game
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
-//            if (unit.IsMain)
-//            {
-//                ChangeState(EMonsterState.Attack);
-//                return;
-//            }
             if (eDirectionType == EDirectionType.Left || eDirectionType == EDirectionType.Right)
             {
                 _timerDetectStay = 0;
@@ -58,7 +53,7 @@ namespace GameA.Game
             {
                 _animation.PlayOnce("Attack", 1, 1);
                 SpeedX = 0;
-                _timerAttack = 70;
+                _timerAttack = 70; //用于判断攻击动作持续时间，必须比技能CD短
             }
         }
 
@@ -73,20 +68,13 @@ namespace GameA.Game
                     //面向玩家
                     if (rel.x > 0)
                     {
-                        _nextMoveDirection = EMoveDirection.Left;
+                        SetNextMoveDirection(EMoveDirection.Left);
                     }
                     else
                     {
-                        _nextMoveDirection = EMoveDirection.Right;
+                        SetNextMoveDirection(EMoveDirection.Right);
                     }
-                    ChangeWay(_nextMoveDirection);
-                    if (_trans != null)
-                    {
-                        Vector3 euler = _trans.eulerAngles;
-                        _trans.eulerAngles = _nextMoveDirection != EMoveDirection.Right
-                            ? new Vector3(euler.x, 180, euler.z)
-                            : new Vector3(euler.x, 0, euler.z);
-                    }
+                    SetFacingDir(_nextMoveDirection);
                     ChangeState(EMonsterState.Attack);
                 }
             }
@@ -96,21 +84,15 @@ namespace GameA.Game
                 if (_eMonsterState == EMonsterState.Attack && _timerAttack <= 0)
                 {
                     ChangeState(EMonsterState.Run);
+                    ChangeWay(_nextMoveDirection);
                 }
             }
-            if (_eMonsterState == EMonsterState.Attack)
-            {
-                SetInput(EInputType.Skill1, true);
-            }
-            else
-            {
-                SetInput(EInputType.Skill1, false);
-            }
+            
             if (_eMonsterState == EMonsterState.Brake)
             {
                 if (Mathf.Abs(SpeedX) == 0)
                 {
-                    ChangeState(EMonsterState.Run);
+                    ChangeState(EMonsterState.Chase);
                 }
             }
             //每5帧检测一次
@@ -119,7 +101,7 @@ namespace GameA.Game
                 var units = ColliderScene2D.RaycastAllReturnUnits(CenterPos,
                     _moveDirection == EMoveDirection.Right ? Vector2.right : Vector2.left, _viewDistance,
                     EnvManager.MonsterViewLayer);
-                bool isMain = false;
+//                bool isMain = false;
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
@@ -127,7 +109,7 @@ namespace GameA.Game
                     {
                         if (unit.IsMain)
                         {
-                            isMain = true;
+//                            isMain = true;
                             if (_eMonsterState != EMonsterState.Chase)
                             {
                                 ChangeState(EMonsterState.Bang);
@@ -137,23 +119,24 @@ namespace GameA.Game
                         break;
                     }
                 }
-                if ((units.Count == 0 || !isMain) && _eMonsterState == EMonsterState.Chase && _timerDetectStay == 0)
+//                if ((units.Count == 0 || !isMain) && _eMonsterState == EMonsterState.Chase && _timerDetectStay == 0)
+                //若玩家位置与老虎追逐方向相反，则刹车
+                if (_eMonsterState == EMonsterState.Chase)
                 {
-                    if (_timerBrake > 0)
-                    {
-                        _timerBrake--;
-                    }
-                    else
+                    if (CenterDownPos.x > PlayMode.Instance.MainPlayer.CenterDownPos.x &&
+                        _moveDirection == EMoveDirection.Right ||
+                        CenterDownPos.x <= PlayMode.Instance.MainPlayer.CenterDownPos.x &&
+                        _moveDirection == EMoveDirection.Left)
                     {
                         ChangeState(EMonsterState.Brake);
                     }
                 }
-                else
-                {
-                    _timerBrake = 3;
-                }
             }
             base.UpdateMonsterAI();
+            if (_eMonsterState != EMonsterState.Attack)
+            {
+                SetInput(EInputType.Skill1, false);
+            }
         }
 
         protected virtual bool ConditionAttack(IntVec2 rel)
@@ -162,7 +145,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            if (Mathf.Abs(rel.x) > AttackRange.x || Mathf.Abs(rel.y) > AttackRange.y)
+            if (Mathf.Abs(rel.x) > _attackRange.x || Mathf.Abs(rel.y) > _attackRange.y)
             {
                 return false;
             }
@@ -216,10 +199,15 @@ namespace GameA.Game
 //                    ChangeWay(EMoveDirection.Right);
 //                else if (_moveDirection == EMoveDirection.Right)
 //                    ChangeWay(EMoveDirection.Left);
-                _animation.PlayOnce("Brake3");
+                if (_animation != null && !_animation.IsPlaying("Brake3"))
+                {
+                    _animation.PlayOnce("Brake3");
+//                    _justPlayBrakeAnim = true;
+                }
             }
         }
 
+//        private bool _justPlayBrakeAnim;
         protected override void UpdateMonsterView(float deltaTime)
         {
             if (_animation != null)
@@ -238,7 +226,25 @@ namespace GameA.Game
                             _animation.PlayLoop("Run", Mathf.Clamp(Mathf.Abs(SpeedX), 30, 200) * deltaTime);
                     }
                 }
+//                if (_animation.IsPlaying("Brake3"))
+//                {
+//                    if (_justPlayBrakeAnim)
+//                    {
+//                        _justPlayBrakeAnim = false;//第一帧不翻转
+//                    }
+//                    else
+//                    {
+//                        if (_trans != null)
+//                        {
+//                            Vector3 euler = _trans.eulerAngles;
+//                            _trans.eulerAngles = euler.y == 0
+//                                ? new Vector3(euler.x, 180, euler.z)
+//                                : new Vector3(euler.x, 0, euler.z);
+//                        }
+//                    }
+//                }
             }
         }
     }
 }
+

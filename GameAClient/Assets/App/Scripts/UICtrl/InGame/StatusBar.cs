@@ -125,7 +125,7 @@ namespace GameA.Game
 
         public void SetHPActive(bool value)
         {
-            HPRoot.SetActive(value);
+            HPRoot.SetActiveEx(value);
         }
 
         public void SetHP(EHPModifyCase modifyCase, int current, int max)

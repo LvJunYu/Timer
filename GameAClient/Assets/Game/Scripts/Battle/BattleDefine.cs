@@ -22,5 +22,7 @@ namespace GameA.Game
         public const int MaxWingCount = 20;
         
         public const int DamageDurationFrame =  (int) (0.2f * ConstDefineGM2D.FixedFrameCount);
+        
+        public const int HpStayTime =  4 * ConstDefineGM2D.FixedFrameCount;
     }
 }

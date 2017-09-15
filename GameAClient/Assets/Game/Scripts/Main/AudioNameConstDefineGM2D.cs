@@ -22,7 +22,7 @@ namespace GameA.Game
         public const string ButtonClick = "AudioButtonClick";
         public const string Reborn = "AudioReborn";
         public const string LevelNormalBgm = "MusicLevelNormal";
-        public const string LevelBonusBgm = "MusicLevelBunus";
+        public const string LevelBonusBgm = "MusicLevelBonus";
     }
 
     public class ParticleNameConstDefineGM2D
@@ -40,6 +40,7 @@ namespace GameA.Game
         
         public const string Dialog = "M1EffectDialog";
         public const string Bang = "M1EffectBang";
+        public const string Question = "M1EffectQuestion";
 
         public const string RedMask = "RedMaskEffect";
         public const string YellowMask = "YellowMaskEffect";
@@ -47,7 +48,7 @@ namespace GameA.Game
         public const string ConnectLine = "SwitchConnectionEffect";
 
         public const string HomeBgEffect = "M1EffectHome_1";
-        public const string SingleModeBgEffect = "M1EffectStory_1";
+        public const string SingleModeBgEffect = "M1EffectStory_";
 
         public const string WinEffect = "Particle_GameFinish_Win1";
         public const string LoseEffect = "Particle_GameFinish_Lose1";
