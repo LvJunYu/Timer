@@ -46,7 +46,6 @@ namespace GameA
             _cachedView.GoldPlusBtn.onClick.AddListener(OnGoldPlusBtn);
             _cachedView.DiamondPlusBtn.onClick.AddListener(OnDiamondPlusBtn);
 //            _styleStack.Push(EStyle.None);
-            _startPos = new Vector3(0,200,0);
         }
 
         protected override void OnOpen(object parameter)
@@ -62,6 +61,25 @@ namespace GameA
             base.SetAnimationType();
             _animationType = EAnimationType.MoveFromUp;
         }
+        
+        protected override void OnCloseAnimationComplete()
+        {
+            base.OnCloseAnimationComplete();
+
+            if (_styleStack.Count > 0)
+            {
+                SetStyle(_styleStack.Peek());
+            }
+            else
+            {
+                SetStyle(EStyle.None);
+            }
+            //判断是否移入设置按钮
+            if (_styleStack.Count == 1)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlTaskbar>().ShowSettingButton();
+            }
+        }
 
         public void PushStyle(EStyle eStyle)
         {
@@ -72,7 +90,13 @@ namespace GameA
             _styleStack.Push(eStyle);
             if (_isOpen)
             {
+                //先显示移出动画，再移入
                 SocialGUIManager.Instance.CloseUI<UICtrlGoldEnergy>();
+                //判断是否移出设置按钮
+                if (_styleStack.Count > 1)
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlTaskbar>().HideSettingButton();
+                }
             }
             else
             {
@@ -95,20 +119,6 @@ namespace GameA
 //            }
         }
 
-        protected override void OnCloseAnimationComplete()
-        {
-            base.OnCloseAnimationComplete();
-
-            if (_styleStack.Count > 0)
-            {
-                SetStyle(_styleStack.Peek());
-            }
-            else
-            {
-                SetStyle(EStyle.None);
-            }
-        }
-
         private void SetStyle(EStyle eStyle)
         {
             var styleVal = (int) eStyle;
@@ -119,7 +129,6 @@ namespace GameA
             _cachedView.Diamond.SetActiveEx((styleVal & 1 << (int) ESlot.Diamond) > 0);
             _cachedView.Gold.SetActiveEx((styleVal & 1 << (int) ESlot.Gold) > 0);
             _cachedView.Energy.SetActiveEx((styleVal & 1 << (int) ESlot.Energy) > 0);
-            
         }
 
         public override void OnUpdate()

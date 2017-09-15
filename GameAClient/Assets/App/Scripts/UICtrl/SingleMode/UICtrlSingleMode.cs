@@ -162,6 +162,14 @@ namespace GameA
 		    _firstDelayFrames = 3;
 	    }
 
+	    protected override void SetPartAnimations()
+	    {
+		    base.SetPartAnimations();
+		    SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp, 0);
+		    SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown, 1);
+		    SetPart(_cachedView.BGRtf, EAnimationType.Fade, 2);
+	    }
+
 	    protected override void OnViewCreated()
         {
             base.OnViewCreated();
