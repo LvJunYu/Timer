@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using SoyEngine;
+﻿using SoyEngine;
 using UnityEngine;
 
 namespace GameA.Game
@@ -87,7 +86,7 @@ namespace GameA.Game
                     ChangeWay(_nextMoveDirection);
                 }
             }
-            
+
             if (_eMonsterState == EMonsterState.Brake)
             {
                 if (Mathf.Abs(SpeedX) == 0)
@@ -119,9 +118,8 @@ namespace GameA.Game
                         break;
                     }
                 }
-//                if ((units.Count == 0 || !isMain) && _eMonsterState == EMonsterState.Chase && _timerDetectStay == 0)
                 //若玩家位置与老虎追逐方向相反，则刹车
-                if (_eMonsterState == EMonsterState.Chase)
+                if (_eMonsterState == EMonsterState.Chase && Mathf.Abs(SpeedX) > 0)
                 {
                     if (CenterDownPos.x > PlayMode.Instance.MainPlayer.CenterDownPos.x &&
                         _moveDirection == EMoveDirection.Right ||
@@ -226,6 +224,7 @@ namespace GameA.Game
                             _animation.PlayLoop("Run", Mathf.Clamp(Mathf.Abs(SpeedX), 30, 200) * deltaTime);
                     }
                 }
+                //刹车动画反转
 //                if (_animation.IsPlaying("Brake3"))
 //                {
 //                    if (_justPlayBrakeAnim)
@@ -247,4 +246,3 @@ namespace GameA.Game
         }
     }
 }
-
