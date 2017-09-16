@@ -258,7 +258,7 @@ namespace GameA.Game
 
         protected void CreateProjectile(int projectileId, IntVec2 pos, float angle)
         {
-            if (!string.IsNullOrEmpty(_tableSkill.AudioFire))
+            if (!string.IsNullOrEmpty(_tableSkill.AudioFire) && _owner.IsMain)
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableSkill.AudioFire);
             }
@@ -487,7 +487,7 @@ namespace GameA.Game
         /// </summary>
         protected void OnBulletOver(IntVec2 hitPos, float angle, UnitBase hitUnit)
         {
-            if (!string.IsNullOrEmpty(_tableSkill.AudioDestroy))
+            if (!string.IsNullOrEmpty(_tableSkill.AudioDestroy) && _owner.IsMain)
             {
                 GameAudioManager.Instance.PlaySoundsEffects(_tableSkill.AudioDestroy);
             }
