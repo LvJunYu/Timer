@@ -533,11 +533,14 @@ namespace GameA.Game
             }
             SetFacingDir(_moveDirection, true);
             _view.SetSortingOrder((int) ESortingOrder.DragingItem);
-            for (int i = 0; i < _viewExtras.Length; i++)
+            if (_viewExtras != null)
             {
-                if (_viewExtras[i].Trans != null)
+                for (int i = 0; i < _viewExtras.Length; i++)
                 {
-                    _viewExtras[i].SetSortingOrder((int) ESortingOrder.DragingItem);
+                    if (_viewExtras[i].Trans != null)
+                    {
+                        _viewExtras[i].SetSortingOrder((int) ESortingOrder.DragingItem);
+                    }
                 }
             }
         }
