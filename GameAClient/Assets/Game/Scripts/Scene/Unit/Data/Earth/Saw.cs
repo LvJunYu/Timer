@@ -41,8 +41,7 @@ namespace GameA.Game
         {
             if (!checkOnly && Rotation == (int) EDirectionType.Up)
             {
-                var grid = _colliderGrid.Shrink(160);
-                if (other.ColliderGrid.XMin < grid.XMax && other.ColliderGrid.XMax > grid.XMin)
+                if (IntersectX(other, _colliderGrid.Shrink(160)))
                 {
                     OnEffect(other, EDirectionType.Up);
                 }
@@ -54,8 +53,7 @@ namespace GameA.Game
         {
             if (!checkOnly && Rotation == (int) EDirectionType.Down)
             {
-                var grid = _colliderGrid.Shrink(160);
-                if (other.ColliderGrid.XMin < grid.XMax && other.ColliderGrid.XMax > grid.XMin)
+                if (IntersectX(other, _colliderGrid.Shrink(160)))
                 {
                     OnEffect(other, EDirectionType.Down);
                 }
@@ -67,8 +65,7 @@ namespace GameA.Game
         {
             if (!checkOnly && Rotation == (int) EDirectionType.Left)
             {
-                var grid = _colliderGrid.Shrink(160);
-                if (other.ColliderGrid.YMin < grid.YMax && other.ColliderGrid.YMax > grid.YMin)
+                if (IntersectY(other, _colliderGrid.Shrink(160)))
                 {
                     OnEffect(other, EDirectionType.Left);
                 }
@@ -80,8 +77,7 @@ namespace GameA.Game
         {
             if (!checkOnly && Rotation == (int) EDirectionType.Right)
             {
-                var grid = _colliderGrid.Shrink(160);
-                if (other.ColliderGrid.YMin < grid.YMax && other.ColliderGrid.YMax > grid.YMin)
+                if (IntersectY(other, _colliderGrid.Shrink(160)))
                 {
                     OnEffect(other, EDirectionType.Right);
                 }

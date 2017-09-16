@@ -1675,5 +1675,15 @@ namespace GameA.Game
         public virtual void SetLifeTime(int lifeTime)
         {
         }
+
+        public virtual bool IntersectX(UnitBase other, Grid2D grid)
+        {
+            return other.ColliderGrid.XMin <= grid.XMax && other.ColliderGrid.XMax >= grid.XMin;
+        }
+        
+        public virtual bool IntersectY(UnitBase other, Grid2D grid)
+        {
+            return other.ColliderGrid.YMin <= grid.YMax && other.ColliderGrid.YMax >= grid.YMin;
+        }
     }
 }
