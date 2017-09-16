@@ -47,6 +47,7 @@ namespace GameA
             _cachedView.DiamondPlusBtn.onClick.AddListener(OnDiamondPlusBtn);
             _cachedView.SettingBtn.onClick.AddListener(OnSettingBtn);
 //            _styleStack.Push(EStyle.None);
+            _startPos = new Vector3(0,100,0);
         }
 
         protected override void OnOpen(object parameter)
@@ -79,10 +80,6 @@ namespace GameA
 
         public void PushStyle(EStyle eStyle)
         {
-//            if (!_isOpen)
-//            {
-//                SocialGUIManager.Instance.OpenUI<UICtrlGoldEnergy>();
-//            }
             _styleStack.Push(eStyle);
             if (_isOpen)
             {
@@ -93,30 +90,21 @@ namespace GameA
             {
                 SetStyle(eStyle);
             }
-//            SetStyle(eStyle);
         }
 
         public void PopStyle()
         {
             _styleStack.Pop();
             SocialGUIManager.Instance.CloseUI<UICtrlGoldEnergy>();
-//            if (_styleStack.Count > 0)
-//            {
-//                SetStyle(_styleStack.Peek());
-//            }
-//            else
-//            {
-//                SetStyle(EStyle.None);
-//            }
         }
 
         private void SetStyle(EStyle eStyle)
         {
-            var styleVal = (int) eStyle;
             if (!_isOpen)
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlGoldEnergy>();
             }
+            var styleVal = (int) eStyle;
             _cachedView.Diamond.SetActiveEx((styleVal & 1 << (int) ESlot.Diamond) > 0);
             _cachedView.Gold.SetActiveEx((styleVal & 1 << (int) ESlot.Gold) > 0);
             _cachedView.Energy.SetActiveEx((styleVal & 1 << (int) ESlot.Energy) > 0);
