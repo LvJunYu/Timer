@@ -8,12 +8,15 @@
 using System;
 using System.Collections;
 using SoyEngine;
+using Spine;
 
 namespace GameA.Game
 {
     [Unit(Id = 4005, Type = typeof(Saw))]
     public class Saw : BlockBase
     {
+        protected int _timer;
+        
         internal override bool InstantiateView()
         {
             if (!base.InstantiateView())
@@ -27,6 +30,7 @@ namespace GameA.Game
         protected override void Clear()
         {
             base.Clear();
+            _timer = 0;
             if (_animation != null)
             {
                 _animation.Reset();
@@ -37,7 +41,11 @@ namespace GameA.Game
         {
             if (!checkOnly && Rotation == (int) EDirectionType.Up)
             {
-                OnEffect(other, EDirectionType.Up);
+                var grid = _colliderGrid.Shrink(160);
+                if (other.ColliderGrid.XMin < grid.XMax && other.ColliderGrid.XMax > grid.XMin)
+                {
+                    OnEffect(other, EDirectionType.Up);
+                }
             }
             return base.OnUpHit(other, ref y, checkOnly);
         }
@@ -46,7 +54,11 @@ namespace GameA.Game
         {
             if (!checkOnly && Rotation == (int) EDirectionType.Down)
             {
-                OnEffect(other, EDirectionType.Down);
+                var grid = _colliderGrid.Shrink(160);
+                if (other.ColliderGrid.XMin < grid.XMax && other.ColliderGrid.XMax > grid.XMin)
+                {
+                    OnEffect(other, EDirectionType.Down);
+                }
             }
             return base.OnDownHit(other, ref y, checkOnly);
         }
@@ -55,7 +67,11 @@ namespace GameA.Game
         {
             if (!checkOnly && Rotation == (int) EDirectionType.Left)
             {
-                OnEffect(other, EDirectionType.Left);
+                var grid = _colliderGrid.Shrink(160);
+                if (other.ColliderGrid.YMin < grid.YMax && other.ColliderGrid.YMax > grid.YMin)
+                {
+                    OnEffect(other, EDirectionType.Left);
+                }
             }
             return base.OnLeftHit(other, ref x, checkOnly);
         }
@@ -64,19 +80,37 @@ namespace GameA.Game
         {
             if (!checkOnly && Rotation == (int) EDirectionType.Right)
             {
-                OnEffect(other, EDirectionType.Right);
+                var grid = _colliderGrid.Shrink(160);
+                if (other.ColliderGrid.YMin < grid.YMax && other.ColliderGrid.YMax > grid.YMin)
+                {
+                    OnEffect(other, EDirectionType.Right);
+                }
             }
             return base.OnRightHit(other, ref x, checkOnly);
         }
 
         private void OnEffect(UnitBase other, EDirectionType eDirectionType)
         {
-            if (other.IsActor)
+            if (other.IsActor && !other.IsInvincible)
             {
+                _timer = 50;
                 other.InSaw();
                 if (_animation != null)
                 {
                     _animation.PlayOnce((EDirectionType) Rotation + "Start");
+                }
+            }
+        }
+
+        public override void UpdateLogic()
+        {
+            base.UpdateLogic();
+            if (_timer > 0)
+            {
+                _timer--;
+                if (_timer == 0)
+                {
+                    InitAssetRotation();
                 }
             }
         }
