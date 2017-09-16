@@ -31,7 +31,8 @@ namespace GameA
         {
             base.OnViewCreated();
             _cachedView.LoginOut.onClick.AddListener(LoginOut);
-            _cachedView.ChangePwd.onClick.AddListener(OnChangePWDBtnClick);
+            _cachedView.ChangePwdBtn.onClick.AddListener(OnChangePWDBtnClick);
+            _cachedView.BindingBtn.onClick.AddListener(OnBindingBtnClick);
 
             _showShadow = new USCtrlGameSettingItem();
             _showShadow.Init(_cachedView.ShowShadow);
@@ -67,6 +68,9 @@ namespace GameA
                     _openGamePlaying = true;
                 }
             }
+            var isGuest = LocalUser.Instance.Account.IsGuest;
+            _cachedView.BindingBtn.SetActiveEx(isGuest);
+            _cachedView.ChangePwdBtn.SetActiveEx(!isGuest);
         }
 
         protected override void OnClose()
@@ -107,7 +111,13 @@ namespace GameA
         {
             SocialGUIManager.Instance.CloseUI<UICtrlGameSetting>();
         }
-
+        
+        public void OnBindingBtnClick()
+        {
+            SocialGUIManager.Instance.OpenUI<UICtrlBindingPhone>();
+            SocialGUIManager.Instance.CloseUI<UICtrlGameSetting>();
+        }
+        
         public void OnChangePWDBtnClick()
         {
             SocialGUIManager.Instance.OpenUI<UICtrlChangePassword>();
@@ -175,61 +185,7 @@ namespace GameA
 
         private void OnExitBtn()
         {
-            //if (GM2DGame.Instance.GameInitType == GameManager.EStartType.Create
-            //|| GM2DGame.Instance.GameInitType == GameManager.EStartType.Edit) {
-            //    if (GM2DGame.Instance.NeedSave) {
-            //        CommonTools.ShowPopupDialog ("关卡做出的修改还未保存，是否退出", null,
-            //            new System.Collections.Generic.KeyValuePair<string, Action> ("取消", () => {
-            //            }),
-            //            new System.Collections.Generic.KeyValuePair<string, Action> ("保存", () => {
-            //                if (GM2DGame.Instance.CurrentMode == EMode.EditTest) {
-            //                    Messenger<ECommandType>.Broadcast (EMessengerType.OnCommandChanged, ECommandType.Pause);
-            //                    GM2DGame.Instance.ChangeToMode (EMode.Edit);
-            //                }
-            //                Project project = GM2DGame.Instance.Project;
-            //                if (project.LocalDataState == ELocalDataState.LDS_UnCreated) {
-            //                    CoroutineProxy.Instance.StartCoroutine (CoroutineProxy.RunNextFrame (() => {
-            //                    SocialGUIManager.Instance.CloseUI<UICtrlGameSetting> ();
-            //                        SocialGUIManager.Instance.OpenUI<UICtrlPublish> ();
-            //                    }));
-            //                } else {
-            //                    UICtrlPublish.SaveProject (project.Name, project.Summary,
-            //                        project.DownloadPrice, project.PublishRecordFlag, () => {
-            //                        SocialGUIManager.Instance.CloseUI<UICtrlGameSetting> ();
-            //                        SocialApp.Instance.ReturnToApp ();
-            //                    }, () => {
-            //                        //保存失败
-            //                    });
-            //                }
-            //            }),
-            //            new System.Collections.Generic.KeyValuePair<string, Action> ("退出", () => {
-            //                SocialGUIManager.Instance.CloseUI<UICtrlGameSetting> ();
-            //                SocialApp.Instance.ReturnToApp ();
-            //            }));
-            //        return;
-            //    }
-            //} else if (GM2DGame.Instance.GameInitType == GameManager.EStartType.ModifyEdit) {
-            //    if (GM2DGame.Instance.NeedSave) {
-            //        // 保存改造关卡
-            //        SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().OpenLoading (this, "正在保存改造关卡");
-            //        GM2DGame.Instance.SaveModifyProject (() => {
-            //            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-            //            SocialGUIManager.Instance.CloseUI<UICtrlGameSetting> ();
-            //            SocialApp.Instance.ReturnToApp ();
-            //        },
-            //            code => {
-            //                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
-            //                SocialGUIManager.Instance.CloseUI<UICtrlGameSetting> ();
-            //                SocialApp.Instance.ReturnToApp ();
-            //                // todo error handle
-            //                LogHelper.Error ("SaveModifyProject failed");
-            //            }
-            //        );
-            //        return;
-            //    }
-            //}
             SocialGUIManager.Instance.CloseUI<UICtrlGameSetting>();
-            //SocialApp.Instance.ReturnToApp();
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
             GM2DGame.Instance.QuitGame(
                 () => { SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this); },

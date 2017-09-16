@@ -185,6 +185,26 @@ namespace GameA
                 CommonTools.ShowPopupDialog("注册失败");
             }
         }
+        
+        public static void ShowAccountBindError(EAccountBindCode code)
+        {
+            switch (code)
+            {
+                case EAccountBindCode.ABC_None:
+                    break;
+                case EAccountBindCode.ABC_Success:
+                    break;
+                case EAccountBindCode.ABC_IdentifyDuplication:
+                    CommonTools.ShowPopupDialog("手机号已注册，请绑定未注册的手机号");
+                    break;
+                case EAccountBindCode.ABC_VerificationCodeError:
+                    CommonTools.ShowPopupDialog("验证码错误");
+                    break;
+                default:
+                    CommonTools.ShowPopupDialog("绑定失败");
+                    break;
+            }
+        }
 
         public static void ShowForgetPasswordError(EForgetPasswordCode code)
         {

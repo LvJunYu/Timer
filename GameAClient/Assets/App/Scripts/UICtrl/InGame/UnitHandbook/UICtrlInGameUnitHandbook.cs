@@ -44,9 +44,16 @@ namespace GameA
 
         protected override void OnOpen(object parameter)
         {
+            GM2DGame.Instance.Pause();
             base.OnOpen(parameter);
             _unitId = (int) parameter;
             RefreshView();
+        }
+
+        protected override void OnClose()
+        {
+            GM2DGame.Instance.Continue();
+            base.OnClose();
         }
 
         private void RefreshView()
