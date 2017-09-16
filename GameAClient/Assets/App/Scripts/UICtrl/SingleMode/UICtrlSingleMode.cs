@@ -81,8 +81,6 @@ namespace GameA
 		    _chapterAry[chapter-1].SetBonusLevelLockState(levelInx, isLock, playAnimation);
 	    }
 	    
-	    
-	    
         protected override void OnOpen (object parameter)
         {
             base.OnOpen (parameter);
@@ -160,7 +158,16 @@ namespace GameA
 	    protected override void SetAnimationType()
 	    {
 		    base.SetAnimationType();
+		    _animationType = EAnimationType.None;
 		    _firstDelayFrames = 3;
+	    }
+
+	    protected override void SetPartAnimations()
+	    {
+		    base.SetPartAnimations();
+		    SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp, 0);
+		    SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown, 1);
+		    SetPart(_cachedView.BGRtf, EAnimationType.Fade, 2);
 	    }
 
 	    protected override void OnViewCreated()
@@ -257,8 +264,6 @@ namespace GameA
 			_cachedView.ChapterScrollRect.ForceReleaseAndDisableDrag();
 			_cachedView.InputBlock.enabled = true;
 		}
-
-		
 
 		private void RefreshChapterInfo (bool doPassAnimate = false) {
 			if (_currentChapter < 1) {

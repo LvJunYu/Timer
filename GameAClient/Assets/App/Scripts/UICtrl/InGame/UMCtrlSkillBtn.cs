@@ -1,6 +1,7 @@
 ﻿using GameA.Game;
 using NewResourceSolution;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
@@ -30,7 +31,8 @@ namespace GameA
             PlayFullParticle(_curTableEquipment.InputType == (int) EWeaponInputType.GetKeyUp);
             _cachedView.BtnCD1.fillAmount = 0;
             _cachedView.BtnCD2.fillAmount = 0;
-            _cachedView.TimeTxt.text = "";
+            int bulletNum = TableManager.Instance.Table_SkillDic[tableSkill.SkillId].BulletCount;
+            UpdateBulletNum(bulletNum, bulletNum);
         }
 
         public void OnSkillCDTime(float leftTime, float totalTime)
@@ -101,6 +103,26 @@ namespace GameA
             }
             if (_curTableEquipment != null && _curTableEquipment.InputType == (int) EWeaponInputType.GetKeyUp)
                 PlayFullParticle(leftCount == totalCount);
+            UpdateBulletNum(leftCount, totalCount);
+        }
+
+        private void UpdateBulletNum(int leftCount, int totalCount)
+        {
+            _cachedView.CurNumTxt.text = leftCount.ToString();
+            _cachedView.TotalNumTxt.text = string.Format("/{0}", totalCount);
+            if (leftCount == 0)
+            {
+                _cachedView.CurNumTxt.color = Color.red;
+            }
+            else if (leftCount == totalCount)
+            {
+                _cachedView.CurNumTxt.color =  _cachedView.TotalNumTxt.color;
+            }
+            else
+            {
+                _cachedView.CurNumTxt.color = Color.white;
+            }
+                
         }
     }
 }

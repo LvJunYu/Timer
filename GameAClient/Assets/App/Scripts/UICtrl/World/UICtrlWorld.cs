@@ -14,9 +14,11 @@ namespace GameA
     public class UICtrlWorld : UICtrlAnimationBase<UIViewWorld>
     {
         #region 常量与字段
+
         private EMenu _curMenu = EMenu.None;
         private UPCtrlBase<UICtrlWorld, UIViewWorld> _curMenuCtrl;
         private UPCtrlBase<UICtrlWorld, UIViewWorld>[] _menuCtrlArray;
+
         #endregion
 
         #region 属性
@@ -26,6 +28,7 @@ namespace GameA
         #region 方法
 
         #region private
+
         private void InitUI()
         {
             _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtnClick);
@@ -34,7 +37,7 @@ namespace GameA
             _menuCtrlArray[(int) EMenu.Recommend] = new UPCtrlWorldRecommendProject();
             _menuCtrlArray[(int) EMenu.UserPlayHistory] = new UPCtrlWorldUserPlayHistory();
             _menuCtrlArray[(int) EMenu.UserFavorite] = new UPCtrlWorldUserFavorite();
-            Array.ForEach(_menuCtrlArray, c=>
+            Array.ForEach(_menuCtrlArray, c =>
             {
                 if (null == c)
                 {
@@ -66,7 +69,7 @@ namespace GameA
             {
                 _curMenuCtrl = _menuCtrlArray[inx];
             }
-            if(_curMenuCtrl != null)
+            if (_curMenuCtrl != null)
             {
                 _curMenuCtrl.Open();
             }
@@ -81,9 +84,10 @@ namespace GameA
             base.OnViewCreated();
             InitUI();
         }
+
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.MainUI;
+            _groupId = (int) EUIGroupType.MainUI;
         }
 
         protected override void InitEventListener()
@@ -97,21 +101,38 @@ namespace GameA
             base.OnOpen(parameter);
             if (_curMenu == EMenu.None)
             {
-                _cachedView.TabGroup.SelectIndex((int)EMenu.Recommend, true);
+                _cachedView.TabGroup.SelectIndex((int) EMenu.Recommend, true);
             }
+            SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamond);
+        }
+
+        protected override void OnClose()
+        {
+            base.OnClose();
+            SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
         }
 
         protected override void SetAnimationType()
         {
             base.SetAnimationType();
-            _firstDelayFrames = 7;
+            _animationType = EAnimationType.None;
+            _firstDelayFrames = 5;
+        }
+
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp, 0);
+            SetPart(_cachedView.TabGroup.transform, EAnimationType.MoveFromLeft, 1, 0.1f);
+            SetPart(_cachedView.ContentPanelDockRtf, EAnimationType.MoveFromRight, 2);
+            SetPart(_cachedView.BGRtf, EAnimationType.Fade, 3);
         }
 
         private void ClickMenu(int selectInx, bool open)
         {
             if (open)
             {
-                ChangeMenu((EMenu)selectInx);
+                ChangeMenu((EMenu) selectInx);
             }
         }
 
@@ -121,6 +142,7 @@ namespace GameA
         }
 
         #endregion 接口
+
         private void OnProjectDataChanged(long projectId)
         {
             if (!_isOpen)
@@ -129,9 +151,10 @@ namespace GameA
             }
             if (_curMenuCtrl != null)
             {
-                ((IOnChangeHandler<long>)_curMenuCtrl).OnChangeHandler(projectId);
+                ((IOnChangeHandler<long>) _curMenuCtrl).OnChangeHandler(projectId);
             }
         }
+
         #endregion
 
         private enum EMenu

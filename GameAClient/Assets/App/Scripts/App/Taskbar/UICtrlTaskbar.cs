@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
@@ -15,7 +16,7 @@ using UnityEngine;
 namespace GameA
 {
     [UIAutoSetup]
-    public class UICtrlTaskbar : UICtrlGenericBase<UIViewTaskbar>
+    public class UICtrlTaskbar : UICtrlAnimationBase<UIViewTaskbar>
     {
         #region 常量与字段
 
@@ -30,6 +31,7 @@ namespace GameA
         private bool _achievementAvailable;
         private bool _mailBoxAvailable = true;
         private bool _friendsAvailable = true;
+        private bool _isShowingSettingButton = true;
         private UIParticleItem _uiParticleItem;
 
         #endregion
@@ -61,6 +63,41 @@ namespace GameA
             RefreshUserInfo();
         }
 
+        public void ShowSettingButton()
+        {
+            if (_openSequence != null && !_isShowingSettingButton)
+            {
+                _cachedView.Account.gameObject.SetActive(true);
+                _openSequence.Restart();
+                _isShowingSettingButton = true;
+            }
+        }
+
+        public void HideSettingButton()
+        {
+            if (_closeSequence != null && _isShowingSettingButton)
+            {
+                _closeSequence.Restart();
+                _isShowingSettingButton = false;
+            }
+        }
+
+        protected override void OnCloseAnimationComplete()
+        {
+            _cachedView.Account.gameObject.SetActive(false);
+        }
+
+        protected override void SetAnimationType()
+        {
+            base.SetAnimationType();
+            _animationType = EAnimationType.None;
+        }
+
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.Account.transform, EAnimationType.MoveFromUp, 0);
+        }
 
         protected override void OnViewCreated()
         {
@@ -100,7 +137,6 @@ namespace GameA
             OpenTaskBtn();
         }
 
-
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
@@ -114,7 +150,6 @@ namespace GameA
             SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
             base.OnClose();
         }
-
 
         public void SetLock(UIFunction UI, bool ifunlock)
         {
@@ -204,7 +239,6 @@ namespace GameA
             }
         }
 
-
         public enum UIFunction
         {
             UI_SingleMode = 0,
@@ -219,7 +253,6 @@ namespace GameA
             UI_Achievement = 9,
             UI_Weapon
         }
-
 
         public void OnCreateBtn()
         {

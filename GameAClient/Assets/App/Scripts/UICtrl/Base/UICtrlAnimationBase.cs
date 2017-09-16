@@ -1,6 +1,8 @@
-﻿using DG.Tweening;
+﻿using System.Collections.Generic;
+using DG.Tweening;
 using SoyEngine;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameA
 {
@@ -9,11 +11,6 @@ namespace GameA
     /// </summary>
     public abstract class UICtrlAnimationBase<T> : UICtrlGenericBase<T> where T : UIViewBase
     {
-//        private const string _maskSprite = "CommonWhite";
-//        private Mask _mask;
-//        private Image _maskImg;
-//        private bool _maskInitialState;
-//        private bool _maskImgInitialState;
         protected EAnimationType _animationType;
 
         protected Sequence _openSequence;
@@ -24,6 +21,9 @@ namespace GameA
         protected int _closeDelayFrames;
         private float _screenHeight;
         private float _screenWidth;
+        private List<Sequence> _openPartSequences = new List<Sequence>(5);
+        private List<Sequence> _closePartSequences = new List<Sequence>(5);
+        private List<Vector3> _initialPos = new List<Vector3>(5);
 
         protected virtual void CreateSequences()
         {
@@ -82,6 +82,7 @@ namespace GameA
                     );
                     break;
             }
+            SetPartAnimations();
             _openSequence.OnComplete(OnOpenAnimationComplete).SetAutoKill(false).Pause()
                 .OnUpdate(OnOpenAnimationUpdate);
             _closeSequence.OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause()
@@ -90,7 +91,6 @@ namespace GameA
 
         private void OpenAnimation()
         {
-//            _maskImg.enabled = _mask.enabled = true;
             if (null == _openSequence)
             {
                 CreateSequences();
@@ -113,7 +113,6 @@ namespace GameA
 
         private void CloseAnimation()
         {
-//            _maskImg.enabled = _mask.enabled = true;
             _cachedView.gameObject.SetActive(true);
             if (null == _closeSequence)
             {
@@ -130,9 +129,9 @@ namespace GameA
             }
         }
 
-        private Vector3 GetStartPos()
+        private Vector3 GetStartPos(EAnimationType animationType)
         {
-            switch (_animationType)
+            switch (animationType)
             {
                 case EAnimationType.MoveFromDown:
                 case EAnimationType.PopupFromDown:
@@ -161,6 +160,13 @@ namespace GameA
         }
 
         /// <summary>
+        /// 设置局部动画
+        /// </summary>
+        protected virtual void SetPartAnimations()
+        {
+        }
+
+        /// <summary>
         /// 打开动画每帧的回调
         /// </summary>
         protected virtual void OnOpenAnimationUpdate()
@@ -172,8 +178,6 @@ namespace GameA
         /// </summary> 
         protected virtual void OnOpenAnimationComplete()
         {
-//            _mask.enabled = _maskInitialState;
-//            _maskImg.enabled = _maskImgInitialState;
         }
 
         /// <summary>
@@ -192,31 +196,7 @@ namespace GameA
             _screenHeight = _cachedView.Trans.rect.height;
             _screenWidth = _cachedView.Trans.rect.width;
             SetAnimationType();
-            _startPos = GetStartPos();
-            //由于部分UI超出屏幕范围（例如单人模式）,影响动画效果，用Mask遮住超出的部分
-//            _mask = _cachedView.GetComponent<Mask>();
-//            _maskImg = _cachedView.GetComponent<Image>();
-//            if (null == _mask)
-//            {
-//                _maskInitialState = false;
-//                _mask = _cachedView.gameObject.AddComponent<Mask>();
-//            }
-//            else
-//            {
-//                _maskInitialState = _mask.enabled;
-//            }
-//            if (null == _maskImg)
-//            {
-//                _maskImgInitialState = false;
-//                _maskImg = _cachedView.gameObject.AddComponent<Image>();
-//                _maskImg.sprite = ResourcesManager.Instance.GetSprite(_maskSprite);
-//                _maskImg.raycastTarget = false;
-//                _mask.showMaskGraphic = false;
-//            }
-//            else
-//            {
-//                _maskImgInitialState = _maskImg.enabled;
-//            }
+            _startPos = GetStartPos(_animationType);
         }
 
         protected override void OnOpen(object parameter)
@@ -229,6 +209,104 @@ namespace GameA
         {
             CloseAnimation();
             base.OnClose();
+        }
+
+        /// <summary>
+        /// 设置局部UI动画，同页面下sequenceIndex不能相同，_animationType要设置为None
+        /// </summary>
+        /// <param name="tf"></param>
+        /// <param name="animationType"></param>
+        /// <param name="sequenceIndex"></param>
+        protected void SetPart(Transform tf, EAnimationType animationType, int sequenceIndex, float delay = 0,
+            Ease openEase = Ease.OutQuad, Ease closeEase = Ease.Linear)
+        {
+            if (sequenceIndex > _openPartSequences.Count - 1)
+            {
+                for (int i = _openPartSequences.Count; i <= sequenceIndex; i++)
+                {
+                    _openPartSequences.Add(null);
+                    _initialPos.Add(Vector3.zero);
+                    _closePartSequences.Add(null);
+                }
+            }
+            _initialPos[sequenceIndex] = tf.localPosition;
+            if (null == _openPartSequences[sequenceIndex])
+            {
+                CreateSequences(tf, animationType, sequenceIndex, delay, openEase, closeEase);
+            }
+        }
+
+        private void CreateSequences(Transform tf, EAnimationType animationType, int sequenceIndex, float delay,
+            Ease openEase, Ease closeEase)
+        {
+            if (null == _openPartSequences[sequenceIndex])
+                _openPartSequences[sequenceIndex] = DOTween.Sequence();
+            if (null == _closePartSequences[sequenceIndex])
+                _closePartSequences[sequenceIndex] = DOTween.Sequence();
+            if (delay > 0)
+            {
+                _openPartSequences[sequenceIndex].AppendInterval(delay);
+            }
+            Vector3 targetPos = GetStartPos(animationType);
+            switch (animationType)
+            {
+                case EAnimationType.MoveFromDown:
+                case EAnimationType.MoveFromUp:
+                case EAnimationType.MoveFromLeft:
+                case EAnimationType.MoveFromRight:
+                    //开始动画
+                    _openPartSequences[sequenceIndex].Append(
+                        tf.DOBlendableMoveBy(targetPos, 0.25f).From().SetEase(openEase)
+                    );
+                    //结束动画
+                    _closePartSequences[sequenceIndex].Append(
+                        tf.DOBlendableMoveBy(targetPos, 0.15f).SetEase(closeEase)
+                    );
+                    break;
+                case EAnimationType.PopupFromCenter:
+                    //开始动画
+                    _openPartSequences[sequenceIndex].Append(
+                        tf.DOScale(Vector3.zero, 0.25f).From().SetEase(Ease.OutBack)
+                    );
+                    //结束动画
+                    _closePartSequences[sequenceIndex].Append(
+                        tf.DOScale(Vector3.zero, 0.15f).SetEase(closeEase)
+                    );
+                    break;
+                case EAnimationType.PopupFromDown:
+                case EAnimationType.PopupFromUp:
+                case EAnimationType.PopupFromLeft:
+                case EAnimationType.PopupFromRight:
+                    //开始动画
+                    _openPartSequences[sequenceIndex].Append(
+                        tf.DOBlendableMoveBy(targetPos * 0.5f, 0.25f).From().SetEase(Ease.OutBack)
+                    );
+                    _openPartSequences[sequenceIndex].Join(
+                        tf.DOScale(Vector3.zero, 0.25f).From().SetEase(Ease.OutBack)
+                    );
+                    //结束动画
+                    _closePartSequences[sequenceIndex].Append(
+                        tf.DOBlendableMoveBy(targetPos * 0.5f, 0.15f).SetEase(closeEase)
+                    );
+                    _closePartSequences[sequenceIndex].Join(
+                        tf.DOScale(Vector3.zero, 0.15f).SetEase(closeEase)
+                    );
+                    break;
+                case EAnimationType.Fade:
+                    //开始动画
+                    _openPartSequences[sequenceIndex].Append(
+                        tf.GetComponent<Image>().DOFade(0, 0.25f).From().SetEase(openEase)
+                    );
+                    //结束动画
+                    _closePartSequences[sequenceIndex].Append(
+                        tf.GetComponent<Image>().DOFade(0, 0.15f).SetEase(closeEase)
+                    );
+                    break;
+            }
+            _closePartSequences[sequenceIndex].PrependCallback(() => tf.localPosition = _initialPos[sequenceIndex])
+                .OnComplete(() => { tf.localPosition = _initialPos[sequenceIndex]; });
+            _openSequence.Join(_openPartSequences[sequenceIndex]);
+            _closeSequence.Join(_closePartSequences[sequenceIndex]);
         }
     }
 
@@ -244,6 +322,8 @@ namespace GameA
         PopupFromUp,
         PopupFromLeft,
         PopupFromRight,
+
+        Fade
 //        PopupFromClickPoint
     }
 }

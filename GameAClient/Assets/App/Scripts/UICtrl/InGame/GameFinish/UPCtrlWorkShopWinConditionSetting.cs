@@ -88,7 +88,7 @@ namespace GameA
             _cachedView.LifeShowText.text = "初始生命";
         }
 
-        private void UpdateData()
+        public void UpdateData()
         {
             for (EWinCondition i = 0; i < EWinCondition.Max; i++)
             {

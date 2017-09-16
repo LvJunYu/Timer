@@ -1,27 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
     [UIAutoSetup]
-    public class UICtrlGoldEnergy : UICtrlGenericBase<UIViewGoldEnergy>
+    public class UICtrlGoldEnergy : UICtrlAnimationBase<UIViewGoldEnergy>
     {
         #region 常量与字段
+
         /// <summary>
         /// 下一次长体力的时间
         /// </summary>
         private long _nextEnergyGenerateTime;
+
         private readonly Stack<EStyle> _styleStack = new Stack<EStyle>(5);
+
         #endregion
 
         #region 属性
+
         #endregion
 
         #region 方法
+
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.FrontUI;
+            _groupId = (int) EUIGroupType.FrontUI;
         }
 
         protected override void InitEventListener()
@@ -36,33 +42,30 @@ namespace GameA
         {
             base.OnViewCreated();
 
-            _cachedView.EnergyPlusBtn.onClick.AddListener (OnEnergyPlusBtn);
-            _cachedView.GoldPlusBtn.onClick.AddListener (OnGoldPlusBtn);
-            _cachedView.DiamondPlusBtn.onClick.AddListener (OnDiamondPlusBtn);
-            _styleStack.Push(EStyle.None);
+            _cachedView.EnergyPlusBtn.onClick.AddListener(OnEnergyPlusBtn);
+            _cachedView.GoldPlusBtn.onClick.AddListener(OnGoldPlusBtn);
+            _cachedView.DiamondPlusBtn.onClick.AddListener(OnDiamondPlusBtn);
+//            _styleStack.Push(EStyle.None);
         }
 
-        protected override void OnOpen (object parameter)
+        protected override void OnOpen(object parameter)
         {
-            base.OnOpen (parameter);
-            OnEnergyChanged ();
-            OnGoldChanged ();
-            OnDiamondChanged ();
+            base.OnOpen(parameter);
+            OnEnergyChanged();
+            OnGoldChanged();
+            OnDiamondChanged();
         }
 
-        public void PushStyle(EStyle eStyle)
+        protected override void SetAnimationType()
         {
-            if (!_isOpen)
-            {
-                SocialGUIManager.Instance.OpenUI<UICtrlGoldEnergy>();
-            }
-            _styleStack.Push(eStyle);
-            SetStyle(eStyle);
+            base.SetAnimationType();
+            _animationType = EAnimationType.MoveFromUp;
         }
-
-        public void PopStyle()
+        
+        protected override void OnCloseAnimationComplete()
         {
-            _styleStack.Pop();
+            base.OnCloseAnimationComplete();
+
             if (_styleStack.Count > 0)
             {
                 SetStyle(_styleStack.Peek());
@@ -71,70 +74,132 @@ namespace GameA
             {
                 SetStyle(EStyle.None);
             }
+            //判断是否移入设置按钮
+            if (_styleStack.Count == 1)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlTaskbar>().ShowSettingButton();
+            }
+        }
+
+        public void PushStyle(EStyle eStyle)
+        {
+//            if (!_isOpen)
+//            {
+//                SocialGUIManager.Instance.OpenUI<UICtrlGoldEnergy>();
+//            }
+            _styleStack.Push(eStyle);
+            if (_isOpen)
+            {
+                //先显示移出动画，再移入
+                SocialGUIManager.Instance.CloseUI<UICtrlGoldEnergy>();
+                //判断是否移出设置按钮
+                if (_styleStack.Count > 1)
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlTaskbar>().HideSettingButton();
+                }
+            }
+            else
+            {
+                SetStyle(eStyle);
+            }
+//            SetStyle(eStyle);
+        }
+
+        public void PopStyle()
+        {
+            _styleStack.Pop();
+            SocialGUIManager.Instance.CloseUI<UICtrlGoldEnergy>();
+//            if (_styleStack.Count > 0)
+//            {
+//                SetStyle(_styleStack.Peek());
+//            }
+//            else
+//            {
+//                SetStyle(EStyle.None);
+//            }
         }
 
         private void SetStyle(EStyle eStyle)
         {
             var styleVal = (int) eStyle;
-            _cachedView.Diamond.SetActiveEx((styleVal & 1<<(int) ESlot.Diamond) > 0);
-            _cachedView.Gold.SetActiveEx((styleVal & 1<<(int) ESlot.Gold) > 0);
-            _cachedView.Energy.SetActiveEx((styleVal & 1<<(int) ESlot.Energy) > 0);
+            if (!_isOpen)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlGoldEnergy>();
+            }
+            _cachedView.Diamond.SetActiveEx((styleVal & 1 << (int) ESlot.Diamond) > 0);
+            _cachedView.Gold.SetActiveEx((styleVal & 1 << (int) ESlot.Gold) > 0);
+            _cachedView.Energy.SetActiveEx((styleVal & 1 << (int) ESlot.Energy) > 0);
         }
 
-        public override void OnUpdate ()
+        public override void OnUpdate()
         {
-            base.OnUpdate ();
+            base.OnUpdate();
             // energy refresh
-            if (DateTimeUtil.GetServerTimeNowTimestampMillis() > _nextEnergyGenerateTime) {
-                OnEnergyChanged ();
+            if (DateTimeUtil.GetServerTimeNowTimestampMillis() > _nextEnergyGenerateTime)
+            {
+                OnEnergyChanged();
             }
         }
 
-        private void OnEnergyPlusBtn () {
+        private void OnEnergyPlusBtn()
+        {
             if (AppData.Instance.AdventureData.UserData.UserEnergyData.Energy >=
-                AppData.Instance.AdventureData.UserData.UserEnergyData.EnergyCapacity) {
-                SocialGUIManager.ShowPopupDialog (
+                AppData.Instance.AdventureData.UserData.UserEnergyData.EnergyCapacity)
+            {
+                SocialGUIManager.ShowPopupDialog(
                     "体力已经满了",
                     null,
-                    new KeyValuePair<string, Action> (
+                    new KeyValuePair<string, Action>(
                         "确定", null)
                 );
-            } else {
-                SocialGUIManager.Instance.OpenUI<UICtrlBuyEnergy> ();
+            }
+            else
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlBuyEnergy>();
             }
         }
-        private void OnGoldPlusBtn () {
-//            SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
-            SocialGUIManager.ShowPopupDialog("测试版还没有开启氪金功能哦~");
-        }
-        private void OnDiamondPlusBtn () {
+
+        private void OnGoldPlusBtn()
+        {
 //            SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
             SocialGUIManager.ShowPopupDialog("测试版还没有开启氪金功能哦~");
         }
 
-        private void OnEnergyChanged () {
+        private void OnDiamondPlusBtn()
+        {
+//            SocialGUIManager.Instance.OpenUI<UICtrlPurchase> ();
+            SocialGUIManager.ShowPopupDialog("测试版还没有开启氪金功能哦~");
+        }
+
+        private void OnEnergyChanged()
+        {
             if (!IsOpen)
                 return;
-            AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh (false);
+            AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh(false);
             int currentEnergy = AppData.Instance.AdventureData.UserData.UserEnergyData.Energy;
             int energyCapacity = AppData.Instance.AdventureData.UserData.UserEnergyData.EnergyCapacity;
             _cachedView.EnergyNumber.text = string.Format("{0} / {1}",
                 currentEnergy,
                 energyCapacity
             );
-            _cachedView.EnergyBar.fillAmount = (float)currentEnergy / energyCapacity;
+            _cachedView.EnergyBar.fillAmount = (float) currentEnergy / energyCapacity;
             _nextEnergyGenerateTime = AppData.Instance.AdventureData.UserData.UserEnergyData.NextGenerateTime;
         }
-        private void OnGoldChanged () {
+
+        private void OnGoldChanged()
+        {
             if (!IsOpen)
                 return;
             _cachedView.GoldNumber.text = LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin.ToString();
         }
-        private void OnDiamondChanged () {
+
+        private void OnDiamondChanged()
+        {
             if (!IsOpen)
                 return;
             _cachedView.DiamondNumber.text = LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond.ToString();
         }
+
         #endregion
 
         private enum ESlot
@@ -143,11 +208,12 @@ namespace GameA
             Gold,
             Energy
         }
+
         public enum EStyle
         {
             None = 0,
-            EnergyGoldDiamond = 1<<ESlot.Diamond | 1<<ESlot.Gold | 1<<ESlot.Energy,
-            GoldDiamond = 1<<ESlot.Diamond | 1<<ESlot.Gold
+            EnergyGoldDiamond = 1 << ESlot.Diamond | 1 << ESlot.Gold | 1 << ESlot.Energy,
+            GoldDiamond = 1 << ESlot.Diamond | 1 << ESlot.Gold
         }
     }
 }

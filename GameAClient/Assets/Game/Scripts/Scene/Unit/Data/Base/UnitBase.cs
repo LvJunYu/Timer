@@ -924,7 +924,13 @@ namespace GameA.Game
                     _tableUnit.ModelOffset = GM2DTools.GetModelOffsetInWorldPos(size, size, _tableUnit);
                 }
             }
-            float z = GetZ(_curPos);
+            var z = GetZ(_colliderPos);
+            if (_deltaPos.y != 0)
+            {
+                var tile = new IntVec2(_colliderPos.x / ConstDefineGM2D.ServerTileScale, _colliderPos.y / ConstDefineGM2D.ServerTileScale);
+                z = Mathf.Clamp(z, GetZ(new IntVec2(tile.x - 1, tile.y + 1) * ConstDefineGM2D.ServerTileScale) - 0.01f,
+                    GetZ(new IntVec2(tile.x + 1, tile.y) * ConstDefineGM2D.ServerTileScale) + 0.01f);
+            }
             if (UnitDefine.IsJet(Id))
             {
                 return GM2DTools.TileToWorld(_curPos) + _tableUnit.ModelOffset + new Vector3(0, 0.5f, z);
@@ -939,7 +945,7 @@ namespace GameA.Game
         protected float GetZ(IntVec2 pos)
         {
             var size = Mathf.Clamp(_tableUnit.Width, 0, ConstDefineGM2D.ServerTileScale);
-            return -(pos.x + pos.y+ size) * UnitDefine.UnitSorttingLayerRatio + _viewZOffset;
+            return -(pos.x + pos.y * 1.5f+ size) * UnitDefine.UnitSorttingLayerRatio + _viewZOffset;
         }
 
         protected void SetRelativeEffectPos(Transform trans, EDirectionType eDirectionType, float viewZOffset = 0)
