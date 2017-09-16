@@ -163,15 +163,15 @@ namespace GameA
                     break;
                 case UIFunction.UI_Workshop:
                 {
-                    _cachedView.Workshop.SetActiveEx(ifunlock);
-//                        _cachedView.WorkshopDisable.SetActiveEx(!ifunlock);
+//                    _cachedView.Workshop.SetActiveEx(ifunlock);
+                    _cachedView.WorkshopDisable.SetActiveEx(!ifunlock);
                     _workshopAvailable = ifunlock;
                 }
                     break;
                 case UIFunction.UI_World:
                 {
-                    _cachedView.World.SetActiveEx(ifunlock);
-//                        _cachedView.WorldDisable.SetActiveEx(!ifunlock);
+//                    _cachedView.World.SetActiveEx(ifunlock);
+                    _cachedView.WorldDisable.SetActiveEx(!ifunlock);
                     _worldAvailable = ifunlock;
                 }
                     break;
@@ -223,6 +223,10 @@ namespace GameA
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlWorkShop>();
             }
+            else
+            {
+                SocialGUIManager.ShowPopupDialog("完成冒险模式第一章，解锁工坊功能，制作属于自己关卡~");
+            }
         }
 
         public void UIPersonalInformation()
@@ -248,6 +252,10 @@ namespace GameA
             if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.World))
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlWorld>();
+            }
+            else
+            {
+                SocialGUIManager.ShowPopupDialog("完成冒险模式第一章，解锁世界功能，挑战其他玩家的制作的关卡~");
             }
         }
 
