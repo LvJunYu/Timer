@@ -73,10 +73,10 @@ namespace GameA
         protected override void SetPartAnimations()
         {
             base.SetPartAnimations();
-            SetPart(_cachedView.TitleRtf,EAnimationType.MoveFromUp, 0);
-            SetPart(_cachedView.LeftPartRtf, EAnimationType.MoveFromLeft, 1);
-            SetPart(_cachedView.RightPartRtf, EAnimationType.MoveFromRight, 2);
-            SetPart(_cachedView.BGRtf,EAnimationType.Fade, 3);
+            SetPart(_cachedView.TitleRtf,EAnimationType.MoveFromUp);
+            SetPart(_cachedView.LeftPartRtf, EAnimationType.MoveFromLeft);
+            SetPart(_cachedView.RightPartRtf, EAnimationType.MoveFromRight);
+            SetPart(_cachedView.BGRtf,EAnimationType.Fade);
         }
 
         protected override void OnOpenAnimationUpdate()

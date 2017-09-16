@@ -158,16 +158,15 @@ namespace GameA
 	    protected override void SetAnimationType()
 	    {
 		    base.SetAnimationType();
-		    _animationType = EAnimationType.None;
 		    _firstDelayFrames = 3;
 	    }
 
 	    protected override void SetPartAnimations()
 	    {
 		    base.SetPartAnimations();
-		    SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp, 0);
-		    SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown, 1);
-		    SetPart(_cachedView.BGRtf, EAnimationType.Fade, 2);
+		    SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp);
+		    SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
+		    SetPart(_cachedView.BGRtf, EAnimationType.Fade);
 	    }
 
 	    protected override void OnViewCreated()

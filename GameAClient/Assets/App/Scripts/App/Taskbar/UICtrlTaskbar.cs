@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using DG.Tweening;
 using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
@@ -16,7 +15,7 @@ using UnityEngine;
 namespace GameA
 {
     [UIAutoSetup]
-    public class UICtrlTaskbar : UICtrlAnimationBase<UIViewTaskbar>
+    public class UICtrlTaskbar : UICtrlGenericBase<UIViewTaskbar>
     {
         #region 常量与字段
 
@@ -63,47 +62,11 @@ namespace GameA
             RefreshUserInfo();
         }
 
-        public void ShowSettingButton()
-        {
-            if (_openSequence != null && !_isShowingSettingButton)
-            {
-                _cachedView.Account.gameObject.SetActive(true);
-                _openSequence.Restart();
-                _isShowingSettingButton = true;
-            }
-        }
-
-        public void HideSettingButton()
-        {
-            if (_closeSequence != null && _isShowingSettingButton)
-            {
-                _closeSequence.Restart();
-                _isShowingSettingButton = false;
-            }
-        }
-
-        protected override void OnCloseAnimationComplete()
-        {
-            _cachedView.Account.gameObject.SetActive(false);
-        }
-
-        protected override void SetAnimationType()
-        {
-            base.SetAnimationType();
-            _animationType = EAnimationType.None;
-        }
-
-        protected override void SetPartAnimations()
-        {
-            base.SetPartAnimations();
-            SetPart(_cachedView.Account.transform, EAnimationType.MoveFromUp, 0);
-        }
-
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-
-            _cachedView.Account.onClick.AddListener(Account);
+            //为了方便UI动画，设置按钮移到UICtrlGoldEnergy页面
+//            _cachedView.Account.onClick.AddListener(Account);
 //            SocialGUIManager.Instance.OpenUI<UICtrlGMTool>();
 
             _cachedView.WorldButton.onClick.AddListener(OnWorldBtn);
@@ -140,7 +103,7 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamond);
+            SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamondSetting);
             RefreshUserInfo();
             GameProcessManager.Instance.RefreshHomeUIUnlock();
         }
@@ -200,15 +163,15 @@ namespace GameA
                     break;
                 case UIFunction.UI_Workshop:
                 {
-                    _cachedView.Workshop.SetActiveEx(ifunlock);
-//                        _cachedView.WorkshopDisable.SetActiveEx(!ifunlock);
+//                    _cachedView.Workshop.SetActiveEx(ifunlock);
+                    _cachedView.WorkshopDisable.SetActiveEx(!ifunlock);
                     _workshopAvailable = ifunlock;
                 }
                     break;
                 case UIFunction.UI_World:
                 {
-                    _cachedView.World.SetActiveEx(ifunlock);
-//                        _cachedView.WorldDisable.SetActiveEx(!ifunlock);
+//                    _cachedView.World.SetActiveEx(ifunlock);
+                    _cachedView.WorldDisable.SetActiveEx(!ifunlock);
                     _worldAvailable = ifunlock;
                 }
                     break;
@@ -260,6 +223,10 @@ namespace GameA
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlWorkShop>();
             }
+            else
+            {
+                SocialGUIManager.ShowPopupDialog("完成冒险模式第一章，解锁工坊功能，制作属于自己关卡~");
+            }
         }
 
         public void UIPersonalInformation()
@@ -275,16 +242,20 @@ namespace GameA
             SocialGUIManager.Instance.OpenUI<UICtrlSignup>();
         }
 
-        public void Account()
-        {
-            SocialGUIManager.Instance.OpenUI<UICtrlGameSetting>().ChangeToSettingAtHome();
-        }
+//        public void Account()
+//        {
+//            SocialGUIManager.Instance.OpenUI<UICtrlGameSetting>().ChangeToSettingAtHome();
+//        }
 
         public void OnWorldBtn()
         {
             if (GameProcessManager.Instance.IsGameSystemAvailable(EGameSystem.World))
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlWorld>();
+            }
+            else
+            {
+                SocialGUIManager.ShowPopupDialog("完成冒险模式第一章，解锁世界功能，挑战其他玩家的制作的关卡~");
             }
         }
 

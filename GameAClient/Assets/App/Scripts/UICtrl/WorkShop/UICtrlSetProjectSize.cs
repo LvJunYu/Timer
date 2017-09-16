@@ -30,6 +30,13 @@ namespace GameA
             RefreshView ();
         }
         
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
+            SetPart(_cachedView.transform, EAnimationType.Fade);
+        }
+        
         protected override void OnClose() {
             
             base.OnClose ();
