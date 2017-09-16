@@ -121,11 +121,11 @@ namespace GameA.Game
                     } else if (_itemsToUnlock [i].Table.Id == 5) {
 //                        uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_FashionShop, false);
                     } else if (_itemsToUnlock [i].Table.Id == 6) {
-//                        uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_Workshop, false);
+                        uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_Workshop, false);
                     } else if (_itemsToUnlock [i].Table.Id == 7) {
 //                    uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_Lottery, false);
                     } else if (_itemsToUnlock [i].Table.Id == 8) {
-//                        uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_World, false);
+                        uiTaskBar.SetLock (UICtrlTaskbar.UIFunction.UI_World, false);
                     }
                 }
             }
