@@ -72,7 +72,6 @@ namespace GameA
         public static int OnSwitchTriggered = SoyEngine.EMessengerType.NextId++;
         // 玩家使用了传送门
         public static int OnPlayerEnterPortal = SoyEngine.EMessengerType.NextId++;
-		public static int OpenGameSetting = SoyEngine.EMessengerType.NextId++;
 		public static int OnCloseGameSetting = SoyEngine.EMessengerType.NextId++;
 
         public static int CaptureGameCover = SoyEngine.EMessengerType.NextId++;

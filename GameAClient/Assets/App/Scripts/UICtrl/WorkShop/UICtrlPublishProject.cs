@@ -1,5 +1,6 @@
-﻿using SoyEngine;
-using SoyEngine.Proto;
+﻿using GameA.Game;
+using SoyEngine;
+using EWinCondition = SoyEngine.Proto.EWinCondition;
 
 namespace GameA
 {
@@ -7,24 +8,30 @@ namespace GameA
     public class UICtrlPublishProject : UICtrlAnimationBase<UIViewPublishProject>
     {
         #region Fields
+
         private Project _project;
+
         #endregion
 
         #region Properties
+
         #endregion
 
         #region Methods
-        protected override void OnOpen (object parameter)
+
+        protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
 
             _project = parameter as Project;
-            if (null == _project) {
-                SocialGUIManager.Instance.CloseUI<UICtrlPublishProject> ();
+            if (null == _project)
+            {
+                SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
                 return;
             }
 
-            ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _project.IconPath, _cachedView.DefaultCover);
+            ImageResourceManager.Instance.SetDynamicImage(_cachedView.Cover, _project.IconPath,
+                _cachedView.DefaultCover);
             _cachedView.ProjectTitle.text = _project.Name;
             _cachedView.ProjectDetailIntro.text = _project.Summary;
 
@@ -40,8 +47,8 @@ namespace GameA
             {
                 // 时间限制转化成分钟
                 int timelimit = _project.TimeLimit * 10;
-                int min = timelimit/60;
-                int seconds = timelimit%60;
+                int min = timelimit / 60;
+                int seconds = timelimit % 60;
                 string timeCondition = string.Empty;
                 if (min == 0 && seconds == 0)
                 {
@@ -51,7 +58,6 @@ namespace GameA
                 if (min > 0)
                 {
                     timeCondition = min + "分钟";
-
                 }
                 if (seconds > 0)
                 {
@@ -64,20 +70,20 @@ namespace GameA
                 string tmp;
                 int conditonCount = 0;
                 // 先判断到达终点
-                if (((winCondition >> (int) EWinCondition.WC_Arrive)&1) == 1)
+                if (((winCondition >> (int) EWinCondition.WC_Arrive) & 1) == 1)
                 {
                     tmp = "到达终点";
                     conditon = string.Format("{0}{1}", conditon, tmp);
                     conditonCount++;
                 }
                 // 再判断收集
-                if (((winCondition >> (int)EWinCondition.WC_Collect) & 1) == 1)
+                if (((winCondition >> (int) EWinCondition.WC_Collect) & 1) == 1)
                 {
                     tmp = "消灭所有宝石";
                     // 目前为止 个数肯定是0或者1
                     if (conditonCount == 1)
                     {
-                        conditon = string.Format("{0}、{1}", conditon, tmp);  
+                        conditon = string.Format("{0}、{1}", conditon, tmp);
                     }
                     else if (conditonCount == 0)
                     {
@@ -86,7 +92,7 @@ namespace GameA
                     conditonCount++;
                 }
                 // 最后判断击杀怪物
-                if (((winCondition >> (int)EWinCondition.WC_Monster) & 1) == 1)
+                if (((winCondition >> (int) EWinCondition.WC_Monster) & 1) == 1)
                 {
                     tmp = "消灭所有怪物";
                     // 目前为止 个数肯定是0或者1或者2
@@ -108,47 +114,52 @@ namespace GameA
                 _cachedView.PassCondition.SetActiveEx(true);
                 _cachedView.TimeLimit.SetActiveEx(true);
             }
-
-
-
-
         }
-        
-        protected override void OnViewCreated() {
-            base.OnViewCreated ();
 
-            _cachedView.OKBtn.onClick.AddListener (OnOKBtn);
-            _cachedView.CancelBtn.onClick.AddListener (OnCancelBtn);
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+
+            _cachedView.OKBtn.onClick.AddListener(OnOKBtn);
+            _cachedView.CancelBtn.onClick.AddListener(OnCancelBtn);
         }
-        
+
         protected override void InitGroupId()
         {
-            _groupId = (int)EUIGroupType.PopUpDialog;
+            _groupId = (int) EUIGroupType.PopUpDialog;
         }
 
-        private void OnOKBtn ()
+        private void OnOKBtn()
         {
-            SocialGUIManager.Instance.CloseUI<UICtrlPublishProject> ();
-            if(SocialGUIManager.Instance.GetUI<UICtrlWorkShopSetting>().IsOpen)
+            SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
+            if (SocialGUIManager.Instance.GetUI<UICtrlWorkShopSetting>().IsOpen)
                 SocialGUIManager.Instance.CloseUI<UICtrlWorkShopSetting>();
             if (null == _project)
             {
                 return;
             }
             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "正在发布");
-            _project.Publish(()=> {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                CommonTools.ShowPopupDialog("发布关卡成功");
-            },
-            code => {
-                SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                CommonTools.ShowPopupDialog("发布关卡失败，错误代码 " + code.ToString());
-            });
+            _project.Publish(() =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    CommonTools.ShowPopupDialog("发布关卡成功");
+                    if (SocialGUIManager.Instance.CurrentMode == SocialGUIManager.EMode.Game)
+                    {
+                        GM2DGame.Instance.QuitGame(null, null);
+                    }
+                },
+                code =>
+                {
+                    SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
+                    CommonTools.ShowPopupDialog("发布关卡失败，错误代码 " + code.ToString());
+                });
         }
 
-        private void OnCancelBtn () {
-            SocialGUIManager.Instance.CloseUI<UICtrlPublishProject> ();
+        private void OnCancelBtn()
+        {
+            SocialGUIManager.Instance.CloseUI<UICtrlPublishProject>();
         }
+
         #endregion
     }
 }
