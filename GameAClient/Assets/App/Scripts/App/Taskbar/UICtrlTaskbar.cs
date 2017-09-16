@@ -30,7 +30,7 @@ namespace GameA
         private bool _achievementAvailable;
         private bool _mailBoxAvailable = true;
         private bool _friendsAvailable = true;
-        private bool _isShowingSettingButton = true;
+//        private bool _isShowingSettingButton = true;
         private UIParticleItem _uiParticleItem;
 
         #endregion

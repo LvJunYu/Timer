@@ -87,8 +87,15 @@ namespace GameA
 		{
             rate = Mathf.Clamp01(rate);
             _cachedView.ProcessText.text = string.Format ("{0:F1} %", rate * 100);
-            _cachedView.ProcessImg.fillAmount = rate;
+			SetProgress(rate);
 		}
+	    
+	    private void SetProgress(float progress)
+	    {
+		    _cachedView.ProcessImg.fillAmount = progress;
+		    _cachedView.ProcessMark.rectTransform.anchoredPosition =
+			    Vector2.right * _cachedView.ProcessImg.rectTransform.GetWidth() * progress;
+	    }
 
 		#endregion 事件响应
 	}

@@ -1,4 +1,5 @@
 ﻿using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
@@ -34,12 +35,12 @@ namespace GameA
         private void OnResourcesCheckStart ()
         {
             DictionaryTools.SetContentText(_cachedView.ProgressText, string.Empty);
-            _cachedView.ProgressBar.fillAmount = 0f;
+            SetProgress(0);
         }
         private void OnResourcesCheckFinish ()
         {
             DictionaryTools.SetContentText(_cachedView.ProgressText, string.Empty);
-            _cachedView.ProgressBar.fillAmount = 1f;
+            SetProgress(1);
         }
         private void OnVersionUpdateStateChange (string state)
         {
@@ -57,7 +58,14 @@ namespace GameA
             }
 //            progress = UnityEngine.Mathf.Clamp01 (progress);
             _cachedView.ProgressText.text = string.Format ("{0:F1}M / {1:F1}M", (float)doneSize / 1024 / 1024, (float)totalSize / 1024 / 1024);
-            _cachedView.ProgressBar.fillAmount = (float)doneSize / totalSize;
+            SetProgress((float)doneSize / totalSize);
+        }
+
+        private void SetProgress(float progress)
+        {
+            _cachedView.ProgressBar.fillAmount = progress;
+            _cachedView.ProgressMark.rectTransform.anchoredPosition =
+                Vector2.right * _cachedView.ProgressBar.rectTransform.GetWidth() * progress;
         }
 
     }
