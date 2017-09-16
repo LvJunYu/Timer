@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace GameA
 {
     [UIAutoSetup]
-    public class UICtrlChangePassword : UICtrlGenericBase<UIViewChangePassword>
+    public class UICtrlBindingPhone : UICtrlGenericBase<UIViewBindingPhone>
     {
 
         protected override void InitGroupId()
@@ -27,13 +27,10 @@ namespace GameA
             //可能是Text的bug
             int charLimit = _cachedView.Phone.characterLimit;
             _cachedView.Phone.characterLimit = charLimit + 1;
-            _cachedView.Phone.text = LocalUser.Instance.User.PhoneNum;
+            _cachedView.Phone.text = LoginLogicUtil.PhoneNum;
             _cachedView.Phone.characterLimit = charLimit;
-            _cachedView.NewPwd.text = "";
-            _cachedView.OldPwd.text = "";
+            _cachedView.Pwd.text = "";
             _cachedView.SmsCode.text = "";
-            LoginLogicUtil.OnSuccess = OnLoginSuccess;
-            LoginLogicUtil.OnFailed = OnLoginFailed;
             base.OnOpen(parameter);
         }
 
@@ -49,50 +46,42 @@ namespace GameA
             _cachedView.GetSMSCode.enabled = true;
         }
 
-        private void OnResetPwd()
+        private void OnBindingPhone()
         {
             var phone = _cachedView.Phone.text;
-            string verificationCode = null;
-            var Newpwd = _cachedView.NewPwd.text;
-            var Oldpwd = _cachedView.OldPwd.text;
+            string verificationCode = _cachedView.SmsCode.text;
+            var pwd = _cachedView.Pwd.text;
             bool phoneCheckResult = CheckTools.CheckPhoneNum(phone);
             LoginLogicUtil.ShowPhoneNumCheckTip(phoneCheckResult);
             if (!phoneCheckResult)
             {
                 return;
             }
-            //bool verificationCheckResult = CheckTools.CheckVerificationCode(verificationCode);
-            //LoginLogicUtil.ShowVerificationCodeCheckTip(verificationCheckResult);
-            //if(!verificationCheckResult)
-            //{
-            //    return;
-            //}
-            CheckTools.ECheckPasswordResult NewpwdCheckResult = CheckTools.CheckPassword(Newpwd);
-            LoginLogicUtil.ShowPasswordCheckTip(NewpwdCheckResult);
-            if (NewpwdCheckResult != CheckTools.ECheckPasswordResult.Success)
+            bool verificationCheckResult = CheckTools.CheckVerificationCode(verificationCode);
+            LoginLogicUtil.ShowVerificationCodeCheckTip(verificationCheckResult);
+            if(!verificationCheckResult)
             {
                 return;
             }
-            CheckTools.ECheckPasswordResult OldpwdCheckResult = CheckTools.CheckPassword(Oldpwd);
-            LoginLogicUtil.ShowPasswordCheckTip(OldpwdCheckResult);
-            if (OldpwdCheckResult != CheckTools.ECheckPasswordResult.Success)
+            CheckTools.ECheckPasswordResult newpwdCheckResult = CheckTools.CheckPassword(pwd);
+            LoginLogicUtil.ShowPasswordCheckTip(newpwdCheckResult);
+            if (newpwdCheckResult != CheckTools.ECheckPasswordResult.Success)
             {
                 return;
             }
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "密码修改中");
+            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "账号绑定中");
 
-            LocalUser.Instance.Account.ChangePassword(Oldpwd, Newpwd, verificationCode,
-                (ret) => {
+            LocalUser.Instance.Account.BindingPhone(phone, pwd, EAccountIdentifyType.AIT_Phone, verificationCode,
+                ret => {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                     Close();
                     SocialApp.Instance.LoginSucceed();
                 },
-                (ret) =>
+                code =>
                 {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-                    LogHelper.Error("修改密码失败, Code: " + ret);
+                    LoginLogicUtil.ShowAccountBindError(code);
                 });
-            //            LoginLogicUtil.RequestSmsLogin(phone, verificationCode, pwd, EVerifyCodeType.VCT_ChangePassword);
             LoginLogicUtil.PhoneNum = _cachedView.Phone.text;
         }
 
@@ -105,8 +94,8 @@ namespace GameA
             {
                 return;
             }
-            RemoteCommands.GetVerificationCode(phoneNum, EAccountIdentifyType.AIT_Phone, EVerifyCodeType.VCT_ForgetPassword,
-                (ret) => { }, null
+            RemoteCommands.GetVerificationCode(phoneNum, EAccountIdentifyType.AIT_Phone, EVerifyCodeType.VCT_Bind,
+                ret => { }, null
                 );
             CoroutineProxy.Instance.StartCoroutine(ProcessSmsCodeCountDown());
 
@@ -115,20 +104,8 @@ namespace GameA
         private void InitUIEvent()
         {
             _cachedView.GetSMSCode.onClick.AddListener(OnGetSMSCodeButtonClick);
-            _cachedView.DoResetPassword.onClick.AddListener(OnDoResetPasswordClick);
-            _cachedView.ForgetPassword.onClick.AddListener(ForgetPWD);
+            _cachedView.ConfirmBtn.onClick.AddListener(OnConfirmBtnClick);
             _cachedView.CloseBtn.onClick.AddListener(Close);
-        }
-
-        private void OnLoginSuccess()
-        {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
-            CommonTools.ShowPopupDialog("修改重置成功");
-        }
-
-        private void OnLoginFailed()
-        {
-            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
         }
  
         #region uievent 
@@ -137,22 +114,11 @@ namespace GameA
             OnSmsCode();
         }
 
-        private void OnDoResetPasswordClick()
+        private void OnConfirmBtnClick()
         {
-            OnResetPwd();
+            OnBindingPhone();
         }
-
-        private void ForgetPWD()
-        {
-            SocialGUIManager.Instance.OpenUI<UICtrlForgetPassword>();
-            Close();
-        }
-
         #endregion
 
-        public object GetTitle()
-        {
-            return "忘记密码";
-        }
     }
 }

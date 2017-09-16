@@ -42,6 +42,11 @@ namespace SoyEngine
             get { return _token; }
         }
 
+        public bool IsGuest
+        {
+            get { return string.IsNullOrEmpty(LocalUser.Instance.User.PhoneNum); }
+        }
+
         public bool HasLogin
         {
             get { return _userGuid != 0; }
@@ -187,6 +192,38 @@ namespace SoyEngine
                     }
                 });
         }
+        
+        public void BindingPhone(
+            string account,
+            string password,
+            EAccountIdentifyType accountType,
+            string verificationCode,
+            Action<Msg_SC_CMD_AccountBind> successCallback, Action<EAccountBindCode> failedCallback)
+        {
+            RemoteCommands.AccountBind(account, password, accountType, verificationCode, ret =>
+                {
+                    if (ret.ResultCode == (int)EAccountBindCode.ABC_Success)
+                    {
+                        OnTokenChange(ret.Token);
+                        LocalUser.Instance.User.PhoneNum = account;
+                        if (null != successCallback)
+                        {
+                            successCallback.Invoke(ret);
+                        }
+                    }
+                    else
+                    {
+                        failedCallback.Invoke((EAccountBindCode)ret.ResultCode);
+                    }
+                }, (errorCode) => {
+                    SoyHttpClient.ShowErrorTip(errorCode);
+                    if (null != failedCallback)
+                    {
+                        failedCallback.Invoke(EAccountBindCode.ABC_None);
+                    }
+                });
+        }
+        
 
 
         public void LoginByToken(Action successCallback, Action<ELoginByTokenCode> failedCallback)
@@ -254,6 +291,7 @@ namespace SoyEngine
                 }
             });
         }
+        
 
 
         public void OnLogin(
@@ -297,6 +335,7 @@ namespace SoyEngine
         {
             _token = token;
             Save();
+            MessengerAsync.Broadcast(EMessengerType.OnAccountLoginStateChanged);
         }
 
         private void Save()

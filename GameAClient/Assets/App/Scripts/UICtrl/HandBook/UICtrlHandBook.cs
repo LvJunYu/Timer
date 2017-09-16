@@ -49,18 +49,6 @@ namespace GameA
 
         #region Methods
 
-        protected override void OnOpen(object parameter)
-        {
-            GM2DGame.Instance.Pause();
-            base.OnOpen(parameter);
-        }
-
-        protected override void OnClose()
-        {
-            GM2DGame.Instance.Continue();
-            base.OnClose();
-        }
-
         protected override void SetPartAnimations()
         {
             base.SetPartAnimations();
