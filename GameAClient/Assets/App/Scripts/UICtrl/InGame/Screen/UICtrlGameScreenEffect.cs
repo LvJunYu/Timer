@@ -22,8 +22,9 @@ namespace GameA
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlGameScreenEffect>();
             }
+            pos.z = 0;
             var uiparticle = GameParticleManager.Instance.EmitUIParticle(itemName, _cachedView.Trans, _groupId,
-               - pos - (Vector3) _cachedView.Trans.anchoredPosition);
+               (pos - (Vector3) _coordinateOffset) * _coordinateScalefactor);
             return uiparticle;
         }
 
@@ -33,8 +34,9 @@ namespace GameA
             {
                 SocialGUIManager.Instance.OpenUI<UICtrlGameScreenEffect>();
             }
+            pos.z = 0;
             var uiparticle = GameParticleManager.Instance.EmitUIParticle(itemName, _cachedView.Trans, _groupId,
-                lifeTime, - pos - (Vector3) _cachedView.Trans.anchoredPosition);
+                lifeTime, (pos - (Vector3) _coordinateOffset) * _coordinateScalefactor);
             return uiparticle;
         }
         
