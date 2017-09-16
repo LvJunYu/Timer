@@ -164,7 +164,7 @@ namespace GameA
 	    protected override void SetPartAnimations()
 	    {
 		    base.SetPartAnimations();
-		    SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp);
+		    SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp,new Vector3(0,100,0),0.1f);
 		    SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
 		    SetPart(_cachedView.BGRtf, EAnimationType.Fade);
 	    }

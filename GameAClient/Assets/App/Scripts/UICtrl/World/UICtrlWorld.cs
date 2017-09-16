@@ -7,6 +7,7 @@
 
 using System;
 using SoyEngine;
+using UnityEngine;
 
 namespace GameA
 {
@@ -115,15 +116,14 @@ namespace GameA
         protected override void SetAnimationType()
         {
             base.SetAnimationType();
-            _animationType = EAnimationType.None;
             _firstDelayFrames = 7;
         }
 
         protected override void SetPartAnimations()
         {
             base.SetPartAnimations();
-            SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp);
-            SetPart(_cachedView.TabGroup.transform, EAnimationType.MoveFromLeft);
+            SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp,new Vector3(0,100,0),0.1f);
+            SetPart(_cachedView.TabGroup.transform, EAnimationType.MoveFromLeft,new Vector3(-200,0,0));
             SetPart(_cachedView.ContentPanelDockRtf, EAnimationType.MoveFromRight);
             SetPart(_cachedView.BGRtf, EAnimationType.Fade);
         }
