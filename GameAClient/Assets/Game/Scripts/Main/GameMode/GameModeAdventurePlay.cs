@@ -11,6 +11,8 @@ namespace GameA.Game
     {
         private SituationAdventureParam _adventureLevelInfo;
         private AdventureGuideBase _guideBase;
+        private const string HandbookEventPrefix = "Book_";
+        private readonly HashSet<int> _handbookShowSet = new HashSet<int>();
 
 
         public SituationAdventureParam GetLevelInfo()
@@ -37,6 +39,8 @@ namespace GameA.Game
             {
                 _guideBase.Init();
             }
+            
+            Messenger<string, bool>.AddListener(EMessengerType.OnTrigger, HandleHandbook);
             return true;
         }
 
@@ -65,6 +69,7 @@ namespace GameA.Game
                 _guideBase.Dispose();
                 _guideBase = null;
             }
+            Messenger<string, bool>.RemoveListener(EMessengerType.OnTrigger, HandleHandbook);
             return base.Stop();
         }
 
@@ -273,6 +278,30 @@ namespace GameA.Game
             yield return null;
 
             GameRun.Instance.Playing();
+        }
+        
+        
+        public void HandleHandbook(string triggerName, bool active)
+        {
+            if (!active)
+            {
+                return;
+            }
+            if (!triggerName.StartsWith(HandbookEventPrefix))
+            {
+                return;
+            }
+            int id;
+            if (!int.TryParse(triggerName.Substring(HandbookEventPrefix.Length), out id))
+            {
+                return;
+            }
+            if (_handbookShowSet.Contains(id))
+            {
+                return;
+            }
+            _handbookShowSet.Add(id);
+            SocialGUIManager.Instance.OpenUI<UICtrlInGameUnitHandbook>(id);
         }
     }
 }

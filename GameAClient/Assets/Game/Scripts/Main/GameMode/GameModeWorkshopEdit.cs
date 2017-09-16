@@ -10,6 +10,8 @@ namespace GameA.Game
     {
 #if WORKSHOPGUIDE
         private AdventureGuideBase _guideBase;
+        private const string HandbookEventPrefix = "Book_";
+        private readonly HashSet<int> _handbookShowSet = new HashSet<int>();
         private int _section = 1;
         private EAdventureProjectType _projectType = EAdventureProjectType.APT_Normal;
         private int _level = 1;
@@ -24,7 +26,18 @@ namespace GameA.Game
                 return false;
             }
             _gameSituation = EGameSituation.World;
+#if WORKSHOPGUIDE
+            Messenger<string, bool>.AddListener(EMessengerType.OnTrigger, HandleHandbook);
+#endif
             return true;
+        }
+
+        public override bool Stop()
+        {
+#if WORKSHOPGUIDE
+            Messenger<string, bool>.RemoveListener(EMessengerType.OnTrigger, HandleHandbook);
+#endif
+            return base.Stop();
         }
 
         public override void OnGameStart()
@@ -156,6 +169,7 @@ namespace GameA.Game
                 _guideBase.Dispose();
                 _guideBase = null;
             }
+            _handbookShowSet.Clear();
 #endif
             base.ChangeMode(mode);
         }
@@ -221,5 +235,31 @@ namespace GameA.Game
             }
             return record;
         }
+
+
+#if WORKSHOPGUIDE
+        public void HandleHandbook(string triggerName, bool active)
+        {
+            if (!active)
+            {
+                return;
+            }
+            if (!triggerName.StartsWith(HandbookEventPrefix))
+            {
+                return;
+            }
+            int id;
+            if (!int.TryParse(triggerName.Substring(HandbookEventPrefix.Length), out id))
+            {
+                return;
+            }
+            if (_handbookShowSet.Contains(id))
+            {
+                return;
+            }
+            _handbookShowSet.Add(id);
+            SocialGUIManager.Instance.OpenUI<UICtrlInGameUnitHandbook>(id);
+        }
+#endif
     }
 }
