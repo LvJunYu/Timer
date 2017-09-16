@@ -221,7 +221,7 @@ namespace GameA
         /// <param name="sequenceIndex"></param>
         protected void SetPart(Transform tf, EAnimationType animationType, float delay = 0,
             Ease openEase = Ease.OutQuad, Ease closeEase = Ease.Linear, float openDuration = 0.25f,
-            float closeDuration = 0.25f)
+            float closeDuration = 0.2f)
         {
             _openPartSequences.Add(null);
             _initialPos.Add(tf.localPosition);
