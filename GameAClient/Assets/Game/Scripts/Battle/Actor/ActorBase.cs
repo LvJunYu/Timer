@@ -83,6 +83,7 @@ namespace GameA.Game
                 _view.SetDamageShaderValue("Value", 0);
             }
             _hpStayTimer = 0;
+            _skillCtrl = null;
             base.Clear();
         }
 

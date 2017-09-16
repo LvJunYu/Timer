@@ -19,13 +19,14 @@ namespace GameA.Game
         protected SpriteRenderer _spriteRenderer;
         protected int _edgeValue;
         protected bool _intersect;
-
+        
         internal override bool InstantiateView()
         {
             if (!base.InstantiateView())
             {
                 return false;
             }
+            SetSortingOrderFront();
             _spriteRenderer = _view.Trans.GetComponent<SpriteRenderer>();
             if (GameRun.Instance.IsEdit)
             {

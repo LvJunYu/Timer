@@ -53,6 +53,7 @@ namespace GameA.Game
         
         protected List<UnitBase> _switchPressUnits = new List<UnitBase>();
         protected List<UnitBase> _switchRectUnits = new List<UnitBase>();
+        protected bool _hasSwitchRectOnce;
 
         protected int _maxHp;
         protected int _hp;
@@ -773,6 +774,7 @@ namespace GameA.Game
             _eUnitState = EUnitState.Normal;
             _switchPressUnits.Clear();
             _switchRectUnits.Clear();
+            _hasSwitchRectOnce = false;
             if (_dynamicCollider != null)
             {
                 SetFacingDir(_moveDirection, true);
@@ -1539,6 +1541,16 @@ namespace GameA.Game
                 OnCtrlBySwitch();
             }
             return true;
+        }
+        
+        internal void OnSwitchRectOnce()
+        {
+            if (_hasSwitchRectOnce)
+            {
+                return;
+            }
+            _hasSwitchRectOnce = true;
+            OnCtrlBySwitch();
         }
 
         internal void OnCtrlBySwitch()

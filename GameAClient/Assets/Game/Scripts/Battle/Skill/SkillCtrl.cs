@@ -26,7 +26,7 @@ namespace GameA.Game
         {
             get { return _currentSkills; }
         }
-
+        
         public bool HasEmptySlot(out int slot)
         {
             for (int i = 0; i < _currentSkills.Length; i++)

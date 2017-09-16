@@ -63,7 +63,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            SetWeapon(_weaponId);
             _trans.localEulerAngles = new Vector3(0, 0, -_angle);
             return true;
         }
@@ -75,7 +74,14 @@ namespace GameA.Game
             {
                 _trans.localEulerAngles = new Vector3(0, 0, -_angle);
             }
+            _skillCtrl = null;
             base.Clear();
+        }
+
+        internal override void OnPlay()
+        {
+            base.OnPlay();
+            SetWeapon(_weaponId);
         }
 
         internal override void OnObjectDestroy()
