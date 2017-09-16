@@ -70,7 +70,7 @@ namespace GameA.Game
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (!unit.CanBridgeCross)
+                    if (!unit.CanBridgeCross && unit.IsAlive)
                     {
                         blocked = true;
                         break;
@@ -90,7 +90,7 @@ namespace GameA.Game
 
                         for (int i = 0; i < units.Count; i++)
                         {
-                            if (UnitDefine.IsSwitchTrigger(units[i].Id))
+                            if (UnitDefine.IsSwitchTrigger(units[i].Id) && units[i].IsAlive)
                             {
                                 units[i].OnIntersect(unit);
                             }

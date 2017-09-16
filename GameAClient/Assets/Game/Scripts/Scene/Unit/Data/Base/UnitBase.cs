@@ -524,6 +524,7 @@ namespace GameA.Game
         {
             _unitDesc = unitDesc;
             _tableUnit = tableUnit;
+            _angle = GM2DTools.GetAngle(Rotation);
             UpdateExtraData();
             InitAssetPath();
             if (!InstantiateView())
