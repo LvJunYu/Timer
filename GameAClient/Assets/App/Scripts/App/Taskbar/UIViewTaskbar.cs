@@ -28,13 +28,13 @@ namespace GameA
         /// </summary>
 		public Button WorkshopButton;
 		public GameObject Workshop;
-	//	public GameObject WorkshopDisable;
-        /// <summary>
+		public GameObject WorkshopDisable;
+//        /// <summary>
         /// 世界切换按钮
         /// </summary>
 		public Button WorldButton;
 		public GameObject World;
-//		public GameObject WorldDisable;
+		public GameObject WorldDisable;
         /// <summary>
         ///单人游戏按钮
         /// </summary>
