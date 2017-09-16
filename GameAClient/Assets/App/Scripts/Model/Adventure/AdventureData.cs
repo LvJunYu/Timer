@@ -458,16 +458,18 @@ namespace GameA
             levelData.SimpleData.Star1Flag = star1Flag;
             levelData.SimpleData.Star2Flag = star2Flag;
             levelData.SimpleData.Star3Flag = star3Flag;
-            if (success) levelData.SimpleData.SuccessCount++;
-
-            if (_userData.AdventureUserProgress.CompleteSection < _lastPlayedChapterIdx)
+            if (success)
             {
-                _userData.AdventureUserProgress.CompleteSection = _lastPlayedChapterIdx;
-                _userData.AdventureUserProgress.CompleteLevel = 1;
-            }
-            else if (_userData.AdventureUserProgress.CompleteLevel < _lastPlayedLevelIdx)
-            {
-                _userData.AdventureUserProgress.CompleteLevel = _lastPlayedLevelIdx;
+                levelData.SimpleData.SuccessCount++;
+                if (_userData.AdventureUserProgress.CompleteSection < _lastPlayedChapterIdx)
+                {
+                    _userData.AdventureUserProgress.CompleteSection = _lastPlayedChapterIdx;
+                    _userData.AdventureUserProgress.CompleteLevel = 1;
+                }
+                else if (_userData.AdventureUserProgress.CompleteLevel < _lastPlayedLevelIdx)
+                {
+                    _userData.AdventureUserProgress.CompleteLevel = _lastPlayedLevelIdx;
+                }
             }
         }
 

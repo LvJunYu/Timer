@@ -11,8 +11,6 @@ namespace GameA.Game
 
         private UMCtrlUIGuideBubble _jumpGuideBubble;
 
-        private EState _goalGuideState;
-        
         public override void Init()
         {
             base.Init();
@@ -21,7 +19,6 @@ namespace GameA.Game
                 .RegistEvent("JumpGuide", JumpGuide)
                 .RegistEvent("JumpMoveGuide", JumpMoveGuide)
                 .RegistEvent("JumpDoubleGuide", JumpDoubleGuide)
-                .RegistEvent("GoalGuide", GoalGuide)
                 .End();
             _uiCtrlUIGuideBubble = SocialGUIManager.Instance.GetUI<UICtrlUIGuideBubble>();
         }
@@ -122,31 +119,6 @@ namespace GameA.Game
                 }
             }
         }
-        
-        private void GoalGuide(bool flag)
-        {
-            if (_goalGuideState == EState.Finish)
-            {
-                return;
-            }
-            if (flag)
-            {
-                SocialGUIManager.Instance.OpenUI<UICtrlInGameUnitHandbook>(5001);
-                GM2DGame.Instance.Pause();
-                _goalGuideState = EState.Doing;
-            }
-        }
-
-        public override void Update()
-        {
-            base.Update();
-            if (_goalGuideState == EState.Doing && !SocialGUIManager.Instance.GetUI<UICtrlInGameUnitHandbook>().IsOpen)
-            {
-                _goalGuideState = EState.Finish;
-                GM2DGame.Instance.Continue();
-            }
-        }
-
 
         public override void Dispose()
         {
@@ -161,13 +133,6 @@ namespace GameA.Game
                 _jumpGuideBubble = null;
             }
             base.Dispose();
-        }
-        
-        private enum EState
-        {
-            None,
-            Doing,
-            Finish
         }
     }
 }
