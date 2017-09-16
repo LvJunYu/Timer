@@ -128,6 +128,13 @@ namespace GameA
         {
             _groupId = (int) EUIGroupType.PopUpDialog;
         }
+        
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
+            SetPart(_cachedView.transform, EAnimationType.Fade);
+        }
 
         private void OnOKBtn()
         {

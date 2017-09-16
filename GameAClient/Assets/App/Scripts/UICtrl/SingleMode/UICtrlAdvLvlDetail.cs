@@ -110,6 +110,13 @@ namespace GameA
             _firstDelayFrames = 4;
         }
 
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
+            SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
+        }
+
         public void RefreshAdventureUserLevelDataDetail()
         {
             _userLevelDataDetail.Request(

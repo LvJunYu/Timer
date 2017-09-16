@@ -87,16 +87,10 @@ namespace GameA
             _cachedView.Account.gameObject.SetActive(false);
         }
 
-        protected override void SetAnimationType()
-        {
-            base.SetAnimationType();
-            _animationType = EAnimationType.None;
-        }
-
         protected override void SetPartAnimations()
         {
             base.SetPartAnimations();
-            SetPart(_cachedView.Account.transform, EAnimationType.MoveFromUp, 0);
+            SetPart(_cachedView.Account.transform, EAnimationType.MoveFromUp);
         }
 
         protected override void OnViewCreated()

@@ -342,6 +342,13 @@ namespace GameA
             Lowerpart = _cachedView.Lowerpart;
         }
 
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
+            SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
+        }
+        
         protected override void OnClose()
         {
             base.OnClose();

@@ -122,10 +122,10 @@ namespace GameA
         protected override void SetPartAnimations()
         {
             base.SetPartAnimations();
-            SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp, 0);
-            SetPart(_cachedView.TabGroup.transform, EAnimationType.MoveFromLeft, 1, 0.1f);
-            SetPart(_cachedView.ContentPanelDockRtf, EAnimationType.MoveFromRight, 2);
-            SetPart(_cachedView.BGRtf, EAnimationType.Fade, 3);
+            SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp);
+            SetPart(_cachedView.TabGroup.transform, EAnimationType.MoveFromLeft);
+            SetPart(_cachedView.ContentPanelDockRtf, EAnimationType.MoveFromRight);
+            SetPart(_cachedView.BGRtf, EAnimationType.Fade);
         }
 
         private void ClickMenu(int selectInx, bool open)

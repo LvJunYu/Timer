@@ -89,7 +89,14 @@ namespace GameA
             base.OnOpen(parameter);
             RefreshView();
         }
-
+        
+        protected override void SetPartAnimations()
+        {
+            base.SetPartAnimations();
+            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
+            SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
+        }
+        
         protected override void InitEventListener()
         {
             base.InitEventListener();

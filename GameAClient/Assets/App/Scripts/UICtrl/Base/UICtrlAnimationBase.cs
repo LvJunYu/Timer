@@ -24,6 +24,7 @@ namespace GameA
         private List<Sequence> _openPartSequences = new List<Sequence>(5);
         private List<Sequence> _closePartSequences = new List<Sequence>(5);
         private List<Vector3> _initialPos = new List<Vector3>(5);
+        private int _sequenceIndex;
 
         protected virtual void CreateSequences()
         {
@@ -84,7 +85,7 @@ namespace GameA
             }
             SetPartAnimations();
             _openSequence.OnComplete(OnOpenAnimationComplete).SetAutoKill(false).Pause()
-                .OnUpdate(OnOpenAnimationUpdate);
+                .OnUpdate(OnOpenAnimationUpdate).PrependCallback(() => _cachedView.gameObject.SetActive(true));
             _closeSequence.OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause()
                 .PrependCallback(() => _cachedView.Trans.localPosition = Vector3.zero);
         }
@@ -101,6 +102,7 @@ namespace GameA
             {
                 if (_openDelayFrames > 0)
                 {
+                    _cachedView.gameObject.SetActive(false);
                     CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(_openDelayFrames,
                         () => _openSequence.Restart()));
                 }
@@ -155,7 +157,7 @@ namespace GameA
         /// </summary>
         protected virtual void SetAnimationType()
         {
-            _animationType = EAnimationType.PopupFromDown;
+            _animationType = EAnimationType.None;
             _firstDelayFrames = 1;
         }
 
@@ -217,28 +219,26 @@ namespace GameA
         /// <param name="tf"></param>
         /// <param name="animationType"></param>
         /// <param name="sequenceIndex"></param>
-        protected void SetPart(Transform tf, EAnimationType animationType, int sequenceIndex, float delay = 0,
-            Ease openEase = Ease.OutQuad, Ease closeEase = Ease.Linear)
+        protected void SetPart(Transform tf, EAnimationType animationType, float delay = 0,
+            Ease openEase = Ease.OutQuad, Ease closeEase = Ease.Linear, float openDuration = 0.25f,
+            float closeDuration = 0.25f)
         {
-            if (sequenceIndex > _openPartSequences.Count - 1)
-            {
-                for (int i = _openPartSequences.Count; i <= sequenceIndex; i++)
-                {
-                    _openPartSequences.Add(null);
-                    _initialPos.Add(Vector3.zero);
-                    _closePartSequences.Add(null);
-                }
-            }
-            _initialPos[sequenceIndex] = tf.localPosition;
-            if (null == _openPartSequences[sequenceIndex])
-            {
-                CreateSequences(tf, animationType, sequenceIndex, delay, openEase, closeEase);
-            }
+            _openPartSequences.Add(null);
+            _initialPos.Add(tf.localPosition);
+            _closePartSequences.Add(null);
+            CreateSequences(tf, animationType, _sequenceIndex, delay, openEase, closeEase, openDuration,
+                closeDuration);
+            _sequenceIndex++;
         }
 
         private void CreateSequences(Transform tf, EAnimationType animationType, int sequenceIndex, float delay,
-            Ease openEase, Ease closeEase)
+            Ease openEase, Ease closeEase, float openDuration, float closeDuration)
         {
+            if (sequenceIndex > _openPartSequences.Count - 1)
+            {
+                LogHelper.Error("sequenceIndex > _openPartSequences.Count - 1");
+                return;
+            }
             if (null == _openPartSequences[sequenceIndex])
                 _openPartSequences[sequenceIndex] = DOTween.Sequence();
             if (null == _closePartSequences[sequenceIndex])
@@ -256,21 +256,21 @@ namespace GameA
                 case EAnimationType.MoveFromRight:
                     //开始动画
                     _openPartSequences[sequenceIndex].Append(
-                        tf.DOBlendableMoveBy(targetPos, 0.25f).From().SetEase(openEase)
+                        tf.DOBlendableMoveBy(targetPos, openDuration).From().SetEase(openEase)
                     );
                     //结束动画
                     _closePartSequences[sequenceIndex].Append(
-                        tf.DOBlendableMoveBy(targetPos, 0.15f).SetEase(closeEase)
+                        tf.DOBlendableMoveBy(targetPos, closeDuration).SetEase(closeEase)
                     );
                     break;
                 case EAnimationType.PopupFromCenter:
                     //开始动画
                     _openPartSequences[sequenceIndex].Append(
-                        tf.DOScale(Vector3.zero, 0.25f).From().SetEase(Ease.OutBack)
+                        tf.DOScale(Vector3.zero, openDuration).From().SetEase(Ease.OutBack)
                     );
                     //结束动画
                     _closePartSequences[sequenceIndex].Append(
-                        tf.DOScale(Vector3.zero, 0.15f).SetEase(closeEase)
+                        tf.DOScale(Vector3.zero, closeDuration).SetEase(closeEase)
                     );
                     break;
                 case EAnimationType.PopupFromDown:
@@ -279,28 +279,28 @@ namespace GameA
                 case EAnimationType.PopupFromRight:
                     //开始动画
                     _openPartSequences[sequenceIndex].Append(
-                        tf.DOBlendableMoveBy(targetPos * 0.5f, 0.25f).From().SetEase(Ease.OutBack)
+                        tf.DOBlendableMoveBy(targetPos * 0.5f, openDuration).From().SetEase(Ease.OutBack)
                     );
                     _openPartSequences[sequenceIndex].Join(
-                        tf.DOScale(Vector3.zero, 0.25f).From().SetEase(Ease.OutBack)
+                        tf.DOScale(Vector3.zero, openDuration).From().SetEase(Ease.OutBack)
                     );
                     //结束动画
                     _closePartSequences[sequenceIndex].Append(
-                        tf.DOBlendableMoveBy(targetPos * 0.5f, 0.15f).SetEase(closeEase)
+                        tf.DOBlendableMoveBy(targetPos * 0.5f, closeDuration).SetEase(closeEase)
                     );
                     _closePartSequences[sequenceIndex].Join(
-                        tf.DOScale(Vector3.zero, 0.15f).SetEase(closeEase)
+                        tf.DOScale(Vector3.zero, closeDuration).SetEase(closeEase)
                     );
                     break;
                 case EAnimationType.Fade:
                     //开始动画
-                    _openPartSequences[sequenceIndex].Append(
-                        tf.GetComponent<Image>().DOFade(0, 0.25f).From().SetEase(openEase)
-                    );
-                    //结束动画
-                    _closePartSequences[sequenceIndex].Append(
-                        tf.GetComponent<Image>().DOFade(0, 0.15f).SetEase(closeEase)
-                    );
+                    Image img = tf.GetComponent<Image>();
+                    if (img != null)
+                    {
+                        _openPartSequences[sequenceIndex].Append(img.DOFade(0, openDuration).From().SetEase(openEase));
+                        //结束动画
+                        _closePartSequences[sequenceIndex].Append(img.DOFade(0, closeDuration).SetEase(closeEase));
+                    }
                     break;
             }
             _closePartSequences[sequenceIndex].PrependCallback(() => tf.localPosition = _initialPos[sequenceIndex])
