@@ -54,8 +54,10 @@ namespace GameA.Game
         {
             if (!checkOnly && other.IsMain)
             {
-                //播放动画
-                PlayMode.Instance.SceneState.Arrived = true;
+                if (IntersectX(other, _colliderGrid.Shrink(319)))
+                {
+                    PlayMode.Instance.SceneState.Arrived = true;
+                }
             }
             return base.OnUpHit(other, ref y, checkOnly);
         }
