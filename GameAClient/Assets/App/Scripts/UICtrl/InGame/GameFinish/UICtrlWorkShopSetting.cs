@@ -4,7 +4,7 @@ using SoyEngine;
 namespace GameA
 {
     [UIAutoSetup]
-    public class UICtrlWorkShopSetting : UICtrlGenericBase<UIViewWorkShopSetting>
+    public class UICtrlWorkShopSetting : UICtrlInGameBase<UIViewWorkShopSetting>
     {
         private UPCtrlWorkShopBasicSetting _upCtrlWorkShopBasicSetting;
         private UPCtrlWorkShopWinConditionSetting _upCtrlWorkShopWinConditionSetting;

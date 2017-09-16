@@ -26,9 +26,9 @@ namespace GameA
         private bool _lotteryAvailable = true;
         private bool _weaponAvailable = true;
         private bool _fashionShopAvailable = true;
-        private bool _puzzleAvailable = false;
+        private bool _puzzleAvailable;
         private bool _trainAvailable = false;
-        private bool _achievementAvailable = false;
+        private bool _achievementAvailable;
         private bool _mailBoxAvailable = true;
         private bool _friendsAvailable = true;
         private bool _isShowingSettingButton = true;
@@ -55,7 +55,6 @@ namespace GameA
         protected override void InitEventListener()
         {
             base.InitEventListener();
-            RegisterEvent(EMessengerType.OpenGameSetting, ShowPuzzleBtn);
             RegisterEvent(EMessengerType.OnUserInfoChanged, OnChangeToUserInfo);
         }
 
@@ -246,7 +245,7 @@ namespace GameA
             UI_Friends = 7,
             UI_Train = 8,
             UI_Achievement = 9,
-            UI_Weapon,
+            UI_Weapon
         }
 
         public void OnCreateBtn()
@@ -272,8 +271,7 @@ namespace GameA
 
         public void Account()
         {
-            Messenger.Broadcast(EMessengerType.OpenGameSetting);
-            SocialGUIManager.Instance.GetUI<UICtrlGameSetting>().ChangeToSettingAtHome();
+            SocialGUIManager.Instance.OpenUI<UICtrlGameSetting>().ChangeToSettingAtHome();
         }
 
         public void OnWorldBtn()
@@ -355,23 +353,6 @@ namespace GameA
         private int _puzzlePasswordCount;
 
         private float _lastClickTime;
-
-        private void ShowPuzzleBtn()
-        {
-            if (Time.time - _lastClickTime < 0.5f)
-                _puzzlePasswordCount++;
-            else
-                _puzzlePasswordCount = 0;
-            _lastClickTime = Time.time;
-            if (_puzzlePasswordCount > 2)
-            {
-//                _cachedView.PuzzleBtn.transform.parent.gameObject.SetActive(true);
-//                _cachedView.PuzzleBtn.gameObject.SetActive(true);
-//                _cachedView.PuzzleDisable.SetActive(false);
-                SetLock(UIFunction.UI_Puzzle, true);
-                _puzzlePasswordCount = 0;
-            }
-        }
 
         private void OnTrainBtn()
         {
