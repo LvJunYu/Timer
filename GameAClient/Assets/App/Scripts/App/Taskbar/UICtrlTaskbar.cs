@@ -114,9 +114,9 @@ namespace GameA
             base.OnClose();
         }
 
-        public void SetLock(UIFunction UI, bool ifunlock)
+        public void SetLock(UIFunction uitype, bool ifunlock)
         {
-            switch (UI)
+            switch (uitype)
             {
                 case UIFunction.UI_SingleMode:
                 {
