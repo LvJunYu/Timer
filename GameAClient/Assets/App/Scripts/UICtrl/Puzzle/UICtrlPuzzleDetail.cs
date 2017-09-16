@@ -425,10 +425,11 @@ namespace GameA
                 _cachedView.FragsScrollRect.horizontal = true;
         }
 
-        protected override void SetAnimationType()
+        protected override void SetPartAnimations()
         {
-            base.SetAnimationType();
-            _animationType = EAnimationType.PopupFromDown;
+            base.SetPartAnimations();
+            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
+            SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
         }
 
         protected override void OnClose()

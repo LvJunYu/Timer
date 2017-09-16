@@ -447,11 +447,13 @@ namespace GameA
             RefreshMap();
         }
 
-        protected override void SetAnimationType()
+        protected override void SetPartAnimations()
         {
-            _animationType = EAnimationType.PopupFromDown;
+            base.SetPartAnimations();
+            SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
+            SetPart(_cachedView.MaskRtf, EAnimationType.Fade);
         }
-
+        
         protected override void InitEventListener()
         {
             base.InitEventListener();
