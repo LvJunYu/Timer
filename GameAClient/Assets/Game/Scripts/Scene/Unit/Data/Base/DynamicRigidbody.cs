@@ -33,6 +33,7 @@ namespace GameA.Game
 
         protected const float SpeedClayRatio = 0.2f;
         protected const float SpeedFireRatio = 1.8f;
+        protected const float SpeedInIceRatio = 0.6f;
         protected const float SpeedHoldingBoxRatio = 0.3f;
         protected const float SpeedChaseRatio = 2f;
 
@@ -43,6 +44,11 @@ namespace GameA.Game
         protected override bool IsClimbing
         {
             get { return _eClimbState != EClimbState.None; }
+        }
+        
+        protected override bool IsClimbingVertical
+        {
+            get { return _eClimbState == EClimbState.Left || _eClimbState == EClimbState.Right; }
         }
 
         public InputBase Input
@@ -359,6 +365,10 @@ namespace GameA.Game
             if (_onClay)
             {
                 _speedRatio *= SpeedClayRatio;
+            }
+            if (IsInState(EEnvState.Ice))
+            {
+                _speedRatio *= SpeedInIceRatio;
             }
         }
         

@@ -132,7 +132,7 @@ namespace GameA.Game
                 return;
             }
             //MagicSwith Brick Cloud
-            var hits = ColliderScene2D.RaycastAll(_curPos, _direction, _skill.ProjectileSpeed, _hitLayer);
+            var hits = ColliderScene2D.RaycastAll(_curPos, _direction, _skill.ProjectileSpeed, _hitLayer, float.MinValue, float.MaxValue, _skill.Owner.DynamicCollider);
             if (hits.Count > 0)
             {
                 for (int i = 0; i < hits.Count; i++)

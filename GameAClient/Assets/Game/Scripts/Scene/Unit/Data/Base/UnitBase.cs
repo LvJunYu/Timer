@@ -19,7 +19,6 @@ namespace GameA.Game
         Ice,
         Clay,
         Stun,
-        Fire,
     }
 
     [Serializable]
@@ -149,6 +148,11 @@ namespace GameA.Game
         {
             get { return false; }
         }
+        
+        protected virtual bool IsClimbingVertical
+        {
+            get { return false; }
+        }
 
         public EActiveState EActiveState
         {
@@ -223,7 +227,7 @@ namespace GameA.Game
 
         public bool CanMove
         {
-            get { return _isAlive && !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) && !IsInState(EEnvState.Ice); }
+            get { return _isAlive && !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun); }
         }
 
         public bool CanAttack
@@ -938,7 +942,7 @@ namespace GameA.Game
                 }
             }
             var z = GetZ(_colliderPos);
-            if (_deltaPos.y != 0)
+            if (_deltaPos.y != 0 || IsClimbingVertical)
             {
                 var tile = new IntVec2(_colliderPos.x / ConstDefineGM2D.ServerTileScale, _colliderPos.y / ConstDefineGM2D.ServerTileScale);
                 z = Mathf.Clamp(z, GetZ(new IntVec2(tile.x - 1, tile.y + 1) * ConstDefineGM2D.ServerTileScale) - 0.01f,
