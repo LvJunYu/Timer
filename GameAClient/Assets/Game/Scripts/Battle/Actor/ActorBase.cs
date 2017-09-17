@@ -128,7 +128,7 @@ namespace GameA.Game
 
         protected override void UpdateData()
         {
-            if (_input != null && CanMove)
+            if (_input != null && CanMove && !IsInState(EEnvState.Ice))
             {
                 UpdateInput();
             }

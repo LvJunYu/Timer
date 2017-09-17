@@ -85,6 +85,10 @@ namespace GameA.Game
 
         public static void OnEffect(UnitBase other, EDirectionType eDirectionType)
         {
+            if (other.IsInState(EEnvState.Ice))
+            {
+                return;
+            }
             switch (eDirectionType)
             {
                 case EDirectionType.Up:

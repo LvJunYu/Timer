@@ -225,7 +225,7 @@ namespace GameA.Game
             get { return _tableUnit; }
         }
 
-        public bool CanMove
+        public virtual bool CanMove
         {
             get { return _isAlive && !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun); }
         }

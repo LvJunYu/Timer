@@ -16,6 +16,11 @@ namespace GameA.Game
     public class MonsterBase : ActorBase
     {
         protected int _fireTimer;
+        
+        public override bool CanMove
+        {
+            get { return _isAlive && !IsInState(EEnvState.Clay) && !IsInState(EEnvState.Stun) && !IsInState(EEnvState.Ice); }
+        }
 
         protected override bool IsCheckClimb()
         {

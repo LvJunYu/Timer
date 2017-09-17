@@ -389,6 +389,10 @@ namespace GameA.Game
                 {
                     _motorAcc = _onIce ? -1 : -10;
                 }
+                if (_grounded && IsInState(EEnvState.Ice) && _motorAcc != 0)
+                {
+                    SpeedY = 120;
+                }
             }
         }
    
