@@ -572,6 +572,10 @@ namespace GameA.Game
         protected override void OnDead()
         {
             base.OnDead();
+            if (_statusBar != null)
+            {
+                _statusBar.SetHPActive(false);
+            }
             if (HasStateType(EStateType.Fire))
             {
                 _eDieType = EDieType.Fire;
@@ -580,7 +584,6 @@ namespace GameA.Game
             if (TryGetState(73, out state))
             {
                 _eDieType = EDieType.TigerEat;
-//                LogHelper.Debug("被老虎咬死了");
             }
             if (_animation != null)
             {

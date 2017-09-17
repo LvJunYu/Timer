@@ -55,9 +55,8 @@ namespace GameA.Game
 
         protected int _damage;
 
-
-        protected int _fireTimer;
-
+        protected int _targetType;
+        
         public int Id
         {
             get { return _tableSkill.Id; }
@@ -104,24 +103,7 @@ namespace GameA.Game
                 LogHelper.Error("GetSkill Failed, {0}", id);
                 return;
             }
-            switch (_tableSkill.Id)
-            {
-                case 1:
-                    _epaintType = EPaintType.Water;
-                    break;
-                case 2:
-                    _epaintType = EPaintType.Clay;
-                    break;
-                case 3:
-                    _epaintType = EPaintType.Jelly;
-                    break;
-                case 4:
-                    _epaintType = EPaintType.Fire;
-                    break;
-                case 5:
-                    _epaintType = EPaintType.Ice;
-                    break;
-            }
+            _epaintType = (EPaintType) _tableSkill.PaintType;
             SetTimerCD(0);
             _cdTime = TableConvert.GetTime(_tableSkill.CDTime);
             _chargeTime = TableConvert.GetTime(_tableSkill.ChargeTime);
@@ -135,6 +117,7 @@ namespace GameA.Game
             _timerCD = 0;
             _timerCharge = 0;
             _timerSing = 0;
+            _targetType = GetHitLayer();
         }
 
         internal void SetValue(int cdTime, int castRange, int singTime = 0)
@@ -432,7 +415,6 @@ namespace GameA.Game
 
         protected List<UnitBase> GetHitUnits(IntVec2 centerPos, UnitBase hitUnit)
         {
-            var hitLayerMask = GetTargetType();
             switch ((EEffcetMode) _tableSkill.EffectMode)
             {
                 case EEffcetMode.Single:
@@ -446,19 +428,19 @@ namespace GameA.Game
                 case EEffcetMode.TargetCircle:
                 {
                     _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
-                    return ColliderScene2D.CircleCastAllReturnUnits(centerPos, _radius, hitLayerMask);
+                    return ColliderScene2D.CircleCastAllReturnUnits(centerPos, _radius, _targetType);
                 }
                 case EEffcetMode.TargetGrid:
                 {
                     _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
                     var grid = new Grid2D(centerPos.x - _radius, centerPos.y - _radius, centerPos.x + _radius - 1, centerPos.y + _radius - 1);
-                    return ColliderScene2D.GridCastAllReturnUnits(grid, hitLayerMask);
+                    return ColliderScene2D.GridCastAllReturnUnits(grid, _targetType);
                 }
                 case EEffcetMode.TargetLine:
                     break;
                 case EEffcetMode.SelfSector:
                     _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
-                    var units = ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, hitLayerMask);
+                    var units = ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, _targetType);
                     for (int i = units.Count - 1; i >= 0; i--)
                     {
                         var unit = units[i];
@@ -476,7 +458,7 @@ namespace GameA.Game
                 case EEffcetMode.SelfCircle:
                 {
                     _radius = TableConvert.GetRange(_tableSkill.EffectValues[0]);
-                    return ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, hitLayerMask);
+                    return ColliderScene2D.CircleCastAllReturnUnits(_owner.CenterPos, _radius, _targetType);
                 }
             }
             return null;
@@ -537,7 +519,7 @@ namespace GameA.Game
             }
         }
         
-        protected int GetTargetType()
+        protected int GetHitLayer()
         {
             int layer = 0;
             if (HasTargetType(ETargetType.Earth))

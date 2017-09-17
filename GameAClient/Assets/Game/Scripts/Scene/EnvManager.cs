@@ -40,7 +40,8 @@ namespace GameA.Game
 	    public const int BulletBlockLayer = MonsterLayer | ItemLayer |  1<<(int)ESceneLayer.Bullet;
         public const int MovingEarthBlockLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
 
-        public const int PaintBulletHitLayer = MonsterLayer | ItemLayer;
+        public const int BulletHitLayer = MonsterLayer | ItemLayer;
+        public const int BulletHitLayerWithMainPlayer = MonsterLayer | ItemLayer | MainPlayerLayer;
 	    
         public const int MonsterViewLayer = MainPlayerLayer | ItemLayer;
 
@@ -71,6 +72,7 @@ namespace GameA.Game
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.RigidbodyItem);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.Monster);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.Bullet);
+	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Bullet, (int) ESceneLayer.MainPlayer);
 
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Gun, (int) ESceneLayer.Item);
 	        JoyPhysics2D.SetLayerCollision((int) ESceneLayer.Gun, (int) ESceneLayer.RigidbodyItem);

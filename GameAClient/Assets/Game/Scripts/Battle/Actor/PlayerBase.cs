@@ -307,10 +307,6 @@ namespace GameA.Game
             {
                 _gun.Stop();
             }
-            if (_statusBar != null)
-            {
-                _statusBar.SetHPActive(false);
-            }
             _input.Clear();
             base.OnDead();
             if (_life <= 0)
@@ -347,14 +343,14 @@ namespace GameA.Game
                                     {
                                         _gun.Play();
                                     }
-                                    if (_statusBar != null)
-                                    {
-                                        _statusBar.SetHPActive(true);
-                                    }
                                     _animation.Reset();
                                     _animation.PlayLoop(IdleAnimName());
                                     GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Reborn);
                                     Messenger.Broadcast(EMessengerType.OnMainPlayerRevive);
+                                    if (_statusBar != null)
+                                    {
+                                        _statusBar.SetHPActive(true);
+                                    }
                                 });
         }
 
@@ -363,6 +359,10 @@ namespace GameA.Game
             if (_eUnitState == EUnitState.Portaling)
             {
                 return;
+            }
+            if (_statusBar != null)
+            {
+                _statusBar.SetHPActive(false);
             }
             _eUnitState = EUnitState.Portaling;
             PlayMode.Instance.Freeze(this);
@@ -381,6 +381,10 @@ namespace GameA.Game
                     _animation.Reset();
                     _animation.PlayLoop(IdleAnimName());
                     GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Reborn);
+                    if (_statusBar != null)
+                    {
+                        _statusBar.SetHPActive(true);
+                    }
                 }));
         }
 

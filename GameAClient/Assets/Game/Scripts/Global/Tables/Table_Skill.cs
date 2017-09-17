@@ -46,6 +46,11 @@ namespace GameA.Game
 		[ColumnMapping("SingTime")]
 		public int SingTime;
 		/// <summary>
+        /// 喷涂类别
+        /// </summary>
+		[ColumnMapping("PaintType")]
+		public int PaintType;
+		/// <summary>
         /// 目标类型
         /// </summary>
 		[ColumnMapping("TargetType")]

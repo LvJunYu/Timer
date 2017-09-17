@@ -23,6 +23,8 @@ namespace GameA.Game
         protected int _destroy;
 
         protected UnitBase _targetUnit;
+
+        protected int _hitLayer;
         
         public Vector2 Direction
         {
@@ -67,6 +69,7 @@ namespace GameA.Game
             _targetUnit = null;
             GameParticleManager.FreeParticleItem(_effectBullet);
             _effectBullet = null;
+            _hitLayer = 0;
         }
 
         public void OnDestroyObject()
@@ -90,6 +93,7 @@ namespace GameA.Game
         {
             _tableUnit = UnitManager.Instance.GetTableUnit(skill.TableSkill.ProjectileId);
             _skill = skill;
+            _hitLayer = _skill.Owner.IsMain ? EnvManager.BulletHitLayer : EnvManager.BulletHitLayerWithMainPlayer;
             _curPos = _originPos = pos;
             
             _angle = angle;
@@ -128,7 +132,7 @@ namespace GameA.Game
                 return;
             }
             //MagicSwith Brick Cloud
-            var hits = ColliderScene2D.RaycastAll(_curPos, _direction, _skill.ProjectileSpeed, EnvManager.PaintBulletHitLayer);
+            var hits = ColliderScene2D.RaycastAll(_curPos, _direction, _skill.ProjectileSpeed, _hitLayer);
             if (hits.Count > 0)
             {
                 for (int i = 0; i < hits.Count; i++)
@@ -140,7 +144,7 @@ namespace GameA.Game
                         for (var j = 0; j < units.Count; j++)
                         {
                             var unit = units[j];
-                            if (unit.IsAlive && !unit.CanBulletCross)
+                            if (unit != _skill.Owner && unit.IsAlive && !unit.CanBulletCross)
                             {
                                 _targetUnit = unit;
                                 _curPos = hit.point;

@@ -19,11 +19,11 @@ namespace GameA.Game
             return true;
         }
 
-        protected override void Clear()
+        internal override void OnPlay()
         {
-            _skillCtrl = _skillCtrl ?? new SkillCtrl(this);
+            _skillCtrl = new SkillCtrl(this);
             _skillCtrl.SetSkill(103);
-            base.Clear();
+            base.OnPlay();
         }
 
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)

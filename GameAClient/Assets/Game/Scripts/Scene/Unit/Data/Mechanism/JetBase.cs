@@ -115,7 +115,7 @@ namespace GameA.Game
                 }
             }
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this);
-            _skillCtrl.SetSkill(tableEquipment.SkillId);
+            _skillCtrl.SetSkill(tableEquipment.MonsterSkillId);
             SetValue();
             return true;
         }
