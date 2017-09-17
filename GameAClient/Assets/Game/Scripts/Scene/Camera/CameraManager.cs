@@ -120,7 +120,6 @@ namespace GameA.Game
         /// <summary>
         /// 显示帧 影响逻辑判断录像正确回放的代码禁止放这里
         /// </summary>
-        /// <param name="deltaTime"></param>
         public void Update()
         {
             if (null == _curCameraCtrl)

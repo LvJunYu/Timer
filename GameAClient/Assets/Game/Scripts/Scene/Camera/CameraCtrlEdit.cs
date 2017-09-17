@@ -86,7 +86,7 @@ namespace GameA.Game
             float mWHRatio = validMapRect.width / validMapRect.height;
 
             float orthoSize = validMapRect.height / 2;
-            Vector3 pos = Vector3.zero;
+            Vector3 pos;
             Vector2 uiResolution = SocialGUIManager.GetUIResolution();
             if (sWHRatio > mWHRatio)
             {//屏幕比地图宽 全显地图底部
