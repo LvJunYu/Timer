@@ -16,6 +16,11 @@ namespace GameA
             get { return _cachedView; }
         }
 
+        public UMCtrlSkillBtn[] UmSkillBtns
+        {
+            get { return _umSkillBtns; }
+        }
+
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.InputCtrl;

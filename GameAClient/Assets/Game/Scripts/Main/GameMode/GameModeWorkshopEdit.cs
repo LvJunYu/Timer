@@ -14,7 +14,7 @@ namespace GameA.Game
         private readonly HashSet<int> _handbookShowSet = new HashSet<int>();
         private int _section = 1;
         private EAdventureProjectType _projectType = EAdventureProjectType.APT_Normal;
-        private int _level = 1;
+        private int _level = 5;
 #endif
 
 
