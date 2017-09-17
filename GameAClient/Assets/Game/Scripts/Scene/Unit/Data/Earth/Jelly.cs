@@ -15,7 +15,7 @@ namespace GameA.Game
     public class Jelly : SkillBlock
     {
         public static int ExtraSpeedX = 180;
-        public static int ExtraSpeedY = 260;
+        public static int ExtraSpeedY = 264;
 
         protected override bool OnInit()
         {
