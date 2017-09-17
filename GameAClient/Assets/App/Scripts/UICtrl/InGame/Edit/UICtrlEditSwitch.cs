@@ -34,7 +34,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.InGamePopup;
+            _groupId = (int) EUIGroupType.InGameStart;
         }
 
         protected override void InitEventListener()

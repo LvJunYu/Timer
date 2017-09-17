@@ -12,6 +12,7 @@ namespace GameA.Game
         public AdventureGuideManager()
         {
             Regist<AdventureGuide_1_N_1>(1, EAdventureProjectType.APT_Normal, 1);
+            Regist<AdventureGuide_1_N_5>(1, EAdventureProjectType.APT_Normal, 5);
         }
 
         public bool TryGetGuide(int section, EAdventureProjectType adventureProjectType, int level,
