@@ -261,6 +261,11 @@ namespace GameA.Game
             set { _isAlive = value; }
         }
 
+        protected virtual bool IsInWater
+        {
+            get { return false; }
+        }
+
         public List<UnitBase> DownUnits
         {
             get { return _downUnits; }
@@ -942,7 +947,12 @@ namespace GameA.Game
                 }
             }
             var z = GetZ(_colliderPos);
-            if (_deltaPos.y != 0 || IsClimbingVertical)
+            if(IsInWater)
+            {
+                var tile = new IntVec2(_colliderPos.x / ConstDefineGM2D.ServerTileScale, _colliderPos.y / ConstDefineGM2D.ServerTileScale);
+                z = Mathf.Clamp(z, GetZ(new IntVec2(tile.x, tile.y) * ConstDefineGM2D.ServerTileScale) - 0.01f,z);
+            }
+            else if (_deltaPos.y != 0 || IsClimbingVertical)
             {
                 var tile = new IntVec2(_colliderPos.x / ConstDefineGM2D.ServerTileScale, _colliderPos.y / ConstDefineGM2D.ServerTileScale);
                 z = Mathf.Clamp(z, GetZ(new IntVec2(tile.x - 1, tile.y + 1) * ConstDefineGM2D.ServerTileScale) - 0.01f,

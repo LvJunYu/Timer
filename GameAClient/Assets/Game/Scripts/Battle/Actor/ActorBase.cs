@@ -57,6 +57,11 @@ namespace GameA.Game
             get { return true; }
         }
 
+        protected override bool IsInWater
+        {
+            get { return _eDieType == EDieType.Water; }
+        }
+
         protected override bool IsCheckGround()
         {
             return true;
