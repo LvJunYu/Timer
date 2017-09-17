@@ -80,7 +80,6 @@ namespace GameA.Game
         public override void UpdateLogic()
         {
             base.UpdateLogic();
-
             if (_isAlive && !_isFreezed)
             {
                 UpdateData();
@@ -133,8 +132,12 @@ namespace GameA.Game
                 }
             }
             CalculateSpeedRatio();
-            _curMaxSpeedX = (int)(_maxSpeedX * _speedRatio * _speedStateRatio);
-            AfterCheckGround();
+            _curMaxSpeedX = 0;
+            if (_eActiveState == EActiveState.Active)
+            {
+                _curMaxSpeedX = (int)(_maxSpeedX * _speedRatio * _speedStateRatio);
+                AfterCheckGround();
+            }
             CalculateMotor();
             if (IsCheckClimb())
             {

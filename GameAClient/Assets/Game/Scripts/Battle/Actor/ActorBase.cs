@@ -121,6 +121,10 @@ namespace GameA.Game
 
         public override void UpdateLogic()
         {
+            if (_eActiveState != EActiveState.Active)
+            {
+                return;
+            }
             base.UpdateLogic();
             //死亡时也要变色
             CheckShowDamage();
@@ -128,7 +132,7 @@ namespace GameA.Game
 
         protected override void UpdateData()
         {
-            if (_input != null && CanMove && !IsInState(EEnvState.Ice))
+            if (_eActiveState == EActiveState.Active && _input != null && CanMove && !IsInState(EEnvState.Ice))
             {
                 UpdateInput();
             }

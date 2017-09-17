@@ -93,7 +93,7 @@ namespace GameA.Game
 
         public static bool IsSwitch(int id)
         {
-            return id > 8101 && id <= 8200;
+            return id > 8101 && id <= 8200 || id == 9003;
         }
 
         public static bool IsSwitchTrigger(int id)

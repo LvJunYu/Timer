@@ -26,6 +26,11 @@ namespace GameA.Game
         {
             return false;
         }
+        
+        public override bool CanControlledBySwitch
+        {
+            get { return true; }
+        }
 
         protected override bool OnInit()
         {
@@ -95,6 +100,18 @@ namespace GameA.Game
             {
                 _fireTimer = 0;
                 UpdateMonsterAI();
+            }
+        }
+
+        protected override void OnActiveStateChanged()
+        {
+            base.OnActiveStateChanged();
+            if (_eActiveState != EActiveState.Active)
+            {
+                SetInput(EInputType.Right, false);
+                SetInput(EInputType.Left, false);
+                SetInput(EInputType.Skill1, false);
+                SpeedX = 0;
             }
         }
 
