@@ -2,7 +2,7 @@
 
 namespace GameA.Game
 {
-    public class AdventureGuide_1_N_5 : AdventureGuideBase
+    public class AdventureGuide_1_N_6 : AdventureGuideBase
     {
         private UICtrlUIGuideBubble _uiCtrlUIGuideBubble;
         
