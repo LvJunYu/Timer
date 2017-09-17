@@ -12,14 +12,13 @@ namespace GameA.Game
             public class Data
             {
                 public List<UnityNativeParticleItem> UnitMaskEffectCache = new List<UnityNativeParticleItem>();
-                public List<UnityNativeParticleItem> ConnectLineEffectCache = new List<UnityNativeParticleItem>();
 
                 /// <summary>
                 /// 与当前选择物体有连接的物体
                 /// </summary>
                 public List<IntVec3> CachedConnectedGUIDs = new List<IntVec3>();
 
-                public UnityNativeParticleItem ConnectingEffect;
+                public UMCtrlEditSwitchConnection CurrentConnectionUI;
             }
 
             private static readonly Color SwitchModeUnitMaskColor = new Color(0.3f, 0.3f, 0.3f, 1f);
@@ -34,15 +33,10 @@ namespace GameA.Game
                     data.UnitMaskEffectCache[i].DestroySelf();
                 }
                 data.UnitMaskEffectCache.Clear();
-                for (int i = 0; i < data.ConnectLineEffectCache.Count; i++)
+                if (null != data.CurrentConnectionUI)
                 {
-                    data.ConnectLineEffectCache[i].DestroySelf();
-                }
-                data.ConnectLineEffectCache.Clear();
-                if (null != data.ConnectingEffect)
-                {
-                    data.ConnectingEffect.DestroySelf();
-                    data.ConnectingEffect = null;
+                    SocialGUIManager.Instance.GetUI<UICtrlEditSwitch>().FreeEditingConnection();
+                    data.CurrentConnectionUI = null;
                 }
             }
 
@@ -75,15 +69,11 @@ namespace GameA.Game
                 {
                     boardData.DragInCurrentState = true;
                     var data = boardData.GetStateData<Data>();
-                    if (null == data.ConnectingEffect)
+                    if (null == data.CurrentConnectionUI)
                     {
-                        data.ConnectingEffect =
-                            GameParticleManager.Instance.GetUnityNativeParticleItem(
-                                ParticleNameConstDefineGM2D.ConnectLine, null);
-                        if (null != data.ConnectingEffect)
-                        {
-                            data.ConnectingEffect.Play();
-                        }
+                        data.CurrentConnectionUI =
+                            SocialGUIManager.Instance.GetUI<UICtrlEditSwitch>().GetEditingConnection();
+                        data.CurrentConnectionUI.SetButtonShow(false);
                     }
                 }
             }
@@ -98,27 +88,17 @@ namespace GameA.Game
                 Vector3 mouseWorldPos = GM2DTools.ScreenToWorldPoint(gesture.position);
 
                 var data = boardData.GetStateData<Data>();
-                if (null != data.ConnectingEffect)
+                if (null != data.CurrentConnectionUI)
                 {
-                    SwitchConnection sc = data.ConnectingEffect.Trans.GetComponent<SwitchConnection>();
-                    if (null != sc)
+                    Vector3 targetPos = mouseWorldPos - new Vector3(0.5f, 0.5f, 0);
+                    Vector3 origPos = GM2DTools.TileToWorld(boardData.CurrentTouchUnitDesc.Guid);
+                    if (UnitDefine.IsSwitch(boardData.CurrentTouchUnitDesc.Id))
                     {
-                        Vector3 targetPos = mouseWorldPos;
-                        Vector3 origPos = GM2DTools.TileToWorld(boardData.CurrentTouchUnitDesc.Guid);
-                        targetPos.z = -60f;
-//                        targetPos.x += MaskEffectOffset.x;
-//                        targetPos.y += MaskEffectOffset.y;
-                        origPos.z = -60f;
-                        origPos.x += MaskEffectOffset.x;
-                        origPos.y += MaskEffectOffset.y;
-                        if (UnitDefine.IsSwitch(boardData.CurrentTouchUnitDesc.Id))
-                        {
-                            sc.Init(origPos, targetPos);
-                        }
-                        else
-                        {
-                            sc.Init(targetPos, origPos);
-                        }
+                        data.CurrentConnectionUI.Set(0, origPos, targetPos);
+                    }
+                    else
+                    {
+                        data.CurrentConnectionUI.Set(0, targetPos, origPos);
                     }
                 }
             }
@@ -143,7 +123,8 @@ namespace GameA.Game
                     boardData.CurrentTouchUnitDesc.Rotation, boardData.CurrentTouchUnitDesc.Scale);
                 float minDepth, maxDepth;
                 EditHelper.GetMinMaxDepth(boardData.EditorLayer, out minDepth, out maxDepth);
-                var coverUnits = DataScene2D.GridCastAllReturnUnits(target, JoyPhysics2D.LayMaskAll, minDepth, maxDepth);
+                var coverUnits =
+                    DataScene2D.GridCastAllReturnUnits(target, JoyPhysics2D.LayMaskAll, minDepth, maxDepth);
 
                 if (coverUnits == null || coverUnits.Count == 0)
                 {
@@ -181,11 +162,10 @@ namespace GameA.Game
                     }
                 }
                 boardData.CurrentTouchUnitDesc = UnitDesc.zero;
-//                    UnitManager.Instance.FreeUnitView(_virUnit);
-                if (null != data.ConnectingEffect)
+                if (null != data.CurrentConnectionUI)
                 {
-                    data.ConnectingEffect.DestroySelf();
-                    data.ConnectingEffect = null;
+                    SocialGUIManager.Instance.GetUI<UICtrlEditSwitch>().FreeEditingConnection();
+                    data.CurrentConnectionUI = null;
                 }
                 boardData.DragInCurrentState = false;
             }
@@ -279,10 +259,6 @@ namespace GameA.Game
                     {
                         data.UnitMaskEffectCache[i].Stop();
                     }
-                    for (int i = 0; i < data.ConnectLineEffectCache.Count; i++)
-                    {
-                        data.ConnectLineEffectCache[i].Stop();
-                    }
                 }
                 else
                 {
@@ -324,34 +300,30 @@ namespace GameA.Game
 
             private void UpdateEffectsOnSwitchMode(EditMode.BlackBoard boardData, Data data)
             {
+                var uiCtrlEditSwitch = SocialGUIManager.Instance.GetUI<UICtrlEditSwitch>();
+                uiCtrlEditSwitch.ClearConnection();
                 bool isFromSwitch = UnitDefine.IsSwitch(boardData.CurrentTouchUnitDesc.Id);
-                List<Vector3> lineCenterPoses = new List<Vector3>();
                 int cnt = 0;
                 for (; cnt < data.CachedConnectedGUIDs.Count; cnt++)
                 {
                     SetMaskEffectPos(GetUnusedMaskEffect(data, cnt), data.CachedConnectedGUIDs[cnt]);
                     if (isFromSwitch)
                     {
-                        lineCenterPoses.Add(SetLineEffectPos(GetUnusedLineEffect(data, cnt),
-                            boardData.CurrentTouchUnitDesc.Guid, data.CachedConnectedGUIDs[cnt]));
+                        uiCtrlEditSwitch.AddConnection(cnt, boardData.CurrentTouchUnitDesc.Guid,
+                            data.CachedConnectedGUIDs[cnt]);
                     }
                     else
                     {
-                        lineCenterPoses.Add(SetLineEffectPos(GetUnusedLineEffect(data, cnt),
-                            data.CachedConnectedGUIDs[cnt], boardData.CurrentTouchUnitDesc.Guid));
+                        uiCtrlEditSwitch.AddConnection(cnt, data.CachedConnectedGUIDs[cnt],
+                            boardData.CurrentTouchUnitDesc.Guid);
                     }
                 }
                 for (; cnt < data.UnitMaskEffectCache.Count; cnt++)
                 {
                     data.UnitMaskEffectCache[cnt].Stop();
-                    if (cnt < data.ConnectLineEffectCache.Count)
-                    {
-                        data.ConnectLineEffectCache[cnt].Stop();
-                    }
                 }
                 SetMaskEffectPos(GetUnusedMaskEffect(data, data.CachedConnectedGUIDs.Count),
                     boardData.CurrentTouchUnitDesc.Guid);
-                Messenger<List<Vector3>>.Broadcast(EMessengerType.OnSelectedItemChangedOnSwitchMode, lineCenterPoses);
             }
 
             private void OnEnterSwitchMode()
@@ -414,59 +386,14 @@ namespace GameA.Game
                 return data.UnitMaskEffectCache[idx];
             }
 
-            private UnityNativeParticleItem GetUnusedLineEffect(Data data, int idx)
-            {
-                if (data.ConnectLineEffectCache.Count <= idx)
-                {
-                    UnityNativeParticleItem newRedMask =
-                        GameParticleManager.Instance.GetUnityNativeParticleItem(ParticleNameConstDefineGM2D.ConnectLine,
-                            null);
-                    if (null == newRedMask)
-                    {
-                        LogHelper.Error("Load connect line effect failed, name is {0}",
-                            ParticleNameConstDefineGM2D.ConnectLine);
-                        return null;
-                    }
-                    data.ConnectLineEffectCache.Add(newRedMask);
-                }
-                return data.ConnectLineEffectCache[idx];
-            }
-
             private void SetMaskEffectPos(UnityNativeParticleItem effect, IntVec3 guid)
             {
                 Vector3 pos = GM2DTools.TileToWorld(guid);
-                pos.z = -60f;
+                pos.z = -799f;
                 pos.x += MaskEffectOffset.x;
                 pos.y += MaskEffectOffset.y;
                 effect.Trans.position = pos;
                 effect.Play();
-            }
-
-            /// <summary>
-            /// Sets the line effect position.
-            /// </summary>
-            /// <returns>返回这条连线的中点.</returns>
-            /// <param name="effect">Effect.</param>
-            /// <param name="orig">Original.</param>
-            /// <param name="target">Target.</param>
-            private Vector3 SetLineEffectPos(UnityNativeParticleItem effect, IntVec3 orig, IntVec3 target)
-            {
-                SwitchConnection sc = effect.Trans.GetComponent<SwitchConnection>();
-                if (null != sc)
-                {
-                    Vector3 targetPos = GM2DTools.TileToWorld(target);
-                    Vector3 origPos = GM2DTools.TileToWorld(orig);
-                    targetPos.z = -60f;
-                    targetPos.x += MaskEffectOffset.x;
-                    targetPos.y += MaskEffectOffset.y;
-                    origPos.z = -60f;
-                    origPos.x += MaskEffectOffset.x;
-                    origPos.y += MaskEffectOffset.y;
-                    sc.Init(origPos, targetPos);
-                    effect.Play();
-                    return (origPos + targetPos) * 0.5f;
-                }
-                return Vector3.zero;
             }
         }
     }

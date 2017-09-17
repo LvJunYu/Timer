@@ -15,7 +15,6 @@ namespace GameA
         public static int OnSelectedItemChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnUndoChanged = SoyEngine.EMessengerType.NextId++;
         public static int OnRedoChanged = SoyEngine.EMessengerType.NextId++;
-        public static int OnSelectedItemChangedOnSwitchMode = SoyEngine.EMessengerType.NextId++;
 
         public static int OnSwitchConnectionChanged = SoyEngine.EMessengerType.NextId++;
 
