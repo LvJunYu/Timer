@@ -39,11 +39,11 @@ namespace GameA.Game
             }
         }
 
-        protected override void Clear()
+        internal override void OnPlay()
         {
-            _skillCtrl = _skillCtrl ?? new SkillCtrl(this);
+            _skillCtrl = new SkillCtrl(this);
             _skillCtrl.SetSkill(104);
-            base.Clear();
+            base.OnPlay();
         }
 
         public override void StartSkill()

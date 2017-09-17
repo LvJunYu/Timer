@@ -20,11 +20,11 @@ namespace GameA.Game
     [Unit(Id = 2001, Type = typeof(MonsterTree))]
     public class MonsterTree : MonsterAI_1
     {
-        protected override void Clear()
+        internal override void OnPlay()
         {
-            _skillCtrl = _skillCtrl ?? new SkillCtrl(this);
+            _skillCtrl = new SkillCtrl(this);
             _skillCtrl.SetSkill(101);
-            base.Clear();
+            base.OnPlay();
         }
 
         public override void StartSkill()

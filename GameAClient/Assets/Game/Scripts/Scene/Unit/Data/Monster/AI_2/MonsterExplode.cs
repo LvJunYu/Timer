@@ -7,7 +7,7 @@ namespace GameA.Game
     [Unit(Id = 2003, Type = typeof(MonsterExplode))]
     public class MonsterExplode : MonsterAI_2
     {
-        private float _viewDistance = 10 * ConstDefineGM2D.ServerTileScale;
+        private float _viewDistance = 15 * ConstDefineGM2D.ServerTileScale;
 
         protected override bool OnInit()
         {

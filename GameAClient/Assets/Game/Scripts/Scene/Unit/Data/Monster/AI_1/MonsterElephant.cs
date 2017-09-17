@@ -25,13 +25,13 @@ namespace GameA.Game
 //            return _curPos.y <= PlayMode.Instance.MainPlayer.CurPos.y;
 //        }
 
-        protected override void Clear()
+        internal override void OnPlay()
         {
-            _skillCtrl = _skillCtrl ?? new SkillCtrl(this);
+            _skillCtrl = new SkillCtrl(this);
             _skillCtrl.SetSkill(102);
-            base.Clear();
+            base.OnPlay();
         }
-
+        
         public override void StartSkill()
         {
             if (_animation != null && !_animation.IsPlaying("Attack", 1))

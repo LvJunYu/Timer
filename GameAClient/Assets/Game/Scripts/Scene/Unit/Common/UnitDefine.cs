@@ -101,9 +101,9 @@ namespace GameA.Game
             return id == SwitchTriggerId || id == SwitchTriggerPressId;
         }
 
-        public static bool IsMagicSwitch(int id)
+        public static bool IsCrossSwitch(int id)
         {
-            return id == MagicSwitchId;
+            return id == MagicSwitchId || id == 9003 || id == 8106 || id == 8107;
         }
 
         public static bool IsFakePart(int one, int other)
@@ -180,7 +180,7 @@ namespace GameA.Game
         {
             ushort id = node.Id;
             return id != TransparentEarthId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsCollection(id) &&
-                   !IsMagicSwitch(id) && (((1 << node.Layer) & EnvManager.LazerBlockLayer) != 0);
+                   !IsCrossSwitch(id) && (((1 << node.Layer) & EnvManager.LazerBlockLayer) != 0);
         }
 
         public static bool IsLaserDamage(int layer)
@@ -193,7 +193,7 @@ namespace GameA.Game
         {
             ushort id = node.Id;
             return id != BlueStoneBanId && id != BlueStoneRotateId &&
-                   !IsCollection(id) && !IsMagicSwitch(id) && !IsBullet(id) && !IsSwitchTrigger(id);
+                   !IsCollection(id) && !IsCrossSwitch(id) && !IsBullet(id) && !IsSwitchTrigger(id);
         }
 
         public static bool IsFanEffect(int layer, int id)
@@ -218,7 +218,7 @@ namespace GameA.Game
         {
             return !IsSwitchTrigger(id) && id != BlueStoneBanId && id != BlueStoneRotateId &&
                    !IsPlant(id) &&
-                   !IsBoard(id) && !IsCollection(id) && !IsMagicSwitch(id) && !IsMain(id) && !IsBullet(id) &&
+                   !IsBoard(id) && !IsCollection(id) && !IsCrossSwitch(id) && !IsMain(id) && !IsBullet(id) &&
                    !IsAIMonster(id) && !IsEffect(id);
         }
 

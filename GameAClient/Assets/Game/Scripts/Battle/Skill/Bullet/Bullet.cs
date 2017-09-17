@@ -149,7 +149,7 @@ namespace GameA.Game
                                 _targetUnit = unit;
                                 _curPos = hit.point;
                                 _destroy = 1;
-                                if (UnitDefine.IsMagicSwitch(unit.Id))
+                                if (unit.Id == UnitDefine.MagicSwitchId)
                                 {
                                     var switchMagic = unit as SwitchMagic;
                                     if (switchMagic != null)
