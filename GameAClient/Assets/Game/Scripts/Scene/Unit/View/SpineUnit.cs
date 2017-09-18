@@ -66,27 +66,42 @@ namespace GameA.Game
 
         public override void SetDamageShaderValue(string name, float value)
         {
+            InitShader();
             if (_renderer == null) return;
-            var sharedMaterials = _renderer.sharedMaterials;
-            if (!_hasSetShader)
+            Material[] materials;
+            //玩家只有一個，直接改shareMals，不頻繁創創建实例
+            if (_unit.IsMain)
             {
-                if (_damageShader == null){_damageShader = Shader.Find("Spine/SkeletonWhite");}
-                for (int i = 0; i < sharedMaterials.Length; i++)
-                {
-                    if (sharedMaterials[i] != null && sharedMaterials[i].shader.name == "Spine/Skeleton")
-                        sharedMaterials[i].shader = _damageShader;
-                }
-                _hasSetShader = true;
+                materials = _renderer.sharedMaterials;
             }
-            for (int i = 0; i < sharedMaterials.Length; i++)
+            else
             {
-                if (name != null && sharedMaterials[i] != null)
+                materials = _renderer.materials;
+            }
+            for (int i = 0; i < materials.Length; i++)
+            {
+                if (name != null && materials[i] != null)
                 {
-                    sharedMaterials[i].SetFloat(name, value);
+                    materials[i].SetFloat(name, value);
                 }
             }
         }
 
+        private void InitShader()
+        {
+            if (_hasSetShader) return;
+            var materials = _renderer.sharedMaterials;
+            if (_damageShader == null)
+            {
+                _damageShader = Shader.Find("Spine/SkeletonWhite");
+            }
+            for (int i = 0; i < materials.Length; i++)
+            {
+                if (materials[i] != null && materials[i].shader.name == "Spine/Skeleton")
+                    materials[i].shader = _damageShader;
+            }
+            _hasSetShader = true;
+        }
 
         public override void SetSortingOrder(int sortingOrder)
         {
@@ -97,7 +112,6 @@ namespace GameA.Game
         {
             //重置ShaderValue
             SetDamageShaderValue("Value", 0);
-			
             if (_animation != null)
             {
                 _animation.OnFree();
