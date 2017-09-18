@@ -32,7 +32,7 @@ namespace GameA.Game
             if (flag)
             {
                 var inputUI = SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
-                if (inputUI != null)
+                if (inputUI.IsViewCreated)
                 {
                     _moveGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
                         inputUI.CachedView.JoyStickEx.RightArrowNormal.GetComponent<RectTransform>(), EDirectionType.Down,
@@ -55,7 +55,7 @@ namespace GameA.Game
             if (flag)
             {
                 var inputUI = SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
-                if (inputUI != null)
+                if (inputUI.IsViewCreated)
                 {
                     _jumpGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
                         inputUI.CachedView.JumpBtn.rectTransform(), EDirectionType.Down,
@@ -77,7 +77,7 @@ namespace GameA.Game
             if (flag)
             {
                 var inputUI = SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
-                if (inputUI != null)
+                if (inputUI.IsViewCreated)
                 {
                     _jumpGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
                         inputUI.CachedView.JumpBtn.rectTransform(), EDirectionType.Down,
@@ -108,7 +108,7 @@ namespace GameA.Game
             if (flag)
             {
                 var inputUI = SocialGUIManager.Instance.GetUI<UICtrlMobileInputControl>();
-                if (inputUI != null)
+                if (inputUI.IsViewCreated)
                 {
                     _jumpGuideBubble = _uiCtrlUIGuideBubble.ShowBubble(
                         inputUI.CachedView.JumpBtn.rectTransform(), EDirectionType.Down,

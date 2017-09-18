@@ -123,6 +123,10 @@ namespace GameA
 
         private void OnSkillSlotChanged(Table_Equipment tableSkill, int slot)
         {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             if (null == tableSkill) return;
             if (0 > slot || slot > _equipments.Length - 1) return;
             _equipments[slot] = tableSkill;
