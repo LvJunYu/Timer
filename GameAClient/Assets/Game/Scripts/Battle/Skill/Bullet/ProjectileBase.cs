@@ -89,6 +89,7 @@ namespace GameA.Game
         {
             _run = true;
             _skill = skill;
+            _excludeUnit = _skill.Owner;
             _maskRandom = UnityEngine.Random.Range(0, 2);
             _originPos = CenterPos;
             SetAngle(angle);
@@ -142,18 +143,6 @@ namespace GameA.Game
                 if (_destroy > 0)
                 {
                     OnDestroy();
-                }
-            }
-        }
-
-        protected override void CheckHit(UnitBase unit, EDirectionType eDirectionType)
-        {
-            if (!_cacheHitUnits.Contains(unit.Guid))
-            {
-                _cacheHitUnits.Add(unit.Guid);
-                if (_skill.Owner != unit)
-                {
-                    Hit(unit, eDirectionType);
                 }
             }
         }

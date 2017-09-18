@@ -33,6 +33,8 @@ namespace GameA.Game
         [SerializeField] protected IntVec2 _fanForce;
         protected Dictionary<IntVec3, IntVec2> _fanForces = new Dictionary<IntVec3, IntVec2>();
 
+        protected UnitBase _excludeUnit;
+
         protected override void Clear()
         {
             base.Clear();
@@ -47,6 +49,7 @@ namespace GameA.Game
             _onIce = false;
             _fanForce = IntVec2.zero;
             _fanForces.Clear();
+            _excludeUnit = null;
         }
         
         public override void SetStepOnClay()
@@ -116,7 +119,7 @@ namespace GameA.Game
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (unit.IsAlive)
+                    if (unit.IsAlive && unit !=  _excludeUnit)
                     {
                         CheckIntersect(unit);
                     }
@@ -147,7 +150,7 @@ namespace GameA.Game
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (unit.IsAlive)
+                    if (unit.IsAlive && unit !=  _excludeUnit)
                     {
                         CheckIntersect(unit);
                         int ymin = 0;
@@ -191,7 +194,7 @@ namespace GameA.Game
                 {
                     var unit = units[i];
                     _cacheCheckedDownUnits.Add(unit.Guid);
-                    if (unit.IsAlive)
+                    if (unit.IsAlive && unit !=  _excludeUnit)
                     {
                         CheckIntersect(unit);
                         int ymin = 0;
@@ -229,7 +232,7 @@ namespace GameA.Game
                 {
                     continue;
                 }
-                if (unit.IsAlive)
+                if (unit.IsAlive && unit !=  _excludeUnit)
                 {
                     CheckIntersect(unit);
                     int ymin = 0;
@@ -254,7 +257,7 @@ namespace GameA.Game
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (unit.IsAlive)
+                    if (unit.IsAlive && unit !=  _excludeUnit)
                     {
                         CheckIntersect(unit);
                         int xmin = 0;
@@ -294,7 +297,7 @@ namespace GameA.Game
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (unit.IsAlive)
+                    if (unit.IsAlive && unit !=  _excludeUnit)
                     {
                         CheckIntersect(unit);
                         int xmin = 0;
