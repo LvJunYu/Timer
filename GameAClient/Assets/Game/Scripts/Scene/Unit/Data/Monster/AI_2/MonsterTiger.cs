@@ -19,7 +19,7 @@ namespace GameA.Game
                 return false;
             }
             _maxSpeedX = 50;
-            _intelligenc = 0;
+            _intelligenc = 0;//智商为0，每次犯傻必回头，作为巡逻
             return true;
         }
 
@@ -195,26 +195,22 @@ namespace GameA.Game
                 {
                     ChangeWay(EMoveDirection.Right);
                 }
-//                if (_moveDirection == EMoveDirection.Left)
-//                    ChangeWay(EMoveDirection.Right);
-//                else if (_moveDirection == EMoveDirection.Right)
-//                    ChangeWay(EMoveDirection.Left);
                 if (_animation != null && !_animation.IsPlaying("Brake3"))
                 {
                     _animation.PlayOnce("Brake3");
 //                    _justPlayBrakeAnim = true;
                 }
             }
-            //老虎巡逻时间
-            if (eMonsterState == EMonsterState.Run)
-            {
-                _timerRun = _patrolTime;
-            }
-            //智商为0，每次犯傻必回头，作为巡逻
-            if (eMonsterState == EMonsterState.Stupid)
-            {
-                _timerStupid =  150;
-            }
+        }
+
+        protected override void OnChangeStupid(Vector3 pos)
+        {
+            _timerStupid = 150;
+        }
+
+        protected override void OnChangeRun()
+        {
+            _timerRun = _patrolTime;
         }
 
 //        private bool _justPlayBrakeAnim;

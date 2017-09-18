@@ -107,15 +107,25 @@ namespace GameA.Game
                         ESortingOrder.EffectItem);
                     break;
                 case EMonsterState.Stupid:
-                    _timerStupid = Random.Range(0, 2) == 0 ? 150 : 225;
-                    GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Question, pos, 2,
-                        ESortingOrder.EffectItem);
+                    OnChangeStupid(pos);
                     break;
                 case EMonsterState.Run:
-                    _timerRun = Random.Range(90, 140);
+                    OnChangeRun();
                     break;
             }
 //            LogHelper.Debug(_eMonsterState+"~");
+        }
+        
+        protected virtual void OnChangeRun()
+        {
+            _timerRun = Random.Range(90, 140);
+        }
+
+        protected virtual void OnChangeStupid(Vector3 pos)
+        {
+            _timerStupid = Random.Range(0, 2) == 0 ? 150 : 225;
+            GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Question, pos, 2,
+                ESortingOrder.EffectItem);
         }
 
         protected override void UpdateMonsterAI()
