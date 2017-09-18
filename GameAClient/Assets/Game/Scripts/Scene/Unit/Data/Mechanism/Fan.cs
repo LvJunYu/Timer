@@ -41,7 +41,10 @@ namespace GameA.Game
             if (_withEffect != null)
             {
                 SetRelativeEffectPos(_withEffect.Trans, (EDirectionType)Rotation);
-                _withEffect.SetActiveStateEx(_switchTrigger.Trigger == EActiveState.Active);
+                if (_switchTrigger != null)
+                {
+                    _withEffect.SetActiveStateEx(_switchTrigger.Trigger == EActiveState.Active);
+                }
             }
             return true;
         }
@@ -67,7 +70,6 @@ namespace GameA.Game
         public override void OnTriggerChanged(EActiveState value)
         {
             _withEffect.SetActiveStateEx(value == EActiveState.Active);
-            LogHelper.Debug(value+" Fan ");
         }
 
         public override void UpdateLogic()
@@ -83,7 +85,7 @@ namespace GameA.Game
             }
             base.UpdateLogic();
             //停止
-            if (_switchTrigger.Trigger != EActiveState.Active)
+            if (_switchTrigger !=null && _switchTrigger.Trigger != EActiveState.Active)
             {
                 return;
             }
