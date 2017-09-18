@@ -27,7 +27,6 @@ namespace GameA
         [SerializeField] private EEnvironment _env;
         [SerializeField] private bool _clearCache;
         [SerializeField] private string _roomServerAddress;
-        
         [SerializeField] private AddressConfig[] _appServerAddress;
 
 		internal static SocialApp Instance;
