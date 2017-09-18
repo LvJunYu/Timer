@@ -23,7 +23,7 @@ namespace GameA
         public void Set(Vector3 pos)
         {
             _targetWorldPos = pos;
-            _cachedView.Trans.localScale = Vector3.one * 0.5f;
+//            _cachedView.Trans.localScale = Vector3.one * 0.5f;
             RecalcPos();
         }
 
