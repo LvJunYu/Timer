@@ -307,6 +307,7 @@ namespace GameA.Game
             _isPlaying = false;
             PlayMode.Instance.GameFinishFailed();
             GameAudioManager.Instance.Stop(_bgmMusic);
+            GameAudioManager.Instance.PlaySoundsEffects(AudioNameConstDefineGM2D.Failed);
         }
 
         #endregion
