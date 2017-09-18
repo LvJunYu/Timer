@@ -10,7 +10,8 @@ namespace GameA.Game
         private float _viewDistance = 10 * ConstDefineGM2D.ServerTileScale;
         private bool _hasTurnBack;
         private IntVec2 _attackRange = new IntVec2(1, 1) * ConstDefineGM2D.ServerTileScale;
-
+        private const int _patrolTime = 70;
+        
         protected override bool OnInit()
         {
             if (!base.OnInit())
@@ -18,6 +19,7 @@ namespace GameA.Game
                 return false;
             }
             _maxSpeedX = 50;
+            _intelligenc = 0;
             return true;
         }
 
@@ -202,6 +204,16 @@ namespace GameA.Game
                     _animation.PlayOnce("Brake3");
 //                    _justPlayBrakeAnim = true;
                 }
+            }
+            //老虎巡逻时间
+            if (eMonsterState == EMonsterState.Run)
+            {
+                _timerRun = _patrolTime;
+            }
+            //智商为0，每次犯傻必回头，作为巡逻
+            if (eMonsterState == EMonsterState.Stupid)
+            {
+                _timerStupid =  150;
             }
         }
 
