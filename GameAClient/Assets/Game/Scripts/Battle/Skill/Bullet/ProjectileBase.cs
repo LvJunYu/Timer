@@ -145,7 +145,19 @@ namespace GameA.Game
                 }
             }
         }
-        
+
+        protected override void CheckHit(UnitBase unit, EDirectionType eDirectionType)
+        {
+            if (!_cacheHitUnits.Contains(unit.Guid))
+            {
+                _cacheHitUnits.Add(unit.Guid);
+                if (_skill.Owner != unit)
+                {
+                    Hit(unit, eDirectionType);
+                }
+            }
+        }
+
         protected override void Hit(UnitBase unit, EDirectionType eDirectionType)
         {
             _targetUnit = unit;
