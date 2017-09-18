@@ -13,7 +13,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            SetAllCross(true);
             SetSortingOrderFrontest();
             return true;
         }

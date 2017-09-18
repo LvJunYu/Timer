@@ -70,7 +70,7 @@ namespace GameA.Game
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (!unit.CanBridgeCross && unit.IsAlive)
+                    if (unit.IsAlive && unit.TableUnit.IsBridgeBlock == 1 && !unit.CanBridgeCross)
                     {
                         blocked = true;
                         break;

@@ -101,16 +101,16 @@ namespace GameA.Game
                             {
                                 unit.OnIntersect(this);
                             }
-                            if (unit.Id == UnitDefine.ScorchedEarthId)
+                            if (unit.TableUnit.IsMagicBlock == 1 && !unit.CanMagicCross)
                             {
-                                var se = unit as ScorchedEarth;
-                                if (se != null)
+                                if (unit.Id == UnitDefine.ScorchedEarthId)
                                 {
-                                    se.OnExplode();
+                                    var se = unit as ScorchedEarth;
+                                    if (se != null)
+                                    {
+                                        se.OnExplode();
+                                    }
                                 }
-                            }
-                            if (!unit.CanMagicCross)
-                            {
                                 if (unit.Id == UnitDefine.BlueStoneRotateId)
                                 {
                                     if (_magicRotate ==null)

@@ -9,16 +9,6 @@ namespace GameA.Game
         protected UnitBase _mainUnit;
         protected List<UnitBase> _units;
         
-        protected override bool OnInit()
-        {
-            if (!base.OnInit())
-            {
-                return false;
-            }
-            SetAllCross(true);
-            return true;
-        }
-        
         internal override void OnPlay()
         {
             base.OnPlay();

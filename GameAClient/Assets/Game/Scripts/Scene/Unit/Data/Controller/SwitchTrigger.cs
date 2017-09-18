@@ -31,7 +31,6 @@ namespace GameA.Game
             {
                 return false;
             }
-            SetAllCross(true);
             SetSortingOrderBack();
             return true;
         }

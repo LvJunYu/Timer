@@ -71,6 +71,16 @@ namespace GameA.Game
 		[ColumnMapping("IsGround")]
 		public int IsGround;
 		/// <summary>
+        /// 蓝石
+        /// </summary>
+		[ColumnMapping("IsMagicBlock")]
+		public int IsMagicBlock;
+		/// <summary>
+        /// 桥梁
+        /// </summary>
+		[ColumnMapping("IsBridgeBlock")]
+		public int IsBridgeBlock;
+		/// <summary>
         /// 激光
         /// </summary>
 		[ColumnMapping("IsLazerBlock")]
