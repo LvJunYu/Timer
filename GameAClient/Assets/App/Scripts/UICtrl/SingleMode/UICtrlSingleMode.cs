@@ -167,6 +167,8 @@ namespace GameA
 		    SetPart(_cachedView.TitleRtf, EAnimationType.MoveFromUp,new Vector3(0,100,0),0.1f);
 		    SetPart(_cachedView.PanelRtf, EAnimationType.MoveFromDown);
 		    SetPart(_cachedView.BGRtf, EAnimationType.Fade);
+		    SetPart(_cachedView.LeftBtnRtf, EAnimationType.MoveFromDown);
+		    SetPart(_cachedView.RightBtnRtf, EAnimationType.MoveFromDown);
 	    }
 
 	    protected override void OnViewCreated()
