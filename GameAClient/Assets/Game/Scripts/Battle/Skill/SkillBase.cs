@@ -558,7 +558,7 @@ namespace GameA.Game
             if (centerPos.y <= target.ColliderGrid.YMin)
             {
                 if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y - length, guid.z), out neighborUnit)
-                || !UnitDefine.IsBulletBlock(neighborUnit.Id))
+                || !UnitDefine.IsPaintBlock(neighborUnit.TableUnit))
                 {
                     DoPaint(centerPos, maskRandom, target, EDirectionType.Down);
                 }
@@ -566,7 +566,7 @@ namespace GameA.Game
             else if (centerPos.y > target.ColliderGrid.YMax)
             {
                 if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x, guid.y + length, guid.z), out neighborUnit)
-                || !UnitDefine.IsBulletBlock(neighborUnit.Id))
+                || !UnitDefine.IsPaintBlock(neighborUnit.TableUnit))
                 {
                     DoPaint(centerPos, maskRandom, target, EDirectionType.Up);
                 }
@@ -574,7 +574,7 @@ namespace GameA.Game
             if (centerPos.x <= target.ColliderGrid.XMin)
             {
                 if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x - length, guid.y, guid.z), out neighborUnit)
-                || !UnitDefine.IsBulletBlock(neighborUnit.Id))
+                || !UnitDefine.IsPaintBlock(neighborUnit.TableUnit))
                 {
                     DoPaint(centerPos, maskRandom, target, EDirectionType.Left);
                 }
@@ -582,7 +582,7 @@ namespace GameA.Game
             else if (centerPos.x > target.ColliderGrid.XMax)
             {
                 if (!ColliderScene2D.Instance.TryGetUnit(new IntVec3(guid.x + length, guid.y, guid.z), out neighborUnit)
-                || !UnitDefine.IsBulletBlock(neighborUnit.Id))
+                || !UnitDefine.IsPaintBlock(neighborUnit.TableUnit))
                 {
                     DoPaint(centerPos, maskRandom, target, EDirectionType.Right);
                 }

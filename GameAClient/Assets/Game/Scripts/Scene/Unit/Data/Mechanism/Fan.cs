@@ -97,7 +97,8 @@ namespace GameA.Game
                 for (int i = 0; i < hits.Count; i++)
                 {
                     var hit = hits[i];
-                    if (UnitDefine.IsFanBlock(hit.node))
+                    var tableUnit = UnitManager.Instance.GetTableUnit(hit.node.Id);
+                    if (tableUnit != null && tableUnit.IsFanBlock == 1)
                     {
                         bool flag = false;
                         var units = ColliderScene2D.GetUnits(hit, SceneQuery2D.GetGrid(_pointA, _pointB, Rotation, hit.distance + 1));

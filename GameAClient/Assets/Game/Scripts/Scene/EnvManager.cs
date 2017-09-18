@@ -32,12 +32,10 @@ namespace GameA.Game
 	    public const int UnitLayerWithoutEffect = (~MaxLayer) & (~EffectLayer);
 		public const int MainPlayerAndEffectLayer = 1 << (int)ESceneLayer.Effect |1<<(int)ESceneLayer.MainPlayer;
 
-        public const int LazerShootLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
-	    
         public const int FanBlockLayer = MainPlayerLayer | MonsterLayer | ItemLayer | 1<<(int)ESceneLayer.Bullet;
-	    public const int LazerBlockLayer = ItemLayer;
+	    
+	    public const int LazerShootLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
         public const int BridgeBlockLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
-	    public const int BulletBlockLayer = MonsterLayer | ItemLayer |  1<<(int)ESceneLayer.Bullet;
         public const int MovingEarthBlockLayer = MainPlayerLayer | MonsterLayer | ItemLayer;
 
         public const int BulletHitLayer = MonsterLayer | ItemLayer;

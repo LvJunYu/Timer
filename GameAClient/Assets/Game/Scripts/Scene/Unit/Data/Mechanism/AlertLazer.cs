@@ -154,7 +154,8 @@ namespace GameA.Game
                     for (int i = 0; i < hits.Count; i++)
                     {
                         var hit = hits[i];
-                        if (UnitDefine.IsLaserBlock(hit.node))
+                        var tableUnit = UnitManager.Instance.GetTableUnit(hit.node.Id);
+                        if (tableUnit != null && tableUnit.IsLazerBlock == 1)
                         {
                             if (UnitDefine.IsSameDirectionSwitchTrigger(hit.node, Rotation))
                             {

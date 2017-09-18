@@ -56,11 +56,6 @@ namespace GameA.Game
             return id == 1001;
         }
 
-        public static bool IsHasText(int id)
-        {
-            return id == BillboardId || id == TextId || id == TriggerId;
-        }
-
         public static bool IsMain(int id)
         {
             return id < 2000 && id > 1001;
@@ -74,16 +69,6 @@ namespace GameA.Game
         public static bool IsMonster(int id)
         {
             return id > 2000 && id < 3000;
-        }
-
-        public static bool IsAIMonster(int id)
-        {
-            return id == 2001 || id == 2002;
-        }
-
-        public static bool IsWeaponPool(int id)
-        {
-            return id == 8001;
         }
 
         public static bool IsJet(int id)
@@ -101,11 +86,6 @@ namespace GameA.Game
             return id == SwitchTriggerId || id == SwitchTriggerPressId;
         }
 
-        public static bool IsCrossSwitch(int id)
-        {
-            return id == MagicSwitchId || id == 9003 || id == 8106 || id == 8107;
-        }
-
         public static bool IsFakePart(int one, int other)
         {
             return (one == 4001 && other == 4002) || (one == 4002 && other == 4001);
@@ -121,33 +101,9 @@ namespace GameA.Game
             return id == 7002 || id == 7003 || id == 7004;
         }
 
-        public static bool IsEffect(int id)
-        {
-            return id >= 9000 && id < 9200;
-        }
-
         public static bool IsRevive(int id)
         {
             return id == 5002;
-        }
-
-        public static int GetRandomPlantId(int id)
-        {
-            switch (id)
-            {
-                case 0:
-                    return 7002;
-                case 1:
-                    return 7003;
-                case 2:
-                    return 7004;
-            }
-            return 7002;
-        }
-
-        public static bool IsBoard(int id)
-        {
-            return IsHasText(id) || id == 7101 || id == 7102 || id == 7103 || id == 7104;
         }
 
         public static bool IsBullet(int id)
@@ -155,73 +111,31 @@ namespace GameA.Game
             return id >= 10001 && id <= 10010;
         }
         
-        public static bool IsPaintBullet(int id)
-        {
-            return id == 10001 || id == 10004 || id == 10005;
-        }
-
-        public static bool IsCollection(int id)
-        {
-            return (id >= 6001 && id <= 6010) || id == 5012; //key
-        }
-
-        public static bool IsEditClick(int id)
-        {
-            return IsHasText(id) || IsWeaponPool(id) || IsJet(id);
-        }
-
         public static bool IsSameDirectionSwitchTrigger(SceneNode node, byte rotation)
         {
             return node.Id == SwitchTriggerPressId &&
                    (node.Rotation + rotation == 2 || node.Rotation + rotation == 4);
         }
 
-        public static bool IsLaserBlock(SceneNode node)
-        {
-            ushort id = node.Id;
-            return id != TransparentEarthId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsCollection(id) &&
-                   !IsCrossSwitch(id) && (((1 << node.Layer) & EnvManager.LazerBlockLayer) != 0);
-        }
-
         public static bool IsLaserDamage(int layer)
         {
-            return ((1 << layer) & (EnvManager.MonsterLayer | EnvManager.MainPlayerLayer | EnvManager.RemotePlayer)) !=
-                   0;
-        }
-
-        public static bool IsFanBlock(SceneNode node)
-        {
-            ushort id = node.Id;
-            return id != BlueStoneBanId && id != BlueStoneRotateId &&
-                   !IsCollection(id) && !IsCrossSwitch(id) && !IsBullet(id) && !IsSwitchTrigger(id);
+            return ((1 << layer) & (EnvManager.MonsterLayer | EnvManager.MainPlayerLayer | EnvManager.RemotePlayer)) != 0;
         }
 
         public static bool IsFanEffect(int layer, int id)
         {
-            return (((1 << layer) & (EnvManager.MonsterLayer | EnvManager.MainPlayerLayer | EnvManager.RemotePlayer)) !=0)
-                   || IsBullet(id);
+            return (((1 << layer) & (EnvManager.MonsterLayer | EnvManager.MainPlayerLayer | EnvManager.RemotePlayer)) !=0) || IsBullet(id);
         }
 
-        /// <summary>
-        /// 特殊处理
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public static bool IsBulletBlock(int id)
+        public static bool IsPaintBlock(Table_Unit tableUnit)
         {
-            return id != CloudId && id != BlueStoneBanId && id != BlueStoneRotateId && !IsPlant(id) &&
-                   !IsBoard(id) && !IsCollection(id) && !IsSwitchTrigger(id) && !IsJet(id) && !IsMain(id) &&
-                   !IsEffect(id);
+            if (IsMain(tableUnit.Id))
+            {
+                return false;
+            }
+            return tableUnit.IsBulletBlock == 1;
         }
-
-        internal static bool IsGround(int id)
-        {
-            return !IsSwitchTrigger(id) && id != BlueStoneBanId && id != BlueStoneRotateId &&
-                   !IsPlant(id) &&
-                   !IsBoard(id) && !IsCollection(id) && !IsCrossSwitch(id) && !IsMain(id) && !IsBullet(id) &&
-                   !IsAIMonster(id) && !IsEffect(id);
-        }
-
+        
         public static bool IsDownY(Table_Unit tableUnit)
         {
             if (tableUnit == null)
@@ -229,17 +143,12 @@ namespace GameA.Game
                 return false;
             }
             return (tableUnit.EGeneratedType == EGeneratedType.Spine && !IsHero(tableUnit.Id) &&
-                    !IsBullet(tableUnit.Id)) || IsWeaponPool(tableUnit.Id) || tableUnit.Id == FinalDoorId;
-        }
-
-        public static bool IsRoller(int id)
-        {
-            return RollerId == id;
+                    !IsBullet(tableUnit.Id)) || tableUnit.Id == 8001 || tableUnit.Id == FinalDoorId;
         }
 
         public static bool UseRayBullet(int id)
         {
-            return IsPaintBullet(id) || id == 10006;
+            return id == 10001 || id == 10004 || id == 10005 || id == 10006;
         }
 
         public static bool CanTrigger(UnitBase unit)

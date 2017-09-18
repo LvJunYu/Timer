@@ -743,7 +743,7 @@ namespace GameA.Game
             if (_dynamicCollider != null && !_lastColliderGrid.Equals(_colliderGrid))
             {
                 _dynamicCollider.Grid = _colliderGrid;
-                ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider, _lastColliderGrid);
+                ColliderScene2D.Instance.UpdateDynamicUnit(this, _lastColliderGrid);
             }
             _lastColliderGrid = _colliderGrid;
             Clear();
@@ -1407,7 +1407,7 @@ namespace GameA.Game
                 if (!_lastColliderGrid.Equals(_colliderGrid))
                 {
                     _dynamicCollider.Grid = _colliderGrid;
-                    ColliderScene2D.Instance.UpdateDynamicNode(_dynamicCollider, _lastColliderGrid);
+                    ColliderScene2D.Instance.UpdateDynamicUnit(this, _lastColliderGrid);
                     _lastColliderGrid = _colliderGrid;
                 }
             }

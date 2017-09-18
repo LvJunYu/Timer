@@ -138,7 +138,7 @@ namespace GameA.Game
                 for (int i = 0; i < hits.Count; i++)
                 {
                     var hit = hits[i];
-                    if (UnitDefine.IsBulletBlock(hit.node.Id))
+                    if (CheckHit(hit.node.Id))
                     {
                        var units = ColliderScene2D.GetUnits(hit);
                         for (var j = 0; j < units.Count; j++)
@@ -186,6 +186,20 @@ namespace GameA.Game
                     _destroy = 1;
                 }
             }
+        }
+
+        private bool CheckHit(int id)
+        {
+            if (_skill.EPaintType != EPaintType.None && UnitDefine.IsMain(id))
+            {
+                return false;
+            }
+            var tableUnit = UnitManager.Instance.GetTableUnit(id);
+            if (tableUnit == null)
+            {
+                return false;
+            }
+            return tableUnit.IsBulletBlock == 1;
         }
 
         protected void OnDestroy()

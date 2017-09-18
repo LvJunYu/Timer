@@ -14,7 +14,7 @@ using UnityEngine;
 namespace GameA.Game
 {
     [Unit(Id = 5010, Type = typeof(Lazer))]
-    public class Lazer : BlockBase
+    public class Lazer : Magic
     {
         protected GridCheck _gridCheck;
 
@@ -40,7 +40,7 @@ namespace GameA.Game
                 return false;
             }
             _gridCheck = new GridCheck(this);
-            SetSortingOrderBack();
+            SetSortingOrderBackground();
             return true;
         }
         
@@ -143,7 +143,8 @@ namespace GameA.Game
                 for (int i = 0; i < hits.Count; i++)
                 {
                     var hit = hits[i];
-                    if (UnitDefine.IsLaserBlock(hit.node))
+                    var tableUnit = UnitManager.Instance.GetTableUnit(hit.node.Id);
+                    if (tableUnit != null && tableUnit.IsLazerBlock == 1)
                     {
                         if (UnitDefine.IsSameDirectionSwitchTrigger(hit.node, Rotation))
                         {

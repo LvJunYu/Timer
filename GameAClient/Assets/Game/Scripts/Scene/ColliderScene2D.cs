@@ -186,7 +186,7 @@ namespace GameA.Game
                 return false;
             }
             _units.Add(unitDesc.Guid, unit);
-            if (UnitDefine.IsGround(unit.Id))
+            if (tableUnit.IsGround == 1)
             {
                 _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 0;
             }
@@ -229,7 +229,7 @@ namespace GameA.Game
                 return false;
             }
             unit.OnDispose();
-            if (UnitDefine.IsGround(tableUnit.Id))
+            if (tableUnit.IsGround == 1)
             {
                 _pathGrid[unitDesc.Guid.x / ConstDefineGM2D.ServerTileScale, unitDesc.Guid.y / ConstDefineGM2D.ServerTileScale] = 1;
             }
@@ -313,14 +313,14 @@ namespace GameA.Game
 
         #region AOI
 
-        public bool UpdateDynamicNode(SceneNode node, Grid2D lastGrid)
+        public bool UpdateDynamicUnit(UnitBase unit, Grid2D lastGrid)
         {
-            if (base.UpdateDynamicNode(node))
+            if (UpdateDynamicNode(unit.DynamicCollider))
             {
-                if (UnitDefine.IsGround(node.Id))
+                if (unit.TableUnit.IsGround == 1)
                 {
                     _pathGrid[lastGrid.XMin / ConstDefineGM2D.ServerTileScale, lastGrid.YMin / ConstDefineGM2D.ServerTileScale] = 1;
-                    _pathGrid[node.Grid.XMin / ConstDefineGM2D.ServerTileScale, node.Grid.YMin / ConstDefineGM2D.ServerTileScale] = 0;
+                    _pathGrid[unit.ColliderGrid.XMin / ConstDefineGM2D.ServerTileScale, unit.ColliderGrid.YMin / ConstDefineGM2D.ServerTileScale] = 0;
                 }
                 return true;
             }
@@ -723,7 +723,8 @@ namespace GameA.Game
                 for (int i = 0; i < hits.Count; i++)
                 {
                     var hit = hits[i];
-                    if (UnitDefine.IsGround(hit.node.Id))
+                    var tableUnit = UnitManager.Instance.GetTableUnit(hit.node.Id);
+                    if (tableUnit != null && tableUnit.IsGround == 1)
                     {
                         end.y -= hit.distance;
                         break;

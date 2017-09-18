@@ -66,6 +66,26 @@ namespace GameA.Game
 		[ColumnMapping("ColliderType")]
 		public int ColliderType;
 		/// <summary>
+        /// 是否地面
+        /// </summary>
+		[ColumnMapping("IsGround")]
+		public int IsGround;
+		/// <summary>
+        /// 激光
+        /// </summary>
+		[ColumnMapping("IsLazerBlock")]
+		public int IsLazerBlock;
+		/// <summary>
+        /// 风扇
+        /// </summary>
+		[ColumnMapping("IsFanBlock")]
+		public int IsFanBlock;
+		/// <summary>
+        /// 子弹
+        /// </summary>
+		[ColumnMapping("IsBulletBlock")]
+		public int IsBulletBlock;
+		/// <summary>
         /// 数量
         /// </summary>
 		[ColumnMapping("Count")]

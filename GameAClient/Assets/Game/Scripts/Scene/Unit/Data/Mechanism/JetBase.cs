@@ -42,6 +42,7 @@ namespace GameA.Game
                 return false;
             }
             _timeScale = 1;
+            SetSortingOrderBackground();
             return true;
         }
         
