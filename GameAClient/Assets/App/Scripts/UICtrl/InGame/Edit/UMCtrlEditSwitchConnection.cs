@@ -6,11 +6,11 @@ namespace GameA
 {
     public class UMCtrlEditSwitchConnection : UMCtrlBase<UMViewEditSwitchConnection>
     {
-        private const float MinButtonShowWidth = 178;
-        private const float SwitchBgSize = 81;
-        private const float SwitchBorderSize = 32;
-        private const float UnitBgSize = 61;
-        private const float UnitBorderSize = 23;
+        private const float MinButtonShowWidth = 135;
+        private const float SwitchBgSize = 45;
+        private const float SwitchBorderSize = 18;
+        private const float UnitBgSize = 37;
+        private const float UnitBorderSize = 14;
         private int _index;
         private Vector3 _targetSwitchWorldPos;
         private Vector3 _targetUnitWorldPos;
@@ -38,7 +38,7 @@ namespace GameA
             _index = inx;
             _targetSwitchWorldPos = switchPos;
             _targetUnitWorldPos = unitPos;
-            _cachedView.Trans.localScale = Vector3.one * 0.5f;
+//            _cachedView.Trans.localScale = Vector3.one * 0.5f;
             RecalcPos();
         }
 
