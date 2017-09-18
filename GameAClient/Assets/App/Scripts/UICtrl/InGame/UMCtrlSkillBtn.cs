@@ -31,7 +31,9 @@ namespace GameA
             PlayFullParticle(_curTableEquipment.InputType == (int) EWeaponInputType.GetKeyUp);
             _cachedView.BtnCD1.fillAmount = 0;
             _cachedView.BtnCD2.fillAmount = 0;
+            _cachedView.TimeTxt.text = "";
             int bulletNum = TableManager.Instance.Table_SkillDic[tableSkill.SkillId].BulletCount;
+            _curBulletCount = bulletNum;
             UpdateBulletNum(bulletNum, bulletNum);
         }
 

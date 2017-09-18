@@ -22,7 +22,7 @@ namespace GameA.Game
         /// <summary>
         /// 是否相撞
         /// </summary>
-        private static HashSet<IntVec3> _cacheHitUnits = new HashSet<IntVec3>();
+        protected static HashSet<IntVec3> _cacheHitUnits = new HashSet<IntVec3>();
         /// <summary>
         /// 是否相交
         /// </summary>
@@ -330,7 +330,7 @@ namespace GameA.Game
             }
         }
 
-        private void CheckHit(UnitBase unit, EDirectionType eDirectionType)
+        protected virtual void CheckHit(UnitBase unit, EDirectionType eDirectionType)
         {
             if (!_cacheHitUnits.Contains(unit.Guid))
             {

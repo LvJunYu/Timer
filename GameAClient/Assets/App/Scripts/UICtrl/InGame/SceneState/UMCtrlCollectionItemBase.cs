@@ -41,6 +41,7 @@ namespace GameA
             if (null == _doMove)
                 CreateTweener(targetTRF);
             _doMove.ChangeStartValue(pos);
+            _doMove.ChangeEndValue(targetTRF.position);
             _doMove.Restart();
             _doScale.Restart();
         }

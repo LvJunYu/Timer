@@ -17,10 +17,12 @@ namespace GameA.Game
             return true;
         }
 
-        protected override void Clear()
+        internal override void OnPlay()
         {
-            base.Clear();
-            SetWeapon(201);
+            base.OnPlay();
+            var unitExtra = DataScene2D.Instance.GetUnitExtra(_guid);
+            _weaponId = unitExtra.ChildId;
+            SetWeapon(_weaponId);
         }
 
         public override bool SetWeapon(int id)
