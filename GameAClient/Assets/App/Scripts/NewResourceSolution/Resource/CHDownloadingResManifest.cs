@@ -45,9 +45,9 @@ namespace NewResourceSolution
         /// </summary>
         private bool _serializeFailed;
 
-        private Queue<BundleDownloader> _waitQueue = new Queue<BundleDownloader>();
-        private List<BundleDownloader> _downloadingList = new List<BundleDownloader>();
-        private Queue<BundleDownloader> _waitDecompressQueue = new Queue<BundleDownloader>();
+        private readonly Queue<BundleDownloader> _waitQueue = new Queue<BundleDownloader>();
+        private readonly List<BundleDownloader> _downloadingList = new List<BundleDownloader>();
+        private readonly Queue<BundleDownloader> _waitDecompressQueue = new Queue<BundleDownloader>();
 
         [Newtonsoft.Json.JsonIgnore]
         public long NeedsDownloadTotalByte
@@ -105,8 +105,7 @@ namespace NewResourceSolution
 				CHResBundle bundleInExistingManifest = existingManifest.GetBundleByBundleName(_bundles[i].AssetBundleName);
                 if (null != bundleInExistingManifest && EFileLocation.Server != bundleInExistingManifest.FileLocation)
                 {
-                    if (null != bundleInExistingManifest &&
-                        string.Compare(_bundles[i].CompressedMd5, bundleInExistingManifest.CompressedMd5) == 0)
+                    if (String.CompareOrdinal(_bundles[i].CompressedMd5, bundleInExistingManifest.CompressedMd5) == 0)
                     {
                         bool isAdamBundle = existingManifest.AdamBundleNameList.Contains (bundleInExistingManifest.AssetBundleName);
                         EFileIntegrity integrity = bundleInExistingManifest.CheckFileIntegrity (bundleInExistingManifest.FileLocation, isAdamBundle);
@@ -336,8 +335,8 @@ namespace NewResourceSolution
 			long totalSizeToDecompress = 0;
 			for (int i = 0; i < _bundles.Count; i++)
 			{
-				if (EFileLocation.Server == _bundles[i].FileLocation ||
-					EFileLocation.Persistent == _bundles[i].FileLocation)
+				if (EFileLocation.Server == _bundles[i].FileLocation
+				    || EFileLocation.Persistent == _bundles[i].FileLocation)
 				{
 					continue;
 				}
@@ -364,8 +363,8 @@ namespace NewResourceSolution
                 }
                 while (workingIEnumerator.Count < s_maxDecompressThreadNum && itor < _bundles.Count)
                 {
-                    if (EFileLocation.Server == _bundles[itor].FileLocation ||
-                        EFileLocation.Persistent == _bundles[itor].FileLocation)
+                    if (EFileLocation.Server == _bundles[itor].FileLocation
+                        || EFileLocation.Persistent == _bundles[itor].FileLocation)
                     {
                         itor++;
                         continue;

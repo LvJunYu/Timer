@@ -26,7 +26,8 @@ namespace NewResourceSolution
         /// 资源目录
         /// </summary>
         private CHRuntimeResManifest _manifest;
-        
+
+	    private CHRuntimeResManifest _persistentManifest;
 
 //        private AssetCache _assetCache;
 
@@ -150,17 +151,30 @@ namespace NewResourceSolution
 
             if (null != _manifest)
             {
-                _manifest.ClearAllAssetCache ();
+                _manifest.ClearAllAssetCache (false);
             }
 
             // 读取本地版本
 			if (UnityTools.TryGetObjectFromLocal (ResDefine.CHResManifestFileName, out _manifest))
-            {
+			{
+			    _persistentManifest = _manifest;
 				_manifest.FileLocation = EFileLocation.Persistent;
 				LogHelper.Info ("Res in pesistant, ver: {0}", _manifest.Ver);
+                CHRuntimeResManifest buildInManifest;
+                // 读取包内版本
+                UnityTools.TryGetObjectFromStreamingAssets (ResDefine.CHResManifestFileName, out buildInManifest);
+                if (null != buildInManifest)
+                {
+                    if (buildInManifest.Ver > _manifest.Ver)
+                    {
+                        _manifest = buildInManifest;
+                        _manifest.FileLocation = EFileLocation.StreamingAsset;
+                    }
+                }
             }
 			else
 			{
+			    _persistentManifest = null;
 				// 不存在则读取包内版本
 				UnityTools.TryGetObjectFromStreamingAssets (ResDefine.CHResManifestFileName, out _manifest);
 				if (null != _manifest)
@@ -372,7 +386,7 @@ namespace NewResourceSolution
             #endif
 		    if (EFileLocation.StreamingAsset == _manifest.FileLocation)
 		    {
-		        CoroutineManager.StartCoroutine(VersionUpdater.CheckVerInternal(null, _manifest));
+		        CoroutineManager.StartCoroutine(VersionUpdater.CheckVerInternal(_persistentManifest, _manifest));
 		    }
 		    else
 		    {

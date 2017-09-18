@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System;
+using System.Collections;
 using SoyEngine;
+using UnityEngine;
 
 namespace NewResourceSolution
 {
@@ -30,11 +30,10 @@ namespace NewResourceSolution
             {
                 LogHelper.Error ("WWW request error, info: {0}, path: {1}", request.error, request.url);
 //                request.Dispose();
-                yield break;
             }
         }
 
-        public static IEnumerator GetObjectFromServer<T> (string path, System.Action<T> setObjCB, int timeoutInMilliSeconds = 8000)
+        public static IEnumerator GetObjectFromServer<T> (string path, Action<T> setObjCB, int timeoutInMilliSeconds = 8000)
 		{
             WWW request = new WWW (path);
             yield return WWWRequestWithTimeout (request, timeoutInMilliSeconds);
@@ -53,25 +52,25 @@ namespace NewResourceSolution
         public static bool TryGetObjectFromLocal<T> (string fileName, out T obj)
         {
 			string fullPath = StringUtil.Format (StringFormat.TwoLevelPath, ResPath.PersistentDataPath, fileName);
-            return TryGetObjectFromStorage<T> (fullPath, out obj);
+            return TryGetObjectFromStorage (fullPath, out obj);
         }
 
         public static bool TryGetObjectFromStreamingAssets<T> (string fileName, out T obj)
         {
 			string fullPath = StringUtil.Format (StringFormat.TwoLevelPath, ResPath.StreamingAssetsPath, fileName);
-            return TryGetObjectFromStorage<T> (fullPath, out obj);
+            return TryGetObjectFromStorage (fullPath, out obj);
         }
 
 		public static bool TryGetObjectFromTemporaryCache<T> (string fileName, out T obj)
 		{
 			string fullPath = StringUtil.Format (StringFormat.ThreeLevelPath, ResPath.PersistentDataPath, ResPath.TempCache, fileName);
-			return TryGetObjectFromStorage<T> (fullPath, out obj);
+			return TryGetObjectFromStorage (fullPath, out obj);
 		}
 
 		public static bool TrySaveObjectToLocal<T> (T obj, string fileName, bool overwrite = true, bool debug = false)
         {
 			string fullPath = StringUtil.Format (StringFormat.TwoLevelPath, ResPath.PersistentDataPath, fileName);
-			return TrySaveObjectToStorage<T> (obj, fullPath, overwrite, debug);
+			return TrySaveObjectToStorage (obj, fullPath, overwrite, debug);
         }
 
         private static bool TryGetObjectFromStorage<T> (string fullPath, out T obj)
@@ -87,10 +86,7 @@ namespace NewResourceSolution
                 obj = JsonTools.DeserializeObject<T> (s);
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
 		private static bool TrySaveObjectToStorage<T> (T obj, string fullPath, bool overwrite = true, bool debug = false)

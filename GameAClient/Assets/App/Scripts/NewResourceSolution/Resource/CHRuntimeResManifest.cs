@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using SoyEngine;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace NewResourceSolution
 {
@@ -45,7 +45,7 @@ namespace NewResourceSolution
 		/// <summary>
 		/// unity 资源目录
 		/// </summary>
-		private UnityEngine.AssetBundleManifest _unityManifest;
+		private AssetBundleManifest _unityManifest;
 
         private Dictionary<string, string> _assetName2BundleName = new Dictionary<string, string>();
         private Dictionary<string, CHResBundle> _bundleName2Bundle = new Dictionary<string, CHResBundle>();
@@ -59,7 +59,7 @@ namespace NewResourceSolution
 		{
 			get
 			{
-				return this._cachedAssetsTotalSize;
+				return _cachedAssetsTotalSize;
 			}
 		}
 		#endregion
@@ -73,7 +73,7 @@ namespace NewResourceSolution
 			_bundleName2Bundle.Clear ();
 			for (int i = 0; i < _bundles.Count; i++)
 			{
-				_bundles[i].IsLocaleRes = _bundles[i].AssetBundleName.ToCharArray()[0] == ResDefine.LocaleResBundleNameFirstChar;
+				_bundles[i].IsLocaleRes = _bundles[i].AssetBundleName[0] == ResDefine.LocaleResBundleNameFirstChar;
 				if (_bundles[i].IsLocaleRes)
 				{
 					_bundles[i].LocaleName = _bundles[i].AssetBundleName.Substring(1).Split(ResDefine.ReplaceSplashCharInAssetBundleName)[0].ToUpper();
@@ -151,7 +151,7 @@ namespace NewResourceSolution
 			return true;
 		}
 
-		public UnityEngine.Object GetAsset (
+		public Object GetAsset (
             string assetName,
             int scenary,
             bool logWhenError,
@@ -175,10 +175,7 @@ namespace NewResourceSolution
 						}
 						return null;
 					}
-					else
-					{
-						bundleName = GetBundleNameByAssetName(assetNameWithLocaleName);
-					}
+					bundleName = GetBundleNameByAssetName(assetNameWithLocaleName);
 				}
 				else
 				{
@@ -190,7 +187,7 @@ namespace NewResourceSolution
 				}
 			}
 			CHResBundle bundle;
-			UnityEngine.Object asset;
+			Object asset;
 			if (_cachedBundleDic.TryGetValue(bundleName, out bundle))
 			{
 				if (bundle.AssetDic.TryGetValue(assetName, out asset))
@@ -232,46 +229,54 @@ namespace NewResourceSolution
 		/// <summary>
 		/// 清除所有asset缓存，不管该缓存是否还有使用
 		/// </summary>
-		public void ClearAllAssetCache ()
+		public void ClearAllAssetCache(bool force = true)
 		{
-            var itor = _cachedBundleDic.GetEnumerator ();
-            while (itor.MoveNext ())
-            {
-                CHResBundle bundle = itor.Current.Value;
-                bundle.UncacheAll ();
-            }
+			using (var itor = _cachedBundleDic.GetEnumerator())
+			{
+				while (itor.MoveNext ())
+				{
+					CHResBundle bundle = itor.Current.Value;
+					bundle.UncacheAll (force);
+				}
+			}
 
 			_cachedBundleDic.Clear ();
 			_cachedAssetsTotalSize = 0;
-			UnityEngine.Resources.UnloadUnusedAssets ();
+			Resources.UnloadUnusedAssets ();
 		}
 
 		private void InternalUnloadUnusedAssets (int scenaryMask2Unload, bool force)
 		{
 			_assetToUnload.Clear ();
-			var itor = _cachedBundleDic.GetEnumerator ();
-			while (itor.MoveNext ())
+			using (var itor = _cachedBundleDic.GetEnumerator())
 			{
-				CHResBundle bundle = itor.Current.Value;
-				if (0 != scenaryMask2Unload)
+				while (itor.MoveNext ())
 				{
-                    bundle.UncacheMask (scenaryMask2Unload);
-				}
-				if (0 == bundle.ScenaryMask)
-				{
-					_assetToUnload.Add (itor.Current.Key);
-                    _cachedAssetsTotalSize -= bundle.Size;
+					CHResBundle bundle = itor.Current.Value;
+					if (0 != scenaryMask2Unload)
+					{
+						bundle.UncacheMask (scenaryMask2Unload);
+					}
+					if (0 == bundle.ScenaryMask)
+					{
+						_assetToUnload.Add (itor.Current.Key);
+						_cachedAssetsTotalSize -= bundle.Size;
 //					if (!force && _cachedAssetsTotalSize < s_SuggestedAssetMemorySize)
 //					{
 //						break;
 //					}
+						if (force)
+						{
+							
+						}
+					}
 				}
 			}
 			for (int i = 0; i < _assetToUnload.Count; i++)
 			{
 				_cachedBundleDic.Remove (_assetToUnload [i]);
 			}
-			UnityEngine.Resources.UnloadUnusedAssets ();
+			Resources.UnloadUnusedAssets ();
 			if (_cachedAssetsTotalSize > s_WarningAssetMemorySize)
 			{
 				// todo 发出警报
@@ -279,12 +284,13 @@ namespace NewResourceSolution
 		}
 
 
-		/// <summary>
-		/// 缓存bundle和他的依赖
-		/// </summary>
-		/// <param name="bundle">Bundle.</param>
-		/// <param name="scenary">Scenary.</param>
-		private CHResBundle CacheBundleAndDependencies (string bundleName, int scenary, bool logWhenError)
+	    /// <summary>
+	    /// 缓存bundle和他的依赖
+	    /// </summary>
+	    /// <param name="bundleName"></param>
+	    /// <param name="scenary">Scenary.</param>
+	    /// <param name="logWhenError"></param>
+	    private CHResBundle CacheBundleAndDependencies (string bundleName, int scenary, bool logWhenError)
 		{
 			CHResBundle bundle = GetBundleByBundleName(bundleName);
 			if (null == bundle)
@@ -297,12 +303,14 @@ namespace NewResourceSolution
 			}
 			return CacheBundleAndDependencies(bundle, scenary, logWhenError);
 		}
-		/// <summary>
-		/// 缓存bundle和他的依赖
-		/// </summary>
-		/// <param name="bundle">Bundle.</param>
-		/// <param name="scenary">Scenary.</param>
-		private CHResBundle CacheBundleAndDependencies (CHResBundle bundle, int scenary, bool logWhenError)
+
+	    /// <summary>
+	    /// 缓存bundle和他的依赖
+	    /// </summary>
+	    /// <param name="bundle">Bundle.</param>
+	    /// <param name="scenary">Scenary.</param>
+	    /// <param name="logWhenError"></param>
+	    private CHResBundle CacheBundleAndDependencies (CHResBundle bundle, int scenary, bool logWhenError)
 		{
 //			LogHelper.Info("CacheBundleAndDependencies, bundleName: {0}", bundle.AssetBundleName);
 			// 如果资源不在本地，也不是非压缩且在streamingAsset中， 也不是adam资源且在streamingAsset中
@@ -328,7 +336,7 @@ namespace NewResourceSolution
 			{
 				//				LogHelper.Info("Dependence {0}: {1}", i, dependencies[i]);
                 // 判断是否已缓存
-				CHResBundle dependenceBundle = null;
+				CHResBundle dependenceBundle;
 				if (_cachedBundleDic.TryGetValue(_bundleToCache[i], out dependenceBundle))
 				{
 					if ((dependenceBundle.ScenaryMask & (1 << scenary)) == 0)
@@ -388,7 +396,7 @@ namespace NewResourceSolution
 				// undo all actions in this method
 				for (int i = 0; i < _bundleToCache.Count; i++)
 				{
-					CHResBundle dependenceBundle = null;
+					CHResBundle dependenceBundle;
 					if (_cachedBundleDic.TryGetValue(_bundleToCache[i], out dependenceBundle))
 					{
 						dependenceBundle.Uncache (scenary);
@@ -431,28 +439,28 @@ namespace NewResourceSolution
 				LogHelper.Error("Manifest not mapped when call GetBundleNameByAssetName({0})", assetNameWithLocaleName);
 				return null;
 			}
-			string bundleName = string.Empty;
+			string bundleName;
 			_assetName2BundleName.TryGetValue(assetNameWithLocaleName, out bundleName);
 			return bundleName;
 		}
 
-		private CHResBundle GetBundleByAssetName (string assetNameWithLocaleName)
-		{
-			if (null == _assetName2BundleName || _assetName2BundleName.Count == 0 ||
-				null == _bundleName2Bundle || _bundleName2Bundle.Count == 0)
-			{
-				LogHelper.Error("Manifest not mapped when call GetBundleByAssetName({0})", assetNameWithLocaleName);
-				return null;
-			}
-			string bundleName = GetBundleNameByAssetName(assetNameWithLocaleName);
-			if (string.IsNullOrEmpty(bundleName))
-			{
-				return null;
-			}
-			CHResBundle bundle = null;
-			_bundleName2Bundle.TryGetValue(bundleName, out bundle);
-			return bundle;
-		}
+//		private CHResBundle GetBundleByAssetName (string assetNameWithLocaleName)
+//		{
+//			if (null == _assetName2BundleName || _assetName2BundleName.Count == 0 ||
+//				null == _bundleName2Bundle || _bundleName2Bundle.Count == 0)
+//			{
+//				LogHelper.Error("Manifest not mapped when call GetBundleByAssetName({0})", assetNameWithLocaleName);
+//				return null;
+//			}
+//			string bundleName = GetBundleNameByAssetName(assetNameWithLocaleName);
+//			if (string.IsNullOrEmpty(bundleName))
+//			{
+//				return null;
+//			}
+//			CHResBundle bundle = null;
+//			_bundleName2Bundle.TryGetValue(bundleName, out bundle);
+//			return bundle;
+//		}
 
 		public CHResBundle GetBundleByBundleName (string bundleName)
 		{
