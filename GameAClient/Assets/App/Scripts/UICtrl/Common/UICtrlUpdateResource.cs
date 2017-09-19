@@ -23,7 +23,7 @@ namespace GameA
         protected override void OnOpen (object parameter)
         {
             base.OnOpen (parameter);
-            _cachedView.ProgressBar.fillAmount = 0;
+            SetProgress(0);
             _cachedView.ProgressText.text = string.Empty;
         }
 
