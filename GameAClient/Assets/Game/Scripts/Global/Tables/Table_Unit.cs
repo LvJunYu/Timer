@@ -146,6 +146,11 @@ namespace GameA.Game
 		[ColumnMapping("MoveDirection")]
 		public int MoveDirection;
 		/// <summary>
+        /// 移动集合
+        /// </summary>
+		[ColumnMapping("MoveDirectionMask")]
+		public int MoveDirectionMask;
+		/// <summary>
         /// 激活
         /// </summary>
 		[ColumnMapping("ActiveState")]

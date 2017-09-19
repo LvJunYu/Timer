@@ -14,6 +14,33 @@ namespace GameA.Game
             get { return true; }
         }
 
+        internal override bool InstantiateView()
+        {
+#if UNITY_EDITOR
+            return base.InstantiateView();
+#else
+            return true;
+            #endif
+        }
+
+        protected override void Clear()
+        {
+            base.Clear();
+            if (_view != null)
+            {
+                _view.SetRendererEnabled(true);
+            }
+        }
+
+        internal override void OnPlay()
+        {
+            base.OnPlay();
+            if (_view != null)
+            {
+                _view.SetRendererEnabled(false);
+            }
+        }
+
         public override void UpdateExtraData()
         {
             base.UpdateExtraData();
