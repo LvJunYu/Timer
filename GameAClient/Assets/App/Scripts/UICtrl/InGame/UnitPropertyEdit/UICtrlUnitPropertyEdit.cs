@@ -179,12 +179,6 @@ namespace GameA
                     button.SetFgImageAngle(90 * (i - 1));
                     button.SetBgImageAngle(90 * (i - 1));
                 }
-                else
-                {
-                    button.SetPosAngle(45 + 90 * (i - 5), MenuOptionsPosRadius);
-                    button.SetFgImageAngle(45 + 90 * (i - 5));
-                    button.SetBgImageAngle(45 + 90 * (i - 5));
-                }
             }
             list = _cachedView.RotateModeDock.GetComponentsInChildren<USViewUnitPropertyEditButton>();
             _rotateMenuList = new USCtrlUnitPropertyEditButton[list.Length];
@@ -446,9 +440,31 @@ namespace GameA
         private void RefreshMoveDirectionMenu()
         {
             var val = Mathf.Clamp((int) _editData.UnitExtra.MoveDirection, 0, _moveDirectionMenuList.Length - 1);
+            var defaultVal = -1;
             for (int i = 0; i < _moveDirectionMenuList.Length; i++)
             {
-                _moveDirectionMenuList[i].SetSelected(i == val);
+                if (EditHelper.CheckMask(i, _tableUnit.MoveDirectionMask))
+                {
+                    _moveDirectionMenuList[i].SetEnable(true);
+                    _moveDirectionMenuList[i].SetSelected(i == val);
+                    defaultVal = i;
+                }
+                else
+                {
+                    _moveDirectionMenuList[i].SetEnable(false);
+                    if (val == i)
+                    {
+                        val = -1;
+                    }
+                }
+            }
+            if (val == -1)
+            {
+                val = defaultVal;
+                if (val != -1)
+                {
+                    _moveDirectionMenuList[val].SetSelected(true);
+                }
             }
             var menuBtn = _menuButtonArray[(int) EEditType.MoveDirection];
             var optionBtn = _moveDirectionMenuList[val];

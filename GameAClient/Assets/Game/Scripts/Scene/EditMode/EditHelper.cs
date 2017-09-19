@@ -224,9 +224,9 @@ namespace GameA.Game
             return unitEditData;
         }
 
-        public static bool CheckMask(byte rotation,int mask)
+        public static bool CheckMask(int val, int mask)
         {
-            return (mask & (byte)(1 << rotation)) != 0;
+            return (mask & 1 << val) != 0;
         }
         
         public static void Clear()
