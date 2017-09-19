@@ -443,7 +443,12 @@ namespace GameA
             var defaultVal = -1;
             for (int i = 0; i < _moveDirectionMenuList.Length; i++)
             {
-                if (EditHelper.CheckMask(i, _tableUnit.MoveDirectionMask))
+                var checkVal = i;
+                if (checkVal == 0)
+                {
+                    checkVal = 5;
+                }
+                if (EditHelper.CheckMask(checkVal, _tableUnit.MoveDirectionMask))
                 {
                     _moveDirectionMenuList[i].SetEnable(true);
                     _moveDirectionMenuList[i].SetSelected(i == val);
