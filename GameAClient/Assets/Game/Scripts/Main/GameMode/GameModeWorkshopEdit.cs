@@ -114,7 +114,7 @@ namespace GameA.Game
             {
                 ChangeMode(EMode.Edit);
             }
-            if (EditMode.Instance.IsInState(EditModeState.Add.Instance))
+            if (!EditMode.Instance.IsInState(EditModeState.Add.Instance))
             {
                 EditMode.Instance.StartAdd();
             }
