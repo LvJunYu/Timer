@@ -22,6 +22,7 @@ namespace GameA.Game
         Depth7,
         Depth8,
         Depth9,
+        Depth10,
         Max
     }
 
@@ -39,8 +40,8 @@ namespace GameA.Game
         private Transform[] _parents;
         private Transform _parent;
         private readonly Dictionary<int, List<Table_Background>> _tableBgs = new Dictionary<int, List<Table_Background>>();
-        private static readonly int[] MaxDepthCount = { 50, 50, 50, 50, 50, 50, 50, 50, 1 };
-        private static readonly float[] MoveRatio = { 0.8f, 0.7f, 0.6f, 0.5f, 0.4f, 0.3f, 0.2f, 0.1f, 0f };
+        private static readonly int[] MaxDepthCount = {50, 50, 50, 50, 50, 50, 50, 50, 50, 1};
+        private static readonly float[] MoveRatio = {0.8f, 0.75f, 0.7f, 0.6f, 0.5f, 0.4f, 0.3f, 0.2f, 0.1f, 0f};
 
         public static BgScene2D Instance
         {
@@ -85,9 +86,9 @@ namespace GameA.Game
         {
             switch (depth)
             {
-                case (int)EBgDepth.Depth3:
-                case (int)EBgDepth.Depth5:
+                case (int)EBgDepth.Depth4:
                 case (int)EBgDepth.Depth6:
+                case (int)EBgDepth.Depth7:
                     return _cloudRect;
             }
             return _followRect;
@@ -257,20 +258,23 @@ namespace GameA.Game
             var size = GetSize(tableBg, out scale);
             switch ((EBgDepth)tableBg.Depth)
             {
-                case EBgDepth.Depth1:
                 case EBgDepth.Depth2:
-                case EBgDepth.Depth4:
-                case EBgDepth.Depth7:
-                case EBgDepth.Depth8:
                     min = new IntVec2(Random.Range(_followTileRect.XMin, _followTileRect.XMax + size.x), _followTileRect.YMin);
                     break;
+                case EBgDepth.Depth1:
                 case EBgDepth.Depth3:
                 case EBgDepth.Depth5:
+                case EBgDepth.Depth8:
+                case EBgDepth.Depth9:
+                    min = new IntVec2(Random.Range(_followTileRect.XMin, _followTileRect.XMax + size.x), _followTileRect.YMin);
+                    break;
+                case EBgDepth.Depth4:
                 case EBgDepth.Depth6:
+                case EBgDepth.Depth7:
                     min = new IntVec2(Random.Range(_cloudTileRect.XMin, _cloudTileRect.XMax + size.x),
                         Random.Range(_cloudTileRect.YMin, _cloudTileRect.YMax + size.y));
                     break;
-                case EBgDepth.Depth9:
+                case EBgDepth.Depth10:
                     min = new IntVec2(_followTileRect.XMin, _followTileRect.YMin);
                     break;
             }
