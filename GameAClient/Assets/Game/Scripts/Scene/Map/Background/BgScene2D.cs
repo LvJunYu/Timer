@@ -215,7 +215,7 @@ namespace GameA.Game
                 for (int i = 0; i < tableBgs.Count; i++)
                 {
                     //传物体重复个数j，用于计算平地的位置
-                    if (GenerateItem(tableBgs[i], j))
+                    if (GenerateItem(tableBgs[i], j + 1))
                     {
                         num++;
                         if (num >= tableBgs.Count)
@@ -270,8 +270,20 @@ namespace GameA.Game
                         _followTileRect.YMin + GM2DTools.WorldToTile(3.4f));
                     break;
                 case EBgDepth.Depth2:
-                    grid = default(Grid2D);
-                    return false;
+//                    if (num == 1)
+//                    {
+//                        min = new IntVec2(_followTileRect.XMin,_followTileRect.YMin);
+//                    }
+//                    else if (num == 2)
+//                    {
+//                        min = new IntVec2(_followTileRect.XMax,_followTileRect.YMin);
+//                    }
+//                    else
+//                    {
+                        grid = default(Grid2D);
+                        return false;
+//                    }
+//                    break;
                 case EBgDepth.Depth3:
                     if (_followTileRect.XMin + num * size.x > _followTileRect.XMax)
                     {
@@ -282,7 +294,7 @@ namespace GameA.Game
                         _followTileRect.YMin + GM2DTools.WorldToTile(0.2f));
                     break;
                 case EBgDepth.Depth4:
-                    if (_followTileRect.XMin + num * size.x > _followTileRect.XMax)
+                    if (_followTileRect.XMin + (num - 1) * size.x > _followTileRect.XMax)
                     {
                         grid = default(Grid2D);
                         return false;
