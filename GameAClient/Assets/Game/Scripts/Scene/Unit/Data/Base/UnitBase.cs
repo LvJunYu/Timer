@@ -947,16 +947,17 @@ namespace GameA.Game
                 }
             }
             var z = GetZ(_colliderPos);
-            if(IsInWater)
+            if (IsInWater)
             {
-                var tile = new IntVec2(_colliderPos.x / ConstDefineGM2D.ServerTileScale, _colliderPos.y / ConstDefineGM2D.ServerTileScale);
-                z = Mathf.Clamp(z, GetZ(new IntVec2(tile.x, tile.y) * ConstDefineGM2D.ServerTileScale) - 0.01f,z);
+                var tile = new IntVec2(_colliderPos.x / ConstDefineGM2D.ServerTileScale,
+                    _colliderPos.y / ConstDefineGM2D.ServerTileScale);
+                z = Mathf.Clamp(z, GetZ(new IntVec2(tile.x, tile.y) * ConstDefineGM2D.ServerTileScale) - 0.01f, z);
             }
             else if (_deltaPos.y != 0 || IsClimbingVertical)
             {
                 var tile = new IntVec2(_colliderPos.x / ConstDefineGM2D.ServerTileScale, _colliderPos.y / ConstDefineGM2D.ServerTileScale);
-                z = Mathf.Clamp(z, GetZ(new IntVec2(tile.x - 1, tile.y + 1) * ConstDefineGM2D.ServerTileScale) - 0.01f,
-                    GetZ(new IntVec2(tile.x + 1, tile.y) * ConstDefineGM2D.ServerTileScale) + 0.01f);
+                z = Mathf.Clamp(z, GetZ(new IntVec2(tile.x + 1, tile.y) * ConstDefineGM2D.ServerTileScale) + 0.01f,
+                GetZ(new IntVec2(tile.x - 1, tile.y + 1) * ConstDefineGM2D.ServerTileScale) - 0.01f);
             }
             if (UnitDefine.IsJet(Id))
             {
@@ -971,8 +972,9 @@ namespace GameA.Game
 
         protected float GetZ(IntVec2 pos)
         {
+            //为了子弹
             var size = Mathf.Clamp(_tableUnit.Width, 0, ConstDefineGM2D.ServerTileScale);
-            return -(pos.x + pos.y * 1.5f+ size) * UnitDefine.UnitSorttingLayerRatio + _viewZOffset;
+            return -(pos.x + pos.y * 1.5f + size) * UnitDefine.UnitSorttingLayerRatio + _viewZOffset;
         }
 
         protected void SetRelativeEffectPos(Transform trans, EDirectionType eDirectionType, float viewZOffset = 0)

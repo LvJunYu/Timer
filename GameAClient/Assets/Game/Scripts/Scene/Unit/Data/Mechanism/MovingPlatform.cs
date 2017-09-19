@@ -13,12 +13,6 @@ namespace GameA.Game
     [Unit(Id = 5006, Type = typeof(MovingPlatform))]
     public class MovingPlatform : BlockBase
     {
-        protected override bool OnInit()
-        {
-            SetSortingOrderFront();
-            return base.OnInit();
-        }
-
         public override bool UseMagic()
         {
             return true;
