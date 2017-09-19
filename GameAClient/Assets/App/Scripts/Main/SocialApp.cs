@@ -28,6 +28,8 @@ namespace GameA
         [SerializeField] private bool _clearCache;
         [SerializeField] private string _roomServerAddress;
         [SerializeField] private AddressConfig[] _appServerAddress;
+        private float _startTime;
+        private const float MinLoadingTime = 2f;
 
 		internal static SocialApp Instance;
 
@@ -123,6 +125,7 @@ namespace GameA
             ResourcesManager.Instance.Init ();
             LocalizationManager.Instance.Init();
             SocialGUIManager.Instance.OpenUI<UICtrlUpdateResource>();
+            _startTime = Time.realtimeSinceStartup;
             ResourcesManager.Instance.CheckApplicationAndResourcesVersion();
         }
 
@@ -201,6 +204,19 @@ namespace GameA
                     new KeyValuePair<string, Action>("重试", ()=>{
                         CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunNextFrame(GetUserData));
                     }));
+            });
+            //最少loading时间MinLoadingTime
+            helper.AddTask((successCb, failedCb)=>
+            {
+                var leftTime = _startTime + MinLoadingTime - Time.realtimeSinceStartup;
+                if (leftTime > 0)
+                {
+                    CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitForSeconds(leftTime, successCb));
+                }
+                else
+                {
+                    successCb.Invoke();
+                }
             });
             helper.AddTask(AppData.Instance.LoadAppData);
             helper.AddTask(LocalUser.Instance.LoadUserData);

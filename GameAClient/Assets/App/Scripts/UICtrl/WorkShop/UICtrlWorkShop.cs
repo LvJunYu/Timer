@@ -456,11 +456,15 @@ namespace GameA
                 _cachedView.Private.SetActive (true);
                 _cachedView.Public.SetActive (false);
                 RefreshWorkShopProjectList ();
+                _cachedView.PublishBtn.SetActiveEx(true);
+                _cachedView.DeleteBtn.SetActiveEx(true);
             } else if (_state == EWorkShopState.PublishList) {
                 _cachedView.Private.SetActive (false);
                 _cachedView.Public.SetActive (true);
                 RequestPublishedProject();
                 RefreshPublishedProjectList();
+                _cachedView.PublishBtn.SetActiveEx(false);
+                _cachedView.DeleteBtn.SetActiveEx(false);
             }
         }
 
