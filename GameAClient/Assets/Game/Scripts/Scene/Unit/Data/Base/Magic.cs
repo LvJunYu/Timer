@@ -111,20 +111,17 @@ namespace GameA.Game
                                         se.OnExplode();
                                     }
                                 }
-                                if (unit.Id == UnitDefine.BlueStoneRotateId)
+                                _timerMagic = 0;
+                                Speed = IntVec2.zero;
+                                ChangeMoveDirection();
+                                _magicRotate = null;
+                                break;
+                            }
+                            if (unit.Id == UnitDefine.BlueStoneRotateId)
+                            {
+                                if (_magicRotate ==null)
                                 {
-                                    if (_magicRotate ==null)
-                                    {
-                                        _magicRotate = unit;
-                                    }
-                                }
-                                else
-                                {
-                                    _timerMagic = 0;
-                                    Speed = IntVec2.zero;
-                                    ChangeMoveDirection();
-                                    _magicRotate = null;
-                                    break;
+                                    _magicRotate = unit;
                                 }
                             }
                         }
@@ -186,7 +183,7 @@ namespace GameA.Game
 
         public override void UpdateView(float deltaTime)
         {
-            if (_eActiveState != EActiveState.Active || !UseMagic())
+            if (!_enabled || _eActiveState != EActiveState.Active || !UseMagic())
             {
                 return;
             }

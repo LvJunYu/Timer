@@ -1590,7 +1590,7 @@ namespace GameA.Game
 
         public bool IsBlockedBy(UnitBase unit)
         {
-            if (unit != null && unit.IsAlive && unit != this && !(unit is SwitchTriggerPress))
+            if (unit != null && unit.IsAlive && unit != this && unit.TableUnit.IsMagicBlock == 1 && !unit.CanMagicCross)
             {
                 return true;
             }
