@@ -16,12 +16,12 @@ namespace GameA.Game
 		[ColumnMapping("Model")]
 		public string Model;
 		/// <summary>
-        /// 数据宽
+        /// 像素宽
         /// </summary>
 		[ColumnMapping("Width")]
 		public int Width;
 		/// <summary>
-        /// Height
+        /// 像素高
         /// </summary>
 		[ColumnMapping("Height")]
 		public int Height;

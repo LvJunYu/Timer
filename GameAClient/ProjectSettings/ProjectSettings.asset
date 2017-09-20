@@ -42,7 +42,7 @@ PlayerSettings:
     duration: 2
   m_SplashScreenBackgroundLandscape: {fileID: 0}
   m_SplashScreenBackgroundPortrait: {fileID: 0}
-  m_VirtualRealitySplashScreen: {fileID: 2800000, guid: b9b54847faf844f7a80a199f5e0505c4,
+  m_VirtualRealitySplashScreen: {fileID: 2800000, guid: b1a5ad973282b4991935d956dad14ff8,
     type: 3}
   m_HolographicTrackingLossScreen: {fileID: 0}
   defaultScreenWidth: 1280
@@ -174,21 +174,21 @@ PlayerSettings:
   tvOSTopShelfImageWideLayers: []
   iOSLaunchScreenType: 1
   iOSLaunchScreenPortrait: {fileID: 0}
-  iOSLaunchScreenLandscape: {fileID: 2800000, guid: b9b54847faf844f7a80a199f5e0505c4,
+  iOSLaunchScreenLandscape: {fileID: 2800000, guid: b1a5ad973282b4991935d956dad14ff8,
     type: 3}
   iOSLaunchScreenBackgroundColor:
     serializedVersion: 2
     rgba: 4294967295
-  iOSLaunchScreenFillPct: 45
+  iOSLaunchScreenFillPct: 100
   iOSLaunchScreenSize: 100
   iOSLaunchScreenCustomXibPath: 
   iOSLaunchScreeniPadType: 1
-  iOSLaunchScreeniPadImage: {fileID: 2800000, guid: b9b54847faf844f7a80a199f5e0505c4,
+  iOSLaunchScreeniPadImage: {fileID: 2800000, guid: b1a5ad973282b4991935d956dad14ff8,
     type: 3}
   iOSLaunchScreeniPadBackgroundColor:
     serializedVersion: 2
-    rgba: 16777215
-  iOSLaunchScreeniPadFillPct: 45
+    rgba: 4294967295
+  iOSLaunchScreeniPadFillPct: 100
   iOSLaunchScreeniPadSize: 100
   iOSLaunchScreeniPadCustomXibPath: 
   iOSDeviceRequirements: []
@@ -201,7 +201,7 @@ PlayerSettings:
   appleEnableAutomaticSigning: 0
   AndroidTargetDevice: 3
   AndroidSplashScreenScale: 2
-  androidSplashScreen: {fileID: 2800000, guid: b9b54847faf844f7a80a199f5e0505c4, type: 3}
+  androidSplashScreen: {fileID: 2800000, guid: b1a5ad973282b4991935d956dad14ff8, type: 3}
   AndroidKeystoreName: KeyChain/Android/JoyYouAndroidDis.keystore
   AndroidKeyaliasName: joyyoudis
   AndroidTVCompatibility: 0
@@ -212,7 +212,8 @@ PlayerSettings:
     height: 180
     banner: {fileID: 0}
   androidGamepadSupportLevel: 0
-  resolutionDialogBanner: {fileID: 0}
+  resolutionDialogBanner: {fileID: 2800000, guid: b1a5ad973282b4991935d956dad14ff8,
+    type: 3}
   m_BuildTargetIcons:
   - m_BuildTarget: 
     m_Icons:
