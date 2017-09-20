@@ -291,12 +291,12 @@ namespace GameA.Game
                         return false;
                     }
                     min = new IntVec2(_followTileRect.XMin + num * size.x,
-                        _followTileRect.YMin + GM2DTools.WorldToTile(0.2f));
+                        _followTileRect.YMin + GM2DTools.WorldToTile(0.63f));
                     break;
                 //前面不动的树    
                 case EBgDepth.Depth3:
                     min = new IntVec2(Random.Range(_followTileRect.XMin, _followTileRect.XMax + size.x),
-                        _followTileRect.YMin + GM2DTools.WorldToTile(3.5f));
+                        _followTileRect.YMin + GM2DTools.WorldToTile(4f));
                     break;
                 //地面
                 case EBgDepth.Depth4:
@@ -343,6 +343,7 @@ namespace GameA.Game
             }
             scale.x = x;
             scale.y = y;
+            //1米 = 640计算单位 = 128像素，650 / 128 = 5，所以每像素占5个计算单位
             return new IntVec2((int) (tableBg.Width * 5 * scale.x), (int) (tableBg.Height * 5 * scale.y));
         }
 
