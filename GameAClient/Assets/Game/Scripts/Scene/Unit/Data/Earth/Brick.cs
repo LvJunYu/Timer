@@ -32,12 +32,22 @@ namespace GameA.Game
 
         public override bool OnLeftHit(UnitBase other, ref int x, bool checkOnly = false)
         {
+            if (other.CanDashBrick)
+            {
+                DestroyBrick();
+                return false;
+            }
             Check(other, checkOnly);
             return base.OnLeftHit(other, ref x, checkOnly);
         }
 
         public override bool OnRightHit(UnitBase other, ref int x, bool checkOnly = false)
         {
+            if (other.CanDashBrick)
+            {
+                DestroyBrick();
+                return false;
+            }
             Check(other, checkOnly);
             return base.OnRightHit(other, ref x, checkOnly);
         }
