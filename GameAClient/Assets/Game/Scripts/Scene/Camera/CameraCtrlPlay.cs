@@ -67,8 +67,8 @@ namespace GameA.Game
             _cameraViewHalfTileSize = _cameraViewTileSize / 2;
 
             _validMapTileRect = DataScene2D.Instance.ValidMapRect;
-            _validMapTileRect.Max += new IntVec2(1, 0) * ConstDefineGM2D.ServerTileScale;
-            _validMapTileRect.Min -= new IntVec2((1* ConstDefineGM2D.ServerTileScale), (int) (1f* ConstDefineGM2D.ServerTileScale)) ;
+            _validMapTileRect.Max += new IntVec2(5, 1) * ConstDefineGM2D.ServerTileScale;
+            _validMapTileRect.Min -= new IntVec2(5, 3) * ConstDefineGM2D.ServerTileScale;
         }
 
         private void UpdatePosByPlayer()

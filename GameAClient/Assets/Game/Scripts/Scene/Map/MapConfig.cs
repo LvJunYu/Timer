@@ -21,7 +21,7 @@ namespace GameA.Game
         public static bool Init()
         {
             UseAOI = false;
-            TerrainItemId = 4001;
+            TerrainItemId = 4100;
             SpawnId = 1001;
             FinalItemId = 5001;
             PermitMapSize = new IntVec2(60, 30) * ConstDefineGM2D.ServerTileScale;
