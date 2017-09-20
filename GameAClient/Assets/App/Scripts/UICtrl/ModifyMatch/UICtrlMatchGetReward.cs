@@ -22,6 +22,11 @@ namespace GameA
         private RewardItem _rewarditem2 = new RewardItem();
         private RewardItem _rewarditem3 = new RewardItem();
         private RewardItem _rewardItemMoney = new RewardItem();
+        private USCtrlRewardItem _usctrlrewarditem1 = new USCtrlRewardItem();
+        private USCtrlRewardItem _usctrlrewarditem2 = new USCtrlRewardItem();
+        private USCtrlRewardItem _usctrlrewarditem3 = new USCtrlRewardItem();
+        private USCtrlRewardItem _usctrlrewarditemMoney = new USCtrlRewardItem();
+
         #endregion
 
         #region 属性
@@ -92,23 +97,23 @@ namespace GameA
         
             if (_rewardLevel == 1)
             {                         
-                _cachedView.RewardLv1Object.SetActive(true);
-                _cachedView.RewardLv2Object.SetActive(false);
-                _cachedView.RewardLv3Object.SetActive(false);
+                _cachedView.RewardLv1Object.gameObject.SetActive(true);
+                _cachedView.RewardLv2Object.gameObject.SetActive(false);
+                _cachedView.RewardLv3Object.gameObject.SetActive(false);
             }
             else
             {
                 if (_rewardLevel == 2)
                 {
-                     _cachedView.RewardLv1Object.SetActive(true);
-                     _cachedView.RewardLv2Object.SetActive(true);
-                     _cachedView.RewardLv3Object.SetActive(false);
+                     _cachedView.RewardLv1Object.gameObject.SetActive(true);
+                     _cachedView.RewardLv2Object.gameObject.SetActive(true);
+                     _cachedView.RewardLv3Object.gameObject.SetActive(false);
                 }
                 else
                 {
-                    _cachedView.RewardLv1Object.SetActive(true);
-                    _cachedView.RewardLv2Object.SetActive(true);
-                    _cachedView.RewardLv3Object.SetActive(true);
+                    _cachedView.RewardLv1Object.gameObject.SetActive(true);
+                    _cachedView.RewardLv2Object.gameObject.SetActive(true);
+                    _cachedView.RewardLv3Object.gameObject.SetActive(true);
                 }
             }
         }
@@ -184,10 +189,14 @@ namespace GameA
                  LocalUser.Instance.MatchUserData.PlayCountForRewardCapacity/ 3 * 4
                  * (1 - passRate) * TableManager.Instance.GetModifyReward(_rewardLevel).DifficultyRewardFactor);
             _rewardItemMoney.Count = _extraGold;
-            _cachedView.RewardLv1.SetItem(_rewarditem1);  
-            _cachedView.RewardLv2.SetItem(_rewarditem2);
-            _cachedView.RewardLv3.SetItem(_rewarditem3);
-            _cachedView.ExtraMoney.SetItem(_rewardItemMoney);
+            _usctrlrewarditem1.Init(_cachedView.RewardLv1Object);
+            _usctrlrewarditem1.SetItem(_rewarditem1);
+            _usctrlrewarditem2.Init(_cachedView.RewardLv2Object);
+            _usctrlrewarditem2.SetItem(_rewarditem2);
+            _usctrlrewarditem3.Init(_cachedView.RewardLv3Object);
+            _usctrlrewarditem3.SetItem(_rewarditem3);
+            _usctrlrewarditemMoney.Init(_cachedView.ExtraMoneyMoney);
+            _usctrlrewarditemMoney.SetItem(_rewardItemMoney);
         }
 
         #endregion 接口
