@@ -8,14 +8,15 @@
 
 #if UNITY_IOS
 
+using System;
+using System.IO;
 using System.Text;
 using SoyEngine;
-using System.IO;
-//using Umeng;
 using UnityEngine;
 using EMessengerType = GameA.EMessengerType;
 using NotificationServices = UnityEngine.iOS.NotificationServices;
 using RemoteNotification = UnityEngine.iOS.RemoteNotification;
+//using Umeng;
 
 public class JoyNativeTooliOS : MonoBehaviour, IJoyNativeTool
 {
