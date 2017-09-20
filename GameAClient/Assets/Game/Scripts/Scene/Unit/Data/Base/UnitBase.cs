@@ -139,6 +139,11 @@ namespace GameA.Game
             get { return _maxHp; }
         }
 
+        public virtual bool CanDashBrick
+        {
+            get { return false; }
+        }
+
         public virtual EDieType EDieType
         {
             get { return EDieType.None; }

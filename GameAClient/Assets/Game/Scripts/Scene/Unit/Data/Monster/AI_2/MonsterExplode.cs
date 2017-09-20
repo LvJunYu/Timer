@@ -9,6 +9,11 @@ namespace GameA.Game
     {
         private float _viewDistance = 15 * ConstDefineGM2D.ServerTileScale;
 
+        public override bool CanDashBrick
+        {
+            get { return _eMonsterState == EMonsterState.Chase; }
+        }
+
         protected override bool OnInit()
         {
             if (!base.OnInit())

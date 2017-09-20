@@ -12,6 +12,11 @@ namespace GameA.Game
         private IntVec2 _attackRange = new IntVec2(1, 1) * ConstDefineGM2D.ServerTileScale;
         private const int _patrolTime = 70;
         
+        public override bool CanDashBrick
+        {
+            get { return _eMonsterState == EMonsterState.Chase; }
+        }
+        
         protected override bool OnInit()
         {
             if (!base.OnInit())

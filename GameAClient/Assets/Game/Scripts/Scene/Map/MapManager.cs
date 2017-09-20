@@ -243,7 +243,7 @@ namespace GameA.Game
                 var unitObject = new UnitDesc();
                 unitObject.Id = MapConfig.SpawnId;
                 unitObject.Scale = Vector2.one;
-                unitObject.Guid = new IntVec3((4 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x),ConstDefineGM2D.MapStartPos.y+ConstDefineGM2D.ServerTileScale,
+                unitObject.Guid = new IntVec3((2 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x),ConstDefineGM2D.MapStartPos.y,
                     (int) EUnitDepth.Earth);
                 EditMode.Instance.AddUnitWithCheck(unitObject, EditHelper.GetUnitDefaultData(unitObject.Id).UnitExtra);
             }
@@ -252,7 +252,7 @@ namespace GameA.Game
                 var unitObject = new UnitDesc();
                 unitObject.Id = MapConfig.FinalItemId;
                 unitObject.Scale = Vector2.one;
-                unitObject.Guid = new IntVec3(12 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x,ConstDefineGM2D.MapStartPos.y+ConstDefineGM2D.ServerTileScale, 0);
+                unitObject.Guid = new IntVec3(12 * ConstDefineGM2D.ServerTileScale + ConstDefineGM2D.MapStartPos.x,ConstDefineGM2D.MapStartPos.y, 0);
                 EditMode.Instance.AddUnitWithCheck(unitObject, EditHelper.GetUnitDefaultData(unitObject.Id).UnitExtra);
             }
             //生成地形
