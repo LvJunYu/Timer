@@ -287,18 +287,18 @@ namespace GameA.Game
                     break;
                 //草
                 case EBgDepth.Depth2:
-                    if (_validMapTileRect.XMin - size.x + (num - 1) * size.x > _followTileRect.XMax)
+                    if (_validMapTileRect.XMin + (num - 1) * size.x > _followTileRect.XMax)
                     {
                         grid = Grid2D.zero;
                         return false;
                     }
-                    min = new IntVec2(_followTileRect.XMin - size.x + (num - 1) * size.x,
+                    min = new IntVec2(_followTileRect.XMin + (num - 1) * size.x,
                         _followTileRect.YMin - GM2DTools.WorldToTile(1f));
                     break;
                 //前面不动的树    
                 case EBgDepth.Depth3:
                     min = new IntVec2(Random.Range(_followTileRect.XMin, _followTileRect.XMax + size.x),
-                        _followTileRect.YMin + GM2DTools.WorldToTile(3f));
+                        _followTileRect.YMin + GM2DTools.WorldToTile(2.6f));
                     break;
                 //地面
                 case EBgDepth.Depth4:
