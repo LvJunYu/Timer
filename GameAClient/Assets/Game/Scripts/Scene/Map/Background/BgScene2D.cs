@@ -301,7 +301,7 @@ namespace GameA.Game
                 //前面不动的树    
                 case EBgDepth.Depth3:
                     min = new IntVec2(Random.Range(_followTileRect.XMin, _followTileRect.XMax + size.x),
-                        _followTileRect.YMin + GM2DTools.WorldToTile(2.1f));
+                        _followTileRect.YMin + GM2DTools.WorldToTile(2.27f));
                     break;
                 //前面的地面
                 case EBgDepth.Depth4:
@@ -311,7 +311,7 @@ namespace GameA.Game
                         return false;
                     }
                     min = new IntVec2(_followTileRect.XMin + (num - 1) * size.x,
-                        _followTileRect.YMin - GM2DTools.WorldToTile(1f));
+                        _followTileRect.YMin - GM2DTools.WorldToTile(1.13f));
                     break;
                 //后面的地面
                 case EBgDepth.Depth5:     
@@ -321,7 +321,7 @@ namespace GameA.Game
                         return false;
                     }
                     min = new IntVec2(_followTileRect.XMin + (num - 1) * size.x,
-                        _followTileRect.YMin + GM2DTools.WorldToTile(2.1f));
+                        _followTileRect.YMin + GM2DTools.WorldToTile(1.85f));
                     break;
                 //后面的树
                 case EBgDepth.Depth6:
