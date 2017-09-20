@@ -278,13 +278,13 @@ namespace GameA.Game
                     //左柱子
                     if (num % 2 == 1)
                     {
-                        min = new IntVec2(_validMapTileRect.XMin - GM2DTools.WorldToTile(6.5f),
+                        min = new IntVec2(_validMapTileRect.XMin - GM2DTools.WorldToTile(6.6f),
                             _validMapTileRect.YMin - GM2DTools.WorldToTile(0.66f) + (num - 1) / 2 * size.y);
                     }
                     //右柱子
                     else
                     {
-                        min = new IntVec2(_validMapTileRect.XMax - GM2DTools.WorldToTile(0.7f),
+                        min = new IntVec2(_validMapTileRect.XMax - GM2DTools.WorldToTile(0.6f),
                             _validMapTileRect.YMin - GM2DTools.WorldToTile(0.66f) + (num - 1) / 2 * size.y);
                     }
                     break;
