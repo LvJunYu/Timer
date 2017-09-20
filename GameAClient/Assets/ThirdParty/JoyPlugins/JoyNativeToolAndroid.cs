@@ -1,21 +1,26 @@
-﻿  /********************************************************************
+﻿/********************************************************************
   ** Filename : JoyNativeToolAndroid.cs
   ** Author : quan
   ** Date : 2016/6/23 16:42
   ** Summary : JoyNativeToolAndroid.cs
   ***********************************************************************/
+
 #if UNITY_ANDROID
 
 using System;
+using System.Threading;
 using UnityEngine;
 using SoyEngine;
+
 //using Umeng;
 
 
-public class JoyNativeToolAndroid: MonoBehaviour, IJoyNativeTool
+public class JoyNativeToolAndroid : MonoBehaviour, IJoyNativeTool
 {
     private static AndroidJavaClass _androidObj;
     private static JoyNativeToolAndroid _instance;
+    private int _mainThreadId;
+
     public static JoyNativeToolAndroid Instance
     {
         get
@@ -24,7 +29,7 @@ public class JoyNativeToolAndroid: MonoBehaviour, IJoyNativeTool
             {
                 var go = new GameObject {name = "JoyNativeTool"};
                 _instance = go.AddComponent<JoyNativeToolAndroid>();
-                _androidObj = new AndroidJavaClass("com.GameLife.Soy.JoyNativeTool.JoyUnityPlayerNativeActivity");
+                _androidObj = new AndroidJavaClass("com.joyyou.gamea.joynativetool.JoyUnityPlayerActivity");
             }
             return _instance;
         }
@@ -48,6 +53,7 @@ public class JoyNativeToolAndroid: MonoBehaviour, IJoyNativeTool
 //        string appkey = "5779c8d167e58e5d37003c26";  
 //        GA.StartWithAppKeyAndChannelId(appkey, "default");  
 //        GA.SetLogEnabled(GlobalVar.Instance.IsDebug); 
+        _mainThreadId = Thread.CurrentThread.ManagedThreadId;
     }
 
     public void AddPushAlias(string alias, string type)
@@ -70,12 +76,12 @@ public class JoyNativeToolAndroid: MonoBehaviour, IJoyNativeTool
 
     public void SetStatusBarShow(bool show)
     {
-        if(show)
+        if (show)
         {
             ApplicationChrome.statusBarState = ApplicationChrome.States.TranslucentOverContent;
             ApplicationChrome.navigationBarState = ApplicationChrome.States.Hidden;
         }
-        else 
+        else
         {
             ApplicationChrome.statusBarState = ApplicationChrome.States.Hidden;
             ApplicationChrome.navigationBarState = ApplicationChrome.States.Hidden;
@@ -96,6 +102,7 @@ public class JoyNativeToolAndroid: MonoBehaviour, IJoyNativeTool
 //            JoyNativeTool.OnImagePicked(texture, path);
 //        }
     }
+
     public string GetCustomNotificationField()
     {
         return string.Empty;
@@ -110,6 +117,23 @@ public class JoyNativeToolAndroid: MonoBehaviour, IJoyNativeTool
     {
         return string.Empty;
 //        return _androidObj.CallStatic<String>("getTextFromClipboard");
+    }
+
+    public bool TryGetFromStreamingAssets(string fileName, out byte[] data)
+    {
+        lock (_androidObj)
+        {
+            if (Thread.CurrentThread.ManagedThreadId != _mainThreadId)
+            {
+                AndroidJNI.AttachCurrentThread();
+            }
+            data = _androidObj.CallStatic<byte[]>("readStreamingAssets", fileName);
+            if (Thread.CurrentThread.ManagedThreadId != _mainThreadId)
+            {
+                AndroidJNI.DetachCurrentThread();
+            }
+        }
+        return data != null;
     }
 }
 #endif

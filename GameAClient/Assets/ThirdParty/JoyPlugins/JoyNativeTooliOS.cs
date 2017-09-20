@@ -10,6 +10,7 @@
 
 using System.Text;
 using SoyEngine;
+using System.IO;
 //using Umeng;
 using UnityEngine;
 using EMessengerType = GameA.EMessengerType;
@@ -133,6 +134,38 @@ public class JoyNativeTooliOS : MonoBehaviour, IJoyNativeTool
     {
 //        return _getTextFromClipboard();
         return string.Empty;
+    }
+    
+    public bool TryGetFromStreamingAssets(string fileName, out byte[] bytes)
+    {
+        string fileFullName = Path.Combine(Application.streamingAssetsPath, fileName);
+        bytes = null;
+        if (!File.Exists(fileFullName)) {
+            return false;
+        }
+
+        bool success;
+        FileStream fs = null;
+        try
+        {
+            fs = new FileStream(fileFullName, FileMode.Open, FileAccess.Read);
+            bytes = new byte[fs.Length];
+            fs.Read (bytes, 0, (int)fs.Length);
+            success = true;
+        }
+        catch (Exception e)
+        {
+            LogHelper.Error(e.ToString());
+            success = false;
+        }
+        finally
+        {
+            if (fs != null)
+            {
+                fs.Close();
+            }
+        }
+        return success;
     }
 }
 #endif
