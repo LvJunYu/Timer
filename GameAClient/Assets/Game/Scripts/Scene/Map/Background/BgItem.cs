@@ -37,7 +37,18 @@ namespace GameA.Game
             _tableBg = table;
             _node = node;
             var size = new IntVec2(_node.Grid.XMax - _node.Grid.XMin + 1, _node.Grid.YMax - _node.Grid.YMin + 1);
-            _curPos = _basePos = GM2DTools.TileToWorld(new IntVec2(_node.Guid.x, _node.Guid.y) + size / 2, table.Depth + UnitDefine.ZOffsetBackground);
+            int zDepth = table.Depth + UnitDefine.ZOffsetBackground;
+            //左右柱子，人物之前显示
+            if (table.Depth == 1)
+            {
+                zDepth -= 700;
+            }
+            //草和前面的地面，最前显示
+            else if (table.Depth == 2 || table.Depth == 4)
+            {
+                zDepth -= 710;
+            }
+            _curPos = _basePos = GM2DTools.TileToWorld(new IntVec2(_node.Guid.x, _node.Guid.y) + size / 2, zDepth);
             GameObject go;
             if (!TryCreateObject(out go))
             {
@@ -46,7 +57,7 @@ namespace GameA.Game
             _trans = go.transform;
             _trans.localPosition = _curPos;
             _trans.localScale = new Vector3(_node.Scale.x, _node.Scale.y, 1);
-            
+
             _sizeX = (_node.Grid.XMax - _node.Grid.XMin + 1) * ConstDefineGM2D.ClientTileScale;
             _halfSizeX = _sizeX / 2;
             _deltaMove = Vector3.zero;
@@ -80,7 +91,7 @@ namespace GameA.Game
             {
                 _deltaMove += new Vector3(_tableBg.MoveSpeedX, 0) * ConstDefineGM2D.FixedDeltaTime;
             }
-            _curPos = _basePos + (followPos - _baseFollowPos) * (1 - BgScene2D.Instance.GetMoveRatio(_tableBg.Depth)) + 
+            _curPos = _basePos + (followPos - _baseFollowPos) * (1 - BgScene2D.Instance.GetMoveRatio(_tableBg.Depth)) +
                       _deltaMove * BgScene2D.Instance.GetMoveRatio(_tableBg.Depth);
             var followRect = BgScene2D.Instance.GetRect(_tableBg.Depth);
             float w = followRect.width + _sizeX;
@@ -109,7 +120,7 @@ namespace GameA.Game
             {
                 _spriteRenderer.material.color = new Color(1, 1, 1, _tableBg.Alpha);
             }
-            _spriteRenderer.sortingOrder = (int)ESortingOrder.Item;
+            _spriteRenderer.sortingOrder = (int) ESortingOrder.Item;
             go.transform.parent = BgScene2D.Instance.GetParent(_tableBg.Depth);
             return true;
         }

@@ -25,6 +25,7 @@ namespace GameA.Game
         Depth10,
         Depth11,
         Depth12,
+        Depth13,
         Max
     }
 
@@ -46,8 +47,8 @@ namespace GameA.Game
         private readonly Dictionary<int, List<Table_Background>> _tableBgs =
             new Dictionary<int, List<Table_Background>>();
 
-        private static readonly int[] MaxDepthCount = {20, 20, 50, 20, 50, 50, 50, 50, 50, 50, 50, 1};
-        private static readonly float[] MoveRatio = {1, 1, 1, 1, 0.7f, 0.6f, 0.5f, 0.4f, 0.3f, 0.2f, 0.1f, 0f};
+        private static readonly int[] MaxDepthCount = {20, 20, 50, 20, 20, 50, 50, 50, 50, 50, 50, 50, 1};
+        private static readonly float[] MoveRatio = {1, 1, 1, 1, 1, 0.7f, 0.6f, 0.5f, 0.4f, 0.3f, 0.2f, 0.1f, 0f};
 
         public static BgScene2D Instance
         {
@@ -92,9 +93,9 @@ namespace GameA.Game
         {
             switch (depth)
             {
-                case (int) EBgDepth.Depth6:
-                case (int) EBgDepth.Depth8:
+                case (int) EBgDepth.Depth7:
                 case (int) EBgDepth.Depth9:
+                case (int) EBgDepth.Depth10:
                     return _cloudRect;
             }
             return _followRect;
@@ -216,7 +217,7 @@ namespace GameA.Game
             {
                 for (int i = 0; i < tableBgs.Count; i++)
                 {
-                    //传物体重复个数j，用于计算平地的位置
+                    //传物体重复个数，用于计算平地的位置
                     if (GenerateItem(tableBgs[i], j + 1))
                     {
                         num++;
@@ -267,22 +268,24 @@ namespace GameA.Game
             var size = GetSize(tableBg, out scale);
             switch ((EBgDepth) tableBg.Depth)
             {
-                //图腾柱子
+                //左右柱子
                 case EBgDepth.Depth1:
                     if (_validMapTileRect.YMin - GM2DTools.WorldToTile(3f) + (num - 1) / 2 * size.y > _validMapTileRect.YMax)
                     {
                         grid = Grid2D.zero;
                         return false;
                     }
+                    //左柱子
                     if (num % 2 == 1)
                     {
-                        min = new IntVec2(_validMapTileRect.XMin - GM2DTools.WorldToTile(2.5f),
-                            _validMapTileRect.YMin - GM2DTools.WorldToTile(3f) + (num - 1) / 2 * size.y);
+                        min = new IntVec2(_validMapTileRect.XMin - GM2DTools.WorldToTile(6.5f),
+                            _validMapTileRect.YMin - GM2DTools.WorldToTile(0.66f) + (num - 1) / 2 * size.y);
                     }
+                    //右柱子
                     else
                     {
-                        min = new IntVec2(_validMapTileRect.XMax,
-                            _validMapTileRect.YMin - GM2DTools.WorldToTile(3f) + (num - 1) / 2 * size.y);
+                        min = new IntVec2(_validMapTileRect.XMax - GM2DTools.WorldToTile(0.7f),
+                            _validMapTileRect.YMin - GM2DTools.WorldToTile(0.66f) + (num - 1) / 2 * size.y);
                     }
                     break;
                 //草
@@ -298,9 +301,9 @@ namespace GameA.Game
                 //前面不动的树    
                 case EBgDepth.Depth3:
                     min = new IntVec2(Random.Range(_followTileRect.XMin, _followTileRect.XMax + size.x),
-                        _followTileRect.YMin + GM2DTools.WorldToTile(2.6f));
+                        _followTileRect.YMin + GM2DTools.WorldToTile(2.1f));
                     break;
-                //地面
+                //前面的地面
                 case EBgDepth.Depth4:
                     if (_followTileRect.XMin + (num - 1) * size.x > _followTileRect.XMax)
                     {
@@ -310,23 +313,33 @@ namespace GameA.Game
                     min = new IntVec2(_followTileRect.XMin + (num - 1) * size.x,
                         _followTileRect.YMin - GM2DTools.WorldToTile(1f));
                     break;
+                //后面的地面
+                case EBgDepth.Depth5:     
+                    if (_followTileRect.XMin + (num - 1) * size.x > _followTileRect.XMax)
+                    {
+                        grid = Grid2D.zero;
+                        return false;
+                    }
+                    min = new IntVec2(_followTileRect.XMin + (num - 1) * size.x,
+                        _followTileRect.YMin + GM2DTools.WorldToTile(2.1f));
+                    break;
                 //后面的树
-                case EBgDepth.Depth5:
-                case EBgDepth.Depth7:
-                case EBgDepth.Depth10:
+                case EBgDepth.Depth6:
+                case EBgDepth.Depth8:
                 case EBgDepth.Depth11:
+                case EBgDepth.Depth12:
                     min = new IntVec2(Random.Range(_followTileRect.XMin, _followTileRect.XMax + size.x),
                         _followTileRect.YMin);
                     break;
                 //云
-                case EBgDepth.Depth6:
-                case EBgDepth.Depth8:
+                case EBgDepth.Depth7:
                 case EBgDepth.Depth9:
+                case EBgDepth.Depth10:
                     min = new IntVec2(Random.Range(_cloudTileRect.XMin, _cloudTileRect.XMax + size.x),
                         Random.Range(_cloudTileRect.YMin, _cloudTileRect.YMax + size.y));
                     break;
                 //背景
-                case EBgDepth.Depth12:
+                case EBgDepth.Depth13:
                     min = new IntVec2(_followTileRect.XMin, _followTileRect.YMin);
                     break;
             }
