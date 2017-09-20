@@ -5,6 +5,8 @@ using SoyEngine;
 using SoyEngine.Proto;
 using Spine.Unity;
 using UnityEngine;
+using AnimationState = Spine.AnimationState;
+
 //using SoyEngine;
 
 
@@ -15,15 +17,15 @@ namespace GameA
     {
         private ChangePartsSpineView _avatarView;
         private RenderCamera _renderCamera;
+        private int _timer;
+        private const  int IntervalTime = 15 * ConstDefineGM2D.FixedFrameCount;
 
         public Texture AvatarRenderTexture
         {
             get
             {
                 if (_renderCamera != null)
-                {
                     return _renderCamera.Texture;
-                }
                 return null;
             }
         }
@@ -50,41 +52,35 @@ namespace GameA
         public void ShowAllUsingAvatar()
         {
             if (LocalUser.Instance.UsingAvatarData.Head != null)
-            {
-                _avatarView.SetParts((int) LocalUser.Instance.UsingAvatarData.Head.Id, SpinePartsHelper.ESpineParts.Head,
+                _avatarView.SetParts((int) LocalUser.Instance.UsingAvatarData.Head.Id,
+                    SpinePartsHelper.ESpineParts.Head,
                     true);
-            }
             if (LocalUser.Instance.UsingAvatarData.Upper != null)
-            {
                 _avatarView.SetParts((int) LocalUser.Instance.UsingAvatarData.Upper.Id,
                     SpinePartsHelper.ESpineParts.Upper, true);
-            }
             if (LocalUser.Instance.UsingAvatarData.Lower != null)
-            {
                 _avatarView.SetParts((int) LocalUser.Instance.UsingAvatarData.Lower.Id,
                     SpinePartsHelper.ESpineParts.Lower, true);
-            }
             if (LocalUser.Instance.UsingAvatarData.Appendage != null)
-            {
                 _avatarView.SetParts((int) LocalUser.Instance.UsingAvatarData.Appendage.Id,
                     SpinePartsHelper.ESpineParts.Appendage, true);
-            }
             CoroutineProxy.Instance.StartCoroutine(DoFunc());
         }
 
         protected override void OnViewCreated()
         {
+            _timer = 1;
             base.OnViewCreated();
             //_cachedView.AvatarBtn.enabled = SocialGUIManager.Instance.OpenUI<UICtrlTaskbar>().FashionShopAvailable; todo
             _cachedView.AvatarBtn.onClick.AddListener(OnAvatarBtn);
-            
 
             _cachedView.PlayerAvatarAnimation.skeletonDataAsset =
                 ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, "SMainBoy0_SkeletonData", 1);
             _cachedView.PlayerAvatarAnimation.Initialize(false);
             _avatarView = new ChangePartsSpineView();
             _avatarView.HomePlayerAvatarViewInit(_cachedView.PlayerAvatarAnimation);
-            _renderCamera = RenderCameraManager.Instance.GetCamera(1.4f, _cachedView.PlayerAvatarAnimation.transform, 200, 360);
+            _renderCamera =
+                RenderCameraManager.Instance.GetCamera(1.4f, _cachedView.PlayerAvatarAnimation.transform, 200, 360);
             _cachedView.AvatarImage.texture = AvatarRenderTexture;
             _cachedView.AvatarImage.SetActiveEx(false);
 
@@ -92,10 +88,10 @@ namespace GameA
                 LocalUser.Instance.UserGuid,
                 () => { ShowAllUsingAvatar(); },
                 code => { LogHelper.Error("Network error when get avatarData, {0}", code); }
-                );
+            );
         }
 
-        IEnumerator DoFunc()
+        private IEnumerator DoFunc()
         {
             _cachedView.AvatarImage.SetActiveEx(false);
             yield return null;
@@ -107,12 +103,25 @@ namespace GameA
             _groupId = (int) EUIGroupType.MainFrame;
         }
 
+
         public override void OnUpdate()
         {
             base.OnUpdate();
             if (_cachedView.PlayerAvatarAnimation != null)
             {
                 _cachedView.PlayerAvatarAnimation.Update(Time.deltaTime);
+                if (_timer > 0)
+                {
+                    _timer--;
+                    if (_timer == 0)
+                    {
+                        _timer = IntervalTime;
+                        var main = Random.Range(1, 3);
+                        var num = Random.Range(3, 7);
+                        _cachedView.PlayerAvatarAnimation.state.SetAnimation(0, "Idle" + num, false).Complete +=
+                            (state, index, count) => _cachedView.PlayerAvatarAnimation.state.SetAnimation(0, "Idle" + main, true);
+                    }
+                }
             }
         }
 

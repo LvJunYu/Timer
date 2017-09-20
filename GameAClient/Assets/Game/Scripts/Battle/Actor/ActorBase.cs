@@ -80,7 +80,6 @@ namespace GameA.Game
         protected override void Clear()
         {
             RemoveAllStates();
-            _canFanCross = true;
             _eDieType = EDieType.None;
             _damageFrame = 0;
             if (_view != null)

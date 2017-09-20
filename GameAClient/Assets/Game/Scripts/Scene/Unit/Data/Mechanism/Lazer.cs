@@ -160,7 +160,7 @@ namespace GameA.Game
                         var units = ColliderScene2D.GetUnits(hit);
                         for (int j = 0; j < units.Count; j++)
                         {
-                            if (units[j] != this && units[j].IsAlive && !units[j].CanLazerCross)
+                            if (units[j] != this && units[j].IsAlive && !units[j].CanCross)
                             {
                                 _distance = hit.distance;
                                 flag = true;

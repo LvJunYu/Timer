@@ -106,7 +106,7 @@ namespace GameA.Game
                         var units = ColliderScene2D.GetUnits(hit, SceneQuery2D.GetGrid(_pointA, _pointB, Rotation, hit.distance + 1));
                         for (int j = 0; j < units.Count; j++)
                         {
-                            if (units[j].IsAlive && !units[j].CanFanCross)
+                            if (units[j].IsAlive && !units[j].CanCross)
                             {
                                 flag = true;
                                 break;

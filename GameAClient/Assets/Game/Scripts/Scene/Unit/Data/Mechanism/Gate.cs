@@ -21,7 +21,7 @@ namespace GameA.Game
             base.Clear();
             _timer = 0;
             _opened = false;
-            SetAllCross(false);
+            SetCross(false);
             SetSortingOrderNormal();
             UpdateTransPos();
         }
@@ -94,7 +94,7 @@ namespace GameA.Game
                 if (_timer == 0)
                 {
                     _opened = true;
-                    SetAllCross(true);
+                    SetCross(true);
                     SetSortingOrderBackground();
                     UpdateTransPos();
                 }

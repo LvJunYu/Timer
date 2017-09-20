@@ -39,12 +39,8 @@ namespace GameA.Game
         [SerializeField] protected IntVec2 _curPos;
 
         [SerializeField] protected bool _isAlive;
-        protected bool _canLazerCross;
-        protected bool _canMagicCross;
-        protected bool _canBridgeCross;
-        protected bool _canFanCross;
-        protected bool _canBulletCross;
-
+        protected bool _canCross;
+        
         protected List<UnitBase> _downUnits = new List<UnitBase>();
         protected UnitBase _downUnit;
         protected bool _useCorner;
@@ -192,29 +188,9 @@ namespace GameA.Game
             get { return UseMagic(); }
         }
 
-        public bool CanLazerCross
+        public bool CanCross
         {
-            get { return _canLazerCross; }
-        }
-
-        public bool CanMagicCross
-        {
-            get { return _canMagicCross; }
-        }
-
-        public bool CanBridgeCross
-        {
-            get { return _canBridgeCross; }
-        }
-
-        public bool CanFanCross
-        {
-            get { return _canFanCross; }
-        }
-
-        public bool CanBulletCross
-        {
-            get { return _canBulletCross; }
+            get { return _canCross; }
         }
 
         /// <summary>
@@ -1595,7 +1571,7 @@ namespace GameA.Game
 
         public bool IsBlockedBy(UnitBase unit)
         {
-            if (unit != null && unit.IsAlive && unit != this && unit.TableUnit.IsMagicBlock == 1 && !unit.CanMagicCross)
+            if (unit != null && unit.IsAlive && unit != this && unit.TableUnit.IsMagicBlock == 1 && !unit.CanCross)
             {
                 return true;
             }
@@ -1697,13 +1673,9 @@ namespace GameA.Game
         {
         }
         
-        protected void SetAllCross(bool value)
+        protected void SetCross(bool value)
         {
-            _canLazerCross = value;
-            _canMagicCross = value;
-            _canBridgeCross = value;
-            _canFanCross = value;
-            _canBulletCross = value;
+            _canCross = value;
         }
 
         public virtual void SetLifeTime(int lifeTime)

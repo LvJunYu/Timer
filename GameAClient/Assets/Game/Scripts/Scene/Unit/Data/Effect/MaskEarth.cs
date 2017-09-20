@@ -69,7 +69,7 @@ namespace GameA.Game
         {
             _intersect = false;
             _trigger = false;
-            SetAllCross(_trigger);
+            SetCross(_trigger);
             base.Clear();
         }
 
@@ -156,7 +156,7 @@ namespace GameA.Game
                 return;
             }
             _trigger = value;
-            SetAllCross(_trigger);
+            SetCross(_trigger);
             if (_spriteRenderer != null)
             {
                 _spriteRenderer.DOFade(_trigger ? 0 : 1, 0.5f);

@@ -101,7 +101,7 @@ namespace GameA.Game
                             {
                                 unit.OnIntersect(this);
                             }
-                            if (unit.TableUnit.IsMagicBlock == 1 && !unit.CanMagicCross)
+                            if (unit.TableUnit.IsMagicBlock == 1 && !unit.CanCross)
                             {
                                 if (unit.Id == UnitDefine.ScorchedEarthId)
                                 {

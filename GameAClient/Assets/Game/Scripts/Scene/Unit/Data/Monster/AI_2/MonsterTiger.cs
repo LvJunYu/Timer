@@ -107,15 +107,13 @@ namespace GameA.Game
                 var units = ColliderScene2D.RaycastAllReturnUnits(CenterPos,
                     _moveDirection == EMoveDirection.Right ? Vector2.right : Vector2.left, _viewDistance,
                     EnvManager.MonsterViewLayer);
-//                bool isMain = false;
                 for (int i = 0; i < units.Count; i++)
                 {
                     var unit = units[i];
-                    if (unit.IsAlive && !unit.CanLazerCross)
+                    if (unit.IsAlive && unit.TableUnit.IsViewBlock == 1&& !unit.CanCross)
                     {
                         if (unit.IsMain)
                         {
-//                            isMain = true;
                             if (_eMonsterState != EMonsterState.Chase)
                             {
                                 ChangeState(EMonsterState.Bang);

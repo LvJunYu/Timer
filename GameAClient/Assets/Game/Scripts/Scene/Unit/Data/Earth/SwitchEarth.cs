@@ -79,7 +79,7 @@ namespace GameA.Game
             {
                 _effect.SetActive(_curActiveState == EActiveState.Deactive);
             }
-            SetAllCross(_curActiveState == EActiveState.Deactive);
+            SetCross(_curActiveState == EActiveState.Deactive);
         }
 
         private void SetCurrentActiveState(EActiveState value)

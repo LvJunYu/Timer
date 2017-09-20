@@ -22,8 +22,7 @@ namespace GameA.Game
             ResetCloud();
             _trigger = false;
             _timer = 0;
-            _canMagicCross = true;
-            _canFanCross = true;
+            SetCross(false);
         }
 
         public override bool OnUpHit(UnitBase other, ref int y, bool checkOnly = false)
@@ -89,6 +88,7 @@ namespace GameA.Game
                 _timer++;
                 if (_timer == 50)
                 {
+                    SetCross(true);
                     //消失
                     PlayMode.Instance.Freeze(this);
                 }
@@ -105,6 +105,7 @@ namespace GameA.Game
             _trigger = false;
             _timer = 0;
             PlayMode.Instance.UnFreeze(this);
+            SetCross(false);
             if (_view != null)
             {
                 _view.SetRendererEnabled(true);

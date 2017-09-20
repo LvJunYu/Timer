@@ -86,6 +86,11 @@ namespace GameA.Game
 		[ColumnMapping("IsLazerBlock")]
 		public int IsLazerBlock;
 		/// <summary>
+        /// 视野
+        /// </summary>
+		[ColumnMapping("IsViewBlock")]
+		public int IsViewBlock;
+		/// <summary>
         /// 风扇
         /// </summary>
 		[ColumnMapping("IsFanBlock")]
