@@ -37,6 +37,7 @@ namespace GameA.Game
         private readonly Dictionary<IntVec3, BgItem> _items = new Dictionary<IntVec3, BgItem>();
         private Grid2D _followTileRect;
         private Rect _followRect;
+        private Grid2D _validMapTileRect;
         private Grid2D _cloudTileRect;
         private Rect _cloudRect;
         private Transform[] _parents;
@@ -103,13 +104,14 @@ namespace GameA.Game
         {
             base.OnInit();
             var validMapTileRect = DataScene2D.Instance.ValidMapRect;
+            _validMapTileRect = GM2DTools.ToGrid2D(validMapTileRect);
             validMapTileRect.Max = new IntVec2(validMapTileRect.Max.x,
                 validMapTileRect.Min.y + ConstDefineGM2D.DefaultValidMapRectSize.y);
             var validMapRect = GM2DTools.TileRectToWorldRect(validMapTileRect);
             _basePos = validMapRect.center;
             _followRect = validMapRect;
             _followRect.size = GM2DTools.TileToWorld(ConstDefineGM2D.DefaultValidMapRectSize);
-            _followRect.width += 4;
+            _followRect.width += 10;
             _followRect.height += 4; //地图编辑黑边有渐变 防止走光
             _followRect.center = _basePos;
 
@@ -267,36 +269,36 @@ namespace GameA.Game
             {
                 //图腾柱子
                 case EBgDepth.Depth1:
-                    if (_followTileRect.YMin + (num - 1) / 2 * size.y > _followTileRect.YMax)
+                    if (_validMapTileRect.YMin - GM2DTools.WorldToTile(3f) + (num - 1) / 2 * size.y > _validMapTileRect.YMax)
                     {
                         grid = Grid2D.zero;
                         return false;
                     }
                     if (num % 2 == 1)
                     {
-                        min = new IntVec2(_followTileRect.XMin + GM2DTools.WorldToTile(10.7f),
-                            _followTileRect.YMin + (num - 1) / 2 * size.y);
+                        min = new IntVec2(_validMapTileRect.XMin - GM2DTools.WorldToTile(2.5f),
+                            _validMapTileRect.YMin - GM2DTools.WorldToTile(3f) + (num - 1) / 2 * size.y);
                     }
                     else
                     {
-                        min = new IntVec2(_followTileRect.XMax - GM2DTools.WorldToTile(12.3f),
-                            _followTileRect.YMin + (num - 1) / 2 * size.y);
+                        min = new IntVec2(_validMapTileRect.XMax,
+                            _validMapTileRect.YMin - GM2DTools.WorldToTile(3f) + (num - 1) / 2 * size.y);
                     }
                     break;
                 //草
                 case EBgDepth.Depth2:
-                    if (_followTileRect.XMin + (num - 1) * size.x > _followTileRect.XMax)
+                    if (_validMapTileRect.XMin - size.x + (num - 1) * size.x > _followTileRect.XMax)
                     {
                         grid = Grid2D.zero;
                         return false;
                     }
-                    min = new IntVec2(_followTileRect.XMin + num * size.x,
-                        _followTileRect.YMin + GM2DTools.WorldToTile(0.63f));
+                    min = new IntVec2(_followTileRect.XMin - size.x + (num - 1) * size.x,
+                        _followTileRect.YMin - GM2DTools.WorldToTile(1f));
                     break;
                 //前面不动的树    
                 case EBgDepth.Depth3:
                     min = new IntVec2(Random.Range(_followTileRect.XMin, _followTileRect.XMax + size.x),
-                        _followTileRect.YMin + GM2DTools.WorldToTile(4f));
+                        _followTileRect.YMin + GM2DTools.WorldToTile(3f));
                     break;
                 //地面
                 case EBgDepth.Depth4:
@@ -305,8 +307,8 @@ namespace GameA.Game
                         grid = Grid2D.zero;
                         return false;
                     }
-                    min = new IntVec2(_followTileRect.XMin + num * size.x,
-                        _followTileRect.YMin + GM2DTools.WorldToTile(0.5f));
+                    min = new IntVec2(_followTileRect.XMin + (num - 1) * size.x,
+                        _followTileRect.YMin - GM2DTools.WorldToTile(1f));
                     break;
                 //后面的树
                 case EBgDepth.Depth5:
