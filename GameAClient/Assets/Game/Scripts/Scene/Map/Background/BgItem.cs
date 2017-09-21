@@ -42,7 +42,7 @@ namespace GameA.Game
             //草、藤蔓、前面的地面、左右柱子最前显示
             if (table.Depth <= 4)
             {
-                zDepth -= 700;
+                zDepth -= 850;
             }
             _curPos = _basePos = GM2DTools.TileToWorld(new IntVec2(_node.Guid.x, _node.Guid.y) + size / 2, zDepth);
             GameObject go;
