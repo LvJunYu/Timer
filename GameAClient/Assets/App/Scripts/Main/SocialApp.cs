@@ -74,8 +74,8 @@ namespace GameA
                 return new AddressConfig
                 {
                     Enable = true,
-                    AppServerApiRoot = "http://dev.joy-you.com/gameaapi",
-                    GameResoureRoot = "http://dev.joy-you.com/res"
+                    AppServerApiRoot = "http://devtest.joy-you.com/gameaapi",
+                    GameResoureRoot = "http://devtest.joy-you.com/res"
                 };
             }
             if(GlobalVar.Instance.Env == EEnvironment.Development)
