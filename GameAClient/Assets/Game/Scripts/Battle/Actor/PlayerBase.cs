@@ -428,7 +428,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            _animation.Init("Idle");
+            _animation.Init("Idle1");
             if (!_animation.AddEventHandle("Step", OnStep))
             {
                 return false;
@@ -695,7 +695,7 @@ namespace GameA.Game
                 case EClimbState.Up:
                     return "ClimbIdleUp";
             }
-            return "Idle";
+            return "Idle1";
         }
 
         protected virtual string ClimbAnimName()
