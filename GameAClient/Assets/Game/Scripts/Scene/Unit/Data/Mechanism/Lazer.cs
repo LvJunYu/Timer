@@ -127,9 +127,12 @@ namespace GameA.Game
                         break;
                 }
                 Util.CorrectAngle360(ref _curAngle);
-                if (Util.IsFloatEqual(_curAngle, _angle) || Util.IsFloatEqual(_curAngle, _endAngle))
+                if (!Util.IsFloatEqual(_angle, _endAngle) )
                 {
-                    _eRotateType = _eRotateType == ERotateMode.Clockwise ? ERotateMode.Anticlockwise : ERotateMode.Clockwise;
+                    if (Util.IsFloatEqual(_curAngle, _angle) || Util.IsFloatEqual(_curAngle, _endAngle))
+                    {
+                        _eRotateType = _eRotateType == ERotateMode.Clockwise ? ERotateMode.Anticlockwise : ERotateMode.Clockwise;
+                    }
                 }
                 _direction = GM2DTools.GetDirection(_curAngle);
                 if (_trans != null)
