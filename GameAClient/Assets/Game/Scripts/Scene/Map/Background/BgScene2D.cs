@@ -274,7 +274,7 @@ namespace GameA.Game
                 //左右柱子
                 case EBgDepth.Depth3:
                     if (_validTileRect.YMin - GM2DTools.WorldToTile(3f) + (num - 1) / 2 * size.y >
-                        _validTileRect.YMax)
+                        _followTileRect.YMax)
                     {
                         grid = Grid2D.zero;
                         return false;
@@ -283,13 +283,13 @@ namespace GameA.Game
                     if (num % 2 == 1)
                     {
                         min = new IntVec2(_validTileRect.XMin - GM2DTools.WorldToTile(6.6f),
-                            _validTileRect.YMin - GM2DTools.WorldToTile(0.66f) + (num - 1) / 2 * size.y);
+                            _followTileRect.YMin - GM2DTools.WorldToTile(0.66f) + (num - 1) / 2 * size.y);
                     }
                     //右柱子
                     else
                     {
                         min = new IntVec2(_validTileRect.XMax - GM2DTools.WorldToTile(0.6f),
-                            _validTileRect.YMin - GM2DTools.WorldToTile(0.66f) + (num - 1) / 2 * size.y);
+                            _followTileRect.YMin - GM2DTools.WorldToTile(0.66f) + (num - 1) / 2 * size.y);
                     }
                     break;
                 //草
@@ -401,6 +401,21 @@ namespace GameA.Game
             }
             _items.Add(node.Guid, bgItem);
             return true;
+        }
+
+        /// <summary>
+        /// 显示/隐藏藤曼
+        /// </summary>
+        /// <param name="value"></param>
+        public void SetCirrus(bool value)
+        {
+            foreach (var bgItem in _items.Values)
+            {
+                if (bgItem.Depth == 4)
+                {
+                    bgItem.Trans.gameObject.SetActive(value);
+                }
+            }
         }
 
 //        private bool DeleteView(SceneNode node)

@@ -113,7 +113,7 @@ namespace NewResourceSolution.EditorTool
 			var textureImportermipmapEnabled = false;
 			var textureImporterfilterMode = FilterMode.Bilinear;
 			var textureImporterfadeout = false;
-			var textureImporterwrapMode = TextureWrapMode.Repeat;
+			var textureImporterwrapMode = TextureWrapMode.Clamp;
 
 			if (textureImporter.textureType != textureImportertextureType)
 			{

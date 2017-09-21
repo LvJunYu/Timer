@@ -31,6 +31,7 @@ namespace GameA.Game
         {
             get { return _trans; }
         }
+        public int Depth{get { return _tableBg.Depth; }}
 
         public virtual bool Init(Table_Background table, SceneNode node)
         {
