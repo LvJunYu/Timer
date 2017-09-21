@@ -38,15 +38,10 @@ namespace GameA.Game
             _node = node;
             var size = new IntVec2(_node.Grid.XMax - _node.Grid.XMin + 1, _node.Grid.YMax - _node.Grid.YMin + 1);
             int zDepth = table.Depth + UnitDefine.ZOffsetBackground;
-            //左右柱子，人物之前显示
-            if (table.Depth == 1)
+            //草、藤蔓、前面的地面、左右柱子最前显示
+            if (table.Depth <= 4)
             {
                 zDepth -= 700;
-            }
-            //草和前面的地面，最前显示
-            else if (table.Depth == 2 || table.Depth == 4)
-            {
-                zDepth -= 710;
             }
             _curPos = _basePos = GM2DTools.TileToWorld(new IntVec2(_node.Guid.x, _node.Guid.y) + size / 2, zDepth);
             GameObject go;
