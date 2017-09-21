@@ -403,26 +403,17 @@ namespace GameA.Game
             return true;
         }
 
-        //隐藏藤曼
-        public void HideCirrus()
+        /// <summary>
+        /// 显示/隐藏藤曼
+        /// </summary>
+        /// <param name="value"></param>
+        public void SetCirrus(bool value)
         {
-            foreach (var value in _items.Values)
+            foreach (var bgItem in _items.Values)
             {
-                if (value.Depth == 4)
+                if (bgItem.Depth == 4)
                 {
-                    value.Trans.gameObject.SetActive(false);
-                }
-            }
-        }
-
-        //显示藤曼        
-        public void ShowCirrus()
-        {
-            foreach (var value in _items.Values)
-            {
-                if (value.Depth == 4)
-                {
-                    value.Trans.gameObject.SetActive(true);
+                    bgItem.Trans.gameObject.SetActive(value);
                 }
             }
         }

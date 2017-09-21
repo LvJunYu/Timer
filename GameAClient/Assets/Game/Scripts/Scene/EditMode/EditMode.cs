@@ -408,7 +408,7 @@ namespace GameA.Game
                     CameraMask.HideLayerMask();
                     break;
                 case EEditorLayer.Capture:
-                    BgScene2D.Instance.ShowCirrus();
+                    BgScene2D.Instance.SetCirrus(true);
                 break;
             }
             _lastEditorLayer = oldLayer;
@@ -468,7 +468,7 @@ namespace GameA.Game
                     }
                     break;
                 case EEditorLayer.Capture:
-                    BgScene2D.Instance.HideCirrus();
+                    BgScene2D.Instance.SetCirrus(false);
                     using (var itor = ColliderScene2D.Instance.Units.GetEnumerator())
                     {
                         while (itor.MoveNext())
