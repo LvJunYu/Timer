@@ -65,6 +65,10 @@ namespace GameA.Game
 
         public void DestroyBrick()
         {
+            if (!_isAlive)
+            {
+                return;
+            }
             PlayMode.Instance.DestroyUnit(this);
             OnDead();
         }
