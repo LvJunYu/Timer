@@ -35,7 +35,7 @@ namespace GameA.Game
 
         protected override void OnRightStampedEmpty()
         {
-            if (_eMonsterState != EMonsterState.Chase)
+            if (_eMonsterState != EMonsterState.Chase && _eMonsterState != EMonsterState.Brake)
             {
                 ChangeState(EMonsterState.Bang);
                 SetNextMoveDirection(EMoveDirection.Left);
@@ -44,7 +44,7 @@ namespace GameA.Game
 
         protected override void OnLeftStampedEmpty()
         {
-            if (_eMonsterState != EMonsterState.Chase)
+            if (_eMonsterState != EMonsterState.Chase && _eMonsterState != EMonsterState.Brake)
             {
                 ChangeState(EMonsterState.Bang);
                 SetNextMoveDirection(EMoveDirection.Right);
@@ -115,7 +115,7 @@ namespace GameA.Game
             }
 //            LogHelper.Debug(_eMonsterState+"~");
         }
-        
+
         protected virtual void OnChangeRun()
         {
             _timerRun = Random.Range(90, 140);
