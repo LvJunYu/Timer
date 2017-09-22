@@ -25,6 +25,14 @@ namespace GameA.Game
             SetWeapon(_weaponId);
         }
 
+        public override void StartSkill()
+        {
+            if (_animation != null && !_animation.IsPlaying("Attack", 1))
+            {
+                _animation.PlayOnce("Attack", 1, 1);
+            }
+        }
+
         public override bool SetWeapon(int id)
         {
             if (id == 0)
@@ -39,13 +47,7 @@ namespace GameA.Game
             }
             _skillCtrl = _skillCtrl ?? new SkillCtrl(this);
             _skillCtrl.SetSkill(tableEquipment.MonsterSkillId);
-            SetValue();
             return true;
-        }
-
-        private void SetValue()
-        {
-            _skillCtrl.CurrentSkills[0].SetValue(50, TableConvert.GetRange(600));
         }
 
         protected override void UpdateMonsterAI()
