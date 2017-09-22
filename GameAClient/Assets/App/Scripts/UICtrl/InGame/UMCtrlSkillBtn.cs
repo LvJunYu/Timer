@@ -126,5 +126,11 @@ namespace GameA
             }
                 
         }
+
+        public void Dispose()
+        {
+            _fullParticleItem = null;
+            _curTableEquipment = null;
+        }
     }
 }

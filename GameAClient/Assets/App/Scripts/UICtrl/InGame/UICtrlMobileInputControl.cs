@@ -60,7 +60,12 @@ namespace GameA
 
         protected override void OnDestroy()
         {
+            for (int i = 0; i < _umSkillBtns.Length; i++)
+            {
+                _umSkillBtns[i].Dispose();
+            }
             _umSkillBtns = null;
+            _equipments = null;
             base.OnDestroy();
         }
 
