@@ -161,19 +161,7 @@ namespace GameA.Game
                     SetInput(EInputType.Left, false);
                     break;
                 case EMonsterState.Run:
-                    SetInput(_moveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
-                    if (_timerRun == 0)
-                    {
-                        int value = Random.Range(0, 10);
-                        if (_intelligenc <= value)
-                        {
-                            ChangeState(EMonsterState.Stupid);
-                        }
-                        else
-                        {
-                            _timerRun = 30;
-                        }
-                    }
+                    OnRun();
                     break;
                 case EMonsterState.Stupid:
                     SetInput(EInputType.Right, false);
@@ -228,6 +216,23 @@ namespace GameA.Game
                     SetInput(EInputType.Skill1, true);
                     break;
             }
+        }
+
+        protected virtual void OnRun()
+        {
+            SetInput(_moveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
+            if (_timerRun == 0)
+            {
+                int value = Random.Range(0, 10);
+                if (_intelligenc <= value)
+                {
+                    ChangeState(EMonsterState.Stupid);
+                }
+                else
+                {
+                    _timerRun = 30;
+                }
+            } 
         }
     }
 }

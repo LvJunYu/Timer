@@ -27,6 +27,8 @@ namespace GameA.Game
 
         public override void StartSkill()
         {
+            _timerAttack = 40;
+//            SpeedX = 0;
             if (_animation != null && !_animation.IsPlaying("Attack", 1))
             {
                 _animation.PlayOnce("Attack", 1, 1);
@@ -52,16 +54,29 @@ namespace GameA.Game
 
         protected override void UpdateMonsterAI()
         {
-//            if (_timerAttack == 0)
-//            {
+            base.UpdateMonsterAI();
+
             SetInput(EInputType.Skill1, true);
-//                _timerAttack = 30;
+        }
+
+        protected override void OnFire()
+        {
+            base.OnFire();
+            SetInput(EInputType.Skill1, false);
+        }
+
+        protected override void OnRun()
+        {
+            base.OnRun();
+//            if (_timerAttack > 0)
+//            {
+//                SetInput(EInputType.Right, false);
+//                SetInput(EInputType.Left, false);
 //            }
 //            else
 //            {
-//                SetInput(EInputType.Skill1, false);
+//                SetInput(_moveDirection == EMoveDirection.Right ? EInputType.Right : EInputType.Left, true);
 //            }
-            base.UpdateMonsterAI();
         }
     }
 }
