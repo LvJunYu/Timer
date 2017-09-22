@@ -159,8 +159,10 @@ namespace GameA
 
         private void OnEnergyChanged()
         {
-            if (!IsOpen)
+            if (!_isViewCreated)
+            {
                 return;
+            }
             AppData.Instance.AdventureData.UserData.UserEnergyData.LocalRefresh(false);
             int currentEnergy = AppData.Instance.AdventureData.UserData.UserEnergyData.Energy;
             int energyCapacity = AppData.Instance.AdventureData.UserData.UserEnergyData.EnergyCapacity;
@@ -174,15 +176,19 @@ namespace GameA
 
         private void OnGoldChanged()
         {
-            if (!IsOpen)
+            if (!_isViewCreated)
+            {
                 return;
+            }
             _cachedView.GoldNumber.text = LocalUser.Instance.User.UserInfoSimple.LevelData.GoldCoin.ToString();
         }
 
         private void OnDiamondChanged()
         {
-            if (!IsOpen)
+            if (!_isViewCreated)
+            {
                 return;
+            }
             _cachedView.DiamondNumber.text = LocalUser.Instance.User.UserInfoSimple.LevelData.Diamond.ToString();
         }
 

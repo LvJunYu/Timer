@@ -105,6 +105,10 @@ namespace GameA
 
         private void OnAddAchievementCount()
         {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             RefreshView();
         }
 

@@ -325,12 +325,20 @@ namespace GameA
 
         private void OnCharacterUpgradeProperty()
         {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             RefreshMap();
             RefreshView();
         }
 
         private void OnCharacterUpgradeGrade()
         {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             RefreshMap();
             RefreshView();
         }

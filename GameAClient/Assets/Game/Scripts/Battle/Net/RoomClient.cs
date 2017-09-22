@@ -128,7 +128,7 @@ namespace GameA.Game
                                 GameManager.Instance.RequestPlayMultiBattle(project);
                                 break;
                         }
-                        SocialGUIManager.Instance.ChangeToGameMode();
+                        SocialApp.Instance.ChangeToGame();
                         _modeNetPlay = GM2DGame.Instance.GameMode as GameModeNetPlay;
                     },
                     error =>

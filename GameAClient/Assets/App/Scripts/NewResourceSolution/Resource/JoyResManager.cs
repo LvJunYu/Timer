@@ -9,6 +9,11 @@ namespace NewResourceSolution
 
         private EResScenary _defaultResScenary;
 
+        public EResScenary DefaultResScenary
+        {
+            get { return _defaultResScenary; }
+        }
+
         public void SetDefaultResScenary(EResScenary resScenary)
         {
             _defaultResScenary = resScenary;

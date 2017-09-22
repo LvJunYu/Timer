@@ -228,12 +228,19 @@ namespace GameA
             helper.AddTask(LocalUser.Instance.LoadWorkshopUnitData);
         }
 
-        internal void ReturnToApp(bool withScreenEffect = true)
+        public void ReturnToApp(bool withScreenEffect = true)
         {
             GameManager.Instance.RequestStopGame();
             //JoySceneManager.Instance.LoadEmptyScene();
             JoyResManager.Instance.SetDefaultResScenary(EResScenary.Home);
             SocialGUIManager.Instance.ChangeToAppMode();
+            GameParticleManager.Instance.OnChangeScene();
+        }
+
+        public void ChangeToGame()
+        {
+            SocialGUIManager.Instance.ChangeToGameMode();
+            GameParticleManager.Instance.OnChangeScene();
         }
 
         public void ClearCache()

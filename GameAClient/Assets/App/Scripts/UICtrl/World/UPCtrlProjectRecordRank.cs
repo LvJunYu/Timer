@@ -116,7 +116,7 @@ namespace GameA
                         {
                             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);
                             GameManager.Instance.RequestPlayRecord(_content, item.Content.Record);
-                            SocialGUIManager.Instance.ChangeToGameMode();
+                            SocialApp.Instance.ChangeToGame();
                         }, (error) =>
                         {
                             SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().CloseLoading(this);

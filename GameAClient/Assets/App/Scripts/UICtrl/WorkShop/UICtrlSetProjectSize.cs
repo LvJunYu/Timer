@@ -128,7 +128,7 @@ namespace GameA
             Project project = Project.CreateWorkShopProject();
             MatrixProjectTools.SetProjectVersion(project);
             GameManager.Instance.RequestCreate (project);
-            SocialGUIManager.Instance.ChangeToGameMode();
+            SocialApp.Instance.ChangeToGame();
         }
 
         #endregion

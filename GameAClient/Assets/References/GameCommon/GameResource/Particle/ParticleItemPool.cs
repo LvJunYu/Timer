@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using GameA;
 using NewResourceSolution;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -21,6 +22,8 @@ namespace SoyEngine
             get { return _poolName; }
         }
 
+        public EResScenary ResScenary { get; private set; }
+
         /// <summary>
         /// 最大闲置回收事件
         /// </summary>
@@ -33,9 +36,10 @@ namespace SoyEngine
 
         private float _lastRequestTime;
 
-        public ParticleItemPool(string name, Transform parent)
+        public ParticleItemPool(string name, Transform parent, EResScenary resScenary)
         {
             _poolName = name;
+            ResScenary = resScenary;
             _poolRoot = new GameObject(name + "_pool").transform;
             CommonTools.SetParent(_poolRoot, parent);
         }
@@ -108,8 +112,7 @@ namespace SoyEngine
 
         private UnityNativeParticleItem CreateItem()
         {
-            var itemPrefab = JoyResManager.Instance.GetPrefab(EResType.ParticlePrefab,
-                    _poolName);
+            var itemPrefab = JoyResManager.Instance.GetPrefab(EResType.ParticlePrefab, _poolName, (int) ResScenary);
             if (itemPrefab == null)
             {
                 LogHelper.Error("GameResourceManager.Instance.LoadMainAssetObject({0}) is null!", _poolName);

@@ -34,11 +34,19 @@ namespace GameA
         
         private void OnResourcesCheckStart ()
         {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             DictionaryTools.SetContentText(_cachedView.ProgressText, string.Empty);
             SetProgress(0);
         }
         private void OnResourcesCheckFinish ()
         {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             DictionaryTools.SetContentText(_cachedView.ProgressText, string.Empty);
             SetProgress(1);
         }

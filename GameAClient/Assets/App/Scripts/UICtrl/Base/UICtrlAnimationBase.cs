@@ -86,9 +86,23 @@ namespace GameA
             }
             SetPartAnimations();
             _openSequence.OnComplete(OnOpenAnimationComplete).SetAutoKill(false).Pause()
-                .OnUpdate(OnOpenAnimationUpdate).PrependCallback(() => _cachedView.gameObject.SetActive(true));
+                .OnUpdate(OnOpenAnimationUpdate).PrependCallback(() =>
+                {
+                    _cachedView.gameObject.SetActive(true);
+                    if (_closeSequence.IsPlaying())
+                    {
+                        _closeSequence.Complete(true);
+                    }
+                });
             _closeSequence.OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause()
-                .PrependCallback(() => _cachedView.Trans.localPosition = Vector3.zero);
+                .PrependCallback(() =>
+                {
+                    if (_openSequence.IsPlaying())
+                    {
+                        _openSequence.Complete(true);
+                    }
+                });
+//            _openSequence.Complete(true);
         }
 
         private void OpenAnimation()
@@ -124,11 +138,11 @@ namespace GameA
             if (_closeDelayFrames > 0)
             {
                 CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(_closeDelayFrames,
-                    () => _closeSequence.Restart()));
+                    () => _closeSequence.PlayForward()));
             }
             else
             {
-                _closeSequence.Restart();
+                _closeSequence.PlayForward();
             }
         }
 
@@ -189,8 +203,7 @@ namespace GameA
         protected virtual void OnCloseAnimationComplete()
         {
             _cachedView.gameObject.SetActive(false);
-            _cachedView.Trans.localPosition = Vector3.zero;
-            _cachedView.Trans.localScale = Vector3.one;
+            _closeSequence.Rewind();
         }
 
         protected override void OnViewCreated()
@@ -212,6 +225,7 @@ namespace GameA
             if (_closeSequence != null)
             {
                 _closeSequence.Kill();
+                _closeSequence = null;
             }
             for (int i = 0; i < _openPartSequences.Count; i++)
             {
@@ -239,10 +253,18 @@ namespace GameA
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
+            if (null == _openSequence)
+            {
+                CreateSequences();
+            }
+            OpenAnimation();
             if (!_openAnimation)
             {
-                OpenAnimation();
                 _openAnimation = true;
+            }
+            else
+            {
+                _openSequence.Complete(true);
             }
         }
 
@@ -346,8 +368,8 @@ namespace GameA
                     }
                     break;
             }
-            _closePartSequences[sequenceIndex].PrependCallback(() => tf.localPosition = _initialPos[sequenceIndex])
-                .OnComplete(() => { tf.localPosition = _initialPos[sequenceIndex]; });
+//            _closePartSequences[sequenceIndex].PrependCallback(() => tf.localPosition = _initialPos[sequenceIndex])
+//                .OnComplete(() => { tf.localPosition = _initialPos[sequenceIndex]; });
             _openSequence.Join(_openPartSequences[sequenceIndex]);
             _closeSequence.Join(_closePartSequences[sequenceIndex]);
         }

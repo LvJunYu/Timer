@@ -39,6 +39,11 @@ namespace SoyEngine
 			get { return _isPlaying; }
 		}
 
+		public bool HasBeDestroyByUnity
+		{
+			get { return _cachedGo == null; }
+		}
+
 
 		public bool NeedToDestroy
 		{

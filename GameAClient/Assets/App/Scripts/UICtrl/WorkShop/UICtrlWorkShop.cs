@@ -268,7 +268,11 @@ namespace GameA
 
         private void RefreshPublishedProjectDetailPanel() {
             _cachedView.EditDescBtn.gameObject.SetActive(false);
+            _cachedView.TitleInput.gameObject.SetActive (false);
             _cachedView.EditTitleBtn.gameObject.SetActive(false);
+            _cachedView.ConfirmTitleBtn.gameObject.SetActive (false);
+            _cachedView.DescInput.gameObject.SetActive (false);
+            _cachedView.ConfirmDescBtn.gameObject.SetActive (false);
             _cachedView.Data.gameObject.SetActive(true);
             _cachedView.HummerIcon.gameObject.SetActive(false);
             _cachedView.PlayIcon.gameObject.SetActive(true);
@@ -636,6 +640,10 @@ namespace GameA
 
         private void OnPersonalProjectListChanged()
         {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             if (!_isOpen)
             {
                 return;
@@ -645,6 +653,10 @@ namespace GameA
         
         private void OnUserPublishedProjectChanged()
         {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             if (!_isOpen)
             {
                 return;

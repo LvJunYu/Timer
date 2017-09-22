@@ -210,7 +210,7 @@ namespace GameA
                             {
                                 GameManager.Instance.RequestPlayAdvNormal(project, param);
                             }
-                            SocialGUIManager.Instance.ChangeToGameMode();
+                            SocialApp.Instance.ChangeToGame();
                         });
                     }
                 }

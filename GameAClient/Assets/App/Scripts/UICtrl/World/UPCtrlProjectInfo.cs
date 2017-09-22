@@ -173,7 +173,7 @@ namespace GameA
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
 
                 GameManager.Instance.RequestPlay (_content);
-                SocialGUIManager.Instance.ChangeToGameMode ();
+                SocialApp.Instance.ChangeToGame();
             }, (error) => {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
                 SocialGUIManager.ShowPopupDialog("进入关卡失败");

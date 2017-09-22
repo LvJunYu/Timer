@@ -353,6 +353,10 @@ namespace GameA
 
         private void OnPuzzleFragChanged()
         {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             if (!_isOpen) return;
             //更新拼图
             _curUMPuzzleItem.RefreshView();

@@ -239,7 +239,7 @@ namespace GameA
                                 }
                                 _isRequestPlayChallenge = false;
                                 GameManager.Instance.RequestPlay(targetProject);
-                                SocialGUIManager.Instance.ChangeToGameMode();
+                                SocialApp.Instance.ChangeToGame();
                             },
                             () => {
                                 // todo err handle

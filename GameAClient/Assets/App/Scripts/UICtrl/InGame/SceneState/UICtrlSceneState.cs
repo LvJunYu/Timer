@@ -141,7 +141,7 @@ namespace GameA
 
         private void OnWinDataChanged()
         {
-            if (!_isOpen)
+            if (!_isViewCreated)
             {
                 return;
             }
@@ -150,7 +150,7 @@ namespace GameA
 
         private void OnLifeChanged()
         {
-            if (!_isOpen)
+            if (!_isViewCreated)
             {
                 return;
             }
@@ -159,7 +159,7 @@ namespace GameA
 
         private void OnGameRestart()
         {
-            if (!_isOpen)
+            if (!_isViewCreated)
             {
                 return;
             }
@@ -169,7 +169,7 @@ namespace GameA
 
         private void OnKeyCountChanged()
         {
-            if (!_isOpen)
+            if (!_isViewCreated)
             {
                 return;
             }
@@ -178,7 +178,7 @@ namespace GameA
 
         private void OnScoreChanged()
         {
-            if (!_isOpen)
+            if (!_isViewCreated)
             {
                 return;
             }
@@ -542,11 +542,19 @@ namespace GameA
 
         private void ShowCollectionAnimation(Vector3 InitialPos)
         {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             CreateUmCtrlCollectionItem().CollectAnimation(InitialPos, _cachedView.CollectionIconRtf);
         }
 
         private void ShowCollectionLifeAnimation(Vector3 InitialPos)
         {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             CreateUmCtrlCollectionLifeItem().CollectAnimation(InitialPos, _cachedView.CollectionLifeIconRtf);
         }
 

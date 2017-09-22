@@ -121,6 +121,10 @@ namespace GameA
 
         private void OnPuzzleCompound()
         {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             if (_otherPictureFull.Contains(CurActivePicFull))
             {
                 _otherPictureFull.Remove(CurActivePicFull);

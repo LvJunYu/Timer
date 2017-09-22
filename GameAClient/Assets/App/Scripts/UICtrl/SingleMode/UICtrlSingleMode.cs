@@ -477,8 +477,10 @@ namespace GameA
 		}
 
 		private void OnReturnToApp () {
-            if (!_isOpen)
-                return;
+			if (!_isViewCreated || !_isOpen)
+			{
+				return;
+			}
 //            _cachedView.ChapterScrollRect.horizontalNormalizedPosition = _chapterRightNormalizedHorizontalPos[_currentChapter - 1];
 			var advData = AppData.Instance.AdventureData;
 			RefreshChapterInfo(advData.LastAdvSuccess);
@@ -514,6 +516,12 @@ namespace GameA
 		    chapterBg.gameObject.SetActive(true);
 		    chapterBg.alpha = 0.0f;
 		    chapterBg.DOFade(1,1);
+	    }
+
+	    protected override void OnDestroy()
+	    {
+		    _uiParticleItemAry = null;
+		    base.OnDestroy();
 	    }
 
 	    #endregion 接口

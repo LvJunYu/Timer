@@ -293,6 +293,10 @@ namespace GameA
 
         private void OnModifyUnitChanged()
         {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             UpdateModifyItemList();
             if (EditMode.Instance.IsInState(EditModeState.ModifyAdd.Instance))
             {

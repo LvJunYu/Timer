@@ -60,6 +60,10 @@ namespace GameA
 
         private void OnChangeToUserInfo()
         {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             RefreshUserInfo();
         }
 

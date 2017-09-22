@@ -62,6 +62,10 @@
             {
                 return;
             }
+            if (!_isViewCreated)
+            {
+                return;
+            }
             _projectInfoPanel.OnChangeToApp();
             _extraPanel.OnChangeToAppMode();
         }

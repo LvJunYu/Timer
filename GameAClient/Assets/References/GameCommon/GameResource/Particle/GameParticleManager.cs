@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using GameA;
 using GameA.Game;
+using NewResourceSolution;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -191,6 +192,29 @@ namespace SoyEngine
         {
         }
 
+        public void OnChangeScene()
+        {
+            var cur = JoyResManager.Instance.DefaultResScenary;
+            List<ParticleItemPool> list = new List<ParticleItemPool>();
+            using (var enumerator = _particlePoolDic.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    ParticleItemPool item = enumerator.Current.Value;
+                    if (item.ResScenary != cur)
+                    {
+                        list.Add(item);
+                    }
+                }
+            }
+            for (int i = 0; i < list.Count; i++)
+            {
+                var item = list[i];
+                item.Dispose();
+                _particlePoolDic.Remove(item.PoolName);
+            }
+        }
+
         public void RemoveFromSceneItems(UnityNativeParticleItem item)
         {
             if (item == null || item.Trans == null)
@@ -284,7 +308,7 @@ namespace SoyEngine
             ParticleItemPool pool;
             if (!_particlePoolDic.TryGetValue(itemName, out pool))
             {
-                pool = new ParticleItemPool(itemName, _rootParticleParent);
+                pool = new ParticleItemPool(itemName, _rootParticleParent, JoyResManager.Instance.DefaultResScenary);
                 _particlePoolDic.Add(itemName, pool);
             }
             return pool.Get();
@@ -349,18 +373,22 @@ namespace SoyEngine
 
             if (Time.realtimeSinceStartup - _lastTickPoolTime > TickPoolInterval)
             {
-                _lastTickPoolTime = Time.realtimeSinceStartup;
-
-                using (var enumerator = _particlePoolDic.GetEnumerator())
-                {
-                    while (enumerator.MoveNext())
-                    {
-                        ParticleItemPool item = enumerator.Current.Value;
-                        item.Tick();
-                    }
-                }
+                PoolTick();
             }
             _isDoingTick = false;
+        }
+
+        private void PoolTick()
+        {
+            _lastTickPoolTime = Time.realtimeSinceStartup;
+            using (var enumerator = _particlePoolDic.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    ParticleItemPool item = enumerator.Current.Value;
+                    item.Tick();
+                }
+            }
         }
 
         #endregion

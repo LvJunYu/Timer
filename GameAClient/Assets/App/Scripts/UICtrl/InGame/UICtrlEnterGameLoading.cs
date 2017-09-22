@@ -65,6 +65,10 @@ namespace GameA
         #region 事件响应
         private void OnGameStartComplete()
         {
+	        if (!_isViewCreated)
+	        {
+		        return;
+	        }
 			SocialGUIManager.Instance.CloseUI<UICtrlEnterGameLoading>();
         }
 
@@ -80,6 +84,10 @@ namespace GameA
 
 	    private void OnSetProcess(float process)
 	    {
+		    if (!_isViewCreated)
+		    {
+			    return;
+		    }
 		    UpdateProgress(process);
 	    }
 

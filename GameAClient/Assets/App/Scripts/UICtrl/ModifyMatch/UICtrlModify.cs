@@ -154,7 +154,7 @@ namespace GameA
                 () => {
                     SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
                     GameManager.Instance.RequestModify(project);
-                    SocialGUIManager.Instance.ChangeToGameMode();
+                    SocialApp.Instance.ChangeToGame();
                 }
             );
         }

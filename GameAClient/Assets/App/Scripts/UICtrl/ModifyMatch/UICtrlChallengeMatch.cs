@@ -335,6 +335,10 @@ namespace GameA
         }
 
         private void OnReturnToApp () {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             if (_isOpen) {
                 Refresh ();
             }

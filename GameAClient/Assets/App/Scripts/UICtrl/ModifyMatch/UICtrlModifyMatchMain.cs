@@ -364,8 +364,10 @@ namespace GameA
 
         #endregion 接口
         private void OnReformProjectPublished () {
-            if (!IsOpen)
+            if (!_isViewCreated)
+            {
                 return;
+            }
             LocalUser.Instance.MatchUserData.Request(
                 LocalUser.Instance.UserGuid,
                 () => {

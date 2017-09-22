@@ -311,6 +311,10 @@ namespace GameA
 
         private void OnWeaponDataChange()
         {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             InitData();
             RefershWeaponShow();
         }

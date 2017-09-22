@@ -64,8 +64,11 @@ namespace GameA
             {
                 _umSkillBtns[i].Dispose();
             }
+            for (int i = 0; i < _equipments.Length; i++)
+            {
+                _equipments[i] = null;
+            }
             _umSkillBtns = null;
-            _equipments = null;
             base.OnDestroy();
         }
 

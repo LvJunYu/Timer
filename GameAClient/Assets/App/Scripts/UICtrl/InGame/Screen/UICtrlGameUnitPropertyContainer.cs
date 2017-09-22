@@ -66,6 +66,10 @@ namespace GameA
 
         private void UpateContainer()
         {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             Vector2 cameraPos = CameraManager.Instance.MainCameraPos;
             float orthoSize = CameraManager.Instance.RendererCamera.orthographicSize;
             float unitPixel = _canvasSize.y * 0.5f / orthoSize;

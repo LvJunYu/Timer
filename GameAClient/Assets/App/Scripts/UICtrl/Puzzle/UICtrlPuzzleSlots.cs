@@ -55,6 +55,10 @@ namespace GameA
 
         private void OnPuzzleEquip()
         {
+            if (!_isViewCreated)
+            {
+                return;
+            }
             //LocalUser.Instance.UserUsingPictureFullData.Request(LocalUser.Instance.UserGuid, null,
             //code => { LogHelper.Error("Network error when get UserUsingPictureFullData, {0}", code); });
             //_usingPicFull = LocalUser.Instance.UserUsingPictureFullData.ItemDataList;

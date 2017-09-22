@@ -60,7 +60,7 @@ namespace GameA
                 param.Level = uictrlAdvLvlDetail.LevelIdx;
                 param.Record = _record;
                 GameManager.Instance.RequestPlayAdvRecord (uictrlAdvLvlDetail.Project, param);
-                SocialGUIManager.Instance.ChangeToGameMode ();
+                SocialApp.Instance.ChangeToGame();
             }, (error) => {
                 SocialGUIManager.Instance.GetUI<UICtrlLittleLoading> ().CloseLoading (this);
                 SocialGUIManager.ShowPopupDialog("进入录像失败");
