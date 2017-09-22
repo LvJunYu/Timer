@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using SoyEngine;
+using SoyEngine.Proto;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -88,7 +89,7 @@ namespace GameA.Game
                 Table_Unit tableUnit = pair.Value;
                 tableUnit.Init();
                 _units.Add(pair.Key, tableUnit);
-                if (tableUnit.Use == 1 || (SocialApp.Instance.IsMaster && tableUnit.Use == 2))
+                if (tableUnit.Use == 1 || (LocalUser.Instance.User.RoleType == (int)EAccountRoleType.AcRT_Admin && tableUnit.Use == 2))
                 {
                     var unitType = (EUIType) tableUnit.UIType;
                     if (!_typeUnits.ContainsKey(unitType))
