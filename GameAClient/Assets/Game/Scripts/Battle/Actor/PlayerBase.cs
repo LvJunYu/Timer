@@ -328,6 +328,7 @@ namespace GameA.Game
             _reviveEffect.Play(_trans.position + Vector3.up * 0.5f,
                                 GM2DTools.TileToWorld(_revivePos), 8, () =>
                                 {
+                                    _eDieType = EDieType.None;
                                     _eUnitState = EUnitState.Normal;
                                     _input.Clear();
                                     ClearRunTime();
