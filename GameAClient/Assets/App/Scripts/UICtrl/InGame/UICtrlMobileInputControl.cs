@@ -38,7 +38,9 @@ namespace GameA
         {
             base.OnViewCreated();
             if (null == _umSkillBtns)
+            {
                 CreateUMSkillBtns();
+            }
             _cachedView.JumpBtn.OnPress += OnJumpButtonDown;
             _cachedView.JumpBtn.OnPress += PlayClickParticle;
             _cachedView.JumpBtn.OnRelease += OnJumpButtonUp;
@@ -54,6 +56,12 @@ namespace GameA
 
             _cachedView.AssistBtn.OnPress += OnAssistButtonDown;
             _cachedView.AssistBtn.OnRelease += OnAssistButtonUp;
+        }
+
+        protected override void OnDestroy()
+        {
+            _umSkillBtns = null;
+            base.OnDestroy();
         }
 
         protected override void OnOpen(object parameter)
@@ -74,9 +82,14 @@ namespace GameA
 
         public void SetSkillBtnVisible(int slot, bool visible)
         {
-            if (null == _cachedView) return;
+            if (null == _cachedView)
+            {
+                return;
+            }
             if (null == _umSkillBtns)
+            {
                 CreateUMSkillBtns();
+            }
             switch (slot)
             {
                 case 0:
