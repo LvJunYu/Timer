@@ -14,7 +14,7 @@ using GameA.Game;
 
 namespace GameA
 {
-    [UIAutoSetup]
+    [UIResAutoSetup(EResScenary.UIInGame)]
     public class UICtrlItem : UICtrlInGameBase<UIViewItem>
     {
         private EUIType _selectedUnitType;
@@ -41,7 +41,13 @@ namespace GameA
 	        }
         }
 
-		protected override void OnOpen(object parameter)
+	    protected override void OnDestroy()
+	    {
+		    _umItems.Clear();
+		    base.OnDestroy();
+	    }
+
+	    protected override void OnOpen(object parameter)
 	    {
 		    base.OnOpen(parameter);
             RefreshView(_selectedUnitType);
@@ -77,7 +83,7 @@ namespace GameA
 		    if (_umCtrlUnitProperty == null)
 		    {
 			    _umCtrlUnitProperty = new UMCtrlUnitProperty();
-			    _umCtrlUnitProperty.Init(_cachedView.Trans, Vector3.up * 10000);
+			    _umCtrlUnitProperty.Init(_cachedView.Trans, ResScenary, Vector3.up * 10000);
 		    }
 		    return _umCtrlUnitProperty;
 	    }
@@ -184,7 +190,7 @@ namespace GameA
 	    private UMCtrlItem CreateNewUmCtrlItem()
 	    {
 		    var umItem = new UMCtrlItem();
-		    umItem.Init(_cachedView.ScrollRect.content);
+		    umItem.Init(_cachedView.ScrollRect.content, ResScenary);
 		    return umItem;
 	    }
 	    

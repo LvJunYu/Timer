@@ -1,12 +1,11 @@
-﻿using System;
-using GameA.Game;
+﻿using GameA.Game;
 using SoyEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
 namespace GameA
 {
-    [UIAutoSetup]
-    public class UICtrlMobileInputControl : UICtrlGenericBase<UIViewMobileInputControl>
+    [UIResAutoSetup(EResScenary.UIInGame)]
+    public class UICtrlMobileInputControl : UICtrlInGameBase<UIViewMobileInputControl>
     {
         private UMCtrlSkillBtn[] _umSkillBtns;
         private Table_Equipment[] _equipments = new Table_Equipment[3];
@@ -162,7 +161,7 @@ namespace GameA
             for (int i = 0; i < skillNum; i++)
             {
                 UMCtrlSkillBtn umCtrlSkillBtn = new UMCtrlSkillBtn();
-                umCtrlSkillBtn.Init(_cachedView.SkillRTFs[i]);
+                umCtrlSkillBtn.Init(_cachedView.SkillRTFs[i], ResScenary);
                 _umSkillBtns[i] = umCtrlSkillBtn;
             }
         }

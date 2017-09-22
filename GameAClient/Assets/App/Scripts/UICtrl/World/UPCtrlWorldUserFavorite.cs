@@ -19,6 +19,8 @@ namespace GameA
         private List<CardDataRendererWrapper<Project>> _contentList = new List<CardDataRendererWrapper<Project>>();
         private Dictionary<long, CardDataRendererWrapper<Project>> _dict = new Dictionary<long, CardDataRendererWrapper<Project>>();
         private UserFavoriteWorldProjectList _data;
+        private EResScenary _resScenary;
+        private bool _unload;
         #endregion
 
         #region 属性
@@ -26,10 +28,15 @@ namespace GameA
         #endregion
 
         #region 方法
+        public void Set(EResScenary resScenary)
+        {
+            _resScenary = resScenary;
+        }
 
         public override void Open()
         {
             base.Open();
+            _unload = false;
             _cachedView.FavoritePanel.SetActiveEx(true);
             _data = AppData.Instance.WorldData.UserFavoriteProjectList;
             RefreshView();
@@ -38,6 +45,8 @@ namespace GameA
 
         public override void Close()
         {
+            _unload = true;
+            _cachedView.FavoriteGridScroller.RefreshCurrent();
             _cachedView.FavoritePanel.SetActiveEx(false);
             base.Close();
         }
@@ -54,24 +63,31 @@ namespace GameA
         private IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlWorldProject();
-            item.Init(parent, Vector3.zero);
+            item.Init(parent, _resScenary);
             item.GetTimeFunc = GetTime;
             return item;
         }
 
         public void OnItemRefresh(IDataItemRenderer item, int inx)
         {
-            if(inx >= _contentList.Count)
+            if (_unload)
             {
-                LogHelper.Error("OnItemRefresh Error Inx > count");
-                return;
+                item.Set(null);
             }
-            item.Set(_contentList[inx]);
-            if (!_data.IsEnd)
+            else
             {
-                if(inx > _contentList.Count - 2)
+                if(inx >= _contentList.Count)
                 {
-                    RequestData(true);
+                    LogHelper.Error("OnItemRefresh Error Inx > count");
+                    return;
+                }
+                item.Set(_contentList[inx]);
+                if (!_data.IsEnd)
+                {
+                    if(inx > _contentList.Count - 2)
+                    {
+                        RequestData(true);
+                    }
                 }
             }
         }

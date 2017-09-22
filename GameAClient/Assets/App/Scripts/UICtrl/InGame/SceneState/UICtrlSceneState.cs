@@ -5,6 +5,7 @@
 ** Summary : UICtrlSceneState  
 ***********************************************************************/
 
+using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using GameA.Game;
@@ -16,7 +17,7 @@ using PlayMode = GameA.Game.PlayMode;
 
 namespace GameA
 {
-    [UIAutoSetup]
+    [UIResAutoSetup(EResScenary.UIInGame)]
     public class UICtrlSceneState : UICtrlInGameBase<UIViewSceneState>
     {
         private readonly Dictionary<EWinCondition, UMCtrlGameWinConditionItem> _winConditionItemDict =
@@ -59,33 +60,39 @@ namespace GameA
             _groupId = (int) EUIGroupType.InGameBackgroud;
         }
 
+        protected override void OnViewCreated()
+        {
+            base.OnViewCreated();
+            //初始化收集物体缓存
+            _umCtrlCollectionItemCache = new List<UMCtrlCollectionItem>(_initUMCollectionItemNum);
+            for (int i = 0; i < _initUMCollectionItemNum; i++)
+            {
+                _umCtrlCollectionItemCache.Add(new UMCtrlCollectionItem());
+                _umCtrlCollectionItemCache[i].Init(_cachedView.Trans, ResScenary);
+                _umCtrlCollectionItemCache[i].Hide();
+            }
+            _umCtrlCollectionLifeItemCache = new List<UMCtrlCollectionLifeItem>(_initUMCollectionLifeNum);
+            for (int i = 0; i < _initUMCollectionLifeNum; i++)
+            {
+                _umCtrlCollectionLifeItemCache.Add(new UMCtrlCollectionLifeItem());
+                _umCtrlCollectionLifeItemCache[i].Init(_cachedView.Trans, ResScenary);
+                _umCtrlCollectionLifeItemCache[i].Hide();
+            }
+        }
+
+        protected override void OnDestroy()
+        {
+            _umCtrlCollectionItemCache = null;
+            _umCtrlCollectionLifeItemCache = null;
+            base.OnDestroy();
+        }
+
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
             Clear();
             UpdateAll();
             UpdateItemVisible();
-            //初始化收集物体缓存
-            if (null == _umCtrlCollectionItemCache)
-            {
-                _umCtrlCollectionItemCache = new List<UMCtrlCollectionItem>(_initUMCollectionItemNum);
-                for (int i = 0; i < _initUMCollectionItemNum; i++)
-                {
-                    _umCtrlCollectionItemCache.Add(new UMCtrlCollectionItem());
-                    _umCtrlCollectionItemCache[i].Init(_cachedView.Trans);
-                    _umCtrlCollectionItemCache[i].Hide();
-                }
-            }
-            if (null == _umCtrlCollectionLifeItemCache)
-            {
-                _umCtrlCollectionLifeItemCache = new List<UMCtrlCollectionLifeItem>(_initUMCollectionLifeNum);
-                for (int i = 0; i < _initUMCollectionLifeNum; i++)
-                {
-                    _umCtrlCollectionLifeItemCache.Add(new UMCtrlCollectionLifeItem());
-                    _umCtrlCollectionLifeItemCache[i].Init(_cachedView.Trans);
-                    _umCtrlCollectionLifeItemCache[i].Hide();
-                }
-            }
         }
 
         protected override void InitEventListener()
@@ -214,7 +221,7 @@ namespace GameA
                 if (hasCondition)
                 {
                     UMCtrlGameWinConditionItem winConditionItem = new UMCtrlGameWinConditionItem();
-                    winConditionItem.Init(_cachedView.ConditionsItemRoot);
+                    winConditionItem.Init(_cachedView.ConditionsItemRoot, ResScenary);
                     _winConditionItemDict.Add(i, winConditionItem);
                     winConditionItem.SetComplete(false);
                     winConditionItem.SetText(GetWinConditionString(i));
@@ -385,7 +392,7 @@ namespace GameA
                             if (i >= _starConditionList.Count)
                             {
                                 item = new UMCtrlGameStarItem();
-                                item.Init(_cachedView.ConditionsItemRoot);
+                                item.Init(_cachedView.ConditionsItemRoot, ResScenary);
                                 _starConditionList.Add(item);
                             }
                             else
@@ -555,7 +562,7 @@ namespace GameA
             else
             {
                 umCtrlCollectionItem = new UMCtrlCollectionItem();
-                umCtrlCollectionItem.Init(_cachedView.Trans);
+                umCtrlCollectionItem.Init(_cachedView.Trans, ResScenary);
                 _umCtrlCollectionItemCache.Add(umCtrlCollectionItem);
             }
             return umCtrlCollectionItem;
@@ -573,7 +580,7 @@ namespace GameA
             else
             {
                 umCtrlCollectionLifeItem = new UMCtrlCollectionLifeItem();
-                umCtrlCollectionLifeItem.Init(_cachedView.Trans);
+                umCtrlCollectionLifeItem.Init(_cachedView.Trans, ResScenary);
                 _umCtrlCollectionLifeItemCache.Add(umCtrlCollectionLifeItem);
             }
             return umCtrlCollectionLifeItem;

@@ -11,7 +11,7 @@ namespace GameA
     /// <summary>
     /// 阶层养成
     /// </summary>
-    [UIAutoSetup]
+    [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlTrain : UICtrlAnimationBase<UIViewTrain>
     {
         private string[] _spriteNames =
@@ -77,10 +77,10 @@ namespace GameA
             for (int i = 0; i < _trainProperties.Length; i++)
             {
                 _propertyItems[i] = new UMCtrlTrainPropertyItem(_trainProperties[i]);
-                _propertyItems[i].Init(_cachedView.PropertyListRTF);
+                _propertyItems[i].Init(_cachedView.PropertyListRTF, ResScenary);
                 _propertyInfos[i] = new UMCtrlTrainPropertyInfo(_trainProperties[i]);
-                _propertyInfos[i].Init(_cachedView.InfoListRTF);
-                Sprite sprite = ResourcesManager.Instance.GetSprite(_spriteNames[i]);
+                _propertyInfos[i].Init(_cachedView.InfoListRTF, ResScenary);
+                Sprite sprite = JoyResManager.Instance.GetSprite(_spriteNames[i]);
                 _propertyItems[i].InitView(sprite, _propertyNames[i]);
                 _propertyInfos[i].InitView(sprite);
             }
@@ -347,7 +347,7 @@ namespace GameA
             }
             Image img = new GameObject("Point").AddComponent<Image>();
             if (null == _pointSprite)
-                _pointSprite = ResourcesManager.Instance.GetSprite(_pointName);
+                _pointSprite = JoyResManager.Instance.GetSprite(_pointName);
             img.sprite = _pointSprite;
             tf = img.GetComponent<Transform>();
             tf.SetParent(_cachedView.MapImg);
@@ -368,7 +368,7 @@ namespace GameA
             }
             Image img = new GameObject("Line").AddComponent<Image>();
             if (null == _lineSprite)
-                _lineSprite = ResourcesManager.Instance.GetSprite(_lineName);
+                _lineSprite = JoyResManager.Instance.GetSprite(_lineName);
             img.sprite = _lineSprite;
             tf = img.GetComponent<Transform>();
             tf.SetParent(_cachedView.MapImg);

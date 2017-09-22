@@ -29,14 +29,14 @@ namespace GameA
             if (mail.ReadFlag == false)
             { 
                 //未读
-                if (ResourcesManager.Instance.TryGetSprite(_mailUnRead, out Flag))
+                if (JoyResManager.Instance.TryGetSprite(_mailUnRead, out Flag))
                 {
                     _cachedView.ReadFlag.sprite = Flag;
                 }
             }
             else
             {
-                if (ResourcesManager.Instance.TryGetSprite(_mailRead, out Flag))
+                if (JoyResManager.Instance.TryGetSprite(_mailRead, out Flag))
                 {
                     _cachedView.ReadFlag.sprite = Flag;
                 }
@@ -45,14 +45,14 @@ namespace GameA
             if (mail.ReceiptedFlag == false)
             {
                 //未接收
-                if (ResourcesManager.Instance.TryGetSprite(_mailUnfetched, out Flag))
+                if (JoyResManager.Instance.TryGetSprite(_mailUnfetched, out Flag))
                 {
                     _cachedView.RewardFlag.sprite = Flag;
                 }
             }
             else
             {
-                if (ResourcesManager.Instance.TryGetSprite(_mailfetched, out Flag))
+                if (JoyResManager.Instance.TryGetSprite(_mailfetched, out Flag))
                 {
                     _cachedView.RewardFlag.sprite = Flag;
                 }

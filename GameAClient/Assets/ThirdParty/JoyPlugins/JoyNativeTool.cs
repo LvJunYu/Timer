@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using GameA;
+using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
 using EMessengerType = SoyEngine.EMessengerType;
@@ -101,7 +102,7 @@ public class JoyNativeTool:IJoyNativeTool
 
     public bool TryGetFromStreamingAssets(string fileName, out byte[] bytes)
     {
-        string fileFullName = Path.Combine(Application.streamingAssetsPath, fileName);
+        string fileFullName = Path.Combine(ResPath.StreamingAssetsPath, fileName);
         bytes = null;
         if (!File.Exists(fileFullName)) {
             return false;

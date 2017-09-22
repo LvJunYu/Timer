@@ -391,7 +391,7 @@ namespace NewResourceSolution
             LogHelper.Info("Res check finish");
             if (manifestUpdated)
             {
-                ResourcesManager.Instance.Init();
+                JoyResManager.Instance.Init();
             }
             Messenger.Broadcast(EMessengerType.OnResourcesCheckFinish);
             SocialApp.Instance.LoginAfterUpdateResComplete();

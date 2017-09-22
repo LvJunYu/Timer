@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    [UIAutoSetup]
+    [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlTaskbar : UICtrlGenericBase<UIViewTaskbar>
     {
         #region 常量与字段
@@ -33,6 +33,7 @@ namespace GameA
 //        private bool _isShowingSettingButton = true;
         private UIParticleItem _uiParticleItem;
 
+        private bool _pushGoldEnergyStyle;
         #endregion
 
         #region 属性
@@ -48,7 +49,7 @@ namespace GameA
 
         protected override void InitGroupId()
         {
-            _groupId = (int) EUIGroupType.MainFrame;
+            _groupId = (int) EUIGroupType.Background;
         }
 
         protected override void InitEventListener()
@@ -100,17 +101,31 @@ namespace GameA
             OpenTaskBtn();
         }
 
+        protected override void OnDestroy()
+        {
+            GameParticleManager.FreeParticleItem(_uiParticleItem.Particle);
+            base.OnDestroy();
+        }
+
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamondSetting);
+            if (!_pushGoldEnergyStyle)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamondSetting);
+                _pushGoldEnergyStyle = true;
+            }
             RefreshUserInfo();
             GameProcessManager.Instance.RefreshHomeUIUnlock();
         }
 
         protected override void OnClose()
         {
-            SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
+            if (_pushGoldEnergyStyle)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
+                _pushGoldEnergyStyle = false;
+            }
             base.OnClose();
         }
 

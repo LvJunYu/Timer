@@ -19,6 +19,7 @@ namespace GameA
         private List<ProjectComment> _contentList = new List<ProjectComment>();
         private WorldProjectCommentList _data;
         private bool _isPostComment;
+        private EResScenary _resScenary;
         #endregion
 
         #region 属性
@@ -26,9 +27,10 @@ namespace GameA
         #endregion
 
         #region 方法
-        public void SetData(Project project)
+        public void SetData(Project project, EResScenary resScenary)
         {
             _content = project;
+            _resScenary = resScenary;
             ClearCommentInput();
             if (_content == null)
             {
@@ -118,7 +120,7 @@ namespace GameA
         private IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlWorldProjectComment();
-            item.Init(parent, Vector3.zero);
+            item.Init(parent, _resScenary);
             return item;
         }
 
@@ -154,7 +156,7 @@ namespace GameA
             _cachedView.CommentListTableScroller.SetCallback(OnItemRefresh, GetItemRenderer);
             _cachedView.PostCommentBtn.onClick.AddListener(OnPostCommentBtnClick);
         }
-
+        
         private void OnPostCommentBtnClick()
         {
             PostComment();

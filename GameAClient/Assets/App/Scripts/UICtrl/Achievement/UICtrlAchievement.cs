@@ -6,7 +6,7 @@ namespace GameA
     /// <summary>
     /// 成就页面
     /// </summary>
-    [UIAutoSetup]
+    [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlAchievement : UICtrlAnimationBase<UIViewAchievement>
     {
         private const int _maxAchievementNum = 40;
@@ -59,7 +59,7 @@ namespace GameA
                 return umCtrlAchievementItem;
             }
             umCtrlAchievementItem = new UMCtrlAchievementItem();
-            umCtrlAchievementItem.Init(_cachedView.UMItemRTF);
+            umCtrlAchievementItem.Init(_cachedView.UMItemRTF, ResScenary);
             _umCtrlAchievementItemCache.Add(umCtrlAchievementItem);
             return umCtrlAchievementItem;
         }

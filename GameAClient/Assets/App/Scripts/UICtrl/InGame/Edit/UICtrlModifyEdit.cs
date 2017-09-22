@@ -223,7 +223,7 @@ namespace GameA
                 else
                 {
                     Sprite texture;
-                    if (ResourcesManager.Instance.TryGetSprite(tableUnit.Icon, out texture))
+                    if (JoyResManager.Instance.TryGetSprite(tableUnit.Icon, out texture))
                     {
                         _cachedView.ModifyItems[i].gameObject.SetActive(true);
                         _cachedView.ModifyItems[i].SetItem(texture);
@@ -269,7 +269,7 @@ namespace GameA
                     continue;
                 }
                 Sprite sprite;
-                if (ResourcesManager.Instance.TryGetSprite(tableUnit.Icon, out sprite))
+                if (JoyResManager.Instance.TryGetSprite(tableUnit.Icon, out sprite))
                 {
                     _cachedView.SelectItems[i].SetItem(sprite,
                         LocalUser.Instance.MatchUserData.UnitData.ItemList[i].UnitCount -

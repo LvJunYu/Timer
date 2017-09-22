@@ -695,7 +695,7 @@ namespace GameA.Game
                 return;
             }
             GameObject statusBarObj =
-                Object.Instantiate(ResourcesManager.Instance.GetPrefab(EResType.ParticlePrefab, "StatusBar", 1)) as
+                Object.Instantiate(JoyResManager.Instance.GetPrefab(EResType.ParticlePrefab, "StatusBar")) as
                     GameObject;
             if (null != statusBarObj)
             {

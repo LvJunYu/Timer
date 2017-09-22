@@ -15,6 +15,7 @@ namespace GameA
     {
         #region 常量与字段
 
+        private EResScenary _resScenary;
         private List<Record> _recordList;
         private List<CardDataRendererWrapper<RecordRankHolder>> _contentList = new List<CardDataRendererWrapper<RecordRankHolder>>();
         #endregion
@@ -28,8 +29,9 @@ namespace GameA
         #region private
         #endregion private
 
-        public void Set(List<Record> recordList)
+        public void Set(List<Record> recordList, EResScenary resScenary)
         {
+            _resScenary = resScenary;
             _recordList = recordList;
             RefreshView();
         }
@@ -95,7 +97,7 @@ namespace GameA
         private IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlRank();
-            item.Init(parent, Vector3.zero);
+            item.Init(parent, _resScenary);
             return item;
         }
         #region 接口

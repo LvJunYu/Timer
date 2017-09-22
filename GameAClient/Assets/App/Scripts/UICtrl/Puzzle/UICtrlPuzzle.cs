@@ -8,7 +8,7 @@ namespace GameA
     /// <summary>
     /// 拼图页面
     /// </summary>
-    [UIAutoSetup]
+    [UIResAutoSetup(EResScenary.UIInGame)]
     public class UICtrlPuzzle : UICtrlAnimationBase<UIViewPuzzle>
     {
         private Dictionary<int, Table_PuzzleSlot> _slots; //装备栏数据
@@ -74,7 +74,7 @@ namespace GameA
                 var unlockLv = _slots[key].UnlockLevel;
                 var equipLoc = new UMCtrlPuzzleEquipLoc(key, unlockLv);
                 _allUMEquipLocs.Add(equipLoc);
-                equipLoc.Init(_cachedView.PuzzleLocsGrid);
+                equipLoc.Init(_cachedView.PuzzleLocsGrid, ResScenary);
                 //显示装备的拼图
                 if (index < _usingUserPicFull.Count && _usingUserPicFull[index] != null)
                     equipLoc.SetPic(_usingUserPicFull[index]);
@@ -91,7 +91,7 @@ namespace GameA
                 {
                     var puzzle = new UMCtrlPuzzleItem();
                     _allUMPuzzleItem.Add(puzzle);
-                    puzzle.Init(_cachedView.PuzzleItemGrid);
+                    puzzle.Init(_cachedView.PuzzleItemGrid, ResScenary);
                     //puzzle.RefreshView();
                 }
                 _cachedView.PuzzleItemSrollRect.horizontal = false;
@@ -115,7 +115,7 @@ namespace GameA
             //var puzzle = new UMCtrlPuzzleItem(_allPictureFull[i]);
             var puzzle = new UMCtrlPuzzleItem();
             _allUMPuzzleItem.Add(puzzle);
-            puzzle.Init(parent);
+            puzzle.Init(parent, ResScenary);
             return puzzle;
         }
 

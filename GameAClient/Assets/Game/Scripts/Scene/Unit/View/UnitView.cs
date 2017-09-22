@@ -261,7 +261,7 @@ namespace GameA.Game
                 return;
             }
             Sprite arrowSprite;
-            if (ResourcesManager.Instance.TryGetSprite("Letter_" + pairUnit.Num, out arrowSprite))
+            if (JoyResManager.Instance.TryGetSprite("Letter_" + pairUnit.Num, out arrowSprite))
             {
                 spriteRenderer.sprite = arrowSprite;
             }

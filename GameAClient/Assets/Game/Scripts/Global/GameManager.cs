@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -245,9 +246,7 @@ namespace GameA
             {
                 return false;
             }
-            if (go.GetComponent<ResourceManager> () == null) {
-                go.AddComponent<ResourceManager> ();
-            }
+            JoyResManager.Instance.SetDefaultResScenary(EResScenary.Game);
             game.Play(project, param, eStartType);
             _currentGame = game;
             Messenger.Broadcast(EMessengerType.OnRequestStartGame);

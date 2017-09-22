@@ -18,6 +18,7 @@ namespace GameA
         private UPCtrlBase<UICtrlProjectDetail, UIViewProjectDetail>[] _ctrlAry;
 
         private UPCtrlBase<UICtrlProjectDetail, UIViewProjectDetail> _curCtrl;
+        private int _curInx;
         #endregion
 
         #region 属性
@@ -26,11 +27,12 @@ namespace GameA
 
         #region 方法
 
-        public void SetData(Project project)
+        public void SetData(Project project, EResScenary resScenary)
         {
-            _upCtrlProjectDetail.SetData(project);
-            _upCtrlRecordRank.SetData(project);
-            _upCtrlProjectComment.SetData(project);
+            
+            _upCtrlProjectDetail.SetData(project, resScenary);
+            _upCtrlRecordRank.SetData(project, resScenary);
+            _upCtrlProjectComment.SetData(project, resScenary);
             
             _cachedView.TabGroup.SelectIndex(0, true);
         }
@@ -38,7 +40,7 @@ namespace GameA
         public override void Open()
         {
             base.Open();
-            _cachedView.TabGroup.SelectIndex(0, true);
+            _cachedView.TabGroup.SelectIndex(_curInx, true);
         }
 
         public void OnChangeToAppMode()
@@ -71,10 +73,20 @@ namespace GameA
                 _cachedView.CommentListTab2, flag=>OnTabChange(2, flag));
         }
 
+        public override void OnDestroy()
+        {
+            _upCtrlProjectComment.OnDestroy();
+            _upCtrlProjectDetail.OnDestroy();
+            _upCtrlRecordRank.OnDestroy();
+            _curCtrl = null;
+            base.OnDestroy();
+        }
+
         private void OnTabChange(int inx, bool open)
         {
             if (open)
             {
+                _curInx = inx;
                 if (_curCtrl != null)
                 {
                     _curCtrl.Close();

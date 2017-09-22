@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    [UIAutoSetup]
+    [UIResAutoSetup(EResScenary.UIInGame)]
     public class UICtrlInGameUnitHandbook : UICtrlInGameAnimationBase<UIViewInGameUnitHandbook>
     {
         #region 常量与字段
@@ -35,8 +35,8 @@ namespace GameA
         {
             _openSequence = DOTween.Sequence();
             _closeSequence = DOTween.Sequence();
-            _openSequence.Append(_cachedView.ContentDock.DOSizeDelta(new Vector2(500f, 100f), 0.5f).From());
-            _closeSequence.Append(_cachedView.ContentDock.DOSizeDelta(new Vector2(500f, 100f), 0.5f));
+            _openSequence.Append(_cachedView.ContentDock.DOSizeDelta(new Vector2(500f, 100f), 0.3f).SetEase(Ease.Linear).From());
+            _closeSequence.Append(_cachedView.ContentDock.DOSizeDelta(new Vector2(500f, 100f), 0.3f).SetEase(Ease.Linear));
             _openSequence.OnComplete(OnOpenAnimationComplete).SetAutoKill(false).Pause().OnUpdate(OnOpenAnimationUpdate);
             _closeSequence.OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause()
                 .PrependCallback(() => _cachedView.Trans.localPosition = Vector3.zero);
@@ -69,7 +69,7 @@ namespace GameA
                 return;
             }
             Sprite sprite;
-            if (ResourcesManager.Instance.TryGetSprite(tableUnit.Icon, out sprite))
+            if (JoyResManager.Instance.TryGetSprite(tableUnit.Icon, out sprite))
             {
                 _cachedView.Icon.sprite = sprite;
             }

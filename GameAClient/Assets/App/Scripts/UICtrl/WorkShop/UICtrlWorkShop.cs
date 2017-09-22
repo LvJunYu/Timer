@@ -10,18 +10,17 @@ using System.Collections.Generic;
 using SoyEngine;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace GameA
 {
-    [UIAutoSetup]
+    [UIResAutoSetup(EResScenary.UISingleMode, EUIAutoSetupType.Create)]
     public class UICtrlWorkShop : UICtrlAnimationBase<UIViewWorkShop>
     {
         #region 常量与字段
         /// <summary>
         /// 当前的状态
         /// </summary>
-        private EWorkShopState _state = EWorkShopState.None;
+        private EWorkShopState _state = EWorkShopState.PersonalProject;
         private CardDataRendererWrapper<Project> _curSelectedPrivateProject;
         private CardDataRendererWrapper<Project> _curSelectedPublicProject;
         private readonly List<CardDataRendererWrapper<Project>> _privateContents = new List<CardDataRendererWrapper<Project>>();
@@ -38,6 +37,8 @@ namespace GameA
         /// </summary>
         private int _waitReturnToAppTimer;
         private const int WaitReturnToAppTimeOut = 4000;
+        private bool _pushGoldEnergyStyle;
+        private bool _unload;
         #endregion
 
         #region 属性
@@ -53,14 +54,29 @@ namespace GameA
             {
                 LocalUser.Instance.PersonalProjectList.Request();
             }
-            SetMode(EWorkShopState.PersonalProject);
-            SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamond);
+
+            _unload = false;
+            var mode = _state;
+            _state = EWorkShopState.None;
+            SetMode(mode);
+            if (!_pushGoldEnergyStyle)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamond);
+                _pushGoldEnergyStyle = true;
+            }
         }
 
         protected override void OnClose()
         {
+            if (_pushGoldEnergyStyle)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
+                _pushGoldEnergyStyle = false;
+            }
+            _unload = true;
+            _cachedView.PrivateProjectsGridScroller.RefreshCurrent();
+            _cachedView.PublicProjectsGridScroller.RefreshCurrent();
             base.OnClose();
-            SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
         }
 
         protected override void SetAnimationType()
@@ -352,40 +368,54 @@ namespace GameA
 
         private void OnPrivateItemRefresh(IDataItemRenderer item, int inx)
         {
-            if(inx >= _privateContents.Count)
+            if (_unload)
             {
-                LogHelper.Error("OnPrivateItemRefresh Error Inx > count");
-                return;
+                item.Set(null);
             }
-            item.Set(_privateContents[inx]);
+            else
+            {
+                if(inx >= _privateContents.Count)
+                {
+                    LogHelper.Error("OnPrivateItemRefresh Error Inx > count");
+                    return;
+                }
+                item.Set(_privateContents[inx]);
+            }
         }
 
         private IDataItemRenderer GetPrivateItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlWorkShopProjectCard();
-            item.Init(parent, Vector3.zero);
+            item.Init(parent, ResScenary);
             return item;
         }
 
         private void OnPublicItemRefresh(IDataItemRenderer item, int inx)
         {
-            if(inx >= _publicContents.Count)
+            if (_unload)
             {
-                LogHelper.Error("OnPublicItemRefresh Error Inx > count");
-                return;
+                item.Set(null);
             }
-            item.Set(_publicContents[inx]);
-            var pList = LocalUser.Instance.UserPublishedWorldProjectList;
-            if (!pList.IsEnd && inx > pList.AllList.Count - 2)
+            else
             {
-                RequestPublishedProject(true);
+                if (inx >= _publicContents.Count)
+                {
+                    LogHelper.Error("OnPublicItemRefresh Error Inx > count");
+                    return;
+                }
+                item.Set(_publicContents[inx]);
+                var pList = LocalUser.Instance.UserPublishedWorldProjectList;
+                if (!pList.IsEnd && inx > pList.AllList.Count - 2)
+                {
+                    RequestPublishedProject(true);
+                }
             }
         }
 
         private IDataItemRenderer GetPublicItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlPublishedProjectCard();
-            item.Init(parent, Vector3.zero);
+            item.Init(parent, ResScenary);
             return item;
         }
 

@@ -149,7 +149,7 @@ namespace SoyEngine
             AudioItem audioItem;
             if (!_playingAudioEffect.TryGetValue(audioName, out audioItem))
             {
-                AudioClip clip = ResourcesManager.Instance.GetAudio(audioName);
+                AudioClip clip = JoyResManager.Instance.GetAudio(audioName);
                 if (null == clip)
                 {
                     LogHelper.Error("Audio {0} load failed!", audioName);

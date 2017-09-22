@@ -77,7 +77,7 @@ namespace GameA
             {
                 _cachedView.RankText.SetActiveEx(false);
                 _cachedView.RankImage.SetActiveEx(true);
-                _cachedView.RankImage.sprite = ResourcesManager.Instance.GetSprite(SpriteNameDefine.GetRank(rank));
+                _cachedView.RankImage.sprite = JoyResManager.Instance.GetSprite(SpriteNameDefine.GetRank(rank));
             }
             else
             {

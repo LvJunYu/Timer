@@ -27,17 +27,12 @@ namespace GameA
 
         #region 方法
 
-        protected override void OnViewCreated()
-        {
-            base.OnViewCreated();
-        }
-
         public void IintItem(int unitID, bool isUnlock)
         {
             _unitId = unitID;
             _uint = TableManager.Instance.GetUnit(unitID);
             _unitIconName = _uint.Icon;
-            if (ResourcesManager.Instance.TryGetSprite(_unitIconName, out _unitIcon))
+            if (JoyResManager.Instance.TryGetSprite(_unitIconName, out _unitIcon))
             {
                 _cachedView.Icon.sprite = _unitIcon;
             }

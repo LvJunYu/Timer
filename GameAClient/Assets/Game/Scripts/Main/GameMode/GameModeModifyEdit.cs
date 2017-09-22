@@ -79,7 +79,13 @@ namespace GameA.Game
 			SocialApp.Instance.ReturnToApp();
         }
 
-        public override void Save(Action successCallback = null, Action<EProjectOperateResult> failedCallback = null)
+	    public override bool Stop()
+	    {
+		    SocialGUIManager.Instance.CloseUI<UICtrlModifyEdit>();
+		    return base.Stop();
+	    }
+
+	    public override void Save(Action successCallback = null, Action<EProjectOperateResult> failedCallback = null)
 		{
 			byte[] mapDataBytes = MapManager.Instance.SaveMapData();
 			byte[] compressedBytes = MatrixProjectTools.CompressLZMA(mapDataBytes);

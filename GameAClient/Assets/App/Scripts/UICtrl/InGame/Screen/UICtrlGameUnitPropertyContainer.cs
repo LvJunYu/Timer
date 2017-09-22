@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    [UIAutoSetup]
+    [UIResAutoSetup(EResScenary.UIInGame)]
     public class UICtrlGameUnitPropertyContainer : UICtrlInGameBase<UIViewGameUnitPropertyContainer>
     {
         private const int ItemSize = 116;
@@ -23,6 +23,12 @@ namespace GameA
         {
             base.InitEventListener();
             RegisterEvent(EMessengerType.OnEditCameraPosChange, UpateContainer);
+        }
+
+        protected override void OnDestroy()
+        {
+            _itemPoolStack.Clear();
+            base.OnDestroy();
         }
 
         protected override void OnOpen(object parameter)
@@ -80,7 +86,7 @@ namespace GameA
                 return _itemPoolStack.Pop();
             }
             var item = new UMCtrlUnitProperty();
-            item.Init(_cachedView.Trans, new Vector3(-10000, 0, 0));
+            item.Init(_cachedView.Trans, ResScenary, new Vector3(-10000, 0, 0));
             return item;
         }
     }

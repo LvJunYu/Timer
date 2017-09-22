@@ -43,7 +43,7 @@ namespace NewResourceSolution
 
         [JsonIgnore] public AssetBundle CachedBundle;
         [JsonIgnore] public Dictionary<string, Object> AssetDic = new Dictionary<string, Object>();
-        [JsonIgnore] public int ScenaryMask;
+        [JsonIgnore] public long ScenaryMask;
         [JsonIgnore] public bool IsLocaleRes;
         [JsonIgnore] public string LocaleName;
 
@@ -257,11 +257,11 @@ namespace NewResourceSolution
                     AssetDic.Add(AssetNames[j], asset);
                 }
             }
-            ScenaryMask |= 1 << scenary;
+            ScenaryMask |= 1L << scenary;
             return true;
         }
 
-        public bool UncacheMask(int mask)
+        public bool UncacheMask(long mask)
         {
             if ((ScenaryMask & mask) == 0)
                 return false;
@@ -275,9 +275,9 @@ namespace NewResourceSolution
 
         public bool Uncache(int scenary)
         {
-            if ((ScenaryMask & (1 << scenary)) == 0)
+            if ((ScenaryMask & (1L << scenary)) == 0)
                 return false;
-            ScenaryMask &= ~(1 << scenary);
+            ScenaryMask &= ~(1L << scenary);
             if (0 == ScenaryMask)
             {
                 UncacheAll();

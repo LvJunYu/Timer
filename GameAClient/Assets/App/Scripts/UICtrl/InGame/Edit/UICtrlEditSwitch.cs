@@ -11,7 +11,7 @@ using SoyEngine;
 
 namespace GameA
 {
-    [UIAutoSetup]
+    [UIResAutoSetup(EResScenary.UIInGame)]
     public class UICtrlEditSwitch : UICtrlInGameBase<UIViewEditSwitch>
     {
         #region 常量与字段
@@ -42,6 +42,15 @@ namespace GameA
             base.InitEventListener();
             RegisterEvent<IntVec3, IntVec3, bool>(EMessengerType.OnSwitchConnectionChanged, OnSwitchConnectionChanged);
             RegisterEvent(EMessengerType.OnEditCameraPosChange, OnCameraPosChanged);
+        }
+
+        protected override void OnDestroy()
+        {
+            _umCountDict.Clear();
+            _umConnectionDict.Clear();
+            _umCountPool.Clear();
+            _umConnectionPool.Clear();
+            base.OnDestroy();
         }
 
         protected override void OnOpen(object parameter)
@@ -181,7 +190,7 @@ namespace GameA
                 return _umConnectionPool.Pop();
             }
             var um = new UMCtrlEditSwitchConnection();
-            um.Init(_cachedView.ConnectionLayer);
+            um.Init(_cachedView.ConnectionLayer, ResScenary);
             return um;
         }
 
@@ -198,7 +207,7 @@ namespace GameA
                 return _umCountPool.Pop();
             }
             var um = new UMCtrlEditSwitchCount();
-            um.Init(_cachedView.CountLayer);
+            um.Init(_cachedView.CountLayer, ResScenary);
             return um;
         }
 

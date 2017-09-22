@@ -6,9 +6,6 @@
 ** Summary : MonoFunctionEx
 ***********************************************************************/
 
-using UnityEngine;
-using UnityEngine.UI;
-
 namespace SoyEngine
 {
 	public static partial class MonoFunctionEx

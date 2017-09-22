@@ -54,7 +54,7 @@ namespace GameA
             //    OnHeadSeleted(true);
             //}
             Texture fashion=null;
-            if (ResourcesManager.Instance.TryGetTexture(head, out fashion))
+            if (JoyResManager.Instance.TryGetTexture(head, out fashion))
             {
                 _cachedView.HeadImg.texture = fashion;
             }

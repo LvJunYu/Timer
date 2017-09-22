@@ -84,6 +84,13 @@ namespace GameA
             _cachedView.WinConditionToggle.onValueChanged.AddListener(WinConditionToggleOnValueChanged);
         }
 
+        protected override void OnDestroy()
+        {
+            _upCtrlWorkShopBasicSetting.OnDestroy();
+            _upCtrlWorkShopWinConditionSetting.OnDestroy();
+            base.OnDestroy();
+        }
+
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);

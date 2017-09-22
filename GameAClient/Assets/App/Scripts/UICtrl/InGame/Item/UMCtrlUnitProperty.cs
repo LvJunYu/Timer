@@ -90,13 +90,13 @@ namespace GameA
                     var mdFg = _cachedView.MoveDirectionFg;
                     if (md == EMoveDirection.None)
                     {
-                        mdFg.sprite = ResourcesManager.Instance.GetSprite(SpriteNameDefine.UnitEditMoveDirectionNone);
+                        mdFg.sprite = JoyResManager.Instance.GetSprite(SpriteNameDefine.UnitEditMoveDirectionNone);
                         mdFg.SetNativeSize();
                         mdFg.rectTransform.localEulerAngles = Vector3.zero;
                     }
                     else
                     {
-                        mdFg.sprite = ResourcesManager.Instance.GetSprite(SpriteNameDefine.UnitEditMoveDirectionUp);
+                        mdFg.sprite = JoyResManager.Instance.GetSprite(SpriteNameDefine.UnitEditMoveDirectionUp);
                         mdFg.SetNativeSize();
                         mdFg.rectTransform.localEulerAngles = 
                             new Vector3(0, 0, -45) * EditHelper.CalcDirectionVal((byte) (md - 1));
@@ -105,10 +105,10 @@ namespace GameA
                 case EEditType.Active:
                     var aState = (EActiveState) unitExtra.Active;
                     _cachedView.ActiveStateFg.sprite =
-                        ResourcesManager.Instance.GetSprite(SpriteNameDefine.GetUnitEditActiveStateImage(aState));
+                        JoyResManager.Instance.GetSprite(SpriteNameDefine.GetUnitEditActiveStateImage(aState));
                     break;
                 case EEditType.Child:
-                    _cachedView.PayloadFg.sprite = ResourcesManager.Instance.GetSprite(
+                    _cachedView.PayloadFg.sprite = JoyResManager.Instance.GetSprite(
                             TableManager.Instance.GetEquipment(unitExtra.ChildId).Icon);
                     break;
                 case EEditType.Rotate:

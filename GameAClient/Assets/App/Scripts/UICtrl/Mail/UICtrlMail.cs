@@ -1,16 +1,8 @@
-﻿using System;
-using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using SoyEngine;
-using SoyEngine.Proto;
-using System.IO;
-using GameA.Game;
-
+﻿using System.Collections.Generic;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlMail : UICtrlAnimationBase<UIViewMail>
     {
         public List<UMCtrlMail> _cardList = new List<UMCtrlMail>();
@@ -94,7 +86,7 @@ namespace GameA
             if (_cachedView != null)
             {
                 var UM = new UMCtrlMail();
-                UM.Init(_cachedView.Dock as RectTransform);
+                UM.Init(_cachedView.Dock, ResScenary);
                 UM.Set(fitting);
                 _cardList.Add(UM);
             }

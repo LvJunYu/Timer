@@ -7,19 +7,16 @@
 ***********************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using GameA.Game;
 using SoyEngine;
 using SoyEngine.Proto;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using GameA.Game;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlFashionShopMainMenu : UICtrlAnimationBase<UIViewFashionShopMainMenu>
     {
         #region 常量与字段
@@ -27,10 +24,10 @@ namespace GameA
         private USCtrlFashionShop _usctrlFashionPage2;
         private USCtrlFashionShop _usctrlFashionPage3;
         private USCtrlFashionShop _usctrlFashionPage4;
-        private UMCtrlFashionShopCard _headSelectedFashionCard = null;
-        private UMCtrlFashionShopCard _upperSelectedFashionCard = null;
-        private UMCtrlFashionShopCard _lowerSelectedFashionCard = null;
-        private UMCtrlFashionShopCard _appendageSelectedFashionCard = null;
+        private UMCtrlFashionShopCard _headSelectedFashionCard;
+        private UMCtrlFashionShopCard _upperSelectedFashionCard;
+        private UMCtrlFashionShopCard _lowerSelectedFashionCard;
+        private UMCtrlFashionShopCard _appendageSelectedFashionCard;
         private RectTransform _head;
         private RectTransform _upBody;
         private RectTransform _lowerpart;
@@ -172,10 +169,10 @@ namespace GameA
                 }
                 list.Add(fashionUnit); //放入shopitem
             }
-            _usctrlFashionPage2.Set(dict[2]);
-            _usctrlFashionPage1.Set(dict[1]);
-            _usctrlFashionPage3.Set(dict[3]);
-            _usctrlFashionPage4.Set(dict[4]);
+            _usctrlFashionPage2.Set(dict[2], ResScenary);
+            _usctrlFashionPage1.Set(dict[1], ResScenary);
+            _usctrlFashionPage3.Set(dict[3], ResScenary);
+            _usctrlFashionPage4.Set(dict[4], ResScenary);
         }
 
         public void RefreshFashionShopPanel()
@@ -192,7 +189,7 @@ namespace GameA
             long partID,
             Action successCallback, Action failedCallback)
         {
-            RemoteCommands.ChangeAvatarPart(type, partID, (ret) =>
+            RemoteCommands.ChangeAvatarPart(type, partID, ret =>
             {
                 if (ret.ResultCode == (int)EChangeAvatarPartCode.CAPC_Success)
                 {
@@ -208,7 +205,7 @@ namespace GameA
                         failedCallback.Invoke();
                     }
                 }
-            }, (errorCode) =>
+            }, errorCode =>
             {
                 if (null != failedCallback)
                 {
@@ -449,9 +446,6 @@ namespace GameA
             else if (LocalUser.Instance.User.UserInfoSimple.Sex == ESex.S_Female)
             {
                 SetFashionPage((int) ESex.S_Male);
-            }
-            else
-            {
             }
         }
 

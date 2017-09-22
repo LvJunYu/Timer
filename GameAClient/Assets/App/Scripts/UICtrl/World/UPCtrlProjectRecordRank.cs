@@ -18,6 +18,7 @@ namespace GameA
         private Project _content;
         private List<CardDataRendererWrapper<RecordRankHolder>> _contentList = new List<CardDataRendererWrapper<RecordRankHolder>>();
         private WorldProjectRecordRankList _data;
+        private EResScenary _resScenary;
         #endregion
 
         #region 属性
@@ -25,9 +26,10 @@ namespace GameA
         #endregion
 
         #region 方法
-        public void SetData(Project project)
+        public void SetData(Project project, EResScenary resScenary)
         {
             _content = project;
+            _resScenary = resScenary;
             if (_content == null)
             {
                 _data = null;
@@ -147,7 +149,7 @@ namespace GameA
         private IDataItemRenderer GetItemRenderer(RectTransform parent)
         {
             var item = new UMCtrlWorldRecordRank();
-            item.Init(parent, Vector3.zero);
+            item.Init(parent, _resScenary);
             return item;
         }
         #region 接口

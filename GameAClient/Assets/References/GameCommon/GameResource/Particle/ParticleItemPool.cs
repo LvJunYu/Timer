@@ -8,35 +8,37 @@
 
 using System;
 using System.Collections.Generic;
+using NewResourceSolution;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace SoyEngine
 {
-	public class ParticleItemPool : IDisposable
-	{
-		public string PoolName
-		{
-			get { return _poolName; }
-		}
-		/// <summary>
-		/// 最大闲置回收事件
-		/// </summary>
-		public const float MaxUnusedRecoveryDelay = 10;
+    public class ParticleItemPool : IDisposable
+    {
+        public string PoolName
+        {
+            get { return _poolName; }
+        }
 
-		private string _poolName;
+        /// <summary>
+        /// 最大闲置回收事件
+        /// </summary>
+        public const float MaxUnusedRecoveryDelay = 10;
 
-		private Stack<UnityNativeParticleItem> _freeParticleItems = new Stack<UnityNativeParticleItem>();
-		private Transform _poolRoot;
+        private string _poolName;
 
-		private float _lastRequestTime;
+        private Stack<UnityNativeParticleItem> _freeParticleItems = new Stack<UnityNativeParticleItem>();
+        private Transform _poolRoot;
 
-		public ParticleItemPool(string name,Transform parent)
-		{
-			_poolName = name;
-			_poolRoot = new GameObject(name + "_pool").transform;
-			CommonTools.SetParent(_poolRoot, parent);
-		}
+        private float _lastRequestTime;
+
+        public ParticleItemPool(string name, Transform parent)
+        {
+            _poolName = name;
+            _poolRoot = new GameObject(name + "_pool").transform;
+            CommonTools.SetParent(_poolRoot, parent);
+        }
 
         public void Dispose()
         {
@@ -52,73 +54,73 @@ namespace SoyEngine
         }
 
 
-	    public int Tick()
-		{
-			if (_freeParticleItems.Count == 0)
-			{
-				return 0;
-			}
-			if (CheckAutoRecovery())
-			{
-				var item = _freeParticleItems.Pop();
-				item.Release();
-				_lastRequestTime = Time.realtimeSinceStartup;
-				return 1;
-			}
-			return 0;
-		}
+        public int Tick()
+        {
+            if (_freeParticleItems.Count == 0)
+            {
+                return 0;
+            }
+            if (CheckAutoRecovery())
+            {
+                var item = _freeParticleItems.Pop();
+                item.Release();
+                _lastRequestTime = Time.realtimeSinceStartup;
+                return 1;
+            }
+            return 0;
+        }
 
-		public UnityNativeParticleItem Get()
-		{
-			UnityNativeParticleItem item;
-			if (_freeParticleItems.Count == 0)
-			{
-				item = CreateItem();
-			}
-			else
-			{
-				item =_freeParticleItems.Pop();
-			}
-			_lastRequestTime = Time.realtimeSinceStartup;
+        public UnityNativeParticleItem Get()
+        {
+            UnityNativeParticleItem item;
+            if (_freeParticleItems.Count == 0)
+            {
+                item = CreateItem();
+            }
+            else
+            {
+                item = _freeParticleItems.Pop();
+            }
+            _lastRequestTime = Time.realtimeSinceStartup;
 
-			return item;
-		}
+            return item;
+        }
 
-		public void Free(UnityNativeParticleItem item)
-		{
-			if (item != null && item.Trans != null)
-			{
-				item.Stop();
-				item.SetParent(_poolRoot,Vector3.zero);
-				item.OnFree();
-				_freeParticleItems.Push(item);
-			}
-		}
-
-
-		#region
-
-		private bool CheckAutoRecovery()
-		{
-			return Time.realtimeSinceStartup - _lastRequestTime > MaxUnusedRecoveryDelay;
-		}
+        public void Free(UnityNativeParticleItem item)
+        {
+            if (item != null && item.Trans != null)
+            {
+                item.Stop();
+                item.SetParent(_poolRoot, Vector3.zero);
+                item.OnFree();
+                _freeParticleItems.Push(item);
+            }
+        }
 
 
-		private UnityNativeParticleItem CreateItem()
-		{
-            var itemPrefab = NewResourceSolution.ResourcesManager.Instance.GetPrefab(NewResourceSolution.EResType.ParticlePrefab,  _poolName, 0);
-			if (itemPrefab == null)
-			{
-				LogHelper.Error("GameResourceManager.Instance.LoadMainAssetObject({0}) is null!", _poolName);
-				return null;
-			}
-			GameObject resGo = Object.Instantiate(itemPrefab) as GameObject;
-			UnityNativeParticleItem com = new UnityNativeParticleItem();
-			com.InitGo(resGo,_poolName);
-			return com;
-		}
+        #region
 
-		#endregion
+        private bool CheckAutoRecovery()
+        {
+            return Time.realtimeSinceStartup - _lastRequestTime > MaxUnusedRecoveryDelay;
+        }
 
-	}
+
+        private UnityNativeParticleItem CreateItem()
+        {
+            var itemPrefab = JoyResManager.Instance.GetPrefab(EResType.ParticlePrefab,
+                    _poolName);
+            if (itemPrefab == null)
+            {
+                LogHelper.Error("GameResourceManager.Instance.LoadMainAssetObject({0}) is null!", _poolName);
+                return null;
+            }
+            GameObject resGo = Object.Instantiate(itemPrefab) as GameObject;
+            UnityNativeParticleItem com = new UnityNativeParticleItem();
+            com.InitGo(resGo, _poolName);
+            return com;
+        }
+
+        #endregion
+    }
 }

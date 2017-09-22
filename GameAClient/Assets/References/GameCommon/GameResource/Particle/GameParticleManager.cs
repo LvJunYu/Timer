@@ -308,29 +308,31 @@ namespace SoyEngine
         private void UpdatePlayingParticleItem()
         {
             _isDoingTick = true;
-            Dictionary<int, UnityNativeParticleItem>.Enumerator sceneItemsEnumerator =
-                _sceneParticleItems.GetEnumerator();
-            while (sceneItemsEnumerator.MoveNext())
+            using (var sceneItemsEnumerator =
+                _sceneParticleItems.GetEnumerator())
             {
-                UnityNativeParticleItem cur = sceneItemsEnumerator.Current.Value;
-                if (cur.Trans == null)
+                while (sceneItemsEnumerator.MoveNext())
                 {
-                    _removeBuffer.Add(cur.UUID);
-                    continue;
-                }
-                if (cur.HasBeenDestory)
-                {
-                    _removeBuffer.Add(cur.UUID);
-                    continue;
-                }
-                if (cur.NeedToDestroy)
-                {
-                    cur.DestroySelf();
-                    continue;
-                }
-                if (cur.IsPlaying && cur.HasFinish)
-                {
-                    cur.Stop();
+                    UnityNativeParticleItem cur = sceneItemsEnumerator.Current.Value;
+                    if (cur.Trans == null)
+                    {
+                        _removeBuffer.Add(cur.UUID);
+                        continue;
+                    }
+                    if (cur.HasBeenDestory)
+                    {
+                        _removeBuffer.Add(cur.UUID);
+                        continue;
+                    }
+                    if (cur.NeedToDestroy)
+                    {
+                        cur.DestroySelf();
+                        continue;
+                    }
+                    if (cur.IsPlaying && cur.HasFinish)
+                    {
+                        cur.Stop();
+                    }
                 }
             }
 
@@ -349,11 +351,13 @@ namespace SoyEngine
             {
                 _lastTickPoolTime = Time.realtimeSinceStartup;
 
-                Dictionary<string, ParticleItemPool>.Enumerator enumerator = _particlePoolDic.GetEnumerator();
-                while (enumerator.MoveNext())
+                using (var enumerator = _particlePoolDic.GetEnumerator())
                 {
-                    ParticleItemPool item = enumerator.Current.Value;
-                    item.Tick();
+                    while (enumerator.MoveNext())
+                    {
+                        ParticleItemPool item = enumerator.Current.Value;
+                        item.Tick();
+                    }
                 }
             }
             _isDoingTick = false;

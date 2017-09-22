@@ -1,8 +1,6 @@
-﻿using SoyEngine;
-
-namespace GameA
+﻿namespace GameA
 {
-    [UIAutoSetup]
+    [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlProjectDetail : UICtrlAnimationBase<UIViewProjectDetail>
     {
         #region Fields
@@ -36,7 +34,7 @@ namespace GameA
         public void SetProject(Project project)
         {
             _projectInfoPanel.SetData(project);
-            _extraPanel.SetData(project);
+            _extraPanel.SetData(project, ResScenary);
         }
 
         protected override void InitGroupId()

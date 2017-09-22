@@ -6,9 +6,9 @@
 ***********************************************************************/
 
 
+using NewResourceSolution;
 using UnityEngine;
 using UnityEngine.UI;
-using NewResourceSolution;
 
 namespace SoyEngine
 {
@@ -20,8 +20,8 @@ namespace SoyEngine
             {
                 return;
             }
-            Sprite sprite = null;
-            if (ResourcesManager.Instance.TryGetSprite (spriteName, out sprite))
+            Sprite sprite;
+            if (JoyResManager.Instance.TryGetSprite (spriteName, out sprite))
             {
                 image.sprite = sprite;
             }

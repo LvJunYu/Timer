@@ -1,16 +1,11 @@
-﻿using System;
-using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using SoyEngine;
+﻿using SoyEngine;
 using SoyEngine.Proto;
-using System.IO;
-
+using UnityEngine;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlSocialRelationship : UICtrlGenericBase<UIViewSocialRelationship>
+    [UIResAutoSetup(EResScenary.UIHome)]
+    public class UICtrlSocialRelationship : UICtrlAnimationBase<UIViewSocialRelationship>
     {
         private USCtrlSocialRelationship _usctrlPage1;
         private USCtrlSocialRelationship _usctrlPage2;
@@ -52,7 +47,7 @@ namespace GameA
                 EOrderType.OT_Asc,
                 () =>
                 {
-                    _usctrlPage1.Set(LocalUser.Instance.FollowRelationUserList.FollowRelationList);
+                    _usctrlPage1.Set(LocalUser.Instance.FollowRelationUserList.FollowRelationList, ResScenary);
                     
                 },
                 code => { LogHelper.Error("Network error when get ReFreshMyRelationUserList, {0}", code); }
@@ -70,7 +65,7 @@ namespace GameA
                 EOrderType.OT_Asc,
                 () =>
                 {
-                    _usctrlPage2.Set(LocalUser.Instance.BlockRelationUserList.BlockRelationList);
+                    _usctrlPage2.Set(LocalUser.Instance.BlockRelationUserList.BlockRelationList, ResScenary);
                 },
                 code => { LogHelper.Error("Network error when get ReFreshMyRelationUserList, {0}", code); }
                 );

@@ -100,7 +100,7 @@ namespace GameA
             get
             {
                 if (null == _picSprite)
-                    _picSprite = ResourcesManager.Instance.GetSprite(_puzzleTable.Icon);
+                    _picSprite = JoyResManager.Instance.GetSprite(_puzzleTable.Icon);
                 return _picSprite;
             }
         }
@@ -110,7 +110,7 @@ namespace GameA
             get
             {
                 if (null == _boardSprite)
-                    _boardSprite = ResourcesManager.Instance.GetSprite(BoardSpriteName);
+                    _boardSprite = JoyResManager.Instance.GetSprite(BoardSpriteName);
                 return _boardSprite;
             }
         }

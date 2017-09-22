@@ -56,14 +56,16 @@ namespace NewResourceSolution
 		public static string TextureExtension = ".png";
         public static string SpriteExtension = ".png";
 
+		private static string _persistentDataPath;
         public static string PersistentDataPath
         {
-            get { return Application.persistentDataPath; }
+            get { return _persistentDataPath ?? (_persistentDataPath = Application.persistentDataPath); }
         }
 
+		private static string _streamingAssetsPath;
         public static string StreamingAssetsPath
         {
-            get { return Application.streamingAssetsPath; }
+            get { return _streamingAssetsPath ?? (_streamingAssetsPath = Application.streamingAssetsPath); }
         }
 	}
 

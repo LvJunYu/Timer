@@ -46,7 +46,7 @@ namespace GameA
             _cachedView.TimeElect.onValueChanged.AddListener(Timeselect);
             _cachedView.PitchOn.onValueChanged.AddListener(Checked);
             Sprite fashion=null;
-            if (ResourcesManager.Instance.TryGetSprite(listItem.PreviewTexture, out fashion))
+            if (JoyResManager.Instance.TryGetSprite(listItem.PreviewTexture, out fashion))
             {
                 _cachedView.FashionPreview.sprite = fashion;
             }

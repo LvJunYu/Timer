@@ -9,7 +9,7 @@ namespace GameA
     /// <summary>
     /// 
     /// </summary>
-    [UIAutoSetup]
+    [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlPuzzleDetail : UICtrlAnimationBase<UIViewPuzzleDetail>
     {
         //碎片间距
@@ -57,14 +57,14 @@ namespace GameA
                     {
                         if (null == _halfMaskImages[index - 1])
                             _halfMaskImages[index - 1] =
-                                ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index));
+                                JoyResManager.Instance.GetSprite(GetSpriteName(puzzleType, index));
                         return _halfMaskImages[index - 1];
                     }
                     else
                     {
                         if (null == _halfImages[index - 1])
                             _halfImages[index - 1] =
-                                ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index, false));
+                                JoyResManager.Instance.GetSprite(GetSpriteName(puzzleType, index, false));
                         return _halfImages[index - 1];
                     }
                 case EPuzzleType.Quarter:
@@ -72,14 +72,14 @@ namespace GameA
                     {
                         if (null == _quarterMaskImages[index - 1])
                             _quarterMaskImages[index - 1] =
-                                ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index));
+                                JoyResManager.Instance.GetSprite(GetSpriteName(puzzleType, index));
                         return _quarterMaskImages[index - 1];
                     }
                     else
                     {
                         if (null == _quarterImages[index - 1])
                             _quarterImages[index - 1] =
-                                ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index, false));
+                                JoyResManager.Instance.GetSprite(GetSpriteName(puzzleType, index, false));
                         return _quarterImages[index - 1];
                     }
                 case EPuzzleType.Sixth:
@@ -87,14 +87,14 @@ namespace GameA
                     {
                         if (null == _sixthMaskImages[index - 1])
                             _sixthMaskImages[index - 1] =
-                                ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index));
+                                JoyResManager.Instance.GetSprite(GetSpriteName(puzzleType, index));
                         return _sixthMaskImages[index - 1];
                     }
                     else
                     {
                         if (null == _sixthImages[index - 1])
                             _sixthImages[index - 1] =
-                                ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index, false));
+                                JoyResManager.Instance.GetSprite(GetSpriteName(puzzleType, index, false));
                         return _sixthImages[index - 1];
                     }
                 case EPuzzleType.Ninth:
@@ -102,14 +102,14 @@ namespace GameA
                     {
                         if (null == _ninthMaskImages[index - 1])
                             _ninthMaskImages[index - 1] =
-                                ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index));
+                                JoyResManager.Instance.GetSprite(GetSpriteName(puzzleType, index));
                         return _ninthMaskImages[index - 1];
                     }
                     else
                     {
                         if (null == _ninthImages[index - 1])
                             _ninthImages[index - 1] =
-                                ResourcesManager.Instance.GetSprite(GetSpriteName(puzzleType, index, false));
+                                JoyResManager.Instance.GetSprite(GetSpriteName(puzzleType, index, false));
                         return _ninthImages[index - 1];
                     }
                 default:
@@ -375,7 +375,7 @@ namespace GameA
             }
             //缓存没有，则创建新的
             var puzzleFragment = new UMCtrlPuzzleFragmentItem();
-            puzzleFragment.Init(_cachedView.PuzzleFragmentGrid.transform as RectTransform);
+            puzzleFragment.Init(_cachedView.PuzzleFragmentGrid.transform as RectTransform, ResScenary);
             //新的添加到缓存
             _fragmentsCache.Add(puzzleFragment);
 
@@ -394,7 +394,7 @@ namespace GameA
             _curUMFragments = new List<UMCtrlPuzzleFragmentItem>(9);
             //创建拼图
             _curUMPuzzleItem = new UMCtrlPuzzleDetailItem();
-            _curUMPuzzleItem.Init(_cachedView.PuzzleItemPos);
+            _curUMPuzzleItem.Init(_cachedView.PuzzleItemPos, ResScenary);
         }
 
         protected override void InitEventListener()

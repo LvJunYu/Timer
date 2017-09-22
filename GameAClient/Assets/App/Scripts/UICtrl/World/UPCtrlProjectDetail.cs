@@ -15,6 +15,7 @@ namespace GameA
         #region 常量与字段
         private Project _content;
         private List<UMCtrlUser40> _umCtrlUser40List;
+        private EResScenary _resScenary;
         #endregion
 
         #region 属性
@@ -22,9 +23,10 @@ namespace GameA
         #endregion
 
         #region 方法
-        public void SetData(Project project)
+        public void SetData(Project project, EResScenary resScenary)
         {
             _content = project;
+            _resScenary = resScenary;
         }
 
         public override void Open()
@@ -93,10 +95,17 @@ namespace GameA
             for (int i = 0; i < 5; i++)
             {
                 var umCtrl = new UMCtrlUser40();
-                umCtrl.Init(_cachedView.RecentPlayUserDock);
+                umCtrl.Init(_cachedView.RecentPlayUserDock, _resScenary);
                 umCtrl.Hide();
                 _umCtrlUser40List.Add(umCtrl);
             }
+        }
+
+        public override void OnDestroy()
+        {
+            _umCtrlUser40List.Clear();
+            _umCtrlUser40List = null;
+            base.OnDestroy();
         }
 
         #endregion 接口

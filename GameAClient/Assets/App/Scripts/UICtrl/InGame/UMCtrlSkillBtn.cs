@@ -26,7 +26,7 @@ namespace GameA
             {
                 _cachedView.BtnColorBgs[i].SetActive(i == bgIndex);
             }
-            _cachedView.BtnIcon.sprite = ResourcesManager.Instance.GetSprite(tableSkill.Icon);
+            _cachedView.BtnIcon.sprite = JoyResManager.Instance.GetSprite(tableSkill.Icon);
             _cachedView.BtnIcon.gameObject.SetActive(true);
             PlayFullParticle(_curTableEquipment.InputType == (int) EWeaponInputType.GetKeyUp);
             _cachedView.BtnCD1.fillAmount = 0;

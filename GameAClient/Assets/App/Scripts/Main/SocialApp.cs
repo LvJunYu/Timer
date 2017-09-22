@@ -122,21 +122,24 @@ namespace GameA
             NetworkManager.AppHttpClient.SendInspector = Account.AppHttpClientAccountInspector;
             gameObject.AddComponent<SocialGUIManager>();
             CoroutineManager.Instance.Init(this);
-            ResourcesManager.Instance.Init ();
+            JoyResManager.Instance.Init ();
+            JoyResManager.Instance.SetDefaultResScenary(EResScenary.Default);
             LocalizationManager.Instance.Init();
             SocialGUIManager.Instance.OpenUI<UICtrlUpdateResource>();
             _startTime = Time.realtimeSinceStartup;
-            ResourcesManager.Instance.CheckApplicationAndResourcesVersion();
+            JoyResManager.Instance.CheckApplicationAndResourcesVersion();
         }
 
         public void LoginAfterUpdateResComplete()
         {
+            JoyResManager.Instance.SetDefaultResScenary(EResScenary.Home);
             gameObject.AddComponent<TableManager>();
             TableManager.Instance.Init();
             LocalUser.Instance.Init();
             GameParticleManager.Instance.Init();
             GameAudioManager.Instance.Init();
             //预加载UI
+            SocialGUIManager.Instance.OnResLoadComplete();
             SocialGUIManager.Instance.CreateView<UICtrlSingleMode>();
             SocialGUIManager.Instance.CreateView<UICtrlWorld>();
             SocialGUIManager.Instance.CreateView<UICtrlWorkShop>();
@@ -229,7 +232,7 @@ namespace GameA
         {
             GameManager.Instance.RequestStopGame();
             //JoySceneManager.Instance.LoadEmptyScene();
-
+            JoyResManager.Instance.SetDefaultResScenary(EResScenary.Home);
             SocialGUIManager.Instance.ChangeToAppMode();
         }
 

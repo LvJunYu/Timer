@@ -10,7 +10,7 @@ using GameA.Game;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlShopingCart : UICtrlAnimationBase<UIViewShopingCart>
     {
         #region 常量与字段
@@ -184,7 +184,7 @@ namespace GameA
             if (_cachedView != null)
             {
                 var UM = new UMCtrlCartCard();
-                UM.Init(_cachedView.Dock as RectTransform);
+                UM.Init(_cachedView.Dock as RectTransform, ResScenary);
                 UM.Set(fittingFashion);
                 _cardList.Add(UM);
             }

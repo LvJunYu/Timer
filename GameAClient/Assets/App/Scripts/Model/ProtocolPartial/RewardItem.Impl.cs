@@ -33,50 +33,50 @@ namespace GameA
         public Sprite GetSprite () {
             switch ((ERewardType)_type) {
             case ERewardType.RT_Gold: {
-                    return ResourcesManager.Instance.GetSprite (_goldSprite);
+                    return JoyResManager.Instance.GetSprite (_goldSprite);
                 }
             case ERewardType.RT_Diamond: {
-                    return ResourcesManager.Instance.GetSprite (_diamondSprite);
+                    return JoyResManager.Instance.GetSprite (_diamondSprite);
                 }
             case ERewardType.RT_PlayerExp: {
-                    return ResourcesManager.Instance.GetSprite (_playerExpSprite);
+                    return JoyResManager.Instance.GetSprite (_playerExpSprite);
                 }
             case ERewardType.RT_CreatorExp: {
-                    return ResourcesManager.Instance.GetSprite (_creatorExpSprite);
+                    return JoyResManager.Instance.GetSprite (_creatorExpSprite);
                 }
             case ERewardType.RT_FashionCoupon: {
-                    return ResourcesManager.Instance.GetSprite (_fashionCouponSprite);
+                    return JoyResManager.Instance.GetSprite (_fashionCouponSprite);
                 }
             case ERewardType.RT_RaffleTicket: {
                     switch (Id) {
                         case 1:
-                        return ResourcesManager.Instance.GetSprite (_raffleTicketSprite1);
+                        return JoyResManager.Instance.GetSprite (_raffleTicketSprite1);
                         case 2:
-                        return ResourcesManager.Instance.GetSprite (_raffleTicketSprite2);
+                        return JoyResManager.Instance.GetSprite (_raffleTicketSprite2);
                         case 3:
-                        return ResourcesManager.Instance.GetSprite (_raffleTicketSprite3);
+                        return JoyResManager.Instance.GetSprite (_raffleTicketSprite3);
                         case 4:
-                        return ResourcesManager.Instance.GetSprite (_raffleTicketSprite4);
+                        return JoyResManager.Instance.GetSprite (_raffleTicketSprite4);
                     }
-                    return ResourcesManager.Instance.GetSprite (_raffleTicketSprite1);
+                    return JoyResManager.Instance.GetSprite (_raffleTicketSprite1);
                 }
             case ERewardType.RT_BoostItem:
                 {
                     var table = TableManager.Instance.GetBoostItem ((int)_id);
                     if (null == table)
                         return null;
-                    return ResourcesManager.Instance.GetSprite (table.Icon);
+                    return JoyResManager.Instance.GetSprite (table.Icon);
                 }
             case ERewardType.RT_ReformUnit:
                 {
                     var table = TableManager.Instance.GetUnit ((int)_id);
                     if (null == table)
                         return null;
-                    return ResourcesManager.Instance.GetSprite (table.Icon);
+                    return JoyResManager.Instance.GetSprite (table.Icon);
                 }
             case ERewardType.RT_RandomReformUnit:
                 {
-                    return ResourcesManager.Instance.GetSprite (_randomUnitSprite);
+                    return JoyResManager.Instance.GetSprite (_randomUnitSprite);
                 }
             }
             return null;

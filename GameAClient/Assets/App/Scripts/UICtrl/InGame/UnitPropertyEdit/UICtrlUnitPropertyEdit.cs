@@ -290,7 +290,7 @@ namespace GameA
                 for (int i = 0; i < _tableUnit.ChildState.Length; i++)
                 {
                     _payloadMenuList[i]
-                        .SetFgImage(ResourcesManager.Instance.GetSprite(TableManager.Instance
+                        .SetFgImage(JoyResManager.Instance.GetSprite(TableManager.Instance
                             .GetEquipment(_tableUnit.ChildState[i]).Icon));
                     _payloadMenuList[i].SetPosAngle(da*i, MenuOptionsPosRadius);
                 }
@@ -413,7 +413,7 @@ namespace GameA
             if (table != null)
             {
                 _menuButtonArray[(int) EEditType.Child].SetFgImage(
-                    ResourcesManager.Instance.GetSprite(table.Icon));
+                    JoyResManager.Instance.GetSprite(table.Icon));
             }
             else
             {
@@ -426,7 +426,7 @@ namespace GameA
                 if (i < _tableUnit.ChildState.Length)
                 {
                     _payloadMenuList[i].SetEnable(true);
-                    _payloadMenuList[i].SetFgImage(ResourcesManager.Instance.GetSprite(
+                    _payloadMenuList[i].SetFgImage(JoyResManager.Instance.GetSprite(
                         TableManager.Instance.GetEquipment(_tableUnit.ChildState[i]).Icon));
                     _payloadMenuList[i].SetSelected(_tableUnit.ChildState[i] == _editData.UnitExtra.ChildId);
                     _payloadMenuList[i].SetBgImageAngle(da * i);
@@ -496,8 +496,8 @@ namespace GameA
             _cachedView.RotateEndDock.SetActiveEx(true);
             _menuButtonArray[(int) EEditType.Rotate].RotateMenuView.FgImage.SetActiveEx(false);
             _menuButtonArray[(int) EEditType.Rotate].RotateMenuView.RotateDock.SetActiveEx(true);
-            var forwardBg = ResourcesManager.Instance.GetSprite(SpriteNameDefine.UnitEditRotateEndBgForward);
-            var normalBg = ResourcesManager.Instance.GetSprite(SpriteNameDefine.UnitEditRotateEndBgNormal);
+            var forwardBg = JoyResManager.Instance.GetSprite(SpriteNameDefine.UnitEditRotateEndBgForward);
+            var normalBg = JoyResManager.Instance.GetSprite(SpriteNameDefine.UnitEditRotateEndBgNormal);
             int start, end;
             if (rotateMode == ERotateMode.Clockwise)
             {

@@ -18,6 +18,7 @@ namespace GameA
         private WorldRecommendProjectList _data;
         private bool _isRequest;
         private bool _hasInited;
+        private EResScenary _resScenary;
         #endregion
 
         #region 属性
@@ -25,7 +26,12 @@ namespace GameA
         #endregion
 
         #region 方法
-        
+
+        public void Set(EResScenary resScenary)
+        {
+            _resScenary = resScenary;
+        }
+
         public override void Open()
         {
             base.Open();
@@ -93,7 +99,7 @@ namespace GameA
             for (int i = 0; i < _cachedView.RecommendCardDockAry.Length; i++)
             {
                 var umCtrl = new UMCtrlWorldRecommendProject();
-                umCtrl.Init(_cachedView.RecommendCardDockAry[i]);
+                umCtrl.Init(_cachedView.RecommendCardDockAry[i], _resScenary);
                 _umCtrlWorldRecommendProjects.Add(umCtrl);
                 if (i < 2)
                 {
@@ -105,6 +111,13 @@ namespace GameA
                 }
             }
             _cachedView.RefreshRecommendButton.onClick.AddListener(RequestData);
+        }
+
+        public override void OnDestroy()
+        {
+            _umCtrlWorldRecommendProjects.Clear();
+            _umCtrlWorldRecommendProjects = null;
+            base.OnDestroy();
         }
 
         public void OnChangeHandler(long val)

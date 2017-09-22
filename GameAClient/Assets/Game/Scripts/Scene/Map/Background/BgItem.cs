@@ -104,7 +104,7 @@ namespace GameA.Game
         {
             go = null;
             Sprite sprite;
-            if (!ResourcesManager.Instance.TryGetSprite(_tableBg.Model, out sprite))
+            if (!JoyResManager.Instance.TryGetSprite(_tableBg.Model, out sprite))
             {
                 LogHelper.Error("TryGetSpriteByName failed,{0}", _tableBg.Model);
                 return false;

@@ -106,6 +106,7 @@ namespace GameA.Game
 
 	    public override bool Stop()
 	    {
+		    SocialGUIManager.Instance.CloseUI<UICtrlItem>();
 		    EditMode.Instance.Dispose();
 		    return base.Stop();
 	    }
@@ -134,7 +135,7 @@ namespace GameA.Game
                 
 				string skeletonDataAssetName = string.Format ("{0}_SkeletonData", table.Model);
 				SkeletonDataAsset data =
-					ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, skeletonDataAssetName, 0);
+					JoyResManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, skeletonDataAssetName);
 				if (data != null)
 				{
 					data.GetAnimationStateData();
@@ -223,6 +224,8 @@ namespace GameA.Game
                 MapDirty = false;
             }
         }
+	    
+	    
 
         public override bool Restart(Action successCb, Action failedCb)
         {
@@ -329,7 +332,6 @@ namespace GameA.Game
 		    SocialGUIManager.Instance.GetUI<UICtrlEdit>().ChangeToEditTestMode();
 //                SocialGUIManager.Instance.CloseUI<UICtrlScreenOperator>();
 		    SocialGUIManager.Instance.OpenUI<UICtrlSceneState>();
-		    SocialGUIManager.Instance.CloseUI<UICtrlModifyEdit>();
 		    InputManager.Instance.ShowGameInput();
 		    GameRun.Instance.Playing();
 	    }

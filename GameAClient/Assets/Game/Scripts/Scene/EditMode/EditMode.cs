@@ -678,7 +678,7 @@ namespace GameA.Game
                 LogHelper.Error("InitMask called but _cameraMask != null");
                 return;
             }
-            var go = Object.Instantiate (ResourcesManager.Instance.GetPrefab(
+            var go = Object.Instantiate (JoyResManager.Instance.GetPrefab(
                 EResType.ModelPrefab, 
                 ConstDefineGM2D.CameraMaskPrefabName)
             ) as GameObject;
@@ -694,7 +694,7 @@ namespace GameA.Game
             {
                 Material m = r.sharedMaterial;
 //                Debug.LogError("m.shader: " + m.shader);
-                Shader s = ResourcesManager.Instance.GetAsset<Shader>(EResType.Shader, "SFVertexColor", 1);
+                Shader s = JoyResManager.Instance.GetAsset<Shader>(EResType.Shader, "SFVertexColor");
                 m.shader = s;
             }
             // --------------------------
