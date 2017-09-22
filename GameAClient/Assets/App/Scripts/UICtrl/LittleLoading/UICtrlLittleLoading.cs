@@ -4,8 +4,8 @@ using SoyEngine;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlLittleLoading : UICtrlGenericBase<UIViewLittleLoading>
+    [UIResAutoSetup(EResScenary.UICommon)]
+    public class UICtrlLittleLoading : UICtrlResManagedBase<UIViewLittleLoading>
     {
         private Dictionary<object, UMCtrlLittleLoading> _dict = new Dictionary<object, UMCtrlLittleLoading>();
 
@@ -27,7 +27,7 @@ namespace GameA
                 return;
             }
             ll = new UMCtrlLittleLoading();
-            ll.Init(_cachedView.Trans);
+            ll.Init(_cachedView.Trans, ResScenary);
             ll.Set(info);
             _dict.Add(key, ll);
         }

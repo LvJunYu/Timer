@@ -22,7 +22,6 @@ namespace GameA
         ///     主体ui架子
         /// </summary>
         MainFrame,
-
         /// <summary>
         ///     主体ui
         /// </summary>
@@ -76,7 +75,7 @@ namespace GameA
         Max
     }
 
-    public class SocialGUIManager : GUIManager
+    public class SocialGUIManager : ResManagedGuiManager
     {
         public static SocialGUIManager Instance;
 
@@ -93,9 +92,9 @@ namespace GameA
             Instance = this;
             SocialUIConfig.Init();
             InitUIRoot<SocialUIRoot>(GetType().Name, 999, (int) EUIGroupType.Max);
-            _uiRoot.Canvas.pixelPerfect = false;
+            UIRoot.Canvas.pixelPerfect = false;
 
-            CanvasScaler cs = _uiRoot.GetComponent<CanvasScaler>();
+            CanvasScaler cs = UIRoot.GetComponent<CanvasScaler>();
             cs.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             cs.referenceResolution = new Vector2(UIConstDefine.UINormalScreenWidth, UIConstDefine.UINormalScreenHeight);
             cs.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
@@ -103,6 +102,11 @@ namespace GameA
 
 
             InitUI(GetType());
+        }
+
+        public void OnResLoadComplete()
+        {
+            ProcessUIAutoSetup();
         }
 
         public void ShowAppView()
@@ -132,14 +136,19 @@ namespace GameA
                 if (i < (int) EUIGroupType.InGameStart) // ||
 //                    i > (int)EUIGroupType.InGameEnd)
                 {
-                    _uiRoot.SetGroupActive(i, false);
+                    UIRoot.SetGroupActive(i, false);
                 }
                 else
                 {
-                    _uiRoot.SetGroupActive(i, true);
+                    UIRoot.SetGroupActive(i, true);
                 }
             }
-            //_uiRoot.SetGroupActive((int)EUIGroupType.InGame, true);
+            ReloadUI(EResScenary.Game);
+            ReloadUI(EResScenary.UIInGame);
+            UnloadUI(EResScenary.UIHome);
+            UnloadUI(EResScenary.UISingleMode);
+            UnloadUI(EResScenary.Home);
+            //UIRoot.SetGroupActive((int)EUIGroupType.InGame, true);
             Messenger.Broadcast(EMessengerType.OnChangeToGameMode);
         }
 
@@ -158,22 +167,28 @@ namespace GameA
 
             for (int i = 0; i < (int) EUIGroupType.Max; i++)
             {
-                _uiRoot.SetGroupActive(i, true);
+                UIRoot.SetGroupActive(i, true);
             }
 
-            //_uiRoot.SetGroupActive((int)EUIGroupType.InGame, false);
+            //UIRoot.SetGroupActive((int)EUIGroupType.InGame, false);
             for (int i = 0; i < (int) EUIGroupType.Max; i++)
             {
                 if (i < (int) EUIGroupType.InGameStart ||
                     i > (int) EUIGroupType.InGameEnd)
                 {
-                    _uiRoot.SetGroupActive(i, true);
+                    UIRoot.SetGroupActive(i, true);
                 }
                 else
                 {
-                    _uiRoot.SetGroupActive(i, false);
+                    UIRoot.SetGroupActive(i, false);
                 }
             }
+            
+            ReloadUI(EResScenary.Home);
+            ReloadUI(EResScenary.UIHome);
+            ReloadUI(EResScenary.UISingleMode);
+            UnloadUI(EResScenary.UIInGame);
+            UnloadUI(EResScenary.Game);
             Messenger.Broadcast(EMessengerType.OnChangeToAppMode);
         }
 
@@ -197,7 +212,7 @@ namespace GameA
 
         public static Vector2 GetUIResolution()
         {
-            var canvasTran = Instance._uiRoot.Trans;
+            var canvasTran = Instance.UIRoot.Trans;
             Vector2 canvasSize = canvasTran.GetSize();
             return new Vector2(Mathf.RoundToInt(canvasSize.x), Mathf.RoundToInt(canvasSize.y));
         }
@@ -206,7 +221,7 @@ namespace GameA
         {
             Vector2 localPos;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRectTransform, screenPos,
-                Instance._uiRoot.Canvas.worldCamera, out localPos);
+                Instance.UIRoot.Canvas.worldCamera, out localPos);
             return localPos;
         }
 

@@ -14,7 +14,7 @@ using UnityEngine.EventSystems;
 
 namespace GameA
 {
-    [UIAutoSetup]
+    [UIResAutoSetup(EResScenary.UISingleMode, EUIAutoSetupType.Create)]
     public class UICtrlSingleMode : UICtrlAnimationBase<UIViewSingleMode>
     {
         #region 常量与字段
@@ -55,6 +55,7 @@ namespace GameA
 	    private USCtrlChapter[] _chapterAry;
 
 	    private UIParticleItem[] _uiParticleItemAry;
+	    private bool _pushGoldEnergyStyle;
         #endregion
 
         #region 属性
@@ -96,6 +97,9 @@ namespace GameA
 			if (_currentChapter > ChapterCnt) {
 				CurrentChapter = ChapterCnt;
 			}
+	        var curChapter = _currentChapter;
+	        _currentChapter = -1;
+	        CurrentChapter = curChapter;
 
 			if (_currentChapter <= AppData.Instance.AdventureData.UserData.SectionList.Count) {
 				if (AppData.Instance.AdventureData.UserData.SectionList [_currentChapter - 1].IsDirty) {
@@ -108,7 +112,11 @@ namespace GameA
 					);
 				}
 			}
-	        SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.EnergyGoldDiamond);
+	        if (!_pushGoldEnergyStyle)
+	        {
+		        SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.EnergyGoldDiamond);
+		        _pushGoldEnergyStyle = true;
+	        }
 //			AppData.Instance.AdventureData.UserData.UserEnergyData.Request (
 //				LocalUser.Instance.UserGuid,
 //				() => {
@@ -132,7 +140,11 @@ namespace GameA
 
         protected override void OnClose()
         {
-	        SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
+	        if (_pushGoldEnergyStyle)
+	        {
+		        SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
+		        _pushGoldEnergyStyle = false;
+	        }
 			_dragging = false;
 	        if (null != _uiParticleItemAry)
 	        {
@@ -209,6 +221,7 @@ namespace GameA
 		        _chapterAry[i].Init(_cachedView.Chapters[i]);
 	        }
 	        _cachedView.ChapterBg[_currentChapter-1].gameObject.SetActive(true);
+	        _cachedView.ChapterScrollRect.horizontalNormalizedPosition = _chapterRightNormalizedHorizontalPos [_currentChapter - 1];
 	        _uiParticleItemAry = new UIParticleItem[_cachedView.Chapters.Length];
         }
 			

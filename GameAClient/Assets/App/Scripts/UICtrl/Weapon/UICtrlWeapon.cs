@@ -203,7 +203,7 @@ namespace GameA
             _cachedView.CostWeaponFragmentsNum.text = _needPart.ToString() + "/" + _userOwnWeaponPart.ToString();
             //武器碎片图片
             _weaponPartSpriteName = TableManager.Instance.GetSkill(_skillID).Icon;
-            ResourcesManager.Instance.TryGetSprite(_weaponPartSpriteName, out _weaponPartSprite);
+            JoyResManager.Instance.TryGetSprite(_weaponPartSpriteName, out _weaponPartSprite);
             _cachedView.OwnedWeaponFragmentsIcon.sprite = _weaponPartSprite;
             _cachedView.CostPartIcons.sprite = _weaponPartSprite;
             //武器碎片的数目

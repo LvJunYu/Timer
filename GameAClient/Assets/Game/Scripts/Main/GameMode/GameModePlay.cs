@@ -85,7 +85,7 @@ namespace GameA.Game
 			InputManager.Instance.ShowGameInput();
         }
 
-        protected virtual void InitGame()
+	    protected virtual void InitGame()
         {
             MainPlayer mainPlayer = PlayMode.Instance.MainPlayer;
             if (mainPlayer == null)

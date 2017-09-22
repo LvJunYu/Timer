@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections;
-using SoyEngine;
-using SoyEngine.Proto;
-using UnityEngine;
-using UnityEngine.UI;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DG.Tweening;
-using NewResourceSolution;
 using GameA.Game;
+using NewResourceSolution;
+using UnityEngine;
 
 namespace GameA
 {
-   
-    
-    [UIAutoSetup]
+    [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlHandBook : UICtrlAnimationBase<UIViewHandBook> 
     {
         public enum ExplantionIndex
@@ -23,18 +16,18 @@ namespace GameA
             Mechanism = 3,
             Collection = 4,
             Decoration = 5,
-            Controller = 6,
+            Controller = 6
         }
         #region Fields
 
         private float _TweenTime = 0.5f;
-        private string _unitIconName = null;
+        private string _unitIconName;
         private bool _isFirst = true;
-        private float _startTime = 0.0f;
+        private float _startTime;
         private Sprite _unitIcon;
         private Table_Unit _uint;
-        private Tweener _contenTween = null;
-        private UMCtrlHandBookItem _curSeleCtrlHandBookItem = null;
+        private Tweener _contenTween;
+        private UMCtrlHandBookItem _curSeleCtrlHandBookItem;
         private  List<int> _RoleList =  new List<int>();
         private  List<int> _EarthList =  new List<int>();
         private  List<int> _MechanismList =  new List<int>();
@@ -129,10 +122,11 @@ namespace GameA
 
         public void InitItemGroup()
         {
+            var resScenary = ResScenary;
             for (int i = 0; i < _RoleList.Count; i++)
             {
                 var explationItem = new UMCtrlHandBookItem();
-                explationItem.Init(_cachedView.RoleRectGroup, Vector3.zero);
+                explationItem.Init(_cachedView.RoleRectGroup, resScenary);
                 explationItem.IintItem(_RoleList[i], false);
                 if (_curSeleCtrlHandBookItem == null)
                 {
@@ -143,31 +137,31 @@ namespace GameA
             for (int i = 0; i < _EarthList.Count; i++)
             {
                 var explationItem = new UMCtrlHandBookItem();
-                explationItem.Init(_cachedView.EarthRectGroup, Vector3.zero);
+                explationItem.Init(_cachedView.EarthRectGroup,resScenary);
                 explationItem.IintItem(_EarthList[i], true);
             }
             for (int i = 0; i < _MechanismList.Count; i++)
             {
                 var explationItem = new UMCtrlHandBookItem();
-                explationItem.Init(_cachedView.TrickRectGroup, Vector3.zero);
+                explationItem.Init(_cachedView.TrickRectGroup, resScenary);
                 explationItem.IintItem(_MechanismList[i], true);
             }
             for (int i = 0; i < _ColletionList.Count; i++)
             {
                 var explationItem = new UMCtrlHandBookItem();
-                explationItem.Init(_cachedView.CollitionRectGroup, Vector3.zero);
+                explationItem.Init(_cachedView.CollitionRectGroup, resScenary);
                 explationItem.IintItem(_ColletionList[i], true);
             }
             for (int i = 0; i < _DecorationList.Count; i++)
             {
                 var explationItem = new UMCtrlHandBookItem();
-                explationItem.Init(_cachedView.DecorationRectGroup, Vector3.zero);
+                explationItem.Init(_cachedView.DecorationRectGroup, resScenary);
                 explationItem.IintItem(_DecorationList[i], true);
             }
             for (int i = 0; i < _ControllerList.Count; i++)
             {
                 var explationItem = new UMCtrlHandBookItem();
-                explationItem.Init(_cachedView.CtrlRectGroup, Vector3.zero);
+                explationItem.Init(_cachedView.CtrlRectGroup, resScenary);
                 explationItem.IintItem(_ControllerList[i], true);
             }
         }
@@ -188,7 +182,7 @@ namespace GameA
             _uint = TableManager.Instance.GetUnit(unitID);
             _cachedView.Name.text = _uint.Name;
             _unitIconName = _uint.Icon;
-            if ( ResourcesManager.Instance.TryGetSprite(_unitIconName, out _unitIcon))
+            if (JoyResManager.Instance.TryGetSprite(_unitIconName, out _unitIcon))
             {
 
                 _cachedView.Icon.sprite = _unitIcon;

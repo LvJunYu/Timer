@@ -33,7 +33,7 @@ namespace GameA.Game
         {
             string skeletonDataAssetName = string.Format("{0}_SkeletonData", _unit.AssetPath);
             SkeletonDataAsset data =
-                ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, skeletonDataAssetName, 0);
+                JoyResManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, skeletonDataAssetName, 0);
             if (null == data)
             {
                 LogHelper.Error("TryGetSpineDataByName Failed! {0}", _unit.AssetPath);

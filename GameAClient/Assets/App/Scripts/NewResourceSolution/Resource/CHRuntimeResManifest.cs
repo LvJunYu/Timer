@@ -211,7 +211,7 @@ namespace NewResourceSolution
 		/// <summary>
 		/// 清理不再使用的asset缓存，考虑在建议asset缓存大小下尽量多缓存asset，如果清理完毕后剩余的缓存大小仍然超过警报大小，则进行警报
 		/// </summary>
-		public void UnloadUnusedAssets (int scenaryMask2Unload)
+		public void UnloadUnusedAssets (long scenaryMask2Unload)
 		{
 //			if (_cachedAssetsTotalSize < s_SuggestedAssetMemorySize)
 //				return;
@@ -245,7 +245,7 @@ namespace NewResourceSolution
 			Resources.UnloadUnusedAssets ();
 		}
 
-		private void InternalUnloadUnusedAssets (int scenaryMask2Unload, bool force)
+		private void InternalUnloadUnusedAssets (long scenaryMask2Unload, bool force)
 		{
 			_assetToUnload.Clear ();
 			using (var itor = _cachedBundleDic.GetEnumerator())

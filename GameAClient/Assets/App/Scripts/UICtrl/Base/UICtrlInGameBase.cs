@@ -2,7 +2,7 @@
 
 namespace GameA
 {
-    public abstract class UICtrlInGameBase<T> : UICtrlGenericBase<T> where T : UIViewBase
+    public abstract class UICtrlInGameBase<T> : UICtrlResManagedBase<T> where T : UIViewBase
     {
         protected bool _reEnterGame = true;
         

@@ -114,7 +114,7 @@ namespace GameA
 
             //武器碎片的图标
             _weaponPartSpriteName = TableManager.Instance.GetSkill(TableManager.Instance.GetEquipment(_weaponID).SkillId).Icon ;
-            ResourcesManager.Instance.TryGetSprite(_weaponPartSpriteName, out _weaponPartSprite);
+            JoyResManager.Instance.TryGetSprite(_weaponPartSpriteName, out _weaponPartSprite);
             _cachedView.WeaponFragmentIcon.sprite = _weaponPartSprite;
 
             //金币的数目

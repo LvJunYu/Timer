@@ -1,24 +1,20 @@
 ﻿
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using GameA.Game;
 using SoyEngine;
-using SoyEngine.Proto;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace GameA
 {
     public class USCtrlSocialRelationship : USCtrlBase<USViewSocialRelationship>
     {
-        public List<UMCtrlRelationCard> _cardList = new List<UMCtrlRelationCard>();
+        private EResScenary _resScenary;
+        private List<UMCtrlRelationCard> _cardList = new List<UMCtrlRelationCard>();
         private RelationshipPage _relationshipPage;
         public RelationshipPage RelationPage
         {
             get
             {
-                return this._relationshipPage;
+                return _relationshipPage;
             }
             set
             {
@@ -41,7 +37,7 @@ namespace GameA
         public enum RelationshipPage
         {
             Relationshippage1,
-            Relationshippage2,
+            Relationshippage2
         }
         /// <summary>
         /// 根据字符串返回枚举
@@ -59,8 +55,9 @@ namespace GameA
         }
 
 
-        public void Set(List<UserInfoDetail> fittingList)
+        public void Set(List<UserInfoDetail> fittingList, EResScenary resScenary)
         {
+            _resScenary = resScenary;
             if (_cardList.Count > 0)
             {
                 for (int i = 0; i < _cardList.Count; i++)
@@ -81,7 +78,7 @@ namespace GameA
             if (_cachedView != null)
             {
                 var UM = new UMCtrlRelationCard();
-                UM.Init(_cachedView.Dock as RectTransform);
+                UM.Init(_cachedView.Dock as RectTransform, _resScenary);
                 UM.Set(fittingFashion);
                 _cardList.Add(UM);
             }

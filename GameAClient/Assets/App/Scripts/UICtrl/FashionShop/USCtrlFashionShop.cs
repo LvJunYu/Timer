@@ -103,7 +103,7 @@ namespace GameA
 	    }
         private List<UMCtrlFashionShopCard> _cardList = new List<UMCtrlFashionShopCard>();
 
-        public void Set(List<Table_FashionUnit> pageList)
+        public void Set(List<Table_FashionUnit> pageList, EResScenary resScenary)
         {
             if (_cardList.Count > 0)
             {
@@ -116,7 +116,7 @@ namespace GameA
             for (int i = 0; i < pageList.Count; i++)
             {
                 var UM = new UMCtrlFashionShopCard();
-                UM.Init(_cachedView.Dock as RectTransform);
+                UM.Init(_cachedView.Dock as RectTransform, resScenary);
                 UM.Set(pageList[i]);
                 
                 _cardList.Add(UM);

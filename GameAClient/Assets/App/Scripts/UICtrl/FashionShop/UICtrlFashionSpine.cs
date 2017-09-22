@@ -12,13 +12,14 @@ using AnimationState = Spine.AnimationState;
 
 namespace GameA
 {
-    [UIAutoSetup]
+    [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlFashionSpine : UICtrlGenericBase<UIViewFashionSpine>
     {
         private ChangePartsSpineView _avatarView;
         private RenderCamera _renderCamera;
         private int _timer;
         private const  int IntervalTime = 15 * ConstDefineGM2D.FixedFrameCount;
+        private bool _buttonEnable;
 
         public Texture AvatarRenderTexture
         {
@@ -71,11 +72,11 @@ namespace GameA
         {
             _timer = 1;
             base.OnViewCreated();
-            //_cachedView.AvatarBtn.enabled = SocialGUIManager.Instance.OpenUI<UICtrlTaskbar>().FashionShopAvailable; todo
+            _cachedView.AvatarBtn.enabled = _buttonEnable;
             _cachedView.AvatarBtn.onClick.AddListener(OnAvatarBtn);
 
             _cachedView.PlayerAvatarAnimation.skeletonDataAsset =
-                ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, "SMainBoy0_SkeletonData", 1);
+                JoyResManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData, "SMainBoy0_SkeletonData", (int) EResScenary.Default);
             _cachedView.PlayerAvatarAnimation.Initialize(false);
             _avatarView = new ChangePartsSpineView();
             _avatarView.HomePlayerAvatarViewInit(_cachedView.PlayerAvatarAnimation);
@@ -89,6 +90,16 @@ namespace GameA
                 () => { ShowAllUsingAvatar(); },
                 code => { LogHelper.Error("Network error when get avatarData, {0}", code); }
             );
+        }
+
+        protected override void OnDestroy()
+        {
+            if (_renderCamera != null)
+            {
+                RenderCameraManager.Instance.FreeCamera(_renderCamera);
+                _renderCamera = null;
+            }
+            base.OnDestroy();
         }
 
         private IEnumerator DoFunc()
@@ -132,7 +143,11 @@ namespace GameA
 
         public void Set(bool ifUsable)
         {
-            _cachedView.AvatarBtn.enabled = ifUsable;
+            _buttonEnable = ifUsable;
+            if (_isViewCreated)
+            {
+                _cachedView.AvatarBtn.enabled = _buttonEnable;
+            }
         }
     }
 }

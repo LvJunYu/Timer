@@ -5,8 +5,8 @@ using UnityEngine;
 
 namespace GameA
 {
-    [UIAutoSetup]
-    public class UICtrlUIGuideBubble : UICtrlGenericBase<UIViewUIGuideBubble>
+    [UIResAutoSetup(EResScenary.UICommon)]
+    public class UICtrlUIGuideBubble : UICtrlResManagedBase<UIViewUIGuideBubble>
     {
         #region 常量与字段
         private readonly HashSet<UMCtrlUIGuideBubble> _openedBubbleSet = new HashSet<UMCtrlUIGuideBubble>();
@@ -62,7 +62,7 @@ namespace GameA
             else
             {
                 item = new UMCtrlUIGuideBubble();
-                item.Init(_cachedView.ContentDock);
+                item.Init(_cachedView.ContentDock, ResScenary);
             }
             return item;
         }

@@ -85,7 +85,7 @@ namespace GameA.Game
             }
             _path = path;
             string skeletonDataAssetName = string.Format("{0}_SkeletonData", path);
-            SkeletonDataAsset data = ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData,skeletonDataAssetName,0);
+            SkeletonDataAsset data = JoyResManager.Instance.GetAsset<SkeletonDataAsset>(EResType.SpineData,skeletonDataAssetName);
             if (data == null)
             {
                 LogHelper.Error("Init failed data is null! {0}|{1}", path, _trans.GetInstanceID());

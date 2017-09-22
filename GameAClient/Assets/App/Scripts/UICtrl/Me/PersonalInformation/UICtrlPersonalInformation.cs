@@ -7,7 +7,6 @@
 
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using GameA.Game;
 using NewResourceSolution;
@@ -29,7 +28,7 @@ namespace GameA
         private int    _defaultHeadNum = 0;
         private ESex _eMale;
         //private Project _representativeProjectle = null;todo
-        private List<UMCtrlAchievement> _cardList = new List<UMCtrlAchievement>();
+        private readonly List<UMCtrlAchievement> _cardList = new List<UMCtrlAchievement>();
 
         #endregion
 
@@ -54,15 +53,6 @@ namespace GameA
             _cachedView.SelectFemaleBtn.onClick.AddListener(SelectFemale);
         }
 
-        protected override void InitEventListener()
-        {
-            base.InitEventListener();
-        }
-
-        protected override void OnDestroy()
-        {
-        }
-
         private void OnSubmit()
         {
             //本地刷新最新信息
@@ -75,7 +65,7 @@ namespace GameA
         private void UpdateUserInfo(Msg_SC_DAT_UserInfoDetail userInfo)
         {
             //更改信息并上传
-            userInfo.UserInfoSimple.Sex = (ESex) _eMale;
+            userInfo.UserInfoSimple.Sex = _eMale;
             userInfo.UserInfoSimple.NickName = _name;
             userInfo.Profile = _signature;
             //userInfo.UserInfoSimple.HeadImgUrl = "";
@@ -105,8 +95,8 @@ namespace GameA
         {
             //_seletctedHeadImage=HeadNum;todo
             var head = SpriteNameDefine.GetHeadImage(HeadNum);
-            Texture fashion = null;
-            if (ResourcesManager.Instance.TryGetTexture(head, out fashion))
+            Texture fashion;
+            if (JoyResManager.Instance.TryGetTexture(head, out fashion))
             {
                 _cachedView.PhotoPortrait.texture = fashion;
             }
@@ -127,14 +117,14 @@ namespace GameA
             //    () => { SetRepresentativeWorks(); },
             //    null
             //    );
-            Texture fashion = null;
-            if (ResourcesManager.Instance.TryGetTexture(LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,out fashion))
+            Texture fashion;
+            if (JoyResManager.Instance.TryGetTexture(LocalUser.Instance.User.UserInfoSimple.HeadImgUrl,out fashion))
             {
                 _cachedView.PhotoPortrait.texture = fashion;
             }
             else
             {
-                ResourcesManager.Instance.TryGetTexture(SpriteNameDefine.GetHeadImage(_defaultHeadNum),out fashion);
+                JoyResManager.Instance.TryGetTexture(SpriteNameDefine.GetHeadImage(_defaultHeadNum),out fashion);
                 _cachedView.PhotoPortrait.texture = fashion;
             }
 
@@ -305,10 +295,10 @@ namespace GameA
         {
             for (int i = 0; i < 10; i++)
             {
-                var UM = new UMCtrlAchievement();
-                UM.Init(_cachedView.Dock as RectTransform);
-                UM.Set();
-                _cardList.Add(UM);
+                var um = new UMCtrlAchievement();
+                um.Init(_cachedView.Dock, ResScenary);
+                um.Set();
+                _cardList.Add(um);
             }
         }
 

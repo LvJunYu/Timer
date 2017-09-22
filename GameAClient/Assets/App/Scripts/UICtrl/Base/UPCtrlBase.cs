@@ -19,6 +19,11 @@
 		{
 		}
 
+		public virtual void OnDestroy()
+		{
+			
+		}
+
         public virtual void Open() { _isOpen = true; }
         public virtual void Close() { _isOpen = false; }
 	}

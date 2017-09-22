@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace GameA
 {
-    [UIAutoSetup]
+    [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlGoldEnergy : UICtrlAnimationBase<UIViewGoldEnergy>
     {
         #region 常量与字段
@@ -56,6 +56,15 @@ namespace GameA
             OnEnergyChanged();
             OnGoldChanged();
             OnDiamondChanged();
+
+            if (_styleStack.Count > 0)
+            {
+                SetStyle(_styleStack.Peek());
+            }
+            else
+            {
+                SetStyle(EStyle.None);
+            }
         }
 
         protected override void SetAnimationType()
@@ -67,15 +76,7 @@ namespace GameA
         protected override void OnCloseAnimationComplete()
         {
             base.OnCloseAnimationComplete();
-
-            if (_styleStack.Count > 0)
-            {
-                SetStyle(_styleStack.Peek());
-            }
-            else
-            {
-                SetStyle(EStyle.None);
-            }
+            SocialGUIManager.Instance.OpenUI<UICtrlGoldEnergy>();
         }
 
         public void PushStyle(EStyle eStyle)

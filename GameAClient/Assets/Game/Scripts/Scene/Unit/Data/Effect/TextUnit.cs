@@ -31,7 +31,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            var go = Object.Instantiate (ResourcesManager.Instance.GetPrefab(EResType.ModelPrefab, 
+            var go = Object.Instantiate (JoyResManager.Instance.GetPrefab(EResType.ModelPrefab, 
                 ConstDefineGM2D.TextBillboardPrefabName)) as GameObject;
             if (go != null)
             {

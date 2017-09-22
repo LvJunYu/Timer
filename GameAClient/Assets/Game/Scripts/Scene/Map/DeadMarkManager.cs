@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace GameA.Game
 {
-    public class DeadMarkManager : IDisposable
+    public class DeadMarkManager
     {
         public static DeadMarkManager _instance;
 

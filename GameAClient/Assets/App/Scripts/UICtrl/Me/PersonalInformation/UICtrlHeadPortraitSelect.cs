@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using SoyEngine;
-using UnityEngine;
-using SoyEngine.Proto;
-using GameA.Game;
 using UnityEngine.UI;
 
 namespace GameA
 {
-    [UIAutoSetup (EUIAutoSetupType.Add)] 
-    public class UICtrlHeadPortraitSelect : UICtrlInGameBase<UIViewHeadPortraitSelect>
+    [UIResAutoSetup(EResScenary.UIHome)]
+    public class UICtrlHeadPortraitSelect : UICtrlResManagedBase<UIViewHeadPortraitSelect>
     {
         private int _seletctedHeadImage;
         private int _headMaxNumber= 12;
@@ -66,10 +62,10 @@ namespace GameA
             _cardList.Clear();
             for (int i = 0; i < _headMaxNumber; i++)
             {
-                var UM = new UMCtrlHead();
-                UM.Init(_cachedView.Dock as RectTransform);
-                UM.Set(i);
-                _cardList.Add(UM);
+                var um = new UMCtrlHead();
+                um.Init(_cachedView.Dock, ResScenary);
+                um.Set(i);
+                _cardList.Add(um);
             }
         }
 

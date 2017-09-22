@@ -46,7 +46,7 @@ namespace GameA
 
         public void RefreshInfo(Table_StandaloneChapter table, int chapterIndex, bool doPassAnimate = false)
         {
-            ResourcesManager.Instance.TryGetSprite(_islandSpriteName[chapterIndex - 1], out _islandSprite);
+            JoyResManager.Instance.TryGetSprite(_islandSpriteName[chapterIndex - 1], out _islandSprite);
             if (_isDoingAnimation)
             {
                 return;

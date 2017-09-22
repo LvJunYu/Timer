@@ -12,7 +12,7 @@ using UnityEditor;
 
 namespace NewResourceSolution
 {
-	public class ResourcesManager : Singleton<ResourcesManager>
+	public class ResourcesManager
 	{
 		#region fields
 //		private static readonly int s_maxScenary = 32;
@@ -48,12 +48,12 @@ namespace NewResourceSolution
 
 		#region public methods
 
-		public Object GetPrefab(EResType resType, string name, int scenary = 0)
+		public Object GetPrefab(EResType resType, string name, int scenary)
 		{
             return GetAsset<Object>(resType, name, scenary, true, true, LocalizationManager.Instance.CurrentLocale);
 		}
 
-        public bool TryGetTexture(string name, out Texture texture, int scenary = 0)
+        public bool TryGetTexture(string name, out Texture texture, int scenary)
         {
             texture = GetAsset<Texture>(EResType.Texture, name, scenary, false);
             if (null != texture)
@@ -63,7 +63,7 @@ namespace NewResourceSolution
             return false;
         }
 
-        public bool TryGetSprite(string name, out Sprite sprite, int scenary = 0)
+        public bool TryGetSprite(string name, out Sprite sprite, int scenary)
         {
             sprite = GetAsset<Sprite>(EResType.Sprite, name, scenary, false);
             if (null != sprite)
@@ -73,22 +73,22 @@ namespace NewResourceSolution
             return false;
         }
 
-        public Texture GetTexture (string name, int scenary = 0)
+        public Texture GetTexture (string name, int scenary)
         {
             return GetAsset<Texture>(EResType.Texture, name, scenary);
         }
 
-        public Sprite GetSprite (string name, int scenary = 0)
+        public Sprite GetSprite (string name, int scenary)
         {
             return GetAsset<Sprite>(EResType.Sprite, name, scenary);
         }
 
-        public AudioClip GetAudio (string name, int scenary = 0)
+        public AudioClip GetAudio (string name, int scenary)
         {
             return GetAsset<AudioClip>(EResType.AudioClip, name, scenary);
         }
 
-        public string GetJson (string name, int scenary = 0)
+        public string GetJson (string name, int scenary)
         {
             var textAsset = GetAsset<TextAsset>(EResType.Table, name, scenary);
             if (null != textAsset)
@@ -355,7 +355,7 @@ namespace NewResourceSolution
             if (!RuntimeConfig.Instance.UseAssetBundleRes) return;
             #endif
 
-			int maskToUnload = 1 << scenary;
+			long maskToUnload = 1L << scenary;
             _manifest.UnloadUnusedAssets (maskToUnload);
         }
 

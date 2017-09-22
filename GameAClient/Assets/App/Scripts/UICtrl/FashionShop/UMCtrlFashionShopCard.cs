@@ -55,7 +55,7 @@ namespace GameA
                 SetParticle(listItem);
             });
             Sprite fashion = null;
-            if (ResourcesManager.Instance.TryGetSprite(listItem.PreviewTexture, out fashion))
+            if (JoyResManager.Instance.TryGetSprite(listItem.PreviewTexture, out fashion))
             {
                 _cachedView.FashionPreview.sprite = fashion;
             }
@@ -80,7 +80,7 @@ namespace GameA
             Sprite Bg = null;
             if (listItem.Sex == 2)
             {
-                if (ResourcesManager.Instance.TryGetSprite("img_store_card_pink", out Bg))
+                if (JoyResManager.Instance.TryGetSprite("img_store_card_pink", out Bg))
                 {
                     _cachedView.SexBg.sprite = Bg;
                 }

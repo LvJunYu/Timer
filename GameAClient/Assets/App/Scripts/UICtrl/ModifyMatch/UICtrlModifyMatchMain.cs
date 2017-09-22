@@ -22,6 +22,7 @@ namespace GameA
         private const long _autoRequstDataInterval = 1000;
         private long _lastAutoRefreshView;
         private long _lastRequstDataTime;
+        private bool _pushGoldEnergyStyle;
         #endregion
 
         #region 属性
@@ -63,7 +64,11 @@ namespace GameA
             if (LocalUser.Instance.MatchUserData.IsInited) {
                 LocalUser.Instance.MatchUserData.LocalRefresh ();
             }
-            SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.None);
+            if (!_pushGoldEnergyStyle)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.None);
+                _pushGoldEnergyStyle = true;
+            }
             //RefreshViewAll ();
             _lastAutoRefreshView = DateTimeUtil.GetServerTimeNowTimestampMillis ();
             _lastRequstDataTime = _lastAutoRefreshView;
@@ -71,8 +76,12 @@ namespace GameA
 
         protected override void OnClose()
         {
+            if (_pushGoldEnergyStyle)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
+                _pushGoldEnergyStyle = false;
+            }
             base.OnClose();
-            SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
         }
 
         protected override void InitEventListener()

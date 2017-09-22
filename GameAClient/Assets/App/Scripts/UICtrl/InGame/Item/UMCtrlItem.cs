@@ -14,7 +14,6 @@ using UnityEngine.EventSystems;
 
 namespace GameA
 {
-    [Poolable(MinPoolSize = 1, PreferedPoolSize = 10, MaxPoolSize = 1000)]
     public class UMCtrlItem : UMCtrlBase<UMViewItem>
     {
         private Table_Unit _table;
@@ -164,7 +163,7 @@ namespace GameA
             _cachedView.SpriteIcon.sprite = null;
             _cachedView.SpriteIcon.SetActiveEx(true);
             Sprite texture;
-            if (ResourcesManager.Instance.TryGetSprite(tableUnit.Icon, out texture))
+            if (JoyResManager.Instance.TryGetSprite(tableUnit.Icon, out texture))
             {
                 _cachedView.SpriteIcon.sprite = texture;
             }

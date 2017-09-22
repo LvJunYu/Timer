@@ -9,7 +9,7 @@ namespace GameA
     /// <summary>
     /// UI动画基类
     /// </summary>
-    public abstract class UICtrlAnimationBase<T> : UICtrlGenericBase<T> where T : UIViewBase
+    public abstract class UICtrlAnimationBase<T> : UICtrlResManagedBase<T> where T : UIViewBase
     {
         protected EAnimationType _animationType;
 
@@ -25,6 +25,7 @@ namespace GameA
         private List<Sequence> _closePartSequences = new List<Sequence>(5);
         private List<Vector3> _initialPos = new List<Vector3>(5);
         private int _sequenceIndex;
+        private bool _openAnimation;
 
         protected virtual void CreateSequences()
         {
@@ -201,15 +202,57 @@ namespace GameA
             _startPos = GetStartPos(_animationType);
         }
 
+        protected override void OnDestroy()
+        {
+            if (_openSequence != null)
+            {
+                _openSequence.Kill();
+                _openSequence = null;
+            }
+            if (_closeSequence != null)
+            {
+                _closeSequence.Kill();
+            }
+            for (int i = 0; i < _openPartSequences.Count; i++)
+            {
+                var sq = _openPartSequences[i];
+                if (sq != null)
+                {
+                    sq.Kill();
+                }
+            }
+            _openPartSequences.Clear();
+            for (int i = 0; i < _closePartSequences.Count; i++)
+            {
+                var sq = _closePartSequences[i];
+                if (sq != null)
+                {
+                    sq.Kill();
+                }
+            }
+            _closePartSequences.Clear();
+            _initialPos.Clear();
+            _sequenceIndex = 0;
+            base.OnDestroy();
+        }
+
         protected override void OnOpen(object parameter)
         {
             base.OnOpen(parameter);
-            OpenAnimation();
+            if (!_openAnimation)
+            {
+                OpenAnimation();
+                _openAnimation = true;
+            }
         }
 
         protected override void OnClose()
         {
-            CloseAnimation();
+            if (_openAnimation)
+            {
+                CloseAnimation();
+                _openAnimation = false;
+            }
             base.OnClose();
         }
 

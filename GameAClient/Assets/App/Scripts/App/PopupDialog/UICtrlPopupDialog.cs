@@ -12,8 +12,8 @@ using System;
 
 namespace GameA
 {
-    [UIAutoSetup(EUIAutoSetupType.Add)]
-    public class UICtrlPopupDialog : UICtrlGenericBase<UIViewPopupDialog>
+    [UIResAutoSetup(EResScenary.UICommon)]
+    public class UICtrlPopupDialog : UICtrlResManagedBase<UIViewPopupDialog>
     {
         #region 常量与字段
         #endregion
@@ -69,7 +69,7 @@ namespace GameA
                 SocialGUIManager.Instance.OpenUI<UICtrlPopupDialog>();
             }
             UMCtrlDialog ctrl = new UMCtrlDialog();
-            ctrl.Init(_cachedView.ContentDock);
+            ctrl.Init(_cachedView.ContentDock, ResScenary);
             ctrl.Set(msg, title, btnParam);
         }
 

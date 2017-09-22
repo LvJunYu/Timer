@@ -1,12 +1,11 @@
-﻿using System;
-using GameA.Game;
+﻿using GameA.Game;
 using SoyEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
 namespace GameA
 {
-    [UIAutoSetup]
-    public class UICtrlMobileInputControl : UICtrlGenericBase<UIViewMobileInputControl>
+    [UIResAutoSetup(EResScenary.UIInGame)]
+    public class UICtrlMobileInputControl : UICtrlInGameBase<UIViewMobileInputControl>
     {
         private UMCtrlSkillBtn[] _umSkillBtns;
         private Table_Equipment[] _equipments = new Table_Equipment[3];
@@ -39,7 +38,9 @@ namespace GameA
         {
             base.OnViewCreated();
             if (null == _umSkillBtns)
+            {
                 CreateUMSkillBtns();
+            }
             _cachedView.JumpBtn.OnPress += OnJumpButtonDown;
             _cachedView.JumpBtn.OnPress += PlayClickParticle;
             _cachedView.JumpBtn.OnRelease += OnJumpButtonUp;
@@ -55,6 +56,17 @@ namespace GameA
 
             _cachedView.AssistBtn.OnPress += OnAssistButtonDown;
             _cachedView.AssistBtn.OnRelease += OnAssistButtonUp;
+        }
+
+        protected override void OnDestroy()
+        {
+            for (int i = 0; i < _umSkillBtns.Length; i++)
+            {
+                _umSkillBtns[i].Dispose();
+            }
+            _umSkillBtns = null;
+            _equipments = null;
+            base.OnDestroy();
         }
 
         protected override void OnOpen(object parameter)
@@ -75,9 +87,14 @@ namespace GameA
 
         public void SetSkillBtnVisible(int slot, bool visible)
         {
-            if (null == _cachedView) return;
+            if (null == _cachedView)
+            {
+                return;
+            }
             if (null == _umSkillBtns)
+            {
                 CreateUMSkillBtns();
+            }
             switch (slot)
             {
                 case 0:
@@ -162,7 +179,7 @@ namespace GameA
             for (int i = 0; i < skillNum; i++)
             {
                 UMCtrlSkillBtn umCtrlSkillBtn = new UMCtrlSkillBtn();
-                umCtrlSkillBtn.Init(_cachedView.SkillRTFs[i]);
+                umCtrlSkillBtn.Init(_cachedView.SkillRTFs[i], ResScenary);
                 _umSkillBtns[i] = umCtrlSkillBtn;
             }
         }

@@ -33,7 +33,7 @@ namespace GameA.Game
 		{
 			var tableUnit = _unit.TableUnit;
             string skeletonDataAssetName = string.Format ("{0}_SkeletonData", tableUnit.Model);
-            SkeletonDataAsset data = ResourcesManager.Instance.GetAsset<SkeletonDataAsset>(
+            SkeletonDataAsset data = JoyResManager.Instance.GetAsset<SkeletonDataAsset>(
                 EResType.SpineData,
                 skeletonDataAssetName,
                 0

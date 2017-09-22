@@ -5,13 +5,12 @@
 ** Summary : UICtrlWorld.cs
 ***********************************************************************/
 
-using System;
 using SoyEngine;
 using UnityEngine;
 
 namespace GameA
 {
-    [UIAutoSetup]
+    [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
     public class UICtrlWorld : UICtrlAnimationBase<UIViewWorld>
     {
         #region 常量与字段
@@ -19,7 +18,7 @@ namespace GameA
         private EMenu _curMenu = EMenu.None;
         private UPCtrlBase<UICtrlWorld, UIViewWorld> _curMenuCtrl;
         private UPCtrlBase<UICtrlWorld, UIViewWorld>[] _menuCtrlArray;
-
+        private bool _pushGoldEnergyStyle;
         #endregion
 
         #region 属性
@@ -35,17 +34,18 @@ namespace GameA
             _cachedView.ReturnBtn.onClick.AddListener(OnReturnBtnClick);
 
             _menuCtrlArray = new UPCtrlBase<UICtrlWorld, UIViewWorld>[(int) EMenu.Max];
-            _menuCtrlArray[(int) EMenu.Recommend] = new UPCtrlWorldRecommendProject();
-            _menuCtrlArray[(int) EMenu.UserPlayHistory] = new UPCtrlWorldUserPlayHistory();
-            _menuCtrlArray[(int) EMenu.UserFavorite] = new UPCtrlWorldUserFavorite();
-            Array.ForEach(_menuCtrlArray, c =>
-            {
-                if (null == c)
-                {
-                    return;
-                }
-                c.Init(this, _cachedView);
-            });
+            var upCtrlWorldRecommendProject = new UPCtrlWorldRecommendProject();
+            upCtrlWorldRecommendProject.Set(ResScenary);
+            upCtrlWorldRecommendProject.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.Recommend] = upCtrlWorldRecommendProject;
+            var upCtrlWorldUserPlayHistory = new UPCtrlWorldUserPlayHistory();
+            upCtrlWorldUserPlayHistory.Set(ResScenary);
+            upCtrlWorldUserPlayHistory.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.UserPlayHistory] = upCtrlWorldUserPlayHistory;
+            var upCtrlWorldUserFavorite = new UPCtrlWorldUserFavorite();
+            upCtrlWorldUserFavorite.Set(ResScenary);
+            upCtrlWorldUserFavorite.Init(this, _cachedView);
+            _menuCtrlArray[(int) EMenu.UserFavorite] = upCtrlWorldUserFavorite;
             for (int i = 0; i < _cachedView.MenuButtonAry.Length; i++)
             {
                 var inx = i;
@@ -86,6 +86,19 @@ namespace GameA
             InitUI();
         }
 
+        protected override void OnDestroy()
+        {
+            for (int i = 0; i < _menuCtrlArray.Length; i++)
+            {
+                if (_menuCtrlArray[i] != null)
+                {
+                    _menuCtrlArray[i].OnDestroy();
+                }
+            }
+            _curMenuCtrl = null;
+            base.OnDestroy();
+        }
+
         protected override void InitGroupId()
         {
             _groupId = (int) EUIGroupType.MainUI;
@@ -104,13 +117,29 @@ namespace GameA
             {
                 _cachedView.TabGroup.SelectIndex((int) EMenu.Recommend, true);
             }
-            SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamond);
+            else
+            {
+                _cachedView.TabGroup.SelectIndex((int) _curMenu, true);
+            }
+            if (!_pushGoldEnergyStyle)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PushStyle(UICtrlGoldEnergy.EStyle.GoldDiamond);
+                _pushGoldEnergyStyle = true;
+            }
         }
 
         protected override void OnClose()
         {
+            if (_pushGoldEnergyStyle)
+            {
+                SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
+                _pushGoldEnergyStyle = false;
+            }
+            if (_curMenuCtrl != null)
+            {
+                _curMenuCtrl.Close();
+            }
             base.OnClose();
-            SocialGUIManager.Instance.GetUI<UICtrlGoldEnergy>().PopStyle();
         }
 
         protected override void SetAnimationType()

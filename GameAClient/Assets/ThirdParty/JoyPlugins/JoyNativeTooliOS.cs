@@ -11,6 +11,7 @@
 using System;
 using System.IO;
 using System.Text;
+using NewResourceSolution;
 using SoyEngine;
 using UnityEngine;
 using EMessengerType = GameA.EMessengerType;
@@ -139,7 +140,7 @@ public class JoyNativeTooliOS : MonoBehaviour, IJoyNativeTool
     
     public bool TryGetFromStreamingAssets(string fileName, out byte[] bytes)
     {
-        string fileFullName = Path.Combine(Application.streamingAssetsPath, fileName);
+        string fileFullName = Path.Combine(ResPath.StreamingAssetsPath, fileName);
         bytes = null;
         if (!File.Exists(fileFullName)) {
             return false;

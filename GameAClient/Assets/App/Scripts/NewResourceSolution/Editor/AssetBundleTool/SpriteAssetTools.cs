@@ -168,6 +168,14 @@ namespace NewResourceSolution.EditorTool
 				textureImporter.SetPlatformTextureSettings(defaultSetting);
 				isDirty = true;
 			}
+			defaultSetting.name = "DefaultTexturePlatform";
+			ds = textureImporter.GetDefaultPlatformTextureSettings();
+			if (ds == null || JsonUtility.ToJson(ds) != JsonUtility.ToJson(defaultSetting))
+			{
+				textureImporter.SetPlatformTextureSettings(defaultSetting);
+				isDirty = true;
+			}
+			
 			
 			// iOS
 			TextureImporterPlatformSettings iosSetting = new TextureImporterPlatformSettings();

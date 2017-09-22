@@ -1,16 +1,13 @@
-﻿using SoyEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System;
+﻿using System.Collections.Generic;
 using GameA.Game;
+using SoyEngine;
 
 namespace GameA
 {
     /// <summary>
     /// 装备拼图
     /// </summary>
-	[UIAutoSetup(EUIAutoSetupType.Add)]
+    [UIResAutoSetup(EResScenary.UIHome)]
     public class UICtrlPuzzleSlots : UICtrlAnimationBase<UIViewPuzzleSlots>
     {
         private Dictionary<int, Table_PuzzleSlot> _slots;//拼图装备栏
@@ -46,7 +43,7 @@ namespace GameA
                 var unlockLv = _slots[key].UnlockLevel;
                 var equipLoc = new UMCtrlPuzzleEquipLoc(key, unlockLv);
                 _allEquipLocs.Add(equipLoc);
-                equipLoc.Init(_cachedView.PuzzleLocsGrid);
+                equipLoc.Init(_cachedView.PuzzleLocsGrid, ResScenary);
                 //显示装备的拼图
                 if (_usingPicFull.Count > index && _usingPicFull[index] != null)
                     equipLoc.SetPic(_usingPicFull[index]);

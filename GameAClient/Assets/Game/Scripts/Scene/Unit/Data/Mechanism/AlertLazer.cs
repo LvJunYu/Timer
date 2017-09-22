@@ -274,7 +274,7 @@ namespace GameA.Game
         {
             CreateMesh();
             Texture texture = null;
-            if (!ResourcesManager.Instance.TryGetTexture(path, out texture))
+            if (!JoyResManager.Instance.TryGetTexture(path, out texture))
             {
                 LogHelper.Error("TryGetTextureByName Failed {0}", path);
                 return;
