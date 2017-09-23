@@ -256,8 +256,11 @@ namespace GameA
             }
             _cachedView.LifeRoot.SetActiveEx(true);
             int lifeCount = PlayMode.Instance.MainPlayer.Life;
-            _cachedView.StartCoroutine(CoroutineProxy.RunWaitForSeconds(_collectDelayTime,
-                () => UpdateLifeItemValueText(lifeCount)));
+            if (_cachedView.IsActive())
+            {
+                _cachedView.StartCoroutine(CoroutineProxy.RunWaitForSeconds(_collectDelayTime,
+                    () => UpdateLifeItemValueText(lifeCount)));
+            }
         }
 
         private void UpdateLifeItemValueText(int lifeCount)
