@@ -31,15 +31,11 @@ namespace GameA
             _cachedView.CloseBtn.onClick.AddListener(Close);
         }
 
-        protected override void CreateSequences()
+        protected override void SetPartAnimations()
         {
-            _openSequence = DOTween.Sequence();
-            _closeSequence = DOTween.Sequence();
+            base.SetPartAnimations();
             _openSequence.Append(_cachedView.ContentDock.DOSizeDelta(new Vector2(500f, 100f), 0.3f).SetEase(Ease.Linear).From());
             _closeSequence.Append(_cachedView.ContentDock.DOSizeDelta(new Vector2(500f, 100f), 0.3f).SetEase(Ease.Linear));
-            _openSequence.OnComplete(OnOpenAnimationComplete).SetAutoKill(false).Pause().OnUpdate(OnOpenAnimationUpdate);
-            _closeSequence.OnComplete(OnCloseAnimationComplete).SetAutoKill(false).Pause()
-                .PrependCallback(() => _cachedView.Trans.localPosition = Vector3.zero);
         }
 
         protected override void OnOpen(object parameter)
