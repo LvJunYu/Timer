@@ -269,8 +269,11 @@ namespace GameA
         {
             int curScore = PlayMode.Instance.SceneState.GemGain;
             int totalScore = PlayMode.Instance.SceneState.TotalGem;
-            _cachedView.StartCoroutine(CoroutineProxy.RunWaitForSeconds(_collectDelayTime,
-                () => UpdateCollectText(curScore)));
+            if (_cachedView.IsActive())
+            {
+                _cachedView.StartCoroutine(CoroutineProxy.RunWaitForSeconds(_collectDelayTime,
+                    () => UpdateCollectText(curScore)));
+            }
             if (_winConditionItemDict.ContainsKey(EWinCondition.CollectTreasure))
             {
                 _winConditionItemDict[EWinCondition.CollectTreasure].SetComplete(curScore == totalScore);
