@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using DG.Tweening;
+﻿using DG.Tweening;
 using SoyEngine;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,15 +15,12 @@ namespace GameA
         protected Sequence _openSequence;
         protected Sequence _closeSequence;
         protected Vector3 _startPos;
-        protected int _firstDelayFrames; //首次延迟帧数
+        protected int _firstDelayFrames;
         protected int _openDelayFrames;
         protected int _closeDelayFrames;
         private float _screenHeight;
         private float _screenWidth;
-        private List<Sequence> _openPartSequences = new List<Sequence>(5);
-        private List<Sequence> _closePartSequences = new List<Sequence>(5);
-        private List<Vector3> _initialPos = new List<Vector3>(5);
-        private int _sequenceIndex;
+        private bool _firstOpen;
         private bool _openAnimation;
 
         protected virtual void CreateSequences()
@@ -105,13 +101,27 @@ namespace GameA
 //            _openSequence.Complete(true);
         }
 
-        private void OpenAnimation()
+        private void OpenAnimation(bool immediateFinish = false)
         {
-            if (null == _openSequence)
+            if (immediateFinish)
             {
-                CreateSequences();
-                CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(_firstDelayFrames,
-                    () => _openSequence.Restart()));
+                _openSequence.Restart();
+                _openSequence.Complete(true);
+                return;
+            }
+            if (_firstOpen)
+            {
+                if (_firstDelayFrames > 0)
+                {
+                    _cachedView.gameObject.SetActive(false);
+                    CoroutineProxy.Instance.StartCoroutine(CoroutineProxy.RunWaitFrames(_firstDelayFrames,
+                        () => _openSequence.Restart()));
+                }
+                else
+                {
+                    _openSequence.Restart();
+                }
+                _firstOpen = false;
             }
             else
             {
@@ -127,13 +137,15 @@ namespace GameA
                 }
             }
         }
-
-        private void CloseAnimation()
+        
+        private void CloseAnimation(bool immediateFinish = false)
         {
             _cachedView.gameObject.SetActive(true);
-            if (null == _closeSequence)
+            if (immediateFinish)
             {
-                CreateSequences();
+                _closeSequence.PlayForward();
+                _closeSequence.Complete(true);
+                return;
             }
             if (_closeDelayFrames > 0)
             {
@@ -227,26 +239,6 @@ namespace GameA
                 _closeSequence.Kill();
                 _closeSequence = null;
             }
-            for (int i = 0; i < _openPartSequences.Count; i++)
-            {
-                var sq = _openPartSequences[i];
-                if (sq != null)
-                {
-                    sq.Kill();
-                }
-            }
-            _openPartSequences.Clear();
-            for (int i = 0; i < _closePartSequences.Count; i++)
-            {
-                var sq = _closePartSequences[i];
-                if (sq != null)
-                {
-                    sq.Kill();
-                }
-            }
-            _closePartSequences.Clear();
-            _initialPos.Clear();
-            _sequenceIndex = 0;
             base.OnDestroy();
         }
 
@@ -256,15 +248,16 @@ namespace GameA
             if (null == _openSequence)
             {
                 CreateSequences();
+                _firstOpen = true;
             }
-            OpenAnimation();
             if (!_openAnimation)
             {
+                OpenAnimation();
                 _openAnimation = true;
             }
             else
             {
-                _openSequence.Complete(true);
+                OpenAnimation(true);
             }
         }
 
@@ -274,6 +267,10 @@ namespace GameA
             {
                 CloseAnimation();
                 _openAnimation = false;
+            }
+            else
+            {
+                CloseAnimation(true);
             }
             base.OnClose();
         }
@@ -285,29 +282,18 @@ namespace GameA
             Ease openEase = Ease.OutQuad, Ease closeEase = Ease.Linear, float openDuration = 0.25f,
             float closeDuration = 0.2f)
         {
-            _openPartSequences.Add(null);
-            _initialPos.Add(tf.localPosition);
-            _closePartSequences.Add(null);
-            CreateSequences(tf, animationType, _sequenceIndex, startPos, delay, openEase, closeEase, openDuration,
+            CreateSequences(tf, animationType, startPos, delay, openEase, closeEase, openDuration,
                 closeDuration);
-            _sequenceIndex++;
         }
 
-        private void CreateSequences(Transform tf, EAnimationType animationType, int sequenceIndex, Vector3? startPos,
+        private void CreateSequences(Transform tf, EAnimationType animationType, Vector3? startPos,
             float delay, Ease openEase, Ease closeEase, float openDuration, float closeDuration)
         {
-            if (sequenceIndex > _openPartSequences.Count - 1)
-            {
-                LogHelper.Error("sequenceIndex > _openPartSequences.Count - 1");
-                return;
-            }
-            if (null == _openPartSequences[sequenceIndex])
-                _openPartSequences[sequenceIndex] = DOTween.Sequence();
-            if (null == _closePartSequences[sequenceIndex])
-                _closePartSequences[sequenceIndex] = DOTween.Sequence();
+            var openPartSequence = DOTween.Sequence();
+            var closePartSequence = DOTween.Sequence();
             if (delay > 0)
             {
-                _openPartSequences[sequenceIndex].AppendInterval(delay);
+                openPartSequence.AppendInterval(delay);
             }
             if (null == startPos)
             {
@@ -320,21 +306,21 @@ namespace GameA
                 case EAnimationType.MoveFromLeft:
                 case EAnimationType.MoveFromRight:
                     //开始动画
-                    _openPartSequences[sequenceIndex].Append(
+                    openPartSequence.Append(
                         tf.DOBlendableMoveBy(startPos.Value, openDuration).From().SetEase(openEase)
                     );
                     //结束动画
-                    _closePartSequences[sequenceIndex].Append(
+                    closePartSequence.Append(
                         tf.DOBlendableMoveBy(startPos.Value, closeDuration).SetEase(closeEase)
                     );
                     break;
                 case EAnimationType.PopupFromCenter:
                     //开始动画
-                    _openPartSequences[sequenceIndex].Append(
+                    openPartSequence.Append(
                         tf.DOScale(Vector3.zero, openDuration).From().SetEase(Ease.OutBack)
                     );
                     //结束动画
-                    _closePartSequences[sequenceIndex].Append(
+                    closePartSequence.Append(
                         tf.DOScale(Vector3.zero, closeDuration).SetEase(closeEase)
                     );
                     break;
@@ -343,17 +329,17 @@ namespace GameA
                 case EAnimationType.PopupFromLeft:
                 case EAnimationType.PopupFromRight:
                     //开始动画
-                    _openPartSequences[sequenceIndex].Append(
+                    openPartSequence.Append(
                         tf.DOBlendableMoveBy(startPos.Value * 0.5f, openDuration).From().SetEase(Ease.OutBack)
                     );
-                    _openPartSequences[sequenceIndex].Join(
+                    openPartSequence.Join(
                         tf.DOScale(Vector3.zero, openDuration).From().SetEase(Ease.OutBack)
                     );
                     //结束动画
-                    _closePartSequences[sequenceIndex].Append(
+                    closePartSequence.Append(
                         tf.DOBlendableMoveBy(startPos.Value * 0.5f, closeDuration).SetEase(closeEase)
                     );
-                    _closePartSequences[sequenceIndex].Join(
+                    closePartSequence.Join(
                         tf.DOScale(Vector3.zero, closeDuration).SetEase(closeEase)
                     );
                     break;
@@ -362,16 +348,14 @@ namespace GameA
                     Image img = tf.GetComponent<Image>();
                     if (img != null)
                     {
-                        _openPartSequences[sequenceIndex].Append(img.DOFade(0, openDuration).From().SetEase(openEase));
+                        openPartSequence.Append(img.DOFade(0, openDuration).From().SetEase(openEase));
                         //结束动画
-                        _closePartSequences[sequenceIndex].Append(img.DOFade(0, closeDuration).SetEase(closeEase));
+                        closePartSequence.Append(img.DOFade(0, closeDuration).SetEase(closeEase));
                     }
                     break;
             }
-//            _closePartSequences[sequenceIndex].PrependCallback(() => tf.localPosition = _initialPos[sequenceIndex])
-//                .OnComplete(() => { tf.localPosition = _initialPos[sequenceIndex]; });
-            _openSequence.Join(_openPartSequences[sequenceIndex]);
-            _closeSequence.Join(_closePartSequences[sequenceIndex]);
+            _openSequence.Join(openPartSequence);
+            _closeSequence.Join(closePartSequence);
         }
     }
 

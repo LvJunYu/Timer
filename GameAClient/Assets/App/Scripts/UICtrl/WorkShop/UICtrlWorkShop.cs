@@ -82,8 +82,7 @@ namespace GameA
         protected override void SetAnimationType()
         {
             base.SetAnimationType();
-            _animationType = EAnimationType.None;
-            _firstDelayFrames = 5;
+            _firstDelayFrames = 0;
         }
 
         protected override void SetPartAnimations()
