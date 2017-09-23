@@ -88,6 +88,7 @@ namespace NewResourceSolution
             _bundles = runtimeManifest.Bundles;
             _fileLocation = runtimeManifest.FileLocation;
             _adamBundleNameList = runtimeManifest.AdamBundleNameList;
+            s_maxDecompressThreadNum = Environment.ProcessorCount + 1;
         }
         /// <summary>
         /// 混合下载manifest和(包内/本地/临时)manifest

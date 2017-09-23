@@ -319,12 +319,18 @@ namespace GameA.Game
                 }
                 return;
             }
-            SocialGUIManager.Instance.OpenUI<UICtrlMobileInputControl>();
+            if (Application.isMobilePlatform)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlMobileInputControl>();
+            }
         }
 
         public void HideGameInput()
         {
-            SocialGUIManager.Instance.CloseUI<UICtrlMobileInputControl>();
+            if (Application.isMobilePlatform)
+            {
+                SocialGUIManager.Instance.CloseUI<UICtrlMobileInputControl>();
+            }
         }
         
         private enum EPhase

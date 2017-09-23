@@ -389,6 +389,7 @@ namespace NewResourceSolution
                 }
             } while (!updateFinish);
             LogHelper.Info("Res check finish");
+            ThreadManager.Instance.Clear();
             if (manifestUpdated)
             {
                 JoyResManager.Instance.Init();

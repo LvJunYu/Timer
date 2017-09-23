@@ -16,13 +16,18 @@ namespace NewResourceSolution
                 Idle,
                 Closed,
             }
+
+            public bool IsRun
+            {
+                get { return State != EThreadContainerState.Closed; }
+            }
+
             public int ContainerIdx;
             // only write by child thread
             public EThreadContainerState State;
             public bool IsTimeout;
 
             public Thread InternalThread;
-            public ManualResetEvent WaitEvent;
 
             private ThreadLoopDelegate _threadLoop;
 
@@ -33,7 +38,6 @@ namespace NewResourceSolution
             public ThreadContainer (int containerIdx, ThreadLoopDelegate threadLoop)
             {
                 ContainerIdx = containerIdx;
-                WaitEvent = new ManualResetEvent(true);
                 State = EThreadContainerState.UnInited;
                 IsTimeout = false;
                 _timeoutTime = long.MaxValue;
@@ -49,7 +53,6 @@ namespace NewResourceSolution
             public void Restart ()
             {
 //                UnityEngine.Debug.Log ("Restart thread container " + ContainerIdx);
-                WaitEvent = new ManualResetEvent(true);
                 State = EThreadContainerState.UnInited;
                 IsTimeout = false;
                 _timeoutTime = long.MaxValue;
@@ -58,6 +61,7 @@ namespace NewResourceSolution
 
             public void Clear ()
             {
+                State = EThreadContainerState.Closed;
                 if (null != InternalThread)
                 {
                     // 危险
@@ -67,7 +71,6 @@ namespace NewResourceSolution
 
             public void HandleAction ()
             {
-                WaitEvent.Set ();
             }
 
             public void CheckTimeout (long currentTimeInMilliSecond)
@@ -100,7 +103,6 @@ namespace NewResourceSolution
                 _timeoutTime = long.MaxValue;
                 _currentWorkingAction = null;
 //                UnityEngine.Debug.Log ("FinishAction, id: " + ContainerIdx);
-                WaitEvent.Reset ();
             }
             public void BeginAction (ThreadAction currentWorkingAction)
             {
@@ -129,7 +131,6 @@ namespace NewResourceSolution
                     }
                 );
                 State = EThreadContainerState.Idle;
-                WaitEvent.Set ();
                 InternalThread = new Thread (threadStart);
                 InternalThread.Start ();
             }
@@ -156,11 +157,6 @@ namespace NewResourceSolution
         public ThreadManager ()
         {
             _ioThreadContainer = new ThreadContainer (0, IOThreadLoop);
-        }
-
-        ~ThreadManager ()
-        {
-            Clear ();
         }
 
         public void Clear ()
@@ -245,7 +241,7 @@ namespace NewResourceSolution
 
         private void ThreadLoop (ThreadContainer container)
         {
-            while (true)
+            while (container.IsRun)
             {
                 ThreadAction threadAction = null;
                 while (true)
@@ -283,13 +279,13 @@ namespace NewResourceSolution
                         container.FinishAction(threadAction);
                     }
                 }
-                container.WaitEvent.WaitOne ();
+                Thread.Sleep(10);
             }
         }
 
         private void IOThreadLoop (ThreadContainer container)
         {
-            while (true)
+            while (container.IsRun)
             {
                 ThreadAction threadAction = null;
                 while (true)
@@ -327,7 +323,7 @@ namespace NewResourceSolution
                         container.FinishAction(threadAction);
                     }
                 }
-                container.WaitEvent.WaitOne ();
+                Thread.Sleep(10);
             }
         }
         #endregion
