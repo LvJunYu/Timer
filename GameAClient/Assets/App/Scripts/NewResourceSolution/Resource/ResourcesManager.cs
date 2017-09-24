@@ -173,6 +173,10 @@ namespace NewResourceSolution
                         _manifest = buildInManifest;
                         _manifest.FileLocation = EFileLocation.StreamingAsset;
                     }
+                    else
+                    {
+                        _persistentManifest = null;
+                    }
                 }
             }
 			else
@@ -189,6 +193,10 @@ namespace NewResourceSolution
             if (null != _manifest)
             {
 				_manifest.MapBundles();
+                if (_persistentManifest != null && _persistentManifest != _manifest)
+                {
+                    _persistentManifest.MapBundles();
+                }
 
 				if (!_manifest.Init())
 				{

@@ -323,46 +323,26 @@ namespace NewResourceSolution
                     if (null == persistentManifest)
                     {
                         var downloadingResManifest = new CHDownloadingResManifest(buildInManifest);
+                        
                         downloadingResManifest.CalculateFilesNeedsDownload();
-                        if (downloadingResManifest.NeedsDownloadTotalCnt == 0)
+                        if (downloadingResManifest.NeedsDownloadTotalCnt != 0)
                         {
-                            yield return downloadingResManifest.DecompressOrCopyToPersistant();
-                            manifestUpdated = true;
+                            // 提示用户需要下载必须的资源，请检查网络再重试
                             updateFinish = true;
                         }
                         else
                         {
-                            bool waitForRetry = true;
-                            // 提示用户必须联网下载资源，等待用户确认重试
-//							CommonDialogMessageData dialogData = new CommonDialogMessageData(
-//								null,
-//								StringUtil.Format(
-//									LocalizationManager.GetText(ELocalText.TryRecheckRes),
-//									downloadingResManifest.NeedsDownloadTotalByte
-//								),
-//								false,
-//								// retry btn
-//								() =>
-//								{
-//									waitForRetry = false;
-//								},
-//								null,
-//								null,
-//								LocalizationManager.GetText(ELocalText.Retry),
-//								null,
-//								null
-//							);
-//							Messenger<CommonDialogMessageData>.Broadcast(EMessengerType.ShowCommonDialog, dialogData);
-                            while (waitForRetry) yield return null;
+                            yield return downloadingResManifest.DecompressOrCopyToPersistant();
+                            manifestUpdated = true;
+                            updateFinish = true;
                         }
                     }
                     else
                     {
                         if (persistentManifest.Ver < buildInManifest.Ver)
                         {
-                            CHDownloadingResManifest latestResManifest = null;
-                            latestResManifest = new CHDownloadingResManifest(buildInManifest);
-                            yield return latestResManifest.MergeExistingManifest(persistentManifest);
+                            var latestResManifest = new CHDownloadingResManifest(buildInManifest);
+                            yield return latestResManifest.MergePersistentToStreamingManifest(persistentManifest);
                             latestResManifest.CalculateFilesNeedsDownload();
                             if (latestResManifest.NeedsDownloadTotalCnt != 0)
                             {
@@ -372,6 +352,7 @@ namespace NewResourceSolution
                             else
                             {
                                 yield return latestResManifest.DecompressOrCopyToPersistant();
+                                latestResManifest.DeleteUnusedBundle();
                                 manifestUpdated = true;
                                 updateFinish = true;
                             }
@@ -389,7 +370,6 @@ namespace NewResourceSolution
                 }
             } while (!updateFinish);
             LogHelper.Info("Res check finish");
-            ThreadManager.Instance.Clear();
             if (manifestUpdated)
             {
                 JoyResManager.Instance.Init();

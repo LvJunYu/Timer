@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using GameA;
 using SoyEngine;
+using UnityEngine;
 using EMessengerType = GameA.EMessengerType;
 namespace NewResourceSolution
 {
@@ -11,10 +13,7 @@ namespace NewResourceSolution
         /// 同时并发的www请求数
         /// </summary>
         private static int s_maxConcurrentDownloadNum = 2;
-        /// <summary>
-        /// 同时并发的bundle解压缩线程
-        /// </summary>
-        private static int s_maxDecompressThreadNum = 3;
+
         /// <summary>
         /// 对单个文件的最大重试次数，任意文件的下载重试次数大于此数则整体下载失败
         /// </summary>
@@ -24,7 +23,6 @@ namespace NewResourceSolution
         private int _needsDownloadTotalCnt;
 
         private long _downloadDoneByte;
-        private int _downloadDoneCnt;
 
         /// <summary>
         /// 总共花费的时间
@@ -35,7 +33,6 @@ namespace NewResourceSolution
         /// </summary>
         private long _downloadTotalTime;
 
-        private int _totalErrorCnt;
         /// <summary>
         /// 下载过程中出错
         /// </summary>
@@ -45,9 +42,12 @@ namespace NewResourceSolution
         /// </summary>
         private bool _serializeFailed;
 
+        private Exception _ioException;
+
         private readonly Queue<BundleDownloader> _waitQueue = new Queue<BundleDownloader>();
         private readonly List<BundleDownloader> _downloadingList = new List<BundleDownloader>();
         private readonly Queue<BundleDownloader> _waitDecompressQueue = new Queue<BundleDownloader>();
+        private readonly List<CHResBundle> _needDeleteBundles = new List<CHResBundle>();
 
         [Newtonsoft.Json.JsonIgnore]
         public long NeedsDownloadTotalByte
@@ -88,35 +88,25 @@ namespace NewResourceSolution
             _bundles = runtimeManifest.Bundles;
             _fileLocation = runtimeManifest.FileLocation;
             _adamBundleNameList = runtimeManifest.AdamBundleNameList;
-            s_maxDecompressThreadNum = Environment.ProcessorCount + 1;
         }
         /// <summary>
-        /// 混合下载manifest和(包内/本地/临时)manifest
+        /// 混合下载manifest和(包内/本地/临时)manifest (现在仅为混合包内和persistent)
         /// </summary>
         /// <param name="existingManifest">Existing manifest.</param>
         public IEnumerator MergeExistingManifest (CHRuntimeResManifest existingManifest)
         {
             for (int i = 0; i < _bundles.Count; i++)
             {
-                if (EFileLocation.Server != _bundles[i].FileLocation)
-                {
-                    // 之前已经和其他manifest合并并确认有此文件了
-                    continue;
-                }
-				CHResBundle bundleInExistingManifest = existingManifest.GetBundleByBundleName(_bundles[i].AssetBundleName);
+                var bundle = _bundles[i];
+				CHResBundle bundleInExistingManifest = existingManifest.GetBundleByBundleName(bundle.AssetBundleName);
                 if (null != bundleInExistingManifest && EFileLocation.Server != bundleInExistingManifest.FileLocation)
                 {
                     if (String.CompareOrdinal(_bundles[i].CompressedMd5, bundleInExistingManifest.CompressedMd5) == 0)
                     {
-                        bool isAdamBundle = existingManifest.AdamBundleNameList.Contains (bundleInExistingManifest.AssetBundleName);
-                        EFileIntegrity integrity = bundleInExistingManifest.CheckFileIntegrity (bundleInExistingManifest.FileLocation, isAdamBundle);
+                        EFileIntegrity integrity = bundleInExistingManifest.CheckFileIntegrity (bundleInExistingManifest.FileLocation);
                         if (EFileIntegrity.Integral == integrity)
                         {
                             _bundles[i].FileLocation = bundleInExistingManifest.FileLocation;
-                            if (isAdamBundle)
-                            {
-                                _adamBundleNameList.Add (_bundles[i].AssetBundleName);
-                            }
 							LogHelper.Info("Bundle <{0}> found in existing manifest, fileLocation is {1}.", _bundles[i].AssetBundleName, _bundles[i].FileLocation);
                         }
                         else
@@ -131,6 +121,60 @@ namespace NewResourceSolution
                     else
                     {
                         _bundles[i].FileLocation = EFileLocation.Server;
+                    }
+                }
+            }
+        }
+        
+        /// <summary>
+        /// 现在仅为混合包内和persistent
+        /// </summary>
+        /// <param name="existingManifest">Existing manifest.</param>
+        public IEnumerator MergePersistentToStreamingManifest (CHRuntimeResManifest existingManifest)
+        {
+            var lastTime = Time.realtimeSinceStartup;
+            var persistentManifestDict = new Dictionary<string, CHResBundle>(existingManifest.BundleName2BundleDict);
+            for (int i = 0; i < _bundles.Count; i++)
+            {
+                if (Time.realtimeSinceStartup - lastTime > 0.2f)
+                {
+                    yield return null;
+                    lastTime = Time.realtimeSinceStartup;
+                }
+                var bundle = _bundles[i];
+				CHResBundle bundleInExistingManifest = existingManifest.GetBundleByBundleName(bundle.AssetBundleName);
+                if (null == bundleInExistingManifest)
+                {
+                    continue;
+                }
+                if (EFileLocation.Persistent != bundleInExistingManifest.FileLocation)
+                {//不在磁盘的文件不处理
+                    continue;
+                }
+                if (bundle.NeedWriteToPersistent())
+                {//不需要写到本地 就跳过 等待删除
+                    continue;
+                }
+                //需要写到本地 比较MD5
+                if (String.CompareOrdinal(_bundles[i].RawMd5, bundleInExistingManifest.RawMd5) == 0)
+                {
+                    EFileIntegrity integrity = bundleInExistingManifest.CheckFileIntegrity (bundleInExistingManifest.FileLocation);
+                    if (EFileIntegrity.Integral == integrity)
+                    {
+                        _bundles[i].FileLocation = EFileLocation.Persistent;
+                        LogHelper.Debug("Bundle <{0}> found in existing manifest, fileLocation is {1}.", _bundles[i].AssetBundleName, _bundles[i].FileLocation);
+                    }
+                }
+                persistentManifestDict.Remove(bundleInExistingManifest.AssetBundleName);
+            }
+            _needDeleteBundles.Clear();
+            using (var itor = persistentManifestDict.GetEnumerator())
+            {//删除已经不使用的本地资源
+                while (itor.MoveNext())
+                {
+                    if (itor.Current.Value.FileLocation == EFileLocation.Persistent)
+                    {
+                        _needDeleteBundles.Add(itor.Current.Value);
                     }
                 }
             }
@@ -151,7 +195,7 @@ namespace NewResourceSolution
                     // 之前已经和其他manifest合并并确认有此文件了
                     continue;
                 }
-                EFileIntegrity integrity = _bundles [i].CheckFileIntegrity (EFileLocation.TemporaryCache, false);
+                EFileIntegrity integrity = _bundles [i].CheckFileIntegrity (EFileLocation.TemporaryCache);
                 if (EFileIntegrity.Integral == integrity)
                 {
                     _bundles [i].FileLocation = EFileLocation.TemporaryCache;
@@ -174,8 +218,7 @@ namespace NewResourceSolution
             {
                 if (EFileLocation.Server != _bundles[i].FileLocation)
                 {
-                    bool isadamBundle = _adamBundleNameList.Contains (_bundles [i].AssetBundleName);
-                    EFileIntegrity integrity = _bundles [i].CheckFileIntegrity (EFileLocation.StreamingAsset, isadamBundle);
+                    EFileIntegrity integrity = _bundles [i].CheckFileIntegrity (EFileLocation.StreamingAsset);
                     if (EFileIntegrity.Integral == integrity)
                     {
                         _bundles [i].FileLocation = EFileLocation.Server;
@@ -216,11 +259,9 @@ namespace NewResourceSolution
             long beginTime = DateTimeUtil.GetNowTicks() / 10000;
             _downloadFailed = false;
             _serializeFailed = false;
-            _totalErrorCnt = 0;
             _downloadTotalTime = 0;
 			_downloadDoneByte = 0;
-			_downloadDoneCnt = 0;
-			FileTools.CheckAndCreateFolder(StringUtil.Format(StringFormat.TwoLevelPath, ResPath.PersistentDataPath, ResPath.TempCache));
+            FileTools.CheckAndCreateFolder(StringUtil.Format(StringFormat.TwoLevelPath, ResPath.PersistentDataPath, ResPath.TempCache));
 
             _waitQueue.Clear ();
             _downloadingList.Clear ();
@@ -256,7 +297,6 @@ namespace NewResourceSolution
                         if (!string.IsNullOrEmpty (_downloadingList [i].Error))
                         {
                             LogHelper.Error ("Error when download assetBundle: {0}", _downloadingList[i].Error);
-                            _totalErrorCnt++;
                             if (_downloadingList [i].TotalErrorCnt >= s_maxRetryCntForSingleFile)
                             {
                                 _downloadFailed = true;
@@ -292,7 +332,6 @@ namespace NewResourceSolution
                         }
                         else
                         {
-                            _downloadDoneCnt++;
                             _downloadDoneByte += currentSerializeDownloader.Bundle.Size;
                             Messenger<long, long>.Broadcast(EMessengerType.OnResourcesUpdateProgressUpdate, _downloadDoneByte, _needsDownloadTotalByte);
                             LogHelper.Info ("Serialize {0} done.", currentSerializeDownloader.Bundle.AssetBundleName);
@@ -308,7 +347,7 @@ namespace NewResourceSolution
             }
             if (null != currentSerializeDownloader)
             {
-                yield return new UnityEngine.WaitUntil (() => currentSerializeDownloader.IsDecompressDone);
+                yield return new WaitUntil (() => currentSerializeDownloader.IsDecompressDone);
             }
             if (!_downloadFailed && !_serializeFailed)
             {
@@ -336,62 +375,90 @@ namespace NewResourceSolution
 			long totalSizeToDecompress = 0;
 			for (int i = 0; i < _bundles.Count; i++)
 			{
-				if (EFileLocation.Server == _bundles[i].FileLocation
-				    || EFileLocation.Persistent == _bundles[i].FileLocation)
-				{
+			    var bundle = _bundles[i];
+				if (!bundle.NeedWriteToPersistent())
+				{//非安卓平台 未压缩资源无需拷贝到persistent
 					continue;
 				}
 				totalSizeToDecompress += _bundles[i].Size;
 			}
-			long sizeDone = 0;
-            List<IEnumerator> workingIEnumerator = new List<IEnumerator>();
-            List<long> compressedSizeOfWorkingBundle = new List<long>();
-            List<string> names = new List<string>();
-            int itor = 0;
-            do
+			long[] sizeDone = {0};
+            for (int i = 0; i < _bundles.Count; i++)
             {
-                for (int i = workingIEnumerator.Count - 1; i >= 0; i--)
+                var bundle = _bundles[i];
+                if (!bundle.NeedWriteToPersistent())
                 {
-                    if (!workingIEnumerator[i].MoveNext())
-                    {
-                        sizeDone += compressedSizeOfWorkingBundle[i];
-                        Messenger<long, long>.Broadcast(EMessengerType.OnResourcesUpdateProgressUpdate, sizeDone,
-                            totalSizeToDecompress);
-                        workingIEnumerator.RemoveAt(i);
-                        compressedSizeOfWorkingBundle.RemoveAt(i);
-                        names.RemoveAt(i);
-                    }
+                    continue;
                 }
-                while (workingIEnumerator.Count < s_maxDecompressThreadNum && itor < _bundles.Count)
+                if (_ioException != null)
                 {
-                    if (EFileLocation.Server == _bundles[itor].FileLocation
-                        || EFileLocation.Persistent == _bundles[itor].FileLocation)
-                    {
-                        itor++;
-                        continue;
-                    }
-                    workingIEnumerator.Add(_bundles[itor]
-                        .DecompressOrCopyToPersistant(_adamBundleNameList.Contains(_bundles[itor].AssetBundleName)));
-                    compressedSizeOfWorkingBundle.Add(_bundles[itor].Size);
-                    names.Add(_bundles[itor].AssetBundleName);
-                    itor++;
+                    break;
                 }
+                Loom.RunAsync(() =>
+                {
+                    if (_ioException != null)
+                    {
+                        return;
+                    }
+                    try
+                    {
+                        long compressedSize = bundle.Size;
+                        bundle.DecompressOrCopyToPersistant();
+                        Loom.QueueOnMainThread(() =>
+                        {
+                            sizeDone[0] += compressedSize;
+                            Messenger<long, long>.Broadcast(EMessengerType.OnResourcesUpdateProgressUpdate, sizeDone[0], totalSizeToDecompress);
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        Loom.QueueOnMainThread(()=>
+                        {
+                            if (_ioException != null)
+                            {
+                                return;
+                            }
+                            _ioException = e;
+                        });
+                    }
+                });
+            }
+            while (totalSizeToDecompress - sizeDone[0] > 0 && _ioException == null)
+            {
                 yield return null;
-            } while (itor < _bundles.Count || workingIEnumerator.Count > 0);
-//            for (int i = 0; i < _bundles.Count; i++)
-//            {
-//				if (EFileLocation.Server == _bundles[i].FileLocation ||
-//					EFileLocation.Persistent == _bundles[i].FileLocation)
-//				{
-//					continue;
-//				}
-//                long compressedSize = _bundles [i].Size;
-//                yield return _bundles [i].DecompressOrCopyToPersistant (_adamBundleNameList.Contains(_bundles[i].AssetBundleName));
-//                sizeDone += compressedSize;
-//                Messenger<long, long>.Broadcast(EMessengerType.OnResourcesUpdateProgressUpdate, sizeDone, totalSizeToDecompress);
-//            }
+            }
+            if (_ioException != null)
+            {
+                LogHelper.Error("DecompressOrCopyToPersistant Failed, Exception: {0}", _ioException.ToString());
+                SocialGUIManager.ShowPopupDialog("资源解压失败，请检查剩余存储空间后重试", null,
+                    new KeyValuePair<string, Action>("确定", () =>
+                {
+                    Application.Quit();
+                }));
+                while (true)
+                {
+                    yield return null;
+                }
+            }
             // 写入manifest文件
 			UnityTools.TrySaveObjectToLocal<CHResManifest> (this, ResDefine.CHResManifestFileName);
+        }
+
+        public void DeleteUnusedBundle()
+        {
+            for (int i = 0; i < _needDeleteBundles.Count; i++)
+            {
+                var bundle = _needDeleteBundles[i];
+                var path = bundle.GetFilePath(EFileLocation.Persistent);
+                try
+                {
+                    FileTools.DeleteFile(path);
+                }
+                catch (Exception e)
+                {
+                    LogHelper.Warning("DeleteUnusedBundle OneFile Failed, FilePath: {0}, Exception: {1}", path, e);
+                }
+            }
         }
     }
 }

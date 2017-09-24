@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using GameA;
@@ -106,7 +105,7 @@ namespace NewResourceSolution
         /// 检查文件完整性，如果检测的是StreamingAsset中的文件，需要根据是否是亚当资源的判断来做特殊处理
         /// </summary>
         /// <returns><c>true</c> if this instance is persistant file ready; otherwise, <c>false</c>.</returns>
-        public EFileIntegrity CheckFileIntegrity(EFileLocation location, bool isAdamBundle)
+        public EFileIntegrity CheckFileIntegrity(EFileLocation location)
         {
             if (EFileLocation.Server == location)
                 return EFileIntegrity.NotExist;
@@ -117,7 +116,7 @@ namespace NewResourceSolution
                 {
                     string md5;
                     FileTools.GetFileMd5(fi.FullName, out md5);
-                    string compareMd5 = isAdamBundle || (EAssetBundleCompressType.NoCompress == CompressType)
+                    string compareMd5 = EAssetBundleCompressType.NoCompress == CompressType
                         ? RawMd5
                         : CompressedMd5;
                     if (String.CompareOrdinal(compareMd5, md5) == 0)
@@ -149,71 +148,36 @@ namespace NewResourceSolution
             }
             return EFileIntegrity.NotExist;
         }
-
+        
         /// <summary>
         /// 解压或拷贝（非压缩状态）到永久存储
         /// </summary>
         /// <returns>The or copy to persistant.</returns>
-        public IEnumerator DecompressOrCopyToPersistant(bool isAdamBundle)
+        public bool DecompressOrCopyToPersistant()
         {
-            if (EFileLocation.Server == FileLocation ||
-                EFileLocation.Persistent == FileLocation)
-            {
-                yield break;
-            }
             string sourceFilePath = GetFilePath(FileLocation);
             string destFilePath = GetFilePath(EFileLocation.Persistent);
             if (String.IsNullOrEmpty(sourceFilePath) || string.IsNullOrEmpty(destFilePath))
-                yield break;
-            // 以下几种情况使用拷贝，否则使用解压：是临时文件夹内的文件、是非压缩的文件、是streamingAssets中的文件并且是亚当资源
-            if (EFileLocation.TemporaryCache == FileLocation ||
-                EAssetBundleCompressType.NoCompress == CompressType ||
-                (EFileLocation.StreamingAsset == FileLocation && isAdamBundle)
-            )
             {
-                ThreadAction copyFile = new ThreadAction(
-                    () =>
-                    {
-                        FileTools.CopyFileSync(
-                            sourceFilePath,
-                            destFilePath
-                        );
-                    }
-                );
-                yield return new WaitUntil(() => copyFile.IsDone);
-                if (!string.IsNullOrEmpty(copyFile.Error))
-                {
-                    LogHelper.Error("Copy file error: {0}", copyFile.Error);
-                }
-//                LogHelper.Info ("Copy file done");
+                return false;
             }
-            else if (EFileLocation.StreamingAsset == FileLocation)
+                
+            // 以下几种情况使用拷贝，否则使用解压：是临时文件夹内的文件、是非压缩的文件、是streamingAssets中的文件并且是亚当资源
+            if (EAssetBundleCompressType.NoCompress == CompressType)
             {
-                long uncompressFileSize = 0;
-                ThreadAction decompressFile = new ThreadAction(
-                    () =>
-                    {
-                        uncompressFileSize = CompressTools.DecompressFileLZMA(
-                            sourceFilePath,
-                            destFilePath
-                        );
-                    }
-                );
-                while (!decompressFile.IsDone)
-                {
-                    yield return null;
-                }
-                if (!string.IsNullOrEmpty(decompressFile.Error))
-                {
-                    LogHelper.Error("Decompress file error: {0}", decompressFile.Error);
-                }
-                else if (0 != uncompressFileSize)
+                FileTools.CopyFileSync(sourceFilePath, destFilePath);
+            }
+            else
+            {
+                long uncompressFileSize = CompressTools.DecompressFileLZMA(sourceFilePath, destFilePath);
+                if (0 != uncompressFileSize)
                 {
                     Size = uncompressFileSize;
                 }
 //                LogHelper.Info ("Decompress file done");
             }
             FileLocation = EFileLocation.Persistent;
+            return true;
         }
 
         public bool Cache(int scenary, bool logWhenError)
@@ -297,6 +261,13 @@ namespace NewResourceSolution
             LogHelper.Info("UncacheAll {0}", AssetBundleName);
         }
 
+        
+        public bool NeedWriteToPersistent()
+        {//不在本地 并且是压缩资源或者是安卓
+            return EFileLocation.Persistent != FileLocation
+                   && (CompressType != EAssetBundleCompressType.NoCompress
+                       || Application.platform == RuntimePlatform.Android);
+        }
 
         #region compare
 
@@ -346,7 +317,7 @@ namespace NewResourceSolution
         private static string s_webRequestTimeoutErrorInfo = "{0} www time out.";
         private static string s_sizeNotMatchErrorInfo = "{0} download size not match.";
         private static string s_webRequestMd5CheckFailedErrorInfo = "{0} www md5 check failed.";
-        private static string s_temporaryFileMd5CheckFailedErrorInfo = "{0} file md5 check failed.";
+//        private static string s_temporaryFileMd5CheckFailedErrorInfo = "{0} file md5 check failed.";
 
         public enum EDownloaderState
         {
@@ -362,7 +333,6 @@ namespace NewResourceSolution
         public CHResBundle Bundle;
         public EDownloaderState State;
         public WWW WebRequest;
-        public ThreadAction SerializeAction;
 
         public string Error;
         public int TotalErrorCnt;
@@ -421,25 +391,7 @@ namespace NewResourceSolution
 
         public bool IsDecompressDone
         {
-            get
-            {
-                if (EDownloaderState.SerializeDone == State)
-                    return true;
-                if (EDownloaderState.Serializing != State)
-                    return false;
-                if (!SerializeAction.IsDone)
-                    return false;
-                if (!string.IsNullOrEmpty(SerializeAction.Error))
-                {
-                    Error = StringUtil.Format("{0}, bundle name: {1}", SerializeAction.Error, Bundle.AssetBundleName);
-                }
-                else if (EFileIntegrity.Integral != Bundle.CheckFileIntegrity(EFileLocation.TemporaryCache, false))
-                {
-                    Error = StringUtil.Format(s_temporaryFileMd5CheckFailedErrorInfo, Bundle.AssetBundleName);
-                }
-
-                return true;
-            }
+            get { return EDownloaderState.SerializeDone == State; }
         }
 
         public BundleDownloader(CHResBundle bundle, Version resVersion)
@@ -464,18 +416,22 @@ namespace NewResourceSolution
             if (EAssetBundleCompressType.NoCompress == Bundle.CompressType)
             {
                 State = EDownloaderState.Serializing;
-                SerializeAction = new ThreadAction(
-                    () => { FileTools.WriteBytesToFile(bytes, destPath); },
-                    true
-                );
+                Loom.RunAsync(() =>
+                {
+                    //TODO 异常处理
+                    FileTools.WriteBytesToFile(bytes, destPath);
+                    State = EDownloaderState.SerializeDone;
+                });
             }
             else if (EAssetBundleCompressType.LZMA == Bundle.CompressType)
             {
                 State = EDownloaderState.Serializing;
-                SerializeAction = new ThreadAction(
-                    () => { CompressTools.DecompressBytesLZMA(bytes, destPath); },
-                    true
-                );
+                Loom.RunAsync(() =>
+                {
+                    //TODO 异常处理
+                    CompressTools.DecompressBytesLZMA(bytes, destPath);
+                    State = EDownloaderState.SerializeDone;
+                });
             }
         }
 

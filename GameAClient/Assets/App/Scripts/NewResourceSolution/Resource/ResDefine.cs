@@ -59,7 +59,21 @@ namespace NewResourceSolution
 		private static string _persistentDataPath;
         public static string PersistentDataPath
         {
-            get { return _persistentDataPath ?? (_persistentDataPath = Application.persistentDataPath); }
+	        get
+	        {
+		        if (_persistentDataPath == null)
+		        {
+			        if (!Application.isEditor && !Application.isMobilePlatform)
+			        {
+				        _persistentDataPath = Application.dataPath + "/PersistentDataPath";
+			        }
+			        else
+			        {
+				        _persistentDataPath = Application.persistentDataPath;
+			        }
+		        }
+		        return _persistentDataPath;
+	        }
         }
 
 		private static string _streamingAssetsPath;

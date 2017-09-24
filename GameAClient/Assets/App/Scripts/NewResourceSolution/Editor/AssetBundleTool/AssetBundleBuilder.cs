@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using Newtonsoft.Json;
 using SoyEngine;
 using UnityEditor;
@@ -152,10 +153,10 @@ namespace NewResourceSolution.EditorTool
             LogHelper.Info("Make manifest...");
             MakeManifest(buildAbConfig, manifest, buildTarget);
             LogHelper.Info("Make manifest done.");
-
+            
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-//			EditorUtility.DisplayDialog ("Done", "Build asset bundles complete", "OK");
+			EditorUtility.DisplayDialog ("Done", "Build asset bundles complete", "OK");
             LogHelper.Info("Build asset bundles complete");
         }
 
@@ -238,10 +239,10 @@ namespace NewResourceSolution.EditorTool
                                 SetBundleNameToFolderAssets(buildAbConfig, manifest, rootPath,
                                     childDirRelatedToUnityProject, assets);
                                 // 这段代码会造成增两打包时会重打全部图集，所以注掉，流程改为需要自动设置图片属性时手动调用菜单快捷方式
-//	                            if (EResType.Sprite == allResList[i].ResType)
-//	                            {
-//		                            SpriteAssetTools.SetAtlasSetting(rootPath, childDirRelatedToUnityProject, assets);
-//	                            }
+                                if (EResType.Sprite == allResList[i].ResType)
+                                {
+                                    SpriteAssetTools.SetAtlasSetting(rootPath, childDirRelatedToUnityProject, assets);
+                                }
                             }
                         }
                         else
@@ -373,77 +374,112 @@ namespace NewResourceSolution.EditorTool
                 lastBuildManifest = JsonTools.DeserializeObject<CHRuntimeResManifest>(lastBuildManifestStr);
                 lastBuildManifest.MapBundles();
             }
+            EditorUtility.DisplayProgressBar("building res", "compress res", 0);
+
+            int maxThreadNum = Mathf.Max(1, Environment.ProcessorCount - 1);
+            int[] currentThreadNum = {0};
             // 之前的压缩文件，需要删除的列表
             List<CHResBundle> remainingOldCompressedBundleList = new List<CHResBundle>();
             var allBundles = manifest.Bundles;
             for (int i = 0; i < allBundles.Count; i++)
             {
-                bool isUnityManifestBundle =
-                    String.CompareOrdinal(allBundles[i].AssetBundleName, ResDefine.UnityManifestBundleName) == 0;
-                string unCompressedAssetBundlePath = string.Format(StringFormat.TwoLevelPath, outputPathUnCompressed,
-                    allBundles[i].AssetBundleName);
-                string rawMd5;
-                long rawSize = FileTools.GetFileMd5(unCompressedAssetBundlePath, out rawMd5);
-                allBundles[i].RawMd5 = rawMd5;
-
-                // 判断是否可以用以前的压缩文件
-                if (null != lastBuildManifest)
+                var bundle = allBundles[i];
+                while (currentThreadNum[0] >= maxThreadNum)
                 {
-                    CHResBundle oldBundle = lastBuildManifest.GetBundleByBundleName(allBundles[i].AssetBundleName);
-                    if (null != oldBundle)
+                    Thread.Sleep(10);
+                }
+                EditorUtility.DisplayProgressBar("building res", "compress res", 1f * i / allBundles.Count);
+                Interlocked.Increment(ref currentThreadNum[0]);
+                ThreadPool.QueueUserWorkItem(obj =>
+                {
+                    while (true)
                     {
-                        // todo 判读该文件的压缩需求是否还和前次保持一致
-                        if (String.CompareOrdinal(allBundles[i].RawMd5, oldBundle.RawMd5) == 0)
+                        string unCompressedAssetBundlePath = string.Format(StringFormat.TwoLevelPath,
+                            outputPathUnCompressed,
+                            bundle.AssetBundleName);
+                        string rawMd5 = null;
+                        try
                         {
-                            FileInfo oldCompressedFileInfo =
-                                new FileInfo(string.Format(
-                                    StringFormat.TwoLevelPathWithExtention,
-                                    outputPathCompressed,
-                                    oldBundle.AssetBundleName,
-                                    oldBundle.CompressedMd5
-                                ));
-                            if (oldCompressedFileInfo.Exists)
+                            FileTools.GetFileMd5(unCompressedAssetBundlePath, out rawMd5);
+                        }
+                        catch (Exception e)
+                        {
+                            LogHelper.Error("CompressAssetBundles Md5 Error, FilePath: {0}, Exception: {1}",
+                                unCompressedAssetBundlePath, e);
+                        }
+                        bundle.RawMd5 = rawMd5;
+    
+                        // 判断是否可以用以前的压缩文件
+                        if (null != lastBuildManifest)
+                        {
+                            CHResBundle oldBundle = lastBuildManifest.GetBundleByBundleName(bundle.AssetBundleName);
+                            if (null != oldBundle)
                             {
-                                allBundles[i].Size = oldBundle.Size;
-                                allBundles[i].CompressedMd5 = oldBundle.CompressedMd5;
-                                allBundles[i].CompressType = isUnityManifestBundle
-                                    ? EAssetBundleCompressType.NoCompress
-                                    : EAssetBundleCompressType.LZMA;
-                                remainingOldCompressedBundleList.Add(oldBundle);
-                                continue;
+                                // todo 判读该文件的压缩需求是否还和前次保持一致
+                                if (String.CompareOrdinal(bundle.RawMd5, oldBundle.RawMd5) == 0)
+                                {
+                                    FileInfo oldCompressedFileInfo =
+                                        new FileInfo(string.Format(
+                                            StringFormat.TwoLevelPathWithExtention,
+                                            outputPathCompressed,
+                                            oldBundle.AssetBundleName,
+                                            oldBundle.CompressedMd5
+                                        ));
+                                    if (oldCompressedFileInfo.Exists)
+                                    {
+                                        bundle.Size = oldBundle.Size;
+                                        bundle.CompressedMd5 = oldBundle.CompressedMd5;
+                                        bundle.CompressType = EAssetBundleCompressType.LZMA;
+                                        remainingOldCompressedBundleList.Add(oldBundle);
+                                        break;
+                                    }
+                                }
                             }
                         }
+    
+                        string compressedAssetBundlePath = string.Format(StringFormat.TwoLevelPath, outputPathCompressed,
+                            bundle.AssetBundleName);
+                        try
+                        {
+                            CompressTools.CompressFileLZMA(unCompressedAssetBundlePath, compressedAssetBundlePath);
+                        }
+                        catch (Exception e)
+                        {
+                            LogHelper.Error("CompressAssetBundles Compress Error, FilePath: {0}, Exception: {1}",
+                                compressedAssetBundlePath, e);
+                        }
+                        FileInfo fi = new FileInfo(compressedAssetBundlePath);
+                        if (fi.Exists)
+                        {
+                            string compressedMd5;
+                            bundle.Size = FileTools.GetFileMd5(compressedAssetBundlePath, out compressedMd5);
+                            bundle.CompressedMd5 = compressedMd5;
+                            bundle.CompressType = EAssetBundleCompressType.LZMA;
+                            string fileFullName = string.Format(StringFormat.TwoLevelPathWithExtention,
+                                outputPathCompressed,
+                                bundle.AssetBundleName, compressedMd5);
+                            try
+                            {
+                                FileTools.RenameFile(compressedAssetBundlePath, fileFullName);
+                            }
+                            catch (Exception e)
+                            {
+                                LogHelper.Error("CompressAssetBundles Rename Error, FilePath: {0}, Exception: {1}",
+                                    compressedAssetBundlePath, e);
+                            }
+                        }
+                        else
+                        {
+                            LogHelper.Error("Compress assetbundle failed, bundle name is {0}.", bundle.AssetBundleName);
+                        }
+                        break;
                     }
-                }
-
-                string compressedAssetBundlePath = string.Format(StringFormat.TwoLevelPath, outputPathCompressed,
-                    allBundles[i].AssetBundleName);
-                if (isUnityManifestBundle)
-                {
-                    allBundles[i].Size = rawSize;
-                    allBundles[i].CompressedMd5 = rawMd5;
-                    allBundles[i].CompressType = EAssetBundleCompressType.NoCompress;
-                    compressedAssetBundlePath = string.Format(StringFormat.TwoLevelPathWithExtention,
-                        outputPathCompressed, allBundles[i].AssetBundleName, rawMd5);
-                    FileTools.CopyFileSync(unCompressedAssetBundlePath, compressedAssetBundlePath);
-                    continue;
-                }
-                CompressTools.CompressFileLZMA(unCompressedAssetBundlePath, compressedAssetBundlePath);
-                FileInfo fi = new FileInfo(compressedAssetBundlePath);
-                if (fi.Exists)
-                {
-                    string compressedMd5;
-                    allBundles[i].Size = FileTools.GetFileMd5(compressedAssetBundlePath, out compressedMd5);
-                    allBundles[i].CompressedMd5 = compressedMd5;
-                    allBundles[i].CompressType = EAssetBundleCompressType.LZMA;
-                    string fileFullName = string.Format(StringFormat.TwoLevelPathWithExtention, outputPathCompressed,
-                        allBundles[i].AssetBundleName, compressedMd5);
-                    FileTools.RenameFile(compressedAssetBundlePath, fileFullName);
-                }
-                else
-                {
-                    LogHelper.Error("Compress assetbundle failed, bundle name is {0}.", allBundles[i].AssetBundleName);
-                }
+                    Interlocked.Decrement(ref currentThreadNum[0]);
+                }, null);
+            }
+            while (currentThreadNum[0] > 0)
+            {
+                Thread.Sleep(10);
             }
             // 清理存留的上次打包文件
             if (null != lastBuildManifest)
@@ -464,6 +500,7 @@ namespace NewResourceSolution.EditorTool
                 }
                 LogHelper.Info("{0} obsolete file deleted.", deleteFileCnt);
             }
+            EditorUtility.ClearProgressBar();
         }
 
         private static void CopyAssetBundles(BuildABConfig buildAbConfig, CHBuildingResManifest manifest,
@@ -478,32 +515,18 @@ namespace NewResourceSolution.EditorTool
                 }
             }
             AssetDatabase.CreateFolder(ResPath.Assets, ResPath.StreamingAssets);
-            string outputPathCompressed = ABUtility.GetOutputPath(buildAbConfig, buildTarget);
+//            string outputPathCompressed = ABUtility.GetOutputPath(buildAbConfig, buildTarget);
             string outputPathUncompressed = ABUtility.GetUnCompressedOutputPath(buildAbConfig, buildTarget);
             var allBundles = manifest.Bundles;
             for (int i = 0; i < allBundles.Count; i++)
             {
-                bool isAdamBundle = manifest.AdamBundleNameList.Contains(allBundles[i].AssetBundleName);
-                if (allBundles[i].GroupId == ResDefine.ResGroupInPackage || isAdamBundle)
+                if (allBundles[i].GroupId == ResDefine.ResGroupInPackage)
                 {
-                    string abPath;
-                    string destPath;
-                    if (isAdamBundle)
-                    {
-                        abPath = string.Format(StringFormat.TwoLevelPath, outputPathUncompressed,
-                            allBundles[i].AssetBundleName);
-                        allBundles[i].CompressType = EAssetBundleCompressType.NoCompress;
-                        destPath = string.Format(StringFormat.TwoLevelPathWithExtention, ResPath.StreamingAssetsPath,
-                            allBundles[i].AssetBundleName, allBundles[i].RawMd5);
-                    }
-                    else
-                    {
-                        abPath = string.Format(StringFormat.TwoLevelPathWithExtention, outputPathCompressed,
-                            allBundles[i].AssetBundleName, allBundles[i].CompressedMd5);
-                        destPath = string.Format(StringFormat.TwoLevelPathWithExtention, ResPath.StreamingAssetsPath,
-                            allBundles[i].AssetBundleName, allBundles[i].CompressedMd5);
-                    }
-
+                    var abPath = string.Format(StringFormat.TwoLevelPath, outputPathUncompressed,
+                        allBundles[i].AssetBundleName);
+                    allBundles[i].CompressType = EAssetBundleCompressType.NoCompress;
+                    var destPath = string.Format(StringFormat.TwoLevelPathWithExtention, ResPath.StreamingAssetsPath,
+                        allBundles[i].AssetBundleName, allBundles[i].RawMd5);
                     FileTools.CopyFileSync(abPath, destPath);
                     allBundles[i].FileLocation = EFileLocation.StreamingAsset;
                 }

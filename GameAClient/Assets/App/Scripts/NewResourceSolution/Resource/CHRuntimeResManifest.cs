@@ -62,7 +62,13 @@ namespace NewResourceSolution
 				return _cachedAssetsTotalSize;
 			}
 		}
-		#endregion
+
+	    public Dictionary<string, CHResBundle> BundleName2BundleDict
+	    {
+		    get { return _bundleName2Bundle; }
+	    }
+
+	    #endregion
 
 		#region methods
         public CHRuntimeResManifest(Version version) : base(version) {}
