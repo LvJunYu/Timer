@@ -7,6 +7,16 @@ namespace GameA.Game
     public class SwitchRectOnce : UnitBase
     {
         protected List<UnitBase> _units;
+        
+        internal override bool InstantiateView()
+        {
+            if (!base.InstantiateView())
+            {
+                return false;
+            }
+            _view.SetRendererEnabled(!GameRun.Instance.IsPlay);
+            return true;
+        }
 
         internal override void OnPlay()
         {

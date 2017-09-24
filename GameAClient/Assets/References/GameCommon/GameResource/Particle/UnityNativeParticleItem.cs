@@ -26,6 +26,7 @@ namespace SoyEngine
 
 		public Action OnFreeEvent;
 
+		protected float _duration;
 
 		public override bool HasFinish
 		{
@@ -37,6 +38,11 @@ namespace SoyEngine
 				}
 				return Time.realtimeSinceStartup > _lastPlayTime + _playTime;
 			}
+		}
+
+		public float Duration
+		{
+			get { return _duration; }
 		}
 
 		public override void InitGo(GameObject go,string itemName)
@@ -203,6 +209,23 @@ namespace SoyEngine
 				for (int i = 0; i < _cachedRenders.Length; i++)
 				{
 					_cachedRenders[i].sortingOrder = (int)ESortingOrder.Bullet;
+				}
+				_duration = 0;
+				var particleSystems = _cachedGo.GetComponentsInChildren<ParticleSystem>(true);
+				if (particleSystems != null)
+				{
+					for (int i = 0; i < particleSystems.Length; i++)
+					{
+						var p = particleSystems[i];
+						if (p.main.duration > _duration)
+						{
+							_duration = p.main.duration;
+						}
+					}
+				}
+				if (_duration <= 0)
+				{
+					_duration = ConstDefineGM2D.DefaultParticlePlayTime;
 				}
 			}
 		}

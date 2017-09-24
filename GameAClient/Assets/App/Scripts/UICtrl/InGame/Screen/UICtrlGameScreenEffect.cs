@@ -16,6 +16,15 @@ namespace GameA
             _groupId = (int) EUIGroupType.InGameStart;
         }
         
+        public UIParticleItem GetUIParticle(string itemName)
+        {
+            if (!_isOpen)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlGameScreenEffect>();
+            }
+            return GameParticleManager.Instance.GetUIParticleItem(itemName, _cachedView.Trans, _groupId);
+        }
+        
         public UIParticleItem EmitUIParticle(string itemName, Vector3 pos = default(Vector3))
         {
             if (!_isOpen)

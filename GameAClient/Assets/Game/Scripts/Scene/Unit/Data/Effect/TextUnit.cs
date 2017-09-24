@@ -41,6 +41,7 @@ namespace GameA.Game
                 _textMesh.GetComponent<Renderer>().sortingOrder = (int) ESortingOrder.EffectItem;
             }
             ShowHide(false);
+            _view.SetRendererEnabled(!GameRun.Instance.IsPlay);
             return true;
         }
 
