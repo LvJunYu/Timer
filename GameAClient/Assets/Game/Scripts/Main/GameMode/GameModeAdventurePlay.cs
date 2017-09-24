@@ -162,30 +162,38 @@ namespace GameA.Game
 
         private void CommitGameResult(Action successCB, Action<ENetResultCode> failureCB)
         {
-            AppData.Instance.AdventureData.CommitLevelResult(
-                PlayMode.Instance.SceneState.GameSucceed,
-                PlayMode.Instance.GameSuccessFrameCnt,
-                PlayMode.Instance.SceneState.CurScore,
-                PlayMode.Instance.SceneState.GemGain,
-                PlayMode.Instance.SceneState.MonsterKilled,
-                PlayMode.Instance.SceneState.SecondLeft,
-                PlayMode.Instance.MainPlayer.Life,
-                GetRecord(),
-                () =>
+            byte[] record;
+            Loom.RunAsync(() =>
+            {
+                record = GetRecord();
+                Loom.QueueOnMainThread(() =>
                 {
-                    LogHelper.Info("游戏成绩提交成功");
-                    if (null != successCB)
-                    {
-                        successCB.Invoke();
-                    }
-                }, errCode =>
-                {
-                    if (null != failureCB)
-                    {
-                        failureCB.Invoke(errCode);
-                    }
-                }
-            );
+                    AppData.Instance.AdventureData.CommitLevelResult(
+                        PlayMode.Instance.SceneState.GameSucceed,
+                        PlayMode.Instance.GameSuccessFrameCnt,
+                        PlayMode.Instance.SceneState.CurScore,
+                        PlayMode.Instance.SceneState.GemGain,
+                        PlayMode.Instance.SceneState.MonsterKilled,
+                        PlayMode.Instance.SceneState.SecondLeft,
+                        PlayMode.Instance.MainPlayer.Life,
+                        record,
+                        () =>
+                        {
+                            LogHelper.Info("游戏成绩提交成功");
+                            if (null != successCB)
+                            {
+                                successCB.Invoke();
+                            }
+                        }, errCode =>
+                        {
+                            if (null != failureCB)
+                            {
+                                failureCB.Invoke(errCode);
+                            }
+                        }
+                    );
+                });
+            });
         }
 
         private byte[] GetRecord()
