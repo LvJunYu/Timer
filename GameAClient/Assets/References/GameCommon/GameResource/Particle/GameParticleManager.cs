@@ -62,6 +62,15 @@ namespace SoyEngine
             _rootParticleParent = new GameObject("ParticleRoot").transform;
         }
 
+        public void PreLoadParticle(string itemName)
+        {
+            var p = GetUnityNativeParticleItem(itemName, null);
+            if (p != null)
+            {
+                FreeParticleItem(p);
+            }
+        }
+
         public UnityNativeParticleItem GetUnityNativeParticleItem(string itemName, Transform parent,
             ESortingOrder sortingOrder = ESortingOrder.Item)
         {

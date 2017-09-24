@@ -11,7 +11,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().GetUIParticle("M1EffectLuoYe");
+            GameParticleManager.Instance.PreLoadParticle("M1EffectLuoYe");
             return true;
         }
         

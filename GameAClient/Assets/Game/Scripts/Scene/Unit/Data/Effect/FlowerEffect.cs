@@ -11,7 +11,7 @@ namespace GameA.Game
             {
                 return false;
             }
-            SocialGUIManager.Instance.GetUI<UICtrlGameScreenEffect>().GetUIParticle("M1EffectHuaBan");
+            GameParticleManager.Instance.PreLoadParticle("M1EffectHuaBan");
             return true;
         }
 

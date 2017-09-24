@@ -681,6 +681,10 @@ namespace GameA.Game
                     OnActiveStateChanged();
                 }
             }
+            if (!string.IsNullOrEmpty(_tableUnit.DestroyEffectName))
+            {
+                GameParticleManager.Instance.PreLoadParticle(_tableUnit.DestroyEffectName);
+            }
             return true;
         }
 
