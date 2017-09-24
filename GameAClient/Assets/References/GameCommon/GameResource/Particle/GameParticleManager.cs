@@ -74,7 +74,7 @@ namespace SoyEngine
                 LogHelper.Error("GetUnityNativeParticleItem failed! itemName is {0}", itemName);
                 return null;
             }
-            com.SetData(false, 0);
+            com.SetData(false);
             com.SetParent(realParent, Vector3.zero);
             com.SetSortingOrder(sortingOrder);
             AddToSceneItems(com);
@@ -101,6 +101,18 @@ namespace SoyEngine
             return item;
         }
 
+        public UIParticleItem EmitUIParticleLoop(string itemName, Transform parent, int groupId, Vector3 pos = default(Vector3))
+        {
+            var uiparticle = GetUIParticleItem(itemName, parent, groupId);
+            if (uiparticle == null)
+            {
+                return null;
+            }
+            uiparticle.Particle.Trans.localPosition = pos;
+            uiparticle.Particle.Play();
+            return uiparticle;
+        }
+
         public UIParticleItem EmitUIParticle(string itemName, Transform parent, int groupId, Vector3 pos = default(Vector3))
         {
             var uiparticle = GetUIParticleItem(itemName, parent, groupId);
@@ -108,77 +120,60 @@ namespace SoyEngine
             {
                 return null;
             }
+            uiparticle.Particle.SetData(true);
             uiparticle.Particle.Trans.localPosition = pos;
             uiparticle.Particle.Play();
             return uiparticle;
         }
 
-        public UIParticleItem EmitUIParticle(string itemName, Transform parent, int groupId, float lifeTime, Vector3 pos = default(Vector3))
-        {
-            var uiparticle = GetUIParticleItem(itemName, parent, groupId);
-            if (uiparticle == null)
-            {
-                return null;
-            }
-            uiparticle.Particle.SetData(true, lifeTime);
-            uiparticle.Particle.Trans.localPosition = pos;
-            uiparticle.Particle.Play();
-            return uiparticle;
-        }
-
-        public bool Emit(string itemName, Vector3 pos, Vector3 rotation, Vector3 scale,
-            float lifeTime = ConstDefineGM2D.DefaultParticlePlayTime, ESortingOrder sortingOrder = ESortingOrder.Item)
+        public bool Emit(string itemName, Vector3 pos, Vector3 rotation, Vector3 scale, ESortingOrder sortingOrder = ESortingOrder.Item)
         {
             if (string.IsNullOrEmpty(itemName))
             {
                 return false;
             }
-
             UnityNativeParticleItem com = GetParticleItem(itemName);
             if (com == null || com.Trans == null)
             {
                 LogHelper.Error("Emit failed! itemName is {0}", itemName);
                 return false;
             }
-            com.SetData(true, lifeTime);
+            com.SetData(true);
             com.SetParent(null, pos);
             com.Trans.localEulerAngles = rotation;
             com.Trans.localScale = scale;
             com.SetSortingOrder(sortingOrder);
-            com.Play(lifeTime);
+            com.Play(com.LifeTime);
             AddToSceneItems(com);
             return true;
         }
 
-        public bool Emit(string itemName, Vector3 pos, Vector3 scale,
-            float lifeTime = ConstDefineGM2D.DefaultParticlePlayTime, ESortingOrder sortingOrder = ESortingOrder.Item)
+        public bool Emit(string itemName, Vector3 pos, Vector3 scale,ESortingOrder sortingOrder = ESortingOrder.Item)
         {
-            return Emit(itemName, pos, Vector3.zero, scale, lifeTime, sortingOrder);
+            return Emit(itemName, pos, Vector3.zero, scale, sortingOrder);
         }
 
-        public bool Emit(string itemName, Vector3 pos, float lifeTime = ConstDefineGM2D.DefaultParticlePlayTime,
+        public bool Emit(string itemName, Vector3 pos, 
             ESortingOrder sortingOrder = ESortingOrder.Item)
         {
-            return Emit(itemName, pos, Vector3.zero, Vector3.one, lifeTime, sortingOrder);
+            return Emit(itemName, pos, Vector3.zero, Vector3.one, sortingOrder);
         }
         
-        public UnityNativeParticleItem Emit(string itemName, Transform parent,
-            float lifeTime = ConstDefineGM2D.DefaultParticlePlayTime)
+        public UnityNativeParticleItem Emit(string itemName, Transform parent)
         {
             if (string.IsNullOrEmpty(itemName))
             {
                 return null;
             }
-
             UnityNativeParticleItem com = GetParticleItem(itemName);
             if (com == null || com.Trans == null)
             {
                 LogHelper.Error("Emit failed! itemName is {0}", itemName);
                 return null;
             }
-            com.SetData(true, lifeTime);
+            com.SetData(true);
             com.SetParent(parent, Vector3.zero);
-            com.Play(lifeTime);
+            com.Play(com.LifeTime);
             AddToSceneItems(com);
             return com;
         }

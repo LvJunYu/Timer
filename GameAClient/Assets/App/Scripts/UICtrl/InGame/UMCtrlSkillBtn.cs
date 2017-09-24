@@ -74,7 +74,7 @@ namespace GameA
         private void PlayClickParticle()
         {
             GameParticleManager.Instance.EmitUIParticle("UIEffectClickSmall",
-                _cachedView.SkillBtn.transform, (int) EUIGroupType.InputCtrl, 0.5f);
+                _cachedView.SkillBtn.transform, (int) EUIGroupType.InputCtrl);
         }
 
         private void PlayFullParticle(bool play)
@@ -82,7 +82,7 @@ namespace GameA
             if (play)
             {
                 if (null == _fullParticleItem)
-                    _fullParticleItem = GameParticleManager.Instance.EmitUIParticle("UIEffectSkillFull",
+                    _fullParticleItem = GameParticleManager.Instance.EmitUIParticleLoop("UIEffectSkillFull",
                         _cachedView.SkillBtn.transform, (int) EUIGroupType.InputCtrl);
                 else
                     _fullParticleItem.Particle.Play();

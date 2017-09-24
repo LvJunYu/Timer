@@ -601,7 +601,7 @@ namespace GameA.Game
             Vector3 scale = _moveDirection == EMoveDirection.Right ? Vector3.one : new Vector3(-1, 1, 1);
             if (_downUnit.Id == UnitDefine.ClayId)
             {
-                GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.RunOnMud, _trans.position + Vector3.up * 0.2f, scale, 1);
+                GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.RunOnMud, _trans.position + Vector3.up * 0.2f, scale);
             }
             int randomValue = Random.Range(0, 3);
             switch (randomValue)

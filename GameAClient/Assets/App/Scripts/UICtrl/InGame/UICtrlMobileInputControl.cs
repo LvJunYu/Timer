@@ -137,8 +137,7 @@ namespace GameA
 
         private void PlayClickParticle()
         {
-            GameParticleManager.Instance.EmitUIParticle("UIEffectClickBig", _cachedView.JumpBtn.transform, _groupId,
-                0.5f);
+            GameParticleManager.Instance.EmitUIParticle("UIEffectClickBig", _cachedView.JumpBtn.transform, _groupId);
         }
 
         private void OnSkillSlotChanged(Table_Equipment tableSkill, int slot)

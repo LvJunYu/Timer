@@ -26,8 +26,6 @@ namespace SoyEngine
 
 		public Action OnFreeEvent;
 
-		protected float _duration;
-
 		public override bool HasFinish
 		{
 			get
@@ -40,11 +38,6 @@ namespace SoyEngine
 			}
 		}
 
-		public float Duration
-		{
-			get { return _duration; }
-		}
-
 		public override void InitGo(GameObject go,string itemName)
 		{
 			base.InitGo(go, itemName);
@@ -52,9 +45,9 @@ namespace SoyEngine
 			_cachedGo.SetActiveEx(false);
 		}
 
-		public override void SetData(bool autoDestroy , float lifeTime)
+		public override void SetData(bool autoDestroy)
 		{
-			base.SetData(autoDestroy, lifeTime);
+			base.SetData(autoDestroy);
 			_autoStop = false;
 			_playTime = 0;
 		}
@@ -210,22 +203,22 @@ namespace SoyEngine
 				{
 					_cachedRenders[i].sortingOrder = (int)ESortingOrder.Bullet;
 				}
-				_duration = 0;
+				_lifeTime = 0;
 				var particleSystems = _cachedGo.GetComponentsInChildren<ParticleSystem>(true);
 				if (particleSystems != null)
 				{
 					for (int i = 0; i < particleSystems.Length; i++)
 					{
 						var p = particleSystems[i];
-						if (p.main.duration > _duration)
+						if (p.main.duration > _lifeTime)
 						{
-							_duration = p.main.duration;
+							_lifeTime = p.main.duration;
 						}
 					}
 				}
-				if (_duration <= 0)
+				if (_lifeTime <= 0)
 				{
-					_duration = ConstDefineGM2D.DefaultParticlePlayTime;
+					_lifeTime = ConstDefineGM2D.DefaultParticlePlayTime;
 				}
 			}
 		}

@@ -98,12 +98,12 @@ namespace GameA.Game
             {
                 case EMonsterState.Bang:
                     _timerBang = 75;
-                    GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Bang, pos, 2,
+                    GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Bang, pos,
                         ESortingOrder.EffectItem);
                     break;
                 case EMonsterState.Dialog:
                     _timerDialog = 125;
-                    GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Dialog, pos, 3,
+                    GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Dialog, pos,
                         ESortingOrder.EffectItem);
                     break;
                 case EMonsterState.Stupid:
@@ -124,7 +124,7 @@ namespace GameA.Game
         protected virtual void OnChangeStupid(Vector3 pos)
         {
             _timerStupid = Random.Range(0, 2) == 0 ? 150 : 225;
-            GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Question, pos, 2,
+            GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Question, pos, 
                 ESortingOrder.EffectItem);
         }
 
@@ -178,7 +178,7 @@ namespace GameA.Game
                         var pos = GM2DTools.TileToWorld(new IntVec2(
                             _moveDirection == EMoveDirection.Right ? _colliderGrid.XMin : _colliderGrid.XMax,
                             _colliderGrid.YMax));
-                        GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Question, pos, 2,
+                        GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.Question, pos,
                             ESortingOrder.EffectItem);
                     }
                     break;

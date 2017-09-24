@@ -25,6 +25,18 @@ namespace GameA
             return GameParticleManager.Instance.GetUIParticleItem(itemName, _cachedView.Trans, _groupId);
         }
         
+        public UIParticleItem EmitUIParticleLoop(string itemName, Vector3 pos = default(Vector3))
+        {
+            if (!_isOpen)
+            {
+                SocialGUIManager.Instance.OpenUI<UICtrlGameScreenEffect>();
+            }
+            pos.z = 0;
+            var uiparticle = GameParticleManager.Instance.EmitUIParticleLoop(itemName, _cachedView.Trans, _groupId,
+               (pos - (Vector3) _coordinateOffset) * _coordinateScalefactor);
+            return uiparticle;
+        }
+
         public UIParticleItem EmitUIParticle(string itemName, Vector3 pos = default(Vector3))
         {
             if (!_isOpen)
@@ -32,20 +44,7 @@ namespace GameA
                 SocialGUIManager.Instance.OpenUI<UICtrlGameScreenEffect>();
             }
             pos.z = 0;
-            var uiparticle = GameParticleManager.Instance.EmitUIParticle(itemName, _cachedView.Trans, _groupId,
-               (pos - (Vector3) _coordinateOffset) * _coordinateScalefactor);
-            return uiparticle;
-        }
-
-        public UIParticleItem EmitUIParticle(string itemName, float lifeTime, Vector3 pos = default(Vector3))
-        {
-            if (!_isOpen)
-            {
-                SocialGUIManager.Instance.OpenUI<UICtrlGameScreenEffect>();
-            }
-            pos.z = 0;
-            var uiparticle = GameParticleManager.Instance.EmitUIParticle(itemName, _cachedView.Trans, _groupId,
-                lifeTime, (pos - (Vector3) _coordinateOffset) * _coordinateScalefactor);
+            var uiparticle = GameParticleManager.Instance.EmitUIParticle(itemName, _cachedView.Trans, _groupId, (pos - (Vector3) _coordinateOffset) * _coordinateScalefactor);
             return uiparticle;
         }
         

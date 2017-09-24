@@ -97,7 +97,7 @@ namespace GameA.Game
                 pos.z = -60;
                 pos.x += MaskEffectOffset.x;
                 pos.y += MaskEffectOffset.y;
-                GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.HereItIs, pos, 2f);
+                GameParticleManager.Instance.Emit(ParticleNameConstDefineGM2D.HereItIs, pos);
             }
 
             protected UnityNativeParticleItem GetUnusedYellowMask(int idx)
