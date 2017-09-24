@@ -140,8 +140,8 @@ MonoBehaviour:
     _trans: {fileID: 0}
   _run: 0
   Language: 0
-  _isMaster: 1
-  _env: 2
+  _isMaster: 0
+  _env: 4
   _clearCache: 0
   _roomServerAddress: 192.168.1.91
   _appServerAddress:

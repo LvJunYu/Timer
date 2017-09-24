@@ -119,46 +119,52 @@ namespace GameA.Game
                 EditMode.Instance.StartAdd();
             }
             EditMode.Instance.ChangeEditorLayer(EEditorLayer.Capture);
-            byte[] mapDataBytes = MapManager.Instance.SaveMapData();
-            mapDataBytes = MatrixProjectTools.CompressLZMA(mapDataBytes);
             IconBytes = CaptureLevel();
             EditMode.Instance.RevertEditorLayer();
-            if (mapDataBytes == null
-                || mapDataBytes.Length == 0)
+            Loom.RunAsync(() =>
             {
-                if (failedCallback != null)
+                byte[] mapDataBytes = MapManager.Instance.SaveMapData();
+                mapDataBytes = MatrixProjectTools.CompressLZMA(mapDataBytes);
+                Loom.QueueOnMainThread(() =>
                 {
-                    failedCallback.Invoke(EProjectOperateResult.POR_Error);
-                }
-                return;
-            }
-            bool passFlag = CheckCanPublish();
-
-            _project.Save(
-                _project.Name,
-                _project.Summary,
-                mapDataBytes,
-                IconBytes,
-                passFlag,
-                true,
-                _recordUsedTime,
-                _recordScore,
-                _recordScoreItemCount,
-                _recordKillMonsterCount,
-                _recordLeftTime,
-                _recordLeftLife,
-                RecordBytes,
-                EditMode.Instance.MapStatistics.TimeLimit,
-                EditMode.Instance.MapStatistics.MsgWinCondition,
-                () =>
-                {
-                    NeedSave = false;
-                    MapDirty = false;
-                    if (successCallback != null)
+                    if (mapDataBytes == null
+                        || mapDataBytes.Length == 0)
                     {
-                        successCallback.Invoke();
+                        if (failedCallback != null)
+                        {
+                            failedCallback.Invoke(EProjectOperateResult.POR_Error);
+                        }
+                        return;
                     }
-                }, failedCallback);
+                    bool passFlag = CheckCanPublish();
+
+                    _project.Save(
+                        _project.Name,
+                        _project.Summary,
+                        mapDataBytes,
+                        IconBytes,
+                        passFlag,
+                        true,
+                        _recordUsedTime,
+                        _recordScore,
+                        _recordScoreItemCount,
+                        _recordKillMonsterCount,
+                        _recordLeftTime,
+                        _recordLeftLife,
+                        RecordBytes,
+                        EditMode.Instance.MapStatistics.TimeLimit,
+                        EditMode.Instance.MapStatistics.MsgWinCondition,
+                        () =>
+                        {
+                            NeedSave = false;
+                            MapDirty = false;
+                            if (successCallback != null)
+                            {
+                                successCallback.Invoke();
+                            }
+                        }, failedCallback);
+                });
+            });
         }
 
         public override void ChangeMode(EMode mode)
