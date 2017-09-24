@@ -62,9 +62,9 @@ namespace SoyEngine
             _rootParticleParent = new GameObject("ParticleRoot").transform;
         }
 
-        public void PreLoadParticle(string itemName)
+        public void PreLoadParticle(string itemName, EResScenary? resScenary = null)
         {
-            var p = GetUnityNativeParticleItem(itemName, null);
+            var p = GetUnityNativeParticleItem(itemName, null, ESortingOrder.Item, resScenary);
             if (p != null)
             {
                 FreeParticleItem(p);
@@ -72,12 +72,12 @@ namespace SoyEngine
         }
 
         public UnityNativeParticleItem GetUnityNativeParticleItem(string itemName, Transform parent,
-            ESortingOrder sortingOrder = ESortingOrder.Item)
+            ESortingOrder sortingOrder = ESortingOrder.Item, EResScenary? resScenary = null)
         {
             if (string.IsNullOrEmpty(itemName)) return null;
 
             Transform realParent = parent == null ? _rootParticleParent : parent;
-            UnityNativeParticleItem com = GetParticleItem(itemName);
+            UnityNativeParticleItem com = GetParticleItem(itemName, resScenary);
             if (com == null || com.Trans == null)
             {
                 LogHelper.Error("GetUnityNativeParticleItem failed! itemName is {0}", itemName);
@@ -307,12 +307,13 @@ namespace SoyEngine
 
         #region private
 
-        private UnityNativeParticleItem GetParticleItem(string itemName)
+        private UnityNativeParticleItem GetParticleItem(string itemName, EResScenary? resScenary = null)
         {
             ParticleItemPool pool;
             if (!_particlePoolDic.TryGetValue(itemName, out pool))
             {
-                pool = new ParticleItemPool(itemName, _rootParticleParent, JoyResManager.Instance.DefaultResScenary);
+                pool = new ParticleItemPool(itemName, _rootParticleParent,
+                    resScenary ?? JoyResManager.Instance.DefaultResScenary);
                 _particlePoolDic.Add(itemName, pool);
             }
             return pool.Get();

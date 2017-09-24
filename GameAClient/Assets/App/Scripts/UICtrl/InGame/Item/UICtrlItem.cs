@@ -43,6 +43,10 @@ namespace GameA
 
 	    protected override void OnDestroy()
 	    {
+		    for (int i = 0; i < _umItems.Count; i++)
+		    {
+			    _umItems[i].Hide();
+		    }
 		    _umItems.Clear();
 		    base.OnDestroy();
 	    }

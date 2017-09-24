@@ -104,7 +104,7 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.GridDataScroller.SetCallback(OnItemRefresh, GetItemRenderer);
+            _cachedView.GridDataScroller.Set(OnItemRefresh, GetItemRenderer);
         }
 
         #endregion 接口

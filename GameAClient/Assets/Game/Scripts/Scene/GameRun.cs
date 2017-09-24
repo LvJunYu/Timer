@@ -115,6 +115,8 @@ namespace GameA.Game
                 Messenger<float>.Broadcast(EMessengerType.OnEnterGameLoadingProcess, MapManager.Instance.MapProcess * 0.8f);
                 yield return new WaitForSeconds(0.1f);
             }
+            GameParticleManager.Instance.PreLoadParticle(ParticleNameConstDefineGM2D.WinEffect, EResScenary.Default);
+            GameParticleManager.Instance.PreLoadParticle(ParticleNameConstDefineGM2D.LoseEffect, EResScenary.Default);
         }
 
         public void Clear()

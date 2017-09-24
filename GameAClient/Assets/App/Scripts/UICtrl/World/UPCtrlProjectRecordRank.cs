@@ -156,7 +156,7 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.RecordRankGridScroller.SetCallback(OnItemRefresh, GetItemRenderer);
+            _cachedView.RecordRankGridScroller.Set(OnItemRefresh, GetItemRenderer);
         }
 
         #endregion 接口

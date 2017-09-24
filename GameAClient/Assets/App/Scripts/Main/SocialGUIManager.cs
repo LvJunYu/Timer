@@ -104,11 +104,6 @@ namespace GameA
             InitUI(GetType());
         }
 
-        public void OnResLoadComplete()
-        {
-            ProcessUIAutoSetup();
-        }
-
         public void ShowAppView()
         {
             if (LocalUser.Instance.User.LoginCount <= 1)
@@ -143,8 +138,8 @@ namespace GameA
                     UIRoot.SetGroupActive(i, true);
                 }
             }
-            ReloadUI(EResScenary.Game);
-            ReloadUI(EResScenary.UIInGame);
+            LoadUI(EResScenary.Game);
+            LoadUI(EResScenary.UIInGame);
             UnloadUI(EResScenary.UIHome);
             UnloadUI(EResScenary.UISingleMode);
             UnloadUI(EResScenary.Home);
@@ -184,9 +179,9 @@ namespace GameA
                 }
             }
             
-            ReloadUI(EResScenary.Home);
-            ReloadUI(EResScenary.UIHome);
-            ReloadUI(EResScenary.UISingleMode);
+            LoadUI(EResScenary.Home);
+            LoadUI(EResScenary.UIHome);
+            LoadUI(EResScenary.UISingleMode);
             UnloadUI(EResScenary.UIInGame);
             UnloadUI(EResScenary.Game);
             Messenger.Broadcast(EMessengerType.OnChangeToAppMode);

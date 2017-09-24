@@ -55,7 +55,7 @@ namespace GameA
             JoyResManager.Instance.UnloadScenary(resScenary);
         }
 
-        public void ReloadUI(EResScenary resScenary)
+        public void LoadUI(EResScenary resScenary)
         {
             List<UICtrlBase> list;
             if (!ResUICtrlDict.TryGetValue(resScenary, out list))

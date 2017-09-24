@@ -136,7 +136,7 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.FavoriteGridScroller.SetCallback(OnItemRefresh, GetItemRenderer);
+            _cachedView.FavoriteGridScroller.Set(OnItemRefresh, GetItemRenderer);
         }
         
         public void OnChangeHandler(long val)

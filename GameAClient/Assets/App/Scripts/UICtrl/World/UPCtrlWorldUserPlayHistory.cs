@@ -134,7 +134,7 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.PlayHistoryGridScroller.SetCallback(OnItemRefresh, GetItemRenderer);
+            _cachedView.PlayHistoryGridScroller.Set(OnItemRefresh, GetItemRenderer);
         }
 
         public void OnChangeHandler(long val)

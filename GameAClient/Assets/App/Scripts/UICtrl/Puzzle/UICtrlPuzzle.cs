@@ -213,7 +213,7 @@ namespace GameA
             _cachedView.Qulity.onValueChanged.AddListener(OnQulityToggle);
             _cachedView.Level.onValueChanged.AddListener(OnLevelToggle);
             _cachedView.Func.onValueChanged.AddListener(OnFuncToggle);
-            _cachedView.PuzzleItemGridDataScroller.SetCallback(OnPuzzleItemRefresh, CreateUmPuzzleItem);
+            _cachedView.PuzzleItemGridDataScroller.Set(OnPuzzleItemRefresh, CreateUmPuzzleItem);
             //            SocialGUIManager.Instance.GetUI<UICtrlLittleLoading>().OpenLoading(this, "...");
             //            LocalUser.Instance.UserPictureFull.Request(LocalUser.Instance.UserGuid,
             //                () =>

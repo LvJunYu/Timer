@@ -138,11 +138,6 @@ namespace GameA
             LocalUser.Instance.Init();
             GameParticleManager.Instance.Init();
             GameAudioManager.Instance.Init();
-            //预加载UI
-            SocialGUIManager.Instance.OnResLoadComplete();
-            SocialGUIManager.Instance.CreateView<UICtrlSingleMode>();
-            SocialGUIManager.Instance.CreateView<UICtrlWorld>();
-            SocialGUIManager.Instance.CreateView<UICtrlWorkShop>();
             if (!string.IsNullOrEmpty(LocalUser.Instance.Account.Token))
             {
                 SocialGUIManager.Instance.GetUI<UICtrlUpdateResource>().ShowInfo("正在加载用户数据");

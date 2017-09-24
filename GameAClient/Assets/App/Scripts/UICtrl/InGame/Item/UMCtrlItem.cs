@@ -22,9 +22,15 @@ namespace GameA
         private static Vector2 _startPos;
         private static readonly Vector2 CheckDelta = new Vector2(5f, 20f);
         private UMCtrlUnitProperty _umCtrlUnitProperty;
-
+        private bool _isShow;
+        
         public void Show()
         {
+            if (_isShow)
+            {
+                return;
+            }
+            _isShow = true;
             _cachedView.gameObject.SetActive(true);
             Messenger<ushort>.AddListener(EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
             Messenger<int>.AddListener(EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);
@@ -34,6 +40,11 @@ namespace GameA
 
         public void Hide()
         {
+            if (!_isShow)
+            {
+                return;
+            }
+            _isShow = false;
             _cachedView.gameObject.SetActive(false);
             Messenger<ushort>.RemoveListener(EMessengerType.OnSelectedItemChanged, OnSelectedItemChanged);
             Messenger<int>.RemoveListener(EMessengerType.OnUnitAddedInEditMode, OnUnitAddedInEditMode);

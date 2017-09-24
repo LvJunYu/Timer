@@ -153,7 +153,7 @@ namespace GameA
         protected override void OnViewCreated()
         {
             base.OnViewCreated();
-            _cachedView.CommentListTableScroller.SetCallback(OnItemRefresh, GetItemRenderer);
+            _cachedView.CommentListTableScroller.Set(OnItemRefresh, GetItemRenderer);
             _cachedView.PostCommentBtn.onClick.AddListener(OnPostCommentBtnClick);
         }
         

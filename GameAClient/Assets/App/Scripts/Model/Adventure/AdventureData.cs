@@ -455,9 +455,12 @@ namespace GameA
             AdventureUserLevelDataDetail levelData =
                 GetAdventureUserLevelDataDetail(_lastPlayedChapterIdx, _lastPlayedLevelType, _lastPlayedLevelIdx);
 
-            levelData.SimpleData.Star1Flag = star1Flag;
-            levelData.SimpleData.Star2Flag = star2Flag;
-            levelData.SimpleData.Star3Flag = star3Flag;
+            if (success && levelData.SimpleData.GetStarCount() != 3)
+            {
+                levelData.SimpleData.Star1Flag = star1Flag;
+                levelData.SimpleData.Star2Flag = star2Flag;
+                levelData.SimpleData.Star3Flag = star3Flag;
+            }
             if (success)
             {
                 levelData.SimpleData.SuccessCount++;

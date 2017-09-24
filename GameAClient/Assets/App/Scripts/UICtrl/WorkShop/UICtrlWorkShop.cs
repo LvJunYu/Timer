@@ -122,8 +122,8 @@ namespace GameA
             _cachedView.EditDescBtn.onClick.AddListener (OnEditDescBtn);
             _cachedView.ConfirmDescBtn.onClick.AddListener (OnConfirmDescBtn);
 			_cachedView.ReturnBtn.onClick.AddListener (OnReturnBtn);
-            _cachedView.PrivateProjectsGridScroller.SetCallback(OnPrivateItemRefresh, GetPrivateItemRenderer);
-            _cachedView.PublicProjectsGridScroller.SetCallback (OnPublicItemRefresh, GetPublicItemRenderer);
+            _cachedView.PrivateProjectsGridScroller.Set(OnPrivateItemRefresh, GetPrivateItemRenderer);
+            _cachedView.PublicProjectsGridScroller.Set (OnPublicItemRefresh, GetPublicItemRenderer);
         }
  
         public override void OnUpdate ()

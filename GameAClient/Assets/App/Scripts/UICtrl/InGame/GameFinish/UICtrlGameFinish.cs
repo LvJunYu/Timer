@@ -16,7 +16,7 @@ using PlayMode = GameA.Game.PlayMode;
 
 namespace GameA
 {
-    [UIAutoSetup]
+    [UIResAutoSetup(EResScenary.UIInGame, EUIAutoSetupType.Create)]
     public class UICtrlGameFinish : UICtrlInGameBase<UIViewGameFinish>
     {
         public enum EShowState
