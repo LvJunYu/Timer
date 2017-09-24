@@ -51,12 +51,16 @@ namespace GameA.Game
 
         public bool IsEdit
         {
-            get { return _eSceneState == ESceneState.Edit; }
+            get { return GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit; }
         }
-        
+
         public bool IsPlay
         {
-            get { return _eSceneState == ESceneState.Play; }
+            get
+            {
+                return GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Play ||
+                       GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.PlayRecord;
+            }
         }
 
         public bool IsPlaying

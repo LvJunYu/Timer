@@ -217,7 +217,7 @@ namespace GameA.Game
             var tableUnit = _unit.TableUnit;
             if (tableUnit.EUnitType != EUnitType.Bullet)
             {
-                if (GM2DGame.Instance.GameMode.GameRunMode == EGameRunMode.Edit)
+                if (GameRun.Instance.IsEdit)
                 {
                     if (EditHelper.CheckCanEdit(tableUnit.Id))
                     {
