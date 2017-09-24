@@ -48,6 +48,7 @@ namespace GameA
 			    _umItems[i].Hide();
 		    }
 		    _umItems.Clear();
+		    _umCtrlUnitProperty = null;
 		    base.OnDestroy();
 	    }
 
