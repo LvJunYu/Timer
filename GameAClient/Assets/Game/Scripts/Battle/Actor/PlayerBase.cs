@@ -178,9 +178,7 @@ namespace GameA.Game
         {
             base.OnPlay();
             LogHelper.Debug("{0}, OnPlay", GetType().Name);
-//            SetWeapon(201);
             _gun.Play();
-            AddStates(61);
             _revivePos = _curPos;
             if (PlayMode.Instance.IsUsingBoostItem(EBoostItemType.BIT_AddLifeCount1))
             {
