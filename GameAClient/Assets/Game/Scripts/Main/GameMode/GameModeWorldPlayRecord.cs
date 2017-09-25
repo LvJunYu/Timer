@@ -28,8 +28,9 @@ namespace GameA.Game
 
         private IEnumerator GameFlow()
         {
-            UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
-            yield return new WaitUntil(()=>uictrlCountDown.ShowComplete);
+//            UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
+//            yield return new WaitUntil(()=>uictrlCountDown.ShowComplete);
+            yield return null;
             GameRun.Instance.Playing();
         }
     }
