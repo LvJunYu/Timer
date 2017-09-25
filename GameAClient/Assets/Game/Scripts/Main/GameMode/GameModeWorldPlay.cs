@@ -156,14 +156,15 @@ namespace GameA.Game
 
         private IEnumerator GameFlow()
         {
-            UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
-            yield return new WaitUntil(() => uictrlCountDown.ShowComplete);
-            if (!Application.isMobilePlatform)
-            {
-                UICtrlSceneState uictrlSceneState = SocialGUIManager.Instance.GetUI<UICtrlSceneState>();
-                uictrlSceneState.ShowHelpPage3Seconds();
-                yield return new WaitUntil(() => uictrlSceneState.ShowHelpPage3SecondsComplete);
-            }
+//            UICtrlCountDown uictrlCountDown = SocialGUIManager.Instance.OpenUI<UICtrlCountDown>();
+//            yield return new WaitUntil(() => uictrlCountDown.ShowComplete);
+//            if (!Application.isMobilePlatform)
+//            {
+//                UICtrlSceneState uictrlSceneState = SocialGUIManager.Instance.GetUI<UICtrlSceneState>();
+//                uictrlSceneState.ShowHelpPage3Seconds();
+//                yield return new WaitUntil(() => uictrlSceneState.ShowHelpPage3SecondsComplete);
+//            }
+            yield return null;
             GameRun.Instance.Playing();
         }
     }
