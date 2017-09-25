@@ -193,26 +193,26 @@ namespace GameA
                     _lastPlayedChapterIdx = sectionId;
                     _lastPlayedLevelIdx = levelIdx;
                     _lastAdvSuccess = false;
-                    if (null != successCallback)
+                    project.PrepareRes(() =>
                     {
-                        successCallback.Invoke();
-                        project.PrepareRes(() =>
+                        var param = new SituationAdventureParam();
+                        param.ProjectType = type;
+                        param.Section = sectionId;
+                        param.Level = levelIdx;
+                        if (EAdventureProjectType.APT_Bonus == type)
                         {
-                            var param = new SituationAdventureParam();
-                            param.ProjectType = type;
-                            param.Section = sectionId;
-                            param.Level = levelIdx;
-                            if (EAdventureProjectType.APT_Bonus == type)
-                            {
-                                GameManager.Instance.RequestPlayAdvBonus(project, param);
-                            }
-                            else
-                            {
-                                GameManager.Instance.RequestPlayAdvNormal(project, param);
-                            }
-                            SocialApp.Instance.ChangeToGame();
-                        });
-                    }
+                            GameManager.Instance.RequestPlayAdvBonus(project, param);
+                        }
+                        else
+                        {
+                            GameManager.Instance.RequestPlayAdvNormal(project, param);
+                        }
+                        if (null != successCallback)
+                        {
+                            successCallback.Invoke();
+                        }
+                        SocialApp.Instance.ChangeToGame();
+                    });
                 }
                 else
                 {
