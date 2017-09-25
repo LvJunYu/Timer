@@ -5,7 +5,6 @@
 ** Summary : UICtrlSceneState  
 ***********************************************************************/
 
-using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using GameA.Game;
@@ -23,7 +22,6 @@ namespace GameA
         private readonly Dictionary<EWinCondition, UMCtrlGameWinConditionItem> _winConditionItemDict =
             new Dictionary<EWinCondition, UMCtrlGameWinConditionItem>();
 
-        private bool _hasTimeLimit;
         private int _lastShowSceonds = -100;
         private int _lastFrame;
         private Tweener _scoreTweener;
@@ -92,7 +90,6 @@ namespace GameA
             base.OnOpen(parameter);
             Clear();
             UpdateAll();
-            UpdateItemVisible();
         }
 
         protected override void InitEventListener()
@@ -112,10 +109,7 @@ namespace GameA
         {
             base.OnUpdate();
             UpdateShowHelper();
-            if (_hasTimeLimit)
-            {
-                UpdateTimeLimit();
-            }
+            UpdateTimeLimit();
 
             if (_showStar)
             {
@@ -164,7 +158,6 @@ namespace GameA
                 return;
             }
             UpdateAll();
-            UpdateItemVisible();
         }
 
         private void OnKeyCountChanged()
@@ -194,6 +187,7 @@ namespace GameA
             InitConditionView();
             UpdateLifeItemValue();
             UpdateWinDataWithOutTimeLimit();
+            UpdateItemVisible();
             UpdateTimeLimit();
             UpdateKeyCount();
             UpdateScore();
@@ -210,14 +204,10 @@ namespace GameA
             _cachedView.EnemyRoot.SetActiveEx(PlayMode.Instance.SceneState.MonsterCount > 0);
             _cachedView.KeyRoot.SetActiveEx(PlayMode.Instance.SceneState.HasKey);
 
-            _hasTimeLimit = false;
+            var hasOtherLimit = false;
             for (EWinCondition i = 0; i < EWinCondition.Max; i++)
             {
                 bool hasCondition = PlayMode.Instance.SceneState.HasWinCondition(i);
-                if (i == EWinCondition.TimeLimit)
-                {
-                    _hasTimeLimit = hasCondition;
-                }
                 if (hasCondition)
                 {
                     UMCtrlGameWinConditionItem winConditionItem = new UMCtrlGameWinConditionItem();
@@ -233,10 +223,14 @@ namespace GameA
                     {
                         winConditionItem.Show();
                     }
+                    if (i != EWinCondition.TimeLimit)
+                    {
+                        hasOtherLimit = true;
+                    }
                 }
             }
-            if (_hasTimeLimit)
-            {
+            if (!hasOtherLimit)
+            {//没有其他条件，时间限制改为存活
                 _winConditionItemDict[EWinCondition.TimeLimit]
                     .SetText(GetWinConditionString(EWinCondition.TimeLimit, true));
             }
@@ -326,16 +320,13 @@ namespace GameA
                     ShowFinalCountDown();
                 }
                 _lastShowSceonds = curValue;
-                if (_hasTimeLimit)
+                if (_winConditionItemDict.Count > 1)
                 {
-                    if (_winConditionItemDict.Count > 1)
-                    {
-                        _winConditionItemDict[EWinCondition.TimeLimit].SetComplete(curValue > 0);
-                    }
-                    else
-                    {
-                        _winConditionItemDict[EWinCondition.TimeLimit].SetComplete(curValue <= 0);
-                    }
+                    _winConditionItemDict[EWinCondition.TimeLimit].SetComplete(curValue > 0);
+                }
+                else
+                {
+                    _winConditionItemDict[EWinCondition.TimeLimit].SetComplete(curValue <= 0);
                 }
             }
         }
@@ -482,7 +473,7 @@ namespace GameA
             switch (winCondition)
             {
                 case EWinCondition.TimeLimit:
-                    if (!special)
+                    if (special)
                     {
                         return string.Format("坚持存活 {0}",
                             GameATools.SecondToHour(PlayMode.Instance.SceneState.RunTimeTimeLimit, true));
