@@ -202,8 +202,8 @@ PlayerSettings:
   AndroidTargetDevice: 3
   AndroidSplashScreenScale: 2
   androidSplashScreen: {fileID: 2800000, guid: b1a5ad973282b4991935d956dad14ff8, type: 3}
-  AndroidKeystoreName: 
-  AndroidKeyaliasName: 
+  AndroidKeystoreName: E:/Workspace/Joyyou/GameAClient/GameAClient/KeyChain/Android/JoyYouAndroidDis.keystore
+  AndroidKeyaliasName: joyyoudis
   AndroidTVCompatibility: 0
   AndroidIsGame: 1
   androidEnableBanner: 0

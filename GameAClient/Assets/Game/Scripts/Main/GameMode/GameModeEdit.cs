@@ -393,7 +393,7 @@ namespace GameA.Game
 			Texture2D t2 = ClientTools.CaptureCamera(CameraManager.Instance.RendererCamera, captureScreenSize, captureRect);
 			CameraManager.Instance.MainCameraPos = oriCameraPos;
 			CameraManager.Instance.RendererCamera.orthographicSize = oriCameraOrthoSize;
-			BgScene2D.Instance.ResetByFollowPos(oriCameraPos);
+			BgScene2D.Instance.Reset();
 			EditMode.Instance.CameraMask.Show();
 			return t2.EncodeToJPG(90);
 		}
