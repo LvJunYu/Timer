@@ -33,7 +33,6 @@ namespace GameA
             var view = go.GetComponent<UIViewBase>();
             view.Init();
             view.Trans.SetParent(_trans, false);
-            go.SetActive(false);
             return view;
         }
 		
