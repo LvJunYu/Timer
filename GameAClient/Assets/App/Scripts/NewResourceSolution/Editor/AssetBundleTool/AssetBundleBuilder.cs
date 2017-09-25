@@ -528,7 +528,7 @@ namespace NewResourceSolution.EditorTool
                 {
                     string abPath;
                     string destPath;
-                    if (!bundle.NeedStreamingAssetsCompress(isAdamBundle, isUnityManifestBundle, buildTarget))
+                    if (!NeedStreamingAssetsCompress(isAdamBundle, isUnityManifestBundle, buildTarget))
                     {
                         abPath = string.Format(StringFormat.TwoLevelPath, outputPathUncompressed,
                             bundle.AssetBundleName);
@@ -570,5 +570,23 @@ namespace NewResourceSolution.EditorTool
             str = JsonTools.SerializeOnjectWithExcludedProperties(manifest, buildAbConfig.Debug, new[] {"FL"});
             FileTools.WriteStringToFile(str, manifestInCompressedAbFolder);
         }
+        
+        private static bool NeedStreamingAssetsCompress(bool isAdam, bool isUnityManifestBundle, BuildTarget buildTarget)
+        {
+            if (buildTarget != BuildTarget.Android)
+            {
+                return false;
+            }
+            if (isAdam)
+            {
+                return false;
+            }
+            if (isUnityManifestBundle)
+            {
+                return false;
+            }
+            return true;
+        }
+
     }
 }

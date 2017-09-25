@@ -270,23 +270,6 @@ namespace NewResourceSolution
                        || Application.platform == RuntimePlatform.Android);
         }
 
-        public bool NeedStreamingAssetsCompress(bool isAdam, bool isUnityManifestBundle, BuildTarget buildTarget)
-        {
-            if (buildTarget != BuildTarget.Android)
-            {
-                return false;
-            }
-            if (isAdam)
-            {
-                return false;
-            }
-            if (isUnityManifestBundle)
-            {
-                return false;
-            }
-            return true;
-        }
-
         #region compare
 
         public static bool operator ==(CHResBundle a, CHResBundle b)
