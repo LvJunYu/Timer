@@ -332,7 +332,6 @@ namespace GameA.Game
                                     ClearRunTime();
                                     _isAlive = true;
                                     OnHpChanged(_maxHp);
-                                    AddStates(61);
                                     _dieTime = 0;
                                     _box = null;
                                     _trans.eulerAngles = new Vector3(0, 0, 0);
