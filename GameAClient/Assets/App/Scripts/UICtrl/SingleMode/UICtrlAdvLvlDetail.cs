@@ -6,7 +6,7 @@ using SoyEngine.Proto;
 
 namespace GameA
 {
-    [UIResAutoSetup(EResScenary.UIHome)]
+    [UIResAutoSetup(EResScenary.UISingleMode, EUIAutoSetupType.Create)]
     public class UICtrlAdvLvlDetail : UICtrlAnimationBase<UIViewAdvLvlDetail>
     {
         #region Fields

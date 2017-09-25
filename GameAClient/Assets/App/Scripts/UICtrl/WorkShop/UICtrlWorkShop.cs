@@ -13,7 +13,7 @@ using UnityEngine.EventSystems;
 
 namespace GameA
 {
-    [UIResAutoSetup(EResScenary.UISingleMode, EUIAutoSetupType.Create)]
+    [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
     public class UICtrlWorkShop : UICtrlAnimationBase<UIViewWorkShop>
     {
         #region 常量与字段

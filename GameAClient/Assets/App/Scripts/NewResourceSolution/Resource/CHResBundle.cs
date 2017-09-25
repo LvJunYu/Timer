@@ -4,6 +4,7 @@ using System.IO;
 using GameA;
 using Newtonsoft.Json;
 using SoyEngine;
+using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -267,6 +268,23 @@ namespace NewResourceSolution
             return EFileLocation.Persistent != FileLocation
                    && (CompressType != EAssetBundleCompressType.NoCompress
                        || Application.platform == RuntimePlatform.Android);
+        }
+
+        public bool NeedStreamingAssetsCompress(bool isAdam, bool isUnityManifestBundle, BuildTarget buildTarget)
+        {
+            if (buildTarget != BuildTarget.Android)
+            {
+                return false;
+            }
+            if (isAdam)
+            {
+                return false;
+            }
+            if (isUnityManifestBundle)
+            {
+                return false;
+            }
+            return true;
         }
 
         #region compare

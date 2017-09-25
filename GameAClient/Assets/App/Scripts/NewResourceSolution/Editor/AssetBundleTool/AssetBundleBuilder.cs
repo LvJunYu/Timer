@@ -515,24 +515,41 @@ namespace NewResourceSolution.EditorTool
                 }
             }
             AssetDatabase.CreateFolder(ResPath.Assets, ResPath.StreamingAssets);
-//            string outputPathCompressed = ABUtility.GetOutputPath(buildAbConfig, buildTarget);
+            string outputPathCompressed = ABUtility.GetOutputPath(buildAbConfig, buildTarget);
             string outputPathUncompressed = ABUtility.GetUnCompressedOutputPath(buildAbConfig, buildTarget);
             var allBundles = manifest.Bundles;
             for (int i = 0; i < allBundles.Count; i++)
             {
-                if (allBundles[i].GroupId == ResDefine.ResGroupInPackage)
+                var bundle = allBundles[i];
+                bool isAdamBundle = manifest.AdamBundleNameList.Contains(bundle.AssetBundleName);
+                bool isUnityManifestBundle =
+                    String.CompareOrdinal(bundle.AssetBundleName, ResDefine.UnityManifestBundleName) == 0;
+                if (bundle.GroupId == ResDefine.ResGroupInPackage || isAdamBundle || isUnityManifestBundle)
                 {
-                    var abPath = string.Format(StringFormat.TwoLevelPath, outputPathUncompressed,
-                        allBundles[i].AssetBundleName);
-                    allBundles[i].CompressType = EAssetBundleCompressType.NoCompress;
-                    var destPath = string.Format(StringFormat.TwoLevelPathWithExtention, ResPath.StreamingAssetsPath,
-                        allBundles[i].AssetBundleName, allBundles[i].RawMd5);
+                    string abPath;
+                    string destPath;
+                    if (!bundle.NeedStreamingAssetsCompress(isAdamBundle, isUnityManifestBundle, buildTarget))
+                    {
+                        abPath = string.Format(StringFormat.TwoLevelPath, outputPathUncompressed,
+                            bundle.AssetBundleName);
+                        bundle.CompressType = EAssetBundleCompressType.NoCompress;
+                        destPath = string.Format(StringFormat.TwoLevelPathWithExtention, ResPath.StreamingAssetsPath,
+                            bundle.AssetBundleName, bundle.RawMd5);
+                    }
+                    else
+                    {
+                        abPath = string.Format(StringFormat.TwoLevelPathWithExtention, outputPathCompressed,
+                            bundle.AssetBundleName, bundle.CompressedMd5);
+                        destPath = string.Format(StringFormat.TwoLevelPathWithExtention, ResPath.StreamingAssetsPath,
+                            bundle.AssetBundleName, bundle.CompressedMd5);
+                    }
+
                     FileTools.CopyFileSync(abPath, destPath);
-                    allBundles[i].FileLocation = EFileLocation.StreamingAsset;
+                    bundle.FileLocation = EFileLocation.StreamingAsset;
                 }
                 else
                 {
-                    allBundles[i].FileLocation = EFileLocation.Server;
+                    bundle.FileLocation = EFileLocation.Server;
                 }
             }
         }

@@ -129,26 +129,6 @@ namespace GameA.Game
                 });
         }
 
-        public override void QuitGame(Action successCB, Action<int> failureCB, bool forceQuitWhenFailed = false)
-        {
-            CommitGameResult(() =>
-                {
-                    if (null != successCB)
-                    {
-                        successCB.Invoke();
-                    }
-                    SocialApp.Instance.ReturnToApp();
-                },
-                code =>
-                {
-                    if (null != failureCB)
-                    {
-                        failureCB.Invoke((int) code);
-                    }
-                    SocialApp.Instance.ReturnToApp();
-                });
-        }
-
         public override bool Restart(Action successCb, Action failedCb)
         {
             if (successCb != null)

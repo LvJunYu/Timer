@@ -79,7 +79,7 @@ namespace GameA
     {
         public static SocialGUIManager Instance;
 
-        private EMode _currentMode = EMode.App;
+        private EMode _currentMode = EMode.None;
         private bool _exitDialogIsOpen;
 
         public EMode CurrentMode
@@ -258,6 +258,7 @@ namespace GameA
 
         public enum EMode
         {
+            None,
             App,
             Game
         }

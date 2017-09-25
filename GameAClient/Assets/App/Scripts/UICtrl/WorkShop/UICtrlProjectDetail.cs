@@ -1,6 +1,8 @@
-﻿namespace GameA
+﻿using SoyEngine;
+
+namespace GameA
 {
-    [UIResAutoSetup(EResScenary.UIHome)]
+    [UIResAutoSetup(EResScenary.UIHome, EUIAutoSetupType.Create)]
     public class UICtrlProjectDetail : UICtrlAnimationBase<UIViewProjectDetail>
     {
         #region Fields
